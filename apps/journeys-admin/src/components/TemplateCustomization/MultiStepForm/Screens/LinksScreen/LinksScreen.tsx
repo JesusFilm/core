@@ -231,7 +231,12 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
 
     await Promise.allSettled(updatePromises)
     setNavigating(true)
-    handleNext()
+    try {
+      await handleNext()
+    } catch (error) {
+      console.error('[LinksScreen] Navigation failed:', error)
+      setNavigating(false)
+    }
   }
 
   return (

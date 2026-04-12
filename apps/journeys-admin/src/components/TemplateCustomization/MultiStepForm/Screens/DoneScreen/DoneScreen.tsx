@@ -1,4 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -9,9 +10,11 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { VARIANT_CONFIGS } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/templateCardPreviewConfig'
 import { TemplateCardPreviewItem } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreviewItem'
 import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ArrowRightContained1Icon from '@core/shared/ui/icons/ArrowRightContained1'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
@@ -38,10 +41,14 @@ interface GoogleSheetsSyncsForDoneScreenVariables {
   filter: { journeyId: string }
 }
 
+const PREVIEW_SCALE = 0.7
+
 export function DoneScreen(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
+  const { emailResponseToggle } = useFlags()
+  const isEmailResponseEnabled = emailResponseToggle === true
   const router = useRouter()
   const [syncDialogOpen, setSyncDialogOpen] = useState(false)
 
@@ -122,7 +129,18 @@ export function DoneScreen(): ReactElement {
       }
     >
       {steps.length > 0 && (
-        <TemplateCardPreviewItem step={steps[0]} variant="standard" />
+        <Box
+          sx={{
+            transform: `scale(${PREVIEW_SCALE})`,
+            transformOrigin: 'top center',
+            height: {
+              xs: VARIANT_CONFIGS.guestPreview.cardHeight.xs * PREVIEW_SCALE,
+              sm: VARIANT_CONFIGS.guestPreview.cardHeight.sm * PREVIEW_SCALE
+            }
+          }}
+        >
+          <TemplateCardPreviewItem step={steps[0]} variant="guestPreview" />
+        </Box>
       )}
 
       <Stack
@@ -179,17 +197,21 @@ export function DoneScreen(): ReactElement {
           }}
         >
           <Typography variant="subtitle1">
-            {t('Choose where responses go:')}
+            {isEmailResponseEnabled
+              ? t('Choose where responses go:')
+              : t('Collect your responses:')}
           </Typography>
           <Stack spacing={2}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Typography variant="body2">{t('Send to my email')}</Typography>
-              <NotificationSwitch journeyId={journey?.id} />
-            </Stack>
+            {isEmailResponseEnabled && (
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography variant="body2">{t('Send to my email')}</Typography>
+                <NotificationSwitch journeyId={journey?.id} />
+              </Stack>
+            )}
             <Stack
               direction="row"
               justifyContent="space-between"

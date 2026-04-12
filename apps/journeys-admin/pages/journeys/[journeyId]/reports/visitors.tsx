@@ -5,7 +5,8 @@ import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useMemo, useState } from 'react'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 
@@ -23,10 +24,16 @@ import {
   UserTeamRole
 } from '../../../../__generated__/globalTypes'
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
+import { useIntegrationGoogleCreate } from '../../../../src/components/Google/GoogleCreateIntegration/libs/useIntegrationGoogleCreate'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
 import { ExportEventsButton } from '../../../../src/components/JourneyVisitorsList/ExportEventsButton'
-import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
+import {
+  FilterDrawer,
+  GET_JOURNEY_BLOCK_TYPENAMES
+} from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
+import { GoogleSheetsSyncDialog } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/GoogleSheetsSyncDialog'
+import { GoogleSheetsSyncButton } from '../../../../src/components/JourneyVisitorsList/GoogleSheetsSyncButton'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../../../src/components/ReportsNavigation'
@@ -100,10 +107,33 @@ function JourneyVisitorsPage({
   journey
 }: JourneyVisitorsPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
   const { user } = useAuth()
   const router = useRouter()
   const journeyId = router.query.journeyId as string
   const from = router.query.from
+  const [showSyncsDialog, setShowSyncsDialog] = useState(false)
+
+  useIntegrationGoogleCreate({
+    teamId: journey?.team?.id,
+    onSuccess: () => {
+      enqueueSnackbar(t('Google integration created successfully'), {
+        variant: 'success'
+      })
+      setShowSyncsDialog(true)
+    },
+    onError: (error) => {
+      enqueueSnackbar(error.message, { variant: 'error' })
+    }
+  })
+
+  useEffect(() => {
+    const openSyncDialog = router.query.openSyncDialog === 'true'
+    const hasCode = router.query.code != null
+    if (openSyncDialog && !hasCode) {
+      setShowSyncsDialog(true)
+    }
+  }, [router.query.openSyncDialog, router.query.code])
 
   // Hide visitors count
   // const { data } = useQuery<GetJourneyVisitorsCount>(
@@ -128,10 +158,32 @@ function JourneyVisitorsPage({
   const [hideInteractive, setHideInterActive] = useState(false)
   const [sortSetting, setSortSetting] = useState<'date' | 'duration'>('date')
 
+  const { data: blockTypesData } = useQuery(GET_JOURNEY_BLOCK_TYPENAMES, {
+    skip: journeyId == null,
+    variables: { id: journeyId }
+  })
+  const blockTypesLoaded = blockTypesData?.journey?.blockTypenames != null
+  const availableBlockTypes: string[] =
+    blockTypesData?.journey?.blockTypenames ?? []
+
+  // Reset URL-driven withSubmittedText filter when journey has no TextResponseBlock (NES-1486)
+  useEffect(() => {
+    if (
+      blockTypesLoaded &&
+      withSubmittedText &&
+      !availableBlockTypes.includes('TextResponseBlock')
+    ) {
+      setWithSubmittedText(false)
+    }
+  }, [blockTypesLoaded, availableBlockTypes, withSubmittedText])
+
+  const waitingForBlockTypes = withSubmittedText && !blockTypesLoaded
+
   const { data: userRoleData } = useUserRoleQuery()
-  const { fetchMore, loading } = useQuery<GetJourneyVisitors>(
+  const { fetchMore, loading: queryLoading } = useQuery<GetJourneyVisitors>(
     GET_JOURNEY_VISITORS,
     {
+      skip: waitingForBlockTypes,
       variables: {
         filter: {
           journeyId,
@@ -152,6 +204,8 @@ function JourneyVisitorsPage({
       }
     }
   )
+  const loading = queryLoading || waitingForBlockTypes
+
   const { data: userTeamsData } = useUserTeamsAndInvitesQuery(
     journey?.team != null
       ? {
@@ -165,8 +219,6 @@ function JourneyVisitorsPage({
     if (visitorEdges != null && hasNextPage) {
       const response = await fetchMore({
         variables: {
-          filter: { journeyId },
-          first: 100,
           after: endCursor
         }
       })
@@ -285,12 +337,14 @@ function JourneyVisitorsPage({
               hideInteractive={hideInteractive}
               handleClearAll={handleClearAll}
             />
-            {
-              <ExportEventsButton
-                journeyId={journeyId}
-                disabled={!enableExportButton}
-              />
-            }
+            <GoogleSheetsSyncButton
+              disabled={!enableExportButton}
+              onSyncClick={() => setShowSyncsDialog(true)}
+            />
+            <ExportEventsButton
+              journeyId={journeyId}
+              disabled={!enableExportButton}
+            />
           </Stack>
         }
         sidePanelTitle={
@@ -307,7 +361,6 @@ function JourneyVisitorsPage({
         sidePanelChildren={
           <FilterDrawer
             journeyId={journeyId}
-            teamId={journey?.team?.id}
             handleChange={handleChange}
             sortSetting={sortSetting}
             chatStarted={chatStarted}
@@ -318,6 +371,7 @@ function JourneyVisitorsPage({
             hideInteractive={hideInteractive}
             handleClearAll={handleClearAll}
             disableExportButton={!enableExportButton}
+            onSyncDialogOpen={() => setShowSyncsDialog(true)}
           />
         }
       >
@@ -327,6 +381,11 @@ function JourneyVisitorsPage({
           fetchNext={handleFetchNext}
           loading={loading}
           hasNextPage={hasNextPage}
+        />
+        <GoogleSheetsSyncDialog
+          open={showSyncsDialog}
+          onClose={() => setShowSyncsDialog(false)}
+          journeyId={journeyId}
         />
       </PageWrapper>
     </>

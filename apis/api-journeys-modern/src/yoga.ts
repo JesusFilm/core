@@ -84,8 +84,13 @@ export const yoga = createYoga<
           cache,
           ttlPerSchemaCoordinate: {
             'Journey.blockTypenames': 0,
+            'Query.adminJourney': 0,
             'Query.adminJourneys': 0,
-            'Query.getJourneyProfile': 1000,
+            // Private per-user data — must not be served from a global shared
+            // cache (session: () => null). TTL 0 disables caching entirely for
+            // this field, preventing cross-user profile contamination that caused
+            // the terms-and-conditions redirect to be skipped for new users.
+            'Query.getJourneyProfile': 0,
             'Query.getUserRole': 0,
             'Query.googleSheetsSyncs': 0,
             'Query.journeysPlausibleStatsAggregate': 5000,

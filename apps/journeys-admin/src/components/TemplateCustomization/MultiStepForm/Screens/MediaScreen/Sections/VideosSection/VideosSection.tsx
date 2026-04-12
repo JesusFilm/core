@@ -11,6 +11,7 @@ import { useDropzone } from 'react-dropzone'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
+import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { useTemplateVideoUpload } from '../../../../TemplateVideoUploadProvider'
 import {
   extractYouTubeVideoId,
@@ -45,14 +46,14 @@ function UploadButton({
         disabled={loading}
         onClick={open}
         sx={{
-          height: 40,
+          borderWidth: 2,
+          borderRadius: 2,
+          height: 48,
           width: '100%',
-          borderRadius: 2
+          borderColor: 'secondary.light'
         }}
       >
-        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-          {label}
-        </Typography>
+        <Typography variant="subtitle2">{label}</Typography>
       </Button>
       {errorMessage != null && (
         <Typography
@@ -81,7 +82,9 @@ function VideoAdapterNote({ note }: VideoAdapterNoteProps): ReactElement {
       sx={{
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap'
+        display: '-webkit-box',
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical'
       }}
     >
       {note}
@@ -138,6 +141,24 @@ export function VideosSection({
   })
 
   const lastSubmittedRef = useRef(new Map<string, string>())
+
+  useEffect(() => {
+    setYoutubeUrl('')
+    setYoutubeUrlError(undefined)
+
+    if (
+      videoBlock != null &&
+      videoBlock.source === VideoBlockSource.youTube &&
+      videoBlock.videoId != null
+    ) {
+      const canonicalUrl = `https://www.youtube.com/watch?v=${videoBlock.videoId}`
+      setYoutubeUrl(canonicalUrl)
+      lastSubmittedRef.current.set(videoBlock.id, canonicalUrl)
+    }
+    // Only reset on card switch — adding videoBlock deps would re-fire
+    // after every YouTube mutation (journey context updates videoId).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardBlockId])
 
   function handleYouTubeUrlChange(event: ChangeEvent<HTMLInputElement>): void {
     setYoutubeUrl(event.target.value)
@@ -213,7 +234,6 @@ export function VideosSection({
         data-testid="VideosSection-youtube-input"
         variant="filled"
         hiddenLabel
-        size="small"
         fullWidth
         placeholder={t('Paste a YouTube link...')}
         value={youtubeUrl}

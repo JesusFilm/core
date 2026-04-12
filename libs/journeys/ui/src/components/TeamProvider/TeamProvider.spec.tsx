@@ -3,6 +3,8 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
+
 import {
   GetLastActiveTeamIdAndTeams,
   GetLastActiveTeamIdAndTeams_teams as Team
@@ -37,6 +39,10 @@ const TestComponent = (): ReactElement => {
         onClick={() => setActiveTeam(query.data?.teams[1] ?? null)}
       >
         Change active to second team
+      </button>
+
+      <button type="button" onClick={() => setActiveTeam(null)}>
+        Set Shared With Me
       </button>
 
       <button type="button" onClick={async () => await refetch()}>
@@ -81,7 +87,22 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
+function setUrlParam(key: string, value: string): void {
+  const url = new URL(window.location.href)
+  url.searchParams.set(key, value)
+  window.history.replaceState({}, '', url.toString())
+}
+
+function clearUrlParams(): void {
+  window.history.replaceState({}, '', window.location.pathname)
+}
+
 describe('TeamProvider', () => {
+  beforeEach(() => {
+    sessionStorage.clear()
+    clearUrlParams()
+  })
+
   it('show show list of teams', async () => {
     render(
       <MockedProvider mocks={[getTeamsMock]}>
@@ -178,5 +199,250 @@ describe('TeamProvider', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Refetch' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should persist active team to sessionStorage on set', async () => {
+    render(
+      <MockedProvider mocks={[getTeamsMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
+    )
+    expect(sessionStorage.getItem('journeys-admin:activeTeamId')).toBe(
+      'teamId1'
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Change active to second team' })
+    )
+    expect(sessionStorage.getItem('journeys-admin:activeTeamId')).toBe(
+      'teamId2'
+    )
+  })
+
+  it('should use sessionStorage value over database lastActiveTeamId', async () => {
+    sessionStorage.setItem('journeys-admin:activeTeamId', 'teamId2')
+
+    const updateLastActiveTeamIdMock: MockedResponse = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: { lastActiveTeamId: 'teamId2' }
+        }
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: { id: 'journeyProfileId' }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider mocks={[getTeamsMock, updateLastActiveTeamIdMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my second team')).toBeInTheDocument()
+    )
+  })
+
+  it('should store sentinel value for Shared With Me in sessionStorage', async () => {
+    render(
+      <MockedProvider mocks={[getTeamsMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Set Shared With Me' }))
+    expect(sessionStorage.getItem('journeys-admin:activeTeamId')).toBe(
+      '__shared__'
+    )
+  })
+
+  it('should set active team from URL activeTeam parameter', async () => {
+    setUrlParam('activeTeam', 'teamId2')
+
+    const updateLastActiveTeamIdMock: MockedResponse = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: { lastActiveTeamId: 'teamId2' }
+        }
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: { id: 'journeyProfileId' }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider mocks={[getTeamsMock, updateLastActiveTeamIdMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my second team')).toBeInTheDocument()
+    )
+  })
+
+  it('should prioritize URL param over session storage', async () => {
+    sessionStorage.setItem('journeys-admin:activeTeamId', 'teamId1')
+    setUrlParam('activeTeam', 'teamId2')
+
+    const updateLastActiveTeamIdMock: MockedResponse = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: { lastActiveTeamId: 'teamId2' }
+        }
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: { id: 'journeyProfileId' }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider mocks={[getTeamsMock, updateLastActiveTeamIdMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my second team')).toBeInTheDocument()
+    )
+  })
+
+  it('should fall through to session storage when URL team is not in teams list', async () => {
+    setUrlParam('activeTeam', 'nonExistentTeamId')
+    sessionStorage.setItem('journeys-admin:activeTeamId', 'teamId2')
+
+    const updateLastActiveTeamIdMock: MockedResponse = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: { lastActiveTeamId: 'teamId2' }
+        }
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: { id: 'journeyProfileId' }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider mocks={[getTeamsMock, updateLastActiveTeamIdMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my second team')).toBeInTheDocument()
+    )
+  })
+
+  it('should clean activeTeam param from URL after consumption', async () => {
+    setUrlParam('activeTeam', 'teamId1')
+    setUrlParam('type', 'templates')
+    const replaceStateSpy = jest.spyOn(window.history, 'replaceState')
+
+    const updateLastActiveTeamIdMock: MockedResponse = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: { lastActiveTeamId: 'teamId1' }
+        }
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: { id: 'journeyProfileId' }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider mocks={[getTeamsMock, updateLastActiveTeamIdMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
+    )
+
+    expect(replaceStateSpy).toHaveBeenCalled()
+    const lastCallUrl = replaceStateSpy.mock.calls[
+      replaceStateSpy.mock.calls.length - 1
+    ][2] as string
+    expect(lastCallUrl).not.toContain('activeTeam')
+    expect(lastCallUrl).toContain('type=templates')
+
+    replaceStateSpy.mockRestore()
+  })
+
+  it('should clean activeTeam param from URL even when team is not found', async () => {
+    setUrlParam('activeTeam', 'nonExistentTeamId')
+    const replaceStateSpy = jest.spyOn(window.history, 'replaceState')
+
+    render(
+      <MockedProvider mocks={[getTeamsMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
+    )
+
+    expect(replaceStateSpy).toHaveBeenCalled()
+    const lastCallUrl = replaceStateSpy.mock.calls[
+      replaceStateSpy.mock.calls.length - 1
+    ][2] as string
+    expect(lastCallUrl).not.toContain('activeTeam')
+
+    replaceStateSpy.mockRestore()
+  })
+
+  it('should fall back to database value when session team is not in teams list', async () => {
+    sessionStorage.setItem('journeys-admin:activeTeamId', 'nonExistentTeamId')
+
+    render(
+      <MockedProvider mocks={[getTeamsMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
+    )
   })
 })

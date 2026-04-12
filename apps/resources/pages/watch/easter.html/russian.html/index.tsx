@@ -6,20 +6,26 @@ import type { ReactElement } from 'react'
 
 import i18nConfig from '../../../../next-i18next.config'
 import { CollectionsPage } from '../../../../src/components/CollectionsPage/languages/ru'
+import { getEasterCampaignYear } from '../../../../src/libs/easterDates'
 import { getFlags } from '../../../../src/libs/getFlags'
 
-export default function EasterPage(): ReactElement {
+interface EasterPageProps {
+  easterYear: number
+}
+
+export default function EasterPage({
+  easterYear
+}: EasterPageProps): ReactElement {
   return (
     <>
       <NextSeo
         titleTemplate="%s | Jesus Film Project"
-        defaultTitle="Пасха 2025: видео и материалы о Великом посте, Страстной неделе, Воскресении | Jesus Film Project"
-        description="Откройте для себя другую сторону Пасхи — историю, наполненную предательством, надеждой и утверждением, изменившим мир."
+        defaultTitle={`Пасха ${easterYear}: смотрите историю воскресения | Jesus Film Project`}
+        description="Узнайте истинный смысл Пасхи через видео о воскресении Иисуса. Смотрите материалы о Страстной неделе, Страстной пятнице и Пасхальном воскресенье более чем на 2 000 языках."
         openGraph={{
-          title:
-            'Что если всё, что вы думали о Пасхе — это только половина истории?',
+          title: `Пасха ${easterYear}: смотрите историю воскресения`,
           description:
-            'Откройте для себя другую сторону Пасхи — историю, наполненную предательством, надеждой и утверждением, изменившим мир.',
+            'Узнайте истинный смысл Пасхи через видео о воскресении Иисуса. Смотрите более чем на 2 000 языках.',
           url: 'https://www.jesusfilm.org/watch/easter/russian',
           type: 'website',
           locale: 'ru_RU',
@@ -48,21 +54,25 @@ export default function EasterPage(): ReactElement {
         }}
       />
       <SnackbarProvider>
-        <CollectionsPage />
+        <CollectionsPage year={easterYear} />
       </SnackbarProvider>
     </>
   )
 }
 
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getStaticProps: GetStaticProps<EasterPageProps> = async (
+  context
+) => {
   return {
     props: {
+      easterYear: getEasterCampaignYear(),
       flags: await getFlags(),
       ...(await serverSideTranslations(
         context.locale ?? 'ru',
         ['apps-resources'],
         i18nConfig
       ))
-    }
+    },
+    revalidate: 60 * 60 * 24
   }
 }

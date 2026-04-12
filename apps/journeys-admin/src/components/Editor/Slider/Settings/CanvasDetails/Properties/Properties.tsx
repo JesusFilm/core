@@ -4,7 +4,7 @@ import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, ReactNode, useState } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -116,7 +116,6 @@ interface PropertiesProps {
 export function Properties({ block, step }: PropertiesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { state, dispatch } = useEditor()
-  const [showCardTemplates, setShowCardTemplates] = useState(true)
   const selectedBlock = block ?? state.selectedBlock
   const selectedStep = step ?? state.selectedStep
 
@@ -127,7 +126,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
 
   if (selectedBlock?.__typename === 'StepBlock') {
     const card = selectedBlock.children[0]
-    if (card?.children.length > 0 || !showCardTemplates) {
+    if (card?.children.length > 0 || state.showCardTemplates === false) {
       return <Properties block={card} step={selectedStep} />
     }
   }
@@ -193,13 +192,18 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
 
   function onClose(): void {
     const isCardTemplates = title === t('Card Templates')
-    setShowCardTemplates(!isCardTemplates)
 
-    if (!isCardTemplates)
+    if (isCardTemplates) {
+      dispatch({
+        type: 'SetShowCardTemplatesAction',
+        showCardTemplates: false
+      })
+    } else {
       dispatch({
         type: 'SetActiveSlideAction',
         activeSlide: mdUp ? ActiveSlide.JourneyFlow : ActiveSlide.Content
       })
+    }
   }
 
   if (component == null) return <></>

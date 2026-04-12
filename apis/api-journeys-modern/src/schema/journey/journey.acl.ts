@@ -178,8 +178,13 @@ function read(journey: Partial<Journey>, user: User): boolean {
   const userTeam = journey?.team?.userTeams.find(
     (userTeam) => userTeam.userId === user.id
   )
-
-  return userTeam != null || userJourney != null
+  const hasJourneyReadAccess =
+    userJourney?.role === UserJourneyRole.owner ||
+    userJourney?.role === UserJourneyRole.editor
+  const hasTeamReadAccess =
+    userTeam?.role === UserTeamRole.manager ||
+    userTeam?.role === UserTeamRole.member
+  return hasJourneyReadAccess || hasTeamReadAccess
 }
 
 // team managers/members and journeys owners/editors can update the journey
