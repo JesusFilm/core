@@ -229,7 +229,9 @@ mediaComponent.openapi(route, async (c) => {
         video.title[0]?.value == null &&
         video.fallbackTitle[0]?.value == null &&
         video.snippet[0]?.value == null &&
-        video.description[0]?.value == null
+        video.fallbackSnippet[0]?.value == null &&
+        video.description[0]?.value == null &&
+        video.fallbackDescription[0]?.value == null
       ) {
         return {
           data: {
