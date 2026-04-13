@@ -4,7 +4,6 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
 import {
   ComponentProps,
   ElementType,
@@ -115,11 +114,10 @@ export function Item({
           target={href != null ? '_blank' : undefined}
           href={href}
           onClick={onClick}
+          sx={{ typography: 'subtitle2' }}
           {...ButtonProps}
         >
-          <Typography variant="subtitle2" sx={{ py: 1 }}>
-            {label}
-          </Typography>
+          {label}
         </Button>
       )
     case 'menu-item':
