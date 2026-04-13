@@ -10,6 +10,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
+import { setPendingGuestJourney } from '../../../../../libs/pendingGuestJourney'
 import { buildCustomizeUrl } from '../../../utils/customizationRoutes'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { getNextCustomizeScreen } from '../../../utils/getNextCustomizeScreen'
@@ -50,6 +51,10 @@ export function GuestPreviewScreen({
   }
 
   function handleContinueWithAccount(): void {
+    if (journey?.id != null) {
+      setPendingGuestJourney(journey.id, journey.fromTemplateId ?? journey.id)
+    }
+
     const nextScreen = getNextCustomizeScreen(screens, 'guestPreview')
     const redirectUrl =
       nextScreen != null
@@ -110,6 +115,7 @@ export function GuestPreviewScreen({
         >
           <Typography
             variant="body2"
+            align="center"
             color="text.secondary"
             display={{ xs: 'block', sm: 'none' }}
           >
@@ -119,6 +125,7 @@ export function GuestPreviewScreen({
           </Typography>
           <Typography
             variant="body1"
+            align="center"
             color="text.secondary"
             display={{ xs: 'none', sm: 'block' }}
           >
@@ -138,6 +145,7 @@ export function GuestPreviewScreen({
           />
           <Typography
             variant="body2"
+            align="center"
             color="text.secondary"
             sx={{ fontStyle: 'italic', fontWeight: 700 }}
           >

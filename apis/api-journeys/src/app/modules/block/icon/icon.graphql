@@ -60,18 +60,6 @@ type IconBlock implements Block @shareable {
   size: IconSize @shareable
 }
 
-input IconBlockCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  parentBlockId: ID!
-  journeyId: ID!
-  name: IconName
-  color: IconColor
-  size: IconSize
-}
-
 input IconBlockUpdateInput {
   name: IconName
   color: IconColor
@@ -79,7 +67,6 @@ input IconBlockUpdateInput {
 }
 
 extend type Mutation {
-  iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
   iconBlockUpdate(
     id: ID!
     input: IconBlockUpdateInput!

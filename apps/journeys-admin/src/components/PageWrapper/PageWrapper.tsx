@@ -86,13 +86,13 @@ export function PageWrapper({
         data-testid="JourneysAdminPageWrapper"
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
-          <Box
-            sx={{
-              minWidth: navbar.width,
-              backgroundColor: backgroundColor ?? 'background.default'
-            }}
-          >
-            {showNavBar && (
+          {showNavBar && (
+            <Box
+              sx={{
+                minWidth: navbar.width,
+                backgroundColor: backgroundColor ?? 'background.default'
+              }}
+            >
               <Fade in appear={fadeInNavBar} timeout={500}>
                 <Box>
                   <NavigationDrawer
@@ -103,8 +103,8 @@ export function PageWrapper({
                   />
                 </Box>
               </Fade>
-            )}
-          </Box>
+            </Box>
+          )}
 
           <Stack
             flexGrow={1}
@@ -113,7 +113,7 @@ export function PageWrapper({
               backgroundColor: backgroundColor ?? 'background.default',
               ...(background != null && { background }),
               width: '100%',
-              pt: { xs: toolbar.height, md: 0 },
+              pt: { xs: showAppHeader ? toolbar.height : 0, md: 0 },
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
                 md: 0
@@ -143,7 +143,7 @@ export function PageWrapper({
               sx={{
                 width: {
                   xs: 'inherit',
-                  md: `calc(100vw - ${navbar.width})`
+                  md: showNavBar ? `calc(100vw - ${navbar.width})` : '100vw'
                 },
                 height: '100%'
               }}
@@ -163,8 +163,12 @@ export function PageWrapper({
                     xs: 'inherit',
                     md:
                       sidePanelChildren != null || customSidePanel != null
-                        ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
-                        : `calc(100vw - ${navbar.width})`
+                        ? showNavBar
+                          ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
+                          : `calc(100vw - ${sidePanel.width})`
+                        : showNavBar
+                          ? `calc(100vw - ${navbar.width})`
+                          : '100vw'
                   },
                   height: showMainHeader
                     ? `calc(100% - ${toolbar.height})`
