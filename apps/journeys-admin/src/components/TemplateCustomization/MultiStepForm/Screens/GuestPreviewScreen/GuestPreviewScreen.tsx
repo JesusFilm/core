@@ -71,9 +71,7 @@ export function GuestPreviewScreen({
     <ScreenWrapper
       title={t('Your preview is ready')}
       mobileTitle={t('Preview ready')}
-      subtitle={t(
-        'Preview your changes here. Tap on a card to zoom it in.'
-      )}
+      subtitle={t('Preview your changes here. Tap on a card to zoom it in.')}
       mobileSubtitle={t('Tap on a card to zoom it in')}
     >
       <Stack
