@@ -153,7 +153,7 @@ export function MultiStepForm(): ReactElement {
             (hasEditableText ||
               hasCustomizableLinks ||
               hasCustomizableMedia) && (
-              <Box sx={{ mt: { xs: 3, sm: 6 } }}>
+              <Box sx={{ mt: 5 }}>
                 <ProgressStepper
                   activeStepNumber={activeStepForStepper}
                   totalSteps={totalSteps}

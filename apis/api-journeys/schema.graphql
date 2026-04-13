@@ -234,9 +234,14 @@ extend type Query {
   hosts(teamId: ID!): [Host!]!
   integrations(teamId: ID!): [Integration!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
   journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
+
+  """
+  Returns distinct language IDs from published global templates.
+  Used to dynamically populate the language filter on the templates page.
+  """
+  journeyTemplateLanguageIds: [String!]!
   journeyCollection(id: ID!): JourneyCollection!
   journeyCollections(teamId: ID!): [JourneyCollection]!
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
@@ -339,14 +344,6 @@ type Mutation {
 
   """blockRestore is used for redo/undo"""
   blockRestore(id: ID!): [Block!]!
-  cardBlockUpdate(
-    id: ID!
-    input: CardBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): CardBlock!
-  iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
   iconBlockUpdate(
     id: ID!
     input: IconBlockUpdateInput!
@@ -608,17 +605,6 @@ type CardBlock implements Block
   themeName: ThemeName @shareable
 }
 
-input CardBlockUpdateInput {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  coverBlockId: ID
-  backgroundColor: String
-  backdropBlur: Int
-  fullscreen: Boolean
-  themeMode: ThemeMode
-  themeName: ThemeName
-}
-
 enum GridDirection {
   columnReverse
   column
@@ -724,18 +710,6 @@ type IconBlock implements Block
   name: IconName @shareable
   color: IconColor @shareable
   size: IconSize @shareable
-}
-
-input IconBlockCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  parentBlockId: ID!
-  journeyId: ID!
-  name: IconName
-  color: IconColor
-  size: IconSize
 }
 
 input IconBlockUpdateInput {

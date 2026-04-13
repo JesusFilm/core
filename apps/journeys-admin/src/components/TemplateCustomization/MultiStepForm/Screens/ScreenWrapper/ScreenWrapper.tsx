@@ -42,6 +42,7 @@ export function ScreenWrapper({
         <Typography
           variant="h3"
           display={{ xs: 'none', sm: 'block' }}
+          align="center"
           gutterBottom
           sx={{ mb: { xs: 0, sm: 2 } }}
         >
@@ -50,6 +51,7 @@ export function ScreenWrapper({
         <Typography
           variant="h6"
           display={{ xs: 'block', sm: 'none' }}
+          align="center"
           gutterBottom
           sx={{ mb: { xs: 0, sm: 2 } }}
         >
