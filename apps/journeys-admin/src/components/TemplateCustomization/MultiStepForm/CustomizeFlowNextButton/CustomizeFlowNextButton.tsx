@@ -40,7 +40,8 @@ export const CustomizeFlowNextButton = ({
       sx={{
         width: { xs: '100%', sm: '216px' },
         alignSelf: 'center',
-        mt: { xs: 6, sm: 4 },
+        mt: 5,
+        borderRadius: 2,
         ...sx
       }}
     >
