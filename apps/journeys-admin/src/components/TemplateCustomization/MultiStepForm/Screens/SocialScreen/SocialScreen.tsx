@@ -24,9 +24,14 @@ export function SocialScreen({ handleNext }: SocialScreenProps): ReactElement {
       footer={
         <CustomizeFlowNextButton
           label={t('Done')}
-          onClick={() => {
+          onClick={async () => {
             setLoading(true)
-            handleNext()
+            try {
+              await handleNext()
+            } catch (error) {
+              console.error('[SocialScreen] Navigation failed:', error)
+              setLoading(false)
+            }
           }}
           loading={loading}
           ariaLabel={t('Done')}
@@ -35,16 +40,15 @@ export function SocialScreen({ handleNext }: SocialScreenProps): ReactElement {
     >
       <Stack
         alignItems="center"
-        gap={6}
+        gap={5}
         data-testid="SocialShareAppearance"
         sx={{
-          width: '100%',
-          py: 5
+          width: '100%'
         }}
       >
-        <SocialScreenSocialImage />
-        <TitleEdit />
-        <DescriptionEdit />
+        <SocialScreenSocialImage hideAdornments />
+        <TitleEdit hideHelperText />
+        <DescriptionEdit hideHelperText />
       </Stack>
     </ScreenWrapper>
   )

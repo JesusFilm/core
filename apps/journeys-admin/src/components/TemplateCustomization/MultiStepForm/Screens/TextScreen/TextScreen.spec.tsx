@@ -71,7 +71,7 @@ describe('TextScreen', () => {
   })
 
   it('submits only when values changed and calls handleNext', async () => {
-    const handleNext = jest.fn()
+    const handleNext = jest.fn().mockResolvedValue(undefined)
     const journeyCustomizationFieldUpdate: MockedResponse<
       JourneyCustomizationFieldUpdate,
       JourneyCustomizationFieldUpdateVariables
@@ -134,7 +134,7 @@ describe('TextScreen', () => {
   })
 
   it('should show loading state on the Next button after clicking', () => {
-    const handleNext = jest.fn()
+    const handleNext = jest.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
@@ -153,7 +153,7 @@ describe('TextScreen', () => {
   })
 
   it('does not submit when no changes and still calls handleNext', () => {
-    const handleNext = jest.fn()
+    const handleNext = jest.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>

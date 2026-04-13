@@ -53,6 +53,7 @@ export interface GetIntegration_integrations_IntegrationGoogle {
   id: string;
   team: GetIntegration_integrations_IntegrationGoogle_team;
   type: IntegrationType;
+  userId: string | null;
   user: GetIntegration_integrations_IntegrationGoogle_user | null;
   accountEmail: string | null;
 }

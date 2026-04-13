@@ -321,26 +321,6 @@ export class ButtonBlockSettingsInput {
     color?: Nullable<string>;
 }
 
-export class CardBlockUpdateInput {
-    parentBlockId?: Nullable<string>;
-    eventLabel?: Nullable<BlockEventLabel>;
-    coverBlockId?: Nullable<string>;
-    backgroundColor?: Nullable<string>;
-    backdropBlur?: Nullable<number>;
-    fullscreen?: Nullable<boolean>;
-    themeMode?: Nullable<ThemeMode>;
-    themeName?: Nullable<ThemeName>;
-}
-
-export class IconBlockCreateInput {
-    id?: Nullable<string>;
-    parentBlockId: string;
-    journeyId: string;
-    name?: Nullable<IconName>;
-    color?: Nullable<IconColor>;
-    size?: Nullable<IconSize>;
-}
-
 export class IconBlockUpdateInput {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
@@ -966,11 +946,11 @@ export abstract class IQuery {
 
     abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
 
-    abstract adminJourney(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
-
     abstract journeys(where?: Nullable<JourneysFilter>, options?: Nullable<JourneysQueryOptions>): Journey[] | Promise<Journey[]>;
 
     abstract journey(id: string, idType?: Nullable<IdType>, options?: Nullable<JourneysQueryOptions>): Journey | Promise<Journey>;
+
+    abstract journeyTemplateLanguageIds(): string[] | Promise<string[]>;
 
     abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
 
@@ -1019,10 +999,6 @@ export abstract class IMutation {
     abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
 
     abstract blockRestore(id: string): Block[] | Promise<Block[]>;
-
-    abstract cardBlockUpdate(id: string, input: CardBlockUpdateInput, journeyId?: Nullable<string>): CardBlock | Promise<CardBlock>;
-
-    abstract iconBlockCreate(input: IconBlockCreateInput): IconBlock | Promise<IconBlock>;
 
     abstract iconBlockUpdate(id: string, input: IconBlockUpdateInput, journeyId?: Nullable<string>): IconBlock | Promise<IconBlock>;
 
@@ -1659,6 +1635,7 @@ export class IntegrationGoogle implements Integration {
     team: Team;
     type: IntegrationType;
     user?: Nullable<User>;
+    userId?: Nullable<string>;
     accountEmail?: Nullable<string>;
 }
 

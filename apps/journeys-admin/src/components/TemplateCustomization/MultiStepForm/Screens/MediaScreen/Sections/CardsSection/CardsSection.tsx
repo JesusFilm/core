@@ -60,6 +60,7 @@ export function CardsSection({
           variant="compact"
           onClick={handleStepClick}
           selectedStep={selectedStep}
+          cardLabel={t('Tap to preview')}
         />
       </Box>
     </Stack>
