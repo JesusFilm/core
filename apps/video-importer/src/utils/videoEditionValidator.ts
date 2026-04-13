@@ -19,8 +19,10 @@ interface VideoWithEditionsResponse {
 }
 
 function getGraphQLErrorMessage(error: unknown): string {
-  return (error as { response?: { errors?: Array<{ message?: string }> } })
-    .response?.errors?.[0]?.message ?? (error as Error).message
+  return (
+    (error as { response?: { errors?: Array<{ message?: string }> } }).response
+      ?.errors?.[0]?.message ?? (error as Error).message
+  )
 }
 
 export async function validateLanguage(languageId: string): Promise<void> {

@@ -49,9 +49,7 @@ export async function processVideoFile(
   try {
     await validateVideoAndEdition(videoId, edition, languageId)
   } catch (error) {
-    console.error(
-      `Validation failed for ${file}: ${(error as Error).message}`
-    )
+    console.error(`Validation failed for ${file}: ${(error as Error).message}`)
     summary.failed++
     return
   }
