@@ -88,7 +88,7 @@ export function SelectableWrapper({
           position: 'absolute',
           top: 0,
           left: 0,
-          outlineOffset: '0px',
+          outlineOffset: '-3px',
           borderRadius: '24px',
           my: '0px !important',
           '&:first-child': {

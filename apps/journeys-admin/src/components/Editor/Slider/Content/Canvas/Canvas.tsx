@@ -307,11 +307,11 @@ export function Canvas(): ReactElement {
                                 journey?.website === true
                                   ? '2px solid #C52D3A'
                                   : 'none',
-                              outlineOffset: 0,
+                              outlineOffset: -4,
                               borderRadius: 6,
                               cursor: 'pointer',
                               minHeight: '42px',
-                              overflow: 'hidden'
+                              px: '6px'
                             }}
                             onHeaderClick={
                               journey?.website === true
@@ -355,7 +355,7 @@ export function Canvas(): ReactElement {
                                 ActiveCanvasDetailsDrawer.JourneyAppearance
                                   ? '2px solid #C52D3A'
                                   : 'none',
-                              outlineOffset: 0,
+                              outlineOffset: -4,
                               borderRadius: 6,
                               cursor: 'pointer'
                             }}
