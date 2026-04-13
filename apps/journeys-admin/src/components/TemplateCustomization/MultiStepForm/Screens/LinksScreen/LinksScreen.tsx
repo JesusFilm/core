@@ -37,8 +37,6 @@ interface LinksScreenProps {
   handleNext: (overrideJourneyId?: string) => void
 }
 
-//
-
 export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -304,7 +302,9 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
             subtitle={t(
               'This content contains buttons linking to external sites. Check them and update the links below.'
             )}
-            mobileSubtitle={t('Check and update the links to external sites.')}
+            mobileSubtitle={t(
+              'Buttons here point to external sites.\nCheck and update the links.'
+            )}
             footer={
               <CustomizeFlowNextButton
                 label={t('Next')}

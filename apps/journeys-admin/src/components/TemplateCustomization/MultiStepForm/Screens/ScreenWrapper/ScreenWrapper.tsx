@@ -39,38 +39,43 @@ export function ScreenWrapper({
       }}
     >
       <Stack alignItems="center" sx={{ pb: { xs: 5, sm: 8 } }}>
-        <Typography
-          variant="h5"
-          display={{ xs: 'none', sm: 'block' }}
-          gutterBottom
-          sx={{ mb: { xs: 0, sm: 2 } }}
-        >
-          {title}
-        </Typography>
-        <Typography
-          variant="h6"
-          display={{ xs: 'block', sm: 'none' }}
-          gutterBottom
-          sx={{ mb: { xs: 0, sm: 2 } }}
-        >
-          {mobileTitle ?? title}
-        </Typography>
-        <Typography
-          variant="body1"
-          display={{ xs: 'none', sm: 'block' }}
-          color="text.secondary"
-          align="center"
-        >
-          {subtitle}
-        </Typography>
-        <Typography
-          variant="body2"
-          display={{ xs: 'block', sm: 'none' }}
-          color="text.secondary"
-          align="center"
-        >
-          {mobileSubtitle ?? subtitle}
-        </Typography>
+        <>
+          <Typography
+            variant="h3"
+            display={{ xs: 'none', sm: 'block' }}
+            gutterBottom
+            sx={{ mb: { xs: 0, sm: 2 } }}
+          >
+            {title}
+          </Typography>
+          <Typography
+            variant="h5"
+            display={{ xs: 'block', sm: 'none' }}
+            gutterBottom
+            sx={{ mb: { xs: 0, sm: 2 } }}
+          >
+            {mobileTitle ?? title}
+          </Typography>
+        </>
+        <>
+          <Typography
+            variant="body1"
+            display={{ xs: 'none', sm: 'block' }}
+            color="text.secondary"
+            align="center"
+          >
+            {subtitle}
+          </Typography>
+          <Typography
+            variant="body2"
+            display={{ xs: 'block', sm: 'none' }}
+            color="text.secondary"
+            align="center"
+            sx={{ whiteSpace: 'pre-line' }}
+          >
+            {mobileSubtitle ?? subtitle}
+          </Typography>
+        </>
       </Stack>
       {children}
       {footer}
