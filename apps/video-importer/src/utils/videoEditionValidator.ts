@@ -25,7 +25,8 @@ function getGraphQLErrorMessage(error: unknown): string {
   )
 }
 
-export async function validateLanguage(languageId: string): Promise<void> {
+export async function validateLanguage(rawLanguageId: string): Promise<void> {
+  const languageId = rawLanguageId.trim()
   if (languageId.length === 0) {
     throw new Error('Missing languageId in filename')
   }
