@@ -47,8 +47,7 @@ export const headerLinks: HeaderLinkProps[] = [
         url: '/resources'
       },
       { label: 'Journeys', url: '/journeys' },
-      { label: 'Watch', url: '/watch' },
-      { label: 'Metaverse', url: 'https://www.jesusfilm.org/metaverse/' },
+      { label: 'Videos', url: '/watch' },
       { label: 'JesusFilm App', url: '/tools/app/' },
       { label: 'Youtube', url: '/tools/youtube/' },
       {

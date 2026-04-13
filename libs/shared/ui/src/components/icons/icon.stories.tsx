@@ -165,7 +165,6 @@ const iconNames: IconName[] = [
   'MessageText1',
   'MessageText2',
   'MessageTyping',
-  'Metaverse',
   'Minimise1',
   'Minimise2',
   'MinusCircleContained',

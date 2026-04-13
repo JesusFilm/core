@@ -3,11 +3,11 @@
   "Unable to create guest user. Please try again or sign in.": "无法创建访客用户。请重试或登录。",
   "Failed to duplicate journey to team, please refresh the page and try again": "未能将旅程复制到团队，请刷新页面并重试",
   "Journey failed to load. Please refresh the page and try again.": "旅程加载失败。请刷新页面并重试。",
-  "Failed to load teams. Please refresh the page and try again.": "加载团队失败。请刷新页面并重试。",
   "Let's Get Started!": "让我们开始吧!",
   "Get Started": "开始",
   "A few quick edits and your template will be ready to share.": "只需快速编辑几下，您的模板就可以共享了。",
   "A few quick edits and it's ready to share!": "稍作编辑，就可以与大家分享了！",
   "Next": "下一个",
-  "Search Language": "搜索语言"
+  "Select a language": "选择语言",
+  "Select a team": "选择一个团队"
 }

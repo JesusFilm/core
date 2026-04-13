@@ -26,7 +26,6 @@ export const GET_INTEGRATION = gql`
       ... on IntegrationGoogle {
         id
         type
-        userId
         user {
           id
           ... on AuthenticatedUser {
