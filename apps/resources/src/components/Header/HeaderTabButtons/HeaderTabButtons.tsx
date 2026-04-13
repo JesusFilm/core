@@ -15,7 +15,6 @@ import { type MouseEvent, type ReactElement, useState } from 'react'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ChervonDownIcon from '@core/shared/ui/icons/ChevronDown'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
-import MetaverseIcon from '@core/shared/ui/icons/Metaverse'
 import Play1Icon from '@core/shared/ui/icons/Play1'
 import TerminalIcon from '@core/shared/ui/icons/Terminal'
 
@@ -39,12 +38,7 @@ export function HeaderTabButtons(): ReactElement {
           href: '/journeys'
         }
       : undefined,
-    { label: t('Watch', { lng: 'en' }), icon: <Play1Icon />, href: '/watch' },
-    {
-      label: t('Metaverse', { lng: 'en' }),
-      icon: <MetaverseIcon />,
-      href: 'https://www.jesusfilm.org/metaverse/'
-    }
+    { label: t('Videos', { lng: 'en' }), icon: <Play1Icon />, href: '/watch' }
   ])
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)

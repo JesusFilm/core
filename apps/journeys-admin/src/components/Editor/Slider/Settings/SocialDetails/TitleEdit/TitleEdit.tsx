@@ -19,13 +19,7 @@ export const JOURNEY_SEO_TITLE_UPDATE = gql`
   }
 `
 
-interface TitleEditProps {
-  hideHelperText?: boolean
-}
-
-export function TitleEdit({
-  hideHelperText = false
-}: TitleEditProps): ReactElement {
+export function TitleEdit(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneySeoTitleUpdate>(
     JOURNEY_SEO_TITLE_UPDATE
@@ -85,11 +79,9 @@ export function TitleEdit({
                 value={values.seoTitle}
                 error={touched.seoTitle === true && Boolean(errors.seoTitle)}
                 helperText={
-                  hideHelperText
-                    ? undefined
-                    : errors.seoTitle != null
-                      ? (errors.seoTitle as string)
-                      : t('Recommended length: 5 words')
+                  errors.seoTitle != null
+                    ? (errors.seoTitle as string)
+                    : t('Recommended length: 5 words')
                 }
                 onChange={handleChange}
                 onBlur={(e) => {
@@ -110,9 +102,7 @@ export function TitleEdit({
           label={t('Headline')}
           fullWidth
           disabled
-          helperText={
-            hideHelperText ? undefined : t('Recommended length: 5 words')
-          }
+          helperText={t('Recommended length: 5 words')}
           data-testid="TitleEdit"
         />
       )}

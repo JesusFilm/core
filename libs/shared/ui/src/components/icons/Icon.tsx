@@ -157,7 +157,6 @@ import MessageSquare from './MessageSquare'
 import MessageText1 from './MessageText1'
 import MessageText2 from './MessageText2'
 import MessageTyping from './MessageTyping'
-import Metaverse from './Metaverse'
 import Minimise1 from './Minimise1'
 import Minimise2 from './Minimise2'
 import MinusCircleContained from './MinusCircleContained'
@@ -393,7 +392,6 @@ export type IconName =
   | 'MessageText1'
   | 'MessageText2'
   | 'MessageTyping'
-  | 'Metaverse'
   | 'Minimise1'
   | 'Minimise2'
   | 'MinusCircleContained'
@@ -632,7 +630,6 @@ const iconComponents: IconComponents = {
   MessageText1,
   MessageText2,
   MessageTyping,
-  Metaverse,
   Minimise1,
   Minimise2,
   MediaStrip1,
