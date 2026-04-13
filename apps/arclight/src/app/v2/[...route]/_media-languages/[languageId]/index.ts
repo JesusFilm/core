@@ -4,8 +4,8 @@ import { HTTPException } from 'hono/http-exception'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
-import { generateCacheKey, getWithStaleCache } from '../../../../../lib/cache'
-import { isCacheBypassEnabled } from '../../../../../lib/cacheBypass'
+import { generateCacheKey } from '../../../../../lib/cache'
+import { getWithStaleCacheForRequest } from '../../../../../lib/cacheBypass'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 
 const GET_LANGUAGE = graphql(`
@@ -163,8 +163,8 @@ mediaLanguage.openapi(route, async (c) => {
     ...metadataLanguageTags
   ])
 
-  const bypass = isCacheBypassEnabled(c)
-  const response = await getWithStaleCache(
+  const response = await getWithStaleCacheForRequest(
+    c,
     cacheKey,
     async () => {
       const { data } = await getApolloClient().query<
@@ -262,8 +262,7 @@ mediaLanguage.openapi(route, async (c) => {
           }
         }
       }
-    },
-    { bypass }
+    }
   )
 
   if ('message' in response) {

@@ -3,8 +3,8 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
-import { generateCacheKey, getWithStaleCache } from '../../../../../lib/cache'
-import { isCacheBypassEnabled } from '../../../../../lib/cacheBypass'
+import { generateCacheKey } from '../../../../../lib/cache'
+import { getWithStaleCacheForRequest } from '../../../../../lib/cacheBypass'
 import { findBestMatchingName } from '../lib'
 
 const GET_TAXONOMY = graphql(`
@@ -96,8 +96,8 @@ taxonomiesWithCategory.openapi(getTaxonomyByCategoryRoute, async (c) => {
     ...metadataLanguageTags
   ])
 
-  const bypass = isCacheBypassEnabled(c)
-  const response = await getWithStaleCache(
+  const response = await getWithStaleCacheForRequest(
+    c,
     cacheKey,
     async () => {
       const { data } = await getApolloClient().query<
@@ -150,8 +150,7 @@ taxonomiesWithCategory.openapi(getTaxonomyByCategoryRoute, async (c) => {
       })
 
       return response
-    },
-    { bypass }
+    }
   )
 
   if ('message' in response) {

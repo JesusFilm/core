@@ -4,11 +4,8 @@ import { timeout } from 'hono/timeout'
 import { prisma as languagesPrisma } from '@core/prisma/languages/client'
 import { prisma as mediaPrisma } from '@core/prisma/media/client'
 
-import {
-  generateCacheKey,
-  getWithStaleCache
-} from '../../../../../../lib/cache'
-import { isCacheBypassEnabled } from '../../../../../../lib/cacheBypass'
+import { generateCacheKey } from '../../../../../../lib/cache'
+import { getWithStaleCacheForRequest } from '../../../../../../lib/cacheBypass'
 import { findDownloadWithFallback } from '../../../../../../lib/downloadHelpers'
 import { getDefaultPlatformForApiKey } from '../../../../../../lib/getPlatformFromApiKey'
 import {
@@ -97,8 +94,8 @@ mediaComponentLanguages.openapi(route, async (c) => {
     ...languageIds.slice(0, 20)
   ])
 
-  const bypass = isCacheBypassEnabled(c)
-  const { data: cachedData, statusCode } = await getWithStaleCache(
+  const { data: cachedData, statusCode } = await getWithStaleCacheForRequest(
+    c,
     cacheKey,
     async () => {
       let video
@@ -370,8 +367,7 @@ mediaComponentLanguages.openapi(route, async (c) => {
         },
         statusCode: 200
       }
-    },
-    { bypass }
+    }
   )
 
   return c.json(cachedData, statusCode as 200 | 404 | 500)
