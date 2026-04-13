@@ -134,16 +134,16 @@ export function DoneScreen(): ReactElement {
             height: {
               xs: VARIANT_CONFIGS.guestPreview.cardHeight.xs * PREVIEW_SCALE,
               sm: VARIANT_CONFIGS.guestPreview.cardHeight.sm * PREVIEW_SCALE
-            },
-            filter:
-              'drop-shadow(10px 12px 12px rgba(0, 0, 0, 0.15)) drop-shadow(-4px 2px 6px rgba(0, 0, 0, 0.08))'
+            }
           }}
         >
           <Box
             sx={{
               transform: `scale(${PREVIEW_SCALE})`,
               transformOrigin: 'top center',
-              borderRadius: 4
+              borderRadius: 4,
+              boxShadow:
+                '4px 4px 8px rgba(0, 0, 0, 0.3), -2px 2px 4px rgba(0, 0, 0, 0.15)'
             }}
           >
             <TemplateCardPreviewItem step={steps[0]} variant="guestPreview" />
