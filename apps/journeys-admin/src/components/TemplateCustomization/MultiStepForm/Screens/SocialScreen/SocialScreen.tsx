@@ -40,16 +40,15 @@ export function SocialScreen({ handleNext }: SocialScreenProps): ReactElement {
     >
       <Stack
         alignItems="center"
-        gap={6}
+        gap={5}
         data-testid="SocialShareAppearance"
         sx={{
-          width: '100%',
-          py: 5
+          width: '100%'
         }}
       >
-        <SocialScreenSocialImage />
-        <TitleEdit />
-        <DescriptionEdit />
+        <SocialScreenSocialImage hideAdornments />
+        <TitleEdit hideHelperText />
+        <DescriptionEdit hideHelperText />
       </Stack>
     </ScreenWrapper>
   )
