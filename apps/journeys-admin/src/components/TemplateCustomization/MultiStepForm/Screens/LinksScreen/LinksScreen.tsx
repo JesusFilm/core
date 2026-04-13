@@ -302,9 +302,13 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
             subtitle={t(
               'This content contains buttons linking to external sites. Check them and update the links below.'
             )}
-            mobileSubtitle={t(
-              'Buttons here point to external sites.\nCheck and update the links.'
-            )}
+            mobileSubtitle={
+              <>
+                {t('Buttons here point to external sites.')}
+                <br />
+                {t('Check and update the links.')}
+              </>
+            }
             footer={
               <CustomizeFlowNextButton
                 label={t('Next')}

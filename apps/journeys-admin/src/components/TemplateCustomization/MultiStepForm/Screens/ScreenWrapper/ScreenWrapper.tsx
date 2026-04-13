@@ -6,7 +6,7 @@ interface ScreenWrapperProps {
   title: string
   mobileTitle?: string
   subtitle: string
-  mobileSubtitle?: string
+  mobileSubtitle?: ReactNode
   footer?: ReactNode
   children: ReactNode
 }
@@ -71,8 +71,7 @@ export function ScreenWrapper({
             display={{ xs: 'block', sm: 'none' }}
             color="text.secondary"
             align="center"
-            sx={{ whiteSpace: 'pre-line' }}
-          >
+>
             {mobileSubtitle ?? subtitle}
           </Typography>
         </>
