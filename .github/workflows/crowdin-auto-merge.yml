@@ -1,0 +1,94 @@
+name: Crowdin Auto Merge
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 1'
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+jobs:
+  auto-merge:
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.CI_BOT_APP_ID }}
+          private-key: ${{ secrets.CI_BOT_PRIVATE_KEY }}
+
+      - name: Find open Crowdin PR
+        id: find-pr
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          if ! PR_JSON=$(gh pr list \
+            --head "00-00-CI-chore-i10n-updates" \
+            --state open \
+            --json number 2>&1); then
+            echo "::error::gh pr list failed: $PR_JSON"
+            exit 1
+          fi
+
+          PR_NUMBER=$(echo "$PR_JSON" | jq -r '.[0].number // empty')
+
+          if [ -z "$PR_NUMBER" ]; then
+            echo "::warning::No open Crowdin translation PR found. Exiting."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Found Crowdin PR #$PR_NUMBER"
+          echo "found=true" >> "$GITHUB_OUTPUT"
+          echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+
+      - name: Validate only locale files changed
+        if: steps.find-pr.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.find-pr.outputs.number }}
+        run: |
+          if ! CHANGED_FILES=$(gh pr diff "$PR_NUMBER" --name-only 2>&1); then
+            echo "::error::gh pr diff failed: $CHANGED_FILES"
+            exit 1
+          fi
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "PR has no changed files. Exiting."
+            exit 1
+          fi
+
+          NON_LOCALE_FILES=$(echo "$CHANGED_FILES" | grep -v '^libs/locales/' || true)
+
+          if [ -n "$NON_LOCALE_FILES" ]; then
+            echo "::error::Crowdin PR contains non-locale files:"
+            echo "$NON_LOCALE_FILES"
+            echo "Skipping auto-merge for safety."
+            exit 1
+          fi
+
+          echo "All changed files are in libs/locales/. Safe to proceed."
+
+      - name: Assign and approve PR
+        if: steps.find-pr.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.find-pr.outputs.number }}
+        run: |
+          gh pr edit "$PR_NUMBER" --add-assignee "${{ github.repository_owner }}" || true
+
+          gh pr review "$PR_NUMBER" --approve \
+            --body "Auto-approved: all changes are in libs/locales/."
+
+      - name: Enable auto-merge
+        if: steps.find-pr.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.find-pr.outputs.number }}
+        run: |
+          gh pr merge "$PR_NUMBER" --auto --squash
+
+          echo "Auto-merge enabled for PR #$PR_NUMBER. It will merge once all checks pass."
