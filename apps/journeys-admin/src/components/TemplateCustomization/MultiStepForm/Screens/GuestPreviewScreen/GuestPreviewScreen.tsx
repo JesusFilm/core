@@ -72,7 +72,7 @@ export function GuestPreviewScreen({
       title={t('Your preview is ready')}
       mobileTitle={t('Preview ready')}
       subtitle={t(
-        'This content contains buttons linking to external sites. Check them and update the links below.'
+        'Preview your changes here. Tap on a card to zoom it in.'
       )}
       mobileSubtitle={t('Tap on a card to zoom it in')}
     >
