@@ -29,13 +29,13 @@ import { useJourneyImageBlockCreateMutation } from '../../../../../../libs/useJo
 import { useJourneyImageBlockUpdateMutation } from '../../../../../../libs/useJourneyImageBlockUpdateMutation'
 
 interface SocialScreenSocialImage {
-  hasCreatorDescription?: boolean
+  hideAdornments?: boolean
 }
 
-const MEDIA_MOBILE_WIDTH = 223
-const MEDIA_MOBILE_HEIGHT = 139
-const MEDIA_DESKTOP_WIDTH = 284
-const MEDIA_DESKTOP_HEIGHT = 194
+const MEDIA_MOBILE_WIDTH = 215
+const MEDIA_MOBILE_HEIGHT = 147
+const MEDIA_DESKTOP_WIDTH = 215
+const MEDIA_DESKTOP_HEIGHT = 147
 const CARD_SPACING = 12
 
 const StyledInput = styled('input')({
@@ -51,7 +51,7 @@ const StyledInput = styled('input')({
 })
 
 export function SocialScreenSocialImage({
-  hasCreatorDescription = false
+  hideAdornments = false
 }: SocialScreenSocialImage): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
@@ -128,8 +128,11 @@ export function SocialScreenSocialImage({
 
   return (
     <Card
+      variant="outlined"
+      elevation={0}
       sx={{
         borderRadius: 3,
+        borderColor: 'divider',
         p: `${CARD_SPACING}px`,
         width: {
           xs: `calc(${MEDIA_MOBILE_WIDTH}px + calc(${CARD_SPACING}px*2))`,
@@ -137,30 +140,32 @@ export function SocialScreenSocialImage({
         }
       }}
     >
-      <CardHeader
-        avatar={<AccountCircleRoundedIcon sx={{ color: 'divider' }} />}
-        title={
-          <Skeleton variant="text" width={85} height={20} animation={false} />
-        }
-        action={
-          <IconButton disabled>
-            <Skeleton
-              variant="circular"
-              width={12}
-              height={12}
-              animation={false}
-            />
-          </IconButton>
-        }
-        sx={{
-          px: 0,
-          pt: 0,
-          pb: 3,
-          '& .MuiCardHeader-action': {
-            alignSelf: 'center'
+      {!hideAdornments && (
+        <CardHeader
+          avatar={<AccountCircleRoundedIcon sx={{ color: 'divider' }} />}
+          title={
+            <Skeleton variant="text" width={85} height={20} animation={false} />
           }
-        }}
-      />
+          action={
+            <IconButton disabled>
+              <Skeleton
+                variant="circular"
+                width={12}
+                height={12}
+                animation={false}
+              />
+            </IconButton>
+          }
+          sx={{
+            px: 0,
+            pt: 0,
+            pb: 3,
+            '& .MuiCardHeader-action': {
+              alignSelf: 'center'
+            }
+          }}
+        />
+      )}
 
       <CardMedia
         sx={{
@@ -171,15 +176,7 @@ export function SocialScreenSocialImage({
           backgroundColor:
             journey != null ? 'background.default' : 'transparent',
           overflow: 'hidden',
-          borderRadius: 3,
-          borderBottomRightRadius: {
-            xs: 12,
-            sm: hasCreatorDescription ? 0 : 12
-          },
-          borderBottomLeftRadius: {
-            xs: 12,
-            sm: hasCreatorDescription ? 0 : 12
-          },
+          borderRadius: 2,
           width: {
             xs: `${MEDIA_MOBILE_WIDTH}px`,
             sm: `${MEDIA_DESKTOP_WIDTH}px`
@@ -260,7 +257,14 @@ export function SocialScreenSocialImage({
         )}
       </CardMedia>
 
-      <CardContent sx={{ px: 0, pb: 1, pt: `${CARD_SPACING}px` }}>
+      <CardContent
+        sx={{
+          px: 0,
+          pb: 0,
+          pt: `${CARD_SPACING}px`,
+          '&:last-child': { pb: 0 }
+        }}
+      >
         <Typography
           variant="body2"
           color="secondary"
@@ -295,20 +299,22 @@ export function SocialScreenSocialImage({
         </Typography>
       </CardContent>
 
-      <CardActions sx={{ justifyContent: 'space-around', p: 0 }}>
-        <IconButton disabled>
-          <ThumbUpOffAltRoundedIcon
-            fontSize="small"
-            sx={{ color: 'divider' }}
-          />
-        </IconButton>
-        <IconButton disabled>
-          <ChatBubbleRoundedIcon fontSize="small" sx={{ color: 'divider' }} />
-        </IconButton>
-        <IconButton disabled>
-          <ShareRoundedIcon fontSize="small" sx={{ color: 'divider' }} />
-        </IconButton>
-      </CardActions>
+      {!hideAdornments && (
+        <CardActions sx={{ justifyContent: 'space-around', p: 0 }}>
+          <IconButton disabled>
+            <ThumbUpOffAltRoundedIcon
+              fontSize="small"
+              sx={{ color: 'divider' }}
+            />
+          </IconButton>
+          <IconButton disabled>
+            <ChatBubbleRoundedIcon fontSize="small" sx={{ color: 'divider' }} />
+          </IconButton>
+          <IconButton disabled>
+            <ShareRoundedIcon fontSize="small" sx={{ color: 'divider' }} />
+          </IconButton>
+        </CardActions>
+      )}
     </Card>
   )
 }
