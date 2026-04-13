@@ -19,7 +19,13 @@ export const JOURNEY_SEO_DESCRIPTION_UPDATE = gql`
   }
 `
 
-export function DescriptionEdit(): ReactElement {
+interface DescriptionEditProps {
+  hideHelperText?: boolean
+}
+
+export function DescriptionEdit({
+  hideHelperText = false
+}: DescriptionEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneySeoDescriptionUpdate>(
     JOURNEY_SEO_DESCRIPTION_UPDATE
@@ -82,9 +88,11 @@ export function DescriptionEdit(): ReactElement {
                   Boolean(errors.seoDescription)
                 }
                 helperText={
-                  errors.seoDescription != null
-                    ? (errors.seoDescription as string)
-                    : t('Recommended length: up to 18 words')
+                  hideHelperText
+                    ? undefined
+                    : errors.seoDescription != null
+                      ? (errors.seoDescription as string)
+                      : t('Recommended length: up to 18 words')
                 }
                 onChange={handleChange}
                 onBlur={(e) => {
@@ -105,7 +113,9 @@ export function DescriptionEdit(): ReactElement {
           label={t('Secondary Text')}
           fullWidth
           disabled
-          helperText={t('Recommended length: up to 18 words')}
+          helperText={
+            hideHelperText ? undefined : t('Recommended length: up to 18 words')
+          }
           data-testid="DescriptionEdit"
         />
       )}
