@@ -1407,6 +1407,8 @@ type Mutation {
     journeyId: ID
   ): RadioOptionBlock! @override(from: "api-journeys")
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @override(from: "api-journeys")
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean): RadioQuestionBlock! @override(from: "api-journeys")
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @override(from: "api-journeys")
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(
     id: ID!
