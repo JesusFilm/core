@@ -175,128 +175,123 @@ mediaCountries.openapi(route, async (c) => {
     ...metadataLanguageTags
   ])
 
-  const response = await getWithStaleCacheForRequest(
-    c,
-    cacheKey,
-    async () => {
-      const { data } = await getApolloClient().query<
-        ResultOf<typeof GET_COUNTRIES>
-      >({
-        query: GET_COUNTRIES,
-        variables: {
-          ids,
-          metadataLanguageId,
-          fallbackLanguageId
-        }
-      })
+  const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
+    const { data } = await getApolloClient().query<
+      ResultOf<typeof GET_COUNTRIES>
+    >({
+      query: GET_COUNTRIES,
+      variables: {
+        ids,
+        metadataLanguageId,
+        fallbackLanguageId
+      }
+    })
 
-      const queryString = new URLSearchParams(queryObject).toString()
-      const firstQueryString = new URLSearchParams({
-        ...queryObject,
-        page: '1'
-      }).toString()
-      const lastQueryString = new URLSearchParams({
-        ...queryObject,
-        page: Math.ceil(data.countries.length / limit).toString()
-      }).toString()
-      const nextQueryString = new URLSearchParams({
-        ...queryObject,
-        page: (page + 1).toString()
-      }).toString()
-      const previousQueryString = new URLSearchParams({
-        ...queryObject,
-        page: (page - 1).toString()
-      }).toString()
+    const queryString = new URLSearchParams(queryObject).toString()
+    const firstQueryString = new URLSearchParams({
+      ...queryObject,
+      page: '1'
+    }).toString()
+    const lastQueryString = new URLSearchParams({
+      ...queryObject,
+      page: Math.ceil(data.countries.length / limit).toString()
+    }).toString()
+    const nextQueryString = new URLSearchParams({
+      ...queryObject,
+      page: (page + 1).toString()
+    }).toString()
+    const previousQueryString = new URLSearchParams({
+      ...queryObject,
+      page: (page - 1).toString()
+    }).toString()
 
-      const mediaCountries = data.countries
-        .slice(offset, offset + limit)
-        .filter(
-          (country) =>
-            country.name[0]?.value != null ||
-            country.fallbackName[0]?.value != null
-        )
-        .map((country) => ({
-          countryId: country.id,
-          name:
-            country.name[0]?.value ?? country.fallbackName?.[0]?.value ?? '',
-          continentName:
-            country.continent?.name[0]?.value ??
-            country.continent?.fallbackName[0]?.value ??
-            '',
-          metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
-          longitude: country.longitude ? country.longitude : 0,
-          latitude: country.latitude ? country.latitude : 0,
-          counts: {
-            languageCount: {
-              value: country.languageCount ?? 0,
-              description: 'Number of spoken languages'
-            },
-            population: {
-              value: country.population ?? 0,
-              description: 'Country population'
-            },
-            languageHavingMediaCount: {
-              value: country.languageHavingMediaCount ?? 0,
-              description: 'Number of languages having media'
-            }
+    const mediaCountries = data.countries
+      .slice(offset, offset + limit)
+      .filter(
+        (country) =>
+          country.name[0]?.value != null ||
+          country.fallbackName[0]?.value != null
+      )
+      .map((country) => ({
+        countryId: country.id,
+        name: country.name[0]?.value ?? country.fallbackName?.[0]?.value ?? '',
+        continentName:
+          country.continent?.name[0]?.value ??
+          country.continent?.fallbackName[0]?.value ??
+          '',
+        metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+        longitude: country.longitude ? country.longitude : 0,
+        latitude: country.latitude ? country.latitude : 0,
+        counts: {
+          languageCount: {
+            value: country.languageCount ?? 0,
+            description: 'Number of spoken languages'
           },
-          assets: {
-            flagUrls: {
-              png8: country.flagPngSrc,
-              webpLossy50: country.flagWebpSrc
-            }
+          population: {
+            value: country.population ?? 0,
+            description: 'Country population'
           },
-          ...(expand === 'languageIds'
-            ? {
-                languageIds: country.countryLanguages.map((countryLanguage) =>
-                  Number(countryLanguage.language.id)
-                )
-              }
-            : {}),
-          _links: {
-            self: {
-              href: `http://api.arclight.org/v2/media-countries/${country.id}?apiKey=${process.env.API_KEY}`
-            }
+          languageHavingMediaCount: {
+            value: country.languageHavingMediaCount ?? 0,
+            description: 'Number of languages having media'
           }
-        }))
-
-      const totalCountries = data.countries.length
-      const totalPages = Math.ceil(totalCountries / limit)
-
-      return {
-        page,
-        limit,
-        pages: totalPages,
-        total: totalCountries,
+        },
+        assets: {
+          flagUrls: {
+            png8: country.flagPngSrc,
+            webpLossy50: country.flagWebpSrc
+          }
+        },
+        ...(expand === 'languageIds'
+          ? {
+              languageIds: country.countryLanguages.map((countryLanguage) =>
+                Number(countryLanguage.language.id)
+              )
+            }
+          : {}),
         _links: {
           self: {
-            href: `http://api.arclight.org/v2/media-countries?${queryString}`
-          },
-          first: {
-            href: `http://api.arclight.org/v2/media-countries?${firstQueryString}`
-          },
-          last: {
-            href: `http://api.arclight.org/v2/media-countries?${lastQueryString}`
-          },
-          next:
-            page < totalPages
-              ? {
-                  href: `http://api.arclight.org/v2/media-countries?${nextQueryString}`
-                }
-              : undefined,
-          previous:
-            page > 1
-              ? {
-                  href: `http://api.arclight.org/v2/media-countries?${previousQueryString}`
-                }
-              : undefined
-        },
-        _embedded: {
-          mediaCountries
+            href: `http://api.arclight.org/v2/media-countries/${country.id}?apiKey=${process.env.API_KEY}`
+          }
         }
+      }))
+
+    const totalCountries = data.countries.length
+    const totalPages = Math.ceil(totalCountries / limit)
+
+    return {
+      page,
+      limit,
+      pages: totalPages,
+      total: totalCountries,
+      _links: {
+        self: {
+          href: `http://api.arclight.org/v2/media-countries?${queryString}`
+        },
+        first: {
+          href: `http://api.arclight.org/v2/media-countries?${firstQueryString}`
+        },
+        last: {
+          href: `http://api.arclight.org/v2/media-countries?${lastQueryString}`
+        },
+        next:
+          page < totalPages
+            ? {
+                href: `http://api.arclight.org/v2/media-countries?${nextQueryString}`
+              }
+            : undefined,
+        previous:
+          page > 1
+            ? {
+                href: `http://api.arclight.org/v2/media-countries?${previousQueryString}`
+              }
+            : undefined
+      },
+      _embedded: {
+        mediaCountries
       }
     }
-  )
+  })
 
   return c.json(response)
 })
