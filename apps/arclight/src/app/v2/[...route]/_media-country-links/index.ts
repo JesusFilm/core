@@ -3,8 +3,8 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
-import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
-import { isCacheBypassEnabled } from '../../../../lib/cacheBypass'
+import { generateCacheKey } from '../../../../lib/cache'
+import { getWithStaleCacheForRequest } from '../../../../lib/cacheBypass'
 
 const GET_COUNTRIES_LANGUAGES = graphql(`
   query GetCountriesLanguages {
@@ -88,8 +88,8 @@ mediaCountryLinks.openapi(route, async (c) => {
 
   const cacheKey = generateCacheKey(['media-country-links', ...ids])
 
-  const bypass = isCacheBypassEnabled(c)
-  const response = await getWithStaleCache(
+  const response = await getWithStaleCacheForRequest(
+    c,
     cacheKey,
     async () => {
       const { data } = await getApolloClient().query<
@@ -141,8 +141,7 @@ mediaCountryLinks.openapi(route, async (c) => {
           mediaCountriesLinks
         }
       }
-    },
-    { bypass }
+    }
   )
 
   return c.json(response)

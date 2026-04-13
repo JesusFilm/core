@@ -3,11 +3,8 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { prisma as languagesPrisma } from '@core/prisma/languages/client'
 import { prisma as mediaPrisma } from '@core/prisma/media/client'
 
-import {
-  generateCacheKey,
-  getWithStaleCache
-} from '../../../../../../../lib/cache'
-import { isCacheBypassEnabled } from '../../../../../../../lib/cacheBypass'
+import { generateCacheKey } from '../../../../../../../lib/cache'
+import { getWithStaleCacheForRequest } from '../../../../../../../lib/cacheBypass'
 import { findDownloadWithFallback } from '../../../../../../../lib/downloadHelpers'
 import { getDefaultPlatformForApiKey } from '../../../../../../../lib/getPlatformFromApiKey'
 import {
@@ -169,8 +166,8 @@ mediaComponentLanguage.openapi(route, async (c) => {
     apiKey ?? ''
   ])
 
-  const bypass = isCacheBypassEnabled(c)
-  const cachedData = await getWithStaleCache(
+  const cachedData = await getWithStaleCacheForRequest(
+    c,
     cacheKey,
     async () => {
       const videoQuery = {
@@ -583,8 +580,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
         },
         statusCode: 200
       }
-    },
-    { bypass }
+    }
   )
   return c.json(cachedData.data, cachedData.statusCode as 200 | 404 | 500)
 })
