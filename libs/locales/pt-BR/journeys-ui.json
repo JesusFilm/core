@@ -3,11 +3,11 @@
   "Unable to create guest user. Please try again or sign in.": "Não é possível criar um usuário convidado. Tente novamente ou faça login.",
   "Failed to duplicate journey to team, please refresh the page and try again": "Falha ao duplicar a jornada para a equipe, atualize a página e tente novamente",
   "Journey failed to load. Please refresh the page and try again.": "Não foi possível carregar o Journey. Atualize a página e tente novamente.",
+  "Failed to load teams. Please refresh the page and try again.": "Falha ao carregar as equipes. Atualize a página e tente novamente.",
   "Let's Get Started!": "Vamos Começar!",
   "Get Started": "Começar a usar",
   "A few quick edits and your template will be ready to share.": "Com algumas edições rápidas, seu modelo estará pronto para ser compartilhado.",
   "A few quick edits and it's ready to share!": "Com algumas edições rápidas, você pode compartilhá-lo!",
   "Next": "Próximo",
-  "Select a language": "Selecione um idioma",
-  "Select a team": "Selecione uma equipe"
+  "Search Language": "Idioma de pesquisa"
 }
