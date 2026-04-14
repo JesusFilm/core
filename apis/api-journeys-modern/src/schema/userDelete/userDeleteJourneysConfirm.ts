@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import { builder } from '../builder'
 
 import { type LogEntry, deleteJourneysData } from './service'
@@ -45,7 +47,12 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
     args: {
       userId: t.arg.string({ required: true })
     },
-    resolve: async (_parent, { userId }) => {
+    resolve: async (_parent, { userId }, ctx) => {
+      if (userId === ctx.user.id) {
+        throw new GraphQLError('Cannot delete your own account', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      }
       return await deleteJourneysData(userId)
     }
   })
