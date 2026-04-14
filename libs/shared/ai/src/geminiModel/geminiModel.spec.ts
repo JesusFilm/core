@@ -267,7 +267,9 @@ describe('geminiModel', () => {
       })
       const operation = jest.fn().mockRejectedValue(rateLimitError)
 
-      await expect(withGeminiFallback(operation)).rejects.toThrow('rate limited')
+      await expect(withGeminiFallback(operation)).rejects.toThrow(
+        'rate limited'
+      )
       expect(operation).toHaveBeenCalledTimes(2)
     })
   })
