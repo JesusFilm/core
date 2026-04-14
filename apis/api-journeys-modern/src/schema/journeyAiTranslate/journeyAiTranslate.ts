@@ -445,7 +445,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           journey: null
         }
 
-        const customizationLanguageName =
+        const descriptionLanguageName =
           input.userLanguageName ?? input.textLanguageName
 
         // Translate customization fields and description
@@ -454,7 +454,8 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
             journey.journeyCustomizationDescription,
           journeyCustomizationFields: journey.journeyCustomizationFields,
           sourceLanguageName: input.journeyLanguageName,
-          targetLanguageName: customizationLanguageName,
+          targetLanguageName: input.textLanguageName,
+          descriptionTargetLanguageName: descriptionLanguageName,
           defaultValueTargetLanguageName: input.textLanguageName,
           journeyAnalysis: analysisResult.analysis
         })
@@ -714,7 +715,7 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
         if (journey.seoDescription && !analysisAndTranslation.seoDescription)
           throw new Error('Failed to translate journey seo description')
 
-        const customizationLanguageName =
+        const descriptionLanguageName =
           input.userLanguageName ?? input.textLanguageName
 
         // Translate customization fields and description
@@ -723,7 +724,8 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
             journey.journeyCustomizationDescription,
           journeyCustomizationFields: journey.journeyCustomizationFields,
           sourceLanguageName: input.journeyLanguageName,
-          targetLanguageName: customizationLanguageName,
+          targetLanguageName: input.textLanguageName,
+          descriptionTargetLanguageName: descriptionLanguageName,
           defaultValueTargetLanguageName: input.textLanguageName,
           journeyAnalysis: analysisAndTranslation.analysis
         })

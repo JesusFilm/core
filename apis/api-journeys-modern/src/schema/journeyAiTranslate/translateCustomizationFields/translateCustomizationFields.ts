@@ -104,7 +104,8 @@ export async function translateValue({
  * @param journeyCustomizationDescription - The customization description string
  * @param journeyCustomizationFields - Array of customization field objects
  * @param sourceLanguageName - Source language name
- * @param targetLanguageName - Target language name for values and description
+ * @param targetLanguageName - Target language name for field values
+ * @param descriptionTargetLanguageName - Target language name for description text outside \{\{ \}\} (falls back to targetLanguageName)
  * @param defaultValueTargetLanguageName - Target language name for default values (falls back to targetLanguageName)
  * @param journeyAnalysis - Optional journey analysis context for better translation
  * @returns Object with translated description and fields
@@ -114,6 +115,7 @@ export async function translateCustomizationFields({
   journeyCustomizationFields,
   sourceLanguageName,
   targetLanguageName,
+  descriptionTargetLanguageName,
   defaultValueTargetLanguageName,
   journeyAnalysis
 }: {
@@ -121,6 +123,7 @@ export async function translateCustomizationFields({
   journeyCustomizationFields: JourneyCustomizationField[]
   sourceLanguageName: string
   targetLanguageName: string
+  descriptionTargetLanguageName?: string
   defaultValueTargetLanguageName?: string
   journeyAnalysis?: string
 }): Promise<{
@@ -132,6 +135,8 @@ export async function translateCustomizationFields({
     translatedDefaultValue: string | null
   }>
 }> {
+  const effectiveDescriptionTarget =
+    descriptionTargetLanguageName ?? targetLanguageName
   const effectiveDefaultValueTarget =
     defaultValueTargetLanguageName ?? targetLanguageName
 
@@ -175,7 +180,7 @@ export async function translateCustomizationFields({
         ? translateCustomizationDescription({
             description: journeyCustomizationDescription,
             sourceLanguageName,
-            targetLanguageName,
+            targetLanguageName: effectiveDescriptionTarget,
             journeyAnalysis
           })
         : Promise.resolve(null)

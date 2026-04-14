@@ -3,10 +3,7 @@ import { prismaMock } from '../../../test/prismaMock'
 import { Action, ability } from '../../lib/auth/ability'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-import {
-  translateCustomizationDescription,
-  translateValue
-} from './translateCustomizationFields/translateCustomizationFields'
+import { translateCustomizationDescription } from './translateCustomizationFields/translateCustomizationFields'
 
 jest.mock('@ai-sdk/google', () => ({
   google: jest.fn(() => 'mocked-google-model')
@@ -34,8 +31,7 @@ jest.mock(
   './translateCustomizationFields/translateCustomizationFields',
   () => ({
     translateCustomizationFields: jest.fn(),
-    translateCustomizationDescription: jest.fn(),
-    translateValue: jest.fn()
+    translateCustomizationDescription: jest.fn()
   })
 )
 
@@ -56,32 +52,12 @@ describe('journeyCustomizationDescriptionTranslate', () => {
     translateCustomizationDescription as jest.MockedFunction<
       typeof translateCustomizationDescription
     >
-  const mockTranslateValue = translateValue as jest.MockedFunction<
-    typeof translateValue
-  >
-
-  const mockFields = [
-    {
-      id: 'field-1',
-      key: 'website_label',
-      value: null,
-      defaultValue: 'our website'
-    },
-    {
-      id: 'field-2',
-      key: 'cta_label',
-      value: null,
-      defaultValue: 'Learn More'
-    },
-    { id: 'field-3', key: 'empty_field', value: null, defaultValue: null }
-  ]
 
   const mockJourney = {
     id: 'journey-1',
     title: 'Test Journey',
     journeyCustomizationDescription:
       'Welcome {{ user_name }}! Enter your details below.',
-    journeyCustomizationFields: mockFields,
     userJourneys: [],
     team: { id: 'team-1', userTeams: [] }
   }
@@ -114,10 +90,6 @@ describe('journeyCustomizationDescriptionTranslate', () => {
     mockTranslateDescription.mockResolvedValue(
       '¡Bienvenido {{ user_name }}! Ingresa tus datos a continuación.'
     )
-    mockTranslateValue.mockImplementation(
-      async ({ value }) => `translated:${value}`
-    )
-    prismaMock.journeyCustomizationField.update.mockResolvedValue({} as any)
     prismaMock.journey.update.mockResolvedValue({
       ...mockJourney,
       journeyCustomizationDescription:
@@ -125,7 +97,7 @@ describe('journeyCustomizationDescriptionTranslate', () => {
     } as any)
   })
 
-  it('should translate description and field values', async () => {
+  it('should translate description only without translating field values', async () => {
     const result = await authClient({
       document: JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE,
       variables: { input: mockInput }
@@ -137,27 +109,7 @@ describe('journeyCustomizationDescriptionTranslate', () => {
       targetLanguageName: 'Spanish'
     })
 
-    expect(mockTranslateValue).toHaveBeenCalledTimes(2)
-    expect(mockTranslateValue).toHaveBeenCalledWith({
-      value: 'our website',
-      sourceLanguageName: 'English',
-      targetLanguageName: 'Spanish'
-    })
-    expect(mockTranslateValue).toHaveBeenCalledWith({
-      value: 'Learn More',
-      sourceLanguageName: 'English',
-      targetLanguageName: 'Spanish'
-    })
-
-    expect(prismaMock.journeyCustomizationField.update).toHaveBeenCalledTimes(2)
-    expect(prismaMock.journeyCustomizationField.update).toHaveBeenCalledWith({
-      where: { id: 'field-1' },
-      data: { value: 'translated:our website' }
-    })
-    expect(prismaMock.journeyCustomizationField.update).toHaveBeenCalledWith({
-      where: { id: 'field-2' },
-      data: { value: 'translated:Learn More' }
-    })
+    expect(prismaMock.journeyCustomizationField.update).not.toHaveBeenCalled()
 
     expect(prismaMock.journey.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -178,7 +130,7 @@ describe('journeyCustomizationDescriptionTranslate', () => {
     })
   })
 
-  it('should translate field values when description is null', async () => {
+  it('should skip translation when description is null', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       ...mockJourney,
       journeyCustomizationDescription: null
@@ -195,44 +147,18 @@ describe('journeyCustomizationDescriptionTranslate', () => {
     })
 
     expect(mockTranslateDescription).not.toHaveBeenCalled()
-    expect(mockTranslateValue).toHaveBeenCalledTimes(2)
-    expect(prismaMock.journeyCustomizationField.update).toHaveBeenCalledTimes(2)
-  })
-
-  it('should skip all translation when no description and no fields', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
-      ...mockJourney,
-      journeyCustomizationDescription: null,
-      journeyCustomizationFields: []
-    } as any)
-
-    prismaMock.journey.findUniqueOrThrow.mockResolvedValueOnce({
-      ...mockJourney,
-      journeyCustomizationDescription: null,
-      journeyCustomizationFields: []
-    } as any)
-
-    await authClient({
-      document: JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE,
-      variables: { input: mockInput }
-    })
-
-    expect(mockTranslateDescription).not.toHaveBeenCalled()
-    expect(mockTranslateValue).not.toHaveBeenCalled()
     expect(prismaMock.journey.update).not.toHaveBeenCalled()
   })
 
-  it('should skip translation when description is empty and no fields', async () => {
+  it('should skip all translation when no description', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       ...mockJourney,
-      journeyCustomizationDescription: '   ',
-      journeyCustomizationFields: []
+      journeyCustomizationDescription: null
     } as any)
 
     prismaMock.journey.findUniqueOrThrow.mockResolvedValueOnce({
       ...mockJourney,
-      journeyCustomizationDescription: '   ',
-      journeyCustomizationFields: []
+      journeyCustomizationDescription: null
     } as any)
 
     await authClient({
@@ -241,7 +167,26 @@ describe('journeyCustomizationDescriptionTranslate', () => {
     })
 
     expect(mockTranslateDescription).not.toHaveBeenCalled()
-    expect(mockTranslateValue).not.toHaveBeenCalled()
+    expect(prismaMock.journey.update).not.toHaveBeenCalled()
+  })
+
+  it('should skip translation when description is empty', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      journeyCustomizationDescription: '   '
+    } as any)
+
+    prismaMock.journey.findUniqueOrThrow.mockResolvedValueOnce({
+      ...mockJourney,
+      journeyCustomizationDescription: '   '
+    } as any)
+
+    await authClient({
+      document: JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE,
+      variables: { input: mockInput }
+    })
+
+    expect(mockTranslateDescription).not.toHaveBeenCalled()
     expect(prismaMock.journey.update).not.toHaveBeenCalled()
   })
 
@@ -258,7 +203,6 @@ describe('journeyCustomizationDescriptionTranslate', () => {
       errors: [expect.objectContaining({ message: 'journey not found' })]
     })
     expect(mockTranslateDescription).not.toHaveBeenCalled()
-    expect(mockTranslateValue).not.toHaveBeenCalled()
   })
 
   it('should throw when user lacks permission', async () => {
@@ -278,6 +222,5 @@ describe('journeyCustomizationDescriptionTranslate', () => {
       ]
     })
     expect(mockTranslateDescription).not.toHaveBeenCalled()
-    expect(mockTranslateValue).not.toHaveBeenCalled()
   })
 })

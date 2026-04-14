@@ -5,10 +5,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { builder } from '../builder'
 
-import {
-  translateCustomizationDescription,
-  translateValue
-} from './translateCustomizationFields'
+import { translateCustomizationDescription } from './translateCustomizationFields'
 
 const JourneyCustomizationDescriptionTranslateInput = builder.inputType(
   'JourneyCustomizationDescriptionTranslateInput',
@@ -49,7 +46,6 @@ builder.mutationField('journeyCustomizationDescriptionTranslate', (t) =>
           where: { id: input.journeyId },
           include: {
             userJourneys: true,
-            journeyCustomizationFields: true,
             team: { include: { userTeams: true } }
           }
         })
@@ -71,40 +67,18 @@ builder.mutationField('journeyCustomizationDescriptionTranslate', (t) =>
           journey.journeyCustomizationDescription != null &&
           journey.journeyCustomizationDescription.trim() !== ''
 
-        const hasFields = journey.journeyCustomizationFields.length > 0
-
-        if (!hasDescription && !hasFields) {
+        if (!hasDescription) {
           return await prisma.journey.findUniqueOrThrow({
             ...query,
             where: { id: input.journeyId }
           })
         }
 
-        const translatedDescription = hasDescription
-          ? await translateCustomizationDescription({
-              description: journey.journeyCustomizationDescription!,
-              sourceLanguageName: input.sourceLanguageName,
-              targetLanguageName: input.targetLanguageName
-            })
-          : null
-
-        if (hasFields) {
-          await Promise.all(
-            journey.journeyCustomizationFields
-              .filter((field) => field.defaultValue != null)
-              .map(async (field) => {
-                const translatedFieldValue = await translateValue({
-                  value: field.defaultValue!,
-                  sourceLanguageName: input.sourceLanguageName,
-                  targetLanguageName: input.targetLanguageName
-                })
-                await prisma.journeyCustomizationField.update({
-                  where: { id: field.id },
-                  data: { value: translatedFieldValue }
-                })
-              })
-          )
-        }
+        const translatedDescription = await translateCustomizationDescription({
+          description: journey.journeyCustomizationDescription!,
+          sourceLanguageName: input.sourceLanguageName,
+          targetLanguageName: input.targetLanguageName
+        })
 
         if (translatedDescription != null) {
           return await prisma.journey.update({

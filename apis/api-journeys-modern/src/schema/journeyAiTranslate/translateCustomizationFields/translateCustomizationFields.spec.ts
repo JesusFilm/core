@@ -397,6 +397,85 @@ describe('translateCustomizationFields', () => {
     })
   })
 
+  it('should translate description to descriptionTargetLanguageName when provided', async () => {
+    const fields = [
+      {
+        id: 'field1',
+        journeyId: 'journey123',
+        key: 'greeting',
+        value: 'Hello',
+        defaultValue: 'Welcome',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
+
+    mockGenerateText.mockImplementation(async (options: any) => {
+      const prompt = options.messages[1].content[0].text
+
+      if (prompt.includes('customization description')) {
+        expect(prompt).toContain('Spanish')
+        return {
+          output: { translatedDescription: '¡Bienvenido {{ greeting }}!' },
+          ...baseMockResponse
+        } as any
+      }
+
+      if (prompt.includes('Hello')) {
+        expect(prompt).toContain('French')
+        return {
+          output: { translations: ['Bonjour'] },
+          ...baseMockResponse
+        } as any
+      }
+
+      if (prompt.includes('Welcome')) {
+        expect(prompt).toContain('French')
+        return {
+          output: { translations: ['Bienvenue'] },
+          ...baseMockResponse
+        } as any
+      }
+
+      return {
+        output: { translations: ['Translated'] },
+        ...baseMockResponse
+      } as any
+    })
+
+    const result = await translateCustomizationFields({
+      journeyCustomizationDescription: 'Welcome {{ greeting }}!',
+      journeyCustomizationFields: fields,
+      sourceLanguageName: 'English',
+      targetLanguageName: 'French',
+      descriptionTargetLanguageName: 'Spanish'
+    })
+
+    expect(result.translatedDescription).toBe('¡Bienvenido {{ greeting }}!')
+    expect(result.translatedFields[0].translatedValue).toBe('Bonjour')
+    expect(result.translatedFields[0].translatedDefaultValue).toBe('Bienvenue')
+  })
+
+  it('should fall back to targetLanguageName for description when descriptionTargetLanguageName not provided', async () => {
+    mockGenerateText.mockImplementation(async (options: any) => {
+      const prompt = options.messages[1].content[0].text
+      expect(prompt).toContain('French')
+      return {
+        output: { translatedDescription: 'Bienvenue!' },
+        ...baseMockResponse
+      } as any
+    })
+
+    const result = await translateCustomizationFields({
+      journeyCustomizationDescription: 'Welcome!',
+      journeyCustomizationFields: [],
+      sourceLanguageName: 'English',
+      targetLanguageName: 'French'
+    })
+
+    expect(result.translatedDescription).toBe('Bienvenue!')
+  })
+
   it('should not translate addresses, times, or locations in field values', async () => {
     const fieldsWithAddresses = [
       {

@@ -378,6 +378,7 @@ describe('journeyAiTranslateCreate mutation', () => {
       journeyCustomizationFields: mockJourney.journeyCustomizationFields,
       sourceLanguageName: mockInput.journeyLanguageName,
       targetLanguageName: mockInput.textLanguageName,
+      descriptionTargetLanguageName: mockInput.textLanguageName,
       defaultValueTargetLanguageName: mockInput.textLanguageName,
       journeyAnalysis: expect.any(String)
     })
@@ -536,7 +537,7 @@ describe('journeyAiTranslateCreate mutation', () => {
     )
   })
 
-  it('should use userLanguageName for customization translation when provided', async () => {
+  it('should use userLanguageName for description translation when provided', async () => {
     const inputWithUserLanguage = {
       ...mockInput,
       userLanguageId: 'userLang789',
@@ -555,13 +556,14 @@ describe('journeyAiTranslateCreate mutation', () => {
         mockJourney.journeyCustomizationDescription,
       journeyCustomizationFields: mockJourney.journeyCustomizationFields,
       sourceLanguageName: inputWithUserLanguage.journeyLanguageName,
-      targetLanguageName: 'French',
+      targetLanguageName: inputWithUserLanguage.textLanguageName,
+      descriptionTargetLanguageName: 'French',
       defaultValueTargetLanguageName: inputWithUserLanguage.textLanguageName,
       journeyAnalysis: expect.any(String)
     })
   })
 
-  it('should fall back to textLanguageName for customization translation when userLanguageName not provided', async () => {
+  it('should fall back to textLanguageName for description translation when userLanguageName not provided', async () => {
     await authClient({
       document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
       variables: {
@@ -575,6 +577,7 @@ describe('journeyAiTranslateCreate mutation', () => {
       journeyCustomizationFields: mockJourney.journeyCustomizationFields,
       sourceLanguageName: mockInput.journeyLanguageName,
       targetLanguageName: mockInput.textLanguageName,
+      descriptionTargetLanguageName: mockInput.textLanguageName,
       defaultValueTargetLanguageName: mockInput.textLanguageName,
       journeyAnalysis: expect.any(String)
     })
