@@ -122,7 +122,7 @@ export function DoneScreen(): ReactElement {
           onClick={handleGoToProjectsDashboard}
           loading={navigating}
           endIcon={<ArrowRightContained1Icon />}
-          sx={{ mt: 4 }}
+          sx={{ width: { xs: '100%', sm: 'auto' }, mt: 4 }}
         >
           {t('Go To Projects Dashboard')}
         </Button>
