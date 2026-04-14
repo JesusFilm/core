@@ -3,8 +3,10 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
+import { GetMe, GetMeVariables } from '../../__generated__/GetMe'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { UserDelete } from '../../src/components/UserDelete'
+import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation/UserNavigation'
 import { useAuth } from '../../src/libs/auth'
 import {
   getAuthTokens,
@@ -32,13 +34,26 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   if (tokens == null) return redirectToLogin(ctx)
   const user = toUser(tokens)
 
-  const { redirect, translations } = await initAndAuthApp({
+  const { apolloClient, redirect, translations } = await initAndAuthApp({
     user,
     locale: ctx.locale,
     resolvedUrl: ctx.resolvedUrl
   })
 
   if (redirect != null) return { redirect }
+
+  // Server-side superAdmin guard — the client-side component also checks this,
+  // but we enforce it here to prevent unauthorised users from loading the page.
+  const meResult = await apolloClient.query<GetMe, GetMeVariables>({
+    query: GET_ME,
+    fetchPolicy: 'network-only'
+  })
+  if (
+    meResult.data?.me?.__typename !== 'AuthenticatedUser' ||
+    meResult.data.me.superAdmin !== true
+  ) {
+    return { redirect: { permanent: false, destination: '/' } }
+  }
 
   return {
     props: {
