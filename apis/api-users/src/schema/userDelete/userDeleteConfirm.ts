@@ -183,6 +183,14 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
         // Delete user record + Firebase cleanup using the deleted IDs from
         // the journeys cleanup step (performed by the frontend before calling
         // this subscription).
+        //
+        // TRUST BOUNDARY: deletedJourneyIds, deletedTeamIds,
+        // deletedUserJourneyIds, and deletedUserTeamIds are client-supplied
+        // values passed from the frontend after it calls
+        // userDeleteJourneysConfirm. They are written to the audit log as-is.
+        // If strict audit integrity is required, cross-reference these IDs
+        // against the actual deletion results returned by api-journeys-modern
+        // rather than trusting client-supplied values.
         yield {
           log: createLog('🔄 Starting user record deletion...'),
           done: false,
