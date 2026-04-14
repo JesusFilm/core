@@ -30,4 +30,8 @@ export interface UserDeleteConfirmSubscription {
 export interface UserDeleteConfirmSubscriptionVariables {
   idType: UserDeleteIdType;
   id: string;
+  deletedJourneyIds: string[];
+  deletedTeamIds: string[];
+  deletedUserJourneyIds: string[];
+  deletedUserTeamIds: string[];
 }

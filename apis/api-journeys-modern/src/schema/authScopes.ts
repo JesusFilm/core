@@ -1,6 +1,7 @@
 import { GraphQLError } from 'graphql'
 
 import { Role, prisma } from '@core/prisma/journeys/client'
+import { prisma as prismaUsers } from '@core/prisma/users/client'
 import { User } from '@core/yoga/firebaseClient'
 import { InteropContext } from '@core/yoga/interop'
 
@@ -78,6 +79,7 @@ export interface AuthScopes {
   isAuthenticated: boolean
   isAnonymous: boolean
   isPublisher: boolean
+  isSuperAdmin: boolean
   isValidInterop: boolean
 }
 
@@ -86,21 +88,28 @@ export async function authScopes(context: Context) {
     isAuthenticated: false,
     isAnonymous: false,
     isPublisher: false,
+    isSuperAdmin: false,
     isValidInterop: false
   }
   switch (context.type) {
-    case 'authenticated':
+    case 'authenticated': {
+      const dbUser = await prismaUsers.user.findUnique({
+        where: { userId: context.user.id },
+        select: { superAdmin: true }
+      })
       return {
         ...defaultScopes,
         isAuthenticated: context.user?.email != null,
         isAnonymous: context.user != null && context.user.email == null,
         isPublisher: context.currentRoles.includes('publisher'),
+        isSuperAdmin: dbUser?.superAdmin ?? false,
         isInTeam: async (teamId: string) => await isInTeam({ context, teamId }),
         isIntegrationOwner: async (integrationId: string) =>
           await isIntegrationOwner({ context, integrationId }),
         isTeamManager: async (teamId: string) =>
           await isTeamManager({ context, teamId })
       }
+    }
     case 'interop':
       return {
         ...defaultScopes,

@@ -46,6 +46,14 @@ import {
   UserDeleteConfirmSubscription,
   UserDeleteConfirmSubscriptionVariables
 } from '../../../__generated__/UserDeleteConfirmSubscription'
+import {
+  UserDeleteJourneysCheck,
+  UserDeleteJourneysCheckVariables
+} from '../../../__generated__/UserDeleteJourneysCheck'
+import {
+  UserDeleteJourneysConfirm,
+  UserDeleteJourneysConfirmVariables
+} from '../../../__generated__/UserDeleteJourneysConfirm'
 import { GET_ME } from '../PageWrapper/NavigationDrawer/UserNavigation/UserNavigation'
 
 interface LogEntry {
@@ -60,6 +68,18 @@ export const USER_DELETE_CHECK = gql`
       userId
       userEmail
       userFirstName
+      logs {
+        message
+        level
+        timestamp
+      }
+    }
+  }
+`
+
+export const USER_DELETE_JOURNEYS_CHECK = gql`
+  mutation UserDeleteJourneysCheck($userId: String!) {
+    userDeleteJourneysCheck(userId: $userId) {
       journeysToDelete
       journeysToTransfer
       journeysToRemove
@@ -75,12 +95,40 @@ export const USER_DELETE_CHECK = gql`
   }
 `
 
+export const USER_DELETE_JOURNEYS_CONFIRM = gql`
+  mutation UserDeleteJourneysConfirm($userId: String!) {
+    userDeleteJourneysConfirm(userId: $userId) {
+      success
+      deletedJourneyIds
+      deletedTeamIds
+      deletedUserJourneyIds
+      deletedUserTeamIds
+      logs {
+        message
+        level
+        timestamp
+      }
+    }
+  }
+`
+
 export const USER_DELETE_CONFIRM = gql`
   subscription UserDeleteConfirmSubscription(
     $idType: UserDeleteIdType!
     $id: String!
+    $deletedJourneyIds: [String!]!
+    $deletedTeamIds: [String!]!
+    $deletedUserJourneyIds: [String!]!
+    $deletedUserTeamIds: [String!]!
   ) {
-    userDeleteConfirm(idType: $idType, id: $id) {
+    userDeleteConfirm(
+      idType: $idType
+      id: $id
+      deletedJourneyIds: $deletedJourneyIds
+      deletedTeamIds: $deletedTeamIds
+      deletedUserJourneyIds: $deletedUserJourneyIds
+      deletedUserTeamIds: $deletedUserTeamIds
+    ) {
       log {
         message
         level
@@ -157,6 +205,10 @@ export function UserDeleteWithErrorBoundary(): ReactElement {
 interface ConfirmVars {
   idType: UserDeleteIdType
   id: string
+  deletedJourneyIds: string[]
+  deletedTeamIds: string[]
+  deletedUserJourneyIds: string[]
+  deletedUserTeamIds: string[]
 }
 
 const levelLabel: Record<string, string> = {
@@ -185,12 +237,29 @@ function UserDeleteContent(): ReactElement {
     UserDeleteCheckVariables
   >(USER_DELETE_CHECK)
 
+  const [userDeleteJourneysCheck, { loading: journeysCheckLoading }] =
+    useMutation<UserDeleteJourneysCheck, UserDeleteJourneysCheckVariables>(
+      USER_DELETE_JOURNEYS_CHECK
+    )
+
+  const [userDeleteJourneysConfirm, { loading: journeysConfirmLoading }] =
+    useMutation<UserDeleteJourneysConfirm, UserDeleteJourneysConfirmVariables>(
+      USER_DELETE_JOURNEYS_CONFIRM
+    )
+
   useSubscription<
     UserDeleteConfirmSubscription,
     UserDeleteConfirmSubscriptionVariables
   >(USER_DELETE_CONFIRM, {
     skip: confirmVars == null,
-    variables: confirmVars ?? { idType: UserDeleteIdType.email, id: '' },
+    variables: confirmVars ?? {
+      idType: UserDeleteIdType.email,
+      id: '',
+      deletedJourneyIds: [],
+      deletedTeamIds: [],
+      deletedUserJourneyIds: [],
+      deletedUserTeamIds: []
+    },
     onData: ({ data: subData }) => {
       const progress = subData.data?.userDeleteConfirm
       if (progress == null) return
@@ -227,7 +296,10 @@ function UserDeleteContent(): ReactElement {
     }
   })
 
-  const confirmLoading = confirmVars != null
+  // journeysConfirmLoading covers the period between clicking "Delete
+  // Permanently" and the subscription starting.
+  const confirmLoading = journeysConfirmLoading || confirmVars != null
+  const isCheckLoading = checkLoading || journeysCheckLoading
 
   const isSuperAdmin =
     data.me?.__typename === 'AuthenticatedUser' && data.me.superAdmin === true
@@ -261,14 +333,30 @@ function UserDeleteContent(): ReactElement {
     setCheckComplete(false)
 
     try {
+      // Step 1: check user info from api-users
       const { data: checkData } = await userDeleteCheck({
         variables: { idType, id: userId.trim() }
       })
 
-      if (checkData?.userDeleteCheck != null) {
-        setLogs(checkData.userDeleteCheck.logs)
-        setCheckComplete(true)
+      if (checkData?.userDeleteCheck == null) return
+
+      const userLogs: LogEntry[] = checkData.userDeleteCheck.logs
+      const resolvedUserId = checkData.userDeleteCheck.userId
+
+      // Step 2: check journeys counts from api-journeys-modern using the
+      // resolved Firebase UID returned by userDeleteCheck
+      let journeysLogs: LogEntry[] = []
+      if (resolvedUserId !== '') {
+        const { data: journeysData } = await userDeleteJourneysCheck({
+          variables: { userId: resolvedUserId }
+        })
+        if (journeysData?.userDeleteJourneysCheck != null) {
+          journeysLogs = journeysData.userDeleteJourneysCheck.logs
+        }
       }
+
+      setLogs([...userLogs, ...journeysLogs])
+      setCheckComplete(true)
     } catch (error) {
       if (error instanceof ApolloError) {
         const message = error.graphQLErrors[0]?.message ?? error.message
@@ -283,12 +371,71 @@ function UserDeleteContent(): ReactElement {
         enqueueSnackbar(message, { variant: 'error', preventDuplicate: true })
       }
     }
-  }, [idType, userId, userDeleteCheck, enqueueSnackbar])
+  }, [idType, userId, userDeleteCheck, userDeleteJourneysCheck, enqueueSnackbar])
 
-  const handleConfirmDelete = useCallback(() => {
+  const handleConfirmDelete = useCallback(async () => {
     setConfirmOpen(false)
-    setConfirmVars({ idType, id: userId.trim() })
-  }, [idType, userId])
+
+    try {
+      // Step 3: delete journeys data from api-journeys-modern, get back IDs
+      const { data: checkData } = await userDeleteCheck({
+        variables: { idType, id: userId.trim() }
+      })
+      const resolvedUserId = checkData?.userDeleteCheck?.userId ?? ''
+
+      const journeysResult = await userDeleteJourneysConfirm({
+        variables: { userId: resolvedUserId }
+      })
+
+      const journeysConfirmData = journeysResult.data?.userDeleteJourneysConfirm
+      if (journeysConfirmData == null) {
+        enqueueSnackbar(t('Journeys cleanup failed. Check logs for details.'), {
+          variant: 'error'
+        })
+        return
+      }
+
+      // Append journeys confirm logs
+      setLogs((prev) => [...prev, ...journeysConfirmData.logs])
+
+      if (!journeysConfirmData.success) {
+        enqueueSnackbar(t('Journeys cleanup failed. Check logs for details.'), {
+          variant: 'error'
+        })
+        return
+      }
+
+      // Step 4: start userDeleteConfirm subscription with deleted IDs
+      setConfirmVars({
+        idType,
+        id: userId.trim(),
+        deletedJourneyIds: journeysConfirmData.deletedJourneyIds,
+        deletedTeamIds: journeysConfirmData.deletedTeamIds,
+        deletedUserJourneyIds: journeysConfirmData.deletedUserJourneyIds,
+        deletedUserTeamIds: journeysConfirmData.deletedUserTeamIds
+      })
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        const message = error.graphQLErrors[0]?.message ?? error.message
+        setLogs((prev) => [
+          ...prev,
+          {
+            message: `Error: ${message}`,
+            level: 'error',
+            timestamp: new Date().toISOString()
+          }
+        ])
+        enqueueSnackbar(message, { variant: 'error', preventDuplicate: true })
+      }
+    }
+  }, [
+    idType,
+    userId,
+    userDeleteCheck,
+    userDeleteJourneysConfirm,
+    enqueueSnackbar,
+    t
+  ])
 
   if (!isSuperAdmin) return <></>
 
@@ -320,7 +467,7 @@ function UserDeleteContent(): ReactElement {
               setCheckComplete(false)
               setLogs([])
             }}
-            disabled={checkLoading || confirmLoading}
+            disabled={isCheckLoading || confirmLoading}
           >
             <MenuItem value={UserDeleteIdType.email}>{t('Email')}</MenuItem>
             <MenuItem value={UserDeleteIdType.databaseId}>
@@ -350,17 +497,17 @@ function UserDeleteContent(): ReactElement {
           onKeyDown={(e) => {
             if (e.key === 'Enter') void handleCheck()
           }}
-          disabled={checkLoading || confirmLoading}
+          disabled={isCheckLoading || confirmLoading}
           fullWidth
         />
 
         <Button
           variant="contained"
           onClick={handleCheck}
-          disabled={userId.trim() === '' || checkLoading || confirmLoading}
+          disabled={userId.trim() === '' || isCheckLoading || confirmLoading}
           sx={{ whiteSpace: 'nowrap', minWidth: 100 }}
         >
-          {checkLoading ? t('Checking...') : t('Check')}
+          {isCheckLoading ? t('Checking...') : t('Check')}
         </Button>
       </Stack>
 

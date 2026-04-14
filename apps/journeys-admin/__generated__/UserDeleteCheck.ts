@@ -21,12 +21,6 @@ export interface UserDeleteCheck_userDeleteCheck {
   userId: string;
   userEmail: string | null;
   userFirstName: string;
-  journeysToDelete: number;
-  journeysToTransfer: number;
-  journeysToRemove: number;
-  teamsToDelete: number;
-  teamsToTransfer: number;
-  teamsToRemove: number;
   logs: UserDeleteCheck_userDeleteCheck_logs[];
 }
 

@@ -48,7 +48,7 @@ builder.objectType(UserDeleteJourneysCheckResult, {
 export { UserDeleteJourneysLogEntry }
 
 builder.mutationField('userDeleteJourneysCheck', (t) =>
-  t.withAuth({ isValidInterop: true }).field({
+  t.withAuth({ isSuperAdmin: true }).field({
     type: UserDeleteJourneysCheckResult,
     nullable: false,
     args: {
