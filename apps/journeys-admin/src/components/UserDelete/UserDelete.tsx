@@ -227,6 +227,7 @@ function UserDeleteContent(): ReactElement {
 
   const [idType, setIdType] = useState<UserDeleteIdType>(UserDeleteIdType.email)
   const [userId, setUserId] = useState('')
+  const [resolvedUserId, setResolvedUserId] = useState('')
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [checkComplete, setCheckComplete] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -274,6 +275,7 @@ function UserDeleteContent(): ReactElement {
             variant: 'success'
           })
           setCheckComplete(false)
+          setResolvedUserId('')
         } else {
           enqueueSnackbar(t('User deletion failed. Check logs for details.'), {
             variant: 'error'
@@ -331,6 +333,7 @@ function UserDeleteContent(): ReactElement {
 
     setLogs([])
     setCheckComplete(false)
+    setResolvedUserId('')
 
     try {
       // Step 1: check user info from api-users
@@ -341,21 +344,26 @@ function UserDeleteContent(): ReactElement {
       if (checkData?.userDeleteCheck == null) return
 
       const userLogs: LogEntry[] = checkData.userDeleteCheck.logs
-      const resolvedUserId = checkData.userDeleteCheck.userId
+      const uid = checkData.userDeleteCheck.userId
+
+      // Show Step 1 logs immediately so they're visible even if Step 2 fails
+      setLogs(userLogs)
+      setResolvedUserId(uid)
 
       // Step 2: check journeys counts from api-journeys-modern using the
       // resolved Firebase UID returned by userDeleteCheck
-      let journeysLogs: LogEntry[] = []
-      if (resolvedUserId !== '') {
+      if (uid !== '') {
         const { data: journeysData } = await userDeleteJourneysCheck({
-          variables: { userId: resolvedUserId }
+          variables: { userId: uid }
         })
         if (journeysData?.userDeleteJourneysCheck != null) {
-          journeysLogs = journeysData.userDeleteJourneysCheck.logs
+          setLogs((prev) => [
+            ...prev,
+            ...journeysData.userDeleteJourneysCheck.logs
+          ])
         }
       }
 
-      setLogs([...userLogs, ...journeysLogs])
       setCheckComplete(true)
     } catch (error) {
       if (error instanceof ApolloError) {
@@ -369,20 +377,40 @@ function UserDeleteContent(): ReactElement {
           }
         ])
         enqueueSnackbar(message, { variant: 'error', preventDuplicate: true })
+      } else {
+        const message =
+          error instanceof Error ? error.message : t('An unexpected error occurred.')
+        setLogs((prev) => [
+          ...prev,
+          {
+            message: `Error: ${message}`,
+            level: 'error',
+            timestamp: new Date().toISOString()
+          }
+        ])
+        enqueueSnackbar(t('An unexpected error occurred.'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
       }
     }
-  }, [idType, userId, userDeleteCheck, userDeleteJourneysCheck, enqueueSnackbar])
+  }, [idType, userId, userDeleteCheck, userDeleteJourneysCheck, enqueueSnackbar, t])
 
   const handleConfirmDelete = useCallback(async () => {
     setConfirmOpen(false)
 
+    if (resolvedUserId === '') {
+      const errMsg = t('An unexpected error occurred.')
+      setLogs((prev) => [
+        ...prev,
+        { message: `Error: ${errMsg}`, level: 'error', timestamp: new Date().toISOString() }
+      ])
+      enqueueSnackbar(errMsg, { variant: 'error', preventDuplicate: true })
+      return
+    }
+
     try {
       // Step 3: delete journeys data from api-journeys-modern, get back IDs
-      const { data: checkData } = await userDeleteCheck({
-        variables: { idType, id: userId.trim() }
-      })
-      const resolvedUserId = checkData?.userDeleteCheck?.userId ?? ''
-
       const journeysResult = await userDeleteJourneysConfirm({
         variables: { userId: resolvedUserId }
       })
@@ -426,12 +454,27 @@ function UserDeleteContent(): ReactElement {
           }
         ])
         enqueueSnackbar(message, { variant: 'error', preventDuplicate: true })
+      } else {
+        const message =
+          error instanceof Error ? error.message : t('An unexpected error occurred.')
+        setLogs((prev) => [
+          ...prev,
+          {
+            message: `Error: ${message}`,
+            level: 'error',
+            timestamp: new Date().toISOString()
+          }
+        ])
+        enqueueSnackbar(t('An unexpected error occurred.'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
       }
     }
   }, [
     idType,
     userId,
-    userDeleteCheck,
+    resolvedUserId,
     userDeleteJourneysConfirm,
     enqueueSnackbar,
     t
@@ -465,6 +508,7 @@ function UserDeleteContent(): ReactElement {
             onChange={(e) => {
               setIdType(e.target.value as UserDeleteIdType)
               setCheckComplete(false)
+              setResolvedUserId('')
               setLogs([])
             }}
             disabled={isCheckLoading || confirmLoading}
@@ -493,6 +537,7 @@ function UserDeleteContent(): ReactElement {
           onChange={(e) => {
             setUserId(e.target.value)
             setCheckComplete(false)
+            setResolvedUserId('')
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') void handleCheck()

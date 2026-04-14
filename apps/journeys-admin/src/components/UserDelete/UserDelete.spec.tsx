@@ -1,5 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import { ThemeProvider } from '../ThemeProvider'
 
 import { UserDeleteWithErrorBoundary } from './UserDelete'
 
@@ -15,7 +18,8 @@ jest.mock('next/router', () => ({
 jest.mock('notistack', () => ({
   useSnackbar: () => ({
     enqueueSnackbar: jest.fn()
-  })
+  }),
+  SnackbarProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>
 }))
 
 const mockUseSuspenseQuery = jest.fn()
@@ -26,6 +30,17 @@ jest.mock('@apollo/client', () => {
     useSuspenseQuery: (...args: unknown[]) => mockUseSuspenseQuery(...args)
   }
 })
+
+const renderComponent = (): ReturnType<typeof render> =>
+  render(
+    <ThemeProvider>
+      <SnackbarProvider>
+        <MockedProvider>
+          <UserDeleteWithErrorBoundary />
+        </MockedProvider>
+      </SnackbarProvider>
+    </ThemeProvider>
+  )
 
 describe('UserDeleteWithErrorBoundary', () => {
   beforeEach(() => {
@@ -42,11 +57,7 @@ describe('UserDeleteWithErrorBoundary', () => {
   })
 
   it('should render the form for superAdmin users', () => {
-    const { getAllByText, getByText } = render(
-      <MockedProvider>
-        <UserDeleteWithErrorBoundary />
-      </MockedProvider>
-    )
+    const { getAllByText, getByText } = renderComponent()
 
     expect(getAllByText('Delete User').length).toBeGreaterThanOrEqual(1)
     expect(getByText('Check')).toBeInTheDocument()
@@ -64,11 +75,7 @@ describe('UserDeleteWithErrorBoundary', () => {
       }
     })
 
-    render(
-      <MockedProvider>
-        <UserDeleteWithErrorBoundary />
-      </MockedProvider>
-    )
+    renderComponent()
 
     expect(mockPush).toHaveBeenCalledWith('/')
   })
@@ -84,21 +91,13 @@ describe('UserDeleteWithErrorBoundary', () => {
       }
     })
 
-    const { queryByText } = render(
-      <MockedProvider>
-        <UserDeleteWithErrorBoundary />
-      </MockedProvider>
-    )
+    const { queryByText } = renderComponent()
 
     expect(queryByText('Check')).not.toBeInTheDocument()
   })
 
   it('should have delete button disabled before check', () => {
-    const { getAllByRole } = render(
-      <MockedProvider>
-        <UserDeleteWithErrorBoundary />
-      </MockedProvider>
-    )
+    const { getAllByRole } = renderComponent()
 
     const deleteUserButtons = getAllByRole('button', { name: 'Delete User' })
     const actionBtn = deleteUserButtons[deleteUserButtons.length - 1]
@@ -106,31 +105,19 @@ describe('UserDeleteWithErrorBoundary', () => {
   })
 
   it('should have check button disabled when input is empty', () => {
-    const { getByText } = render(
-      <MockedProvider>
-        <UserDeleteWithErrorBoundary />
-      </MockedProvider>
-    )
+    const { getByText } = renderComponent()
 
     expect(getByText('Check').closest('button')).toBeDisabled()
   })
 
   it('should render lookup type selector with email as default', () => {
-    const { getByLabelText } = render(
-      <MockedProvider>
-        <UserDeleteWithErrorBoundary />
-      </MockedProvider>
-    )
+    const { getByLabelText } = renderComponent()
 
     expect(getByLabelText('Lookup By')).toBeInTheDocument()
   })
 
   it('should render logs textfield', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <UserDeleteWithErrorBoundary />
-      </MockedProvider>
-    )
+    const { getByRole } = renderComponent()
 
     const logsField = getByRole('textbox', { name: 'Logs' })
     expect(logsField).toBeInTheDocument()
