@@ -35,7 +35,7 @@ interface CardLayoutProps {
 export function CardLayout({
   disableExpanded = false
 }: CardLayoutProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedBlock, selectedStep },
     dispatch
