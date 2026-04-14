@@ -274,13 +274,13 @@ function UserDeleteContent(): ReactElement {
           enqueueSnackbar(t('User deleted successfully'), {
             variant: 'success'
           })
-          setCheckComplete(false)
-          setResolvedUserId('')
         } else {
           enqueueSnackbar(t('User deletion failed. Check logs for details.'), {
             variant: 'error'
           })
         }
+        setCheckComplete(false)
+        setResolvedUserId('')
       }
     },
     onError: (error) => {
