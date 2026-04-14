@@ -61,7 +61,7 @@ builder.mutationField('userDeleteCheck', (t) =>
       }
 
       return {
-        userId: user.id,
+        userId: user.userId,
         userEmail: user.email,
         userFirstName: user.firstName,
         logs
