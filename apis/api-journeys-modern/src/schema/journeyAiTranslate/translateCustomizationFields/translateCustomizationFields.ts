@@ -140,21 +140,26 @@ export async function translateCustomizationFields({
   const effectiveDefaultValueTarget =
     defaultValueTargetLanguageName ?? targetLanguageName
 
+  const hasNonBlank = (v: string | null): v is string =>
+    typeof v === 'string' && v.trim().length > 0
+
   const fieldsWithContent = journeyCustomizationFields.filter(
-    (field) => field.value || field.defaultValue
+    (field) => hasNonBlank(field.value) || hasNonBlank(field.defaultValue)
   )
 
-  if (fieldsWithContent.length === 0 && !journeyCustomizationDescription) {
+  const hasDescription = hasNonBlank(journeyCustomizationDescription)
+
+  if (fieldsWithContent.length === 0 && !hasDescription) {
     return { translatedDescription: null, translatedFields: [] }
   }
 
   const valueEntries = fieldsWithContent
     .map((f, i) => ({ index: i, text: f.value }))
-    .filter((e): e is { index: number; text: string } => e.text != null)
+    .filter((e): e is { index: number; text: string } => hasNonBlank(e.text))
 
   const defaultValueEntries = fieldsWithContent
     .map((f, i) => ({ index: i, text: f.defaultValue }))
-    .filter((e): e is { index: number; text: string } => e.text != null)
+    .filter((e): e is { index: number; text: string } => hasNonBlank(e.text))
 
   const [translatedValues, translatedDefaults, translatedDescription] =
     await Promise.all([
@@ -176,7 +181,7 @@ export async function translateCustomizationFields({
           })
         : Promise.resolve([] as string[]),
 
-      journeyCustomizationDescription
+      hasDescription
         ? translateCustomizationDescription({
             description: journeyCustomizationDescription,
             sourceLanguageName,
@@ -256,6 +261,30 @@ ${hardenPrompt(description)}`
       schema: CustomizationDescriptionTranslationSchema
     })
   })
+
+  if (fieldMatches.length > 0) {
+    const translatedTokens: string[] = []
+    const verifyPattern =
+      /\{\{\s*([^:}]+)(?:\s*:\s*(?:(['"])([^'"]*)\2|([^}]*?)))?\s*\}\}/g
+    let verifyMatch
+    while (
+      (verifyMatch = verifyPattern.exec(output.translatedDescription)) !== null
+    ) {
+      translatedTokens.push(verifyMatch[0])
+    }
+
+    const tokensPreserved =
+      fieldMatches.length === translatedTokens.length &&
+      fieldMatches.every((token, i) => token === translatedTokens[i])
+
+    if (!tokensPreserved) {
+      console.warn(
+        'Customization description translation mangled {{ }} tokens, falling back to original',
+        { expected: fieldMatches, got: translatedTokens }
+      )
+      return description
+    }
+  }
 
   return output.translatedDescription
 }

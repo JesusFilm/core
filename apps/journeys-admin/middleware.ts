@@ -25,7 +25,7 @@ export const LOCALE_LANGUAGES: Record<string, string> = {
   'zh-Hans-CN': '21754', // Chinese, Simplified
   de: '1106', // German
   ne: '1370', // Nepali
-  ms: '584', // Malay
+  ms: '1927', // Malay
   pt: '584' // Portuguese
 }
 
