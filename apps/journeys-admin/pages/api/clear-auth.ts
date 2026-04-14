@@ -12,5 +12,5 @@ export default function handler(
     `${authConfig.cookieName}=; ${base}`,
     `${authConfig.cookieName}.sig=; ${base}`
   ])
-  res.redirect(307, '/users/sign-in')
+  res.redirect(303, '/users/sign-in')
 }
