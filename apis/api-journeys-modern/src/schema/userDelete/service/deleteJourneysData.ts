@@ -221,7 +221,9 @@ export async function deleteJourneysData(
 
       if (journeyNotifications.count > 0)
         txLogs.push(
-          createLog(`Deleted ${journeyNotifications.count} journey notifications`)
+          createLog(
+            `Deleted ${journeyNotifications.count} journey notifications`
+          )
         )
       if (userTeamInvites.count > 0)
         txLogs.push(createLog(`Deleted ${userTeamInvites.count} team invites`))
@@ -232,7 +234,9 @@ export async function deleteJourneysData(
       if (journeyThemes.count > 0)
         txLogs.push(createLog(`Deleted ${journeyThemes.count} journey themes`))
       if (journeyProfile.count > 0)
-        txLogs.push(createLog(`Deleted ${journeyProfile.count} journey profile`))
+        txLogs.push(
+          createLog(`Deleted ${journeyProfile.count} journey profile`)
+        )
       if (integrations.count > 0)
         txLogs.push(createLog(`Deleted ${integrations.count} integrations`))
       if (userRoles.count > 0)
