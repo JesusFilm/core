@@ -25,7 +25,7 @@ export function getGeminiMaxRetries(): number {
 
 export function isRateLimitError(error: unknown): boolean {
   if (!(error instanceof Error)) return false
-  const err = error as Record<string, unknown>
+  const err = error as unknown as Record<string, unknown>
   if (err.statusCode === 429) return true
   const lastError = err.lastError as Record<string, unknown> | undefined
   return lastError?.statusCode === 429
