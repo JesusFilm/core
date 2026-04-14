@@ -99,19 +99,17 @@ export function GoalsBanner(): ReactElement {
         <ListItem>{t('Assign a goal to each action and monitor it')}</ListItem>
         <ListItem>{t('Change all URLs in a single place')}</ListItem>
         <Button
-          variant="outlined"
+          variant="blockOutlined"
+          color="solid"
           startIcon={
             <InformationCircleContainedIcon sx={{ color: 'secondary.light' }} />
           }
           sx={{
-            display: { xs: 'block', sm: 'none' },
-            color: 'secondary.main',
-            borderColor: 'secondary.main',
-            borderRadius: 2
+            display: { xs: 'flex', sm: 'none' }
           }}
           onClick={handleClick}
         >
-          <Typography variant="subtitle2">{t('Learn More')}</Typography>
+          {t('Learn More')}
         </Button>
       </Stack>
     </Box>

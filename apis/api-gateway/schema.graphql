@@ -168,16 +168,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockRestore is used for redo/undo
   """
   blockRestore(id: ID!) : [Block!]! @join__field(graph: API_JOURNEYS) 
-  cardBlockCreate(input: CardBlockCreateInput!) : CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  cardBlockUpdate(
-    id: ID!
-    input: CardBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  iconBlockCreate(input: IconBlockCreateInput!) : IconBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   iconBlockUpdate(
     id: ID!
     input: IconBlockUpdateInput!
@@ -185,8 +175,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): IconBlock! @join__field(graph: API_JOURNEYS) 
-  imageBlockCreate(input: ImageBlockCreateInput!) : ImageBlock! @join__field(graph: API_JOURNEYS) 
+  ): IconBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  imageBlockCreate(input: ImageBlockCreateInput!) : ImageBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   imageBlockUpdate(
     id: ID!
     input: ImageBlockUpdateInput!
@@ -194,8 +184,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): ImageBlock! @join__field(graph: API_JOURNEYS) 
-  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!) : RadioOptionBlock! @join__field(graph: API_JOURNEYS) 
+  ): ImageBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!) : RadioOptionBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   radioOptionBlockUpdate(
     id: ID!
     input: RadioOptionBlockUpdateInput!
@@ -203,10 +193,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): RadioOptionBlock! @join__field(graph: API_JOURNEYS) 
-  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS) 
-  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS) 
-  signUpBlockCreate(input: SignUpBlockCreateInput!) : SignUpBlock! @join__field(graph: API_JOURNEYS) 
+  ): RadioOptionBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  signUpBlockCreate(input: SignUpBlockCreateInput!) : SignUpBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   signUpBlockUpdate(
     id: ID!
     input: SignUpBlockUpdateInput!
@@ -214,9 +204,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): SignUpBlock @join__field(graph: API_JOURNEYS) 
-  spacerBlockCreate(input: SpacerBlockCreateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS) 
-  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS) 
+  ): SignUpBlock @join__field(graph: API_JOURNEYS_MODERN, type: "SignUpBlock!", override: "api-journeys") 
+  spacerBlockCreate(input: SpacerBlockCreateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   stepBlockCreate(input: StepBlockCreateInput!) : StepBlock! @join__field(graph: API_JOURNEYS) 
   stepBlockUpdate(
     id: ID!
@@ -351,7 +341,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS) 
-  buttonBlockCreate(input: ButtonBlockCreateInput!) : ButtonBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  buttonBlockCreate(input: ButtonBlockCreateInput!) : ButtonBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   buttonBlockUpdate(
     id: ID!
     input: ButtonBlockUpdateInput!
@@ -359,7 +349,17 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): ButtonBlock @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): ButtonBlock @join__field(graph: API_JOURNEYS_MODERN) 
+  cardBlockCreate(input: CardBlockCreateInput!) : CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  iconBlockCreate(input: IconBlockCreateInput!) : IconBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   multiselectBlockCreate(input: MultiselectBlockCreateInput!) : MultiselectBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   multiselectBlockUpdate(
     id: ID!
@@ -410,10 +410,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationDelete(id: ID!) : Integration! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyTransferFromAnonymous(journeyId: ID!, teamId: ID) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
     filter: JourneyEventsFilter
@@ -548,8 +549,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoOriginCreate(input: MutationVideoOriginCreateInput!) : VideoOrigin! @join__field(graph: API_MEDIA) 
   videoOriginUpdate(input: MutationVideoOriginUpdateInput!) : VideoOrigin! @join__field(graph: API_MEDIA) 
   videoOriginDelete(id: ID!) : VideoOrigin! @join__field(graph: API_MEDIA) 
-  videoPublishChildren(id: ID!) : VideoPublishChildrenResult! @join__field(graph: API_MEDIA) 
-  videoPublishChildrenAndLanguages(id: ID!) : VideoPublishChildrenAndLanguagesResult! @join__field(graph: API_MEDIA) 
+  videoPublishChildren(id: ID!, mode: VideoPublishMode!, dryRun: Boolean!) : VideoPublishChildrenResult! @join__field(graph: API_MEDIA) 
   videoEditionCreate(input: VideoEditionCreateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionUpdate(input: VideoEditionUpdateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
@@ -702,8 +702,8 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   socialNodeY: Int
   fromTemplateId: String
   showAssistant: Boolean
-  journeyCustomizationDescription: String @join__field(graph: API_JOURNEYS) 
-  journeyCustomizationFields: [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationDescription: String
+  journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
   userJourneys: [UserJourney!]
   """
@@ -720,9 +720,13 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   hosts(teamId: ID!) : [Host!]! @join__field(graph: API_JOURNEYS) 
   integrations(teamId: ID!) : [Integration!]! @join__field(graph: API_JOURNEYS) 
   adminJourneysReport(reportType: JourneysReportType!) : PowerBiEmbed @join__field(graph: API_JOURNEYS) 
-  adminJourney(id: ID!, idType: IdType = slug) : Journey! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   journeys(where: JourneysFilter, options: JourneysQueryOptions) : [Journey!]! @join__field(graph: API_JOURNEYS) 
   journey(id: ID!, idType: IdType, options: JourneysQueryOptions) : Journey! @join__field(graph: API_JOURNEYS) 
+  """
+  Returns distinct language IDs from published global templates.
+  Used to dynamically populate the language filter on the templates page.
+  """
+  journeyTemplateLanguageIds: [String!]! @join__field(graph: API_JOURNEYS) 
   journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
   journeyCollections(teamId: ID!) : [JourneyCollection]! @join__field(graph: API_JOURNEYS) 
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS) 
@@ -788,6 +792,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
+  adminJourney(id: ID!, idType: IdType = slug) : Journey! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   adminJourneys(
     status: [JourneyStatus!]
     template: Boolean
@@ -847,7 +852,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
-  getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
@@ -1323,11 +1328,11 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   subtitleLanguage: Language
   showGeneratedSubtitles: Boolean
   customizable: Boolean
-  mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Publisher notes for template adapters (e.g. trailer, intro).
   """
-  notes: String @join__field(graph: API_JOURNEYS_MODERN) 
+  notes: String
+  mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
 """
@@ -1848,6 +1853,7 @@ type IntegrationGoogle implements Integration @join__type(graph: API_JOURNEYS)  
   team: Team!
   type: IntegrationType!
   user: User
+  userId: ID
   accountEmail: String
 }
 
@@ -1917,7 +1923,7 @@ type JourneyCollection @join__type(graph: API_JOURNEYS)  @join__type(graph: API_
   journeys: [Journey!]
 }
 
-type JourneyCustomizationField @join__type(graph: API_JOURNEYS)  {
+type JourneyCustomizationField @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   journeyId: ID!
   key: String!
@@ -3188,18 +3194,20 @@ type VideoOrigin @join__type(graph: API_MEDIA)  {
   description: String
 }
 
-type VideoPublishChildrenAndLanguagesResult @join__type(graph: API_MEDIA)  {
-  parentId: ID
-  publishedChildIds: [ID!]
-  publishedChildrenCount: Int
-  publishedVariantIds: [ID!]
-  publishedVariantsCount: Int
-}
-
 type VideoPublishChildrenResult @join__type(graph: API_MEDIA)  {
   parentId: ID
-  publishedChildIds: [ID!]
-  publishedChildrenCount: Int
+  publishedVideoIds: [ID!]
+  publishedVideoCount: Int
+  publishedVariantIds: [ID!]
+  publishedVariantsCount: Int
+  dryRun: Boolean
+  videosFailedValidation: [VideoPublishChildrenUnpublishedVideo!]!
+}
+
+type VideoPublishChildrenUnpublishedVideo @join__type(graph: API_MEDIA)  {
+  videoId: ID
+  missingFields: [String!]
+  message: String
 }
 
 type VideoSnippet @join__type(graph: API_MEDIA)  {
@@ -3859,6 +3867,12 @@ enum SegmindModel @join__type(graph: API_MEDIA)  {
   tinysd1__5_txt2img @join__enumValue(graph: API_MEDIA) 
 }
 
+enum VideoPublishMode @join__type(graph: API_MEDIA)  {
+  childrenVideosOnly @join__enumValue(graph: API_MEDIA) 
+  childrenVideosAndVariants @join__enumValue(graph: API_MEDIA) 
+  variantsOnly @join__enumValue(graph: API_MEDIA) 
+}
+
 enum Service @join__type(graph: API_MEDIA)  {
   apiJourneys @join__enumValue(graph: API_MEDIA) 
   apiLanguages @join__enumValue(graph: API_MEDIA) 
@@ -3972,41 +3986,6 @@ input BlockDuplicateIdMap @join__type(graph: API_JOURNEYS)  @join__type(graph: A
 input ButtonBlockSettingsInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   alignment: ButtonAlignment
   color: String
-}
-
-input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  eventLabel: BlockEventLabel
-  backgroundColor: String
-  backdropBlur: Int
-  fullscreen: Boolean
-  themeMode: ThemeMode
-  themeName: ThemeName
-}
-
-input CardBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  coverBlockId: ID
-  backgroundColor: String
-  backdropBlur: Int
-  fullscreen: Boolean
-  themeMode: ThemeMode
-  themeName: ThemeName
-}
-
-input IconBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  parentBlockId: ID!
-  journeyId: ID!
-  name: IconName
-  color: IconColor
-  size: IconSize
 }
 
 input IconBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4809,6 +4788,29 @@ input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   actionValue: String
 }
 
+input CardBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  eventLabel: BlockEventLabel
+  backgroundColor: String
+  backdropBlur: Int
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
+input CardBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  eventLabel: BlockEventLabel
+  coverBlockId: ID
+  backgroundColor: String
+  backdropBlur: Int
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
 input ChatActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   gtmEventName: String
   chatUrl: String!
@@ -4851,6 +4853,18 @@ input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
 input GoogleSheetsSyncsFilter @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID
   integrationId: ID
+}
+
+input IconBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  parentBlockId: ID!
+  journeyId: ID!
+  name: IconName
+  color: IconColor
+  size: IconSize
 }
 
 input IntegrationGoogleCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {

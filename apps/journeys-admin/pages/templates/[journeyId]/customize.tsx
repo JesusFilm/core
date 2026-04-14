@@ -1,10 +1,18 @@
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { Component, ErrorInfo, ReactElement, ReactNode, useEffect } from 'react'
+import {
+  Component,
+  ErrorInfo,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useRef
+} from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
@@ -15,6 +23,7 @@ import {
 } from '../../../__generated__/GetJourney'
 import { IdType } from '../../../__generated__/globalTypes'
 import { PageWrapper } from '../../../src/components/PageWrapper'
+import { GuestCustomizeHeader } from '../../../src/components/TemplateCustomization/GuestCustomizeHeader'
 import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
 import { JOURNEY_NOT_FOUND_ERROR } from '../../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
 import { useAuth } from '../../../src/libs/auth'
@@ -24,6 +33,18 @@ import {
   toUser
 } from '../../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
+import {
+  clearPendingGuestJourney,
+  getPendingGuestJourney
+} from '../../../src/libs/pendingGuestJourney'
+
+const JOURNEY_TRANSFER_FROM_ANONYMOUS = gql`
+  mutation JourneyTransferFromAnonymous($journeyId: ID!) {
+    journeyTransferFromAnonymous(journeyId: $journeyId) {
+      id
+    }
+  }
+`
 
 interface DiagnosticBoundaryState {
   hasError: boolean
@@ -86,6 +107,7 @@ function CustomizePage() {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { user } = useAuth()
+  const isGuest = user == null || user.email == null
   const { data, loading, error } = useJourneyQuery({
     id: router.query.journeyId as string,
     idType: IdType.databaseId,
@@ -93,6 +115,8 @@ function CustomizePage() {
       skipRoutingFilter: true
     }
   })
+  const [transferJourney] = useMutation(JOURNEY_TRANSFER_FROM_ANONYMOUS)
+  const transferAttempted = useRef<string | null>(null)
 
   useEffect(() => {
     if (error == null) return
@@ -108,7 +132,27 @@ function CustomizePage() {
           : undefined,
       graphQLErrors: error.graphQLErrors?.map((e) => e.message)
     })
-  }, [error, router.query.journeyId])
+  }, [error, router])
+
+  useEffect(() => {
+    const journeyId = data?.journey?.id
+    if (journeyId == null) return
+    if (user == null || user.isAnonymous === true) return
+
+    const pending = getPendingGuestJourney()
+    if (pending == null || pending.journeyId !== journeyId) return
+    if (transferAttempted.current === journeyId) return
+
+    transferAttempted.current = journeyId
+    void transferJourney({ variables: { journeyId } })
+      .then(() => {
+        clearPendingGuestJourney()
+      })
+      .catch((err) => {
+        transferAttempted.current = null
+        console.error('[journeyTransfer] client-side transfer failed', err)
+      })
+  }, [data?.journey?.id, user, transferJourney])
 
   return (
     <>
@@ -116,9 +160,12 @@ function CustomizePage() {
       <PageWrapper
         user={user}
         showMainHeader={false}
+        showAppHeader={!isGuest}
+        showNavBar={!isGuest}
         mainBodyPadding={false}
         background="linear-gradient(to bottom, #1f2c430f, #2568994d)"
       >
+        {isGuest && <GuestCustomizeHeader />}
         <JourneyProvider
           value={{
             journey: data?.journey,
@@ -188,6 +235,19 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         destination: '/templates',
         permanent: false
       }
+    }
+  }
+
+  if (ctx.query.transfer === 'true') {
+    try {
+      await apolloClient.mutate({
+        mutation: JOURNEY_TRANSFER_FROM_ANONYMOUS,
+        variables: { journeyId: journeyId.toString() }
+      })
+    } catch (transferError) {
+      logDiagnosticError('journeyTransfer', transferError, ctx, {
+        journeyId: journeyId?.toString()
+      })
     }
   }
 

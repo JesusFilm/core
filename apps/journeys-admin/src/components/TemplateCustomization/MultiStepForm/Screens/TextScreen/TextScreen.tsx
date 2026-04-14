@@ -127,7 +127,7 @@ interface TextScreenProps {
 }
 
 export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const [journeyCustomizationFieldUpdate, { loading: isSubmitting }] =
     useMutation<JourneyCustomizationFieldUpdate>(
@@ -186,7 +186,12 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
       })
     }
     setNavigating(true)
-    handleNext()
+    try {
+      await handleNext()
+    } catch (error) {
+      console.error('[TextScreen] Navigation failed:', error)
+      setNavigating(false)
+    }
   }
 
   return (

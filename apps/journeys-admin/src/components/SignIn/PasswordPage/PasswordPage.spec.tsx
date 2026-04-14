@@ -1,19 +1,40 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { FirebaseError } from 'firebase/app'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import {
+  UserCredential,
+  signOut as firebaseSignOut,
+  signInWithEmailAndPassword
+} from 'firebase/auth'
+
+import { getFirebaseAuth } from '../../../libs/auth'
 
 import { PasswordPage } from './PasswordPage'
 
 const mockLoginWithCredential = jest.fn().mockResolvedValue(undefined)
+const mockLogin = jest.fn().mockResolvedValue(undefined)
+const mockFirebaseSignOut = firebaseSignOut as jest.MockedFunction<
+  typeof firebaseSignOut
+>
 
 jest.mock('firebase/auth', () => ({
-  signInWithEmailAndPassword: jest.fn()
+  signInWithEmailAndPassword: jest.fn(),
+  signOut: jest.fn().mockResolvedValue(undefined)
 }))
 
 jest.mock('../../../libs/auth', () => ({
-  getFirebaseAuth: jest.fn(),
+  getFirebaseAuth: jest.fn(() => ({ currentUser: null })),
+  login: (...args: unknown[]) => mockLogin(...args),
   loginWithCredential: (...args: unknown[]) => mockLoginWithCredential(...args)
 }))
+
+jest.mock('../../../libs/pendingGuestJourney', () => ({
+  getPendingGuestJourney: jest.fn(() => null),
+  clearPendingGuestJourney: jest.fn()
+}))
+
+const mockGetFirebaseAuth = getFirebaseAuth as jest.MockedFunction<
+  typeof getFirebaseAuth
+>
 
 describe('PasswordPage', () => {
   it('should render password page', () => {
@@ -162,5 +183,40 @@ describe('PasswordPage', () => {
 
     fireEvent.click(getByLabelText('toggle password visibility'))
     expect(passwordInput).toHaveAttribute('type', 'text')
+  })
+
+  it('should sign out anonymous user before signing in', async () => {
+    const anonymousUser = { isAnonymous: true, uid: 'anon-123' }
+    mockGetFirebaseAuth.mockReturnValue({
+      currentUser: anonymousUser
+    } as ReturnType<typeof getFirebaseAuth>)
+
+    const mockSignInWithEmailAndPassword =
+      signInWithEmailAndPassword as jest.MockedFunction<
+        typeof signInWithEmailAndPassword
+      >
+    mockSignInWithEmailAndPassword.mockResolvedValueOnce({
+      user: { getIdToken: jest.fn().mockResolvedValue('token') }
+    } as unknown as UserCredential)
+
+    const { getByLabelText, getByRole } = render(
+      <PasswordPage setActivePage={jest.fn()} userEmail="example@example.com" />
+    )
+
+    fireEvent.change(getByLabelText('Password'), {
+      target: { value: 'Password' }
+    })
+    fireEvent.click(getByRole('button', { name: 'Sign In' }))
+
+    await waitFor(() => {
+      expect(mockFirebaseSignOut).toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
+    })
+
+    mockGetFirebaseAuth.mockImplementation(
+      () => ({ currentUser: null }) as ReturnType<typeof getFirebaseAuth>
+    )
   })
 })

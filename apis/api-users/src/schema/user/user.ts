@@ -127,7 +127,7 @@ builder.queryFields((t) => ({
         ctx.currentUser.firstName != null
       ) {
         try {
-          return await prisma.user.update({
+          const updatedUser = await prisma.user.update({
             where: { userId: ctx.currentUser.id },
             data: {
               firstName: ctx.currentUser.firstName.trim(),
@@ -137,6 +137,22 @@ builder.queryFields((t) => ({
               })
             }
           })
+          if (!updatedUser.emailVerified) {
+            try {
+              await verifyUser(
+                ctx.currentUser.id,
+                ctx.currentUser.email,
+                input?.redirect ?? undefined,
+                input?.app ?? 'NextSteps'
+              )
+            } catch (verifyError) {
+              console.error(
+                `Failed to enqueue verification email for userId: ${ctx.currentUser.id}`,
+                verifyError
+              )
+            }
+          }
+          return updatedUser
         } catch (error) {
           if (
             error instanceof Prisma.PrismaClientKnownRequestError &&

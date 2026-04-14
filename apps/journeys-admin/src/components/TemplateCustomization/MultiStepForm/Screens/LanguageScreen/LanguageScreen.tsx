@@ -1,7 +1,9 @@
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
+import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
@@ -20,6 +22,7 @@ import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplica
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { useUpdateLastActiveTeamIdMutation } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import Translate from '@core/shared/ui/icons/Translate'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { useAuth } from '../../../../../libs/auth'
@@ -28,7 +31,7 @@ import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetC
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
-import { CardsPreview, EDGE_FADE_PX } from '../LinksScreen/CardsPreview'
+import { CardsPreview } from '../LinksScreen/CardsPreview'
 import { ScreenWrapper } from '../ScreenWrapper'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
@@ -49,7 +52,7 @@ interface LanguageScreenProps {
 export function LanguageScreen({
   handleNext
 }: LanguageScreenProps): ReactElement {
-  const { t } = useTranslation('journeys-ui')
+  const { t } = useTranslation('apps-journeys-admin')
   const { templateCustomizationGuestFlow } = useFlags()
   const { enqueueSnackbar } = useSnackbar()
   const { user } = useAuth()
@@ -274,7 +277,7 @@ export function LanguageScreen({
         languagesJourneyMap?.[values.languageSelect?.id ?? ''] ?? journey?.id
 
       if (shouldSkipDuplicate(journey, values)) {
-        handleNext()
+        await handleNext()
         return
       }
 
@@ -286,7 +289,7 @@ export function LanguageScreen({
       )
 
       if (duplicatedJourneyId != null) {
-        handleNext(duplicatedJourneyId)
+        await handleNext(duplicatedJourneyId)
       }
     } catch {
       enqueueSnackbar(
@@ -295,7 +298,6 @@ export function LanguageScreen({
         ),
         { variant: 'error' }
       )
-    } finally {
       setLoading(false)
     }
   }
@@ -374,19 +376,14 @@ export function LanguageScreen({
           >
             <Typography
               variant="subtitle2"
+              color="text.secondary"
+              align="center"
               gutterBottom
               sx={{ mb: { xs: 0, sm: 2 } }}
             >
               {`'${journey?.title ?? ''}'`}
             </Typography>
-            <Box
-              sx={{
-                mx: `-${EDGE_FADE_PX}px`,
-                width: `calc(100% + ${EDGE_FADE_PX * 2}px)`
-              }}
-            >
-              {steps.length > 0 && <CardsPreview steps={steps} />}
-            </Box>
+            {steps.length > 0 && <CardsPreview steps={steps} />}
             <Form style={{ width: '100%' }}>
               <FormControl
                 sx={{
@@ -395,18 +392,6 @@ export function LanguageScreen({
                 }}
               >
                 <Stack gap={2} sx={{ px: { xs: 0 } }}>
-                  <Typography
-                    variant="h6"
-                    display={{ xs: 'none', sm: 'block' }}
-                  >
-                    {t('Select a language')}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    display={{ xs: 'block', sm: 'none' }}
-                  >
-                    {t('Select a language')}
-                  </Typography>
                   <LanguageAutocomplete
                     value={values.languageSelect}
                     languages={languages.map((language) => ({
@@ -415,25 +400,29 @@ export function LanguageScreen({
                       slug: language?.slug
                     }))}
                     onChange={(value) => setFieldValue('languageSelect', value)}
+                    renderInput={(params) => (
+                      <TextField
+                        data-testid="LanguageAutocompleteInput"
+                        {...params}
+                        hiddenLabel
+                        placeholder={t('Search Language')}
+                        variant="filled"
+                        InputProps={{
+                          ...params.InputProps,
+                          sx: { paddingBottom: 2 },
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <Translate />
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                    )}
                   />
                   {isSignedIn && (
-                    <>
-                      <Typography
-                        variant="h6"
-                        display={{ xs: 'none', sm: 'block' }}
-                        sx={{ mt: 4 }}
-                      >
-                        {t('Select a team')}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        display={{ xs: 'block', sm: 'none' }}
-                        sx={{ mt: 4 }}
-                      >
-                        {t('Select a team')}
-                      </Typography>
+                    <Box sx={{ mt: 4 }}>
                       <JourneyCustomizeTeamSelect />
-                    </>
+                    </Box>
                   )}
                 </Stack>
               </FormControl>

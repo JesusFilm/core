@@ -19,6 +19,48 @@ jest.mock('next-i18next', () => ({
   })
 }))
 
+jest.mock('../LinksScreen/CardsPreview', () => ({
+  CardsPreview: ({
+    steps,
+    onCardClick
+  }: {
+    steps: Array<{ id: string }>
+    onCardClick?: (step: { id: string }) => void
+  }) => (
+    <button
+      data-testid="MockCardsPreview"
+      onClick={() => onCardClick?.(steps[0])}
+    >
+      Cards Preview
+    </button>
+  )
+}))
+
+jest.mock(
+  '../LinksScreen/CardsPreview/TemplateCardPreviewDialog/TemplateCardPreviewDialog',
+  () => ({
+    TemplateCardPreviewDialog: ({
+      open,
+      onClose,
+      initialStepId
+    }: {
+      open: boolean
+      onClose: () => void
+      initialStepId: string | null
+    }) => (
+      <div
+        data-testid="MockTemplateCardPreviewDialog"
+        data-open={String(open)}
+        data-initial-step-id={initialStepId ?? ''}
+      >
+        <button data-testid="MockDialogClose" onClick={onClose}>
+          Close Dialog
+        </button>
+      </div>
+    )
+  })
+)
+
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 const defaultScreens: CustomizationScreen[] = [
@@ -52,7 +94,7 @@ describe('GuestPreviewScreen', () => {
     )
     expect(
       screen.getByText(
-        'This content contains buttons linking to external sites. Check them and update the links below.'
+        'Preview your changes here. Tap on a card to zoom it in.'
       )
     ).toBeInTheDocument()
   })
@@ -72,7 +114,7 @@ describe('GuestPreviewScreen', () => {
         <GuestPreviewScreen screens={defaultScreens} />
       </JourneyProvider>
     )
-    expect(screen.getByText('"my journey"')).toBeInTheDocument()
+    expect(screen.getByText("'my journey'")).toBeInTheDocument()
   })
 
   it('renders CardsPreview', () => {
@@ -81,9 +123,7 @@ describe('GuestPreviewScreen', () => {
         <GuestPreviewScreen screens={defaultScreens} />
       </JourneyProvider>
     )
-    const placeholder = screen.queryByTestId('CardsPreviewPlaceholder')
-    const slide = screen.queryByTestId('CardsSwiperSlide')
-    expect(placeholder != null || slide != null).toBe(true)
+    expect(screen.getByTestId('MockCardsPreview')).toBeInTheDocument()
   })
 
   it('calls router.push with sign-in path and redirect when Continue with account is clicked', () => {
@@ -124,6 +164,42 @@ describe('GuestPreviewScreen', () => {
     expect(firstArg.query.redirect).toBe(
       '/templates/journey-123/customize?screen=media'
     )
+  })
+
+  describe('dialog', () => {
+    it('opens dialog with correct initialStepId when a card is clicked', () => {
+      render(
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <GuestPreviewScreen screens={defaultScreens} />
+        </JourneyProvider>
+      )
+
+      const dialog = screen.getByTestId('MockTemplateCardPreviewDialog')
+      expect(dialog).toHaveAttribute('data-open', 'false')
+
+      fireEvent.click(screen.getByTestId('MockCardsPreview'))
+
+      expect(dialog).toHaveAttribute('data-open', 'true')
+      expect(dialog).toHaveAttribute('data-initial-step-id', 'step0.id')
+    })
+
+    it('closes dialog when onClose is called', () => {
+      render(
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <GuestPreviewScreen screens={defaultScreens} />
+        </JourneyProvider>
+      )
+
+      fireEvent.click(screen.getByTestId('MockCardsPreview'))
+      expect(
+        screen.getByTestId('MockTemplateCardPreviewDialog')
+      ).toHaveAttribute('data-open', 'true')
+
+      fireEvent.click(screen.getByTestId('MockDialogClose'))
+      expect(
+        screen.getByTestId('MockTemplateCardPreviewDialog')
+      ).toHaveAttribute('data-open', 'false')
+    })
   })
 
   it('uses root path in redirect when guestPreview is the last screen', () => {
