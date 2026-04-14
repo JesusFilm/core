@@ -1417,6 +1417,7 @@ type Mutation {
     journeyId: ID
   ): SignUpBlock! @override(from: "api-journeys")
   spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock! @override(from: "api-journeys")
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock! @override(from: "api-journeys")
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(
     id: ID!
