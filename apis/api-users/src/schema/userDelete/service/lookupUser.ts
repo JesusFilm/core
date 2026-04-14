@@ -100,10 +100,65 @@ async function checkFirebaseUser(
 }
 
 export async function lookupUser(
-  idType: 'databaseId' | 'email',
+  idType: 'databaseId' | 'email' | 'jwt',
   id: string
 ): Promise<LookupResult> {
   const logs: LogEntry[] = []
+
+  if (idType === 'jwt') {
+    logs.push(createLog('🔍 Looking for user by JWT token'))
+
+    let uid: string
+    try {
+      const decodedToken = await auth.verifyIdToken(id)
+      uid = decodedToken.uid
+      logs.push(createLog(`✅ JWT verified, Firebase UID: ${uid}`))
+    } catch (error) {
+      console.error('Failed to verify JWT token:', error)
+      throw new GraphQLError('Invalid or expired JWT token', {
+        extensions: { code: 'UNAUTHENTICATED' }
+      })
+    }
+
+    const user = await prisma.user.findUnique({ where: { userId: uid } })
+
+    if (user != null) {
+      logs.push(
+        createLog(
+          `✅ User found: ${user.firstName} ${user.lastName ?? ''} (${user.email ?? 'no email'})`
+        )
+      )
+      const { status: firebase, logs: fbLogs } = await checkFirebaseUser(
+        user.userId,
+        user.email
+      )
+      logs.push(...fbLogs)
+      return { user, firebase, logs }
+    }
+
+    // No DB user — check Firebase directly by UID
+    logs.push(
+      createLog(`⚠️ No database user found for Firebase UID: ${uid}`, 'warn')
+    )
+    const { status: firebase, logs: fbLogs } = await checkFirebaseUser(uid, null)
+    logs.push(...fbLogs)
+
+    if (firebase.exists) {
+      logs.push(
+        createLog(
+          '⚠️ Firebase-only account detected — no database record, but Firebase auth exists',
+          'warn'
+        )
+      )
+      return { user: null, firebase, logs }
+    }
+
+    console.error('User not found with JWT UID:', uid)
+    throw new GraphQLError('User not found', {
+      extensions: { code: 'NOT_FOUND' }
+    })
+  }
+
   logs.push(createLog(`🔍 Looking for user by ${idType}: ${id}`))
 
   const user =

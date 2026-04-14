@@ -36,7 +36,7 @@ builder.objectType(UserDeleteConfirmProgress, {
 })
 
 builder.subscriptionField('userDeleteConfirm', (t) =>
-  t.withAuth({ isSuperAdmin: true }).field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: UserDeleteConfirmProgress,
     nullable: false,
     args: {
@@ -71,6 +71,20 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
         if (caller == null) {
           yield {
             log: createLog('❌ Caller user not found', 'error'),
+            done: true,
+            success: false
+          }
+          return
+        }
+
+        // Authorization: superAdmin can delete any user; regular users can only delete themselves
+        const targetUserId = user?.userId ?? firebase.uid
+        if (!caller.superAdmin && targetUserId !== ctx.currentUser.id) {
+          yield {
+            log: createLog(
+              '❌ Forbidden: you can only delete your own account',
+              'error'
+            ),
             done: true,
             success: false
           }
@@ -166,16 +180,6 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
             ),
             done: true,
             success: !hasError
-          }
-          return
-        }
-
-        // Prevent self-deletion
-        if (user.userId === ctx.currentUser.id) {
-          yield {
-            log: createLog('❌ Cannot delete your own account', 'error'),
-            done: true,
-            success: false
           }
           return
         }

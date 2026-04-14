@@ -1,5 +1,7 @@
 import { GraphQLError } from 'graphql'
 
+import { prisma as usersDb } from '@core/prisma/users/client'
+
 import { builder } from '../builder'
 
 import { type LogEntry, deleteJourneysData } from './service'
@@ -41,17 +43,23 @@ builder.objectType(UserDeleteJourneysConfirmResult, {
 })
 
 builder.mutationField('userDeleteJourneysConfirm', (t) =>
-  t.withAuth({ isSuperAdmin: true }).field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: UserDeleteJourneysConfirmResult,
     nullable: false,
     args: {
       userId: t.arg.string({ required: true })
     },
     resolve: async (_parent, { userId }, ctx) => {
-      if (userId === ctx.user.id) {
-        throw new GraphQLError('Cannot delete your own account', {
-          extensions: { code: 'FORBIDDEN' }
-        })
+      // Authorization: superAdmin can delete any user; regular users can only delete themselves
+      const caller = await usersDb.user.findUnique({
+        where: { userId: ctx.user.id },
+        select: { superAdmin: true }
+      })
+      if (!caller?.superAdmin && userId !== ctx.user.id) {
+        throw new GraphQLError(
+          'Forbidden: you can only delete your own account',
+          { extensions: { code: 'FORBIDDEN' } }
+        )
       }
       return await deleteJourneysData(userId)
     }
