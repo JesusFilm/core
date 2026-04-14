@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { ReactElement, use } from 'react'
+import { ReactElement, use, useEffect } from 'react'
 
 type DownloadPageProps = {
   params: Promise<{
@@ -15,9 +15,12 @@ export default function DownloadPage({
 }: DownloadPageProps): ReactElement {
   const params = use(paramsPromise)
   const router = useRouter()
-  router.push(`/videos/${params.videoId}/audio/${params.variantId}`, {
-    scroll: false
-  })
+
+  useEffect(() => {
+    router.push(`/videos/${params.videoId}/audio/${params.variantId}`, {
+      scroll: false
+    })
+  }, [router, params.videoId, params.variantId])
 
   return <></>
 }

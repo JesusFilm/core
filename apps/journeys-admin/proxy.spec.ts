@@ -13,7 +13,7 @@ jest.mock('next-firebase-auth-edge', () => ({
   )
 }))
 
-describe('middleware', () => {
+describe('proxy', () => {
   const url = 'http://localhost:4200/'
   const requestInit = {
     nextConfig: { i18n: { defaultLocale: 'en', locales: ['ar', 'en', 'ja'] } }

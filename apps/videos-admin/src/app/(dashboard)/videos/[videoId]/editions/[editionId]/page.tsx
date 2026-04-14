@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { use } from 'react'
+import { type KeyboardEvent, use } from 'react'
 import { object, string } from 'yup'
 
 import { graphql } from '@core/shared/gql'
@@ -183,7 +183,7 @@ export default function EditEditionPage({
                 )
               }
 
-              const handleKeyDown = (event: React.KeyboardEvent) => {
+              const handleKeyDown = (event: KeyboardEvent) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                   event.preventDefault()
                   handleClick()

@@ -33,7 +33,7 @@ const createMockRequest = (
   return req
 }
 
-describe('middleware', () => {
+describe('proxy', () => {
   describe('locale detection', () => {
     it('should use URL path locale if no cookie', async () => {
       const req = createMockRequest('/watch/jesus.html/french.html')

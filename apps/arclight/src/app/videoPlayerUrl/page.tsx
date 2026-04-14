@@ -125,9 +125,15 @@ export default async function Page(props: {
       id: searchParams.refId
     }
   })
+
+  const videoVariant = data?.videoVariant
+  if (!videoVariant?.hls || !videoVariant.videoId) {
+    notFound()
+  }
+
   const { data: videoTitleData } = await getApolloClient().query({
     query: GET_VIDEO_TITLE,
-    variables: { id: data?.videoVariant?.videoId ?? '' }
+    variables: { id: videoVariant.videoId }
   })
 
   const { activeSubLangId, acceptedSubLangIds } = handleSubtitles(
@@ -135,10 +141,10 @@ export default async function Page(props: {
     sublangidsRaw
   )
 
-  const hlsUrl = data?.videoVariant?.hls
+  const hlsUrl = videoVariant.hls
   const videoTitle = videoTitleData?.video?.title?.[0]?.value
   const thumbnail = videoTitleData?.video?.images?.[0]?.mobileCinematicHigh
-  const subtitles = data?.videoVariant?.subtitle
+  const subtitles = videoVariant.subtitle
     ?.filter((subtitle) =>
       acceptedSubLangIds.includes(subtitle.language?.id ?? '')
     )
@@ -150,10 +156,6 @@ export default async function Page(props: {
       langId: subtitle.language?.id ?? '',
       default: activeSubLangId === subtitle.language?.id
     }))
-
-  if (!hlsUrl) {
-    notFound()
-  }
 
   return (
     <VideoPlayer

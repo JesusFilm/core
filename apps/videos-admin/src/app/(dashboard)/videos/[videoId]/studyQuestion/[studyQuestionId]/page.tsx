@@ -3,7 +3,7 @@
 import { useMutation, useSuspenseQuery } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement, use } from 'react'
+import { ReactElement, use, useEffect } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -52,10 +52,15 @@ export default function StudyQuestionDialog({
     (question) => question.id === studyQuestionId
   )
 
+  useEffect(() => {
+    if (!studyQuestion) {
+      router.push(returnUrl, {
+        scroll: false
+      })
+    }
+  }, [studyQuestion, router, returnUrl])
+
   if (!studyQuestion) {
-    router.push(returnUrl, {
-      scroll: false
-    })
     return <></>
   }
 
