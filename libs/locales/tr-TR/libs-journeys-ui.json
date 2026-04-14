@@ -102,5 +102,6 @@
   "{{count}} Cards_one": "{{count}} Kart",
   "{{count}} Cards_other": "{{count}} Kartlar",
   "{{count}} Videos_one": "{{count}} Video",
-  "{{count}} Videos_other": "{{count}} Videolar"
+  "{{count}} Videos_other": "{{count}} Videolar",
+  "None": "None"
 }

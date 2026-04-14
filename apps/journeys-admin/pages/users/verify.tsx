@@ -143,9 +143,10 @@ function ValidateEmail({
                   </Typography>
                   <Button
                     onClick={handleResendValidationEmail}
-                    variant="contained"
+                    variant="blockContained"
                     disabled={disableResendButton}
-                    color="secondary"
+                    color="solid"
+                    size="small"
                     fullWidth
                   >
                     {t('Resend Validation Email')}
@@ -197,8 +198,9 @@ function ValidateEmail({
                       <Button
                         disabled={disableValidationButton}
                         type="submit"
-                        variant="contained"
-                        color="secondary"
+                        variant="blockContained"
+                        color="solid"
+                        size="small"
                         sx={{ mb: 4 }}
                         fullWidth
                       >
