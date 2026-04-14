@@ -2,7 +2,10 @@ import { Output, generateText } from 'ai'
 import { z } from 'zod'
 
 import { prisma } from '@core/prisma/journeys/client'
-import { getGeminiMaxRetries, getGeminiModel } from '@core/shared/ai/geminiModel'
+import {
+  getGeminiMaxRetries,
+  getGeminiModel
+} from '@core/shared/ai/geminiModel'
 import { hardenPrompt } from '@core/shared/ai/prompts'
 
 import { builder } from '../builder'

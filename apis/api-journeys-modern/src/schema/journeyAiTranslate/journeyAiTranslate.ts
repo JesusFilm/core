@@ -3,7 +3,10 @@ import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
 import { prisma } from '@core/prisma/journeys/client'
-import { getGeminiMaxRetries, getGeminiModel } from '@core/shared/ai/geminiModel'
+import {
+  getGeminiMaxRetries,
+  getGeminiModel
+} from '@core/shared/ai/geminiModel'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
