@@ -34,6 +34,18 @@ describe('geminiModel', () => {
       expect(mockedGoogle).toHaveBeenCalledWith('gemini-2.0-flash')
     })
 
+    it('should fall back to default for empty string', () => {
+      process.env.GEMINI_MODEL = ''
+      getGeminiModel()
+      expect(mockedGoogle).toHaveBeenCalledWith('gemini-2.0-flash')
+    })
+
+    it('should fall back to default for whitespace-only string', () => {
+      process.env.GEMINI_MODEL = '   '
+      getGeminiModel()
+      expect(mockedGoogle).toHaveBeenCalledWith('gemini-2.0-flash')
+    })
+
     it('should use GEMINI_MODEL env var for arbitrary model ids', () => {
       process.env.GEMINI_MODEL = 'gemini-2.5-flash-lite'
       getGeminiModel()
@@ -63,6 +75,21 @@ describe('geminiModel', () => {
 
     it('should return default for empty string', () => {
       process.env.GEMINI_MAX_RETRIES = ''
+      expect(getGeminiMaxRetries()).toBe(4)
+    })
+
+    it('should return default for negative values', () => {
+      process.env.GEMINI_MAX_RETRIES = '-1'
+      expect(getGeminiMaxRetries()).toBe(4)
+    })
+
+    it('should return default for fractional values', () => {
+      process.env.GEMINI_MAX_RETRIES = '1.5'
+      expect(getGeminiMaxRetries()).toBe(4)
+    })
+
+    it('should return default for Infinity', () => {
+      process.env.GEMINI_MAX_RETRIES = 'Infinity'
       expect(getGeminiMaxRetries()).toBe(4)
     })
   })
