@@ -127,7 +127,7 @@ interface TextScreenProps {
 }
 
 export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const [journeyCustomizationFieldUpdate, { loading: isSubmitting }] =
     useMutation<JourneyCustomizationFieldUpdate>(
