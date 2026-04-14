@@ -89,7 +89,8 @@ export function StepHeader({
                   color: { xs: 'primary.main', lg: 'white' },
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
-                  textOverflow: 'ellipsis'
+                  textOverflow: 'ellipsis',
+                  maxWidth: '100%'
                 }}
               >
                 {journey?.displayTitle ?? journey?.seoTitle}
