@@ -52,7 +52,7 @@ interface LanguageScreenProps {
 export function LanguageScreen({
   handleNext
 }: LanguageScreenProps): ReactElement {
-  const { t } = useTranslation('journeys-ui')
+  const { t } = useTranslation('apps-journeys-admin')
   const { templateCustomizationGuestFlow } = useFlags()
   const { enqueueSnackbar } = useSnackbar()
   const { user } = useAuth()
@@ -376,6 +376,8 @@ export function LanguageScreen({
           >
             <Typography
               variant="subtitle2"
+              color="text.secondary"
+              align="center"
               gutterBottom
               sx={{ mb: { xs: 0, sm: 2 } }}
             >
