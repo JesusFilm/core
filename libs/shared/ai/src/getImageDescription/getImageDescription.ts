@@ -1,5 +1,6 @@
-import { google } from '@ai-sdk/google'
 import { generateText } from 'ai'
+
+import { getGeminiMaxRetries, getGeminiModel } from '../geminiModel'
 
 export const getImageDescription = async ({
   imageUrl,
@@ -11,7 +12,8 @@ export const getImageDescription = async ({
   try {
     // Use Gemini to analyze the image via URL directly
     const { text } = await generateText({
-      model: google('gemini-2.5-flash'),
+      model: getGeminiModel(),
+      maxRetries: getGeminiMaxRetries(),
       messages: [
         {
           role: 'user',

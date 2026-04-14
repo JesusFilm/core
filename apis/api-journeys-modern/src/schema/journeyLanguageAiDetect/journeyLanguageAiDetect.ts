@@ -1,8 +1,9 @@
-import { google } from '@ai-sdk/google'
 import { Output, generateText } from 'ai'
 import { z } from 'zod'
 
 import { prisma } from '@core/prisma/journeys/client'
+import { getGeminiMaxRetries, getGeminiModel } from '@core/shared/ai/geminiModel'
+import { hardenPrompt } from '@core/shared/ai/prompts'
 
 import { builder } from '../builder'
 
@@ -45,26 +46,30 @@ builder.mutationFields((t) => ({
           .map((block) => block.content)
           .join('\n')
 
+        const hardenedSourceLanguage = hardenPrompt(sourceLanguageName)
+        const hardenedRequestedLanguage = hardenPrompt(requestedLanguageName)
+        const hardenedContent = hardenPrompt(journeyContent)
+
         const languageDetectionPrompt = `
       Detect the language and writing system of the following content.
       Do not just look at the individual words or characters but the whole sentences to determine the language.
-      We think the content is in ${sourceLanguageName}.
-      The requested content is ${requestedLanguageName}.
-      
+      We think the content is in ${hardenedSourceLanguage}.
+      The requested content is ${hardenedRequestedLanguage}.
+
       When determining if the language of the content provided is Simplified Chinese or Traditional Chinese, always consider the following:
       - For Chinese, determine whether the characters are from the Simplified set (used in Mainland China/Singapore) or the Traditional set (used in Taiwan/Hong Kong/Macau).
       - Consider "Simplified Chinese" and "Traditional Chinese" as distinct for comparison, even though they share the same spoken language base.
-    
+
       Only apply the following logic if the detected language is Simplified Chinese or Traditional Chinese:
       - If the detected language is Simplified Chinese:
-        - And the ${requestedLanguageName} is 華語, then always return isSameLanguage as false.
-        - And the ${requestedLanguageName} is 中文, then always return isSameLanguage as true.
+        - And the ${hardenedRequestedLanguage} is 華語, then always return isSameLanguage as false.
+        - And the ${hardenedRequestedLanguage} is 中文, then always return isSameLanguage as true.
       - If the detected language is Traditional Chinese:
-        - And the ${requestedLanguageName} is 華語, then always return isSameLanguage as true.
-        - And the ${requestedLanguageName} is 中文, then always return isSameLanguage as false.
+        - And the ${hardenedRequestedLanguage} is 華語, then always return isSameLanguage as true.
+        - And the ${hardenedRequestedLanguage} is 中文, then always return isSameLanguage as false.
       For languages that use the western alphabet, do not assume the detected language is English.
       Instead, analyze the content to determine the language.
-      Content: ${journeyContent}
+      Content: ${hardenedContent}
       Return the result in this exact JSON format:
       {
         language: [e.g. "Traditional Chinese", "Simplified Chinese", "Japanese", "English"],
@@ -73,7 +78,8 @@ builder.mutationFields((t) => ({
 
         try {
           const { output: detectedLanguage } = await generateText({
-            model: google('gemini-2.5-flash'),
+            model: getGeminiModel(),
+            maxRetries: getGeminiMaxRetries(),
             output: Output.object({
               schema: z.object({
                 language: z.string(),

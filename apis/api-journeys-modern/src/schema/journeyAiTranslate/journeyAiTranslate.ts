@@ -1,9 +1,9 @@
-import { google } from '@ai-sdk/google'
 import { Output, generateText, streamText } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
 import { prisma } from '@core/prisma/journeys/client'
+import { getGeminiMaxRetries, getGeminiModel } from '@core/shared/ai/geminiModel'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
@@ -234,7 +234,8 @@ Return in this format:
 `
 
         const { output: analysisResult } = await generateText({
-          model: google('gemini-2.5-flash'),
+          model: getGeminiModel(),
+          maxRetries: getGeminiMaxRetries(),
           messages: [
             {
               role: 'system',
@@ -431,7 +432,8 @@ If there is no Bible translation was available, use the the most popular English
             try {
               // Stream the translations
               const { elementStream } = streamText({
-                model: google('gemini-2.5-flash'),
+                model: getGeminiModel(),
+                maxRetries: getGeminiMaxRetries(),
                 messages: [
                   {
                     role: 'system',
@@ -680,7 +682,8 @@ Return in this format:
 
       try {
         const { output: analysisAndTranslation } = await generateText({
-          model: google('gemini-2.5-flash'),
+          model: getGeminiModel(),
+          maxRetries: getGeminiMaxRetries(),
           messages: [
             {
               role: 'system',
@@ -853,7 +856,8 @@ If there is no Bible translation was available, use the the most popular English
               try {
                 // Stream the translations
                 const { elementStream } = streamText({
-                  model: google('gemini-2.5-flash'),
+                  model: getGeminiModel(),
+                  maxRetries: getGeminiMaxRetries(),
                   messages: [
                     {
                       role: 'system',
