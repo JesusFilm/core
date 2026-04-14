@@ -4,7 +4,8 @@ import { HTTPException } from 'hono/http-exception'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
-import { generateCacheKey, getWithStaleCache } from '../../../../../lib/cache'
+import { generateCacheKey } from '../../../../../lib/cache'
+import { getWithStaleCacheForRequest } from '../../../../../lib/cacheBypass'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 
 const GET_LANGUAGE = graphql(`
@@ -162,7 +163,7 @@ mediaLanguage.openapi(route, async (c) => {
     ...metadataLanguageTags
   ])
 
-  const response = await getWithStaleCache(cacheKey, async () => {
+  const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
     const { data } = await getApolloClient().query<
       ResultOf<typeof GET_LANGUAGE>
     >({
