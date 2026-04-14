@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { prisma } from '@core/prisma/journeys/client'
 import {
   getGeminiMaxRetries,
-  getGeminiModel
+  withGeminiFallback
 } from '@core/shared/ai/geminiModel'
 import { hardenPrompt } from '@core/shared/ai/prompts'
 
@@ -80,17 +80,20 @@ builder.mutationFields((t) => ({
       }`
 
         try {
-          const { output: detectedLanguage } = await generateText({
-            model: getGeminiModel(),
-            maxRetries: getGeminiMaxRetries(),
-            output: Output.object({
-              schema: z.object({
-                language: z.string(),
-                isSameLanguage: z.boolean()
+          const { output: detectedLanguage } = await withGeminiFallback(
+            (model) =>
+              generateText({
+                model,
+                maxRetries: getGeminiMaxRetries(),
+                output: Output.object({
+                  schema: z.object({
+                    language: z.string(),
+                    isSameLanguage: z.boolean()
+                  })
+                }),
+                prompt: languageDetectionPrompt
               })
-            }),
-            prompt: languageDetectionPrompt
-          })
+          )
           return detectedLanguage.isSameLanguage
         } catch {
           throw new Error('Error detecting language with AI')

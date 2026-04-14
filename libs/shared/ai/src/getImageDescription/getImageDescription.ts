@@ -1,6 +1,6 @@
 import { generateText } from 'ai'
 
-import { getGeminiMaxRetries, getGeminiModel } from '../geminiModel'
+import { getGeminiMaxRetries, withGeminiFallback } from '../geminiModel'
 
 export const getImageDescription = async ({
   imageUrl,
@@ -11,26 +11,28 @@ export const getImageDescription = async ({
 }): Promise<string | null> => {
   try {
     // Use Gemini to analyze the image via URL directly
-    const { text } = await generateText({
-      model: getGeminiModel(),
-      maxRetries: getGeminiMaxRetries(),
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: prompt
-            },
+    const { text } = await withGeminiFallback((model) =>
+      generateText({
+        model,
+        maxRetries: getGeminiMaxRetries(),
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: prompt
+              },
 
-            {
-              type: 'image',
-              image: imageUrl
-            }
-          ]
-        }
-      ]
-    })
+              {
+                type: 'image',
+                image: imageUrl
+              }
+            ]
+          }
+        ]
+      })
+    )
     return text
   } catch (error) {
     console.error('Error describing image:', error)

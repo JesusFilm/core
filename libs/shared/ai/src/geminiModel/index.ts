@@ -1,1 +1,7 @@
-export { getGeminiModel, getGeminiMaxRetries } from './geminiModel'
+export {
+  getGeminiModel,
+  getGeminiFallbackModel,
+  getGeminiMaxRetries,
+  isRateLimitError,
+  withGeminiFallback
+} from './geminiModel'
