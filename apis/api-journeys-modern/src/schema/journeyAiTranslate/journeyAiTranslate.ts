@@ -236,30 +236,29 @@ Return in this format:
 }
 `
 
-        const { output: analysisResult } = await withGeminiFallback(
-          (model) =>
-            generateText({
-              model,
-              maxRetries: getGeminiMaxRetries(),
-              messages: [
-                {
-                  role: 'system',
-                  content: preSystemPrompt
-                },
-                {
-                  role: 'user',
-                  content: [
-                    {
-                      type: 'text',
-                      text: combinedPrompt
-                    }
-                  ]
-                }
-              ],
-              output: Output.object({
-                schema: JourneyAnalysisSchema
-              })
+        const { output: analysisResult } = await withGeminiFallback((model) =>
+          generateText({
+            model,
+            maxRetries: getGeminiMaxRetries(),
+            messages: [
+              {
+                role: 'system',
+                content: preSystemPrompt
+              },
+              {
+                role: 'user',
+                content: [
+                  {
+                    type: 'text',
+                    text: combinedPrompt
+                  }
+                ]
+              }
+            ],
+            output: Output.object({
+              schema: JourneyAnalysisSchema
             })
+          })
         )
 
         if (!analysisResult.title) {
