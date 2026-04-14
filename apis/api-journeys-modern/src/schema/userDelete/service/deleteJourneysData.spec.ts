@@ -44,7 +44,9 @@ describe('deleteJourneysData', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     txMock = buildTxMock()
-    prismaMock.$transaction.mockImplementation(async (fn: any) => fn(txMock))
+    prismaMock.$transaction.mockImplementation(async (fn: any, _opts?: any) =>
+      fn(txMock)
+    )
   })
 
   it('should complete all phases successfully with no data', async () => {
@@ -111,5 +113,9 @@ describe('deleteJourneysData', () => {
 
     expect(result.success).toBe(false)
     expect(result.logs.some((l) => l.level === 'error')).toBe(true)
+    // Error message must not leak raw DB details to the client
+    expect(
+      result.logs.find((l) => l.level === 'error')?.message
+    ).not.toContain('DB crashed')
   })
 })

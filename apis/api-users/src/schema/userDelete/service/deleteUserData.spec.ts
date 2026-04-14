@@ -81,11 +81,11 @@ describe('deleteUserData', () => {
   })
 
   it('should successfully delete user data', async () => {
-    mockDeleteUser.mockResolvedValueOnce(undefined)
     prismaMock.userDeleteAuditLog.create.mockResolvedValueOnce({
       id: 'audit-1'
     } as any)
     prismaMock.user.delete.mockResolvedValueOnce({} as any)
+    mockDeleteUser.mockResolvedValueOnce(undefined)
     prismaMock.userDeleteAuditLog.update.mockResolvedValueOnce({} as any)
 
     const result = await deleteUserData(baseInput)
@@ -100,24 +100,60 @@ describe('deleteUserData', () => {
     })
   })
 
-  it('should fail if firebase deletion has hard error', async () => {
-    // Comment 2: audit log is now created BEFORE Firebase deletion (Comment 3
-    // fix), so these mocks are required — the function reaches audit log
-    // creation before hitting the Firebase error.
+  it('should store firebase UID in audit log', async () => {
     prismaMock.userDeleteAuditLog.create.mockResolvedValueOnce({
       id: 'audit-1'
     } as any)
+    prismaMock.user.delete.mockResolvedValueOnce({} as any)
+    mockDeleteUser.mockResolvedValueOnce(undefined)
+    prismaMock.userDeleteAuditLog.update.mockResolvedValueOnce({} as any)
+
+    await deleteUserData(baseInput)
+
+    expect(prismaMock.userDeleteAuditLog.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          deletedUserFirebaseUid: 'fb-uid-1'
+        })
+      })
+    )
+  })
+
+  it('should delete DB record first, then Firebase', async () => {
+    prismaMock.userDeleteAuditLog.create.mockResolvedValueOnce({
+      id: 'audit-1'
+    } as any)
+    prismaMock.user.delete.mockResolvedValueOnce({} as any)
+    mockDeleteUser.mockResolvedValueOnce(undefined)
+    prismaMock.userDeleteAuditLog.update.mockResolvedValueOnce({} as any)
+
+    const result = await deleteUserData(baseInput)
+
+    expect(result.success).toBe(true)
+    const dbDeleteOrder = prismaMock.user.delete.mock.invocationCallOrder[0]
+    const firebaseDeleteOrder = mockDeleteUser.mock.invocationCallOrder[0]
+    expect(dbDeleteOrder).toBeLessThan(firebaseDeleteOrder)
+  })
+
+  it('should fail if firebase deletion has hard error after DB delete, leaving retry path open', async () => {
+    // DB delete succeeds first, then Firebase fails.
+    // The result is success: false so the caller knows Firebase cleanup is
+    // still needed — a retry will find no DB record and take the firebase-only path.
+    prismaMock.userDeleteAuditLog.create.mockResolvedValueOnce({
+      id: 'audit-1'
+    } as any)
+    prismaMock.user.delete.mockResolvedValueOnce({} as any)
     mockDeleteUser.mockRejectedValueOnce(new Error('Firebase error'))
     prismaMock.userDeleteAuditLog.update.mockResolvedValueOnce({} as any)
 
     const result = await deleteUserData(baseInput)
 
     expect(result.success).toBe(false)
-    expect(prismaMock.user.delete).not.toHaveBeenCalled()
+    // DB was deleted — a retry enters the firebase-only path
+    expect(prismaMock.user.delete).toHaveBeenCalled()
   })
 
   it('should fail if user record deletion fails', async () => {
-    mockDeleteUser.mockResolvedValueOnce(undefined)
     prismaMock.userDeleteAuditLog.create.mockResolvedValueOnce({
       id: 'audit-1'
     } as any)
@@ -127,6 +163,8 @@ describe('deleteUserData', () => {
     const result = await deleteUserData(baseInput)
 
     expect(result.success).toBe(false)
+    // Firebase must not be touched if DB deletion failed
+    expect(mockDeleteUser).not.toHaveBeenCalled()
     expect(prismaMock.userDeleteAuditLog.update).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
@@ -137,7 +175,6 @@ describe('deleteUserData', () => {
   })
 
   it('should fail if audit log creation fails', async () => {
-    mockDeleteUser.mockResolvedValueOnce(undefined)
     prismaMock.userDeleteAuditLog.create.mockRejectedValueOnce(
       new Error('Audit error')
     )

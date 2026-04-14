@@ -1,4 +1,6 @@
 export { lookupUser } from './lookupUser'
 export { deleteFirebaseUser, deleteUserData } from './deleteUserData'
+export { deleteFirebaseOnlyAccount } from './deleteFirebaseOnlyAccount'
+export type { DeleteFirebaseOnlyAccountResult } from './deleteFirebaseOnlyAccount'
 export type { LogEntry } from './types'
 export { createLog } from './types'

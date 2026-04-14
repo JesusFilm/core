@@ -5,10 +5,10 @@ import { builder } from '../builder'
 import {
   type LogEntry,
   createLog,
-  deleteFirebaseUser,
   deleteUserData,
   lookupUser
 } from './service'
+import { deleteFirebaseOnlyAccount } from './service/deleteFirebaseOnlyAccount'
 import { UserDeleteIdType, UserDeleteLogEntry } from './userDeleteCheck'
 
 interface UserDeleteConfirmProgressShape {
@@ -91,7 +91,8 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
           return
         }
 
-        // Firebase-only account — no DB user, just delete Firebase auth
+        // Firebase-only account — no DB user, delegate to the extracted function
+        // which includes its own self-delete guard and audit logging.
         if (user == null) {
           if (!firebase.exists || firebase.uid == null) {
             yield {
@@ -102,84 +103,34 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
             return
           }
 
-          // Create audit log before deletion so there is always a durable
-          // record, matching the behaviour of the full-user path.
-          let auditLog: { id: string } | null = null
-          try {
-            auditLog = await prisma.userDeleteAuditLog.create({
-              data: {
-                deletedUserId: firebase.uid,
-                callerUserId: caller.id,
-                callerEmail: caller.email,
-                deletedJourneyIds: [],
-                deletedTeamIds: [],
-                deletedUserJourneyIds: [],
-                deletedUserTeamIds: [],
-                success: false
-              }
-            })
-            yield {
-              log: createLog('📝 Audit log created'),
-              done: false,
-              success: null
-            }
-          } catch (auditError) {
-            console.error(
-              'Failed to create audit log for firebase-only deletion:',
-              auditError
-            )
-            yield {
-              log: createLog(
-                '❌ Failed to create audit log. Aborting deletion.',
-                'error'
-              ),
-              done: true,
-              success: false
-            }
-            return
-          }
-
           yield {
-            log: createLog('🔥 Deleting Firebase-only account...'),
+            log: createLog('🔄 Starting Firebase-only account deletion...'),
             done: false,
             success: null
           }
 
-          const fbLogs = await deleteFirebaseUser(
-            firebase.uid,
-            null,
-            firebase.email
-          )
-          for (const log of fbLogs) {
+          const fbOnlyResult = await deleteFirebaseOnlyAccount({
+            targetFirebaseUid: firebase.uid,
+            targetEmail: firebase.email,
+            callerDbId: caller.id,
+            callerEmail: caller.email,
+            callerFirebaseUid: ctx.currentUser.id,
+            callerIsSuperAdmin: caller.superAdmin
+          })
+
+          for (const log of fbOnlyResult.logs) {
             yield { log, done: false, success: null }
-          }
-
-          const hasError = fbLogs.some((log) => log.level === 'error')
-
-          // Best-effort audit log update
-          try {
-            await prisma.userDeleteAuditLog.update({
-              where: { id: auditLog.id },
-              data: {
-                success: !hasError,
-                ...(hasError
-                  ? { errorMessage: 'Firebase deletion failed' }
-                  : {})
-              }
-            })
-          } catch {
-            // best-effort
           }
 
           yield {
             log: createLog(
-              hasError
-                ? '❌ Firebase deletion failed'
-                : '✅ Firebase-only account deleted successfully',
-              hasError ? 'error' : 'info'
+              fbOnlyResult.success
+                ? '✅ Firebase-only account deleted successfully'
+                : '❌ Firebase deletion failed',
+              fbOnlyResult.success ? 'info' : 'error'
             ),
             done: true,
-            success: !hasError
+            success: fbOnlyResult.success
           }
           return
         }
@@ -224,10 +175,9 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
           success: userResult.success
         }
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Unknown error'
         console.error('userDeleteConfirm subscription error:', error)
         yield {
-          log: createLog(`❌ Unexpected error: ${message}`, 'error'),
+          log: createLog('❌ An internal error occurred', 'error'),
           done: true,
           success: false
         }

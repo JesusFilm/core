@@ -1,5 +1,6 @@
 import { prisma } from '@core/prisma/journeys/client'
 
+import { classifyJourney, classifyTeam } from './classifyJourneys'
 import { LogEntry, createLog } from './types'
 
 export interface CheckJourneysDataResult {
@@ -40,14 +41,16 @@ export async function checkJourneysData(
   let journeysToRemove = 0
 
   for (const uj of userJourneys) {
-    // Exclude inviteRequested — same logic as deleteJourneysData to keep
+    // Use shared classification — same logic as deleteJourneysData to keep
     // check/confirm counts consistent.
-    const others = uj.journey.userJourneys.filter(
-      (j) => j.userId !== userId && j.role !== 'inviteRequested'
+    const classification = classifyJourney(
+      userId,
+      uj.role,
+      uj.journey.userJourneys
     )
-    if (others.length === 0) {
+    if (classification === 'delete') {
       journeysToDelete++
-    } else if (uj.role === 'owner') {
+    } else if (classification === 'transfer') {
       journeysToTransfer++
     } else {
       journeysToRemove++
@@ -92,10 +95,10 @@ export async function checkJourneysData(
   let teamsToRemove = 0
 
   for (const ut of userTeams) {
-    const others = ut.team.userTeams.filter((t) => t.userId !== userId)
-    if (others.length === 0) {
+    const classification = classifyTeam(userId, ut.role, ut.team.userTeams)
+    if (classification === 'delete') {
       teamsToDelete++
-    } else if (ut.role === 'manager') {
+    } else if (classification === 'transfer') {
       teamsToTransfer++
     } else {
       teamsToRemove++

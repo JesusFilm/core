@@ -80,7 +80,7 @@ export interface AuthScopes {
   isAnonymous: boolean
   isPublisher: boolean
   isValidInterop: boolean
-  isSuperAdmin: boolean
+  isSuperAdmin: boolean | (() => Promise<boolean>)
 }
 
 export async function authScopes(context: Context) {
@@ -93,16 +93,21 @@ export async function authScopes(context: Context) {
   }
   switch (context.type) {
     case 'authenticated': {
-      const dbUser = await usersDb.user.findUnique({
-        where: { userId: context.user.id },
-        select: { superAdmin: true }
-      })
       return {
         ...defaultScopes,
         isAuthenticated: context.user?.email != null,
         isAnonymous: context.user != null && context.user.email == null,
         isPublisher: context.currentRoles.includes('publisher'),
-        isSuperAdmin: dbUser?.superAdmin ?? false,
+        // Lazy: only queries the DB when a resolver actually checks this scope,
+        // avoiding an unnecessary round-trip on every authenticated request that
+        // does not require superAdmin access.
+        isSuperAdmin: async () => {
+          const user = await usersDb.user.findUnique({
+            where: { userId: context.user.id },
+            select: { superAdmin: true }
+          })
+          return user?.superAdmin === true
+        },
         isInTeam: async (teamId: string) => await isInTeam({ context, teamId }),
         isIntegrationOwner: async (integrationId: string) =>
           await isIntegrationOwner({ context, integrationId }),

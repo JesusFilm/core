@@ -100,8 +100,10 @@ export async function deleteUserData(
   let auditLog: { id: string } | null = null
   try {
     auditLog = await prisma.userDeleteAuditLog.create({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: {
         deletedUserId: input.userDbId,
+        deletedUserFirebaseUid: input.firebaseUserId,
         callerUserId: input.callerUserId,
         callerEmail: input.callerEmail,
         deletedJourneyIds: input.deletedJourneyIds,
@@ -109,7 +111,7 @@ export async function deleteUserData(
         deletedUserJourneyIds: input.deletedUserJourneyIds,
         deletedUserTeamIds: input.deletedUserTeamIds,
         success: false
-      }
+      } as any
     })
     logs.push(createLog('📝 Audit log created'))
   } catch (error) {
@@ -120,30 +122,13 @@ export async function deleteUserData(
     return { success: false, logs }
   }
 
-  // 2. Delete Firebase auth record(s)
-  const fbLogs = await deleteFirebaseUser(
-    input.firebaseUserId,
-    input.firebaseUidOverride,
-    input.userEmail
-  )
-  logs.push(...fbLogs)
-
-  const hasFirebaseError = fbLogs.some((log) => log.level === 'error')
-  if (hasFirebaseError) {
-    // Best-effort update — the user is NOT yet deleted, so a failure here
-    // just leaves the audit record with success: false (correct).
-    try {
-      await prisma.userDeleteAuditLog.update({
-        where: { id: auditLog.id },
-        data: { errorMessage: 'Firebase deletion failed' }
-      })
-    } catch {
-      // best-effort
-    }
-    return { success: false, logs }
-  }
-
-  // 3. Delete User record
+  // 2. Delete DB user record FIRST.
+  // Ordering rationale: deleting the DB record before Firebase means that if
+  // Firebase deletion subsequently fails, the user no longer exists in the DB
+  // and a retry will take the firebase-only path, which handles removing the
+  // orphaned Firebase auth record cleanly. The reverse order (Firebase first)
+  // would leave a dangling DB record if Firebase succeeded but DB deletion
+  // failed, which is harder to recover from.
   try {
     await prisma.user.delete({ where: { id: input.userDbId } })
     logs.push(createLog('🗑️ User record deleted from database'))
@@ -156,11 +141,38 @@ export async function deleteUserData(
         where: { id: auditLog.id },
         data: { errorMessage: `Failed to delete user record: ${message}` }
       })
-    } catch {
-      // best-effort
+    } catch (auditError) {
+      console.warn('Best-effort operation failed:', auditError)
     }
     console.error('Failed to delete user record:', error)
     logs.push(createLog('❌ Failed to delete user record', 'error'))
+    return { success: false, logs }
+  }
+
+  // 3. Delete Firebase auth record(s)
+  const fbLogs = await deleteFirebaseUser(
+    input.firebaseUserId,
+    input.firebaseUidOverride,
+    input.userEmail
+  )
+  logs.push(...fbLogs)
+
+  const hasFirebaseError = fbLogs.some((log) => log.level === 'error')
+  if (hasFirebaseError) {
+    // DB record is already deleted. Firebase auth still exists — a retry will
+    // look up the account, find no DB user, and take the firebase-only path
+    // which handles the orphaned Firebase auth record.
+    try {
+      await prisma.userDeleteAuditLog.update({
+        where: { id: auditLog.id },
+        data: {
+          errorMessage:
+            'Firebase deletion failed after DB delete (DB record deleted)'
+        }
+      })
+    } catch (auditError) {
+      console.warn('Best-effort operation failed:', auditError)
+    }
     return { success: false, logs }
   }
 

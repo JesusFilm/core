@@ -29,17 +29,18 @@ model User {
 }
 
 model UserDeleteAuditLog {
-  id                    String   @id @default(uuid())
-  deletedUserId         String
-  callerUserId          String
-  callerEmail           String?
-  deletedJourneyIds     String[]
-  deletedTeamIds        String[]
-  deletedUserJourneyIds String[]
-  deletedUserTeamIds    String[]
-  success               Boolean  @default(false)
-  errorMessage          String?
-  createdAt             DateTime @default(now())
+  id                      String   @id @default(uuid())
+  deletedUserId           String
+  deletedUserFirebaseUid  String?
+  callerUserId            String
+  callerEmail             String?
+  deletedJourneyIds       String[]
+  deletedTeamIds          String[]
+  deletedUserJourneyIds   String[]
+  deletedUserTeamIds      String[]
+  success                 Boolean  @default(false)
+  errorMessage            String?
+  createdAt               DateTime @default(now())
 
   @@index(deletedUserId)
   @@index(callerUserId)
