@@ -96,7 +96,12 @@ export function createGeminiFallbackSession(): GeminiFallbackSession {
       }
 
       try {
-        return await retryWithBackoff(primaryModel, operation, maxRetries, () => useFallback)
+        return await retryWithBackoff(
+          primaryModel,
+          operation,
+          maxRetries,
+          () => useFallback
+        )
       } catch (error) {
         if (!isRateLimitError(error)) throw error
         // Primary exhausted all retries (or aborted early due to a concurrent
