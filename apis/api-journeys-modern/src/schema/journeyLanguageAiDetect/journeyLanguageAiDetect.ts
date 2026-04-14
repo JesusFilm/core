@@ -2,10 +2,7 @@ import { Output, generateText } from 'ai'
 import { z } from 'zod'
 
 import { prisma } from '@core/prisma/journeys/client'
-import {
-  getGeminiMaxRetries,
-  withGeminiFallback
-} from '@core/shared/ai/geminiModel'
+import { withGeminiFallback } from '@core/shared/ai/geminiModel'
 import { hardenPrompt } from '@core/shared/ai/prompts'
 
 import { builder } from '../builder'
@@ -84,7 +81,7 @@ builder.mutationFields((t) => ({
             (model) =>
               generateText({
                 model,
-                maxRetries: getGeminiMaxRetries(),
+                maxRetries: 0,
                 output: Output.object({
                   schema: z.object({
                     language: z.string(),

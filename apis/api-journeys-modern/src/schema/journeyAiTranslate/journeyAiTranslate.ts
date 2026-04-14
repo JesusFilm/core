@@ -3,10 +3,7 @@ import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
 import { prisma } from '@core/prisma/journeys/client'
-import {
-  getGeminiMaxRetries,
-  withGeminiFallback
-} from '@core/shared/ai/geminiModel'
+import { withGeminiFallback } from '@core/shared/ai/geminiModel'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
@@ -240,7 +237,7 @@ Return in this format:
           (model) =>
             generateText({
               model,
-              maxRetries: getGeminiMaxRetries(),
+              maxRetries: 0,
               messages: [
                 {
                   role: 'system',
@@ -440,7 +437,7 @@ If there is no Bible translation was available, use the the most popular English
                 // Stream the translations
                 const { elementStream } = streamText({
                   model,
-                  maxRetries: getGeminiMaxRetries(),
+                  maxRetries: 0,
                   messages: [
                     {
                       role: 'system',
@@ -693,7 +690,7 @@ Return in this format:
           (model) =>
             generateText({
               model,
-              maxRetries: getGeminiMaxRetries(),
+              maxRetries: 0,
               messages: [
                 {
                   role: 'system',
@@ -869,7 +866,7 @@ If there is no Bible translation was available, use the the most popular English
                   // Stream the translations
                   const { elementStream } = streamText({
                     model,
-                    maxRetries: getGeminiMaxRetries(),
+                    maxRetries: 0,
                     messages: [
                       {
                         role: 'system',
