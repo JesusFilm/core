@@ -2531,7 +2531,7 @@ type PlausibleStatsResponse @join__type(graph: API_JOURNEYS_MODERN)  {
 
 type Subscription @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress! @join__field(graph: API_JOURNEYS_MODERN) 
-  userDeleteConfirm(idType: UserDeleteIdType!, id: String!) : UserDeleteConfirmProgress! @join__field(graph: API_USERS) 
+  userDeleteConfirm(idType: UserDeleteIdType!, id: String!, deletedJourneyIds: [String!]!, deletedTeamIds: [String!]!, deletedUserJourneyIds: [String!]!, deletedUserTeamIds: [String!]!) : UserDeleteConfirmProgress! @join__field(graph: API_USERS)
 }
 
 type TemplateFamilyStatsAggregateResponse @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3329,12 +3329,6 @@ type UserDeleteCheckResult @join__type(graph: API_USERS)  {
   userId: String!
   userEmail: String
   userFirstName: String!
-  journeysToDelete: Int!
-  journeysToTransfer: Int!
-  journeysToRemove: Int!
-  teamsToDelete: Int!
-  teamsToTransfer: Int!
-  teamsToRemove: Int!
   logs: [UserDeleteLogEntry!]!
 }
 
