@@ -4,7 +4,6 @@ import { builder } from '../builder'
 
 import {
   type LogEntry,
-  callJourneysConfirm,
   createLog,
   deleteFirebaseUser,
   deleteUserData,
@@ -42,9 +41,24 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
     nullable: false,
     args: {
       idType: t.arg({ type: UserDeleteIdType, required: true }),
-      id: t.arg.string({ required: true })
+      id: t.arg.string({ required: true }),
+      deletedJourneyIds: t.arg.stringList({ required: true }),
+      deletedTeamIds: t.arg.stringList({ required: true }),
+      deletedUserJourneyIds: t.arg.stringList({ required: true }),
+      deletedUserTeamIds: t.arg.stringList({ required: true })
     },
-    subscribe: async function* (_parent, { idType, id }, ctx) {
+    subscribe: async function* (
+      _parent,
+      {
+        idType,
+        id,
+        deletedJourneyIds,
+        deletedTeamIds,
+        deletedUserJourneyIds,
+        deletedUserTeamIds
+      },
+      ctx
+    ) {
       try {
         const [{ user, firebase, logs: lookupLogs }, caller] =
           await Promise.all([
@@ -166,28 +180,9 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
           return
         }
 
-        // Phase 1: Journeys DB cleanup (via interop)
-        yield {
-          log: createLog('🔄 Starting journeys database cleanup...'),
-          done: false,
-          success: null
-        }
-
-        const journeysResult = await callJourneysConfirm(user.userId)
-        for (const log of journeysResult.logs) {
-          yield { log, done: false, success: null }
-        }
-
-        if (!journeysResult.success) {
-          yield {
-            log: createLog('❌ Journeys cleanup failed, aborting', 'error'),
-            done: true,
-            success: false
-          }
-          return
-        }
-
-        // Phase 2: Users DB deletion + Firebase cleanup
+        // Delete user record + Firebase cleanup using the deleted IDs from
+        // the journeys cleanup step (performed by the frontend before calling
+        // this subscription).
         yield {
           log: createLog('🔄 Starting user record deletion...'),
           done: false,
@@ -206,10 +201,10 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
           userEmail: user.email,
           callerUserId: caller.id,
           callerEmail: caller.email,
-          deletedJourneyIds: journeysResult.deletedJourneyIds,
-          deletedTeamIds: journeysResult.deletedTeamIds,
-          deletedUserJourneyIds: journeysResult.deletedUserJourneyIds,
-          deletedUserTeamIds: journeysResult.deletedUserTeamIds
+          deletedJourneyIds,
+          deletedTeamIds,
+          deletedUserJourneyIds,
+          deletedUserTeamIds
         })
 
         for (const log of userResult.logs) {

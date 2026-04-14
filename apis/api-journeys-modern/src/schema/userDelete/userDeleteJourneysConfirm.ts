@@ -39,7 +39,7 @@ builder.objectType(UserDeleteJourneysConfirmResult, {
 })
 
 builder.mutationField('userDeleteJourneysConfirm', (t) =>
-  t.withAuth({ isValidInterop: true }).field({
+  t.withAuth({ isSuperAdmin: true }).field({
     type: UserDeleteJourneysConfirmResult,
     nullable: false,
     args: {
