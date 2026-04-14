@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
 import { prisma } from '@core/prisma/journeys/client'
-import { withGeminiFallback } from '@core/shared/ai/geminiModel'
+import { createGeminiFallbackSession } from '@core/shared/ai/geminiModel'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
@@ -199,6 +199,8 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           journey: null
         }
 
+        const session = createGeminiFallbackSession()
+
         // Step 1: Analyze and translate journey title, description, and SEO fields
         const combinedPrompt = `
 Analyze this journey content and provide the key intent, themes, and target audience.
@@ -233,7 +235,7 @@ Return in this format:
 }
 `
 
-        const { output: analysisResult } = await withGeminiFallback((model) =>
+        const { output: analysisResult } = await session.execute((model) =>
           generateText({
             model,
             maxRetries: 0,
@@ -432,7 +434,7 @@ If there is no Bible translation was available, use the the most popular English
             )
 
             try {
-              await withGeminiFallback(async (model) => {
+              await session.execute(async (model) => {
                 // Stream the translations
                 const { elementStream } = streamText({
                   model,
@@ -454,13 +456,7 @@ If there is no Bible translation was available, use the the most popular English
                   ],
                   output: Output.array({
                     element: BlockTranslationSchema
-                  }),
-                  onError: ({ error }) => {
-                    console.warn(
-                      `Error in translation stream for card ${cardBlock.id}:`,
-                      error
-                    )
-                  }
+                  })
                 })
 
                 for await (const item of elementStream) {
@@ -685,7 +681,9 @@ Return in this format:
 `
 
       try {
-        const { output: analysisAndTranslation } = await withGeminiFallback(
+        const session = createGeminiFallbackSession()
+
+        const { output: analysisAndTranslation } = await session.execute(
           (model) =>
             generateText({
               model,
@@ -861,7 +859,7 @@ You must never make changes to content from the Bible yourself.
 If there is no Bible translation was available, use the the most popular English Bible translation available. 
 `
               try {
-                await withGeminiFallback(async (model) => {
+                await session.execute(async (model) => {
                   // Stream the translations
                   const { elementStream } = streamText({
                     model,
@@ -883,13 +881,7 @@ If there is no Bible translation was available, use the the most popular English
                     ],
                     output: Output.array({
                       element: BlockTranslationSchema
-                    }),
-                    onError: ({ error }) => {
-                      console.warn(
-                        `Error in translation stream for card ${cardBlock.id}:`,
-                        error
-                      )
-                    }
+                    })
                   })
 
                   for await (const item of elementStream) {
