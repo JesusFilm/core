@@ -140,7 +140,10 @@ export async function lookupUser(
     logs.push(
       createLog(`⚠️ No database user found for Firebase UID: ${uid}`, 'warn')
     )
-    const { status: firebase, logs: fbLogs } = await checkFirebaseUser(uid, null)
+    const { status: firebase, logs: fbLogs } = await checkFirebaseUser(
+      uid,
+      null
+    )
     logs.push(...fbLogs)
 
     if (firebase.exists) {
