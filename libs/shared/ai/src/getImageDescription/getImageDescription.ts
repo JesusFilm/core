@@ -1,6 +1,6 @@
 import { generateText } from 'ai'
 
-import { getGeminiMaxRetries, withGeminiFallback } from '../geminiModel'
+import { withGeminiFallback } from '../geminiModel'
 
 export const getImageDescription = async ({
   imageUrl,
@@ -14,7 +14,7 @@ export const getImageDescription = async ({
     const { text } = await withGeminiFallback((model) =>
       generateText({
         model,
-        maxRetries: getGeminiMaxRetries(),
+        maxRetries: 0,
         messages: [
           {
             role: 'user',

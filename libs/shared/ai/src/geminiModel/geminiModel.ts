@@ -2,7 +2,7 @@ import { google } from '@ai-sdk/google'
 
 const DEFAULT_MODEL = 'gemini-2.5-flash'
 const DEFAULT_FALLBACK_MODEL = 'gemini-2.0-flash'
-const DEFAULT_MAX_RETRIES = 4
+const DEFAULT_MAX_RETRIES = 3
 const BACKOFF_BASE_MS = 1000
 
 export function getGeminiModel() {
@@ -34,12 +34,21 @@ export function isRateLimitError(error: unknown): boolean {
 export async function withGeminiFallback<T>(
   operation: (model: ReturnType<typeof google>) => Promise<T>
 ): Promise<T> {
-  try {
-    return await operation(getGeminiModel())
-  } catch (error) {
-    if (!isRateLimitError(error)) throw error
-    const delayMs = BACKOFF_BASE_MS * (1 + Math.random())
-    await new Promise((resolve) => setTimeout(resolve, delayMs))
-    return operation(getGeminiFallbackModel())
+  const maxRetries = getGeminiMaxRetries()
+  const primaryModel = getGeminiModel()
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    if (attempt > 0) {
+      const delayMs = BACKOFF_BASE_MS * Math.pow(2, attempt - 1)
+      await new Promise((resolve) => setTimeout(resolve, delayMs))
+    }
+    try {
+      return await operation(primaryModel)
+    } catch (error) {
+      if (!isRateLimitError(error)) throw error
+    }
   }
+
+  // Primary model exhausted all retries; try fallback model once
+  return operation(getGeminiFallbackModel())
 }

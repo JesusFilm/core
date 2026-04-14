@@ -69,7 +69,7 @@ describe('geminiModel', () => {
 
   describe('getGeminiMaxRetries', () => {
     it('should return default when GEMINI_MAX_RETRIES is not set', () => {
-      expect(getGeminiMaxRetries()).toBe(4)
+      expect(getGeminiMaxRetries()).toBe(3)
     })
 
     it('should respect GEMINI_MAX_RETRIES env var', () => {
@@ -84,27 +84,27 @@ describe('geminiModel', () => {
 
     it('should return default for non-numeric values', () => {
       process.env.GEMINI_MAX_RETRIES = 'abc'
-      expect(getGeminiMaxRetries()).toBe(4)
+      expect(getGeminiMaxRetries()).toBe(3)
     })
 
     it('should return default for empty string', () => {
       process.env.GEMINI_MAX_RETRIES = ''
-      expect(getGeminiMaxRetries()).toBe(4)
+      expect(getGeminiMaxRetries()).toBe(3)
     })
 
     it('should return default for negative values', () => {
       process.env.GEMINI_MAX_RETRIES = '-1'
-      expect(getGeminiMaxRetries()).toBe(4)
+      expect(getGeminiMaxRetries()).toBe(3)
     })
 
     it('should return default for fractional values', () => {
       process.env.GEMINI_MAX_RETRIES = '1.5'
-      expect(getGeminiMaxRetries()).toBe(4)
+      expect(getGeminiMaxRetries()).toBe(3)
     })
 
     it('should return default for Infinity', () => {
       process.env.GEMINI_MAX_RETRIES = 'Infinity'
-      expect(getGeminiMaxRetries()).toBe(4)
+      expect(getGeminiMaxRetries()).toBe(3)
     })
   })
 
@@ -155,7 +155,64 @@ describe('geminiModel', () => {
       )
     })
 
-    it('should fall back to secondary model on 429', async () => {
+    it('should retry primary model with exponential backoff on 429', async () => {
+      process.env.GEMINI_MAX_RETRIES = '2'
+      const rateLimitError = Object.assign(new Error('rate limited'), {
+        statusCode: 429
+      })
+      const operation = jest
+        .fn()
+        .mockRejectedValueOnce(rateLimitError)
+        .mockRejectedValueOnce(rateLimitError)
+        .mockResolvedValueOnce('retry-ok')
+
+      const promise = withGeminiFallback(operation)
+      // Attempt 1 delay: 1000ms (2^0 * BACKOFF_BASE_MS)
+      await jest.advanceTimersByTimeAsync(1000)
+      // Attempt 2 delay: 2000ms (2^1 * BACKOFF_BASE_MS)
+      await jest.advanceTimersByTimeAsync(2000)
+      const result = await promise
+
+      expect(result).toBe('retry-ok')
+      expect(operation).toHaveBeenCalledTimes(3)
+      for (const call of operation.mock.calls) {
+        expect(call[0]).toEqual(
+          expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+        )
+      }
+    })
+
+    it('should fall back to secondary model after exhausting primary retries', async () => {
+      process.env.GEMINI_MAX_RETRIES = '1'
+      const rateLimitError = Object.assign(new Error('rate limited'), {
+        statusCode: 429
+      })
+      const operation = jest
+        .fn()
+        .mockRejectedValueOnce(rateLimitError)
+        .mockRejectedValueOnce(rateLimitError)
+        .mockResolvedValueOnce('fallback-ok')
+
+      const promise = withGeminiFallback(operation)
+      // Only one retry delay: 1000ms (2^0 * BACKOFF_BASE_MS)
+      await jest.advanceTimersByTimeAsync(1000)
+      const result = await promise
+
+      expect(result).toBe('fallback-ok')
+      expect(operation).toHaveBeenCalledTimes(3)
+      expect(operation.mock.calls[0][0]).toEqual(
+        expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+      )
+      expect(operation.mock.calls[1][0]).toEqual(
+        expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+      )
+      expect(operation.mock.calls[2][0]).toEqual(
+        expect.objectContaining({ modelId: 'gemini-2.0-flash' })
+      )
+    })
+
+    it('should fall back immediately when maxRetries is 0', async () => {
+      process.env.GEMINI_MAX_RETRIES = '0'
       const rateLimitError = Object.assign(new Error('rate limited'), {
         statusCode: 429
       })
@@ -164,9 +221,7 @@ describe('geminiModel', () => {
         .mockRejectedValueOnce(rateLimitError)
         .mockResolvedValueOnce('fallback-ok')
 
-      const promise = withGeminiFallback(operation)
-      await jest.advanceTimersByTimeAsync(2000)
-      const result = await promise
+      const result = await withGeminiFallback(operation)
 
       expect(result).toBe('fallback-ok')
       expect(operation).toHaveBeenCalledTimes(2)
@@ -178,21 +233,23 @@ describe('geminiModel', () => {
       )
     })
 
-    it('should fall back on RetryError with 429 lastError', async () => {
+    it('should fall back after exhausting retries on RetryError with 429 lastError', async () => {
+      process.env.GEMINI_MAX_RETRIES = '1'
       const retryError = Object.assign(new Error('retry exhausted'), {
         lastError: { statusCode: 429 }
       })
       const operation = jest
         .fn()
         .mockRejectedValueOnce(retryError)
+        .mockRejectedValueOnce(retryError)
         .mockResolvedValueOnce('recovered')
 
       const promise = withGeminiFallback(operation)
-      await jest.advanceTimersByTimeAsync(2000)
+      await jest.advanceTimersByTimeAsync(1000)
       const result = await promise
 
       expect(result).toBe('recovered')
-      expect(operation).toHaveBeenCalledTimes(2)
+      expect(operation).toHaveBeenCalledTimes(3)
     })
 
     it('should throw immediately on non-429 error', async () => {
@@ -204,18 +261,13 @@ describe('geminiModel', () => {
     })
 
     it('should throw if fallback also fails', async () => {
+      process.env.GEMINI_MAX_RETRIES = '0'
       const rateLimitError = Object.assign(new Error('rate limited'), {
         statusCode: 429
       })
       const operation = jest.fn().mockRejectedValue(rateLimitError)
 
-      // Attach catch immediately to avoid unhandled rejection warning
-      const promise = withGeminiFallback(operation).catch((e: unknown) => e)
-      await jest.advanceTimersByTimeAsync(2000)
-      const result = await promise
-
-      expect(result).toBeInstanceOf(Error)
-      expect((result as Error).message).toBe('rate limited')
+      await expect(withGeminiFallback(operation)).rejects.toThrow('rate limited')
       expect(operation).toHaveBeenCalledTimes(2)
     })
   })
