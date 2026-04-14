@@ -10,12 +10,27 @@ const UserDeleteIdType = builder.enumType('UserDeleteIdType', {
   values: ['databaseId', 'email', 'jwt'] as const
 })
 
+// Enum mirrors the LogLevel union in the shared types lib.
+// Values are uppercase in the GraphQL schema; the internal representation
+// remains lowercase to match the LogEntry type.
+const UserDeleteLogLevel = builder.enumType('USER_DELETE_LOG_LEVEL', {
+  values: {
+    INFO: { value: 'info' as const },
+    WARN: { value: 'warn' as const },
+    ERROR: { value: 'error' as const }
+  }
+})
+
 const UserDeleteLogEntry = builder.objectRef<LogEntry>('UserDeleteLogEntry')
 
 builder.objectType(UserDeleteLogEntry, {
   fields: (t) => ({
     message: t.exposeString('message', { nullable: false }),
-    level: t.exposeString('level', { nullable: false }),
+    level: t.field({
+      type: UserDeleteLogLevel,
+      nullable: false,
+      resolve: (parent) => parent.level
+    }),
     timestamp: t.exposeString('timestamp', { nullable: false })
   })
 })

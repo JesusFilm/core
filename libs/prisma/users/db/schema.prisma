@@ -38,9 +38,10 @@ model UserDeleteAuditLog {
   deletedTeamIds          String[]
   deletedUserJourneyIds   String[]
   deletedUserTeamIds      String[]
-  success                 Boolean  @default(false)
+  success                 Boolean   @default(false)
   errorMessage            String?
-  createdAt               DateTime @default(now())
+  completedAt             DateTime?
+  createdAt               DateTime  @default(now())
 
   @@index(deletedUserId)
   @@index(callerUserId)

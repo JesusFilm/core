@@ -6,6 +6,17 @@ import { builder } from '../builder'
 
 import { type LogEntry, checkJourneysData } from './service'
 
+// Enum mirrors the LogLevel union in the shared types lib.
+// Values are uppercase in the GraphQL schema; the internal representation
+// remains lowercase to match the LogEntry type.
+const UserDeleteJourneysLogLevel = builder.enumType('USER_DELETE_LOG_LEVEL', {
+  values: {
+    INFO: { value: 'info' as const },
+    WARN: { value: 'warn' as const },
+    ERROR: { value: 'error' as const }
+  }
+})
+
 const UserDeleteJourneysLogEntry = builder.objectRef<LogEntry>(
   'UserDeleteJourneysLogEntry'
 )
@@ -13,7 +24,11 @@ const UserDeleteJourneysLogEntry = builder.objectRef<LogEntry>(
 builder.objectType(UserDeleteJourneysLogEntry, {
   fields: (t) => ({
     message: t.exposeString('message', { nullable: false }),
-    level: t.exposeString('level', { nullable: false }),
+    level: t.field({
+      type: UserDeleteJourneysLogLevel,
+      nullable: false,
+      resolve: (parent) => parent.level
+    }),
     timestamp: t.exposeString('timestamp', { nullable: false })
   })
 })

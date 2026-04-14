@@ -99,10 +99,35 @@ async function checkFirebaseUser(
   }
 }
 
+const MAX_ID_LENGTH = 2048
+// Basic email format: local@domain.tld
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+// Standard UUID v4 format
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 export async function lookupUser(
   idType: 'databaseId' | 'email' | 'jwt',
   id: string
 ): Promise<LookupResult> {
+  if (id.length > MAX_ID_LENGTH) {
+    throw new GraphQLError('id exceeds maximum allowed length', {
+      extensions: { code: 'BAD_USER_INPUT' }
+    })
+  }
+  if (idType === 'email' && !EMAIL_REGEX.test(id)) {
+    throw new GraphQLError(
+      'id must be a valid email address when idType is "email"',
+      { extensions: { code: 'BAD_USER_INPUT' } }
+    )
+  }
+  if (idType === 'databaseId' && !UUID_REGEX.test(id)) {
+    throw new GraphQLError(
+      'id must be a valid UUID when idType is "databaseId"',
+      { extensions: { code: 'BAD_USER_INPUT' } }
+    )
+  }
+
   const logs: LogEntry[] = []
 
   if (idType === 'jwt') {

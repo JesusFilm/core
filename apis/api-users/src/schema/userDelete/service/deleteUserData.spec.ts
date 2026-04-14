@@ -96,7 +96,7 @@ describe('deleteUserData', () => {
     })
     expect(prismaMock.userDeleteAuditLog.update).toHaveBeenCalledWith({
       where: { id: 'audit-1' },
-      data: { success: true }
+      data: { success: true, completedAt: expect.any(Date) }
     })
   })
 

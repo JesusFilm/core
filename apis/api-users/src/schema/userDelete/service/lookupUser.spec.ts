@@ -55,6 +55,7 @@ describe('lookupUser', () => {
   })
 
   it('should find user by databaseId', async () => {
+    const validUuid = '123e4567-e89b-12d3-a456-426614174001'
     prismaMock.user.findUnique.mockResolvedValueOnce(mockUser as any)
     mockGetUser.mockResolvedValueOnce({
       uid: 'firebase-uid-1',
@@ -63,10 +64,10 @@ describe('lookupUser', () => {
       providerData: []
     })
 
-    const result = await lookupUser('databaseId', 'db-id-1')
+    const result = await lookupUser('databaseId', validUuid)
 
     expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
-      where: { id: 'db-id-1' }
+      where: { id: validUuid }
     })
     expect(result.user).toEqual(mockUser)
   })
@@ -115,9 +116,10 @@ describe('lookupUser', () => {
   })
 
   it('should throw NOT_FOUND when no DB user by databaseId', async () => {
+    const validUuid = '123e4567-e89b-12d3-a456-426614174002'
     prismaMock.user.findUnique.mockResolvedValueOnce(null)
 
-    await expect(lookupUser('databaseId', 'nonexistent-id')).rejects.toThrow(
+    await expect(lookupUser('databaseId', validUuid)).rejects.toThrow(
       GraphQLError
     )
   })

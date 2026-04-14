@@ -91,7 +91,9 @@ export async function deleteFirebaseOnlyAccount(
       where: { id: auditLog.id },
       data: {
         success: !hasError,
-        ...(hasError ? { errorMessage: 'Firebase deletion failed' } : {})
+        ...(hasError
+          ? { errorMessage: 'Firebase deletion failed' }
+          : { completedAt: new Date() })
       }
     })
   } catch (error) {

@@ -181,7 +181,7 @@ export async function deleteUserData(
   try {
     await prisma.userDeleteAuditLog.update({
       where: { id: auditLog.id },
-      data: { success: true }
+      data: { success: true, completedAt: new Date() }
     })
   } catch (error) {
     console.error('Failed to update audit log to success:', error)
