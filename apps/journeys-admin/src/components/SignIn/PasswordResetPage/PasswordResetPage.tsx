@@ -93,10 +93,9 @@ export function PasswordResetPage({
                   {t('Cancel')}
                 </Button>
                 <Button
-                  variant="contained"
-                  size="large"
+                  variant="blockContained"
                   fullWidth
-                  color="secondary"
+                  color="solid"
                   type="submit"
                   disabled={!isValid || isSubmitting}
                 >
