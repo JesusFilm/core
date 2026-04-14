@@ -15,30 +15,36 @@ The user will specify the target branch, e.g. "swap to branch feat/my-feature".
 
 Run each step sequentially. Stop and report if any step fails.
 
-1. **Checkout the branch**
+1. **Fetch from origin**
 
-First try checking out the local branch:
+```bash
+git fetch origin
+```
+
+2. **Checkout the branch**
+
+Try checking out the branch:
 
 ```bash
 git checkout <branch>
 ```
 
-If it fails (branch doesn't exist locally), fetch and check out from origin instead:
+This succeeds if the branch exists locally **or** if a matching remote-tracking branch exists (git auto-creates a local tracking branch).
+
+If it fails, check the error:
+
+- **Uncommitted changes** — stop and inform the user. Suggest `git stash` or committing first.
+- **Branch not found** — the branch doesn't exist locally. Try creating it from the remote:
 
 ```bash
-git fetch origin
 git checkout -b <branch> origin/<branch>
 ```
 
-Then skip steps 2 and 3 since the branch is already up to date from origin.
+If this also fails, the branch doesn't exist on the remote either. Stop and inform the user that the branch was not found locally or on origin.
 
-2. **Fetch from origin** *(skip if checked out from origin above)*
+If the branch was freshly created from origin, skip step 3.
 
-```bash
-git fetch origin
-```
-
-3. **Pull latest changes** *(skip if checked out from origin above)*
+3. **Pull latest changes** *(skip if created from origin above)*
 
 ```bash
 git pull origin <branch>
@@ -59,4 +65,5 @@ nx run-many -t prisma-generate
 ## Error Handling
 
 - If `git checkout` fails because of uncommitted changes, inform the user and suggest stashing (`git stash`) or committing first.
+- If the branch is not found locally or on origin, inform the user that the branch name may be incorrect.
 - If `pnpm i` or `prisma-generate` fails, show the error output to the user.
