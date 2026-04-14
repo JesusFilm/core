@@ -93,16 +93,18 @@ export async function authScopes(context: Context) {
   }
   switch (context.type) {
     case 'authenticated': {
-      const dbUser = await prismaUsers.user.findUnique({
-        where: { userId: context.user.id },
-        select: { superAdmin: true }
-      })
       return {
         ...defaultScopes,
         isAuthenticated: context.user?.email != null,
         isAnonymous: context.user != null && context.user.email == null,
         isPublisher: context.currentRoles.includes('publisher'),
-        isSuperAdmin: dbUser?.superAdmin ?? false,
+        isSuperAdmin: async () => {
+          const dbUser = await prismaUsers.user.findUnique({
+            where: { userId: context.user.id },
+            select: { superAdmin: true }
+          })
+          return dbUser?.superAdmin ?? false
+        },
         isInTeam: async (teamId: string) => await isInTeam({ context, teamId }),
         isIntegrationOwner: async (integrationId: string) =>
           await isIntegrationOwner({ context, integrationId }),
