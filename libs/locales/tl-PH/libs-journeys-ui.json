@@ -102,5 +102,6 @@
   "{{count}} Cards_one": "{{count}} Mga kard",
   "{{count}} Cards_other": "{{count}} Mga kard",
   "{{count}} Videos_one": "{{count}} Mga video",
-  "{{count}} Videos_other": "{{count}} Mga video"
+  "{{count}} Videos_other": "{{count}} Mga video",
+  "None": "None"
 }
