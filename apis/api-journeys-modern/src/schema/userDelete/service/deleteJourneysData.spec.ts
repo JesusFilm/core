@@ -2,101 +2,93 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { deleteJourneysData } from './deleteJourneysData'
 
+// All operations now run inside a single prisma.$transaction callback.
+// The txMock must provide every Prisma method invoked across all phases.
+function buildTxMock() {
+  return {
+    userJourney: {
+      findMany: jest.fn().mockResolvedValue([]),
+      updateMany: jest.fn().mockResolvedValue({ count: 0 }),
+      deleteMany: jest.fn().mockResolvedValue({ count: 0 })
+    },
+    userTeam: {
+      findMany: jest.fn().mockResolvedValue([]),
+      updateMany: jest.fn().mockResolvedValue({ count: 0 }),
+      deleteMany: jest.fn().mockResolvedValue({ count: 0 })
+    },
+    event: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    journeyVisitor: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    action: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    block: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    journey: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    team: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    journeyNotification: {
+      deleteMany: jest.fn().mockResolvedValue({ count: 0 })
+    },
+    userTeamInvite: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    userInvite: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    journeyEventsExportLog: {
+      deleteMany: jest.fn().mockResolvedValue({ count: 0 })
+    },
+    journeyTheme: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    journeyProfile: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    integration: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    userRole: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    visitor: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) }
+  }
+}
+
 describe('deleteJourneysData', () => {
-  // Nitpick: added beforeEach to prevent cross-test mock contamination
+  let txMock: ReturnType<typeof buildTxMock>
+
   beforeEach(() => {
     jest.clearAllMocks()
+    txMock = buildTxMock()
+    prismaMock.$transaction.mockImplementation(async (fn: any) => fn(txMock))
   })
 
   it('should complete all phases successfully with no data', async () => {
-    const txMock = {
-      userJourney: { findMany: jest.fn().mockResolvedValue([]) },
-      userTeam: { findMany: jest.fn().mockResolvedValue([]) }
-    }
-    prismaMock.$transaction.mockImplementation(async (fn: any) => fn(txMock))
-    prismaMock.userJourney.findMany.mockResolvedValueOnce([])
-    prismaMock.userJourney.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.userTeam.findMany.mockResolvedValueOnce([])
-    prismaMock.userTeam.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.journeyNotification.deleteMany.mockResolvedValueOnce({
-      count: 0
-    })
-    prismaMock.userTeamInvite.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.userInvite.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.journeyEventsExportLog.deleteMany.mockResolvedValueOnce({
-      count: 0
-    })
-    prismaMock.journeyTheme.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.journeyProfile.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.integration.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.userRole.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.visitor.deleteMany.mockResolvedValueOnce({ count: 0 })
-
     const result = await deleteJourneysData('user-1')
 
     expect(result.success).toBe(true)
     expect(result.deletedJourneyIds).toEqual([])
     expect(result.deletedTeamIds).toEqual([])
+    expect(result.deletedUserJourneyIds).toEqual([])
+    expect(result.deletedUserTeamIds).toEqual([])
   })
 
   it('should transfer ownership and delete sole-accessor journeys', async () => {
-    const txMock = {
-      userJourney: {
-        findMany: jest.fn().mockResolvedValue([
-          {
-            id: 'uj1',
-            userId: 'user-1',
-            role: 'owner',
-            journey: {
-              id: 'j1',
-              title: 'Shared',
-              userJourneys: [
-                { id: 'uj1', userId: 'user-1', role: 'owner' },
-                { id: 'uj2', userId: 'user-2', role: 'editor' }
-              ]
-            }
-          },
-          {
-            id: 'uj3',
-            userId: 'user-1',
-            role: 'owner',
-            journey: {
-              id: 'j2',
-              title: 'Solo',
-              userJourneys: [{ id: 'uj3', userId: 'user-1', role: 'owner' }]
-            }
-          }
-        ]),
-        updateMany: jest.fn().mockResolvedValue({ count: 1 })
+    txMock.userJourney.findMany.mockResolvedValue([
+      {
+        id: 'uj1',
+        userId: 'user-1',
+        role: 'owner',
+        journey: {
+          id: 'j1',
+          title: 'Shared',
+          userJourneys: [
+            { id: 'uj1', userId: 'user-1', role: 'owner' },
+            { id: 'uj2', userId: 'user-2', role: 'editor' }
+          ]
+        }
       },
-      userTeam: { findMany: jest.fn().mockResolvedValue([]) }
-    }
-    prismaMock.$transaction.mockImplementation(async (fn: any) => fn(txMock))
-    prismaMock.userJourney.findMany.mockResolvedValueOnce([
-      { id: 'uj1' },
-      { id: 'uj3' }
-    ] as any)
-    prismaMock.userJourney.deleteMany.mockResolvedValueOnce({ count: 2 })
-    prismaMock.userTeam.findMany.mockResolvedValueOnce([])
-    prismaMock.userTeam.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.event.deleteMany.mockResolvedValueOnce({ count: 5 })
-    prismaMock.journeyVisitor.deleteMany.mockResolvedValueOnce({ count: 2 })
-    prismaMock.action.deleteMany.mockResolvedValueOnce({ count: 3 })
-    prismaMock.block.deleteMany.mockResolvedValueOnce({ count: 10 })
-    prismaMock.journey.delete.mockResolvedValueOnce({} as any)
-    prismaMock.journeyNotification.deleteMany.mockResolvedValueOnce({
-      count: 0
-    })
-    prismaMock.userTeamInvite.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.userInvite.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.journeyEventsExportLog.deleteMany.mockResolvedValueOnce({
-      count: 0
-    })
-    prismaMock.journeyTheme.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.journeyProfile.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.integration.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.userRole.deleteMany.mockResolvedValueOnce({ count: 0 })
-    prismaMock.visitor.deleteMany.mockResolvedValueOnce({ count: 0 })
+      {
+        id: 'uj3',
+        userId: 'user-1',
+        role: 'owner',
+        journey: {
+          id: 'j2',
+          title: 'Solo',
+          userJourneys: [{ id: 'uj3', userId: 'user-1', role: 'owner' }]
+        }
+      }
+    ])
+    txMock.userJourney.deleteMany.mockResolvedValue({ count: 2 })
+    txMock.event.deleteMany.mockResolvedValue({ count: 5 })
+    txMock.journeyVisitor.deleteMany.mockResolvedValue({ count: 2 })
+    txMock.action.deleteMany.mockResolvedValue({ count: 3 })
+    txMock.block.deleteMany.mockResolvedValue({ count: 10 })
+    txMock.journey.deleteMany.mockResolvedValue({ count: 1 })
 
     const result = await deleteJourneysData('user-1')
 
@@ -107,6 +99,9 @@ describe('deleteJourneysData', () => {
         data: { role: 'owner' }
       })
     )
+    expect(txMock.journey.deleteMany).toHaveBeenCalledWith({
+      where: { id: { in: ['j2'] } }
+    })
   })
 
   it('should return success false on error', async () => {
