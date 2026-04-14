@@ -5,6 +5,7 @@ import {
   useSubscription,
   useSuspenseQuery
 } from '@apollo/client'
+import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import Box from '@mui/material/Box'
@@ -195,7 +196,7 @@ function UserDeleteErrorFallback({
 export function UserDeleteWithErrorBoundary(): ReactElement {
   return (
     <UserDeleteErrorBoundary>
-      <Suspense>
+      <Suspense fallback={<CircularProgress />}>
         <UserDeleteContent />
       </Suspense>
     </UserDeleteErrorBoundary>
@@ -548,7 +549,7 @@ function UserDeleteContent(): ReactElement {
 
         <Button
           variant="contained"
-          onClick={handleCheck}
+          onClick={() => void handleCheck()}
           disabled={userId.trim() === '' || isCheckLoading || confirmLoading}
           sx={{ whiteSpace: 'nowrap', minWidth: 100 }}
         >
@@ -606,7 +607,7 @@ function UserDeleteContent(): ReactElement {
         <DialogActions>
           <Button onClick={() => setConfirmOpen(false)}>{t('Cancel')}</Button>
           <Button
-            onClick={handleConfirmDelete}
+            onClick={() => void handleConfirmDelete()}
             color="error"
             variant="contained"
             autoFocus
