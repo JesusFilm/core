@@ -18,7 +18,7 @@ import { SortOrder } from '../JourneySort'
 import { SharedWithMeMode } from './DisplayModes/SharedWithMeMode/SharedWithMeMode'
 import { ContentTypeOption, TeamMode } from './DisplayModes/TeamMode/TeamMode'
 
-export type ContentType = 'journeys' | 'templates'
+export type ContentType = 'journeys' | 'templates' | 'foldersDemo'
 export type JourneyStatus = 'active' | 'archived' | 'trashed'
 
 export interface JourneyListViewProps {
@@ -69,6 +69,11 @@ export function JourneyListView({
       queryParam: 'templates',
       displayValue: breakpoints.sm ? t('Team Templates') : t('Templates'),
       tabIndex: 1
+    },
+    {
+      queryParam: 'foldersDemo',
+      displayValue: t('Folders Demo'),
+      tabIndex: 2
     }
   ]
 

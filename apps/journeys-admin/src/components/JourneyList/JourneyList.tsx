@@ -7,6 +7,8 @@ import { User } from '../../libs/auth/authContext'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { usePageWrapperStyles } from '../PageWrapper/utils/usePageWrapperStyles'
 
+import { FoldersDemo } from '../FoldersDemo'
+
 import { AddJourneyFab } from './AddJourneyFab'
 import { JourneyListContent } from './JourneyListContent'
 import { JourneyListView } from './JourneyListView'
@@ -96,6 +98,10 @@ export function JourneyList({
     contentType: ContentType,
     status: JourneyStatusFilter
   ): ReactElement => {
+    if (contentType === 'foldersDemo') {
+      return <FoldersDemo />
+    }
+
     // Only pass event to the currently active content type to prevent duplicate actions
     const eventForThisContentType =
       contentType === currentContentType ? event : undefined

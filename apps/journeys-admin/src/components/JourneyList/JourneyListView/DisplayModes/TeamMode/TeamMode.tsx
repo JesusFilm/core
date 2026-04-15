@@ -37,55 +37,75 @@ export const TeamMode = ({
   setActiveEvent,
   router,
   renderList
-}: TeamModeProps): ReactElement => (
-  <>
-    <Tabs
-      value={activeContentTypeTab}
-      onChange={handleContentTypeChange}
-      aria-label="journey content type tabs"
-      data-testid="journey-list-view"
-      sx={{
-        // Allow overflow to prevent hover circle on JourneyListMenu from being clipped
-        // MUI Tabs uses an internal scroller with overflow: hidden by default
-        overflow: 'visible',
-        pr: 2,
-        display: 'flex',
-        alignItems: 'center',
-        '& .MuiTabs-scroller': {
-          overflow: 'visible !important'
-        },
-        '& .MuiTab-root': {
-          typography: 'subtitle2'
-        }
-      }}
-    >
-      <Tab
-        label={contentTypeOptions[0].displayValue}
-        {...tabA11yProps(
-          'journeys-content-panel',
-          contentTypeOptions[0].tabIndex
-        )}
-      />
-      <Tab
-        label={contentTypeOptions[1].displayValue}
-        {...tabA11yProps(
-          'templates-content-panel',
-          contentTypeOptions[1].tabIndex
-        )}
-      />
-      <StatusFilterControl
-        selectedStatus={selectedStatus}
-        handleStatusChange={handleStatusChange}
-      />
-      <SortControl sortOrder={sortOrder} setSortOrder={setSortOrder} />
-      <MenuControl
-        setActiveEvent={setActiveEvent}
-        menuMarginRight={{
-          xs: 1,
-          sm: router?.query?.type === 'templates' ? -12 : -8
+}: TeamModeProps): ReactElement => {
+  const isFoldersDemo =
+    contentTypeOptions[2] != null &&
+    activeContentTypeTab === contentTypeOptions[2].tabIndex
+
+  return (
+    <>
+      <Tabs
+        value={activeContentTypeTab}
+        onChange={handleContentTypeChange}
+        aria-label="journey content type tabs"
+        data-testid="journey-list-view"
+        sx={{
+          // Allow overflow to prevent hover circle on JourneyListMenu from being clipped
+          // MUI Tabs uses an internal scroller with overflow: hidden by default
+          overflow: 'visible',
+          pr: 2,
+          display: 'flex',
+          alignItems: 'center',
+          '& .MuiTabs-scroller': {
+            overflow: 'visible !important'
+          },
+          '& .MuiTab-root': {
+            typography: 'subtitle2'
+          }
         }}
-      />
-    </Tabs>
+      >
+        <Tab
+          label={contentTypeOptions[0].displayValue}
+          {...tabA11yProps(
+            'journeys-content-panel',
+            contentTypeOptions[0].tabIndex
+          )}
+        />
+        <Tab
+          label={contentTypeOptions[1].displayValue}
+          {...tabA11yProps(
+            'templates-content-panel',
+            contentTypeOptions[1].tabIndex
+          )}
+        />
+        {contentTypeOptions[2] != null && (
+          <Tab
+            label={contentTypeOptions[2].displayValue}
+            {...tabA11yProps(
+              'folders-demo-content-panel',
+              contentTypeOptions[2].tabIndex
+            )}
+          />
+        )}
+        {!isFoldersDemo && (
+          <StatusFilterControl
+            selectedStatus={selectedStatus}
+            handleStatusChange={handleStatusChange}
+          />
+        )}
+        {!isFoldersDemo && (
+          <SortControl sortOrder={sortOrder} setSortOrder={setSortOrder} />
+        )}
+        {!isFoldersDemo && (
+          <MenuControl
+            setActiveEvent={setActiveEvent}
+            menuMarginRight={{
+              xs: 1,
+              sm: router?.query?.type === 'templates' ? -12 : -8
+            }}
+          />
+        )}
+      </Tabs>
     {/* Journeys tab panel */}
     <TabPanel
       name="journeys-content-panel"
@@ -108,5 +128,20 @@ export const TeamMode = ({
     >
       {renderList('templates', selectedStatus)}
     </TabPanel>
+    {/* Folders Demo tab panel */}
+    {contentTypeOptions[2] != null && (
+      <TabPanel
+        name="folders-demo-content-panel"
+        value={activeContentTypeTab}
+        index={contentTypeOptions[2].tabIndex}
+        unmountUntilVisible={
+          router?.query?.type !== undefined &&
+          router?.query?.type !== 'foldersDemo'
+        }
+      >
+        {renderList('foldersDemo', selectedStatus)}
+      </TabPanel>
+    )}
   </>
-)
+  )
+}
