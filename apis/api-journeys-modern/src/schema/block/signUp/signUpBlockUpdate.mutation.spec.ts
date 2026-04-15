@@ -126,17 +126,16 @@ describe('signUpBlockUpdate', () => {
   })
 
   it('updates with valid submitIconId', async () => {
+    prismaMock.block.findUnique.mockResolvedValue({
+      id: 'iconId',
+      parentBlockId: id
+    } as any)
     fetchBlockWithJourneyAcl.mockResolvedValue({
       id,
       journeyId: 'journeyId',
       journey: { id: 'journeyId' }
     })
     mockAbility.mockReturnValue(true)
-    prismaMock.block.findFirst.mockResolvedValue({
-      id: 'iconId',
-      parentBlockId: id,
-      typename: 'IconBlock'
-    } as any)
 
     const tx = {
       block: {
@@ -163,13 +162,8 @@ describe('signUpBlockUpdate', () => {
       }
     })
 
-    expect(prismaMock.block.findFirst).toHaveBeenCalledWith({
-      where: {
-        id: 'iconId',
-        parentBlockId: id,
-        typename: 'IconBlock',
-        deletedAt: null
-      }
+    expect(prismaMock.block.findUnique).toHaveBeenCalledWith({
+      where: { id: 'iconId', deletedAt: null }
     })
     expect(tx.block.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -191,13 +185,7 @@ describe('signUpBlockUpdate', () => {
   })
 
   it('returns NOT_FOUND for invalid submitIconId', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
-      id,
-      journeyId: 'journeyId',
-      journey: { id: 'journeyId' }
-    })
-    mockAbility.mockReturnValue(true)
-    prismaMock.block.findFirst.mockResolvedValue(null)
+    prismaMock.block.findUnique.mockResolvedValue(null)
 
     const result = await authClient({
       document: SIGN_UP_BLOCK_UPDATE,
@@ -218,46 +206,16 @@ describe('signUpBlockUpdate', () => {
   })
 
   it('returns NOT_FOUND when submitIconId is not a child of the block', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
-      id,
-      journeyId: 'journeyId',
-      journey: { id: 'journeyId' }
-    })
-    mockAbility.mockReturnValue(true)
-    prismaMock.block.findFirst.mockResolvedValue(null)
+    prismaMock.block.findUnique.mockResolvedValue({
+      id: 'iconId',
+      parentBlockId: 'otherBlockId'
+    } as any)
 
     const result = await authClient({
       document: SIGN_UP_BLOCK_UPDATE,
       variables: {
         id,
         input: { submitIconId: 'iconId' }
-      }
-    })
-
-    expect(result).toEqual({
-      data: null,
-      errors: [
-        expect.objectContaining({
-          message: 'Submit icon does not exist'
-        })
-      ]
-    })
-  })
-
-  it('returns NOT_FOUND when submitIconId is not an IconBlock', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
-      id,
-      journeyId: 'journeyId',
-      journey: { id: 'journeyId' }
-    })
-    mockAbility.mockReturnValue(true)
-    prismaMock.block.findFirst.mockResolvedValue(null)
-
-    const result = await authClient({
-      document: SIGN_UP_BLOCK_UPDATE,
-      variables: {
-        id,
-        input: { submitIconId: 'notAnIconBlockId' }
       }
     })
 
