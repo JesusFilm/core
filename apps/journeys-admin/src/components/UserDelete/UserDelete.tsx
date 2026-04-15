@@ -5,11 +5,11 @@ import {
   useSubscription,
   useSuspenseQuery
 } from '@apollo/client'
-import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -550,7 +550,7 @@ function UserDeleteContent(): ReactElement {
 
         <Button
           variant="contained"
-          onClick={() => void handleCheck()}
+          onClick={() => { void handleCheck() }}
           disabled={userId.trim() === '' || isCheckLoading || confirmLoading}
           sx={{ whiteSpace: 'nowrap', minWidth: 100 }}
         >
@@ -608,7 +608,7 @@ function UserDeleteContent(): ReactElement {
         <DialogActions>
           <Button onClick={() => setConfirmOpen(false)}>{t('Cancel')}</Button>
           <Button
-            onClick={() => void handleConfirmDelete()}
+            onClick={() => { void handleConfirmDelete() }}
             color="error"
             variant="contained"
             autoFocus

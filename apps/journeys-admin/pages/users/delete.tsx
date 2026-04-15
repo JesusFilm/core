@@ -5,8 +5,8 @@ import { ReactElement } from 'react'
 
 import { GetMe, GetMeVariables } from '../../__generated__/GetMe'
 import { PageWrapper } from '../../src/components/PageWrapper'
-import { UserDelete } from '../../src/components/UserDelete'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation/UserNavigation'
+import { UserDelete } from '../../src/components/UserDelete'
 import { useAuth } from '../../src/libs/auth'
 import {
   getAuthTokens,
