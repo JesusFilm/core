@@ -4,11 +4,11 @@ import {
   useSubscription,
   useSuspenseQuery
 } from '@apollo/client'
-import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -54,8 +54,8 @@ import {
   USER_DELETE_JOURNEYS_CHECK,
   USER_DELETE_JOURNEYS_CONFIRM
 } from './UserDelete.documents'
-import { UserDeleteErrorBoundary } from './UserDeleteErrorBoundary'
 import { UserDeleteConfirmDialog } from './UserDeleteConfirmDialog'
+import { UserDeleteErrorBoundary } from './UserDeleteErrorBoundary'
 
 export {
   USER_DELETE_CHECK,
@@ -423,7 +423,7 @@ function UserDeleteContent(): ReactElement {
 
         <Button
           variant="contained"
-          onClick={() => void handleCheck()}
+          onClick={() => { void handleCheck() }}
           disabled={userId.trim() === '' || isCheckLoading || confirmLoading}
           sx={{ whiteSpace: 'nowrap', minWidth: 100 }}
         >
@@ -466,7 +466,7 @@ function UserDeleteContent(): ReactElement {
       <UserDeleteConfirmDialog
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        onConfirm={() => void handleConfirmDelete()}
+        onConfirm={() => { void handleConfirmDelete() }}
       />
     </Box>
   )

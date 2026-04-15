@@ -10,6 +10,7 @@ import { print } from 'graphql'
 import { createClient } from 'graphql-sse'
 
 import { logout } from '../auth/firebase'
+
 import { SSELink, createApolloClient, createErrorLink } from './apolloClient'
 
 jest.mock('graphql-sse', () => ({
@@ -57,7 +58,7 @@ describe('SSELink', () => {
     mockSubscribe.mockImplementation((_op, sink) => {
       sink.next({ data: { item: { id: 'item-1' } } })
       sink.complete()
-      return (): void => {}
+      return () => undefined
     })
 
     const link = new SSELink('http://localhost:4000')
@@ -102,7 +103,7 @@ describe('SSELink', () => {
     mockSubscribe.mockImplementation((_op, sink) => {
       sink.next({ data: {} })
       sink.complete()
-      return (): void => {}
+      return () => undefined
     })
 
     const link = new SSELink('http://localhost:4000')
@@ -139,7 +140,7 @@ describe('SSELink', () => {
     const sseError = new Error('SSE connection failed')
     mockSubscribe.mockImplementation((_op, sink) => {
       sink.error(sseError)
-      return (): void => {}
+      return () => undefined
     })
 
     const link = new SSELink('http://localhost:4000')
