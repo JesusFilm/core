@@ -71,9 +71,7 @@ export function GuestPreviewScreen({
     <ScreenWrapper
       title={t('Your preview is ready')}
       mobileTitle={t('Preview ready')}
-      subtitle={t(
-        'This content contains buttons linking to external sites. Check them and update the links below.'
-      )}
+      subtitle={t('Preview your changes here. Tap on a card to zoom it in.')}
       mobileSubtitle={t('Tap on a card to zoom it in')}
     >
       <Stack
@@ -85,6 +83,7 @@ export function GuestPreviewScreen({
       >
         <Typography
           variant="subtitle2"
+          color="text.secondary"
           align="center"
           gutterBottom
           sx={{ mb: { xs: 0, sm: 2 } }}

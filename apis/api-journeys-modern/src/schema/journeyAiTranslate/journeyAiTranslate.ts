@@ -1,9 +1,9 @@
-import { google } from '@ai-sdk/google'
 import { Output, generateText, streamText } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
 import { Block, prisma } from '@core/prisma/journeys/client'
+import { createGeminiFallbackSession } from '@core/shared/ai/geminiModel'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
@@ -196,7 +196,8 @@ async function translateCardBlocks({
   journeyAnalysis,
   sourceLanguageName,
   targetLanguageName,
-  onBlockUpdated
+  onBlockUpdated,
+  session
 }: {
   allBlocks: Block[]
   cardBlock: Block
@@ -209,6 +210,7 @@ async function translateCardBlocks({
     blockId: string,
     updates: Partial<Record<TranslatableBlockField, string>>
   ) => void
+  session: ReturnType<typeof createGeminiFallbackSession>
 }): Promise<void> {
   const blocksToTranslate = getTranslatableBlocksForCard(allBlocks, cardBlock)
   if (blocksToTranslate.length === 0) return
@@ -229,49 +231,52 @@ ${hardenPrompt(cardContent)}
 Blocks to translate (use the EXACT IDs shown in square brackets as blockId):
 ${hardenPrompt(blocksInfo)}`
 
-  const { elementStream } = streamText({
-    model: google('gemini-2.5-flash'),
-    messages: [
-      { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
-      {
-        role: 'user',
-        content: [{ type: 'text', text: prompt }]
+  await session.execute(async (model) => {
+    const { elementStream } = streamText({
+      model,
+      maxRetries: 0,
+      messages: [
+        { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
+        {
+          role: 'user',
+          content: [{ type: 'text', text: prompt }]
+        }
+      ],
+      output: Output.array({ element: BlockTranslationSchema }),
+      onError: ({ error }) => {
+        console.warn(
+          `Error in translation stream for card ${cardBlock.id}:`,
+          error
+        )
       }
-    ],
-    output: Output.array({ element: BlockTranslationSchema }),
-    onError: ({ error }) => {
-      console.warn(
-        `Error in translation stream for card ${cardBlock.id}:`,
-        error
-      )
+    })
+
+    for await (const item of elementStream) {
+      try {
+        const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
+
+        if (!allowedBlockIds.has(cleanBlockId)) continue
+
+        const blockToUpdate = allBlocks.find((b) => b.id === cleanBlockId)
+        if (blockToUpdate == null) continue
+
+        const validatedUpdates = getValidatedBlockUpdates(
+          blockToUpdate,
+          item.updates
+        )
+        if (validatedUpdates == null) continue
+
+        await prisma.block.update({
+          where: { id: cleanBlockId, journeyId },
+          data: validatedUpdates
+        })
+
+        onBlockUpdated?.(cleanBlockId, validatedUpdates)
+      } catch (updateError) {
+        console.error(`Error updating block ${item.blockId}:`, updateError)
+      }
     }
   })
-
-  for await (const item of elementStream) {
-    try {
-      const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
-
-      if (!allowedBlockIds.has(cleanBlockId)) continue
-
-      const blockToUpdate = allBlocks.find((b) => b.id === cleanBlockId)
-      if (blockToUpdate == null) continue
-
-      const validatedUpdates = getValidatedBlockUpdates(
-        blockToUpdate,
-        item.updates
-      )
-      if (validatedUpdates == null) continue
-
-      await prisma.block.update({
-        where: { id: cleanBlockId, journeyId },
-        data: validatedUpdates
-      })
-
-      onBlockUpdated?.(cleanBlockId, validatedUpdates)
-    } catch (updateError) {
-      console.error(`Error updating block ${item.blockId}:`, updateError)
-    }
-  }
 }
 
 // Define the shared input type
@@ -396,6 +401,8 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           journey: null
         }
 
+        const session = createGeminiFallbackSession()
+
         // Step 1: Analyze and translate journey title, description, and SEO fields
         const analysisPrompt = buildAnalysisPrompt({
           sourceLanguageName: input.journeyLanguageName,
@@ -407,19 +414,22 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           cardBlocksContent
         })
 
-        const { output: analysisResult } = await generateText({
-          model: google('gemini-2.5-flash'),
-          messages: [
-            { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
-            {
-              role: 'user',
-              content: [{ type: 'text', text: analysisPrompt }]
-            }
-          ],
-          output: Output.object({
-            schema: JourneyAnalysisSchema
+        const { output: analysisResult } = await session.execute((model) =>
+          generateText({
+            model,
+            maxRetries: 0,
+            messages: [
+              { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
+              {
+                role: 'user',
+                content: [{ type: 'text', text: analysisPrompt }]
+              }
+            ],
+            output: Output.object({
+              schema: JourneyAnalysisSchema
+            })
           })
-        })
+        )
 
         if (!analysisResult.title) {
           throw new GraphQLError('Failed to translate journey title')
@@ -445,7 +455,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           journey: null
         }
 
-        const customizationLanguageName =
+        const descriptionLanguageName =
           input.userLanguageName ?? input.textLanguageName
 
         // Translate customization fields and description
@@ -454,7 +464,8 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
             journey.journeyCustomizationDescription,
           journeyCustomizationFields: journey.journeyCustomizationFields,
           sourceLanguageName: input.journeyLanguageName,
-          targetLanguageName: customizationLanguageName,
+          targetLanguageName: input.textLanguageName,
+          descriptionTargetLanguageName: descriptionLanguageName,
           defaultValueTargetLanguageName: input.textLanguageName,
           journeyAnalysis: analysisResult.analysis
         })
@@ -563,7 +574,8 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
                     ...updates
                   }
                 }
-              }
+              },
+              session
             }).catch((error) => {
               console.warn(
                 `Error translating card ${cardBlocks[cardIndex].id}:`,
@@ -673,6 +685,8 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
         cardBlocks
       })
 
+      const session = createGeminiFallbackSession()
+
       try {
         // 4. Use Gemini to analyze the journey content and get intent, and translate title/description
         const analysisPrompt = buildAnalysisPrompt({
@@ -685,19 +699,23 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
           cardBlocksContent
         })
 
-        const { output: analysisAndTranslation } = await generateText({
-          model: google('gemini-2.5-flash'),
-          messages: [
-            { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
-            {
-              role: 'user',
-              content: [{ type: 'text', text: analysisPrompt }]
-            }
-          ],
-          output: Output.object({
-            schema: JourneyAnalysisSchema
-          })
-        })
+        const { output: analysisAndTranslation } = await session.execute(
+          (model) =>
+            generateText({
+              model,
+              maxRetries: 0,
+              messages: [
+                { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
+                {
+                  role: 'user',
+                  content: [{ type: 'text', text: analysisPrompt }]
+                }
+              ],
+              output: Output.object({
+                schema: JourneyAnalysisSchema
+              })
+            })
+        )
 
         if (!analysisAndTranslation.title)
           throw new Error('Failed to translate journey title')
@@ -714,7 +732,7 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
         if (journey.seoDescription && !analysisAndTranslation.seoDescription)
           throw new Error('Failed to translate journey seo description')
 
-        const customizationLanguageName =
+        const descriptionLanguageName =
           input.userLanguageName ?? input.textLanguageName
 
         // Translate customization fields and description
@@ -723,7 +741,8 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
             journey.journeyCustomizationDescription,
           journeyCustomizationFields: journey.journeyCustomizationFields,
           sourceLanguageName: input.journeyLanguageName,
-          targetLanguageName: customizationLanguageName,
+          targetLanguageName: input.textLanguageName,
+          descriptionTargetLanguageName: descriptionLanguageName,
           defaultValueTargetLanguageName: input.textLanguageName,
           journeyAnalysis: analysisAndTranslation.analysis
         })
@@ -781,7 +800,8 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
               cardContent: cardBlocksContent[i],
               journeyAnalysis: analysisAndTranslation.analysis,
               sourceLanguageName,
-              targetLanguageName
+              targetLanguageName,
+              session
             }).catch((error) => {
               console.warn(`Error translating card ${cardBlock.id}:`, error)
             })

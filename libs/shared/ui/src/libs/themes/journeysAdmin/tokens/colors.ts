@@ -1,4 +1,19 @@
-import { ThemeOptions } from '@mui/material/styles'
+import { PaletteColorOptions, ThemeOptions } from '@mui/material/styles'
+
+declare module '@mui/material/styles' {
+  interface Palette {
+    solid: Palette['primary']
+  }
+  interface PaletteOptions {
+    solid?: PaletteColorOptions
+  }
+}
+
+declare module '@mui/material/Button' {
+  interface ButtonPropsColorOverrides {
+    solid: true
+  }
+}
 
 export const palette = {
   error: '#B62D1C',
@@ -35,6 +50,12 @@ export const adminColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
       primary: palette[800],
       secondary: palette[700]
     },
-    divider: palette[200]
+    divider: palette[200],
+    solid: {
+      light: palette[800],
+      main: palette[900],
+      dark: palette[900],
+      contrastText: palette[0]
+    }
   }
 }

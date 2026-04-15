@@ -104,7 +104,8 @@ export async function translateValue({
  * @param journeyCustomizationDescription - The customization description string
  * @param journeyCustomizationFields - Array of customization field objects
  * @param sourceLanguageName - Source language name
- * @param targetLanguageName - Target language name for values and description
+ * @param targetLanguageName - Target language name for field values
+ * @param descriptionTargetLanguageName - Target language name for description text outside \{\{ \}\} (falls back to targetLanguageName)
  * @param defaultValueTargetLanguageName - Target language name for default values (falls back to targetLanguageName)
  * @param journeyAnalysis - Optional journey analysis context for better translation
  * @returns Object with translated description and fields
@@ -114,6 +115,7 @@ export async function translateCustomizationFields({
   journeyCustomizationFields,
   sourceLanguageName,
   targetLanguageName,
+  descriptionTargetLanguageName,
   defaultValueTargetLanguageName,
   journeyAnalysis
 }: {
@@ -121,6 +123,7 @@ export async function translateCustomizationFields({
   journeyCustomizationFields: JourneyCustomizationField[]
   sourceLanguageName: string
   targetLanguageName: string
+  descriptionTargetLanguageName?: string
   defaultValueTargetLanguageName?: string
   journeyAnalysis?: string
 }): Promise<{
@@ -132,24 +135,31 @@ export async function translateCustomizationFields({
     translatedDefaultValue: string | null
   }>
 }> {
+  const effectiveDescriptionTarget =
+    descriptionTargetLanguageName ?? targetLanguageName
   const effectiveDefaultValueTarget =
     defaultValueTargetLanguageName ?? targetLanguageName
 
+  const hasNonBlank = (v: string | null): v is string =>
+    typeof v === 'string' && v.trim().length > 0
+
   const fieldsWithContent = journeyCustomizationFields.filter(
-    (field) => field.value || field.defaultValue
+    (field) => hasNonBlank(field.value) || hasNonBlank(field.defaultValue)
   )
 
-  if (fieldsWithContent.length === 0 && !journeyCustomizationDescription) {
+  const hasDescription = hasNonBlank(journeyCustomizationDescription)
+
+  if (fieldsWithContent.length === 0 && !hasDescription) {
     return { translatedDescription: null, translatedFields: [] }
   }
 
   const valueEntries = fieldsWithContent
     .map((f, i) => ({ index: i, text: f.value }))
-    .filter((e): e is { index: number; text: string } => e.text != null)
+    .filter((e): e is { index: number; text: string } => hasNonBlank(e.text))
 
   const defaultValueEntries = fieldsWithContent
     .map((f, i) => ({ index: i, text: f.defaultValue }))
-    .filter((e): e is { index: number; text: string } => e.text != null)
+    .filter((e): e is { index: number; text: string } => hasNonBlank(e.text))
 
   const [translatedValues, translatedDefaults, translatedDescription] =
     await Promise.all([
@@ -171,11 +181,11 @@ export async function translateCustomizationFields({
           })
         : Promise.resolve([] as string[]),
 
-      journeyCustomizationDescription
+      hasDescription
         ? translateCustomizationDescription({
             description: journeyCustomizationDescription,
             sourceLanguageName,
-            targetLanguageName,
+            targetLanguageName: effectiveDescriptionTarget,
             journeyAnalysis
           })
         : Promise.resolve(null)
@@ -251,6 +261,30 @@ ${hardenPrompt(description)}`
       schema: CustomizationDescriptionTranslationSchema
     })
   })
+
+  if (fieldMatches.length > 0) {
+    const translatedTokens: string[] = []
+    const verifyPattern =
+      /\{\{\s*([^:}]+)(?:\s*:\s*(?:(['"])([^'"]*)\2|([^}]*?)))?\s*\}\}/g
+    let verifyMatch
+    while (
+      (verifyMatch = verifyPattern.exec(output.translatedDescription)) !== null
+    ) {
+      translatedTokens.push(verifyMatch[0])
+    }
+
+    const tokensPreserved =
+      fieldMatches.length === translatedTokens.length &&
+      fieldMatches.every((token, i) => token === translatedTokens[i])
+
+    if (!tokensPreserved) {
+      console.warn(
+        'Customization description translation mangled {{ }} tokens, falling back to original',
+        { expected: fieldMatches, got: translatedTokens }
+      )
+      return description
+    }
+  }
 
   return output.translatedDescription
 }
