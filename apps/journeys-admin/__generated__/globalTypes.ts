@@ -328,9 +328,16 @@ export enum TypographyVariant {
   subtitle2 = "subtitle2",
 }
 
+export enum USER_DELETE_LOG_LEVEL {
+  ERROR = "ERROR",
+  INFO = "INFO",
+  WARN = "WARN",
+}
+
 export enum UserDeleteIdType {
   databaseId = "databaseId",
   email = "email",
+  jwt = "jwt",
 }
 
 export enum UserJourneyRole {
