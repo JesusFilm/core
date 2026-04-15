@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { UserDeleteIdType } from "./globalTypes";
+import { UserDeleteIdType, USER_DELETE_LOG_LEVEL } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: UserDeleteCheck
@@ -12,7 +12,7 @@ import { UserDeleteIdType } from "./globalTypes";
 export interface UserDeleteCheck_userDeleteCheck_logs {
   __typename: "UserDeleteLogEntry";
   message: string;
-  level: string;
+  level: USER_DELETE_LOG_LEVEL;
   timestamp: string;
 }
 
