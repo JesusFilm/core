@@ -114,8 +114,8 @@ describe('deleteJourneysData', () => {
     expect(result.success).toBe(false)
     expect(result.logs.some((l) => l.level === 'error')).toBe(true)
     // Error message must not leak raw DB details to the client
-    expect(
-      result.logs.find((l) => l.level === 'error')?.message
-    ).not.toContain('DB crashed')
+    expect(result.logs.find((l) => l.level === 'error')?.message).not.toContain(
+      'DB crashed'
+    )
   })
 })

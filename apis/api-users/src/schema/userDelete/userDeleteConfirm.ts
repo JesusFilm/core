@@ -2,12 +2,7 @@ import { prisma } from '@core/prisma/users/client'
 
 import { builder } from '../builder'
 
-import {
-  type LogEntry,
-  createLog,
-  deleteUserData,
-  lookupUser
-} from './service'
+import { type LogEntry, createLog, deleteUserData, lookupUser } from './service'
 import { deleteFirebaseOnlyAccount } from './service/deleteFirebaseOnlyAccount'
 import { UserDeleteIdType, UserDeleteLogEntry } from './userDeleteCheck'
 

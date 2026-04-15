@@ -244,7 +244,9 @@ export async function deleteJourneysData(
         if (exportLogs.count > 0)
           txLogs.push(createLog(`Deleted ${exportLogs.count} export logs`))
         if (journeyThemes.count > 0)
-          txLogs.push(createLog(`Deleted ${journeyThemes.count} journey themes`))
+          txLogs.push(
+            createLog(`Deleted ${journeyThemes.count} journey themes`)
+          )
         if (journeyProfile.count > 0)
           txLogs.push(
             createLog(`Deleted ${journeyProfile.count} journey profile`)
@@ -283,9 +285,7 @@ export async function deleteJourneysData(
     }
   } catch (error) {
     console.error('deleteJourneysData failed:', error)
-    logs.push(
-      createLog('❌ Journeys database cleanup failed', 'error')
-    )
+    logs.push(createLog('❌ Journeys database cleanup failed', 'error'))
     return {
       success: false,
       deletedJourneyIds: [],
