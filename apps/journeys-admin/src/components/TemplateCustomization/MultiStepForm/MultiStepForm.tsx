@@ -144,7 +144,7 @@ export function MultiStepForm(): ReactElement {
           borderRadius: { xs: '0px', sm: '16px' },
           mt: { xs: 0, sm: 6 },
           mb: { xs: 0, sm: 6 },
-          pt: { xs: '62px', sm: 10 },
+          pt: { xs: isGuest ? '62px' : '31px', sm: 10 },
           pb: 10,
           overflow: 'hidden'
         }}
