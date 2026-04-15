@@ -167,10 +167,9 @@ export function PasswordPage({
                   {t('Cancel')}
                 </Button>
                 <Button
-                  variant="contained"
-                  size="large"
+                  variant="blockContained"
                   type="submit"
-                  color="secondary"
+                  color="solid"
                   fullWidth
                 >
                   {t('Sign In')}

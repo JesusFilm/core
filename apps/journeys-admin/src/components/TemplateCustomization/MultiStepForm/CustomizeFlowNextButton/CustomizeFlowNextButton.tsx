@@ -1,15 +1,8 @@
 import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
 import { SxProps, Theme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
-
-import {
-  BUTTON_NEXT_STEP_HEIGHT,
-  BUTTON_NEXT_STEP_WIDTH
-} from '../../utils/sharedStyles'
 
 interface CustomizeFlowNextButtonProps {
   label: string
@@ -34,8 +27,8 @@ export const CustomizeFlowNextButton = ({
 }: CustomizeFlowNextButtonProps): ReactElement => {
   return (
     <Button
-      variant="contained"
-      color="secondary"
+      variant="blockContained"
+      color="solid"
       type={type}
       form={form}
       onClick={onClick}
@@ -43,21 +36,16 @@ export const CustomizeFlowNextButton = ({
       disabled={disabled}
       aria-label={ariaLabel}
       data-testid="CustomizeFlowNextButton"
+      endIcon={<ArrowRightIcon />}
       sx={{
-        width: { xs: '100%', sm: BUTTON_NEXT_STEP_WIDTH },
-        height: BUTTON_NEXT_STEP_HEIGHT,
+        width: { xs: '100%', sm: '216px' },
         alignSelf: 'center',
-        mt: { xs: 6, sm: 4 },
+        mt: 5,
         borderRadius: 2,
         ...sx
       }}
     >
-      <Stack direction="row" alignItems="center" gap={1}>
-        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-          {label}
-        </Typography>
-        <ArrowRightIcon sx={{ fontSize: 24 }} />
-      </Stack>
+      {label}
     </Button>
   )
 }

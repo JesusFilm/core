@@ -2,6 +2,7 @@
 // and object type in the schema
 
 import './user'
+import './userDelete'
 
 import { builder } from './builder'
 
