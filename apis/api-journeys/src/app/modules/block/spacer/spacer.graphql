@@ -5,4 +5,3 @@ type SpacerBlock implements Block @shareable {
   parentOrder: Int @shareable
   spacing: Int @shareable
 }
-

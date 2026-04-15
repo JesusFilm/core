@@ -7,4 +7,3 @@ type SignUpBlock implements Block @shareable {
   submitIconId: ID @shareable
   submitLabel: String @shareable
 }
-

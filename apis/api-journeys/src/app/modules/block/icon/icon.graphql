@@ -59,4 +59,3 @@ type IconBlock implements Block @shareable {
   color: IconColor @shareable
   size: IconSize @shareable
 }
-

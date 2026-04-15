@@ -5,4 +5,3 @@ type RadioQuestionBlock implements Block @shareable {
   parentOrder: Int @shareable
   gridView: Boolean @shareable
 }
-

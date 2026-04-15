@@ -8,4 +8,3 @@ type RadioOptionBlock implements Block @shareable {
   action: Action
   pollOptionImageBlockId: ID @shareable
 }
-

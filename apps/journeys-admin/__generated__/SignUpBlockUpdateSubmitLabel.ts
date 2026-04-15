@@ -14,7 +14,7 @@ export interface SignUpBlockUpdateSubmitLabel_signUpBlockUpdate {
 }
 
 export interface SignUpBlockUpdateSubmitLabel {
-  signUpBlockUpdate: SignUpBlockUpdateSubmitLabel_signUpBlockUpdate | null;
+  signUpBlockUpdate: SignUpBlockUpdateSubmitLabel_signUpBlockUpdate;
 }
 
 export interface SignUpBlockUpdateSubmitLabelVariables {
