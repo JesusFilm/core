@@ -2537,7 +2537,14 @@ type PlausibleStatsResponse @join__type(graph: API_JOURNEYS_MODERN)  {
 
 type Subscription @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress! @join__field(graph: API_JOURNEYS_MODERN) 
-  userDeleteConfirm(idType: UserDeleteIdType!, id: String!, deletedJourneyIds: [String!]!, deletedTeamIds: [String!]!, deletedUserJourneyIds: [String!]!, deletedUserTeamIds: [String!]!) : UserDeleteConfirmProgress! @join__field(graph: API_USERS)
+  userDeleteConfirm(
+    idType: UserDeleteIdType!
+    id: String!
+    deletedJourneyIds: [String!]!
+    deletedTeamIds: [String!]!
+    deletedUserJourneyIds: [String!]!
+    deletedUserTeamIds: [String!]!
+  ): UserDeleteConfirmProgress! @join__field(graph: API_USERS) 
 }
 
 type TemplateFamilyStatsAggregateResponse @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2580,7 +2587,7 @@ type UserDeleteJourneysConfirmResult @join__type(graph: API_JOURNEYS_MODERN)  {
 
 type UserDeleteJourneysLogEntry @join__type(graph: API_JOURNEYS_MODERN)  {
   message: String!
-  level: String!
+  level: USER_DELETE_LOG_LEVEL!
   timestamp: String!
 }
 
@@ -3348,7 +3355,7 @@ type UserDeleteConfirmProgress @join__type(graph: API_USERS)  {
 
 type UserDeleteLogEntry @join__type(graph: API_USERS)  {
   message: String!
-  level: String!
+  level: USER_DELETE_LOG_LEVEL!
   timestamp: String!
 }
 
@@ -3700,10 +3707,10 @@ enum MessagePlatform @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JO
   menu1 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   checkBroken @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   checkContained @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  settings @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)
-  discord @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)
-  signal @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)
-  weChat @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)
+  settings @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  discord @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  signal @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  weChat @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum ButtonAction @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3828,6 +3835,12 @@ enum PlausibleEvent @join__type(graph: API_JOURNEYS_MODERN)  {
   linksClicked @join__enumValue(graph: API_JOURNEYS_MODERN) 
   journeyVisitors @join__enumValue(graph: API_JOURNEYS_MODERN) 
   journeyResponses @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum USER_DELETE_LOG_LEVEL @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
+  INFO @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_USERS) 
+  WARN @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_USERS) 
+  ERROR @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_USERS) 
 }
 
 enum LanguageRole @join__type(graph: API_LANGUAGES)  {
@@ -3965,6 +3978,7 @@ enum App @join__type(graph: API_USERS)  {
 enum UserDeleteIdType @join__type(graph: API_USERS)  {
   databaseId @join__enumValue(graph: API_USERS) 
   email @join__enumValue(graph: API_USERS) 
+  jwt @join__enumValue(graph: API_USERS) 
 }
 
 input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
