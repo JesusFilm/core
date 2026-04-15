@@ -1,9 +1,9 @@
-import { google } from '@ai-sdk/google'
 import { Output, generateText, streamText } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
 import { prisma } from '@core/prisma/journeys/client'
+import { createGeminiFallbackSession } from '@core/shared/ai/geminiModel'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
@@ -199,6 +199,8 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           journey: null
         }
 
+        const session = createGeminiFallbackSession()
+
         // Step 1: Analyze and translate journey title, description, and SEO fields
         const combinedPrompt = `
 Analyze this journey content and provide the key intent, themes, and target audience.
@@ -233,27 +235,30 @@ Return in this format:
 }
 `
 
-        const { output: analysisResult } = await generateText({
-          model: google('gemini-2.5-flash'),
-          messages: [
-            {
-              role: 'system',
-              content: preSystemPrompt
-            },
-            {
-              role: 'user',
-              content: [
-                {
-                  type: 'text',
-                  text: combinedPrompt
-                }
-              ]
-            }
-          ],
-          output: Output.object({
-            schema: JourneyAnalysisSchema
+        const { output: analysisResult } = await session.execute((model) =>
+          generateText({
+            model,
+            maxRetries: 0,
+            messages: [
+              {
+                role: 'system',
+                content: preSystemPrompt
+              },
+              {
+                role: 'user',
+                content: [
+                  {
+                    type: 'text',
+                    text: combinedPrompt
+                  }
+                ]
+              }
+            ],
+            output: Output.object({
+              schema: JourneyAnalysisSchema
+            })
           })
-        })
+        )
 
         if (!analysisResult.title) {
           throw new GraphQLError('Failed to translate journey title')
@@ -429,86 +434,83 @@ If there is no Bible translation was available, use the the most popular English
             )
 
             try {
-              // Stream the translations
-              const { elementStream } = streamText({
-                model: google('gemini-2.5-flash'),
-                messages: [
-                  {
-                    role: 'system',
-                    content: preSystemPrompt
-                  },
-                  {
-                    role: 'user',
-                    content: [
-                      {
-                        type: 'text',
-                        text: blockTranslationPrompt
+              await session.execute(async (model) => {
+                // Stream the translations
+                const { elementStream } = streamText({
+                  model,
+                  maxRetries: 0,
+                  messages: [
+                    {
+                      role: 'system',
+                      content: preSystemPrompt
+                    },
+                    {
+                      role: 'user',
+                      content: [
+                        {
+                          type: 'text',
+                          text: blockTranslationPrompt
+                        }
+                      ]
+                    }
+                  ],
+                  output: Output.array({
+                    element: BlockTranslationSchema
+                  })
+                })
+
+                for await (const item of elementStream) {
+                  try {
+                    const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
+
+                    // Verify the block belongs to the current card translation batch
+                    if (!allowedBlockIdsForCard.has(cleanBlockId)) {
+                      continue
+                    }
+
+                    const blockToUpdate = updatedJourney.blocks.find(
+                      (block) => block.id === cleanBlockId
+                    )
+
+                    if (blockToUpdate == null) {
+                      continue
+                    }
+
+                    const validatedUpdates = getValidatedBlockUpdates(
+                      blockToUpdate,
+                      item.updates
+                    )
+
+                    if (validatedUpdates == null) {
+                      continue
+                    }
+
+                    await prisma.block.update({
+                      where: {
+                        id: cleanBlockId,
+                        journeyId: input.journeyId
+                      },
+                      data: validatedUpdates
+                    })
+
+                    // Update the in-memory journey blocks
+                    const blockIndex = updatedJourney.blocks.findIndex(
+                      (block) => block.id === cleanBlockId
+                    )
+                    if (blockIndex !== -1) {
+                      updatedJourney.blocks[blockIndex] = {
+                        ...updatedJourney.blocks[blockIndex],
+                        ...validatedUpdates
                       }
-                    ]
+                    }
+                  } catch (updateError) {
+                    console.error(
+                      `Error updating block ${item.blockId}:`,
+                      updateError
+                    )
                   }
-                ],
-                output: Output.array({
-                  element: BlockTranslationSchema
-                }),
-                onError: ({ error }) => {
-                  console.warn(
-                    `Error in translation stream for card ${cardBlock.id}:`,
-                    error
-                  )
                 }
               })
-
-              for await (const item of elementStream) {
-                try {
-                  const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
-
-                  // Verify the block belongs to the current card translation batch
-                  if (!allowedBlockIdsForCard.has(cleanBlockId)) {
-                    continue
-                  }
-
-                  const blockToUpdate = updatedJourney.blocks.find(
-                    (block) => block.id === cleanBlockId
-                  )
-
-                  if (blockToUpdate == null) {
-                    continue
-                  }
-
-                  const validatedUpdates = getValidatedBlockUpdates(
-                    blockToUpdate,
-                    item.updates
-                  )
-
-                  if (validatedUpdates == null) {
-                    continue
-                  }
-
-                  await prisma.block.update({
-                    where: {
-                      id: cleanBlockId,
-                      journeyId: input.journeyId
-                    },
-                    data: validatedUpdates
-                  })
-
-                  // Update the in-memory journey blocks
-                  const blockIndex = updatedJourney.blocks.findIndex(
-                    (block) => block.id === cleanBlockId
-                  )
-                  if (blockIndex !== -1) {
-                    updatedJourney.blocks[blockIndex] = {
-                      ...updatedJourney.blocks[blockIndex],
-                      ...validatedUpdates
-                    }
-                  }
-                } catch (updateError) {
-                  console.error(
-                    `Error updating block ${item.blockId}:`,
-                    updateError
-                  )
-                }
-              }
             } catch (error) {
               console.warn(`Error translating card ${cardBlock.id}:`, error)
               // Continue with other cards
@@ -679,27 +681,33 @@ Return in this format:
 `
 
       try {
-        const { output: analysisAndTranslation } = await generateText({
-          model: google('gemini-2.5-flash'),
-          messages: [
-            {
-              role: 'system',
-              content: preSystemPrompt
-            },
-            {
-              role: 'user',
-              content: [
+        const session = createGeminiFallbackSession()
+
+        const { output: analysisAndTranslation } = await session.execute(
+          (model) =>
+            generateText({
+              model,
+              maxRetries: 0,
+              messages: [
                 {
-                  type: 'text',
-                  text: combinedPrompt
+                  role: 'system',
+                  content: preSystemPrompt
+                },
+                {
+                  role: 'user',
+                  content: [
+                    {
+                      type: 'text',
+                      text: combinedPrompt
+                    }
+                  ]
                 }
-              ]
-            }
-          ],
-          output: Output.object({
-            schema: JourneyAnalysisSchema
-          })
-        })
+              ],
+              output: Output.object({
+                schema: JourneyAnalysisSchema
+              })
+            })
+        )
 
         if (!analysisAndTranslation.title)
           throw new Error('Failed to translate journey title')
@@ -851,75 +859,72 @@ You must never make changes to content from the Bible yourself.
 If there is no Bible translation was available, use the the most popular English Bible translation available. 
 `
               try {
-                // Stream the translations
-                const { elementStream } = streamText({
-                  model: google('gemini-2.5-flash'),
-                  messages: [
-                    {
-                      role: 'system',
-                      content: preSystemPrompt
-                    },
-                    {
-                      role: 'user',
-                      content: [
-                        {
-                          type: 'text',
-                          text: cardAnalysisPrompt
-                        }
-                      ]
+                await session.execute(async (model) => {
+                  // Stream the translations
+                  const { elementStream } = streamText({
+                    model,
+                    maxRetries: 0,
+                    messages: [
+                      {
+                        role: 'system',
+                        content: preSystemPrompt
+                      },
+                      {
+                        role: 'user',
+                        content: [
+                          {
+                            type: 'text',
+                            text: cardAnalysisPrompt
+                          }
+                        ]
+                      }
+                    ],
+                    output: Output.array({
+                      element: BlockTranslationSchema
+                    })
+                  })
+
+                  for await (const item of elementStream) {
+                    try {
+                      const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
+
+                      // Verify the block belongs to the current card translation batch
+                      if (!allowedBlockIdsForCard.has(cleanBlockId)) {
+                        continue
+                      }
+
+                      const blockToUpdate = journey.blocks.find(
+                        (block) => block.id === cleanBlockId
+                      )
+
+                      if (blockToUpdate == null) {
+                        continue
+                      }
+
+                      const validatedUpdates = getValidatedBlockUpdates(
+                        blockToUpdate,
+                        item.updates
+                      )
+
+                      if (validatedUpdates == null) {
+                        continue
+                      }
+
+                      await prisma.block.update({
+                        where: {
+                          id: cleanBlockId,
+                          journeyId: input.journeyId
+                        },
+                        data: validatedUpdates
+                      })
+                    } catch (updateError) {
+                      console.error(
+                        `Error updating block ${item.blockId}:`,
+                        updateError
+                      )
                     }
-                  ],
-                  output: Output.array({
-                    element: BlockTranslationSchema
-                  }),
-                  onError: ({ error }) => {
-                    console.warn(
-                      `Error in translation stream for card ${cardBlock.id}:`,
-                      error
-                    )
                   }
                 })
-
-                for await (const item of elementStream) {
-                  try {
-                    const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
-
-                    // Verify the block belongs to the current card translation batch
-                    if (!allowedBlockIdsForCard.has(cleanBlockId)) {
-                      continue
-                    }
-
-                    const blockToUpdate = journey.blocks.find(
-                      (block) => block.id === cleanBlockId
-                    )
-
-                    if (blockToUpdate == null) {
-                      continue
-                    }
-
-                    const validatedUpdates = getValidatedBlockUpdates(
-                      blockToUpdate,
-                      item.updates
-                    )
-
-                    if (validatedUpdates == null) {
-                      continue
-                    }
-
-                    await prisma.block.update({
-                      where: {
-                        id: cleanBlockId,
-                        journeyId: input.journeyId
-                      },
-                      data: validatedUpdates
-                    })
-                  } catch (updateError) {
-                    console.error(
-                      `Error updating block ${item.blockId}:`,
-                      updateError
-                    )
-                  }
-                }
               } catch (error) {
                 console.warn(`Error translating card ${cardBlock.id}:`, error)
                 // Continue with other cards

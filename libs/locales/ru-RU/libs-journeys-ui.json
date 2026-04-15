@@ -114,5 +114,6 @@
   "{{count}} Videos_one": "{{count}} Видео",
   "{{count}} Videos_few": "{{count}} Видео",
   "{{count}} Videos_many": "{{count}} Видео",
-  "{{count}} Videos_other": "{{count}} Видео"
+  "{{count}} Videos_other": "{{count}} Видео",
+  "None": "None"
 }
