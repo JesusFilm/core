@@ -36,8 +36,10 @@ export function UserDeleteConfirmDialog({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>{t('Cancel')}</Button>
-        <Button onClick={onConfirm} color="error" variant="contained" autoFocus>
+        <Button onClick={onClose} autoFocus>
+          {t('Cancel')}
+        </Button>
+        <Button onClick={onConfirm} color="error" variant="contained">
           {t('Delete Permanently')}
         </Button>
       </DialogActions>

@@ -18,7 +18,7 @@ import DebounceLink from 'apollo-link-debounce'
 import { getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { print } from 'graphql'
-import { Client, createClient } from 'graphql-sse'
+import { createClient } from 'graphql-sse'
 import { useMemo } from 'react'
 import { Observable } from 'zen-observable-ts'
 
@@ -32,35 +32,33 @@ let apolloClient: ApolloClient<NormalizedCacheObject>
 const DEFAULT_DEBOUNCE_TIMEOUT = 500
 
 // Custom Apollo Link for Server-Sent Events using graphql-sse.
-// The graphql-sse Client is created once (singleton) and reused across
-// subscriptions. The auth headers are captured at request time via the
-// `headers` factory function so each SSE connection uses the current token.
+// A new graphql-sse Client is created per request so each subscription
+// captures its own auth headers in a closure, avoiding race conditions
+// between concurrent subscriptions sharing mutable state.
 export class SSELink extends ApolloLink {
   private url: string
-  private client: Client
-  private headers: Record<string, string> = {}
 
   constructor(url: string) {
     super()
     this.url = url
-    this.client = createClient({
-      url,
-      headers: () => ({
-        ...this.headers,
-        'Content-Type': 'application/json',
-        Accept: 'text/event-stream'
-      })
-    })
   }
 
   public request(
     operation: Operation,
     _forward?: NextLink
   ): Observable<FetchResult> | null {
-    this.headers = operation.getContext().headers ?? {}
+    const headers = operation.getContext().headers ?? {}
+    const client = createClient({
+      url: this.url,
+      headers: () => ({
+        ...headers,
+        'Content-Type': 'application/json',
+        Accept: 'text/event-stream'
+      })
+    })
 
     return new Observable<FetchResult>((observer) => {
-      const unsubscribe = this.client.subscribe(
+      const unsubscribe = client.subscribe(
         {
           query: print(operation.query),
           variables: operation.variables,
