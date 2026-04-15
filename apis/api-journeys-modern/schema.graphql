@@ -2396,6 +2396,12 @@ enum TypographyVariant {
   overline
 }
 
+enum USER_DELETE_LOG_LEVEL {
+  INFO
+  WARN
+  ERROR
+}
+
 type User
   @key(fields: "id")
   @interfaceObject
@@ -2432,7 +2438,7 @@ type UserDeleteJourneysConfirmResult {
 
 type UserDeleteJourneysLogEntry {
   message: String!
-  level: String!
+  level: USER_DELETE_LOG_LEVEL!
   timestamp: String!
 }
 
