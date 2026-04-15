@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { USER_DELETE_LOG_LEVEL } from "./globalTypes";
+
 // ====================================================
 // GraphQL mutation operation: UserDeleteJourneysConfirm
 // ====================================================
@@ -10,7 +12,7 @@
 export interface UserDeleteJourneysConfirm_userDeleteJourneysConfirm_logs {
   __typename: "UserDeleteJourneysLogEntry";
   message: string;
-  level: string;
+  level: USER_DELETE_LOG_LEVEL;
   timestamp: string;
 }
 
