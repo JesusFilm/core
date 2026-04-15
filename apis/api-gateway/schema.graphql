@@ -284,7 +284,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     journeyId: ID
   ): ButtonBlock @join__field(graph: API_JOURNEYS_MODERN) 
-  cardBlockCreate(input: CardBlockCreateInput!) : CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  cardBlockCreate(input: CardBlockCreateInput!) : CardBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   cardBlockUpdate(
     id: ID!
     input: CardBlockUpdateInput!
@@ -292,8 +292,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  iconBlockCreate(input: IconBlockCreateInput!) : IconBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): CardBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  iconBlockCreate(input: IconBlockCreateInput!) : IconBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   iconBlockUpdate(
     id: ID!
     input: IconBlockUpdateInput!
@@ -301,8 +301,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): IconBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  imageBlockCreate(input: ImageBlockCreateInput!) : ImageBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): IconBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  imageBlockCreate(input: ImageBlockCreateInput!) : ImageBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   imageBlockUpdate(
     id: ID!
     input: ImageBlockUpdateInput!
@@ -310,7 +310,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): ImageBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): ImageBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   multiselectBlockCreate(input: MultiselectBlockCreateInput!) : MultiselectBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   multiselectBlockUpdate(
     id: ID!
@@ -329,7 +329,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     journeyId: ID
   ): MultiselectOptionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
-  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!) : RadioOptionBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!) : RadioOptionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   radioOptionBlockUpdate(
     id: ID!
     input: RadioOptionBlockUpdateInput!
@@ -337,10 +337,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): RadioOptionBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  signUpBlockCreate(input: SignUpBlockCreateInput!) : SignUpBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): RadioOptionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  signUpBlockCreate(input: SignUpBlockCreateInput!) : SignUpBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   signUpBlockUpdate(
     id: ID!
     input: SignUpBlockUpdateInput!
@@ -348,10 +348,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): SignUpBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  spacerBlockCreate(input: SpacerBlockCreateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  stepBlockCreate(input: StepBlockCreateInput!) : StepBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): SignUpBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  spacerBlockCreate(input: SpacerBlockCreateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  stepBlockCreate(input: StepBlockCreateInput!) : StepBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   stepBlockUpdate(
     id: ID!
     input: StepBlockUpdateInput!
@@ -359,8 +359,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): StepBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  textResponseBlockCreate(input: TextResponseBlockCreateInput!) : TextResponseBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): StepBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  textResponseBlockCreate(input: TextResponseBlockCreateInput!) : TextResponseBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   textResponseBlockUpdate(
     id: ID!
     input: TextResponseBlockUpdateInput!
@@ -368,8 +368,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): TextResponseBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  typographyBlockCreate(input: TypographyBlockCreateInput!) : TypographyBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): TextResponseBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  typographyBlockCreate(input: TypographyBlockCreateInput!) : TypographyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   typographyBlockUpdate(
     id: ID!
     input: TypographyBlockUpdateInput!
@@ -377,7 +377,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): TypographyBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): TypographyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   videoBlockCreate(input: VideoBlockCreateInput!) : VideoBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   videoBlockUpdate(
     id: ID!
@@ -793,13 +793,13 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
-  adminJourney(id: ID!, idType: IdType = slug) : Journey! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  adminJourney(id: ID!, idType: IdType = slug) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   adminJourneys(
     status: [JourneyStatus!]
     template: Boolean
     teamId: ID
     useLastActiveTeamId: Boolean
-  ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
   getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
