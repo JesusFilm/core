@@ -1418,6 +1418,14 @@ type Mutation {
   ): SignUpBlock! @override(from: "api-journeys")
   spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock! @override(from: "api-journeys")
   spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock! @override(from: "api-journeys")
+  stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @override(from: "api-journeys")
+  stepBlockUpdate(
+    id: ID!
+    input: StepBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): StepBlock! @override(from: "api-journeys")
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(
     id: ID!
