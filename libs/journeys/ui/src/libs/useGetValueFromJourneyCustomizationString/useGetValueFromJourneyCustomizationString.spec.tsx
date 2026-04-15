@@ -40,7 +40,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
     expect(result.current).toBe('Plain')
   })
 
-  it('prefers defaultValue for default variant (end-user rendering)', () => {
+  it('prefers value for default variant (end-user rendering)', () => {
     const journey = {
       template: false,
       journeyCustomizationFields: [
@@ -76,7 +76,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       }
     )
 
-    expect(result.current).toBe('Anonymous')
+    expect(result.current).toBe('Alice')
 
     rerender({ label: '{{ title }}' })
     expect(result.current).toBe('Child of God')
@@ -116,7 +116,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
     expect(result.current).toBe('Alice')
   })
 
-  it('replaces custom fields within mixed strings using defaultValue for default variant', () => {
+  it('replaces custom fields within mixed strings using value for default variant', () => {
     const journey = {
       template: false,
       journeyCustomizationFields: [
@@ -144,10 +144,10 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       }
     )
 
-    expect(result.current).toBe('Hello Anonymous!')
+    expect(result.current).toBe('Hello Alice!')
   })
 
-  it('supports multiple custom fields using defaultValue for default variant', () => {
+  it('supports multiple custom fields using value for default variant', () => {
     const journey = {
       template: false,
       journeyCustomizationFields: [
@@ -183,9 +183,9 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       }
     )
 
-    expect(result.current).toBe('Hello J D!')
+    expect(result.current).toBe('Hello John Doe!')
 
     rerender({ label: '{{ first }} & {{ first }}' })
-    expect(result.current).toBe('J & J')
+    expect(result.current).toBe('John & John')
   })
 })
