@@ -3,15 +3,6 @@ import { GraphQLError } from 'graphql'
 import { Prisma, prisma } from '@core/prisma/users/client'
 import { impersonateUser } from '@core/yoga/firebaseClient'
 
-function isFirebaseNotFound(error: unknown): boolean {
-  return (
-    error != null &&
-    typeof error === 'object' &&
-    'code' in error &&
-    (error as { code: string }).code === 'auth/user-not-found'
-  )
-}
-
 import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
