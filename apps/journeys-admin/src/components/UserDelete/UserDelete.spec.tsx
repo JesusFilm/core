@@ -190,7 +190,7 @@ describe('UserDeleteWithErrorBoundary', () => {
 
       const { getByRole } = renderComponent()
 
-      fireEvent.change(getByRole('textbox', { name: 'User Email' }), {
+      fireEvent.change(getByRole('textbox', { name: 'User email to delete' }), {
         target: { value: 'test@example.com' }
       })
       fireEvent.click(getByRole('button', { name: 'Check' }))
@@ -230,7 +230,7 @@ describe('UserDeleteWithErrorBoundary', () => {
 
       const { getByRole } = renderComponent()
 
-      fireEvent.change(getByRole('textbox', { name: 'User Email' }), {
+      fireEvent.change(getByRole('textbox', { name: 'User email to delete' }), {
         target: { value: 'test@example.com' }
       })
       fireEvent.click(getByRole('button', { name: 'Check' }))
@@ -286,7 +286,7 @@ describe('UserDeleteWithErrorBoundary', () => {
         }
       })
 
-      fireEvent.change(getByRole('textbox', { name: 'User Email' }), {
+      fireEvent.change(getByRole('textbox', { name: 'User email to delete' }), {
         target: { value: 'test@example.com' }
       })
       fireEvent.click(getByRole('button', { name: 'Check' }))
