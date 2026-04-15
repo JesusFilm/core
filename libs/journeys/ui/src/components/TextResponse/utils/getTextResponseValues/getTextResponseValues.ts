@@ -18,19 +18,25 @@ export function getTextResponseValues(
     return textResponseStrings
   }
 
+  const useDefaultValue = variant !== 'admin'
+  const options = { useDefaultValue }
+
   return {
     label:
       resolveJourneyCustomizationString(
         textResponseStrings.label,
-        journeyCustomizationFields
+        journeyCustomizationFields,
+        options
       ) ?? '',
     placeholder: resolveJourneyCustomizationString(
       textResponseStrings.placeholder,
-      journeyCustomizationFields
+      journeyCustomizationFields,
+      options
     ),
     hint: resolveJourneyCustomizationString(
       textResponseStrings.hint,
-      journeyCustomizationFields
+      journeyCustomizationFields,
+      options
     )
   }
 }

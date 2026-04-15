@@ -4,6 +4,11 @@ import { Logger } from 'pino'
 import { UserJourneyRole, prisma } from '@core/prisma/journeys/client'
 import { prisma as prismaUsers } from '@core/prisma/users/client'
 
+import {
+  collectMediaFromJourneys,
+  deleteUnusedMedia
+} from '../../../lib/mediaCleanup/mediaCleanup'
+
 interface E2eCleanupJob {
   __typename: 'e2eCleanup'
   olderThanHours?: number
@@ -92,25 +97,40 @@ export async function service(
         return
       }
 
-      // 3. Delete journeys one at a time
+      const journeyIds = journeys.map((j) => j.id)
+      const mediaRefs = await collectMediaFromJourneys(journeyIds)
 
+      const deletedJourneyIds: string[] = []
       for (const journey of journeys) {
-        logger?.info(`🗑️ Deleting journey "${journey.title}" (${journey.id})`)
-
         try {
-          // Delete the journey - this will cascade delete everything else
-          await prisma.journey.delete({
-            where: { id: journey.id }
-          })
-
+          await prisma.journey.delete({ where: { id: journey.id } })
           deletedCount++
-          logger?.info(`✅ Deleted journey "${journey.title}" (${journey.id})`)
+          deletedJourneyIds.push(journey.id)
+          logger?.info(`Deleted journey "${journey.title}" (${journey.id})`)
         } catch (error) {
           logger?.warn(
             { journeyId: journey.id, error },
             `Failed to delete journey "${journey.title}"`
           )
         }
+      }
+
+      if (
+        deletedJourneyIds.length > 0 &&
+        (mediaRefs.muxVideoIds.size > 0 ||
+          mediaRefs.cloudflareImageIds.size > 0)
+      ) {
+        const { deletedMuxVideos, deletedCloudflareImages } =
+          await deleteUnusedMedia(
+            mediaRefs,
+            deletedJourneyIds,
+            user.userId,
+            logger
+          )
+        logger?.info(
+          { deletedMuxVideos, deletedCloudflareImages },
+          `Cleaned up ${deletedMuxVideos} Mux videos and ${deletedCloudflareImages} Cloudflare images`
+        )
       }
 
       // 4. Delete User

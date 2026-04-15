@@ -328,6 +328,11 @@ export enum TypographyVariant {
   subtitle2 = "subtitle2",
 }
 
+export enum UserDeleteIdType {
+  databaseId = "databaseId",
+  email = "email",
+}
+
 export enum UserJourneyRole {
   editor = "editor",
   inviteRequested = "inviteRequested",
@@ -595,6 +600,12 @@ export interface JourneyCollectionCreateInput {
 export interface JourneyCollectionUpdateInput {
   title?: string | null;
   journeyIds?: string[] | null;
+}
+
+export interface JourneyCustomizationDescriptionTranslateInput {
+  journeyId: string;
+  sourceLanguageName: string;
+  targetLanguageName: string;
 }
 
 export interface JourneyCustomizationFieldInput {
