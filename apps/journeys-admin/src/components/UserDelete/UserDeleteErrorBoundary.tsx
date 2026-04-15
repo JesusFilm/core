@@ -39,11 +39,13 @@ export class UserDeleteErrorBoundary extends Component<
   }
 }
 
+interface UserDeleteErrorFallbackProps {
+  error: Error | null
+}
+
 function UserDeleteErrorFallback({
   error
-}: {
-  error: Error | null
-}): ReactElement {
+}: UserDeleteErrorFallbackProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <Box sx={{ p: 4, maxWidth: 800 }}>

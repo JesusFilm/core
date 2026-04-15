@@ -395,7 +395,7 @@ function UserDeleteContent(): ReactElement {
         <TextField
           size="small"
           slotProps={{
-            input: {
+            htmlInput: {
               'aria-label':
                 idType === UserDeleteIdType.email
                   ? t('User email to delete')
