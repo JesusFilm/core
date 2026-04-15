@@ -1152,11 +1152,20 @@ export type Journey = {
 };
 
 export type JourneyAiTranslateInput = {
+  /** The ID of the journey to translate */
   journeyId: Scalars['ID']['input'];
+  /** The source language name of the journey content */
   journeyLanguageName: Scalars['String']['input'];
+  /** The journey name to translate */
   name: Scalars['String']['input'];
+  /** The target language ID for journey content (blocks, title, description) */
   textLanguageId: Scalars['ID']['input'];
+  /** The target language name for journey content (blocks, title, description) */
   textLanguageName: Scalars['String']['input'];
+  /** Language ID for customization text translation. Falls back to textLanguageId if not provided. */
+  userLanguageId?: InputMaybe<Scalars['ID']['input']>;
+  /** Language name for customization text translation. Falls back to textLanguageName if not provided. */
+  userLanguageName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyAiTranslateProgress = {
@@ -1209,6 +1218,15 @@ export type JourneyCreateInput = {
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
   title: Scalars['String']['input'];
+};
+
+export type JourneyCustomizationDescriptionTranslateInput = {
+  /** The ID of the journey whose customization description to translate */
+  journeyId: Scalars['ID']['input'];
+  /** The current language of the customization description */
+  sourceLanguageName: Scalars['String']['input'];
+  /** The language to translate the customization description into */
+  targetLanguageName: Scalars['String']['input'];
 };
 
 export type JourneyCustomizationField = {
@@ -1901,6 +1919,7 @@ export type Mutation = {
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
   journeyCreate: Journey;
+  journeyCustomizationDescriptionTranslate: Journey;
   journeyCustomizationFieldPublisherUpdate: Array<JourneyCustomizationField>;
   journeyCustomizationFieldUserUpdate: Array<JourneyCustomizationField>;
   journeyDuplicate: Journey;
@@ -1990,6 +2009,9 @@ export type Mutation = {
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
   updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
   updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
+  userDeleteCheck: UserDeleteCheckResult;
+  userDeleteJourneysCheck: UserDeleteJourneysCheckResult;
+  userDeleteJourneysConfirm: UserDeleteJourneysConfirmResult;
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -2468,6 +2490,11 @@ export type MutationJourneyCreateArgs = {
 };
 
 
+export type MutationJourneyCustomizationDescriptionTranslateArgs = {
+  input: JourneyCustomizationDescriptionTranslateInput;
+};
+
+
 export type MutationJourneyCustomizationFieldPublisherUpdateArgs = {
   journeyId: Scalars['ID']['input'];
   string: Scalars['String']['input'];
@@ -2855,6 +2882,22 @@ export type MutationUpdateVideoAlgoliaIndexArgs = {
 
 export type MutationUpdateVideoVariantAlgoliaIndexArgs = {
   videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationUserDeleteCheckArgs = {
+  id: Scalars['String']['input'];
+  idType: UserDeleteIdType;
+};
+
+
+export type MutationUserDeleteJourneysCheckArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
+export type MutationUserDeleteJourneysConfirmArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -4832,11 +4875,22 @@ export type StepViewEventCreateInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   journeyAiTranslateCreateSubscription: JourneyAiTranslateProgress;
+  userDeleteConfirm: UserDeleteConfirmProgress;
 };
 
 
 export type SubscriptionJourneyAiTranslateCreateSubscriptionArgs = {
   input: JourneyAiTranslateInput;
+};
+
+
+export type SubscriptionUserDeleteConfirmArgs = {
+  deletedJourneyIds: Array<Scalars['String']['input']>;
+  deletedTeamIds: Array<Scalars['String']['input']>;
+  deletedUserJourneyIds: Array<Scalars['String']['input']>;
+  deletedUserTeamIds: Array<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  idType: UserDeleteIdType;
 };
 
 export type Tag = {
@@ -5203,6 +5257,61 @@ export type UserAgent = {
   browser: Browser;
   device: Device;
   os: OperatingSystem;
+};
+
+export type UserDeleteCheckResult = {
+  __typename?: 'UserDeleteCheckResult';
+  logs: Array<UserDeleteLogEntry>;
+  userEmail?: Maybe<Scalars['String']['output']>;
+  userFirstName: Scalars['String']['output'];
+  userId: Scalars['String']['output'];
+};
+
+export type UserDeleteConfirmProgress = {
+  __typename?: 'UserDeleteConfirmProgress';
+  done: Scalars['Boolean']['output'];
+  log: UserDeleteLogEntry;
+  success?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export enum UserDeleteIdType {
+  DatabaseId = 'databaseId',
+  Email = 'email'
+}
+
+export type UserDeleteJourneysCheckResult = {
+  __typename?: 'UserDeleteJourneysCheckResult';
+  journeysToDelete: Scalars['Int']['output'];
+  journeysToRemove: Scalars['Int']['output'];
+  journeysToTransfer: Scalars['Int']['output'];
+  logs: Array<UserDeleteJourneysLogEntry>;
+  teamsToDelete: Scalars['Int']['output'];
+  teamsToRemove: Scalars['Int']['output'];
+  teamsToTransfer: Scalars['Int']['output'];
+};
+
+export type UserDeleteJourneysConfirmResult = {
+  __typename?: 'UserDeleteJourneysConfirmResult';
+  deletedJourneyIds: Array<Scalars['String']['output']>;
+  deletedTeamIds: Array<Scalars['String']['output']>;
+  deletedUserJourneyIds: Array<Scalars['String']['output']>;
+  deletedUserTeamIds: Array<Scalars['String']['output']>;
+  logs: Array<UserDeleteJourneysLogEntry>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type UserDeleteJourneysLogEntry = {
+  __typename?: 'UserDeleteJourneysLogEntry';
+  level: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+  timestamp: Scalars['String']['output'];
+};
+
+export type UserDeleteLogEntry = {
+  __typename?: 'UserDeleteLogEntry';
+  level: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+  timestamp: Scalars['String']['output'];
 };
 
 export type UserInvite = {

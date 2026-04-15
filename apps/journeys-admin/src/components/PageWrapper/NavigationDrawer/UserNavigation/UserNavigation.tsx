@@ -12,6 +12,7 @@ import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useEffect, useState } from 'react'
 
 import BoxIcon from '@core/shared/ui/icons/Box'
+import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
 
 import { GetMe } from '../../../../../__generated__/GetMe'
@@ -143,6 +144,23 @@ export function UserNavigation({
             </ListItemIcon>
             <ListItemText
               primary={t('Impersonate')}
+              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+            />
+          </ListItemButton>
+        )}
+      {data.me?.__typename === 'AuthenticatedUser' &&
+        data.me.superAdmin === true && (
+          <ListItemButton
+            LinkComponent={NextLink}
+            href="/users/delete"
+            selected={selectedPage === 'users-delete'}
+            data-testid="NavigationListItemDeleteUser"
+          >
+            <ListItemIcon>
+              <Trash2Icon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('Delete User')}
               primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
             />
           </ListItemButton>
