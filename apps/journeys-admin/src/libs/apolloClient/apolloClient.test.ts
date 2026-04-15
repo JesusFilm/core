@@ -21,12 +21,16 @@ jest.mock('../auth/firebase', () => ({
   logout: jest.fn().mockResolvedValue(undefined)
 }))
 
-const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>
+const mockCreateClient = createClient as jest.MockedFunction<
+  typeof createClient
+>
 const mockLogout = logout as jest.MockedFunction<typeof logout>
 
 describe('createApolloClient', () => {
   beforeEach(() => {
-    mockCreateClient.mockReturnValue({ subscribe: jest.fn() } as unknown as ReturnType<typeof createClient>)
+    mockCreateClient.mockReturnValue({
+      subscribe: jest.fn()
+    } as unknown as ReturnType<typeof createClient>)
   })
 
   it('should create Apollo client with SSE support', () => {
@@ -198,7 +202,13 @@ describe('createErrorLink', () => {
 
     const link = from([errorLink, terminatingLink])
 
-    execute(link, { query: gql`query Test { test }` }).subscribe({
+    execute(link, {
+      query: gql`
+        query Test {
+          test
+        }
+      `
+    }).subscribe({
       error: (err: Error) => {
         expect(mockLogout).toHaveBeenCalled()
         expect(err.message).toBe('Session expired')
@@ -229,7 +239,13 @@ describe('createErrorLink', () => {
 
     const link = from([errorLink, terminatingLink])
 
-    execute(link, { query: gql`query Test { test }` }).subscribe({
+    execute(link, {
+      query: gql`
+        query Test {
+          test
+        }
+      `
+    }).subscribe({
       next: () => {
         expect(mockLogout).not.toHaveBeenCalled()
       },

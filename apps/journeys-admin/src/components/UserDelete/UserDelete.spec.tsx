@@ -21,7 +21,9 @@ jest.mock('notistack', () => ({
   useSnackbar: () => ({
     enqueueSnackbar: mockEnqueueSnackbar
   }),
-  SnackbarProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>
+  SnackbarProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  )
 }))
 
 const mockUseSuspenseQuery = jest.fn()
@@ -357,9 +359,12 @@ describe('UserDeleteWithErrorBoundary', () => {
       })
 
       await waitFor(() => {
-        expect(mockEnqueueSnackbar).toHaveBeenCalledWith('User deleted successfully', {
-          variant: 'success'
-        })
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+          'User deleted successfully',
+          {
+            variant: 'success'
+          }
+        )
       })
     })
 

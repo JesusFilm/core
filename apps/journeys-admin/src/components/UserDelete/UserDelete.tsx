@@ -423,7 +423,9 @@ function UserDeleteContent(): ReactElement {
 
         <Button
           variant="contained"
-          onClick={() => { void handleCheck() }}
+          onClick={() => {
+            void handleCheck()
+          }}
           disabled={userId.trim() === '' || isCheckLoading || confirmLoading}
           sx={{ whiteSpace: 'nowrap', minWidth: 100 }}
         >
@@ -466,7 +468,9 @@ function UserDeleteContent(): ReactElement {
       <UserDeleteConfirmDialog
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        onConfirm={() => { void handleConfirmDelete() }}
+        onConfirm={() => {
+          void handleConfirmDelete()
+        }}
       />
     </Box>
   )
