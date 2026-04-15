@@ -5136,6 +5136,12 @@ export enum TypographyVariant {
   Subtitle2 = 'subtitle2'
 }
 
+export enum User_Delete_Log_Level {
+  Error = 'ERROR',
+  Info = 'INFO',
+  Warn = 'WARN'
+}
+
 export enum UnsplashColor {
   Black = 'black',
   BlackAndWhite = 'black_and_white',
@@ -5276,7 +5282,8 @@ export type UserDeleteConfirmProgress = {
 
 export enum UserDeleteIdType {
   DatabaseId = 'databaseId',
-  Email = 'email'
+  Email = 'email',
+  Jwt = 'jwt'
 }
 
 export type UserDeleteJourneysCheckResult = {
@@ -5302,14 +5309,14 @@ export type UserDeleteJourneysConfirmResult = {
 
 export type UserDeleteJourneysLogEntry = {
   __typename?: 'UserDeleteJourneysLogEntry';
-  level: Scalars['String']['output'];
+  level: User_Delete_Log_Level;
   message: Scalars['String']['output'];
   timestamp: Scalars['String']['output'];
 };
 
 export type UserDeleteLogEntry = {
   __typename?: 'UserDeleteLogEntry';
-  level: Scalars['String']['output'];
+  level: User_Delete_Log_Level;
   message: Scalars['String']['output'];
   timestamp: Scalars['String']['output'];
 };
