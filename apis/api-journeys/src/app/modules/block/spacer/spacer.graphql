@@ -6,19 +6,3 @@ type SpacerBlock implements Block @shareable {
   spacing: Int @shareable
 }
 
-input SpacerBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  spacing: Int
-}
-
-input SpacerBlockUpdateInput {
-  parentBlockId: ID
-  spacing: Int
-}
-
-extend type Mutation {
-  spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
-  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock!
-}

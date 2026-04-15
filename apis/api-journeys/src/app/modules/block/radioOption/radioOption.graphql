@@ -9,29 +9,3 @@ type RadioOptionBlock implements Block @shareable {
   pollOptionImageBlockId: ID @shareable
 }
 
-input RadioOptionBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  eventLabel: BlockEventLabel
-  label: String!
-}
-
-input RadioOptionBlockUpdateInput {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  label: String
-  pollOptionImageBlockId: ID
-}
-
-extend type Mutation {
-  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
-  radioOptionBlockUpdate(
-    id: ID!
-    input: RadioOptionBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): RadioOptionBlock!
-}

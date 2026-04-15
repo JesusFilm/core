@@ -60,19 +60,3 @@ type IconBlock implements Block @shareable {
   size: IconSize @shareable
 }
 
-input IconBlockUpdateInput {
-  name: IconName
-  color: IconColor
-  size: IconSize
-}
-
-extend type Mutation {
-  iconBlockUpdate(
-    id: ID!
-    input: IconBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): IconBlock!
-}

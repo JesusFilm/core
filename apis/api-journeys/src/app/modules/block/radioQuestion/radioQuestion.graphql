@@ -6,19 +6,3 @@ type RadioQuestionBlock implements Block @shareable {
   gridView: Boolean @shareable
 }
 
-input RadioQuestionBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-}
-
-extend type Mutation {
-  radioQuestionBlockCreate(
-    input: RadioQuestionBlockCreateInput!
-  ): RadioQuestionBlock!
-  radioQuestionBlockUpdate(
-    id: ID!
-    parentBlockId: ID!
-    gridView: Boolean
-  ): RadioQuestionBlock!
-}
