@@ -184,4 +184,49 @@ describe('deleteUserData', () => {
     expect(result.success).toBe(false)
     expect(prismaMock.user.delete).not.toHaveBeenCalled()
   })
+
+  it('should persist audit log when caller is the deleted user (self-deletion)', async () => {
+    // When callerUserId === userDbId the audit log must be created BEFORE the
+    // user record is deleted so the log survives even if there were a FK
+    // constraint (there isn't, but this confirms the ordering is safe).
+    const selfDeleteInput = {
+      ...baseInput,
+      callerUserId: baseInput.userDbId, // same person
+      callerEmail: baseInput.userEmail
+    }
+
+    prismaMock.userDeleteAuditLog.create.mockResolvedValueOnce({
+      id: 'audit-self'
+    } as any)
+    prismaMock.user.delete.mockResolvedValueOnce({} as any)
+    mockDeleteUser.mockResolvedValueOnce(undefined)
+    prismaMock.userDeleteAuditLog.update.mockResolvedValueOnce({} as any)
+
+    const result = await deleteUserData(selfDeleteInput)
+
+    expect(result.success).toBe(true)
+
+    // Audit log was created before the user was deleted
+    const auditCreateOrder =
+      prismaMock.userDeleteAuditLog.create.mock.invocationCallOrder[0]
+    const userDeleteOrder = prismaMock.user.delete.mock.invocationCallOrder[0]
+    expect(auditCreateOrder).toBeLessThan(userDeleteOrder)
+
+    // callerEmail was stored so the log is useful after the user record is gone
+    expect(prismaMock.userDeleteAuditLog.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          callerUserId: baseInput.userDbId,
+          callerEmail: baseInput.userEmail,
+          deletedUserId: baseInput.userDbId
+        })
+      })
+    )
+
+    // Audit log updated to success after deletion
+    expect(prismaMock.userDeleteAuditLog.update).toHaveBeenCalledWith({
+      where: { id: 'audit-self' },
+      data: { success: true, completedAt: expect.any(Date) }
+    })
+  })
 })
