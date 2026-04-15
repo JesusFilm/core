@@ -380,7 +380,9 @@ function UserDeleteContent(): ReactElement {
         enqueueSnackbar(message, { variant: 'error', preventDuplicate: true })
       } else {
         const message =
-          error instanceof Error ? error.message : t('An unexpected error occurred.')
+          error instanceof Error
+            ? error.message
+            : t('An unexpected error occurred.')
         setLogs((prev) => [
           ...prev,
           {
@@ -395,7 +397,14 @@ function UserDeleteContent(): ReactElement {
         })
       }
     }
-  }, [idType, userId, userDeleteCheck, userDeleteJourneysCheck, enqueueSnackbar, t])
+  }, [
+    idType,
+    userId,
+    userDeleteCheck,
+    userDeleteJourneysCheck,
+    enqueueSnackbar,
+    t
+  ])
 
   const handleConfirmDelete = useCallback(async () => {
     setConfirmOpen(false)
@@ -404,7 +413,11 @@ function UserDeleteContent(): ReactElement {
       const errMsg = t('An unexpected error occurred.')
       setLogs((prev) => [
         ...prev,
-        { message: `Error: ${errMsg}`, level: 'error', timestamp: new Date().toISOString() }
+        {
+          message: `Error: ${errMsg}`,
+          level: 'error',
+          timestamp: new Date().toISOString()
+        }
       ])
       enqueueSnackbar(errMsg, { variant: 'error', preventDuplicate: true })
       return
@@ -457,7 +470,9 @@ function UserDeleteContent(): ReactElement {
         enqueueSnackbar(message, { variant: 'error', preventDuplicate: true })
       } else {
         const message =
-          error instanceof Error ? error.message : t('An unexpected error occurred.')
+          error instanceof Error
+            ? error.message
+            : t('An unexpected error occurred.')
         setLogs((prev) => [
           ...prev,
           {
@@ -550,7 +565,9 @@ function UserDeleteContent(): ReactElement {
 
         <Button
           variant="contained"
-          onClick={() => { void handleCheck() }}
+          onClick={() => {
+            void handleCheck()
+          }}
           disabled={userId.trim() === '' || isCheckLoading || confirmLoading}
           sx={{ whiteSpace: 'nowrap', minWidth: 100 }}
         >
@@ -608,7 +625,9 @@ function UserDeleteContent(): ReactElement {
         <DialogActions>
           <Button onClick={() => setConfirmOpen(false)}>{t('Cancel')}</Button>
           <Button
-            onClick={() => { void handleConfirmDelete() }}
+            onClick={() => {
+              void handleConfirmDelete()
+            }}
             color="error"
             variant="contained"
             autoFocus
