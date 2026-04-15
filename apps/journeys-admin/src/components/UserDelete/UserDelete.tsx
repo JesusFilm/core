@@ -523,12 +523,13 @@ function UserDeleteContent(): ReactElement {
 
         <TextField
           size="small"
-          aria-label={
-            idType === UserDeleteIdType.email
-              ? t('User email to delete')
-              : t('Database ID to delete')
-          }
-          aria-describedby="delete-warning"
+          inputProps={{
+            'aria-label':
+              idType === UserDeleteIdType.email
+                ? t('User email to delete')
+                : t('Database ID to delete'),
+            'aria-describedby': 'delete-warning'
+          }}
           label={
             idType === UserDeleteIdType.email
               ? t('User Email')

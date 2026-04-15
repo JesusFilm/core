@@ -194,13 +194,13 @@ describe('UserDeleteWithErrorBoundary', () => {
       fireEvent.click(getByRole('button', { name: 'Check' }))
 
       await waitFor(() => {
-        expect(getByRole('textbox', { name: 'Logs' })).toHaveValue(
-          expect.stringContaining('User found: test@example.com')
+        expect(getByRole('textbox', { name: 'Logs' }).value).toContain(
+          'User found: test@example.com'
         )
       })
 
-      expect(getByRole('textbox', { name: 'Logs' })).toHaveValue(
-        expect.stringContaining('Found 2 journeys to delete')
+      expect(getByRole('textbox', { name: 'Logs' }).value).toContain(
+        'Found 2 journeys to delete'
       )
       expect(getByRole('button', { name: 'Delete User' })).not.toBeDisabled()
     })
@@ -238,8 +238,8 @@ describe('UserDeleteWithErrorBoundary', () => {
       })
 
       // Step 1 logs must still be visible despite step 2 failing
-      expect(getByRole('textbox', { name: 'Logs' })).toHaveValue(
-        expect.stringContaining('User found: test@example.com')
+      expect(getByRole('textbox', { name: 'Logs' }).value).toContain(
+        'User found: test@example.com'
       )
     })
   })

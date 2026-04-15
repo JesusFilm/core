@@ -79,7 +79,6 @@ export interface AuthScopes {
   isAuthenticated: boolean
   isAnonymous: boolean
   isPublisher: boolean
-  isSuperAdmin: boolean
   isValidInterop: boolean
   isSuperAdmin: boolean | (() => Promise<boolean>)
 }
