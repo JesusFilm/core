@@ -1,7 +1,10 @@
 import PlausibleProvider from 'next-plausible'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode, useMemo } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyAiContextProvider } from '@core/journeys/ui/JourneyAiContextProvider'
+import { transformer } from '@core/journeys/ui/transformer'
+import { useJourneyAiContextGenerator } from '@core/journeys/ui/useJourneyAiContextGenerator'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
@@ -37,6 +40,16 @@ export function JourneyPageWrapper({
     labelFont: journey.journeyTheme?.labelFont ?? ''
   }
 
+  const treeBlocks = useMemo(
+    () => (journey.blocks != null ? transformer(journey.blocks) : []),
+    [journey.blocks]
+  )
+  const languageBcp47 = journey.language?.bcp47 ?? undefined
+  const aiContextValue = useJourneyAiContextGenerator(
+    journey.showAssistant === true ? treeBlocks : [],
+    languageBcp47
+  )
+
   const journeyDomain =
     journeyId != null ? `api-journeys-journey-${journeyId}` : ''
   const teamDomain = teamId != null ? `,api-journeys-team-${teamId}` : ''
@@ -57,14 +70,16 @@ export function JourneyPageWrapper({
       domain={`${journeyDomain}${teamDomain}${templateDomain}`}
     >
       <JourneyProvider value={{ journey, variant: variant ?? 'default' }}>
-        <ThemeProvider
-          {...journeyTheme}
-          rtl={rtl}
-          locale={locale}
-          fontFamilies={fontFamilies}
-        >
-          {children}
-        </ThemeProvider>
+        <JourneyAiContextProvider value={aiContextValue}>
+          <ThemeProvider
+            {...journeyTheme}
+            rtl={rtl}
+            locale={locale}
+            fontFamilies={fontFamilies}
+          >
+            {children}
+          </ThemeProvider>
+        </JourneyAiContextProvider>
       </JourneyProvider>
     </PlausibleProvider>
   )
