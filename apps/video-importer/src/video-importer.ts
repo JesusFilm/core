@@ -178,7 +178,12 @@ async function main() {
     )
   }
 
-  if (!options.dryRun && !options.noSlack && slackTokenConfigured && slackChannelConfigured) {
+  if (
+    !options.dryRun &&
+    !options.noSlack &&
+    slackTokenConfigured &&
+    slackChannelConfigured
+  ) {
     const { postVideoImporterSlackSummary } = await import(
       /* webpackChunkName: "video-importer-slack" */ './services/slack'
     )

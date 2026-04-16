@@ -134,8 +134,7 @@ export function parseImporterFilenameForTable(
     const [, videoId, editionName, rawLanguageId, extraField, fileExtension] =
       subMatch
     const ext = (fileExtension ?? '').toLowerCase()
-    const extra =
-      extraField != null && extraField.length > 0 ? extraField : '—'
+    const extra = extraField != null && extraField.length > 0 ? extraField : '—'
 
     return {
       file,
@@ -193,5 +192,7 @@ export function formatImporterFilenameParts(file: string): string {
     ].join('\n')
   }
 
-  return ['*Type:* unrecognized pattern', `*Filename:* \`${esc(file)}\``].join('\n')
+  return ['*Type:* unrecognized pattern', `*Filename:* \`${esc(file)}\``].join(
+    '\n'
+  )
 }

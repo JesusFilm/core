@@ -60,13 +60,14 @@ function truncate(raw: string, max: number): string {
 }
 
 function sanitizeCell(raw: string): string {
-  return raw
-    .replace(/\s+/g, ' ')
-    .replace(/```/g, "'''")
-    .trim()
+  return raw.replace(/\s+/g, ' ').replace(/```/g, "'''").trim()
 }
 
-function padCell(value: string, width: number, align: 'left' | 'right' = 'left'): string {
+function padCell(
+  value: string,
+  width: number,
+  align: 'left' | 'right' = 'left'
+): string {
   if (value.length >= width) {
     return value
   }
@@ -78,7 +79,10 @@ function padCell(value: string, width: number, align: 'left' | 'right' = 'left')
 function shortenErrorReason(reason: string): string {
   return reason
     .replace(/^Cannot reach GraphQL endpoint\s+/i, 'Backend unreachable: ')
-    .replace(/^Validation query rejected by server:\s*/i, 'Server rejected query: ')
+    .replace(
+      /^Validation query rejected by server:\s*/i,
+      'Server rejected query: '
+    )
     .replace(/^Validation query failed:\s*/i, 'Validation: ')
     .replace(/^Failed validation query:\s*/i, 'Validation: ')
     .replace(/^R2 (create asset|upload):\s*/i, 'R2 $1: ')
@@ -225,7 +229,10 @@ function pushRunLogTable(blocks: SlackBlock[], rows: TableRow[]): void {
     const tableText = renderAlignedTable(slice)
     const section = `\`\`\`\n${tableText}\n\`\`\``
 
-    if (section.length + staticOverhead <= MRKDWN_SECTION_BUDGET || slice.length === 1) {
+    if (
+      section.length + staticOverhead <= MRKDWN_SECTION_BUDGET ||
+      slice.length === 1
+    ) {
       blocks.push({
         type: 'section',
         text: { type: 'mrkdwn', text: section }
@@ -302,7 +309,10 @@ function buildSlackBlocks(params: {
   return blocks
 }
 
-function resolveSlackCredentials(): { token: string; channelId: string } | null {
+function resolveSlackCredentials(): {
+  token: string
+  channelId: string
+} | null {
   const token =
     typeof process.env.SLACK_BOT_TOKEN === 'string'
       ? process.env.SLACK_BOT_TOKEN.trim()

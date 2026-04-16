@@ -40,7 +40,6 @@ After a real run (not `--dry-run`), the importer can post a summary to Slack usi
 2. Under **OAuth & Permissions**, copy the **Bot User OAuth Token** (`xoxb-…`).
 3. Invite the bot to the target channel (`/invite @YourBot`), then copy the channel ID (right-click the channel → **View channel details** → scroll to the bottom for the ID, or open the channel in a browser and read it from the URL).
 4. Add to your `.env` (same folder as the binary):
-
    - `SLACK_BOT_TOKEN` — bot token (`xoxb-…`)
    - `SLACK_CHANNEL_ID` — channel ID (starts with `C` for public channels)
 
