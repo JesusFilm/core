@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
@@ -11,6 +12,7 @@ import type { MockTemplate } from './mockData'
 interface MockTemplateCardProps {
   template: MockTemplate
   isDragOverlay?: boolean
+  dragDisabled?: boolean
 }
 
 function CardVisual({ template }: { template: MockTemplate }): ReactElement {
@@ -53,14 +55,14 @@ function CardVisual({ template }: { template: MockTemplate }): ReactElement {
           }}
         />
       </Box>
-      <CardContent sx={{ pl: 2.5, pr: 2, pt: 1, pb: 2 }}>
+      <CardContent sx={{ pl: 2.5, pr: 2, pt: 1, pb: 2, height: 80 }}>
         <Typography
           variant="subtitle2"
           sx={{
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             display: '-webkit-box',
-            WebkitLineClamp: 2,
+            WebkitLineClamp: 1,
             WebkitBoxOrient: 'vertical'
           }}
         >
@@ -87,10 +89,12 @@ function CardVisual({ template }: { template: MockTemplate }): ReactElement {
 
 export function MockTemplateCard({
   template,
-  isDragOverlay = false
+  isDragOverlay = false,
+  dragDisabled = false
 }: MockTemplateCardProps): ReactElement {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: template.id
+    id: template.id,
+    disabled: dragDisabled
   })
 
   if (isDragOverlay) {
@@ -110,19 +114,18 @@ export function MockTemplateCard({
     )
   }
 
-  return (
+  const card = (
     <Card
       ref={setNodeRef}
       variant="outlined"
-      {...attributes}
-      {...listeners}
+      {...(dragDisabled ? {} : { ...attributes, ...listeners })}
       sx={{
         borderColor: 'divider',
-        cursor: 'grab',
+        cursor: dragDisabled ? 'default' : 'grab',
         opacity: isDragging ? 0.3 : 1,
         touchAction: 'none',
         '&:hover': {
-          boxShadow: 2
+          boxShadow: dragDisabled ? 0 : 2
         }
       }}
       aria-label={`template card ${template.title}`}
@@ -130,6 +133,16 @@ export function MockTemplateCard({
       <CardVisual template={template} />
     </Card>
   )
+
+  if (dragDisabled) {
+    return (
+      <Tooltip title="Published — templates locked" arrow>
+        {card}
+      </Tooltip>
+    )
+  }
+
+  return card
 }
 
 export { CardVisual }

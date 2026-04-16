@@ -38,9 +38,11 @@ export const TeamMode = ({
   router,
   renderList
 }: TeamModeProps): ReactElement => {
-  const isFoldersDemo =
-    contentTypeOptions[2] != null &&
-    activeContentTypeTab === contentTypeOptions[2].tabIndex
+  const isDemoMode =
+    (contentTypeOptions[2] != null &&
+      activeContentTypeTab === contentTypeOptions[2].tabIndex) ||
+    (contentTypeOptions[3] != null &&
+      activeContentTypeTab === contentTypeOptions[3].tabIndex)
 
   return (
     <>
@@ -87,16 +89,25 @@ export const TeamMode = ({
             )}
           />
         )}
-        {!isFoldersDemo && (
+        {contentTypeOptions[3] != null && (
+          <Tab
+            label={contentTypeOptions[3].displayValue}
+            {...tabA11yProps(
+              'collections-demo-content-panel',
+              contentTypeOptions[3].tabIndex
+            )}
+          />
+        )}
+        {!isDemoMode && (
           <StatusFilterControl
             selectedStatus={selectedStatus}
             handleStatusChange={handleStatusChange}
           />
         )}
-        {!isFoldersDemo && (
+        {!isDemoMode && (
           <SortControl sortOrder={sortOrder} setSortOrder={setSortOrder} />
         )}
-        {!isFoldersDemo && (
+        {!isDemoMode && (
           <MenuControl
             setActiveEvent={setActiveEvent}
             menuMarginRight={{
@@ -140,6 +151,20 @@ export const TeamMode = ({
         }
       >
         {renderList('foldersDemo', selectedStatus)}
+      </TabPanel>
+    )}
+    {/* Collections Demo tab panel */}
+    {contentTypeOptions[3] != null && (
+      <TabPanel
+        name="collections-demo-content-panel"
+        value={activeContentTypeTab}
+        index={contentTypeOptions[3].tabIndex}
+        unmountUntilVisible={
+          router?.query?.type !== undefined &&
+          router?.query?.type !== 'collectionsDemo'
+        }
+      >
+        {renderList('collectionsDemo', selectedStatus)}
       </TabPanel>
     )}
   </>

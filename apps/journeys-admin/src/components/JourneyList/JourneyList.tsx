@@ -7,6 +7,7 @@ import { User } from '../../libs/auth/authContext'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { usePageWrapperStyles } from '../PageWrapper/utils/usePageWrapperStyles'
 
+import { CollectionsDemo } from '../CollectionsDemo'
 import { FoldersDemo } from '../FoldersDemo'
 
 import { AddJourneyFab } from './AddJourneyFab'
@@ -100,6 +101,9 @@ export function JourneyList({
   ): ReactElement => {
     if (contentType === 'foldersDemo') {
       return <FoldersDemo />
+    }
+    if (contentType === 'collectionsDemo') {
+      return <CollectionsDemo />
     }
 
     // Only pass event to the currently active content type to prevent duplicate actions
