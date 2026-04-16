@@ -24,6 +24,8 @@ builder.mutationField('stepBlockPositionUpdate', (t) =>
       })
     },
     resolve: async (_parent, { input }, context) => {
+      if (input.length === 0) return []
+
       const blocks = await prisma.block.findMany({
         where: {
           id: { in: input.map(({ id }) => id) },

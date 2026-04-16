@@ -57,6 +57,19 @@ describe('stepBlockPositionUpdate', () => {
     jest.clearAllMocks()
   })
 
+  it('returns empty array when input is empty', async () => {
+    const result = await authClient({
+      document: STEP_BLOCK_POSITION_UPDATE,
+      variables: { input: [] }
+    })
+
+    expect(result).toEqual({
+      data: { stepBlockPositionUpdate: [] }
+    })
+    expect(prismaMock.block.findMany).not.toHaveBeenCalled()
+    expect(prismaMock.$transaction).not.toHaveBeenCalled()
+  })
+
   it('updates positions when authorized', async () => {
     mockAbility.mockReturnValue(true)
     prismaMock.block.findMany.mockResolvedValue([block1, block2] as any)
