@@ -96,15 +96,9 @@ export function LastCardChatBar({
           zIndex: 1,
           bottom: 0,
           width: '100%',
-          height: '25vh',
-          minHeight: '25vh',
-          maxHeight: '25vh',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'flex-end',
           backgroundColor: 'background.paper',
-          borderTop: '1px solid',
-          borderColor: 'divider',
           pb: 'env(safe-area-inset-bottom)',
           ...sx
         }}

@@ -89,7 +89,7 @@ export function OverlayContent({
     variant !== 'embed'
 
   const footerSpacing: SxProps = {
-    mb: { xs: isLastCard ? '25vh' : footerMobileSpacing, sm: 10 }
+    mb: { xs: isLastCard ? '120px' : footerMobileSpacing, sm: 10 }
   }
 
   const hasHeader = showHeader(journey, variant)
