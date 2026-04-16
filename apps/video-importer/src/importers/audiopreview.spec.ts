@@ -21,7 +21,10 @@ describe('processAudioPreviewFile', () => {
     const summary = {
       total: 1,
       successful: 0,
-      failed: 0
+      failed: 0,
+      successfulFiles: [] as string[],
+      failedFiles: [] as string[],
+      failureDetails: [] as { file: string; reason: string }[]
     }
 
     await processAudioPreviewFile('   .aac', '/tmp/   .aac', 100, summary)
@@ -30,7 +33,15 @@ describe('processAudioPreviewFile', () => {
     assert.deepEqual(summary, {
       total: 1,
       successful: 0,
-      failed: 1
+      failed: 1,
+      successfulFiles: [],
+      failedFiles: ['   .aac'],
+      failureDetails: [
+        {
+          file: '   .aac',
+          reason: 'Missing languageId in filename'
+        }
+      ]
     })
   })
 })

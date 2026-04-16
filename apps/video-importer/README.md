@@ -32,6 +32,22 @@ Before you can use the Video Importer binary, make sure you have the following:
 
 - The tool needs to connect to the internet to upload files and update backend records. Ensure your network/firewall allows outgoing connections to the endpoints specified in your `.env` file.
 
+### 5. Slack notifications (optional)
+
+After a real run (not `--dry-run`), the importer can post a summary to Slack using a bot token and the Web API (`chat.postMessage`).
+
+1. Create a Slack app for your workspace, enable **Bots**, and install it to the workspace.
+2. Under **OAuth & Permissions**, copy the **Bot User OAuth Token** (`xoxb-…`).
+3. Invite the bot to the target channel (`/invite @YourBot`), then copy the channel ID (right-click the channel → **View channel details** → scroll to the bottom for the ID, or open the channel in a browser and read it from the URL).
+4. Add to your `.env` (same folder as the binary):
+
+   - `SLACK_BOT_TOKEN` — bot token (`xoxb-…`)
+   - `SLACK_CHANNEL_ID` — channel ID (starts with `C` for public channels)
+
+Both must be set for notifications to send. Omit them if you do not want Slack. Use `--no-slack` on the command line to skip posting even when these variables are set.
+
+The bot needs the `chat:write` scope (and access to the chosen channel).
+
 ---
 
 ## Supported File Types & Formatting
