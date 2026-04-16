@@ -17,9 +17,7 @@ describe('stepBlockPositionUpdate', () => {
   })
 
   const STEP_BLOCK_POSITION_UPDATE = graphql(`
-    mutation StepBlockPositionUpdate(
-      $input: [StepBlockPositionUpdateInput!]!
-    ) {
+    mutation StepBlockPositionUpdate($input: [StepBlockPositionUpdateInput!]!) {
       stepBlockPositionUpdate(input: $input) {
         id
         journeyId
