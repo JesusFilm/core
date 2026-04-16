@@ -1,8 +1,7 @@
-import { ReactElement } from 'react'
+import { BookOpen, Lightbulb } from 'lucide-react'
+import { ComponentType, ReactElement, SVGProps } from 'react'
 
-import { SimpleButton } from '../../SimpleButton'
-
-export type InteractionType = 'explain' | 'reflect' | 'question'
+export type InteractionType = 'explain' | 'reflect'
 
 interface InteractionStarterProps {
   onSelect: (type: InteractionType, prompt: string) => void
@@ -11,23 +10,21 @@ interface InteractionStarterProps {
 const interactions: Array<{
   type: InteractionType
   label: string
+  icon: ComponentType<SVGProps<SVGSVGElement>>
   prompt: string
 }> = [
   {
     type: 'explain',
-    label: 'Explain this',
+    label: 'Explain',
+    icon: BookOpen,
     prompt: 'Can you explain what this content is about and its significance?'
   },
   {
     type: 'reflect',
-    label: 'Help me reflect',
+    label: 'Reflect',
+    icon: Lightbulb,
     prompt:
       'Help me reflect on this content. What are the key takeaways and how can I apply them?'
-  },
-  {
-    type: 'question',
-    label: 'I have a question',
-    prompt: 'I have a question about what I just read.'
   }
 ]
 
@@ -39,31 +36,84 @@ export function InteractionStarter({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 8,
-        padding: '16px'
+        alignItems: 'center',
+        gap: 12,
+        padding: '24px 16px 16px'
       }}
     >
       <p
         style={{
-          fontSize: 14,
-          color: '#666',
-          margin: '0 0 8px',
+          fontSize: 11,
+          color: '#9e9e9e',
+          margin: 0,
+          textAlign: 'center',
+          lineHeight: 1.4
+        }}
+      >
+        AI may make mistakes.
+        <br />
+        Please double-check important info.
+      </p>
+      <p
+        style={{
+          fontSize: 18,
+          fontWeight: 700,
+          color: '#1a1a1a',
+          margin: 0,
           textAlign: 'center'
         }}
       >
-        How can I help you today?
+        How would you like to go deeper?
       </p>
-      {interactions.map(({ type, label, prompt }) => (
-        <SimpleButton
-          key={type}
-          variant="secondary"
-          size="md"
-          onClick={() => onSelect(type, prompt)}
-          style={{ width: '100%' }}
-        >
-          {label}
-        </SimpleButton>
-      ))}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 8,
+          justifyContent: 'center'
+        }}
+      >
+        {interactions.map(({ type, label, icon: Icon, prompt }) => (
+          <button
+            key={type}
+            type="button"
+            onClick={() => onSelect(type, prompt)}
+            aria-label={label}
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onSelect(type, prompt)
+              }
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 16px',
+              fontSize: 14,
+              fontFamily: 'inherit',
+              fontWeight: 500,
+              borderRadius: 9999,
+              border: '1px solid #e0e0e0',
+              backgroundColor: 'transparent',
+              color: '#333',
+              cursor: 'pointer',
+              outline: 'none',
+              transition: 'background-color 0.2s'
+            }}
+          >
+            <Icon
+              style={{
+                width: 20,
+                height: 20,
+                color: 'var(--color-secondary-light, #6D28D9)'
+              }}
+            />
+            {label}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

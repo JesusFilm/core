@@ -66,7 +66,8 @@ export function DrawerContent({
           style={{
             display: 'flex',
             justifyContent: 'center',
-            padding: '12px 0 8px'
+            padding: '12px 0 8px',
+            position: 'relative'
           }}
         >
           <div
@@ -77,6 +78,33 @@ export function DrawerContent({
               backgroundColor: '#e0e0e0'
             }}
           />
+          <VaulDrawer.Close asChild>
+            <button
+              type="button"
+              aria-label="Close chat"
+              tabIndex={0}
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 12,
+                width: 28,
+                height: 28,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: 'none',
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                fontSize: 18,
+                color: '#666',
+                borderRadius: 9999,
+                padding: 0,
+                outline: 'none'
+              }}
+            >
+              ✕
+            </button>
+          </VaulDrawer.Close>
         </div>
         {title != null && (
           <VaulDrawer.Title

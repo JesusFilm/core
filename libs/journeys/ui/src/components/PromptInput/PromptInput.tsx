@@ -6,7 +6,6 @@ import {
   useRef
 } from 'react'
 
-import { SimpleButton } from '../SimpleButton'
 import { Textarea } from '../Textarea'
 
 interface PromptInputProps {
@@ -54,7 +53,7 @@ export function PromptInput({
       style={{
         display: 'flex',
         gap: 8,
-        padding: '8px 16px 16px',
+        padding: '8px 12px 12px',
         alignItems: 'flex-end',
         borderTop: '1px solid #e0e0e0'
       }}
@@ -64,32 +63,64 @@ export function PromptInput({
         value={input}
         onChange={(e) => onInputChange(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Type a message..."
+        placeholder="Ask me anything"
         rows={1}
         disabled={isLoading}
         aria-label="Chat message input"
         style={{ flex: 1 }}
       />
       {isLoading ? (
-        <SimpleButton
-          variant="ghost"
-          size="md"
+        <button
+          type="button"
           onClick={onStop}
           aria-label="Stop generating"
-          type="button"
+          tabIndex={0}
+          style={{
+            width: 36,
+            height: 36,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: 'none',
+            backgroundColor: '#e0e0e0',
+            borderRadius: 9999,
+            cursor: 'pointer',
+            fontSize: 16,
+            color: '#666',
+            padding: 0,
+            outline: 'none',
+            flexShrink: 0
+          }}
         >
-          Stop
-        </SimpleButton>
+          ■
+        </button>
       ) : (
-        <SimpleButton
-          variant="primary"
-          size="md"
+        <button
           type="submit"
           disabled={input.trim().length === 0}
           aria-label="Send message"
+          tabIndex={0}
+          style={{
+            width: 36,
+            height: 36,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: 'none',
+            backgroundColor:
+              input.trim().length > 0 ? '#6D28D9' : '#e0e0e0',
+            borderRadius: 9999,
+            cursor:
+              input.trim().length > 0 ? 'pointer' : 'not-allowed',
+            fontSize: 16,
+            color: input.trim().length > 0 ? 'white' : '#999',
+            padding: 0,
+            outline: 'none',
+            flexShrink: 0
+          }}
         >
-          Send
-        </SimpleButton>
+          ▶
+        </button>
       )}
     </form>
   )

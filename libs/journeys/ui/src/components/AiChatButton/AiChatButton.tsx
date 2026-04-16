@@ -54,9 +54,7 @@ export function AiChatButton({
       </IconButton>
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerContent title="AI Chat">
-          <div style={{ height: '70vh', display: 'flex', flexDirection: 'column' }}>
-            <AiChat activeBlockId={activeBlockId} userId={userId} />
-          </div>
+          <AiChat activeBlockId={activeBlockId} userId={userId} />
         </DrawerContent>
       </Drawer>
     </>
