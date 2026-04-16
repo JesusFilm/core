@@ -6,7 +6,9 @@ import {
   FormEvent,
   ReactElement,
   useCallback,
+  useEffect,
   useMemo,
+  useRef,
   useState
 } from 'react'
 
@@ -25,6 +27,8 @@ import { getActiveBlockContext } from './utils/contextExtraction'
 interface AiChatProps {
   activeBlockId?: string
   userId?: string
+  /** When provided, this message is sent automatically on first render */
+  initialMessage?: string
 }
 
 const followUpSuggestions = [
@@ -40,10 +44,11 @@ function getTextFromMessage(message: UIMessage): string {
     .join('')
 }
 
-export function AiChat({ activeBlockId, userId }: AiChatProps): ReactElement {
+export function AiChat({ activeBlockId, userId, initialMessage }: AiChatProps): ReactElement {
   const { journey } = useJourney()
   const { aiContextData } = useJourneyAiContext()
   const [input, setInput] = useState('')
+  const initialMessageSent = useRef(false)
 
   const contextText = useMemo(
     () => getActiveBlockContext(activeBlockId, aiContextData),
@@ -81,6 +86,18 @@ export function AiChat({ activeBlockId, userId }: AiChatProps): ReactElement {
   })
 
   const isLoading = status === 'submitted' || status === 'streaming'
+
+  // Auto-send initialMessage on first render (used by LastCardChatBar)
+  useEffect(() => {
+    if (
+      initialMessage != null &&
+      initialMessage.trim().length > 0 &&
+      !initialMessageSent.current
+    ) {
+      initialMessageSent.current = true
+      void sendMessage({ text: initialMessage })
+    }
+  }, [initialMessage, sendMessage])
 
   const handleInteractionSelect = useCallback(
     (_type: InteractionType, prompt: string) => {

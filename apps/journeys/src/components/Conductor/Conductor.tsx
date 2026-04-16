@@ -11,6 +11,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { blockHistoryVar, useBlocks } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { LastCardChatBar } from '@core/journeys/ui/LastCardChatBar'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
@@ -46,7 +47,7 @@ interface ConductorProps {
 }
 
 export function Conductor({ blocks }: ConductorProps): ReactElement {
-  const { setTreeBlocks, blockHistory, showHeaderFooter } = useBlocks()
+  const { setTreeBlocks, blockHistory, showHeaderFooter, getNextBlock, treeBlocks } = useBlocks()
   const theme = useTheme()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
@@ -68,6 +69,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
+
+  // Last-card detection: no next block means this is the final card
+  const nextBlock = getNextBlock({ activeBlock })
+  const isLastCard = nextBlock === undefined && treeBlocks.length > 0
+  const showPinnedChat =
+    isLastCard &&
+    journey?.showAssistant === true &&
+    variant !== 'admin' &&
+    variant !== 'embed'
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -213,15 +223,39 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 variant={rtl ? 'previous' : 'next'}
                 alignment="right"
               />
-              <StepFooter
-                sx={{
-                  ...mobileNotchStyling,
-                  display: {
-                    xs: showHeaderFooter ? 'flex' : 'none',
-                    lg: 'flex'
-                  }
-                }}
-              />
+              {showPinnedChat ? (
+                <LastCardChatBar
+                  sx={{
+                    ...mobileNotchStyling,
+                    display: {
+                      xs: showHeaderFooter ? 'flex' : 'none',
+                      lg: 'none'
+                    }
+                  }}
+                />
+              ) : (
+                <StepFooter
+                  sx={{
+                    ...mobileNotchStyling,
+                    display: {
+                      xs: showHeaderFooter ? 'flex' : 'none',
+                      lg: 'flex'
+                    }
+                  }}
+                />
+              )}
+              {/* On desktop (lg+), always show StepFooter when pinned chat is active on mobile */}
+              {showPinnedChat && (
+                <StepFooter
+                  sx={{
+                    ...mobileNotchStyling,
+                    display: {
+                      xs: 'none',
+                      lg: 'flex'
+                    }
+                  }}
+                />
+              )}
             </Stack>
           </Box>
         </Stack>
