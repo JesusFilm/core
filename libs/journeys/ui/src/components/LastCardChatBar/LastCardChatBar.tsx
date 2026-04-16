@@ -136,9 +136,9 @@ export function LastCardChatBar({
                 fontFamily: 'inherit',
                 fontWeight: 500,
                 borderRadius: 9999,
-                border: '1px solid #e0e0e0',
-                backgroundColor: 'transparent',
-                color: '#333',
+                border: '1px solid rgba(255, 255, 255, 0.4)',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: '#ffffff',
                 cursor: 'pointer',
                 outline: 'none',
                 transition: 'background-color 0.2s'
@@ -148,7 +148,7 @@ export function LastCardChatBar({
                 style={{
                   width: 20,
                   height: 20,
-                  color: 'var(--color-secondary-light, #6D28D9)'
+                  color: 'rgba(255, 255, 255, 0.85)'
                 }}
               />
               {label}

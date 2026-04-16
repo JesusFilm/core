@@ -29,6 +29,7 @@ const baseStyles: CSSProperties = {
   fontFamily: 'inherit',
   outline: 'none',
   backgroundColor: '#f5f5f5',
+  color: '#1a1a1a',
   transition: 'border-color 0.2s',
   boxSizing: 'border-box'
 }
