@@ -5,9 +5,9 @@ import { resolveJourneyCustomizationString } from '../resolveJourneyCustomizatio
 
 /**
  * Returns a memoized label string resolved from a potential customization template
- * using the current Journey context. If variant is 'admin', returns the label as-is.
- * Otherwise resolves strictly matching patterns like `{{ key }}` or `{{ key: value }}`
- * against `journey.journeyCustomizationFields`.
+ * using the current Journey context. If variant is 'admin' and the journey is a
+ * template, returns the label as-is (raw tokens). Otherwise resolves using
+ * value first, falling back to defaultValue.
  */
 export function useGetValueFromJourneyCustomizationString(
   label: string | null | undefined

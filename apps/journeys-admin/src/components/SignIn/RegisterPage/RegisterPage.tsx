@@ -287,9 +287,8 @@ export function RegisterPage({
                   {t('Cancel')}
                 </Button>
                 <Button
-                  variant="contained"
-                  size="large"
-                  color="secondary"
+                  variant="blockContained"
+                  color="solid"
                   type="submit"
                   fullWidth
                   disabled={!isValid || isSubmitting}
