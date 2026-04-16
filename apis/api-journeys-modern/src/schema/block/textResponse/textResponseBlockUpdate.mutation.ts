@@ -10,7 +10,6 @@ builder.mutationField('textResponseBlockUpdate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: TextResponseBlock,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       id: t.arg({ type: 'ID', required: true }),
       input: t.arg({ type: TextResponseBlockUpdateInput, required: true }),
