@@ -1015,6 +1015,7 @@ export type ImageBlockUpdateInput = {
   focalLeft?: InputMaybe<Scalars['Int']['input']>;
   focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
+  isCover?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   scale?: InputMaybe<Scalars['Int']['input']>;
   src?: InputMaybe<Scalars['String']['input']>;
@@ -1987,7 +1988,7 @@ export type Mutation = {
   /** update an existing short link */
   shortLinkUpdate: MutationShortLinkUpdateResult;
   signUpBlockCreate: SignUpBlock;
-  signUpBlockUpdate?: Maybe<SignUpBlock>;
+  signUpBlockUpdate: SignUpBlock;
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
   siteCreate: MutationSiteCreateResult;
   spacerBlockCreate: SpacerBlock;
@@ -2001,7 +2002,7 @@ export type Mutation = {
   teamCreate: Team;
   teamUpdate: Team;
   textResponseBlockCreate: TextResponseBlock;
-  textResponseBlockUpdate?: Maybe<TextResponseBlock>;
+  textResponseBlockUpdate: TextResponseBlock;
   textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
   triggerUnsplashDownload: Scalars['Boolean']['output'];
   typographyBlockCreate: TypographyBlock;
@@ -2009,6 +2010,9 @@ export type Mutation = {
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
   updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
   updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
+  userDeleteCheck: UserDeleteCheckResult;
+  userDeleteJourneysCheck: UserDeleteJourneysCheckResult;
+  userDeleteJourneysConfirm: UserDeleteJourneysConfirmResult;
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -2879,6 +2883,22 @@ export type MutationUpdateVideoAlgoliaIndexArgs = {
 
 export type MutationUpdateVideoVariantAlgoliaIndexArgs = {
   videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationUserDeleteCheckArgs = {
+  id: Scalars['String']['input'];
+  idType: UserDeleteIdType;
+};
+
+
+export type MutationUserDeleteJourneysCheckArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
+export type MutationUserDeleteJourneysConfirmArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -4738,15 +4758,9 @@ export type StepBlockCreateInput = {
   journeyId: Scalars['ID']['input'];
   locked?: InputMaybe<Scalars['Boolean']['input']>;
   nextBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * x is used to position the block horizontally in the journey flow diagram on
-   * the editor.
-   */
+  /** x is used to position the block horizontally in the journey flow diagram on the editor. */
   x?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * y is used to position the block vertically in the journey flow diagram on
-   * the editor.
-   */
+  /** y is used to position the block vertically in the journey flow diagram on the editor. */
   y?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -4759,23 +4773,11 @@ export type StepBlockPositionUpdateInput = {
 export type StepBlockUpdateInput = {
   locked?: InputMaybe<Scalars['Boolean']['input']>;
   nextBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * Slug should be unique amongst all blocks
-   * (server will throw BAD_USER_INPUT error if not)
-   * If not required will use the current block id
-   * If the generated slug is not unique the uuid will be placed
-   * at the end of the slug guaranteeing uniqueness
-   */
+  /** Slug should be unique amongst all blocks (server will throw BAD_USER_INPUT error if not). If not required will use the current block id. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness */
   slug?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * x is used to position the block horizontally in the journey flow diagram on
-   * the editor.
-   */
+  /** x is used to position the block horizontally in the journey flow diagram on the editor. */
   x?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * y is used to position the block vertically in the journey flow diagram on
-   * the editor.
-   */
+  /** y is used to position the block vertically in the journey flow diagram on the editor. */
   y?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -4856,11 +4858,22 @@ export type StepViewEventCreateInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   journeyAiTranslateCreateSubscription: JourneyAiTranslateProgress;
+  userDeleteConfirm: UserDeleteConfirmProgress;
 };
 
 
 export type SubscriptionJourneyAiTranslateCreateSubscriptionArgs = {
   input: JourneyAiTranslateInput;
+};
+
+
+export type SubscriptionUserDeleteConfirmArgs = {
+  deletedJourneyIds: Array<Scalars['String']['input']>;
+  deletedTeamIds: Array<Scalars['String']['input']>;
+  deletedUserJourneyIds: Array<Scalars['String']['input']>;
+  deletedUserTeamIds: Array<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  idType: UserDeleteIdType;
 };
 
 export type Tag = {
@@ -5106,6 +5119,12 @@ export enum TypographyVariant {
   Subtitle2 = 'subtitle2'
 }
 
+export enum User_Delete_Log_Level {
+  Error = 'ERROR',
+  Info = 'INFO',
+  Warn = 'WARN'
+}
+
 export enum UnsplashColor {
   Black = 'black',
   BlackAndWhite = 'black_and_white',
@@ -5227,6 +5246,62 @@ export type UserAgent = {
   browser: Browser;
   device: Device;
   os: OperatingSystem;
+};
+
+export type UserDeleteCheckResult = {
+  __typename?: 'UserDeleteCheckResult';
+  logs: Array<UserDeleteLogEntry>;
+  userEmail?: Maybe<Scalars['String']['output']>;
+  userFirstName: Scalars['String']['output'];
+  userId: Scalars['String']['output'];
+};
+
+export type UserDeleteConfirmProgress = {
+  __typename?: 'UserDeleteConfirmProgress';
+  done: Scalars['Boolean']['output'];
+  log: UserDeleteLogEntry;
+  success?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export enum UserDeleteIdType {
+  DatabaseId = 'databaseId',
+  Email = 'email',
+  Jwt = 'jwt'
+}
+
+export type UserDeleteJourneysCheckResult = {
+  __typename?: 'UserDeleteJourneysCheckResult';
+  journeysToDelete: Scalars['Int']['output'];
+  journeysToRemove: Scalars['Int']['output'];
+  journeysToTransfer: Scalars['Int']['output'];
+  logs: Array<UserDeleteJourneysLogEntry>;
+  teamsToDelete: Scalars['Int']['output'];
+  teamsToRemove: Scalars['Int']['output'];
+  teamsToTransfer: Scalars['Int']['output'];
+};
+
+export type UserDeleteJourneysConfirmResult = {
+  __typename?: 'UserDeleteJourneysConfirmResult';
+  deletedJourneyIds: Array<Scalars['String']['output']>;
+  deletedTeamIds: Array<Scalars['String']['output']>;
+  deletedUserJourneyIds: Array<Scalars['String']['output']>;
+  deletedUserTeamIds: Array<Scalars['String']['output']>;
+  logs: Array<UserDeleteJourneysLogEntry>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type UserDeleteJourneysLogEntry = {
+  __typename?: 'UserDeleteJourneysLogEntry';
+  level: User_Delete_Log_Level;
+  message: Scalars['String']['output'];
+  timestamp: Scalars['String']['output'];
+};
+
+export type UserDeleteLogEntry = {
+  __typename?: 'UserDeleteLogEntry';
+  level: User_Delete_Log_Level;
+  message: Scalars['String']['output'];
+  timestamp: Scalars['String']['output'];
 };
 
 export type UserInvite = {
