@@ -68,10 +68,7 @@ export function parseVideoFilename(file: string): ParsedVideoFilename | null {
   }
 
   const [videoId, editionDisplay, ...variantSegments] = parts
-  if (
-    videoId.trim().length === 0 ||
-    editionDisplay.trim().length === 0
-  ) {
+  if (videoId.trim().length === 0 || editionDisplay.trim().length === 0) {
     return null
   }
 

@@ -67,9 +67,7 @@ describe('parseVideoFilename', () => {
       null
     )
     assert.equal(
-      parseVideoFilename(
-        '1_jf-0-0---ot---529---1---a---b---c.mp4'
-      ),
+      parseVideoFilename('1_jf-0-0---ot---529---1---a---b---c.mp4'),
       null
     )
   })
