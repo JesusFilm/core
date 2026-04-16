@@ -20,7 +20,6 @@ builder.mutationField('imageBlockCreate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: ImageBlock,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       input: t.arg({ type: ImageBlockCreateInput, required: true })
     },
