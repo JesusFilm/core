@@ -149,7 +149,7 @@ describe('SSELink', () => {
 
     const link = new SSELink('http://localhost:4000')
     const doc = gql`
-      subscription TestSub {
+      subscription TestSubError {
         ping
       }
     `
@@ -159,7 +159,7 @@ describe('SSELink', () => {
         {
           query: doc,
           variables: {},
-          operationName: 'TestSub',
+          operationName: 'TestSubError',
           getContext: () => ({}),
           setContext: jest.fn(),
           extensions: {}
@@ -241,7 +241,7 @@ describe('createErrorLink', () => {
 
     execute(link, {
       query: gql`
-        query Test {
+        query TestNonAuth {
           test
         }
       `
