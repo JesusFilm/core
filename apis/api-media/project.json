@@ -172,6 +172,12 @@
       "options": {
         "commands": ["pnpm exec tsx apis/api-media/db/seed.ts"]
       }
+    },
+    "export-watch-videos": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx apis/api-media/db/seeds/exportWatchVideos.ts"
+      }
     }
   }
 }
