@@ -55,14 +55,27 @@ The bot needs the `chat:write` scope (and access to the chosen channel).
 ### Video Files
 
 - **Format:** `.mp4` only
-- **Naming Convention:**
+- **Naming Convention (classic, 4 segments):**
 
   ```
-  <videoId>---<edition>---<languageId>[---extra].mp4
+  <videoId>---<edition>---<languageId>---<version>.mp4
   ```
 
-  - Example: `1_jf-0-0---ot---529.mp4`
-  - Example: `1_jf-0-0---jl---496---VersionNumber.mp4`
+  - Example: `1_jf-0-0---jl---496---1.mp4` (video `1_jf-0-0`, edition `jl`, language `496`, version `1`)
+
+- **Naming Convention (burned-in aware, 6 segments):**
+
+  ```
+  <videoId>---<edition>---<audioLanguageId>---<audioVersion>---<burnedLanguageId>---<burnedVersion>.mp4
+  ```
+
+  - When `<burnedLanguageId>` and `<burnedVersion>` are both **non-zero**, the file is treated as a burned-in variant. The video variant's `languageId` and `version` become the **burned-in pair** — that's the language a viewer actually sees on screen — and the audio pair is only logged for diagnostics.
+  - When `<burnedLanguageId>` and `<burnedVersion>` are both `0` (or blank), there is no burned-in subtitle. The audio pair is used as the variant's `languageId` and `version` (same result as the classic 4-segment shape).
+
+  Examples:
+
+  - Non-burned-in: `1_jf6138-0-0---OT---6440---28288---0---0.mp4` → variant `languageId=6440`, `version=28288`
+  - Burned-in: `1_jf6138-0-0---OT---529---1234---6440---28288.mp4` → variant `languageId=6440`, `version=28288` (audio was `529 / 1234`)
 
 ### Subtitle Files
 

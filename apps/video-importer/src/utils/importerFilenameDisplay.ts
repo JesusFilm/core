@@ -4,6 +4,8 @@ import {
   VIDEO_FILENAME_REGEX
 } from '../importerFilenamePatterns'
 
+import { parseVideoFilename } from './videoFilename'
+
 /** Fields for Slack tables / summaries (no display names — IDs only). */
 export interface ImporterFilenameTableFields {
   /** Original filename */
@@ -12,12 +14,14 @@ export interface ImporterFilenameTableFields {
   production: string
   /** Video / component id, or "—" for language-only audio */
   mediaComponentId: string
-  /** Language id from the filename */
+  /** Language id from the filename (burned-in lang for burned-in videos) */
   languageId: string
-  /** Video | Subtitle | Audio preview | Unknown */
+  /** Video | Video (burned-in) | Subtitle | Audio preview | Unknown */
   kind: string
   /** Version segment when present (video), else "—" */
   version: string
+  /** When a burned-in video file, the audio language id; otherwise undefined */
+  audioLanguageId?: string
 }
 
 function esc(s: string): string {
@@ -68,23 +72,23 @@ export function parseImporterFilenameForTable(
   }
 
   if (file.toLowerCase().endsWith('.mp4')) {
-    const stem = file.slice(0, -'.mp4'.length)
-    const parts = stem.split('---').filter((p) => p.length > 0)
-
-    if (parts.length >= 4) {
-      const [videoId, edition, rawLang, fourth, ...extras] = parts
-      const version =
-        extras.length > 0 ? `${fourth} +${extras.length} extra` : fourth
-
+    const parsed = parseVideoFilename(file)
+    if (parsed) {
       return {
         file,
-        production: editionProduction(edition),
-        mediaComponentId: videoId,
-        languageId: rawLang.trim(),
-        kind: 'Video',
-        version
+        production: editionProduction(parsed.editionDisplay),
+        mediaComponentId: parsed.videoId,
+        languageId: parsed.languageId.trim(),
+        kind: parsed.burnedIn ? 'Video (burned-in)' : 'Video',
+        version: parsed.version,
+        audioLanguageId: parsed.burnedIn
+          ? parsed.audioLanguageId?.trim()
+          : undefined
       }
     }
+
+    const stem = file.slice(0, -'.mp4'.length)
+    const parts = stem.split('---').filter((p) => p.length > 0)
 
     if (parts.length === 3) {
       const [videoId, edition, rawLang] = parts
@@ -173,6 +177,10 @@ export function formatImporterFilenameParts(file: string): string {
       `*Language ID:* \`${esc(r.languageId)}\``,
       `*Version:* \`${esc(r.version)}\``
     ]
+
+    if (r.audioLanguageId != null && r.audioLanguageId.length > 0) {
+      lines.push(`*Audio Language ID:* \`${esc(r.audioLanguageId)}\``)
+    }
 
     if (r.kind === 'Video (unparsed)') {
       lines.push(`*Filename:* \`${esc(file)}\``)
