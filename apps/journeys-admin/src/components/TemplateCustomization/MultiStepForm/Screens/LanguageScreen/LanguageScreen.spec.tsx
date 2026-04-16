@@ -1731,7 +1731,7 @@ describe('LanguageScreen', () => {
             result: mockGetLastActiveTeamIdAndTeamsResult
           },
           createGetLanguagesMock([
-            { id: '21028', slug: 'spanish', value: 'Spanish' }
+            { id: '532', slug: 'spanish', value: 'Spanish' }
           ]),
           mockGetChildJourneysFromTemplateId,
           mockGetParentJourneysFromTemplateId,
