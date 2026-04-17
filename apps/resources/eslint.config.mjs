@@ -3,7 +3,13 @@ import nextConfig from '../../libs/shared/eslint/next.mjs'
 export default [
   ...nextConfig,
   {
-    ignores: ['apps/resources/jest.config.ts', 'apps/resources/next.config.js']
+    ignores: [
+      'apps/resources/jest.config.ts',
+      'apps/resources/next.config.js',
+      'apps/resources/i18next-parser.config.js',
+      'apps/resources/**/*.stories.{ts,tsx,js,jsx}',
+      'apps/resources/src/libs/storybook/**'
+    ]
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],

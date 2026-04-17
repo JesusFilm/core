@@ -3,11 +3,11 @@ import nextConfig from '../../libs/shared/eslint/next.mjs'
 export default [
   ...nextConfig,
   {
-    ignores: ['apps/videos-admin/jest.config.ts']
-  },
-  {
-    files: ['apps/videos-admin/src/libs/storybookConfig/videosAdminConfig.tsx'],
-    rules: { 'i18next/no-literal-string': 'off' }
+    ignores: [
+      'apps/videos-admin/jest.config.ts',
+      'apps/videos-admin/**/*.stories.{ts,tsx,js,jsx}',
+      'apps/videos-admin/src/libs/storybookConfig/**'
+    ]
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],

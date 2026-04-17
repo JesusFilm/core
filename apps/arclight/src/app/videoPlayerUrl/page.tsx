@@ -1,5 +1,6 @@
-import { graphql } from '@core/shared/gql'
 import { notFound } from 'next/navigation'
+
+import { graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../lib/apolloClient'
 
