@@ -1,6 +1,7 @@
 {
   "Submit": "Ipasa",
   "Button": "Button",
+  "None": "wala",
   "This field is required": "This field is required",
   "Name must be 2 characters or more": "Name must be 2 characters or more",
   "Name must be 50 characters or less": "Name must be 50 characters or less",
@@ -102,6 +103,5 @@
   "{{count}} Cards_one": "{{count}} Mga kard",
   "{{count}} Cards_other": "{{count}} Mga kard",
   "{{count}} Videos_one": "{{count}} Mga video",
-  "{{count}} Videos_other": "{{count}} Mga video",
-  "None": "None"
+  "{{count}} Videos_other": "{{count}} Mga video"
 }

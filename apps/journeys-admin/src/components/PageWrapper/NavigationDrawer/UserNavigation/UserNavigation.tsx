@@ -153,7 +153,7 @@ export function UserNavigation({
           <ListItemButton
             LinkComponent={NextLink}
             href="/users/delete"
-            selected={selectedPage === 'users-delete'}
+            selected={router.pathname === '/users/delete'}
             data-testid="NavigationListItemDeleteUser"
           >
             <ListItemIcon>

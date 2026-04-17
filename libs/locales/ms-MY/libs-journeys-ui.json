@@ -1,6 +1,7 @@
 {
   "Submit": "Hantar",
   "Button": "Butang",
+  "None": "tiada",
   "This field is required": "Medan ini diperlukan",
   "Name must be 2 characters or more": "Nama mestilah 2 aksara atau lebih",
   "Name must be 50 characters or less": "Nama mestilah 50 aksara atau kurang",
@@ -96,6 +97,5 @@
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Templat Perjalanan</0> <1>dalam</1> <2>{{count}} Bahasa</2>",
   "{{count}} more cards_other": "{{count}} lagi kad",
   "{{count}} Cards_other": "{{count}} Kad",
-  "{{count}} Videos_other": "{{count}} Video",
-  "None": "None"
+  "{{count}} Videos_other": "{{count}} Video"
 }

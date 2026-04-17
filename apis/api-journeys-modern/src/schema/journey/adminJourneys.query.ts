@@ -17,9 +17,6 @@ builder.queryField('adminJourneys', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     type: [JourneyRef],
     nullable: false,
-    override: {
-      from: 'api-journeys'
-    },
     args: {
       status: t.arg({ type: [JourneyStatus], required: false }),
       template: t.arg.boolean({ required: false }),

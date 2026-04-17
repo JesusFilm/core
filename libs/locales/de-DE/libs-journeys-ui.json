@@ -1,6 +1,7 @@
 {
   "Submit": "einreichen",
   "Button": "Taste",
+  "None": "Keine",
   "This field is required": "Dieses Feld ist erforderlich",
   "Name must be 2 characters or more": "Der Name muss 2 oder mehr Zeichen haben",
   "Name must be 50 characters or less": "Der Name darf höchstens 50 Zeichen lang sein",
@@ -102,6 +103,5 @@
   "{{count}} Cards_one": "{{count}} Karten",
   "{{count}} Cards_other": "{{count}} Karten",
   "{{count}} Videos_one": "{{count}} Videos",
-  "{{count}} Videos_other": "{{count}} Videos",
-  "None": "None"
+  "{{count}} Videos_other": "{{count}} Videos"
 }

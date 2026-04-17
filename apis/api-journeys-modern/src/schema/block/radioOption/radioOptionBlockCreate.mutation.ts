@@ -17,7 +17,6 @@ builder.mutationField('radioOptionBlockCreate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: RadioOptionBlock,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       input: t.arg({ type: RadioOptionBlockCreateInput, required: true })
     },
