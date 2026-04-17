@@ -5,10 +5,57 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 const APOLOGIST_BASE_URL = process.env.APOLOGIST_API_URL ?? ''
 const APOLOGIST_MODEL_ID = 'openai/gpt/4o-mini'
 
+/**
+ * Fetch wrapper that logs every upstream HTTP call. Mirrors the logger
+ * in /api/chat so we can compare the working context endpoint vs chat.
+ */
+const loggingFetch: typeof fetch = async (input, init) => {
+  const url =
+    typeof input === 'string'
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url
+  const method = init?.method ?? 'POST'
+  let bodyPreview = '(no body)'
+  if (init?.body != null && typeof init.body === 'string') {
+    bodyPreview = init.body.slice(0, 400)
+  }
+  console.log(
+    '[apologist:upstream] ctx -> ',
+    method,
+    url,
+    'bodyPreview=',
+    bodyPreview
+  )
+  const response = await fetch(input, init)
+  const contentType = response.headers.get('content-type') ?? ''
+  console.log(
+    '[apologist:upstream] ctx <- status=',
+    response.status,
+    'content-type=',
+    contentType
+  )
+  if (!contentType.includes('text/event-stream')) {
+    try {
+      const clone = response.clone()
+      const text = await clone.text()
+      console.log(
+        '[apologist:upstream] ctx <- bodyPreview (first 512B):',
+        text.slice(0, 512)
+      )
+    } catch (err) {
+      console.error('[apologist:upstream] ctx body read error', err)
+    }
+  }
+  return response
+}
+
 const apologist = createOpenAICompatible({
   name: 'apologist',
   baseURL: APOLOGIST_BASE_URL,
-  apiKey: process.env.APOLOGIST_API_KEY ?? ''
+  apiKey: process.env.APOLOGIST_API_KEY ?? '',
+  fetch: loggingFetch
 })
 
 interface BlockContext {

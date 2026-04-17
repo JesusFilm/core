@@ -66,16 +66,59 @@ export function AiChat({ activeBlockId, userId, initialMessage }: AiChatProps): 
     return id
   }, [])
 
+  // Keep a ref of the latest body fields so the transport's body resolver
+  // reads the current value at send time. Without this, any async update
+  // to aiContextData after transport construction would not be reflected
+  // in the /api/chat request body (classic memoized-transport race).
+  const bodyStateRef = useRef({
+    contextText,
+    languageBcp47,
+    journeyId: journey?.id,
+    userId,
+    sessionId
+  })
+  bodyStateRef.current = {
+    contextText,
+    languageBcp47,
+    journeyId: journey?.id,
+    userId,
+    sessionId
+  }
+
+  useEffect(() => {
+    console.log(
+      '[apologist:client] context state update aiContextDataLength=',
+      aiContextData?.length ?? 0,
+      'contextText.length=',
+      contextText?.length ?? 0,
+      'activeBlockId=',
+      activeBlockId
+    )
+  }, [aiContextData, contextText, activeBlockId])
+
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
         api: '/api/chat',
-        body: {
-          contextText,
-          language: languageBcp47,
-          journeyId: journey?.id,
-          userId,
-          sessionId
+        body: () => {
+          const latest = bodyStateRef.current
+          console.log(
+            '[apologist:client] sending chat body contextText.length=',
+            latest.contextText?.length ?? 0,
+            'language=',
+            latest.languageBcp47,
+            'journeyId=',
+            latest.journeyId,
+            'sessionId=',
+            latest.sessionId
+          )
+          return {
+            contextText: latest.contextText,
+            language: latest.languageBcp47,
+            journeyId: latest.journeyId,
+            userId: latest.userId,
+            sessionId: latest.sessionId
+          }
         },
         // Custom fetch wrapper logs response status/headers so we can see
         // whether the /api/chat endpoint is emitting the AI SDK Data Stream
@@ -109,7 +152,10 @@ export function AiChat({ activeBlockId, userId, initialMessage }: AiChatProps): 
           return response
         }
       }),
-    [contextText, languageBcp47, journey?.id, userId, sessionId]
+    // Body is read from bodyStateRef.current at send time, so the
+    // transport does not need to be rebuilt on every body change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   )
 
   const { messages, sendMessage, regenerate, stop, status } = useChat({
