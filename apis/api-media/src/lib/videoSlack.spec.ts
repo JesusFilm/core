@@ -1,5 +1,6 @@
 import fetch from 'node-fetch'
 
+import { prisma as languagesPrisma } from '@core/prisma/languages/client'
 import { prisma } from '@core/prisma/media/client'
 
 import { logger } from '../logger'
@@ -7,9 +8,19 @@ import { logger } from '../logger'
 import { sendWeeklyVideoSummary } from './videoSlack'
 
 jest.mock('node-fetch')
+jest.mock('@core/prisma/languages/client', () => ({
+  prisma: {
+    language: {
+      findMany: jest.fn()
+    }
+  }
+}))
 jest.mock('@core/prisma/media/client', () => ({
   prisma: {
     video: {
+      findMany: jest.fn()
+    },
+    videoVariant: {
       findMany: jest.fn()
     }
   }
@@ -24,7 +35,9 @@ jest.mock('../logger', () => ({
 
 describe('videoSlack', () => {
   const mockFetch = fetch as jest.MockedFunction<typeof fetch>
-  const mockFindMany = jest.mocked(prisma.video.findMany)
+  const mockVideoFindMany = jest.mocked(prisma.video.findMany)
+  const mockVariantFindMany = jest.mocked(prisma.videoVariant.findMany)
+  const mockLanguageFindMany = jest.mocked(languagesPrisma.language.findMany)
   const mockLoggerWarn = jest.mocked(logger.warn)
   const mockLoggerInfo = jest.mocked(logger.info)
   const mockLoggerChild = jest.mocked(logger.child)
@@ -35,40 +48,52 @@ describe('videoSlack', () => {
     mockLoggerChild.mockReturnValue(logger as any)
     process.env = {
       ...originalEnv,
-      VIDEO_SLACK_BOT_TOKEN: 'test-token',
-      VIDEO_SLACK_CHANNEL_ID: 'test-channel'
+      STAGE_RESET_SLACK_BOT_TOKEN: 'test-token',
+      SLACK_DATA_LANGS_CHANNEL_ID: 'test-channel'
     }
     mockFetch.mockResolvedValue({
       ok: true,
       status: 200,
-      json: jest.fn().mockResolvedValue({ ok: true })
+      json: jest.fn().mockResolvedValue({ ok: true, ts: '1111.1111' })
     } as any)
+    mockLanguageFindMany.mockResolvedValue([
+      {
+        id: '529',
+        name: [{ value: 'English' }]
+      }
+    ] as any)
   })
 
   afterEach(() => {
     process.env = originalEnv
   })
 
-  it('should post a weekly video summary to Slack', async () => {
-    mockFindMany
+  it('should post a production-style weekly report to Slack', async () => {
+    mockVideoFindMany
       .mockResolvedValueOnce([
         {
           id: 'created-video',
-          label: 'featureFilm',
           slug: 'created-slug',
+          primaryLanguageId: '529',
           createdAt: new Date('2026-04-01T00:00:00.000Z'),
-          updatedAt: new Date('2026-04-01T00:00:00.000Z')
+          title: [{ value: 'Created Production' }],
+          _count: { variants: 3 }
         } as any
       ])
-      .mockResolvedValueOnce([
-        {
+      .mockResolvedValueOnce([])
+    mockVariantFindMany.mockResolvedValueOnce([
+      {
+        videoId: 'updated-video',
+        languageId: '529',
+        updatedAt: new Date('2026-04-04T00:00:00.000Z'),
+        video: {
           id: 'updated-video',
-          label: 'segment',
           slug: 'updated-slug',
-          createdAt: new Date('2026-03-01T00:00:00.000Z'),
-          updatedAt: new Date('2026-04-04T00:00:00.000Z')
-        } as any
-      ])
+          title: [{ value: 'Updated Production' }],
+          _count: { variants: 5 }
+        }
+      } as any
+    ])
 
     await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
 
@@ -89,61 +114,148 @@ describe('videoSlack', () => {
     expect(body).toMatchObject({
       channel: 'test-channel'
     })
-    expect(body.blocks[0].text.text).toBe('Weekly video summary')
-    expect(body.blocks[1].text.text).toContain('*Created:* 1')
-    expect(body.blocks[1].text.text).toContain('*Updated:* 1')
-    expect(body.blocks[2].text.text).toContain('created-video')
-    expect(body.blocks[2].text.text).toContain('created: 2026-04-01')
-    expect(body.blocks[3].text.text).toContain('updated-video')
-    expect(body.blocks[3].text.text).toContain('updated: 2026-04-04')
+    expect(body.text).toContain('Weekly production report')
+    expect(body.text).toContain('2 row')
+
+    const blocksText = JSON.stringify(body.blocks)
+    expect(blocksText).toContain('Media Component ID')
+    expect(blocksText).toContain('created-video')
+    expect(blocksText).toContain('updated-video')
+    expect(blocksText).toContain('New Upload')
+    expect(blocksText).toContain('Update')
+    expect(blocksText).toContain('English')
   })
 
-  it('should warn and skip when Slack env vars are missing', async () => {
-    delete process.env.VIDEO_SLACK_BOT_TOKEN
-
-    mockFindMany
+  it('should post when only Video.updatedAt moved (no variant rows)', async () => {
+    mockVideoFindMany
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([
         {
-          id: 'created-video',
+          id: 'meta-only',
+          slug: 'meta-slug',
+          primaryLanguageId: '529',
+          createdAt: new Date('2025-01-01T00:00:00.000Z'),
+          updatedAt: new Date('2026-04-05T00:00:00.000Z'),
+          title: [{ value: 'Metadata Only Production' }],
+          _count: { variants: 2 }
+        } as any
+      ])
+    mockVariantFindMany.mockResolvedValueOnce([])
+
+    await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
+
+    expect(mockFetch).toHaveBeenCalled()
+    const [, options] = mockFetch.mock.calls[0]
+    const body = JSON.parse(options?.body as string)
+    expect(body.text).toContain('1 row')
+    expect(JSON.stringify(body.blocks)).toContain('meta-only')
+    expect(JSON.stringify(body.blocks)).toContain('Update')
+  })
+
+  it('should use language package totals for feature films with translated clips', async () => {
+    mockVideoFindMany
+      .mockResolvedValueOnce([
+        {
+          id: 'jf-parent',
           label: 'featureFilm',
-          slug: 'created-slug',
-          createdAt: new Date('2026-04-01T00:00:00.000Z'),
-          updatedAt: new Date('2026-04-01T00:00:00.000Z')
+          slug: 'jesus-film',
+          primaryLanguageId: '529',
+          createdAt: new Date('2026-04-08T00:00:00.000Z'),
+          title: [{ value: 'JESUS' }],
+          _count: { variants: 99 }
         } as any
       ])
       .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([
+        {
+          id: 'jf-parent',
+          children: [
+            { id: 'jf-segment-1', label: 'segment' },
+            { id: 'jf-segment-2', label: 'segment' },
+            { id: 'jf-segment-3', label: 'segment' }
+          ]
+        } as any
+      ])
+    mockVariantFindMany
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([
+        { languageId: '529', videoId: 'jf-parent' } as any,
+        { languageId: '529', videoId: 'jf-segment-1' } as any,
+        { languageId: '529', videoId: 'jf-segment-3' } as any
+      ])
+
+    await sendWeeklyVideoSummary(new Date('2026-04-10T00:00:00.000Z'))
+
+    const [, options] = mockFetch.mock.calls[0]
+    const body = JSON.parse(options?.body as string)
+    const sectionTexts = (body.blocks as { text?: { text: string } }[])
+      .map((block) => block.text?.text)
+      .filter((text): text is string => text != null)
+      .join('\n')
+    const jesusLine = sectionTexts
+      .split('\n')
+      .find((line) => line.includes('jf-parent'))
+
+    expect(jesusLine).toBeDefined()
+    expect(jesusLine).toContain(' | 3')
+  })
+
+  it('should warn and skip when Slack env vars are missing', async () => {
+    delete process.env.STAGE_RESET_SLACK_BOT_TOKEN
+
+    mockVideoFindMany
+      .mockResolvedValueOnce([
+        {
+          id: 'created-video',
+          slug: 'x',
+          primaryLanguageId: '529',
+          createdAt: new Date('2026-04-01T00:00:00.000Z'),
+          title: [{ value: 'P' }],
+          _count: { variants: 1 }
+        } as any
+      ])
+      .mockResolvedValueOnce([])
+    mockVariantFindMany.mockResolvedValueOnce([])
 
     await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
 
     expect(mockFetch).not.toHaveBeenCalled()
     expect(mockLoggerWarn).toHaveBeenCalledWith(
-      'Skipping video Slack notification because VIDEO_SLACK_BOT_TOKEN or VIDEO_SLACK_CHANNEL_ID is missing'
+      'Skipping video Slack notification because STAGE_RESET_SLACK_BOT_TOKEN or SLACK_DATA_LANGS_CHANNEL_ID is missing'
     )
   })
 
   it('should not post when there are no weekly changes', async () => {
-    mockFindMany.mockResolvedValueOnce([]).mockResolvedValueOnce([])
+    mockVideoFindMany.mockResolvedValueOnce([]).mockResolvedValueOnce([])
+    mockVariantFindMany.mockResolvedValueOnce([])
 
     await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
 
     expect(mockFetch).not.toHaveBeenCalled()
     expect(mockLoggerInfo).toHaveBeenCalledWith(
-      'No videos were created or updated in the last week'
+      expect.objectContaining({
+        newVideos: 0,
+        variantUpdateRows: 0,
+        videoMetadataOnlyRows: 0
+      }),
+      'Weekly video Slack summary skipped: no new videos, no variant updates, and no metadata-only video updates in the window'
     )
   })
 
   it('should warn when Slack API returns an error response', async () => {
-    mockFindMany
+    mockVideoFindMany
       .mockResolvedValueOnce([
         {
           id: 'created-video',
-          label: 'featureFilm',
-          slug: 'created-slug',
+          slug: 'x',
+          primaryLanguageId: '529',
           createdAt: new Date('2026-04-01T00:00:00.000Z'),
-          updatedAt: new Date('2026-04-01T00:00:00.000Z')
+          title: [{ value: 'P' }],
+          _count: { variants: 1 }
         } as any
       ])
       .mockResolvedValueOnce([])
+    mockVariantFindMany.mockResolvedValueOnce([])
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
