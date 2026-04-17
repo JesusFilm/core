@@ -89,7 +89,7 @@ export default async function handler(
   const { blocks, language } = req.body as ContextRequestBody
 
   console.log(
-    '[apologist:server] chat/context payload blockCount=',
+    '[apologist:server] chat/context payload block count=',
     blocks?.length ?? 0,
     'language=',
     language
