@@ -52,9 +52,9 @@ Page-level wrapping order (from `_app.tsx` and `JourneyPageWrapper`):
 2. `AppCacheProvider` — MUI Emotion cache for SSR
 3. `ApolloProvider` — GraphQL client
 4. `SnackbarProvider` — toast notifications
-4. `PlausibleProvider` — analytics (per journey)
-5. `JourneyProvider` — journey data context (`useJourney()`)
-6. `ThemeProvider` — per-step theming with custom fonts
+5. `PlausibleProvider` — analytics (per journey)
+6. `JourneyProvider` — journey data context (`useJourney()`)
+7. `ThemeProvider` — per-step theming with custom fonts
 
 Tests must wrap components in the required providers:
 
