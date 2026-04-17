@@ -106,7 +106,7 @@ const loggingFetch: typeof fetch = async (input, init) => {
       const clone = response.clone()
       const text = await clone.text()
       console.log(
-        '[apologist:upstream] <- bodyPreview (first 1KB):',
+        '[apologist:upstream] <- body preview (first 1KB):',
         text.slice(0, 1024)
       )
     } catch (err) {
