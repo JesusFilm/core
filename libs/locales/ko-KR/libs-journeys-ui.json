@@ -1,6 +1,7 @@
 {
   "Submit": "제출하기",
   "Button": "버튼",
+  "None": "없음",
   "This field is required": "이 필드는 필수 입력 사항입니다.",
   "Name must be 2 characters or more": "이름은 2자 이상이어야 합니다.",
   "Name must be 50 characters or less": "이름은 50자 이내여야 합니다.",
@@ -96,6 +97,5 @@
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>여정 템플릿</0><1>in</1><2>{{count}} 언어</2>",
   "{{count}} more cards_other": "{{count}} 더 많은 카드",
   "{{count}} Cards_other": "{{count}} 카드",
-  "{{count}} Videos_other": "{{count}} 동영상",
-  "None": "None"
+  "{{count}} Videos_other": "{{count}} 동영상"
 }
