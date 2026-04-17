@@ -76,13 +76,70 @@ export function AiChat({ activeBlockId, userId, initialMessage }: AiChatProps): 
           journeyId: journey?.id,
           userId,
           sessionId
+        },
+        // Custom fetch wrapper logs response status/headers so we can see
+        // whether the /api/chat endpoint is emitting the AI SDK Data Stream
+        // Protocol (x-vercel-ai-ui-message-stream header should be present).
+        fetch: async (input, init) => {
+          console.log('[apologist:client] fetch start url=', input)
+          const response = await fetch(input, init)
+          try {
+            const headerDump: Record<string, string> = {}
+            response.headers.forEach((value, key) => {
+              headerDump[key] = value
+            })
+            console.log(
+              '[apologist:client] fetch response status=',
+              response.status,
+              'content-type=',
+              response.headers.get('content-type'),
+              'x-vercel-ai-data-stream=',
+              response.headers.get('x-vercel-ai-data-stream'),
+              'x-vercel-ai-ui-message-stream=',
+              response.headers.get('x-vercel-ai-ui-message-stream'),
+              'all-headers=',
+              headerDump
+            )
+          } catch (err) {
+            console.error(
+              '[apologist:client] fetch response header read error',
+              err
+            )
+          }
+          return response
         }
       }),
     [contextText, languageBcp47, journey?.id, userId, sessionId]
   )
 
   const { messages, sendMessage, regenerate, stop, status } = useChat({
-    transport
+    transport,
+    onFinish: ({ message }) => {
+      const text = getTextFromMessage(message)
+      console.log(
+        '[apologist:client] useChat onFinish role=',
+        message.role,
+        'id=',
+        message.id,
+        'partCount=',
+        message.parts?.length ?? 0,
+        'text.length=',
+        text.length
+      )
+    },
+    onError: (error) => {
+      console.error(
+        '[apologist:client] useChat onError message=',
+        error?.message,
+        'stack=',
+        error?.stack,
+        'raw=',
+        error
+      )
+    },
+    onData: (data) => {
+      console.log('[apologist:client] useChat onData part=', data)
+    }
   })
 
   const isLoading = status === 'submitted' || status === 'streaming'

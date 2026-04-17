@@ -11,22 +11,24 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 type ChatProvider = 'apologist' | 'gemini' | 'openai'
 
-function getChatModel(): LanguageModel {
+function getChatModel(): { model: LanguageModel; provider: ChatProvider; modelId: string; baseURL?: string } {
   const provider = (process.env.CHAT_PROVIDER ?? 'apologist') as ChatProvider
 
   switch (provider) {
     case 'gemini':
-      return google('gemini-2.0-flash')
+      return { model: google('gemini-2.0-flash'), provider, modelId: 'gemini-2.0-flash' }
     case 'openai':
-      return openai('gpt-4o')
+      return { model: openai('gpt-4o'), provider, modelId: 'gpt-4o' }
     case 'apologist':
     default: {
+      const baseURL = process.env.APOLOGIST_API_URL ?? ''
       const apologist = createOpenAICompatible({
         name: 'apologist',
-        baseURL: process.env.APOLOGIST_API_URL ?? '',
+        baseURL,
         apiKey: process.env.APOLOGIST_API_KEY ?? ''
       })
-      return apologist.chatModel('openai/gpt/4o')
+      const modelId = 'openai/gpt/4o'
+      return { model: apologist.chatModel(modelId), provider: 'apologist', modelId, baseURL }
     }
   }
 }
@@ -42,6 +44,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
+  console.log('[apologist:server] handler=chat method=', req.method)
+
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
     res.status(405).end('Method Not Allowed')
@@ -54,6 +58,17 @@ export default async function handler(
     language,
     interactionType
   } = req.body as ChatRequestBody
+
+  console.log(
+    '[apologist:server] request payload messageCount=',
+    messages?.length ?? 0,
+    'contextText.length=',
+    contextText?.length ?? 0,
+    'language=',
+    language,
+    'interactionType=',
+    interactionType
+  )
 
   if (!messages || messages.length === 0) {
     res.status(400).json({ error: 'messages are required' })
@@ -68,12 +83,59 @@ export default async function handler(
 
   const modelMessages = await convertToModelMessages(messages)
 
+  const { model, provider, modelId, baseURL } = getChatModel()
+  console.log(
+    '[apologist:server] model resolved provider=',
+    provider,
+    'modelId=',
+    modelId,
+    'baseURL=',
+    baseURL ?? '(provider default)'
+  )
+
   const result = streamText({
-    model: getChatModel(),
+    model,
     system: systemMessage,
-    messages: modelMessages
+    messages: modelMessages,
+    onChunk({ chunk }) {
+      const preview =
+        chunk.type === 'text-delta' || chunk.type === 'reasoning-delta'
+          ? (chunk.text ?? '').slice(0, 80)
+          : undefined
+      console.log(
+        '[apologist:server] onChunk type=',
+        chunk.type,
+        preview !== undefined ? `preview="${preview}"` : ''
+      )
+    },
+    onFinish({ text, finishReason, usage, toolCalls }) {
+      console.log(
+        '[apologist:server] onFinish finishReason=',
+        finishReason,
+        'usage=',
+        JSON.stringify(usage),
+        'text.length=',
+        text?.length ?? 0,
+        'toolCalls=',
+        toolCalls?.length ?? 0
+      )
+    },
+    onError({ error }) {
+      const err = error as Error
+      console.error(
+        '[apologist:server] onError message=',
+        err?.message,
+        'stack=',
+        err?.stack,
+        'raw=',
+        error
+      )
+    }
   })
 
+  console.log(
+    '[apologist:server] response protocol=pipeUIMessageStreamToResponse (UI Message Stream / Data Stream Protocol)'
+  )
   result.pipeUIMessageStreamToResponse(res)
 }
 
