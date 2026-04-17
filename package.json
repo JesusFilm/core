@@ -241,7 +241,7 @@
     "unsplash-js": "^7.0.19",
     "util": "^0.12.4",
     "uuid": "^10.0.0",
-    "vercel": "^46.0.0",
+    "vercel": "^51.5.1",
     "video.js": "^8.17.4",
     "videojs-mux": "^4.21.0",
     "videojs-youtube": "^3.0.1",
