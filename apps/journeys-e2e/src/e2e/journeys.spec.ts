@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { type Page, expect, test } from '@playwright/test'
 
 /**
  * Next step in LTR: `HotkeyNavigation` maps ArrowRight to next. Chevrons stay
@@ -13,6 +13,7 @@ Test a journey by following the journey's selection buttons
 */
 test('journeys', async ({ page }) => {
   test.setTimeout(120000)
+
   await page.goto('/', { waitUntil: 'domcontentloaded' })
   // Wait for and click the Fact or Fiction entry using a stable href-based locator
   const factOrFictionLink = page.locator('a[href="/fact-or-fiction"]')
@@ -38,7 +39,9 @@ test('journeys', async ({ page }) => {
   // Test Video Screen
   await pressConductorNext(targetPage)
   // Test Can we trust the story of Jesus? screen
-  await expect(targetPage.getByText('Can we trust the story of Jesus?')).toBeVisible({
+  await expect(
+    targetPage.getByText('Can we trust the story of Jesus?')
+  ).toBeVisible({
     timeout: 30000
   })
   await targetPage.getByText('Yes, it’s a true story 👍').click()
