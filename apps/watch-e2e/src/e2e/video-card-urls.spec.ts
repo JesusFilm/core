@@ -27,7 +27,8 @@ test('visible VideoCard links do not contain undefined or empty path segments', 
       )
   )
 
-  expect(badHrefs, `Invalid VideoCard hrefs: ${JSON.stringify(badHrefs)}`).toEqual(
-    []
-  )
+  expect(
+    badHrefs,
+    `Invalid VideoCard hrefs: ${JSON.stringify(badHrefs)}`
+  ).toEqual([])
 })
