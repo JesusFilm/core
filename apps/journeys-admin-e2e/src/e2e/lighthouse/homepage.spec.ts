@@ -7,7 +7,7 @@ import { LandingPage } from '../../pages/landing-page'
 const config = {
   extends: 'lighthouse:default',
   settings: {
-    formFactor: 'desktop',
+    formFactor: 'desktop' as const,
     screenEmulation: {
       mobile: false,
       width: 1350,
