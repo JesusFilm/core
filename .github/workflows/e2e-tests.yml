@@ -15,6 +15,7 @@ on:
           - 'docs-e2e'
           - 'journeys-e2e'
           - 'journeys-admin-e2e'
+          - 'resources-e2e'
           - 'watch-e2e'
           - 'watch-modern-e2e'
           - 'videos-admin-e2e'
@@ -44,6 +45,7 @@ jobs:
             'docs',
             'journeys',
             'journeys-admin',
+            'resources',
             'watch',
             'watch-modern',
             'videos-admin',
@@ -97,6 +99,7 @@ jobs:
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
           WATCH_MODERN_VERCEL_PROJECT_ID: ${{ secrets.WATCH_MODERN_VERCEL_PROJECT_ID }}
+          RESOURCES_VERCEL_PROJECT_ID: ${{ secrets.RESOURCES_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: preview
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }}
@@ -151,6 +154,9 @@ jobs:
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
+          SHORT_LINK_HAPPY_PATH_URL: ${{ secrets.SHORT_LINK_HAPPY_PATH_URL }}
+          PLAYWRIGHT_VIDEOS_ADMIN_EMAIL: ${{ secrets.PLAYWRIGHT_VIDEOS_ADMIN_EMAIL }}
+          PLAYWRIGHT_VIDEOS_ADMIN_PASSWORD: ${{ secrets.PLAYWRIGHT_VIDEOS_ADMIN_PASSWORD }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -239,6 +245,9 @@ jobs:
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
+          SHORT_LINK_HAPPY_PATH_URL: ${{ secrets.SHORT_LINK_HAPPY_PATH_URL }}
+          PLAYWRIGHT_VIDEOS_ADMIN_EMAIL: ${{ secrets.PLAYWRIGHT_VIDEOS_ADMIN_EMAIL }}
+          PLAYWRIGHT_VIDEOS_ADMIN_PASSWORD: ${{ secrets.PLAYWRIGHT_VIDEOS_ADMIN_PASSWORD }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:

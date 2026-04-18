@@ -7,7 +7,8 @@ test('journeys', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' })
   // Wait for and click the Fact or Fiction entry using a stable href-based locator
   const factOrFictionLink = page.locator('a[href="/fact-or-fiction"]')
-  await expect(factOrFictionLink).toBeVisible({ timeout: 150000 })
+  // 90s: cold Vercel SSR for journeys home can exceed the default Playwright timeout
+  await expect(factOrFictionLink).toBeVisible({ timeout: 90000 })
   // Click and handle potential new-tab navigation; fall back to same-page navigation
   const newPageWait = page
     .context()
