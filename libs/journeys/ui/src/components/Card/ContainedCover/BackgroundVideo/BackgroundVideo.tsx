@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
-import { CSSProperties, ReactElement, useEffect, useRef } from 'react'
+import { CSSProperties, ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
 import { defaultBackgroundVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+import { isInstagramAndroidWebView } from '@core/shared/ui/deviceUtils'
 
 import {
   VideoBlockObjectFit,
@@ -36,6 +37,11 @@ export function BackgroundVideo({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
   const isYouTube = source === VideoBlockSource.youTube
+  const [inAppBrowser, setInAppBrowser] = useState(false)
+
+  useEffect(() => {
+    setInAppBrowser(isInstagramAndroidWebView())
+  }, [])
 
   // Initiate Video
   useEffect(() => {
@@ -134,6 +140,31 @@ export function BackgroundVideo({
         videoFit = 'cover'
         break
     }
+  }
+
+  if (inAppBrowser && isYouTube && videoId != null) {
+    return (
+      <Box
+        height="100%"
+        width="100%"
+        minHeight="-webkit-fill-available"
+        overflow="hidden"
+        position="absolute"
+        data-testid="CardContainedBackgroundVideo"
+      >
+        <iframe
+          src={`https://www.youtube.com/embed/${videoId}?start=${startAt ?? 0}&end=${endAt ?? 0}&autoplay=1&mute=1&loop=1&playsinline=1&controls=0`}
+          allow="accelerometer; autoplay; encrypted-media"
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            pointerEvents: 'none'
+          }}
+          title="Background video"
+        />
+      </Box>
+    )
   }
 
   return (

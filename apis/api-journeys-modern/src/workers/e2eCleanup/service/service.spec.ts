@@ -4,10 +4,13 @@ import { Logger } from 'pino'
 import { UserJourneyRole } from '@core/prisma/journeys/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
+import {
+  collectMediaFromJourneys,
+  deleteUnusedMedia
+} from '../../../lib/mediaCleanup/mediaCleanup'
 
 import { service } from './service'
 
-// Mock prismaUsers - must be defined in the factory to avoid hoisting issues
 jest.mock('@core/prisma/users/client', () => ({
   prisma: {
     user: {
@@ -17,7 +20,16 @@ jest.mock('@core/prisma/users/client', () => ({
   }
 }))
 
-// Get reference to the mock for use in tests
+jest.mock('../../../lib/mediaCleanup/mediaCleanup')
+
+const mockCollectMediaFromJourneys =
+  collectMediaFromJourneys as jest.MockedFunction<
+    typeof collectMediaFromJourneys
+  >
+const mockDeleteUnusedMedia = deleteUnusedMedia as jest.MockedFunction<
+  typeof deleteUnusedMedia
+>
+
 const { prisma: mockPrismaUsers } = jest.requireMock(
   '@core/prisma/users/client'
 )
@@ -33,6 +45,15 @@ describe('E2E Cleanup Service', () => {
       warn: jest.fn(),
       error: jest.fn()
     } as any
+
+    mockCollectMediaFromJourneys.mockResolvedValue({
+      muxVideoIds: new Set(),
+      cloudflareImageIds: new Set()
+    })
+    mockDeleteUnusedMedia.mockResolvedValue({
+      deletedMuxVideos: 0,
+      deletedCloudflareImages: 0
+    })
   })
 
   describe('service', () => {
@@ -365,6 +386,113 @@ describe('E2E Cleanup Service', () => {
 
       // Allow for small time difference due to test execution time
       expect(Math.abs(actualCutoffTime - expectedCutoffTime)).toBeLessThan(1000)
+    })
+
+    it('should clean up unused media after deleting journeys', async () => {
+      mockPrismaUsers.user.findMany.mockResolvedValue([
+        {
+          id: 'user-1',
+          userId: 'playwright-user-1',
+          email: 'playwright123@example.com'
+        }
+      ])
+      prismaMock.journey.findMany.mockResolvedValue([
+        { id: 'journey-1', title: 'J1' },
+        { id: 'journey-2', title: 'J2' }
+      ] as any)
+      prismaMock.journey.delete.mockResolvedValue({} as any)
+      mockPrismaUsers.user.delete.mockResolvedValue({})
+
+      mockCollectMediaFromJourneys.mockResolvedValue({
+        muxVideoIds: new Set(['mux-1']),
+        cloudflareImageIds: new Set(['cf-img-1'])
+      })
+      mockDeleteUnusedMedia.mockResolvedValue({
+        deletedMuxVideos: 1,
+        deletedCloudflareImages: 1
+      })
+
+      const job = {
+        data: { __typename: 'e2eCleanup', dryRun: false }
+      } as Job
+
+      await service(job, mockLogger)
+
+      expect(mockCollectMediaFromJourneys).toHaveBeenCalledWith([
+        'journey-1',
+        'journey-2'
+      ])
+      expect(mockDeleteUnusedMedia).toHaveBeenCalledWith(
+        {
+          muxVideoIds: new Set(['mux-1']),
+          cloudflareImageIds: new Set(['cf-img-1'])
+        },
+        ['journey-1', 'journey-2'],
+        'playwright-user-1',
+        mockLogger
+      )
+    })
+
+    it('should only pass successfully deleted journey IDs to media cleanup', async () => {
+      mockPrismaUsers.user.findMany.mockResolvedValue([
+        {
+          id: 'user-1',
+          userId: 'playwright-user-1',
+          email: 'playwright123@example.com'
+        }
+      ])
+      prismaMock.journey.findMany.mockResolvedValue([
+        { id: 'journey-1', title: 'J1' },
+        { id: 'journey-2', title: 'J2' }
+      ] as any)
+      prismaMock.journey.delete
+        .mockResolvedValueOnce({} as any)
+        .mockRejectedValueOnce(new Error('delete failed'))
+      mockPrismaUsers.user.delete.mockResolvedValue({})
+
+      mockCollectMediaFromJourneys.mockResolvedValue({
+        muxVideoIds: new Set(['mux-1']),
+        cloudflareImageIds: new Set()
+      })
+      mockDeleteUnusedMedia.mockResolvedValue({
+        deletedMuxVideos: 1,
+        deletedCloudflareImages: 0
+      })
+
+      const job = {
+        data: { __typename: 'e2eCleanup', dryRun: false }
+      } as Job
+
+      await service(job, mockLogger)
+
+      expect(mockDeleteUnusedMedia).toHaveBeenCalledWith(
+        expect.anything(),
+        ['journey-1'],
+        'playwright-user-1',
+        mockLogger
+      )
+    })
+
+    it('should skip media cleanup in dry run mode', async () => {
+      mockPrismaUsers.user.findMany.mockResolvedValue([
+        {
+          id: 'user-1',
+          userId: 'playwright-user-1',
+          email: 'playwright123@example.com'
+        }
+      ])
+      prismaMock.journey.findMany.mockResolvedValue([
+        { id: 'journey-1', title: 'J1' }
+      ] as any)
+
+      const job = {
+        data: { __typename: 'e2eCleanup', dryRun: true }
+      } as Job
+
+      await service(job, mockLogger)
+
+      expect(mockCollectMediaFromJourneys).not.toHaveBeenCalled()
+      expect(mockDeleteUnusedMedia).not.toHaveBeenCalled()
     })
   })
 })
