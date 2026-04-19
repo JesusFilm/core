@@ -1,6 +1,7 @@
 {
   "Submit": "投稿する",
   "Button": "ボタン",
+  "None": "なし",
   "This field is required": "このフィールドは必須です。",
   "Name must be 2 characters or more": "氏名は2文字以上",
   "Name must be 50 characters or less": "氏名は50文字以内",
@@ -96,6 +97,5 @@
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>旅のテンプレート</0><1>言語</1><2>{{count}} 言語</2>",
   "{{count}} more cards_other": "{{count}} その他のカード",
   "{{count}} Cards_other": "{{count}} カード",
-  "{{count}} Videos_other": "{{count}} ビデオ",
-  "None": "None"
+  "{{count}} Videos_other": "{{count}} ビデオ"
 }
