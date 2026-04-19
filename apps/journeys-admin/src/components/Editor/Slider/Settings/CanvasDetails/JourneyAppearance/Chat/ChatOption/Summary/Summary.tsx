@@ -204,7 +204,12 @@ export function Summary({
         checked={active}
         size="small"
         sx={{ p: 1, mr: 1 }}
-        disabled={disableSelection && !active}
+        disabled={
+          (disableSelection && !active) ||
+          createLoading ||
+          removeLoading ||
+          journeyId == null
+        }
         onChange={handleToggle}
       />
       <Typography sx={{ my: 'auto' }}>{title}</Typography>

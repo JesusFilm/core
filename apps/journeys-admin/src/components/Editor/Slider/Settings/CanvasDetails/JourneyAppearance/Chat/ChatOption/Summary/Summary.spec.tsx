@@ -62,6 +62,29 @@ describe('Summary', () => {
       </MockedProvider>
     )
     expect(getByRole('checkbox')).not.toBeChecked()
+    expect(getByRole('checkbox')).toBeDisabled()
+  })
+
+  it('should disable when journeyId is missing', () => {
+    const props = {
+      title: 'title',
+      active: false,
+      disableSelection: false,
+      journeyId: undefined,
+      currentLink: 'https://example.com',
+      currentPlatform: MessagePlatform.facebook,
+      chatButtonId: 'chat.id',
+      openAccordion: noop
+    }
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <Summary {...props} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('checkbox')).toBeDisabled()
   })
 
   it('should create chat button and add to cache', async () => {
