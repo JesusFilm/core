@@ -2,6 +2,7 @@
   "My Team": "Mon équipe",
   "Unable to create guest user. Please try again or sign in.": "Impossible de créer un utilisateur invité. Essaie à nouveau ou connecte-toi.",
   "Failed to duplicate journey to team, please refresh the page and try again": "La duplication du trajet vers l'équipe a échoué, rafraîchis la page et réessaie.",
+  "Journey Translated": "Voyage traduit",
   "Journey failed to load. Please refresh the page and try again.": "Le chargement de Journey a échoué. Actualise la page et essaie à nouveau.",
   "Failed to load teams. Please refresh the page and try again.": "Échec du chargement des équipes. Actualise la page et essaie à nouveau.",
   "Let's Get Started!": "Allons-y!",
@@ -9,5 +10,6 @@
   "A few quick edits and your template will be ready to share.": "Quelques modifications rapides et ton modèle sera prêt à être partagé.",
   "A few quick edits and it's ready to share!": "Quelques modifications rapides et c'est prêt à être partagé !",
   "Next": "Suivant",
-  "Search Language": "Langue de recherche"
+  "Search Language": "Langue de recherche",
+  "Translating": "Traduire"
 }

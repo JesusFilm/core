@@ -94,7 +94,7 @@ describe('GuestPreviewScreen', () => {
     )
     expect(
       screen.getByText(
-        'This content contains buttons linking to external sites. Check them and update the links below.'
+        'Preview your changes here. Tap on a card to zoom it in.'
       )
     ).toBeInTheDocument()
   })

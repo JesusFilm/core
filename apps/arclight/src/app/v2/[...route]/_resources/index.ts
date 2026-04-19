@@ -142,19 +142,11 @@ async function searchAlgoliaLanguages(
     throw new Error('Algolia environment variables are not set')
   }
 
-  const facets = []
-  for (const tag of metadataLanguageTags) {
-    facets.push(`names.bcp47:${tag}`)
-  }
   const response = await client.searchSingleIndex<AlgoliaLanguageHit>({
     indexName,
     searchParams: {
       query: term,
       hitsPerPage: 1000,
-      facets: metadataLanguageTags.length > 0 ? ['names.bcp47'] : [],
-      ...(metadataLanguageTags.length > 0 && {
-        facetFilters: facets
-      }),
       maxValuesPerFacet: 100,
       attributesToRetrieve: [
         'objectID',
@@ -195,20 +187,11 @@ async function searchAlgoliaCountries(
     throw new Error('Algolia environment variables are not set')
   }
 
-  const facets = []
-  for (const tag of metadataLanguageTags) {
-    facets.push(`names.bcp47:${tag}`)
-  }
-
   const response = await client.searchSingleIndex<AlgoliaCountryHit>({
     indexName,
     searchParams: {
       query: term,
       hitsPerPage: 1000,
-      facets: metadataLanguageTags.length > 0 ? ['names.bcp47'] : [],
-      ...(metadataLanguageTags.length > 0 && {
-        facetFilters: facets
-      }),
       ruleContexts: ['arclight_resources_page']
     }
   })

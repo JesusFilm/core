@@ -1,6 +1,7 @@
 {
   "Submit": "Soumettre",
   "Button": "Bouton",
+  "None": "Aucun",
   "This field is required": "Ce champ est obligatoire",
   "Name must be 2 characters or more": "Le nom doit comporter 2 caractères ou plus",
   "Name must be 50 characters or less": "Le nom doit comporter 50 caractères ou moins",
