@@ -133,6 +133,24 @@ async function reorderSiblings(
   )
 }
 
+export async function reorderBlock(
+  block: BlockWithAction,
+  parentOrder: number,
+  tx: Prisma.TransactionClient = prisma
+): Promise<BlockWithAction[]> {
+  if (block.parentOrder == null) return []
+
+  const siblings = await getSiblingsInternal(
+    block.journeyId,
+    block.parentBlockId,
+    tx,
+    { id: { not: block.id } }
+  )
+
+  siblings.splice(parentOrder, 0, block)
+  return await reorderSiblings(siblings, tx)
+}
+
 export async function setJourneyUpdatedAt(
   tx: Prisma.TransactionClient,
   block: Block

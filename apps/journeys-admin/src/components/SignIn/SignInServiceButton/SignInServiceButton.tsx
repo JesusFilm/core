@@ -115,9 +115,8 @@ export function SignInServiceButton({
 
   return (
     <Button
-      variant="outlined"
-      size="large"
-      color="secondary"
+      variant="blockOutlined"
+      color="solid"
       startIcon={
         service === 'google.com' ? (
           <GoogleIcon />

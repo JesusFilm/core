@@ -1350,6 +1350,13 @@ input MultiselectSubmissionEventCreateInput {
 }
 
 type Mutation {
+  blockOrderUpdate(
+    id: ID!
+    parentOrder: Int!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): [Block!]! @override(from: "api-journeys")
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!
@@ -1358,22 +1365,30 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): ButtonBlock
-  cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @override(from: "api-journeys")
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(
     id: ID!
     input: CardBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): CardBlock! @override(from: "api-journeys")
-  iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @override(from: "api-journeys")
+  ): CardBlock!
+  iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
   iconBlockUpdate(
     id: ID!
     input: IconBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): IconBlock! @override(from: "api-journeys")
+  ): IconBlock!
+  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
+  imageBlockUpdate(
+    id: ID!
+    input: ImageBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ImageBlock!
   multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
   multiselectBlockUpdate(
     id: ID!
@@ -1390,6 +1405,51 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): MultiselectOptionBlock!
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
+  radioOptionBlockUpdate(
+    id: ID!
+    input: RadioOptionBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): RadioOptionBlock!
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean): RadioQuestionBlock!
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
+  signUpBlockUpdate(
+    id: ID!
+    input: SignUpBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): SignUpBlock!
+  spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock!
+  stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]! @override(from: "api-journeys")
+  stepBlockUpdate(
+    id: ID!
+    input: StepBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): StepBlock!
+  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
+  textResponseBlockUpdate(
+    id: ID!
+    input: TextResponseBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TextResponseBlock!
+  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
+  typographyBlockUpdate(
+    id: ID!
+    input: TypographyBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(
     id: ID!
@@ -1439,6 +1499,8 @@ type Mutation {
     """
     timezone: String
   ): JourneyVisitorGoogleSheetExportResult!
+  userDeleteJourneysCheck(userId: String!): UserDeleteJourneysCheckResult!
+  userDeleteJourneysConfirm(userId: String!): UserDeleteJourneysConfirmResult!
 }
 
 input MutationJourneyLanguageAiDetectInput {
@@ -1755,8 +1817,8 @@ type Query {
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(integrationId: ID!): String!
-  adminJourney(id: ID!, idType: IdType = slug): Journey! @override(from: "api-journeys")
-  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]! @override(from: "api-journeys")
+  adminJourney(id: ID!, idType: IdType = slug): Journey!
+  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]!
   getJourneyProfile: JourneyProfile
 
   """
@@ -2307,6 +2369,12 @@ enum TypographyVariant {
   overline
 }
 
+enum USER_DELETE_LOG_LEVEL {
+  INFO
+  WARN
+  ERROR
+}
+
 type User
   @key(fields: "id")
   @interfaceObject
@@ -2320,6 +2388,31 @@ type UserAgent
   browser: Browser!
   device: Device!
   os: OperatingSystem!
+}
+
+type UserDeleteJourneysCheckResult {
+  journeysToDelete: Int!
+  journeysToTransfer: Int!
+  journeysToRemove: Int!
+  teamsToDelete: Int!
+  teamsToTransfer: Int!
+  teamsToRemove: Int!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysConfirmResult {
+  success: Boolean!
+  deletedJourneyIds: [String!]!
+  deletedTeamIds: [String!]!
+  deletedUserJourneyIds: [String!]!
+  deletedUserTeamIds: [String!]!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysLogEntry {
+  message: String!
+  level: USER_DELETE_LOG_LEVEL!
+  timestamp: String!
 }
 
 type UserInvite

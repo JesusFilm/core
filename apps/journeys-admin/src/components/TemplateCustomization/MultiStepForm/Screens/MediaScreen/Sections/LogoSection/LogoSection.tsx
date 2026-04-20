@@ -120,27 +120,18 @@ export function LogoSection(): ReactElement {
             )}
           </Box>
         </Box>
-        <Stack spacing={0.5} alignItems="flex-start">
+        <Stack spacing={0.5} alignItems="flex-start" sx={{ flex: 1 }}>
           <input {...getInputProps()} data-testid="LogoSection-file-input" />
           <Button
-            size="small"
-            color="secondary"
-            variant="outlined"
+            variant="blockOutlined"
+            color="solid"
             disabled={loading}
             onClick={open}
             sx={{
-              height: 32,
-              width: { xs: 160, sm: 220 },
-              borderRadius: 2
+              width: '100%'
             }}
           >
-            <Typography
-              variant="subtitle2"
-              fontSize={14}
-              sx={{ color: 'text.secondary' }}
-            >
-              {t('Upload File')}
-            </Typography>
+            {t('Upload File')}
           </Button>
           <Typography variant="caption" color="text.secondary">
             {t('Supports JPG, PNG, and GIF files.')}
