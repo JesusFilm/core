@@ -219,5 +219,4 @@ describe('useTemplateCustomizationRedirect', () => {
       expect(mockEnqueueSnackbar).not.toHaveBeenCalled()
     })
   })
-
 })

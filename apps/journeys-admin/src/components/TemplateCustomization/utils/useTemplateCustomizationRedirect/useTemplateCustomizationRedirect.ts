@@ -118,5 +118,4 @@ export function useTemplateCustomizationRedirect({
     t,
     enqueueSnackbar
   ])
-
 }
