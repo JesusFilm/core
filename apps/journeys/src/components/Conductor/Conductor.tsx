@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
+import dynamic from 'next/dynamic'
 import { ReactElement, useEffect } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
@@ -11,10 +12,10 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { blockHistoryVar, useBlocks } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { LastCardChatBar } from '@core/journeys/ui/LastCardChatBar'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { FontFamilies, ThemeName } from '@core/shared/ui/themes'
 
@@ -26,6 +27,14 @@ import { DynamicCardList } from './DynamicCardList'
 import { HotkeyNavigation } from './HotkeyNavigation'
 import { NavigationButton } from './NavigationButton'
 import { SwipeNavigation } from './SwipeNavigation'
+
+const DynamicLastCardChatBar = dynamic(
+  async () =>
+    await import('@core/journeys/ui/LastCardChatBar').then(
+      (mod) => mod.LastCardChatBar
+    ),
+  { ssr: false }
+)
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -51,6 +60,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const theme = useTheme()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
+  const flags = useFlags()
+  const apologistChatEnabled = flags.apologistChat === true
 
   // Create font family strings based on journey theme
   const fontFamilies: FontFamilies = {
@@ -74,6 +85,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const nextBlock = getNextBlock({ activeBlock })
   const isLastCard = nextBlock === undefined && treeBlocks.length > 0
   const showPinnedChat =
+    apologistChatEnabled &&
     isLastCard &&
     journey?.showAssistant === true &&
     variant !== 'admin' &&
@@ -224,7 +236,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 alignment="right"
               />
               {showPinnedChat ? (
-                <LastCardChatBar
+                <DynamicLastCardChatBar
                   sx={{
                     ...mobileNotchStyling,
                     display: {

@@ -12,6 +12,8 @@ import {
 } from 'ai'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import { getFlags } from '../../../src/libs/getFlags'
+
 type ChatProvider = 'apologist' | 'gemini' | 'openai'
 
 /**
@@ -166,6 +168,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
+  const flags = await getFlags()
+  if (flags.apologistChat !== true) {
+    res.status(404).end()
+    return
+  }
+
   console.log('[apologist:server] handler=chat method=', req.method)
 
   if (req.method !== 'POST') {
