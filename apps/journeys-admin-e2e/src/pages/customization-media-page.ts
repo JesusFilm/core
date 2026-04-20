@@ -4,6 +4,20 @@ import type { Locator, Page } from 'playwright-core'
 const defaultTimeout = 60000
 const maxNavigationClicks = 5
 
+/** Thrown when the template flow has no media step (flag off or journey has no customizable video). */
+export class MediaCustomizeStepUnavailableError extends Error {
+  constructor() {
+    super(
+      'Media customization step is not available (customizableMedia flag off or template has no video blocks)'
+    )
+    this.name = 'MediaCustomizeStepUnavailableError'
+  }
+}
+
+function readCustomizeScreenParam(pageUrl: string): string | null {
+  return new URL(pageUrl).searchParams.get('screen')
+}
+
 export class CustomizationMediaPage {
   readonly page: Page
 
@@ -23,11 +37,30 @@ export class CustomizationMediaPage {
     await nextButton.click({ timeout: defaultTimeout })
   }
 
+  /**
+   * From the language customize entry (`navigateToCustomize`), advances with Next
+   * until `VideosSection` is shown or the flow ends on `screen=social` (no media step).
+   */
   async navigateToMediaScreen(): Promise<void> {
     const videosSection = this.page.getByTestId('VideosSection')
     for (let i = 0; i < maxNavigationClicks; i++) {
       if (await videosSection.isVisible()) return
+
+      const screen = readCustomizeScreenParam(this.page.url())
+      if (screen === 'social') {
+        throw new MediaCustomizeStepUnavailableError()
+      }
+      if (screen === 'media') {
+        await expect(videosSection).toBeVisible({ timeout: defaultTimeout })
+        return
+      }
+
+      if (!this.page.url().includes('/customize')) break
+      const urlBefore = this.page.url()
       await this.clickNextButton()
+      await this.page.waitForURL((url) => url.toString() !== urlBefore, {
+        timeout: defaultTimeout
+      })
     }
     await expect(videosSection).toBeVisible({ timeout: defaultTimeout })
   }
@@ -52,18 +85,16 @@ export class CustomizationMediaPage {
   }
 
   async waitForAutoSubmit(): Promise<void> {
-    const helperText = this.page
-      .getByTestId('VideosSection-youtube-input')
-      .locator('.MuiFormHelperText-root')
-    await expect(helperText).toBeVisible({ timeout: defaultTimeout })
-    await this.page.waitForLoadState('load')
+    await expect(
+      this.page.getByTestId('VideosSection').locator('iframe, video')
+    ).toBeVisible({ timeout: defaultTimeout })
   }
 
   async waitForAutoSubmitError(): Promise<void> {
-    const errorText = this.page
-      .getByTestId('VideosSection-youtube-input')
-      .locator('p.MuiFormHelperText-root.Mui-error')
-    await expect(errorText).toBeVisible({ timeout: 90000 })
+    // Wait for the input to become invalid (aria-invalid is set by MUI on error)
+    await expect(
+      this.page.getByTestId('VideosSection-youtube-input').locator('input')
+    ).toHaveAttribute('aria-invalid', 'true', { timeout: 90000 })
   }
 
   async verifyVideosSectionVisible(): Promise<void> {
@@ -100,7 +131,7 @@ export class CustomizationMediaPage {
   async getYouTubeHelperText(): Promise<string | null> {
     return await this.page
       .getByTestId('VideosSection-youtube-input')
-      .locator('.MuiFormHelperText-root')
+      .locator('p')
       .textContent()
   }
 }

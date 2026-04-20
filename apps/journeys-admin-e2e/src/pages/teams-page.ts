@@ -3,10 +3,12 @@ import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
 
+import { journeyEditorUrlRegex } from '../e2e-constants'
 import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
+const ninetySecondsTimeout = 90000
 
 export class TeamsPage {
   readonly page: Page
@@ -63,6 +65,12 @@ export class TeamsPage {
   }
 
   async clickThreeDotOfTeams() {
+    // Wait for TeamProvider to finish resolving before asserting MoreIcon.
+    // TeamMenu (which contains MoreIcon) only renders once activeTeam is set.
+    // Without this guard count=0 on cold Vercel starts.
+    await expect(
+      this.page.getByTestId('TeamSelect').getByRole('combobox')
+    ).toBeEnabled({ timeout: ninetySecondsTimeout })
     const moreButton = this.page
       .getByTestId('MainPanelHeader')
       .locator('button')
@@ -142,7 +150,13 @@ export class TeamsPage {
   }
 
   async clickCreateJourneyBtn() {
-    await this.page.locator('button[data-testid="AddJourneyButton"]').click()
+    await Promise.all([
+      this.page.waitForURL(journeyEditorUrlRegex, {
+        timeout: ninetySecondsTimeout,
+        waitUntil: 'commit'
+      }),
+      this.page.locator('button[data-testid="AddJourneyButton"]').click()
+    ])
   }
 
   async enterTeamRename() {

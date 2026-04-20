@@ -1,34 +1,57 @@
 /* eslint-disable playwright/expect-expect */
-import { test } from '@playwright/test'
+import type { BrowserContext, Page } from 'playwright-core'
 
+import {
+  newContextWithWorkerStorageState,
+  test
+} from '../../fixtures/workerAuth'
 import { JourneyPage } from '../../pages/journey-page'
-import { LandingPage } from '../../pages/landing-page'
-import { LoginPage } from '../../pages/login-page'
-import { Register } from '../../pages/register-Page'
 
-let userEmail = ''
+let sharedPage: Page | undefined
+let sharedContext: BrowserContext | undefined
+
+const getSharedPage = (): Page => {
+  if (sharedPage == null)
+    throw new Error('Shared authenticated page was not initialized')
+  return sharedPage
+}
+
+const getSharedContext = (): BrowserContext => {
+  if (sharedContext == null) {
+    throw new Error('Shared authenticated context was not initialized')
+  }
+  return sharedContext
+}
 
 test.describe('Verify analytics page functionality', () => {
-  test.beforeAll('Register new account', async ({ browser }) => {
-    const page = await browser.newPage()
-    const landingPage = new LandingPage(page)
-    const register = new Register(page)
-    await landingPage.goToAdminUrl()
-    await register.registerNewAccount() // registering new user account
-    userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log(`userName : ${userEmail}`)
-    await page.close()
+  test.describe.configure({ mode: 'serial' })
+
+  test.beforeAll(
+    'Register new account',
+    async ({ browser, workerStorageState }) => {
+      sharedContext = await newContextWithWorkerStorageState(
+        browser,
+        workerStorageState
+      )
+      sharedPage = await sharedContext.newPage()
+    }
+  )
+
+  test.beforeEach(async () => {
+    await getSharedPage().goto('/')
   })
 
-  test.beforeEach(async ({ page }) => {
-    const landingPage = new LandingPage(page)
-    const loginPage = new LoginPage(page)
-    await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
+  test.afterAll(async () => {
+    if (sharedPage != null) await sharedPage.close()
+    if (sharedContext != null) await sharedContext.close()
+    sharedPage = undefined
+    sharedContext = undefined
   })
 
   // Verify the user able to navigate to Journey analytics page through analytics icon
-  test('navigate to Journey analytics', async ({ page, context }) => {
+  test('navigate to Journey analytics', async () => {
+    const page = getSharedPage()
+    const context = getSharedContext()
     const journeyPage = new JourneyPage(page)
     await journeyPage.setBrowserContext(context)
     await journeyPage.clickCreateCustomJourney() // click create custom journey button

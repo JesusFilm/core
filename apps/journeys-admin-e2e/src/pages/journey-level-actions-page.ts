@@ -2,11 +2,15 @@
 import { expect } from '@playwright/test'
 import type { Page } from 'playwright-core'
 
+import { journeyEditorUrlRegex } from '../e2e-constants'
 import { generateRandomNumber } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
+import type { JourneyPage } from './journey-page'
+
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
+const ninetySecondsTimeout = 90000
 
 export class JourneyLevelActions {
   readonly page: Page
@@ -83,7 +87,14 @@ export class JourneyLevelActions {
     await expect(journeyCardpath).toBeInViewport({
       timeout: thirtySecondsTimeout
     })
-    await journeyCardpath.click({ delay: 500 })
+    // 90s: cold Vercel SSR / client navigation after card click before editor mounts
+    await Promise.all([
+      this.page.waitForURL(journeyEditorUrlRegex, {
+        timeout: ninetySecondsTimeout,
+        waitUntil: 'commit'
+      }),
+      journeyCardpath.click({ delay: 500 })
+    ])
   }
 
   async clickThreeDotOptions(options): Promise<void> {
@@ -320,7 +331,11 @@ export class JourneyLevelActions {
   }
 
   async clickNavigateToGoalBtn(): Promise<void> {
-    await this.page.locator('div[data-testid="StrategyItem"] button').click()
+    // Use an explicit timeout beyond the default 20s action timeout because
+    // the journey detail page can be slow to render StrategyItem on cold Vercel.
+    await this.page
+      .locator('div[data-testid="StrategyItem"] button')
+      .click({ timeout: thirtySecondsTimeout })
   }
 
   async verifyPageIsNavigatedToGoalPage(): Promise<void> {
@@ -379,6 +394,24 @@ export class JourneyLevelActions {
     ).toHaveAttribute('value', this.selectedLanguage, {
       timeout: thirtySecondsTimeout
     })
+  }
+
+  /**
+   * After saving journey details, reopen Edit Details until the language field
+   * reflects the persisted value (avoids fixed sleeps while the mutation lands).
+   */
+  async assertPersistedLanguageWhenReopeningEditDetails(
+    journeyPage: JourneyPage,
+    language: string
+  ): Promise<void> {
+    await expect(async () => {
+      await this.page.keyboard.press('Escape')
+      await journeyPage.clickThreeDotBtnOfCustomJourney()
+      await this.clickThreeDotOptionsOfJourneyCreationPage('Edit Details')
+      await expect(
+        this.page.locator('input[placeholder="Search Language"]')
+      ).toHaveAttribute('value', language)
+    }).toPass({ timeout: ninetySecondsTimeout })
   }
 
   async sleep(ms): Promise<Promise<void>> {

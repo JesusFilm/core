@@ -29,8 +29,22 @@ export class LoginPage {
     await this.page.locator('button[type="submit"]').click()
   }
 
-  async waitUntilDiscoverPageLoaded() {
-    // 90s: cold Vercel SSR + TeamProvider Apollo query can take >65s on first run
+  async waitUntilDiscoverPageLoadedAsAdmin(): Promise<void> {
+    // Admin accounts have no sessionStorage team ID so TeamProvider resolves
+    // their last active team from the DB. If none is set, they land in
+    // "Shared With Me" mode. Wait for the TeamSelect combobox to become
+    // enabled: it is disabled (aria-disabled="true") while query.loading is
+    // true and enabled in both Shared With Me and team mode once resolved.
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can be slow on CI.
+    await expect(
+      this.page.getByTestId('TeamSelect').getByRole('combobox')
+    ).toBeEnabled({ timeout: 90000 })
+  }
+
+  async waitUntilDiscoverPageLoadedAsUser(): Promise<void> {
+    // Newly-created users complete onboarding with a team, so they always land
+    // in team mode with the "Create Custom Journey" button enabled.
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can be slow on CI.
     await expect(
       this.page.getByRole('button', { name: 'Create Custom Journey' })
     ).toBeEnabled({ timeout: 90000 })
@@ -43,16 +57,19 @@ export class LoginPage {
     const password = await getPassword(accountKey)
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()
-    await this.waitUntilDiscoverPageLoaded()
+    await this.waitUntilDiscoverPageLoadedAsAdmin()
   }
 
-  async logInWithCreatedNewUser(userName: string) {
-    await this.fillExistingEmail(userName)
-    console.log(`userName : ${userName}`)
+  async signInWithEmailAndPassword(email: string): Promise<void> {
+    await this.fillExistingEmail(email)
     await this.clickSubmitButton()
     const password = await getPassword()
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()
-    await this.waitUntilDiscoverPageLoaded()
+  }
+
+  async logInWithCreatedNewUser(userName: string) {
+    await this.signInWithEmailAndPassword(userName)
+    await this.waitUntilDiscoverPageLoadedAsUser()
   }
 }

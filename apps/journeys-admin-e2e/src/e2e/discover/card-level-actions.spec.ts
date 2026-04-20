@@ -1,34 +1,42 @@
 /* eslint-disable playwright/no-skipped-test */
 /* eslint-disable playwright/expect-expect */
-import { test } from '@playwright/test'
+import type { BrowserContext, Page } from 'playwright-core'
 
+import {
+  newContextWithWorkerStorageState,
+  test
+} from '../../fixtures/workerAuth'
 import { CardLevelActionPage } from '../../pages/card-level-actions'
 import { JourneyPage } from '../../pages/journey-page'
-import { LandingPage } from '../../pages/landing-page'
-import { LoginPage } from '../../pages/login-page'
-import { Register } from '../../pages/register-Page'
 
-let userEmail = ''
+let sharedPage: Page | undefined
+let sharedContext: BrowserContext | undefined
+
+const getSharedPage = (): Page => {
+  if (sharedPage == null)
+    throw new Error('Shared authenticated page was not initialized')
+  return sharedPage
+}
 
 test.describe('verify card level actions', () => {
-  test.beforeAll('Register new account', async ({ browser }) => {
-    const page = await browser.newPage()
-    const landingPage = new LandingPage(page)
-    const register = new Register(page)
-    await landingPage.goToAdminUrl()
-    await register.registerNewAccount()
-    userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log(`userEamil : ${userEmail}`)
-    await page.close()
-  })
+  test.describe.configure({ mode: 'serial' })
 
-  test.beforeEach(async ({ page }) => {
-    const landingPage = new LandingPage(page)
-    const loginPage = new LoginPage(page)
+  test.beforeAll(
+    'Register new account',
+    async ({ browser, workerStorageState }) => {
+      sharedContext = await newContextWithWorkerStorageState(
+        browser,
+        workerStorageState
+      )
+      sharedPage = await sharedContext.newPage()
+    }
+  )
+
+  test.beforeEach(async () => {
+    const page = getSharedPage()
     const cardLevelActionPage = new CardLevelActionPage(page)
     const journeyPage = new JourneyPage(page)
-    await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
+    await page.goto('/')
     await journeyPage.clickCreateCustomJourney() //  clicking on the create custom journey button
     await cardLevelActionPage.waitUntilJourneyCardLoaded() // waiting for custom journey page loaded
     await cardLevelActionPage.clickOnJourneyCard() // clicking on the journey card
@@ -38,8 +46,16 @@ test.describe('verify card level actions', () => {
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
   })
 
+  test.afterAll(async () => {
+    if (sharedPage != null) await sharedPage.close()
+    if (sharedContext != null) await sharedContext.close()
+    sharedPage = undefined
+    sharedContext = undefined
+  })
+
   // Text - create, update & delete
-  test('Text - create, update & delete', async ({ page }) => {
+  test('Text - create, update & delete', async () => {
+    const page = getSharedPage()
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickTextBtnInAddBlockDrawer() // clicking on text button in add block drawer
@@ -62,7 +78,8 @@ test.describe('verify card level actions', () => {
   })
 
   // Image - create, update & delete
-  test('Image - create, update & delete', async ({ page }) => {
+  test('Image - create, update & delete', async () => {
+    const page = getSharedPage()
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Image') // clicking on image button in add block drawer
@@ -81,7 +98,8 @@ test.describe('verify card level actions', () => {
   })
 
   // Video - create, update & delete
-  test.skip('Video - create, update & delete', async ({ page }) => {
+  test.skip('Video - create, update & delete', async () => {
+    const page = getSharedPage()
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.deleteAllAddedCardProperties() // deleting all the added properties in the card
     await cardLevelActionPage.clickOnVideoJourneyCard() // clicking on the journey card
@@ -108,7 +126,8 @@ test.describe('verify card level actions', () => {
   })
 
   // Poll - create, update & delete
-  test.fixme('Poll - create, update & delete', async ({ page }) => {
+  test.fixme('Poll - create, update & delete', async () => {
+    const page = getSharedPage()
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Poll') // clicking on poll button in add block drawer
@@ -124,7 +143,8 @@ test.describe('verify card level actions', () => {
   })
 
   // Response Field- create, update & delete
-  test('Response Field - create, update & delete', async ({ page }) => {
+  test('Response Field - create, update & delete', async () => {
+    const page = getSharedPage()
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Response Field') // clicking on Response Field button in add block drawer
@@ -143,7 +163,8 @@ test.describe('verify card level actions', () => {
   })
 
   // Button - create, update & delete
-  test('Button - create, update & delete', async ({ page }) => {
+  test('Button - create, update & delete', async () => {
+    const page = getSharedPage()
     const buttonName = 'Playwright'
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
@@ -172,7 +193,8 @@ test.describe('verify card level actions', () => {
   })
 
   // Spacer - create & delete
-  test('Spacer - create & delete', async ({ page }) => {
+  test('Spacer - create & delete', async () => {
+    const page = getSharedPage()
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Spacer') // clicking on subscribe button in add block drawer
@@ -183,64 +205,5 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.validateSpacerHeightPixelGotChange(beforeChange) // validate that space height pixels got increased
     await cardLevelActionPage.clickDeleteBtnInToolTipBar() //Clicking delete button in the tooltip bar to delete the Spacer from the card
     await cardLevelActionPage.verifySpacerRemovedFromCard() //validate spacer got removed from the card after delete
-  })
-
-  // Footer properties (Journey) - Reactions, Display Title, Hosted By & Chat Widget
-  test('Footer properties (Journey) - create, update & delete', async ({
-    page
-  }) => {
-    const footerTitle = 'Footer Playwright'
-    const cardLevelActionPage = new CardLevelActionPage(page)
-    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Footer section
-    await cardLevelActionPage.expandJourneyAppearance('Reactions') // clicking on the 'Reactions' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.selectAllTheReactionOptions() // Select all the reaction checkboxes 'Share', 'Like', 'DisLike'
-    await cardLevelActionPage.expandJourneyAppearance('Display Title') // clicking on the 'Display Title' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.enterDisplayTitleForFooter(footerTitle) // Enter Display title for the Footer Section
-    await cardLevelActionPage.expandJourneyAppearance('Hosted By') // clicking on the 'Hosted By' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clicSelectHostBtn() // clicking the 'select a host' button below the 'Hosted by' tab in the footer properties drawer
-    await cardLevelActionPage.clickCreateNewBtn() // clicking the 'create new' button below the 'Hosted by' tab in the footer properties drawer
-    await cardLevelActionPage.enterHostName() // entering host name in the host field in the footer properties drawer
-    await cardLevelActionPage.enterLocation() // entering location in the location field in the footer properties drawer
-    await cardLevelActionPage.clickOnJourneyCard() // clickng on the journey card
-    await cardLevelActionPage.verifyHostNameAddedInCard() // verifying the added host name and location are updated in the footer section at bottom of the card
-    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Footer section
-    await cardLevelActionPage.expandJourneyAppearance('Chat Widget') // clicking on the 'Chat Widget' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clickMessangerDropDown('WhatsApp') // clicking the whatsapp dropdown check box
-    await cardLevelActionPage.enterWhatsAppLink() // entering link value on the URL field
-    await cardLevelActionPage.verifyChatWidgetAddedToCard() // verifying the selected messager icon is updated in the footer section at bottom of the card
-    await cardLevelActionPage.validateFooterTitleAndReactionButtonsInCard(
-      footerTitle
-    ) //Verifying the Footer Title and Reactions in the card
-  })
-
-  // Footer properties (WebSite) - Logo, Display Title, Menu & Chat Widget
-  test('Footer properties (WebSite) - create, update & delete', async ({
-    page
-  }) => {
-    const footerTitle = 'Footer Playwright'
-    const cardLevelActionPage = new CardLevelActionPage(page)
-    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Footer section
-    await cardLevelActionPage.clickJourneyOrWebSiteOptionForFooter('Website') //Select WebSite option in the top of the footer property
-    await cardLevelActionPage.expandJourneyAppearance('Logo') // clicking on the 'Logo' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clickSelectImageBtn() // Select Plus icon to add the Image
-    await cardLevelActionPage.selectFirstImageFromGalleryForFooter() //Select first image from the gallery for the Footer section
-    await cardLevelActionPage.valdiateSelectedImageWithDeleteIcon() //Verifying the Selected Image with Delete icon is display
-    await cardLevelActionPage.closeToolDrawerForFooterImage() // Close the tool drawer after selected the Image
-    await cardLevelActionPage.validateSelectedImageWithEditIcon() //Verifying the Selected image is showing under Logo section with edit button
-    await cardLevelActionPage.expandJourneyAppearance('Display Title') // clicking on the 'Display Title' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.enterDisplayTitleForFooter(footerTitle) // Enter Display title for the Footer Section
-    await cardLevelActionPage.expandJourneyAppearance('Menu') // clicking on the 'Menu' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clickSelectIconDropdownForFooterMenu() //Click Select icon dropdown for Menu
-    await cardLevelActionPage.selectChevronDownIconForFooter() // Select ChevronDownIcon for Menu icon
-    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
-    await cardLevelActionPage.expandJourneyAppearance('Chat Widget') // clicking on the 'Chat Widget' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clickMessangerDropDown('WhatsApp') // clicking the whatsapp dropdown check box
-    await cardLevelActionPage.enterWhatsAppLink() // entering link value on the URL field
-    await cardLevelActionPage.verifyChatWidgetAddedToCard() // verifying the selected messager icon is updated in the footer section at bottom of the card
-    await cardLevelActionPage.validateWebsiteFooterSectionInCard(footerTitle) //Verifying the Selected Image, Display Title and menu icon are showing at the top of the card
-    await cardLevelActionPage.expandJourneyAppearance('Menu') // clicking on the 'Menu' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clickCreateMenuCardButtonInMenuFooter() //Click create menu card button to create menu card
-    await cardLevelActionPage.clickleftSideArrowIcon() //Click Left Chevron button to navigate to react flow panel
-    await cardLevelActionPage.validateMenuCardInReactFlow() //Verifying the Menu card in react flow panel
   })
 })

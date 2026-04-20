@@ -5,12 +5,14 @@ import path from 'path'
 import { expect } from '@playwright/test'
 import type { Page } from 'playwright-core'
 
+import { journeyEditorUrlRegex } from '../e2e-constants'
 import { generateRandomNumber, getBaseUrl } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
 let journeyName = ''
 const thirtySecondsTimeout = 30000
 const sixtySecondsTimeout = 60000
+const ninetySecondsTimeout = 90000
 // eslint-disable-next-line no-undef
 const downloadFolderPath = path.join(__dirname, '../utils/download/')
 
@@ -40,6 +42,10 @@ export class JourneyPage {
     ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
   async createAndVerifyCustomJourney() {
+    // Shallow Next.js client transitions may not fire `load`; poll URL instead.
+    await expect(this.page).toHaveURL(journeyEditorUrlRegex, {
+      timeout: ninetySecondsTimeout
+    })
     await this.enterJourneysTypography()
     await this.clickDoneBtn()
     await this.clickThreeDotBtnOfCustomJourney()
@@ -239,19 +245,63 @@ export class JourneyPage {
     await this.page.getByRole('link', { name: 'Preview' }).click()
   }
 
+  /**
+   * Discover list + create action load under TeamProvider; plain `/` can leave
+   * "Create Custom Journey" disabled until the journeys view is ready.
+   */
+  async gotoDiscoverJourneysPage(): Promise<void> {
+    const baseUrl = await getBaseUrl()
+    const root = baseUrl.replace(/\/$/, '') + '/'
+    const teamFromWorker = process.env.PLAYWRIGHT_WORKER_ACTIVE_TEAM_ID
+    let discoverUrl = root
+    if (
+      teamFromWorker != null &&
+      teamFromWorker !== '' &&
+      teamFromWorker !== '__shared__'
+    ) {
+      const u = new URL(root)
+      u.searchParams.set('activeTeam', teamFromWorker)
+      discoverUrl = u.toString()
+    }
+    await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
+
+    // Wait for TeamProvider to finish resolving before asserting page state.
+    // The combobox is aria-disabled while query.loading is true and becomes
+    // enabled once the team (or SharedWithMe) has been resolved.
+    // 90s: cold Vercel SSR + Apollo query on CI.
+    await expect(
+      this.page.getByTestId('TeamSelect').getByRole('combobox')
+    ).toBeEnabled({ timeout: ninetySecondsTimeout })
+
+    // The create button only renders when activeTeam != null (TeamMode).
+    // Fail loudly here if the user is in SharedWithMe rather than silently
+    // timing out later during the journey creation flow.
+    const createBtn = this.page
+      .getByTestId('JourneysAdminContainedIconButton')
+      .getByRole('button')
+    await expect(createBtn).toBeEnabled({ timeout: ninetySecondsTimeout })
+
+    await expect(this.page).not.toHaveURL(/terms-and-conditions/, {
+      timeout: thirtySecondsTimeout
+    })
+  }
+
   async clickCreateCustomJourney(): Promise<void> {
-    const createButton = this.page.getByRole('button', {
-      name: 'Create Custom Journey'
-    })
-    // 90s: cold Vercel SSR + TeamProvider Apollo query can take time on first load
-    await expect(createButton).toBeEnabled({ timeout: 90000 })
-    await createButton.click()
-    const journeyImageLoader = this.page.locator(
-      'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
-    )
-    await expect(journeyImageLoader).toBeHidden({
-      timeout: sixtySecondsTimeout
-    })
+    // Always land on Discover with reload-retry so TeamProvider + sessionStorage
+    // resolve; plain page.goto('/') in specs leaves the card disabled (Shared With Me).
+    await this.gotoDiscoverJourneysPage()
+    const createButton = this.page
+      .getByTestId('JourneysAdminContainedIconButton')
+      .getByRole('button')
+    // Start listening before click so fast client navigations are not missed.
+    // 90s: cold Vercel SSR for a new journey page after TeamProvider resolves.
+    await Promise.all([
+      this.page.waitForURL(journeyEditorUrlRegex, {
+        timeout: ninetySecondsTimeout,
+        waitUntil: 'commit'
+      }),
+      createButton.click()
+    ])
   }
 
   async setJourneyName(journey: string) {
@@ -269,7 +319,7 @@ export class JourneyPage {
         'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
       )
       .first()
-      .click({ timeout: sixtySecondsTimeout, delay: 1000 })
+      .click({ timeout: ninetySecondsTimeout, delay: 1000 })
     for (let clickRetry = 0; clickRetry < 5; clickRetry++) {
       if (
         await this.page
@@ -288,7 +338,7 @@ export class JourneyPage {
           'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
         )
         .first()
-        .click({ timeout: sixtySecondsTimeout, delay: 1000 })
+        .click({ timeout: ninetySecondsTimeout, delay: 1000 })
     }
     await this.page
       .frameLocator(this.journeyCardFrame)
@@ -338,7 +388,13 @@ export class JourneyPage {
   }
 
   async backToHome() {
-    await this.page.locator('a[data-testid="NextStepsLogo"]').click()
+    await Promise.all([
+      this.page.waitForURL(/\/(\?.*)?$/, {
+        timeout: thirtySecondsTimeout,
+        waitUntil: 'commit'
+      }),
+      this.page.locator('a[data-testid="NextStepsLogo"]').click()
+    ])
   }
 
   async verifyCreatedCustomJourneyInActiveList() {
@@ -971,11 +1027,16 @@ export class JourneyPage {
   }
 
   async verifySeeLinkHrefAttributeBesideUseTemplate() {
+    // Wait for the page to be fully loaded before checking the template section.
+    // Without this guard the locator resolves to 0 elements on cold Vercel starts.
+    await expect(
+      this.page.getByTestId('TeamSelect').getByRole('combobox')
+    ).toBeEnabled({ timeout: ninetySecondsTimeout })
     await expect(
       this.page.locator('h6:has-text("Use Template") + a', {
         hasText: 'See all'
       })
-    ).toHaveAttribute('href', '/templates')
+    ).toHaveAttribute('href', '/templates', { timeout: thirtySecondsTimeout })
   }
 
   async verifySeeAllTemplateBelowUseTemplate() {
@@ -1262,6 +1323,13 @@ export class JourneyPage {
     await menuItem.click()
   }
   async downloadQRCodeAsPng() {
+    // 90s: QR code canvas-to-PNG conversion on cold Vercel can keep the button
+    // disabled well beyond the default 20s actionTimeout.
+    await expect(
+      this.page
+        .locator('div.MuiDialogContent-root')
+        .getByRole('button', { name: 'Download PNG' })
+    ).toBeEnabled({ timeout: ninetySecondsTimeout })
     const qrDownload = this.page.waitForEvent('download', { timeout: 60000 })
     await this.clickButtonInShareDialog('Download PNG')
     const downloadFile = await qrDownload

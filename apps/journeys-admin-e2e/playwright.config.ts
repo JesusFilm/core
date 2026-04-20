@@ -21,7 +21,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 3 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 10 : 1,
+  workers: process.env.CI ? 4 : 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -29,8 +29,8 @@ export default defineConfig({
     permissions: ['clipboard-read', 'clipboard-write'],
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL:
-      process.env.JOURNEYS_ADMIN_DAILY_E2E ??
       process.env.DEPLOYMENT_URL ??
+      process.env.JOURNEYS_ADMIN_DAILY_E2E ??
       'http://localhost:4200',
     actionTimeout: 20000,
     navigationTimeout: 60000,

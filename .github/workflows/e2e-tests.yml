@@ -157,7 +157,6 @@ jobs:
           name: ${{ matrix.app }}-e2e-playwright-report
           path: |
             playwright-report/
-            apps/${{ matrix.app }}-e2e/src/e2e/
             test-results
           retention-days: 30
 
@@ -245,7 +244,6 @@ jobs:
           name: ${{ matrix.test-suite }}-playwright-report
           path: |
             playwright-report/
-            apps/${{ matrix.test-suite }}/src/e2e/
             test-results
           retention-days: 30
 

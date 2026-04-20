@@ -10,12 +10,20 @@ test.use({
 })
 
 test.describe('YouTube video section on Media screen', () => {
+  /* eslint-disable playwright/expect-expect -- CustomizationMediaPage helpers call expect() */
+  test.beforeEach(async ({ authedPage }) => {
+    const mediaPage = new CustomizationMediaPage(authedPage)
+    await mediaPage.navigateToCustomize(TEMPLATE_ID)
+    await mediaPage.navigateToMediaScreen()
+    await expect(authedPage.getByTestId('VideosSection')).toBeVisible({
+      timeout: 60000
+    })
+  })
+
   test('should display VideosSection with input and upload button', async ({
     authedPage
   }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
-    await mediaPage.navigateToCustomize(TEMPLATE_ID)
-    await mediaPage.navigateToMediaScreen()
     await mediaPage.verifyVideosSectionVisible()
     await mediaPage.verifyYouTubeInputVisible()
     await mediaPage.verifyUploadButtonVisible()
@@ -25,9 +33,6 @@ test.describe('YouTube video section on Media screen', () => {
     authedPage
   }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
-    await mediaPage.navigateToCustomize(TEMPLATE_ID)
-    await mediaPage.navigateToMediaScreen()
-
     const input = authedPage
       .getByTestId('VideosSection-youtube-input')
       .locator('input')
@@ -44,8 +49,6 @@ test.describe('YouTube video section on Media screen', () => {
     authedPage
   }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
-    await mediaPage.navigateToCustomize(TEMPLATE_ID)
-    await mediaPage.navigateToMediaScreen()
     await mediaPage.pasteYouTubeUrl(YOUTUBE_URL)
     await mediaPage.waitForAutoSubmit()
 
@@ -56,8 +59,6 @@ test.describe('YouTube video section on Media screen', () => {
 
   test('should show error for invalid YouTube URL', async ({ authedPage }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
-    await mediaPage.navigateToCustomize(TEMPLATE_ID)
-    await mediaPage.navigateToMediaScreen()
     await mediaPage.pasteYouTubeUrl('not-a-valid-url')
     await mediaPage.waitForAutoSubmitError()
 
@@ -66,28 +67,17 @@ test.describe('YouTube video section on Media screen', () => {
   })
 
   test('should render upload button at medium size', async ({ authedPage }) => {
-    const mediaPage = new CustomizationMediaPage(authedPage)
-    await mediaPage.navigateToCustomize(TEMPLATE_ID)
-    await mediaPage.navigateToMediaScreen()
-
     const uploadButton = authedPage.getByTestId('VideosSection-upload-button')
     await expect(uploadButton).toBeVisible()
 
-    // Verify Max size text is not present
     await expect(authedPage.getByText('Max size is 1 GB')).toBeHidden()
   })
 
   test('should use filled variant styling on YouTube input', async ({
     authedPage
   }) => {
-    const mediaPage = new CustomizationMediaPage(authedPage)
-    await mediaPage.navigateToCustomize(TEMPLATE_ID)
-    await mediaPage.navigateToMediaScreen()
-
-    // Filled variant renders with MuiFilledInput class
-    const filledInput = authedPage
-      .getByTestId('VideosSection-youtube-input')
-      .locator('.MuiFilledInput-root')
-    await expect(filledInput).toBeVisible()
+    const field = authedPage.getByTestId('VideosSection-youtube-input')
+    await expect(field.getByRole('textbox')).toBeVisible()
+    await expect(field.locator('.MuiFilledInput-root')).toBeVisible()
   })
 })
