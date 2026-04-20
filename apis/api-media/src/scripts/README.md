@@ -190,3 +190,37 @@ The script includes comprehensive error handling for:
 - Network connectivity issues
 
 If any error occurs, the script will log the error and continue processing other items when possible.
+
+## Migrate Hindu/Buddhist Tags Script
+
+The migrate Hindu/Buddhist tags script is a one-off data migration that splits the legacy combined `Hindu/Buddist` Audience tag into two separate tags — `Hindu` and `Buddhist` — and preserves every tagging on the original row.
+
+### Usage
+
+```bash
+nx run api-media:migrate-hindu-buddhist-tags
+```
+
+### Environment Variables
+
+The script requires the following environment variable:
+
+- `PG_DATABASE_URL_MEDIA`: The connection string to the media PostgreSQL database (required)
+
+### Process
+
+The script runs inside a single transaction and will:
+
+1. Look up the existing `Hindu/Buddist` tag. If it does not exist, exit immediately (idempotent — already migrated).
+2. Look up the `Audience` parent tag. If missing, abort with an error.
+3. Rename the existing tag row to `Hindu` and update its primary `TagName` value from `Hindu/Buddist` to `Hindu` (the original `Tag.id` is preserved, so existing `Tagging` rows continue to point at the same row).
+4. Create a new `Buddhist` tag under the same `Audience` parent, with a primary `TagName` of `Buddhist` in language `529`.
+5. Duplicate every `Tagging` from the renamed row onto the new `Buddhist` row, so any content previously tagged with `Hindu/Buddist` ends up tagged with both `Hindu` and `Buddhist`.
+
+### Idempotency
+
+Re-running the script after a successful run is safe — the `Hindu/Buddist` row no longer exists on the second run, so the script exits early without making any further changes.
+
+### Error Handling
+
+The script wraps all mutations in a single Prisma transaction. On failure, the transaction rolls back and no partial state is written. On unhandled errors, the script exits with a non-zero code.

@@ -155,6 +155,12 @@
         "command": "pnpm exec tsx apis/api-media/src/scripts/update-arcgt-urls.ts"
       }
     },
+    "migrate-hindu-buddhist-tags": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx apis/api-media/src/scripts/migrate-hindu-buddhist-tags.ts"
+      }
+    },
     "mux-videos": {
       "executor": "nx:run-commands",
       "options": {
