@@ -121,10 +121,9 @@ export function HomePage({
                 />
               </div>
               <Button
-                variant="contained"
-                size="large"
+                variant="blockContained"
                 fullWidth
-                color="secondary"
+                color="solid"
                 startIcon={<MailOutlineIcon />}
                 type="submit"
                 disabled={!isValid || isSubmitting}

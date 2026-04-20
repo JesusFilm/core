@@ -14,7 +14,7 @@ export interface TextResponsePlaceholderUpdate_textResponseBlockUpdate {
 }
 
 export interface TextResponsePlaceholderUpdate {
-  textResponseBlockUpdate: TextResponsePlaceholderUpdate_textResponseBlockUpdate | null;
+  textResponseBlockUpdate: TextResponsePlaceholderUpdate_textResponseBlockUpdate;
 }
 
 export interface TextResponsePlaceholderUpdateVariables {

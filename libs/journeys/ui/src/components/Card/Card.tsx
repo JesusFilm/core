@@ -105,7 +105,7 @@ export function Card({
       MULTISELECT_SUBMISSION_EVENT_CREATE
     )
 
-  const { t } = useTranslation('journeys-ui')
+  const { t } = useTranslation('libs-journeys-ui')
   const theme = useTheme()
   const { blockHistory, treeBlocks } = useBlocks()
   const { variant, journey } = useJourney()
