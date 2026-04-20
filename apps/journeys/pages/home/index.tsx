@@ -26,6 +26,7 @@ import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import logo from '../../public/logo.svg'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { getFlags } from '../../src/libs/getFlags'
 
 interface JourneysPageProps {
   journeys: Journey[]
@@ -175,6 +176,7 @@ export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
   } else {
     return {
       props: {
+        flags: await getFlags(),
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-journeys', 'libs-journeys-ui'],
