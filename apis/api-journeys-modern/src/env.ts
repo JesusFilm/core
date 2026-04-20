@@ -27,10 +27,6 @@ export const env = createEnv({
     PLAUSIBLE_URL: z.url().refine((url) => !url.endsWith('/'), {
       message: 'PLAUSIBLE_URL must not end with a trailing slash'
     }),
-    CLOUDFLARE_ACCOUNT_ID: z.string().trim().min(1),
-    CLOUDFLARE_IMAGES_TOKEN: z.string().trim().min(1),
-    MUX_UGC_ACCESS_TOKEN_ID: z.string().trim().min(1),
-    MUX_UGC_SECRET_KEY: z.string().trim().min(1),
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
     REDIS_URL: z.string().trim().min(1).default('redis'),
     SERVICE_VERSION: z.string().trim().default('')
