@@ -10,6 +10,7 @@ import {
   treeBlocksVar
 } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import {
@@ -328,6 +329,38 @@ describe('Conductor', () => {
 
       expect(blockHistoryVar()).toHaveLength(1)
       expect(blockHistoryVar()[0].id).toBe('step1.id')
+    })
+  })
+
+  describe('FlagsProvider integration', () => {
+    it('should render correctly when wrapped in FlagsProvider', () => {
+      const { getByTestId } = render(
+        <FlagsProvider flags={{ apologistChat: true }}>
+          <MockedProvider mocks={[]}>
+            <SnackbarProvider>
+              <JourneyProvider value={{ journey: defaultJourney }}>
+                <Conductor blocks={basic} />
+              </JourneyProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </FlagsProvider>
+      )
+      expect(getByTestId('Conductor')).toBeInTheDocument()
+    })
+
+    it('should render correctly when FlagsProvider has no flags', () => {
+      const { getByTestId } = render(
+        <FlagsProvider>
+          <MockedProvider mocks={[]}>
+            <SnackbarProvider>
+              <JourneyProvider value={{ journey: defaultJourney }}>
+                <Conductor blocks={basic} />
+              </JourneyProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </FlagsProvider>
+      )
+      expect(getByTestId('Conductor')).toBeInTheDocument()
     })
   })
 })
