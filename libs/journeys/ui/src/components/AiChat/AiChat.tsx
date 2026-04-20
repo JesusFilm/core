@@ -12,30 +12,18 @@ import {
   useState
 } from 'react'
 
-import { useJourneyAiContext } from '../../libs/JourneyAiContextProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { Actions } from '../Actions'
 import { Conversation } from '../Conversation'
 import { Message } from '../Message'
 import { PromptInput } from '../PromptInput'
 import { Response } from '../Response'
-import { SuggestionsList } from '../Suggestion'
-
-import { InteractionStarter, InteractionType } from './InteractionStarter'
-import { getActiveBlockContext } from './utils/contextExtraction'
 
 interface AiChatProps {
-  activeBlockId?: string
   userId?: string
   /** When provided, this message is sent automatically on first render */
   initialMessage?: string
 }
-
-const followUpSuggestions = [
-  'Tell me more',
-  'What does the Bible say?',
-  'How can I apply this?'
-]
 
 function getTextFromMessage(message: UIMessage): string {
   return message.parts
@@ -44,16 +32,10 @@ function getTextFromMessage(message: UIMessage): string {
     .join('')
 }
 
-export function AiChat({ activeBlockId, userId, initialMessage }: AiChatProps): ReactElement {
+export function AiChat({ userId, initialMessage }: AiChatProps): ReactElement {
   const { journey } = useJourney()
-  const { aiContextData } = useJourneyAiContext()
   const [input, setInput] = useState('')
   const initialMessageSent = useRef(false)
-
-  const contextText = useMemo(
-    () => getActiveBlockContext(activeBlockId, aiContextData),
-    [activeBlockId, aiContextData]
-  )
 
   const languageBcp47 = journey?.language?.bcp47 ?? undefined
 
@@ -67,34 +49,19 @@ export function AiChat({ activeBlockId, userId, initialMessage }: AiChatProps): 
   }, [])
 
   // Keep a ref of the latest body fields so the transport's body resolver
-  // reads the current value at send time. Without this, any async update
-  // to aiContextData after transport construction would not be reflected
-  // in the /api/chat request body (classic memoized-transport race).
+  // reads the current value at send time.
   const bodyStateRef = useRef({
-    contextText,
     languageBcp47,
     journeyId: journey?.id,
     userId,
     sessionId
   })
   bodyStateRef.current = {
-    contextText,
     languageBcp47,
     journeyId: journey?.id,
     userId,
     sessionId
   }
-
-  useEffect(() => {
-    console.log(
-      '[apologist:client] context state update aiContextDataLength=',
-      aiContextData?.length ?? 0,
-      'contextText.length=',
-      contextText?.length ?? 0,
-      'activeBlockId=',
-      activeBlockId
-    )
-  }, [aiContextData, contextText, activeBlockId])
 
   const transport = useMemo(
     () =>
@@ -103,9 +70,7 @@ export function AiChat({ activeBlockId, userId, initialMessage }: AiChatProps): 
         body: () => {
           const latest = bodyStateRef.current
           console.log(
-            '[apologist:client] sending chat body contextText.length=',
-            latest.contextText?.length ?? 0,
-            'language=',
+            '[apologist:client] sending chat body language=',
             latest.languageBcp47,
             'journeyId=',
             latest.journeyId,
@@ -113,7 +78,6 @@ export function AiChat({ activeBlockId, userId, initialMessage }: AiChatProps): 
             latest.sessionId
           )
           return {
-            contextText: latest.contextText,
             language: latest.languageBcp47,
             journeyId: latest.journeyId,
             userId: latest.userId,
@@ -202,20 +166,6 @@ export function AiChat({ activeBlockId, userId, initialMessage }: AiChatProps): 
     }
   }, [initialMessage, sendMessage])
 
-  const handleInteractionSelect = useCallback(
-    (_type: InteractionType, prompt: string) => {
-      void sendMessage({ text: prompt })
-    },
-    [sendMessage]
-  )
-
-  const handleSuggestionSelect = useCallback(
-    (suggestion: string) => {
-      void sendMessage({ text: suggestion })
-    },
-    [sendMessage]
-  )
-
   const handleSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault()
@@ -233,8 +183,6 @@ export function AiChat({ activeBlockId, userId, initialMessage }: AiChatProps): 
     return -1
   }, [messages])
 
-  const showInteractionStarters = messages.length === 0
-
   return (
     <div
       style={{
@@ -245,9 +193,6 @@ export function AiChat({ activeBlockId, userId, initialMessage }: AiChatProps): 
       }}
     >
       <Conversation>
-        {showInteractionStarters && (
-          <InteractionStarter onSelect={handleInteractionSelect} />
-        )}
         {messages.map((message, index) => {
           const text = getTextFromMessage(message)
           return (
@@ -279,13 +224,6 @@ export function AiChat({ activeBlockId, userId, initialMessage }: AiChatProps): 
             </Message>
           )}
       </Conversation>
-
-      {!isLoading && messages.length > 0 && (
-        <SuggestionsList
-          suggestions={followUpSuggestions}
-          onSelect={handleSuggestionSelect}
-        />
-      )}
 
       <PromptInput
         input={input}

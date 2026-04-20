@@ -10,13 +10,9 @@ import { Drawer, DrawerContent } from '../Drawer'
 
 interface AiChatButtonProps {
   userId?: string
-  activeBlockId?: string
 }
 
-export function AiChatButton({
-  userId,
-  activeBlockId
-}: AiChatButtonProps): ReactElement {
+export function AiChatButton({ userId }: AiChatButtonProps): ReactElement {
   const { variant } = useJourney()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -54,7 +50,7 @@ export function AiChatButton({
       </IconButton>
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerContent title="AI Chat">
-          <AiChat activeBlockId={activeBlockId} userId={userId} />
+          <AiChat userId={userId} />
         </DrawerContent>
       </Drawer>
     </>

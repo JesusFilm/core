@@ -159,9 +159,7 @@ function getChatModel(): {
 
 interface ChatRequestBody {
   messages: UIMessage[]
-  contextText?: string
   language?: string
-  interactionType?: string
 }
 
 export default async function handler(
@@ -176,22 +174,13 @@ export default async function handler(
     return
   }
 
-  const {
-    messages,
-    contextText,
-    language,
-    interactionType
-  } = req.body as ChatRequestBody
+  const { messages, language } = req.body as ChatRequestBody
 
   console.log(
     '[apologist:server] request payload messageCount=',
     messages?.length ?? 0,
-    'contextText.length=',
-    contextText?.length ?? 0,
     'language=',
-    language,
-    'interactionType=',
-    interactionType
+    language
   )
 
   if (!messages || messages.length === 0) {
@@ -199,11 +188,7 @@ export default async function handler(
     return
   }
 
-  const systemMessage = buildSystemMessage({
-    contextText,
-    language,
-    interactionType
-  })
+  const systemMessage = buildSystemMessage({ language })
 
   const modelMessages = await convertToModelMessages(messages)
 
@@ -298,15 +283,7 @@ export default async function handler(
   }
 }
 
-function buildSystemMessage({
-  contextText,
-  language,
-  interactionType
-}: {
-  contextText?: string
-  language?: string
-  interactionType?: string
-}): string {
+function buildSystemMessage({ language }: { language?: string }): string {
   const parts: string[] = [
     'You are a helpful Christian apologist and spiritual guide.',
     'Be warm, empathetic, and conversational.',
@@ -314,18 +291,8 @@ function buildSystemMessage({
     'Keep responses concise but thorough.'
   ]
 
-  if (contextText != null && contextText.length > 0) {
-    parts.push(
-      `The user is currently viewing content with the following context: ${contextText}`
-    )
-  }
-
   if (language != null && language.length > 0) {
     parts.push(`Respond in the following language: ${language}`)
-  }
-
-  if (interactionType != null && interactionType.length > 0) {
-    parts.push(`The user wants to: ${interactionType}`)
   }
 
   return parts.join('\n')
