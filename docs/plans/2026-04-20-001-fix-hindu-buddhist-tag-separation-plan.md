@@ -15,7 +15,7 @@ This plan splits the single combined tag into two separate tags — `Hindu` and 
 
 ## Problem Frame
 
-Melissa (Slack `#nextsteps-bugs`, 2026-04-20): *"Is it possible to get the checkbox in the Global Template Library under 'Audience' that says 'Hindu/Buddist' separated out into two different checkboxes? … These two religions are pushed together. Also, Buddhist is misspelled."*
+Melissa (Slack `#nextsteps-bugs`, 2026-04-20): _"Is it possible to get the checkbox in the Global Template Library under 'Audience' that says 'Hindu/Buddist' separated out into two different checkboxes? … These two religions are pushed together. Also, Buddhist is misspelled."_
 
 The Audience tags are seeded by `apis/api-media/src/workers/seed/service/tag/tag.ts` (`seedTags` → `upsertTag('Audience', [...])`). The frontend (`apps/journeys-admin/src/components/Editor/Toolbar/Items/TemplateSettingsItem/TemplateSettingsDialog/CategoriesTabPanel`) renders the children of each parent Audience tag dynamically — it does **not** hardcode `Hindu/Buddist`. So the code-level fix is purely in the seed file.
 
@@ -74,9 +74,9 @@ However, `apis/api-media/src/workers/server.ts` (lines 91-98) runs the seed work
 
 ### Resolved During Planning
 
-- *Q: Should the frontend change?* A: No. `CategoriesTabPanel.tsx` renders children of `Audience` dynamically from the `tags` GraphQL query — no hardcoded labels.
-- *Q: Should we add migration logic inside `seedTags`?* A: No — production doesn't run the seed, and dev environments will either be fresh (no old tag) or can run the same standalone script locally if needed.
-- *Q: What happens if the script runs twice?* A: The first run renames `Hindu/Buddist` → `Hindu`. On the second run, `findUnique({ name: 'Hindu/Buddist' })` returns null and the script exits early — idempotent.
+- _Q: Should the frontend change?_ A: No. `CategoriesTabPanel.tsx` renders children of `Audience` dynamically from the `tags` GraphQL query — no hardcoded labels.
+- _Q: Should we add migration logic inside `seedTags`?_ A: No — production doesn't run the seed, and dev environments will either be fresh (no old tag) or can run the same standalone script locally if needed.
+- _Q: What happens if the script runs twice?_ A: The first run renames `Hindu/Buddist` → `Hindu`. On the second run, `findUnique({ name: 'Hindu/Buddist' })` returns null and the script exits early — idempotent.
 
 ### Deferred to Implementation
 
@@ -94,20 +94,25 @@ However, `apis/api-media/src/workers/server.ts` (lines 91-98) runs the seed work
 **Dependencies:** None.
 
 **Files:**
+
 - Modify: `apis/api-media/src/workers/seed/service/tag/tag.ts`
 
 **Approach:**
+
 - In the `Audience` array passed to `upsertTag`, replace the `'Hindu/Buddist'` string with two entries: `'Hindu'` and `'Buddhist'`.
 - Preserve the position in the array (between `Muslim` and `Atheist/Agnostic`) to minimize diff noise.
 - No changes to other Audience entries or other parent tags.
 
 **Patterns to follow:**
+
 - The existing array format in the same function.
 
 **Test scenarios:**
+
 - Covered by Unit 2's `tag.spec.ts` — Happy path: `seedTags()` upserts a `Hindu` and `Buddhist` tag as children of `Audience`, and does not upsert any `Hindu/Buddist` tag.
 
 **Verification:**
+
 - Source file diff shows only the Audience list entry change.
 - Running the seed locally against a fresh database produces `Hindu` and `Buddhist` tags under `Audience`, no `Hindu/Buddist`.
 
@@ -120,25 +125,30 @@ However, `apis/api-media/src/workers/server.ts` (lines 91-98) runs the seed work
 **Dependencies:** Unit 1.
 
 **Files:**
+
 - Create: `apis/api-media/src/workers/seed/service/tag/tag.spec.ts`
 - Modify (if needed for mock availability): none expected; `test/prismaMock.ts` already exists and is used by `taxonomy.spec.ts`.
 
 **Approach:**
+
 - Mirror `apis/api-media/src/workers/seed/service/taxonomy/taxonomy.spec.ts` structure: import `prismaMock`, call `seedTags()`, assert on `prismaMock.tag.upsert` / `prismaMock.tagName.upsert` call arguments.
 - Because `upsertTag` upserts parent-then-children recursively, assertions should focus on observable outcomes rather than exact call counts: that `tag.upsert` was called with `name: 'Hindu'` and `name: 'Buddhist'`, and was **not** called with `name: 'Hindu/Buddist'`.
 
 **Execution note:** Test-first is not required, but the test should be added in the same PR — not a follow-up.
 
 **Patterns to follow:**
+
 - `apis/api-media/src/workers/seed/service/taxonomy/taxonomy.spec.ts` — `prismaMock` usage, `describe`/`it` structure, absence of a real DB.
 
 **Test scenarios:**
+
 - Happy path: `seedTags()` calls `prisma.tag.upsert` with `where: { name: 'Hindu' }` (parent `Audience`).
 - Happy path: `seedTags()` calls `prisma.tag.upsert` with `where: { name: 'Buddhist' }` (parent `Audience`).
 - Regression guard: `seedTags()` never calls `prisma.tag.upsert` with `where: { name: 'Hindu/Buddist' }`.
 - Happy path: `seedTags()` also calls `prisma.tag.upsert` for the parent `Audience` (spot-check to confirm parent chain still runs).
 
 **Verification:**
+
 - `npx jest --config apis/api-media/jest.config.ts --no-coverage apis/api-media/src/workers/seed/service/tag/tag.spec.ts` passes.
 - The spec fails if Unit 1 is reverted.
 
@@ -151,6 +161,7 @@ However, `apis/api-media/src/workers/server.ts` (lines 91-98) runs the seed work
 **Dependencies:** None directly (can run independently of Unit 1), but is shipped with the same PR.
 
 **Files:**
+
 - Create: `apis/api-media/src/scripts/migrate-hindu-buddhist-tags.ts`
 - Modify: `apis/api-media/src/scripts/README.md` (add a section documenting the new script)
 - Modify: `apis/api-media/project.json` (register a new `migrate-hindu-buddhist-tags` target mirroring `update-arcgt-urls`)
@@ -177,7 +188,7 @@ Structure the script exactly like `apis/api-media/src/scripts/update-arcgt-urls.
 
 **Execution note:** Implement defensively (findUnique null-checks, try/catch with exit code), mirroring `update-arcgt-urls.ts`.
 
-**Technical design:** *(directional)*
+**Technical design:** _(directional)_
 
     // Pseudo-steps, not final code
     const old = await tx.tag.findUnique({ where: { name: 'Hindu/Buddist' } })
@@ -209,10 +220,12 @@ Structure the script exactly like `apis/api-media/src/scripts/update-arcgt-urls.
     }
 
 **Patterns to follow:**
+
 - `apis/api-media/src/scripts/update-arcgt-urls.ts` — entry-point structure, logging, prisma import path, exit-code handling.
 - `apis/api-media/src/workers/seed/service/tag/tag.ts` — `upsert` signatures for `tag` and `tagName` (language `'529'`, `primary: true`).
 
 **Test scenarios:**
+
 - Happy path: Given a DB with a `Hindu/Buddist` tag under `Audience` with two `Tagging` rows, the script renames the tag to `Hindu`, creates a new `Buddhist` tag, and produces two matching `Tagging` rows on `Buddhist`. Assert: the `Tag` table now has `Hindu` and `Buddhist` under `Audience` and no row named `Hindu/Buddist`; `Tagging` count on the new `Buddhist` tag equals the count that was on `Hindu/Buddist` before the run.
 - Happy path: `TagName` row for the renamed tag now has `value = 'Hindu'` (spelling fix visible at the display layer).
 - Happy path: `TagName` row for `Buddhist` has `value = 'Buddhist'`, `languageId = '529'`, `primary = true`.
@@ -221,9 +234,11 @@ Structure the script exactly like `apis/api-media/src/scripts/update-arcgt-urls.
 - Error path (missing `Audience`): Running against a DB without an `Audience` parent tag — script throws with a clear error message and does not partially apply changes (transaction rollback).
 
 **Files for tests:**
+
 - Create: `apis/api-media/src/scripts/migrate-hindu-buddhist-tags.spec.ts` — mirror `update-arcgt-urls` style if a spec exists; otherwise use `prismaMock`.
 
 **Verification:**
+
 - `npx jest --config apis/api-media/jest.config.ts --no-coverage apis/api-media/src/scripts/migrate-hindu-buddhist-tags.spec.ts` passes.
 - `nx run api-media:migrate-hindu-buddhist-tags` target is registered in `project.json` and runs the script via ts-node (same mechanism as `update-arcgt-urls`).
 - Manual dry run against a local `media` DB with a seeded `Hindu/Buddist` tag produces the expected shape.
@@ -237,19 +252,24 @@ Structure the script exactly like `apis/api-media/src/scripts/update-arcgt-urls.
 **Dependencies:** Unit 3.
 
 **Files:**
+
 - Modify: `apis/api-media/src/scripts/README.md`
 
 **Approach:**
+
 - Add a section titled `## Migrate Hindu/Buddhist Tags` following the same structure as existing entries (Usage, Environment Variables, Process, Idempotency, Error Handling).
 - State that this is a one-off production script, note that it is safe to run multiple times, and document the env var `PG_DATABASE_URL_MEDIA`.
 
 **Patterns to follow:**
+
 - The `## Update Arc.gt URLs Script` section in the same README.
 
 **Test scenarios:**
+
 - Test expectation: none — docs-only change with no behavioral surface.
 
 **Verification:**
+
 - Running the script with the command in the README works end-to-end against a local DB.
 
 ## System-Wide Impact
@@ -266,12 +286,12 @@ Structure the script exactly like `apis/api-media/src/scripts/update-arcgt-urls.
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| Running the migration against production without testing locally first | Ship the spec and a local dry-run step in the README; run against a local seeded DB before production. |
-| Someone re-introduces the old tag by running the pre-change seed | The seed change in Unit 1 removes the old value permanently from source. Unit 2's spec will fail if anyone re-adds it. |
+| Risk                                                                           | Mitigation                                                                                                                                                                                                      |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Running the migration against production without testing locally first         | Ship the spec and a local dry-run step in the README; run against a local seeded DB before production.                                                                                                          |
+| Someone re-introduces the old tag by running the pre-change seed               | The seed change in Unit 1 removes the old value permanently from source. Unit 2's spec will fail if anyone re-adds it.                                                                                          |
 | Transaction hits a production timeout for DBs with very large `Tagging` counts | `Tagging` rows per tag are expected to be in the low hundreds at most (template count). Acceptable. If this turns out to be wrong in production, split the `createMany` into batches — defer to execution-time. |
-| Migration is forgotten and only the seed ships | Call out in the PR description that the script needs to be run against production post-merge, before Shannon/Lisa's training. |
+| Migration is forgotten and only the seed ships                                 | Call out in the PR description that the script needs to be run against production post-merge, before Shannon/Lisa's training.                                                                                   |
 
 ## Documentation / Operational Notes
 
