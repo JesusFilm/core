@@ -9,7 +9,6 @@ import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import uniqBy from 'lodash/uniqBy'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -19,19 +18,13 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { transformer } from '@core/journeys/ui/transformer'
-import { TranslationDialogWrapper } from '@core/journeys/ui/TranslationDialogWrapper'
-import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
-import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateSubscription/supportedLanguages'
-import { useJourneyCustomizationDescriptionTranslateMutation } from '@core/journeys/ui/useJourneyCustomizationDescriptionTranslateMutation'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
-import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { useUpdateLastActiveTeamIdMutation } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Translate from '@core/shared/ui/icons/Translate'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { LOCALE_LANGUAGES } from '../../../../../../middleware'
 import { useAuth } from '../../../../../libs/auth'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
@@ -60,15 +53,12 @@ export function LanguageScreen({
   handleNext
 }: LanguageScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
   const { templateCustomizationGuestFlow } = useFlags()
   const { enqueueSnackbar } = useSnackbar()
   const { user } = useAuth()
   const { journey } = useJourney()
   const { query, setActiveTeam } = useTeam()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
-  const [descriptionTranslate] =
-    useJourneyCustomizationDescriptionTranslateMutation()
   const updateLastActiveTeamId = useUpdateLastActiveTeamIdMutation()
   const { loadUser } = useCurrentUserLazyQuery()
   const [teamCreate] = useTeamCreateMutation()
@@ -148,13 +138,6 @@ export function LanguageScreen({
     ...parentJourneyLanguagesJourneyMap,
     ...filteredChildJourneyLanguagesJourneyMap
   }
-
-  const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
-    languageId: '529',
-    where: {
-      ids: [...SUPPORTED_LANGUAGE_IDS]
-    }
-  })
 
   const validationSchema = object({
     teamSelect: isSignedIn ? string().required() : string()
@@ -257,24 +240,13 @@ export function LanguageScreen({
     })
 
     if (data?.journeyDuplicate == null) {
-      switch (type) {
-        case 'signedIn':
-          enqueueSnackbar(
-            t(
-              'Failed to duplicate journey to team, please refresh the page and try again'
-            ),
-            { variant: 'error' }
-          )
-          return null
-        case 'guest':
-          enqueueSnackbar(
-            t(
-              'Failed to duplicate journey to team, please refresh the page and try again'
-            ),
-            { variant: 'error' }
-          )
-          return null
-      }
+      enqueueSnackbar(
+        t(
+          'Failed to duplicate journey to team, please refresh the page and try again'
+        ),
+        { variant: 'error' }
+      )
+      return null
     }
 
     if (teamId != null) {
@@ -287,69 +259,11 @@ export function LanguageScreen({
       })
     }
 
-    return data?.journeyDuplicate?.id ?? null
+    return data.journeyDuplicate.id
   }
-
-  const [translationVariables, setTranslationVariables] = useState<
-    | {
-        journeyId: string
-        name: string
-        journeyLanguageName: string
-        textLanguageId: string
-        textLanguageName: string
-        userLanguageId?: string
-        userLanguageName?: string
-      }
-    | undefined
-  >(undefined)
-  const [translationCompleted, setTranslationCompleted] = useState(false)
-
-  const { data: translationData } = useJourneyAiTranslateSubscription({
-    variables: translationVariables,
-    skip: !translationVariables,
-    onData: ({ data }) => {
-      if (
-        !translationCompleted &&
-        data?.data?.journeyAiTranslateCreateSubscription?.progress === 100 &&
-        data?.data?.journeyAiTranslateCreateSubscription?.journey
-      ) {
-        setTranslationCompleted(true)
-        const translatedJourneyId =
-          data.data.journeyAiTranslateCreateSubscription.journey.id
-
-        enqueueSnackbar(t('Journey Translated'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-        setLoading(false)
-        setTranslationVariables(undefined)
-        handleNext(translatedJourneyId)
-      }
-    },
-    onError: (error) => {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
-      setLoading(false)
-      setTranslationVariables(undefined)
-      setTranslationCompleted(false)
-    }
-  })
-
-  const translationProgress =
-    translationData?.journeyAiTranslateCreateSubscription
-      ? {
-          progress:
-            translationData.journeyAiTranslateCreateSubscription.progress ?? 0,
-          message:
-            translationData.journeyAiTranslateCreateSubscription.message ?? ''
-        }
-      : undefined
 
   async function handleSubmit(values: LanguageFormValues) {
     setLoading(true)
-    let startedTranslation = false
     try {
       if (journey == null) {
         enqueueSnackbar(
@@ -359,15 +273,11 @@ export function LanguageScreen({
         return
       }
 
-      const selectedLanguageId = values.languageSelect?.id ?? ''
-      const needsTranslation =
-        languagesJourneyMap?.[selectedLanguageId] == null &&
-        selectedLanguageId !== journey?.language?.id
+      const journeyId =
+        languagesJourneyMap?.[values.languageSelect?.id ?? ''] ?? journey?.id
 
-      const journeyId = languagesJourneyMap?.[selectedLanguageId] ?? journey?.id
-
-      if (shouldSkipDuplicate(journey, values) && !needsTranslation) {
-        handleNext()
+      if (shouldSkipDuplicate(journey, values)) {
+        await handleNext()
         return
       }
 
@@ -378,72 +288,9 @@ export function LanguageScreen({
         isSignedIn ? values.teamSelect : undefined
       )
 
-      if (duplicatedJourneyId == null) return
-
-      if (needsTranslation && isSignedIn) {
-        const sourceLanguageName =
-          journey.language.name.find((name) => !name.primary)?.value ?? ''
-        const targetLanguageName =
-          values.languageSelect?.nativeName ??
-          values.languageSelect?.localName ??
-          ''
-
-        const currentLocale = router.locale ?? 'en'
-        const userLanguageId = LOCALE_LANGUAGES[currentLocale]
-        const userLanguage = languagesData?.languages?.find(
-          (l) => l.id === userLanguageId
-        )
-        const userLanguageName =
-          userLanguage?.name?.find((n) => n.primary)?.value ?? currentLocale
-
-        startedTranslation = true
-        setTranslationCompleted(false)
-        setTranslationVariables({
-          journeyId: duplicatedJourneyId,
-          name: journey.title,
-          journeyLanguageName: sourceLanguageName,
-          textLanguageId: selectedLanguageId,
-          textLanguageName: targetLanguageName,
-          userLanguageId,
-          userLanguageName
-        })
-        return
+      if (duplicatedJourneyId != null) {
+        await handleNext(duplicatedJourneyId)
       }
-
-      const currentLocale = router.locale ?? 'en'
-      const userLocaleLanguageId = LOCALE_LANGUAGES[currentLocale]
-      if (
-        userLocaleLanguageId != null &&
-        userLocaleLanguageId !== selectedLanguageId
-      ) {
-        const sourceLanguageName =
-          values.languageSelect?.nativeName ??
-          values.languageSelect?.localName ??
-          ''
-        const userLanguage = languagesData?.languages?.find(
-          (l) => l.id === userLocaleLanguageId
-        )
-        const targetLanguageName =
-          userLanguage?.name?.find((n) => n.primary)?.value ?? ''
-
-        if (sourceLanguageName !== '' && targetLanguageName !== '') {
-          try {
-            await descriptionTranslate({
-              variables: {
-                input: {
-                  journeyId: duplicatedJourneyId,
-                  sourceLanguageName,
-                  targetLanguageName
-                }
-              }
-            })
-          } catch {
-            // Best-effort — don't block navigation if description translation fails
-          }
-        }
-      }
-
-      handleNext(duplicatedJourneyId)
     } catch {
       enqueueSnackbar(
         t(
@@ -451,10 +298,7 @@ export function LanguageScreen({
         ),
         { variant: 'error' }
       )
-    } finally {
-      if (!startedTranslation) {
-        setLoading(false)
-      }
+      setLoading(false)
     }
   }
 
@@ -550,8 +394,11 @@ export function LanguageScreen({
                 <Stack gap={2} sx={{ px: { xs: 0 } }}>
                   <LanguageAutocomplete
                     value={values.languageSelect}
-                    languages={languagesData?.languages}
-                    loading={languagesLoading}
+                    languages={languages.map((language) => ({
+                      id: language?.id,
+                      name: language?.name,
+                      slug: language?.slug
+                    }))}
                     onChange={(value) => setFieldValue('languageSelect', value)}
                     renderInput={(params) => (
                       <TextField
@@ -577,23 +424,6 @@ export function LanguageScreen({
                       <JourneyCustomizeTeamSelect />
                     </Box>
                   )}
-                  <TranslationDialogWrapper
-                    open={translationVariables != null}
-                    onClose={() => {
-                      setTranslationVariables(undefined)
-                      setLoading(false)
-                    }}
-                    onTranslate={async () => {
-                      // Do nothing
-                    }}
-                    title={t('Translating')}
-                    loading={translationVariables != null}
-                    isTranslation
-                    translationProgress={translationProgress}
-                    testId="LanguageScreenTranslationDialog"
-                  >
-                    <></>
-                  </TranslationDialogWrapper>
                 </Stack>
               </FormControl>
             </Form>

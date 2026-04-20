@@ -17,8 +17,6 @@ export const JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION = gql`
     $journeyLanguageName: String!
     $textLanguageId: ID!
     $textLanguageName: String!
-    $userLanguageId: ID
-    $userLanguageName: String
   ) {
     journeyAiTranslateCreateSubscription(
       input: {
@@ -27,8 +25,6 @@ export const JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION = gql`
         journeyLanguageName: $journeyLanguageName
         textLanguageId: $textLanguageId
         textLanguageName: $textLanguageName
-        userLanguageId: $userLanguageId
-        userLanguageName: $userLanguageName
       }
     ) {
       progress
@@ -47,14 +43,6 @@ export const JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION = gql`
         }
         createdAt
         updatedAt
-        journeyCustomizationDescription
-        journeyCustomizationFields {
-          id
-          journeyId
-          key
-          value
-          defaultValue
-        }
         blocks {
           id
           __typename
@@ -105,14 +93,6 @@ export function updateCacheWithTranslatedJourney(
             }
           }
           updatedAt
-          journeyCustomizationDescription
-          journeyCustomizationFields {
-            id
-            journeyId
-            key
-            value
-            defaultValue
-          }
           blocks {
             id
             __typename
@@ -139,10 +119,6 @@ export function updateCacheWithTranslatedJourney(
         languageId: translatedJourney.languageId,
         language: translatedJourney.language,
         updatedAt: translatedJourney.updatedAt,
-        journeyCustomizationDescription:
-          translatedJourney.journeyCustomizationDescription ?? null,
-        journeyCustomizationFields:
-          translatedJourney.journeyCustomizationFields ?? [],
         blocks: translatedJourney.blocks,
         __typename: 'Journey'
       }

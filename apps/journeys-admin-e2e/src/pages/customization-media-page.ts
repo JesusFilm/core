@@ -2,7 +2,6 @@ import { expect } from '@playwright/test'
 import type { Locator, Page } from 'playwright-core'
 
 const defaultTimeout = 60000
-const maxNavigationClicks = 5
 
 export class CustomizationMediaPage {
   readonly page: Page
@@ -17,19 +16,18 @@ export class CustomizationMediaPage {
     })
   }
 
-  async clickNextButton(): Promise<void> {
-    const nextButton = this.page.getByTestId('CustomizeFlowNextButton')
-    await expect(nextButton).toBeEnabled({ timeout: defaultTimeout })
-    await nextButton.click({ timeout: defaultTimeout })
-  }
-
-  async navigateToMediaScreen(): Promise<void> {
-    const videosSection = this.page.getByTestId('VideosSection')
-    for (let i = 0; i < maxNavigationClicks; i++) {
-      if (await videosSection.isVisible()) return
-      await this.clickNextButton()
-    }
-    await expect(videosSection).toBeVisible({ timeout: defaultTimeout })
+  /**
+   * Jumps to the Media step via `?screen=media`. Do not simulate repeated Next clicks:
+   * `VideosSection` visibility can flicker during transitions, causing an extra Next and
+   * navigating past Media before the test fills the YouTube field.
+   */
+  async navigateToMediaScreen(templateId: string): Promise<void> {
+    await this.page.goto(`/templates/${templateId}/customize?screen=media`, {
+      waitUntil: 'load'
+    })
+    await expect(this.page.getByTestId('VideosSection')).toBeVisible({
+      timeout: defaultTimeout
+    })
   }
 
   getVideosSectionLocator(): Locator {
@@ -45,10 +43,11 @@ export class CustomizationMediaPage {
   }
 
   async pasteYouTubeUrl(url: string): Promise<void> {
-    const input = this.page
-      .getByTestId('VideosSection-youtube-input')
-      .locator('input')
+    const input = this.page.getByRole('textbox', { name: 'YouTube URL' })
+    // VideosSection disables this field while upload/processing; filling while disabled skips debounced validation.
+    await expect(input).toBeEnabled({ timeout: defaultTimeout })
     await input.fill(url)
+    await expect(input).toHaveValue(url)
   }
 
   async waitForAutoSubmit(): Promise<void> {
@@ -60,10 +59,12 @@ export class CustomizationMediaPage {
   }
 
   async waitForAutoSubmitError(): Promise<void> {
-    const errorText = this.page
-      .getByTestId('VideosSection-youtube-input')
-      .locator('p.MuiFormHelperText-root.Mui-error')
-    await expect(errorText).toBeVisible({ timeout: 90000 })
+    // App debounces validation by 800ms (VideosSection). Assert user-visible copy — more stable than MUI error classes.
+    await expect(
+      this.page
+        .getByTestId('VideosSection')
+        .getByText('Please enter a valid YouTube URL')
+    ).toBeVisible({ timeout: 90000 })
   }
 
   async verifyVideosSectionVisible(): Promise<void> {
