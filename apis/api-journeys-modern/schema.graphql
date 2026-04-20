@@ -827,34 +827,11 @@ type Journey
 }
 
 input JourneyAiTranslateInput {
-  """The ID of the journey to translate"""
   journeyId: ID!
-
-  """The journey name to translate"""
   name: String!
-
-  """The source language name of the journey content"""
   journeyLanguageName: String!
-
-  """
-  The target language ID for journey content (blocks, title, description)
-  """
   textLanguageId: ID!
-
-  """
-  The target language name for journey content (blocks, title, description)
-  """
   textLanguageName: String!
-
-  """
-  Language ID for customization text translation. Falls back to textLanguageId if not provided.
-  """
-  userLanguageId: ID
-
-  """
-  Language name for customization text translation. Falls back to textLanguageName if not provided.
-  """
-  userLanguageName: String
 }
 
 type JourneyAiTranslateProgress {
@@ -905,17 +882,6 @@ input JourneyCreateInput {
   Slug should be unique amongst all journeys (server will throw BAD_USER_INPUT error if not). If not required will use title formatted with kebab-case. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness
   """
   slug: String
-}
-
-input JourneyCustomizationDescriptionTranslateInput {
-  """The ID of the journey whose customization description to translate"""
-  journeyId: ID!
-
-  """The current language of the customization description"""
-  sourceLanguageName: String!
-
-  """The language to translate the customization description into"""
-  targetLanguageName: String!
 }
 
 type JourneyCustomizationField
@@ -1511,7 +1477,6 @@ type Mutation {
   integrationDelete(id: ID!): Integration!
   journeyTransferFromAnonymous(journeyId: ID!, teamId: ID): Journey!
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
-  journeyCustomizationDescriptionTranslate(input: JourneyCustomizationDescriptionTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
