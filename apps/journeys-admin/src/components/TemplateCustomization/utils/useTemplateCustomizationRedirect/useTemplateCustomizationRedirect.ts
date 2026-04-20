@@ -17,19 +17,29 @@ export interface UseTemplateCustomizationRedirectParams {
   activeScreen: CustomizationScreen
   isGuest: boolean
   guestFlowEnabled: boolean
+  /**
+   * Whether the journey has any customisable content (text, links, or media).
+   * When the journey is loaded and this is false, the user is redirected back
+   * to the template detail page — the journey.customizable flag may be stale
+   * relative to what the step-level checks can resolve.
+   * Pass undefined while the journey is still loading.
+   */
+  hasAnyContent: boolean | undefined
 }
 
 /**
  * Handles all redirects for the template customization flow:
  * 1. Syncs URL with a valid screen (redirects to first screen if missing/invalid).
  * 2. For guests: redirects away from non-guest screens or when guest flow is disabled.
+ * 3. Redirects back to the template page when the journey has no customisable content.
  */
 export function useTemplateCustomizationRedirect({
   journeyId,
   screens,
   activeScreen,
   isGuest,
-  guestFlowEnabled
+  guestFlowEnabled,
+  hasAnyContent
 }: UseTemplateCustomizationRedirectParams): void {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
@@ -118,4 +128,22 @@ export function useTemplateCustomizationRedirect({
     t,
     enqueueSnackbar
   ])
+
+  // 4. Redirect back to template page when journey has no customisable content.
+  // journey.customizable (used by the gallery) is backend-computed and may be stale
+  // or out of sync with what the step-level checks can resolve (e.g. templates
+  // where journeyCustomizationDescription is set but journeyCustomizationFields is
+  // empty, or where the customizableMedia flag is the only thing in scope but is
+  // currently off). hasAnyContent is undefined while the journey is loading.
+  useEffect(() => {
+    if (!router.isReady || !journeyId || hasAnyContent !== false) return
+
+    enqueueSnackbar(
+      t(
+        'This template has no customisable content. Redirecting to template page.'
+      ),
+      { variant: 'info', preventDuplicate: true }
+    )
+    void router.replace(`/templates/${journeyId}`)
+  }, [router, router.isReady, journeyId, hasAnyContent, t, enqueueSnackbar])
 }
