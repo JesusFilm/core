@@ -7,6 +7,11 @@ export default async function handler(
   res: NextApiResponse
 ): Promise<void> {
   const flags = await getFlags()
+  console.log('[flags:server]', {
+    keyPresent: process.env.LAUNCH_DARKLY_SDK_KEY != null,
+    apologistChat: flags.apologistChat,
+    valid: (flags as { $valid?: boolean }).$valid
+  })
   res.setHeader('Cache-Control', 'no-store')
   res.status(200).json(flags)
 }

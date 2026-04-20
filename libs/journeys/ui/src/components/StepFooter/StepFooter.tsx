@@ -63,6 +63,14 @@ export function StepFooter({
   const chat = hasChatWidget({ journey, variant })
   const aiChat =
     hasAiChatButton({ journey, variant }) && flags.apologistChat === true
+  if (typeof window !== 'undefined') {
+    console.log('[flags:StepFooter]', {
+      apologistChat: flags.apologistChat,
+      showAssistant: journey?.showAssistant,
+      variant,
+      aiChat
+    })
+  }
   const title = getTitle({ journey })
 
   const footerMobileHeight = getFooterMobileHeight({ journey, variant })

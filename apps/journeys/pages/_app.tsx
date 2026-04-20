@@ -58,11 +58,18 @@ function JourneysApp({
     let cancelled = false
     void fetch('/api/flags')
       .then(async (response) => {
-        if (!response.ok) return
+        if (!response.ok) {
+          console.warn('[flags:client] /api/flags non-OK', response.status)
+          return
+        }
         const data = (await response.json()) as { [key: string]: boolean }
+        console.log('[flags:client]', {
+          apologistChat: data.apologistChat
+        })
         if (!cancelled) setFlags(data)
       })
-      .catch(() => {
+      .catch((err) => {
+        console.warn('[flags:client] fetch failed', err)
         // Fail closed — keep flags at {} so gated features stay off.
       })
     return () => {
