@@ -15,6 +15,7 @@ import { ReactElement, useEffect } from 'react'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import XCircleContainedIcon from '@core/shared/ui/icons/XCircleContained'
 
 import { GetJourney_journey as Journey } from '../__generated__/GetJourney'
@@ -35,7 +36,10 @@ const SnackbarAction = (snackbarKey: SnackbarKey): ReactElement => (
   </IconButton>
 )
 
-type JourneysAppProps = NextJsAppProps<{ journey?: Journey }> & {
+type JourneysAppProps = NextJsAppProps<{
+  journey?: Journey
+  flags?: { [key: string]: boolean }
+}> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache
 }
@@ -69,24 +73,25 @@ function JourneysApp({
   const apolloClient = useApollo()
 
   return (
-    <AppCacheProvider emotionCache={emotionCache}>
-      <GlobalStyles styles="@layer theme, base, mui, css, components, utilities;" />
-      <DefaultSeo
-        titleTemplate={t('%s | Next Steps')}
-        defaultTitle={t('Next Steps')}
-      />
-      <Head>
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width, viewport-fit=cover"
+    <FlagsProvider flags={pageProps.flags}>
+      <AppCacheProvider emotionCache={emotionCache}>
+        <GlobalStyles styles="@layer theme, base, mui, css, components, utilities;" />
+        <DefaultSeo
+          titleTemplate={t('%s | Next Steps')}
+          defaultTitle={t('Next Steps')}
         />
-      </Head>
-      {process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
-        process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
-        process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
-        process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== '' && (
-          <Script id="datadog-rum">
-            {`
+        <Head>
+          <meta
+            name="viewport"
+            content="minimum-scale=1, initial-scale=1, width=device-width, viewport-fit=cover"
+          />
+        </Head>
+        {process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
+          process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
+          process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
+          process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== '' && (
+            <Script id="datadog-rum">
+              {`
              (function(h,o,u,n,d) {
                h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}
                d=o.createElement(u);d.async=1;d.src=n
@@ -113,21 +118,22 @@ function JourneysApp({
                });
              })
            `}
-          </Script>
-        )}
-      <ApolloProvider client={apolloClient}>
-        <SnackbarProvider
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right'
-          }}
-          action={SnackbarAction}
-        >
-          <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''} />
-          <Component {...pageProps} />
-        </SnackbarProvider>
-      </ApolloProvider>
-    </AppCacheProvider>
+            </Script>
+          )}
+        <ApolloProvider client={apolloClient}>
+          <SnackbarProvider
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right'
+            }}
+            action={SnackbarAction}
+          >
+            <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''} />
+            <Component {...pageProps} />
+          </SnackbarProvider>
+        </ApolloProvider>
+      </AppCacheProvider>
+    </FlagsProvider>
   )
 }
 

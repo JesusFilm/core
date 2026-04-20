@@ -270,7 +270,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
           permanent: false
         }
       }
-    } catch (_err) {
+    } catch {
       return {
         props: {
           email,

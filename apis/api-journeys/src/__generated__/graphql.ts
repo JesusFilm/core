@@ -1015,6 +1015,7 @@ export type ImageBlockUpdateInput = {
   focalLeft?: InputMaybe<Scalars['Int']['input']>;
   focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
+  isCover?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   scale?: InputMaybe<Scalars['Int']['input']>;
   src?: InputMaybe<Scalars['String']['input']>;
@@ -1987,7 +1988,7 @@ export type Mutation = {
   /** update an existing short link */
   shortLinkUpdate: MutationShortLinkUpdateResult;
   signUpBlockCreate: SignUpBlock;
-  signUpBlockUpdate?: Maybe<SignUpBlock>;
+  signUpBlockUpdate: SignUpBlock;
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
   siteCreate: MutationSiteCreateResult;
   spacerBlockCreate: SpacerBlock;
@@ -2001,7 +2002,7 @@ export type Mutation = {
   teamCreate: Team;
   teamUpdate: Team;
   textResponseBlockCreate: TextResponseBlock;
-  textResponseBlockUpdate?: Maybe<TextResponseBlock>;
+  textResponseBlockUpdate: TextResponseBlock;
   textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
   triggerUnsplashDownload: Scalars['Boolean']['output'];
   typographyBlockCreate: TypographyBlock;
@@ -4757,15 +4758,9 @@ export type StepBlockCreateInput = {
   journeyId: Scalars['ID']['input'];
   locked?: InputMaybe<Scalars['Boolean']['input']>;
   nextBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * x is used to position the block horizontally in the journey flow diagram on
-   * the editor.
-   */
+  /** x is used to position the block horizontally in the journey flow diagram on the editor. */
   x?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * y is used to position the block vertically in the journey flow diagram on
-   * the editor.
-   */
+  /** y is used to position the block vertically in the journey flow diagram on the editor. */
   y?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -4778,23 +4773,11 @@ export type StepBlockPositionUpdateInput = {
 export type StepBlockUpdateInput = {
   locked?: InputMaybe<Scalars['Boolean']['input']>;
   nextBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * Slug should be unique amongst all blocks
-   * (server will throw BAD_USER_INPUT error if not)
-   * If not required will use the current block id
-   * If the generated slug is not unique the uuid will be placed
-   * at the end of the slug guaranteeing uniqueness
-   */
+  /** Slug should be unique amongst all blocks (server will throw BAD_USER_INPUT error if not). If not required will use the current block id. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness */
   slug?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * x is used to position the block horizontally in the journey flow diagram on
-   * the editor.
-   */
+  /** x is used to position the block horizontally in the journey flow diagram on the editor. */
   x?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * y is used to position the block vertically in the journey flow diagram on
-   * the editor.
-   */
+  /** y is used to position the block vertically in the journey flow diagram on the editor. */
   y?: InputMaybe<Scalars['Int']['input']>;
 };
 
