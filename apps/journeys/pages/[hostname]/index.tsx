@@ -13,6 +13,7 @@ import {
 import { IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { getFlags } from '../../src/libs/getFlags'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 import JourneysPage, { GET_JOURNEYS } from '../home'
 
@@ -103,6 +104,7 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
       })
       return {
         props: {
+          flags: await getFlags(),
           host: context.params?.host?.toString() ?? '',
           ...(await serverSideTranslations(
             context.locale ?? 'en',
@@ -130,6 +132,7 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
   }
   return {
     props: {
+      flags: await getFlags(),
       ...(await serverSideTranslations(
         context.locale ?? 'en',
         ['apps-journeys', 'libs-journeys-ui'],
