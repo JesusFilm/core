@@ -12,7 +12,6 @@ builder.mutationField('signUpBlockUpdate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: SignUpBlock,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       id: t.arg({ type: 'ID', required: true }),
       input: t.arg({ type: SignUpBlockUpdateInput, required: true }),
@@ -25,18 +24,24 @@ builder.mutationField('signUpBlockUpdate', (t) =>
     resolve: async (_parent, args, context) => {
       const { id, input } = args
 
+      await authorizeBlockUpdate(id, context.user)
+
       if (input.submitIconId != null) {
-        const submitIcon = await prisma.block.findUnique({
-          where: { id: input.submitIconId, deletedAt: null }
+        const submitIcon = await prisma.block.findFirst({
+          where: {
+            id: input.submitIconId,
+            parentBlockId: id,
+            typename: 'IconBlock',
+            deletedAt: null
+          }
         })
-        if (submitIcon == null || submitIcon.parentBlockId !== id) {
+        if (submitIcon == null) {
           throw new GraphQLError('Submit icon does not exist', {
             extensions: { code: 'NOT_FOUND' }
           })
         }
       }
 
-      await authorizeBlockUpdate(id, context.user)
       return await update(id, { ...input })
     }
   })

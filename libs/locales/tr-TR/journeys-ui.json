@@ -2,6 +2,7 @@
   "My Team": "Benim Takımım",
   "Unable to create guest user. Please try again or sign in.": "Konuk kullanıcı oluşturulamıyor. Lütfen tekrar deneyin veya oturum açın.",
   "Failed to duplicate journey to team, please refresh the page and try again": "Ekibe yolculuk çoğaltılamadı, lütfen sayfayı yenileyip tekrar deneyin",
+  "Journey Translated": "Yolculuk Çevrildi",
   "Journey failed to load. Please refresh the page and try again.": "Yolculuk yüklenemedi. Lütfen sayfayı yenileyin ve tekrar deneyin.",
   "Failed to load teams. Please refresh the page and try again.": "Takımlar yüklenemedi. Lütfen sayfayı yenileyin ve tekrar deneyin.",
   "Let's Get Started!": "Hadi Başlayalım!",
@@ -9,5 +10,6 @@
   "A few quick edits and your template will be ready to share.": "Birkaç hızlı düzenleme ile şablonunuz paylaşıma hazır hale gelecektir.",
   "A few quick edits and it's ready to share!": "Birkaç hızlı düzenleme ve paylaşmaya hazır!",
   "Next": "Sonraki",
-  "Search Language": "Arama Dili"
+  "Search Language": "Arama Dili",
+  "Translating": "Çeviri"
 }

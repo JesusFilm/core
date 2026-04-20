@@ -15,7 +15,7 @@ export interface TextResponseIntegrationUpdate_textResponseBlockUpdate {
 }
 
 export interface TextResponseIntegrationUpdate {
-  textResponseBlockUpdate: TextResponseIntegrationUpdate_textResponseBlockUpdate | null;
+  textResponseBlockUpdate: TextResponseIntegrationUpdate_textResponseBlockUpdate;
 }
 
 export interface TextResponseIntegrationUpdateVariables {

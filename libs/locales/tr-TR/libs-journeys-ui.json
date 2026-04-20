@@ -1,6 +1,7 @@
 {
   "Submit": "Gönder",
   "Button": "Düğme",
+  "None": "Hiçbiri",
   "This field is required": "Bu alan zorunludur",
   "Name must be 2 characters or more": "İsim 2 karakter veya daha fazla olmalıdır",
   "Name must be 50 characters or less": "İsim 50 karakter veya daha az olmalıdır",
@@ -102,6 +103,5 @@
   "{{count}} Cards_one": "{{count}} Kart",
   "{{count}} Cards_other": "{{count}} Kartlar",
   "{{count}} Videos_one": "{{count}} Video",
-  "{{count}} Videos_other": "{{count}} Videolar",
-  "None": "None"
+  "{{count}} Videos_other": "{{count}} Videolar"
 }

@@ -1,6 +1,7 @@
 {
   "Submit": "Отправить",
   "Button": "Кнопка",
+  "None": "Нет",
   "This field is required": "Это поле обязательно для заполнения",
   "Name must be 2 characters or more": "Имя должно состоять из 2 символов или более",
   "Name must be 50 characters or less": "Имя должно состоять из 50 символов или меньше",
@@ -114,6 +115,5 @@
   "{{count}} Videos_one": "{{count}} Видео",
   "{{count}} Videos_few": "{{count}} Видео",
   "{{count}} Videos_many": "{{count}} Видео",
-  "{{count}} Videos_other": "{{count}} Видео",
-  "None": "None"
+  "{{count}} Videos_other": "{{count}} Видео"
 }
