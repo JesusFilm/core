@@ -151,11 +151,11 @@ In `VideoLibrary.onSelect`, the current code closes only the inner drawer. The f
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
+| Risk                                                                                                          | Mitigation                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | A rare caller might rely on the outer drawer staying open after Select (e.g. a preview-multiple-videos flow). | None found in the codebase after reviewing `VideoLibrary` consumers (`Source`, `BackgroundMediaVideo`, `VideoOptions`). Test coverage will catch any hidden coupling. |
-| Snapshot or storybook tests asserting the pre-bug DOM state could break. | Run `VideoLibrary.stories.tsx` and `VideoLibrary.spec.tsx` after the change and update any snapshots that reflect the new (correct) behaviour, with a note in the PR. |
-| Background MUX upload completion inadvertently triggers `VideoLibrary.onSelect`. | Confirmed in Phase 1 research it does not — it goes through `VideoOptions.handleChange` directly. A test asserts upload-completion paths don't invoke `onClose`. |
+| Snapshot or storybook tests asserting the pre-bug DOM state could break.                                      | Run `VideoLibrary.stories.tsx` and `VideoLibrary.spec.tsx` after the change and update any snapshots that reflect the new (correct) behaviour, with a note in the PR. |
+| Background MUX upload completion inadvertently triggers `VideoLibrary.onSelect`.                              | Confirmed in Phase 1 research it does not — it goes through `VideoOptions.handleChange` directly. A test asserts upload-completion paths don't invoke `onClose`.      |
 
 ## Documentation / Operational Notes
 
