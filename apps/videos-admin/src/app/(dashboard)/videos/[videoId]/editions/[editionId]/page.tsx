@@ -57,9 +57,7 @@ interface EditEditionPageProps {
   }>
 }
 
-export default function EditEditionPage({
-  params
-}: EditEditionPageProps) {
+export default function EditEditionPage({ params }: EditEditionPageProps) {
   const { videoId, editionId } = use(params)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()

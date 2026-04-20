@@ -32,5 +32,12 @@
     "../../dist/apps/videos-admin/.next/types/**/*.ts",
     "src/app/(dashboard)/videos/[videoId]/image/[aspectRatio]/layout.tsx"
   ],
-  "exclude": ["node_modules", "jest.config.ts", ".next", "**/*.stories.ts", "**/*.stories.tsx", "src/libs/storybookConfig"]
+  "exclude": [
+    "node_modules",
+    "jest.config.ts",
+    ".next",
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
+    "src/libs/storybookConfig"
+  ]
 }

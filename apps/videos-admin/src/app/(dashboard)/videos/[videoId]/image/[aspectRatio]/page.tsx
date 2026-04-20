@@ -58,9 +58,7 @@ interface VideoImageProps {
   }>
 }
 
-export default function VideoImage({
-  params
-}: VideoImageProps): ReactElement {
+export default function VideoImage({ params }: VideoImageProps): ReactElement {
   const { videoId, aspectRatio: aspectRatioParam } = use(params)
   const aspectRatio = ImageAspectRatio[aspectRatioParam]
   const router = useRouter()

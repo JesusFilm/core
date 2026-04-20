@@ -49,9 +49,7 @@ interface DeleteChildProps {
   }>
 }
 
-export default function DeleteChild({
-  params
-}: DeleteChildProps) {
+export default function DeleteChild({ params }: DeleteChildProps) {
   const { videoId, childId } = use(params)
   const router = useRouter()
   const { data } = useSuspenseQuery(GET_VIDEO_CHILDREN, {

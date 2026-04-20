@@ -23,9 +23,7 @@ interface DeleteEditionPageProps {
   }>
 }
 
-export default function DeleteEditionPage({
-  params
-}: DeleteEditionPageProps) {
+export default function DeleteEditionPage({ params }: DeleteEditionPageProps) {
   const { videoId, editionId } = use(params)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()

@@ -21,5 +21,11 @@
     "next-env.d.ts",
     "postcss.config.mjs"
   ],
-  "exclude": ["node_modules", "jest.config.ts", "**/*.stories.ts", "**/*.stories.tsx", "src/libs/storybook"]
+  "exclude": [
+    "node_modules",
+    "jest.config.ts",
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
+    "src/libs/storybook"
+  ]
 }

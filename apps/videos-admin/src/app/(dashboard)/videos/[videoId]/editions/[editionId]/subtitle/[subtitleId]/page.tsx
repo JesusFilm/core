@@ -90,9 +90,7 @@ interface SubtitlePageProps {
   }>
 }
 
-export default function SubtitlePage({
-  params
-}: SubtitlePageProps) {
+export default function SubtitlePage({ params }: SubtitlePageProps) {
   const { videoId, editionId, subtitleId } = use(params)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()

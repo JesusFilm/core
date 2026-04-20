@@ -38,9 +38,7 @@ const DELETE_VIDEO_VARIANT = graphql(`
   }
 `)
 
-export default function DeleteAudio({
-  params
-}: DeleteAudioParams) {
+export default function DeleteAudio({ params }: DeleteAudioParams) {
   const { videoId, variantId } = use(params)
   const router = useRouter()
   const { data } = useSuspenseQuery(GET_ADMIN_VIDEO_VARIANT_DELETE, {

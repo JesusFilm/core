@@ -24,5 +24,10 @@
     "**/*.mjs",
     "next-env.d.ts"
   ],
-  "exclude": ["node_modules", "jest.config.ts", "**/*.stories.ts", "**/*.stories.tsx"]
+  "exclude": [
+    "node_modules",
+    "jest.config.ts",
+    "**/*.stories.ts",
+    "**/*.stories.tsx"
+  ]
 }
