@@ -24,7 +24,7 @@ const baseStyles: CSSProperties = {
   border: '1px solid #e0e0e0',
   borderRadius: 12,
   padding: '8px 12px',
-  fontSize: 14,
+  fontSize: 16,
   lineHeight: 1.5,
   fontFamily: 'inherit',
   outline: 'none',
