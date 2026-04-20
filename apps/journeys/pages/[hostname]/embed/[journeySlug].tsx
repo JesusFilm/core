@@ -21,6 +21,7 @@ import i18nConfig from '../../../next-i18next.config'
 import { EmbeddedPreview } from '../../../src/components/EmbeddedPreview'
 import { JourneyPageWrapper } from '../../../src/components/JourneyPageWrapper'
 import { createApolloClient } from '../../../src/libs/apolloClient'
+import { getFlags } from '../../../src/libs/getFlags'
 import { isJourneyNotFoundError } from '../../../src/libs/isJourneyNotFoundError'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../../src/libs/journeyQueryOptions'
 
@@ -110,6 +111,7 @@ export const getStaticProps: GetStaticProps<HostJourneyEmbedPageProps> = async (
     const { rtl, locale } = getJourneyRTL(data.journey)
     return {
       props: {
+        flags: await getFlags(),
         host: context.params?.host?.toString() ?? '',
         ...(await serverSideTranslations(
           locale ?? 'en',
