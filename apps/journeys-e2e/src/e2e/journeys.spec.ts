@@ -30,6 +30,7 @@ test('journeys', async ({ page }) => {
     await newPage.waitForLoadState('domcontentloaded')
   }
   // Path can stay `/` on some previews while the journey content loads from the slug.
+  // 90s: cold Vercel preview SSR + hydration can delay the first journey paint (within the 90s hard cap).
   await expect(
     targetPage
       .getByRole('heading', { name: 'Fact or Fiction' })
