@@ -6,6 +6,8 @@ import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 import { ReactElement } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
 import { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { useJourney } from '../../libs/JourneyProvider'
@@ -55,10 +57,12 @@ export function StepFooter({
   const selectedStep =
     selectedStepProp !== undefined ? selectedStepProp : editorSelectedStep
 
+  const flags = useFlags()
   const hostAvatar = hasHostAvatar({ journey, variant })
   const hostDetails = hasHostDetails({ journey })
   const chat = hasChatWidget({ journey, variant })
-  const aiChat = hasAiChatButton({ journey, variant })
+  const aiChat =
+    hasAiChatButton({ journey, variant }) && flags.apologistChat === true
   const title = getTitle({ journey })
 
   const footerMobileHeight = getFooterMobileHeight({ journey, variant })
