@@ -13,8 +13,12 @@
   "exclude": [
     "**/*.spec.ts",
     "**/*.spec.tsx",
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
     "jest.config.ts",
-    "postcss.config.mjs"
+    "postcss.config.mjs",
+    "src/libs/journeyUiConfig",
+    "src/libs/simpleComponentConfig"
   ],
   "include": [
     "**/*.js",
