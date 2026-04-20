@@ -1,14 +1,16 @@
+import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TemplateView } from '@core/journeys/ui/TemplateView'
+import { AccountCheckDialog } from '@core/journeys/ui/TemplateView/AccountCheckDialog'
 import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
@@ -18,10 +20,12 @@ import {
   GetJourneys,
   GetJourneysVariables
 } from '../../__generated__/GetJourneys'
+import { GetMe } from '../../__generated__/GetMe'
 import { GetTags } from '../../__generated__/GetTags'
 import { IdType } from '../../__generated__/globalTypes'
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
+import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { useAuth } from '../../src/libs/auth'
 import { getAuthTokens, toUser } from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
@@ -38,12 +42,31 @@ function TemplateDetailsPage(): ReactElement {
     }
   })
   const { activeTeam, refetch, query } = useTeam()
+  const { data: meData } = useQuery<GetMe>(GET_ME)
+  const [showAccountDialog, setShowAccountDialog] = useState(false)
 
   useEffect(() => {
     if (activeTeam == null) {
       void refetch()
     }
   }, [user?.id, query, activeTeam, refetch])
+
+  useEffect(() => {
+    if (
+      meData?.me?.__typename === 'AnonymousUser' &&
+      data?.journey != null &&
+      data.journey.customizable !== true
+    ) {
+      setShowAccountDialog(true)
+    }
+  }, [meData?.me?.__typename, data?.journey?.id, data?.journey?.customizable])
+
+  function handleSignIn(login: boolean): void {
+    void router.push({
+      pathname: '/users/sign-in',
+      query: { redirect: router.asPath, login }
+    })
+  }
 
   const userSignedIn = user?.id != null
 
@@ -116,6 +139,11 @@ function TemplateDetailsPage(): ReactElement {
           </Box>
         </PageWrapper>
       </JourneyProvider>
+      <AccountCheckDialog
+        open={showAccountDialog}
+        onClose={() => setShowAccountDialog(false)}
+        handleSignIn={handleSignIn}
+      />
     </>
   )
 }
