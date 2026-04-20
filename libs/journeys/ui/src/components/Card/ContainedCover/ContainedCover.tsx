@@ -289,11 +289,11 @@ export function ContainedCover({
                 pl: { sm: 50 },
                 WebkitMask: {
                   xs: overlayGradient('bottom'),
-                  sm: overlayGradient('right')
+                  sm: overlayGradient(rtl ? 'left' : 'right')
                 },
                 mask: {
                   xs: overlayGradient('bottom'),
-                  sm: overlayGradient('right')
+                  sm: overlayGradient(rtl ? 'left' : 'right')
                 },
                 backgroundColor: `${baseBackgroundColor}FF`
               }}
@@ -313,6 +313,7 @@ export function ContainedCover({
           <StyledGradientBackground
             className="overlay-gradient"
             sx={{
+              height: { sm: '100%' },
               background: {
                 xs: `linear-gradient(to bottom, ${reduceHexOpacity(
                   backgroundColor,
@@ -321,7 +322,7 @@ export function ContainedCover({
                   backgroundColor,
                   70
                 )} 60%, ${backgroundColor} 100%)`,
-                sm: 'unset'
+                sm: backgroundColor
               }
             }}
           />
