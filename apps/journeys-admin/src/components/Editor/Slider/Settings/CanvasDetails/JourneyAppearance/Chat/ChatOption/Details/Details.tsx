@@ -101,7 +101,7 @@ export function Details({
             variables: {
               chatButtonUpdateId: chatButtonId,
               journeyId,
-              input: { link, platform: currentPlatform }
+              input: { link }
             },
             optimisticResponse: {
               chatButtonUpdate: {
@@ -130,7 +130,7 @@ export function Details({
             variables: {
               chatButtonUpdateId: chatButtonId,
               journeyId,
-              input: { link: currentLink, platform }
+              input: { platform }
             },
             optimisticResponse: {
               chatButtonUpdate: {

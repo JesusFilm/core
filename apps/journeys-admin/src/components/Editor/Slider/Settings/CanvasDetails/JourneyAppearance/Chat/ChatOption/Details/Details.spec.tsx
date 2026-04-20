@@ -75,8 +75,7 @@ describe('Details', () => {
                 chatButtonUpdateId: 'chat.id',
                 journeyId: 'journeyId',
                 input: {
-                  link: 'https://newlink.com',
-                  platform: MessagePlatform.telegram
+                  link: 'https://newlink.com'
                 }
               }
             },
@@ -128,8 +127,7 @@ describe('Details', () => {
                 chatButtonUpdateId: 'chat.id',
                 journeyId: 'journeyId',
                 input: {
-                  link: 'https://newlink.com',
-                  platform: MessagePlatform.telegram
+                  link: 'https://newlink.com'
                 }
               }
             },
@@ -182,7 +180,6 @@ describe('Details', () => {
                 chatButtonUpdateId: 'chat.id',
                 journeyId: 'journeyId',
                 input: {
-                  link: 'https://example.com',
                   platform: MessagePlatform.snapchat
                 }
               }
@@ -238,8 +235,7 @@ describe('Details', () => {
           chatButtonUpdateId: 'chat.id',
           journeyId: 'journeyId',
           input: {
-            link: 'https://newlink.com',
-            platform: MessagePlatform.whatsApp
+            link: 'https://newlink.com'
           }
         }
       },
@@ -255,8 +251,7 @@ describe('Details', () => {
           chatButtonUpdateId: 'chat.id',
           journeyId: 'journeyId',
           input: {
-            link: 'https://example.com',
-            platform: MessagePlatform.whatsApp
+            link: 'https://example.com'
           }
         }
       },
@@ -318,7 +313,6 @@ describe('Details', () => {
           chatButtonUpdateId: 'chat.id',
           journeyId: 'journeyId',
           input: {
-            link: 'https://example.com',
             platform: MessagePlatform.snapchat
           }
         }
@@ -335,7 +329,6 @@ describe('Details', () => {
           chatButtonUpdateId: 'chat.id',
           journeyId: 'journeyId',
           input: {
-            link: 'https://example.com',
             platform: MessagePlatform.tikTok
           }
         }

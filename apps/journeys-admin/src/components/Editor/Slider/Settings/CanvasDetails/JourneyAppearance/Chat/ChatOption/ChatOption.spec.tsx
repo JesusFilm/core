@@ -2,6 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
+
 import { MessagePlatform } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../../__generated__/JourneyFields'
 
@@ -84,7 +86,9 @@ describe('ChatOption', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <ChatOption {...props} />
+          <CommandProvider>
+            <ChatOption {...props} />
+          </CommandProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
