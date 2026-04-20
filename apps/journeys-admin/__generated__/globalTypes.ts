@@ -328,18 +328,6 @@ export enum TypographyVariant {
   subtitle2 = "subtitle2",
 }
 
-export enum USER_DELETE_LOG_LEVEL {
-  ERROR = "ERROR",
-  INFO = "INFO",
-  WARN = "WARN",
-}
-
-export enum UserDeleteIdType {
-  databaseId = "databaseId",
-  email = "email",
-  jwt = "jwt",
-}
-
 export enum UserJourneyRole {
   editor = "editor",
   inviteRequested = "inviteRequested",
@@ -574,7 +562,6 @@ export interface ImageBlockUpdateInput {
   blurhash?: string | null;
   width?: number | null;
   height?: number | null;
-  isCover?: boolean | null;
   scale?: number | null;
   focalTop?: number | null;
   focalLeft?: number | null;
@@ -608,12 +595,6 @@ export interface JourneyCollectionCreateInput {
 export interface JourneyCollectionUpdateInput {
   title?: string | null;
   journeyIds?: string[] | null;
-}
-
-export interface JourneyCustomizationDescriptionTranslateInput {
-  journeyId: string;
-  sourceLanguageName: string;
-  targetLanguageName: string;
 }
 
 export interface JourneyCustomizationFieldInput {

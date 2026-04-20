@@ -2,7 +2,7 @@ import { Output, generateText, streamText } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
-import { Block, prisma } from '@core/prisma/journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 import { createGeminiFallbackSession } from '@core/shared/ai/geminiModel'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
@@ -10,21 +10,7 @@ import { Action, ability, subject } from '../../lib/auth/ability'
 import { builder } from '../builder'
 import { JourneyRef } from '../journey/journey'
 
-import {
-  createTranslationInfo,
-  getTranslatableFields
-} from './blockTranslation'
 import { getCardBlocksContent } from './getCardBlocksContent'
-import { translateCustomizationFields } from './translateCustomizationFields'
-
-const TRANSLATION_SYSTEM_PROMPT = `${preSystemPrompt}
-
-You are a professional translator for interactive journey content.
-- Translate accurately while being culturally appropriate for the target language
-- Keep UI text (button labels, placeholders) concise and natural
-- Preserve all {{variable}} template syntax exactly as-is — never translate content inside {{ }}
-- For Bible passages, use an established translation in the target language — never translate scripture yourself. If none is identified, use the most popular English Bible translation.
-- DO NOT translate proper nouns`
 
 // Define the translation progress interface
 interface JourneyAiTranslateProgress {
@@ -52,6 +38,7 @@ builder.objectType(JourneyAiTranslateProgressRef, {
       nullable: true,
       description: 'The journey being translated (only present when complete)',
       resolve: (query, parent) => {
+        // Return the journey if it exists, otherwise null
         return parent.journey ? { ...query, ...parent.journey } : null
       }
     })
@@ -62,23 +49,11 @@ builder.objectType(JourneyAiTranslateProgressRef, {
 const JourneyAnalysisSchema = z.object({
   analysis: z
     .string()
-    .describe(
-      'Analysis of journey themes, target audience, cultural considerations, and identified Bible translation for the target language'
-    ),
+    .describe('Analysis of the journey content and cultural considerations'),
   title: z.string().describe('Translated journey title'),
-  description: z
-    .string()
-    .describe(
-      'Translated journey description, or empty string if none was provided'
-    ),
-  seoTitle: z
-    .string()
-    .describe('Translated SEO title, or empty string if none was provided'),
-  seoDescription: z
-    .string()
-    .describe(
-      'Translated SEO description, or empty string if none was provided'
-    )
+  description: z.string().describe('Translated journey description'),
+  seoTitle: z.string().describe('Translated journey SEO title'),
+  seoDescription: z.string().describe('Translated journey SEO description')
 })
 
 const BlockTranslationUpdatesSchema = z
@@ -116,7 +91,9 @@ function getValidatedBlockUpdates(
       block.typename as keyof typeof allowedTranslationFieldsByBlockType
     ]
 
-  if (allowedFields == null) return null
+  if (allowedFields == null) {
+    return null
+  }
 
   const validatedUpdates = Object.fromEntries(
     allowedFields.flatMap((field) => {
@@ -128,192 +105,14 @@ function getValidatedBlockUpdates(
   return Object.keys(validatedUpdates).length > 0 ? validatedUpdates : null
 }
 
-// --- Shared helpers for mutation and subscription ---
-
-function getTranslatableBlocksForCard(
-  allBlocks: Block[],
-  cardBlock: Block
-): Block[] {
-  const cardChildren = allBlocks.filter(
-    (block) => block.parentBlockId === cardBlock.id
-  )
-
-  const radioOptionBlocks = cardChildren
-    .filter((block) => block.typename === 'RadioQuestionBlock')
-    .flatMap((rq) =>
-      allBlocks.filter(
-        (block) =>
-          block.parentBlockId === rq.id && block.typename === 'RadioOptionBlock'
-      )
-    )
-
-  return [...cardChildren, ...radioOptionBlocks].filter((block) => {
-    const fields = getTranslatableFields(block)
-    return Object.values(fields).some((v) => v != null && v !== '')
-  })
-}
-
-function buildAnalysisPrompt({
-  sourceLanguageName,
-  targetLanguageName,
-  journeyTitle,
-  journeyDescription,
-  seoTitle,
-  seoDescription,
-  cardBlocksContent
-}: {
-  sourceLanguageName: string
-  targetLanguageName: string
-  journeyTitle: string
-  journeyDescription: string | null
-  seoTitle: string | null
-  seoDescription: string | null
-  cardBlocksContent: string[]
-}): string {
-  const trimmedDescription = journeyDescription?.trim() ?? ''
-  const hasDescription = Boolean(trimmedDescription)
-
-  return `Translate this journey from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
-
-Analyze the content first: identify themes, target audience, and cultural adaptation needs.
-If the content references the Bible, identify the most appropriate Bible translation in the target language.
-Fields marked as "(not provided)" must return empty strings.
-
-${hardenPrompt(`Journey Title: ${journeyTitle}
-${hasDescription ? `Journey Description: ${trimmedDescription}` : '(No description provided)'}
-${seoTitle ? `SEO Title: ${seoTitle}` : '(No SEO title provided)'}
-${seoDescription ? `SEO Description: ${seoDescription}` : '(No SEO description provided)'}
-
-Journey Content:
-${cardBlocksContent.join('\n')}`)}`
-}
-
-async function translateCardBlocks({
-  allBlocks,
-  cardBlock,
-  journeyId,
-  cardContent,
-  journeyAnalysis,
-  sourceLanguageName,
-  targetLanguageName,
-  onBlockUpdated,
-  session
-}: {
-  allBlocks: Block[]
-  cardBlock: Block
-  journeyId: string
-  cardContent: string
-  journeyAnalysis: string
-  sourceLanguageName: string
-  targetLanguageName: string
-  onBlockUpdated?: (
-    blockId: string,
-    updates: Partial<Record<TranslatableBlockField, string>>
-  ) => void
-  session: ReturnType<typeof createGeminiFallbackSession>
-}): Promise<void> {
-  const blocksToTranslate = getTranslatableBlocksForCard(allBlocks, cardBlock)
-  if (blocksToTranslate.length === 0) return
-
-  const allowedBlockIds = new Set(blocksToTranslate.map((b) => b.id))
-  const blocksInfo = blocksToTranslate
-    .map((block) => createTranslationInfo(block))
-    .join('\n')
-
-  const prompt = `Context from journey analysis:
-${hardenPrompt(journeyAnalysis)}
-
-Translate from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
-
-Card context:
-${hardenPrompt(cardContent)}
-
-Blocks to translate (use the EXACT IDs shown in square brackets as blockId):
-${hardenPrompt(blocksInfo)}`
-
-  await session.execute(async (model) => {
-    const { elementStream } = streamText({
-      model,
-      maxRetries: 0,
-      messages: [
-        { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
-        {
-          role: 'user',
-          content: [{ type: 'text', text: prompt }]
-        }
-      ],
-      output: Output.array({ element: BlockTranslationSchema }),
-      onError: ({ error }) => {
-        console.warn(
-          `Error in translation stream for card ${cardBlock.id}:`,
-          error
-        )
-      }
-    })
-
-    for await (const item of elementStream) {
-      try {
-        const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
-
-        if (!allowedBlockIds.has(cleanBlockId)) continue
-
-        const blockToUpdate = allBlocks.find((b) => b.id === cleanBlockId)
-        if (blockToUpdate == null) continue
-
-        const validatedUpdates = getValidatedBlockUpdates(
-          blockToUpdate,
-          item.updates
-        )
-        if (validatedUpdates == null) continue
-
-        await prisma.block.update({
-          where: { id: cleanBlockId, journeyId },
-          data: validatedUpdates
-        })
-
-        onBlockUpdated?.(cleanBlockId, validatedUpdates)
-      } catch (updateError) {
-        console.error(`Error updating block ${item.blockId}:`, updateError)
-      }
-    }
-  })
-}
-
 // Define the shared input type
 const JourneyAiTranslateInput = builder.inputType('JourneyAiTranslateInput', {
   fields: (t) => ({
-    journeyId: t.id({
-      required: true,
-      description: 'The ID of the journey to translate'
-    }),
-    name: t.string({
-      required: true,
-      description: 'The journey name to translate'
-    }),
-    journeyLanguageName: t.string({
-      required: true,
-      description: 'The source language name of the journey content'
-    }),
-    textLanguageId: t.id({
-      required: true,
-      description:
-        'The target language ID for journey content (blocks, title, description)'
-    }),
-    textLanguageName: t.string({
-      required: true,
-      description:
-        'The target language name for journey content (blocks, title, description)'
-    }),
-    userLanguageId: t.id({
-      required: false,
-      description:
-        'Language ID for customization text translation. Falls back to textLanguageId if not provided.'
-    }),
-    userLanguageName: t.string({
-      required: false,
-      description:
-        'Language name for customization text translation. Falls back to textLanguageName if not provided.'
-    })
+    journeyId: t.id({ required: true }),
+    name: t.string({ required: true }),
+    journeyLanguageName: t.string({ required: true }),
+    textLanguageId: t.id({ required: true }),
+    textLanguageName: t.string({ required: true })
   })
 })
 
@@ -343,7 +142,6 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           include: {
             blocks: true,
             userJourneys: true,
-            journeyCustomizationFields: true,
             team: {
               include: {
                 userTeams: true
@@ -404,25 +202,56 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
         const session = createGeminiFallbackSession()
 
         // Step 1: Analyze and translate journey title, description, and SEO fields
-        const analysisPrompt = buildAnalysisPrompt({
-          sourceLanguageName: input.journeyLanguageName,
-          targetLanguageName: input.textLanguageName,
-          journeyTitle: input.name,
-          journeyDescription: journey.description,
-          seoTitle: journey.seoTitle,
-          seoDescription: journey.seoDescription,
-          cardBlocksContent
-        })
+        const combinedPrompt = `
+Analyze this journey content and provide the key intent, themes, and target audience.
+Also suggest ways to culturally adapt this content for the target language: ${hardenPrompt(input.textLanguageName)}.
+Then, translate the following journey title and description to ${hardenPrompt(input.textLanguageName)}.
+If a description is not provided, do not create one.
+
+If possible, find a popular translation of the Bible in the target language for Bible translations and include it in the analysis.
+
+${hardenPrompt(`
+The source language is: ${input.journeyLanguageName}.
+The target language name is: ${input.textLanguageName}.
+
+Journey Title: ${input.name}
+${hasDescription ? `Journey Description: ${trimmedDescription}` : ''}
+
+Seo Title: ${journey.seoTitle ?? ''}
+Seo Description: ${journey.seoDescription ?? ''}
+
+Journey Content: 
+${cardBlocksContent.join('\n')}
+
+`)}
+
+Return in this format:
+{
+  analysis: [analysis and adaptation suggestions],
+  title: [translated title],
+  description: [translated description or empty string if no description was provided]
+  seoTitle: [translated seo title or empty string if no seo title was provided]
+  seoDescription: [translated seo description or empty string if no seo description was provided]
+}
+`
 
         const { output: analysisResult } = await session.execute((model) =>
           generateText({
             model,
             maxRetries: 0,
             messages: [
-              { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
+              {
+                role: 'system',
+                content: preSystemPrompt
+              },
               {
                 role: 'user',
-                content: [{ type: 'text', text: analysisPrompt }]
+                content: [
+                  {
+                    type: 'text',
+                    text: combinedPrompt
+                  }
+                ]
               }
             ],
             output: Output.object({
@@ -451,54 +280,17 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
 
         yield {
           progress: 70,
-          message: 'Translating customization fields...',
-          journey: null
-        }
-
-        const descriptionLanguageName =
-          input.userLanguageName ?? input.textLanguageName
-
-        // Translate customization fields and description
-        const customizationTranslation = await translateCustomizationFields({
-          journeyCustomizationDescription:
-            journey.journeyCustomizationDescription,
-          journeyCustomizationFields: journey.journeyCustomizationFields,
-          sourceLanguageName: input.journeyLanguageName,
-          targetLanguageName: input.textLanguageName,
-          descriptionTargetLanguageName: descriptionLanguageName,
-          defaultValueTargetLanguageName: input.textLanguageName,
-          journeyAnalysis: analysisResult.analysis
-        })
-
-        // Update customization field values in the database
-        if (customizationTranslation.translatedFields.length > 0) {
-          await Promise.all(
-            customizationTranslation.translatedFields.map((field) =>
-              prisma.journeyCustomizationField.update({
-                where: { id: field.id },
-                data: {
-                  value: field.translatedValue,
-                  defaultValue: field.translatedDefaultValue
-                }
-              })
-            )
-          )
-        }
-
-        yield {
-          progress: 75,
           message: 'Updating journey with translated title...',
           journey: null
         }
 
-        // Update journey with translated title, description, SEO fields, and customization description
+        // Update journey with translated title, description, and SEO fields
         const updateData: {
           title: string
           languageId: string
           description?: string
           seoTitle?: string
           seoDescription?: string
-          journeyCustomizationDescription?: string
         } = {
           title: analysisResult.title,
           languageId: input.textLanguageId
@@ -508,26 +300,21 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           updateData.description = analysisResult.description
         }
 
+        // Only update seoTitle if the original journey had one
         if (journey.seoTitle && analysisResult.seoTitle) {
           updateData.seoTitle = analysisResult.seoTitle
         }
 
+        // Only update seoDescription if the original journey had one
         if (journey.seoDescription && analysisResult.seoDescription) {
           updateData.seoDescription = analysisResult.seoDescription
-        }
-
-        // Update customization description if it was translated
-        if (customizationTranslation.translatedDescription !== null) {
-          updateData.journeyCustomizationDescription =
-            customizationTranslation.translatedDescription
         }
 
         const updatedJourney = await prisma.journey.update({
           where: { id: input.journeyId },
           data: updateData,
           include: {
-            blocks: true,
-            journeyCustomizationFields: true
+            blocks: true
           }
         })
 
@@ -538,6 +325,202 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
         }
 
         // Step 2: Translate blocks for each card with progress updates
+        // Use updatedJourney as the working journey object to update with translated blocks
+        const translateCard = async (
+          cardContent: string,
+          cardIndex: number
+        ) => {
+          try {
+            // Get translatable blocks for this card
+            const cardBlock = cardBlocks[cardIndex]
+
+            // Get all child blocks of this card
+            const cardBlocksChildren = updatedJourney.blocks.filter(
+              (block) => block.parentBlockId === cardBlock.id
+            )
+
+            // Skip if no children to translate
+            if (cardBlocksChildren.length === 0) {
+              return
+            }
+
+            // Get radio question blocks to find their radio option blocks
+            const radioQuestionBlocks = cardBlocksChildren.filter(
+              (block) => block.typename === 'RadioQuestionBlock'
+            )
+
+            // Find all radio option blocks that need translation
+            const radioOptionBlocks = []
+            for (const radioQuestionBlock of radioQuestionBlocks) {
+              const options = updatedJourney.blocks.filter(
+                (block) =>
+                  block.parentBlockId === radioQuestionBlock.id &&
+                  block.typename === 'RadioOptionBlock'
+              )
+              radioOptionBlocks.push(...options)
+            }
+
+            // All blocks that need translation including radio options
+            const allBlocksToTranslate = [
+              ...cardBlocksChildren,
+              ...radioOptionBlocks
+            ]
+
+            // Skip if no blocks to translate
+            if (allBlocksToTranslate.length === 0) {
+              return
+            }
+
+            // Create a more concise representation of blocks to translate
+            const blocksToTranslateInfo = allBlocksToTranslate
+              .map((block) => {
+                let fieldInfo = ''
+                switch (block.typename) {
+                  case 'TypographyBlock':
+                    fieldInfo = `Content: "${block.content || ''}"`
+                    break
+                  case 'ButtonBlock':
+                  case 'RadioOptionBlock':
+                    fieldInfo = `Label: "${block.label || ''}"`
+                    break
+                  case 'TextResponseBlock':
+                    fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}"`
+                    break
+                }
+
+                return `[${block.id}] ${block.typename}: ${fieldInfo}`
+              })
+              .join('\n')
+
+            const blockTranslationPrompt = `
+JOURNEY ANALYSIS AND ADAPTATION SUGGESTIONS:
+${hardenPrompt(analysisResult.analysis)}
+
+Translate content
+${hardenPrompt(`
+The source language is: ${input.journeyLanguageName}.
+The target language name is: ${input.textLanguageName}.
+`)}
+
+CONTEXT:
+${hardenPrompt(cardContent)}
+
+TRANSLATE THE FOLLOWING BLOCKS:
+${hardenPrompt(blocksToTranslateInfo)}
+
+IMPORTANT: For each block, use ONLY the EXACT IDs in square brackets [ID].
+Return an array where each item is an object with:
+- blockId: The EXACT ID from square brackets
+- updates: An object with field names and translated values
+
+Field names to translate per block type:
+- TypographyBlock: "content" field
+- ButtonBlock: "label" field
+- RadioOptionBlock: "label" field
+- TextResponseBlock: "label" and "placeholder" fields
+
+Ensure translations maintain the meaning while being culturally appropriate for ${input.textLanguageName}.
+Keep translations concise and effective for UI context (e.g., button labels should remain short).
+
+If you are in the process of translating and you recognize passages from the
+Bible you should not translate that content. Instead, you should rely on a Bible
+translation available from the previous journey analysis and use that content directly. 
+You must never make changes to content from the Bible yourself. 
+If there is no Bible translation was available, use the the most popular English Bible translation available. 
+`
+
+            const allowedBlockIdsForCard = new Set(
+              allBlocksToTranslate.map((block) => block.id)
+            )
+
+            try {
+              await session.execute(async (model) => {
+                // Stream the translations
+                const { elementStream } = streamText({
+                  model,
+                  maxRetries: 0,
+                  messages: [
+                    {
+                      role: 'system',
+                      content: preSystemPrompt
+                    },
+                    {
+                      role: 'user',
+                      content: [
+                        {
+                          type: 'text',
+                          text: blockTranslationPrompt
+                        }
+                      ]
+                    }
+                  ],
+                  output: Output.array({
+                    element: BlockTranslationSchema
+                  })
+                })
+
+                for await (const item of elementStream) {
+                  try {
+                    const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
+
+                    // Verify the block belongs to the current card translation batch
+                    if (!allowedBlockIdsForCard.has(cleanBlockId)) {
+                      continue
+                    }
+
+                    const blockToUpdate = updatedJourney.blocks.find(
+                      (block) => block.id === cleanBlockId
+                    )
+
+                    if (blockToUpdate == null) {
+                      continue
+                    }
+
+                    const validatedUpdates = getValidatedBlockUpdates(
+                      blockToUpdate,
+                      item.updates
+                    )
+
+                    if (validatedUpdates == null) {
+                      continue
+                    }
+
+                    await prisma.block.update({
+                      where: {
+                        id: cleanBlockId,
+                        journeyId: input.journeyId
+                      },
+                      data: validatedUpdates
+                    })
+
+                    // Update the in-memory journey blocks
+                    const blockIndex = updatedJourney.blocks.findIndex(
+                      (block) => block.id === cleanBlockId
+                    )
+                    if (blockIndex !== -1) {
+                      updatedJourney.blocks[blockIndex] = {
+                        ...updatedJourney.blocks[blockIndex],
+                        ...validatedUpdates
+                      }
+                    }
+                  } catch (updateError) {
+                    console.error(
+                      `Error updating block ${item.blockId}:`,
+                      updateError
+                    )
+                  }
+                }
+              })
+            } catch (error) {
+              console.warn(`Error translating card ${cardBlock.id}:`, error)
+              // Continue with other cards
+            }
+          } catch (error) {
+            console.error(`Error translating card ${cardIndex + 1}:`, error)
+            // Continue with other cards even if one fails
+          }
+        }
+
         // Process cards in batches of 5 for parallel processing with progress updates
         const batchSize = 5
         let completedCards = 0
@@ -556,32 +539,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           // Create batch of translation promises
           const batchPromises = currentBatch.map((cardContent, index) => {
             const cardIndex = batchStart + index
-            return translateCardBlocks({
-              allBlocks: updatedJourney.blocks,
-              cardBlock: cardBlocks[cardIndex],
-              journeyId: input.journeyId,
-              cardContent,
-              journeyAnalysis: analysisResult.analysis,
-              sourceLanguageName: input.journeyLanguageName,
-              targetLanguageName: input.textLanguageName,
-              onBlockUpdated: (blockId, updates) => {
-                const idx = updatedJourney.blocks.findIndex(
-                  (b) => b.id === blockId
-                )
-                if (idx !== -1) {
-                  updatedJourney.blocks[idx] = {
-                    ...updatedJourney.blocks[idx],
-                    ...updates
-                  }
-                }
-              },
-              session
-            }).catch((error) => {
-              console.warn(
-                `Error translating card ${cardBlocks[cardIndex].id}:`,
-                error
-              )
-            })
+            return translateCard(cardContent, cardIndex)
           })
 
           // Process batch in parallel
@@ -608,8 +566,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
         const finalJourney = await prisma.journey.findUnique({
           where: { id: input.journeyId },
           include: {
-            blocks: true,
-            journeyCustomizationFields: true
+            blocks: true
           }
         })
 
@@ -642,13 +599,15 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
       })
     },
     resolve: async (_query, _root, { input }, { user }) => {
+      const originalName = input.name
       // 1. First get the journey details using Prisma
       const journey = await prisma.journey.findUnique({
-        where: { id: input.journeyId },
+        where: {
+          id: input.journeyId
+        },
         include: {
           blocks: true,
           userJourneys: true,
-          journeyCustomizationFields: true,
           team: {
             include: { userTeams: true }
           }
@@ -667,13 +626,15 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
       if (!ability(Action.Update, subject('Journey', journey), user)) {
         throw new GraphQLError(
           'user does not have permission to update journey',
-          { extensions: { code: 'FORBIDDEN' } }
+          {
+            extensions: { code: 'FORBIDDEN' }
+          }
         )
       }
 
       // 2. Get the language names
       const sourceLanguageName = input.journeyLanguageName
-      const targetLanguageName = input.textLanguageName
+      const requestedLanguageName = input.textLanguageName
 
       // 3. Get Cards Content
       const cardBlocks = journey.blocks
@@ -685,19 +646,42 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
         cardBlocks
       })
 
-      const session = createGeminiFallbackSession()
+      // 4. Use Gemini to analyze the journey content and get intent, and translate title/description
+      const combinedPrompt = `
+Analyze this journey content and provide the key intent, themes, and target audience.
+Also suggest ways to culturally adapt this content for the target language: ${hardenPrompt(requestedLanguageName)}.
+Then, translate the following journey title and description to ${hardenPrompt(requestedLanguageName)}.
+If a description is not provided, do not create one.
+
+If possible, find a popular translation of the Bible in the target language to use in follow up steps.
+
+${hardenPrompt(`
+The source language is: ${sourceLanguageName}.
+The target language name is: ${requestedLanguageName}.
+
+Journey Title: ${originalName}
+${hasDescription ? `Journey Description: ${trimmedDescription}` : ''}
+
+Seo Title: ${journey.seoTitle ?? ''}
+Seo Description: ${journey.seoDescription ?? ''}
+
+Journey Content: 
+${cardBlocksContent.join('\n')}
+
+`)}
+
+Return in this format:
+{
+  analysis: [analysis and adaptation suggestions],
+  title: [translated title],
+  description: [translated description or empty string if no description was provided]
+  seoTitle: [translated seo title or empty string if no seo title was provided]
+  seoDescription: [translated seo description or empty string if no seo description was provided]
+}
+`
 
       try {
-        // 4. Use Gemini to analyze the journey content and get intent, and translate title/description
-        const analysisPrompt = buildAnalysisPrompt({
-          sourceLanguageName,
-          targetLanguageName,
-          journeyTitle: input.name,
-          journeyDescription: journey.description,
-          seoTitle: journey.seoTitle,
-          seoDescription: journey.seoDescription,
-          cardBlocksContent
-        })
+        const session = createGeminiFallbackSession()
 
         const { output: analysisAndTranslation } = await session.execute(
           (model) =>
@@ -705,10 +689,18 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
               model,
               maxRetries: 0,
               messages: [
-                { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
+                {
+                  role: 'system',
+                  content: preSystemPrompt
+                },
                 {
                   role: 'user',
-                  content: [{ type: 'text', text: analysisPrompt }]
+                  content: [
+                    {
+                      type: 'text',
+                      text: combinedPrompt
+                    }
+                  ]
                 }
               ],
               output: Output.object({
@@ -732,39 +724,11 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
         if (journey.seoDescription && !analysisAndTranslation.seoDescription)
           throw new Error('Failed to translate journey seo description')
 
-        const descriptionLanguageName =
-          input.userLanguageName ?? input.textLanguageName
-
-        // Translate customization fields and description
-        const customizationTranslation = await translateCustomizationFields({
-          journeyCustomizationDescription:
-            journey.journeyCustomizationDescription,
-          journeyCustomizationFields: journey.journeyCustomizationFields,
-          sourceLanguageName: input.journeyLanguageName,
-          targetLanguageName: input.textLanguageName,
-          descriptionTargetLanguageName: descriptionLanguageName,
-          defaultValueTargetLanguageName: input.textLanguageName,
-          journeyAnalysis: analysisAndTranslation.analysis
-        })
-
-        // Update customization field values in the database
-        if (customizationTranslation.translatedFields.length > 0) {
-          await Promise.all(
-            customizationTranslation.translatedFields.map((field) =>
-              prisma.journeyCustomizationField.update({
-                where: { id: field.id },
-                data: {
-                  value: field.translatedValue,
-                  defaultValue: field.translatedDefaultValue
-                }
-              })
-            )
-          )
-        }
-
         // Update the journey using Prisma
         await prisma.journey.update({
-          where: { id: input.journeyId },
+          where: {
+            id: input.journeyId
+          },
           data: {
             title: analysisAndTranslation.title,
             // Only update description if the original journey had one
@@ -779,33 +743,200 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
             ...(journey.seoDescription
               ? { seoDescription: analysisAndTranslation.seoDescription }
               : {}),
-            // Update customization description if it was translated
-            ...(customizationTranslation.translatedDescription !== null
-              ? {
-                  journeyCustomizationDescription:
-                    customizationTranslation.translatedDescription
-                }
-              : {}),
             languageId: input.textLanguageId
           }
         })
 
-        // 5. Translate each card (reuses sorted cardBlocks from above)
+        // Use analysisAndTranslation.analysis for card translation context
+        const journeyAnalysis = analysisAndTranslation.analysis
+
+        // 5. Translate each card
+        const cardBlocks = journey.blocks.filter(
+          (block) => block.typename === 'CardBlock'
+        )
+
         await Promise.all(
-          cardBlocks.map((cardBlock, i) =>
-            translateCardBlocks({
-              allBlocks: journey.blocks,
-              cardBlock,
-              journeyId: input.journeyId,
-              cardContent: cardBlocksContent[i],
-              journeyAnalysis: analysisAndTranslation.analysis,
-              sourceLanguageName,
-              targetLanguageName,
-              session
-            }).catch((error) => {
-              console.warn(`Error translating card ${cardBlock.id}:`, error)
-            })
-          )
+          cardBlocks.map(async (cardBlock, i) => {
+            const cardContent = cardBlocksContent[i]
+            try {
+              // Get all child blocks of this card
+              const cardBlocksChildren = journey.blocks.filter(
+                ({ parentBlockId }) => parentBlockId === cardBlock.id
+              )
+
+              // Skip if no children to translate
+              if (cardBlocksChildren.length === 0) {
+                return
+              }
+
+              // Get radio question blocks to find their radio option blocks
+              const radioQuestionBlocks = cardBlocksChildren.filter(
+                (block) => block.typename === 'RadioQuestionBlock'
+              )
+
+              // Find all radio option blocks that need translation
+              const radioOptionBlocks = []
+              for (const radioQuestionBlock of radioQuestionBlocks) {
+                const options = journey.blocks.filter(
+                  (block) =>
+                    block.parentBlockId === radioQuestionBlock.id &&
+                    block.typename === 'RadioOptionBlock'
+                )
+                radioOptionBlocks.push(...options)
+              }
+
+              // All blocks that need translation including radio options
+              const allBlocksToTranslate = [
+                ...cardBlocksChildren,
+                ...radioOptionBlocks
+              ]
+
+              // Skip if no blocks to translate
+              if (allBlocksToTranslate.length === 0) {
+                return
+              }
+
+              const allowedBlockIdsForCard = new Set(
+                allBlocksToTranslate.map((block) => block.id)
+              )
+
+              // Create a more concise representation of blocks to translate
+              const blocksToTranslateInfo = allBlocksToTranslate
+                .map((block) => {
+                  let fieldInfo = ''
+                  switch (block.typename) {
+                    case 'TypographyBlock':
+                      fieldInfo = `Content: "${block.content || ''}"`
+                      break
+                    case 'ButtonBlock':
+                    case 'RadioOptionBlock':
+                      fieldInfo = `Label: "${block.label || ''}"`
+                      break
+                    case 'TextResponseBlock':
+                      fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}"`
+                      break
+                  }
+
+                  return `[${block.id}] ${block.typename}: ${fieldInfo}`
+                })
+                .join('\n')
+
+              // Create prompt for translation
+              const cardAnalysisPrompt = `
+JOURNEY ANALYSIS AND ADAPTATION SUGGESTIONS:
+${hardenPrompt(journeyAnalysis)}
+
+Translate content
+${hardenPrompt(`
+The source language is: ${sourceLanguageName}.
+The target language name is: ${requestedLanguageName}.
+`)}
+
+CONTEXT:
+${hardenPrompt(cardContent)}
+
+TRANSLATE THE FOLLOWING BLOCKS:
+${hardenPrompt(blocksToTranslateInfo)}
+
+IMPORTANT: For each block, use ONLY the EXACT IDs in square brackets [ID].
+Return an array where each item is an object with:
+- blockId: The EXACT ID from square brackets
+- updates: An object with field names and translated values
+
+Field names to translate per block type:
+- TypographyBlock: "content" field
+- ButtonBlock: "label" field
+- RadioOptionBlock: "label" field
+- TextResponseBlock: "label" and "placeholder" fields
+
+Ensure translations maintain the meaning while being culturally appropriate for ${hardenPrompt(requestedLanguageName)}.
+Keep translations concise and effective for UI context (e.g., button labels should remain short).
+
+If you are in the process of translating and you recognize passages from the
+Bible you should not translate that content. Instead, you should rely on a Bible
+translation available from the previous journey analysis and use that content directly. 
+You must never make changes to content from the Bible yourself. 
+If there is no Bible translation was available, use the the most popular English Bible translation available. 
+`
+              try {
+                await session.execute(async (model) => {
+                  // Stream the translations
+                  const { elementStream } = streamText({
+                    model,
+                    maxRetries: 0,
+                    messages: [
+                      {
+                        role: 'system',
+                        content: preSystemPrompt
+                      },
+                      {
+                        role: 'user',
+                        content: [
+                          {
+                            type: 'text',
+                            text: cardAnalysisPrompt
+                          }
+                        ]
+                      }
+                    ],
+                    output: Output.array({
+                      element: BlockTranslationSchema
+                    })
+                  })
+
+                  for await (const item of elementStream) {
+                    try {
+                      const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
+
+                      // Verify the block belongs to the current card translation batch
+                      if (!allowedBlockIdsForCard.has(cleanBlockId)) {
+                        continue
+                      }
+
+                      const blockToUpdate = journey.blocks.find(
+                        (block) => block.id === cleanBlockId
+                      )
+
+                      if (blockToUpdate == null) {
+                        continue
+                      }
+
+                      const validatedUpdates = getValidatedBlockUpdates(
+                        blockToUpdate,
+                        item.updates
+                      )
+
+                      if (validatedUpdates == null) {
+                        continue
+                      }
+
+                      await prisma.block.update({
+                        where: {
+                          id: cleanBlockId,
+                          journeyId: input.journeyId
+                        },
+                        data: validatedUpdates
+                      })
+                    } catch (updateError) {
+                      console.error(
+                        `Error updating block ${item.blockId}:`,
+                        updateError
+                      )
+                    }
+                  }
+                })
+              } catch (error) {
+                console.warn(`Error translating card ${cardBlock.id}:`, error)
+                // Continue with other cards
+              }
+            } catch (error) {
+              console.warn(
+                `Error analyzing and translating card ${cardBlock.id}:`,
+                error
+              )
+              // Continue with other cards
+            }
+          })
         )
       } catch (error: unknown) {
         console.error('Error analyzing journey with Gemini:', error)
@@ -813,13 +944,12 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
           error instanceof Error ? error.message : 'Unknown error occurred'
         throw new Error(`Failed to analyze journey: ${errorMessage}`)
       }
-
       // Fetch and return the updated journey with all necessary relations
       const updatedJourney = await prisma.journey.findUnique({
         where: { id: input.journeyId },
         include: {
-          blocks: true,
-          journeyCustomizationFields: true
+          blocks: true
+          // Add other relations as needed for the full object
         }
       })
       if (!updatedJourney) throw new Error('Could not fetch updated journey')

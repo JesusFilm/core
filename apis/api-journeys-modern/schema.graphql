@@ -907,17 +907,6 @@ input JourneyCreateInput {
   slug: String
 }
 
-input JourneyCustomizationDescriptionTranslateInput {
-  """The ID of the journey whose customization description to translate"""
-  journeyId: ID!
-
-  """The current language of the customization description"""
-  sourceLanguageName: String!
-
-  """The language to translate the customization description into"""
-  targetLanguageName: String!
-}
-
 type JourneyCustomizationField
   @shareable
 {
@@ -1510,7 +1499,6 @@ type Mutation {
   integrationDelete(id: ID!): Integration!
   journeyTransferFromAnonymous(journeyId: ID!, teamId: ID): Journey!
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
-  journeyCustomizationDescriptionTranslate(input: JourneyCustomizationDescriptionTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
