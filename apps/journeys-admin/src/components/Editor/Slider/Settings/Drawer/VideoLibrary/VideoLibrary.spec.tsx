@@ -58,6 +58,44 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
+// Mock VideoFromMux so a test can trigger VideoLibrary.onSelect with
+// shouldCloseDrawer=false — the path used by background MUX upload completions.
+// The mock renders a test-only button; the existing Upload-tab tests in this
+// file only assert tab routing and do not touch VideoFromMux internals.
+jest.mock('./VideoFromMux', () => ({
+  __esModule: true,
+  VideoFromMux: ({
+    onSelect
+  }: {
+    onSelect: (
+      block: Record<string, unknown>,
+      shouldCloseDrawer?: boolean
+    ) => void
+  }) => {
+    const handleBackgroundCompletion = (): void => {
+      onSelect(
+        {
+          videoId: 'mux-video-id',
+          source: 'mux',
+          videoVariantLanguageId: null,
+          startAt: 0,
+          endAt: null,
+          duration: null
+        },
+        false
+      )
+    }
+    return (
+      <button
+        data-testid="VideoLibraryMuxBackgroundCompletionTrigger"
+        onClick={handleBackgroundCompletion}
+      >
+        Mock MUX background completion
+      </button>
+    )
+  }
+}))
+
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 jest.mock('react-instantsearch')
@@ -419,7 +457,7 @@ describe('VideoLibrary', () => {
       },
       true
     )
-    expect(onClose).toHaveBeenCalled()
+    expect(onClose).toHaveBeenCalledTimes(1)
   })
 
   it('should close the library when Select is clicked on an existing internal video', async () => {
@@ -524,7 +562,7 @@ describe('VideoLibrary', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Select' }))
 
     expect(onSelect).toHaveBeenCalled()
-    expect(onClose).toHaveBeenCalled()
+    expect(onClose).toHaveBeenCalledTimes(1)
   })
 
   it('should render video details if videoId is not null', async () => {
@@ -853,6 +891,8 @@ describe('VideoLibrary', () => {
         { shallow: true }
       )
     })
+
+    expect(onClose).not.toHaveBeenCalled()
   })
 
   it('should navigate to Library tab when clicking Change Video on an internal video', async () => {
@@ -1043,5 +1083,48 @@ describe('VideoLibrary', () => {
         { shallow: true }
       )
     })
+
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('should NOT close the library when onSelect fires with shouldCloseDrawer=false', async () => {
+    // A background MUX upload completion calls VideoFromMux.handleChange with
+    // shouldCloseDrawer=false so the outer drawer stays put if the user has
+    // navigated to a different block while the upload ran.
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+
+    mockRouter()
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
+
+    await waitFor(() =>
+      expect(
+        screen.getByTestId('VideoLibraryMuxBackgroundCompletionTrigger')
+      ).toBeInTheDocument()
+    )
+
+    fireEvent.click(
+      screen.getByTestId('VideoLibraryMuxBackgroundCompletionTrigger')
+    )
+
+    expect(onSelect).toHaveBeenCalledWith(
+      expect.objectContaining({
+        videoId: 'mux-video-id',
+        source: VideoBlockSource.mux
+      }),
+      false
+    )
+    expect(onClose).not.toHaveBeenCalled()
   })
 })

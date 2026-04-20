@@ -28,7 +28,7 @@ A successful selection is semantically a terminal action — the user has picked
 
 - **R1.** After a user confirms a video block update via **Select** (from `LocalDetails`, `MuxDetails`, or `YouTubeDetails`), both the inner `VideoDetails` drawer and the outer `VideoLibrary` drawer must close, returning focus to the journey editor.
 - **R2.** Existing flows that feed into `VideoLibrary.onSelect` must continue to work: (a) selecting a brand-new video from the Library tab, (b) uploading a MUX video and selecting it, (c) selecting a YouTube video, (d) clearing a video via the trash icon in `VideoDetails`.
-- **R3.** Background MUX upload completion paths that call `onChange` with `shouldFocus = false` must not be regressed — they never pass through `VideoLibrary.onSelect`, so simply closing on every call to that handler is safe, but we must verify this assumption in testing.
+- **R3.** Background MUX upload completion paths must not be regressed. They **do** flow through `VideoLibrary.onSelect` (chain: `processUpload.onComplete` → `AddByFile.onChange(videoId, false)` → `VideoFromMux.handleChange` → `VideoLibrary.onSelect(block, false)`). The `shouldCloseDrawer` parameter — already wired through the chain — must gate the outer `onClose?.()` call so a background completion cannot yank the drawer from under a user who has since navigated to a different block.
 - **R4.** Regression coverage: a test must assert the outer drawer closes on Select for the existing-video-edit flow.
 
 ## Scope Boundaries
@@ -83,7 +83,7 @@ In `VideoLibrary.onSelect`, the current code closes only the inner drawer. The f
 
 - **Close the outer drawer inside `VideoLibrary.onSelect` rather than in each child component.** Centralising the close behaviour in the one place that already handles the final `handleSelect` invocation keeps the children (LocalDetails, MuxDetails, YouTubeDetails, VideoListItem) unchanged and prevents drift. Rationale: children should not know about the existence of the outer drawer; that is a composition concern of `VideoLibrary`.
 - **Do not gate the close on `selectedBlock?.videoId`.** The existing-video-edit and new-video-browse flows both reach `VideoLibrary.onSelect` on a terminal user action. Closing in both cases is the correct terminal behaviour and matches user expectation (the action completes the task). This also means no new branching logic is introduced.
-- **Preserve the `shouldCloseDrawer` parameter semantics.** The parameter currently maps to `shouldFocus` passed upstream; not repurposing it here avoids touching unrelated focus behaviour. If a future caller needs to suppress drawer close, we can wire it then.
+- **Gate the new `onClose?.()` call on the existing `shouldCloseDrawer` parameter.** The parameter was already threaded from `AddByFile` (which sets it to `false` on background upload completion) through `VideoFromMux` into `VideoLibrary.onSelect`, but it was only aliased to `shouldFocus` and never actually gated drawer closing. Gating the new `onClose?.()` on `shouldCloseDrawer` both restores the background-completion contract and aligns the parameter name with real behaviour. This mirrors the existing pattern in `handleVideoDetailsClose` (`if (closeParent === true) onClose?.()`).
 - **No change to `VideoLanguage`.** Its "Apply" button remains a close-only affordance; the broader Apply/Select redesign is QA-221's responsibility.
 
 ## Open Questions
@@ -93,7 +93,7 @@ In `VideoLibrary.onSelect`, the current code closes only the inner drawer. The f
 - **Q: Should the outer drawer close only when editing an existing video, not when browsing for a new one?**
   A: No. Both flows end with a user-confirmed Select that persists the block. Closing after any successful Select is the terminal behaviour. Staying open after browsing would be equally surprising.
 - **Q: Does closing the outer drawer break the MUX upload flow where a background upload completion triggers `onSelect`?**
-  A: No. Background upload completions flow through `MuxVideoUploadProvider` and call `handleChange` in `VideoOptions` directly with `shouldFocus = false`; they do not pass through `VideoLibrary.onSelect`.
+  A: It would if the `onClose?.()` call were unconditional, because background completions **do** flow through `VideoLibrary.onSelect` (via `AddByFile` → `VideoFromMux` → `VideoLibrary`). `AddByFile` passes `shouldCloseDrawer = false` for exactly this reason. The fix therefore gates the new `onClose?.()` on `shouldCloseDrawer`, consistent with the pattern in `handleVideoDetailsClose`.
 
 ### Deferred to Implementation
 
@@ -116,8 +116,8 @@ In `VideoLibrary.onSelect`, the current code closes only the inner drawer. The f
 
 **Approach:**
 
-- In `VideoLibrary.onSelect`, after the existing `setOpenVideoDetails(false)` line, call the optional `onClose?.()` supplied by the parent. This completes the terminal "user confirmed a selection" action by closing both layers of drawer in one place.
-- No changes required in `LocalDetails`, `MuxDetails`, `YouTubeDetails`, `VideoDetails`, `VideoLanguage`, `VideoFromLocal`, or `VideoListItem`. The cascade is already correct; only the final close step is missing.
+- In `VideoLibrary.onSelect`, after the existing `setOpenVideoDetails(false)` line, call the optional `onClose?.()` supplied by the parent — but gate it on the existing `shouldCloseDrawer` parameter so background MUX upload completions (which pass `shouldCloseDrawer = false`) do not yank the drawer from under a user who has navigated away. The gate mirrors the pattern in `handleVideoDetailsClose`.
+- No changes required in `LocalDetails`, `MuxDetails`, `YouTubeDetails`, `VideoDetails`, `VideoLanguage`, `VideoFromLocal`, or `VideoListItem`. The cascade is already correct; only the final (gated) close step is missing.
 
 **Patterns to follow:**
 
@@ -131,7 +131,8 @@ In `VideoLibrary.onSelect`, the current code closes only the inner drawer. The f
 - **Happy path — select via Upload (MUX) tab after upload completes:** `VideoFromMux` → `onSelect` triggers outer close.
 - **Edge case — clearing a video via the trash icon in `VideoDetails`:** `handleClearVideo` calls `onSelect` with null fields; verify the outer drawer also closes (this matches user intent: "remove this video and get me out").
 - **Edge case — `onClose` prop is not supplied:** `onClose?.()` short-circuits gracefully. Render without an `onClose` prop and assert no throw.
-- **Regression guard — Change Video button in VideoDetails:** Clicking `Change Video` (which calls `onClose(false)` on the inner details) does NOT close the outer drawer. This verifies we haven't accidentally coupled the two paths.
+- **Regression guard — Change Video button in VideoDetails:** Clicking `Change Video` (which calls `onClose(false)` on the inner details) does NOT close the outer drawer. Cover all three source types (internal, YouTube, MUX) so a future unconditional-close regression is caught on every path.
+- **Regression guard — background MUX upload completion:** `VideoLibrary.onSelect(block, shouldCloseDrawer=false)` must NOT call `onClose`. Simulate by mocking `VideoFromMux` to expose a button that fires `onSelect(block, false)` and assert the outer close is suppressed.
 
 **Verification:**
 
