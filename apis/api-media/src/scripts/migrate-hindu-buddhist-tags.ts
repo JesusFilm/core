@@ -1,21 +1,52 @@
 import { prisma } from '@core/prisma/media/client'
 
 const OLD_TAG_NAME = 'Hindu/Buddist'
-const RENAMED_TAG_NAME = 'Hindu'
-const NEW_TAG_NAME = 'Buddhist'
+const HINDU_TAG_NAME = 'Hindu'
+const BUDDHIST_TAG_NAME = 'Buddhist'
 const PARENT_TAG_NAME = 'Audience'
 const PRIMARY_LANGUAGE_ID = '529'
 
 /**
- * Renames the existing 'Hindu/Buddist' tag to 'Hindu', creates a new 'Buddhist'
- * tag under the same 'Audience' parent, and duplicates every Tagging on the
- * renamed tag onto the new tag so existing tagged content ends up with both.
+ * Splits the legacy combined "Hindu/Buddist" Audience tag into two separate
+ * tags — "Hindu" and "Buddhist" — and re-tags every template that used the
+ * combined tag so each template ends up tagged with BOTH new tags.
  *
- * Idempotent: re-running after a successful run is a no-op because the old
- * tag name no longer exists.
+ * All steps run inside a single prisma.$transaction. On any failure, the
+ * transaction rolls back and the database is left in its pre-run state.
+ *
+ * Steps:
+ *   1. Look up the legacy "Hindu/Buddist" Tag. If it is absent, the
+ *      migration has already been applied — exit early (idempotent).
+ *   2. Look up the "Audience" parent Tag. If it is absent, throw — the
+ *      database is not a validly-seeded media database.
+ *   3. Snapshot every Tagging that points at the legacy Tag into memory.
+ *      This snapshot is used in step 6, before the legacy Tag is deleted
+ *      — otherwise the Taggings would cascade-delete and we would lose
+ *      the template list.
+ *   4. Upsert a "Hindu" Tag under "Audience" and its primary English
+ *      TagName. Upsert is idempotent: if a "Hindu" row already exists
+ *      (e.g., from a fresh seed run in a dev environment), it is reused.
+ *   5. Upsert a "Buddhist" Tag under "Audience" and its primary English
+ *      TagName, the same way.
+ *   6. For every snapshotted Tagging, create two new Tagging rows — one
+ *      on "Hindu", one on "Buddhist" — preserving taggableId,
+ *      taggableType, and context. skipDuplicates: true keeps
+ *      partial-rerun scenarios safe.
+ *   7. Delete the legacy Tag's TagName rows. TagName.tagId is
+ *      ON DELETE RESTRICT, so these must be removed before the Tag.
+ *   8. Delete the legacy Tag row. Tagging.tag is ON DELETE CASCADE, so
+ *      any remaining legacy Taggings are removed automatically.
+ *
+ * Idempotent: safe to run repeatedly. After the first successful run the
+ * legacy Tag no longer exists, so step 1 exits early on every subsequent
+ * run.
+ *
+ * Scope: only the primary English (languageId '529') TagName is created
+ * for each new tag. Localized TagName rows for the legacy tag — if any —
+ * are cascade-dropped along with the legacy Tag in step 8.
  */
 export async function migrateHinduBuddhistTags(): Promise<void> {
-  console.log(`Starting Hindu/Buddhist tag migration...`)
+  console.log('Starting Hindu/Buddhist tag migration...')
 
   await prisma.$transaction(async (tx) => {
     const oldTag = await tx.tag.findUnique({
@@ -39,38 +70,37 @@ export async function migrateHinduBuddhistTags(): Promise<void> {
       )
     }
 
-    const existingHinduTag = await tx.tag.findUnique({
-      where: { name: RENAMED_TAG_NAME }
+    const oldTaggings = await tx.tagging.findMany({
+      where: { tagId: oldTag.id }
     })
-
-    if (existingHinduTag != null && existingHinduTag.id !== oldTag.id) {
-      console.log(
-        `Found an existing "${RENAMED_TAG_NAME}" tag (likely seed-created). Removing it so the legacy "${OLD_TAG_NAME}" row can be renamed in place and keep its existing taggings.`
-      )
-      await tx.tagName.deleteMany({
-        where: { tagId: existingHinduTag.id }
-      })
-      await tx.tag.delete({
-        where: { id: existingHinduTag.id }
-      })
-    }
-
-    console.log(`Renaming tag "${OLD_TAG_NAME}" → "${RENAMED_TAG_NAME}"...`)
-    await tx.tag.update({
-      where: { id: oldTag.id },
-      data: { name: RENAMED_TAG_NAME }
-    })
-    await tx.tagName.updateMany({
-      where: { tagId: oldTag.id, languageId: PRIMARY_LANGUAGE_ID },
-      data: { value: RENAMED_TAG_NAME }
-    })
-
     console.log(
-      `Upserting new tag "${NEW_TAG_NAME}" under parent "${PARENT_TAG_NAME}"...`
+      `Found ${oldTaggings.length} tagging(s) on "${OLD_TAG_NAME}" to split onto "${HINDU_TAG_NAME}" and "${BUDDHIST_TAG_NAME}".`
     )
+
+    const hinduTag = await tx.tag.upsert({
+      where: { name: HINDU_TAG_NAME },
+      create: { name: HINDU_TAG_NAME, parentId: audienceTag.id },
+      update: {}
+    })
+    await tx.tagName.upsert({
+      where: {
+        tagId_languageId: {
+          tagId: hinduTag.id,
+          languageId: PRIMARY_LANGUAGE_ID
+        }
+      },
+      create: {
+        tagId: hinduTag.id,
+        value: HINDU_TAG_NAME,
+        languageId: PRIMARY_LANGUAGE_ID,
+        primary: true
+      },
+      update: {}
+    })
+
     const buddhistTag = await tx.tag.upsert({
-      where: { name: NEW_TAG_NAME },
-      create: { name: NEW_TAG_NAME, parentId: audienceTag.id },
+      where: { name: BUDDHIST_TAG_NAME },
+      create: { name: BUDDHIST_TAG_NAME, parentId: audienceTag.id },
       update: {}
     })
     await tx.tagName.upsert({
@@ -82,32 +112,39 @@ export async function migrateHinduBuddhistTags(): Promise<void> {
       },
       create: {
         tagId: buddhistTag.id,
-        value: NEW_TAG_NAME,
+        value: BUDDHIST_TAG_NAME,
         languageId: PRIMARY_LANGUAGE_ID,
         primary: true
       },
       update: {}
     })
 
-    const existingTaggings = await tx.tagging.findMany({
-      where: { tagId: oldTag.id }
-    })
-    console.log(
-      `Found ${existingTaggings.length} tagging(s) to duplicate onto "${NEW_TAG_NAME}".`
-    )
-
-    if (existingTaggings.length > 0) {
+    if (oldTaggings.length > 0) {
       const { count } = await tx.tagging.createMany({
-        data: existingTaggings.map((tagging) => ({
-          taggableId: tagging.taggableId,
-          taggableType: tagging.taggableType,
-          context: tagging.context,
-          tagId: buddhistTag.id
-        })),
+        data: oldTaggings.flatMap((tagging) => [
+          {
+            taggableId: tagging.taggableId,
+            taggableType: tagging.taggableType,
+            context: tagging.context,
+            tagId: hinduTag.id
+          },
+          {
+            taggableId: tagging.taggableId,
+            taggableType: tagging.taggableType,
+            context: tagging.context,
+            tagId: buddhistTag.id
+          }
+        ]),
         skipDuplicates: true
       })
-      console.log(`Created ${count} new tagging(s) for "${NEW_TAG_NAME}".`)
+      console.log(
+        `Created ${count} new tagging(s) across "${HINDU_TAG_NAME}" and "${BUDDHIST_TAG_NAME}".`
+      )
     }
+
+    await tx.tagName.deleteMany({ where: { tagId: oldTag.id } })
+    await tx.tag.delete({ where: { id: oldTag.id } })
+    console.log(`Deleted legacy "${OLD_TAG_NAME}" tag.`)
 
     console.log('Migration complete.')
   })

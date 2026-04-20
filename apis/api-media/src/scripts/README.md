@@ -193,7 +193,7 @@ If any error occurs, the script will log the error and continue processing other
 
 ## Migrate Hindu/Buddhist Tags Script
 
-The migrate Hindu/Buddhist tags script is a one-off data migration that splits the legacy combined `Hindu/Buddist` Audience tag into two separate tags — `Hindu` and `Buddhist` — and preserves every tagging on the original row.
+A one-off data migration that splits the legacy combined `Hindu/Buddist` Audience tag into two separate tags — `Hindu` and `Buddhist` — deletes the legacy tag entirely, and re-tags every template that used it so each template ends up tagged with **both** new tags.
 
 ### Usage
 
@@ -203,24 +203,72 @@ nx run api-media:migrate-hindu-buddhist-tags
 
 ### Environment Variables
 
-The script requires the following environment variable:
-
-- `PG_DATABASE_URL_MEDIA`: The connection string to the media PostgreSQL database (required)
+- `PG_DATABASE_URL_MEDIA`: connection string to the media PostgreSQL database (required).
 
 ### Process
 
-The script runs inside a single transaction and will:
+All steps run inside a single Prisma transaction. On any failure, the transaction rolls back and the database is left in its pre-run state.
 
-1. Look up the existing `Hindu/Buddist` tag. If it does not exist, exit immediately (idempotent — already migrated).
-2. Look up the `Audience` parent tag. If missing, abort with an error.
-3. Rename the existing tag row to `Hindu` and update its primary `TagName` value from `Hindu/Buddist` to `Hindu` (the original `Tag.id` is preserved, so existing `Tagging` rows continue to point at the same row).
-4. Create a new `Buddhist` tag under the same `Audience` parent, with a primary `TagName` of `Buddhist` in language `529`.
-5. Duplicate every `Tagging` from the renamed row onto the new `Buddhist` row, so any content previously tagged with `Hindu/Buddist` ends up tagged with both `Hindu` and `Buddhist`.
+1. Look up the legacy `Hindu/Buddist` tag. If absent, exit immediately (idempotent — already migrated).
+2. Look up the `Audience` parent tag. If absent, throw — the database is not a validly-seeded media database.
+3. Snapshot every `Tagging` that points at the legacy tag into memory. (The snapshot is used in step 6 before the legacy tag is deleted; otherwise those `Tagging` rows cascade-delete.)
+4. Upsert a `Hindu` tag under `Audience` with a primary English `TagName` (languageId `'529'`). Upsert is idempotent — if a `Hindu` row already exists (e.g., from a fresh seed run in a dev environment), it is reused.
+5. Upsert a `Buddhist` tag under `Audience` with a primary English `TagName`, the same way.
+6. For every snapshotted `Tagging`, create two new `Tagging` rows — one on `Hindu`, one on `Buddhist` — preserving `taggableId`, `taggableType`, and `context`. `skipDuplicates: true` keeps partial-rerun scenarios safe.
+7. Delete the legacy tag's `TagName` rows. (`TagName.tagId` is `ON DELETE RESTRICT`, so these must be removed before the parent `Tag`.)
+8. Delete the legacy `Tag` row. (`Tagging.tag` is `ON DELETE CASCADE`, so any remaining legacy taggings are removed automatically.)
 
 ### Idempotency
 
-Re-running the script after a successful run is safe — the `Hindu/Buddist` row no longer exists on the second run, so the script exits early without making any further changes.
+Safe to re-run. After the first successful run the legacy tag is gone, so step 1 exits immediately on every subsequent invocation.
 
 ### Error Handling
 
-The script wraps all mutations in a single Prisma transaction. On failure, the transaction rolls back and no partial state is written. On unhandled errors, the script exits with a non-zero code.
+On any unhandled error the Prisma transaction rolls back — no partial state is written — and the script exits with a non-zero code.
+
+### Rollout Procedure
+
+Run the migration against **stage first**. Do not run the production migration until the stage run has been validated end-to-end.
+
+#### 1. Stage run
+
+```bash
+PG_DATABASE_URL_MEDIA="<stage connection string>" nx run api-media:migrate-hindu-buddhist-tags
+```
+
+#### 2. Stage verification
+
+**UI:** Log in to the stage admin, open a template's Audience checkbox list, and confirm:
+
+- `Hindu/Buddist` is no longer listed.
+- `Hindu` and `Buddhist` are listed as separate options.
+- Every template that previously carried the combined tag now shows **both** `Hindu` and `Buddhist` ticked.
+
+**SQL verification** (against the stage `media` database):
+
+```sql
+-- Must return 0 rows.
+SELECT * FROM "Tag" WHERE name = 'Hindu/Buddist';
+
+-- Must return 2 rows, both with parentId equal to the Audience tag's id.
+SELECT t.id, t.name, t."parentId"
+FROM "Tag" t
+WHERE t.name IN ('Hindu', 'Buddhist');
+
+-- Row count must be exactly 2 × (number of templates that had the legacy tag).
+SELECT COUNT(*) FROM "Tagging" tg
+JOIN "Tag" t ON t.id = tg."tagId"
+WHERE t.name IN ('Hindu', 'Buddhist');
+```
+
+#### 3. Production run
+
+Only after every stage check passes:
+
+```bash
+PG_DATABASE_URL_MEDIA="<prod connection string>" nx run api-media:migrate-hindu-buddhist-tags
+```
+
+#### 4. Production verification
+
+Repeat the same UI and SQL checks against the production database.
