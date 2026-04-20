@@ -120,6 +120,7 @@ export function VideoLibrary({
 
     if (handleSelect != null) handleSelect(block, shouldFocus)
     setOpenVideoDetails(false)
+    onClose?.()
   }
 
   const handleVideoDetailsClose = (closeParent?: boolean): void => {

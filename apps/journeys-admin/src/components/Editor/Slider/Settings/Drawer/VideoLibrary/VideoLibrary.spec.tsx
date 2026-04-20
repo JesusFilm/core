@@ -419,6 +419,112 @@ describe('VideoLibrary', () => {
       },
       true
     )
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  it('should close the library when Select is clicked on an existing internal video', async () => {
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+    const existingVideoBlock: TreeBlock<VideoBlock> = {
+      id: 'video1.id',
+      __typename: 'VideoBlock',
+      parentBlockId: 'card1.id',
+      videoId: 'videoId',
+      videoVariantLanguageId: '529',
+      parentOrder: 0,
+      action: null,
+      muted: false,
+      autoplay: true,
+      startAt: 0,
+      endAt: 144,
+      fullsize: true,
+      title: null,
+      description: null,
+      duration: 144,
+      image: null,
+      subtitleLanguage: null,
+      showGeneratedSubtitles: null,
+      mediaVideo: null,
+      objectFit: null,
+      posterBlockId: null,
+      eventLabel: null,
+      endEventLabel: null,
+      customizable: null,
+      notes: null,
+      children: [],
+      source: VideoBlockSource.internal
+    }
+    const mocks = [
+      {
+        request: {
+          query: GET_VIDEO,
+          variables: { id: 'videoId', languageId: '529' }
+        },
+        result: {
+          data: {
+            video: {
+              id: 'videoId',
+              primaryLanguageId: '529',
+              images: [],
+              title: [
+                { primary: true, value: 'title1', __typename: 'Language' }
+              ],
+              description: [
+                { primary: true, value: 'desc', __typename: 'Language' }
+              ],
+              variant: {
+                id: 'v1',
+                duration: 144,
+                hls: 'https://example.com/video.m3u8',
+                __typename: 'VideoVariant'
+              },
+              variantLanguages: [
+                {
+                  __typename: 'Language',
+                  id: '529',
+                  slug: 'english',
+                  name: [
+                    {
+                      value: 'English',
+                      primary: true,
+                      __typename: 'LanguageName'
+                    }
+                  ]
+                }
+              ],
+              __typename: 'Video'
+            }
+          }
+        }
+      }
+    ]
+
+    render(
+      <MockedProvider mocks={mocks}>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock: existingVideoBlock }}>
+            <MuxVideoUploadProvider>
+              <VideoLibrary
+                open
+                selectedBlock={existingVideoBlock}
+                onSelect={onSelect}
+                onClose={onClose}
+              />
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(screen.getByText('Video Details')).toBeVisible())
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Select' })).toBeEnabled()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
+
+    expect(onSelect).toHaveBeenCalled()
+    expect(onClose).toHaveBeenCalled()
   })
 
   it('should render video details if videoId is not null', async () => {
@@ -862,6 +968,10 @@ describe('VideoLibrary', () => {
         { shallow: true }
       )
     })
+
+    // Change Video should keep the outer drawer open so the user can pick a
+    // different video — only the inner Video Details collapses back to the tabs.
+    expect(onClose).not.toHaveBeenCalled()
   })
 
   it('should navigate to Upload tab when clicking Change Video on a mux video', async () => {
