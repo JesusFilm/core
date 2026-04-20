@@ -21,7 +21,7 @@ The script is the production-side delivery mechanism because the seed worker is 
 
 ## Problem Frame
 
-Melissa (Slack `#nextsteps-bugs`, 2026-04-20): *"Is it possible to get the checkbox in the Global Template Library under 'Audience' that says 'Hindu/Buddist' separated out into two different checkboxes? … These two religions are pushed together. Also, Buddhist is misspelled."*
+Melissa (Slack `#nextsteps-bugs`, 2026-04-20): _"Is it possible to get the checkbox in the Global Template Library under 'Audience' that says 'Hindu/Buddist' separated out into two different checkboxes? … These two religions are pushed together. Also, Buddhist is misspelled."_
 
 The Audience tags are seeded by `apis/api-media/src/workers/seed/service/tag/tag.ts` (`seedTags()` → `upsertTag('Audience', [...])`). The frontend (`apps/journeys-admin/src/components/Editor/Toolbar/Items/TemplateSettingsItem/TemplateSettingsDialog/CategoriesTabPanel`) renders the children of each parent Audience tag dynamically from the `tags` GraphQL query — it does **not** hardcode `Hindu/Buddist`. So the code-level source-of-truth change is purely in the seed file.
 
@@ -96,12 +96,12 @@ Four templates in production currently carry the `Hindu/Buddist` tag (confirmed 
 
 ### Resolved During Planning
 
-- *Q: Should the frontend change?* A: No. `CategoriesTabPanel.tsx` renders children of `Audience` dynamically.
-- *Q: Should we add migration logic inside `seedTags()`?* A: No. Production doesn't run the seed; a standalone script is the only viable delivery mechanism.
-- *Q: Should the script rename the old row or delete it?* A: Delete, per the clarified requirement that the combined tag is gone entirely. Delete is also semantically cleaner and naturally idempotent (upserts handle repeat runs without special casing).
-- *Q: What happens if the script runs twice?* A: First run deletes `Hindu/Buddist`, creates `Hindu` + `Buddhist`, re-tags the affected templates. Second run finds no `Hindu/Buddist` row, logs "already migrated", exits — no further mutations.
-- *Q: What happens if `Hindu` or `Buddhist` already exist before the script runs (e.g., a dev environment where the updated seed ran first)?* A: Upsert handles it — the existing rows are reused and the script proceeds to tag the old templates against those existing tags.
-- *Q: Do we preserve existing localized `TagName` rows for `Hindu/Buddist`?* A: No. They are cascade-dropped with the old `Tag`. English-only creation is the scope.
+- _Q: Should the frontend change?_ A: No. `CategoriesTabPanel.tsx` renders children of `Audience` dynamically.
+- _Q: Should we add migration logic inside `seedTags()`?_ A: No. Production doesn't run the seed; a standalone script is the only viable delivery mechanism.
+- _Q: Should the script rename the old row or delete it?_ A: Delete, per the clarified requirement that the combined tag is gone entirely. Delete is also semantically cleaner and naturally idempotent (upserts handle repeat runs without special casing).
+- _Q: What happens if the script runs twice?_ A: First run deletes `Hindu/Buddist`, creates `Hindu` + `Buddhist`, re-tags the affected templates. Second run finds no `Hindu/Buddist` row, logs "already migrated", exits — no further mutations.
+- _Q: What happens if `Hindu` or `Buddhist` already exist before the script runs (e.g., a dev environment where the updated seed ran first)?_ A: Upsert handles it — the existing rows are reused and the script proceeds to tag the old templates against those existing tags.
+- _Q: Do we preserve existing localized `TagName` rows for `Hindu/Buddist`?_ A: No. They are cascade-dropped with the old `Tag`. English-only creation is the scope.
 
 ### Deferred to Implementation
 
@@ -110,7 +110,7 @@ Four templates in production currently carry the `Hindu/Buddist` tag (confirmed 
 
 ## Implementation Units
 
-- [x] **Unit 1: Update the Audience seed list** *(already committed on this branch: `147150233`)*
+- [x] **Unit 1: Update the Audience seed list** _(already committed on this branch: `147150233`)_
 
 **Goal:** Change `apis/api-media/src/workers/seed/service/tag/tag.ts` so the `Audience` children contain `Hindu` and `Buddhist` instead of `Hindu/Buddist`. Fresh environments then receive the correct tags via the seed.
 
@@ -119,21 +119,26 @@ Four templates in production currently carry the `Hindu/Buddist` tag (confirmed 
 **Dependencies:** None.
 
 **Files:**
+
 - Modify: `apis/api-media/src/workers/seed/service/tag/tag.ts`
 
 **Approach:**
+
 - In the `Audience` array passed to `upsertTag`, replace the `'Hindu/Buddist'` string with two entries: `'Hindu'` and `'Buddhist'`, preserving position between `Muslim` and `Atheist/Agnostic`.
 
 **Patterns to follow:**
+
 - The existing array format in the same function.
 
 **Test scenarios:**
+
 - Covered by Unit 2's `tag.spec.ts`.
 
 **Verification:**
+
 - Running the seed locally against a fresh database produces `Hindu` and `Buddhist` tags under `Audience`, no `Hindu/Buddist`.
 
-- [x] **Unit 2: Add a spec for `seedTags`** *(already committed on this branch: `147150233`)*
+- [x] **Unit 2: Add a spec for `seedTags`** _(already committed on this branch: `147150233`)_
 
 **Goal:** Lock in the Audience taxonomy via a new `tag.spec.ts` next to `tag.ts`.
 
@@ -142,18 +147,22 @@ Four templates in production currently carry the `Hindu/Buddist` tag (confirmed 
 **Dependencies:** Unit 1.
 
 **Files:**
+
 - Create: `apis/api-media/src/workers/seed/service/tag/tag.spec.ts`
 
 **Approach:**
+
 - Mirror `apis/api-media/src/workers/seed/service/taxonomy/taxonomy.spec.ts` structure: import `prismaMock`, call `seedTags()`, assert on `prismaMock.tag.upsert` call arguments.
 
 **Test scenarios:**
+
 - Happy path: `seedTags()` calls `prisma.tag.upsert` with `where: { name: 'Hindu' }`.
 - Happy path: `seedTags()` calls `prisma.tag.upsert` with `where: { name: 'Buddhist' }`.
 - Regression guard: `seedTags()` never calls `prisma.tag.upsert` with `where: { name: 'Hindu/Buddist' }`.
 - Spot-check: `seedTags()` also calls `prisma.tag.upsert` for the parent `Audience`.
 
 **Verification:**
+
 - `npx jest --config apis/api-media/jest.config.ts --no-coverage apis/api-media/src/workers/seed/service/tag/tag.spec.ts` passes.
 
 - [ ] **Unit 3: Rewrite the migration script to delete-and-create**
@@ -165,8 +174,9 @@ Four templates in production currently carry the `Hindu/Buddist` tag (confirmed 
 **Dependencies:** None — can run independently of Units 1-2, but ships in the same PR.
 
 **Files:**
-- Modify: `apis/api-media/src/scripts/migrate-hindu-buddhist-tags.ts` *(currently committed with rename logic; rewrite to delete-and-create)*
-- Modify: `apis/api-media/src/scripts/migrate-hindu-buddhist-tags.spec.ts` *(currently committed with rename-era tests; rewrite to match new behavior)*
+
+- Modify: `apis/api-media/src/scripts/migrate-hindu-buddhist-tags.ts` _(currently committed with rename logic; rewrite to delete-and-create)_
+- Modify: `apis/api-media/src/scripts/migrate-hindu-buddhist-tags.spec.ts` _(currently committed with rename-era tests; rewrite to match new behavior)_
 - (No change needed to `apis/api-media/project.json` — the `migrate-hindu-buddhist-tags` nx target is already registered.)
 
 **Approach:**
@@ -185,7 +195,7 @@ Wrap everything in one `prisma.$transaction`.
 
 No collision guards, no rename logic, no filter on `TagName.value` — the delete-and-create model makes those unnecessary.
 
-**Technical design:** *(directional)*
+**Technical design:** _(directional)_
 
     // Pseudo-steps, not final code
     const oldTag = await tx.tag.findUnique({ where: { name: 'Hindu/Buddist' } })
@@ -232,6 +242,7 @@ No collision guards, no rename logic, no filter on `TagName.value` — the delet
     await tx.tag.delete({ where: { id: oldTag.id } })
 
 **Patterns to follow:**
+
 - `apis/api-media/src/scripts/update-arcgt-urls.ts` — entry-point structure, `main()` with try/catch + `process.exit(1)`, `prisma.$disconnect()` in `finally`, `require.main === module` guard.
 - `apis/api-media/src/workers/seed/service/tag/tag.ts` — `upsert` signatures for `Tag` and `TagName`, primary language id `'529'`.
 - Existing spec at `apis/api-media/src/scripts/migrate-hindu-buddhist-tags.spec.ts` — `prismaMock.$transaction.mockImplementation(async (cb: any) => cb(prismaMock))` pattern. Keep the `: any` typing — `Prisma.TransactionClient` narrowing breaks overload resolution against Prisma 7's overloaded `$transaction` signature (verified during the previous review).
@@ -246,9 +257,11 @@ No collision guards, no rename logic, no filter on `TagName.value` — the delet
 - Regression guard: The script does **not** call `tag.update` (previous rename logic must not survive the rewrite).
 
 **Files for tests:**
+
 - Modify: `apis/api-media/src/scripts/migrate-hindu-buddhist-tags.spec.ts`
 
 **Verification:**
+
 - `npx jest --config apis/api-media/jest.config.ts --no-coverage apis/api-media/src/scripts/migrate-hindu-buddhist-tags.spec.ts` passes.
 - Local dry-run against a dev `media` DB with a `Hindu/Buddist` tag plus 1-2 seeded template Taggings produces the expected end state (old gone, new two exist, taggings on both).
 
@@ -261,9 +274,11 @@ No collision guards, no rename logic, no filter on `TagName.value` — the delet
 **Dependencies:** Unit 3.
 
 **Files:**
+
 - Modify: `apis/api-media/src/scripts/README.md`
 
 **Approach:**
+
 - Replace the "Migrate Hindu/Buddhist Tags" section with content covering: Usage, Environment Variables, Process (delete + create + re-tag), Idempotency, Error Handling, and a new **Rollout Procedure** subsection that documents stage-first:
   1. Run `nx run api-media:migrate-hindu-buddhist-tags` against stage `PG_DATABASE_URL_MEDIA`.
   2. Verify: log in to stage admin, open Audience checkbox list → `Hindu/Buddist` absent, `Hindu` + `Buddhist` present. Open each affected stage template and confirm both new tags appear.
@@ -275,12 +290,15 @@ No collision guards, no rename logic, no filter on `TagName.value` — the delet
   5. Repeat the same UI + SQL verifications on prod.
 
 **Patterns to follow:**
+
 - The `## Update Arc.gt URLs Script` section in the same README.
 
 **Test scenarios:**
+
 - Test expectation: none — docs-only change with no behavioral surface.
 
 **Verification:**
+
 - A new team member can follow the README top-to-bottom and complete the stage rollout without external context.
 
 ## System-Wide Impact
@@ -298,14 +316,14 @@ No collision guards, no rename logic, no filter on `TagName.value` — the delet
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
+| Risk                                                                                                     | Mitigation                                                                                                                                                                                                                    |
+| -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | A consumer caches `Tag.id` externally (currently unknown) and breaks when `Hindu`/`Buddhist` get new ids | Mitigation is the stage rollout (R5): if any cache issue exists, stage will show it before prod. Rollback: the script changes are reversible via an inverse script documented in the README's Rollback section (to be added). |
-| The migration is run against prod without first running on stage | R5 mandates stage-first; the README Rollout Procedure calls it out; the PR description will repeat the requirement. |
-| Transaction timeout on an unexpectedly large `Tagging` set | Four templates in prod (confirmed). Stage likely has a similar or smaller count. If this assumption breaks, the transaction will roll back and we split `createMany` into batches — a small code change. |
-| Someone re-introduces the combined name via a future seed change | Unit 2's spec (`tag.spec.ts`) has a regression guard that fails if `'Hindu/Buddist'` is re-added. |
-| Localized `TagName` rows for the old tag (if any) are lost via cascade | Accepted: English-only is in scope; translation team re-adds as needed post-migration. |
-| The rename-era committed code does not match the revised plan | Unit 3 explicitly rewrites the script + spec. Existing commits on the branch will be superseded by a new commit from Unit 3's work. |
+| The migration is run against prod without first running on stage                                         | R5 mandates stage-first; the README Rollout Procedure calls it out; the PR description will repeat the requirement.                                                                                                           |
+| Transaction timeout on an unexpectedly large `Tagging` set                                               | Four templates in prod (confirmed). Stage likely has a similar or smaller count. If this assumption breaks, the transaction will roll back and we split `createMany` into batches — a small code change.                      |
+| Someone re-introduces the combined name via a future seed change                                         | Unit 2's spec (`tag.spec.ts`) has a regression guard that fails if `'Hindu/Buddist'` is re-added.                                                                                                                             |
+| Localized `TagName` rows for the old tag (if any) are lost via cascade                                   | Accepted: English-only is in scope; translation team re-adds as needed post-migration.                                                                                                                                        |
+| The rename-era committed code does not match the revised plan                                            | Unit 3 explicitly rewrites the script + spec. Existing commits on the branch will be superseded by a new commit from Unit 3's work.                                                                                           |
 
 ## Documentation / Operational Notes
 
@@ -323,11 +341,11 @@ No collision guards, no rename logic, no filter on `TagName.value` — the delet
 - PR: https://github.com/JesusFilm/core/pull/9047 (this branch; Units 1 and 2 committed, Units 3 and 4 to be rewritten per this plan).
 - Related code:
   - `apis/api-media/src/workers/seed/service/tag/tag.ts`
-  - `apis/api-media/src/workers/seed/service/tag/tag.spec.ts` *(new; committed)*
-  - `apis/api-media/src/scripts/migrate-hindu-buddhist-tags.ts` *(to be rewritten — Unit 3)*
-  - `apis/api-media/src/scripts/migrate-hindu-buddhist-tags.spec.ts` *(to be rewritten — Unit 3)*
-  - `apis/api-media/src/scripts/README.md` *(to be updated — Unit 4)*
-  - `apis/api-media/project.json` *(already registers `migrate-hindu-buddhist-tags`; no change)*
+  - `apis/api-media/src/workers/seed/service/tag/tag.spec.ts` _(new; committed)_
+  - `apis/api-media/src/scripts/migrate-hindu-buddhist-tags.ts` _(to be rewritten — Unit 3)_
+  - `apis/api-media/src/scripts/migrate-hindu-buddhist-tags.spec.ts` _(to be rewritten — Unit 3)_
+  - `apis/api-media/src/scripts/README.md` _(to be updated — Unit 4)_
+  - `apis/api-media/project.json` _(already registers `migrate-hindu-buddhist-tags`; no change)_
   - `apis/api-media/src/scripts/update-arcgt-urls.ts` (script pattern reference)
   - `apis/api-media/src/workers/server.ts` (NODE_ENV gating of seed worker)
   - `infrastructure/modules/aws/ecs-task/main.tf` + `ecs-task-job/main.tf` (hardcoded `NODE_ENV=production`)
