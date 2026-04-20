@@ -39,13 +39,29 @@ export async function migrateHinduBuddhistTags(): Promise<void> {
       )
     }
 
+    const existingHinduTag = await tx.tag.findUnique({
+      where: { name: RENAMED_TAG_NAME }
+    })
+
+    if (existingHinduTag != null && existingHinduTag.id !== oldTag.id) {
+      console.log(
+        `Found an existing "${RENAMED_TAG_NAME}" tag (likely seed-created). Removing it so the legacy "${OLD_TAG_NAME}" row can be renamed in place and keep its existing taggings.`
+      )
+      await tx.tagName.deleteMany({
+        where: { tagId: existingHinduTag.id }
+      })
+      await tx.tag.delete({
+        where: { id: existingHinduTag.id }
+      })
+    }
+
     console.log(`Renaming tag "${OLD_TAG_NAME}" → "${RENAMED_TAG_NAME}"...`)
     await tx.tag.update({
       where: { id: oldTag.id },
       data: { name: RENAMED_TAG_NAME }
     })
     await tx.tagName.updateMany({
-      where: { tagId: oldTag.id, value: OLD_TAG_NAME },
+      where: { tagId: oldTag.id, languageId: PRIMARY_LANGUAGE_ID },
       data: { value: RENAMED_TAG_NAME }
     })
 
