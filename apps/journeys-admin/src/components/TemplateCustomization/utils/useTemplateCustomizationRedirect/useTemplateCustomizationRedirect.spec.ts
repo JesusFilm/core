@@ -44,7 +44,6 @@ function createParams(
     activeScreen: 'language' as CustomizationScreen,
     isGuest: false,
     guestFlowEnabled: false,
-    hasAnyContent: true,
     ...overrides
   }
 }
@@ -221,69 +220,4 @@ describe('useTemplateCustomizationRedirect', () => {
     })
   })
 
-  describe('no-content redirect', () => {
-    it('redirects to template page with info snackbar when journey has no customisable content', () => {
-      renderHook(() =>
-        useTemplateCustomizationRedirect(
-          createParams({ hasAnyContent: false })
-        )
-      )
-
-      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        'This template has no customisable content. Redirecting to template page.',
-        { variant: 'info', preventDuplicate: true }
-      )
-      expect(mockReplace).toHaveBeenCalledWith('/templates/journey-1')
-    })
-
-    it('does not redirect when journey is still loading (hasAnyContent is undefined)', () => {
-      renderHook(() =>
-        useTemplateCustomizationRedirect(
-          createParams({ hasAnyContent: undefined })
-        )
-      )
-
-      expect(mockReplace).not.toHaveBeenCalledWith('/templates/journey-1')
-      expect(mockEnqueueSnackbar).not.toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({ variant: 'info' })
-      )
-    })
-
-    it('does not redirect when journey has customisable content', () => {
-      renderHook(() =>
-        useTemplateCustomizationRedirect(
-          createParams({ hasAnyContent: true })
-        )
-      )
-
-      expect(mockReplace).not.toHaveBeenCalledWith('/templates/journey-1')
-    })
-
-    it('does not redirect when router is not ready', () => {
-      mockUseRouter.mockReturnValue({
-        isReady: false,
-        query: { journeyId: 'journey-1', screen: 'language' },
-        replace: mockReplace
-      })
-
-      renderHook(() =>
-        useTemplateCustomizationRedirect(
-          createParams({ hasAnyContent: false })
-        )
-      )
-
-      expect(mockReplace).not.toHaveBeenCalledWith('/templates/journey-1')
-    })
-
-    it('does not redirect when journeyId is empty', () => {
-      renderHook(() =>
-        useTemplateCustomizationRedirect(
-          createParams({ journeyId: '', hasAnyContent: false })
-        )
-      )
-
-      expect(mockReplace).not.toHaveBeenCalledWith('/templates/')
-    })
-  })
 })

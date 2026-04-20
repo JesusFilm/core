@@ -87,12 +87,6 @@ export function MultiStepForm(): ReactElement {
     [journey, t, customizableMedia, isGuest]
   )
 
-  // undefined while journey is loading; false once loaded with no resolvable steps
-  const hasAnyContent =
-    journey != null
-      ? hasEditableText || hasCustomizableLinks || hasCustomizableMedia
-      : undefined
-
   const activeScreen = getActiveScreenFromQuery(
     router.query[CUSTOMIZE_SCREEN_QUERY_KEY],
     screens
@@ -116,8 +110,7 @@ export function MultiStepForm(): ReactElement {
     screens,
     activeScreen,
     isGuest,
-    guestFlowEnabled: templateCustomizationGuestFlow === true,
-    hasAnyContent
+    guestFlowEnabled: templateCustomizationGuestFlow === true
   })
 
   async function handleNext(overrideJourneyId?: string): Promise<void> {

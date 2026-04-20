@@ -979,9 +979,6 @@ describe('MultiStepForm', () => {
       })
 
       it('should redirect to first screen when URL has screen not in journey flow', async () => {
-        // Journey has customizable links only — 'text' is not in the resulting
-        // screen list, so the screen-validation redirect fires. hasAnyContent is
-        // true (links exist), so the no-content redirect does NOT fire.
         const journeyWithLinksOnly = {
           ...journey,
           journeyCustomizationDescription: null,
@@ -1020,38 +1017,6 @@ describe('MultiStepForm', () => {
         expect(mockReplace).toHaveBeenCalledWith(
           `/templates/${journeyId}/customize?screen=language`
         )
-      })
-    })
-
-    describe('no-content redirect', () => {
-      it('should redirect to template page when journey has no customisable content', async () => {
-        const journeyWithNoCapabilities = {
-          ...journey,
-          journeyCustomizationDescription: null,
-          journeyCustomizationFields: [],
-          chatButtons: [],
-          blocks: []
-        } as unknown as Journey
-
-        const journeyId = journeyWithNoCapabilities.id
-        setRouterQuery({ journeyId, screen: 'language' }, { isReady: true })
-
-        render(
-          <FlagsProvider flags={defaultFlags}>
-            <SnackbarProvider>
-              <JourneyProvider value={{ journey: journeyWithNoCapabilities }}>
-                <MultiStepForm />
-              </JourneyProvider>
-            </SnackbarProvider>
-          </FlagsProvider>
-        )
-
-        expect(
-          await screen.findByText(
-            'This template has no customisable content. Redirecting to template page.'
-          )
-        ).toBeInTheDocument()
-        expect(mockReplace).toHaveBeenCalledWith(`/templates/${journeyId}`)
       })
     })
 
@@ -1172,8 +1137,6 @@ describe('MultiStepForm', () => {
           }
         })
 
-        // Journey must have content so the no-content guard does not redirect.
-        // This test is specifically about guest vs signed-in routing behaviour.
         const journeyWithTextCapabilities = {
           ...journey,
           journeyCustomizationDescription: 'Hello {{ firstName: John }}!',

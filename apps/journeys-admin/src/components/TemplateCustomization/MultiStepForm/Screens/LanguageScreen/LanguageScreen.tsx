@@ -138,10 +138,10 @@ export function LanguageScreen({
       ([langId, journeyId]) =>
         langId !== currentLanguageId || journeyId === currentJourneyId
     )
-    if (isParentTemplate && journey?.language?.id != null) {
-      mapArray.push([journey.language.id, journey.id ?? ''])
-    }
     const map = Object.fromEntries(mapArray)
+    if (journey?.language?.id != null && journey?.id != null) {
+      map[journey.language.id] = journey.id
+    }
     return map
   })()
   const languagesJourneyMap = {
@@ -364,10 +364,7 @@ export function LanguageScreen({
         languagesJourneyMap?.[selectedLanguageId] == null &&
         selectedLanguageId !== journey?.language?.id
 
-      const journeyId =
-        selectedLanguageId === journey?.language?.id
-          ? journey?.id
-          : (languagesJourneyMap?.[selectedLanguageId] ?? journey?.id)
+      const journeyId = languagesJourneyMap?.[selectedLanguageId] ?? journey?.id
 
       if (shouldSkipDuplicate(journey, values) && !needsTranslation) {
         handleNext()
