@@ -48,9 +48,7 @@ async function backfillBuddhistJourneyTag(): Promise<BackfillStats> {
     )
   }
 
-  console.log(
-    `Media tag IDs: hindu=${hinduTag.id} buddhist=${buddhistTag.id}`
-  )
+  console.log(`Media tag IDs: hindu=${hinduTag.id} buddhist=${buddhistTag.id}`)
 
   const stats: BackfillStats = {
     sourceRows: 0,
@@ -108,10 +106,7 @@ async function main(): Promise<void> {
     console.error('Migration failed:', error)
     process.exitCode = 1
   } finally {
-    await Promise.all([
-      mediaPrisma.$disconnect(),
-      journeysPrisma.$disconnect()
-    ])
+    await Promise.all([mediaPrisma.$disconnect(), journeysPrisma.$disconnect()])
   }
 }
 
