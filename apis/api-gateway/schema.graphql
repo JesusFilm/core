@@ -155,7 +155,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     the editor.
     """
     y: Int
-  ): [Block!]! @join__field(graph: API_JOURNEYS) 
+  ): [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   blockOrderUpdate(
     id: ID!
     parentOrder: Int!
