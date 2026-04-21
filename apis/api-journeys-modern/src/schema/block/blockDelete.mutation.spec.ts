@@ -1,8 +1,8 @@
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { Action, ability } from '../../lib/auth/ability'
-import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 
 jest.mock('../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
@@ -41,10 +41,9 @@ describe('blockDelete', () => {
     fetchBlockWithJourneyAcl
   } = require('../../lib/auth/fetchBlockWithJourneyAcl')
   const mockAbility = ability as jest.MockedFunction<typeof ability>
-  const mockRecalculate =
-    recalculateJourneyCustomizable as jest.MockedFunction<
-      typeof recalculateJourneyCustomizable
-    >
+  const mockRecalculate = recalculateJourneyCustomizable as jest.MockedFunction<
+    typeof recalculateJourneyCustomizable
+  >
 
   const id = 'blockId'
   const journey = { id: 'journeyId' }
@@ -80,7 +79,10 @@ describe('blockDelete', () => {
       block: {
         update: jest
           .fn()
-          .mockResolvedValueOnce({ ...block, deletedAt: new Date().toISOString() })
+          .mockResolvedValueOnce({
+            ...block,
+            deletedAt: new Date().toISOString()
+          })
           .mockResolvedValueOnce(reorderedSibling),
         findMany: jest.fn().mockResolvedValue([sibling])
       },
