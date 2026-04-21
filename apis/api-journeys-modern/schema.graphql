@@ -1812,6 +1812,7 @@ input QrCodesFilter {
 }
 
 type Query {
+  block(id: ID!): Block! @override(from: "api-journeys")
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
