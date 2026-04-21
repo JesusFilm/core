@@ -2,17 +2,21 @@
 
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
 import IconButton from '@mui/material/IconButton'
+import dynamic from 'next/dynamic'
 import { ReactElement, useCallback, useState } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
-import { AiChat } from '../AiChat'
 import { Drawer, DrawerContent } from '../Drawer'
 
-interface AiChatButtonProps {
-  userId?: string
-}
+const AiChat = dynamic(
+  async () =>
+    await import(/* webpackChunkName: 'ai-chat' */ '../AiChat').then(
+      (mod) => mod.AiChat
+    ),
+  { ssr: false }
+)
 
-export function AiChatButton({ userId }: AiChatButtonProps): ReactElement {
+export function AiChatButton(): ReactElement | null {
   const { variant } = useJourney()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -21,7 +25,7 @@ export function AiChatButton({ userId }: AiChatButtonProps): ReactElement {
   }, [])
 
   if (variant === 'admin' || variant === 'embed') {
-    return <></>
+    return null
   }
 
   return (
@@ -50,7 +54,7 @@ export function AiChatButton({ userId }: AiChatButtonProps): ReactElement {
       </IconButton>
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerContent title="AI Chat">
-          <AiChat userId={userId} />
+          <AiChat />
         </DrawerContent>
       </Drawer>
     </>

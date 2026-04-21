@@ -1,0 +1,1 @@
+export { useIsLastCard } from './useIsLastCard'

@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 import { ReactElement } from 'react'
 
@@ -12,6 +11,7 @@ import { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { AiChatButton } from '../AiChatButton'
 import {
   getFooterMobileHeight,
   getTitle,
@@ -28,14 +28,6 @@ import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
 import { HostAvatars } from './HostAvatars'
 import { HostTitleLocation } from './HostTitleLocation'
-
-const LazyAiChatButton = dynamic(
-  async () => {
-    const mod = await import('../AiChatButton')
-    return { default: mod.AiChatButton }
-  },
-  { ssr: false }
-)
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -190,7 +182,7 @@ export function StepFooter({
           )}
           {aiChat && (
             <Box>
-              <LazyAiChatButton />
+              <AiChatButton />
             </Box>
           )}
         </Stack>

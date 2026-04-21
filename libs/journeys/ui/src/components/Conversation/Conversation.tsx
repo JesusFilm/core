@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useRef } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { useStickToBottom } from 'use-stick-to-bottom'
 
 interface ConversationProps {
@@ -6,15 +6,11 @@ interface ConversationProps {
 }
 
 export function Conversation({ children }: ConversationProps): ReactElement {
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const { scrollRef: stickRef, contentRef } = useStickToBottom()
+  const { scrollRef, contentRef } = useStickToBottom()
 
   return (
     <div
-      ref={(node) => {
-        scrollRef.current = node
-        stickRef.current = node
-      }}
+      ref={scrollRef}
       style={{
         flex: 1,
         overflowY: 'auto',

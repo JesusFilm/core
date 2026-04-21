@@ -31,8 +31,11 @@ describe('/api/flags handler', () => {
     jest.clearAllMocks()
   })
 
-  it('returns flags as JSON with no-store cache header', async () => {
-    mockGetFlags.mockResolvedValue({ apologistChat: true, other: false })
+  it('returns only allowlisted flags with no-store cache header', async () => {
+    mockGetFlags.mockResolvedValue({
+      apologistChat: true,
+      internalFlag: true
+    })
 
     const { res, status, json, setHeader } = makeRes()
 
@@ -41,10 +44,10 @@ describe('/api/flags handler', () => {
     expect(mockGetFlags).toHaveBeenCalledTimes(1)
     expect(setHeader).toHaveBeenCalledWith('Cache-Control', 'no-store')
     expect(status).toHaveBeenCalledWith(200)
-    expect(json).toHaveBeenCalledWith({ apologistChat: true, other: false })
+    expect(json).toHaveBeenCalledWith({ apologistChat: true })
   })
 
-  it('returns empty object when LaunchDarkly resolves no flags', async () => {
+  it('defaults allowlisted flags to false when LaunchDarkly resolves no flags', async () => {
     mockGetFlags.mockResolvedValue({})
 
     const { res, status, json } = makeRes()
@@ -52,6 +55,6 @@ describe('/api/flags handler', () => {
     await handler({} as NextApiRequest, res)
 
     expect(status).toHaveBeenCalledWith(200)
-    expect(json).toHaveBeenCalledWith({})
+    expect(json).toHaveBeenCalledWith({ apologistChat: false })
   })
 })

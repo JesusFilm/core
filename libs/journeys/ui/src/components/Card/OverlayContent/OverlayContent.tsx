@@ -2,13 +2,10 @@ import Box from '@mui/material/Box'
 import { SxProps } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 
-import { useBlocks } from '../../../libs/block'
+import { useIsLastCard } from '../../../libs/isLastCard'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getFooterMobileSpacing } from '../utils/getFooterElements'
 import { showHeader } from '../utils/getHeaderElements'
-
-import type { TreeBlock } from '../../../libs/block'
-import type { BlockFields_StepBlock as StepFields } from '../../../libs/block/__generated__/BlockFields'
 
 interface OverlayContentProps {
   children: ReactNode
@@ -75,21 +72,15 @@ export function OverlayContent({
 
   const footerMobileSpacing = getFooterMobileSpacing({ journey, variant })
 
-  // Detect last card: when pinned chat bar is showing, adjust bottom spacing
-  const { blockHistory, getNextBlock, treeBlocks } = useBlocks()
-  const activeBlock = blockHistory[blockHistory.length - 1] as
-    | TreeBlock<StepFields>
-    | undefined
-  const nextBlock = activeBlock != null ? getNextBlock({ activeBlock }) : undefined
-  const isLastCard =
-    nextBlock === undefined &&
-    treeBlocks.length > 0 &&
+  const isLastCard = useIsLastCard()
+  const pinnedChatActive =
+    isLastCard &&
     journey?.showAssistant === true &&
     variant !== 'admin' &&
     variant !== 'embed'
 
   const footerSpacing: SxProps = {
-    mb: { xs: isLastCard ? '120px' : footerMobileSpacing, sm: 10 }
+    mb: { xs: pinnedChatActive ? '120px' : footerMobileSpacing, sm: 10 }
   }
 
   const hasHeader = showHeader(journey, variant)

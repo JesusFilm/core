@@ -2,22 +2,28 @@
 
 import Box from '@mui/material/Box'
 import { SxProps } from '@mui/material/styles'
+import dynamic from 'next/dynamic'
 import { FormEvent, ReactElement, useCallback, useState } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
-import { AiChat } from '../AiChat'
 import { Drawer, DrawerContent } from '../Drawer'
 import { PromptInput } from '../PromptInput'
 
+const AiChat = dynamic(
+  async () =>
+    await import(/* webpackChunkName: 'ai-chat' */ '../AiChat').then(
+      (mod) => mod.AiChat
+    ),
+  { ssr: false }
+)
+
 interface LastCardChatBarProps {
   sx?: SxProps
-  userId?: string
 }
 
 export function LastCardChatBar({
-  sx,
-  userId
-}: LastCardChatBarProps): ReactElement {
+  sx
+}: LastCardChatBarProps): ReactElement | null {
   const { variant } = useJourney()
   const [input, setInput] = useState('')
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -46,7 +52,7 @@ export function LastCardChatBar({
   }, [])
 
   if (variant === 'admin' || variant === 'embed') {
-    return <></>
+    return null
   }
 
   return (
@@ -79,7 +85,7 @@ export function LastCardChatBar({
       {/* Full AiChat drawer — opens on submit with message pre-loaded */}
       <Drawer open={drawerOpen} onOpenChange={handleDrawerOpenChange}>
         <DrawerContent title="AI Chat">
-          <AiChat userId={userId} initialMessage={pendingMessage} />
+          <AiChat initialMessage={pendingMessage} />
         </DrawerContent>
       </Drawer>
     </>
