@@ -372,6 +372,30 @@ describe('TemplateViewHeader', () => {
     })
   })
 
+  it('should open account check dialog for anonymous user on non-customizable journey', async () => {
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: nonCustomizableJourney }}>
+            <TemplateViewHeader
+              isPublisher
+              authUser={{ id: '123' } as unknown as User}
+            />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getAllByRole('button', { name: 'Use This Template' })[0])
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'Login with my account' })
+      ).toBeInTheDocument()
+    })
+    expect(screen.queryByTestId('CopyToTeamDialog')).not.toBeInTheDocument()
+  })
+
   it('should show use this template loading skeleton if journey is undefined', async () => {
     render(
       <MockedProvider>

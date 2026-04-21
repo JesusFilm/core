@@ -307,7 +307,7 @@ export function TemplateCardPreview({
             >
               {t('Use this template to see more!')}
             </Typography>
-            <TemplateActionButton signedIn={authUser?.id != null} />
+            <TemplateActionButton signedIn={authUser?.email != null} />
           </Stack>
           <Box
             sx={{
