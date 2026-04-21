@@ -1,7 +1,8 @@
 'use client'
 
 import Box from '@mui/material/Box'
-import { SxProps } from '@mui/material/styles'
+import { SxProps, useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import { FormEvent, ReactElement, useCallback, useState } from 'react'
 
@@ -25,6 +26,8 @@ export function LastCardChatBar({
   sx
 }: LastCardChatBarProps): ReactElement | null {
   const { variant } = useJourney()
+  const theme = useTheme()
+  const isDesktop = useMediaQuery(theme.breakpoints.up('sm'))
   const [input, setInput] = useState('')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [pendingMessage, setPendingMessage] = useState<string | undefined>(
@@ -84,7 +87,7 @@ export function LastCardChatBar({
 
       {/* Full AiChat drawer — opens on submit with message pre-loaded */}
       <Drawer open={drawerOpen} onOpenChange={handleDrawerOpenChange}>
-        <DrawerContent title="AI Chat">
+        <DrawerContent title={isDesktop ? 'Chat' : 'AI Chat'}>
           <AiChat initialMessage={pendingMessage} />
         </DrawerContent>
       </Drawer>

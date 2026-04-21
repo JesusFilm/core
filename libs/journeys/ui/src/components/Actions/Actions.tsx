@@ -22,8 +22,7 @@ export function Actions({
       sx={{
         display: 'flex',
         gap: 0.5,
-        pl: 6.5,
-        pr: 2,
+        px: 2,
         py: 0.25
       }}
     >
@@ -31,7 +30,7 @@ export function Actions({
         size="small"
         onClick={handleCopy}
         aria-label="Copy message"
-        sx={{ fontSize: 12, color: 'text.secondary', minWidth: 0 }}
+        sx={{ fontSize: 12, color: '#666', minWidth: 0 }}
       >
         Copy
       </Button>
@@ -40,7 +39,7 @@ export function Actions({
           size="small"
           onClick={onRegenerate}
           aria-label="Regenerate response"
-          sx={{ fontSize: 12, color: 'text.secondary', minWidth: 0 }}
+          sx={{ fontSize: 12, color: '#666', minWidth: 0 }}
         >
           Retry
         </Button>
