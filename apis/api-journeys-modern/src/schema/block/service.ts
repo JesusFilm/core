@@ -240,14 +240,20 @@ async function getDuplicateBlockAndChildren(
     if (key === 'nextBlockId') {
       updatedBlockProps[key] = null
     } else if (key.includes('BlockId') || key.includes('IconId')) {
-      const blockId: string | null | undefined = (block as Record<string, unknown>)[key] as string | null | undefined
+      const blockId: string | null | undefined = (
+        block as Record<string, unknown>
+      )[key] as string | null | undefined
       updatedBlockProps[key] = blockId != null ? childIds.get(blockId) : null
     }
     if (key === 'action') {
       const action = omit(block.action, 'parentBlockId') as unknown as Action
       updatedBlockProps[key] = action
     }
-    if (key === 'submitEnabled' && (block as Record<string, unknown>)[key] === true && !isStepBlock) {
+    if (
+      key === 'submitEnabled' &&
+      (block as Record<string, unknown>)[key] === true &&
+      !isStepBlock
+    ) {
       updatedBlockProps[key] = false
     }
   })
@@ -351,8 +357,7 @@ export async function duplicateBlock(
           posterBlockId: newBlock.posterBlockId ?? undefined,
           coverBlockId: newBlock.coverBlockId ?? undefined,
           nextBlockId: newBlock.nextBlockId ?? undefined,
-          pollOptionImageBlockId:
-            newBlock.pollOptionImageBlockId ?? undefined,
+          pollOptionImageBlockId: newBlock.pollOptionImageBlockId ?? undefined,
           action:
             !isActionEmpty && newBlock.action != null
               ? {
@@ -395,8 +400,7 @@ export async function duplicateBlock(
   const defaultDuplicateBlockIndex = siblings.findIndex(
     (s) => s.id === duplicatedBlock.id
   )
-  const insertIndex =
-    parentOrder != null ? parentOrder : siblings.length + 1
+  const insertIndex = parentOrder != null ? parentOrder : siblings.length + 1
   siblings.splice(defaultDuplicateBlockIndex, 1)
   siblings.splice(insertIndex, 0, duplicatedBlock)
   const reorderedBlocks = await reorderSiblings(siblings)

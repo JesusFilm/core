@@ -134,7 +134,10 @@ describe('blockDuplicate', () => {
     prismaMock.block.findUnique.mockResolvedValue(customBlock as any)
     prismaMock.block.findMany
       .mockResolvedValueOnce([])
-      .mockResolvedValue([customBlock as any, { ...duplicatedBlock, id: 'customNewId' } as any])
+      .mockResolvedValue([
+        customBlock as any,
+        { ...duplicatedBlock, id: 'customNewId' } as any
+      ])
     prismaMock.block.create.mockResolvedValue({
       ...duplicatedBlock,
       id: 'customNewId'
