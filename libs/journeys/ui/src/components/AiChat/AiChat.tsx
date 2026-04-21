@@ -2,6 +2,7 @@
 
 import { useChat } from '@ai-sdk/react'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import { DefaultChatTransport, UIMessage } from 'ai'
 import {
   FormEvent,
@@ -52,11 +53,15 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
     []
   )
 
-  const { messages, sendMessage, regenerate, stop, status } = useChat({
+  const { messages, sendMessage, regenerate, stop, status, error } = useChat({
     transport
   })
 
   const isLoading = status === 'submitted' || status === 'streaming'
+
+  const handleRetry = useCallback(() => {
+    void regenerate()
+  }, [regenerate])
 
   useEffect(() => {
     if (
@@ -128,6 +133,25 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
               </Box>
             </Message>
           )}
+        {error != null && !isLoading && (
+          <Box>
+            <Message role="assistant">
+              <Box component="span" sx={{ opacity: 0.7 }}>
+                Something went wrong. Please try again.
+              </Box>
+            </Message>
+            <Box sx={{ display: 'flex', px: 2, py: 0.25 }}>
+              <Button
+                size="small"
+                onClick={handleRetry}
+                aria-label="Retry"
+                sx={{ fontSize: 12, color: 'text.secondary', minWidth: 0 }}
+              >
+                Retry
+              </Button>
+            </Box>
+          </Box>
+        )}
       </Conversation>
 
       <PromptInput
