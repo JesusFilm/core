@@ -1350,6 +1350,15 @@ input MultiselectSubmissionEventCreateInput {
 }
 
 type Mutation {
+  blockDelete(
+    id: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+
+    """drop this parameter after merging teams"""
+    parentBlockId: ID
+  ): [Block!]! @override(from: "api-journeys")
   blockOrderUpdate(
     id: ID!
     parentOrder: Int!

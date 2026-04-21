@@ -127,7 +127,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     parentBlockId: ID
-  ): [Block!]! @join__field(graph: API_JOURNEYS) 
+  ): [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   """
   blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
   """

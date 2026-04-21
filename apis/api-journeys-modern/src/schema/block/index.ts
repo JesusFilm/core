@@ -1,4 +1,5 @@
 // Export all block schemas from a central location
+import './blockDelete.mutation'
 import './blockOrderUpdate.mutation'
 import './button'
 import './card'
