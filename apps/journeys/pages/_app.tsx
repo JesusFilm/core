@@ -11,7 +11,7 @@ import Script from 'next/script'
 import { SSRConfig, appWithTranslation, useTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { SnackbarKey, SnackbarProvider, closeSnackbar } from 'notistack'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
@@ -52,23 +52,6 @@ function JourneysApp({
   })
 }: JourneysAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys')
-  const [flags, setFlags] = useState<{ [key: string]: boolean }>({})
-
-  useEffect(() => {
-    let cancelled = false
-    void fetch('/api/flags')
-      .then(async (response) => {
-        if (!response.ok) return
-        const data = (await response.json()) as { [key: string]: boolean }
-        if (!cancelled) setFlags(data)
-      })
-      .catch(() => {
-        // Fail closed — keep flags at {} so gated features stay off.
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
 
   useEffect(() => {
     // Remove the server-side injected CSS.
@@ -91,7 +74,7 @@ function JourneysApp({
   const apolloClient = useApollo()
 
   return (
-    <FlagsProvider flags={flags}>
+    <FlagsProvider flags={pageProps.flags}>
       <AppCacheProvider emotionCache={emotionCache}>
         <GlobalStyles styles="@layer theme, base, mui, css, components, utilities;" />
         <DefaultSeo

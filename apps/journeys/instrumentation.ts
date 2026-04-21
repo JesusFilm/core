@@ -3,9 +3,9 @@
  * instrumentation.
  *
  * Without this file, `nx serve journeys` exits cleanly (code 0) shortly after
- * serving the initial page + `/api/flags` request — Nx reports
- * "Successfully ran target serve" and the dev server dies. Reproduced 3/3
- * on Next 15.5.7 + Node v24.14.0 in this repo.
+ * serving the initial requests — Nx reports "Successfully ran target serve"
+ * and the dev server dies. Reproduced 3/3 on Next 15.5.7 + Node v24.14.0 in
+ * this repo.
  *
  * Creating `instrumentation.ts` and exporting an (even empty) `register()`
  * function triggers Next's instrumentation hook and prevents the shutdown.
@@ -20,6 +20,8 @@
  *
  * Safe to delete once upgrading Node / Next resolves the underlying
  * behaviour. Revisit when bumping either.
+ *
+ * Follow-up: NES-1596 (Cleanup & Tech Debt).
  */
 export async function register(): Promise<void> {
   // intentionally empty — presence of the register export is the workaround
