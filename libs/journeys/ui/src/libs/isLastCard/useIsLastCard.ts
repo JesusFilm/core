@@ -1,5 +1,4 @@
 import { useBlocks } from '../block'
-
 import type { TreeBlock } from '../block'
 import type { BlockFields_StepBlock as StepFields } from '../block/__generated__/BlockFields'
 

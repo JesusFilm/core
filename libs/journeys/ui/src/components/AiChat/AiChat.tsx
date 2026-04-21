@@ -4,6 +4,7 @@ import { useChat } from '@ai-sdk/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { DefaultChatTransport, UIMessage } from 'ai'
+import { useTranslation } from 'next-i18next'
 import {
   FormEvent,
   ReactElement,
@@ -36,6 +37,7 @@ function getTextFromMessage(message: UIMessage): string {
 }
 
 export function AiChat({ initialMessage }: AiChatProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   const { journey } = useJourney()
   const [input, setInput] = useState('')
   const initialMessageSent = useRef(false)
@@ -137,17 +139,17 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
           <Box>
             <Message role="assistant">
               <Box component="span" sx={{ opacity: 0.7 }}>
-                Something went wrong. Please try again.
+                {t('Something went wrong. Please try again.')}
               </Box>
             </Message>
             <Box sx={{ display: 'flex', px: 2, py: 0.25 }}>
               <Button
                 size="small"
                 onClick={handleRetry}
-                aria-label="Retry"
+                aria-label={t('Retry')}
                 sx={{ fontSize: 12, color: 'text.secondary', minWidth: 0 }}
               >
-                Retry
+                {t('Retry')}
               </Button>
             </Box>
           </Box>

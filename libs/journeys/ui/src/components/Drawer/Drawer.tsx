@@ -1,7 +1,7 @@
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
 import MuiDrawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
@@ -20,7 +20,7 @@ interface DrawerProps {
 
 interface DrawerContentProps {
   children: ReactNode
-  title?: string
+  title: string
 }
 
 export function Drawer({
@@ -90,14 +90,12 @@ export function DrawerContent({
           <CloseRoundedIcon fontSize="small" />
         </IconButton>
       </Box>
-      {title != null && (
-        <Typography
-          variant="subtitle1"
-          sx={{ fontWeight: 600, px: 2, pb: 1, color: '#1a1a1a' }}
-        >
-          {title}
-        </Typography>
-      )}
+      <Typography
+        variant="subtitle1"
+        sx={{ fontWeight: 600, px: 2, pb: 1, color: '#1a1a1a' }}
+      >
+        {title}
+      </Typography>
       <Box
         sx={{
           flex: 1,

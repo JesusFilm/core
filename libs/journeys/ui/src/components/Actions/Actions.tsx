@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback } from 'react'
 
 interface ActionsProps {
@@ -13,6 +14,8 @@ export function Actions({
   onRegenerate,
   isLastAssistantMessage
 }: ActionsProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
+
   const handleCopy = useCallback(async () => {
     await navigator.clipboard.writeText(content)
   }, [content])
@@ -29,19 +32,19 @@ export function Actions({
       <Button
         size="small"
         onClick={handleCopy}
-        aria-label="Copy message"
+        aria-label={t('Copy message')}
         sx={{ fontSize: 12, color: '#666', minWidth: 0 }}
       >
-        Copy
+        {t('Copy')}
       </Button>
       {isLastAssistantMessage && onRegenerate != null && (
         <Button
           size="small"
           onClick={onRegenerate}
-          aria-label="Regenerate response"
+          aria-label={t('Regenerate response')}
           sx={{ fontSize: 12, color: '#666', minWidth: 0 }}
         >
-          Retry
+          {t('Retry')}
         </Button>
       )}
     </Box>
