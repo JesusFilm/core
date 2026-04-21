@@ -1,5 +1,7 @@
 import { prismaMock } from '../../test/prismaMock'
 
+import { extendHinduBuddhistTemplates } from './extend-hindu-buddhist-templates'
+
 jest.mock('@core/prisma/media/client', () => ({
   prisma: {
     tag: {
@@ -12,8 +14,6 @@ jest.mock('@core/prisma/media/client', () => ({
 const { prisma: mockPrismaMedia } = jest.requireMock(
   '@core/prisma/media/client'
 )
-
-import { extendHinduBuddhistTemplates } from './extend-hindu-buddhist-templates'
 
 const HINDU_TAG = {
   id: 'hindu-tag-id',

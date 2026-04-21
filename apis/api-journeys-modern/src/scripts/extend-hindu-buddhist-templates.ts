@@ -82,7 +82,9 @@ export async function extendHinduBuddhistTemplates(
   }
 
   for (const journeyId of affectedJourneyIds) {
-    console.log(`  ${dryRun ? 'Would add' : 'Adding'} Buddhist JourneyTag for journey ${journeyId}.`)
+    console.log(
+      `  ${dryRun ? 'Would add' : 'Adding'} Buddhist JourneyTag for journey ${journeyId}.`
+    )
   }
 
   if (dryRun) {
