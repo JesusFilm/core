@@ -24,7 +24,6 @@ export interface JourneyForTemplate {
   customizable?: boolean | null
   fromTemplateId?: string | null
   language: {
-    id: string
     name: Array<{ value: string; primary: boolean }>
   }
   blocks?: unknown[] | null
@@ -86,8 +85,6 @@ export function CreateJourneyButton({
         journeyLanguageName: string
         textLanguageId: string
         textLanguageName: string
-        userLanguageId?: string
-        userLanguageName?: string
       }
     | undefined
   >(undefined)
@@ -200,20 +197,16 @@ export function CreateJourneyButton({
         }
 
         // Translation needed - set up subscription and wait
-        const currentLanguageName =
-          journeyDataToUse.language.name.find(({ primary }) => !primary)
-            ?.value ?? ''
-
         setPendingNavigationId(newJourneyId)
         setTranslationVariables({
           journeyId: newJourneyId,
           name: journeyDataToUse.title,
-          journeyLanguageName: currentLanguageName,
+          journeyLanguageName:
+            journeyDataToUse.language.name.find(({ primary }) => !primary)
+              ?.value ?? '',
           textLanguageId: selectedLanguage.id,
           textLanguageName:
-            selectedLanguage.nativeName ?? selectedLanguage.localName ?? '',
-          userLanguageId: journeyDataToUse.language.id,
-          userLanguageName: currentLanguageName
+            selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
         })
 
         // Don't close dialog or navigate yet - wait for translation to complete

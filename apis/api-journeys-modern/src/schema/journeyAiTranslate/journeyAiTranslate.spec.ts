@@ -6,7 +6,6 @@ import { Action, ability } from '../../lib/auth/ability'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
-import { translateCustomizationFields } from './translateCustomizationFields/translateCustomizationFields'
 
 // Mock all external dependencies
 jest.mock('@ai-sdk/google', () => ({
@@ -38,13 +37,6 @@ jest.mock('../../lib/auth/ability', () => ({
 jest.mock('./getCardBlocksContent', () => ({
   getCardBlocksContent: jest.fn()
 }))
-
-jest.mock(
-  './translateCustomizationFields/translateCustomizationFields',
-  () => ({
-    translateCustomizationFields: jest.fn()
-  })
-)
 
 // Mock utility to create AsyncIterator for testing
 function createMockAsyncIterator<T>(items: T[]): AsyncIterable<T> {
@@ -78,10 +70,6 @@ describe('journeyAiTranslateCreate mutation', () => {
   const mockGetCardBlocksContent = getCardBlocksContent as jest.MockedFunction<
     typeof getCardBlocksContent
   >
-  const mockTranslateCustomizationFields =
-    translateCustomizationFields as jest.MockedFunction<
-      typeof translateCustomizationFields
-    >
 
   // Sample data
   const mockJourneyId = 'journey123'
@@ -98,24 +86,6 @@ describe('journeyAiTranslateCreate mutation', () => {
     id: mockJourneyId,
     title: 'Original Journey Title',
     description: 'Original journey description',
-    journeyCustomizationDescription:
-      'Welcome {{ user_name }}! Your event is on {{ event_date }}.',
-    journeyCustomizationFields: [
-      {
-        id: 'field1',
-        journeyId: mockJourneyId,
-        key: 'user_name',
-        value: 'John Doe',
-        defaultValue: 'Guest'
-      },
-      {
-        id: 'field2',
-        journeyId: mockJourneyId,
-        key: 'event_date',
-        value: 'January 15, 2024',
-        defaultValue: null
-      }
-    ],
     blocks: [
       {
         id: 'card1',
@@ -256,29 +226,6 @@ describe('journeyAiTranslateCreate mutation', () => {
     } as any)
 
     mockGetCardBlocksContent.mockResolvedValue(mockCardBlocksContent)
-
-    // Mock translateCustomizationFields
-    mockTranslateCustomizationFields.mockResolvedValue({
-      translatedDescription:
-        '¡Bienvenido {{ user_name }}! Tu evento es el {{ event_date }}.',
-      translatedFields: [
-        {
-          id: 'field1',
-          key: 'user_name',
-          translatedValue: 'Juan Pérez',
-          translatedDefaultValue: 'Invitado'
-        },
-        {
-          id: 'field2',
-          key: 'event_date',
-          translatedValue: '15 de enero de 2024',
-          translatedDefaultValue: null
-        }
-      ]
-    })
-
-    // Mock journeyCustomizationField.update
-    prismaMock.journeyCustomizationField.update.mockResolvedValue({} as any)
   })
 
   it('should translate a journey successfully', async () => {
@@ -295,8 +242,7 @@ describe('journeyAiTranslateCreate mutation', () => {
       where: { id: mockInput.journeyId },
       include: expect.objectContaining({
         blocks: true,
-        userJourneys: true,
-        journeyCustomizationFields: true
+        userJourneys: true
       })
     })
 
@@ -370,49 +316,6 @@ describe('journeyAiTranslateCreate mutation', () => {
         })
       )
     })
-
-    // Verify customization fields translation was called
-    expect(mockTranslateCustomizationFields).toHaveBeenCalledWith({
-      journeyCustomizationDescription:
-        mockJourney.journeyCustomizationDescription,
-      journeyCustomizationFields: mockJourney.journeyCustomizationFields,
-      sourceLanguageName: mockInput.journeyLanguageName,
-      targetLanguageName: mockInput.textLanguageName,
-      descriptionTargetLanguageName: mockInput.textLanguageName,
-      defaultValueTargetLanguageName: mockInput.textLanguageName,
-      journeyAnalysis: expect.any(String)
-    })
-
-    // Verify customization fields were updated
-    expect(prismaMock.journeyCustomizationField.update).toHaveBeenCalledTimes(2)
-    expect(prismaMock.journeyCustomizationField.update).toHaveBeenCalledWith({
-      where: { id: 'field1' },
-      data: {
-        value: 'Juan Pérez',
-        defaultValue: 'Invitado'
-      }
-    })
-    expect(prismaMock.journeyCustomizationField.update).toHaveBeenCalledWith({
-      where: { id: 'field2' },
-      data: {
-        value: '15 de enero de 2024',
-        defaultValue: null
-      }
-    })
-
-    // Verify journey was updated with translated customization description
-    expect(prismaMock.journey.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id: mockInput.journeyId },
-        data: expect.objectContaining({
-          title: mockAnalysisAndTranslation.title,
-          description: mockAnalysisAndTranslation.description,
-          languageId: mockInput.textLanguageId,
-          journeyCustomizationDescription:
-            '¡Bienvenido {{ user_name }}! Tu evento es el {{ event_date }}.'
-        })
-      })
-    )
 
     // Verify the result
     expect(result).toEqual({
@@ -502,85 +405,6 @@ describe('journeyAiTranslateCreate mutation', () => {
     })
 
     expect(prismaMock.journey.update).not.toHaveBeenCalled()
-  })
-
-  it('should handle journey with no customization description', async () => {
-    mockTranslateCustomizationFields.mockResolvedValueOnce({
-      translatedDescription: null,
-      translatedFields: [
-        {
-          id: 'field1',
-          key: 'user_name',
-          translatedValue: 'Juan Pérez',
-          translatedDefaultValue: 'Invitado'
-        }
-      ]
-    })
-
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
-      ...mockJourney,
-      journeyCustomizationDescription: null
-    } as any)
-
-    await authClient({
-      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
-      variables: {
-        input: mockInput
-      }
-    })
-
-    // Should still succeed even without customization description
-    expect(mockTranslateCustomizationFields).toHaveBeenCalledWith(
-      expect.objectContaining({
-        journeyCustomizationDescription: null
-      })
-    )
-  })
-
-  it('should use userLanguageName for description translation when provided', async () => {
-    const inputWithUserLanguage = {
-      ...mockInput,
-      userLanguageId: 'userLang789',
-      userLanguageName: 'French'
-    }
-
-    await authClient({
-      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
-      variables: {
-        input: inputWithUserLanguage
-      }
-    })
-
-    expect(mockTranslateCustomizationFields).toHaveBeenCalledWith({
-      journeyCustomizationDescription:
-        mockJourney.journeyCustomizationDescription,
-      journeyCustomizationFields: mockJourney.journeyCustomizationFields,
-      sourceLanguageName: inputWithUserLanguage.journeyLanguageName,
-      targetLanguageName: inputWithUserLanguage.textLanguageName,
-      descriptionTargetLanguageName: 'French',
-      defaultValueTargetLanguageName: inputWithUserLanguage.textLanguageName,
-      journeyAnalysis: expect.any(String)
-    })
-  })
-
-  it('should fall back to textLanguageName for description translation when userLanguageName not provided', async () => {
-    await authClient({
-      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
-      variables: {
-        input: mockInput
-      }
-    })
-
-    expect(mockTranslateCustomizationFields).toHaveBeenCalledWith({
-      journeyCustomizationDescription:
-        mockJourney.journeyCustomizationDescription,
-      journeyCustomizationFields: mockJourney.journeyCustomizationFields,
-      sourceLanguageName: mockInput.journeyLanguageName,
-      targetLanguageName: mockInput.textLanguageName,
-      descriptionTargetLanguageName: mockInput.textLanguageName,
-      defaultValueTargetLanguageName: mockInput.textLanguageName,
-      journeyAnalysis: expect.any(String)
-    })
   })
 
   it('should not require description translation if original has no description', async () => {
@@ -743,10 +567,6 @@ describe('journeyAiTranslateCreateSubscription', () => {
   const mockGetCardBlocksContent = getCardBlocksContent as jest.MockedFunction<
     typeof getCardBlocksContent
   >
-  const mockTranslateCustomizationFields =
-    translateCustomizationFields as jest.MockedFunction<
-      typeof translateCustomizationFields
-    >
 
   // Sample data
   const mockJourneyId = 'journey123'
@@ -765,24 +585,6 @@ describe('journeyAiTranslateCreateSubscription', () => {
     description: 'Original journey description',
     seoTitle: 'Original SEO Title',
     seoDescription: 'Original SEO Description',
-    journeyCustomizationDescription:
-      'Welcome {{ user_name }}! Your event is on {{ event_date }}.',
-    journeyCustomizationFields: [
-      {
-        id: 'field1',
-        journeyId: mockJourneyId,
-        key: 'user_name',
-        value: 'John Doe',
-        defaultValue: 'Guest'
-      },
-      {
-        id: 'field2',
-        journeyId: mockJourneyId,
-        key: 'event_date',
-        value: 'January 15, 2024',
-        defaultValue: null
-      }
-    ],
     blocks: [
       {
         id: 'card1',
@@ -894,29 +696,6 @@ describe('journeyAiTranslateCreateSubscription', () => {
         }
       ])
     } as any)
-
-    // Mock translateCustomizationFields
-    mockTranslateCustomizationFields.mockResolvedValue({
-      translatedDescription:
-        '¡Bienvenido {{ user_name }}! Tu evento es el {{ event_date }}.',
-      translatedFields: [
-        {
-          id: 'field1',
-          key: 'user_name',
-          translatedValue: 'Juan Pérez',
-          translatedDefaultValue: 'Invitado'
-        },
-        {
-          id: 'field2',
-          key: 'event_date',
-          translatedValue: '15 de enero de 2024',
-          translatedDefaultValue: null
-        }
-      ]
-    })
-
-    // Mock journeyCustomizationField.update
-    prismaMock.journeyCustomizationField.update.mockResolvedValue({} as any)
   })
 
   it('should validate subscription includes SEO fields in schema', () => {
@@ -958,41 +737,5 @@ describe('journeyAiTranslateCreateSubscription', () => {
     )
     expect(radioOption).toBeDefined()
     expect(radioOption?.parentBlockId).toBe('radio1')
-  })
-
-  it('should translate customization fields in subscription', async () => {
-    // Verify that translateCustomizationFields is called with correct parameters
-    expect(mockTranslateCustomizationFields).toBeDefined()
-
-    // The function should be called during the subscription flow
-    // This is verified by the mock setup in beforeEach
-    expect(
-      mockTranslateCustomizationFields.mock.calls.length
-    ).toBeGreaterThanOrEqual(0)
-  })
-
-  it('should handle journey with no customization fields', async () => {
-    const journeyWithoutCustomization = {
-      ...mockJourney,
-      journeyCustomizationDescription: null,
-      journeyCustomizationFields: []
-    }
-
-    prismaMock.journey.findUnique.mockResolvedValueOnce(
-      journeyWithoutCustomization as any
-    )
-
-    mockTranslateCustomizationFields.mockResolvedValueOnce({
-      translatedDescription: null,
-      translatedFields: []
-    })
-
-    // The subscription should handle this gracefully
-    expect(journeyWithoutCustomization.journeyCustomizationFields).toHaveLength(
-      0
-    )
-    expect(
-      journeyWithoutCustomization.journeyCustomizationDescription
-    ).toBeNull()
   })
 })

@@ -68,8 +68,6 @@ export function TranslateJourneyDialog({
         journeyLanguageName: string
         textLanguageId: string
         textLanguageName: string
-        userLanguageId?: string
-        userLanguageName?: string
       }
     | undefined
   >(undefined)
@@ -155,19 +153,16 @@ export function TranslateJourneyDialog({
       })
 
       if (duplicateData?.journeyDuplicate?.id) {
-        const currentLanguageName =
-          journeyData.language.name.find(({ primary }) => !primary)?.value ?? ''
-
         // Start the translation subscription
         setTranslationVariables({
           journeyId: duplicateData.journeyDuplicate.id,
           name: `${journeyData.title}`,
-          journeyLanguageName: currentLanguageName,
+          journeyLanguageName:
+            journeyData.language.name.find(({ primary }) => !primary)?.value ??
+            '',
           textLanguageId: selectedLanguage.id,
           textLanguageName:
-            selectedLanguage.nativeName ?? selectedLanguage.localName ?? '',
-          userLanguageId: journeyData.language.id,
-          userLanguageName: currentLanguageName
+            selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
         })
 
         // The subscription will handle the completion and success message

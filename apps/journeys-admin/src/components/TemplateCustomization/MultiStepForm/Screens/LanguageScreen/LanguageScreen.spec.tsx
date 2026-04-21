@@ -9,10 +9,7 @@ import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
-import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateSubscription/supportedLanguages'
-import { JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE } from '@core/journeys/ui/useJourneyCustomizationDescriptionTranslateMutation'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
-import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
@@ -189,54 +186,6 @@ const mockTeamCreate: MockedResponse<TeamCreate, TeamCreateVariables> = {
         publicTitle: 'My Team',
         userTeams: [],
         customDomains: []
-      }
-    }
-  }
-}
-
-function createGetLanguagesMock(
-  extraLanguages: Array<{
-    id: string
-    slug: string
-    value: string
-  }> = []
-) {
-  return {
-    request: {
-      query: GET_LANGUAGES,
-      variables: {
-        languageId: '529',
-        where: { ids: [...SUPPORTED_LANGUAGE_IDS] }
-      }
-    },
-    result: {
-      data: {
-        languages: [
-          {
-            __typename: 'Language' as const,
-            id: '529',
-            slug: 'english',
-            name: [
-              {
-                __typename: 'LanguageName' as const,
-                value: 'English',
-                primary: true
-              }
-            ]
-          },
-          ...extraLanguages.map((lang) => ({
-            __typename: 'Language' as const,
-            id: lang.id,
-            slug: lang.slug,
-            name: [
-              {
-                __typename: 'LanguageName' as const,
-                value: lang.value,
-                primary: true
-              }
-            ]
-          }))
-        ]
       }
     }
   }
@@ -465,9 +414,6 @@ describe('LanguageScreen', () => {
       <MockedProvider
         mocks={[
           mockGetLastActiveTeamIdAndTeams,
-          createGetLanguagesMock([
-            { id: 'language-2', slug: 'spanish', value: 'Spanish' }
-          ]),
           {
             request: {
               ...mockJourneyDuplicate.request,
@@ -1025,13 +971,6 @@ describe('LanguageScreen', () => {
       <MockedProvider
         mocks={[
           mockGetLastActiveTeamIdAndTeams,
-          createGetLanguagesMock([
-            {
-              id: 'language-duplicate',
-              slug: 'spanish',
-              value: 'Spanish'
-            }
-          ]),
           mockChildJourneysWithDuplicateLanguage,
           mockParentJourneysForDuplicateLanguage,
           mockJourneyDuplicateForDuplicateLanguage,
