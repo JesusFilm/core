@@ -31,8 +31,6 @@ export const LOCALE_LANGUAGES: Record<string, string> = {
 
 const SUPPORTED_LOCALES = Object.keys(LOCALE_LANGUAGES)
 
-const PUBLIC_PATHS = ['/users/sign-in']
-
 interface LanguagePriority {
   code: string
   priority: number
@@ -151,19 +149,6 @@ function handleLocaleRedirect(
     : NextResponse.redirect(redirectUrl)
   response.cookies.set('NEXT_LOCALE', `${COOKIE_FINGERPRINT}---${locale}`)
   return response
-}
-
-function isPublicPath(req: NextRequest): boolean {
-  const pathname = req.nextUrl.pathname
-  return PUBLIC_PATHS.some(
-    (p) =>
-      pathname === p ||
-      pathname.match(
-        new RegExp(
-          `^/[a-z]{2}(-[A-Za-z]+(-[A-Za-z]+)?)?${p.replace('/', '\\/')}$`
-        )
-      )
-  )
 }
 
 export default async function middleware(
