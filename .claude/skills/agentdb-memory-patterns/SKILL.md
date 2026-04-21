@@ -1,6 +1,6 @@
 ---
-name: "AgentDB Memory Patterns"
-description: "Implement persistent memory patterns for AI agents using AgentDB. Includes session memory, long-term storage, pattern learning, and context management. Use when building stateful agents, chat systems, or intelligent assistants."
+name: 'AgentDB Memory Patterns'
+description: 'Implement persistent memory patterns for AI agents using AgentDB. Includes session memory, long-term storage, pattern learning, and context management. Use when building stateful agents, chat systems, or intelligent assistants.'
 ---
 
 # AgentDB Memory Patterns
@@ -65,16 +65,16 @@ npx agentdb@latest create-plugin -t decision-transformer -n my-agent
 ## Quick Start with API
 
 ```typescript
-import { createAgentDBAdapter } from 'agentic-flow/reasoningbank';
+import { createAgentDBAdapter } from 'agentic-flow/reasoningbank'
 
 // Initialize with default configuration
 const adapter = await createAgentDBAdapter({
   dbPath: '.agentdb/reasoningbank.db',
-  enableLearning: true,      // Enable learning plugins
-  enableReasoning: true,      // Enable reasoning agents
+  enableLearning: true, // Enable learning plugins
+  enableReasoning: true, // Enable reasoning agents
   quantizationType: 'scalar', // binary | scalar | product | none
-  cacheSize: 1000,            // In-memory cache
-});
+  cacheSize: 1000 // In-memory cache
+})
 
 // Store interaction memory
 const patternId = await adapter.insertPattern({
@@ -93,21 +93,22 @@ const patternId = await adapter.insertPattern({
   usage_count: 1,
   success_count: 1,
   created_at: Date.now(),
-  last_used: Date.now(),
-});
+  last_used: Date.now()
+})
 
 // Retrieve context with reasoning
 const context = await adapter.retrieveWithReasoning(queryEmbedding, {
   domain: 'conversation',
   k: 10,
-  useMMR: true,              // Maximal Marginal Relevance
-  synthesizeContext: true,    // Generate rich context
-});
+  useMMR: true, // Maximal Marginal Relevance
+  synthesizeContext: true // Generate rich context
+})
 ```
 
 ## Memory Patterns
 
 ### 1. Session Memory
+
 ```typescript
 class SessionMemory {
   async storeMessage(role: string, content: string) {
@@ -116,7 +117,7 @@ class SessionMemory {
       role,
       content,
       timestamp: Date.now()
-    });
+    })
   }
 
   async getSessionHistory(limit = 20) {
@@ -124,12 +125,13 @@ class SessionMemory {
       filters: { sessionId: this.sessionId },
       orderBy: 'timestamp',
       limit
-    });
+    })
   }
 }
 ```
 
 ### 2. Long-Term Memory
+
 ```typescript
 // Store important facts
 await db.storeFact({
@@ -138,15 +140,16 @@ await db.storeFact({
   value: 'English',
   confidence: 1.0,
   source: 'explicit'
-});
+})
 
 // Retrieve facts
 const prefs = await db.getFacts({
   category: 'user_preference'
-});
+})
 ```
 
 ### 3. Pattern Learning
+
 ```typescript
 // Learn from successful interactions
 await db.storePattern({
@@ -154,33 +157,35 @@ await db.storePattern({
   response: 'provide_formatted_time',
   success: true,
   context: { timezone: 'UTC' }
-});
+})
 
 // Apply learned patterns
-const pattern = await db.matchPattern(currentContext);
+const pattern = await db.matchPattern(currentContext)
 ```
 
 ## Advanced Patterns
 
 ### Hierarchical Memory
+
 ```typescript
 // Organize memory in hierarchy
 await memory.organize({
-  immediate: recentMessages,    // Last 10 messages
-  shortTerm: sessionContext,    // Current session
-  longTerm: importantFacts,     // Persistent facts
-  semantic: embeddedKnowledge   // Vector search
-});
+  immediate: recentMessages, // Last 10 messages
+  shortTerm: sessionContext, // Current session
+  longTerm: importantFacts, // Persistent facts
+  semantic: embeddedKnowledge // Vector search
+})
 ```
 
 ### Memory Consolidation
+
 ```typescript
 // Periodically consolidate memories
 await memory.consolidate({
-  strategy: 'importance',       // Keep important memories
-  maxSize: 10000,              // Size limit
-  minScore: 0.5                // Relevance threshold
-});
+  strategy: 'importance', // Keep important memories
+  maxSize: 10000, // Size limit
+  minScore: 0.5 // Relevance threshold
+})
 ```
 
 ## CLI Operations
@@ -229,32 +234,32 @@ npx agentdb@latest benchmark
 ## Integration with ReasoningBank
 
 ```typescript
-import { createAgentDBAdapter, migrateToAgentDB } from 'agentic-flow/reasoningbank';
+import { createAgentDBAdapter, migrateToAgentDB } from 'agentic-flow/reasoningbank'
 
 // Migrate from legacy ReasoningBank
 const result = await migrateToAgentDB(
-  '.swarm/memory.db',           // Source (legacy)
-  '.agentdb/reasoningbank.db'   // Destination (AgentDB)
-);
+  '.swarm/memory.db', // Source (legacy)
+  '.agentdb/reasoningbank.db' // Destination (AgentDB)
+)
 
-console.log(`✅ Migrated ${result.patternsMigrated} patterns`);
+console.log(`✅ Migrated ${result.patternsMigrated} patterns`)
 
 // Train learning model
 const adapter = await createAgentDBAdapter({
-  enableLearning: true,
-});
+  enableLearning: true
+})
 
 await adapter.train({
   epochs: 50,
-  batchSize: 32,
-});
+  batchSize: 32
+})
 
 // Get optimal strategy with reasoning
 const result = await adapter.retrieveWithReasoning(queryEmbedding, {
   domain: 'task-planning',
   synthesizeContext: true,
-  optimizeMemory: true,
-});
+  optimizeMemory: true
+})
 ```
 
 ## Learning Plugins
@@ -303,6 +308,7 @@ npx agentdb@latest plugin-info <name>
 ## Troubleshooting
 
 ### Issue: Memory growing too large
+
 ```bash
 # Check database size
 npx agentdb@latest stats ./agents.db
@@ -312,12 +318,14 @@ npx agentdb@latest stats ./agents.db
 ```
 
 ### Issue: Slow search performance
+
 ```bash
 # Enable HNSW indexing and caching
 # Results: <100µs search time
 ```
 
 ### Issue: Migration from legacy ReasoningBank
+
 ```bash
 # Automatic migration with validation
 npx agentdb@latest migrate --source .swarm/memory.db

@@ -197,20 +197,20 @@ def analyze(text:, count:, score:, enabled:, threshold:)
 end
 ```
 
-| Sorbet Type      | JSON Schema                                        |
-|------------------|----------------------------------------------------|
-| `String`         | `{"type": "string"}`                               |
-| `Integer`        | `{"type": "integer"}`                              |
-| `Float`          | `{"type": "number"}`                               |
-| `Numeric`        | `{"type": "number"}`                               |
-| `T::Boolean`     | `{"type": "boolean"}`                              |
-| `T::Enum`        | `{"type": "string", "enum": [...]}`                |
-| `T::Struct`      | `{"type": "object", "properties": {...}}`          |
-| `T::Array[Type]` | `{"type": "array", "items": {...}}`                |
-| `T::Hash[K, V]`  | `{"type": "object", "additionalProperties": {...}}`|
-| `T.nilable(Type)`| `{"type": [original, "null"]}`                     |
-| `T.any(T1, T2)`  | `{"oneOf": [{...}, {...}]}`                        |
-| `T.class_of(X)`  | `{"type": "string"}`                               |
+| Sorbet Type       | JSON Schema                                         |
+| ----------------- | --------------------------------------------------- |
+| `String`          | `{"type": "string"}`                                |
+| `Integer`         | `{"type": "integer"}`                               |
+| `Float`           | `{"type": "number"}`                                |
+| `Numeric`         | `{"type": "number"}`                                |
+| `T::Boolean`      | `{"type": "boolean"}`                               |
+| `T::Enum`         | `{"type": "string", "enum": [...]}`                 |
+| `T::Struct`       | `{"type": "object", "properties": {...}}`           |
+| `T::Array[Type]`  | `{"type": "array", "items": {...}}`                 |
+| `T::Hash[K, V]`   | `{"type": "object", "additionalProperties": {...}}` |
+| `T.nilable(Type)` | `{"type": [original, "null"]}`                      |
+| `T.any(T1, T2)`   | `{"oneOf": [{...}, {...}]}`                         |
+| `T.class_of(X)`   | `{"type": "string"}`                                |
 
 ### T::Enum Parameters
 
@@ -330,16 +330,16 @@ end
 
 `DSPy::Tools::TextProcessingToolset` provides Unix-style text analysis and manipulation operations. Toolset name prefix: `text`.
 
-| Tool Name                         | Method            | Description                                |
-|-----------------------------------|-------------------|--------------------------------------------|
-| `text_grep`                       | `grep`            | Search for patterns with optional case-insensitive and count-only modes |
-| `text_wc`                         | `word_count`      | Count lines, words, and characters         |
-| `text_rg`                         | `ripgrep`         | Fast pattern search with context lines     |
-| `text_extract_lines`              | `extract_lines`   | Extract a range of lines by number         |
-| `text_filter_lines`               | `filter_lines`    | Keep or reject lines matching a regex      |
-| `text_unique_lines`               | `unique_lines`    | Deduplicate lines, optionally preserving order |
-| `text_sort_lines`                 | `sort_lines`      | Sort lines alphabetically or numerically   |
-| `text_summarize_text`             | `summarize_text`  | Produce a statistical summary (counts, averages, frequent words) |
+| Tool Name             | Method           | Description                                                             |
+| --------------------- | ---------------- | ----------------------------------------------------------------------- |
+| `text_grep`           | `grep`           | Search for patterns with optional case-insensitive and count-only modes |
+| `text_wc`             | `word_count`     | Count lines, words, and characters                                      |
+| `text_rg`             | `ripgrep`        | Fast pattern search with context lines                                  |
+| `text_extract_lines`  | `extract_lines`  | Extract a range of lines by number                                      |
+| `text_filter_lines`   | `filter_lines`   | Keep or reject lines matching a regex                                   |
+| `text_unique_lines`   | `unique_lines`   | Deduplicate lines, optionally preserving order                          |
+| `text_sort_lines`     | `sort_lines`     | Sort lines alphabetically or numerically                                |
+| `text_summarize_text` | `summarize_text` | Produce a statistical summary (counts, averages, frequent words)        |
 
 Usage:
 
@@ -357,15 +357,15 @@ puts result.answer
 
 `DSPy::Tools::GitHubCLIToolset` wraps the `gh` CLI for read-oriented GitHub operations. Toolset name prefix: `github`.
 
-| Tool Name              | Method            | Description                                       |
-|------------------------|-------------------|---------------------------------------------------|
-| `github_list_issues`   | `list_issues`     | List issues filtered by state, labels, assignee   |
-| `github_list_prs`      | `list_prs`        | List pull requests filtered by state, author, base|
-| `github_get_issue`     | `get_issue`       | Retrieve details of a single issue                |
-| `github_get_pr`        | `get_pr`          | Retrieve details of a single pull request         |
-| `github_api_request`   | `api_request`     | Make an arbitrary GET request to the GitHub API    |
-| `github_traffic_views` | `traffic_views`   | Fetch repository traffic view counts              |
-| `github_traffic_clones`| `traffic_clones`  | Fetch repository traffic clone counts             |
+| Tool Name               | Method           | Description                                        |
+| ----------------------- | ---------------- | -------------------------------------------------- |
+| `github_list_issues`    | `list_issues`    | List issues filtered by state, labels, assignee    |
+| `github_list_prs`       | `list_prs`       | List pull requests filtered by state, author, base |
+| `github_get_issue`      | `get_issue`      | Retrieve details of a single issue                 |
+| `github_get_pr`         | `get_pr`         | Retrieve details of a single pull request          |
+| `github_api_request`    | `api_request`    | Make an arbitrary GET request to the GitHub API    |
+| `github_traffic_views`  | `traffic_views`  | Fetch repository traffic view counts               |
+| `github_traffic_clones` | `traffic_clones` | Fetch repository traffic clone counts              |
 
 This toolset uses `T::Enum` parameters (`IssueState`, `PRState`, `ReviewState`) for state filters, demonstrating enum-based tool signatures in practice.
 

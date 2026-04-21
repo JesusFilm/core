@@ -1,7 +1,7 @@
 ---
 name: ce:plan
 description: Transform feature descriptions into well-structured project plans following conventions
-argument-hint: "[feature description, bug report, or improvement idea]"
+argument-hint: '[feature description, bug report, or improvement idea]'
 ---
 
 # Create a plan for a new feature or bug fix
@@ -31,11 +31,13 @@ ls -la docs/brainstorms/*-requirements.md 2>/dev/null | head -10
 ```
 
 **Relevance criteria:** A requirements document is relevant if:
+
 - The topic (from filename or YAML frontmatter) semantically matches the feature description
 - Created within the last 14 days
 - If multiple candidates match, use the most recent one
 
 **If a relevant requirements document exists:**
+
 1. Read the source document **thoroughly** — every section matters
 2. Announce: "Found source document from [date]: [topic]. Using as foundation for planning."
 3. Extract and carry forward **ALL** of the following into the plan:
@@ -87,6 +89,7 @@ Run these agents **in parallel** to gather local context:
 - Task compound-engineering:research:learnings-researcher(feature_description)
 
 **What to look for:**
+
 - **Repo research:** existing patterns, AGENTS.md guidance, technology familiarity, pattern consistency
 - **Learnings:** documented solutions in `docs/solutions/` that might apply (gotchas, patterns, lessons learned)
 
@@ -105,6 +108,7 @@ Based on signals from Step 0 and findings from Step 1, decide on external resear
 **Announce the decision and proceed.** Brief explanation, then continue. User can redirect if needed.
 
 Examples:
+
 - "Your codebase has solid patterns for this. Proceeding without external research."
 - "This involves payment processing, so I'll research current best practices first."
 
@@ -192,7 +196,7 @@ title: [Issue Title]
 type: [feat|fix|refactor]
 status: active
 date: YYYY-MM-DD
-origin: docs/brainstorms/YYYY-MM-DD-<topic>-requirements.md  # if originated from a requirements doc, otherwise omit
+origin: docs/brainstorms/YYYY-MM-DD-<topic>-requirements.md # if originated from a requirements doc, otherwise omit
 ---
 
 # [Issue Title]
@@ -247,7 +251,7 @@ title: [Issue Title]
 type: [feat|fix|refactor]
 status: active
 date: YYYY-MM-DD
-origin: docs/brainstorms/YYYY-MM-DD-<topic>-requirements.md  # if originated from a requirements doc, otherwise omit
+origin: docs/brainstorms/YYYY-MM-DD-<topic>-requirements.md # if originated from a requirements doc, otherwise omit
 ---
 
 # [Issue Title]
@@ -322,7 +326,7 @@ title: [Issue Title]
 type: [feat|fix|refactor]
 status: active
 date: YYYY-MM-DD
-origin: docs/brainstorms/YYYY-MM-DD-<topic>-requirements.md  # if originated from a requirements doc, otherwise omit
+origin: docs/brainstorms/YYYY-MM-DD-<topic>-requirements.md # if originated from a requirements doc, otherwise omit
 ---
 
 # [Issue Title]
@@ -486,7 +490,6 @@ Apply best practices for clarity and actionability, making the issue easy to sca
 ````markdown
 # Good example with syntax highlighting and line references
 
-
 ```ruby
 # app/services/user_service.rb:42
 def process_user(user)
@@ -519,6 +522,7 @@ end
 **Origin document cross-check (if plan originated from a requirements doc):**
 
 Before finalizing, re-read the origin document and verify:
+
 - [ ] Every key decision from the origin document is reflected in the plan
 - [ ] The chosen approach matches what was decided in the origin document
 - [ ] Constraints and requirements from the origin document are captured in acceptance criteria
@@ -563,6 +567,7 @@ docs/plans/YYYY-MM-DD-NNN-<type>-<descriptive-name>-plan.md
 ```
 
 Examples:
+
 - ✅ `docs/plans/2026-01-15-001-feat-user-authentication-flow-plan.md`
 - ✅ `docs/plans/2026-02-03-001-fix-checkout-race-condition-plan.md`
 - ✅ `docs/plans/2026-03-10-002-refactor-api-client-extraction-plan.md`
@@ -578,6 +583,7 @@ After writing the plan file, use the **AskUserQuestion tool** to present these o
 **Question:** "Plan ready at `docs/plans/YYYY-MM-DD-NNN-<type>-<name>-plan.md`. What would you like to do next?"
 
 **Options:**
+
 1. **Open plan in editor** - Open the plan file for review
 2. **Run `/deepen-plan`** - Enhance each section with parallel research agents (best practices, performance, UI)
 3. **Review and refine** - Improve the document through structured self-review
@@ -587,6 +593,7 @@ After writing the plan file, use the **AskUserQuestion tool** to present these o
 7. **Create Issue** - Create issue in project tracker (GitHub/Linear)
 
 Based on selection:
+
 - **Open plan in editor** → Run `open docs/plans/<plan_filename>.md` to open the file in the user's default editor
 - **`/deepen-plan`** → Call the /deepen-plan command with the plan file path to enhance with research
 - **Review and refine** → Load `document-review` skill.

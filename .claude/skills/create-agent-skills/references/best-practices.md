@@ -11,12 +11,14 @@ The context window is a public good. Your Skill shares the context window with e
 **Default assumption**: Claude is already very smart. Only add context Claude doesn't already have.
 
 Challenge each piece of information:
+
 - "Does Claude really need this explanation?"
 - "Can I assume Claude knows this?"
 - "Does this paragraph justify its token cost?"
 
 **Good example (concise, ~50 tokens):**
-```markdown
+
+````markdown
 ## Extract PDF text
 
 Use pdfplumber for text extraction:
@@ -26,7 +28,9 @@ import pdfplumber
 with pdfplumber.open("file.pdf") as pdf:
     text = pdf.pages[0].extract_text()
 ```
-```
+````
+
+````
 
 **Bad example (too verbose, ~150 tokens):**
 ```markdown
@@ -35,13 +39,14 @@ with pdfplumber.open("file.pdf") as pdf:
 PDF (Portable Document Format) files are a common file format that contains
 text, images, and other content. To extract text from a PDF, you'll need to
 use a library. There are many libraries available...
-```
+````
 
 ### Set Appropriate Degrees of Freedom
 
 Match specificity to task fragility and variability.
 
 **High freedom** (multiple valid approaches):
+
 ```markdown
 ## Code review process
 
@@ -52,7 +57,8 @@ Match specificity to task fragility and variability.
 ```
 
 **Medium freedom** (preferred pattern with variation):
-```markdown
+
+````markdown
 ## Generate report
 
 Use this template and customize as needed:
@@ -62,7 +68,9 @@ def generate_report(data, format="markdown"):
     # Process data
     # Generate output in specified format
 ```
-```
+````
+
+````
 
 **Low freedom** (fragile, exact sequence required):
 ```markdown
@@ -72,10 +80,11 @@ Run exactly this script:
 
 ```bash
 python scripts/migrate.py --verify --backup
-```
+````
 
 Do not modify the command or add flags.
-```
+
+````
 
 ### Test With All Models
 
@@ -120,9 +129,10 @@ description: Analyze Excel spreadsheets, create pivot tables, generate charts. U
 
 # Git Commit Helper skill
 description: Generate descriptive commit messages by analyzing git diffs. Use when the user asks for help writing commit messages or reviewing staged changes.
-```
+````
 
 **Avoid vague descriptions:**
+
 ```yaml
 description: Helps with documents  # Too vague!
 description: Processes data       # Too generic!
@@ -133,7 +143,7 @@ description: Does stuff with files # Useless!
 
 ### Pattern 1: High-level guide with references
 
-```markdown
+````markdown
 ---
 name: pdf-processing
 description: Extracts text and tables from PDF files, fills forms, merges documents.
@@ -148,25 +158,29 @@ import pdfplumber
 with pdfplumber.open("file.pdf") as pdf:
     text = pdf.pages[0].extract_text()
 ```
+````
 
 ## Advanced features
 
 **Form filling**: See [FORMS.md](FORMS.md)
 **API reference**: See [REFERENCE.md](REFERENCE.md)
 **Examples**: See [EXAMPLES.md](EXAMPLES.md)
+
 ```
 
 ### Pattern 2: Domain-specific organization
 
 ```
+
 bigquery-skill/
 ├── SKILL.md (overview and navigation)
 └── reference/
-    ├── finance.md (revenue, billing)
-    ├── sales.md (opportunities, pipeline)
-    ├── product.md (API usage, features)
-    └── marketing.md (campaigns, attribution)
-```
+├── finance.md (revenue, billing)
+├── sales.md (opportunities, pipeline)
+├── product.md (API usage, features)
+└── marketing.md (campaigns, attribution)
+
+````
 
 ### Pattern 3: Conditional details
 
@@ -183,25 +197,30 @@ For simple edits, modify the XML directly.
 
 **For tracked changes**: See [REDLINING.md](REDLINING.md)
 **For OOXML details**: See [OOXML.md](OOXML.md)
-```
+````
 
 ## Keep References One Level Deep
 
 Claude may partially read files when they're referenced from other referenced files.
 
 **Bad (too deep):**
+
 ```markdown
 # SKILL.md
+
 See [advanced.md](advanced.md)...
 
 # advanced.md
+
 See [details.md](details.md)...
 
 # details.md
+
 Here's the actual information...
 ```
 
 **Good (one level deep):**
+
 ```markdown
 # SKILL.md
 
@@ -219,13 +238,14 @@ Here's the actual information...
 ## Research synthesis workflow
 
 Copy this checklist:
-
 ```
+
 - [ ] Step 1: Read all source documents
 - [ ] Step 2: Identify key themes
 - [ ] Step 3: Cross-reference claims
 - [ ] Step 4: Create structured summary
 - [ ] Step 5: Verify citations
+
 ```
 
 **Step 1: Read all source documents**
@@ -253,7 +273,7 @@ Review each document in `sources/`. Note main arguments.
 
 ### Template Pattern
 
-```markdown
+````markdown
 ## Report structure
 
 Use this template:
@@ -262,17 +282,22 @@ Use this template:
 # [Analysis Title]
 
 ## Executive summary
+
 [One-paragraph overview]
 
 ## Key findings
+
 - Finding 1 with supporting data
 - Finding 2 with supporting data
 
 ## Recommendations
+
 1. Specific actionable recommendation
 2. Specific actionable recommendation
 ```
-```
+````
+
+````
 
 ### Examples Pattern
 
@@ -282,18 +307,23 @@ Use this template:
 **Example 1:**
 Input: Added user authentication with JWT tokens
 Output:
-```
+````
+
 feat(auth): implement JWT-based authentication
 
 Add login endpoint and token validation middleware
+
 ```
 
 **Example 2:**
 Input: Fixed bug where dates displayed incorrectly
 Output:
 ```
+
 fix(reports): correct date formatting in timezone conversion
+
 ```
+
 ```
 
 ### Conditional Workflow Pattern
@@ -321,11 +351,13 @@ fix(reports): correct date formatting in timezone conversion
 ### Avoid Time-Sensitive Information
 
 **Bad:**
+
 ```markdown
 If you're doing this before August 2025, use the old API.
 ```
 
 **Good:**
+
 ```markdown
 ## Current method
 
@@ -342,11 +374,13 @@ The v1 API used: `api.example.com/v1/messages`
 ### Use Consistent Terminology
 
 **Good - Consistent:**
+
 - Always "API endpoint"
 - Always "field"
 - Always "extract"
 
 **Bad - Inconsistent:**
+
 - Mix "API endpoint", "URL", "API route", "path"
 - Mix "field", "box", "element", "control"
 
@@ -360,18 +394,23 @@ The v1 API used: `api.example.com/v1/messages`
 ### Too Many Options
 
 **Bad:**
+
 ```markdown
 You can use pypdf, or pdfplumber, or PyMuPDF, or pdf2image, or...
 ```
 
 **Good:**
-```markdown
+
+````markdown
 Use pdfplumber for text extraction:
+
 ```python
 import pdfplumber
 ```
+````
 
 For scanned PDFs requiring OCR, use pdf2image with pytesseract instead.
+
 ```
 
 ## Checklist for Effective Skills
@@ -402,3 +441,4 @@ For scanned PDFs requiring OCR, use pdf2image with pytesseract instead.
 - [ ] Tested with Haiku, Sonnet, and Opus
 - [ ] Tested with real usage scenarios
 - [ ] Team feedback incorporated
+```

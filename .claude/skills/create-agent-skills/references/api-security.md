@@ -17,6 +17,7 @@ When Claude executes this, the full command with expanded `$API_KEY` appears in 
 Use `~/.claude/scripts/secure-api.sh` - a wrapper that loads credentials internally.
 
 <for_supported_services>
+
 ```bash
 # ✅ GOOD - No credentials visible
 ~/.claude/scripts/secure-api.sh <service> <operation> [args]
@@ -25,6 +26,7 @@ Use `~/.claude/scripts/secure-api.sh` - a wrapper that loads credentials interna
 ~/.claude/scripts/secure-api.sh facebook list-campaigns
 ~/.claude/scripts/secure-api.sh ghl search-contact "email@example.com"
 ```
+
 </for_supported_services>
 
 <adding_new_services>
@@ -79,7 +81,7 @@ echo "Added credential placeholders to ~/.claude/.env - user needs to fill them 
 
 4. **Document profile workflow in your SKILL.md**:
 
-```markdown
+````markdown
 ## Profile Selection Workflow
 
 **CRITICAL:** Always use profile selection to prevent using wrong account credentials.
@@ -90,28 +92,34 @@ echo "Added credential placeholders to ~/.claude/.env - user needs to fill them 
    ```bash
    ~/.claude/scripts/profile-state get yourservice
    ```
+````
 
 2. **If no profile saved, discover available profiles:**
+
    ```bash
    ~/.claude/scripts/list-profiles yourservice
    ```
 
 3. **If only ONE profile:** Use it automatically and announce:
+
    ```
    "Using YourService profile 'main' to list items..."
    ```
 
 4. **If MULTIPLE profiles:** Ask user which one:
+
    ```
    "Which YourService profile: main, clienta, or clientb?"
    ```
 
 5. **Save user's selection:**
+
    ```bash
    ~/.claude/scripts/profile-state set yourservice <selected_profile>
    ```
 
 6. **Always announce which profile before calling API:**
+
    ```
    "Using YourService profile 'main' to list items..."
    ```
@@ -134,7 +142,8 @@ All API calls use profile syntax:
 ```
 
 **Profile persists for session:** Once selected, use same profile for subsequent operations unless user explicitly changes it.
-```
+
+````
 </adding_new_services>
 </the_solution>
 
@@ -144,10 +153,12 @@ All API calls use profile syntax:
 curl -s -G \
     -H "Authorization: Bearer $API_KEY" \
     "https://api.example.com/endpoint"
-```
+````
+
 </simple_get_requests>
 
 <post_with_json_body>
+
 ```bash
 ITEM_ID=$1
 curl -s -X POST \
@@ -158,12 +169,15 @@ curl -s -X POST \
 ```
 
 Usage:
+
 ```bash
 echo '{"name":"value"}' | ~/.claude/scripts/secure-api.sh service create-item
 ```
+
 </post_with_json_body>
 
 <post_with_form_data>
+
 ```bash
 curl -s -X POST \
     -F "field1=value1" \
@@ -171,6 +185,7 @@ curl -s -X POST \
     -F "access_token=$API_TOKEN" \
     "https://api.example.com/endpoint"
 ```
+
 </post_with_form_data>
 </pattern_guidelines>
 
@@ -178,6 +193,7 @@ curl -s -X POST \
 **Location:** `~/.claude/.env` (global for all skills, accessible from any directory)
 
 **Format:**
+
 ```bash
 # Service credentials
 SERVICE_API_KEY=your-key-here
@@ -189,21 +205,24 @@ OTHER_BASE_URL=https://api.other.com
 ```
 
 **Loading in script:**
+
 ```bash
 set -a
 source ~/.claude/.env 2>/dev/null || { echo "Error: ~/.claude/.env not found" >&2; exit 1; }
 set +a
 ```
+
 </credential_storage>
 
 <best_practices>
+
 1. **Never use raw curl with `$VARIABLE` in skill examples** - always use the wrapper
 2. **Add all operations to the wrapper** - don't make users figure out curl syntax
 3. **Auto-create credential placeholders** - add empty fields to `~/.claude/.env` immediately when creating the skill
 4. **Keep credentials in `~/.claude/.env`** - one central location, works everywhere
 5. **Document each operation** - show examples in SKILL.md
 6. **Handle errors gracefully** - check for missing env vars, show helpful error messages
-</best_practices>
+   </best_practices>
 
 <testing>
 Test the wrapper without exposing credentials:
@@ -216,6 +235,7 @@ Test the wrapper without exposing credentials:
 ```
 
 Verify credentials are loaded:
+
 ```bash
 # Check .env exists
 ls -la ~/.claude/.env
@@ -223,4 +243,5 @@ ls -la ~/.claude/.env
 # Check specific variables (without showing values)
 grep -q "YOUR_API_KEY=" ~/.claude/.env && echo "API key configured" || echo "API key missing"
 ```
+
 </testing>

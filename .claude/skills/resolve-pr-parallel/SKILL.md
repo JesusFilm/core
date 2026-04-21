@@ -1,7 +1,7 @@
 ---
 name: resolve-pr-parallel
 description: Resolve all PR comments using parallel processing. Use when addressing PR review feedback, resolving review threads, or batch-fixing PR comments.
-argument-hint: "[optional: PR number or current PR]"
+argument-hint: '[optional: PR number or current PR]'
 disable-model-invocation: true
 allowed-tools: Bash(gh *), Bash(git *), Read
 ---
@@ -13,6 +13,7 @@ Resolve all unresolved PR review comments by spawning parallel agents for each t
 ## Context Detection
 
 Claude Code automatically detects git context:
+
 - Current branch and associated PR
 - All PR comments and review threads
 - Works with any PR by specifying the number
@@ -30,6 +31,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/resolve-pr-parallel/scripts/get-pr-comments PR
 This returns only **unresolved, non-outdated** threads with file paths, line numbers, and comment bodies.
 
 If the script fails, fall back to:
+
 ```bash
 gh pr view PR_NUMBER --json reviews,comments
 gh api repos/{owner}/{repo}/pulls/PR_NUMBER/comments
@@ -38,6 +40,7 @@ gh api repos/{owner}/{repo}/pulls/PR_NUMBER/comments
 ### 2. Plan
 
 Create a TodoWrite list of all unresolved items grouped by type:
+
 - Code changes requested
 - Questions to answer
 - Style/convention fixes

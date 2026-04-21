@@ -10,6 +10,7 @@ This skill provides a systematic approach to reviewing copy against Every's comp
 ## When to Use This Skill
 
 Use this skill when:
+
 - Reviewing articles, blog posts, newsletters, or any written content
 - Ensuring copy follows Every's specific style conventions
 - Providing feedback on grammar, punctuation, and mechanics
@@ -30,6 +31,7 @@ This skill enables performing a comprehensive review of written content in four 
 ### Step 1: Initial Assessment
 
 Begin by reading the entire piece to understand:
+
 - Document type (article, knowledge base entry, social post, etc.)
 - Target audience
 - Overall tone and voice
@@ -38,6 +40,7 @@ Begin by reading the entire piece to understand:
 ### Step 2: Detailed Line Edit
 
 Review each paragraph systematically, checking for:
+
 - Sentence structure and grammar correctness
 - Punctuation usage (commas, semicolons, em dashes, etc.)
 - Capitalization rules (especially job titles, headlines)
@@ -49,6 +52,7 @@ Reference the complete [EVERY_WRITE_STYLE.md](./references/EVERY_WRITE_STYLE.md)
 ### Step 3: Mechanical Review
 
 Verify:
+
 - Spacing and formatting consistency
 - Style choices applied uniformly throughout
 - Special elements (lists, quotes, citations)

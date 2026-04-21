@@ -86,7 +86,7 @@ Avoid using them unless they're part of a proper noun or company name. Write out
 
 #### Emphasis Guidelines
 
-Italics may be used in rare cases for emphasis, especially if doing so will increase clarity. Bold and underline should not be used for emphasis: Hosting a meeting with all 20 team members *seemed* like a good idea, but the conversation quickly got out of hand.
+Italics may be used in rare cases for emphasis, especially if doing so will increase clarity. Bold and underline should not be used for emphasis: Hosting a meeting with all 20 team members _seemed_ like a good idea, but the conversation quickly got out of hand.
 
 ### Buttons
 
@@ -98,11 +98,11 @@ Use the sentence case in CTA buttons: Register for the course
 
 #### Guest Author Biography
 
-Pieces written by guest authors include a biography for the author at the bottom of the piece. If a piece was previously published, cite and link to the original source. Use italics: *Leo Polovets is a general partner at [Humba Ventures](https://humbaventures.com/), an early-stage deep tech fund in the Susa Ventures fund family. Before cofounding Susa and Humba, Leo spent 10 years as a software engineer. Previously, he was the second engineering hire at LinkedIn, among other roles. This piece was originally published [in his newsletter](https://www.codingvc.com/p/betting-on-deep-tech).*
+Pieces written by guest authors include a biography for the author at the bottom of the piece. If a piece was previously published, cite and link to the original source. Use italics: _Leo Polovets is a general partner at [Humba Ventures](https://humbaventures.com/), an early-stage deep tech fund in the Susa Ventures fund family. Before cofounding Susa and Humba, Leo spent 10 years as a software engineer. Previously, he was the second engineering hire at LinkedIn, among other roles. This piece was originally published [in his newsletter](https://www.codingvc.com/p/betting-on-deep-tech)._
 
 #### Guest Author Introduction
 
-Pieces written by guest authors also include an introduction from an Every staff member that identifies the author, their background, the subject of the piece, and why we recommend it. The introduction is signed by the staff member who wrote it. Use italics: *When I was coming up in tech, the conventional wisdom was that working at or investing in software companies was a great way to make money, while doing so with companies that took on scientific risk or produced hardware components were a wonderful way to lose every cent to your name. This has always struck me as, you know, wrong, which is why this piece by venture capitalist Leo Polovets resonated with me. He takes a data-driven approach to understanding how deep tech companies can produce superior financial returns. If you're on the fence with your career—perhaps facing temptation to do something relatively safe in B2B SaaS—take this piece as a rational encouragement to dream bigger. —[Evan](https://twitter.com/itsurboyevan)*
+Pieces written by guest authors also include an introduction from an Every staff member that identifies the author, their background, the subject of the piece, and why we recommend it. The introduction is signed by the staff member who wrote it. Use italics: _When I was coming up in tech, the conventional wisdom was that working at or investing in software companies was a great way to make money, while doing so with companies that took on scientific risk or produced hardware components were a wonderful way to lose every cent to your name. This has always struck me as, you know, wrong, which is why this piece by venture capitalist Leo Polovets resonated with me. He takes a data-driven approach to understanding how deep tech companies can produce superior financial returns. If you're on the fence with your career—perhaps facing temptation to do something relatively safe in B2B SaaS—take this piece as a rational encouragement to dream bigger. —[Evan](https://twitter.com/itsurboyevan)_
 
 ### Capitalization
 
@@ -264,7 +264,7 @@ Use hyphens in fractions, no matter their part of speech: three-fourths of the t
 
 #### Titles
 
-Italicize titles of books, newspapers, periodicals, movies, TV shows, and video games, with the following rules: If a magazine title must be followed by "magazine" to distinguish it from other publications, do not italicize "magazine" unless it is formally included in the title: *New York* magazine vs. *The New York Times Magazine*. For magazine titles, italicize the article if it is a formal part of the title: *The New Yorker*. For newspapers, do not italicize the article: the *New York Times*
+Italicize titles of books, newspapers, periodicals, movies, TV shows, and video games, with the following rules: If a magazine title must be followed by "magazine" to distinguish it from other publications, do not italicize "magazine" unless it is formally included in the title: _New York_ magazine vs. _The New York Times Magazine_. For magazine titles, italicize the article if it is a formal part of the title: _The New Yorker_. For newspapers, do not italicize the article: the _New York Times_
 
 #### Short Works
 
@@ -272,7 +272,7 @@ Titles of short works (poems, songs, TV episodes, book chapters) take quotation 
 
 #### Punctuation After Italics
 
-Do not italicize punctuation that follows an italicized term: Stewart Brand published the first issue of his seminal magazine, the *Whole Earth Catalogue*, in 1968. Which earned more at the box office, *Barbie* or *Oppenheimer*?
+Do not italicize punctuation that follows an italicized term: Stewart Brand published the first issue of his seminal magazine, the _Whole Earth Catalogue_, in 1968. Which earned more at the box office, _Barbie_ or _Oppenheimer_?
 
 #### Websites
 

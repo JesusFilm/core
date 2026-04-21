@@ -1,7 +1,7 @@
 ---
 name: triage
 description: Triage and categorize findings for the CLI todo system
-argument-hint: "[findings list or source type]"
+argument-hint: '[findings list or source type]'
 disable-model-invocation: true
 ---
 
@@ -60,7 +60,6 @@ Do you want to add this to the todo list?
 1. **Update existing todo file** (if it exists) or **Create new filename:**
 
    If todo already exists (from code review):
-
    - Rename file from `{id}-pending-{priority}-{desc}.md` → `{id}-ready-{priority}-{desc}.md`
    - Update YAML frontmatter: `status: pending` → `status: ready`
    - Keep issue_id, priority, and description unchanged
@@ -72,7 +71,6 @@ Do you want to add this to the todo list?
    ```
 
    Priority mapping:
-
    - 🔴 P1 (CRITICAL) → `p1`
    - 🟡 P2 (IMPORTANT) → `p2`
    - 🔵 P3 (NICE-TO-HAVE) → `p3`
@@ -85,7 +83,7 @@ Do you want to add this to the todo list?
    ---
    status: ready # IMPORTANT: Change from "pending" to "ready"
    priority: p1 # or p2, p3 based on severity
-   issue_id: "042"
+   issue_id: '042'
    tags: [category, relevant-tags]
    dependencies: []
    ---

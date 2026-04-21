@@ -14,12 +14,14 @@
 ## Fixtures as Test Data
 
 Rather than factories, fixtures provide preloaded data:
+
 - Loaded once, reused across tests
 - No runtime object creation overhead
 - Explicit relationship visibility
 - Deterministic IDs for easier debugging
 
 ### Fixture Structure
+
 ```yaml
 # test/fixtures/users.yml
 david:
@@ -46,6 +48,7 @@ greeting:
 ```
 
 ### Using Fixtures in Tests
+
 ```ruby
 test "sending a message" do
   user = users(:david)
@@ -56,7 +59,9 @@ end
 ```
 
 ### Dynamic Fixture Values
+
 ERB enables time-sensitive data:
+
 ```yaml
 recent_card:
   title: Recent Card
@@ -70,6 +75,7 @@ old_card:
 ## Test Organization
 
 ### Unit Tests
+
 Verify business logic using setup blocks and standard assertions:
 
 ```ruby
@@ -101,6 +107,7 @@ end
 ```
 
 ### Integration Tests
+
 Test full request/response cycles:
 
 ```ruby
@@ -132,6 +139,7 @@ end
 ```
 
 ### System Tests
+
 Browser-based tests using Capybara:
 
 ```ruby
@@ -177,6 +185,7 @@ end
 ## Advanced Patterns
 
 ### Time Testing
+
 Use `travel_to` for deterministic time-dependent assertions:
 
 ```ruby
@@ -190,6 +199,7 @@ end
 ```
 
 ### External API Testing with VCR
+
 Record and replay HTTP interactions:
 
 ```ruby
@@ -203,6 +213,7 @@ end
 ```
 
 ### Background Job Testing
+
 Assert job enqueueing and email delivery:
 
 ```ruby
@@ -222,6 +233,7 @@ end
 ```
 
 ### Testing Turbo Streams
+
 ```ruby
 test "message creation broadcasts to room" do
   room = rooms(:watercooler)
@@ -235,6 +247,7 @@ end
 ## Testing Principles
 
 ### 1. Test Observable Behavior
+
 Focus on what the code does, not how it does it:
 
 ```ruby
@@ -279,12 +292,15 @@ end
 ```
 
 ### 3. Tests Ship with Features
+
 Same commit, not TDD-first but together. Neither before (strict TDD) nor after (deferred testing).
 
 ### 4. Security Fixes Always Include Regression Tests
+
 Every security fix must include a test that would have caught the vulnerability.
 
 ### 5. Integration Tests Validate Complete Workflows
+
 Don't just test individual pieces - test that they work together.
 
 ## File Organization

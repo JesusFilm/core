@@ -1,7 +1,7 @@
 ---
 name: agent-native-audit
 description: Run comprehensive agent-native architecture review with scored principles
-argument-hint: "[optional: specific principle to audit]"
+argument-hint: '[optional: specific principle to audit]'
 disable-model-invocation: true
 ---
 
@@ -44,6 +44,7 @@ Launch 8 parallel sub-agents using the Task tool with `subagent_type: Explore`, 
 <sub-agents>
 
 **Agent 1: Action Parity**
+
 ```
 Audit for ACTION PARITY - "Whatever the user can do, the agent can do."
 
@@ -66,6 +67,7 @@ Format:
 ```
 
 **Agent 2: Tools as Primitives**
+
 ```
 Audit for TOOLS AS PRIMITIVES - "Tools provide capability, not behavior."
 
@@ -86,6 +88,7 @@ Format:
 ```
 
 **Agent 3: Context Injection**
+
 ```
 Audit for CONTEXT INJECTION - "System prompt includes dynamic context about app state"
 
@@ -110,6 +113,7 @@ Format:
 ```
 
 **Agent 4: Shared Workspace**
+
 ```
 Audit for SHARED WORKSPACE - "Agent and user work in the same data space"
 
@@ -128,6 +132,7 @@ Format:
 ```
 
 **Agent 5: CRUD Completeness**
+
 ```
 Audit for CRUD COMPLETENESS - "Every entity has full CRUD"
 
@@ -150,6 +155,7 @@ Format:
 ```
 
 **Agent 6: UI Integration**
+
 ```
 Audit for UI INTEGRATION - "Agent actions immediately reflected in UI"
 
@@ -173,6 +179,7 @@ Format:
 ```
 
 **Agent 7: Capability Discovery**
+
 ```
 Audit for CAPABILITY DISCOVERY - "Users can discover what the agent can do"
 
@@ -197,6 +204,7 @@ Format:
 ```
 
 **Agent 8: Prompt-Native Features**
+
 ```
 Audit for PROMPT-NATIVE FEATURES - "Features are prompts defining outcomes, not code"
 
@@ -227,20 +235,21 @@ After all agents complete, compile a summary with:
 
 ### Overall Score Summary
 
-| Core Principle | Score | Percentage | Status |
-|----------------|-------|------------|--------|
-| Action Parity | X/Y | Z% | ✅/⚠️/❌ |
-| Tools as Primitives | X/Y | Z% | ✅/⚠️/❌ |
-| Context Injection | X/Y | Z% | ✅/⚠️/❌ |
-| Shared Workspace | X/Y | Z% | ✅/⚠️/❌ |
-| CRUD Completeness | X/Y | Z% | ✅/⚠️/❌ |
-| UI Integration | X/Y | Z% | ✅/⚠️/❌ |
-| Capability Discovery | X/Y | Z% | ✅/⚠️/❌ |
-| Prompt-Native Features | X/Y | Z% | ✅/⚠️/❌ |
+| Core Principle         | Score | Percentage | Status   |
+| ---------------------- | ----- | ---------- | -------- |
+| Action Parity          | X/Y   | Z%         | ✅/⚠️/❌ |
+| Tools as Primitives    | X/Y   | Z%         | ✅/⚠️/❌ |
+| Context Injection      | X/Y   | Z%         | ✅/⚠️/❌ |
+| Shared Workspace       | X/Y   | Z%         | ✅/⚠️/❌ |
+| CRUD Completeness      | X/Y   | Z%         | ✅/⚠️/❌ |
+| UI Integration         | X/Y   | Z%         | ✅/⚠️/❌ |
+| Capability Discovery   | X/Y   | Z%         | ✅/⚠️/❌ |
+| Prompt-Native Features | X/Y   | Z%         | ✅/⚠️/❌ |
 
 **Overall Agent-Native Score: X%**
 
 ### Status Legend
+
 - ✅ Excellent (80%+)
 - ⚠️ Partial (50-79%)
 - ❌ Needs Work (<50%)
@@ -248,7 +257,7 @@ After all agents complete, compile a summary with:
 ### Top 10 Recommendations by Impact
 
 | Priority | Action | Principle | Effort |
-|----------|--------|-----------|--------|
+| -------- | ------ | --------- | ------ |
 
 ### What's Working Excellently
 
@@ -268,6 +277,7 @@ After all agents complete, compile a summary with:
 If $ARGUMENTS specifies a single principle (e.g., "action parity"), only run that sub-agent and provide detailed findings for that principle alone.
 
 Valid arguments:
+
 - `action parity` or `1`
 - `tools` or `primitives` or `2`
 - `context` or `injection` or `3`

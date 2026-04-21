@@ -483,12 +483,14 @@ end
 ### Schema vs Description: When to Use Each
 
 **Use schemas (T::Struct/T::Enum)** for:
+
 - Multi-field outputs with specific types
 - Enums with defined values the LLM must pick from
 - Nested structures, arrays of typed objects
 - Outputs consumed by code (not displayed to users)
 
 **Use string descriptions** for:
+
 - Simple single-field outputs where the type is `String`
 - Natural language generation (summaries, answers)
 - Fields where constraint guidance helps (e.g., `description: "YYYY-MM-DD format"`)
@@ -527,6 +529,7 @@ end
 ```
 
 **Key patterns:**
+
 - Short-circuit LLM calls when unnecessary (small data, trivial cases)
 - Cap input size to prevent token overflow
 - Per-tool model selection via `configure`

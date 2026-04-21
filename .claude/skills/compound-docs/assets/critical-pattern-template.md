@@ -7,11 +7,13 @@ Use this template when adding a pattern to `docs/solutions/patterns/critical-pat
 ## N. [Pattern Name] (ALWAYS REQUIRED)
 
 ### ❌ WRONG ([Will cause X error])
+
 ```[language]
 [code showing wrong approach]
 ```
 
 ### ✅ CORRECT
+
 ```[language]
 [code showing correct approach]
 ```
@@ -25,6 +27,7 @@ Use this template when adding a pattern to `docs/solutions/patterns/critical-pat
 ---
 
 **Instructions:**
+
 1. Replace N with the next pattern number
 2. Replace [Pattern Name] with descriptive title
 3. Fill in WRONG example with code that causes the problem

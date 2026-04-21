@@ -164,19 +164,19 @@ lm = DSPy::LM.new('ruby_llm/gemini-pro', provider: 'vertexai')
 
 ### Supported Providers Table
 
-| Provider    | Example Model ID                           | Notes                           |
-|-------------|--------------------------------------------|---------------------------------|
-| OpenAI      | `ruby_llm/gpt-4o-mini`                    | Auto-detected from registry     |
-| Anthropic   | `ruby_llm/claude-sonnet-4-20250514`       | Auto-detected from registry     |
-| Gemini      | `ruby_llm/gemini-2.5-flash`               | Auto-detected from registry     |
-| DeepSeek    | `ruby_llm/deepseek-chat`                  | Auto-detected from registry     |
-| Mistral     | `ruby_llm/mistral-large`                  | Auto-detected from registry     |
-| Ollama      | `ruby_llm/llama3.2`                       | Use `provider: 'ollama'`        |
-| AWS Bedrock | `ruby_llm/anthropic.claude-3-5-sonnet`    | Configure RubyLLM globally      |
-| VertexAI    | `ruby_llm/gemini-pro`                     | Configure RubyLLM globally      |
-| OpenRouter  | `ruby_llm/anthropic/claude-3-opus`        | Use `provider: 'openrouter'`    |
-| Perplexity  | `ruby_llm/llama-3.1-sonar-large`          | Use `provider: 'perplexity'`    |
-| GPUStack    | `ruby_llm/model-name`                     | Use `provider: 'gpustack'`      |
+| Provider    | Example Model ID                       | Notes                        |
+| ----------- | -------------------------------------- | ---------------------------- |
+| OpenAI      | `ruby_llm/gpt-4o-mini`                 | Auto-detected from registry  |
+| Anthropic   | `ruby_llm/claude-sonnet-4-20250514`    | Auto-detected from registry  |
+| Gemini      | `ruby_llm/gemini-2.5-flash`            | Auto-detected from registry  |
+| DeepSeek    | `ruby_llm/deepseek-chat`               | Auto-detected from registry  |
+| Mistral     | `ruby_llm/mistral-large`               | Auto-detected from registry  |
+| Ollama      | `ruby_llm/llama3.2`                    | Use `provider: 'ollama'`     |
+| AWS Bedrock | `ruby_llm/anthropic.claude-3-5-sonnet` | Configure RubyLLM globally   |
+| VertexAI    | `ruby_llm/gemini-pro`                  | Configure RubyLLM globally   |
+| OpenRouter  | `ruby_llm/anthropic/claude-3-opus`     | Use `provider: 'openrouter'` |
+| Perplexity  | `ruby_llm/llama-3.1-sonar-large`       | Use `provider: 'perplexity'` |
+| GPUStack    | `ruby_llm/model-name`                  | Use `provider: 'gpustack'`   |
 
 ---
 
@@ -291,12 +291,12 @@ agent
 
 #### Available Predictors by Agent Type
 
-| Agent                | Internal Predictors                                              |
-|----------------------|------------------------------------------------------------------|
-| `DSPy::ReAct`        | `thought_generator`, `observation_processor`                    |
-| `DSPy::CodeAct`      | `code_generator`, `observation_processor`                       |
-| `DSPy::DeepResearch`  | `planner`, `synthesizer`, `qa_reviewer`, `reporter`            |
-| `DSPy::DeepSearch`    | `seed_predictor`, `search_predictor`, `reader_predictor`, `reason_predictor` |
+| Agent                | Internal Predictors                                                          |
+| -------------------- | ---------------------------------------------------------------------------- |
+| `DSPy::ReAct`        | `thought_generator`, `observation_processor`                                 |
+| `DSPy::CodeAct`      | `code_generator`, `observation_processor`                                    |
+| `DSPy::DeepResearch` | `planner`, `synthesizer`, `qa_reviewer`, `reporter`                          |
+| `DSPy::DeepSearch`   | `seed_predictor`, `search_predictor`, `reader_predictor`, `reason_predictor` |
 
 #### Propagation Rules
 
@@ -379,13 +379,13 @@ This pattern keeps model routing declarative and avoids scattering `DSPy::LM.new
 
 Feature support across direct adapter gems. All features listed assume `structured_outputs: true` (the default).
 
-| Feature              | OpenAI | Anthropic | Gemini | Ollama   | OpenRouter | RubyLLM     |
-|----------------------|--------|-----------|--------|----------|------------|-------------|
-| Structured Output    | Native JSON mode | Tool-based extraction | Native JSON schema | OpenAI-compatible JSON | Varies by model | Via `with_schema` |
-| Vision (Images)      | File + URL | File + Base64 | File + Base64 | Limited  | Varies     | Delegates to underlying provider |
-| Image URLs           | Yes    | No        | No     | No       | Varies     | Depends on provider |
-| Tool Calling         | Yes    | Yes       | Yes    | Varies   | Varies     | Yes         |
-| Streaming            | Yes    | Yes       | Yes    | Yes      | Yes        | Yes         |
+| Feature           | OpenAI           | Anthropic             | Gemini             | Ollama                 | OpenRouter      | RubyLLM                          |
+| ----------------- | ---------------- | --------------------- | ------------------ | ---------------------- | --------------- | -------------------------------- |
+| Structured Output | Native JSON mode | Tool-based extraction | Native JSON schema | OpenAI-compatible JSON | Varies by model | Via `with_schema`                |
+| Vision (Images)   | File + URL       | File + Base64         | File + Base64      | Limited                | Varies          | Delegates to underlying provider |
+| Image URLs        | Yes              | No                    | No                 | No                     | Varies          | Depends on provider              |
+| Tool Calling      | Yes              | Yes                   | Yes                | Varies                 | Varies          | Yes                              |
+| Streaming         | Yes              | Yes                   | Yes                | Yes                    | Yes             | Yes                              |
 
 **Notes:**
 
@@ -400,19 +400,19 @@ Feature support across direct adapter gems. All features listed assume `structur
 
 ### Choosing an Adapter Strategy
 
-| Scenario                                  | Recommended Adapter            |
-|-------------------------------------------|--------------------------------|
+| Scenario                                    | Recommended Adapter                                            |
+| ------------------------------------------- | -------------------------------------------------------------- |
 | Single provider (OpenAI, Claude, or Gemini) | Dedicated gem (`dspy-openai`, `dspy-anthropic`, `dspy-gemini`) |
-| Multi-provider with per-agent model routing | `dspy-ruby_llm`               |
-| AWS Bedrock or Google VertexAI             | `dspy-ruby_llm`               |
-| Local development with Ollama              | `dspy-openai` (Ollama sub-adapter) or `dspy-ruby_llm` |
-| OpenRouter for cost optimization           | `dspy-openai` (OpenRouter sub-adapter) |
+| Multi-provider with per-agent model routing | `dspy-ruby_llm`                                                |
+| AWS Bedrock or Google VertexAI              | `dspy-ruby_llm`                                                |
+| Local development with Ollama               | `dspy-openai` (Ollama sub-adapter) or `dspy-ruby_llm`          |
+| OpenRouter for cost optimization            | `dspy-openai` (OpenRouter sub-adapter)                         |
 
 ### Current Recommended Models
 
-| Provider  | Model ID                              | Use Case              |
-|-----------|---------------------------------------|-----------------------|
-| OpenAI    | `openai/gpt-4o-mini`                 | Fast, cost-effective  |
-| Anthropic | `anthropic/claude-sonnet-4-20250514` | Balanced reasoning    |
-| Gemini    | `gemini/gemini-2.5-flash`            | Fast, cost-effective  |
-| Ollama    | `ollama/llama3.2`                    | Local, zero API cost  |
+| Provider  | Model ID                             | Use Case             |
+| --------- | ------------------------------------ | -------------------- |
+| OpenAI    | `openai/gpt-4o-mini`                 | Fast, cost-effective |
+| Anthropic | `anthropic/claude-sonnet-4-20250514` | Balanced reasoning   |
+| Gemini    | `gemini/gemini-2.5-flash`            | Fast, cost-effective |
+| Ollama    | `ollama/llama3.2`                    | Local, zero API cost |

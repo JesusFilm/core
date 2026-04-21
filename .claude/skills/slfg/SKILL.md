@@ -1,7 +1,7 @@
 ---
 name: slfg
 description: Full autonomous engineering workflow using swarm mode for parallel execution
-argument-hint: "[feature description]"
+argument-hint: '[feature description]'
 disable-model-invocation: true
 ---
 

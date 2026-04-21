@@ -16,11 +16,13 @@ Custom slash commands have been merged into skills. A file at `.claude/commands/
 ## When To Create What
 
 **Use a command file** (`commands/name.md`) when:
+
 - Simple, single-file workflow
 - No supporting files needed
 - Task-oriented action (deploy, commit, triage)
 
 **Use a skill directory** (`skills/name/SKILL.md`) when:
+
 - Need supporting reference files, scripts, or templates
 - Background knowledge Claude should auto-load
 - Complex enough to benefit from progressive disclosure
@@ -40,12 +42,15 @@ description: What it does and when to use it
 # My Skill Name
 
 ## Quick Start
+
 Immediate actionable guidance...
 
 ## Instructions
+
 Step-by-step procedures...
 
 ## Examples
+
 Concrete usage examples...
 ```
 
@@ -53,25 +58,25 @@ Concrete usage examples...
 
 All fields are optional. Only `description` is recommended.
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| `name` | No | Display name. Lowercase letters, numbers, hyphens (max 64 chars). Defaults to directory name. |
-| `description` | Recommended | What it does AND when to use it. Claude uses this for auto-discovery. Max 1024 chars. |
-| `argument-hint` | No | Hint shown during autocomplete. Example: `[issue-number]` |
-| `disable-model-invocation` | No | Set `true` to prevent Claude auto-loading. Use for manual workflows like `/deploy`, `/commit`. Default: `false`. |
-| `user-invocable` | No | Set `false` to hide from `/` menu. Use for background knowledge. Default: `true`. |
-| `allowed-tools` | No | Tools Claude can use without permission prompts. Example: `Read, Bash(git *)` |
-| `model` | No | Model to use. Options: `haiku`, `sonnet`, `opus`. |
-| `context` | No | Set `fork` to run in isolated subagent context. |
-| `agent` | No | Subagent type when `context: fork`. Options: `Explore`, `Plan`, `general-purpose`, or custom agent name. |
+| Field                      | Required    | Description                                                                                                      |
+| -------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------- |
+| `name`                     | No          | Display name. Lowercase letters, numbers, hyphens (max 64 chars). Defaults to directory name.                    |
+| `description`              | Recommended | What it does AND when to use it. Claude uses this for auto-discovery. Max 1024 chars.                            |
+| `argument-hint`            | No          | Hint shown during autocomplete. Example: `[issue-number]`                                                        |
+| `disable-model-invocation` | No          | Set `true` to prevent Claude auto-loading. Use for manual workflows like `/deploy`, `/commit`. Default: `false`. |
+| `user-invocable`           | No          | Set `false` to hide from `/` menu. Use for background knowledge. Default: `true`.                                |
+| `allowed-tools`            | No          | Tools Claude can use without permission prompts. Example: `Read, Bash(git *)`                                    |
+| `model`                    | No          | Model to use. Options: `haiku`, `sonnet`, `opus`.                                                                |
+| `context`                  | No          | Set `fork` to run in isolated subagent context.                                                                  |
+| `agent`                    | No          | Subagent type when `context: fork`. Options: `Explore`, `Plan`, `general-purpose`, or custom agent name.         |
 
 ### Invocation Control
 
-| Frontmatter | User can invoke | Claude can invoke | When loaded |
-|-------------|----------------|-------------------|-------------|
-| (default) | Yes | Yes | Description always in context, full content loads when invoked |
-| `disable-model-invocation: true` | Yes | No | Description not in context, loads only when user invokes |
-| `user-invocable: false` | No | Yes | Description always in context, loads when relevant |
+| Frontmatter                      | User can invoke | Claude can invoke | When loaded                                                    |
+| -------------------------------- | --------------- | ----------------- | -------------------------------------------------------------- |
+| (default)                        | Yes             | Yes               | Description always in context, full content loads when invoked |
+| `disable-model-invocation: true` | Yes             | No                | Description not in context, loads only when user invokes       |
+| `user-invocable: false`          | No              | Yes               | Description always in context, loads when relevant             |
 
 **Use `disable-model-invocation: true`** for workflows with side effects: `/deploy`, `/commit`, `/triage-prs`, `/send-slack-message`. You don't want Claude deciding to deploy because your code looks ready.
 
@@ -89,7 +94,6 @@ name: fix-issue
 description: Fix a GitHub issue
 disable-model-invocation: true
 ---
-
 Fix GitHub issue $ARGUMENTS following our coding standards.
 ```
 
@@ -143,11 +147,13 @@ Keep references **one level deep** from SKILL.md. Avoid nested chains.
 The description enables skill discovery. Include both **what** it does and **when** to use it.
 
 **Good:**
+
 ```yaml
 description: Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
 ```
 
 **Bad:**
+
 ```yaml
 description: Helps with documents
 ```
@@ -173,6 +179,7 @@ Ask: Is this a manual workflow (deploy, commit, triage) or background knowledge 
 ### Step 2: Create the File
 
 **Command:**
+
 ```markdown
 ---
 name: my-command
@@ -187,17 +194,21 @@ allowed-tools: Bash(gh *), Read
 ## Workflow
 
 ### Step 1: Gather Context
+
 ...
 
 ### Step 2: Execute
+
 ...
 
 ## Success Criteria
+
 - [ ] Expected outcome 1
 - [ ] Expected outcome 2
 ```
 
 **Skill:**
+
 ```markdown
 ---
 name: my-skill
@@ -207,18 +218,22 @@ description: What it does. Use when [trigger conditions].
 # Skill Title
 
 ## Quick Start
+
 [Immediate actionable example]
 
 ## Instructions
+
 [Core guidance]
 
 ## Examples
+
 [Concrete input/output pairs]
 ```
 
 ### Step 3: Add Reference Files (If Needed)
 
 Link from SKILL.md to detailed content:
+
 ```markdown
 For API reference, see [reference.md](reference.md).
 For form filling guide, see [forms.md](forms.md).
@@ -255,6 +270,7 @@ For form filling guide, see [forms.md](forms.md).
 ## Reference Files
 
 For detailed guidance, see:
+
 - [official-spec.md](references/official-spec.md) - Official skill specification
 - [best-practices.md](references/best-practices.md) - Skill authoring best practices
 

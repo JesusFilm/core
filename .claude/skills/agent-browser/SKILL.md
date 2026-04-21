@@ -613,6 +613,7 @@ agent-browser --engine lightpanda --executable-path /path/to/lightpanda open exa
 ```
 
 Supported engines:
+
 - `chrome` (default) -- Chrome/Chromium via CDP
 - `lightpanda` -- Lightpanda headless browser via CDP (10x faster, 10x less memory than Chrome)
 
@@ -646,20 +647,22 @@ Lightpanda does not support `--extension`, `--profile`, `--state`, or `--allow-f
 
 ## vs Playwright MCP
 
-| Feature | agent-browser (CLI) | Playwright MCP |
-|---------|---------------------|----------------|
-| Interface | Bash commands | MCP tools |
-| Selection | Refs (@e1) | Refs (e1) |
-| Output | Text/JSON | Tool responses |
-| Parallel | Sessions | Tabs |
-| Best for | Quick automation | Tool integration |
+| Feature   | agent-browser (CLI) | Playwright MCP   |
+| --------- | ------------------- | ---------------- |
+| Interface | Bash commands       | MCP tools        |
+| Selection | Refs (@e1)          | Refs (e1)        |
+| Output    | Text/JSON           | Tool responses   |
+| Parallel  | Sessions            | Tabs             |
+| Best for  | Quick automation    | Tool integration |
 
 Use agent-browser when:
+
 - You prefer Bash-based workflows
 - You want simpler CLI commands
 - You need quick one-off automation
 
 Use Playwright MCP when:
+
 - You need deep MCP tool integration
 - You want tool-based responses
 - You're building complex automation

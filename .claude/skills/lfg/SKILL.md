@@ -1,7 +1,7 @@
 ---
 name: lfg
 description: Full autonomous engineering workflow
-argument-hint: "[feature description]"
+argument-hint: '[feature description]'
 disable-model-invocation: true
 ---
 

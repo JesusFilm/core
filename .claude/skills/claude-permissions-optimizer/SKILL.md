@@ -37,11 +37,13 @@ Default to **All projects** unless the user explicitly asks for a single project
 Run the bundled script. It handles everything: loads the current allowlist, scans recent session transcripts (most recent 500 sessions or last 30 days, whichever is more restrictive), filters already-covered commands, applies a min-count threshold (5+), normalizes into `Bash(pattern)` rules, and pre-classifies each as safe/review/dangerous.
 
 **All projects:**
+
 ```bash
 node <skill-dir>/scripts/extract-commands.mjs
 ```
 
 **This project only** -- pass the project slug (absolute path with every non-alphanumeric char replaced by `-`, e.g., `/Users/tmchow/Code/my-project` becomes `-Users-tmchow-Code-my-project`):
+
 ```bash
 node <skill-dir>/scripts/extract-commands.mjs --project-slug <slug>
 ```
@@ -49,6 +51,7 @@ node <skill-dir>/scripts/extract-commands.mjs --project-slug <slug>
 Optional: `--days <N>` to limit to the last N days. Omit to analyze all available sessions.
 
 The output JSON has:
+
 - `green`: safe patterns to recommend `{ pattern, count, sessions, examples }`
 - `redExamples`: top 5 blocked dangerous patterns `{ pattern, reason, count }` (or empty)
 - `yellowFootnote`: one-line summary of frequently-used commands that aren't safe to auto-allow (or null)
@@ -67,6 +70,7 @@ Present in three parts. Keep the formatting clean and scannable.
 Show the work done using the script's `stats`. Reaffirm the scope. Keep it to 4-5 lines.
 
 **Example:**
+
 ```
 ## Analysis (compound-engineering-plugin)
 
@@ -113,6 +117,7 @@ Adding 22 rules would bring your allowlist coverage from 65% to 93%.
 ```
 
 Compute the percentages from stats:
+
 - **Before:** `alreadyCovered / totalExtracted * 100`
 - **After:** `(alreadyCovered + greenRawCount) / totalExtracted * 100`
 

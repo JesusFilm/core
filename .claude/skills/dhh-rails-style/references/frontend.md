@@ -1,25 +1,30 @@
 # Frontend - DHH Rails Style
 
 <turbo_patterns>
+
 ## Turbo Patterns
 
 **Turbo Streams** for partial updates:
+
 ```erb
 <%# app/views/cards/closures/create.turbo_stream.erb %>
 <%= turbo_stream.replace @card %>
 ```
 
 **Morphing** for complex updates:
+
 ```ruby
 render turbo_stream: turbo_stream.morph(@card)
 ```
 
 **Global morphing** - enable in layout:
+
 ```ruby
 turbo_refreshes_with method: :morph, scroll: :preserve
 ```
 
 **Fragment caching** with `cached: true`:
+
 ```erb
 <%= render partial: "card", collection: @cards, cached: true %>
 ```
@@ -28,16 +33,19 @@ turbo_refreshes_with method: :morph, scroll: :preserve
 </turbo_patterns>
 
 <turbo_morphing>
+
 ## Turbo Morphing Best Practices
 
 **Listen for morph events** to restore client state:
+
 ```javascript
-document.addEventListener("turbo:morph-element", (event) => {
+document.addEventListener('turbo:morph-element', (event) => {
   // Restore any client-side state after morph
 })
 ```
 
 **Permanent elements** - skip morphing with data attribute:
+
 ```erb
 <div data-turbo-permanent id="notification-count">
   <%= @count %>
@@ -45,25 +53,29 @@ document.addEventListener("turbo:morph-element", (event) => {
 ```
 
 **Frame morphing** - add refresh attribute:
+
 ```erb
 <%= turbo_frame_tag :assignment, src: path, refresh: :morph %>
 ```
 
 **Common issues and solutions:**
 
-| Problem | Solution |
-|---------|----------|
-| Timers not updating | Clear/restart in morph event listener |
-| Forms resetting | Wrap form sections in turbo frames |
-| Pagination breaking | Use turbo frames with `refresh: :morph` |
-| Flickering on replace | Switch to morph instead of replace |
-| localStorage loss | Listen to `turbo:morph-element`, restore state |
+| Problem               | Solution                                       |
+| --------------------- | ---------------------------------------------- |
+| Timers not updating   | Clear/restart in morph event listener          |
+| Forms resetting       | Wrap form sections in turbo frames             |
+| Pagination breaking   | Use turbo frames with `refresh: :morph`        |
+| Flickering on replace | Switch to morph instead of replace             |
+| localStorage loss     | Listen to `turbo:morph-element`, restore state |
+
 </turbo_morphing>
 
 <turbo_frames>
+
 ## Turbo Frames
 
 **Lazy loading** with spinner:
+
 ```erb
 <%= turbo_frame_tag "menu",
       src: menu_path,
@@ -73,6 +85,7 @@ document.addEventListener("turbo:morph-element", (event) => {
 ```
 
 **Inline editing** with edit/view toggle:
+
 ```erb
 <%= turbo_frame_tag dom_id(card, :edit) do %>
   <%= link_to "Edit", edit_card_path(card),
@@ -81,23 +94,28 @@ document.addEventListener("turbo:morph-element", (event) => {
 ```
 
 **Target parent frame** without hardcoding:
+
 ```erb
 <%= form_with model: @card, data: { turbo_frame: "_parent" } do |f| %>
 ```
 
 **Real-time subscriptions:**
+
 ```erb
 <%= turbo_stream_from @card %>
 <%= turbo_stream_from @card, :activity %>
 ```
+
 </turbo_frames>
 
 <stimulus_controllers>
+
 ## Stimulus Controllers
 
 52 controllers in Fizzy, split 62% reusable, 38% domain-specific.
 
 **Characteristics:**
+
 - Single responsibility per controller
 - Configuration via values/classes
 - Events for communication
@@ -108,7 +126,7 @@ document.addEventListener("turbo:morph-element", (event) => {
 
 ```javascript
 // copy-to-clipboard (25 lines)
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
   static values = { content: String }
@@ -119,15 +137,15 @@ export default class extends Controller {
   }
 
   #showFeedback() {
-    this.element.classList.add("copied")
-    setTimeout(() => this.element.classList.remove("copied"), 1500)
+    this.element.classList.add('copied')
+    setTimeout(() => this.element.classList.remove('copied'), 1500)
   }
 }
 ```
 
 ```javascript
 // auto-click (7 lines)
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
   connect() {
@@ -138,10 +156,10 @@ export default class extends Controller {
 
 ```javascript
 // toggle-class (31 lines)
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static classes = ["toggle"]
+  static classes = ['toggle']
   static values = { open: { type: Boolean, default: false } }
 
   toggle() {
@@ -156,7 +174,7 @@ export default class extends Controller {
 
 ```javascript
 // auto-submit (28 lines) - debounced form submission
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
   static values = { delay: { type: Number, default: 300 } }
@@ -180,7 +198,7 @@ export default class extends Controller {
 
 ```javascript
 // dialog (45 lines) - native HTML dialog management
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
   open() {
@@ -189,7 +207,7 @@ export default class extends Controller {
 
   close() {
     this.element.close()
-    this.dispatch("closed")
+    this.dispatch('closed')
   }
 
   clickOutside(event) {
@@ -200,7 +218,7 @@ export default class extends Controller {
 
 ```javascript
 // local-time (40 lines) - relative time display
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
   static values = { datetime: String }
@@ -224,12 +242,15 @@ export default class extends Controller {
   }
 }
 ```
+
 </stimulus_controllers>
 
 <stimulus_best_practices>
+
 ## Stimulus Best Practices
 
 **Values API** over getAttribute:
+
 ```javascript
 // Good
 static values = { delay: { type: Number, default: 300 } }
@@ -239,6 +260,7 @@ this.element.getAttribute("data-delay")
 ```
 
 **Cleanup in disconnect:**
+
 ```javascript
 disconnect() {
   clearTimeout(this.timeout)
@@ -248,11 +270,13 @@ disconnect() {
 ```
 
 **Action filters** - `:self` prevents bubbling:
+
 ```erb
 <div data-action="click->menu#toggle:self">
 ```
 
 **Helper extraction** - shared utilities in separate modules:
+
 ```javascript
 // app/javascript/helpers/timing.js
 export function debounce(fn, delay) {
@@ -265,15 +289,19 @@ export function debounce(fn, delay) {
 ```
 
 **Event dispatching** for loose coupling:
+
 ```javascript
-this.dispatch("selected", { detail: { id: this.idValue } })
+this.dispatch('selected', { detail: { id: this.idValue } })
 ```
+
 </stimulus_best_practices>
 
 <view_helpers>
+
 ## View Helpers (Stimulus-Integrated)
 
 **Dialog helper:**
+
 ```ruby
 def dialog_tag(id, &block)
   tag.dialog(
@@ -288,6 +316,7 @@ end
 ```
 
 **Auto-submit form helper:**
+
 ```ruby
 def auto_submit_form_with(model:, delay: 300, **options, &block)
   form_with(
@@ -304,6 +333,7 @@ end
 ```
 
 **Copy button helper:**
+
 ```ruby
 def copy_button(content:, label: "Copy")
   tag.button(
@@ -316,39 +346,55 @@ def copy_button(content:, label: "Copy")
   )
 end
 ```
+
 </view_helpers>
 
 <css_architecture>
+
 ## CSS Architecture
 
 Vanilla CSS with modern features, no preprocessors.
 
 **CSS @layer** for cascade control:
+
 ```css
 @layer reset, base, components, modules, utilities;
 
 @layer reset {
-  *, *::before, *::after { box-sizing: border-box; }
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 }
 
 @layer base {
-  body { font-family: var(--font-sans); }
+  body {
+    font-family: var(--font-sans);
+  }
 }
 
 @layer components {
-  .btn { /* button styles */ }
+  .btn {
+    /* button styles */
+  }
 }
 
 @layer modules {
-  .card { /* card module styles */ }
+  .card {
+    /* card module styles */
+  }
 }
 
 @layer utilities {
-  .hidden { display: none; }
+  .hidden {
+    display: none;
+  }
 }
 ```
 
 **OKLCH color system** for perceptual uniformity:
+
 ```css
 :root {
   --color-primary: oklch(60% 0.15 250);
@@ -359,6 +405,7 @@ Vanilla CSS with modern features, no preprocessors.
 ```
 
 **Dark mode** via CSS variables:
+
 ```css
 :root {
   --bg: oklch(98% 0 0);
@@ -374,6 +421,7 @@ Vanilla CSS with modern features, no preprocessors.
 ```
 
 **Native CSS nesting:**
+
 ```css
 .card {
   padding: var(--space-4);
@@ -391,17 +439,20 @@ Vanilla CSS with modern features, no preprocessors.
 **~60 minimal utilities** vs Tailwind's hundreds.
 
 **Modern features used:**
+
 - `@starting-style` for enter animations
 - `color-mix()` for color manipulation
 - `:has()` for parent selection
 - Logical properties (`margin-inline`, `padding-block`)
 - Container queries
-</css_architecture>
+  </css_architecture>
 
 <view_patterns>
+
 ## View Patterns
 
 **Standard partials** - no ViewComponents:
+
 ```erb
 <%# app/views/cards/_card.html.erb %>
 <article id="<%= dom_id(card) %>" class="card">
@@ -412,6 +463,7 @@ Vanilla CSS with modern features, no preprocessors.
 ```
 
 **Fragment caching:**
+
 ```erb
 <% cache card do %>
   <%= render "cards/card", card: card %>
@@ -419,21 +471,30 @@ Vanilla CSS with modern features, no preprocessors.
 ```
 
 **Collection caching:**
+
 ```erb
 <%= render partial: "card", collection: @cards, cached: true %>
 ```
 
 **Simple component naming** - no strict BEM:
+
 ```css
-.card { }
-.card .title { }
-.card .actions { }
-.card.golden { }
-.card.closed { }
+.card {
+}
+.card .title {
+}
+.card .actions {
+}
+.card.golden {
+}
+.card.closed {
+}
 ```
+
 </view_patterns>
 
 <caching_with_personalization>
+
 ## User-Specific Content in Caches
 
 Move personalization to client-side JavaScript to preserve caching:
@@ -454,18 +515,19 @@ Move personalization to client-side JavaScript to preserve caching:
 // Reveal user-specific elements after cache hit
 export default class extends Controller {
   static values = { currentUser: Number }
-  static targets = ["ownerOnly"]
+  static targets = ['ownerOnly']
 
   connect() {
     const creatorId = parseInt(this.element.dataset.creatorId)
     if (creatorId === this.currentUserValue) {
-      this.ownerOnlyTargets.forEach(el => el.classList.remove("hidden"))
+      this.ownerOnlyTargets.forEach((el) => el.classList.remove('hidden'))
     }
   }
 }
 ```
 
 **Extract dynamic content** to separate frames:
+
 ```erb
 <% cache [card, board] do %>
   <article class="card">
@@ -483,6 +545,7 @@ Assignment dropdown updates independently without invalidating parent cache.
 ## Broadcasting with Turbo Streams
 
 **Model callbacks** for real-time updates:
+
 ```ruby
 class Card < ApplicationRecord
   include Broadcastable

@@ -36,8 +36,8 @@ date: 2025-11-12
 problem_type: performance_issue
 component: rails_model
 symptoms:
-  - "N+1 query when loading email threads"
-  - "Brief generation taking >5 seconds"
+  - 'N+1 query when loading email threads'
+  - 'Brief generation taking >5 seconds'
 root_cause: missing_include
 rails_version: 7.1.2
 resolution_type: code_fix

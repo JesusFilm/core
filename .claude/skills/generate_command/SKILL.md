@@ -1,7 +1,7 @@
 ---
 name: generate_command
 description: Create a new custom slash command following conventions and best practices
-argument-hint: "[command purpose and requirements]"
+argument-hint: '[command purpose and requirements]'
 disable-model-invocation: true
 ---
 
@@ -16,21 +16,25 @@ Create a new skill in `.claude/skills/` for the requested task.
 ## Key Capabilities to Leverage
 
 **File Operations:**
+
 - Read, Edit, Write - modify files precisely
 - Glob, Grep - search codebase
 - MultiEdit - atomic multi-part changes
 
 **Development:**
+
 - Bash - run commands (git, tests, linters)
 - Task - launch specialized agents for complex tasks
 - TodoWrite - track progress with todo lists
 
 **Web & APIs:**
+
 - WebFetch, WebSearch - research documentation
 - GitHub (gh cli) - PRs, issues, reviews
 - Playwright - browser automation, screenshots
 
 **Integrations:**
+
 - AppSignal - logs and monitoring
 - Context7 - framework docs
 - Stripe, Todoist, Featurebase (if relevant)
@@ -52,11 +56,12 @@ Create a new skill in `.claude/skills/` for the requested task.
 ---
 name: command-name
 description: Brief description of what this command does (max 100 chars)
-argument-hint: "[what arguments the command accepts]"
+argument-hint: '[what arguments the command accepts]'
 ---
 ```
 
 **Fields:**
+
 - `name`: Lowercase command identifier (used internally)
 - `description`: Clear, concise summary of command purpose
 - `argument-hint`: Shows user what arguments are expected (e.g., `[file path]`, `[PR number]`, `[optional: format]`)
@@ -139,7 +144,7 @@ Implement #$ARGUMENTS following these steps:
 ---
 name: command-name
 description: What this command does
-argument-hint: "[expected arguments]"
+argument-hint: '[expected arguments]'
 ---
 
 # Command Title

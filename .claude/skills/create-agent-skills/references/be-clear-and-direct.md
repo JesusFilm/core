@@ -57,6 +57,7 @@ Sequential steps create clear expectations and reduce the chance Claude skips im
 
 <example_comparison>
 <unclear_example>
+
 ```xml
 <quick_start>
 Please remove all personally identifiable information from these customer feedback messages: {{FEEDBACK_DATA}}
@@ -64,14 +65,16 @@ Please remove all personally identifiable information from these customer feedba
 ```
 
 **Problems**:
+
 - What counts as PII?
 - What should replace PII?
 - What format should the output be?
 - What if no PII is found?
 - Should product names be redacted?
-</unclear_example>
+  </unclear_example>
 
 <clear_example>
+
 ```xml
 <objective>
 Anonymize customer feedback for quarterly review presentation.
@@ -99,16 +102,18 @@ Data to process: {{FEEDBACK_DATA}}
 ```
 
 **Why this is better**:
+
 - States the purpose (quarterly review)
 - Provides explicit step-by-step rules
 - Defines output format clearly
 - Specifies edge cases (product names, no PII found)
 - Defines success criteria
-</clear_example>
-</example_comparison>
+  </clear_example>
+  </example_comparison>
 
 <key_differences>
 The clear version:
+
 - States the purpose (quarterly review)
 - Provides explicit step-by-step rules
 - Defines output format
@@ -124,14 +129,17 @@ When format matters, show an example rather than just describing it.
 </principle>
 
 <telling_example>
+
 ```xml
 <commit_messages>
 Generate commit messages in conventional format with type, scope, and description.
 </commit_messages>
 ```
+
 </telling_example>
 
 <showing_example>
+
 ```xml
 <commit_message_format>
 Generate commit messages following these examples:
@@ -140,9 +148,11 @@ Generate commit messages following these examples:
 <input>Added user authentication with JWT tokens</input>
 <output>
 ```
+
 feat(auth): implement JWT-based authentication
 
 Add login endpoint and token validation middleware
+
 ```
 </output>
 </example>
@@ -151,9 +161,11 @@ Add login endpoint and token validation middleware
 <input>Fixed bug where dates displayed incorrectly in reports</input>
 <output>
 ```
+
 fix(reports): correct date formatting in timezone conversion
 
 Use UTC timestamps consistently across report generation
+
 ```
 </output>
 </example>
@@ -161,10 +173,12 @@ Use UTC timestamps consistently across report generation
 Follow this style: type(scope): brief description, then detailed explanation.
 </commit_message_format>
 ```
+
 </showing_example>
 
 <why_showing_works>
 Examples communicate nuances that text descriptions can't:
+
 - Exact formatting (spacing, capitalization, punctuation)
 - Tone and style
 - Level of detail
@@ -202,17 +216,19 @@ You should probably validate the output and try to fix any errors.
 ```
 
 ✅ **Clear**:
-```xml
+
+````xml
 <validation>
 Always validate output before proceeding:
 
 ```bash
 python scripts/validate.py output_dir/
-```
+````
 
 If validation fails, fix errors and re-validate. Only proceed when validation passes with zero errors.
 </validation>
-```
+
+````
 </example>
 </avoid_ambiguity>
 
@@ -226,17 +242,19 @@ Anticipate edge cases and define how to handle them. Don't leave Claude guessing
 <quick_start>
 Extract email addresses from the text file and save to a JSON array.
 </quick_start>
-```
+````
 
 **Questions left unanswered**:
+
 - What if no emails are found?
 - What if the same email appears multiple times?
 - What if emails are malformed?
 - What JSON format exactly?
-</without_edge_cases>
+  </without_edge_cases>
 
 <with_edge_cases>
-```xml
+
+````xml
 <quick_start>
 Extract email addresses from the text file and save to a JSON array.
 
@@ -253,10 +271,12 @@ Extract email addresses from the text file and save to a JSON array.
   "user1@example.com",
   "user2@example.com"
 ]
-```
+````
+
 </example_output>
 </quick_start>
-```
+
+````
 </with_edge_cases>
 </define_edge_cases>
 
@@ -270,11 +290,13 @@ When output format matters, specify it precisely. Show examples.
 <output>
 Generate a report with the analysis results.
 </output>
-```
+````
+
 </vague_format>
 
 <specific_format>
-```xml
+
+````xml
 <output_format>
 Generate a markdown report with this exact structure:
 
@@ -295,16 +317,18 @@ Generate a markdown report with this exact structure:
 
 ## Appendix
 [Raw data and detailed calculations]
-```
+````
 
 **Requirements**:
+
 - Use exactly these section headings
 - Executive summary must be 1-2 paragraphs
 - List 3-5 key findings
 - Provide 2-4 recommendations
 - Include appendix with source data
-</output_format>
-```
+  </output_format>
+
+````
 </specific_format>
 </output_format_specification>
 
@@ -318,12 +342,13 @@ When Claude must make decisions, provide clear criteria.
 <workflow>
 Analyze the data and decide which visualization to use.
 </workflow>
-```
+````
 
 **Problem**: What factors should guide this decision?
 </no_criteria>
 
 <with_criteria>
+
 ```xml
 <workflow>
 Analyze the data and select appropriate visualization:
@@ -357,6 +382,7 @@ Clearly separate "must do" from "nice to have" from "must not do".
 </principle>
 
 <unclear_requirements>
+
 ```xml
 <requirements>
 The report should include financial data, customer metrics, and market analysis. It would be good to have visualizations. Don't make it too long.
@@ -364,12 +390,14 @@ The report should include financial data, customer metrics, and market analysis.
 ```
 
 **Problems**:
+
 - Are all three content types required?
 - Are visualizations optional or required?
 - How long is "too long"?
-</unclear_requirements>
+  </unclear_requirements>
 
 <clear_requirements>
+
 ```xml
 <requirements>
 <must_have>
@@ -403,6 +431,7 @@ Define what success looks like. How will Claude know it succeeded?
 </principle>
 
 <without_success_criteria>
+
 ```xml
 <objective>
 Process the CSV file and generate a report.
@@ -413,6 +442,7 @@ Process the CSV file and generate a report.
 </without_success_criteria>
 
 <with_success_criteria>
+
 ```xml
 <objective>
 Process the CSV file and generate a summary report.
@@ -438,6 +468,7 @@ Test your instructions by asking: "Could I hand these instructions to a junior d
 </principle>
 
 <testing_process>
+
 1. Read your skill instructions
 2. Remove context only you have (project knowledge, unstated assumptions)
 3. Identify ambiguous terms or vague requirements
@@ -452,6 +483,7 @@ If a human with minimal context struggles, Claude will too.
 <practical_examples>
 <example domain="data_processing">
 ❌ **Unclear**:
+
 ```xml
 <quick_start>
 Clean the data and remove bad entries.
@@ -459,6 +491,7 @@ Clean the data and remove bad entries.
 ```
 
 ✅ **Clear**:
+
 ```xml
 <quick_start>
 <data_cleaning>
@@ -478,6 +511,7 @@ Clean the data and remove bad entries.
 </success_criteria>
 </quick_start>
 ```
+
 </example>
 
 <example domain="code_generation">
@@ -489,7 +523,8 @@ Write a function to process user input.
 ```
 
 ✅ **Clear**:
-```xml
+
+````xml
 <quick_start>
 <function_specification>
 Write a Python function with this signature:
@@ -508,24 +543,28 @@ def process_user_input(raw_input: str) -> dict:
     Raises:
         ValueError: If input format is invalid
     """
-```
+````
 
 **Requirements**:
+
 - Split input on colon delimiter
 - Validate email contains @ and domain
 - Convert age to integer, raise ValueError if not numeric
 - Return dictionary with specified keys
 - Include docstring and type hints
-</function_specification>
+  </function_specification>
 
 <success_criteria>
+
 - Function signature matches specification
 - All validation checks implemented
 - Proper error handling for invalid input
 - Type hints included
 - Docstring included
-</success_criteria>
-</quick_start>
+  </success_criteria>
+  </quick_start>
+
 ```
 </example>
 </practical_examples>
+```

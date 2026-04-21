@@ -1,7 +1,7 @@
 ---
 name: ce:ideate
 description: "Generate and critically evaluate grounded improvement ideas for the current project. Use when asking what to improve, requesting idea generation, exploring surprising improvements, or wanting the AI to proactively suggest strong project directions before brainstorming one in depth. Triggers on phrases like 'what should I improve', 'give me ideas', 'ideate on this project', 'surprise me with improvements', 'what would you change', or any request for AI-generated project improvement suggestions rather than refining the user's own idea."
-argument-hint: "[optional: feature, focus area, or constraint]"
+argument-hint: '[optional: feature, focus area, or constraint]'
 ---
 
 # Generate Improvement Ideas
@@ -54,16 +54,19 @@ If no argument is provided, proceed with open-ended ideation.
 Look in `docs/ideation/` for ideation documents created within the last 30 days.
 
 Treat a prior ideation doc as relevant when:
+
 - the topic matches the requested focus
 - the path or subsystem overlaps the requested focus
 - the request is open-ended and there is an obvious recent open ideation doc
 - the issue-grounded status matches: do not offer to resume a non-issue ideation when the current argument indicates issue-tracker intent, or vice versa — treat these as distinct topics
 
 If a relevant doc exists, ask whether to:
+
 1. continue from it
 2. start fresh
 
 If continuing:
+
 - read the document
 - summarize what has already been explored
 - preserve previous idea statuses and session log entries
@@ -84,10 +87,12 @@ Do NOT trigger on arguments that merely mention bugs as a focus: `bug in auth`, 
 When combined (e.g., `top 3 bugs in authentication`): detect issue-tracker intent first, volume override second, remainder is the focus hint. The focus narrows which issues matter; the volume override controls survivor count.
 
 Default volume:
+
 - each ideation sub-agent generates about 7-8 ideas (yielding 30-40 raw ideas across agents, ~20-30 after dedupe)
 - keep the top 5-7 survivors
 
 Honor clear overrides such as:
+
 - `top 3`
 - `100 ideas`
 - `go deep`
@@ -104,6 +109,7 @@ Run agents in parallel in the **foreground** (do not use background dispatch —
 1. **Quick context scan** — dispatch a general-purpose sub-agent with this prompt:
 
    > Read the project's AGENTS.md (or CLAUDE.md only as compatibility fallback, then README.md if neither exists), then discover the top-level directory layout using the native file-search/glob tool (e.g., `Glob` with pattern `*` or `*/*` in Claude Code). Return a concise summary (under 30 lines) covering:
+   >
    > - project shape (language, framework, top-level directory layout)
    > - notable patterns or conventions
    > - obvious pain points or gaps
@@ -163,6 +169,7 @@ Follow this mechanism exactly:
    - assumption-breaking or reframing
    - leverage and compounding effects
    - extreme cases, edge cases, or power-user pressure
+
 9. Ask each ideation sub-agent to return a standardized structure for each idea so the orchestrator can merge and reason over the outputs consistently. Prefer a compact JSON-like structure with:
    - title
    - summary
@@ -172,21 +179,25 @@ Follow this mechanism exactly:
 10. Merge and dedupe the sub-agent outputs into one master candidate list.
 11. **Synthesize cross-cutting combinations.** After deduping, scan the merged list for ideas from different frames that together suggest something stronger than either alone. If two or more ideas naturally combine into a higher-leverage proposal, add the combined idea to the list (expect 3-5 additions at most). This synthesis step belongs to the orchestrator because it requires seeing all ideas simultaneously.
 12. Spread ideas across multiple dimensions when justified:
-   - workflow/DX
-   - reliability
-   - extensibility
-   - missing capabilities
-   - docs/knowledge compounding
-   - quality and maintenance
-   - leverage on future work
+
+- workflow/DX
+- reliability
+- extensibility
+- missing capabilities
+- docs/knowledge compounding
+- quality and maintenance
+- leverage on future work
+
 13. If a focus was provided, pass it to every ideation sub-agent and weight the merged list toward it without excluding stronger adjacent ideas.
 
 The mechanism to preserve is:
+
 - generate many ideas first
 - critique the full combined list second
 - explain only the survivors in detail
 
 The sub-agent pattern to preserve is:
+
 - independent ideation with frames as starting biases first
 - orchestrator merge, dedupe, and cross-cutting synthesis second
 - critique only after the combined and synthesized list exists
@@ -196,6 +207,7 @@ The sub-agent pattern to preserve is:
 Review every generated idea critically.
 
 Prefer a two-layer critique:
+
 1. Have one or more skeptical sub-agents attack the merged list from distinct angles.
 2. Have the orchestrator synthesize those critiques, apply the rubric consistently, score the survivors, and decide the final ranking.
 
@@ -206,6 +218,7 @@ Critique agents may provide local judgments, but final scoring authority belongs
 For each rejected idea, write a one-line reason.
 
 Use rejection criteria such as:
+
 - too vague
 - not actionable
 - duplicates a stronger idea
@@ -215,6 +228,7 @@ Use rejection criteria such as:
 - interesting but better handled as a brainstorm variant, not a product improvement
 
 Use a consistent survivor rubric that weighs:
+
 - groundedness in the current repo
 - expected value
 - novelty
@@ -224,6 +238,7 @@ Use a consistent survivor rubric that weighs:
 - overlap with stronger ideas
 
 Target output:
+
 - keep 5-7 survivors by default
 - if too many survive, run a second stricter pass
 - if fewer than 5 survive, report that honestly rather than lowering the bar
@@ -250,6 +265,7 @@ Keep the presentation concise. The durable artifact holds the full record.
 Allow brief follow-up questions and lightweight clarification before writing the artifact.
 
 Do not write the ideation doc yet unless:
+
 - the user indicates the candidate set is good enough to preserve
 - the user asks to refine and continue in a way that should be recorded
 - the workflow is about to hand off to `ce:brainstorm`, Proof sharing, or session end
@@ -259,6 +275,7 @@ Do not write the ideation doc yet unless:
 Write the ideation artifact after the candidate set has been reviewed enough to preserve.
 
 Always write or update the artifact before:
+
 - handing off to `ce:brainstorm`
 - sharing to Proof
 - ending the session
@@ -283,11 +300,13 @@ focus: <optional focus hint>
 # Ideation: <Title>
 
 ## Codebase Context
+
 [Grounding summary from Phase 1]
 
 ## Ranked Ideas
 
 ### 1. <Idea Title>
+
 **Description:** [Concrete explanation]
 **Rationale:** [Why this improves the project]
 **Downsides:** [Tradeoffs or costs]
@@ -297,15 +316,17 @@ focus: <optional focus hint>
 
 ## Rejection Summary
 
-| # | Idea | Reason Rejected |
-|---|------|-----------------|
-| 1 | <Idea> | <Reason rejected> |
+| #   | Idea   | Reason Rejected   |
+| --- | ------ | ----------------- |
+| 1   | <Idea> | <Reason rejected> |
 
 ## Session Log
+
 - YYYY-MM-DD: Initial ideation — <candidate count> generated, <survivor count> survived
 ```
 
 If resuming:
+
 - update the existing file in place
 - append to the session log
 - preserve explored markers
@@ -315,6 +336,7 @@ If resuming:
 After presenting the results, ask what should happen next.
 
 Offer these options:
+
 1. brainstorm a selected idea
 2. refine the ideation
 3. share to Proof
@@ -323,6 +345,7 @@ Offer these options:
 #### 6.1 Brainstorm a Selected Idea
 
 If the user selects an idea:
+
 - write or update the ideation doc first
 - mark that idea as `Explored`
 - note the brainstorm date in the session log
@@ -339,6 +362,7 @@ Route refinement by intent:
 - `dig deeper on idea #N` -> expand only that idea's analysis
 
 After each refinement:
+
 - update the ideation document before any handoff, sharing, or session end
 - append a session log entry
 
@@ -351,6 +375,7 @@ Return to the next-step options after sharing.
 #### 6.4 End the Session
 
 When ending:
+
 - offer to commit only the ideation doc
 - do not create a branch
 - do not push

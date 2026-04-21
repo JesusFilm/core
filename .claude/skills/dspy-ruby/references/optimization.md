@@ -24,11 +24,11 @@ medium = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: metric)  # 12 trials
 heavy  = DSPy::Teleprompt::MIPROv2::AutoMode.heavy(metric: metric)   # 18 trials, Bayesian
 ```
 
-| Preset   | Trials | Strategy   | Use case                                            |
-|----------|--------|------------|-----------------------------------------------------|
-| `light`  | 6      | `:greedy`  | Quick wins on small datasets or during prototyping. |
-| `medium` | 12     | `:adaptive`| Balanced exploration vs. runtime for most pilots.   |
-| `heavy`  | 18     | `:bayesian`| Highest accuracy targets or multi-stage programs.   |
+| Preset   | Trials | Strategy    | Use case                                            |
+| -------- | ------ | ----------- | --------------------------------------------------- |
+| `light`  | 6      | `:greedy`   | Quick wins on small datasets or during prototyping. |
+| `medium` | 12     | `:adaptive` | Balanced exploration vs. runtime for most pilots.   |
+| `heavy`  | 18     | `:bayesian` | Highest accuracy targets or multi-stage programs.   |
 
 ### Manual configuration with dry-configurable
 
@@ -94,6 +94,7 @@ puts "Best score: #{result.best_score_value}"
 ```
 
 The `result` object exposes:
+
 - `optimized_program` -- ready-to-use predictor with updated instruction and demos.
 - `optimization_trace[:trial_logs]` -- per-trial record of instructions, demos, and scores.
 - `metadata[:optimizer]` -- `"MIPROv2"`, useful when persisting experiments from multiple optimizers.
@@ -105,6 +106,7 @@ MIPROv2 generates dataset summaries for each predictor and proposes per-stage in
 ### Bootstrap sampling
 
 During the bootstrap phase MIPROv2:
+
 1. Generates dataset summaries from the training set.
 2. Bootstraps few-shot demonstrations by running the baseline program.
 3. Proposes candidate instructions grounded in the summaries and bootstrapped examples.
@@ -191,19 +193,19 @@ teleprompter = DSPy::Teleprompt::GEPA.new(
 
 Key configuration knobs:
 
-| Knob                 | Purpose                                                                                   |
-|----------------------|-------------------------------------------------------------------------------------------|
+| Knob                 | Purpose                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------ |
 | `max_metric_calls`   | Hard budget on evaluation calls. Set to at least the validation set size plus a few minibatches. |
-| `minibatch_size`     | Examples per reflective replay batch. Smaller = cheaper iterations, noisier scores.       |
-| `skip_perfect_score` | Set `true` to stop early when a candidate reaches score `1.0`.                            |
+| `minibatch_size`     | Examples per reflective replay batch. Smaller = cheaper iterations, noisier scores.              |
+| `skip_perfect_score` | Set `true` to stop early when a candidate reaches score `1.0`.                                   |
 
 ### Minibatch sizing
 
-| Goal                                            | Suggested size | Rationale                                                  |
-|-------------------------------------------------|----------------|------------------------------------------------------------|
-| Explore many candidates within a tight budget   | 3--6           | Cheap iterations, more prompt variants, noisier metrics.   |
-| Stable metrics when each rollout is costly      | 8--12          | Smoother scores, fewer candidates unless budget is raised. |
-| Investigate specific failure modes              | 3--4 then 8+   | Start with breadth, increase once patterns emerge.         |
+| Goal                                          | Suggested size | Rationale                                                  |
+| --------------------------------------------- | -------------- | ---------------------------------------------------------- |
+| Explore many candidates within a tight budget | 3--6           | Cheap iterations, more prompt variants, noisier metrics.   |
+| Stable metrics when each rollout is costly    | 8--12          | Smoother scores, fewer candidates unless budget is raised. |
+| Investigate specific failure modes            | 3--4 then 8+   | Start with breadth, increase once patterns emerge.         |
 
 ### Compile and evaluate
 
@@ -217,6 +219,7 @@ test_metrics = evaluate(optimized_program, test)
 ```
 
 The `result` object exposes:
+
 - `optimized_program` -- predictor with updated instruction and few-shot examples.
 - `best_score_value` -- validation score for the best candidate.
 - `metadata` -- candidate counts, trace hashes, and telemetry IDs.
@@ -579,6 +582,7 @@ deleted_count = manager.cleanup_old_programs
 ### Storage events
 
 The storage system emits structured log events for monitoring:
+
 - `dspy.storage.save_start`, `dspy.storage.save_complete`, `dspy.storage.save_error`
 - `dspy.storage.load_start`, `dspy.storage.load_complete`, `dspy.storage.load_error`
 - `dspy.storage.delete`, `dspy.storage.export`, `dspy.storage.import`, `dspy.storage.cleanup`

@@ -12,16 +12,16 @@ Master multi-agent orchestration using Claude Code's TeammateTool and Task syste
 
 ## Primitives
 
-| Primitive | What It Is | File Location |
-|-----------|-----------|---------------|
-| **Agent** | A Claude instance that can use tools. You are an agent. Subagents are agents you spawn. | N/A (process) |
-| **Team** | A named group of agents working together. One leader, multiple teammates. | `~/.claude/teams/{name}/config.json` |
-| **Teammate** | An agent that joined a team. Has a name, color, inbox. Spawned via Task with `team_name` + `name`. | Listed in team config |
-| **Leader** | The agent that created the team. Receives teammate messages, approves plans/shutdowns. | First member in config |
-| **Task** | A work item with subject, description, status, owner, and dependencies. | `~/.claude/tasks/{team}/N.json` |
-| **Inbox** | JSON file where an agent receives messages from teammates. | `~/.claude/teams/{name}/inboxes/{agent}.json` |
-| **Message** | A JSON object sent between agents. Can be text or structured (shutdown_request, idle_notification, etc). | Stored in inbox files |
-| **Backend** | How teammates run. Auto-detected: `in-process` (same Node.js, invisible), `tmux` (separate panes, visible), `iterm2` (split panes in iTerm2). See [Spawn Backends](#spawn-backends). | Auto-detected based on environment |
+| Primitive    | What It Is                                                                                                                                                                           | File Location                                 |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| **Agent**    | A Claude instance that can use tools. You are an agent. Subagents are agents you spawn.                                                                                              | N/A (process)                                 |
+| **Team**     | A named group of agents working together. One leader, multiple teammates.                                                                                                            | `~/.claude/teams/{name}/config.json`          |
+| **Teammate** | An agent that joined a team. Has a name, color, inbox. Spawned via Task with `team_name` + `name`.                                                                                   | Listed in team config                         |
+| **Leader**   | The agent that created the team. Receives teammate messages, approves plans/shutdowns.                                                                                               | First member in config                        |
+| **Task**     | A work item with subject, description, status, owner, and dependencies.                                                                                                              | `~/.claude/tasks/{team}/N.json`               |
+| **Inbox**    | JSON file where an agent receives messages from teammates.                                                                                                                           | `~/.claude/teams/{name}/inboxes/{agent}.json` |
+| **Message**  | A JSON object sent between agents. Can be text or structured (shutdown_request, idle_notification, etc).                                                                             | Stored in inbox files                         |
+| **Backend**  | How teammates run. Auto-detected: `in-process` (same Node.js, invisible), `tmux` (separate panes, visible), `iterm2` (split panes in iTerm2). See [Spawn Backends](#spawn-backends). | Auto-detected based on environment            |
 
 ### How They Connect
 
@@ -116,6 +116,7 @@ sequenceDiagram
 ### How Swarms Work
 
 A swarm consists of:
+
 - **Leader** (you) - Creates team, spawns workers, coordinates work
 - **Teammates** (spawned agents) - Execute tasks, report back
 - **Task List** - Shared work queue with dependencies
@@ -181,14 +182,15 @@ Use Task for **short-lived, focused work** that returns a result:
 
 ```javascript
 Task({
-  subagent_type: "Explore",
-  description: "Find auth files",
-  prompt: "Find all authentication-related files in this codebase",
-  model: "haiku"  // Optional: haiku, sonnet, opus
+  subagent_type: 'Explore',
+  description: 'Find auth files',
+  prompt: 'Find all authentication-related files in this codebase',
+  model: 'haiku' // Optional: haiku, sonnet, opus
 })
 ```
 
 **Characteristics:**
+
 - Runs synchronously (blocks until complete) or async with `run_in_background: true`
 - Returns result directly to you
 - No team membership required
@@ -200,19 +202,20 @@ Use Task with `team_name` and `name` to **spawn persistent teammates**:
 
 ```javascript
 // First create a team
-Teammate({ operation: "spawnTeam", team_name: "my-project" })
+Teammate({ operation: 'spawnTeam', team_name: 'my-project' })
 
 // Then spawn a teammate into that team
 Task({
-  team_name: "my-project",        // Required: which team to join
-  name: "security-reviewer",      // Required: teammate's name
-  subagent_type: "security-sentinel",
-  prompt: "Review all authentication code for vulnerabilities. Send findings to team-lead via Teammate write.",
-  run_in_background: true         // Teammates usually run in background
+  team_name: 'my-project', // Required: which team to join
+  name: 'security-reviewer', // Required: teammate's name
+  subagent_type: 'security-sentinel',
+  prompt: 'Review all authentication code for vulnerabilities. Send findings to team-lead via Teammate write.',
+  run_in_background: true // Teammates usually run in background
 })
 ```
 
 **Characteristics:**
+
 - Joins team, appears in `config.json`
 - Communicates via inbox messages
 - Can claim tasks from shared task list
@@ -221,13 +224,13 @@ Task({
 
 ### Key Difference
 
-| Aspect | Task (subagent) | Task + team_name + name (teammate) |
-|--------|-----------------|-----------------------------------|
-| Lifespan | Until task complete | Until shutdown requested |
-| Communication | Return value | Inbox messages |
-| Task access | None | Shared task list |
-| Team membership | No | Yes |
-| Coordination | One-off | Ongoing |
+| Aspect          | Task (subagent)     | Task + team_name + name (teammate) |
+| --------------- | ------------------- | ---------------------------------- |
+| Lifespan        | Until task complete | Until shutdown requested           |
+| Communication   | Return value        | Inbox messages                     |
+| Task access     | None                | Shared task list                   |
+| Team membership | No                  | Yes                                |
+| Coordination    | One-off             | Ongoing                            |
 
 ---
 
@@ -236,74 +239,86 @@ Task({
 These are always available without plugins:
 
 ### Bash
+
 ```javascript
 Task({
-  subagent_type: "Bash",
-  description: "Run git commands",
-  prompt: "Check git status and show recent commits"
+  subagent_type: 'Bash',
+  description: 'Run git commands',
+  prompt: 'Check git status and show recent commits'
 })
 ```
+
 - **Tools:** Bash only
 - **Model:** Inherits from parent
 - **Best for:** Git operations, command execution, system tasks
 
 ### Explore
+
 ```javascript
 Task({
-  subagent_type: "Explore",
-  description: "Find API endpoints",
-  prompt: "Find all API endpoints in this codebase. Be very thorough.",
-  model: "haiku"  // Fast and cheap
+  subagent_type: 'Explore',
+  description: 'Find API endpoints',
+  prompt: 'Find all API endpoints in this codebase. Be very thorough.',
+  model: 'haiku' // Fast and cheap
 })
 ```
+
 - **Tools:** All read-only tools (no Edit, Write, NotebookEdit, Task)
 - **Model:** Haiku (optimized for speed)
 - **Best for:** Codebase exploration, file searches, code understanding
 - **Thoroughness levels:** "quick", "medium", "very thorough"
 
 ### Plan
+
 ```javascript
 Task({
-  subagent_type: "Plan",
-  description: "Design auth system",
-  prompt: "Create an implementation plan for adding OAuth2 authentication"
+  subagent_type: 'Plan',
+  description: 'Design auth system',
+  prompt: 'Create an implementation plan for adding OAuth2 authentication'
 })
 ```
+
 - **Tools:** All read-only tools
 - **Model:** Inherits from parent
 - **Best for:** Architecture planning, implementation strategies
 
 ### general-purpose
+
 ```javascript
 Task({
-  subagent_type: "general-purpose",
-  description: "Research and implement",
-  prompt: "Research React Query best practices and implement caching for the user API"
+  subagent_type: 'general-purpose',
+  description: 'Research and implement',
+  prompt: 'Research React Query best practices and implement caching for the user API'
 })
 ```
-- **Tools:** All tools (*)
+
+- **Tools:** All tools (\*)
 - **Model:** Inherits from parent
 - **Best for:** Multi-step tasks, research + action combinations
 
 ### claude-code-guide
+
 ```javascript
 Task({
-  subagent_type: "claude-code-guide",
-  description: "Help with Claude Code",
-  prompt: "How do I configure MCP servers?"
+  subagent_type: 'claude-code-guide',
+  description: 'Help with Claude Code',
+  prompt: 'How do I configure MCP servers?'
 })
 ```
+
 - **Tools:** Read-only + WebFetch + WebSearch
 - **Best for:** Questions about Claude Code, Agent SDK, Anthropic API
 
 ### statusline-setup
+
 ```javascript
 Task({
-  subagent_type: "statusline-setup",
-  description: "Configure status line",
-  prompt: "Set up a status line showing git branch and node version"
+  subagent_type: 'statusline-setup',
+  description: 'Configure status line',
+  prompt: 'Set up a status line showing git branch and node version'
 })
 ```
+
 - **Tools:** Read, Edit only
 - **Model:** Sonnet
 - **Best for:** Configuring Claude Code status line
@@ -315,44 +330,46 @@ Task({
 From the `compound-engineering` plugin (examples):
 
 ### Review Agents
+
 ```javascript
 // Security review
 Task({
-  subagent_type: "compound-engineering:review:security-sentinel",
-  description: "Security audit",
-  prompt: "Audit this PR for security vulnerabilities"
+  subagent_type: 'compound-engineering:review:security-sentinel',
+  description: 'Security audit',
+  prompt: 'Audit this PR for security vulnerabilities'
 })
 
 // Performance review
 Task({
-  subagent_type: "compound-engineering:review:performance-oracle",
-  description: "Performance check",
-  prompt: "Analyze this code for performance bottlenecks"
+  subagent_type: 'compound-engineering:review:performance-oracle',
+  description: 'Performance check',
+  prompt: 'Analyze this code for performance bottlenecks'
 })
 
 // Rails code review
 Task({
-  subagent_type: "compound-engineering:review:kieran-rails-reviewer",
-  description: "Rails review",
-  prompt: "Review this Rails code for best practices"
+  subagent_type: 'compound-engineering:review:kieran-rails-reviewer',
+  description: 'Rails review',
+  prompt: 'Review this Rails code for best practices'
 })
 
 // Architecture review
 Task({
-  subagent_type: "compound-engineering:review:architecture-strategist",
-  description: "Architecture review",
-  prompt: "Review the system architecture of the authentication module"
+  subagent_type: 'compound-engineering:review:architecture-strategist',
+  description: 'Architecture review',
+  prompt: 'Review the system architecture of the authentication module'
 })
 
 // Code simplicity
 Task({
-  subagent_type: "compound-engineering:review:code-simplicity-reviewer",
-  description: "Simplicity check",
-  prompt: "Check if this implementation can be simplified"
+  subagent_type: 'compound-engineering:review:code-simplicity-reviewer',
+  description: 'Simplicity check',
+  prompt: 'Check if this implementation can be simplified'
 })
 ```
 
 **All review agents from compound-engineering:**
+
 - `agent-native-reviewer` - Ensures features work for agents too
 - `architecture-strategist` - Architectural compliance
 - `code-simplicity-reviewer` - YAGNI and minimalism
@@ -369,30 +386,32 @@ Task({
 - `security-sentinel` - Security vulnerabilities
 
 ### Research Agents
+
 ```javascript
 // Best practices research
 Task({
-  subagent_type: "compound-engineering:research:best-practices-researcher",
-  description: "Research auth best practices",
-  prompt: "Research current best practices for JWT authentication in Rails 2024-2026"
+  subagent_type: 'compound-engineering:research:best-practices-researcher',
+  description: 'Research auth best practices',
+  prompt: 'Research current best practices for JWT authentication in Rails 2024-2026'
 })
 
 // Framework documentation
 Task({
-  subagent_type: "compound-engineering:research:framework-docs-researcher",
-  description: "Research Active Storage",
-  prompt: "Gather comprehensive documentation about Active Storage file uploads"
+  subagent_type: 'compound-engineering:research:framework-docs-researcher',
+  description: 'Research Active Storage',
+  prompt: 'Gather comprehensive documentation about Active Storage file uploads'
 })
 
 // Git history analysis
 Task({
-  subagent_type: "compound-engineering:research:git-history-analyzer",
-  description: "Analyze auth history",
-  prompt: "Analyze the git history of the authentication module to understand its evolution"
+  subagent_type: 'compound-engineering:research:git-history-analyzer',
+  description: 'Analyze auth history',
+  prompt: 'Analyze the git history of the authentication module to understand its evolution'
 })
 ```
 
 **All research agents:**
+
 - `best-practices-researcher` - External best practices
 - `framework-docs-researcher` - Framework documentation
 - `git-history-analyzer` - Code archaeology
@@ -400,20 +419,22 @@ Task({
 - `repo-research-analyst` - Repository patterns
 
 ### Design Agents
+
 ```javascript
 Task({
-  subagent_type: "compound-engineering:design:figma-design-sync",
-  description: "Sync with Figma",
-  prompt: "Compare implementation with Figma design at [URL]"
+  subagent_type: 'compound-engineering:design:figma-design-sync',
+  description: 'Sync with Figma',
+  prompt: 'Compare implementation with Figma design at [URL]'
 })
 ```
 
 ### Workflow Agents
+
 ```javascript
 Task({
-  subagent_type: "compound-engineering:workflow:bug-reproduction-validator",
-  description: "Validate bug",
-  prompt: "Reproduce and validate this reported bug: [description]"
+  subagent_type: 'compound-engineering:workflow:bug-reproduction-validator',
+  description: 'Validate bug',
+  prompt: 'Reproduce and validate this reported bug: [description]'
 })
 ```
 
@@ -425,13 +446,14 @@ Task({
 
 ```javascript
 Teammate({
-  operation: "spawnTeam",
-  team_name: "feature-auth",
-  description: "Implementing OAuth2 authentication"
+  operation: 'spawnTeam',
+  team_name: 'feature-auth',
+  description: 'Implementing OAuth2 authentication'
 })
 ```
 
 **Creates:**
+
 - `~/.claude/teams/feature-auth/config.json`
 - `~/.claude/tasks/feature-auth/` directory
 - You become the team leader
@@ -439,7 +461,7 @@ Teammate({
 ### 2. discoverTeams - List Available Teams
 
 ```javascript
-Teammate({ operation: "discoverTeams" })
+Teammate({ operation: 'discoverTeams' })
 ```
 
 **Returns:** List of teams you can join (not already a member of)
@@ -448,26 +470,28 @@ Teammate({ operation: "discoverTeams" })
 
 ```javascript
 Teammate({
-  operation: "requestJoin",
-  team_name: "feature-auth",
-  proposed_name: "helper",
-  capabilities: "I can help with code review and testing"
+  operation: 'requestJoin',
+  team_name: 'feature-auth',
+  proposed_name: 'helper',
+  capabilities: 'I can help with code review and testing'
 })
 ```
 
 ### 4. approveJoin - Accept Join Request (Leader Only)
 
 When you receive a `join_request` message:
+
 ```json
 {"type": "join_request", "proposedName": "helper", "requestId": "join-123", ...}
 ```
 
 Approve it:
+
 ```javascript
 Teammate({
-  operation: "approveJoin",
-  target_agent_id: "helper",
-  request_id: "join-123"
+  operation: 'approveJoin',
+  target_agent_id: 'helper',
+  request_id: 'join-123'
 })
 ```
 
@@ -475,10 +499,10 @@ Teammate({
 
 ```javascript
 Teammate({
-  operation: "rejectJoin",
-  target_agent_id: "helper",
-  request_id: "join-123",
-  reason: "Team is at capacity"
+  operation: 'rejectJoin',
+  target_agent_id: 'helper',
+  request_id: 'join-123',
+  reason: 'Team is at capacity'
 })
 ```
 
@@ -486,9 +510,9 @@ Teammate({
 
 ```javascript
 Teammate({
-  operation: "write",
-  target_agent_id: "security-reviewer",
-  value: "Please prioritize the authentication module. The deadline is tomorrow."
+  operation: 'write',
+  target_agent_id: 'security-reviewer',
+  value: 'Please prioritize the authentication module. The deadline is tomorrow.'
 })
 ```
 
@@ -498,19 +522,21 @@ Teammate({
 
 ```javascript
 Teammate({
-  operation: "broadcast",
-  name: "team-lead",  // Your name
-  value: "Status check: Please report your progress"
+  operation: 'broadcast',
+  name: 'team-lead', // Your name
+  value: 'Status check: Please report your progress'
 })
 ```
 
 **WARNING:** Broadcasting is expensive - sends N separate messages for N teammates. Prefer `write` to specific teammates.
 
 **When to broadcast:**
+
 - Critical issues requiring immediate attention
 - Major announcements affecting everyone
 
 **When NOT to broadcast:**
+
 - Responding to one teammate
 - Normal back-and-forth
 - Information relevant to only some teammates
@@ -519,24 +545,26 @@ Teammate({
 
 ```javascript
 Teammate({
-  operation: "requestShutdown",
-  target_agent_id: "security-reviewer",
-  reason: "All tasks complete, wrapping up"
+  operation: 'requestShutdown',
+  target_agent_id: 'security-reviewer',
+  reason: 'All tasks complete, wrapping up'
 })
 ```
 
 ### 9. approveShutdown - Accept Shutdown (Teammate Only)
 
 When you receive a `shutdown_request` message:
+
 ```json
-{"type": "shutdown_request", "requestId": "shutdown-123", "from": "team-lead", "reason": "Done"}
+{ "type": "shutdown_request", "requestId": "shutdown-123", "from": "team-lead", "reason": "Done" }
 ```
 
 **MUST** call:
+
 ```javascript
 Teammate({
-  operation: "approveShutdown",
-  request_id: "shutdown-123"
+  operation: 'approveShutdown',
+  request_id: 'shutdown-123'
 })
 ```
 
@@ -546,25 +574,27 @@ This sends confirmation and terminates your process.
 
 ```javascript
 Teammate({
-  operation: "rejectShutdown",
-  request_id: "shutdown-123",
-  reason: "Still working on task #3, need 5 more minutes"
+  operation: 'rejectShutdown',
+  request_id: 'shutdown-123',
+  reason: 'Still working on task #3, need 5 more minutes'
 })
 ```
 
 ### 11. approvePlan - Approve Teammate's Plan (Leader Only)
 
 When teammate with `plan_mode_required` sends a plan:
+
 ```json
 {"type": "plan_approval_request", "from": "architect", "requestId": "plan-456", ...}
 ```
 
 Approve:
+
 ```javascript
 Teammate({
-  operation: "approvePlan",
-  target_agent_id: "architect",
-  request_id: "plan-456"
+  operation: 'approvePlan',
+  target_agent_id: 'architect',
+  request_id: 'plan-456'
 })
 ```
 
@@ -572,20 +602,21 @@ Teammate({
 
 ```javascript
 Teammate({
-  operation: "rejectPlan",
-  target_agent_id: "architect",
-  request_id: "plan-456",
-  feedback: "Please add error handling for the API calls and consider rate limiting"
+  operation: 'rejectPlan',
+  target_agent_id: 'architect',
+  request_id: 'plan-456',
+  feedback: 'Please add error handling for the API calls and consider rate limiting'
 })
 ```
 
 ### 13. cleanup - Remove Team Resources
 
 ```javascript
-Teammate({ operation: "cleanup" })
+Teammate({ operation: 'cleanup' })
 ```
 
 **Removes:**
+
 - `~/.claude/teams/{team-name}/` directory
 - `~/.claude/tasks/{team-name}/` directory
 
@@ -599,9 +630,9 @@ Teammate({ operation: "cleanup" })
 
 ```javascript
 TaskCreate({
-  subject: "Review authentication module",
-  description: "Review all files in app/services/auth/ for security vulnerabilities",
-  activeForm: "Reviewing auth module..."  // Shown in spinner when in_progress
+  subject: 'Review authentication module',
+  description: 'Review all files in app/services/auth/ for security vulnerabilities',
+  activeForm: 'Reviewing auth module...' // Shown in spinner when in_progress
 })
 ```
 
@@ -612,6 +643,7 @@ TaskList()
 ```
 
 Returns:
+
 ```
 #1 [completed] Analyze codebase structure
 #2 [in_progress] Review authentication module (owner: security-reviewer)
@@ -621,7 +653,7 @@ Returns:
 ### TaskGet - Get Task Details
 
 ```javascript
-TaskGet({ taskId: "2" })
+TaskGet({ taskId: '2' })
 ```
 
 Returns full task with description, status, blockedBy, etc.
@@ -630,16 +662,16 @@ Returns full task with description, status, blockedBy, etc.
 
 ```javascript
 // Claim a task
-TaskUpdate({ taskId: "2", owner: "security-reviewer" })
+TaskUpdate({ taskId: '2', owner: 'security-reviewer' })
 
 // Start working
-TaskUpdate({ taskId: "2", status: "in_progress" })
+TaskUpdate({ taskId: '2', status: 'in_progress' })
 
 // Mark complete
-TaskUpdate({ taskId: "2", status: "completed" })
+TaskUpdate({ taskId: '2', status: 'completed' })
 
 // Set up dependencies
-TaskUpdate({ taskId: "3", addBlockedBy: ["1", "2"] })
+TaskUpdate({ taskId: '3', addBlockedBy: ['1', '2'] })
 ```
 
 ### Task Dependencies
@@ -648,15 +680,15 @@ When a blocking task is completed, blocked tasks are automatically unblocked:
 
 ```javascript
 // Create pipeline
-TaskCreate({ subject: "Step 1: Research" })        // #1
-TaskCreate({ subject: "Step 2: Implement" })       // #2
-TaskCreate({ subject: "Step 3: Test" })            // #3
-TaskCreate({ subject: "Step 4: Deploy" })          // #4
+TaskCreate({ subject: 'Step 1: Research' }) // #1
+TaskCreate({ subject: 'Step 2: Implement' }) // #2
+TaskCreate({ subject: 'Step 3: Test' }) // #3
+TaskCreate({ subject: 'Step 4: Deploy' }) // #4
 
 // Set up dependencies
-TaskUpdate({ taskId: "2", addBlockedBy: ["1"] })   // #2 waits for #1
-TaskUpdate({ taskId: "3", addBlockedBy: ["2"] })   // #3 waits for #2
-TaskUpdate({ taskId: "4", addBlockedBy: ["3"] })   // #4 waits for #3
+TaskUpdate({ taskId: '2', addBlockedBy: ['1'] }) // #2 waits for #1
+TaskUpdate({ taskId: '3', addBlockedBy: ['2'] }) // #3 waits for #2
+TaskUpdate({ taskId: '4', addBlockedBy: ['3'] }) // #4 waits for #3
 
 // When #1 completes, #2 auto-unblocks
 // When #2 completes, #3 auto-unblocks
@@ -666,6 +698,7 @@ TaskUpdate({ taskId: "4", addBlockedBy: ["3"] })   // #4 waits for #3
 ### Task File Structure
 
 `~/.claude/tasks/{team-name}/1.json`:
+
 ```json
 {
   "id": "1",
@@ -699,6 +732,7 @@ TaskUpdate({ taskId: "4", addBlockedBy: ["3"] })   // #4 waits for #3
 ### Structured Messages (JSON in text field)
 
 #### Shutdown Request
+
 ```json
 {
   "type": "shutdown_request",
@@ -710,6 +744,7 @@ TaskUpdate({ taskId: "4", addBlockedBy: ["3"] })   // #4 waits for #3
 ```
 
 #### Shutdown Approved
+
 ```json
 {
   "type": "shutdown_approved",
@@ -722,6 +757,7 @@ TaskUpdate({ taskId: "4", addBlockedBy: ["3"] })   // #4 waits for #3
 ```
 
 #### Idle Notification (auto-sent when teammate stops)
+
 ```json
 {
   "type": "idle_notification",
@@ -733,6 +769,7 @@ TaskUpdate({ taskId: "4", addBlockedBy: ["3"] })   // #4 waits for #3
 ```
 
 #### Task Completed
+
 ```json
 {
   "type": "task_completed",
@@ -744,6 +781,7 @@ TaskUpdate({ taskId: "4", addBlockedBy: ["3"] })   // #4 waits for #3
 ```
 
 #### Plan Approval Request
+
 ```json
 {
   "type": "plan_approval_request",
@@ -755,6 +793,7 @@ TaskUpdate({ taskId: "4", addBlockedBy: ["3"] })   // #4 waits for #3
 ```
 
 #### Join Request
+
 ```json
 {
   "type": "join_request",
@@ -766,6 +805,7 @@ TaskUpdate({ taskId: "4", addBlockedBy: ["3"] })   // #4 waits for #3
 ```
 
 #### Permission Request (for sandbox/tool permissions)
+
 ```json
 {
   "type": "permission_request",
@@ -776,7 +816,7 @@ TaskUpdate({ taskId: "4", addBlockedBy: ["3"] })   // #4 waits for #3
   "toolName": "Bash",
   "toolUseId": "toolu_abc123",
   "description": "Run npm install",
-  "input": {"command": "npm install"},
+  "input": { "command": "npm install" },
   "permissionSuggestions": ["Bash(npm *)"],
   "createdAt": 1706000000000
 }
@@ -792,30 +832,30 @@ Multiple specialists review code simultaneously:
 
 ```javascript
 // 1. Create team
-Teammate({ operation: "spawnTeam", team_name: "code-review" })
+Teammate({ operation: 'spawnTeam', team_name: 'code-review' })
 
 // 2. Spawn specialists in parallel (single message, multiple Task calls)
 Task({
-  team_name: "code-review",
-  name: "security",
-  subagent_type: "compound-engineering:review:security-sentinel",
-  prompt: "Review the PR for security vulnerabilities. Focus on: SQL injection, XSS, auth bypass. Send findings to team-lead.",
+  team_name: 'code-review',
+  name: 'security',
+  subagent_type: 'compound-engineering:review:security-sentinel',
+  prompt: 'Review the PR for security vulnerabilities. Focus on: SQL injection, XSS, auth bypass. Send findings to team-lead.',
   run_in_background: true
 })
 
 Task({
-  team_name: "code-review",
-  name: "performance",
-  subagent_type: "compound-engineering:review:performance-oracle",
-  prompt: "Review the PR for performance issues. Focus on: N+1 queries, memory leaks, slow algorithms. Send findings to team-lead.",
+  team_name: 'code-review',
+  name: 'performance',
+  subagent_type: 'compound-engineering:review:performance-oracle',
+  prompt: 'Review the PR for performance issues. Focus on: N+1 queries, memory leaks, slow algorithms. Send findings to team-lead.',
   run_in_background: true
 })
 
 Task({
-  team_name: "code-review",
-  name: "simplicity",
-  subagent_type: "compound-engineering:review:code-simplicity-reviewer",
-  prompt: "Review the PR for unnecessary complexity. Focus on: over-engineering, premature abstraction, YAGNI violations. Send findings to team-lead.",
+  team_name: 'code-review',
+  name: 'simplicity',
+  subagent_type: 'compound-engineering:review:code-simplicity-reviewer',
+  prompt: 'Review the PR for unnecessary complexity. Focus on: over-engineering, premature abstraction, YAGNI violations. Send findings to team-lead.',
   run_in_background: true
 })
 
@@ -823,11 +863,11 @@ Task({
 // cat ~/.claude/teams/code-review/inboxes/team-lead.json
 
 // 4. Synthesize findings and cleanup
-Teammate({ operation: "requestShutdown", target_agent_id: "security" })
-Teammate({ operation: "requestShutdown", target_agent_id: "performance" })
-Teammate({ operation: "requestShutdown", target_agent_id: "simplicity" })
+Teammate({ operation: 'requestShutdown', target_agent_id: 'security' })
+Teammate({ operation: 'requestShutdown', target_agent_id: 'performance' })
+Teammate({ operation: 'requestShutdown', target_agent_id: 'simplicity' })
 // Wait for approvals...
-Teammate({ operation: "cleanup" })
+Teammate({ operation: 'cleanup' })
 ```
 
 ### Pattern 2: Pipeline (Sequential Dependencies)
@@ -836,34 +876,34 @@ Each stage depends on the previous:
 
 ```javascript
 // 1. Create team and task pipeline
-Teammate({ operation: "spawnTeam", team_name: "feature-pipeline" })
+Teammate({ operation: 'spawnTeam', team_name: 'feature-pipeline' })
 
-TaskCreate({ subject: "Research", description: "Research best practices for the feature", activeForm: "Researching..." })
-TaskCreate({ subject: "Plan", description: "Create implementation plan based on research", activeForm: "Planning..." })
-TaskCreate({ subject: "Implement", description: "Implement the feature according to plan", activeForm: "Implementing..." })
-TaskCreate({ subject: "Test", description: "Write and run tests for the implementation", activeForm: "Testing..." })
-TaskCreate({ subject: "Review", description: "Final code review before merge", activeForm: "Reviewing..." })
+TaskCreate({ subject: 'Research', description: 'Research best practices for the feature', activeForm: 'Researching...' })
+TaskCreate({ subject: 'Plan', description: 'Create implementation plan based on research', activeForm: 'Planning...' })
+TaskCreate({ subject: 'Implement', description: 'Implement the feature according to plan', activeForm: 'Implementing...' })
+TaskCreate({ subject: 'Test', description: 'Write and run tests for the implementation', activeForm: 'Testing...' })
+TaskCreate({ subject: 'Review', description: 'Final code review before merge', activeForm: 'Reviewing...' })
 
 // Set up sequential dependencies
-TaskUpdate({ taskId: "2", addBlockedBy: ["1"] })
-TaskUpdate({ taskId: "3", addBlockedBy: ["2"] })
-TaskUpdate({ taskId: "4", addBlockedBy: ["3"] })
-TaskUpdate({ taskId: "5", addBlockedBy: ["4"] })
+TaskUpdate({ taskId: '2', addBlockedBy: ['1'] })
+TaskUpdate({ taskId: '3', addBlockedBy: ['2'] })
+TaskUpdate({ taskId: '4', addBlockedBy: ['3'] })
+TaskUpdate({ taskId: '5', addBlockedBy: ['4'] })
 
 // 2. Spawn workers that claim and complete tasks
 Task({
-  team_name: "feature-pipeline",
-  name: "researcher",
-  subagent_type: "compound-engineering:research:best-practices-researcher",
-  prompt: "Claim task #1, research best practices, complete it, send findings to team-lead. Then check for more work.",
+  team_name: 'feature-pipeline',
+  name: 'researcher',
+  subagent_type: 'compound-engineering:research:best-practices-researcher',
+  prompt: 'Claim task #1, research best practices, complete it, send findings to team-lead. Then check for more work.',
   run_in_background: true
 })
 
 Task({
-  team_name: "feature-pipeline",
-  name: "implementer",
-  subagent_type: "general-purpose",
-  prompt: "Poll TaskList every 30 seconds. When task #3 unblocks, claim it and implement. Then complete and notify team-lead.",
+  team_name: 'feature-pipeline',
+  name: 'implementer',
+  subagent_type: 'general-purpose',
+  prompt: 'Poll TaskList every 30 seconds. When task #3 unblocks, claim it and implement. Then complete and notify team-lead.',
   run_in_background: true
 })
 
@@ -876,10 +916,10 @@ Workers grab available tasks from a pool:
 
 ```javascript
 // 1. Create team and task pool
-Teammate({ operation: "spawnTeam", team_name: "file-review-swarm" })
+Teammate({ operation: 'spawnTeam', team_name: 'file-review-swarm' })
 
 // Create many independent tasks (no dependencies)
-for (const file of ["auth.rb", "user.rb", "api_controller.rb", "payment.rb"]) {
+for (const file of ['auth.rb', 'user.rb', 'api_controller.rb', 'payment.rb']) {
   TaskCreate({
     subject: `Review ${file}`,
     description: `Review ${file} for security and code quality issues`,
@@ -889,9 +929,9 @@ for (const file of ["auth.rb", "user.rb", "api_controller.rb", "payment.rb"]) {
 
 // 2. Spawn worker swarm
 Task({
-  team_name: "file-review-swarm",
-  name: "worker-1",
-  subagent_type: "general-purpose",
+  team_name: 'file-review-swarm',
+  name: 'worker-1',
+  subagent_type: 'general-purpose',
   prompt: `
     You are a swarm worker. Your job:
     1. Call TaskList to see available tasks
@@ -906,17 +946,17 @@ Task({
 })
 
 Task({
-  team_name: "file-review-swarm",
-  name: "worker-2",
-  subagent_type: "general-purpose",
+  team_name: 'file-review-swarm',
+  name: 'worker-2',
+  subagent_type: 'general-purpose',
   prompt: `[Same prompt as worker-1]`,
   run_in_background: true
 })
 
 Task({
-  team_name: "file-review-swarm",
-  name: "worker-3",
-  subagent_type: "general-purpose",
+  team_name: 'file-review-swarm',
+  name: 'worker-3',
+  subagent_type: 'general-purpose',
   prompt: `[Same prompt as worker-1]`,
   run_in_background: true
 })
@@ -931,15 +971,15 @@ Research first, then implement:
 ```javascript
 // 1. Research phase (synchronous, returns results)
 const research = await Task({
-  subagent_type: "compound-engineering:research:best-practices-researcher",
-  description: "Research caching patterns",
-  prompt: "Research best practices for implementing caching in Rails APIs. Include: cache invalidation strategies, Redis vs Memcached, cache key design."
+  subagent_type: 'compound-engineering:research:best-practices-researcher',
+  description: 'Research caching patterns',
+  prompt: 'Research best practices for implementing caching in Rails APIs. Include: cache invalidation strategies, Redis vs Memcached, cache key design.'
 })
 
 // 2. Use research to guide implementation
 Task({
-  subagent_type: "general-purpose",
-  description: "Implement caching",
+  subagent_type: 'general-purpose',
+  description: 'Implement caching',
   prompt: `
     Implement API caching based on this research:
 
@@ -956,15 +996,15 @@ Require plan approval before implementation:
 
 ```javascript
 // 1. Create team
-Teammate({ operation: "spawnTeam", team_name: "careful-work" })
+Teammate({ operation: 'spawnTeam', team_name: 'careful-work' })
 
 // 2. Spawn architect with plan_mode_required
 Task({
-  team_name: "careful-work",
-  name: "architect",
-  subagent_type: "Plan",
-  prompt: "Design an implementation plan for adding OAuth2 authentication",
-  mode: "plan",  // Requires plan approval
+  team_name: 'careful-work',
+  name: 'architect',
+  subagent_type: 'Plan',
+  prompt: 'Design an implementation plan for adding OAuth2 authentication',
+  mode: 'plan', // Requires plan approval
   run_in_background: true
 })
 
@@ -973,16 +1013,16 @@ Task({
 
 // 4. Review and approve/reject
 Teammate({
-  operation: "approvePlan",
-  target_agent_id: "architect",
-  request_id: "plan-xxx"
+  operation: 'approvePlan',
+  target_agent_id: 'architect',
+  request_id: 'plan-xxx'
 })
 // OR
 Teammate({
-  operation: "rejectPlan",
-  target_agent_id: "architect",
-  request_id: "plan-xxx",
-  feedback: "Please add rate limiting considerations"
+  operation: 'rejectPlan',
+  target_agent_id: 'architect',
+  request_id: 'plan-xxx',
+  feedback: 'Please add rate limiting considerations'
 })
 ```
 
@@ -990,52 +1030,52 @@ Teammate({
 
 ```javascript
 // 1. Create team for coordinated refactoring
-Teammate({ operation: "spawnTeam", team_name: "refactor-auth" })
+Teammate({ operation: 'spawnTeam', team_name: 'refactor-auth' })
 
 // 2. Create tasks with clear file boundaries
 TaskCreate({
-  subject: "Refactor User model",
-  description: "Extract authentication methods to AuthenticatableUser concern",
-  activeForm: "Refactoring User model..."
+  subject: 'Refactor User model',
+  description: 'Extract authentication methods to AuthenticatableUser concern',
+  activeForm: 'Refactoring User model...'
 })
 
 TaskCreate({
-  subject: "Refactor Session controller",
-  description: "Update to use new AuthenticatableUser concern",
-  activeForm: "Refactoring Sessions..."
+  subject: 'Refactor Session controller',
+  description: 'Update to use new AuthenticatableUser concern',
+  activeForm: 'Refactoring Sessions...'
 })
 
 TaskCreate({
-  subject: "Update specs",
-  description: "Update all authentication specs for new structure",
-  activeForm: "Updating specs..."
+  subject: 'Update specs',
+  description: 'Update all authentication specs for new structure',
+  activeForm: 'Updating specs...'
 })
 
 // Dependencies: specs depend on both refactors completing
-TaskUpdate({ taskId: "3", addBlockedBy: ["1", "2"] })
+TaskUpdate({ taskId: '3', addBlockedBy: ['1', '2'] })
 
 // 3. Spawn workers for each task
 Task({
-  team_name: "refactor-auth",
-  name: "model-worker",
-  subagent_type: "general-purpose",
-  prompt: "Claim task #1, refactor the User model, complete when done",
+  team_name: 'refactor-auth',
+  name: 'model-worker',
+  subagent_type: 'general-purpose',
+  prompt: 'Claim task #1, refactor the User model, complete when done',
   run_in_background: true
 })
 
 Task({
-  team_name: "refactor-auth",
-  name: "controller-worker",
-  subagent_type: "general-purpose",
-  prompt: "Claim task #2, refactor the Session controller, complete when done",
+  team_name: 'refactor-auth',
+  name: 'controller-worker',
+  subagent_type: 'general-purpose',
+  prompt: 'Claim task #2, refactor the Session controller, complete when done',
   run_in_background: true
 })
 
 Task({
-  team_name: "refactor-auth",
-  name: "spec-worker",
-  subagent_type: "general-purpose",
-  prompt: "Wait for task #3 to unblock (when #1 and #2 complete), then update specs",
+  team_name: 'refactor-auth',
+  name: 'spec-worker',
+  subagent_type: 'general-purpose',
+  prompt: 'Wait for task #3 to unblock (when #1 and #2 complete), then update specs',
   run_in_background: true
 })
 ```
@@ -1057,12 +1097,13 @@ CLAUDE_CODE_PARENT_SESSION_ID="session-xyz"
 ```
 
 **Using in prompts:**
+
 ```javascript
 Task({
-  team_name: "my-project",
-  name: "worker",
-  subagent_type: "general-purpose",
-  prompt: "Your name is $CLAUDE_CODE_AGENT_NAME. Use it when sending messages to team-lead."
+  team_name: 'my-project',
+  name: 'worker',
+  subagent_type: 'general-purpose',
+  prompt: 'Your name is $CLAUDE_CODE_AGENT_NAME. Use it when sending messages to team-lead.'
 })
 ```
 
@@ -1074,11 +1115,11 @@ A **backend** determines how teammate Claude instances actually run. Claude Code
 
 ### Backend Comparison
 
-| Backend | How It Works | Visibility | Persistence | Speed |
-|---------|-------------|------------|-------------|-------|
-| **in-process** | Same Node.js process as leader | Hidden (background) | Dies with leader | Fastest |
-| **tmux** | Separate terminal in tmux session | Visible in tmux | Survives leader exit | Medium |
-| **iterm2** | Split panes in iTerm2 window | Visible side-by-side | Dies with window | Medium |
+| Backend        | How It Works                      | Visibility           | Persistence          | Speed   |
+| -------------- | --------------------------------- | -------------------- | -------------------- | ------- |
+| **in-process** | Same Node.js process as leader    | Hidden (background)  | Dies with leader     | Fastest |
+| **tmux**       | Separate terminal in tmux session | Visible in tmux      | Survives leader exit | Medium  |
+| **iterm2**     | Split panes in iTerm2 window      | Visible side-by-side | Dies with window     | Medium  |
 
 ### Auto-Detection Logic
 
@@ -1100,6 +1141,7 @@ flowchart TD
 ```
 
 **Detection checks:**
+
 1. `$TMUX` environment variable → inside tmux
 2. `$TERM_PROGRAM === "iTerm.app"` or `$ITERM_SESSION_ID` → in iTerm2
 3. `which tmux` → tmux available
@@ -1110,17 +1152,20 @@ flowchart TD
 Teammates run as async tasks within the same Node.js process.
 
 **How it works:**
+
 - No new process spawned
 - Teammates share the same Node.js event loop
 - Communication via in-memory queues (fast)
 - You don't see teammate output directly
 
 **When it's used:**
+
 - Not running inside tmux session
 - Non-interactive mode (CI, scripts)
 - Explicitly set via `CLAUDE_CODE_SPAWN_BACKEND=in-process`
 
 **Characteristics:**
+
 ```
 ┌─────────────────────────────────────────┐
 │           Node.js Process               │
@@ -1132,11 +1177,13 @@ Teammates run as async tasks within the same Node.js process.
 ```
 
 **Pros:**
+
 - Fastest startup (no process spawn)
 - Lowest overhead
 - Works everywhere
 
 **Cons:**
+
 - Can't see teammate output in real-time
 - All die if leader dies
 - Harder to debug
@@ -1144,10 +1191,10 @@ Teammates run as async tasks within the same Node.js process.
 ```javascript
 // in-process is automatic when not in tmux
 Task({
-  team_name: "my-project",
-  name: "worker",
-  subagent_type: "general-purpose",
-  prompt: "...",
+  team_name: 'my-project',
+  name: 'worker',
+  subagent_type: 'general-purpose',
+  prompt: '...',
   run_in_background: true
 })
 
@@ -1160,12 +1207,14 @@ Task({
 Teammates run as separate Claude instances in tmux panes/windows.
 
 **How it works:**
+
 - Each teammate gets its own tmux pane
 - Separate process per teammate
 - You can switch panes to see teammate output
 - Communication via inbox files
 
 **When it's used:**
+
 - Running inside a tmux session (`$TMUX` is set)
 - tmux available and not in iTerm2
 - Explicitly set via `CLAUDE_CODE_SPAWN_BACKEND=tmux`
@@ -1173,6 +1222,7 @@ Teammates run as separate Claude instances in tmux panes/windows.
 **Layout modes:**
 
 1. **Inside tmux (native):** Splits your current window
+
 ```
 ┌─────────────────┬─────────────────┐
 │                 │    Worker 1     │
@@ -1184,6 +1234,7 @@ Teammates run as separate Claude instances in tmux panes/windows.
 ```
 
 2. **Outside tmux (external session):** Creates a new tmux session called `claude-swarm`
+
 ```bash
 # Your terminal stays as-is
 # Workers run in separate tmux session
@@ -1193,12 +1244,14 @@ tmux attach -t claude-swarm
 ```
 
 **Pros:**
+
 - See teammate output in real-time
 - Teammates survive leader exit
 - Can attach/detach sessions
 - Works in CI/headless environments
 
 **Cons:**
+
 - Slower startup (process spawn)
 - Requires tmux installed
 - More resource usage
@@ -1212,6 +1265,7 @@ export CLAUDE_CODE_SPAWN_BACKEND=tmux
 ```
 
 **Useful tmux commands:**
+
 ```bash
 # List all panes in current window
 tmux list-panes
@@ -1234,17 +1288,20 @@ tmux select-layout tiled
 Teammates run as split panes within your iTerm2 window.
 
 **How it works:**
+
 - Uses iTerm2's Python API via `it2` CLI
 - Splits your current window into panes
 - Each teammate visible side-by-side
 - Communication via inbox files
 
 **When it's used:**
+
 - Running in iTerm2 (`$TERM_PROGRAM === "iTerm.app"`)
 - `it2` CLI is installed and working
 - Python API enabled in iTerm2 preferences
 
 **Layout:**
+
 ```
 ┌─────────────────┬─────────────────┐
 │                 │    Worker 1     │
@@ -1256,17 +1313,20 @@ Teammates run as split panes within your iTerm2 window.
 ```
 
 **Pros:**
+
 - Visual debugging - see all teammates
 - Native macOS experience
 - No tmux needed
 - Automatic pane management
 
 **Cons:**
+
 - macOS + iTerm2 only
 - Requires setup (it2 CLI + Python API)
 - Panes die with window
 
 **Setup:**
+
 ```bash
 # 1. Install it2 CLI
 uv tool install it2
@@ -1287,6 +1347,7 @@ it2 session list
 
 **If setup fails:**
 Claude Code will prompt you to set up it2 when you first spawn a teammate. You can choose to:
+
 1. Install it2 now (guided setup)
 2. Use tmux instead
 3. Cancel
@@ -1327,13 +1388,13 @@ The backend type is recorded per-teammate in `config.json`:
 
 ### Troubleshooting Backends
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| "No pane backend available" | Neither tmux nor iTerm2 available | Install tmux: `brew install tmux` |
-| "it2 CLI not installed" | In iTerm2 but missing it2 | Run `uv tool install it2` |
-| "Python API not enabled" | it2 can't communicate with iTerm2 | Enable in iTerm2 Settings → General → Magic |
-| Workers not visible | Using in-process backend | Start inside tmux or iTerm2 |
-| Workers dying unexpectedly | Outside tmux, leader exited | Use tmux for persistence |
+| Issue                       | Cause                             | Solution                                    |
+| --------------------------- | --------------------------------- | ------------------------------------------- |
+| "No pane backend available" | Neither tmux nor iTerm2 available | Install tmux: `brew install tmux`           |
+| "it2 CLI not installed"     | In iTerm2 but missing it2         | Run `uv tool install it2`                   |
+| "Python API not enabled"    | it2 can't communicate with iTerm2 | Enable in iTerm2 Settings → General → Magic |
+| Workers not visible         | Using in-process backend          | Start inside tmux or iTerm2                 |
+| Workers dying unexpectedly  | Outside tmux, leader exited       | Use tmux for persistence                    |
 
 ### Checking Current Backend
 
@@ -1360,14 +1421,14 @@ which it2
 
 ### Common Errors
 
-| Error | Cause | Solution |
-|-------|-------|----------|
+| Error                                | Cause                   | Solution                                                 |
+| ------------------------------------ | ----------------------- | -------------------------------------------------------- |
 | "Cannot cleanup with active members" | Teammates still running | `requestShutdown` all teammates first, wait for approval |
-| "Already leading a team" | Team already exists | `cleanup` first, or use different team name |
-| "Agent not found" | Wrong teammate name | Check `config.json` for actual names |
-| "Team does not exist" | No team created | Call `spawnTeam` first |
-| "team_name is required" | Missing team context | Provide `team_name` parameter |
-| "Agent type not found" | Invalid subagent_type | Check available agents with proper prefix |
+| "Already leading a team"             | Team already exists     | `cleanup` first, or use different team name              |
+| "Agent not found"                    | Wrong teammate name     | Check `config.json` for actual names                     |
+| "Team does not exist"                | No team created         | Call `spawnTeam` first                                   |
+| "team_name is required"              | Missing team context    | Provide `team_name` parameter                            |
+| "Agent type not found"               | Invalid subagent_type   | Check available agents with proper prefix                |
 
 ### Graceful Shutdown Sequence
 
@@ -1375,8 +1436,8 @@ which it2
 
 ```javascript
 // 1. Request shutdown for all teammates
-Teammate({ operation: "requestShutdown", target_agent_id: "worker-1" })
-Teammate({ operation: "requestShutdown", target_agent_id: "worker-2" })
+Teammate({ operation: 'requestShutdown', target_agent_id: 'worker-1' })
+Teammate({ operation: 'requestShutdown', target_agent_id: 'worker-2' })
 
 // 2. Wait for shutdown approvals
 // Check for {"type": "shutdown_approved", ...} messages
@@ -1385,7 +1446,7 @@ Teammate({ operation: "requestShutdown", target_agent_id: "worker-2" })
 // Read ~/.claude/teams/{team}/config.json
 
 // 4. Only then cleanup
-Teammate({ operation: "cleanup" })
+Teammate({ operation: 'cleanup' })
 ```
 
 ### Handling Crashed Teammates
@@ -1424,14 +1485,14 @@ tail -f ~/.claude/teams/{team}/inboxes/team-lead.json
 
 ```javascript
 // === STEP 1: Setup ===
-Teammate({ operation: "spawnTeam", team_name: "pr-review-123", description: "Reviewing PR #123" })
+Teammate({ operation: 'spawnTeam', team_name: 'pr-review-123', description: 'Reviewing PR #123' })
 
 // === STEP 2: Spawn reviewers in parallel ===
 // (Send all these in a single message for parallel execution)
 Task({
-  team_name: "pr-review-123",
-  name: "security",
-  subagent_type: "compound-engineering:review:security-sentinel",
+  team_name: 'pr-review-123',
+  name: 'security',
+  subagent_type: 'compound-engineering:review:security-sentinel',
   prompt: `Review PR #123 for security vulnerabilities.
 
   Focus on:
@@ -1446,9 +1507,9 @@ Task({
 })
 
 Task({
-  team_name: "pr-review-123",
-  name: "perf",
-  subagent_type: "compound-engineering:review:performance-oracle",
+  team_name: 'pr-review-123',
+  name: 'perf',
+  subagent_type: 'compound-engineering:review:performance-oracle',
   prompt: `Review PR #123 for performance issues.
 
   Focus on:
@@ -1462,9 +1523,9 @@ Task({
 })
 
 Task({
-  team_name: "pr-review-123",
-  name: "arch",
-  subagent_type: "compound-engineering:review:architecture-strategist",
+  team_name: 'pr-review-123',
+  name: 'arch',
+  subagent_type: 'compound-engineering:review:architecture-strategist',
   prompt: `Review PR #123 for architectural concerns.
 
   Focus on:
@@ -1485,70 +1546,70 @@ Task({
 // Combine all reviewer findings into a cohesive report
 
 // === STEP 5: Cleanup ===
-Teammate({ operation: "requestShutdown", target_agent_id: "security" })
-Teammate({ operation: "requestShutdown", target_agent_id: "perf" })
-Teammate({ operation: "requestShutdown", target_agent_id: "arch" })
+Teammate({ operation: 'requestShutdown', target_agent_id: 'security' })
+Teammate({ operation: 'requestShutdown', target_agent_id: 'perf' })
+Teammate({ operation: 'requestShutdown', target_agent_id: 'arch' })
 // Wait for approvals...
-Teammate({ operation: "cleanup" })
+Teammate({ operation: 'cleanup' })
 ```
 
 ### Workflow 2: Research → Plan → Implement → Test Pipeline
 
 ```javascript
 // === SETUP ===
-Teammate({ operation: "spawnTeam", team_name: "feature-oauth" })
+Teammate({ operation: 'spawnTeam', team_name: 'feature-oauth' })
 
 // === CREATE PIPELINE ===
-TaskCreate({ subject: "Research OAuth providers", description: "Research OAuth2 best practices and compare providers (Google, GitHub, Auth0)", activeForm: "Researching OAuth..." })
-TaskCreate({ subject: "Create implementation plan", description: "Design OAuth implementation based on research findings", activeForm: "Planning..." })
-TaskCreate({ subject: "Implement OAuth", description: "Implement OAuth2 authentication according to plan", activeForm: "Implementing OAuth..." })
-TaskCreate({ subject: "Write tests", description: "Write comprehensive tests for OAuth implementation", activeForm: "Writing tests..." })
-TaskCreate({ subject: "Final review", description: "Review complete implementation for security and quality", activeForm: "Final review..." })
+TaskCreate({ subject: 'Research OAuth providers', description: 'Research OAuth2 best practices and compare providers (Google, GitHub, Auth0)', activeForm: 'Researching OAuth...' })
+TaskCreate({ subject: 'Create implementation plan', description: 'Design OAuth implementation based on research findings', activeForm: 'Planning...' })
+TaskCreate({ subject: 'Implement OAuth', description: 'Implement OAuth2 authentication according to plan', activeForm: 'Implementing OAuth...' })
+TaskCreate({ subject: 'Write tests', description: 'Write comprehensive tests for OAuth implementation', activeForm: 'Writing tests...' })
+TaskCreate({ subject: 'Final review', description: 'Review complete implementation for security and quality', activeForm: 'Final review...' })
 
 // Set dependencies
-TaskUpdate({ taskId: "2", addBlockedBy: ["1"] })
-TaskUpdate({ taskId: "3", addBlockedBy: ["2"] })
-TaskUpdate({ taskId: "4", addBlockedBy: ["3"] })
-TaskUpdate({ taskId: "5", addBlockedBy: ["4"] })
+TaskUpdate({ taskId: '2', addBlockedBy: ['1'] })
+TaskUpdate({ taskId: '3', addBlockedBy: ['2'] })
+TaskUpdate({ taskId: '4', addBlockedBy: ['3'] })
+TaskUpdate({ taskId: '5', addBlockedBy: ['4'] })
 
 // === SPAWN SPECIALIZED WORKERS ===
 Task({
-  team_name: "feature-oauth",
-  name: "researcher",
-  subagent_type: "compound-engineering:research:best-practices-researcher",
-  prompt: "Claim task #1. Research OAuth2 best practices, compare providers, document findings. Mark task complete and send summary to team-lead.",
+  team_name: 'feature-oauth',
+  name: 'researcher',
+  subagent_type: 'compound-engineering:research:best-practices-researcher',
+  prompt: 'Claim task #1. Research OAuth2 best practices, compare providers, document findings. Mark task complete and send summary to team-lead.',
   run_in_background: true
 })
 
 Task({
-  team_name: "feature-oauth",
-  name: "planner",
-  subagent_type: "Plan",
-  prompt: "Wait for task #2 to unblock. Read research from task #1. Create detailed implementation plan. Mark complete and send plan to team-lead.",
+  team_name: 'feature-oauth',
+  name: 'planner',
+  subagent_type: 'Plan',
+  prompt: 'Wait for task #2 to unblock. Read research from task #1. Create detailed implementation plan. Mark complete and send plan to team-lead.',
   run_in_background: true
 })
 
 Task({
-  team_name: "feature-oauth",
-  name: "implementer",
-  subagent_type: "general-purpose",
-  prompt: "Wait for task #3 to unblock. Read plan from task #2. Implement OAuth2 authentication. Mark complete when done.",
+  team_name: 'feature-oauth',
+  name: 'implementer',
+  subagent_type: 'general-purpose',
+  prompt: 'Wait for task #3 to unblock. Read plan from task #2. Implement OAuth2 authentication. Mark complete when done.',
   run_in_background: true
 })
 
 Task({
-  team_name: "feature-oauth",
-  name: "tester",
-  subagent_type: "general-purpose",
-  prompt: "Wait for task #4 to unblock. Write comprehensive tests for the OAuth implementation. Run tests. Mark complete with results.",
+  team_name: 'feature-oauth',
+  name: 'tester',
+  subagent_type: 'general-purpose',
+  prompt: 'Wait for task #4 to unblock. Write comprehensive tests for the OAuth implementation. Run tests. Mark complete with results.',
   run_in_background: true
 })
 
 Task({
-  team_name: "feature-oauth",
-  name: "reviewer",
-  subagent_type: "compound-engineering:review:security-sentinel",
-  prompt: "Wait for task #5 to unblock. Review the complete OAuth implementation for security. Send final assessment to team-lead.",
+  team_name: 'feature-oauth',
+  name: 'reviewer',
+  subagent_type: 'compound-engineering:review:security-sentinel',
+  prompt: 'Wait for task #5 to unblock. Review the complete OAuth implementation for security. Send final assessment to team-lead.',
   run_in_background: true
 })
 
@@ -1559,18 +1620,10 @@ Task({
 
 ```javascript
 // === SETUP ===
-Teammate({ operation: "spawnTeam", team_name: "codebase-review" })
+Teammate({ operation: 'spawnTeam', team_name: 'codebase-review' })
 
 // === CREATE TASK POOL (all independent, no dependencies) ===
-const filesToReview = [
-  "app/models/user.rb",
-  "app/models/payment.rb",
-  "app/controllers/api/v1/users_controller.rb",
-  "app/controllers/api/v1/payments_controller.rb",
-  "app/services/payment_processor.rb",
-  "app/services/notification_service.rb",
-  "lib/encryption_helper.rb"
-]
+const filesToReview = ['app/models/user.rb', 'app/models/payment.rb', 'app/controllers/api/v1/users_controller.rb', 'app/controllers/api/v1/payments_controller.rb', 'app/services/payment_processor.rb', 'app/services/notification_service.rb', 'lib/encryption_helper.rb']
 
 for (const file of filesToReview) {
   TaskCreate({
@@ -1607,9 +1660,9 @@ Replace YOUR_NAME with your actual agent name from $CLAUDE_CODE_AGENT_NAME.
 `
 
 // Spawn 3 workers
-Task({ team_name: "codebase-review", name: "worker-1", subagent_type: "general-purpose", prompt: swarmPrompt, run_in_background: true })
-Task({ team_name: "codebase-review", name: "worker-2", subagent_type: "general-purpose", prompt: swarmPrompt, run_in_background: true })
-Task({ team_name: "codebase-review", name: "worker-3", subagent_type: "general-purpose", prompt: swarmPrompt, run_in_background: true })
+Task({ team_name: 'codebase-review', name: 'worker-1', subagent_type: 'general-purpose', prompt: swarmPrompt, run_in_background: true })
+Task({ team_name: 'codebase-review', name: 'worker-2', subagent_type: 'general-purpose', prompt: swarmPrompt, run_in_background: true })
+Task({ team_name: 'codebase-review', name: 'worker-3', subagent_type: 'general-purpose', prompt: swarmPrompt, run_in_background: true })
 
 // Workers self-organize: race to claim tasks, naturally load-balance
 // Monitor progress with TaskList() or by reading inbox
@@ -1620,22 +1673,26 @@ Task({ team_name: "codebase-review", name: "worker-3", subagent_type: "general-p
 ## Best Practices
 
 ### 1. Always Cleanup
+
 Don't leave orphaned teams. Always call `cleanup` when done.
 
 ### 2. Use Meaningful Names
+
 ```javascript
 // Good
-name: "security-reviewer"
-name: "oauth-implementer"
-name: "test-writer"
+name: 'security-reviewer'
+name: 'oauth-implementer'
+name: 'test-writer'
 
 // Bad
-name: "worker-1"
-name: "agent-2"
+name: 'worker-1'
+name: 'agent-2'
 ```
 
 ### 3. Write Clear Prompts
+
 Tell workers exactly what to do:
+
 ```javascript
 // Good
 prompt: `
@@ -1646,34 +1703,41 @@ prompt: `
 `
 
 // Bad
-prompt: "Review the code"
+prompt: 'Review the code'
 ```
 
 ### 4. Use Task Dependencies
+
 Let the system manage unblocking:
+
 ```javascript
 // Good: Auto-unblocking
-TaskUpdate({ taskId: "2", addBlockedBy: ["1"] })
+TaskUpdate({ taskId: '2', addBlockedBy: ['1'] })
 
 // Bad: Manual polling
-"Wait until task #1 is done, check every 30 seconds..."
+;('Wait until task #1 is done, check every 30 seconds...')
 ```
 
 ### 5. Check Inboxes for Results
+
 Workers send results to your inbox. Check it:
+
 ```bash
 cat ~/.claude/teams/{team}/inboxes/team-lead.json | jq '.'
 ```
 
 ### 6. Handle Worker Failures
+
 - Workers have 5-minute heartbeat timeout
 - Tasks of crashed workers can be reclaimed
 - Build retry logic into worker prompts
 
 ### 7. Prefer write Over broadcast
+
 `broadcast` sends N messages for N teammates. Use `write` for targeted communication.
 
 ### 8. Match Agent Type to Task
+
 - **Explore** for searching/reading
 - **Plan** for architecture design
 - **general-purpose** for implementation
@@ -1684,35 +1748,40 @@ cat ~/.claude/teams/{team}/inboxes/team-lead.json | jq '.'
 ## Quick Reference
 
 ### Spawn Subagent (No Team)
+
 ```javascript
-Task({ subagent_type: "Explore", description: "Find files", prompt: "..." })
+Task({ subagent_type: 'Explore', description: 'Find files', prompt: '...' })
 ```
 
 ### Spawn Teammate (With Team)
+
 ```javascript
-Teammate({ operation: "spawnTeam", team_name: "my-team" })
-Task({ team_name: "my-team", name: "worker", subagent_type: "general-purpose", prompt: "...", run_in_background: true })
+Teammate({ operation: 'spawnTeam', team_name: 'my-team' })
+Task({ team_name: 'my-team', name: 'worker', subagent_type: 'general-purpose', prompt: '...', run_in_background: true })
 ```
 
 ### Message Teammate
+
 ```javascript
-Teammate({ operation: "write", target_agent_id: "worker-1", value: "..." })
+Teammate({ operation: 'write', target_agent_id: 'worker-1', value: '...' })
 ```
 
 ### Create Task Pipeline
+
 ```javascript
-TaskCreate({ subject: "Step 1", description: "..." })
-TaskCreate({ subject: "Step 2", description: "..." })
-TaskUpdate({ taskId: "2", addBlockedBy: ["1"] })
+TaskCreate({ subject: 'Step 1', description: '...' })
+TaskCreate({ subject: 'Step 2', description: '...' })
+TaskUpdate({ taskId: '2', addBlockedBy: ['1'] })
 ```
 
 ### Shutdown Team
+
 ```javascript
-Teammate({ operation: "requestShutdown", target_agent_id: "worker-1" })
+Teammate({ operation: 'requestShutdown', target_agent_id: 'worker-1' })
 // Wait for approval...
-Teammate({ operation: "cleanup" })
+Teammate({ operation: 'cleanup' })
 ```
 
 ---
 
-*Based on Claude Code v2.1.19 - Tested and verified 2026-01-25*
+_Based on Claude Code v2.1.19 - Tested and verified 2026-01-25_

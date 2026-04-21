@@ -122,18 +122,21 @@ options:
 ## Step 4: Build Agent List and Write File
 
 **Stack-specific agents:**
+
 - Rails → `kieran-rails-reviewer, dhh-rails-reviewer`
 - Python → `kieran-python-reviewer`
 - TypeScript → `kieran-typescript-reviewer`
 - General → (none)
 
 **Focus area agents:**
+
 - Security → `security-sentinel`
 - Performance → `performance-oracle`
 - Architecture → `architecture-strategist`
 - Code simplicity → `code-simplicity-reviewer`
 
 **Depth:**
+
 - Thorough: stack + selected focus areas
 - Fast: stack + `code-simplicity-reviewer` only
 - Comprehensive: all above + `git-history-analyzer, data-integrity-guardian, agent-native-reviewer`
@@ -144,8 +147,8 @@ Write `compound-engineering.local.md`:
 
 ```markdown
 ---
-review_agents: [{computed agent list}]
-plan_review_agents: [{computed plan agent list}]
+review_agents: [{ computed agent list }]
+plan_review_agents: [{ computed plan agent list }]
 ---
 
 # Review Context
@@ -154,6 +157,7 @@ Add project-specific review instructions here.
 These notes are passed to all review agents during /ce:review and /ce:work.
 
 Examples:
+
 - "We use Turbo Frames heavily — check for frame-busting issues"
 - "Our API is public — extra scrutiny on input validation"
 - "Performance-critical: we serve 10k req/s on this endpoint"

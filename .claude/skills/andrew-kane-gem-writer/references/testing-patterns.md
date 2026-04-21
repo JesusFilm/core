@@ -127,11 +127,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - ruby: "3.2"
+          - ruby: '3.2'
             gemfile: activerecord70
-          - ruby: "3.3"
+          - ruby: '3.3'
             gemfile: activerecord71
-          - ruby: "3.3"
+          - ruby: '3.3'
             gemfile: activerecord72
 
     env:

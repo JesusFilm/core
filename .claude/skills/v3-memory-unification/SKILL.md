@@ -1,6 +1,6 @@
 ---
-name: "V3 Memory Unification"
-description: "Unify 6+ memory systems into AgentDB with HNSW indexing for 150x-12,500x search improvements. Implements ADR-006 (Unified Memory Service) and ADR-009 (Hybrid Memory Backend)."
+name: 'V3 Memory Unification'
+description: 'Unify 6+ memory systems into AgentDB with HNSW indexing for 150x-12,500x search improvements. Implements ADR-006 (Unified Memory Service) and ADR-009 (Hybrid Memory Backend).'
 ---
 
 # V3 Memory Unification
@@ -25,6 +25,7 @@ Task("Memory migration", "Migrate SQLite/Markdown to AgentDB", "v3-memory-specia
 ## Systems to Unify
 
 ### Legacy Systems → AgentDB
+
 ```
 ┌─────────────────────────────────────────┐
 │  • MemoryManager (basic operations)     │
@@ -48,6 +49,7 @@ Task("Memory migration", "Migrate SQLite/Markdown to AgentDB", "v3-memory-specia
 ## Implementation Architecture
 
 ### Unified Memory Service
+
 ```typescript
 class UnifiedMemoryService implements IMemoryBackend {
   constructor(
@@ -57,20 +59,21 @@ class UnifiedMemoryService implements IMemoryBackend {
   ) {}
 
   async store(entry: MemoryEntry): Promise<void> {
-    await this.agentdb.store(entry);
-    await this.indexer.index(entry);
+    await this.agentdb.store(entry)
+    await this.indexer.index(entry)
   }
 
   async query(query: MemoryQuery): Promise<MemoryEntry[]> {
     if (query.semantic) {
-      return this.indexer.search(query); // 150x-12,500x faster
+      return this.indexer.search(query) // 150x-12,500x faster
     }
-    return this.agentdb.query(query);
+    return this.agentdb.query(query)
   }
 }
 ```
 
 ### HNSW Vector Search
+
 ```typescript
 class HNSWIndexer {
   constructor(dimensions: number = 1536) {
@@ -79,13 +82,13 @@ class HNSWIndexer {
       efConstruction: 200,
       M: 16,
       speedupTarget: '150x-12500x'
-    });
+    })
   }
 
   async search(query: MemoryQuery): Promise<MemoryEntry[]> {
-    const embedding = await this.embedContent(query.content);
-    const results = this.index.search(embedding, query.limit || 10);
-    return this.retrieveEntries(results);
+    const embedding = await this.embedContent(query.content)
+    const results = this.index.search(embedding, query.limit || 10)
+    return this.retrieveEntries(results)
   }
 }
 ```
@@ -93,44 +96,47 @@ class HNSWIndexer {
 ## Migration Strategy
 
 ### Phase 1: Foundation
+
 ```typescript
 // AgentDB adapter setup
 const agentdb = new AgentDBAdapter({
   dimensions: 1536,
   indexType: 'HNSW',
   speedupTarget: '150x-12500x'
-});
+})
 ```
 
 ### Phase 2: Data Migration
+
 ```typescript
 // SQLite → AgentDB
 const migrateFromSQLite = async () => {
-  const entries = await sqlite.getAll();
+  const entries = await sqlite.getAll()
   for (const entry of entries) {
-    const embedding = await generateEmbedding(entry.content);
-    await agentdb.store({ ...entry, embedding });
+    const embedding = await generateEmbedding(entry.content)
+    await agentdb.store({ ...entry, embedding })
   }
-};
+}
 
 // Markdown → AgentDB
 const migrateFromMarkdown = async () => {
-  const files = await glob('**/*.md');
+  const files = await glob('**/*.md')
   for (const file of files) {
-    const content = await fs.readFile(file, 'utf-8');
+    const content = await fs.readFile(file, 'utf-8')
     await agentdb.store({
       id: generateId(),
       content,
       embedding: await generateEmbedding(content),
       metadata: { originalFile: file }
-    });
+    })
   }
-};
+}
 ```
 
 ## SONA Integration
 
 ### Learning Pattern Storage
+
 ```typescript
 class SONAMemoryIntegration {
   async storePattern(pattern: LearningPattern): Promise<void> {
@@ -143,7 +149,7 @@ class SONAMemoryIntegration {
         adaptationTime: pattern.adaptationTime
       },
       embedding: await this.generateEmbedding(pattern.data)
-    });
+    })
   }
 
   async retrieveSimilarPatterns(query: string): Promise<LearningPattern[]> {
@@ -151,7 +157,7 @@ class SONAMemoryIntegration {
       type: 'semantic',
       content: query,
       filters: { type: 'learning_pattern' }
-    });
+    })
   }
 }
 ```

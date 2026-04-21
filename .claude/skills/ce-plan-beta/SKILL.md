@@ -1,7 +1,7 @@
 ---
 name: ce:plan-beta
 description: "[BETA] Transform feature descriptions or requirements into structured implementation plans grounded in repo patterns and research. Use when the user says 'plan this', 'create a plan', 'write a tech plan', 'plan the implementation', 'how should we build', 'what's the approach for', 'break this down', or when a brainstorm/requirements document is ready for technical planning. Best when requirements are at least roughly defined; for exploratory or ambiguous requests, prefer ce:brainstorm first."
-argument-hint: "[feature description, requirements doc path, or improvement idea]"
+argument-hint: '[feature description, requirements doc path, or improvement idea]'
 disable-model-invocation: true
 ---
 
@@ -40,6 +40,7 @@ Do not proceed until you have a clear planning input.
 ## Plan Quality Bar
 
 Every plan should contain:
+
 - A clear problem frame and scope boundary
 - Concrete requirements traceability back to the request or origin document
 - Exact file paths for the work being proposed
@@ -58,6 +59,7 @@ A plan is ready when an implementer can start confidently without needing the pl
 #### 0.1 Resume Existing Plan Work When Appropriate
 
 If the user references an existing plan file or there is an obvious recent matching plan in `docs/plans/`:
+
 - Read it
 - Confirm whether to update it in place or create a new plan
 - If updating, preserve completed checkboxes and revise only the still-relevant sections
@@ -67,6 +69,7 @@ If the user references an existing plan file or there is an obvious recent match
 Before asking planning questions, search `docs/brainstorms/` for files matching `*-requirements.md`.
 
 **Relevance criteria:** A requirements document is relevant if:
+
 - The topic semantically matches the feature description
 - It was created within the last 30 days (use judgment to override if the document is clearly still relevant or clearly stale)
 - It appears to cover the same user problem or scope
@@ -76,6 +79,7 @@ If multiple source documents match, ask which one to use using the platform's bl
 #### 0.3 Use the Source Document as Primary Input
 
 If a relevant requirements document exists:
+
 1. Read it thoroughly
 2. Announce that it will serve as the origin document for planning
 3. Carry forward all of the following:
@@ -94,11 +98,13 @@ If no relevant requirements document exists, planning may proceed from the user'
 #### 0.4 No-Requirements-Doc Fallback
 
 If no relevant requirements document exists:
+
 - Assess whether the request is already clear enough for direct technical planning
 - If the ambiguity is mainly product framing, user behavior, or scope definition, recommend `ce:brainstorm` first
 - If the user wants to continue here anyway, run a short planning bootstrap instead of refusing
 
 The planning bootstrap should establish:
+
 - Problem frame
 - Intended behavior
 - Scope boundaries and obvious non-goals
@@ -108,17 +114,20 @@ The planning bootstrap should establish:
 Keep this bootstrap brief. It exists to preserve direct-entry convenience, not to replace a full brainstorm.
 
 If the bootstrap uncovers major unresolved product questions:
+
 - Recommend `ce:brainstorm` again
 - If the user still wants to continue, require explicit assumptions before proceeding
 
 #### 0.5 Classify Outstanding Questions Before Planning
 
 If the origin document contains `Resolve Before Planning` or similar blocking questions:
+
 - Review each one before proceeding
 - Reclassify it into planning-owned work **only if** it is actually a technical, architectural, or research question
 - Keep it as a blocker if it would change product behavior, scope, or success criteria
 
 If true product blockers remain:
+
 - Surface them clearly
 - Ask the user, using the platform's blocking question tool when available (see Interaction Method), whether to:
   1. Resume `ce:brainstorm` to resolve them
@@ -140,6 +149,7 @@ If depth is unclear, ask one targeted question and then continue.
 #### 1.1 Local Research (Always Runs)
 
 Prepare a concise planning context summary (a paragraph or two) to pass as input to the research agents:
+
 - If an origin document exists, summarize the problem frame, requirements, and key decisions from that document
 - Otherwise use the feature description directly
 
@@ -149,6 +159,7 @@ Run these agents in parallel:
 - Task compound-engineering:research:learnings-researcher(planning context summary)
 
 Collect:
+
 - Existing patterns and conventions to follow
 - Relevant files, modules, and tests
 - AGENTS.md guidance that materially affects the plan, with CLAUDE.md used only as compatibility fallback when present
@@ -159,6 +170,7 @@ Collect:
 Decide whether the plan should carry a lightweight execution posture signal.
 
 Look for signals such as:
+
 - The user explicitly asks for TDD, test-first, or characterization-first work
 - The origin document calls for test-first implementation or exploratory hardening of legacy code
 - Local research shows the target area is legacy, weakly tested, or historically fragile, suggesting characterization coverage before changing behavior
@@ -172,22 +184,26 @@ Ask the user only if the posture would materially change sequencing or risk and 
 Based on the origin document, user signals, and local findings, decide whether external research adds value.
 
 **Read between the lines.** Pay attention to signals from the conversation so far:
+
 - **User familiarity** — Are they pointing to specific files or patterns? They likely know the codebase well.
 - **User intent** — Do they want speed or thoroughness? Exploration or execution?
 - **Topic risk** — Security, payments, external APIs warrant more caution regardless of user signals.
 - **Uncertainty level** — Is the approach clear or still open-ended?
 
 **Always lean toward external research when:**
+
 - The topic is high-risk: security, payments, privacy, external APIs, migrations, compliance
 - The codebase lacks relevant local patterns
 - The user is exploring unfamiliar territory
 
 **Skip external research when:**
+
 - The codebase already shows a strong local pattern
 - The user already knows the intended shape
 - Additional external context would add little practical value
 
 Announce the decision briefly before continuing. Examples:
+
 - "Your codebase has solid patterns for this. Proceeding without external research."
 - "This involves payment processing, so I'll research current best practices first."
 
@@ -201,6 +217,7 @@ If Step 1.2 indicates external research is useful, run these agents in parallel:
 #### 1.4 Consolidate Research
 
 Summarize:
+
 - Relevant codebase patterns and file paths
 - Relevant institutional learnings
 - External references and best practices, if gathered
@@ -214,6 +231,7 @@ For **Standard** or **Deep** plans, or when user flow completeness is still uncl
 - Task compound-engineering:workflow:spec-flow-analyzer(planning context summary, research findings)
 
 Use the output to:
+
 - Identify missing edge cases, state transitions, or handoff gaps
 - Tighten requirements trace or verification strategy
 - Add only the flow details that materially improve the plan
@@ -221,11 +239,13 @@ Use the output to:
 ### Phase 2: Resolve Planning Questions
 
 Build a planning question list from:
+
 - Deferred questions in the origin document
 - Gaps discovered in repo or external research
 - Technical decisions required to produce a useful plan
 
 For each question, decide whether it should be:
+
 - **Resolved during planning** - the answer is knowable from repo context, documentation, or user choice
 - **Deferred to implementation** - the answer depends on code changes, runtime behavior, or execution-time discovery
 
@@ -256,6 +276,7 @@ For **Standard** or **Deep** plans, briefly consider who is affected by this cha
 Break the work into logical implementation units. Each unit should represent one meaningful change that an implementer could typically land as an atomic commit.
 
 Good units are:
+
 - Focused on one component, behavior, or integration seam
 - Usually touching a small cluster of related files
 - Ordered by dependency
@@ -263,6 +284,7 @@ Good units are:
 - Marked with checkbox syntax for progress tracking
 
 Avoid:
+
 - 2-5 minute micro-steps
 - Units that span multiple unrelated concerns
 - Units that are so vague an implementer still has to invent the plan
@@ -270,6 +292,7 @@ Avoid:
 #### 3.4 Define Each Implementation Unit
 
 For each unit, include:
+
 - **Goal** - what this unit accomplishes
 - **Requirements** - which requirements or success criteria it advances
 - **Dependencies** - what must exist first
@@ -283,6 +306,7 @@ For each unit, include:
 Every feature-bearing unit should include the test file path in `**Files:**`.
 
 Use `Execution note` sparingly. Good uses include:
+
 - `Execution note: Start with a failing integration test for the request/response contract.`
 - `Execution note: Add characterization coverage before modifying this legacy parser.`
 - `Execution note: Implement new domain behavior test-first.`
@@ -294,6 +318,7 @@ Do not expand units into literal `RED/GREEN/REFACTOR` substeps.
 If something is important but not knowable yet, record it explicitly under deferred implementation notes rather than pretending to resolve it in the plan.
 
 Examples:
+
 - Exact method or helper names
 - Final SQL or query details after touching real code
 - Runtime behavior that depends on seeing actual test failures
@@ -306,16 +331,19 @@ Use one planning philosophy across all depths. Change the amount of detail, not 
 #### 4.1 Plan Depth Guidance
 
 **Lightweight**
+
 - Keep the plan compact
 - Usually 2-4 implementation units
 - Omit optional sections that add little value
 
 **Standard**
+
 - Use the full core template
 - Usually 3-6 implementation units
 - Include risks, deferred questions, and system-wide impact when relevant
 
 **Deep**
+
 - Use the full core template plus optional analysis sections
 - Usually 4-8 implementation units
 - Group units into phases when that improves clarity
@@ -324,6 +352,7 @@ Use one planning philosophy across all depths. Change the amount of detail, not 
 #### 4.1b Optional Deep Plan Extensions
 
 For sufficiently large, risky, or cross-cutting work, add the sections that genuinely help:
+
 - **Alternative Approaches Considered**
 - **Success Metrics**
 - **Dependencies / Prerequisites**
@@ -345,8 +374,8 @@ title: [Plan Title]
 type: [feat|fix|refactor]
 status: active
 date: YYYY-MM-DD
-origin: docs/brainstorms/YYYY-MM-DD-<topic>-requirements.md  # include when planning from a requirements doc
-deepened: YYYY-MM-DD  # optional, set later by deepen-plan-beta when the plan is substantively strengthened
+origin: docs/brainstorms/YYYY-MM-DD-<topic>-requirements.md # include when planning from a requirements doc
+deepened: YYYY-MM-DD # optional, set later by deepen-plan-beta when the plan is substantively strengthened
 ---
 
 # [Plan Title]
@@ -407,23 +436,28 @@ deepened: YYYY-MM-DD  # optional, set later by deepen-plan-beta when the plan is
 **Dependencies:** [None / Unit 1 / external prerequisite]
 
 **Files:**
+
 - Create: `path/to/new_file`
 - Modify: `path/to/existing_file`
 - Test: `path/to/test_file`
 
 **Approach:**
+
 - [Key design or sequencing decision]
 
 **Execution note:** [Optional test-first, characterization-first, or other execution posture signal]
 
 **Patterns to follow:**
+
 - [Existing file, class, or pattern]
 
 **Test scenarios:**
+
 - [Specific scenario with expected behavior]
 - [Edge case or failure path]
 
 **Verification:**
+
 - [Outcome that should hold when this unit is complete]
 
 ## System-Wide Impact
@@ -472,9 +506,11 @@ For larger `Deep` plans, extend the core template only when useful with sections
 ## Phased Delivery
 
 ### Phase 1
+
 - [What lands first and why]
 
 ### Phase 2
+
 - [What follows and why]
 
 ## Documentation Plan
@@ -501,6 +537,7 @@ For larger `Deep` plans, extend the core template only when useful with sections
 #### 5.1 Review Before Writing
 
 Before finalizing, check:
+
 - The plan does not invent product behavior that should have been defined in `ce:brainstorm`
 - If there was no origin document, the bounded planning bootstrap established enough product clarity to plan responsibly
 - Every major decision is grounded in the origin document or research
@@ -510,6 +547,7 @@ Before finalizing, check:
 - Deferred items are explicit and not hidden as fake certainty
 
 If the plan originated from a requirements document, re-read that document and verify:
+
 - The chosen approach still matches the product intent
 - Scope boundaries and success criteria are preserved
 - Blocking questions were either resolved, explicitly assumed, or sent back to `ce:brainstorm`
@@ -540,6 +578,7 @@ After writing the plan file, present the options using the platform's blocking q
 **Question:** "Plan ready at `docs/plans/YYYY-MM-DD-NNN-<type>-<name>-beta-plan.md`. What would you like to do next?"
 
 **Options:**
+
 1. **Open plan in editor** - Open the plan file for review
 2. **Run `/deepen-plan-beta`** - Stress-test weak sections with targeted research when the plan needs more confidence
 3. **Run `document-review` skill** - Improve the plan through structured document review
@@ -549,6 +588,7 @@ After writing the plan file, present the options using the platform's blocking q
 7. **Create Issue** - Create an issue in the configured tracker
 
 Based on selection:
+
 - **Open plan in editor** → Open `docs/plans/<plan_filename>.md` using the current platform's file-open or editor mechanism (e.g., `open` on macOS, `xdg-open` on Linux, or the IDE's file-open API)
 - **`/deepen-plan-beta`** → Call `/deepen-plan-beta` with the plan path
 - **`document-review` skill** → Load the `document-review` skill with the plan path
@@ -591,6 +631,7 @@ When the user selects "Create Issue", detect their project tracker from `AGENTS.
    - Suggest adding the tracker to `AGENTS.md` for future runs
 
 After issue creation:
+
 - Display the issue URL
 - Ask whether to proceed to `/ce:work`
 

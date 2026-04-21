@@ -1,7 +1,7 @@
 ---
 name: resolve-todo-parallel
 description: Resolve all pending CLI todos using parallel processing, compound on lessons learned, then clean up completed todos.
-argument-hint: "[optional: specific todo ID or pattern]"
+argument-hint: '[optional: specific todo ID or pattern]'
 ---
 
 Resolve all TODO comments using parallel processing, document lessons learned, then clean up completed todos.
@@ -10,7 +10,7 @@ Resolve all TODO comments using parallel processing, document lessons learned, t
 
 ### 1. Analyze
 
-Get all unresolved TODOs from the /todos/*.md directory
+Get all unresolved TODOs from the /todos/\*.md directory
 
 If any todo recommends deleting, removing, or gitignoring files in `docs/brainstorms/`, `docs/plans/`, or `docs/solutions/`, skip it and mark it as `wont_fix`. These are compound-engineering pipeline artifacts that are intentional and permanent.
 

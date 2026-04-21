@@ -42,63 +42,70 @@ agent-browser snapshot -i
 ## Quick Reference
 
 ### Navigation
-| Command | Description |
-|---------|-------------|
+
+| Command      | Description     |
+| ------------ | --------------- |
 | `open <url>` | Navigate to URL |
-| `back` | Go back |
-| `forward` | Go forward |
-| `reload` | Reload page |
-| `close` | Close browser |
+| `back`       | Go back         |
+| `forward`    | Go forward      |
+| `reload`     | Reload page     |
+| `close`      | Close browser   |
 
 ### Snapshots (AI-Optimized)
-| Command | Description |
-|---------|-------------|
-| `snapshot` | Full accessibility tree |
-| `snapshot -i` | Interactive elements only (buttons, links, inputs) |
-| `snapshot -c` | Compact (remove empty elements) |
-| `snapshot -d 3` | Limit depth to 3 levels |
-| `screenshot [path]` | Capture screenshot (base64 if no path) |
+
+| Command             | Description                                        |
+| ------------------- | -------------------------------------------------- |
+| `snapshot`          | Full accessibility tree                            |
+| `snapshot -i`       | Interactive elements only (buttons, links, inputs) |
+| `snapshot -c`       | Compact (remove empty elements)                    |
+| `snapshot -d 3`     | Limit depth to 3 levels                            |
+| `screenshot [path]` | Capture screenshot (base64 if no path)             |
 
 ### Interaction
-| Command | Description |
-|---------|-------------|
-| `click <sel>` | Click element |
-| `fill <sel> <text>` | Clear and fill input |
-| `type <sel> <text>` | Type with key events |
-| `press <key>` | Press key (Enter, Tab, etc.) |
-| `hover <sel>` | Hover element |
-| `select <sel> <val>` | Select dropdown option |
-| `check/uncheck <sel>` | Toggle checkbox |
-| `scroll <dir> [px]` | Scroll page |
+
+| Command               | Description                  |
+| --------------------- | ---------------------------- |
+| `click <sel>`         | Click element                |
+| `fill <sel> <text>`   | Clear and fill input         |
+| `type <sel> <text>`   | Type with key events         |
+| `press <key>`         | Press key (Enter, Tab, etc.) |
+| `hover <sel>`         | Hover element                |
+| `select <sel> <val>`  | Select dropdown option       |
+| `check/uncheck <sel>` | Toggle checkbox              |
+| `scroll <dir> [px]`   | Scroll page                  |
 
 ### Get Info
-| Command | Description |
-|---------|-------------|
-| `get text <sel>` | Get text content |
-| `get html <sel>` | Get innerHTML |
-| `get value <sel>` | Get input value |
-| `get attr <sel> <attr>` | Get attribute |
-| `get title` | Get page title |
-| `get url` | Get current URL |
+
+| Command                 | Description      |
+| ----------------------- | ---------------- |
+| `get text <sel>`        | Get text content |
+| `get html <sel>`        | Get innerHTML    |
+| `get value <sel>`       | Get input value  |
+| `get attr <sel> <attr>` | Get attribute    |
+| `get title`             | Get page title   |
+| `get url`               | Get current URL  |
 
 ### Wait
-| Command | Description |
-|---------|-------------|
-| `wait <selector>` | Wait for element |
-| `wait <ms>` | Wait milliseconds |
-| `wait --text "text"` | Wait for text |
-| `wait --url "pattern"` | Wait for URL |
+
+| Command                   | Description         |
+| ------------------------- | ------------------- |
+| `wait <selector>`         | Wait for element    |
+| `wait <ms>`               | Wait milliseconds   |
+| `wait --text "text"`      | Wait for text       |
+| `wait --url "pattern"`    | Wait for URL        |
 | `wait --load networkidle` | Wait for load state |
 
 ### Sessions
-| Command | Description |
-|---------|-------------|
+
+| Command            | Description          |
+| ------------------ | -------------------- |
 | `--session <name>` | Use isolated session |
-| `session list` | List active sessions |
+| `session list`     | List active sessions |
 
 ## Selectors
 
 ### Element Refs (Recommended)
+
 ```bash
 # Get refs from snapshot
 agent-browser snapshot -i
@@ -109,12 +116,14 @@ agent-browser click @e2
 ```
 
 ### CSS Selectors
+
 ```bash
 agent-browser click "#submit"
 agent-browser fill ".email-input" "test@test.com"
 ```
 
 ### Semantic Locators
+
 ```bash
 agent-browser find role button click --name "Submit"
 agent-browser find label "Email" fill "test@test.com"
@@ -124,6 +133,7 @@ agent-browser find testid "login-btn" click
 ## Examples
 
 ### Login Flow
+
 ```bash
 agent-browser open https://example.com/login
 agent-browser snapshot -i
@@ -134,6 +144,7 @@ agent-browser wait --url "**/dashboard"
 ```
 
 ### Form Submission
+
 ```bash
 agent-browser open https://example.com/contact
 agent-browser snapshot -i
@@ -145,6 +156,7 @@ agent-browser wait --text "Thank you"
 ```
 
 ### Data Extraction
+
 ```bash
 agent-browser open https://example.com/products
 agent-browser snapshot -i
@@ -155,6 +167,7 @@ agent-browser get attr @e3 href  # Link
 ```
 
 ### Multi-Session (Swarm)
+
 ```bash
 # Session 1: Navigator
 agent-browser --session nav open https://example.com
@@ -169,7 +182,9 @@ agent-browser --session scrape snapshot -i
 ## Integration with Claude Flow
 
 ### MCP Tools
+
 All browser operations are available as MCP tools with `browser/` prefix:
+
 - `browser/open`
 - `browser/snapshot`
 - `browser/click`
@@ -178,6 +193,7 @@ All browser operations are available as MCP tools with `browser/` prefix:
 - etc.
 
 ### Memory Integration
+
 ```bash
 # Store successful patterns
 npx @claude-flow/cli memory store --namespace browser-patterns --key "login-flow" --value "snapshot->fill->click->wait"
@@ -187,6 +203,7 @@ npx @claude-flow/cli memory search --query "login automation"
 ```
 
 ### Hooks
+
 ```bash
 # Pre-browse hook (get context)
 npx @claude-flow/cli hooks pre-edit --file "browser-task.ts"

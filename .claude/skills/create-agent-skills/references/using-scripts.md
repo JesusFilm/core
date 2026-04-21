@@ -6,18 +6,20 @@ Scripts are executable code that Claude runs as-is rather than regenerating each
 
 <when_to_use>
 Use scripts when:
+
 - The same code runs across multiple skill invocations
 - Operations are error-prone when rewritten from scratch
 - Complex shell commands or API interactions are involved
 - Consistency matters more than flexibility
 
 Common script types:
+
 - **Deployment** - Deploy to Vercel, publish packages, push releases
 - **Setup** - Initialize projects, install dependencies, configure environments
 - **API calls** - Authenticated requests, webhook handlers, data fetches
 - **Data processing** - Transform files, batch operations, migrations
 - **Build processes** - Compile, bundle, test runners
-</when_to_use>
+  </when_to_use>
 
 <script_structure>
 Scripts live in `scripts/` within the skill directory:
@@ -35,14 +37,16 @@ skill-name/
 ```
 
 A well-structured script includes:
+
 1. Clear purpose comment at top
 2. Input validation
 3. Error handling
 4. Idempotent operations where possible
 5. Clear output/feedback
-</script_structure>
+   </script_structure>
 
 <script_example>
+
 ```bash
 #!/bin/bash
 # deploy.sh - Deploy project to Vercel
@@ -69,6 +73,7 @@ fi
 
 echo "Deployment complete."
 ```
+
 </script_example>
 
 <workflow_integration>
@@ -90,6 +95,7 @@ The workflow tells Claude WHEN to run the script. The script handles HOW the ope
 
 <best_practices>
 **Do:**
+
 - Make scripts idempotent (safe to run multiple times)
 - Include clear usage comments
 - Validate inputs before executing
@@ -97,17 +103,19 @@ The workflow tells Claude WHEN to run the script. The script handles HOW the ope
 - Use `set -euo pipefail` in bash scripts
 
 **Don't:**
+
 - Hardcode secrets or credentials (use environment variables)
 - Create scripts for one-off operations
 - Skip error handling
 - Make scripts do too many unrelated things
 - Forget to make scripts executable (`chmod +x`)
-</best_practices>
+  </best_practices>
 
 <security_considerations>
+
 - Never embed API keys, tokens, or secrets in scripts
 - Use environment variables for sensitive configuration
 - Validate and sanitize any user-provided inputs
 - Be cautious with scripts that delete or modify data
 - Consider adding `--dry-run` options for destructive operations
-</security_considerations>
+  </security_considerations>

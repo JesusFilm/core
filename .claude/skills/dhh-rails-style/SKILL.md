@@ -8,11 +8,13 @@ Apply 37signals/DHH Rails conventions to Ruby and Rails code. This skill provide
 </objective>
 
 <essential_principles>
+
 ## Core Philosophy
 
 "The best code is the code you don't write. The second best is the code that's obviously correct."
 
 **Vanilla Rails is plenty:**
+
 - Rich domain models over service objects
 - CRUD controllers over custom actions
 - Concerns for horizontal code sharing
@@ -21,6 +23,7 @@ Apply 37signals/DHH Rails conventions to Ruby and Rails code. This skill provide
 - Build solutions before reaching for gems
 
 **What they deliberately avoid:**
+
 - devise (custom ~150-line auth instead)
 - pundit/cancancan (simple role checks in models)
 - sidekiq (Solid Queue uses database)
@@ -32,11 +35,12 @@ Apply 37signals/DHH Rails conventions to Ruby and Rails code. This skill provide
 - Tailwind (native CSS with layers)
 
 **Development Philosophy:**
+
 - Ship, Validate, Refine - prototype-quality code to production to learn
 - Fix root causes, not symptoms
 - Write-time operations over read-time computations
 - Database constraints over ActiveRecord validations
-</essential_principles>
+  </essential_principles>
 
 <intake>
 What are you working on?
@@ -55,21 +59,22 @@ What are you working on?
 
 <routing>
 
-| Response | Reference to Read |
-|----------|-------------------|
-| 1, controller | [controllers.md](./references/controllers.md) |
-| 2, model | [models.md](./references/models.md) |
-| 3, view, frontend, turbo, stimulus, css | [frontend.md](./references/frontend.md) |
+| Response                                   | Reference to Read                               |
+| ------------------------------------------ | ----------------------------------------------- |
+| 1, controller                              | [controllers.md](./references/controllers.md)   |
+| 2, model                                   | [models.md](./references/models.md)             |
+| 3, view, frontend, turbo, stimulus, css    | [frontend.md](./references/frontend.md)         |
 | 4, architecture, routing, auth, job, cache | [architecture.md](./references/architecture.md) |
-| 5, test, testing, minitest, fixture | [testing.md](./references/testing.md) |
-| 6, gem, dependency, library | [gems.md](./references/gems.md) |
-| 7, review | Read all references, then review code |
-| 8, general task | Read relevant references based on context |
+| 5, test, testing, minitest, fixture        | [testing.md](./references/testing.md)           |
+| 6, gem, dependency, library                | [gems.md](./references/gems.md)                 |
+| 7, review                                  | Read all references, then review code           |
+| 8, general task                            | Read relevant references based on context       |
 
 **After reading relevant references, apply patterns to the user's code.**
 </routing>
 
 <quick_reference>
+
 ## Naming Conventions
 
 **Verbs:** `card.close`, `card.gild`, `board.publish` (not `set_style` methods)
@@ -81,6 +86,7 @@ What are you working on?
 **Controllers:** Nouns matching resources (`Cards::ClosuresController`)
 
 **Scopes:**
+
 - `chronologically`, `reverse_chronologically`, `alphabetically`, `latest`
 - `preloaded` (standard eager loading name)
 - `indexed_by`, `sorted_by` (parameterized)
@@ -126,17 +132,20 @@ end
 ## Key Patterns
 
 **State as Records:**
+
 ```ruby
 Card.joins(:closure)         # closed cards
 Card.where.missing(:closure) # open cards
 ```
 
 **Current Attributes:**
+
 ```ruby
 belongs_to :creator, default: -> { Current.user }
 ```
 
 **Authorization on Models:**
+
 ```ruby
 class User < ApplicationRecord
   def can_administer?(message)
@@ -144,25 +153,29 @@ class User < ApplicationRecord
   end
 end
 ```
+
 </quick_reference>
 
 <reference_index>
+
 ## Domain Knowledge
 
 All detailed patterns in `references/`:
 
-| File | Topics |
-|------|--------|
-| [controllers.md](./references/controllers.md) | REST mapping, concerns, Turbo responses, API patterns, HTTP caching |
-| [models.md](./references/models.md) | Concerns, state records, callbacks, scopes, POROs, authorization, broadcasting |
-| [frontend.md](./references/frontend.md) | Turbo Streams, Stimulus controllers, CSS layers, OKLCH colors, partials |
-| [architecture.md](./references/architecture.md) | Routing, authentication, jobs, Current attributes, caching, database patterns |
-| [testing.md](./references/testing.md) | Minitest, fixtures, unit/integration/system tests, testing patterns |
-| [gems.md](./references/gems.md) | What they use vs avoid, decision framework, Gemfile examples |
+| File                                            | Topics                                                                         |
+| ----------------------------------------------- | ------------------------------------------------------------------------------ |
+| [controllers.md](./references/controllers.md)   | REST mapping, concerns, Turbo responses, API patterns, HTTP caching            |
+| [models.md](./references/models.md)             | Concerns, state records, callbacks, scopes, POROs, authorization, broadcasting |
+| [frontend.md](./references/frontend.md)         | Turbo Streams, Stimulus controllers, CSS layers, OKLCH colors, partials        |
+| [architecture.md](./references/architecture.md) | Routing, authentication, jobs, Current attributes, caching, database patterns  |
+| [testing.md](./references/testing.md)           | Minitest, fixtures, unit/integration/system tests, testing patterns            |
+| [gems.md](./references/gems.md)                 | What they use vs avoid, decision framework, Gemfile examples                   |
+
 </reference_index>
 
 <success_criteria>
 Code follows DHH style when:
+
 - Controllers map to CRUD verbs on resources
 - Models use concerns for horizontal behavior
 - State is tracked via records, not booleans
@@ -173,13 +186,14 @@ Code follows DHH style when:
 - Native CSS with modern features (layers, OKLCH, nesting)
 - Authorization logic lives on User model
 - Jobs are shallow wrappers calling model methods
-</success_criteria>
+  </success_criteria>
 
 <credits>
 Based on [The Unofficial 37signals/DHH Rails Style Guide](https://github.com/marckohlbrugge/unofficial-37signals-coding-style-guide) by [Marc Köhlbrugge](https://x.com/marckohlbrugge), generated through deep analysis of 265 pull requests from the Fizzy codebase.
 
 **Important Disclaimers:**
+
 - LLM-generated guide - may contain inaccuracies
 - Code examples from Fizzy are licensed under the O'Saasy License
 - Not affiliated with or endorsed by 37signals
-</credits>
+  </credits>

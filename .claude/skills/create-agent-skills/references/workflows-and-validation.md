@@ -8,6 +8,7 @@ Break complex operations into clear, sequential steps. For particularly complex 
 </principle>
 
 <pdf_forms_example>
+
 ```xml
 <objective>
 Fill PDF forms with validated data from JSON field mappings.
@@ -17,12 +18,15 @@ Fill PDF forms with validated data from JSON field mappings.
 Copy this checklist and check off items as you complete them:
 
 ```
+
 Task Progress:
+
 - [ ] Step 1: Analyze the form (run analyze_form.py)
 - [ ] Step 2: Create field mapping (edit fields.json)
 - [ ] Step 3: Validate mapping (run validate_fields.py)
 - [ ] Step 4: Fill the form (run fill_form.py)
 - [ ] Step 5: Verify output (run verify_output.py)
+
 ```
 
 <step_1>
@@ -62,16 +66,18 @@ If verification fails, return to Step 2.
 </step_5>
 </workflow>
 ```
+
 </pdf_forms_example>
 
 <when_to_use>
 Use checklist pattern when:
+
 - Workflow has 5+ sequential steps
 - Steps must be completed in order
 - Progress tracking helps prevent errors
 - Easy resumption after interruption is valuable
-</when_to_use>
-</complex_workflows>
+  </when_to_use>
+  </complex_workflows>
 
 <feedback_loops>
 <validate_fix_repeat_pattern>
@@ -80,6 +86,7 @@ Run validator → fix errors → repeat. This pattern greatly improves output qu
 </principle>
 
 <document_editing_example>
+
 ```xml
 <objective>
 Edit OOXML documents with XML validation at each step.
@@ -118,15 +125,17 @@ Test the output document
 Never skip validation. Catching errors early prevents corrupted output files.
 </validation>
 ```
+
 </document_editing_example>
 
 <why_it_works>
+
 - Catches errors early before changes are applied
 - Machine-verifiable with objective verification
 - Plan can be iterated without touching originals
 - Reduces total iteration cycles
-</why_it_works>
-</validate_fix_repeat_pattern>
+  </why_it_works>
+  </validate_fix_repeat_pattern>
 
 <plan_validate_execute_pattern>
 <principle>
@@ -136,6 +145,7 @@ Workflow: analyze → **create plan file** → **validate plan** → execute →
 </principle>
 
 <batch_update_example>
+
 ```xml
 <objective>
 Apply batch updates to spreadsheet with plan validation.
@@ -186,6 +196,7 @@ Verify output
 - Output verification confirms expected results
 </success_criteria>
 ```
+
 </batch_update_example>
 
 <implementation_tip>
@@ -202,13 +213,14 @@ Specific errors help Claude fix issues without guessing.
 
 <when_to_use>
 Use plan-validate-execute when:
+
 - Operations are complex and error-prone
 - Changes are irreversible or difficult to undo
 - Planning can be validated independently
 - Catching errors early saves significant time
-</when_to_use>
-</plan_validate_execute_pattern>
-</feedback_loops>
+  </when_to_use>
+  </plan_validate_execute_pattern>
+  </feedback_loops>
 
 <conditional_workflows>
 <principle>
@@ -216,6 +228,7 @@ Guide Claude through decision points with clear branching logic.
 </principle>
 
 <document_modification_example>
+
 ```xml
 <objective>
 Modify DOCX files using appropriate method based on task type.
@@ -257,16 +270,18 @@ Determine the modification type:
 - Output file validated and verified
 </success_criteria>
 ```
+
 </document_modification_example>
 
 <when_to_use>
 Use conditional workflows when:
+
 - Different task types require different approaches
 - Decision points are clear and well-defined
 - Workflows are mutually exclusive
 - Guiding Claude to correct path improves outcomes
-</when_to_use>
-</conditional_workflows>
+  </when_to_use>
+  </conditional_workflows>
 
 <validation_scripts>
 <principles>
@@ -310,13 +325,14 @@ Showing valid options eliminates guesswork.
 </characteristics_of_good_validation>
 
 <implementation_pattern>
-```xml
+
+````xml
 <validation>
 After making changes, validate immediately:
 
 ```bash
 python scripts/validate.py output_dir/
-```
+````
 
 If validation fails, fix errors before continuing. Validation errors include:
 
@@ -327,7 +343,8 @@ If validation fails, fix errors before continuing. Validation errors include:
 
 Only proceed when validation passes with zero errors.
 </validation>
-```
+
+````
 </implementation_pattern>
 
 <benefits>
@@ -391,17 +408,19 @@ Export to final format and deliver.
 - All quality criteria met
 - Report ready for delivery
 </success_criteria>
-```
+````
+
 </implementation_example>
 
 <when_to_use>
 Use iterative refinement when:
+
 - Quality improves with multiple passes
 - Validation provides actionable feedback
 - Time permits iteration
 - Perfect output matters more than speed
-</when_to_use>
-</iterative_refinement>
+  </when_to_use>
+  </iterative_refinement>
 
 <checkpoint_pattern>
 <principle>
@@ -409,6 +428,7 @@ For long workflows, add checkpoints where Claude can pause and verify progress b
 </principle>
 
 <implementation_example>
+
 ```xml
 <workflow>
 <phase_1>
@@ -450,6 +470,7 @@ At each checkpoint:
 4. Only proceed when validation passes
 </checkpoint_validation>
 ```
+
 </implementation_example>
 
 <benefits>
@@ -467,6 +488,7 @@ Design workflows with clear error recovery paths. Claude should know what to do 
 </principle>
 
 <implementation_example>
+
 ```xml
 <workflow>
 <normal_path>
@@ -497,14 +519,16 @@ Design workflows with clear error recovery paths. Claude should know what to do 
 </escalation>
 </workflow>
 ```
+
 </implementation_example>
 
 <when_to_use>
 Include error recovery when:
+
 - Workflows interact with external systems
 - File operations could fail
 - Network calls could timeout
 - User input could be invalid
 - Errors are recoverable
-</when_to_use>
-</error_recovery>
+  </when_to_use>
+  </error_recovery>

@@ -15,15 +15,19 @@ description: What it does and when to use it
 # Skill Name
 
 ## Quick Start
+
 Immediate actionable guidance...
 
 ## Instructions
+
 Step-by-step procedures...
 
 ## Examples
+
 Concrete usage examples...
 
 ## Guidelines
+
 Rules and constraints...
 ```
 
@@ -58,12 +62,14 @@ description: What it does and when to use it (specific triggers included)
 ### Name Field
 
 **Validation rules:**
+
 - Maximum 64 characters
 - Lowercase letters, numbers, hyphens only
 - Must match directory name
 - No reserved words: "anthropic", "claude"
 
 **Examples:**
+
 - `triage-prs`
 - `deploy-production`
 - `review-code`
@@ -74,41 +80,44 @@ description: What it does and when to use it (specific triggers included)
 ### Description Field
 
 **Validation rules:**
+
 - Maximum 1024 characters
 - Include what it does AND when to use it
 - Third person voice
 
 **Good:**
+
 ```yaml
 description: Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
 ```
 
 **Bad:**
+
 ```yaml
 description: Helps with documents
 ```
 
 ### Optional Fields
 
-| Field | Description |
-|-------|-------------|
-| `argument-hint` | Usage hints. Example: `[issue-number]` |
+| Field                      | Description                                                    |
+| -------------------------- | -------------------------------------------------------------- |
+| `argument-hint`            | Usage hints. Example: `[issue-number]`                         |
 | `disable-model-invocation` | `true` to prevent auto-loading. Use for side-effect workflows. |
-| `user-invocable` | `false` to hide from `/` menu. Use for background knowledge. |
-| `allowed-tools` | Tools without permission prompts. Example: `Read, Bash(git *)` |
-| `model` | `haiku`, `sonnet`, or `opus` |
-| `context` | `fork` for isolated subagent execution |
-| `agent` | Subagent type: `Explore`, `Plan`, `general-purpose`, or custom |
+| `user-invocable`           | `false` to hide from `/` menu. Use for background knowledge.   |
+| `allowed-tools`            | Tools without permission prompts. Example: `Read, Bash(git *)` |
+| `model`                    | `haiku`, `sonnet`, or `opus`                                   |
+| `context`                  | `fork` for isolated subagent execution                         |
+| `agent`                    | Subagent type: `Explore`, `Plan`, `general-purpose`, or custom |
 
 ## Naming Conventions
 
 Use descriptive names that indicate purpose:
 
-| Pattern | Examples |
-|---------|----------|
-| Action-oriented | `triage-prs`, `deploy-production`, `review-code` |
-| Domain-specific | `setup-stripe-payments`, `manage-facebook-ads` |
-| Descriptive | `git-worktree`, `frontend-design`, `dhh-rails-style` |
+| Pattern         | Examples                                             |
+| --------------- | ---------------------------------------------------- |
+| Action-oriented | `triage-prs`, `deploy-production`, `review-code`     |
+| Domain-specific | `setup-stripe-payments`, `manage-facebook-ads`       |
+| Descriptive     | `git-worktree`, `frontend-design`, `dhh-rails-style` |
 
 ## Progressive Disclosure
 
@@ -124,6 +133,7 @@ my-skill/
 ```
 
 **Rules:**
+
 - Keep references one level deep from SKILL.md
 - Add table of contents to reference files over 100 lines
 - Use forward slashes in paths: `scripts/helper.py`

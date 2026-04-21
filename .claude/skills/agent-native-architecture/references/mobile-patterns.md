@@ -3,20 +3,25 @@ Mobile is a first-class platform for agent-native apps. It has unique constraint
 </overview>
 
 <why_mobile>
+
 ## Why Mobile Matters
 
 Mobile devices offer unique advantages for agent-native apps:
 
 ### A File System
+
 Agents can work with files naturally, using the same primitives that work everywhere else. The filesystem is the universal interface.
 
 ### Rich Context
+
 A walled garden you get access to. Health data, location, photos, calendars—context that doesn't exist on desktop or web. This enables deeply personalized agent experiences.
 
 ### Local Apps
+
 Everyone has their own copy of the app. This opens opportunities that aren't fully realized yet: apps that modify themselves, fork themselves, evolve per-user. App Store policies constrain some of this today, but the foundation is there.
 
 ### Cross-Device Sync
+
 If you use the file system with iCloud, all devices share the same file system. The agent's work on one device appears on all devices—without you having to build a server.
 
 ### The Challenge
@@ -26,13 +31,15 @@ If you use the file system with iCloud, all devices share the same file system. 
 An agent might need 30 seconds, 5 minutes, or an hour to complete a task. But iOS will background your app after seconds of inactivity, and may kill it entirely to reclaim memory. The user might switch apps, take a call, or lock their phone mid-task.
 
 This means mobile agent apps need:
+
 - **Checkpointing** — Saving state so work isn't lost
 - **Resuming** — Picking up where you left off after interruption
 - **Background execution** — Using the limited time iOS gives you wisely
 - **On-device vs. cloud decisions** — What runs locally vs. what needs a server
-</why_mobile>
+  </why_mobile>
 
 <ios_storage>
+
 ## iOS Storage Architecture
 
 > **Needs validation:** This is an approach that works well, but better solutions may exist.
@@ -41,13 +48,14 @@ For agent-native iOS apps, use iCloud Drive's Documents folder for your shared w
 
 ### Why iCloud Documents?
 
-| Approach | Cost | Complexity | Offline | Multi-Device |
-|----------|------|------------|---------|--------------|
-| Custom backend + sync | $$$ | High | Manual | Yes |
-| CloudKit database | Free tier limits | Medium | Manual | Yes |
-| **iCloud Documents** | Free (user's storage) | Low | Automatic | Automatic |
+| Approach              | Cost                  | Complexity | Offline   | Multi-Device |
+| --------------------- | --------------------- | ---------- | --------- | ------------ |
+| Custom backend + sync | $$$                   | High       | Manual    | Yes          |
+| CloudKit database     | Free tier limits      | Medium     | Manual    | Yes          |
+| **iCloud Documents**  | Free (user's storage) | Low        | Automatic | Automatic    |
 
 iCloud Documents:
+
 - Uses user's existing iCloud storage (free 5GB, most users have more)
 - Automatic sync across all user's devices
 - Works offline, syncs when online
@@ -176,9 +184,10 @@ Add to your app's entitlements:
 - **High-frequency writes** - iCloud sync has latency; use local + periodic sync
 - **Large media files** - Consider CloudKit Assets or on-demand resources
 - **Shared between users** - iCloud Documents is single-user; use CloudKit for sharing
-</ios_storage>
+  </ios_storage>
 
 <background_execution>
+
 ## Background Execution & Resumption
 
 > **Needs validation:** These patterns work but better solutions may exist.
@@ -337,6 +346,7 @@ struct AgentStatusView: View {
     }
 }
 ```
+
 </background_execution>
 
 <permissions>
@@ -346,13 +356,13 @@ Mobile agents may need access to system resources. Handle permission requests gr
 
 ### Common Permissions
 
-| Resource | iOS Permission | Use Case |
-|----------|---------------|----------|
-| Photo Library | PHPhotoLibrary | Profile generation from photos |
-| Files | Document picker | Reading user documents |
-| Camera | AVCaptureDevice | Scanning book covers |
-| Location | CLLocationManager | Location-aware recommendations |
-| Network | (automatic) | Web search, API calls |
+| Resource      | iOS Permission    | Use Case                       |
+| ------------- | ----------------- | ------------------------------ |
+| Photo Library | PHPhotoLibrary    | Profile generation from photos |
+| Files         | Document picker   | Reading user documents         |
+| Camera        | AVCaptureDevice   | Scanning book covers           |
+| Location      | CLLocationManager | Location-aware recommendations |
+| Network       | (automatic)       | Web search, API calls          |
 
 ### Permission-Aware Tools
 
@@ -449,9 +459,11 @@ tool("analyze_book_cover", async ({ image }) => {
     }
 })
 ```
+
 </permissions>
 
 <cost_awareness>
+
 ## Cost-Aware Design
 
 Mobile users may be on cellular data or concerned about API costs. Design agents to be efficient.
@@ -650,9 +662,11 @@ struct AgentCostView: View {
     }
 }
 ```
+
 </cost_awareness>
 
 <offline_handling>
+
 ## Offline Graceful Degradation
 
 Handle offline scenarios gracefully:
@@ -740,9 +754,11 @@ class OfflineQueue: ObservableObject {
     }
 }
 ```
+
 </offline_handling>
 
 <battery_awareness>
+
 ## Battery-Aware Execution
 
 Respect device battery state:
@@ -799,29 +815,33 @@ class AgentOrchestrator {
     }
 }
 ```
+
 </battery_awareness>
 
 <on_device_vs_cloud>
+
 ## On-Device vs. Cloud
 
 Understanding what runs where in a mobile agent-native app:
 
-| Component | On-Device | Cloud |
-|-----------|-----------|-------|
-| Orchestration | ✅ | |
-| Tool execution | ✅ (file ops, photo access, HealthKit) | |
-| LLM calls | | ✅ (Anthropic API) |
-| Checkpoints | ✅ (local files) | Optional via iCloud |
-| Long-running agents | Limited by iOS | Possible with server |
+| Component           | On-Device                              | Cloud                |
+| ------------------- | -------------------------------------- | -------------------- |
+| Orchestration       | ✅                                     |                      |
+| Tool execution      | ✅ (file ops, photo access, HealthKit) |                      |
+| LLM calls           |                                        | ✅ (Anthropic API)   |
+| Checkpoints         | ✅ (local files)                       | Optional via iCloud  |
+| Long-running agents | Limited by iOS                         | Possible with server |
 
 ### Implications
 
 **Network required for reasoning:**
+
 - The app needs network connectivity for LLM calls
 - Design tools to degrade gracefully when network is unavailable
 - Consider offline caching for common queries
 
 **Data stays local:**
+
 - File operations happen on device
 - Sensitive data never leaves the device unless explicitly synced
 - Privacy is preserved by default
@@ -834,24 +854,28 @@ For truly long-running agents (hours), consider a server-side orchestrator that 
 ## Mobile Agent-Native Checklist
 
 **iOS Storage:**
+
 - [ ] iCloud Documents as primary storage (or conscious alternative)
 - [ ] Local Documents fallback when iCloud unavailable
 - [ ] Handle `.icloud` placeholder files (trigger download)
 - [ ] Use NSFileCoordinator for conflict-safe writes
 
 **Background Execution:**
+
 - [ ] Checkpoint/resume implemented for all agent sessions
 - [ ] State machine for agent lifecycle (idle, running, backgrounded, etc.)
 - [ ] Background task extension for critical saves (30 second window)
 - [ ] User-visible status for backgrounded agents
 
 **Permissions:**
+
 - [ ] Permissions requested only when needed, not at launch
 - [ ] Graceful degradation when permissions denied
 - [ ] Clear error messages with Settings deep links
 - [ ] Alternative paths when permissions unavailable
 
 **Cost Awareness:**
+
 - [ ] Model tier matched to task complexity
 - [ ] Token budgets per session
 - [ ] Network-aware (defer heavy work to WiFi)
@@ -859,13 +883,15 @@ For truly long-running agents (hours), consider a server-side orchestrator that 
 - [ ] Cost visibility to users
 
 **Offline Handling:**
+
 - [ ] Offline-capable tools identified
 - [ ] Graceful degradation for online-only features
 - [ ] Action queue for sync when online
 - [ ] Clear user communication about offline state
 
 **Battery Awareness:**
+
 - [ ] Battery monitoring for heavy operations
 - [ ] Low power mode detection
 - [ ] Defer or downgrade based on battery state
-</checklist>
+      </checklist>

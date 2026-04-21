@@ -1,5 +1,5 @@
 ---
-name: "ReasoningBank with AgentDB"
+name: 'ReasoningBank with AgentDB'
 description: "Implement ReasoningBank adaptive learning with AgentDB's 150x faster vector database. Includes trajectory tracking, verdict judgment, memory distillation, and pattern recognition. Use when building self-learning agents, optimizing decision-making, or implementing experience replay systems."
 ---
 
@@ -47,19 +47,19 @@ npx agentdb@latest stats ./.agentdb/reasoningbank.db
 ## Quick Start with API
 
 ```typescript
-import { createAgentDBAdapter, computeEmbedding } from 'agentic-flow/reasoningbank';
+import { createAgentDBAdapter, computeEmbedding } from 'agentic-flow/reasoningbank'
 
 // Initialize ReasoningBank with AgentDB
 const rb = await createAgentDBAdapter({
   dbPath: '.agentdb/reasoningbank.db',
-  enableLearning: true,      // Enable learning plugins
-  enableReasoning: true,      // Enable reasoning agents
-  cacheSize: 1000,            // 1000 pattern cache
-});
+  enableLearning: true, // Enable learning plugins
+  enableReasoning: true, // Enable reasoning agents
+  cacheSize: 1000 // 1000 pattern cache
+})
 
 // Store successful experience
-const query = "How to optimize database queries?";
-const embedding = await computeEmbedding(query);
+const query = 'How to optimize database queries?'
+const embedding = await computeEmbedding(query)
 
 await rb.insertPattern({
   id: '',
@@ -78,20 +78,20 @@ await rb.insertPattern({
   usage_count: 1,
   success_count: 1,
   created_at: Date.now(),
-  last_used: Date.now(),
-});
+  last_used: Date.now()
+})
 
 // Retrieve similar experiences with reasoning
 const result = await rb.retrieveWithReasoning(embedding, {
   domain: 'database-optimization',
   k: 5,
-  useMMR: true,              // Diverse results
-  synthesizeContext: true,    // Rich context synthesis
-});
+  useMMR: true, // Diverse results
+  synthesizeContext: true // Rich context synthesis
+})
 
-console.log('Memories:', result.memories);
-console.log('Context:', result.context);
-console.log('Patterns:', result.patterns);
+console.log('Memories:', result.memories)
+console.log('Context:', result.context)
+console.log('Patterns:', result.patterns)
 ```
 
 ---
@@ -113,9 +113,9 @@ const trajectory = {
   ],
   outcome: 'success',
   metrics: { latency_before: 2500, latency_after: 150 }
-};
+}
 
-const embedding = await computeEmbedding(JSON.stringify(trajectory));
+const embedding = await computeEmbedding(JSON.stringify(trajectory))
 
 await rb.insertPattern({
   id: '',
@@ -126,8 +126,8 @@ await rb.insertPattern({
   usage_count: 1,
   success_count: 1,
   created_at: Date.now(),
-  last_used: Date.now(),
-});
+  last_used: Date.now()
+})
 ```
 
 ### 2. Verdict Judgment
@@ -138,17 +138,14 @@ Judge whether a trajectory was successful:
 // Retrieve similar past trajectories
 const similar = await rb.retrieveWithReasoning(queryEmbedding, {
   domain: 'api-optimization',
-  k: 10,
-});
+  k: 10
+})
 
 // Judge based on similarity to successful patterns
-const verdict = similar.memories.filter(m =>
-  m.pattern.outcome === 'success' &&
-  m.similarity > 0.8
-).length > 5 ? 'likely_success' : 'needs_review';
+const verdict = similar.memories.filter((m) => m.pattern.outcome === 'success' && m.similarity > 0.8).length > 5 ? 'likely_success' : 'needs_review'
 
-console.log('Verdict:', verdict);
-console.log('Confidence:', similar.memories[0]?.similarity || 0);
+console.log('Verdict:', verdict)
+console.log('Confidence:', similar.memories[0]?.similarity || 0)
 ```
 
 ### 3. Memory Distillation
@@ -160,8 +157,8 @@ Consolidate similar experiences into patterns:
 const experiences = await rb.retrieveWithReasoning(embedding, {
   domain: 'api-optimization',
   k: 100,
-  optimizeMemory: true,  // Automatic consolidation
-});
+  optimizeMemory: true // Automatic consolidation
+})
 
 // Distill into high-level pattern
 const distilledPattern = {
@@ -170,7 +167,7 @@ const distilledPattern = {
   success_rate: 0.92,
   sample_size: experiences.memories.length,
   confidence: 0.95
-};
+}
 
 await rb.insertPattern({
   id: '',
@@ -184,8 +181,8 @@ await rb.insertPattern({
   usage_count: 0,
   success_count: 0,
   created_at: Date.now(),
-  last_used: Date.now(),
-});
+  last_used: Date.now()
+})
 ```
 
 ---
@@ -202,15 +199,15 @@ Find similar successful patterns:
 const result = await rb.retrieveWithReasoning(queryEmbedding, {
   domain: 'problem-solving',
   k: 10,
-  useMMR: true,  // Maximal Marginal Relevance for diversity
-});
+  useMMR: true // Maximal Marginal Relevance for diversity
+})
 
 // PatternMatcher returns diverse, relevant memories
-result.memories.forEach(mem => {
-  console.log(`Pattern: ${mem.pattern.approach}`);
-  console.log(`Similarity: ${mem.similarity}`);
-  console.log(`Success Rate: ${mem.success_count / mem.usage_count}`);
-});
+result.memories.forEach((mem) => {
+  console.log(`Pattern: ${mem.pattern.approach}`)
+  console.log(`Similarity: ${mem.similarity}`)
+  console.log(`Success Rate: ${mem.success_count / mem.usage_count}`)
+})
 ```
 
 ### 2. ContextSynthesizer
@@ -220,12 +217,12 @@ Generate rich context from multiple memories:
 ```typescript
 const result = await rb.retrieveWithReasoning(queryEmbedding, {
   domain: 'code-optimization',
-  synthesizeContext: true,  // Enable context synthesis
-  k: 5,
-});
+  synthesizeContext: true, // Enable context synthesis
+  k: 5
+})
 
 // ContextSynthesizer creates coherent narrative
-console.log('Synthesized Context:', result.context);
+console.log('Synthesized Context:', result.context)
 // "Based on 5 similar optimizations, the most effective approach
 //  involves profiling, identifying bottlenecks, and applying targeted
 //  improvements. Success rate: 87%"
@@ -238,11 +235,11 @@ Automatically consolidate and prune:
 ```typescript
 const result = await rb.retrieveWithReasoning(queryEmbedding, {
   domain: 'testing',
-  optimizeMemory: true,  // Enable automatic optimization
-});
+  optimizeMemory: true // Enable automatic optimization
+})
 
 // MemoryOptimizer consolidates similar patterns and prunes low-quality
-console.log('Optimizations:', result.optimizations);
+console.log('Optimizations:', result.optimizations)
 // { consolidated: 15, pruned: 3, improved_quality: 0.12 }
 ```
 
@@ -254,14 +251,14 @@ Filter by quality and relevance:
 const result = await rb.retrieveWithReasoning(queryEmbedding, {
   domain: 'debugging',
   k: 20,
-  minConfidence: 0.8,  // Only high-confidence experiences
-});
+  minConfidence: 0.8 // Only high-confidence experiences
+})
 
 // ExperienceCurator returns only quality experiences
-result.memories.forEach(mem => {
-  console.log(`Confidence: ${mem.confidence}`);
-  console.log(`Success Rate: ${mem.success_count / mem.usage_count}`);
-});
+result.memories.forEach((mem) => {
+  console.log(`Confidence: ${mem.confidence}`)
+  console.log(`Success Rate: ${mem.success_count / mem.usage_count}`)
+})
 ```
 
 ---
@@ -271,26 +268,17 @@ result.memories.forEach(mem => {
 AgentDB maintains 100% backward compatibility with legacy ReasoningBank:
 
 ```typescript
-import {
-  retrieveMemories,
-  judgeTrajectory,
-  distillMemories
-} from 'agentic-flow/reasoningbank';
+import { retrieveMemories, judgeTrajectory, distillMemories } from 'agentic-flow/reasoningbank'
 
 // Legacy API works unchanged (uses AgentDB backend automatically)
 const memories = await retrieveMemories(query, {
   domain: 'code-generation',
   agent: 'coder'
-});
+})
 
-const verdict = await judgeTrajectory(trajectory, query);
+const verdict = await judgeTrajectory(trajectory, query)
 
-const newMemories = await distillMemories(
-  trajectory,
-  verdict,
-  query,
-  { domain: 'code-generation' }
-);
+const newMemories = await distillMemories(trajectory, verdict, query, { domain: 'code-generation' })
 ```
 
 ---
@@ -320,9 +308,9 @@ await rb.insertPattern({
     embedding,
     pattern: { bug: 'NPE in UserService.getUser()', fix: 'Add null check' }
   }),
-  confidence: 0.9,
+  confidence: 0.9
   // ...
-});
+})
 
 // Mid-level: Pattern across similar cases
 await rb.insertPattern({
@@ -332,9 +320,9 @@ await rb.insertPattern({
     embedding,
     pattern: { category: 'null-pointer', approach: 'defensive-checks' }
   }),
-  confidence: 0.85,
+  confidence: 0.85
   // ...
-});
+})
 
 // High-level: General principle
 await rb.insertPattern({
@@ -344,9 +332,9 @@ await rb.insertPattern({
     embedding,
     pattern: { principle: 'fail-fast with clear errors' }
   }),
-  confidence: 0.95,
+  confidence: 0.95
   // ...
-});
+})
 ```
 
 ### Multi-Domain Learning
@@ -357,15 +345,15 @@ Transfer learning across domains:
 // Learn from backend optimization
 const backendExperience = await rb.retrieveWithReasoning(embedding, {
   domain: 'backend-optimization',
-  k: 10,
-});
+  k: 10
+})
 
 // Apply to frontend optimization
-const transferredKnowledge = backendExperience.memories.map(mem => ({
+const transferredKnowledge = backendExperience.memories.map((mem) => ({
   ...mem,
   domain: 'frontend-optimization',
-  adapted: true,
-}));
+  adapted: true
+}))
 ```
 
 ---
@@ -401,6 +389,7 @@ npx agentdb@latest stats .agentdb/reasoningbank.db
 ## Troubleshooting
 
 ### Issue: Migration fails
+
 ```bash
 # Check source database exists
 ls -la .swarm/memory.db
@@ -410,24 +399,26 @@ DEBUG=agentdb:* npx agentdb@latest migrate --source .swarm/memory.db
 ```
 
 ### Issue: Low confidence scores
+
 ```typescript
 // Enable context synthesis for better quality
 const result = await rb.retrieveWithReasoning(embedding, {
   synthesizeContext: true,
   useMMR: true,
-  k: 10,
-});
+  k: 10
+})
 ```
 
 ### Issue: Memory growing too large
+
 ```typescript
 // Enable automatic optimization
 const result = await rb.retrieveWithReasoning(embedding, {
-  optimizeMemory: true,  // Consolidates similar patterns
-});
+  optimizeMemory: true // Consolidates similar patterns
+})
 
 // Or manually optimize
-await rb.optimize();
+await rb.optimize()
 ```
 
 ---

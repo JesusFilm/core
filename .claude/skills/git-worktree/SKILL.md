@@ -22,6 +22,7 @@ This skill provides a unified interface for managing Git worktrees across your d
 **NEVER call `git worktree add` directly.** Always use the `worktree-manager.sh` script.
 
 The script handles critical setup that raw git commands don't:
+
 1. Copies `.env`, `.env.local`, `.env.test`, etc. from main repo
 2. Ensures `.worktrees` is in `.gitignore`
 3. Creates consistent directory structure
@@ -82,15 +83,18 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh clean
 Creates a new worktree with the given branch name.
 
 **Options:**
+
 - `branch-name` (required): The name for the new branch and worktree
 - `from-branch` (optional): Base branch to create from (defaults to `main`)
 
 **Example:**
+
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create feature-login
 ```
 
 **What happens:**
+
 1. Checks if worktree already exists
 2. Updates the base branch from remote
 3. Creates new worktree and branch
@@ -102,11 +106,13 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh creat
 Lists all available worktrees with their branches and current status.
 
 **Example:**
+
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh list
 ```
 
 **Output shows:**
+
 - Worktree name
 - Branch name
 - Which is current (marked with ✓)
@@ -117,11 +123,13 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh list
 Switches to an existing worktree and cd's into it.
 
 **Example:**
+
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh switch feature-login
 ```
 
 **Optional:**
+
 - If name not provided, lists available worktrees and prompts for selection
 
 ### `cleanup` or `clean`
@@ -129,11 +137,13 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh switc
 Interactively cleans up inactive worktrees with confirmation.
 
 **Example:**
+
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh cleanup
 ```
 
 **What happens:**
+
 1. Lists all inactive worktrees
 2. Asks for confirmation
 3. Removes selected worktrees

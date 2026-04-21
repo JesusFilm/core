@@ -75,6 +75,7 @@ end
 ```
 
 The `scope:` parameter accepts:
+
 - `:descendants` (default) -- receives events from the module **and** every nested module invoked inside it.
 - `DSPy::Module::SubcriptionScope::SelfOnly` -- restricts delivery to events emitted by the module instance itself; ignores descendants.
 
@@ -124,11 +125,11 @@ end
 
 Three gems compose the observability stack:
 
-| Gem | Purpose |
-|---|---|
-| `dspy` | Core event bus (`DSPy.event`, `DSPy.events`) -- always available |
-| `dspy-o11y` | OpenTelemetry spans, `AsyncSpanProcessor`, `DSPy::Context.with_span` helpers |
-| `dspy-o11y-langfuse` | Langfuse adapter -- configures OTLP exporter targeting Langfuse endpoints |
+| Gem                  | Purpose                                                                      |
+| -------------------- | ---------------------------------------------------------------------------- |
+| `dspy`               | Core event bus (`DSPy.event`, `DSPy.events`) -- always available             |
+| `dspy-o11y`          | OpenTelemetry spans, `AsyncSpanProcessor`, `DSPy::Context.with_span` helpers |
+| `dspy-o11y-langfuse` | Langfuse adapter -- configures OTLP exporter targeting Langfuse endpoints    |
 
 ### Installation
 
@@ -190,16 +191,16 @@ Trace: abc-123-def
 
 DSPy maps module classes to Langfuse observation types automatically via `DSPy::ObservationType.for_module_class`:
 
-| Module | Observation Type |
-|---|---|
-| `DSPy::LM` (raw chat) | `generation` |
-| `DSPy::ChainOfThought` | `chain` |
-| `DSPy::ReAct` | `agent` |
-| Tool invocations | `tool` |
-| Memory/retrieval | `retriever` |
-| Embedding engines | `embedding` |
-| Evaluation modules | `evaluator` |
-| Generic operations | `span` |
+| Module                 | Observation Type |
+| ---------------------- | ---------------- |
+| `DSPy::LM` (raw chat)  | `generation`     |
+| `DSPy::ChainOfThought` | `chain`          |
+| `DSPy::ReAct`          | `agent`          |
+| Tool invocations       | `tool`           |
+| Memory/retrieval       | `retriever`      |
+| Embedding engines      | `embedding`      |
+| Evaluation modules     | `evaluator`      |
+| Generic operations     | `span`           |
 
 ## Score Reporting
 
@@ -321,13 +322,13 @@ When `DSPy::Module#forward` runs, the context layer maintains a module stack. Ev
 }
 ```
 
-| Key | Meaning |
-|---|---|
-| `module_path` | Ordered array of `{id, class, label}` entries from root to leaf |
-| `module_root` | The outermost module in the current call chain |
-| `module_leaf` | The innermost (currently executing) module |
-| `module_scope.ancestry_token` | Stable string of joined UUIDs representing the nesting path |
-| `module_scope.depth` | Integer depth of the current module in the stack |
+| Key                           | Meaning                                                         |
+| ----------------------------- | --------------------------------------------------------------- |
+| `module_path`                 | Ordered array of `{id, class, label}` entries from root to leaf |
+| `module_root`                 | The outermost module in the current call chain                  |
+| `module_leaf`                 | The innermost (currently executing) module                      |
+| `module_scope.ancestry_token` | Stable string of joined UUIDs representing the nesting path     |
+| `module_scope.depth`          | Integer depth of the current module in the stack                |
 
 Labels are set via `module_scope_label=` on a module instance or derived automatically from named predictors. Use this metadata to power Langfuse filters, scoped metrics, or custom event routing.
 
@@ -347,15 +348,15 @@ No application code interacts with the processor directly. Configure it entirely
 
 ## Built-in Events Reference
 
-| Event Name | Emitted By | Key Attributes |
-|---|---|---|
-| `lm.tokens` | `DSPy::LM` | `gen_ai.system`, `gen_ai.request.model`, `input_tokens`, `output_tokens`, `total_tokens` |
-| `chain_of_thought.reasoning_complete` | `DSPy::ChainOfThought` | `dspy.signature`, `cot.reasoning_steps`, `cot.reasoning_length`, `cot.has_reasoning` |
-| `react.iteration_complete` | `DSPy::ReAct` | `iteration`, `thought`, `action`, `observation` |
-| `codeact.iteration_complete` | `dspy-code_act` gem | `iteration`, `code_executed`, `execution_result` |
-| `optimization.trial_complete` | Teleprompters (MIPROv2) | `trial_number`, `score` |
-| `score.create` | `DSPy.score` | `score_name`, `score_value`, `score_data_type`, `trace_id` |
-| `span.start` | `DSPy::Context.with_span` | `trace_id`, `span_id`, `parent_span_id`, `operation` |
+| Event Name                            | Emitted By                | Key Attributes                                                                           |
+| ------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------- |
+| `lm.tokens`                           | `DSPy::LM`                | `gen_ai.system`, `gen_ai.request.model`, `input_tokens`, `output_tokens`, `total_tokens` |
+| `chain_of_thought.reasoning_complete` | `DSPy::ChainOfThought`    | `dspy.signature`, `cot.reasoning_steps`, `cot.reasoning_length`, `cot.has_reasoning`     |
+| `react.iteration_complete`            | `DSPy::ReAct`             | `iteration`, `thought`, `action`, `observation`                                          |
+| `codeact.iteration_complete`          | `dspy-code_act` gem       | `iteration`, `code_executed`, `execution_result`                                         |
+| `optimization.trial_complete`         | Teleprompters (MIPROv2)   | `trial_number`, `score`                                                                  |
+| `score.create`                        | `DSPy.score`              | `score_name`, `score_value`, `score_data_type`, `trace_id`                               |
+| `span.start`                          | `DSPy::Context.with_span` | `trace_id`, `span_id`, `parent_span_id`, `operation`                                     |
 
 ## Best Practices
 

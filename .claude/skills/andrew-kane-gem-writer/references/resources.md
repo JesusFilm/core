@@ -10,82 +10,89 @@
 
 ### Search & Data
 
-| Gem | Stars | Description | Source |
-|-----|-------|-------------|--------|
+| Gem            | Stars | Description                  | Source                               |
+| -------------- | ----- | ---------------------------- | ------------------------------------ |
 | **Searchkick** | 6.6k+ | Intelligent search for Rails | https://github.com/ankane/searchkick |
-| **Chartkick** | 6.4k+ | Beautiful charts in Ruby | https://github.com/ankane/chartkick |
-| **Groupdate** | 3.8k+ | Group by day, week, month | https://github.com/ankane/groupdate |
-| **Blazer** | 4.6k+ | SQL dashboard for Rails | https://github.com/ankane/blazer |
+| **Chartkick**  | 6.4k+ | Beautiful charts in Ruby     | https://github.com/ankane/chartkick  |
+| **Groupdate**  | 3.8k+ | Group by day, week, month    | https://github.com/ankane/groupdate  |
+| **Blazer**     | 4.6k+ | SQL dashboard for Rails      | https://github.com/ankane/blazer     |
 
 ### Database & Migrations
 
-| Gem | Stars | Description | Source |
-|-----|-------|-------------|--------|
-| **PgHero** | 8.2k+ | PostgreSQL insights | https://github.com/ankane/pghero |
+| Gem                   | Stars | Description           | Source                                      |
+| --------------------- | ----- | --------------------- | ------------------------------------------- |
+| **PgHero**            | 8.2k+ | PostgreSQL insights   | https://github.com/ankane/pghero            |
 | **Strong Migrations** | 4.1k+ | Safe migration checks | https://github.com/ankane/strong_migrations |
-| **Dexter** | 1.8k+ | Auto index advisor | https://github.com/ankane/dexter |
-| **PgSync** | 1.5k+ | Sync Postgres data | https://github.com/ankane/pgsync |
+| **Dexter**            | 1.8k+ | Auto index advisor    | https://github.com/ankane/dexter            |
+| **PgSync**            | 1.5k+ | Sync Postgres data    | https://github.com/ankane/pgsync            |
 
 ### Security & Encryption
 
-| Gem | Stars | Description | Source |
-|-----|-------|-------------|--------|
-| **Lockbox** | 1.5k+ | Application-level encryption | https://github.com/ankane/lockbox |
-| **Blind Index** | 1.0k+ | Encrypted search | https://github.com/ankane/blind_index |
-| **Secure Headers** | — | Contributed patterns | Referenced in gems |
+| Gem                | Stars | Description                  | Source                                |
+| ------------------ | ----- | ---------------------------- | ------------------------------------- |
+| **Lockbox**        | 1.5k+ | Application-level encryption | https://github.com/ankane/lockbox     |
+| **Blind Index**    | 1.0k+ | Encrypted search             | https://github.com/ankane/blind_index |
+| **Secure Headers** | —     | Contributed patterns         | Referenced in gems                    |
 
 ### Analytics & ML
 
-| Gem | Stars | Description | Source |
-|-----|-------|-------------|--------|
-| **Ahoy** | 4.2k+ | Analytics for Rails | https://github.com/ankane/ahoy |
-| **Neighbor** | 1.1k+ | Vector search for Rails | https://github.com/ankane/neighbor |
-| **Rover** | 700+ | DataFrames for Ruby | https://github.com/ankane/rover |
-| **Tomoto** | 200+ | Topic modeling | https://github.com/ankane/tomoto-ruby |
+| Gem          | Stars | Description             | Source                                |
+| ------------ | ----- | ----------------------- | ------------------------------------- |
+| **Ahoy**     | 4.2k+ | Analytics for Rails     | https://github.com/ankane/ahoy        |
+| **Neighbor** | 1.1k+ | Vector search for Rails | https://github.com/ankane/neighbor    |
+| **Rover**    | 700+  | DataFrames for Ruby     | https://github.com/ankane/rover       |
+| **Tomoto**   | 200+  | Topic modeling          | https://github.com/ankane/tomoto-ruby |
 
 ### Utilities
 
-| Gem | Stars | Description | Source |
-|-----|-------|-------------|--------|
-| **Pretender** | 2.0k+ | Login as another user | https://github.com/ankane/pretender |
-| **Authtrail** | 900+ | Login activity tracking | https://github.com/ankane/authtrail |
-| **Notable** | 200+ | Track notable requests | https://github.com/ankane/notable |
-| **Logstop** | 200+ | Filter sensitive logs | https://github.com/ankane/logstop |
+| Gem           | Stars | Description             | Source                              |
+| ------------- | ----- | ----------------------- | ----------------------------------- |
+| **Pretender** | 2.0k+ | Login as another user   | https://github.com/ankane/pretender |
+| **Authtrail** | 900+  | Login activity tracking | https://github.com/ankane/authtrail |
+| **Notable**   | 200+  | Track notable requests  | https://github.com/ankane/notable   |
+| **Logstop**   | 200+  | Filter sensitive logs   | https://github.com/ankane/logstop   |
 
 ## Key Source Files to Study
 
 ### Entry Point Patterns
+
 - https://github.com/ankane/searchkick/blob/master/lib/searchkick.rb
 - https://github.com/ankane/pghero/blob/master/lib/pghero.rb
 - https://github.com/ankane/strong_migrations/blob/master/lib/strong_migrations.rb
 - https://github.com/ankane/lockbox/blob/master/lib/lockbox.rb
 
 ### Class Macro Implementations
+
 - https://github.com/ankane/searchkick/blob/master/lib/searchkick/model.rb
 - https://github.com/ankane/lockbox/blob/master/lib/lockbox/model.rb
 - https://github.com/ankane/neighbor/blob/master/lib/neighbor/model.rb
 - https://github.com/ankane/blind_index/blob/master/lib/blind_index/model.rb
 
 ### Rails Integration (Railtie/Engine)
+
 - https://github.com/ankane/pghero/blob/master/lib/pghero/engine.rb
 - https://github.com/ankane/searchkick/blob/master/lib/searchkick/railtie.rb
 - https://github.com/ankane/ahoy/blob/master/lib/ahoy/engine.rb
 - https://github.com/ankane/blazer/blob/master/lib/blazer/engine.rb
 
 ### Database Adapters
+
 - https://github.com/ankane/strong_migrations/tree/master/lib/strong_migrations/adapters
 - https://github.com/ankane/groupdate/tree/master/lib/groupdate/adapters
 - https://github.com/ankane/neighbor/tree/master/lib/neighbor
 
 ### Error Messages (Template Pattern)
+
 - https://github.com/ankane/strong_migrations/blob/master/lib/strong_migrations/error_messages.rb
 
 ### Gemspec Examples
+
 - https://github.com/ankane/searchkick/blob/master/searchkick.gemspec
 - https://github.com/ankane/neighbor/blob/master/neighbor.gemspec
 - https://github.com/ankane/ahoy/blob/master/ahoy_matey.gemspec
 
 ### Test Setups
+
 - https://github.com/ankane/searchkick/tree/master/test
 - https://github.com/ankane/lockbox/tree/master/test
 - https://github.com/ankane/strong_migrations/tree/master/test

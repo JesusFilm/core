@@ -9,25 +9,28 @@ Build a comprehensive execution skill that does real work in a specific domain. 
 **Domain expertise skill:** "Do EVERYTHING in this domain, with complete practitioner knowledge"
 
 Examples:
+
 - `expertise/macos-apps` - Build macOS apps from scratch through shipping
 - `expertise/python-games` - Build complete Python games with full game dev lifecycle
 - `expertise/rust-systems` - Build Rust systems programs with exhaustive systems knowledge
 - `expertise/web-scraping` - Build scrapers, handle all edge cases, deploy at scale
 
 Domain expertise skills:
+
 - ✅ Execute tasks (build, debug, optimize, ship)
 - ✅ Have comprehensive domain knowledge in references
 - ✅ Are invoked directly by users ("build a macOS app")
 - ✅ Can be loaded by other skills (create-plans reads references for planning)
 - ✅ Cover the FULL lifecycle, not just getting started
-</critical_distinction>
+  </critical_distinction>
 
 <required_reading>
 **Read these reference files NOW:**
+
 1. references/recommended-structure.md
 2. references/core-principles.md
 3. references/use-xml-tags.md
-</required_reading>
+   </required_reading>
 
 <process>
 ## Step 1: Identify Domain
@@ -35,6 +38,7 @@ Domain expertise skills:
 Ask user what domain expertise to build:
 
 **Example domains:**
+
 - macOS/iOS app development
 - Python game development
 - Rust systems programming
@@ -51,6 +55,7 @@ Get specific: "Python games" or "Python games with Pygame specifically"?
 ## Step 2: Confirm Target Location
 
 Explain:
+
 ```
 Domain expertise skills go in: ~/.claude/skills/expertise/{domain-name}/
 
@@ -71,6 +76,7 @@ Confirm or adjust name.
 Domain expertise skills cover the FULL lifecycle. Identify what workflows are needed.
 
 **Common workflows for most domains:**
+
 1. **build-new-{thing}.md** - Create from scratch
 2. **add-feature.md** - Extend existing {thing}
 3. **debug-{thing}.md** - Find and fix bugs
@@ -79,6 +85,7 @@ Domain expertise skills cover the FULL lifecycle. Identify what workflows are ne
 6. **ship-{thing}.md** - Deploy/distribute
 
 **Domain-specific workflows:**
+
 - Games: `implement-game-mechanic.md`, `add-audio.md`, `polish-ui.md`
 - Web apps: `setup-auth.md`, `add-api-endpoint.md`, `setup-database.md`
 - Systems: `optimize-memory.md`, `profile-cpu.md`, `cross-compile.md`
@@ -94,26 +101,31 @@ Each workflow = one complete task type that users actually do.
 Run multiple web searches to ensure coverage:
 
 **Search 1: Current ecosystem**
+
 - "best {domain} libraries 2024 2025 2026"
 - "popular {domain} frameworks comparison"
 - "{domain} tech stack recommendations"
 
 **Search 2: Architecture patterns**
+
 - "{domain} architecture patterns"
 - "{domain} best practices design patterns"
 - "how to structure {domain} projects"
 
 **Search 3: Lifecycle and tooling**
+
 - "{domain} development workflow"
 - "{domain} testing debugging best practices"
 - "{domain} deployment distribution"
 
 **Search 4: Common pitfalls**
+
 - "{domain} common mistakes avoid"
 - "{domain} anti-patterns"
 - "what not to do {domain}"
 
 **Search 5: Real-world usage**
+
 - "{domain} production examples GitHub"
 - "{domain} case studies"
 - "successful {domain} projects"
@@ -121,12 +133,14 @@ Run multiple web searches to ensure coverage:
 ### Verification Requirements
 
 For EACH major library/tool/pattern found:
+
 - **Check recency:** When was it last updated?
 - **Check adoption:** Is it actively maintained? Community size?
 - **Check alternatives:** What else exists? When to use each?
 - **Check deprecation:** Is anything being replaced?
 
 **Red flags for outdated content:**
+
 - Articles from before 2023 (unless fundamental concepts)
 - Abandoned libraries (no commits in 12+ months)
 - Deprecated APIs or patterns
@@ -135,6 +149,7 @@ For EACH major library/tool/pattern found:
 ### Documentation Sources
 
 Use Context7 MCP when available:
+
 ```
 mcp__context7__resolve-library-id: {library-name}
 mcp__context7__get-library-docs: {library-id}
@@ -147,6 +162,7 @@ Focus on official docs, not tutorials.
 Structure references by domain concerns, NOT by arbitrary categories.
 
 **For game development example:**
+
 ```
 references/
 ├── architecture.md         # ECS, component-based, state machines
@@ -168,6 +184,7 @@ references/
 ```
 
 **For macOS app development example:**
+
 ```
 references/
 ├── app-architecture.md     # State management, dependency injection
@@ -187,6 +204,7 @@ references/
 ```
 
 **For each reference file:**
+
 - Pure XML structure
 - Decision trees: "If X, use Y. If Z, use A instead."
 - Comparison tables: Library vs Library (speed, features, learning curve)
@@ -199,7 +217,7 @@ references/
 
 Domain expertise skills use router pattern with essential principles:
 
-```yaml
+````yaml
 ---
 name: build-{domain-name}
 description: Build {domain things} from scratch through shipping. Full lifecycle - build, debug, test, optimize, ship. {Any specific constraints like "CLI-only, no IDE"}.
@@ -262,15 +280,17 @@ Example for compiled languages:
 
 # 3. Does it run?
 {run command}
-```
+````
 
 Report to the user:
+
 - "Build: ✓"
 - "Tests: X pass, Y fail"
 - "Ready for you to check [specific thing]"
-</verification_loop>
+  </verification_loop>
 
 <reference_index>
+
 ## Domain Knowledge
 
 All in `references/`:
@@ -283,20 +303,23 @@ All in `references/`:
 </reference_index>
 
 <workflows_index>
+
 ## Workflows
 
 All in `workflows/`:
 
-| File | Purpose |
-|------|---------|
-| build-new-{thing}.md | Create new {thing} from scratch |
-| debug-{thing}.md | Find and fix bugs |
-| add-feature.md | Add to existing {thing} |
-| write-tests.md | Write and run tests |
-| optimize-performance.md | Profile and speed up |
-| ship-{thing}.md | Deploy/distribute |
+| File                    | Purpose                         |
+| ----------------------- | ------------------------------- |
+| build-new-{thing}.md    | Create new {thing} from scratch |
+| debug-{thing}.md        | Find and fix bugs               |
+| add-feature.md          | Add to existing {thing}         |
+| write-tests.md          | Write and run tests             |
+| optimize-performance.md | Profile and speed up            |
+| ship-{thing}.md         | Deploy/distribute               |
+
 </workflows_index>
-```
+
+````
 
 ## Step 7: Write Workflows
 
@@ -333,26 +356,30 @@ For EACH workflow identified in Step 3:
 
 ```bash
 {verification commands}
-```
+````
+
 </process>
 
 <anti_patterns>
 Avoid:
+
 - {Common mistake 1}
 - {Common mistake 2}
 - {Common mistake 3}
-</anti_patterns>
+  </anti_patterns>
 
 <success_criteria>
 A well-{completed task}:
+
 - {Criterion 1}
 - {Criterion 2}
 - {Criterion 3}
 - Builds/runs without errors
 - Tests pass
 - Feels {native/professional/correct}
-</success_criteria>
-```
+  </success_criteria>
+
+````
 
 **Key workflow characteristics:**
 - Starts with required_reading (which references to load)
@@ -384,7 +411,8 @@ Brief introduction to this domain area
 
 ```code
 # Example usage
-```
+````
+
 </option>
 
 <option name="Library B">
@@ -393,6 +421,7 @@ Brief introduction to this domain area
 </options>
 
 <decision_tree>
+
 ## Choosing the Right Approach
 
 **If you need [X]:** Use [Library A]
@@ -413,6 +442,7 @@ Brief introduction to this domain area
 </patterns>
 
 <anti_patterns>
+
 ## What NOT to Do
 
 <anti_pattern name="Common Mistake">
@@ -423,6 +453,7 @@ Brief introduction to this domain area
 </anti_patterns>
 
 <platform_considerations>
+
 ## Platform-Specific Notes
 
 **Windows:** [considerations]
@@ -430,7 +461,8 @@ Brief introduction to this domain area
 **Linux:** [considerations]
 **Mobile:** [if applicable]
 </platform_considerations>
-```
+
+````
 
 ### Quality Standards
 
@@ -509,13 +541,14 @@ mkdir -p ~/.claude/skills/expertise/{domain-name}/references
 
 # Verify structure
 ls -R ~/.claude/skills/expertise/{domain-name}
-```
+````
 
 ## Step 11: Document in create-plans
 
 Update `~/.claude/skills/create-plans/SKILL.md` to reference this new domain:
 
 Add to the domain inference table:
+
 ```markdown
 | "{keyword}", "{domain term}" | expertise/{domain-name} |
 ```
@@ -527,6 +560,7 @@ So create-plans can auto-detect and offer to load it.
 Review entire skill:
 
 **SKILL.md:**
+
 - [ ] Name matches directory (build-{domain-name})
 - [ ] Description explains it builds things from scratch through shipping
 - [ ] Essential principles inline (always loaded)
@@ -536,6 +570,7 @@ Review entire skill:
 - [ ] Workflows index complete
 
 **Workflows:**
+
 - [ ] Each workflow starts with required_reading
 - [ ] Each workflow has actual implementation steps
 - [ ] Each workflow has verification steps
@@ -543,6 +578,7 @@ Review entire skill:
 - [ ] Workflows cover full lifecycle (build, debug, test, optimize, ship)
 
 **References:**
+
 - [ ] Pure XML structure (no markdown headings)
 - [ ] Decision guidance in every file
 - [ ] Current versions verified
@@ -551,6 +587,7 @@ Review entire skill:
 - [ ] Platform considerations included
 
 **Completeness:**
+
 - [ ] A professional practitioner would find this comprehensive
 - [ ] No major libraries/patterns missing
 - [ ] Full lifecycle covered
@@ -577,10 +614,11 @@ Domain expertise skill is complete when:
 - [ ] Referenced in create-plans domain inference table
 - [ ] Passes dual-purpose test: Can be invoked directly AND loaded for knowledge
 - [ ] User can build something professional from scratch through shipping
-</success_criteria>
+      </success_criteria>
 
 <anti_patterns>
 **DON'T:**
+
 - Copy tutorial content without verification
 - Include only "getting started" material
 - Skip the "when NOT to use" guidance
@@ -593,6 +631,7 @@ Domain expertise skill is complete when:
 - Create workflows that just say "read the references"
 
 **DO:**
+
 - Verify everything is current
 - Include complete lifecycle (build → ship)
 - Provide decision guidance
@@ -602,4 +641,4 @@ Domain expertise skill is complete when:
 - Include verification in every workflow
 - Make it exhaustive, not minimal
 - Test both direct invocation and knowledge reference use cases
-</anti_patterns>
+  </anti_patterns>

@@ -11,6 +11,7 @@ disable-model-invocation: true
 The `todos/` directory contains a file-based tracking system for managing code review feedback, technical debt, feature requests, and work items. Each todo is a markdown file with YAML frontmatter and structured sections.
 
 This skill should be used when:
+
 - Creating new todos from findings or feedback
 - Managing todo lifecycle (pending → ready → complete)
 - Triaging pending items for approval
@@ -27,12 +28,14 @@ Todo files follow this naming pattern:
 ```
 
 **Components:**
+
 - **issue_id**: Sequential number (001, 002, 003...) - never reused
 - **status**: `pending` (needs triage), `ready` (approved), `complete` (done)
 - **priority**: `p1` (critical), `p2` (important), `p3` (nice-to-have)
 - **description**: kebab-case, brief description
 
 **Examples:**
+
 ```
 001-pending-p1-mailer-test.md
 002-ready-p1-fix-n-plus-1.md
@@ -44,6 +47,7 @@ Todo files follow this naming pattern:
 Each todo is a markdown file with YAML frontmatter and structured sections. Use the template at [todo-template.md](./assets/todo-template.md) as a starting point when creating new todos.
 
 **Required sections:**
+
 - **Problem Statement** - What is broken, missing, or needs improvement?
 - **Findings** - Investigation results, root cause, key discoveries
 - **Proposed Solutions** - Multiple options with pros/cons, effort, risk
@@ -52,18 +56,20 @@ Each todo is a markdown file with YAML frontmatter and structured sections. Use 
 - **Work Log** - Chronological record with date, actions, learnings
 
 **Optional sections:**
+
 - **Technical Details** - Affected files, related components, DB changes
 - **Resources** - Links to errors, tests, PRs, documentation
 - **Notes** - Additional context or decisions
 
 **YAML frontmatter fields:**
+
 ```yaml
 ---
-status: ready              # pending | ready | complete
-priority: p1              # p1 | p2 | p3
-issue_id: "002"
+status: ready # pending | ready | complete
+priority: p1 # p1 | p2 | p3
+issue_id: '002'
 tags: [rails, performance, database]
-dependencies: ["001"]     # Issue IDs this is blocked by
+dependencies: ['001'] # Issue IDs this is blocked by
 ---
 ```
 
@@ -85,6 +91,7 @@ dependencies: ["001"]     # Issue IDs this is blocked by
 5. Add relevant tags for filtering
 
 **When to create a todo:**
+
 - Requires more than 15-20 minutes of work
 - Needs research, planning, or multiple approaches considered
 - Has dependencies on other work
@@ -93,6 +100,7 @@ dependencies: ["001"]     # Issue IDs this is blocked by
 - Technical debt needing documentation
 
 **When to act immediately instead:**
+
 - Issue is trivial (< 15 minutes)
 - Complete context available now
 - No planning needed
@@ -127,16 +135,19 @@ dependencies: []               # No blockers - can work immediately
 ```
 
 **To check what blocks a todo:**
+
 ```bash
 grep "^dependencies:" todos/003-*.md
 ```
 
 **To find what a todo blocks:**
+
 ```bash
 grep -l 'dependencies:.*"002"' todos/*.md
 ```
 
 **To verify blockers are complete before starting:**
+
 ```bash
 for dep in 001 002 003; do
   [ -f "todos/${dep}-complete-*.md" ] || echo "Issue $dep not complete"
@@ -153,18 +164,21 @@ done
 **By:** Claude Code / Developer Name
 
 **Actions:**
+
 - Specific changes made (include file:line references)
 - Commands executed
 - Tests run
 - Results of investigation
 
 **Learnings:**
+
 - What worked / what didn't
 - Patterns discovered
 - Key insights for future work
 ```
 
 Work logs serve as:
+
 - Historical record of investigation
 - Documentation of approaches attempted
 - Knowledge sharing for team
@@ -183,17 +197,18 @@ Work logs serve as:
 
 ## Integration with Development Workflows
 
-| Trigger | Flow | Tool |
-|---------|------|------|
-| Code review | `/ce:review` → Findings → `/triage` → Todos | Review agent + skill |
-| PR comments | `/resolve_pr_parallel` → Individual fixes → Todos | gh CLI + skill |
-| Code TODOs | `/resolve-todo-parallel` → Fixes + Complex todos | Agent + skill |
-| Planning | Brainstorm → Create todo → Work → Complete | Skill |
-| Feedback | Discussion → Create todo → Triage → Work | Skill + slash |
+| Trigger     | Flow                                              | Tool                 |
+| ----------- | ------------------------------------------------- | -------------------- |
+| Code review | `/ce:review` → Findings → `/triage` → Todos       | Review agent + skill |
+| PR comments | `/resolve_pr_parallel` → Individual fixes → Todos | gh CLI + skill       |
+| Code TODOs  | `/resolve-todo-parallel` → Fixes + Complex todos  | Agent + skill        |
+| Planning    | Brainstorm → Create todo → Work → Complete        | Skill                |
+| Feedback    | Discussion → Create todo → Triage → Work          | Skill + slash        |
 
 ## Quick Reference Commands
 
 **Finding work:**
+
 ```bash
 # List highest priority unblocked work
 grep -l 'dependencies: \[\]' todos/*-ready-p1-*.md
@@ -211,6 +226,7 @@ done
 ```
 
 **Dependency management:**
+
 ```bash
 # What blocks this todo?
 grep "^dependencies:" todos/003-*.md
@@ -220,6 +236,7 @@ grep -l 'dependencies:.*"002"' todos/*.md
 ```
 
 **Searching:**
+
 ```bash
 # Search by tag
 grep -l "tags:.*rails" todos/*.md
@@ -234,18 +251,21 @@ grep -r "payment" todos/
 ## Key Distinctions
 
 **File-todos system (this skill):**
+
 - Markdown files in `todos/` directory
 - Development/project tracking
 - Standalone markdown files with YAML frontmatter
 - Used by humans and agents
 
 **Rails Todo model:**
+
 - Database model in `app/models/todo.rb`
 - User-facing feature in the application
 - Active Record CRUD operations
 - Different from this file-based system
 
 **TodoWrite tool:**
+
 - In-memory task tracking during agent sessions
 - Temporary tracking for single conversation
 - Not persisted to disk

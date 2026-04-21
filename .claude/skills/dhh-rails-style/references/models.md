@@ -1,6 +1,7 @@
 # Models - DHH Rails Style
 
 <model_concerns>
+
 ## Concerns for Horizontal Behavior
 
 Models heavily use concerns. A typical Card model includes 14+ concerns:
@@ -31,6 +32,7 @@ Each concern is self-contained with associations, scopes, and methods.
 </model_concerns>
 
 <state_records>
+
 ## State as Records, Not Booleans
 
 Instead of boolean columns, create separate records:
@@ -59,12 +61,14 @@ end
 ```
 
 **Benefits:**
+
 - Automatic timestamps (when it happened)
 - Track who made changes
 - Easy filtering via joins and `where.missing`
 - Enables rich UI showing when/who
 
 **In the model:**
+
 ```ruby
 module Closeable
   extend ActiveSupport::Concern
@@ -88,10 +92,12 @@ end
 ```
 
 **Querying:**
+
 ```ruby
 Card.joins(:closure)         # closed cards
 Card.where.missing(:closure) # open cards
 ```
+
 </state_records>
 
 <callbacks>
@@ -100,11 +106,13 @@ Card.where.missing(:closure) # open cards
 Only 38 callback occurrences across 30 files in Fizzy. Guidelines:
 
 **Use for:**
+
 - `after_commit` for async work
 - `before_save` for derived data
 - `after_create_commit` for side effects
 
 **Avoid:**
+
 - Complex callback chains
 - Business logic in callbacks
 - Synchronous external calls
@@ -120,6 +128,7 @@ class Card < ApplicationRecord
     end
 end
 ```
+
 </callbacks>
 
 <scopes>
@@ -142,6 +151,7 @@ class Card < ApplicationRecord
   scope :sorted_by, ->(column, direction = :asc) { order(column => direction) }
 end
 ```
+
 </scopes>
 
 <poros>
@@ -182,9 +192,11 @@ end
 </poros>
 
 <verbs_predicates>
+
 ## Method Naming
 
 **Verbs** - Actions that change state:
+
 ```ruby
 card.close
 card.reopen
@@ -195,6 +207,7 @@ board.archive
 ```
 
 **Predicates** - Queries derived from state:
+
 ```ruby
 card.closed?    # closure.present?
 card.golden?    # goldness.present?
@@ -202,6 +215,7 @@ board.published?
 ```
 
 **Avoid** generic setters:
+
 ```ruby
 # Bad
 card.set_closed(true)
@@ -211,9 +225,11 @@ card.update_golden_status(false)
 card.close
 card.ungild
 ```
+
 </verbs_predicates>
 
 <validation_philosophy>
+
 ## Validation Philosophy
 
 Minimal validations on models. Use contextual validations on form/operation objects:
@@ -241,14 +257,17 @@ end
 ```
 
 **Prefer database constraints** over model validations for data integrity:
+
 ```ruby
 # migration
 add_index :users, :email, unique: true
 add_foreign_key :cards, :boards
 ```
+
 </validation_philosophy>
 
 <error_handling>
+
 ## Let It Crash Philosophy
 
 Use bang methods that raise exceptions on failure:
@@ -270,6 +289,7 @@ Let errors propagate naturally. Rails handles ActiveRecord::RecordInvalid with 4
 </error_handling>
 
 <default_values>
+
 ## Default Values with Lambdas
 
 Use lambda defaults for associations with Current:
@@ -289,9 +309,11 @@ Lambdas ensure dynamic resolution at creation time.
 </default_values>
 
 <rails_71_patterns>
+
 ## Rails 7.1+ Model Patterns
 
 **Normalizes** - clean data before validation:
+
 ```ruby
 class User < ApplicationRecord
   normalizes :email, with: ->(email) { email.strip.downcase }
@@ -300,6 +322,7 @@ end
 ```
 
 **Delegated Types** - replace polymorphic associations:
+
 ```ruby
 class Message < ApplicationRecord
   delegated_type :messageable, types: %w[Comment Reply Announcement]
@@ -312,6 +335,7 @@ Message.comments        # scope for Comment messages
 ```
 
 **Store Accessor** - structured JSON storage:
+
 ```ruby
 class User < ApplicationRecord
   store :settings, accessors: [:theme, :notifications_enabled], coder: JSON
@@ -320,9 +344,11 @@ end
 user.theme = "dark"
 user.notifications_enabled = true
 ```
+
 </rails_71_patterns>
 
 <concern_guidelines>
+
 ## Concern Guidelines
 
 - **50-150 lines** per concern (most are ~100)
@@ -332,6 +358,7 @@ user.notifications_enabled = true
 - **Not for mere organization** - create when genuine reuse needed
 
 **Touch chains** for cache invalidation:
+
 ```ruby
 class Comment < ApplicationRecord
   belongs_to :card, touch: true
@@ -345,6 +372,7 @@ end
 When comment updates, card's `updated_at` changes, which cascades to board.
 
 **Transaction wrapping** for related updates:
+
 ```ruby
 class Card < ApplicationRecord
   def close(creator: Current.user)
@@ -356,4 +384,5 @@ class Card < ApplicationRecord
   end
 end
 ```
+
 </concern_guidelines>

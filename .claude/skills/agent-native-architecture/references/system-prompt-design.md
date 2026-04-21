@@ -8,20 +8,23 @@ How to write system prompts for prompt-native agents. The system prompt is where
 Each feature is a section of the system prompt that tells the agent how to behave.
 
 **Traditional approach:** Feature = function in codebase
+
 ```typescript
 function processFeedback(message) {
-  const category = categorize(message);
-  const priority = calculatePriority(message);
-  await store(message, category, priority);
-  if (priority > 3) await notify();
+  const category = categorize(message)
+  const priority = calculatePriority(message)
+  await store(message, category, priority)
+  if (priority > 3) await notify()
 }
 ```
 
 **Prompt-native approach:** Feature = section in system prompt
+
 ```markdown
 ## Feedback Processing
 
 When someone shares feedback:
+
 1. Read the message to understand what they're saying
 2. Rate importance 1-5:
    - 5 (Critical): Blocking issues, data loss, security
@@ -34,6 +37,7 @@ When someone shares feedback:
 
 Use your judgment. Context matters.
 ```
+
 </principle>
 
 <structure>
@@ -72,6 +76,7 @@ You are [Name], [brief identity statement].
 
 [Explicit boundaries]
 ```
+
 </structure>
 
 <principle name="guide-not-micromanage">
@@ -80,8 +85,10 @@ You are [Name], [brief identity statement].
 Tell the agent what to achieve, not exactly how to do it.
 
 **Micromanaging (bad):**
+
 ```markdown
 When creating a summary:
+
 1. Use exactly 3 bullet points
 2. Each bullet under 20 words
 3. Use em-dashes for sub-points
@@ -90,8 +97,10 @@ When creating a summary:
 ```
 
 **Guiding (good):**
+
 ```markdown
 When creating summaries:
+
 - Be concise but complete
 - Highlight the most important points
 - Use your judgment about format
@@ -108,26 +117,31 @@ Trust the agent's intelligence. It knows how to communicate.
 Instead of rules, provide criteria for making decisions.
 
 **Rules (rigid):**
+
 ```markdown
 If the message contains "bug", set importance to 4.
 If the message contains "crash", set importance to 5.
 ```
 
 **Judgment criteria (flexible):**
+
 ```markdown
 ## Importance Rating
 
 Rate importance based on:
+
 - **Impact**: How many users affected? How severe?
 - **Urgency**: Is this blocking? Time-sensitive?
 - **Actionability**: Can we actually fix this?
 - **Evidence**: Video/screenshots vs vague description
 
 Examples:
+
 - "App crashes when I tap submit" → 4-5 (critical, reproducible)
 - "The button color seems off" → 2 (cosmetic, non-blocking)
 - "Video walkthrough with 15 timestamped issues" → 5 (high-quality evidence)
 ```
+
 </principle>
 
 <principle name="context-windows">
@@ -136,24 +150,29 @@ Examples:
 The agent sees: system prompt + recent messages + tool results. Design for this.
 
 **Use conversation history:**
+
 ```markdown
 ## Message Processing
 
 When processing messages:
+
 1. Check if this relates to recent conversation
 2. If someone is continuing a previous thread, maintain context
 3. Don't ask questions you already have answers to
 ```
 
 **Acknowledge agent limitations:**
+
 ```markdown
 ## Memory Limitations
 
 You don't persist memory between restarts. Use the memory server:
+
 - Before responding, check memory.recall for relevant context
 - After important decisions, use memory.store to remember
 - Store conversation threads, not individual messages
 ```
+
 </principle>
 
 <example name="feedback-bot">
@@ -201,7 +220,8 @@ The site should look professional and be easy to scan.
 ## Message Deduplication
 
 Before processing any message:
-1. Check memory.recall(key: "processed_{messageId}")
+
+1. Check memory.recall(key: "processed\_{messageId}")
 2. Skip if already processed
 3. After processing, store the key
 
@@ -219,6 +239,7 @@ Before processing any message:
 - Don't ignore feedback even if it seems minor
 - Don't repeat yourself—vary acknowledgments
 ```
+
 </example>
 
 <iteration>
@@ -247,4 +268,4 @@ No code changes. No recompilation. Just prose.
 - [ ] Tone guidance
 - [ ] Tool usage guidance (when to use each)
 - [ ] Memory/context handling
-</checklist>
+      </checklist>

@@ -12,6 +12,7 @@ Intelligent automation system that coordinates, validates, and learns from Claud
 This skill provides a comprehensive hook system that automatically manages development operations, coordinates swarm agents, maintains session state, and continuously learns from coding patterns. It enables automated agent assignment, code formatting, performance tracking, and cross-session memory persistence.
 
 **Key Capabilities:**
+
 - **Pre-Operation Hooks**: Validate, prepare, and auto-assign agents before operations
 - **Post-Operation Hooks**: Format, analyze, and train patterns after operations
 - **Session Management**: Persist state, restore context, generate summaries
@@ -23,11 +24,13 @@ This skill provides a comprehensive hook system that automatically manages devel
 ## Prerequisites
 
 **Required:**
+
 - Claude Flow CLI installed (`npm install -g claude-flow@alpha`)
 - Claude Code with hooks enabled
 - `.claude/settings.json` with hook configurations
 
 **Optional:**
+
 - MCP servers configured (claude-flow, ruv-swarm, flow-nexus)
 - Git repository for version control
 - Testing framework for quality verification
@@ -42,6 +45,7 @@ npx claude-flow init --hooks
 ```
 
 This creates:
+
 - `.claude/settings.json` with pre-configured hooks
 - Hook command documentation in `.claude/commands/hooks/`
 - Default hook handlers for common operations
@@ -70,6 +74,7 @@ npx claude-flow hook session-end --session-id "dev-session" --export-metrics
 Hooks that execute BEFORE operations to prepare and validate:
 
 **pre-edit** - Validate and assign agents before file modifications
+
 ```bash
 npx claude-flow hook pre-edit [options]
 
@@ -87,12 +92,14 @@ Examples:
 ```
 
 **Features:**
+
 - Auto agent assignment based on file type
 - Syntax validation to prevent broken code
 - Conflict detection for concurrent edits
 - Automatic file backups for safety
 
 **pre-bash** - Check command safety and resource requirements
+
 ```bash
 npx claude-flow hook pre-bash --command <cmd>
 
@@ -108,12 +115,14 @@ Examples:
 ```
 
 **Features:**
+
 - Command safety validation
 - Resource requirement estimation
 - Destructive command confirmation
 - Permission checks
 
 **pre-task** - Auto-spawn agents and prepare for complex tasks
+
 ```bash
 npx claude-flow hook pre-task [options]
 
@@ -131,12 +140,14 @@ Examples:
 ```
 
 **Features:**
+
 - Automatic agent spawning based on task analysis
 - Memory loading for context continuity
 - Topology optimization for task structure
 - Complexity estimation and time prediction
 
 **pre-search** - Prepare and optimize search operations
+
 ```bash
 npx claude-flow hook pre-search --query <query>
 
@@ -150,6 +161,7 @@ Examples:
 ```
 
 **Features:**
+
 - Cache checking for faster results
 - Query optimization
 - Search pattern improvement
@@ -159,6 +171,7 @@ Examples:
 Hooks that execute AFTER operations to process and learn:
 
 **post-edit** - Auto-format, validate, and update memory
+
 ```bash
 npx claude-flow hook post-edit [options]
 
@@ -176,12 +189,14 @@ Examples:
 ```
 
 **Features:**
+
 - Language-specific auto-formatting (Prettier, Black, gofmt)
 - Memory storage for edit context and decisions
 - Neural pattern training for continuous improvement
 - Output validation with linting
 
 **post-bash** - Log execution and update metrics
+
 ```bash
 npx claude-flow hook post-bash --command <cmd>
 
@@ -196,12 +211,14 @@ Examples:
 ```
 
 **Features:**
+
 - Command execution logging
 - Performance metric tracking
 - Result storage for analysis
 - Error pattern detection
 
 **post-task** - Performance analysis and decision storage
+
 ```bash
 npx claude-flow hook post-task [options]
 
@@ -219,12 +236,14 @@ Examples:
 ```
 
 **Features:**
+
 - Execution time and token usage measurement
 - Decision and implementation choice recording
 - Neural learning pattern export
 - Completion report generation
 
 **post-search** - Cache results and improve patterns
+
 ```bash
 npx claude-flow hook post-search --query <query> --results <path>
 
@@ -239,6 +258,7 @@ Examples:
 ```
 
 **Features:**
+
 - Result caching for faster subsequent searches
 - Search pattern improvement
 - Relevance scoring
@@ -248,6 +268,7 @@ Examples:
 Hooks that coordinate with MCP swarm tools:
 
 **mcp-initialized** - Persist swarm configuration
+
 ```bash
 npx claude-flow hook mcp-initialized --swarm-id <id>
 
@@ -258,6 +279,7 @@ Features:
 ```
 
 **agent-spawned** - Update agent roster and memory
+
 ```bash
 npx claude-flow hook agent-spawned --agent-id <id> --type <type>
 
@@ -268,6 +290,7 @@ Features:
 ```
 
 **task-orchestrated** - Monitor task progress
+
 ```bash
 npx claude-flow hook task-orchestrated --task-id <id>
 
@@ -278,6 +301,7 @@ Features:
 ```
 
 **neural-trained** - Save pattern improvements
+
 ```bash
 npx claude-flow hook neural-trained --pattern <name>
 
@@ -290,6 +314,7 @@ Features:
 #### Memory Coordination Hooks
 
 **memory-write** - Triggered when agents write to coordination memory
+
 ```bash
 Features:
 - Validate memory key format
@@ -299,6 +324,7 @@ Features:
 ```
 
 **memory-read** - Triggered when agents read from coordination memory
+
 ```bash
 Features:
 - Log access patterns
@@ -308,6 +334,7 @@ Features:
 ```
 
 **memory-sync** - Synchronize memory across swarm agents
+
 ```bash
 npx claude-flow hook memory-sync --namespace <ns>
 
@@ -321,6 +348,7 @@ Features:
 #### Session Hooks
 
 **session-start** - Initialize new session
+
 ```bash
 npx claude-flow hook session-start --session-id <id>
 
@@ -337,6 +365,7 @@ Features:
 ```
 
 **session-restore** - Load previous session state
+
 ```bash
 npx claude-flow hook session-restore --session-id <id>
 
@@ -351,12 +380,14 @@ Examples:
 ```
 
 **Features:**
+
 - Load previous session context
 - Restore memory state and decisions
 - Reconfigure agents to previous state
 - Resume in-progress tasks
 
 **session-end** - Cleanup and persist session state
+
 ```bash
 npx claude-flow hook session-end [options]
 
@@ -374,12 +405,14 @@ Examples:
 ```
 
 **Features:**
+
 - Save current context and progress
 - Export session metrics (duration, commands, tokens, files)
 - Generate work summary with decisions and next steps
 - Cleanup temporary files and optimize storage
 
 **notify** - Custom notifications with swarm status
+
 ```bash
 npx claude-flow hook notify --message <msg>
 
@@ -395,6 +428,7 @@ Examples:
 ```
 
 **Features:**
+
 - Send notifications to coordination system
 - Include swarm status and metrics
 - Broadcast to all agents
@@ -412,33 +446,41 @@ Edit `.claude/settings.json` to configure hooks:
     "PreToolUse": [
       {
         "matcher": "^(Write|Edit|MultiEdit)$",
-        "hooks": [{
-          "type": "command",
-          "command": "npx claude-flow hook pre-edit --file '${tool.params.file_path}' --memory-key 'swarm/editor/current'"
-        }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx claude-flow hook pre-edit --file '${tool.params.file_path}' --memory-key 'swarm/editor/current'"
+          }
+        ]
       },
       {
         "matcher": "^Bash$",
-        "hooks": [{
-          "type": "command",
-          "command": "npx claude-flow hook pre-bash --command '${tool.params.command}'"
-        }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx claude-flow hook pre-bash --command '${tool.params.command}'"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "^(Write|Edit|MultiEdit)$",
-        "hooks": [{
-          "type": "command",
-          "command": "npx claude-flow hook post-edit --file '${tool.params.file_path}' --memory-key 'swarm/editor/complete' --auto-format --train-patterns"
-        }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx claude-flow hook post-edit --file '${tool.params.file_path}' --memory-key 'swarm/editor/complete' --auto-format --train-patterns"
+          }
+        ]
       },
       {
         "matcher": "^Bash$",
-        "hooks": [{
-          "type": "command",
-          "command": "npx claude-flow hook post-bash --command '${tool.params.command}' --update-metrics"
-        }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx claude-flow hook post-bash --command '${tool.params.command}' --update-metrics"
+          }
+        ]
       }
     ]
   }
@@ -670,6 +712,7 @@ All hooks follow a standardized memory coordination pattern:
 #### Three-Phase Memory Protocol
 
 **Phase 1: STATUS** - Hook starts
+
 ```javascript
 mcp__claude-flow__memory_usage {
   action: "store",
@@ -685,6 +728,7 @@ mcp__claude-flow__memory_usage {
 ```
 
 **Phase 2: PROGRESS** - Hook processes
+
 ```javascript
 mcp__claude-flow__memory_usage {
   action: "store",
@@ -699,6 +743,7 @@ mcp__claude-flow__memory_usage {
 ```
 
 **Phase 3: COMPLETE** - Hook finishes
+
 ```javascript
 mcp__claude-flow__memory_usage {
   action: "store",
@@ -719,6 +764,7 @@ mcp__claude-flow__memory_usage {
 Hooks return JSON responses to control operation flow:
 
 #### Continue Response
+
 ```json
 {
   "continue": true,
@@ -732,6 +778,7 @@ Hooks return JSON responses to control operation flow:
 ```
 
 #### Block Response
+
 ```json
 {
   "continue": false,
@@ -745,14 +792,12 @@ Hooks return JSON responses to control operation flow:
 ```
 
 #### Warning Response
+
 ```json
 {
   "continue": true,
   "reason": "Syntax valid but complexity high",
-  "warnings": [
-    "Cyclomatic complexity: 15 (threshold: 10)",
-    "Consider refactoring for better maintainability"
-  ],
+  "warnings": ["Cyclomatic complexity: 15 (threshold: 10)", "Consider refactoring for better maintainability"],
   "metadata": {
     "complexity": 15,
     "threshold": 10
@@ -765,6 +810,7 @@ Hooks return JSON responses to control operation flow:
 Hooks can integrate with Git operations for quality control:
 
 #### Pre-Commit Hook
+
 ```bash
 # Add to .git/hooks/pre-commit or use husky
 
@@ -794,6 +840,7 @@ exit $?
 ```
 
 #### Post-Commit Hook
+
 ```bash
 # Add to .git/hooks/post-commit
 
@@ -810,6 +857,7 @@ npx claude-flow hook notify \
 ```
 
 #### Pre-Push Hook
+
 ```bash
 # Add to .git/hooks/pre-push
 
@@ -920,37 +968,34 @@ module.exports = {
   matcher: /\.(ts|js)$/,
 
   async execute(context) {
-    const { file, content } = context;
+    const { file, content } = context
 
     // Custom validation logic
-    const complexity = await analyzeComplexity(content);
-    const securityIssues = await scanSecurity(content);
+    const complexity = await analyzeComplexity(content)
+    const securityIssues = await scanSecurity(content)
 
     // Store in memory
     await storeInMemory({
       key: `quality/${file}`,
       value: { complexity, securityIssues }
-    });
+    })
 
     // Return decision
     if (complexity > 15 || securityIssues.length > 0) {
       return {
         continue: false,
         reason: 'Quality checks failed',
-        warnings: [
-          `Complexity: ${complexity} (max: 15)`,
-          `Security issues: ${securityIssues.length}`
-        ]
-      };
+        warnings: [`Complexity: ${complexity} (max: 15)`, `Security issues: ${securityIssues.length}`]
+      }
     }
 
     return {
       continue: true,
       reason: 'Quality checks passed',
       metadata: { complexity, securityIssues: 0 }
-    };
+    }
   }
-};
+}
 ```
 
 #### Register Custom Hook
@@ -1157,6 +1202,7 @@ npx claude-flow hook validate-config
 ### Troubleshooting
 
 #### Hooks Not Executing
+
 - Verify `.claude/settings.json` syntax
 - Check hook matcher patterns
 - Enable debug mode
@@ -1164,18 +1210,21 @@ npx claude-flow hook validate-config
 - Ensure claude-flow CLI is in PATH
 
 #### Hook Timeouts
+
 - Increase timeout values in configuration
 - Make hooks asynchronous for heavy operations
 - Optimize hook logic
 - Check network connectivity for MCP tools
 
 #### Memory Issues
+
 - Set appropriate TTLs for memory keys
 - Clean up old memory entries
 - Use memory namespaces effectively
 - Monitor memory usage
 
 #### Performance Problems
+
 - Profile hook execution times
 - Use caching for repeated operations
 - Batch operations when possible
@@ -1193,6 +1242,7 @@ npx claude-flow hook validate-config
 ### Integration with Other Skills
 
 This skill works seamlessly with:
+
 - **SPARC Methodology** - Hooks enhance SPARC workflows
 - **Pair Programming** - Automated quality in pairing sessions
 - **Verification Quality** - Truth-score validation in hooks

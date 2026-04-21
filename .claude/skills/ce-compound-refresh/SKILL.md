@@ -1,7 +1,7 @@
 ---
 name: ce:compound-refresh
 description: Refresh stale or drifting learnings and pattern docs in docs/solutions/ by reviewing, updating, replacing, or archiving them against the current codebase. Use after refactors, migrations, dependency upgrades, or when a retrieved learning feels outdated or wrong. Also use when reviewing docs/solutions/ for accuracy, when a recently solved problem contradicts an existing learning, or when pattern docs no longer reflect current code.
-argument-hint: "[mode:autonomous] [optional: scope hint]"
+argument-hint: '[mode:autonomous] [optional: scope hint]'
 disable-model-invocation: true
 ---
 
@@ -13,10 +13,10 @@ Maintain the quality of `docs/solutions/` over time. This workflow reviews exist
 
 Check if `$ARGUMENTS` contains `mode:autonomous`. If present, strip it from arguments (use the remainder as a scope hint) and run in **autonomous mode**.
 
-| Mode | When | Behavior |
-|------|------|----------|
-| **Interactive** (default) | User is present and can answer questions | Ask for decisions on ambiguous cases, confirm actions |
-| **Autonomous** | `mode:autonomous` in arguments | No user interaction. Apply all unambiguous actions (Keep, Update, auto-Archive, Replace with sufficient evidence). Mark ambiguous cases as stale. Generate a summary report at the end. |
+| Mode                      | When                                     | Behavior                                                                                                                                                                                |
+| ------------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Interactive** (default) | User is present and can answer questions | Ask for decisions on ambiguous cases, confirm actions                                                                                                                                   |
+| **Autonomous**            | `mode:autonomous` in arguments           | No user interaction. Apply all unambiguous actions (Keep, Update, auto-Archive, Replace with sufficient evidence). Mark ambiguous cases as stale. Generate a summary report at the end. |
 
 ### Autonomous mode rules
 
@@ -61,12 +61,12 @@ If the user starts by naming a pattern doc, you may begin there to understand th
 
 For each candidate artifact, classify it into one of four outcomes:
 
-| Outcome | Meaning | Default action |
-|---------|---------|----------------|
-| **Keep** | Still accurate and still useful | No file edit by default; report that it was reviewed and remains trustworthy |
-| **Update** | Core solution is still correct, but references drifted | Apply evidence-backed in-place edits |
-| **Replace** | The old artifact is now misleading, but there is a known better replacement | Create a trustworthy successor or revised pattern, then mark/archive the old artifact as needed |
-| **Archive** | No longer useful or applicable | Move the obsolete artifact to `docs/solutions/_archived/` with archive metadata when appropriate |
+| Outcome     | Meaning                                                                     | Default action                                                                                   |
+| ----------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Keep**    | Still accurate and still useful                                             | No file edit by default; report that it was reviewed and remains trustworthy                     |
+| **Update**  | Core solution is still correct, but references drifted                      | Apply evidence-backed in-place edits                                                             |
+| **Replace** | The old artifact is now misleading, but there is a known better replacement | Create a trustworthy successor or revised pattern, then mark/archive the old artifact as needed  |
+| **Archive** | No longer useful or applicable                                              | Move the obsolete artifact to `docs/solutions/_archived/` with archive metadata when appropriate |
 
 ## Core Rules
 
@@ -120,11 +120,11 @@ Before asking the user to classify anything:
 
 ### Route by Scope
 
-| Scope | When to use it | Interaction style |
-|-------|----------------|-------------------|
-| **Focused** | 1-2 likely files or user named a specific doc | Investigate directly, then present a recommendation |
-| **Batch** | Up to ~8 mostly independent docs | Investigate first, then present grouped recommendations |
-| **Broad** | 9+ docs, ambiguous, or repo-wide stale-doc sweep | Triage first, then investigate in batches |
+| Scope       | When to use it                                   | Interaction style                                       |
+| ----------- | ------------------------------------------------ | ------------------------------------------------------- |
+| **Focused** | 1-2 likely files or user named a specific doc    | Investigate directly, then present a recommendation     |
+| **Batch**   | Up to ~8 mostly independent docs                 | Investigate first, then present grouped recommendations |
+| **Broad**   | 9+ docs, ambiguous, or repo-wide stale-doc sweep | Triage first, then investigate in batches               |
 
 ### Broad Scope Triage
 
@@ -175,6 +175,7 @@ The critical distinction is whether the drift is **cosmetic** (references moved 
 **The boundary:** if you find yourself rewriting the solution section or changing what the learning recommends, stop — that is Replace, not Update.
 
 **Memory-sourced drift signals** are supplementary, not primary. A memory note describing a different approach does not alone justify Replace or Archive. Use memory signals to:
+
 - Corroborate codebase-sourced drift (strengthens the case for Replace)
 - Prompt deeper investigation when codebase evidence is borderline
 - Add context to the evidence report ("(auto memory [claude]) notes suggest approach X may have changed since this learning was written")
@@ -201,12 +202,12 @@ A pattern doc with no clear supporting learnings is a stale signal — investiga
 
 Use subagents for context isolation when investigating multiple artifacts — not just because the task sounds complex. Choose the lightest approach that fits:
 
-| Approach | When to use |
-|----------|-------------|
-| **Main thread only** | Small scope, short docs |
-| **Sequential subagents** | 1-2 artifacts with many supporting files to read |
-| **Parallel subagents** | 3+ truly independent artifacts with low overlap |
-| **Batched subagents** | Broad sweeps — narrow scope first, then investigate in batches |
+| Approach                 | When to use                                                    |
+| ------------------------ | -------------------------------------------------------------- |
+| **Main thread only**     | Small scope, short docs                                        |
+| **Sequential subagents** | 1-2 artifacts with many supporting files to read               |
+| **Parallel subagents**   | 3+ truly independent artifacts with low overlap                |
+| **Batched subagents**    | Broad sweeps — narrow scope first, then investigate in batches |
 
 **When spawning any subagent, include this instruction in its task prompt:**
 
@@ -245,9 +246,9 @@ By the time you identify a Replace candidate, Phase 1 investigation has already 
 
 - **Sufficient evidence** — you understand both what the old learning recommended AND what the current approach is. The investigation found the current code patterns, the new file locations, the changed architecture. → Proceed to write the replacement (see Phase 4 Replace Flow).
 - **Insufficient evidence** — the drift is so fundamental that you cannot confidently document the current approach. The entire subsystem was replaced, or the new architecture is too complex to understand from a file scan alone. → Mark as stale in place:
-   - Add `status: stale`, `stale_reason: [what you found]`, `stale_date: YYYY-MM-DD` to the frontmatter
-   - Report what evidence you found and what is missing
-   - Recommend the user run `ce:compound` after their next encounter with that area, when they have fresh problem-solving context
+  - Add `status: stale`, `stale_reason: [what you found]`, `stale_date: YYYY-MM-DD` to the frontmatter
+  - Report what evidence you found and what is missing
+  - Recommend the user run `ce:compound` after their next encounter with that area, when they have fresh problem-solving context
 
 ### Archive
 
@@ -453,6 +454,7 @@ Marked stale: S
 ```
 
 Then for EVERY file processed, list:
+
 - The file path
 - The classification (Keep/Update/Replace/Archive/Stale)
 - What evidence was found -- tag any memory-sourced findings with "(auto memory [claude])" to distinguish them from codebase-sourced evidence
@@ -467,12 +469,14 @@ In autonomous mode, the report is the sole deliverable — there is no user pres
 Split actions into two sections:
 
 **Applied** (writes that succeeded):
+
 - For each **Updated** file: the file path, what references were fixed, and why
 - For each **Replaced** file: what the old learning recommended vs what the current code does, and the path to the new successor
 - For each **Archived** file: the file path and what referenced code/workflow is gone
 - For each **Marked stale** file: the file path, what evidence was found, and why it was ambiguous
 
 **Recommended** (actions that could not be written — e.g., permission denied):
+
 - Same detail as above, but framed as recommendations for a human to apply
 - Include enough context that the user can apply the change manually or re-run the skill interactively
 
@@ -485,6 +489,7 @@ After all actions are executed and the report is generated, handle committing th
 ### Detect git context
 
 Before offering options, check:
+
 1. Which branch is currently checked out (main/master vs feature branch)
 2. Whether the working tree has other uncommitted changes beyond what compound-refresh modified
 3. Recent commit messages to match the repo's commit style
@@ -493,11 +498,11 @@ Before offering options, check:
 
 Use sensible defaults — no user to ask:
 
-| Context | Default action |
-|---------|---------------|
-| On main/master | Create a branch named for what was refreshed (e.g., `docs/refresh-auth-and-ci-learnings`), commit, attempt to open a PR. If PR creation fails, report the branch name. |
-| On a feature branch | Commit as a separate commit on the current branch |
-| Git operations fail | Include the recommended git commands in the report and continue |
+| Context             | Default action                                                                                                                                                         |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| On main/master      | Create a branch named for what was refreshed (e.g., `docs/refresh-auth-and-ci-learnings`), commit, attempt to open a PR. If PR creation fails, report the branch name. |
+| On a feature branch | Commit as a separate commit on the current branch                                                                                                                      |
+| Git operations fail | Include the recommended git commands in the report and continue                                                                                                        |
 
 Stage only the files that compound-refresh modified — not other dirty files in the working tree.
 
@@ -525,6 +530,7 @@ First, run `git branch --show-current` to determine the current branch. Then pre
 ### Commit message
 
 Write a descriptive commit message that:
+
 - Summarizes what was refreshed (e.g., "update 3 stale learnings, archive 1 obsolete doc")
 - Follows the repo's existing commit conventions (check recent git log for style)
 - Is succinct — the details are in the changed files themselves

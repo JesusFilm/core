@@ -1,7 +1,7 @@
 ---
 name: ce:work
 description: Execute work plans efficiently while maintaining quality and finishing features
-argument-hint: "[plan file, specification, or todo file path]"
+argument-hint: '[plan file, specification, or todo file path]'
 ---
 
 # Work Plan Execution Command
@@ -21,7 +21,6 @@ This command takes a work document (plan, specification, or todo file) and execu
 ### Phase 1: Quick Start
 
 1. **Read Plan and Clarify**
-
    - Read the work document completely
    - Treat the plan as a decision artifact, not an execution script
    - If the plan includes sections such as `Implementation Units`, `Work Breakdown`, `Requirements Trace`, `Files`, `Test Scenarios`, or `Verification`, use those as the primary source material for execution
@@ -56,13 +55,16 @@ This command takes a work document (plan, specification, or todo file) and execu
    **If on the default branch**, choose how to proceed:
 
    **Option A: Create a new branch**
+
    ```bash
    git pull origin [default_branch]
    git checkout -b feature-branch-name
    ```
+
    Use a meaningful name based on the work (e.g., `feat/user-authentication`, `fix/email-validation`).
 
    **Option B: Use a worktree (recommended for parallel development)**
+
    ```bash
    skill: git-worktree
    # The skill will create a new branch from the default branch in an isolated worktree
@@ -94,10 +96,10 @@ This command takes a work document (plan, specification, or todo file) and execu
 
    After creating the task list, decide how to execute based on the plan's size and dependency structure:
 
-   | Strategy | When to use |
-   |----------|-------------|
-   | **Inline** | 1-2 small tasks, or tasks needing user interaction mid-flight |
-   | **Serial subagents** | 3+ tasks with dependencies between them. Each subagent gets a fresh context window focused on one unit — prevents context degradation across many tasks |
+   | Strategy               | When to use                                                                                                                                                                              |
+   | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | **Inline**             | 1-2 small tasks, or tasks needing user interaction mid-flight                                                                                                                            |
+   | **Serial subagents**   | 3+ tasks with dependencies between them. Each subagent gets a fresh context window focused on one unit — prevents context degradation across many tasks                                  |
    | **Parallel subagents** | 3+ tasks where some units have no shared dependencies and touch non-overlapping files. Dispatch independent units simultaneously, run dependent units after their prerequisites complete |
 
    **Subagent dispatch** uses your available subagent or task spawning mechanism. For each unit, give the subagent:
@@ -138,35 +140,35 @@ This command takes a work document (plan, specification, or todo file) and execu
 
    **System-Wide Test Check** — Before marking a task done, pause and ask:
 
-   | Question | What to do |
-   |----------|------------|
-   | **What fires when this runs?** Callbacks, middleware, observers, event handlers — trace two levels out from your change. | Read the actual code (not docs) for callbacks on models you touch, middleware in the request chain, `after_*` hooks. |
-   | **Do my tests exercise the real chain?** If every dependency is mocked, the test proves your logic works *in isolation* — it says nothing about the interaction. | Write at least one integration test that uses real objects through the full callback/middleware chain. No mocks for the layers that interact. |
+   | Question                                                                                                                                                                                       | What to do                                                                                                                                    |
+   | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+   | **What fires when this runs?** Callbacks, middleware, observers, event handlers — trace two levels out from your change.                                                                       | Read the actual code (not docs) for callbacks on models you touch, middleware in the request chain, `after_*` hooks.                          |
+   | **Do my tests exercise the real chain?** If every dependency is mocked, the test proves your logic works _in isolation_ — it says nothing about the interaction.                               | Write at least one integration test that uses real objects through the full callback/middleware chain. No mocks for the layers that interact. |
    | **Can failure leave orphaned state?** If your code persists state (DB row, cache, file) before calling an external service, what happens when the service fails? Does retry create duplicates? | Trace the failure path with real objects. If state is created before the risky call, test that failure cleans up or that retry is idempotent. |
-   | **What other interfaces expose this?** Mixins, DSLs, alternative entry points (Agent vs Chat vs ChatMethods). | Grep for the method/behavior in related classes. If parity is needed, add it now — not as a follow-up. |
-   | **Do error strategies align across layers?** Retry middleware + application fallback + framework error handling — do they conflict or create double execution? | List the specific error classes at each layer. Verify your rescue list matches what the lower layer actually raises. |
+   | **What other interfaces expose this?** Mixins, DSLs, alternative entry points (Agent vs Chat vs ChatMethods).                                                                                  | Grep for the method/behavior in related classes. If parity is needed, add it now — not as a follow-up.                                        |
+   | **Do error strategies align across layers?** Retry middleware + application fallback + framework error handling — do they conflict or create double execution?                                 | List the specific error classes at each layer. Verify your rescue list matches what the lower layer actually raises.                          |
 
    **When to skip:** Leaf-node changes with no callbacks, no state persistence, no parallel interfaces. If the change is purely additive (new helper method, new view partial), the check takes 10 seconds and the answer is "nothing fires, skip."
 
    **When this matters most:** Any change that touches models with callbacks, error handling with fallback/retry, or functionality exposed through multiple interfaces.
 
-
 2. **Incremental Commits**
 
    After completing each task, evaluate whether to create an incremental commit:
 
-   | Commit when... | Don't commit when... |
-   |----------------|---------------------|
-   | Logical unit complete (model, service, component) | Small part of a larger unit |
-   | Tests pass + meaningful progress | Tests failing |
-   | About to switch contexts (backend → frontend) | Purely scaffolding with no behavior |
-   | About to attempt risky/uncertain changes | Would need a "WIP" commit message |
+   | Commit when...                                    | Don't commit when...                |
+   | ------------------------------------------------- | ----------------------------------- |
+   | Logical unit complete (model, service, component) | Small part of a larger unit         |
+   | Tests pass + meaningful progress                  | Tests failing                       |
+   | About to switch contexts (backend → frontend)     | Purely scaffolding with no behavior |
+   | About to attempt risky/uncertain changes          | Would need a "WIP" commit message   |
 
    **Heuristic:** "Can I write a commit message that describes a complete, valuable change? If yes, commit. If the message would be 'WIP' or 'partial X', wait."
 
    If the plan has Implementation Units, use them as a starting guide for commit boundaries — but adapt based on what you find during implementation. A unit might need multiple commits if it's larger than expected, or small related units might land together. Use each unit's Goal to inform the commit message.
 
    **Commit workflow:**
+
    ```bash
    # 1. Verify tests pass (use project's test command)
    # Examples: bin/rails test, npm test, pytest, go test, etc.
@@ -183,7 +185,6 @@ This command takes a work document (plan, specification, or todo file) and execu
    **Note:** Incremental commits use clean conventional messages without attribution footers. The final Phase 4 commit/PR includes the full attribution.
 
 3. **Follow Existing Patterns**
-
    - The plan should reference similar code - read those files first
    - Match naming conventions exactly
    - Reuse existing components where possible
@@ -191,7 +192,6 @@ This command takes a work document (plan, specification, or todo file) and execu
    - When in doubt, grep for similar implementations
 
 4. **Test Continuously**
-
    - Run relevant tests after each significant change
    - Don't wait until the end to test
    - Fix failures immediately
@@ -209,13 +209,12 @@ This command takes a work document (plan, specification, or todo file) and execu
 6. **Figma Design Sync** (if applicable)
 
    For UI work with Figma designs:
-
    - Implement components following design specs
    - Use figma-design-sync agent iteratively to compare
    - Fix visual differences identified
    - Repeat until implementation matches design
 
-6. **Track Progress**
+7. **Track Progress**
    - Keep the task list updated as you complete tasks
    - Note any blockers or unexpected discoveries
    - Create new tasks if scope expands
@@ -285,16 +284,16 @@ This command takes a work document (plan, specification, or todo file) and execu
 
    **Fill in at commit/PR time:**
 
-   | Placeholder | Value | Example |
-   |-------------|-------|---------|
-   | Placeholder | Value | Example |
-   |-------------|-------|---------|
-   | `[MODEL]` | Model name | Claude Opus 4.6, GPT-5.4 |
-   | `[CONTEXT]` | Context window (if known) | 200K, 1M |
-   | `[THINKING]` | Thinking level (if known) | extended thinking |
-   | `[HARNESS]` | Tool running you | Claude Code, Codex, Gemini CLI |
-   | `[HARNESS_URL]` | Link to that tool | `https://claude.com/claude-code` |
-   | `[VERSION]` | `plugin.json` → `version` | 2.40.0 |
+   | Placeholder     | Value                     | Example                          |
+   | --------------- | ------------------------- | -------------------------------- |
+   | Placeholder     | Value                     | Example                          |
+   | -------------   | -------                   | ---------                        |
+   | `[MODEL]`       | Model name                | Claude Opus 4.6, GPT-5.4         |
+   | `[CONTEXT]`     | Context window (if known) | 200K, 1M                         |
+   | `[THINKING]`    | Thinking level (if known) | extended thinking                |
+   | `[HARNESS]`     | Tool running you          | Claude Code, Codex, Gemini CLI   |
+   | `[HARNESS_URL]` | Link to that tool         | `https://claude.com/claude-code` |
+   | `[VERSION]`     | `plugin.json` → `version` | 2.40.0                           |
 
    Subagents creating commits/PRs are equally responsible for accurate attribution.
 
@@ -303,19 +302,23 @@ This command takes a work document (plan, specification, or todo file) and execu
    For **any** design changes, new views, or UI modifications, you MUST capture and upload screenshots:
 
    **Step 1: Start dev server** (if not running)
+
    ```bash
    bin/dev  # Run in background
    ```
 
    **Step 2: Capture screenshots with agent-browser CLI**
+
    ```bash
    agent-browser open http://localhost:3000/[route]
    agent-browser snapshot -i
    agent-browser screenshot output.png
    ```
+
    See the `agent-browser` skill for detailed usage.
 
    **Step 3: Upload using imgup skill**
+
    ```bash
    skill: imgup
    # Then upload each screenshot:
@@ -380,6 +383,7 @@ This command takes a work document (plan, specification, or todo file) and execu
 4. **Update Plan Status**
 
    If the input document has YAML frontmatter with a `status` field, update it to `completed`:
+
    ```
    status: active  →  status: completed
    ```
@@ -400,12 +404,12 @@ For genuinely large plans where agents need to communicate with each other, chal
 
 ### When to Use Agent Teams vs Subagents
 
-| Agent Teams | Subagents (standard mode) |
-|-------------|---------------------------|
-| Agents need to discuss and challenge each other's approaches | Each task is independent — only the result matters |
-| Persistent specialized roles (e.g., dedicated tester running continuously) | Workers report back and finish |
-| 10+ tasks with complex cross-cutting coordination | 3-8 tasks with clear dependency chains |
-| User explicitly requests "swarm mode" or "agent teams" | Default for most plans |
+| Agent Teams                                                                | Subagents (standard mode)                          |
+| -------------------------------------------------------------------------- | -------------------------------------------------- |
+| Agents need to discuss and challenge each other's approaches               | Each task is independent — only the result matters |
+| Persistent specialized roles (e.g., dedicated tester running continuously) | Workers report back and finish                     |
+| 10+ tasks with complex cross-cutting coordination                          | 3-8 tasks with clear dependency chains             |
+| User explicitly requests "swarm mode" or "agent teams"                     | Default for most plans                             |
 
 Most plans should use subagent dispatch from standard mode. Agent teams add significant token cost and coordination overhead — use them when the inter-agent communication genuinely improves the outcome.
 

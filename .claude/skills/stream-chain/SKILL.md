@@ -51,17 +51,18 @@ claude-flow stream-chain run <prompt1> <prompt2> [...] [options]
 ```
 
 **Requirements:**
+
 - Minimum 2 prompts required
 - Each prompt becomes a step in the chain
 - Output flows sequentially through all steps
 
 ### Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--verbose` | Show detailed execution information | `false` |
-| `--timeout <seconds>` | Timeout per step | `30` |
-| `--debug` | Enable debug mode with full logging | `false` |
+| Option                | Description                         | Default |
+| --------------------- | ----------------------------------- | ------- |
+| `--verbose`           | Show detailed execution information | `false` |
+| `--timeout <seconds>` | Timeout per step                    | `30`    |
+| `--debug`             | Enable debug mode with full logging | `false` |
 
 ### How Context Flows
 
@@ -151,11 +152,13 @@ claude-flow stream-chain pipeline analysis
 ```
 
 **Workflow Steps:**
+
 1. **Structure Analysis**: Map directory structure and identify components
 2. **Issue Detection**: Find potential improvements and problems
 3. **Recommendations**: Generate actionable improvement report
 
 **Use Cases:**
+
 - New codebase onboarding
 - Technical debt assessment
 - Architecture review
@@ -170,11 +173,13 @@ claude-flow stream-chain pipeline refactor
 ```
 
 **Workflow Steps:**
+
 1. **Candidate Identification**: Find code needing refactoring
 2. **Prioritization**: Create ranked refactoring plan
 3. **Implementation**: Provide refactored code for top priorities
 
 **Use Cases:**
+
 - Technical debt reduction
 - Code quality improvement
 - Legacy code modernization
@@ -189,11 +194,13 @@ claude-flow stream-chain pipeline test
 ```
 
 **Workflow Steps:**
+
 1. **Coverage Analysis**: Identify areas lacking tests
 2. **Test Design**: Create test cases for critical functions
 3. **Implementation**: Generate unit tests with assertions
 
 **Use Cases:**
+
 - Increasing test coverage
 - TDD workflow support
 - Regression test creation
@@ -208,11 +215,13 @@ claude-flow stream-chain pipeline optimize
 ```
 
 **Workflow Steps:**
+
 1. **Profiling**: Identify performance bottlenecks
 2. **Strategy**: Analyze and suggest optimization approaches
 3. **Implementation**: Provide optimized code
 
 **Use Cases:**
+
 - Performance improvement
 - Resource optimization
 - Scalability enhancement
@@ -220,11 +229,11 @@ claude-flow stream-chain pipeline optimize
 
 ### Pipeline Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--verbose` | Show detailed execution | `false` |
-| `--timeout <seconds>` | Timeout per step | `30` |
-| `--debug` | Enable debug mode | `false` |
+| Option                | Description             | Default |
+| --------------------- | ----------------------- | ------- |
+| `--verbose`           | Show detailed execution | `false` |
+| `--timeout <seconds>` | Timeout per step        | `30`    |
+| `--debug`             | Enable debug mode       | `false` |
 
 ### Pipeline Examples
 
@@ -276,22 +285,12 @@ Define reusable pipelines in `.claude-flow/config.json`:
       "security": {
         "name": "Security Audit Pipeline",
         "description": "Comprehensive security analysis",
-        "prompts": [
-          "Scan codebase for security vulnerabilities",
-          "Categorize issues by severity (critical/high/medium/low)",
-          "Generate fixes with priority and implementation steps",
-          "Create security test suite"
-        ],
+        "prompts": ["Scan codebase for security vulnerabilities", "Categorize issues by severity (critical/high/medium/low)", "Generate fixes with priority and implementation steps", "Create security test suite"],
         "timeout": 45
       },
       "documentation": {
         "name": "Documentation Generation Pipeline",
-        "prompts": [
-          "Analyze code structure and identify undocumented areas",
-          "Generate API documentation with examples",
-          "Create usage guides and tutorials",
-          "Build architecture diagrams and flow charts"
-        ]
+        "prompts": ["Analyze code structure and identify undocumented areas", "Generate API documentation with examples", "Create usage guides and tutorials", "Build architecture diagrams and flow charts"]
       }
     }
   }
@@ -367,11 +366,13 @@ claude-flow stream-chain pipeline optimize
 ### 1. Clear and Specific Prompts
 
 **Good:**
+
 ```bash
 "Analyze authentication.js for SQL injection vulnerabilities"
 ```
 
 **Avoid:**
+
 ```bash
 "Check security"
 ```
@@ -379,6 +380,7 @@ claude-flow stream-chain pipeline optimize
 ### 2. Logical Progression
 
 Order prompts to build on previous outputs:
+
 ```bash
 1. "Identify the problem"
 2. "Analyze root causes"
@@ -397,6 +399,7 @@ Order prompts to build on previous outputs:
 ### 4. Verification Steps
 
 Include validation in your chains:
+
 ```bash
 claude-flow stream-chain run \
   "Implement feature X" \
@@ -407,6 +410,7 @@ claude-flow stream-chain run \
 ### 5. Iterative Refinement
 
 Use chains for iterative improvement:
+
 ```bash
 claude-flow stream-chain run \
   "Generate initial implementation" \

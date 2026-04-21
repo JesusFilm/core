@@ -1,7 +1,7 @@
 ---
 name: report-bug
 description: Report a bug in the compound-engineering plugin
-argument-hint: "[optional: brief description of the bug]"
+argument-hint: '[optional: brief description of the bug]'
 disable-model-invocation: true
 ---
 
@@ -14,32 +14,39 @@ Report bugs encountered while using the compound-engineering plugin. This comman
 Use the AskUserQuestion tool to collect the following information:
 
 **Question 1: Bug Category**
+
 - What type of issue are you experiencing?
 - Options: Agent not working, Command not working, Skill not working, MCP server issue, Installation problem, Other
 
 **Question 2: Specific Component**
+
 - Which specific component is affected?
 - Ask for the name of the agent, command, skill, or MCP server
 
 **Question 3: What Happened (Actual Behavior)**
+
 - Ask: "What happened when you used this component?"
 - Get a clear description of the actual behavior
 
 **Question 4: What Should Have Happened (Expected Behavior)**
+
 - Ask: "What did you expect to happen instead?"
 - Get a clear description of expected behavior
 
 **Question 5: Steps to Reproduce**
+
 - Ask: "What steps did you take before the bug occurred?"
 - Get reproduction steps
 
 **Question 6: Error Messages**
+
 - Ask: "Did you see any error messages? If so, please share them."
 - Capture any error output
 
 ## Step 2: Collect Environment Information
 
 Automatically gather:
+
 ```bash
 # Get plugin version
 cat ~/.claude/plugins/installed_plugins.json 2>/dev/null | grep -A5 "compound-engineering" | head -10 || echo "Plugin info not found"
@@ -82,9 +89,10 @@ Create a well-structured bug report with:
 3. [Step 3]
 
 ## Error Messages
-
 ```
+
 [Any error output]
+
 ```
 
 ## Additional Context
@@ -108,6 +116,7 @@ gh issue create \
 ```
 
 **Note:** If labels don't exist, create without labels:
+
 ```bash
 gh issue create \
   --repo EveryInc/compound-engineering-plugin \
@@ -118,6 +127,7 @@ gh issue create \
 ## Step 5: Confirm Submission
 
 After the issue is created:
+
 1. Display the issue URL to the user
 2. Thank them for reporting the bug
 3. Let them know the maintainer (Kieran Klaassen) will be notified
@@ -143,6 +153,7 @@ The maintainer will review your report and respond as soon as possible.
 ## Privacy Notice
 
 This command does NOT collect:
+
 - Personal information
 - API keys or credentials
 - Private code from your projects
