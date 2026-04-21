@@ -8,9 +8,6 @@ builder.mutationField('cardBlockUpdate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: CardBlock,
     nullable: false,
-    override: {
-      from: 'api-journeys'
-    },
     args: {
       id: t.arg({ type: 'ID', required: true }),
       input: t.arg({ type: CardBlockUpdateInput, required: true }),

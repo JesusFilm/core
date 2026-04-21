@@ -364,7 +364,7 @@ describe('TranslateJourneyDialog', () => {
                 ]
               }
             },
-            __typename: 'JourneyAiTranslateCreateSubscriptionPayload'
+            __typename: 'JourneyAiTranslateProgress'
           }
         }
       }))

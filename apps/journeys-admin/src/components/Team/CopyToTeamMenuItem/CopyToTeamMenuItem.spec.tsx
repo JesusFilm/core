@@ -125,7 +125,7 @@ describe('CopyToTeamMenuItem', () => {
             blocks: [],
             __typename: 'Journey'
           },
-          __typename: 'JourneyAiTranslateCreateSubscriptionPayload'
+          __typename: 'JourneyAiTranslateProgress'
         }
       }
     }))
