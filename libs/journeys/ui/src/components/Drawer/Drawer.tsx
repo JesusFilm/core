@@ -56,7 +56,9 @@ export function DrawerContent({
           borderTopLeftRadius: 16,
           borderTopRightRadius: 16,
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          bgcolor: 'background.paper',
+          backgroundImage: 'none'
         }
       }}
       aria-label={title}

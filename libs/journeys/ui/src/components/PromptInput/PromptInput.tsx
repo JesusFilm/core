@@ -84,8 +84,19 @@ export function PromptInput({
         sx={{
           '& .MuiOutlinedInput-root': {
             borderRadius: 3,
-            bgcolor: 'grey.50'
-          }
+            bgcolor: 'grey.50',
+            fontSize: 16
+          },
+          '& .MuiOutlinedInput-notchedOutline': {
+            border: 'none'
+          },
+          '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+            border: 'none'
+          },
+          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline':
+            {
+              border: 'none'
+            }
         }}
       />
       {isLoading ? (
