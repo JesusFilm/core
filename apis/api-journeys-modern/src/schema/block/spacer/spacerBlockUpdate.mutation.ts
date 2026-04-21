@@ -8,7 +8,6 @@ builder.mutationField('spacerBlockUpdate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: SpacerBlock,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       id: t.arg({ type: 'ID', required: true }),
       input: t.arg({ type: SpacerBlockUpdateInput, required: true })

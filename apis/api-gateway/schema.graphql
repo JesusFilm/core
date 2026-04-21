@@ -163,82 +163,12 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): [Block!]! @join__field(graph: API_JOURNEYS) 
+  ): [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   """
   blockRestore is used for redo/undo
   """
   blockRestore(id: ID!) : [Block!]! @join__field(graph: API_JOURNEYS) 
-  iconBlockUpdate(
-    id: ID!
-    input: IconBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): IconBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  imageBlockCreate(input: ImageBlockCreateInput!) : ImageBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  imageBlockUpdate(
-    id: ID!
-    input: ImageBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): ImageBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!) : RadioOptionBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  radioOptionBlockUpdate(
-    id: ID!
-    input: RadioOptionBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): RadioOptionBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  signUpBlockCreate(input: SignUpBlockCreateInput!) : SignUpBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  signUpBlockUpdate(
-    id: ID!
-    input: SignUpBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): SignUpBlock @join__field(graph: API_JOURNEYS_MODERN, type: "SignUpBlock!", override: "api-journeys") 
-  spacerBlockCreate(input: SpacerBlockCreateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  stepBlockCreate(input: StepBlockCreateInput!) : StepBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  stepBlockUpdate(
-    id: ID!
-    input: StepBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): StepBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!) : [StepBlock!]! @join__field(graph: API_JOURNEYS) 
-  textResponseBlockCreate(input: TextResponseBlockCreateInput!) : TextResponseBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  textResponseBlockUpdate(
-    id: ID!
-    input: TextResponseBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): TextResponseBlock @join__field(
-    graph: API_JOURNEYS_MODERN
-    type: "TextResponseBlock!"
-    override: "api-journeys"
-  )
-  typographyBlockCreate(input: TypographyBlockCreateInput!) : TypographyBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  typographyBlockUpdate(
-    id: ID!
-    input: TypographyBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): TypographyBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!) : [StepBlock!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput) : ChatButton! @join__field(graph: API_JOURNEYS) 
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!) : ChatButton! @join__field(graph: API_JOURNEYS) 
   chatButtonRemove(id: ID!) : ChatButton! @join__field(graph: API_JOURNEYS) 
@@ -354,7 +284,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     journeyId: ID
   ): ButtonBlock @join__field(graph: API_JOURNEYS_MODERN) 
-  cardBlockCreate(input: CardBlockCreateInput!) : CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  cardBlockCreate(input: CardBlockCreateInput!) : CardBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   cardBlockUpdate(
     id: ID!
     input: CardBlockUpdateInput!
@@ -362,8 +292,25 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  iconBlockCreate(input: IconBlockCreateInput!) : IconBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): CardBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  iconBlockCreate(input: IconBlockCreateInput!) : IconBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  iconBlockUpdate(
+    id: ID!
+    input: IconBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): IconBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  imageBlockCreate(input: ImageBlockCreateInput!) : ImageBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  imageBlockUpdate(
+    id: ID!
+    input: ImageBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): ImageBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   multiselectBlockCreate(input: MultiselectBlockCreateInput!) : MultiselectBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   multiselectBlockUpdate(
     id: ID!
@@ -382,6 +329,55 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     journeyId: ID
   ): MultiselectOptionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!) : RadioOptionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  radioOptionBlockUpdate(
+    id: ID!
+    input: RadioOptionBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): RadioOptionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  signUpBlockCreate(input: SignUpBlockCreateInput!) : SignUpBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  signUpBlockUpdate(
+    id: ID!
+    input: SignUpBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): SignUpBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  spacerBlockCreate(input: SpacerBlockCreateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  stepBlockCreate(input: StepBlockCreateInput!) : StepBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  stepBlockUpdate(
+    id: ID!
+    input: StepBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): StepBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  textResponseBlockCreate(input: TextResponseBlockCreateInput!) : TextResponseBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  textResponseBlockUpdate(
+    id: ID!
+    input: TextResponseBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): TextResponseBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  typographyBlockCreate(input: TypographyBlockCreateInput!) : TypographyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  typographyBlockUpdate(
+    id: ID!
+    input: TypographyBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): TypographyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   videoBlockCreate(input: VideoBlockCreateInput!) : VideoBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   videoBlockUpdate(
     id: ID!
@@ -416,7 +412,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   integrationDelete(id: ID!) : Integration! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyTransferFromAnonymous(journeyId: ID!, teamId: ID) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeyCustomizationDescriptionTranslate(input: JourneyCustomizationDescriptionTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -797,13 +792,13 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
-  adminJourney(id: ID!, idType: IdType = slug) : Journey! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  adminJourney(id: ID!, idType: IdType = slug) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   adminJourneys(
     status: [JourneyStatus!]
     template: Boolean
     teamId: ID
     useLastActiveTeamId: Boolean
-  ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
   getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
@@ -4007,187 +4002,14 @@ input ButtonBlockSettingsInput @join__type(graph: API_JOURNEYS)  @join__type(gra
   color: String
 }
 
-input IconBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  name: IconName
-  color: IconColor
-  size: IconSize
-}
-
-input ImageBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  parentBlockId: ID
-  journeyId: ID!
-  src: String
-  alt: String!
-  """
-  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
-  """
-  blurhash: String
-  width: Int
-  height: Int
-  """
-  True if the coverBlockId in a parent block should be set to this block's id.
-  """
-  isCover: Boolean
-  scale: Int
-  focalTop: Int
-  focalLeft: Int
-  customizable: Boolean
-}
-
-input ImageBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  src: String
-  alt: String
-  """
-  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
-  """
-  blurhash: String
-  width: Int
-  height: Int
-  scale: Int
-  focalTop: Int
-  focalLeft: Int
-  customizable: Boolean
-}
-
-input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  eventLabel: BlockEventLabel
-  label: String!
-}
-
-input RadioOptionBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  label: String
-  pollOptionImageBlockId: ID
-}
-
-input RadioQuestionBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-}
-
-input SignUpBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  submitLabel: String!
-}
-
-input SignUpBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  submitIconId: ID
-  submitLabel: String
-}
-
-input SpacerBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  spacing: Int
-}
-
-input SpacerBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  spacing: Int
-}
-
-input StepBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  nextBlockId: ID
-  locked: Boolean
-  """
-  x is used to position the block horizontally in the journey flow diagram on
-  the editor.
-  """
-  x: Int
-  """
-  y is used to position the block vertically in the journey flow diagram on
-  the editor.
-  """
-  y: Int
-}
-
-input StepBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  nextBlockId: ID
-  locked: Boolean
-  """
-  x is used to position the block horizontally in the journey flow diagram on
-  the editor.
-  """
-  x: Int
-  """
-  y is used to position the block vertically in the journey flow diagram on
-  the editor.
-  """
-  y: Int
-  """
-  Slug should be unique amongst all blocks
-  (server will throw BAD_USER_INPUT error if not)
-  If not required will use the current block id
-  If the generated slug is not unique the uuid will be placed
-  at the end of the slug guaranteeing uniqueness
-  """
-  slug: String
-}
-
 input StepBlockPositionUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   x: Int
   y: Int
 }
 
-input TextResponseBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  label: String!
-}
-
-input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  label: String
-  placeholder: String
-  required: Boolean
-  hint: String
-  hideLabel: Boolean
-  minRows: Int
-  routeId: String
-  type: TextResponseType
-  integrationId: String
-}
-
 input TypographyBlockSettingsInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   color: String
-}
-
-input TypographyBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  content: String!
-  variant: TypographyVariant
-  color: TypographyColor
-  align: TypographyAlign
-  settings: TypographyBlockSettingsInput
-}
-
-input TypographyBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  content: String
-  variant: TypographyVariant
-  color: TypographyColor
-  align: TypographyAlign
-  settings: TypographyBlockSettingsInput
 }
 
 input ChatButtonCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4886,6 +4708,54 @@ input IconBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   size: IconSize
 }
 
+input IconBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
+input ImageBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  parentBlockId: ID
+  journeyId: ID!
+  src: String
+  alt: String!
+  """
+  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
+  """
+  blurhash: String
+  width: Int
+  height: Int
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
+  scale: Int
+  focalTop: Int
+  focalLeft: Int
+  customizable: Boolean
+}
+
+input ImageBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  src: String
+  alt: String
+  """
+  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
+  """
+  blurhash: String
+  width: Int
+  height: Int
+  isCover: Boolean
+  scale: Int
+  focalTop: Int
+  focalLeft: Int
+  customizable: Boolean
+}
+
 input IntegrationGoogleCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   teamId: String!
   code: String!
@@ -4898,49 +4768,11 @@ input IntegrationGoogleUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input JourneyAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  The ID of the journey to translate
-  """
   journeyId: ID!
-  """
-  The journey name to translate
-  """
   name: String!
-  """
-  The source language name of the journey content
-  """
   journeyLanguageName: String!
-  """
-  The target language ID for journey content (blocks, title, description)
-  """
   textLanguageId: ID!
-  """
-  The target language name for journey content (blocks, title, description)
-  """
   textLanguageName: String!
-  """
-  Language ID for customization text translation. Falls back to textLanguageId if not provided.
-  """
-  userLanguageId: ID
-  """
-  Language name for customization text translation. Falls back to textLanguageName if not provided.
-  """
-  userLanguageName: String
-}
-
-input JourneyCustomizationDescriptionTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  The ID of the journey whose customization description to translate
-  """
-  journeyId: ID!
-  """
-  The current language of the customization description
-  """
-  sourceLanguageName: String!
-  """
-  The language to translate the customization description into
-  """
-  targetLanguageName: String!
 }
 
 input JourneyEventsExportLogInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5118,6 +4950,27 @@ input PlausibleStatsTimeseriesFilter @join__type(graph: API_JOURNEYS_MODERN)  {
   interval: String
 }
 
+input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  eventLabel: BlockEventLabel
+  label: String!
+}
+
+input RadioOptionBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  eventLabel: BlockEventLabel
+  label: String
+  pollOptionImageBlockId: ID
+}
+
+input RadioQuestionBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+}
+
 input RadioQuestionSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   blockId: ID!
@@ -5125,6 +4978,19 @@ input RadioQuestionSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MO
   stepId: ID
   label: String
   value: String
+}
+
+input SignUpBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  submitLabel: String!
+}
+
+input SignUpBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  submitIconId: ID
+  submitLabel: String
 }
 
 input SignUpSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5135,12 +5001,96 @@ input SignUpSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  
   email: String!
 }
 
+input SpacerBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  spacing: Int
+}
+
+input SpacerBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  spacing: Int
+}
+
+input StepBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  nextBlockId: ID
+  locked: Boolean
+  """
+  x is used to position the block horizontally in the journey flow diagram on the editor.
+  """
+  x: Int
+  """
+  y is used to position the block vertically in the journey flow diagram on the editor.
+  """
+  y: Int
+}
+
+input StepBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  nextBlockId: ID
+  locked: Boolean
+  """
+  x is used to position the block horizontally in the journey flow diagram on the editor.
+  """
+  x: Int
+  """
+  y is used to position the block vertically in the journey flow diagram on the editor.
+  """
+  y: Int
+  """
+  Slug should be unique amongst all blocks (server will throw BAD_USER_INPUT error if not). If not required will use the current block id. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness
+  """
+  slug: String
+}
+
+input TextResponseBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+}
+
+input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  label: String
+  placeholder: String
+  required: Boolean
+  hint: String
+  hideLabel: Boolean
+  minRows: Int
+  routeId: String
+  type: TextResponseType
+  integrationId: String
+}
+
 input TextResponseSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   blockId: ID!
   stepId: ID
   label: String
   value: String!
+}
+
+input TypographyBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  content: String!
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+  settings: TypographyBlockSettingsInput
+}
+
+input TypographyBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  content: String
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+  settings: TypographyBlockSettingsInput
 }
 
 input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {

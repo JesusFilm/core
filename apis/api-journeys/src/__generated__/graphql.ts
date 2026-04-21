@@ -1015,6 +1015,7 @@ export type ImageBlockUpdateInput = {
   focalLeft?: InputMaybe<Scalars['Int']['input']>;
   focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
+  isCover?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   scale?: InputMaybe<Scalars['Int']['input']>;
   src?: InputMaybe<Scalars['String']['input']>;
@@ -1152,20 +1153,11 @@ export type Journey = {
 };
 
 export type JourneyAiTranslateInput = {
-  /** The ID of the journey to translate */
   journeyId: Scalars['ID']['input'];
-  /** The source language name of the journey content */
   journeyLanguageName: Scalars['String']['input'];
-  /** The journey name to translate */
   name: Scalars['String']['input'];
-  /** The target language ID for journey content (blocks, title, description) */
   textLanguageId: Scalars['ID']['input'];
-  /** The target language name for journey content (blocks, title, description) */
   textLanguageName: Scalars['String']['input'];
-  /** Language ID for customization text translation. Falls back to textLanguageId if not provided. */
-  userLanguageId?: InputMaybe<Scalars['ID']['input']>;
-  /** Language name for customization text translation. Falls back to textLanguageName if not provided. */
-  userLanguageName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyAiTranslateProgress = {
@@ -1218,15 +1210,6 @@ export type JourneyCreateInput = {
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
   title: Scalars['String']['input'];
-};
-
-export type JourneyCustomizationDescriptionTranslateInput = {
-  /** The ID of the journey whose customization description to translate */
-  journeyId: Scalars['ID']['input'];
-  /** The current language of the customization description */
-  sourceLanguageName: Scalars['String']['input'];
-  /** The language to translate the customization description into */
-  targetLanguageName: Scalars['String']['input'];
 };
 
 export type JourneyCustomizationField = {
@@ -1919,7 +1902,6 @@ export type Mutation = {
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
   journeyCreate: Journey;
-  journeyCustomizationDescriptionTranslate: Journey;
   journeyCustomizationFieldPublisherUpdate: Array<JourneyCustomizationField>;
   journeyCustomizationFieldUserUpdate: Array<JourneyCustomizationField>;
   journeyDuplicate: Journey;
@@ -1987,7 +1969,7 @@ export type Mutation = {
   /** update an existing short link */
   shortLinkUpdate: MutationShortLinkUpdateResult;
   signUpBlockCreate: SignUpBlock;
-  signUpBlockUpdate?: Maybe<SignUpBlock>;
+  signUpBlockUpdate: SignUpBlock;
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
   siteCreate: MutationSiteCreateResult;
   spacerBlockCreate: SpacerBlock;
@@ -2001,7 +1983,7 @@ export type Mutation = {
   teamCreate: Team;
   teamUpdate: Team;
   textResponseBlockCreate: TextResponseBlock;
-  textResponseBlockUpdate?: Maybe<TextResponseBlock>;
+  textResponseBlockUpdate: TextResponseBlock;
   textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
   triggerUnsplashDownload: Scalars['Boolean']['output'];
   typographyBlockCreate: TypographyBlock;
@@ -2487,11 +2469,6 @@ export type MutationJourneyCollectionUpdateArgs = {
 export type MutationJourneyCreateArgs = {
   input: JourneyCreateInput;
   teamId: Scalars['ID']['input'];
-};
-
-
-export type MutationJourneyCustomizationDescriptionTranslateArgs = {
-  input: JourneyCustomizationDescriptionTranslateInput;
 };
 
 
@@ -4757,15 +4734,9 @@ export type StepBlockCreateInput = {
   journeyId: Scalars['ID']['input'];
   locked?: InputMaybe<Scalars['Boolean']['input']>;
   nextBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * x is used to position the block horizontally in the journey flow diagram on
-   * the editor.
-   */
+  /** x is used to position the block horizontally in the journey flow diagram on the editor. */
   x?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * y is used to position the block vertically in the journey flow diagram on
-   * the editor.
-   */
+  /** y is used to position the block vertically in the journey flow diagram on the editor. */
   y?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -4778,23 +4749,11 @@ export type StepBlockPositionUpdateInput = {
 export type StepBlockUpdateInput = {
   locked?: InputMaybe<Scalars['Boolean']['input']>;
   nextBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * Slug should be unique amongst all blocks
-   * (server will throw BAD_USER_INPUT error if not)
-   * If not required will use the current block id
-   * If the generated slug is not unique the uuid will be placed
-   * at the end of the slug guaranteeing uniqueness
-   */
+  /** Slug should be unique amongst all blocks (server will throw BAD_USER_INPUT error if not). If not required will use the current block id. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness */
   slug?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * x is used to position the block horizontally in the journey flow diagram on
-   * the editor.
-   */
+  /** x is used to position the block horizontally in the journey flow diagram on the editor. */
   x?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * y is used to position the block vertically in the journey flow diagram on
-   * the editor.
-   */
+  /** y is used to position the block vertically in the journey flow diagram on the editor. */
   y?: InputMaybe<Scalars['Int']['input']>;
 };
 

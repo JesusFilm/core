@@ -1,6 +1,5 @@
 import {
   ApolloError,
-  gql,
   useMutation,
   useSubscription,
   useSuspenseQuery
@@ -10,11 +9,6 @@ import AlertTitle from '@mui/material/AlertTitle'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogTitle from '@mui/material/DialogTitle'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -26,10 +20,7 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import {
-  Component,
-  ErrorInfo,
   ReactElement,
-  ReactNode,
   Suspense,
   useCallback,
   useEffect,
@@ -57,140 +48,26 @@ import {
 } from '../../../__generated__/UserDeleteJourneysConfirm'
 import { GET_ME } from '../PageWrapper/NavigationDrawer/UserNavigation/UserNavigation'
 
+import {
+  USER_DELETE_CHECK,
+  USER_DELETE_CONFIRM,
+  USER_DELETE_JOURNEYS_CHECK,
+  USER_DELETE_JOURNEYS_CONFIRM
+} from './UserDelete.documents'
+import { UserDeleteConfirmDialog } from './UserDeleteConfirmDialog'
+import { UserDeleteErrorBoundary } from './UserDeleteErrorBoundary'
+
+export {
+  USER_DELETE_CHECK,
+  USER_DELETE_CONFIRM,
+  USER_DELETE_JOURNEYS_CHECK,
+  USER_DELETE_JOURNEYS_CONFIRM
+}
+
 interface LogEntry {
   message: string
   level: string
   timestamp: string
-}
-
-export const USER_DELETE_CHECK = gql`
-  mutation UserDeleteCheck($idType: UserDeleteIdType!, $id: String!) {
-    userDeleteCheck(idType: $idType, id: $id) {
-      userId
-      userEmail
-      userFirstName
-      logs {
-        message
-        level
-        timestamp
-      }
-    }
-  }
-`
-
-export const USER_DELETE_JOURNEYS_CHECK = gql`
-  mutation UserDeleteJourneysCheck($userId: String!) {
-    userDeleteJourneysCheck(userId: $userId) {
-      journeysToDelete
-      journeysToTransfer
-      journeysToRemove
-      teamsToDelete
-      teamsToTransfer
-      teamsToRemove
-      logs {
-        message
-        level
-        timestamp
-      }
-    }
-  }
-`
-
-export const USER_DELETE_JOURNEYS_CONFIRM = gql`
-  mutation UserDeleteJourneysConfirm($userId: String!) {
-    userDeleteJourneysConfirm(userId: $userId) {
-      success
-      deletedJourneyIds
-      deletedTeamIds
-      deletedUserJourneyIds
-      deletedUserTeamIds
-      logs {
-        message
-        level
-        timestamp
-      }
-    }
-  }
-`
-
-export const USER_DELETE_CONFIRM = gql`
-  subscription UserDeleteConfirmSubscription(
-    $idType: UserDeleteIdType!
-    $id: String!
-    $deletedJourneyIds: [String!]!
-    $deletedTeamIds: [String!]!
-    $deletedUserJourneyIds: [String!]!
-    $deletedUserTeamIds: [String!]!
-  ) {
-    userDeleteConfirm(
-      idType: $idType
-      id: $id
-      deletedJourneyIds: $deletedJourneyIds
-      deletedTeamIds: $deletedTeamIds
-      deletedUserJourneyIds: $deletedUserJourneyIds
-      deletedUserTeamIds: $deletedUserTeamIds
-    ) {
-      log {
-        message
-        level
-        timestamp
-      }
-      done
-      success
-    }
-  }
-`
-
-interface UserDeleteErrorBoundaryProps {
-  children: ReactNode
-}
-
-interface UserDeleteErrorBoundaryState {
-  hasError: boolean
-  error: Error | null
-}
-
-class UserDeleteErrorBoundary extends Component<
-  UserDeleteErrorBoundaryProps,
-  UserDeleteErrorBoundaryState
-> {
-  constructor(props: UserDeleteErrorBoundaryProps) {
-    super(props)
-    this.state = { hasError: false, error: null }
-  }
-
-  static getDerivedStateFromError(error: Error): UserDeleteErrorBoundaryState {
-    return { hasError: true, error }
-  }
-
-  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error('UserDelete error:', error, errorInfo)
-  }
-
-  render(): ReactNode {
-    if (this.state.hasError) {
-      return <UserDeleteErrorFallback error={this.state.error} />
-    }
-    return this.props.children
-  }
-}
-
-function UserDeleteErrorFallback({
-  error
-}: {
-  error: Error | null
-}): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-  return (
-    <Box sx={{ p: 4, maxWidth: 800 }}>
-      <Alert severity="error">
-        <AlertTitle>{t('Something went wrong')}</AlertTitle>
-        <Typography variant="body2">
-          {error?.message ?? t('An unexpected error occurred.')}
-        </Typography>
-      </Alert>
-    </Box>
-  )
 }
 
 export function UserDeleteWithErrorBoundary(): ReactElement {
@@ -329,6 +206,41 @@ function UserDeleteContent(): ReactElement {
     })
     .join('\n')
 
+  const handleMutationError = useCallback(
+    (error: unknown): void => {
+      if (error instanceof ApolloError) {
+        const message = error.graphQLErrors[0]?.message ?? error.message
+        setLogs((prev) => [
+          ...prev,
+          {
+            message: `Error: ${message}`,
+            level: 'error',
+            timestamp: new Date().toISOString()
+          }
+        ])
+        enqueueSnackbar(message, { variant: 'error', preventDuplicate: true })
+      } else {
+        const message =
+          error instanceof Error
+            ? error.message
+            : t('An unexpected error occurred.')
+        setLogs((prev) => [
+          ...prev,
+          {
+            message: `Error: ${message}`,
+            level: 'error',
+            timestamp: new Date().toISOString()
+          }
+        ])
+        enqueueSnackbar(t('An unexpected error occurred.'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
+    },
+    [enqueueSnackbar, t]
+  )
+
   const handleCheck = useCallback(async () => {
     if (userId.trim() === '') return
 
@@ -367,43 +279,14 @@ function UserDeleteContent(): ReactElement {
 
       setCheckComplete(true)
     } catch (error) {
-      if (error instanceof ApolloError) {
-        const message = error.graphQLErrors[0]?.message ?? error.message
-        setLogs((prev) => [
-          ...prev,
-          {
-            message: `Error: ${message}`,
-            level: 'error',
-            timestamp: new Date().toISOString()
-          }
-        ])
-        enqueueSnackbar(message, { variant: 'error', preventDuplicate: true })
-      } else {
-        const message =
-          error instanceof Error
-            ? error.message
-            : t('An unexpected error occurred.')
-        setLogs((prev) => [
-          ...prev,
-          {
-            message: `Error: ${message}`,
-            level: 'error',
-            timestamp: new Date().toISOString()
-          }
-        ])
-        enqueueSnackbar(t('An unexpected error occurred.'), {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
+      handleMutationError(error)
     }
   }, [
     idType,
     userId,
     userDeleteCheck,
     userDeleteJourneysCheck,
-    enqueueSnackbar,
-    t
+    handleMutationError
   ])
 
   const handleConfirmDelete = useCallback(async () => {
@@ -457,35 +340,7 @@ function UserDeleteContent(): ReactElement {
         deletedUserTeamIds: journeysConfirmData.deletedUserTeamIds
       })
     } catch (error) {
-      if (error instanceof ApolloError) {
-        const message = error.graphQLErrors[0]?.message ?? error.message
-        setLogs((prev) => [
-          ...prev,
-          {
-            message: `Error: ${message}`,
-            level: 'error',
-            timestamp: new Date().toISOString()
-          }
-        ])
-        enqueueSnackbar(message, { variant: 'error', preventDuplicate: true })
-      } else {
-        const message =
-          error instanceof Error
-            ? error.message
-            : t('An unexpected error occurred.')
-        setLogs((prev) => [
-          ...prev,
-          {
-            message: `Error: ${message}`,
-            level: 'error',
-            timestamp: new Date().toISOString()
-          }
-        ])
-        enqueueSnackbar(t('An unexpected error occurred.'), {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
+      handleMutationError(error)
     }
   }, [
     idType,
@@ -493,6 +348,7 @@ function UserDeleteContent(): ReactElement {
     resolvedUserId,
     userDeleteJourneysConfirm,
     enqueueSnackbar,
+    handleMutationError,
     t
   ])
 
@@ -538,12 +394,14 @@ function UserDeleteContent(): ReactElement {
 
         <TextField
           size="small"
-          inputProps={{
-            'aria-label':
-              idType === UserDeleteIdType.email
-                ? t('User email to delete')
-                : t('Database ID to delete'),
-            'aria-describedby': 'delete-warning'
+          slotProps={{
+            htmlInput: {
+              'aria-label':
+                idType === UserDeleteIdType.email
+                  ? t('User email to delete')
+                  : t('Database ID to delete'),
+              'aria-describedby': 'delete-warning'
+            }
           }}
           label={
             idType === UserDeleteIdType.email
@@ -607,35 +465,13 @@ function UserDeleteContent(): ReactElement {
         </Button>
       </Stack>
 
-      <Dialog
+      <UserDeleteConfirmDialog
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        aria-labelledby="confirm-delete-title"
-      >
-        <DialogTitle id="confirm-delete-title">
-          {t('Confirm User Deletion')}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {t(
-              'Are you sure you want to permanently delete this user? This action cannot be undone. All associated data including journeys, team memberships, and related records will be permanently removed.'
-            )}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setConfirmOpen(false)}>{t('Cancel')}</Button>
-          <Button
-            onClick={() => {
-              void handleConfirmDelete()
-            }}
-            color="error"
-            variant="contained"
-            autoFocus
-          >
-            {t('Delete Permanently')}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onConfirm={() => {
+          void handleConfirmDelete()
+        }}
+      />
     </Box>
   )
 }

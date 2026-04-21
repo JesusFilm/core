@@ -19,17 +19,8 @@ export interface TranslatedJourney_language {
   name: TranslatedJourney_language_name[];
 }
 
-export interface TranslatedJourney_journeyCustomizationFields {
-  __typename: "JourneyCustomizationField";
-  id: string;
-  journeyId: string;
-  key: string;
-  value: string | null;
-  defaultValue: string | null;
-}
-
 export interface TranslatedJourney_blocks_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "IconBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "CardBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -71,7 +62,5 @@ export interface TranslatedJourney {
   languageId: string;
   language: TranslatedJourney_language;
   updatedAt: any;
-  journeyCustomizationDescription: string | null;
-  journeyCustomizationFields: TranslatedJourney_journeyCustomizationFields[];
   blocks: TranslatedJourney_blocks[] | null;
 }
