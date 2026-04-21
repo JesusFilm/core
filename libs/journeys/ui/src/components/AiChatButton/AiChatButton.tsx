@@ -53,7 +53,7 @@ export function AiChatButton(): ReactElement | null {
         <AutoAwesomeRoundedIcon sx={{ fontSize: 20 }} />
       </IconButton>
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerContent title="AI Chat">
+        <DrawerContent title="Chat">
           <AiChat />
         </DrawerContent>
       </Drawer>

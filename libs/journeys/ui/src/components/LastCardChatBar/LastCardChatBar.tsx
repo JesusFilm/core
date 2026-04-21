@@ -87,7 +87,7 @@ export function LastCardChatBar({
 
       {/* Full AiChat drawer — opens on submit with message pre-loaded */}
       <Drawer open={drawerOpen} onOpenChange={handleDrawerOpenChange}>
-        <DrawerContent title={isDesktop ? 'Chat' : 'AI Chat'}>
+        <DrawerContent title={'Chat'}>
           <AiChat initialMessage={pendingMessage} />
         </DrawerContent>
       </Drawer>
