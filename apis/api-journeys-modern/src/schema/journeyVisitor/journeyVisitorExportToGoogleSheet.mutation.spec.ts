@@ -95,6 +95,8 @@ describe('journeyVisitorExportToGoogleSheet', () => {
 
   const mockIntegration = {
     id: 'integration-id',
+    userId: 'userId',
+    teamId: 'team-id',
     accountEmail: 'test@example.com'
   }
 
@@ -559,6 +561,70 @@ describe('journeyVisitorExportToGoogleSheet', () => {
         })
       ]
     })
+  })
+
+  it('should throw error when user does not own the integration', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
+    prismaMock.integration.findUnique.mockResolvedValue({
+      id: 'integration-id',
+      userId: 'other-user-id',
+      teamId: 'team-id',
+      accountEmail: 'other@example.com'
+    } as any)
+
+    const result = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_TO_GOOGLE_SHEET_MUTATION,
+      variables: {
+        journeyId: 'journey-id',
+        integrationId: 'integration-id',
+        destination: {
+          mode: 'create',
+          spreadsheetTitle: 'Test'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'You can only create syncs using your own Google account'
+        })
+      ]
+    })
+    expect(mockGetIntegrationGoogleAccessToken).not.toHaveBeenCalled()
+  })
+
+  it('should throw error when integration belongs to a different team', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
+    prismaMock.integration.findUnique.mockResolvedValue({
+      id: 'integration-id',
+      userId: 'userId',
+      teamId: 'other-team-id',
+      accountEmail: 'test@example.com'
+    } as any)
+
+    const result = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_TO_GOOGLE_SHEET_MUTATION,
+      variables: {
+        journeyId: 'journey-id',
+        integrationId: 'integration-id',
+        destination: {
+          mode: 'create',
+          spreadsheetTitle: 'Test'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: "Integration does not belong to this journey's team"
+        })
+      ]
+    })
+    expect(mockGetIntegrationGoogleAccessToken).not.toHaveBeenCalled()
   })
 
   it('should use provided timezone', async () => {
