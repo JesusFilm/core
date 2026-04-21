@@ -20,8 +20,10 @@
  *   npx nx backfill-buddhist-journey-tag api-journeys
  */
 
-import { prisma as journeysPrisma } from '@core/prisma/journeys/client'
-import { prisma as mediaPrisma } from '@core/prisma/media/client'
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { prisma as journeysPrisma } from '../../../../../../libs/prisma/journeys/src/client'
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { prisma as mediaPrisma } from '../../../../../../libs/prisma/media/src/client'
 
 const HINDU_TAG_NAME = 'Hindu'
 const BUDDHIST_TAG_NAME = 'Buddhist'

@@ -24,7 +24,8 @@
  *   PG_DATABASE_URL_MEDIA=<target-url> npx nx split-hindu-buddhist-tag api-media
  */
 
-import { prisma } from '@core/prisma/media/client'
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { prisma } from '../../../../../../libs/prisma/media/src/client'
 
 const OLD_TAG_NAME = 'Hindu/Buddist'
 const RENAMED_TAG_NAME = 'Hindu'
