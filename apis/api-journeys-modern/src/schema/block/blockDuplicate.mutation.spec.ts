@@ -67,43 +67,72 @@ describe('blockDuplicate', () => {
     parentBlockId: 'parentId',
     parentOrder: 0,
     action: null,
+    settings: {},
     journey
-  }
-
-  const duplicatedBlock = {
-    id: 'duplicatedBlockId',
-    typename: 'ImageBlock',
-    journeyId: 'journeyId',
-    parentBlockId: 'parentId',
-    parentOrder: 1,
-    action: null
   }
 
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
-  it('duplicates the block when authorized', async () => {
+  it('duplicates the block when authorized and returns response fields', async () => {
     fetchBlockWithJourneyAcl.mockResolvedValue(block)
     mockAbility.mockReturnValue(true)
 
     prismaMock.block.findUnique.mockResolvedValue(block as any)
-    prismaMock.block.findMany.mockResolvedValueOnce([])
-    prismaMock.block.create.mockResolvedValue(duplicatedBlock as any)
-    prismaMock.block.findMany.mockResolvedValue([
-      block as any,
-      duplicatedBlock as any
-    ])
+    prismaMock.block.findMany
+      .mockResolvedValueOnce([])
+      .mockResolvedValue([
+        { ...block, parentOrder: 0 } as any,
+        {
+          id: 'duplicatedBlockId',
+          typename: 'ImageBlock',
+          journeyId: 'journeyId',
+          parentBlockId: 'parentId',
+          parentOrder: 1,
+          action: null
+        } as any
+      ])
+    prismaMock.block.create.mockResolvedValue({
+      id: 'duplicatedBlockId',
+      typename: 'ImageBlock',
+      journeyId: 'journeyId',
+      parentBlockId: 'parentId',
+      parentOrder: null,
+      action: null
+    } as any)
     prismaMock.block.update
-      .mockResolvedValueOnce({ ...block, parentOrder: 0 } as any)
-      .mockResolvedValueOnce({ ...duplicatedBlock, parentOrder: 1 } as any)
+      .mockResolvedValueOnce({
+        id: 'duplicatedBlockId',
+        typename: 'ImageBlock',
+        journeyId: 'journeyId',
+        parentBlockId: 'parentId',
+        parentOrder: null,
+        action: null
+      } as any)
+      .mockResolvedValueOnce({
+        id,
+        typename: 'ImageBlock',
+        journeyId: 'journeyId',
+        parentBlockId: 'parentId',
+        parentOrder: 0,
+        action: null
+      } as any)
+      .mockResolvedValueOnce({
+        id: 'duplicatedBlockId',
+        typename: 'ImageBlock',
+        journeyId: 'journeyId',
+        parentBlockId: 'parentId',
+        parentOrder: 1,
+        action: null
+      } as any)
 
     const tx = {
       journey: { update: jest.fn().mockResolvedValue(journey) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
-    await authClient({
+    const result = await authClient({
       document: BLOCK_DUPLICATE,
       variables: { id, parentOrder: 1 }
     })
@@ -119,34 +148,72 @@ describe('blockDuplicate', () => {
       data: { updatedAt: expect.any(String) }
     })
     expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
+    expect(result).toEqual({
+      data: {
+        blockDuplicate: [
+          { id, journeyId: 'journeyId', parentBlockId: 'parentId', parentOrder: 0 },
+          {
+            id: 'duplicatedBlockId',
+            journeyId: 'journeyId',
+            parentBlockId: 'parentId',
+            parentOrder: 1
+          }
+        ]
+      }
+    })
   })
 
-  it('duplicates with custom idMap', async () => {
+  it('duplicates with custom idMap and returns the mapped id', async () => {
     fetchBlockWithJourneyAcl.mockResolvedValue(block)
     mockAbility.mockReturnValue(true)
 
-    const customBlock = {
-      ...block,
-      settings: {},
-      action: null
-    }
-
-    prismaMock.block.findUnique.mockResolvedValue(customBlock as any)
+    prismaMock.block.findUnique.mockResolvedValue(block as any)
     prismaMock.block.findMany
       .mockResolvedValueOnce([])
       .mockResolvedValue([
-        customBlock as any,
-        { ...duplicatedBlock, id: 'customNewId' } as any
+        { ...block, parentOrder: 0 } as any,
+        {
+          id: 'customNewId',
+          typename: 'ImageBlock',
+          journeyId: 'journeyId',
+          parentBlockId: 'parentId',
+          parentOrder: 1,
+          action: null
+        } as any
       ])
     prismaMock.block.create.mockResolvedValue({
-      ...duplicatedBlock,
-      id: 'customNewId'
+      id: 'customNewId',
+      typename: 'ImageBlock',
+      journeyId: 'journeyId',
+      parentBlockId: 'parentId',
+      parentOrder: null,
+      action: null
     } as any)
-    prismaMock.block.update.mockImplementation((async (args: any) => ({
-      ...duplicatedBlock,
-      id: args.where.id,
-      parentOrder: args.data.parentOrder ?? 0
-    })) as any)
+    prismaMock.block.update
+      .mockResolvedValueOnce({
+        id: 'customNewId',
+        typename: 'ImageBlock',
+        journeyId: 'journeyId',
+        parentBlockId: 'parentId',
+        parentOrder: null,
+        action: null
+      } as any)
+      .mockResolvedValueOnce({
+        id,
+        typename: 'ImageBlock',
+        journeyId: 'journeyId',
+        parentBlockId: 'parentId',
+        parentOrder: 0,
+        action: null
+      } as any)
+      .mockResolvedValueOnce({
+        id: 'customNewId',
+        typename: 'ImageBlock',
+        journeyId: 'journeyId',
+        parentBlockId: 'parentId',
+        parentOrder: 1,
+        action: null
+      } as any)
 
     const tx = {
       journey: { update: jest.fn().mockResolvedValue(journey) }
@@ -155,12 +222,136 @@ describe('blockDuplicate', () => {
 
     const idMap = [{ oldId: 'blockId', newId: 'customNewId' }]
 
-    await authClient({
+    const result = await authClient({
       document: BLOCK_DUPLICATE,
       variables: { id, parentOrder: 1, idMap }
     })
 
     expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
+    expect(result).toEqual({
+      data: {
+        blockDuplicate: [
+          { id, journeyId: 'journeyId', parentBlockId: 'parentId', parentOrder: 0 },
+          {
+            id: 'customNewId',
+            journeyId: 'journeyId',
+            parentBlockId: 'parentId',
+            parentOrder: 1
+          }
+        ]
+      }
+    })
+  })
+
+  it('duplicates a StepBlock with x and y coordinates', async () => {
+    const stepBlock = {
+      ...block,
+      id: 'stepBlockId',
+      typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      x: 100,
+      y: 200
+    }
+
+    fetchBlockWithJourneyAcl.mockResolvedValue(stepBlock)
+    mockAbility.mockReturnValue(true)
+
+    prismaMock.block.findUnique.mockResolvedValue(stepBlock as any)
+    prismaMock.block.findMany
+      .mockResolvedValueOnce([])
+      .mockResolvedValue([
+        { ...stepBlock, parentOrder: 0 } as any,
+        {
+          id: 'duplicatedStepId',
+          typename: 'StepBlock',
+          journeyId: 'journeyId',
+          parentBlockId: null,
+          parentOrder: 1,
+          x: 300,
+          y: 400,
+          action: null
+        } as any
+      ])
+    prismaMock.block.create.mockResolvedValue({
+      id: 'duplicatedStepId',
+      typename: 'StepBlock',
+      journeyId: 'journeyId',
+      parentBlockId: null,
+      parentOrder: null,
+      x: 100,
+      y: 200,
+      action: null
+    } as any)
+    prismaMock.block.update
+      .mockResolvedValueOnce({
+        id: 'duplicatedStepId',
+        typename: 'StepBlock',
+        journeyId: 'journeyId',
+        parentBlockId: null,
+        parentOrder: null,
+        x: 300,
+        y: 400,
+        action: null
+      } as any)
+      .mockResolvedValueOnce({
+        id: 'stepBlockId',
+        typename: 'StepBlock',
+        journeyId: 'journeyId',
+        parentBlockId: null,
+        parentOrder: 0,
+        x: 100,
+        y: 200,
+        action: null
+      } as any)
+      .mockResolvedValueOnce({
+        id: 'duplicatedStepId',
+        typename: 'StepBlock',
+        journeyId: 'journeyId',
+        parentBlockId: null,
+        parentOrder: 1,
+        x: 300,
+        y: 400,
+        action: null
+      } as any)
+
+    const tx = {
+      journey: { update: jest.fn().mockResolvedValue(journey) }
+    }
+    prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
+
+    const idMap = [{ oldId: 'stepBlockId', newId: 'duplicatedStepId' }]
+
+    const result = await authClient({
+      document: BLOCK_DUPLICATE,
+      variables: { id: 'stepBlockId', parentOrder: 1, x: 300, y: 400, idMap }
+    })
+
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'duplicatedStepId' },
+        data: expect.objectContaining({ x: 300, y: 400 })
+      })
+    )
+    expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
+    expect(result).toEqual({
+      data: {
+        blockDuplicate: [
+          {
+            id: 'stepBlockId',
+            journeyId: 'journeyId',
+            parentBlockId: null,
+            parentOrder: 0
+          },
+          {
+            id: 'duplicatedStepId',
+            journeyId: 'journeyId',
+            parentBlockId: null,
+            parentOrder: 1
+          }
+        ]
+      }
+    })
   })
 
   it('returns FORBIDDEN when unauthorized', async () => {
