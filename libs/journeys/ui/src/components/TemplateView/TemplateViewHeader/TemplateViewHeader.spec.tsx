@@ -336,7 +336,9 @@ describe('TemplateViewHeader', () => {
         <JourneyProvider value={{ journey: customizableJourney }}>
           <TemplateViewHeader
             isPublisher
-            authUser={{ id: '123', email: 'user@example.com' } as unknown as User}
+            authUser={
+              { id: '123', email: 'user@example.com' } as unknown as User
+            }
           />
         </JourneyProvider>
       </MockedProvider>
@@ -359,7 +361,9 @@ describe('TemplateViewHeader', () => {
         <JourneyProvider value={{ journey: nonCustomizableJourney }}>
           <TemplateViewHeader
             isPublisher
-            authUser={{ id: '123', email: 'user@example.com' } as unknown as User}
+            authUser={
+              { id: '123', email: 'user@example.com' } as unknown as User
+            }
           />
         </JourneyProvider>
       </MockedProvider>
