@@ -1,5 +1,16 @@
-import { ReactElement, ReactNode } from 'react'
-import { Drawer as VaulDrawer } from 'vaul'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import MuiDrawer from '@mui/material/Drawer'
+import Typography from '@mui/material/Typography'
+import { ReactElement, ReactNode, createContext, useContext } from 'react'
+
+interface DrawerContextValue {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+const DrawerContext = createContext<DrawerContextValue | null>(null)
 
 interface DrawerProps {
   open: boolean
@@ -18,118 +29,82 @@ export function Drawer({
   children
 }: DrawerProps): ReactElement {
   return (
-    <VaulDrawer.Root open={open} onOpenChange={onOpenChange}>
+    <DrawerContext.Provider value={{ open, onOpenChange }}>
       {children}
-    </VaulDrawer.Root>
+    </DrawerContext.Provider>
   )
-}
-
-export function DrawerTrigger({
-  children
-}: {
-  children: ReactNode
-}): ReactElement {
-  return <VaulDrawer.Trigger asChild>{children}</VaulDrawer.Trigger>
 }
 
 export function DrawerContent({
   children,
   title
 }: DrawerContentProps): ReactElement {
+  const ctx = useContext(DrawerContext)
+  if (ctx == null) {
+    throw new Error('DrawerContent must be rendered inside <Drawer>')
+  }
+  const { open, onOpenChange } = ctx
+
   return (
-    <VaulDrawer.Portal>
-      <VaulDrawer.Overlay
-        style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.4)',
-          zIndex: 1300
-        }}
-      />
-      <VaulDrawer.Content
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
+    <MuiDrawer
+      anchor="bottom"
+      open={open}
+      onClose={() => onOpenChange(false)}
+      PaperProps={{
+        sx: {
           maxHeight: '85vh',
-          backgroundColor: 'white',
           borderTopLeftRadius: 16,
           borderTopRightRadius: 16,
           display: 'flex',
-          flexDirection: 'column',
-          zIndex: 1301
+          flexDirection: 'column'
+        }
+      }}
+      aria-label={title}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          pt: 1.5,
+          pb: 1,
+          position: 'relative'
         }}
-        aria-label={title}
       >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            padding: '12px 0 8px',
-            position: 'relative'
+        <Box
+          sx={{
+            width: 48,
+            height: 4,
+            borderRadius: 9999,
+            bgcolor: 'grey.300'
           }}
+        />
+        <IconButton
+          onClick={() => onOpenChange(false)}
+          aria-label="Close chat"
+          size="small"
+          sx={{ position: 'absolute', top: 4, right: 8 }}
         >
-          <div
-            style={{
-              width: 48,
-              height: 4,
-              borderRadius: 9999,
-              backgroundColor: '#e0e0e0'
-            }}
-          />
-          <VaulDrawer.Close asChild>
-            <button
-              type="button"
-              aria-label="Close chat"
-              tabIndex={0}
-              style={{
-                position: 'absolute',
-                top: 8,
-                right: 12,
-                width: 28,
-                height: 28,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: 'none',
-                backgroundColor: 'transparent',
-                cursor: 'pointer',
-                fontSize: 18,
-                color: '#666',
-                borderRadius: 9999,
-                padding: 0,
-                outline: 'none'
-              }}
-            >
-              ✕
-            </button>
-          </VaulDrawer.Close>
-        </div>
-        {title != null && (
-          <VaulDrawer.Title
-            style={{
-              fontSize: 16,
-              fontWeight: 600,
-              padding: '0 16px 8px',
-              margin: 0
-            }}
-          >
-            {title}
-          </VaulDrawer.Title>
-        )}
-        <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          {children}
-        </div>
-      </VaulDrawer.Content>
-    </VaulDrawer.Portal>
+          <CloseRoundedIcon fontSize="small" />
+        </IconButton>
+      </Box>
+      {title != null && (
+        <Typography
+          variant="subtitle1"
+          sx={{ fontWeight: 600, px: 2, pb: 1 }}
+        >
+          {title}
+        </Typography>
+      )}
+      <Box
+        sx={{
+          flex: 1,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        {children}
+      </Box>
+    </MuiDrawer>
   )
-}
-
-export function DrawerClose({
-  children
-}: {
-  children: ReactNode
-}): ReactElement {
-  return <VaulDrawer.Close asChild>{children}</VaulDrawer.Close>
 }

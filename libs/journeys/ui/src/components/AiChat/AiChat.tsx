@@ -1,6 +1,7 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
+import Box from '@mui/material/Box'
 import { DefaultChatTransport, UIMessage } from 'ai'
 import {
   FormEvent,
@@ -86,8 +87,8 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
   }, [messages])
 
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
@@ -98,7 +99,7 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
         {messages.map((message, index) => {
           const text = getTextFromMessage(message)
           return (
-            <div key={message.id}>
+            <Box key={message.id}>
               <Message role={message.role as 'user' | 'assistant'}>
                 {message.role === 'assistant' ? (
                   <Response content={text} />
@@ -115,14 +116,16 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
                   isLastAssistantMessage={index === lastAssistantIndex}
                 />
               )}
-            </div>
+            </Box>
           )
         })}
         {isLoading &&
           (messages.length === 0 ||
             messages[messages.length - 1]?.role === 'user') && (
             <Message role="assistant">
-              <span style={{ opacity: 0.5 }}>Thinking...</span>
+              <Box component="span" sx={{ opacity: 0.5 }}>
+                Thinking...
+              </Box>
             </Message>
           )}
       </Conversation>
@@ -134,6 +137,6 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
         isLoading={isLoading}
         onStop={stop}
       />
-    </div>
+    </Box>
   )
 }

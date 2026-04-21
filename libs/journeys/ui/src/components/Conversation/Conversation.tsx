@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { ReactElement, ReactNode } from 'react'
 import { useStickToBottom } from 'use-stick-to-bottom'
 
@@ -9,27 +10,26 @@ export function Conversation({ children }: ConversationProps): ReactElement {
   const { scrollRef, contentRef } = useStickToBottom()
 
   return (
-    <div
+    <Box
       ref={scrollRef}
-      style={{
+      sx={{
         flex: 1,
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column'
       }}
     >
-      <div
+      <Box
         ref={contentRef}
-        style={{
+        sx={{
           display: 'flex',
           flexDirection: 'column',
-          gap: 8,
-          paddingTop: 8,
-          paddingBottom: 8
+          gap: 1,
+          py: 1
         }}
       >
         {children}
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }

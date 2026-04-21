@@ -1,6 +1,7 @@
-import { CSSProperties, ReactElement, ReactNode } from 'react'
-
-import { Avatar } from '../Avatar'
+import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import { ReactElement, ReactNode } from 'react'
 
 type MessageRole = 'user' | 'assistant'
 
@@ -9,51 +10,48 @@ interface MessageProps {
   children: ReactNode
 }
 
-const containerStyles: Record<MessageRole, CSSProperties> = {
-  user: {
-    display: 'flex',
-    flexDirection: 'row-reverse',
-    gap: 8,
-    padding: '4px 16px'
-  },
-  assistant: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 8,
-    padding: '4px 16px'
-  }
-}
-
-const bubbleStyles: Record<MessageRole, CSSProperties> = {
-  user: {
-    backgroundColor: '#6D28D9',
-    color: 'white',
-    borderRadius: '16px 16px 4px 16px',
-    padding: '10px 14px',
-    maxWidth: '80%',
-    fontSize: 14,
-    lineHeight: 1.5,
-    wordBreak: 'break-word'
-  },
-  assistant: {
-    backgroundColor: '#f3f4f6',
-    color: '#1a1a1a',
-    borderRadius: '16px 16px 16px 4px',
-    padding: '10px 14px',
-    maxWidth: '80%',
-    fontSize: 14,
-    lineHeight: 1.5,
-    wordBreak: 'break-word'
-  }
-}
-
 export function Message({ role, children }: MessageProps): ReactElement {
+  const isUser = role === 'user'
+
   return (
-    <div style={containerStyles[role]}>
-      {role === 'assistant' && (
-        <Avatar fallback="AI" size={28} />
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: isUser ? 'row-reverse' : 'row',
+        gap: 1,
+        px: 2,
+        py: 0.5
+      }}
+    >
+      {!isUser && (
+        <Avatar
+          sx={{
+            width: 28,
+            height: 28,
+            bgcolor: 'primary.main',
+            color: 'primary.contrastText',
+            fontSize: 11,
+            fontWeight: 600
+          }}
+        >
+          AI
+        </Avatar>
       )}
-      <div style={bubbleStyles[role]}>{children}</div>
-    </div>
+      <Box
+        sx={{
+          bgcolor: isUser ? 'primary.main' : 'grey.100',
+          color: isUser ? 'primary.contrastText' : 'text.primary',
+          borderRadius: isUser ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+          px: 1.75,
+          py: 1.25,
+          maxWidth: '80%',
+          wordBreak: 'break-word'
+        }}
+      >
+        <Typography variant="body2" component="div" sx={{ lineHeight: 1.5 }}>
+          {children}
+        </Typography>
+      </Box>
+    </Box>
   )
 }

@@ -1,6 +1,6 @@
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import { ReactElement, useCallback } from 'react'
-
-import { SimpleButton } from '../SimpleButton'
 
 interface ActionsProps {
   content: string
@@ -18,33 +18,33 @@ export function Actions({
   }, [content])
 
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         display: 'flex',
-        gap: 4,
-        padding: '2px 16px 2px 52px'
+        gap: 0.5,
+        pl: 6.5,
+        pr: 2,
+        py: 0.25
       }}
     >
-      <SimpleButton
-        size="sm"
-        variant="ghost"
+      <Button
+        size="small"
         onClick={handleCopy}
         aria-label="Copy message"
-        style={{ fontSize: 12, color: '#999' }}
+        sx={{ fontSize: 12, color: 'text.secondary', minWidth: 0 }}
       >
         Copy
-      </SimpleButton>
+      </Button>
       {isLastAssistantMessage && onRegenerate != null && (
-        <SimpleButton
-          size="sm"
-          variant="ghost"
+        <Button
+          size="small"
           onClick={onRegenerate}
           aria-label="Regenerate response"
-          style={{ fontSize: 12, color: '#999' }}
+          sx={{ fontSize: 12, color: 'text.secondary', minWidth: 0 }}
         >
           Retry
-        </SimpleButton>
+        </Button>
       )}
-    </div>
+    </Box>
   )
 }

@@ -1,3 +1,8 @@
+import SendRoundedIcon from '@mui/icons-material/SendRounded'
+import StopRoundedIcon from '@mui/icons-material/StopRounded'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import TextField from '@mui/material/TextField'
 import {
   FormEvent,
   KeyboardEvent,
@@ -5,8 +10,6 @@ import {
   useCallback,
   useRef
 } from 'react'
-
-import { Textarea } from '../Textarea'
 
 interface PromptInputProps {
   input: string
@@ -47,81 +50,73 @@ export function PromptInput({
     [input, isLoading, onSubmit]
   )
 
+  const canSubmit = input.trim().length > 0
+
   return (
-    <form
+    <Box
+      component="form"
       onSubmit={handleFormSubmit}
-      style={{
+      sx={{
         display: 'flex',
-        gap: 8,
-        padding: '8px 12px 12px',
         alignItems: 'flex-end',
-        borderTop: '1px solid #e0e0e0'
+        gap: 1,
+        px: 1.5,
+        pt: 1,
+        pb: 1.5,
+        borderTop: 1,
+        borderColor: 'divider'
       }}
     >
-      <Textarea
-        ref={textareaRef}
+      <TextField
+        inputRef={textareaRef}
         value={input}
         onChange={(e) => onInputChange(e.target.value)}
-        onKeyDown={handleKeyDown}
         placeholder="Ask me anything"
-        rows={1}
         disabled={isLoading}
-        aria-label="Chat message input"
-        style={{ flex: 1 }}
+        multiline
+        maxRows={6}
+        size="small"
+        fullWidth
+        inputProps={{
+          'aria-label': 'Chat message input',
+          onKeyDown: handleKeyDown
+        }}
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 3,
+            bgcolor: 'grey.50'
+          }
+        }}
       />
       {isLoading ? (
-        <button
+        <IconButton
           type="button"
           onClick={onStop}
           aria-label="Stop generating"
-          tabIndex={0}
-          style={{
-            width: 36,
-            height: 36,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: 'none',
-            backgroundColor: '#e0e0e0',
-            borderRadius: 9999,
-            cursor: 'pointer',
-            fontSize: 16,
-            color: '#666',
-            padding: 0,
-            outline: 'none',
-            flexShrink: 0
-          }}
+          sx={{ bgcolor: 'grey.200', '&:hover': { bgcolor: 'grey.300' } }}
         >
-          ■
-        </button>
+          <StopRoundedIcon fontSize="small" />
+        </IconButton>
       ) : (
-        <button
+        <IconButton
           type="submit"
-          disabled={input.trim().length === 0}
+          disabled={!canSubmit}
           aria-label="Send message"
-          tabIndex={0}
-          style={{
-            width: 36,
-            height: 36,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: 'none',
-            backgroundColor:
-              input.trim().length > 0 ? '#6D28D9' : '#e0e0e0',
-            borderRadius: 9999,
-            cursor:
-              input.trim().length > 0 ? 'pointer' : 'not-allowed',
-            fontSize: 16,
-            color: input.trim().length > 0 ? 'white' : '#999',
-            padding: 0,
-            outline: 'none',
-            flexShrink: 0
+          sx={{
+            bgcolor: canSubmit ? 'primary.main' : 'grey.200',
+            color: canSubmit ? 'primary.contrastText' : 'text.disabled',
+            '&:hover': {
+              bgcolor: canSubmit ? 'primary.dark' : 'grey.300'
+            },
+            '&.Mui-disabled': {
+              bgcolor: 'grey.200',
+              color: 'text.disabled'
+            }
           }}
         >
-          ▶
-        </button>
+          <SendRoundedIcon fontSize="small" />
+        </IconButton>
       )}
-    </form>
+    </Box>
   )
 }
