@@ -6,9 +6,7 @@ export default [
     ignores: [
       'apps/journeys/jest.config.ts',
       'apps/journeys/next.config.js',
-      'apps/journeys/i18next-parser.config.js',
-      'apps/journeys/**/*.stories.{ts,tsx,js,jsx}',
-      'apps/journeys/src/libs/storybook/**'
+      'apps/journeys/i18next-parser.config.js'
     ]
   },
   {
@@ -19,6 +17,7 @@ export default [
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
+    ignores: ['**/*.stories.ts', '**/*.stories.tsx'],
     rules: {
       'no-void': ['error', { allowAsStatement: true }],
       '@typescript-eslint/no-misused-promises': 'off',

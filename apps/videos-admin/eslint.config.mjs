@@ -4,9 +4,7 @@ export default [
   ...nextConfig,
   {
     ignores: [
-      'apps/videos-admin/jest.config.ts',
-      'apps/videos-admin/**/*.stories.{ts,tsx,js,jsx}',
-      'apps/videos-admin/src/libs/storybookConfig/**'
+      'apps/videos-admin/jest.config.ts'
     ]
   },
   {
@@ -21,6 +19,7 @@ export default [
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
+    ignores: ['**/*.stories.ts', '**/*.stories.tsx'],
     rules: {
       '@typescript-eslint/no-misused-promises': 'off',
       '@typescript-eslint/no-unnecessary-type-assertion': 'warn'

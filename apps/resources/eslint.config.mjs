@@ -6,9 +6,7 @@ export default [
     ignores: [
       'apps/resources/jest.config.ts',
       'apps/resources/next.config.js',
-      'apps/resources/i18next-parser.config.js',
-      'apps/resources/**/*.stories.{ts,tsx,js,jsx}',
-      'apps/resources/src/libs/storybook/**'
+      'apps/resources/i18next-parser.config.js'
     ]
   },
   {

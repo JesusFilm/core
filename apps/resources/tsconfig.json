@@ -26,7 +26,6 @@
     "node_modules",
     "jest.config.ts",
     "**/*.stories.ts",
-    "**/*.stories.tsx",
-    "src/libs/storybook"
+    "**/*.stories.tsx"
   ]
 }

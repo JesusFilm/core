@@ -6,9 +6,7 @@ export default [
     ignores: [
       'apps/watch/jest.config.ts',
       'apps/watch/next.config.js',
-      'apps/watch/i18next-parser.config.js',
-      'apps/watch/**/*.stories.{ts,tsx,js,jsx}',
-      'apps/watch/src/libs/storybook/**'
+      'apps/watch/i18next-parser.config.js'
     ]
   },
   {

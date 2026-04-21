@@ -7,9 +7,7 @@ export default [
       'apps/journeys-admin/jest.config.ts',
       'apps/journeys-admin/postcss.config.mjs',
       'apps/journeys-admin/next.config.js',
-      'apps/journeys-admin/i18next-parser.config.js',
-      'apps/journeys-admin/**/*.stories.{ts,tsx,js,jsx}',
-      'apps/journeys-admin/src/libs/storybook/**'
+      'apps/journeys-admin/i18next-parser.config.js'
     ]
   },
   {

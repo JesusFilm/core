@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "outDir": "../../dist/out-tsc",
+    "types": ["node"]
+  },
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "jest.config.ts"
+  ],
+  "include": [
+    "src/**/*.stories.ts",
+    "src/**/*.stories.tsx",
+    "src/lib/apiUsersConfig/**/*.ts",
+    "src/lib/apiUsersConfig/**/*.tsx"
+  ]
+}

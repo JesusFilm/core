@@ -37,7 +37,6 @@
     "jest.config.ts",
     ".next",
     "**/*.stories.ts",
-    "**/*.stories.tsx",
-    "src/libs/storybookConfig"
+    "**/*.stories.tsx"
   ]
 }

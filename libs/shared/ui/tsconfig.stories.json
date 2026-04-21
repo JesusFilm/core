@@ -1,31 +1,31 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "emitDecoratorMetadata": true,
-    "outDir": ""
+    "outDir": "../../../dist/out-tsc"
   },
   "files": [
-    "index.d.ts",
-    "next-env.d.ts",
     "../../../node_modules/@nx/react/typings/cssmodule.d.ts",
     "../../../node_modules/@nx/react/typings/image.d.ts"
   ],
   "exclude": [
     "**/*.spec.ts",
-    "**/*.spec.js",
     "**/*.spec.tsx",
+    "**/*.spec.js",
     "**/*.spec.jsx",
     "jest.config.ts"
   ],
   "include": [
     "src/**/*.stories.ts",
+    "src/**/*.stories.tsx",
     "src/**/*.stories.js",
     "src/**/*.stories.jsx",
-    "src/**/*.stories.tsx",
-    "src/**/*.mock.tsx",
-    "src/libs/journeyUiConfig/**/*.ts",
-    "src/libs/journeyUiConfig/**/*.tsx",
+    "src/libs/storybook/**/*.ts",
+    "src/libs/storybook/**/*.tsx",
+    "src/libs/sharedUiConfig/**/*.ts",
+    "src/libs/sharedUiConfig/**/*.tsx",
     "src/libs/simpleComponentConfig/**/*.ts",
-    "src/libs/simpleComponentConfig/**/*.tsx"
+    "src/libs/simpleComponentConfig/**/*.tsx",
+    "src/components/ThemeDecorator/**/*.ts",
+    "src/components/ThemeDecorator/**/*.tsx"
   ]
 }
