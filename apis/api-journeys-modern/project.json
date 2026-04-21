@@ -114,6 +114,12 @@
       "options": {
         "command": "pnpm exec tsx --tsconfig apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/scripts/fix-cross-team-visitors.ts"
       }
+    },
+    "extend-hindu-buddhist-templates": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/scripts/extend-hindu-buddhist-templates.ts"
+      }
     }
   }
 }

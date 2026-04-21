@@ -7,9 +7,16 @@ const PARENT_TAG_NAME = 'Audience'
 const PRIMARY_LANGUAGE_ID = '529'
 
 /**
- * Splits the legacy combined "Hindu/Buddist" Audience tag into two separate
- * tags — "Hindu" and "Buddhist" — and re-tags every template that used the
- * combined tag so each template ends up tagged with BOTH new tags.
+ * Script 1 of 2 for the Hindu/Buddhist tag split (NES-1591). Touches the
+ * media DB only. Must be run BEFORE the api-journeys-modern script
+ * `extend-hindu-buddhist-templates`.
+ *
+ * Renames the legacy combined "Hindu/Buddist" Audience Tag row to "Hindu",
+ * preserving its Tag.id, and upserts a new "Buddhist" Tag under the same
+ * Audience parent. Preserving Tag.id matters because the journeys DB stores
+ * a bare cross-DB reference to it in JourneyTag.tagId — if we deleted the
+ * old row, every existing JourneyTag pointing at the combined tag would
+ * become a dangling reference.
  *
  * All steps run inside a single prisma.$transaction. On any failure, the
  * transaction rolls back and the database is left in its pre-run state.
@@ -19,41 +26,42 @@ const PRIMARY_LANGUAGE_ID = '529'
  *      migration has already been applied — exit early (idempotent).
  *   2. Look up the "Audience" parent Tag. If it is absent, throw — the
  *      database is not a validly-seeded media database.
- *   3. Snapshot every Tagging that points at the legacy Tag into memory.
- *      This snapshot is used in step 6, before the legacy Tag is deleted
- *      — otherwise the Taggings would cascade-delete and we would lose
- *      the template list.
- *   4. Upsert a "Hindu" Tag under "Audience" and its primary English
- *      TagName. Upsert is idempotent: if a "Hindu" row already exists
- *      (e.g., from a fresh seed run in a dev environment), it is reused.
- *   5. Upsert a "Buddhist" Tag under "Audience" and its primary English
- *      TagName, the same way.
- *   6. For every snapshotted Tagging, create two new Tagging rows — one
- *      on "Hindu", one on "Buddhist" — preserving taggableId,
- *      taggableType, and context. skipDuplicates: true keeps
- *      partial-rerun scenarios safe.
- *   7. Delete the legacy Tag's TagName rows. TagName.tagId is
- *      ON DELETE RESTRICT, so these must be removed before the Tag.
- *   8. Delete the legacy Tag row. Tagging.tag is ON DELETE CASCADE, so
- *      any remaining legacy Taggings are removed automatically.
+ *   3. Collision guard: look up "Hindu" by name. If a row already exists
+ *      with a different id than the legacy tag, delete its TagName rows
+ *      and the Tag row. This scenario only arises in local dev where
+ *      someone ran the updated seed before this script; the stub has no
+ *      JourneyTag referrers because nothing was ever named "Hindu" in
+ *      prod or stage prior to this migration.
+ *   4. Rename the legacy row: tag.update({ data: { name: 'Hindu' } }).
+ *      Tag.id is preserved — every existing JourneyTag pointing at this
+ *      row now resolves to "Hindu" without any journeys-side work.
+ *   5. Update the primary English TagName value to "Hindu". Filter on
+ *      languageId: '529' (not on the current value) so we always hit the
+ *      primary English row regardless of what its value currently is.
+ *      Non-English localized TagName rows are intentionally left in place
+ *      — see the plan's Scope Boundaries.
+ *   6. Upsert a new "Buddhist" Tag under "Audience" and its primary
+ *      English TagName at languageId '529'. Upsert is idempotent: if a
+ *      "Buddhist" row already exists (e.g., from a fresh seed run in a
+ *      dev environment), it is reused.
  *
  * Idempotent: safe to run repeatedly. After the first successful run the
- * legacy Tag no longer exists, so step 1 exits early on every subsequent
+ * legacy tag no longer exists, so step 1 exits early on every subsequent
  * run.
  *
- * Scope: only the primary English (languageId '529') TagName is created
- * for each new tag. Localized TagName rows for the legacy tag — if any —
- * are cascade-dropped along with the legacy Tag in step 8.
+ * This script does NOT touch the dormant media.Tagging table — it is
+ * unused by application code. Template-to-tag relationships live in the
+ * journeys DB (JourneyTag) and are handled by Script 2.
  */
 export async function migrateHinduBuddhistTags(): Promise<void> {
-  console.log('Starting Hindu/Buddhist tag migration...')
+  console.log('Starting Hindu/Buddhist tag migration (api-media)...')
 
   await prisma.$transaction(async (tx) => {
-    const oldTag = await tx.tag.findUnique({
+    const legacyTag = await tx.tag.findUnique({
       where: { name: OLD_TAG_NAME }
     })
 
-    if (oldTag == null) {
+    if (legacyTag == null) {
       console.log(
         `No "${OLD_TAG_NAME}" tag found — migration already applied. Exiting.`
       )
@@ -70,34 +78,38 @@ export async function migrateHinduBuddhistTags(): Promise<void> {
       )
     }
 
-    const oldTaggings = await tx.tagging.findMany({
-      where: { tagId: oldTag.id }
+    const existingHinduTag = await tx.tag.findUnique({
+      where: { name: HINDU_TAG_NAME }
     })
+
+    if (existingHinduTag != null && existingHinduTag.id !== legacyTag.id) {
+      console.log(
+        `Found a pre-existing "${HINDU_TAG_NAME}" tag (likely seed-created in a dev environment). Removing it so the legacy "${OLD_TAG_NAME}" row can be renamed in place.`
+      )
+      await tx.tagName.deleteMany({
+        where: { tagId: existingHinduTag.id }
+      })
+      await tx.tag.delete({
+        where: { id: existingHinduTag.id }
+      })
+    }
+
     console.log(
-      `Found ${oldTaggings.length} tagging(s) on "${OLD_TAG_NAME}" to split onto "${HINDU_TAG_NAME}" and "${BUDDHIST_TAG_NAME}".`
+      `Renaming tag "${OLD_TAG_NAME}" → "${HINDU_TAG_NAME}" (preserving Tag.id ${legacyTag.id})...`
     )
-
-    const hinduTag = await tx.tag.upsert({
-      where: { name: HINDU_TAG_NAME },
-      create: { name: HINDU_TAG_NAME, parentId: audienceTag.id },
-      update: {}
+    await tx.tag.update({
+      where: { id: legacyTag.id },
+      data: { name: HINDU_TAG_NAME }
     })
-    await tx.tagName.upsert({
-      where: {
-        tagId_languageId: {
-          tagId: hinduTag.id,
-          languageId: PRIMARY_LANGUAGE_ID
-        }
-      },
-      create: {
-        tagId: hinduTag.id,
-        value: HINDU_TAG_NAME,
-        languageId: PRIMARY_LANGUAGE_ID,
-        primary: true
-      },
-      update: {}
+    const { count: tagNamesUpdated } = await tx.tagName.updateMany({
+      where: { tagId: legacyTag.id, languageId: PRIMARY_LANGUAGE_ID },
+      data: { value: HINDU_TAG_NAME }
     })
+    console.log(`Updated ${tagNamesUpdated} primary English TagName row(s).`)
 
+    console.log(
+      `Upserting "${BUDDHIST_TAG_NAME}" tag under "${PARENT_TAG_NAME}"...`
+    )
     const buddhistTag = await tx.tag.upsert({
       where: { name: BUDDHIST_TAG_NAME },
       create: { name: BUDDHIST_TAG_NAME, parentId: audienceTag.id },
@@ -119,34 +131,12 @@ export async function migrateHinduBuddhistTags(): Promise<void> {
       update: {}
     })
 
-    if (oldTaggings.length > 0) {
-      const { count } = await tx.tagging.createMany({
-        data: oldTaggings.flatMap((tagging) => [
-          {
-            taggableId: tagging.taggableId,
-            taggableType: tagging.taggableType,
-            context: tagging.context,
-            tagId: hinduTag.id
-          },
-          {
-            taggableId: tagging.taggableId,
-            taggableType: tagging.taggableType,
-            context: tagging.context,
-            tagId: buddhistTag.id
-          }
-        ]),
-        skipDuplicates: true
-      })
-      console.log(
-        `Created ${count} new tagging(s) across "${HINDU_TAG_NAME}" and "${BUDDHIST_TAG_NAME}".`
-      )
-    }
-
-    await tx.tagName.deleteMany({ where: { tagId: oldTag.id } })
-    await tx.tag.delete({ where: { id: oldTag.id } })
-    console.log(`Deleted legacy "${OLD_TAG_NAME}" tag.`)
-
-    console.log('Migration complete.')
+    console.log(
+      `Migration complete. Hindu Tag.id (preserved): ${legacyTag.id}. Buddhist Tag.id (new or reused): ${buddhistTag.id}.`
+    )
+    console.log(
+      'Next step: run `nx run api-journeys-modern:extend-hindu-buddhist-templates --apply` to add Buddhist JourneyTag rows for affected templates.'
+    )
   })
 }
 
