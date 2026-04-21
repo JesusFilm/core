@@ -117,6 +117,12 @@
       "options": {
         "commands": ["pnpm exec tsx apis/api-journeys/db/seed.ts"]
       }
+    },
+    "backfill-buddhist-journey-tag": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx apis/api-journeys/src/workers/migrations/backfill-buddhist-journey-tag/backfill-buddhist-journey-tag.ts"
+      }
     }
   }
 }

@@ -172,6 +172,12 @@
       "options": {
         "commands": ["pnpm exec tsx apis/api-media/db/seed.ts"]
       }
+    },
+    "split-hindu-buddhist-tag": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx apis/api-media/src/workers/migrations/split-hindu-buddhist-tag/split-hindu-buddhist-tag.ts"
+      }
     }
   }
 }
