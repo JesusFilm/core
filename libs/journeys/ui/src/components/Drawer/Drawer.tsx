@@ -57,8 +57,9 @@ export function DrawerContent({
           borderTopRightRadius: 16,
           display: 'flex',
           flexDirection: 'column',
-          bgcolor: 'background.paper',
-          backgroundImage: 'none'
+          bgcolor: 'common.white',
+          backgroundImage: 'none',
+          color: '#1a1a1a'
         }
       }}
       aria-label={title}
@@ -77,14 +78,14 @@ export function DrawerContent({
             width: 48,
             height: 4,
             borderRadius: 9999,
-            bgcolor: 'grey.300'
+            bgcolor: '#e0e0e0'
           }}
         />
         <IconButton
           onClick={() => onOpenChange(false)}
           aria-label="Close chat"
           size="small"
-          sx={{ position: 'absolute', top: 4, right: 8 }}
+          sx={{ position: 'absolute', top: 4, right: 8, color: '#666' }}
         >
           <CloseRoundedIcon fontSize="small" />
         </IconButton>
@@ -92,7 +93,7 @@ export function DrawerContent({
       {title != null && (
         <Typography
           variant="subtitle1"
-          sx={{ fontWeight: 600, px: 2, pb: 1 }}
+          sx={{ fontWeight: 600, px: 2, pb: 1, color: '#1a1a1a' }}
         >
           {title}
         </Typography>

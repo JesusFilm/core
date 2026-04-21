@@ -66,7 +66,7 @@ export function LastCardChatBar({
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: 'background.paper',
+          backgroundColor: 'common.white',
           pb: 'env(safe-area-inset-bottom)',
           ...sx
         }}

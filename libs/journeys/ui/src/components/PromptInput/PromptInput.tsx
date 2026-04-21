@@ -58,13 +58,11 @@ export function PromptInput({
       onSubmit={handleFormSubmit}
       sx={{
         display: 'flex',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         gap: 1,
-        px: 1.5,
-        pt: 1,
-        pb: 1.5,
-        borderTop: 1,
-        borderColor: 'divider'
+        p: 1.5,
+        bgcolor: 'common.white',
+        borderTop: '1px solid #e0e0e0'
       }}
     >
       <TextField
@@ -84,8 +82,7 @@ export function PromptInput({
         sx={{
           '& .MuiOutlinedInput-root': {
             borderRadius: 3,
-            bgcolor: 'grey.50',
-            fontSize: 16
+            bgcolor: 'grey.50'
           },
           '& .MuiOutlinedInput-notchedOutline': {
             border: 'none'
@@ -96,7 +93,15 @@ export function PromptInput({
           '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline':
             {
               border: 'none'
-            }
+            },
+          '& .MuiInputBase-input': {
+            fontSize: 16,
+            color: '#1a1a1a'
+          },
+          '& .MuiInputBase-input::placeholder': {
+            color: '#9e9e9e',
+            opacity: 1
+          }
         }}
       />
       {isLoading ? (
@@ -104,7 +109,15 @@ export function PromptInput({
           type="button"
           onClick={onStop}
           aria-label="Stop generating"
-          sx={{ bgcolor: 'grey.200', '&:hover': { bgcolor: 'grey.300' } }}
+          sx={{
+            width: 36,
+            height: 36,
+            flexShrink: 0,
+            p: 0,
+            bgcolor: '#e0e0e0',
+            color: '#666',
+            '&:hover': { bgcolor: '#d0d0d0' }
+          }}
         >
           <StopRoundedIcon fontSize="small" />
         </IconButton>
@@ -114,14 +127,18 @@ export function PromptInput({
           disabled={!canSubmit}
           aria-label="Send message"
           sx={{
-            bgcolor: canSubmit ? 'primary.main' : 'grey.200',
-            color: canSubmit ? 'primary.contrastText' : 'text.disabled',
+            width: 36,
+            height: 36,
+            flexShrink: 0,
+            p: 0,
+            bgcolor: canSubmit ? '#6D28D9' : '#e0e0e0',
+            color: canSubmit ? '#ffffff' : '#999',
             '&:hover': {
-              bgcolor: canSubmit ? 'primary.dark' : 'grey.300'
+              bgcolor: canSubmit ? '#5B21B6' : '#d0d0d0'
             },
             '&.Mui-disabled': {
-              bgcolor: 'grey.200',
-              color: 'text.disabled'
+              bgcolor: '#e0e0e0',
+              color: '#999'
             }
           }}
         >
