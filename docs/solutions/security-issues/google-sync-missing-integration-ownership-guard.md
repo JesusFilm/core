@@ -1,5 +1,5 @@
 ---
-title: "Google Sync export mutation missing integration ownership and team-scoping guards"
+title: 'Google Sync export mutation missing integration ownership and team-scoping guards'
 date: 2026-04-14
 category: security-issues
 module: api-journeys-modern
@@ -43,7 +43,7 @@ Google Sync (Google Sheets export) only worked for the team creator. Other manag
 
 - **Targeted the wrong mutation** (session history): The initial PR (#8909 first iteration) modified `googleSheetsSyncCreate`, adding ownership guards there. However, the frontend never calls `googleSheetsSyncCreate` -- it exclusively calls `journeyVisitorExportToGoogleSheet`. The original `googleSheetsSyncCreate` already had correct auth via the `isIntegrationOwner` withAuth guard. All changes to it were reverted. Investigation should have traced the actual frontend code path first.
 
-- **Assumed removing `isIntegrationOwner` was the fix** (session history): Early investigation assumed the `isIntegrationOwner` guard on `googleSheetsSyncCreate` was too restrictive. But since the frontend doesn't call that mutation, loosening it had no effect on the user-facing bug. The actual problem was the *absence* of any ownership check on the mutation the frontend *does* call.
+- **Assumed removing `isIntegrationOwner` was the fix** (session history): Early investigation assumed the `isIntegrationOwner` guard on `googleSheetsSyncCreate` was too restrictive. But since the frontend doesn't call that mutation, loosening it had no effect on the user-facing bug. The actual problem was the _absence_ of any ownership check on the mutation the frontend _does_ call.
 
 ## Solution
 
@@ -60,10 +60,10 @@ File: `apis/api-journeys-modern/src/schema/journeyVisitor/journeyVisitorExportTo
 Added two guard checks and moved the Google access token fetch after validation:
 
 Before:
+
 ```typescript
 // Validate integration
-const accessToken = (await getIntegrationGoogleAccessToken(integrationId))
-  .accessToken
+const accessToken = (await getIntegrationGoogleAccessToken(integrationId)).accessToken
 
 const integrationRecord = await prisma.integration.findUnique({
   where: { id: integrationId },
@@ -72,6 +72,7 @@ const integrationRecord = await prisma.integration.findUnique({
 ```
 
 After:
+
 ```typescript
 // Validate integration: must exist, belong to the journey's team,
 // and be owned by the requesting user (privacy: only use your own Google account)
@@ -87,24 +88,18 @@ if (integrationRecord == null) {
 }
 
 if (integrationRecord.teamId !== journey.teamId) {
-  throw new GraphQLError(
-    "Integration does not belong to this journey's team",
-    { extensions: { code: 'FORBIDDEN' } }
-  )
+  throw new GraphQLError("Integration does not belong to this journey's team", { extensions: { code: 'FORBIDDEN' } })
 }
 
 if (integrationRecord.userId !== context.user.id) {
-  throw new GraphQLError(
-    'You can only create syncs using your own Google account',
-    { extensions: { code: 'FORBIDDEN' } }
-  )
+  throw new GraphQLError('You can only create syncs using your own Google account', { extensions: { code: 'FORBIDDEN' } })
 }
 
-const accessToken = (await getIntegrationGoogleAccessToken(integrationId))
-  .accessToken
+const accessToken = (await getIntegrationGoogleAccessToken(integrationId)).accessToken
 ```
 
 Two test cases were added:
+
 1. User doesn't own integration -> FORBIDDEN (verifies `getIntegrationGoogleAccessToken` is not called)
 2. Integration from a different team -> FORBIDDEN (verifies `getIntegrationGoogleAccessToken` is not called)
 
@@ -112,7 +107,7 @@ Two test cases were added:
 
 The user-facing root cause was never fully isolated. QA observed that non-creator team members received errors even when selecting their own Google integration from the dropdown -- the request appeared to carry the correct user and integration IDs. The Google Drive folder picker returned a 403 ("you don't have access"), suggesting a downstream auth check (possibly `getPickerToken`'s `isIntegrationOwner` withAuth guard) was rejecting the request despite correct-looking IDs.
 
-> **Unverified speculation (not confirmed in code):** One hypothesis worth investigating if this recurs is a federation UUID vs Firebase UID mismatch, which was separately documented during the NES-1492 fix (see `docs/plans/2026-04-07-001-fix-google-sync-dropdown-userid-mismatch-plan.md`). That plan notes `IntegrationGoogle.user.id` returned a Prisma UUID via federation resolution while auth context used Firebase UIDs. *If* an auth guard somewhere compared these mismatched ID shapes, it could fail regardless of actual ownership -- but this was not traced to the actual source of the production error. Treat as a lead, not a conclusion.
+> **Unverified speculation (not confirmed in code):** One hypothesis worth investigating if this recurs is a federation UUID vs Firebase UID mismatch, which was separately documented during the NES-1492 fix (see `docs/plans/2026-04-07-001-fix-google-sync-dropdown-userid-mismatch-plan.md`). That plan notes `IntegrationGoogle.user.id` returned a Prisma UUID via federation resolution while auth context used Firebase UIDs. _If_ an auth guard somewhere compared these mismatched ID shapes, it could fail regardless of actual ownership -- but this was not traced to the actual source of the production error. Treat as a lead, not a conclusion.
 
 **What is certain:**
 
@@ -135,7 +130,7 @@ The user-facing root cause was never fully isolated. QA observed that non-creato
 
   This is the same pattern documented in the `journey-acl-read-authorization-bypass` solution -- checking record existence alone (`!= null`) is insufficient for authorization.
 
-- **For mutations that use third-party credentials** (Google OAuth tokens, API keys, etc.), validate ownership *before* fetching or using those credentials. Credential access is the sensitive boundary, not the downstream operation.
+- **For mutations that use third-party credentials** (Google OAuth tokens, API keys, etc.), validate ownership _before_ fetching or using those credentials. Credential access is the sensitive boundary, not the downstream operation.
 
 ## Related Issues
 
