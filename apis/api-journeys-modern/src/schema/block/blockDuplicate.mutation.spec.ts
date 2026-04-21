@@ -80,19 +80,17 @@ describe('blockDuplicate', () => {
     mockAbility.mockReturnValue(true)
 
     prismaMock.block.findUnique.mockResolvedValue(block as any)
-    prismaMock.block.findMany
-      .mockResolvedValueOnce([])
-      .mockResolvedValue([
-        { ...block, parentOrder: 0 } as any,
-        {
-          id: 'duplicatedBlockId',
-          typename: 'ImageBlock',
-          journeyId: 'journeyId',
-          parentBlockId: 'parentId',
-          parentOrder: 1,
-          action: null
-        } as any
-      ])
+    prismaMock.block.findMany.mockResolvedValueOnce([]).mockResolvedValue([
+      { ...block, parentOrder: 0 } as any,
+      {
+        id: 'duplicatedBlockId',
+        typename: 'ImageBlock',
+        journeyId: 'journeyId',
+        parentBlockId: 'parentId',
+        parentOrder: 1,
+        action: null
+      } as any
+    ])
     prismaMock.block.create.mockResolvedValue({
       id: 'duplicatedBlockId',
       typename: 'ImageBlock',
@@ -151,7 +149,12 @@ describe('blockDuplicate', () => {
     expect(result).toEqual({
       data: {
         blockDuplicate: [
-          { id, journeyId: 'journeyId', parentBlockId: 'parentId', parentOrder: 0 },
+          {
+            id,
+            journeyId: 'journeyId',
+            parentBlockId: 'parentId',
+            parentOrder: 0
+          },
           {
             id: 'duplicatedBlockId',
             journeyId: 'journeyId',
@@ -168,19 +171,17 @@ describe('blockDuplicate', () => {
     mockAbility.mockReturnValue(true)
 
     prismaMock.block.findUnique.mockResolvedValue(block as any)
-    prismaMock.block.findMany
-      .mockResolvedValueOnce([])
-      .mockResolvedValue([
-        { ...block, parentOrder: 0 } as any,
-        {
-          id: 'customNewId',
-          typename: 'ImageBlock',
-          journeyId: 'journeyId',
-          parentBlockId: 'parentId',
-          parentOrder: 1,
-          action: null
-        } as any
-      ])
+    prismaMock.block.findMany.mockResolvedValueOnce([]).mockResolvedValue([
+      { ...block, parentOrder: 0 } as any,
+      {
+        id: 'customNewId',
+        typename: 'ImageBlock',
+        journeyId: 'journeyId',
+        parentBlockId: 'parentId',
+        parentOrder: 1,
+        action: null
+      } as any
+    ])
     prismaMock.block.create.mockResolvedValue({
       id: 'customNewId',
       typename: 'ImageBlock',
@@ -231,7 +232,12 @@ describe('blockDuplicate', () => {
     expect(result).toEqual({
       data: {
         blockDuplicate: [
-          { id, journeyId: 'journeyId', parentBlockId: 'parentId', parentOrder: 0 },
+          {
+            id,
+            journeyId: 'journeyId',
+            parentBlockId: 'parentId',
+            parentOrder: 0
+          },
           {
             id: 'customNewId',
             journeyId: 'journeyId',
@@ -258,21 +264,19 @@ describe('blockDuplicate', () => {
     mockAbility.mockReturnValue(true)
 
     prismaMock.block.findUnique.mockResolvedValue(stepBlock as any)
-    prismaMock.block.findMany
-      .mockResolvedValueOnce([])
-      .mockResolvedValue([
-        { ...stepBlock, parentOrder: 0 } as any,
-        {
-          id: 'duplicatedStepId',
-          typename: 'StepBlock',
-          journeyId: 'journeyId',
-          parentBlockId: null,
-          parentOrder: 1,
-          x: 300,
-          y: 400,
-          action: null
-        } as any
-      ])
+    prismaMock.block.findMany.mockResolvedValueOnce([]).mockResolvedValue([
+      { ...stepBlock, parentOrder: 0 } as any,
+      {
+        id: 'duplicatedStepId',
+        typename: 'StepBlock',
+        journeyId: 'journeyId',
+        parentBlockId: null,
+        parentOrder: 1,
+        x: 300,
+        y: 400,
+        action: null
+      } as any
+    ])
     prismaMock.block.create.mockResolvedValue({
       id: 'duplicatedStepId',
       typename: 'StepBlock',
