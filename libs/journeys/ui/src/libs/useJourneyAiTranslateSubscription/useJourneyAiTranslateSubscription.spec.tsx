@@ -62,7 +62,7 @@ const data = {
     progress: 100,
     message: 'Translation complete',
     journey: translatedJourney,
-    __typename: 'JourneyAiTranslateProgress'
+    __typename: 'JourneyAiTranslateCreateSubscriptionPayload'
   }
 }
 
