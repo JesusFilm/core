@@ -155,7 +155,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     the editor.
     """
     y: Int
-  ): [Block!]! @join__field(graph: API_JOURNEYS) 
+  ): [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   blockOrderUpdate(
     id: ID!
     parentOrder: Int!
@@ -412,6 +412,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   integrationDelete(id: ID!) : Integration! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyTransferFromAnonymous(journeyId: ID!, teamId: ID) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyCustomizationDescriptionTranslate(input: JourneyCustomizationDescriptionTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -4768,11 +4769,49 @@ input IntegrationGoogleUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input JourneyAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  The ID of the journey to translate
+  """
   journeyId: ID!
+  """
+  The journey name to translate
+  """
   name: String!
+  """
+  The source language name of the journey content
+  """
   journeyLanguageName: String!
+  """
+  The target language ID for journey content (blocks, title, description)
+  """
   textLanguageId: ID!
+  """
+  The target language name for journey content (blocks, title, description)
+  """
   textLanguageName: String!
+  """
+  Language ID for customization text translation. Falls back to textLanguageId if not provided.
+  """
+  userLanguageId: ID
+  """
+  Language name for customization text translation. Falls back to textLanguageName if not provided.
+  """
+  userLanguageName: String
+}
+
+input JourneyCustomizationDescriptionTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  The ID of the journey whose customization description to translate
+  """
+  journeyId: ID!
+  """
+  The current language of the customization description
+  """
+  sourceLanguageName: String!
+  """
+  The language to translate the customization description into
+  """
+  targetLanguageName: String!
 }
 
 input JourneyEventsExportLogInput @join__type(graph: API_JOURNEYS_MODERN)  {
