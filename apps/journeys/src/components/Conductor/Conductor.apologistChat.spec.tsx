@@ -183,7 +183,7 @@ describe('Conductor apologistChat flag gating', () => {
     expect(queryByTestId('PinnedChatBar')).not.toBeInTheDocument()
   })
 
-  it('renders PinnedChatBar when flag is on and showAssistant is true on the last card', async () => {
+  it('renders PinnedChatBar when flag is on and showAssistant is true', async () => {
     const { findByTestId } = render(
       <FlagsProvider flags={{ apologistChat: true }}>
         <MockedProvider mocks={[]}>
