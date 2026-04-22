@@ -10,7 +10,6 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { blockHistoryVar, useBlocks } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
-import { useIsLastCard } from '@core/journeys/ui/isLastCard'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { PinnedChatBar } from '@core/journeys/ui/PinnedChatBar'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
@@ -74,10 +73,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
 
-  const isLastCard = useIsLastCard()
   const showPinnedChat =
     apologistChatEnabled &&
-    isLastCard &&
     journey?.showAssistant === true &&
     variant !== 'admin' &&
     variant !== 'embed'

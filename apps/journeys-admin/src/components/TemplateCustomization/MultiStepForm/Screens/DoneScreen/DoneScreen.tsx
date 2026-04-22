@@ -117,8 +117,8 @@ export function DoneScreen(): ReactElement {
       footer={
         <Button
           data-testid="ProjectsDashboardButton"
-          variant="blockContained"
-          color="solid"
+          variant="text"
+          color="primary"
           onClick={handleGoToProjectsDashboard}
           loading={navigating}
           endIcon={<ChevronRightIcon />}

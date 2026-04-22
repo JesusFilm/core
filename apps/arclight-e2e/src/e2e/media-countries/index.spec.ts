@@ -71,7 +71,7 @@ test.describe('GET /v2/media-countries', () => {
     )
     expect(countryIds).toContain('US')
     expect(countryIds).toContain('GB')
-    expect(countryIds.length).toBe(2)
+    expect(countryIds).toHaveLength(2)
   })
 
   test('expands language IDs', async ({ request }) => {
