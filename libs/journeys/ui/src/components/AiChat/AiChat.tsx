@@ -48,9 +48,7 @@ function useTypewriter(
   enabled: boolean,
   isStreaming: boolean
 ): TypewriterResult {
-  const [revealed, setRevealed] = useState(() =>
-    enabled ? 0 : target.length
-  )
+  const [revealed, setRevealed] = useState(() => (enabled ? 0 : target.length))
   const targetRef = useRef(target)
   targetRef.current = target
 
