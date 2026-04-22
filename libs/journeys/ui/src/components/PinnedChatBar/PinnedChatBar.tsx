@@ -22,9 +22,7 @@ interface PinnedChatBarProps {
   sx?: SxProps
 }
 
-export function PinnedChatBar({
-  sx
-}: PinnedChatBarProps): ReactElement | null {
+export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
   const { variant } = useJourney()
   const theme = useTheme()
   const isDesktop = useMediaQuery(theme.breakpoints.up('sm'))

@@ -1,5 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import { getFlags } from '../../../src/libs/getFlags'
+
+import handler from './index'
+
 jest.mock('@ai-sdk/google', () => ({ google: jest.fn() }))
 jest.mock('@ai-sdk/openai', () => ({ openai: jest.fn() }))
 jest.mock('@ai-sdk/openai-compatible', () => ({
@@ -14,10 +18,6 @@ jest.mock('ai', () => ({
 jest.mock('../../../src/libs/getFlags', () => ({
   getFlags: jest.fn()
 }))
-
-import { getFlags } from '../../../src/libs/getFlags'
-
-import handler from './index'
 
 const mockGetFlags = getFlags as jest.MockedFunction<typeof getFlags>
 
