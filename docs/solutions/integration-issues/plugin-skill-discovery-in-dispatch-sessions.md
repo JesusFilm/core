@@ -1,5 +1,5 @@
 ---
-title: "CE Plugin Skills Not Available in Dispatch-Spawned Code Task Sessions"
+title: 'CE Plugin Skills Not Available in Dispatch-Spawned Code Task Sessions'
 category: integration-issues
 created: 2026-04-22
 status: resolved
@@ -22,6 +22,7 @@ related:
 Compound-engineering plugin skills (`/ce-plan`, `/ce-review`, `/ce-brainstorm`, `/ce-work`, `/ce-compound`, etc.) were available in local Claude Code CLI sessions but **not discoverable by Dispatch-spawned Code task sessions**.
 
 **Symptoms:**
+
 - Dispatch tasks reported CE skills as unavailable when invoked
 - Skills worked fine in the local CLI terminal
 - The same repo, same branch, different execution context
@@ -65,12 +66,14 @@ The devcontainer had `.claude/skills/` and `.claude/agents/` listed in `.git/inf
 A two-phase update workflow for keeping the vendored snapshot current:
 
 **Phase 1 (always runs):**
+
 1. Compare `.ce-version` against upstream plugin version
 2. Show brief diff preview (new/removed/modified skills and agents)
 3. Run best-effort heuristic security scan on incoming changes
 4. Ask for user confirmation
 
 **Phase 2 (after confirmation):**
+
 1. Identify the user (git name, GitHub username, initials)
 2. Create worktree branch: `00-00-XX-chore-ce-sync-vX-Y-Z`
 3. Delete CE files removed upstream (using manifest)
