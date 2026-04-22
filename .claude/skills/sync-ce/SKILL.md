@@ -70,6 +70,7 @@ echo "<new-version>" > .ce-version
 ### 6. Report changes
 
 Summarize what changed:
+
 - Version bump (old -> new)
 - New skills added (list any new directories in `.claude/skills/`)
 - New agents added (list any new directories in `.claude/agents/`)
