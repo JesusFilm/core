@@ -18,13 +18,13 @@ const AiChat = dynamic(
   { ssr: false }
 )
 
-interface LastCardChatBarProps {
+interface PinnedChatBarProps {
   sx?: SxProps
 }
 
-export function LastCardChatBar({
+export function PinnedChatBar({
   sx
-}: LastCardChatBarProps): ReactElement | null {
+}: PinnedChatBarProps): ReactElement | null {
   const { variant } = useJourney()
   const theme = useTheme()
   const isDesktop = useMediaQuery(theme.breakpoints.up('sm'))
@@ -61,7 +61,7 @@ export function LastCardChatBar({
   return (
     <>
       <Box
-        data-testid="LastCardChatBar"
+        data-testid="PinnedChatBar"
         sx={{
           position: 'absolute',
           zIndex: 1,

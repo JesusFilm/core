@@ -12,7 +12,7 @@ import { blockHistoryVar, useBlocks } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useIsLastCard } from '@core/journeys/ui/isLastCard'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { LastCardChatBar } from '@core/journeys/ui/LastCardChatBar'
+import { PinnedChatBar } from '@core/journeys/ui/PinnedChatBar'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
@@ -227,7 +227,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 alignment="right"
               />
               {showPinnedChat ? (
-                <LastCardChatBar
+                <PinnedChatBar
                   sx={{
                     ...mobileNotchStyling,
                     display: {

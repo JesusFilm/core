@@ -27,9 +27,9 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-jest.mock('@core/journeys/ui/LastCardChatBar', () => ({
+jest.mock('@core/journeys/ui/PinnedChatBar', () => ({
   __esModule: true,
-  LastCardChatBar: () => <div data-testid="LastCardChatBar" />
+  PinnedChatBar: () => <div data-testid="PinnedChatBar" />
 }))
 
 global.fetch = jest.fn(
@@ -131,7 +131,7 @@ describe('Conductor apologistChat flag gating', () => {
     showAssistant: true
   }
 
-  it('does not render LastCardChatBar when apologistChat flag is off', () => {
+  it('does not render PinnedChatBar when apologistChat flag is off', () => {
     const { queryByTestId } = render(
       <FlagsProvider flags={{ apologistChat: false }}>
         <MockedProvider mocks={[]}>
@@ -145,10 +145,10 @@ describe('Conductor apologistChat flag gating', () => {
         </MockedProvider>
       </FlagsProvider>
     )
-    expect(queryByTestId('LastCardChatBar')).not.toBeInTheDocument()
+    expect(queryByTestId('PinnedChatBar')).not.toBeInTheDocument()
   })
 
-  it('does not render LastCardChatBar when FlagsProvider is absent', () => {
+  it('does not render PinnedChatBar when FlagsProvider is absent', () => {
     const { queryByTestId } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
@@ -160,10 +160,10 @@ describe('Conductor apologistChat flag gating', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(queryByTestId('LastCardChatBar')).not.toBeInTheDocument()
+    expect(queryByTestId('PinnedChatBar')).not.toBeInTheDocument()
   })
 
-  it('does not render LastCardChatBar when flag is on but showAssistant is false', () => {
+  it('does not render PinnedChatBar when flag is on but showAssistant is false', () => {
     const { queryByTestId } = render(
       <FlagsProvider flags={{ apologistChat: true }}>
         <MockedProvider mocks={[]}>
@@ -180,10 +180,10 @@ describe('Conductor apologistChat flag gating', () => {
         </MockedProvider>
       </FlagsProvider>
     )
-    expect(queryByTestId('LastCardChatBar')).not.toBeInTheDocument()
+    expect(queryByTestId('PinnedChatBar')).not.toBeInTheDocument()
   })
 
-  it('renders LastCardChatBar when flag is on and showAssistant is true on the last card', async () => {
+  it('renders PinnedChatBar when flag is on and showAssistant is true on the last card', async () => {
     const { findByTestId } = render(
       <FlagsProvider flags={{ apologistChat: true }}>
         <MockedProvider mocks={[]}>
@@ -197,6 +197,6 @@ describe('Conductor apologistChat flag gating', () => {
         </MockedProvider>
       </FlagsProvider>
     )
-    expect(await findByTestId('LastCardChatBar')).toBeInTheDocument()
+    expect(await findByTestId('PinnedChatBar')).toBeInTheDocument()
   })
 })

@@ -2,6 +2,8 @@ import Box from '@mui/material/Box'
 import { SxProps } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
 import { useIsLastCard } from '../../../libs/isLastCard'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getFooterMobileSpacing } from '../utils/getFooterElements'
@@ -72,8 +74,10 @@ export function OverlayContent({
 
   const footerMobileSpacing = getFooterMobileSpacing({ journey, variant })
 
+  const flags = useFlags()
   const isLastCard = useIsLastCard()
   const pinnedChatActive =
+    flags.apologistChat === true &&
     isLastCard &&
     journey?.showAssistant === true &&
     variant !== 'admin' &&
