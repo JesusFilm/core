@@ -1153,11 +1153,20 @@ export type Journey = {
 };
 
 export type JourneyAiTranslateInput = {
+  /** The ID of the journey to translate */
   journeyId: Scalars['ID']['input'];
+  /** The source language name of the journey content */
   journeyLanguageName: Scalars['String']['input'];
+  /** The journey name to translate */
   name: Scalars['String']['input'];
+  /** The target language ID for journey content (blocks, title, description) */
   textLanguageId: Scalars['ID']['input'];
+  /** The target language name for journey content (blocks, title, description) */
   textLanguageName: Scalars['String']['input'];
+  /** Language ID for customization text translation. Falls back to textLanguageId if not provided. */
+  userLanguageId?: InputMaybe<Scalars['ID']['input']>;
+  /** Language name for customization text translation. Falls back to textLanguageName if not provided. */
+  userLanguageName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyAiTranslateProgress = {
@@ -1210,6 +1219,15 @@ export type JourneyCreateInput = {
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
   title: Scalars['String']['input'];
+};
+
+export type JourneyCustomizationDescriptionTranslateInput = {
+  /** The ID of the journey whose customization description to translate */
+  journeyId: Scalars['ID']['input'];
+  /** The current language of the customization description */
+  sourceLanguageName: Scalars['String']['input'];
+  /** The language to translate the customization description into */
+  targetLanguageName: Scalars['String']['input'];
 };
 
 export type JourneyCustomizationField = {
@@ -1902,6 +1920,7 @@ export type Mutation = {
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
   journeyCreate: Journey;
+  journeyCustomizationDescriptionTranslate: Journey;
   journeyCustomizationFieldPublisherUpdate: Array<JourneyCustomizationField>;
   journeyCustomizationFieldUserUpdate: Array<JourneyCustomizationField>;
   journeyDuplicate: Journey;
@@ -2469,6 +2488,11 @@ export type MutationJourneyCollectionUpdateArgs = {
 export type MutationJourneyCreateArgs = {
   input: JourneyCreateInput;
   teamId: Scalars['ID']['input'];
+};
+
+
+export type MutationJourneyCustomizationDescriptionTranslateArgs = {
+  input: JourneyCustomizationDescriptionTranslateInput;
 };
 
 
