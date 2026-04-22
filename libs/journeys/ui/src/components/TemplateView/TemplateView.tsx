@@ -155,7 +155,7 @@ export function TemplateView({
               }}
             />
           )}
-          <TemplateFooter signedIn={authUser?.id != null} />
+          <TemplateFooter signedIn={authUser?.email != null} />
         </Stack>
       </Container>
     </Paper>
