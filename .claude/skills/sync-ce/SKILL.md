@@ -124,6 +124,10 @@ cp -r "$TEMP_DIR/plugins/compound-engineering/skills/"* ../sync-ce-worktree/.cla
 # Copy agents
 cp -r "$TEMP_DIR/plugins/compound-engineering/agents/"* ../sync-ce-worktree/.claude/agents/
 
+# Copy LICENSE to both directories
+cp "$TEMP_DIR/plugins/compound-engineering/LICENSE" ../sync-ce-worktree/.claude/skills/CE-LICENSE
+cp "$TEMP_DIR/plugins/compound-engineering/LICENSE" ../sync-ce-worktree/.claude/agents/CE-LICENSE
+
 # Update version file
 echo "<new-version>" > ../sync-ce-worktree/.ce-version
 ```
