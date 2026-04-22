@@ -50,6 +50,7 @@ git clone --depth 1 --quiet https://github.com/EveryInc/compound-engineering-plu
 ```
 
 Read the existing `.ce-manifest` to know which skills and agents are CE-owned. Then compare:
+
 - List new skills (in upstream but not in manifest)
 - List removed skills (in manifest but no longer upstream)
 - List new agents (in upstream but not in manifest)
