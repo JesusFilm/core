@@ -4,17 +4,14 @@ import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import {
   type LanguageModel,
   UIMessage,
-  UIMessageChunk,
   convertToModelMessages,
-  createUIMessageStream,
-  generateText,
-  pipeUIMessageStreamToResponse
+  streamText
 } from 'ai'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { getFlags } from '../../../src/libs/getFlags'
 
-type ChatProvider = 'apologist' | 'gemini' | 'openai'
+type ChatProvider = 'apologist' | 'gemini' | 'openai' | 'openrouter'
 
 interface ResolvedChatModel {
   model: LanguageModel
@@ -42,6 +39,24 @@ function resolveChatModel():
     return {
       ok: true,
       resolved: { model: openai('gpt-4o'), provider, modelId: 'gpt-4o' }
+    }
+  }
+
+  if (provider === 'openrouter') {
+    const apiKey = process.env.OPENROUTER_API_KEY ?? ''
+    if (apiKey === '') {
+      return { ok: false, error: 'openrouter provider is not configured' }
+    }
+    const openrouter = createOpenAICompatible({
+      name: 'openrouter',
+      baseURL: 'https://openrouter.ai/api/v1',
+      apiKey
+    })
+    const modelId =
+      process.env.OPENROUTER_MODEL ?? 'google/gemini-2.5-flash-lite'
+    return {
+      ok: true,
+      resolved: { model: openrouter.chatModel(modelId), provider, modelId }
     }
   }
 
@@ -109,43 +124,49 @@ export default async function handler(
   const systemMessage = buildSystemMessage({ language })
   const modelMessages = await convertToModelMessages(messages)
 
-  // TODO(NES-1554 follow-up): the upstream openai-compatible SSE stream is
-  // not decoded correctly by @ai-sdk/openai-compatible (empty text + empty
-  // usage). We use generateText + a synthesised UIMessageStream so the
-  // client still receives a valid AI SDK stream. Revisit once upstream or
-  // the SDK is fixed.
+  const { provider, modelId } = modelResult.resolved
+
   try {
-    const { text, finishReason } = await generateText({
+    const result = streamText({
       model: modelResult.resolved.model,
       system: systemMessage,
-      messages: modelMessages
-    })
-
-    const stream = createUIMessageStream({
-      execute: ({ writer }) => {
-        const textId = `text-${Date.now()}`
-        writer.write({ type: 'start' } as UIMessageChunk)
-        writer.write({ type: 'start-step' } as UIMessageChunk)
-        writer.write({ type: 'text-start', id: textId } as UIMessageChunk)
-        writer.write({
-          type: 'text-delta',
-          id: textId,
-          delta: text ?? ''
-        } as UIMessageChunk)
-        writer.write({ type: 'text-end', id: textId } as UIMessageChunk)
-        writer.write({ type: 'finish-step' } as UIMessageChunk)
-        writer.write({ type: 'finish', finishReason } as UIMessageChunk)
+      messages: modelMessages,
+      onError: ({ error }) => {
+        const err = error as Error
+        console.error('[chat] streamText onError', {
+          provider,
+          modelId,
+          name: err?.name,
+          message: err?.message,
+          stack: err?.stack
+        })
       }
     })
 
-    pipeUIMessageStreamToResponse({ response: res, stream })
+    result.pipeUIMessageStreamToResponse(res, {
+      onError: (error) => {
+        const err = error as Error
+        console.error('[chat] pipe onError', {
+          provider,
+          modelId,
+          name: err?.name,
+          message: err?.message
+        })
+        return err?.message ?? 'stream failed'
+      }
+    })
   } catch (error) {
     const err = error as Error
-    console.error('apologist chat error', err?.message)
+    console.error('[chat] synchronous error', {
+      provider,
+      modelId,
+      name: err?.name,
+      message: err?.message
+    })
     if (!res.headersSent) {
       res
         .status(500)
-        .json({ error: err?.message ?? 'upstream generateText failed' })
+        .json({ error: err?.message ?? 'upstream streamText failed' })
     } else {
       res.end()
     }

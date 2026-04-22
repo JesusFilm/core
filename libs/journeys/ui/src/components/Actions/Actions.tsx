@@ -5,15 +5,9 @@ import { ReactElement, useCallback } from 'react'
 
 interface ActionsProps {
   content: string
-  onRegenerate?: () => void
-  isLastAssistantMessage: boolean
 }
 
-export function Actions({
-  content,
-  onRegenerate,
-  isLastAssistantMessage
-}: ActionsProps): ReactElement {
+export function Actions({ content }: ActionsProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
   const handleCopy = useCallback(async () => {
@@ -37,16 +31,6 @@ export function Actions({
       >
         {t('Copy')}
       </Button>
-      {isLastAssistantMessage && onRegenerate != null && (
-        <Button
-          size="small"
-          onClick={onRegenerate}
-          aria-label={t('Regenerate response')}
-          sx={{ fontSize: 12, color: '#666', minWidth: 0 }}
-        >
-          {t('Retry')}
-        </Button>
-      )}
     </Box>
   )
 }

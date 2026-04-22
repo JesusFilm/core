@@ -11,9 +11,9 @@ jest.mock('@ai-sdk/openai-compatible', () => ({
 }))
 jest.mock('ai', () => ({
   convertToModelMessages: jest.fn(),
-  createUIMessageStream: jest.fn(),
-  generateText: jest.fn(),
-  pipeUIMessageStreamToResponse: jest.fn()
+  streamText: jest.fn(() => ({
+    pipeUIMessageStreamToResponse: jest.fn()
+  }))
 }))
 jest.mock('../../../src/libs/getFlags', () => ({
   getFlags: jest.fn()
