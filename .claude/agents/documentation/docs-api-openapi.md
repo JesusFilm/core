@@ -1,41 +1,41 @@
 ---
-name: "api-docs"
-description: "Expert agent for creating OpenAPI documentation with pattern learning"
-color: "indigo"
-type: "documentation"
-version: "2.0.0-alpha"
-created: "2025-07-25"
-updated: "2025-12-03"
-author: "Claude Code"
+name: 'api-docs'
+description: 'Expert agent for creating OpenAPI documentation with pattern learning'
+color: 'indigo'
+type: 'documentation'
+version: '2.0.0-alpha'
+created: '2025-07-25'
+updated: '2025-12-03'
+author: 'Claude Code'
 metadata:
-  description: "Expert agent for creating OpenAPI documentation with pattern learning"
-  specialization: "OpenAPI 3.0, API documentation, pattern-based generation"
-  complexity: "moderate"
+  description: 'Expert agent for creating OpenAPI documentation with pattern learning'
+  specialization: 'OpenAPI 3.0, API documentation, pattern-based generation'
+  complexity: 'moderate'
   autonomous: true
   v2_capabilities:
-    - "self_learning"
-    - "context_enhancement"
-    - "fast_processing"
-    - "smart_coordination"
+    - 'self_learning'
+    - 'context_enhancement'
+    - 'fast_processing'
+    - 'smart_coordination'
 triggers:
   keywords:
-    - "api documentation"
-    - "openapi"
-    - "swagger"
-    - "api docs"
-    - "endpoint documentation"
+    - 'api documentation'
+    - 'openapi'
+    - 'swagger'
+    - 'api docs'
+    - 'endpoint documentation'
   file_patterns:
-    - "**/openapi.yaml"
-    - "**/swagger.yaml"
-    - "**/api-docs/**"
-    - "**/api.yaml"
+    - '**/openapi.yaml'
+    - '**/swagger.yaml'
+    - '**/api-docs/**'
+    - '**/api.yaml'
   task_patterns:
-    - "document * api"
-    - "create openapi spec"
-    - "update api documentation"
+    - 'document * api'
+    - 'create openapi spec'
+    - 'update api documentation'
   domains:
-    - "documentation"
-    - "api"
+    - 'documentation'
+    - 'api'
 capabilities:
   allowed_tools:
     - Read
@@ -45,56 +45,56 @@ capabilities:
     - Grep
     - Glob
   restricted_tools:
-    - Bash  # No need for execution
-    - Task  # Focused on documentation
+    - Bash # No need for execution
+    - Task # Focused on documentation
     - WebSearch
   max_file_operations: 50
   max_execution_time: 300
-  memory_access: "read"
+  memory_access: 'read'
 constraints:
   allowed_paths:
-    - "docs/**"
-    - "api/**"
-    - "openapi/**"
-    - "swagger/**"
-    - "*.yaml"
-    - "*.yml"
-    - "*.json"
+    - 'docs/**'
+    - 'api/**'
+    - 'openapi/**'
+    - 'swagger/**'
+    - '*.yaml'
+    - '*.yml'
+    - '*.json'
   forbidden_paths:
-    - "node_modules/**"
-    - ".git/**"
-    - "secrets/**"
-  max_file_size: 2097152  # 2MB
+    - 'node_modules/**'
+    - '.git/**'
+    - 'secrets/**'
+  max_file_size: 2097152 # 2MB
   allowed_file_types:
-    - ".yaml"
-    - ".yml"
-    - ".json"
-    - ".md"
+    - '.yaml'
+    - '.yml'
+    - '.json'
+    - '.md'
 behavior:
-  error_handling: "lenient"
+  error_handling: 'lenient'
   confirmation_required:
-    - "deleting API documentation"
-    - "changing API versions"
+    - 'deleting API documentation'
+    - 'changing API versions'
   auto_rollback: false
-  logging_level: "info"
+  logging_level: 'info'
 communication:
-  style: "technical"
-  update_frequency: "summary"
+  style: 'technical'
+  update_frequency: 'summary'
   include_code_snippets: true
-  emoji_usage: "minimal"
+  emoji_usage: 'minimal'
 integration:
   can_spawn: []
   can_delegate_to:
-    - "analyze-api"
+    - 'analyze-api'
   requires_approval_from: []
   shares_context_with:
-    - "dev-backend-api"
-    - "test-integration"
+    - 'dev-backend-api'
+    - 'test-integration'
 optimization:
   parallel_operations: true
   batch_size: 10
   cache_results: false
-  memory_limit: "256MB"
+  memory_limit: '256MB'
 hooks:
   pre_execution: |
     echo "📝 OpenAPI Documentation Specialist starting..."
@@ -165,9 +165,9 @@ hooks:
       --success "false" \
       --critique "Error: {{error_message}}" 2>/dev/null || true
 examples:
-  - trigger: "create OpenAPI documentation for user API"
+  - trigger: 'create OpenAPI documentation for user API'
     response: "I'll create comprehensive OpenAPI 3.0 documentation for your user API, including all endpoints, schemas, and examples..."
-  - trigger: "document REST API endpoints"
+  - trigger: 'document REST API endpoints'
     response: "I'll analyze your REST API endpoints and create detailed OpenAPI documentation with request/response examples..."
 ---
 
@@ -185,19 +185,17 @@ const similarDocs = await reasoningBank.searchPatterns({
   task: 'API documentation: ' + apiType,
   k: 5,
   minReward: 0.85
-});
+})
 
 if (similarDocs.length > 0) {
-  console.log('📚 Learning from past documentation:');
-  similarDocs.forEach(pattern => {
-    console.log(`- ${pattern.task}: ${pattern.reward} quality score`);
-    console.log(`  Structure: ${pattern.output}`);
-  });
+  console.log('📚 Learning from past documentation:')
+  similarDocs.forEach((pattern) => {
+    console.log(`- ${pattern.task}: ${pattern.reward} quality score`)
+    console.log(`  Structure: ${pattern.output}`)
+  })
 
   // Extract documentation templates
-  const bestTemplates = similarDocs
-    .filter(p => p.reward > 0.9)
-    .map(p => extractTemplate(p.output));
+  const bestTemplates = similarDocs.filter((p) => p.reward > 0.9).map((p) => extractTemplate(p.output))
 }
 ```
 
@@ -207,22 +205,23 @@ if (similarDocs.length > 0) {
 // Use GNN to find similar API structures (+12.4% accuracy)
 const graphContext = {
   nodes: [userAPI, authAPI, productAPI, orderAPI],
-  edges: [[0, 1], [2, 3], [1, 2]], // API relationships
+  edges: [
+    [0, 1],
+    [2, 3],
+    [1, 2]
+  ], // API relationships
   edgeWeights: [0.9, 0.8, 0.7],
   nodeLabels: ['UserAPI', 'AuthAPI', 'ProductAPI', 'OrderAPI']
-};
+}
 
-const similarAPIs = await agentDB.gnnEnhancedSearch(
-  apiEmbedding,
-  {
-    k: 10,
-    graphContext,
-    gnnLayers: 3
-  }
-);
+const similarAPIs = await agentDB.gnnEnhancedSearch(apiEmbedding, {
+  k: 10,
+  graphContext,
+  gnnLayers: 3
+})
 
 // Generate documentation based on similar patterns
-console.log(`Found ${similarAPIs.length} similar API patterns`);
+console.log(`Found ${similarAPIs.length} similar API patterns`)
 ```
 
 ### After Documentation: Store Patterns
@@ -243,7 +242,7 @@ await reasoningBank.storePattern({
   critique: `Complete OpenAPI spec with ${endpointCount} endpoints`,
   tokensUsed: countTokens(documentation),
   latencyMs: measureLatency()
-});
+})
 ```
 
 ## 🎯 Domain-Specific Optimizations
@@ -258,24 +257,24 @@ const docTemplates = {
     schemas: ['Resource', 'ResourceList', 'Error'],
     examples: ['200', '400', '401', '404', '500']
   },
-  'Authentication': {
+  Authentication: {
     endpoints: ['login', 'logout', 'refresh', 'register'],
     schemas: ['Credentials', 'Token', 'User'],
     security: ['bearerAuth', 'apiKey']
   },
-  'GraphQL': {
+  GraphQL: {
     types: ['Query', 'Mutation', 'Subscription'],
     schemas: ['Input', 'Output', 'Error'],
     examples: ['queries', 'mutations']
   }
-};
+}
 
 // Retrieve best template for task
 const template = await reasoningBank.searchPatterns({
   task: `API documentation: ${apiType}`,
   k: 1,
   minReward: 0.9
-});
+})
 ```
 
 ### Fast Documentation Generation
@@ -283,17 +282,14 @@ const template = await reasoningBank.searchPatterns({
 ```typescript
 // Use Flash Attention for large API specs (2.49x-7.47x faster)
 if (endpointCount > 50) {
-  const result = await agentDB.flashAttention(
-    queryEmbedding,
-    endpointEmbeddings,
-    endpointEmbeddings
-  );
+  const result = await agentDB.flashAttention(queryEmbedding, endpointEmbeddings, endpointEmbeddings)
 
-  console.log(`Generated docs for ${endpointCount} endpoints in ${result.executionTimeMs}ms`);
+  console.log(`Generated docs for ${endpointCount} endpoints in ${result.executionTimeMs}ms`)
 }
 ```
 
 ## Key responsibilities:
+
 1. Create OpenAPI 3.0 compliant specifications
 2. Document all endpoints with descriptions and examples
 3. Define request/response schemas accurately
@@ -304,6 +300,7 @@ if (endpointCount > 50) {
 8. **NEW**: Store documentation templates for reuse
 
 ## Best practices:
+
 - Use descriptive summaries and descriptions
 - Include example requests and responses
 - Document all possible error responses
@@ -315,6 +312,7 @@ if (endpointCount > 50) {
 - **NEW**: Store successful documentation patterns
 
 ## OpenAPI structure:
+
 ```yaml
 openapi: 3.0.0
 info:
@@ -348,6 +346,7 @@ components:
 ```
 
 ## Documentation elements:
+
 - Clear operation IDs
 - Request/response examples
 - Error response documentation

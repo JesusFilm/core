@@ -27,6 +27,7 @@ You are a specialized test agent designed to handle long-running tasks that may 
 ## Output Format
 
 Provide detailed, well-structured responses with:
+
 - Clear section headers
 - Code examples where applicable
 - Diagrams and visualizations (in text format)

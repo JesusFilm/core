@@ -27,12 +27,15 @@ hooks:
 # GitHub Integration Modes
 
 ## Overview
+
 This document describes all GitHub integration modes available in Claude-Flow with ruv-swarm coordination. Each mode is optimized for specific GitHub workflows and includes batch tool integration for maximum efficiency.
 
 ## GitHub Workflow Modes
 
 ### gh-coordinator
+
 **GitHub workflow orchestration and coordination**
+
 - **Coordination Mode**: Hierarchical
 - **Max Parallel Operations**: 10
 - **Batch Optimized**: Yes
@@ -41,7 +44,9 @@ This document describes all GitHub integration modes available in Claude-Flow wi
 - **Best For**: Complex GitHub workflows, multi-repo coordination
 
 ### pr-manager
+
 **Pull request management and review coordination**
+
 - **Review Mode**: Automated
 - **Multi-reviewer**: Yes
 - **Conflict Resolution**: Intelligent
@@ -50,7 +55,9 @@ This document describes all GitHub integration modes available in Claude-Flow wi
 - **Best For**: PR reviews, merge coordination, conflict resolution
 
 ### issue-tracker
+
 **Issue management and project coordination**
+
 - **Issue Workflow**: Automated
 - **Label Management**: Smart
 - **Progress Tracking**: Real-time
@@ -59,7 +66,9 @@ This document describes all GitHub integration modes available in Claude-Flow wi
 - **Best For**: Project management, issue coordination, progress tracking
 
 ### release-manager
+
 **Release coordination and deployment**
+
 - **Release Pipeline**: Automated
 - **Versioning**: Semantic
 - **Deployment**: Multi-stage
@@ -70,7 +79,9 @@ This document describes all GitHub integration modes available in Claude-Flow wi
 ## Repository Management Modes
 
 ### repo-architect
+
 **Repository structure and organization**
+
 - **Structure Optimization**: Yes
 - **Multi-repo**: Support
 - **Template Management**: Advanced
@@ -79,7 +90,9 @@ This document describes all GitHub integration modes available in Claude-Flow wi
 - **Best For**: Repository setup, structure optimization, multi-repo management
 
 ### code-reviewer
+
 **Automated code review and quality assurance**
+
 - **Review Quality**: Deep
 - **Security Analysis**: Yes
 - **Performance Check**: Automated
@@ -88,7 +101,9 @@ This document describes all GitHub integration modes available in Claude-Flow wi
 - **Best For**: Code quality, security reviews, performance analysis
 
 ### branch-manager
+
 **Branch management and workflow coordination**
+
 - **Branch Strategy**: GitFlow
 - **Merge Strategy**: Intelligent
 - **Conflict Prevention**: Proactive
@@ -99,7 +114,9 @@ This document describes all GitHub integration modes available in Claude-Flow wi
 ## Integration Commands
 
 ### sync-coordinator
+
 **Multi-package synchronization**
+
 - **Package Sync**: Intelligent
 - **Version Alignment**: Automatic
 - **Dependency Resolution**: Advanced
@@ -108,7 +125,9 @@ This document describes all GitHub integration modes available in Claude-Flow wi
 - **Best For**: Package synchronization, version management, dependency updates
 
 ### ci-orchestrator
+
 **CI/CD pipeline coordination**
+
 - **Pipeline Management**: Advanced
 - **Test Coordination**: Parallel
 - **Deployment**: Automated
@@ -117,7 +136,9 @@ This document describes all GitHub integration modes available in Claude-Flow wi
 - **Best For**: CI/CD coordination, test management, deployment automation
 
 ### security-guardian
+
 **Security and compliance management**
+
 - **Security Scan**: Automated
 - **Compliance Check**: Continuous
 - **Vulnerability Management**: Proactive
@@ -128,16 +149,19 @@ This document describes all GitHub integration modes available in Claude-Flow wi
 ## Usage Examples
 
 ### Creating a coordinated pull request workflow:
+
 ```bash
 /github pr-manager "Review and merge feature/new-integration branch with automated testing and multi-reviewer coordination"
 ```
 
 ### Managing repository synchronization:
+
 ```bash
 /github sync-coordinator "Synchronize claude-code-flow and ruv-swarm packages, align versions, and update cross-dependencies"
 ```
 
 ### Setting up automated issue tracking:
+
 ```bash
 /github issue-tracker "Create and manage integration issues with automated progress tracking and swarm coordination"
 ```
@@ -147,6 +171,7 @@ This document describes all GitHub integration modes available in Claude-Flow wi
 All GitHub modes support batch operations for maximum efficiency:
 
 ### Parallel GitHub Operations Example:
+
 ```javascript
 [Single Message with BatchTool]:
   Bash("gh issue create --title 'Feature A' --body '...'")

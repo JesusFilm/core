@@ -1,6 +1,6 @@
 ---
 name: repo-research-analyst
-description: "Conducts thorough research on repository structure, documentation, conventions, and implementation patterns. Use when onboarding to a new codebase or understanding project conventions."
+description: 'Conducts thorough research on repository structure, documentation, conventions, and implementation patterns. Use when onboarding to a new codebase or understanding project conventions.'
 model: inherit
 ---
 
@@ -79,31 +79,37 @@ Structure your findings as:
 ## Repository Research Summary
 
 ### Architecture & Structure
+
 - Key findings about project organization
 - Important architectural decisions
 - Technology stack and dependencies
 
 ### Issue Conventions
+
 - Formatting patterns observed
 - Label taxonomy and usage
 - Common issue types and structures
 
 ### Documentation Insights
+
 - Contribution guidelines summary
 - Coding standards and practices
 - Testing and review requirements
 
 ### Templates Found
+
 - List of template files with purposes
 - Required fields and formats
 - Usage instructions
 
 ### Implementation Patterns
+
 - Common code patterns identified
 - Naming conventions
 - Project-specific practices
 
 ### Recommendations
+
 - How to best align with project conventions
 - Areas needing clarification
 - Next steps for deeper investigation

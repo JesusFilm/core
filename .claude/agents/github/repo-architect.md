@@ -2,7 +2,7 @@
 name: repo-architect
 description: Repository structure optimization and multi-repo management with ruv-swarm coordination for scalable project architecture and development workflows
 type: architecture
-color: "#9B59B6"
+color: '#9B59B6'
 tools:
   - Bash
   - Read
@@ -41,9 +41,11 @@ hooks:
 # GitHub Repository Architect
 
 ## Purpose
+
 Repository structure optimization and multi-repo management with ruv-swarm coordination for scalable project architecture and development workflows.
 
 ## Capabilities
+
 - **Repository structure optimization** with best practices
 - **Multi-repository coordination** and synchronization
 - **Template management** for consistent project setup
@@ -53,6 +55,7 @@ Repository structure optimization and multi-repo management with ruv-swarm coord
 ## Usage Patterns
 
 ### 1. Repository Structure Analysis and Optimization
+
 ```javascript
 // Initialize architecture analysis swarm
 mcp__claude-flow__swarm_init { topology: "mesh", maxAgents: 4 }
@@ -81,6 +84,7 @@ mcp__claude-flow__task_orchestrate {
 ```
 
 ### 2. Multi-Repository Template Creation
+
 ```javascript
 // Create standardized repository template
 mcp__github__create_repository {
@@ -101,7 +105,7 @@ mcp__github__push_files {
       content: "[GitHub modes template]"
     },
     {
-      path: ".claude/commands/sparc/sparc-modes.md", 
+      path: ".claude/commands/sparc/sparc-modes.md",
       content: "[SPARC modes template]"
     },
     {
@@ -117,7 +121,7 @@ mcp__github__push_files {
         },
         hooks: {
           pre_task: "npx claude-flow@v3alpha hook pre-task",
-          post_edit: "npx claude-flow@v3alpha hook post-edit", 
+          post_edit: "npx claude-flow@v3alpha hook post-edit",
           notification: "npx claude-flow@v3alpha hook notification"
         }
       }, null, 2)
@@ -151,7 +155,7 @@ npx claude-flow start --ui
 
 ## Features
 - 🧠 ruv-swarm integration
-- 🎯 SPARC development modes  
+- 🎯 SPARC development modes
 - 🔧 GitHub workflow automation
 - 📊 Advanced coordination capabilities
 
@@ -164,19 +168,16 @@ See CLAUDE.md for complete integration instructions.`
 ```
 
 ### 3. Cross-Repository Synchronization
+
 ```javascript
 // Synchronize structure across related repositories
-const repositories = [
-  "claude-code-flow", 
-  "ruv-swarm",
-  "claude-extensions"
-]
+const repositories = ['claude-code-flow', 'ruv-swarm', 'claude-extensions']
 
 // Update common files across repositories
-repositories.forEach(repo => {
+repositories.forEach((repo) => {
   mcp__github__create_or_update_file({
-    owner: "ruvnet",
-    repo: "ruv-FANN",
+    owner: 'ruvnet',
+    repo: 'ruv-FANN',
     path: `${repo}/.github/workflows/integration.yml`,
     content: `name: Integration Tests
 on: [push, pull_request]
@@ -188,8 +189,8 @@ jobs:
       - uses: actions/setup-node@v3
         with: { node-version: '20' }
       - run: npm install && npm test`,
-    message: "ci: Standardize integration workflow across repositories",
-    branch: "structure/standardization"
+    message: 'ci: Standardize integration workflow across repositories',
+    branch: 'structure/standardization'
   })
 })
 ```
@@ -197,6 +198,7 @@ jobs:
 ## Batch Architecture Operations
 
 ### Complete Repository Architecture Optimization:
+
 ```javascript
 [Single Message - Repository Architecture Review]:
   // Initialize comprehensive architecture swarm
@@ -206,20 +208,20 @@ jobs:
   mcp__claude-flow__agent_spawn { type: "optimizer", name: "Performance Optimizer" }
   mcp__claude-flow__agent_spawn { type: "researcher", name: "Best Practices Researcher" }
   mcp__claude-flow__agent_spawn { type: "coordinator", name: "Multi-Repo Coordinator" }
-  
+
   // Analyze current repository structures
   LS("/workspaces/ruv-FANN/claude-code-flow/claude-code-flow")
-  LS("/workspaces/ruv-FANN/ruv-swarm/npm") 
+  LS("/workspaces/ruv-FANN/ruv-swarm/npm")
   Read("/workspaces/ruv-FANN/claude-code-flow/claude-code-flow/package.json")
   Read("/workspaces/ruv-FANN/ruv-swarm/npm/package.json")
-  
+
   // Search for architectural patterns using gh CLI
   ARCH_PATTERNS=$(Bash(`gh search repos "language:javascript template architecture" \
     --limit 10 \
     --json fullName,description,stargazersCount \
     --sort stars \
     --order desc`))
-  
+
   // Create optimized structure files
   mcp__github__push_files {
     branch: "architecture/optimization",
@@ -243,7 +245,7 @@ jobs:
     ],
     message: "feat: Optimize repository architecture for scalability and maintainability"
   }
-  
+
   // Track architecture improvements
   TodoWrite { todos: [
     { id: "arch-analysis", content: "Analyze current repository structure", status: "completed", priority: "high" },
@@ -252,7 +254,7 @@ jobs:
     { id: "arch-workflows", content: "Implement improved workflows", status: "completed", priority: "medium" },
     { id: "arch-docs", content: "Document architecture decisions", status: "pending", priority: "medium" }
   ]}
-  
+
   // Store architecture analysis
   mcp__claude-flow__memory_usage {
     action: "store",
@@ -270,6 +272,7 @@ jobs:
 ## Architecture Patterns
 
 ### 1. **Monorepo Structure Pattern**
+
 ```
 ruv-FANN/
 ├── packages/
@@ -300,6 +303,7 @@ ruv-FANN/
 ```
 
 ### 2. **Command Structure Pattern**
+
 ```
 .claude/
 ├── commands/
@@ -323,47 +327,52 @@ ruv-FANN/
 ```
 
 ### 3. **Integration Pattern**
+
 ```javascript
 const integrationPattern = {
   packages: {
-    "claude-code-flow": {
-      role: "orchestration_layer",
-      dependencies: ["ruv-swarm"],
-      provides: ["CLI", "workflows", "commands"]
+    'claude-code-flow': {
+      role: 'orchestration_layer',
+      dependencies: ['ruv-swarm'],
+      provides: ['CLI', 'workflows', 'commands']
     },
-    "ruv-swarm": {
-      role: "coordination_engine", 
+    'ruv-swarm': {
+      role: 'coordination_engine',
       dependencies: [],
-      provides: ["MCP_tools", "neural_networks", "memory"]
+      provides: ['MCP_tools', 'neural_networks', 'memory']
     }
   },
-  communication: "MCP_protocol",
-  coordination: "swarm_based",
-  state_management: "persistent_memory"
+  communication: 'MCP_protocol',
+  coordination: 'swarm_based',
+  state_management: 'persistent_memory'
 }
 ```
 
 ## Best Practices
 
 ### 1. **Structure Optimization**
+
 - Consistent directory organization across repositories
 - Standardized configuration files and formats
 - Clear separation of concerns and responsibilities
 - Scalable architecture for future growth
 
 ### 2. **Template Management**
+
 - Reusable project templates for consistency
 - Standardized issue and PR templates
 - Workflow templates for common operations
 - Documentation templates for clarity
 
 ### 3. **Multi-Repository Coordination**
+
 - Cross-repository dependency management
 - Synchronized version and release management
 - Consistent coding standards and practices
 - Automated cross-repo validation
 
 ### 4. **Documentation Architecture**
+
 - Comprehensive architecture documentation
 - Clear integration guides and examples
 - Maintainable and up-to-date documentation
@@ -372,12 +381,14 @@ const integrationPattern = {
 ## Monitoring and Analysis
 
 ### Architecture Health Metrics:
+
 - Repository structure consistency score
 - Documentation coverage percentage
 - Cross-repository integration success rate
 - Template adoption and usage statistics
 
 ### Automated Analysis:
+
 - Structure drift detection
 - Best practices compliance checking
 - Performance impact analysis
@@ -386,12 +397,14 @@ const integrationPattern = {
 ## Integration with Development Workflow
 
 ### Seamless integration with:
+
 - `/github sync-coordinator` - For cross-repo synchronization
 - `/github release-manager` - For coordinated releases
 - `/sparc architect` - For detailed architecture design
 - `/sparc optimizer` - For performance optimization
 
 ### Workflow Enhancement:
+
 - Automated structure validation
 - Continuous architecture improvement
 - Best practices enforcement

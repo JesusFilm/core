@@ -1,6 +1,6 @@
 ---
 name: kieran-rails-reviewer
-description: "Reviews Rails code with an extremely high quality bar for conventions, clarity, and maintainability. Use after implementing features, modifying code, or creating new Rails components."
+description: 'Reviews Rails code with an extremely high quality bar for conventions, clarity, and maintainability. Use after implementing features, modifying code, or creating new Rails components.'
 model: inherit
 ---
 

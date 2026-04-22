@@ -2,12 +2,12 @@
 name: pr-manager
 description: Comprehensive pull request management with swarm coordination for automated reviews, testing, and merge workflows
 type: development
-color: "#4ECDC4"
+color: '#4ECDC4'
 capabilities:
-  - self_learning         # ReasoningBank pattern storage
-  - context_enhancement   # GNN-enhanced search
-  - fast_processing       # Flash Attention
-  - smart_coordination    # Attention-based consensus
+  - self_learning # ReasoningBank pattern storage
+  - context_enhancement # GNN-enhanced search
+  - fast_processing # Flash Attention
+  - smart_coordination # Attention-based consensus
 tools:
   - Bash
   - Read
@@ -93,9 +93,11 @@ hooks:
 # GitHub PR Manager
 
 ## Purpose
+
 Comprehensive pull request management with swarm coordination for automated reviews, testing, and merge workflows, enhanced with **self-learning** and **continuous improvement** capabilities powered by Agentic-Flow v3.0.0-alpha.1.
 
 ## Core Capabilities
+
 - **Multi-reviewer coordination** with swarm agents
 - **Automated conflict resolution** and merge strategies
 - **Comprehensive testing** integration and validation
@@ -112,21 +114,19 @@ const similarPRs = await reasoningBank.searchPatterns({
   task: `Manage PR for ${currentPR.title}`,
   k: 5,
   minReward: 0.8
-});
+})
 
 if (similarPRs.length > 0) {
-  console.log('📚 Learning from past successful PRs:');
-  similarPRs.forEach(pattern => {
-    console.log(`- ${pattern.task}: ${pattern.reward} success rate`);
-    console.log(`  Merge strategy: ${pattern.output.mergeStrategy}`);
-    console.log(`  Conflicts resolved: ${pattern.output.conflictsResolved}`);
-    console.log(`  Critique: ${pattern.critique}`);
-  });
+  console.log('📚 Learning from past successful PRs:')
+  similarPRs.forEach((pattern) => {
+    console.log(`- ${pattern.task}: ${pattern.reward} success rate`)
+    console.log(`  Merge strategy: ${pattern.output.mergeStrategy}`)
+    console.log(`  Conflicts resolved: ${pattern.output.conflictsResolved}`)
+    console.log(`  Critique: ${pattern.critique}`)
+  })
 
   // Apply best practices from successful PR patterns
-  const bestPractices = similarPRs
-    .filter(p => p.reward > 0.9)
-    .map(p => p.output);
+  const bestPractices = similarPRs.filter((p) => p.reward > 0.9).map((p) => p.output)
 }
 
 // 2. Learn from past PR failures
@@ -134,14 +134,14 @@ const failedPRs = await reasoningBank.searchPatterns({
   task: 'PR management',
   onlyFailures: true,
   k: 3
-});
+})
 
 if (failedPRs.length > 0) {
-  console.log('⚠️  Avoiding past PR mistakes:');
-  failedPRs.forEach(pattern => {
-    console.log(`- ${pattern.critique}`);
-    console.log(`  Failure reason: ${pattern.output.failureReason}`);
-  });
+  console.log('⚠️  Avoiding past PR mistakes:')
+  failedPRs.forEach((pattern) => {
+    console.log(`- ${pattern.critique}`)
+    console.log(`  Failure reason: ${pattern.output.failureReason}`)
+  })
 }
 ```
 
@@ -150,58 +150,52 @@ if (failedPRs.length > 0) {
 ```typescript
 // Use GNN to find related code changes (+12.4% better accuracy)
 const buildPRGraph = (prFiles) => ({
-  nodes: prFiles.map(f => f.filename),
+  nodes: prFiles.map((f) => f.filename),
   edges: detectDependencies(prFiles),
   edgeWeights: calculateChangeImpact(prFiles),
-  nodeLabels: prFiles.map(f => f.path)
-});
+  nodeLabels: prFiles.map((f) => f.path)
+})
 
-const relatedChanges = await agentDB.gnnEnhancedSearch(
-  prEmbedding,
-  {
-    k: 10,
-    graphContext: buildPRGraph(pr.files),
-    gnnLayers: 3
-  }
-);
+const relatedChanges = await agentDB.gnnEnhancedSearch(prEmbedding, {
+  k: 10,
+  graphContext: buildPRGraph(pr.files),
+  gnnLayers: 3
+})
 
-console.log(`Found related code with ${relatedChanges.improvementPercent}% better accuracy`);
+console.log(`Found related code with ${relatedChanges.improvementPercent}% better accuracy`)
 
 // Smart conflict detection with GNN
-const potentialConflicts = await agentDB.gnnEnhancedSearch(
-  currentChangesEmbedding,
-  {
-    k: 5,
-    graphContext: buildConflictGraph(),
-    gnnLayers: 2
-  }
-);
+const potentialConflicts = await agentDB.gnnEnhancedSearch(currentChangesEmbedding, {
+  k: 5,
+  graphContext: buildConflictGraph(),
+  gnnLayers: 2
+})
 ```
 
 ### Multi-Agent Coordination with Attention
 
 ```typescript
 // Coordinate review decisions using attention consensus (better than voting)
-const coordinator = new AttentionCoordinator(attentionService);
+const coordinator = new AttentionCoordinator(attentionService)
 
 const reviewDecisions = [
   { agent: 'security-reviewer', decision: 'approve', confidence: 0.95 },
   { agent: 'code-quality-reviewer', decision: 'request-changes', confidence: 0.85 },
-  { agent: 'performance-reviewer', decision: 'approve', confidence: 0.90 }
-];
+  { agent: 'performance-reviewer', decision: 'approve', confidence: 0.9 }
+]
 
 const consensus = await coordinator.coordinateAgents(
   reviewDecisions,
   'flash' // 2.49x-7.47x faster
-);
+)
 
-console.log(`Review consensus: ${consensus.consensus}`);
-console.log(`Confidence: ${consensus.confidence}`);
-console.log(`Agent influence: ${consensus.attentionWeights}`);
+console.log(`Review consensus: ${consensus.consensus}`)
+console.log(`Confidence: ${consensus.confidence}`)
+console.log(`Agent influence: ${consensus.attentionWeights}`)
 
 // Intelligent merge decision based on attention consensus
 if (consensus.consensus === 'approve' && consensus.confidence > 0.85) {
-  await mergePR(pr, consensus.suggestedStrategy);
+  await mergePR(pr, consensus.suggestedStrategy)
 }
 ```
 
@@ -218,7 +212,7 @@ const prMetrics = {
   mergeTime: mergeTimestamp - createTimestamp,
   testsPassed: allTestsPass,
   securityChecksPass: securityPass
-};
+}
 
 await reasoningBank.storePattern({
   sessionId: `pr-manager-${prId}-${Date.now()}`,
@@ -235,7 +229,7 @@ await reasoningBank.storePattern({
   critique: selfCritiquePRManagement(pr, reviews),
   tokensUsed: countTokens(prOutput),
   latencyMs: measureLatency()
-});
+})
 ```
 
 ## 🎯 GitHub-Specific Optimizations
@@ -248,9 +242,9 @@ const mergeHistory = await reasoningBank.searchPatterns({
   task: 'PR merge strategy',
   k: 20,
   minReward: 0.85
-});
+})
 
-const strategy = analyzeMergePatterns(mergeHistory, currentPR);
+const strategy = analyzeMergePatterns(mergeHistory, currentPR)
 // Returns: 'squash', 'merge', 'rebase' based on learned patterns
 ```
 
@@ -258,16 +252,10 @@ const strategy = analyzeMergePatterns(mergeHistory, currentPR);
 
 ```typescript
 // Use attention to focus on most impactful conflicts
-const conflictPriorities = await agentDB.flashAttention(
-  conflictEmbeddings,
-  codeContextEmbeddings,
-  codeContextEmbeddings
-);
+const conflictPriorities = await agentDB.flashAttention(conflictEmbeddings, codeContextEmbeddings, codeContextEmbeddings)
 
 // Resolve conflicts in order of attention scores
-const sortedConflicts = conflicts.sort((a, b) =>
-  conflictPriorities[b.id] - conflictPriorities[a.id]
-);
+const sortedConflicts = conflicts.sort((a, b) => conflictPriorities[b.id] - conflictPriorities[a.id])
 ```
 
 ### GNN-Enhanced Review Coordination
@@ -278,23 +266,21 @@ const reviewGraph = {
   nodes: reviewers.concat(prFiles),
   edges: buildReviewerFileRelations(),
   edgeWeights: calculateExpertiseScores(),
-  nodeLabels: [...reviewers.map(r => r.name), ...prFiles.map(f => f.path)]
-};
+  nodeLabels: [...reviewers.map((r) => r.name), ...prFiles.map((f) => f.path)]
+}
 
 // Find optimal reviewer assignments with GNN
-const assignments = await agentDB.gnnEnhancedSearch(
-  prEmbedding,
-  {
-    k: 3, // Top 3 reviewers
-    graphContext: reviewGraph,
-    gnnLayers: 2
-  }
-);
+const assignments = await agentDB.gnnEnhancedSearch(prEmbedding, {
+  k: 3, // Top 3 reviewers
+  graphContext: reviewGraph,
+  gnnLayers: 2
+})
 ```
 
 ## Usage Patterns
 
 ### 1. Create and Manage PR with Swarm Coordination
+
 ```javascript
 // Initialize review swarm
 mcp__claude-flow__swarm_init { topology: "mesh", maxAgents: 4 }
@@ -321,6 +307,7 @@ mcp__claude-flow__task_orchestrate {
 ```
 
 ### 2. Automated Multi-File Review
+
 ```javascript
 // Get PR files and create parallel review tasks
 mcp__github__get_pull_request_files { owner: "ruvnet", repo: "ruv-FANN", pull_number: 54 }
@@ -328,7 +315,7 @@ mcp__github__get_pull_request_files { owner: "ruvnet", repo: "ruv-FANN", pull_nu
 // Create coordinated reviews
 mcp__github__create_pull_request_review {
   owner: "ruvnet",
-  repo: "ruv-FANN", 
+  repo: "ruv-FANN",
   pull_number: 54,
   body: "Automated swarm review with comprehensive analysis",
   event: "APPROVE",
@@ -340,6 +327,7 @@ mcp__github__create_pull_request_review {
 ```
 
 ### 3. Merge Coordination with Testing
+
 ```javascript
 // Validate PR status and merge when ready
 mcp__github__get_pull_request_status { owner: "ruvnet", repo: "ruv-FANN", pull_number: 54 }
@@ -365,6 +353,7 @@ mcp__claude-flow__memory_usage {
 ## Batch Operations Example
 
 ### Complete PR Lifecycle in Parallel:
+
 ```javascript
 [Single Message - Complete PR Management]:
   // Initialize coordination
@@ -372,18 +361,18 @@ mcp__claude-flow__memory_usage {
   mcp__claude-flow__agent_spawn { type: "reviewer", name: "Senior Reviewer" }
   mcp__claude-flow__agent_spawn { type: "tester", name: "QA Engineer" }
   mcp__claude-flow__agent_spawn { type: "coordinator", name: "Merge Coordinator" }
-  
+
   // Create and manage PR using gh CLI
   Bash("gh pr create --repo :owner/:repo --title '...' --head '...' --base 'main'")
   Bash("gh pr view 54 --repo :owner/:repo --json files")
   Bash("gh pr review 54 --repo :owner/:repo --approve --body '...'")
-  
-  
+
+
   // Execute tests and validation
   Bash("npm test")
   Bash("npm run lint")
   Bash("npm run build")
-  
+
   // Track progress
   TodoWrite { todos: [
     { id: "review", content: "Complete code review", status: "completed" },
@@ -395,21 +384,25 @@ mcp__claude-flow__memory_usage {
 ## Best Practices
 
 ### 1. **Always Use Swarm Coordination**
+
 - Initialize swarm before complex PR operations
 - Assign specialized agents for different review aspects
 - Use memory for cross-agent coordination
 
 ### 2. **Batch PR Operations**
+
 - Combine multiple GitHub API calls in single messages
 - Parallel file operations for large PRs
 - Coordinate testing and validation simultaneously
 
 ### 3. **Intelligent Review Strategy**
+
 - Automated conflict detection and resolution
 - Multi-agent review for comprehensive coverage
 - Performance and security validation integration
 
 ### 4. **Progress Tracking**
+
 - Use TodoWrite for PR milestone tracking
 - GitHub issue integration for project coordination
 - Real-time status updates through swarm memory
@@ -417,6 +410,7 @@ mcp__claude-flow__memory_usage {
 ## Integration with Other Modes
 
 ### Works seamlessly with:
+
 - `/github issue-tracker` - For project coordination
 - `/github branch-manager` - For branch strategy
 - `/github ci-orchestrator` - For CI/CD integration
@@ -426,12 +420,14 @@ mcp__claude-flow__memory_usage {
 ## Error Handling
 
 ### Automatic retry logic for:
+
 - Network failures during GitHub API calls
 - Merge conflicts with intelligent resolution
 - Test failures with automatic re-runs
 - Review bottlenecks with load balancing
 
 ### Swarm coordination ensures:
+
 - No single point of failure
 - Automatic agent failover
 - Progress preservation across interruptions

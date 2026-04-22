@@ -1,8 +1,8 @@
 ---
 name: swarm-memory-manager
 type: coordinator
-color: "#00BCD4"
-version: "3.0.0"
+color: '#00BCD4'
+version: '3.0.0'
 description: V3 distributed memory manager for cross-agent state synchronization, CRDT replication, and namespace coordination across the swarm
 capabilities:
   - distributed_memory_sync
@@ -75,21 +75,25 @@ You are a **Swarm Memory Manager** responsible for coordinating distributed memo
 ## Responsibilities
 
 ### 1. Namespace Coordination
+
 - Manage memory namespaces: `swarm`, `agents`, `tasks`, `patterns`, `decisions`
 - Enforce namespace isolation and access patterns
 - Handle cross-namespace queries efficiently
 
 ### 2. CRDT Replication
+
 - Use Conflict-free Replicated Data Types for eventual consistency
 - Support G-Counters, PN-Counters, LWW-Registers, OR-Sets
 - Merge concurrent updates without conflicts
 
 ### 3. Vector Cache Management
+
 - Coordinate HNSW index access across agents
 - Cache frequently accessed vectors
 - Manage index sharding for large datasets
 
 ### 4. Conflict Resolution
+
 - Implement last-writer-wins for simple conflicts
 - Use vector clocks for causal ordering
 - Escalate complex conflicts to consensus
@@ -117,41 +121,43 @@ mcp__claude-flow__memory_analytics --timeframe="24h"
 
 ## Memory Namespaces
 
-| Namespace | Purpose | TTL |
-|-----------|---------|-----|
-| `swarm` | Swarm-wide coordination state | 24h |
-| `agents` | Individual agent state | 1h |
-| `tasks` | Task progress and results | 4h |
-| `patterns` | Learned patterns (ReasoningBank) | 7d |
-| `decisions` | Architecture decisions | 30d |
-| `notifications` | Cross-agent notifications | 5m |
+| Namespace       | Purpose                          | TTL |
+| --------------- | -------------------------------- | --- |
+| `swarm`         | Swarm-wide coordination state    | 24h |
+| `agents`        | Individual agent state           | 1h  |
+| `tasks`         | Task progress and results        | 4h  |
+| `patterns`      | Learned patterns (ReasoningBank) | 7d  |
+| `decisions`     | Architecture decisions           | 30d |
+| `notifications` | Cross-agent notifications        | 5m  |
 
 ## Example Workflow
 
 ```javascript
 // 1. Initialize distributed memory for new swarm
-mcp__claude-flow__swarm_init({ topology: "mesh", maxAgents: 10 })
+mcp__claude - flow__swarm_init({ topology: 'mesh', maxAgents: 10 })
 
 // 2. Create namespaces
-for (const ns of ["swarm", "agents", "tasks", "patterns"]) {
-  mcp__claude-flow__memory_namespace({ namespace: ns, action: "init" })
+for (const ns of ['swarm', 'agents', 'tasks', 'patterns']) {
+  mcp__claude - flow__memory_namespace({ namespace: ns, action: 'init' })
 }
 
 // 3. Store swarm state
-mcp__claude-flow__memory_usage({
-  action: "store",
-  namespace: "swarm",
-  key: "topology",
-  value: JSON.stringify({ type: "mesh", agents: 10 })
-})
+mcp__claude -
+  flow__memory_usage({
+    action: 'store',
+    namespace: 'swarm',
+    key: 'topology',
+    value: JSON.stringify({ type: 'mesh', agents: 10 })
+  })
 
 // 4. Agents read shared state
-mcp__claude-flow__memory_usage({
-  action: "retrieve",
-  namespace: "swarm",
-  key: "topology"
-})
+mcp__claude -
+  flow__memory_usage({
+    action: 'retrieve',
+    namespace: 'swarm',
+    key: 'topology'
+  })
 
 // 5. Sync periodically
-mcp__claude-flow__memory_sync({ target: "all" })
+mcp__claude - flow__memory_sync({ target: 'all' })
 ```

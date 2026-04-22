@@ -87,17 +87,17 @@ const similarSpecs = await reasoningBank.searchPatterns({
   task: 'specification: ' + currentTask.description,
   k: 5,
   minReward: 0.8
-});
+})
 
 if (similarSpecs.length > 0) {
-  console.log('📚 Learning from past successful specifications:');
-  similarSpecs.forEach(pattern => {
-    console.log(`- ${pattern.task}: ${pattern.reward} quality score`);
-    console.log(`  Key insights: ${pattern.critique}`);
+  console.log('📚 Learning from past successful specifications:')
+  similarSpecs.forEach((pattern) => {
+    console.log(`- ${pattern.task}: ${pattern.reward} quality score`)
+    console.log(`  Key insights: ${pattern.critique}`)
     // Apply successful requirement patterns
     // Reuse proven acceptance criteria formats
     // Adopt validated constraint analysis approaches
-  });
+  })
 }
 
 // 2. Learn from specification failures
@@ -105,16 +105,16 @@ const failures = await reasoningBank.searchPatterns({
   task: 'specification: ' + currentTask.description,
   onlyFailures: true,
   k: 3
-});
+})
 
 if (failures.length > 0) {
-  console.log('⚠️  Avoiding past specification mistakes:');
-  failures.forEach(pattern => {
-    console.log(`- ${pattern.critique}`);
+  console.log('⚠️  Avoiding past specification mistakes:')
+  failures.forEach((pattern) => {
+    console.log(`- ${pattern.critique}`)
     // Avoid ambiguous requirements
     // Ensure completeness in scope definition
     // Include comprehensive acceptance criteria
-  });
+  })
 }
 ```
 
@@ -122,20 +122,20 @@ if (failures.length > 0) {
 
 ```typescript
 // Use GNN-enhanced search for better requirement patterns (+12.4% accuracy)
-const relevantRequirements = await agentDB.gnnEnhancedSearch(
-  taskEmbedding,
-  {
-    k: 10,
-    graphContext: {
-      nodes: [pastRequirements, similarProjects, domainKnowledge],
-      edges: [[0, 1], [1, 2]],
-      edgeWeights: [0.9, 0.7]
-    },
-    gnnLayers: 3
-  }
-);
+const relevantRequirements = await agentDB.gnnEnhancedSearch(taskEmbedding, {
+  k: 10,
+  graphContext: {
+    nodes: [pastRequirements, similarProjects, domainKnowledge],
+    edges: [
+      [0, 1],
+      [1, 2]
+    ],
+    edgeWeights: [0.9, 0.7]
+  },
+  gnnLayers: 3
+})
 
-console.log(`Requirement pattern accuracy improved by ${relevantRequirements.improvementPercent}%`);
+console.log(`Requirement pattern accuracy improved by ${relevantRequirements.improvementPercent}%`)
 ```
 
 ### After Specification: Store Learning Patterns
@@ -152,7 +152,7 @@ await reasoningBank.storePattern({
   critique: selfCritiqueSpecification(),
   tokensUsed: countTokens(structuredSpecification),
   latencyMs: measureLatency()
-});
+})
 ```
 
 ## 📈 Specification Quality Metrics
@@ -164,11 +164,11 @@ Track continuous improvement:
 const stats = await reasoningBank.getPatternStats({
   task: 'specification',
   k: 10
-});
+})
 
-console.log(`Specification quality trend: ${stats.avgReward}`);
-console.log(`Common improvement areas: ${stats.commonCritiques}`);
-console.log(`Success rate: ${stats.successRate}%`);
+console.log(`Specification quality trend: ${stats.avgReward}`)
+console.log(`Common improvement areas: ${stats.commonCritiques}`)
+console.log(`Success rate: ${stats.successRate}%`)
 ```
 
 ## 🎯 SPARC-Specific Learning Optimizations
@@ -181,7 +181,7 @@ const bestRequirementPatterns = await reasoningBank.searchPatterns({
   task: 'specification: authentication',
   k: 5,
   minReward: 0.9
-});
+})
 
 // Apply proven patterns:
 // - User story format vs technical specs
@@ -196,40 +196,41 @@ const bestRequirementPatterns = await reasoningBank.searchPatterns({
 // Build graph of related requirements
 const requirementGraph = {
   nodes: [userAuth, dataValidation, errorHandling],
-  edges: [[0, 1], [0, 2]], // Auth connects to validation and error handling
+  edges: [
+    [0, 1],
+    [0, 2]
+  ], // Auth connects to validation and error handling
   edgeWeights: [0.9, 0.8],
   nodeLabels: ['Authentication', 'Validation', 'ErrorHandling']
-};
+}
 
 // GNN-enhanced requirement discovery
-const relatedRequirements = await agentDB.gnnEnhancedSearch(
-  currentRequirement,
-  {
-    k: 8,
-    graphContext: requirementGraph,
-    gnnLayers: 3
-  }
-);
+const relatedRequirements = await agentDB.gnnEnhancedSearch(currentRequirement, {
+  k: 8,
+  graphContext: requirementGraph,
+  gnnLayers: 3
+})
 ```
 
 ### Cross-Phase Coordination with Attention
 
 ```typescript
 // Coordinate with other SPARC phases using attention
-const coordinator = new AttentionCoordinator(attentionService);
+const coordinator = new AttentionCoordinator(attentionService)
 
 // Share specification insights with pseudocode agent
 const phaseCoordination = await coordinator.coordinateAgents(
   [specificationOutput, pseudocodeNeeds, architectureRequirements],
   'multi-head' // Multi-perspective analysis
-);
+)
 
-console.log(`Phase consensus on requirements: ${phaseCoordination.consensus}`);
+console.log(`Phase consensus on requirements: ${phaseCoordination.consensus}`)
 ```
 
 ## SPARC Specification Phase
 
 The Specification phase is the foundation of SPARC methodology, where we:
+
 1. Define clear, measurable requirements
 2. Identify constraints and boundaries
 3. Create acceptance criteria
@@ -243,24 +244,24 @@ The Specification phase is the foundation of SPARC methodology, where we:
 ```yaml
 specification:
   functional_requirements:
-    - id: "FR-001"
-      description: "System shall authenticate users via OAuth2"
-      priority: "high"
+    - id: 'FR-001'
+      description: 'System shall authenticate users via OAuth2'
+      priority: 'high'
       acceptance_criteria:
-        - "Users can login with Google/GitHub"
-        - "Session persists for 24 hours"
-        - "Refresh tokens auto-renew"
-      
+        - 'Users can login with Google/GitHub'
+        - 'Session persists for 24 hours'
+        - 'Refresh tokens auto-renew'
+
   non_functional_requirements:
-    - id: "NFR-001"
-      category: "performance"
-      description: "API response time <200ms for 95% of requests"
-      measurement: "p95 latency metric"
-    
-    - id: "NFR-002"
-      category: "security"
-      description: "All data encrypted in transit and at rest"
-      validation: "Security audit checklist"
+    - id: 'NFR-001'
+      category: 'performance'
+      description: 'API response time <200ms for 95% of requests'
+      measurement: 'p95 latency metric'
+
+    - id: 'NFR-002'
+      category: 'security'
+      description: 'All data encrypted in transit and at rest'
+      validation: 'Security audit checklist'
 ```
 
 ### 2. Constraint Analysis
@@ -268,45 +269,44 @@ specification:
 ```yaml
 constraints:
   technical:
-    - "Must use existing PostgreSQL database"
-    - "Compatible with Node.js 18+"
-    - "Deploy to AWS infrastructure"
-    
+    - 'Must use existing PostgreSQL database'
+    - 'Compatible with Node.js 18+'
+    - 'Deploy to AWS infrastructure'
+
   business:
-    - "Launch by Q2 2024"
-    - "Budget: $50,000"
-    - "Team size: 3 developers"
-    
+    - 'Launch by Q2 2024'
+    - 'Budget: $50,000'
+    - 'Team size: 3 developers'
+
   regulatory:
-    - "GDPR compliance required"
-    - "SOC2 Type II certification"
-    - "WCAG 2.1 AA accessibility"
+    - 'GDPR compliance required'
+    - 'SOC2 Type II certification'
+    - 'WCAG 2.1 AA accessibility'
 ```
 
 ### 3. Use Case Definition
 
 ```yaml
 use_cases:
-  - id: "UC-001"
-    title: "User Registration"
-    actor: "New User"
+  - id: 'UC-001'
+    title: 'User Registration'
+    actor: 'New User'
     preconditions:
-      - "User has valid email"
-      - "User accepts terms"
-    flow:
-      1. "User clicks 'Sign Up'"
+      - 'User has valid email'
+      - 'User accepts terms'
+    flow: 1. "User clicks 'Sign Up'"
       2. "System displays registration form"
       3. "User enters email and password"
       4. "System validates inputs"
       5. "System creates account"
       6. "System sends confirmation email"
     postconditions:
-      - "User account created"
-      - "Confirmation email sent"
+      - 'User account created'
+      - 'Confirmation email sent'
     exceptions:
-      - "Invalid email: Show error"
-      - "Weak password: Show requirements"
-      - "Duplicate email: Suggest login"
+      - 'Invalid email: Show error'
+      - 'Weak password: Show requirements'
+      - 'Duplicate email: Suggest login'
 ```
 
 ### 4. Acceptance Criteria
@@ -341,16 +341,20 @@ Feature: User Authentication
 # System Requirements Specification
 
 ## 1. Introduction
+
 ### 1.1 Purpose
+
 This system provides user authentication and authorization...
 
 ### 1.2 Scope
+
 - User registration and login
 - Role-based access control
 - Session management
 - Security audit logging
 
 ### 1.3 Definitions
+
 - **User**: Any person with system access
 - **Role**: Set of permissions assigned to users
 - **Session**: Active authentication state
@@ -358,11 +362,13 @@ This system provides user authentication and authorization...
 ## 2. Functional Requirements
 
 ### 2.1 Authentication
+
 - FR-2.1.1: Support email/password login
 - FR-2.1.2: Implement OAuth2 providers
 - FR-2.1.3: Two-factor authentication
 
 ### 2.2 Authorization
+
 - FR-2.2.1: Role-based permissions
 - FR-2.2.2: Resource-level access control
 - FR-2.2.3: API key management
@@ -370,11 +376,13 @@ This system provides user authentication and authorization...
 ## 3. Non-Functional Requirements
 
 ### 3.1 Performance
+
 - NFR-3.1.1: 99.9% uptime SLA
 - NFR-3.1.2: <200ms response time
 - NFR-3.1.3: Support 10,000 concurrent users
 
 ### 3.2 Security
+
 - NFR-3.2.1: OWASP Top 10 compliance
 - NFR-3.2.2: Data encryption (AES-256)
 - NFR-3.2.3: Security audit logging
@@ -394,7 +402,7 @@ entities:
     relationships:
       - has_many: Sessions
       - has_many: UserRoles
-    
+
   Role:
     attributes:
       - id: uuid (primary key)
@@ -402,7 +410,7 @@ entities:
       - permissions: json
     relationships:
       - has_many: UserRoles
-    
+
   Session:
     attributes:
       - id: uuid (primary key)

@@ -98,6 +98,7 @@ hooks:
 # SPARC Methodology Orchestrator Agent
 
 ## Purpose
+
 This agent orchestrates the complete SPARC (Specification, Pseudocode, Architecture, Refinement, Completion) methodology with **hierarchical coordination**, **MoE routing**, and **self-learning** capabilities powered by Agentic-Flow v3.0.0-alpha.1.
 
 ## 🧠 Self-Learning Protocol for SPARC Coordination
@@ -110,17 +111,17 @@ const similarCycles = await reasoningBank.searchPatterns({
   task: 'sparc-cycle: ' + currentProject.description,
   k: 5,
   minReward: 0.85
-});
+})
 
 if (similarCycles.length > 0) {
-  console.log('📚 Learning from past SPARC methodology cycles:');
-  similarCycles.forEach(pattern => {
-    console.log(`- ${pattern.task}: ${pattern.reward} cycle success rate`);
-    console.log(`  Key insights: ${pattern.critique}`);
+  console.log('📚 Learning from past SPARC methodology cycles:')
+  similarCycles.forEach((pattern) => {
+    console.log(`- ${pattern.task}: ${pattern.reward} cycle success rate`)
+    console.log(`  Key insights: ${pattern.critique}`)
     // Apply successful phase transitions
     // Reuse proven quality gate criteria
     // Adopt validated coordination patterns
-  });
+  })
 }
 
 // 2. Learn from incomplete or failed SPARC cycles
@@ -128,16 +129,16 @@ const failedCycles = await reasoningBank.searchPatterns({
   task: 'sparc-cycle: ' + currentProject.description,
   onlyFailures: true,
   k: 3
-});
+})
 
 if (failedCycles.length > 0) {
-  console.log('⚠️  Avoiding past SPARC methodology mistakes:');
-  failedCycles.forEach(pattern => {
-    console.log(`- ${pattern.critique}`);
+  console.log('⚠️  Avoiding past SPARC methodology mistakes:')
+  failedCycles.forEach((pattern) => {
+    console.log(`- ${pattern.critique}`)
     // Prevent phase skipping
     // Ensure quality gate compliance
     // Maintain phase continuity
-  });
+  })
 }
 ```
 
@@ -145,7 +146,7 @@ if (failedCycles.length > 0) {
 
 ```typescript
 // Use hierarchical coordination (queen-worker model)
-const coordinator = new AttentionCoordinator(attentionService);
+const coordinator = new AttentionCoordinator(attentionService)
 
 // SPARC Coordinator = Queen (strategic decisions)
 // Phase Specialists = Workers (execution details)
@@ -153,18 +154,18 @@ const phaseCoordination = await coordinator.hierarchicalCoordination(
   [
     { phase: 'strategic_requirements', importance: 1.0 },
     { phase: 'overall_architecture', importance: 0.9 }
-  ],  // Queen decisions
+  ], // Queen decisions
   [
     { agent: 'specification', output: specOutput },
     { agent: 'pseudocode', output: pseudoOutput },
     { agent: 'architecture', output: archOutput },
     { agent: 'refinement', output: refineOutput }
-  ],  // Worker outputs
-  -1.0  // Hyperbolic curvature for natural hierarchy
-);
+  ], // Worker outputs
+  -1.0 // Hyperbolic curvature for natural hierarchy
+)
 
-console.log(`Hierarchical coordination score: ${phaseCoordination.consensus}`);
-console.log(`Queens have 1.5x influence on decisions`);
+console.log(`Hierarchical coordination score: ${phaseCoordination.consensus}`)
+console.log(`Queens have 1.5x influence on decisions`)
 ```
 
 ### MoE Routing for Phase Specialist Selection
@@ -179,11 +180,11 @@ const taskRouting = await coordinator.routeToExperts(
     { agent: 'architecture', expertise: ['system-design', 'scalability'] },
     { agent: 'refinement', expertise: ['testing', 'optimization'] }
   ],
-  2  // Top 2 most relevant specialists
-);
+  2 // Top 2 most relevant specialists
+)
 
-console.log(`Selected specialists: ${taskRouting.selectedExperts.map(e => e.agent)}`);
-console.log(`Routing confidence: ${taskRouting.routingScores}`);
+console.log(`Selected specialists: ${taskRouting.selectedExperts.map((e) => e.agent)}`)
+console.log(`Routing confidence: ${taskRouting.routingScores}`)
 ```
 
 ### After SPARC Cycle: Store Complete Methodology Learning
@@ -197,15 +198,10 @@ const cycleMetrics = {
   refinementCoverage: getPhaseMetric('refinement'),
   phasesCompleted: countCompletedPhases(),
   totalDuration: measureCycleDuration()
-};
+}
 
 // Calculate overall SPARC cycle success
-const cycleReward = (
-  cycleMetrics.specificationQuality * 0.25 +
-  cycleMetrics.algorithmEfficiency * 0.25 +
-  cycleMetrics.architectureScalability * 0.25 +
-  cycleMetrics.refinementCoverage * 0.25
-);
+const cycleReward = cycleMetrics.specificationQuality * 0.25 + cycleMetrics.algorithmEfficiency * 0.25 + cycleMetrics.architectureScalability * 0.25 + cycleMetrics.refinementCoverage * 0.25
 
 // Store complete SPARC cycle pattern
 await reasoningBank.storePattern({
@@ -213,12 +209,12 @@ await reasoningBank.storePattern({
   task: 'sparc-coordination: ' + projectDescription,
   input: initialRequirements,
   output: completedProject,
-  reward: cycleReward,  // 0-1 based on all phase metrics
+  reward: cycleReward, // 0-1 based on all phase metrics
   success: cycleMetrics.phasesCompleted >= 4,
   critique: `Phases: ${cycleMetrics.phasesCompleted}/4, Avg Quality: ${cycleReward}`,
   tokensUsed: sumAllPhaseTokens(),
   latencyMs: cycleMetrics.totalDuration
-});
+})
 ```
 
 ## 👑 Hierarchical SPARC Coordination Pattern
@@ -227,19 +223,14 @@ await reasoningBank.storePattern({
 
 ```typescript
 // SPARC Coordinator acts as queen
-const queenDecisions = [
-  'overall_project_direction',
-  'quality_gate_criteria',
-  'phase_transition_approval',
-  'methodology_compliance'
-];
+const queenDecisions = ['overall_project_direction', 'quality_gate_criteria', 'phase_transition_approval', 'methodology_compliance']
 
 // Queens have 1.5x influence weight
 const strategicDecisions = await coordinator.hierarchicalCoordination(
   queenDecisions,
   workerPhaseOutputs,
-  -1.0  // Hyperbolic space for hierarchy
-);
+  -1.0 // Hyperbolic space for hierarchy
+)
 ```
 
 ### Worker Level (Phase Execution)
@@ -251,13 +242,13 @@ const workers = [
   { agent: 'pseudocode', role: 'algorithm_design' },
   { agent: 'architecture', role: 'system_design' },
   { agent: 'refinement', role: 'code_quality' }
-];
+]
 
 // Workers coordinate through attention mechanism
 const workerConsensus = await coordinator.coordinateAgents(
-  workers.map(w => w.output),
-  'flash'  // Fast coordination for worker level
-);
+  workers.map((w) => w.output),
+  'flash' // Fast coordination for worker level
+)
 ```
 
 ## 🎯 MoE Expert Routing for SPARC Phases
@@ -280,22 +271,22 @@ class SPARCRouter {
       {
         agent: 'architecture',
         expertise: ['system_design', 'scalability', 'components'],
-        successRate: 0.90
+        successRate: 0.9
       },
       {
         agent: 'refinement',
         expertise: ['testing', 'optimization', 'refactoring'],
         successRate: 0.91
       }
-    ];
+    ]
 
     const routing = await coordinator.routeToExperts(
       task,
       experts,
-      1  // Select single best expert for this task
-    );
+      1 // Select single best expert for this task
+    )
 
-    return routing.selectedExperts[0];
+    return routing.selectedExperts[0]
   }
 }
 ```
@@ -311,13 +302,13 @@ const crossPhaseLearning = await coordinator.coordinateAgents(
     { phase: 'arch', patterns: archPatterns },
     { phase: 'refine', patterns: refinePatterns }
   ],
-  'multi-head'  // Multi-perspective cross-phase analysis
-);
+  'multi-head' // Multi-perspective cross-phase analysis
+)
 
-console.log(`Cross-phase patterns identified: ${crossPhaseLearning.consensus}`);
+console.log(`Cross-phase patterns identified: ${crossPhaseLearning.consensus}`)
 
 // Apply learned patterns to improve future cycles
-const improvements = extractImprovements(crossPhaseLearning);
+const improvements = extractImprovements(crossPhaseLearning)
 ```
 
 ## 📊 SPARC Cycle Improvement Tracking
@@ -327,20 +318,21 @@ const improvements = extractImprovements(crossPhaseLearning);
 const cycleStats = await reasoningBank.getPatternStats({
   task: 'sparc-cycle',
   k: 20
-});
+})
 
-console.log(`SPARC cycle success rate: ${cycleStats.successRate}%`);
-console.log(`Average quality score: ${cycleStats.avgReward}`);
-console.log(`Common optimization opportunities: ${cycleStats.commonCritiques}`);
+console.log(`SPARC cycle success rate: ${cycleStats.successRate}%`)
+console.log(`Average quality score: ${cycleStats.avgReward}`)
+console.log(`Common optimization opportunities: ${cycleStats.commonCritiques}`)
 
 // Weekly improvement trends
-const weeklyImprovement = calculateCycleImprovement(cycleStats);
-console.log(`Methodology efficiency improved by ${weeklyImprovement}% this week`);
+const weeklyImprovement = calculateCycleImprovement(cycleStats)
+console.log(`Methodology efficiency improved by ${weeklyImprovement}% this week`)
 ```
 
 ## ⚡ Performance Benefits
 
 ### Before: Traditional SPARC coordination
+
 ```typescript
 // Manual phase transitions
 // No pattern reuse across cycles
@@ -350,6 +342,7 @@ console.log(`Methodology efficiency improved by ${weeklyImprovement}% this week`
 ```
 
 ### After: Self-learning SPARC coordination (v3.0.0-alpha.1)
+
 ```typescript
 // 1. Hierarchical coordination (queen-worker model)
 // 2. MoE routing to optimal phase specialists
@@ -362,30 +355,35 @@ console.log(`Methodology efficiency improved by ${weeklyImprovement}% this week`
 ## SPARC Phases Overview
 
 ### 1. Specification Phase
+
 - Detailed requirements gathering
 - User story creation
 - Acceptance criteria definition
 - Edge case identification
 
 ### 2. Pseudocode Phase
+
 - Algorithm design
 - Logic flow planning
 - Data structure selection
 - Complexity analysis
 
 ### 3. Architecture Phase
+
 - System design
 - Component definition
 - Interface contracts
 - Integration planning
 
 ### 4. Refinement Phase
+
 - TDD implementation
 - Iterative improvement
 - Performance optimization
 - Code quality enhancement
 
 ### 5. Completion Phase
+
 - Integration testing
 - Documentation finalization
 - Deployment preparation
@@ -394,19 +392,21 @@ console.log(`Methodology efficiency improved by ${weeklyImprovement}% this week`
 ## Orchestration Workflow
 
 ### Phase Transitions
+
 ```
 Specification → Quality Gate 1 → Pseudocode
      ↓
-Pseudocode → Quality Gate 2 → Architecture  
+Pseudocode → Quality Gate 2 → Architecture
      ↓
 Architecture → Quality Gate 3 → Refinement
-     ↓ 
+     ↓
 Refinement → Quality Gate 4 → Completion
      ↓
 Completion → Final Review → Deployment
 ```
 
 ### Quality Gates
+
 1. **Specification Complete**: All requirements documented
 2. **Algorithms Validated**: Logic verified and optimized
 3. **Design Approved**: Architecture reviewed and accepted
@@ -416,6 +416,7 @@ Completion → Final Review → Deployment
 ## Agent Coordination
 
 ### Specialized SPARC Agents
+
 1. **SPARC Researcher**: Requirements and feasibility
 2. **SPARC Designer**: Architecture and interfaces
 3. **SPARC Coder**: Implementation and refinement
@@ -423,6 +424,7 @@ Completion → Final Review → Deployment
 5. **SPARC Documenter**: Documentation and guides
 
 ### Parallel Execution Patterns
+
 - Spawn multiple agents for independent components
 - Coordinate cross-functional reviews
 - Parallelize testing and documentation
@@ -431,29 +433,35 @@ Completion → Final Review → Deployment
 ## Usage Examples
 
 ### Complete SPARC Cycle
+
 "Use SPARC methodology to develop a user authentication system"
 
 ### Specific Phase Focus
+
 "Execute SPARC architecture phase for microservices design"
 
 ### Parallel Component Development
+
 "Apply SPARC to develop API, frontend, and database layers simultaneously"
 
 ## Integration Patterns
 
 ### With Task Orchestrator
+
 - Receives high-level objectives
 - Breaks down by SPARC phases
 - Coordinates phase execution
 - Reports progress back
 
 ### With GitHub Agents
+
 - Creates branches for each phase
 - Manages PRs at phase boundaries
 - Coordinates reviews at quality gates
 - Handles merge workflows
 
 ### With Testing Agents
+
 - Integrates TDD in refinement
 - Coordinates test coverage
 - Manages test automation
@@ -462,12 +470,14 @@ Completion → Final Review → Deployment
 ## Best Practices
 
 ### Phase Execution
+
 1. **Never skip phases** - Each builds on the previous
 2. **Enforce quality gates** - No shortcuts
 3. **Document decisions** - Maintain traceability
 4. **Iterate within phases** - Refinement is expected
 
 ### Common Patterns
+
 1. **Feature Development**
    - Full SPARC cycle
    - Emphasis on specification
@@ -486,6 +496,7 @@ Completion → Final Review → Deployment
 ## Memory Integration
 
 ### Stored Artifacts
+
 - Phase outputs and decisions
 - Quality gate results
 - Architectural decisions
@@ -493,6 +504,7 @@ Completion → Final Review → Deployment
 - Lessons learned
 
 ### Retrieval Patterns
+
 - Check previous similar projects
 - Reuse architectural patterns
 - Apply learned optimizations
@@ -501,6 +513,7 @@ Completion → Final Review → Deployment
 ## Success Metrics
 
 ### Phase Metrics
+
 - Specification completeness
 - Algorithm efficiency
 - Architecture clarity
@@ -508,6 +521,7 @@ Completion → Final Review → Deployment
 - Documentation coverage
 
 ### Overall Metrics
+
 - Time per phase
 - Quality gate pass rate
 - Defect discovery timing

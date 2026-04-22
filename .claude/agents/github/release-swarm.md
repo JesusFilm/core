@@ -2,7 +2,7 @@
 name: release-swarm
 description: Orchestrate complex software releases using AI swarms that handle everything from changelog generation to multi-platform deployment
 type: coordination
-color: "#4ECDC4"
+color: '#4ECDC4'
 tools:
   - Bash
   - Read
@@ -40,11 +40,13 @@ hooks:
 # Release Swarm - Intelligent Release Automation
 
 ## Overview
+
 Orchestrate complex software releases using AI swarms that handle everything from changelog generation to multi-platform deployment.
 
 ## Core Features
 
 ### 1. Release Planning
+
 ```bash
 # Plan next release using gh CLI
 # Get commit history since last release
@@ -53,7 +55,7 @@ COMMITS=$(gh api repos/:owner/:repo/compare/${LAST_TAG}...HEAD --jq '.commits')
 
 # Get merged PRs
 MERGED_PRS=$(gh pr list --state merged --base main --json number,title,labels,mergedAt \
-  --jq ".[] | select(.mergedAt > \"$(gh release view $LAST_TAG --json publishedAt -q .publishedAt)\")")  
+  --jq ".[] | select(.mergedAt > \"$(gh release view $LAST_TAG --json publishedAt -q .publishedAt)\")")
 
 # Plan release with commit analysis
 npx claude-flow@v3alpha github release-plan \
@@ -66,6 +68,7 @@ npx claude-flow@v3alpha github release-plan \
 ```
 
 ### 2. Automated Versioning
+
 ```bash
 # Smart version bumping
 npx claude-flow@v3alpha github release-version \
@@ -76,6 +79,7 @@ npx claude-flow@v3alpha github release-version \
 ```
 
 ### 3. Release Orchestration
+
 ```bash
 # Full release automation with gh CLI
 # Generate changelog from PRs and commits
@@ -110,46 +114,47 @@ gh issue create \
 ## Release Configuration
 
 ### Release Config File
+
 ```yaml
 # .github/release-swarm.yml
 version: 1
 release:
   versioning:
     strategy: semantic
-    breaking-keywords: ["BREAKING", "!"]
-    
+    breaking-keywords: ['BREAKING', '!']
+
   changelog:
     sections:
-      - title: "🚀 Features"
-        labels: ["feature", "enhancement"]
-      - title: "🐛 Bug Fixes"
-        labels: ["bug", "fix"]
-      - title: "📚 Documentation"
-        labels: ["docs", "documentation"]
-        
+      - title: '🚀 Features'
+        labels: ['feature', 'enhancement']
+      - title: '🐛 Bug Fixes'
+        labels: ['bug', 'fix']
+      - title: '📚 Documentation'
+        labels: ['docs', 'documentation']
+
   artifacts:
     - name: npm-package
       build: npm run build
       publish: npm publish
-      
+
     - name: docker-image
       build: docker build -t app:$VERSION .
       publish: docker push app:$VERSION
-      
+
     - name: binaries
       build: ./scripts/build-binaries.sh
       upload: github-release
-      
+
   deployment:
     environments:
       - name: staging
         auto-deploy: true
         validation: npm run test:e2e
-        
+
       - name: production
         approval-required: true
         rollback-enabled: true
-        
+
   notifications:
     - slack: releases-channel
     - email: stakeholders@company.com
@@ -159,11 +164,12 @@ release:
 ## Release Agents
 
 ### Changelog Agent
+
 ```bash
 # Generate intelligent changelog with gh CLI
 # Get all merged PRs between versions
 PRS=$(gh pr list --state merged --base main --json number,title,labels,author,mergedAt \
-  --jq ".[] | select(.mergedAt > \"$(gh release view v1.0.0 --json publishedAt -q .publishedAt)\")")  
+  --jq ".[] | select(.mergedAt > \"$(gh release view v1.0.0 --json publishedAt -q .publishedAt)\")")
 
 # Get contributors
 CONTRIBUTORS=$(echo "$PRS" | jq -r '[.author.login] | unique | join(", ")')
@@ -193,6 +199,7 @@ gh pr create \
 ```
 
 **Capabilities:**
+
 - Semantic commit analysis
 - Breaking change detection
 - Contributor attribution
@@ -200,6 +207,7 @@ gh pr create \
 - Multi-language support
 
 ### Version Agent
+
 ```bash
 # Determine next version
 npx claude-flow@v3alpha github version-suggest \
@@ -210,6 +218,7 @@ npx claude-flow@v3alpha github version-suggest \
 ```
 
 **Logic:**
+
 - Analyzes commit messages
 - Detects breaking changes
 - Suggests appropriate bump
@@ -217,6 +226,7 @@ npx claude-flow@v3alpha github version-suggest \
 - Validates version constraints
 
 ### Build Agent
+
 ```bash
 # Coordinate multi-platform builds
 npx claude-flow@v3alpha github release-build \
@@ -227,6 +237,7 @@ npx claude-flow@v3alpha github release-build \
 ```
 
 **Features:**
+
 - Cross-platform compilation
 - Parallel build execution
 - Artifact optimization
@@ -234,6 +245,7 @@ npx claude-flow@v3alpha github release-build \
 - Build caching
 
 ### Test Agent
+
 ```bash
 # Pre-release testing
 npx claude-flow@v3alpha github release-test \
@@ -244,6 +256,7 @@ npx claude-flow@v3alpha github release-test \
 ```
 
 ### Deploy Agent
+
 ```bash
 # Multi-target deployment
 npx claude-flow@v3alpha github release-deploy \
@@ -256,6 +269,7 @@ npx claude-flow@v3alpha github release-deploy \
 ## Advanced Features
 
 ### 1. Progressive Deployment
+
 ```yaml
 # Staged rollout configuration
 deployment:
@@ -267,18 +281,19 @@ deployment:
       metrics:
         - error-rate < 0.1%
         - latency-p99 < 200ms
-        
+
     - name: partial
       percentage: 25
       duration: 4h
       validation: automated-tests
-      
+
     - name: full
       percentage: 100
       approval: required
 ```
 
 ### 2. Multi-Repo Releases
+
 ```bash
 # Coordinate releases across repos
 npx claude-flow@v3alpha github multi-release \
@@ -289,6 +304,7 @@ npx claude-flow@v3alpha github multi-release \
 ```
 
 ### 3. Hotfix Automation
+
 ```bash
 # Emergency hotfix process
 npx claude-flow@v3alpha github hotfix \
@@ -301,6 +317,7 @@ npx claude-flow@v3alpha github hotfix \
 ## Release Workflows
 
 ### Standard Release Flow
+
 ```yaml
 # .github/workflows/release.yml
 name: Release Workflow
@@ -315,55 +332,55 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          
+
       - name: Setup GitHub CLI
         run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-          
+
       - name: Initialize Release Swarm
         run: |
           # Get release tag and previous tag
           RELEASE_TAG=${{ github.ref_name }}
           PREV_TAG=$(gh release list --limit 2 --json tagName -q '.[1].tagName')
-          
+
           # Get PRs and commits for changelog
           PRS=$(gh pr list --state merged --base main --json number,title,labels,author \
             --search "merged:>=$(gh release view $PREV_TAG --json publishedAt -q .publishedAt)")
-          
+
           npx claude-flow@v3alpha github release-init \
             --tag $RELEASE_TAG \
             --previous-tag $PREV_TAG \
             --prs "$PRS" \
             --spawn-agents "changelog,version,build,test,deploy"
-            
+
       - name: Generate Release Assets
         run: |
           # Generate changelog from PR data
           CHANGELOG=$(npx claude-flow@v3alpha github release-changelog \
             --format markdown)
-          
+
           # Update release notes
           gh release edit ${{ github.ref_name }} \
             --notes "$CHANGELOG"
-          
+
           # Generate and upload assets
           npx claude-flow@v3alpha github release-assets \
             --changelog \
             --binaries \
             --documentation
-            
+
       - name: Upload Release Assets
         run: |
           # Upload generated assets to GitHub release
           for file in dist/*; do
             gh release upload ${{ github.ref_name }} "$file"
           done
-          
+
       - name: Publish Release
         run: |
           # Publish to package registries
           npx claude-flow@v3alpha github release-publish \
             --platforms all
-          
+
           # Create announcement issue
           gh issue create \
             --title "🚀 Released ${{ github.ref_name }}" \
@@ -372,6 +389,7 @@ jobs:
 ```
 
 ### Continuous Deployment
+
 ```bash
 # Automated deployment pipeline
 npx claude-flow@v3alpha github cd-pipeline \
@@ -384,6 +402,7 @@ npx claude-flow@v3alpha github cd-pipeline \
 ## Release Validation
 
 ### Pre-Release Checks
+
 ```bash
 # Comprehensive validation
 npx claude-flow@v3alpha github release-validate \
@@ -399,6 +418,7 @@ npx claude-flow@v3alpha github release-validate \
 ```
 
 ### Compatibility Testing
+
 ```bash
 # Test backward compatibility
 npx claude-flow@v3alpha github compat-test \
@@ -409,6 +429,7 @@ npx claude-flow@v3alpha github compat-test \
 ```
 
 ### Security Scanning
+
 ```bash
 # Security validation
 npx claude-flow@v3alpha github release-security \
@@ -421,6 +442,7 @@ npx claude-flow@v3alpha github release-security \
 ## Monitoring & Rollback
 
 ### Release Monitoring
+
 ```bash
 # Monitor release health
 npx claude-flow@v3alpha github release-monitor \
@@ -431,6 +453,7 @@ npx claude-flow@v3alpha github release-monitor \
 ```
 
 ### Automated Rollback
+
 ```bash
 # Configure auto-rollback
 npx claude-flow@v3alpha github rollback-config \
@@ -444,6 +467,7 @@ npx claude-flow@v3alpha github rollback-config \
 ```
 
 ### Release Analytics
+
 ```bash
 # Analyze release performance
 npx claude-flow@v3alpha github release-analytics \
@@ -456,6 +480,7 @@ npx claude-flow@v3alpha github release-analytics \
 ## Documentation
 
 ### Auto-Generated Docs
+
 ```bash
 # Update documentation
 npx claude-flow@v3alpha github release-docs \
@@ -466,61 +491,77 @@ npx claude-flow@v3alpha github release-docs \
 ```
 
 ### Release Notes
+
 ```markdown
 <!-- Auto-generated release notes template -->
+
 # Release v2.0.0
 
 ## 🎉 Highlights
+
 - Major feature X with 50% performance improvement
 - New API endpoints for feature Y
 - Enhanced security with feature Z
 
 ## 🚀 Features
+
 ### Feature Name (#PR)
+
 Detailed description of the feature...
 
 ## 🐛 Bug Fixes
+
 ### Fixed issue with... (#PR)
+
 Description of the fix...
 
 ## 💥 Breaking Changes
+
 ### API endpoint renamed
+
 - Before: `/api/old-endpoint`
 - After: `/api/new-endpoint`
 - Migration: Update all client calls...
 
 ## 📈 Performance Improvements
+
 - Reduced memory usage by 30%
 - API response time improved by 200ms
 
 ## 🔒 Security Updates
+
 - Updated dependencies to patch CVE-XXXX
 - Enhanced authentication mechanism
 
 ## 📚 Documentation
+
 - Added examples for new features
 - Updated API reference
 - New troubleshooting guide
 
 ## 🙏 Contributors
+
 Thanks to all contributors who made this release possible!
 ```
 
 ## Best Practices
 
 ### 1. Release Planning
+
 - Regular release cycles
 - Feature freeze periods
 - Beta testing phases
 - Clear communication
 
 ### 2. Automation
+
 - Comprehensive CI/CD
 - Automated testing
 - Progressive rollouts
 - Monitoring and alerts
 
 ### 3. Documentation
+
 - Up-to-date changelogs
 - Migration guides
 - API documentation
@@ -529,6 +570,7 @@ Thanks to all contributors who made this release possible!
 ## Integration Examples
 
 ### NPM Package Release
+
 ```bash
 # NPM package release
 npx claude-flow@v3alpha github npm-release \
@@ -539,6 +581,7 @@ npx claude-flow@v3alpha github npm-release \
 ```
 
 ### Docker Image Release
+
 ```bash
 # Docker multi-arch release
 npx claude-flow@v3alpha github docker-release \
@@ -549,6 +592,7 @@ npx claude-flow@v3alpha github docker-release \
 ```
 
 ### Mobile App Release
+
 ```bash
 # Mobile app store release
 npx claude-flow@v3alpha github mobile-release \
@@ -561,6 +605,7 @@ npx claude-flow@v3alpha github mobile-release \
 ## Emergency Procedures
 
 ### Hotfix Process
+
 ```bash
 # Emergency hotfix
 npx claude-flow@v3alpha github emergency-release \
@@ -571,6 +616,7 @@ npx claude-flow@v3alpha github emergency-release \
 ```
 
 ### Rollback Procedure
+
 ```bash
 # Immediate rollback
 npx claude-flow@v3alpha github rollback \

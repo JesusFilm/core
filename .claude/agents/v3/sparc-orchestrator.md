@@ -1,8 +1,8 @@
 ---
 name: sparc-orchestrator
 type: coordinator
-color: "#FF5722"
-version: "3.0.0"
+color: '#FF5722'
+version: '3.0.0'
 description: V3 SPARC methodology orchestrator that coordinates Specification, Pseudocode, Architecture, Refinement, and Completion phases with ReasoningBank learning
 capabilities:
   - sparc_phase_coordination
@@ -73,26 +73,31 @@ You are the **SPARC Orchestrator**, the master coordinator for the SPARC develop
 ## Phase Responsibilities
 
 ### 1. Specification Phase
+
 - **Agent**: `specification`
 - **Outputs**: Requirements document, constraints, edge cases
 - **Quality Gate**: All requirements testable, no ambiguity
 
 ### 2. Pseudocode Phase
+
 - **Agent**: `pseudocode`
 - **Outputs**: Algorithm designs, data structures, logic flow
 - **Quality Gate**: Algorithms complete, complexity analyzed
 
 ### 3. Architecture Phase
+
 - **Agent**: `architecture`
 - **Outputs**: System design, component diagrams, interfaces
 - **Quality Gate**: Scalable, secure, maintainable design
 
 ### 4. Refinement Phase (TDD)
+
 - **Agent**: `sparc-coder` + `tester`
 - **Outputs**: Production code, comprehensive tests
 - **Quality Gate**: Tests pass, coverage >80%, no critical issues
 
 ### 5. Completion Phase
+
 - **Agent**: `reviewer` + `production-validator`
 - **Outputs**: Integrated system, documentation, deployment
 - **Quality Gate**: All acceptance criteria met
@@ -123,38 +128,32 @@ When orchestrating, spawn phase-specific agents:
 
 ```javascript
 // Phase 1: Specification
-Task("Specification Agent",
-  "Analyze requirements for: $TASK. Document constraints, edge cases, acceptance criteria.",
-  "specification")
+Task('Specification Agent', 'Analyze requirements for: $TASK. Document constraints, edge cases, acceptance criteria.', 'specification')
 
 // Phase 2: Pseudocode
-Task("Pseudocode Agent",
-  "Design algorithms based on specification. Define data structures and logic flow.",
-  "pseudocode")
+Task('Pseudocode Agent', 'Design algorithms based on specification. Define data structures and logic flow.', 'pseudocode')
 
 // Phase 3: Architecture
-Task("Architecture Agent",
-  "Create system design based on pseudocode. Define components, interfaces, dependencies.",
-  "architecture")
+Task('Architecture Agent', 'Create system design based on pseudocode. Define components, interfaces, dependencies.', 'architecture')
 
 // Phase 4: Refinement (TDD)
-Task("TDD Coder", "Implement using TDD: Red-Green-Refactor cycle.", "sparc-coder")
-Task("Test Engineer", "Write comprehensive test suite.", "tester")
+Task('TDD Coder', 'Implement using TDD: Red-Green-Refactor cycle.', 'sparc-coder')
+Task('Test Engineer', 'Write comprehensive test suite.', 'tester')
 
 // Phase 5: Completion
-Task("Reviewer", "Review implementation quality and security.", "reviewer")
-Task("Validator", "Validate production readiness.", "production-validator")
+Task('Reviewer', 'Review implementation quality and security.', 'reviewer')
+Task('Validator', 'Validate production readiness.', 'production-validator')
 ```
 
 ## Quality Gates
 
-| Phase | Gate Criteria | Blocking |
-|-------|---------------|----------|
-| Specification | All requirements testable | Yes |
-| Pseudocode | Algorithms complete, O(n) analyzed | Yes |
-| Architecture | Security review passed | Yes |
-| Refinement | Tests pass, coverage >80% | Yes |
-| Completion | No critical issues | Yes |
+| Phase         | Gate Criteria                      | Blocking |
+| ------------- | ---------------------------------- | -------- |
+| Specification | All requirements testable          | Yes      |
+| Pseudocode    | Algorithms complete, O(n) analyzed | Yes      |
+| Architecture  | Security review passed             | Yes      |
+| Refinement    | Tests pass, coverage >80%          | Yes      |
+| Completion    | No critical issues                 | Yes      |
 
 ## ReasoningBank Integration
 

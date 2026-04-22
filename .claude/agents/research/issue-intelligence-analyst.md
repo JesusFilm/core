@@ -57,12 +57,14 @@ gh label list --json name --limit 100
 ```
 
 The label list serves two purposes:
+
 - **Priority signals:** patterns like `P0`, `P1`, `priority:critical`, `severity:high`, `urgent`, `critical`
 - **Focus targeting:** if a focus hint was provided (e.g., "collaboration", "auth", "performance"), scan the label list for labels that match the focus area. Every repo's label taxonomy is different — some use `subsystem:collab`, others use `area/auth`, others have no structured labels at all. Use your judgment to identify which labels (if any) relate to the focus, then use `--label` to narrow the fetch. If no labels match the focus, fetch broadly and weight the focus area during clustering instead.
 
 **2b. Fetch open issues (priority-aware):**
 
 If priority/severity labels were detected:
+
 - Fetch high-priority issues first (with truncated bodies for clustering):
   ```
   gh issue list --state open --label "{high-priority-labels}" --limit 50 --json number,title,labels,createdAt,body --jq '[.[] | {number, title, labels, createdAt, body: (.body[:500])}]'
@@ -74,6 +76,7 @@ If priority/severity labels were detected:
 - Deduplicate by issue number.
 
 If no priority labels detected:
+
 ```
 gh issue list --state open --limit 100 --json number,title,labels,createdAt,body --jq '[.[] | {number, title, labels, createdAt, body: (.body[:500])}]'
 ```
@@ -85,6 +88,7 @@ gh issue list --state closed --limit 50 --json number,title,labels,createdAt,sta
 ```
 
 Then filter the output by reading it directly:
+
 - Keep only issues closed within the last 30 days (by `closedAt` date)
 - Exclude issues whose labels match common won't-fix patterns: `wontfix`, `won't fix`, `duplicate`, `invalid`, `by design`
 
@@ -99,6 +103,7 @@ Perform date and label filtering by reasoning over the returned data directly. D
 Cluster from open issues first. Then check whether closed issues reinforce those themes. Do not let closed issues create new themes that have no open issue support.
 
 **Hard rules:**
+
 - **One `gh` call per fetch** — fetch all needed issues in a single call with `--limit`. Do not paginate across multiple calls, pipe through `tail`/`head`, or split fetches. A single `gh issue list --limit 200` is fine; two calls to get issues 1-100 then 101-200 is unnecessary.
 - Do not fetch `comments`, `assignees`, or `milestone` — these fields are expensive and not needed.
 - Do not reformulate `gh` commands with custom `--jq` output formatting (tab-separated, CSV, etc.). Always return JSON arrays from `--jq` so the output is machine-readable and consistent.
@@ -127,6 +132,7 @@ This is the core analytical step. Group issues into themes that represent **area
 **Target: 3-8 themes.** Fewer than 3 suggests the issues are too homogeneous or the repo has few issues. More than 8 suggests clustering is too granular — merge related themes.
 
 **What makes a good cluster:**
+
 - It names a systemic concern, not a specific error or ticket
 - A product or engineering leader would recognize it as "an area we need to invest in"
 - It is actionable at a strategic level — could drive an initiative, not just a patch
@@ -136,6 +142,7 @@ This is the core analytical step. Group issues into themes that represent **area
 The truncated bodies from Step 2 (500 chars) are usually sufficient for clustering. Only fetch full bodies when a truncated body was cut off at a critical point and the full context would materially change the cluster assignment or theme understanding.
 
 When a full read is needed:
+
 ```
 gh issue view {number} --json body --jq '.body'
 ```
@@ -145,6 +152,7 @@ Limit full reads to 2-3 issues total across all clusters, not per cluster. Use `
 ### Step 5: Synthesize Themes
 
 For each cluster, produce a theme entry with these fields:
+
 - **theme_title**: short descriptive name (systemic, not symptom-level)
 - **description**: what the pattern is and what it signals about the system
 - **why_it_matters**: user impact, severity distribution, frequency, and what happens if unaddressed
@@ -157,6 +165,7 @@ For each cluster, produce a theme entry with these fields:
 Order themes by issue count descending.
 
 **Accuracy requirement:** Every number in the output must be derived from the actual data returned by `gh`, not estimated or assumed.
+
 - Count the actual issues returned by each `gh` call — do not assume the count matches the `--limit` value. If you requested `--limit 100` but only 30 issues came back, report 30.
 - Per-theme issue counts must add up to the total (with minor overlap for cross-referenced issues). If you claim 55 issues in theme 1 but only fetched 30 total, something is wrong.
 - Do not fabricate statistics, ratios, or breakdowns that you did not compute from the actual returned data. If you cannot determine an exact count, say so — do not approximate with a round number.
@@ -181,6 +190,7 @@ Every theme MUST include ALL of the following fields. Do not skip fields, merge 
 **Themes identified:** {K}
 
 ### Theme 1: {theme_title}
+
 **Issues:** {count} | **Trend:** {direction} | **Confidence:** {level}
 **Sources:** {X human-reported, Y bot-generated} | **Type:** {bugs/enhancements/mixed}
 
@@ -193,15 +203,18 @@ Every theme MUST include ALL of the following fields. Do not skip fields, merge 
 ---
 
 ### Theme 2: {theme_title}
+
 (same fields — no exceptions)
 
 ...
 
 ### Minor / Unclustered
+
 {Issues that didn't fit any theme — list each with #{num} {title}, or "None"}
 ```
 
 **Output checklist — verify before returning:**
+
 - [ ] Total analyzed count matches actual `gh` results (not the `--limit` value)
 - [ ] Every theme has all 6 lines: title, issues/trend/confidence, sources/type, description, why it matters, representative issues
 - [ ] Representative issues use real issue numbers from the fetched data
@@ -223,6 +236,7 @@ Every theme MUST include ALL of the following fields. Do not skip fields, merge 
 ## Integration Points
 
 This agent is designed to be invoked by:
+
 - `ce:ideate` — as a third parallel Phase 1 scan when issue-tracker intent is detected
 - Direct user dispatch — for standalone issue landscape analysis
 - Other skills or workflows — any context where understanding issue patterns is valuable

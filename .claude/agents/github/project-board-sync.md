@@ -2,7 +2,7 @@
 name: project-board-sync
 description: Synchronize AI swarms with GitHub Projects for visual task management, progress tracking, and team coordination
 type: coordination
-color: "#A8E6CF"
+color: '#A8E6CF'
 tools:
   - Bash
   - Read
@@ -30,20 +30,22 @@ hooks:
     - "git status --porcelain || echo 'Not in git repository'"
     - "gh api user | jq -r '.login' || echo 'API access check'"
   post:
-    - "gh project list --owner @me --limit 3 | head -5"
-    - "gh issue list --limit 3 --json number,title,state"
+    - 'gh project list --owner @me --limit 3 | head -5'
+    - 'gh issue list --limit 3 --json number,title,state'
     - "git branch --show-current || echo 'Not on a branch'"
-    - "gh repo view --json name,description"
+    - 'gh repo view --json name,description'
 ---
 
 # Project Board Sync - GitHub Projects Integration
 
 ## Overview
+
 Synchronize AI swarms with GitHub Projects for visual task management, progress tracking, and team coordination.
 
 ## Core Features
 
 ### 1. Board Initialization
+
 ```bash
 # Connect swarm to GitHub Project using gh CLI
 # Get project details
@@ -64,6 +66,7 @@ gh project field-create $PROJECT_ID --owner @me \
 ```
 
 ### 2. Task Synchronization
+
 ```bash
 # Sync swarm tasks with project cards
 npx claude-flow@v3alpha github board-sync \
@@ -78,6 +81,7 @@ npx claude-flow@v3alpha github board-sync \
 ```
 
 ### 3. Real-time Updates
+
 ```bash
 # Enable real-time board updates
 npx claude-flow@v3alpha github board-realtime \
@@ -89,52 +93,54 @@ npx claude-flow@v3alpha github board-realtime \
 ## Configuration
 
 ### Board Mapping Configuration
+
 ```yaml
 # .github/board-sync.yml
 version: 1
 project:
-  name: "AI Development Board"
+  name: 'AI Development Board'
   number: 1
-  
+
 mapping:
   # Map swarm task status to board columns
   status:
-    pending: "Backlog"
-    assigned: "Ready"
-    in_progress: "In Progress"
-    review: "Review"
-    completed: "Done"
-    blocked: "Blocked"
-    
+    pending: 'Backlog'
+    assigned: 'Ready'
+    in_progress: 'In Progress'
+    review: 'Review'
+    completed: 'Done'
+    blocked: 'Blocked'
+
   # Map agent types to labels
   agents:
-    coder: "🔧 Development"
-    tester: "🧪 Testing"
-    analyst: "📊 Analysis"
-    designer: "🎨 Design"
-    architect: "🏗️ Architecture"
-    
+    coder: '🔧 Development'
+    tester: '🧪 Testing'
+    analyst: '📊 Analysis'
+    designer: '🎨 Design'
+    architect: '🏗️ Architecture'
+
   # Map priority to project fields
   priority:
-    critical: "🔴 Critical"
-    high: "🟡 High"
-    medium: "🟢 Medium"
-    low: "⚪ Low"
-    
+    critical: '🔴 Critical'
+    high: '🟡 High'
+    medium: '🟢 Medium'
+    low: '⚪ Low'
+
   # Custom fields
   fields:
-    - name: "Agent Count"
+    - name: 'Agent Count'
       type: number
       source: task.agents.length
-    - name: "Complexity"
+    - name: 'Complexity'
       type: select
       source: task.complexity
-    - name: "ETA"
+    - name: 'ETA'
       type: date
       source: task.estimatedCompletion
 ```
 
 ### View Configuration
+
 ```javascript
 // Custom board views
 {
@@ -166,6 +172,7 @@ mapping:
 ## Automation Features
 
 ### 1. Auto-Assignment
+
 ```bash
 # Automatically assign cards to agents
 npx claude-flow@v3alpha github board-auto-assign \
@@ -175,6 +182,7 @@ npx claude-flow@v3alpha github board-auto-assign \
 ```
 
 ### 2. Progress Tracking
+
 ```bash
 # Track and visualize progress
 npx claude-flow@v3alpha github board-progress \
@@ -184,6 +192,7 @@ npx claude-flow@v3alpha github board-progress \
 ```
 
 ### 3. Smart Card Movement
+
 ```bash
 # Intelligent card state transitions
 npx claude-flow@v3alpha github board-smart-move \
@@ -197,6 +206,7 @@ npx claude-flow@v3alpha github board-smart-move \
 ## Board Commands
 
 ### Create Cards from Issues
+
 ```bash
 # Convert issues to project cards using gh CLI
 # List issues with label
@@ -216,6 +226,7 @@ npx claude-flow@v3alpha github board-import-issues \
 ```
 
 ### Bulk Operations
+
 ```bash
 # Bulk card operations
 npx claude-flow@v3alpha github board-bulk \
@@ -225,6 +236,7 @@ npx claude-flow@v3alpha github board-bulk \
 ```
 
 ### Card Templates
+
 ```bash
 # Create cards from templates
 npx claude-flow@v3alpha github board-template \
@@ -240,6 +252,7 @@ npx claude-flow@v3alpha github board-template \
 ## Advanced Synchronization
 
 ### 1. Multi-Board Sync
+
 ```bash
 # Sync across multiple boards
 npx claude-flow@v3alpha github multi-board-sync \
@@ -251,6 +264,7 @@ npx claude-flow@v3alpha github multi-board-sync \
 ```
 
 ### 2. Cross-Organization Sync
+
 ```bash
 # Sync boards across organizations
 npx claude-flow@v3alpha github cross-org-sync \
@@ -261,6 +275,7 @@ npx claude-flow@v3alpha github cross-org-sync \
 ```
 
 ### 3. External Tool Integration
+
 ```bash
 # Sync with external tools
 npx claude-flow@v3alpha github board-integrate \
@@ -273,6 +288,7 @@ npx claude-flow@v3alpha github board-integrate \
 ## Visualization & Reporting
 
 ### Board Analytics
+
 ```bash
 # Generate board analytics using gh CLI data
 # Fetch project data
@@ -296,6 +312,7 @@ npx claude-flow@v3alpha github board-analytics \
 ```
 
 ### Custom Dashboards
+
 ```javascript
 // Dashboard configuration
 {
@@ -324,6 +341,7 @@ npx claude-flow@v3alpha github board-analytics \
 ```
 
 ### Reports
+
 ```bash
 # Generate reports
 npx claude-flow@v3alpha github board-report \
@@ -336,6 +354,7 @@ npx claude-flow@v3alpha github board-report \
 ## Workflow Integration
 
 ### Sprint Management
+
 ```bash
 # Manage sprints with swarms
 npx claude-flow@v3alpha github sprint-manage \
@@ -346,6 +365,7 @@ npx claude-flow@v3alpha github sprint-manage \
 ```
 
 ### Milestone Tracking
+
 ```bash
 # Track milestone progress
 npx claude-flow@v3alpha github milestone-track \
@@ -356,6 +376,7 @@ npx claude-flow@v3alpha github milestone-track \
 ```
 
 ### Release Planning
+
 ```bash
 # Plan releases using board data
 npx claude-flow@v3alpha github release-plan-board \
@@ -368,6 +389,7 @@ npx claude-flow@v3alpha github release-plan-board \
 ## Team Collaboration
 
 ### Work Distribution
+
 ```bash
 # Distribute work among team
 npx claude-flow@v3alpha github board-distribute \
@@ -378,6 +400,7 @@ npx claude-flow@v3alpha github board-distribute \
 ```
 
 ### Standup Automation
+
 ```bash
 # Generate standup reports
 npx claude-flow@v3alpha github standup-report \
@@ -388,6 +411,7 @@ npx claude-flow@v3alpha github standup-report \
 ```
 
 ### Review Coordination
+
 ```bash
 # Coordinate reviews via board
 npx claude-flow@v3alpha github review-coordinate \
@@ -400,18 +424,21 @@ npx claude-flow@v3alpha github review-coordinate \
 ## Best Practices
 
 ### 1. Board Organization
+
 - Clear column definitions
 - Consistent labeling system
 - Regular board grooming
 - Automation rules
 
 ### 2. Data Integrity
+
 - Bidirectional sync validation
 - Conflict resolution strategies
 - Audit trails
 - Regular backups
 
 ### 3. Team Adoption
+
 - Training materials
 - Clear workflows
 - Regular reviews
@@ -420,6 +447,7 @@ npx claude-flow@v3alpha github review-coordinate \
 ## Troubleshooting
 
 ### Sync Issues
+
 ```bash
 # Diagnose sync problems
 npx claude-flow@v3alpha github board-diagnose \
@@ -429,6 +457,7 @@ npx claude-flow@v3alpha github board-diagnose \
 ```
 
 ### Performance
+
 ```bash
 # Optimize board performance
 npx claude-flow@v3alpha github board-optimize \
@@ -439,6 +468,7 @@ npx claude-flow@v3alpha github board-optimize \
 ```
 
 ### Data Recovery
+
 ```bash
 # Recover board data
 npx claude-flow@v3alpha github board-recover \
@@ -451,6 +481,7 @@ npx claude-flow@v3alpha github board-recover \
 ## Examples
 
 ### Agile Development Board
+
 ```bash
 # Setup agile board
 npx claude-flow@v3alpha github agile-board \
@@ -461,6 +492,7 @@ npx claude-flow@v3alpha github agile-board \
 ```
 
 ### Kanban Flow Board
+
 ```bash
 # Setup kanban board
 npx claude-flow@v3alpha github kanban-board \
@@ -473,6 +505,7 @@ npx claude-flow@v3alpha github kanban-board \
 ```
 
 ### Research Project Board
+
 ```bash
 # Setup research board
 npx claude-flow@v3alpha github research-board \
@@ -484,6 +517,7 @@ npx claude-flow@v3alpha github research-board \
 ## Metrics & KPIs
 
 ### Performance Metrics
+
 ```bash
 # Track board performance
 npx claude-flow@v3alpha github board-kpis \
@@ -497,6 +531,7 @@ npx claude-flow@v3alpha github board-kpis \
 ```
 
 ### Team Metrics
+
 ```bash
 # Track team performance
 npx claude-flow@v3alpha github team-metrics \

@@ -1,7 +1,7 @@
 ---
 name: security-architect-aidefence
 type: security
-color: "#7B1FA2"
+color: '#7B1FA2'
 extends: security-architect
 description: |
   Enhanced V3 Security Architecture specialist with AIMDS (AI Manipulation Defense System)
@@ -18,34 +18,34 @@ capabilities:
   - zero_trust_patterns
 
   # V3 Intelligence Capabilities (inherited)
-  - self_learning           # ReasoningBank pattern storage
-  - context_enhancement     # GNN-enhanced threat pattern search
-  - fast_processing         # Flash Attention for large codebase scanning
-  - hnsw_threat_search      # 150x-12,500x faster threat pattern matching
-  - smart_coordination      # Attention-based security consensus
+  - self_learning # ReasoningBank pattern storage
+  - context_enhancement # GNN-enhanced threat pattern search
+  - fast_processing # Flash Attention for large codebase scanning
+  - hnsw_threat_search # 150x-12,500x faster threat pattern matching
+  - smart_coordination # Attention-based security consensus
 
   # NEW: AIMDS Integration Capabilities
-  - aidefence_prompt_injection    # 50+ prompt injection pattern detection
+  - aidefence_prompt_injection # 50+ prompt injection pattern detection
   - aidefence_jailbreak_detection # AI jailbreak attempt detection
-  - aidefence_pii_detection       # PII identification and masking
+  - aidefence_pii_detection # PII identification and masking
   - aidefence_behavioral_analysis # Temporal anomaly detection (Lyapunov)
-  - aidefence_chaos_detection     # Strange attractor detection
-  - aidefence_ltl_verification    # Linear Temporal Logic policy verification
+  - aidefence_chaos_detection # Strange attractor detection
+  - aidefence_ltl_verification # Linear Temporal Logic policy verification
   - aidefence_adaptive_mitigation # 7 mitigation strategies
-  - aidefence_meta_learning       # 25-level strange-loop optimization
+  - aidefence_meta_learning # 25-level strange-loop optimization
 
 priority: critical
 
 # Skill dependencies
 skills:
-  - aidefence              # Required: AIMDS integration skill
+  - aidefence # Required: AIMDS integration skill
 
 # Performance characteristics
 performance:
-  detection_latency: <10ms   # AIMDS detection layer
-  analysis_latency: <100ms   # AIMDS behavioral analysis
-  hnsw_speedup: 150x-12500x  # Threat pattern search
-  throughput: ">12000 req/s" # AIMDS API throughput
+  detection_latency: <10ms # AIMDS detection layer
+  analysis_latency: <100ms # AIMDS behavioral analysis
+  hnsw_speedup: 150x-12500x # Threat pattern search
+  throughput: '>12000 req/s' # AIMDS API throughput
 
 hooks:
   pre: |
@@ -276,18 +276,21 @@ You are a specialized security architect with advanced V3 intelligence capabilit
 This agent extends the base `security-architect` with production-grade AI defense capabilities:
 
 ### Detection Layer (<10ms)
+
 - **50+ prompt injection patterns** - Comprehensive pattern matching
 - **Jailbreak detection** - DAN variants, hypothetical attacks, roleplay bypasses
 - **PII identification** - Emails, SSNs, credit cards, API keys
 - **Unicode normalization** - Control character and encoding attack prevention
 
 ### Analysis Layer (<100ms)
+
 - **Behavioral analysis** - Temporal pattern detection using attractor classification
 - **Chaos detection** - Lyapunov exponent calculation for adversarial behavior
 - **LTL policy verification** - Linear Temporal Logic security policy enforcement
 - **Statistical anomaly detection** - Baseline learning and deviation alerting
 
 ### Response Layer (<50ms)
+
 - **7 mitigation strategies** - Adaptive response selection
 - **25-level meta-learning** - strange-loop recursive optimization
 - **Rollback management** - Failed mitigation recovery
@@ -323,26 +326,29 @@ npx claude-flow@v3alpha security learn --threat-type prompt_injection --strategy
 
 ```javascript
 // Real-time threat scanning
-mcp__claude-flow__security_scan({
-  action: "defend",
-  input: userInput,
-  mode: "thorough"
-})
+mcp__claude -
+  flow__security_scan({
+    action: 'defend',
+    input: userInput,
+    mode: 'thorough'
+  })
 
 // Behavioral anomaly detection
-mcp__claude-flow__security_analyze({
-  action: "behavior",
-  agentId: agentId,
-  timeWindow: "1h",
-  anomalyThreshold: 0.8
-})
+mcp__claude -
+  flow__security_analyze({
+    action: 'behavior',
+    agentId: agentId,
+    timeWindow: '1h',
+    anomalyThreshold: 0.8
+  })
 
 // LTL policy verification
-mcp__claude-flow__security_verify({
-  action: "policy",
-  agentId: agentId,
-  policy: "G(!self_approve)"
-})
+mcp__claude -
+  flow__security_verify({
+    action: 'policy',
+    agentId: agentId,
+    policy: 'G(!self_approve)'
+  })
 ```
 
 ## Threat Pattern Storage (AgentDB)
@@ -362,7 +368,7 @@ await agentDB.store({
     source: 'aidefence'
   },
   embedding: await embed(detectedPattern)
-});
+})
 
 // Search for similar threats (150x-12,500x faster via HNSW)
 const similarThreats = await agentDB.hnswSearch({
@@ -370,7 +376,7 @@ const similarThreats = await agentDB.hnswSearch({
   query: suspiciousInput,
   k: 10,
   minSimilarity: 0.85
-});
+})
 ```
 
 ## Collaboration Protocol
@@ -402,6 +408,7 @@ G(rate_limit_exceeded -> X(alert_generated))
 ```
 
 Remember: Security is not a feature, it's a fundamental property. With AIMDS integration, you now have:
+
 - **Real-time threat detection** (50+ patterns, <10ms)
 - **Behavioral anomaly detection** (Lyapunov chaos analysis)
 - **Adaptive mitigation** (25-level meta-learning)

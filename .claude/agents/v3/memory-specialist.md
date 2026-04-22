@@ -1,8 +1,8 @@
 ---
 name: memory-specialist
 type: specialist
-color: "#00D4AA"
-version: "3.0.0"
+color: '#00D4AA'
+version: '3.0.0'
 description: V3 memory optimization specialist with HNSW indexing, hybrid backend management, vector quantization, and EWC++ for preventing catastrophic forgetting
 capabilities:
   - hnsw_indexing_optimization
@@ -76,61 +76,61 @@ class HNSWOptimizer {
   constructor() {
     this.defaultParams = {
       // Construction parameters
-      M: 16,                    // Max connections per layer
-      efConstruction: 200,     // Construction search depth
+      M: 16, // Max connections per layer
+      efConstruction: 200, // Construction search depth
 
       // Query parameters
-      efSearch: 100,           // Search depth (higher = more accurate)
+      efSearch: 100, // Search depth (higher = more accurate)
 
       // Memory optimization
-      maxElements: 1000000,    // Pre-allocate for capacity
-      quantization: 'int8'     // 4x memory reduction
-    };
+      maxElements: 1000000, // Pre-allocate for capacity
+      quantization: 'int8' // 4x memory reduction
+    }
   }
 
   // Optimize HNSW parameters based on workload
   async optimizeForWorkload(workloadType) {
     const optimizations = {
-      'high_throughput': {
+      high_throughput: {
         M: 12,
         efConstruction: 100,
         efSearch: 50,
         quantization: 'int8'
       },
-      'high_accuracy': {
+      high_accuracy: {
         M: 32,
         efConstruction: 400,
         efSearch: 200,
         quantization: 'float32'
       },
-      'balanced': {
+      balanced: {
         M: 16,
         efConstruction: 200,
         efSearch: 100,
         quantization: 'float16'
       },
-      'memory_constrained': {
+      memory_constrained: {
         M: 8,
         efConstruction: 50,
         efSearch: 30,
         quantization: 'int4'
       }
-    };
+    }
 
-    return optimizations[workloadType] || optimizations['balanced'];
+    return optimizations[workloadType] || optimizations['balanced']
   }
 
   // Performance benchmarks
   measureSearchPerformance(indexSize, dimensions) {
-    const baselineLinear = indexSize * dimensions; // O(n*d)
-    const hnswComplexity = Math.log2(indexSize) * this.defaultParams.M;
+    const baselineLinear = indexSize * dimensions // O(n*d)
+    const hnswComplexity = Math.log2(indexSize) * this.defaultParams.M
 
     return {
       linearComplexity: baselineLinear,
       hnswComplexity: hnswComplexity,
       speedup: baselineLinear / hnswComplexity,
       expectedLatency: hnswComplexity * 0.001 // ms per operation
-    };
+    }
   }
 }
 ```
@@ -149,71 +149,68 @@ class HybridMemoryBackend {
       walMode: true,
       cacheSize: 10000,
       mmap: true
-    });
+    })
 
     // AgentDB for vector embeddings and semantic search
     this.agentdb = new AgentDBBackend({
-      dimensions: 1536,        // OpenAI embedding dimensions
+      dimensions: 1536, // OpenAI embedding dimensions
       metric: 'cosine',
       indexType: 'hnsw',
       quantization: 'int8'
-    });
+    })
 
     // Unified query interface
-    this.queryRouter = new QueryRouter(this.sqlite, this.agentdb);
+    this.queryRouter = new QueryRouter(this.sqlite, this.agentdb)
   }
 
   // Intelligent query routing
   async query(querySpec) {
-    const queryType = this.classifyQuery(querySpec);
+    const queryType = this.classifyQuery(querySpec)
 
     switch (queryType) {
       case 'structured':
-        return this.sqlite.query(querySpec);
+        return this.sqlite.query(querySpec)
       case 'semantic':
-        return this.agentdb.semanticSearch(querySpec);
+        return this.agentdb.semanticSearch(querySpec)
       case 'hybrid':
-        return this.hybridQuery(querySpec);
+        return this.hybridQuery(querySpec)
       default:
-        throw new Error(`Unknown query type: ${queryType}`);
+        throw new Error(`Unknown query type: ${queryType}`)
     }
   }
 
   // Hybrid query combining structured and vector search
   async hybridQuery(querySpec) {
-    const [structuredResults, semanticResults] = await Promise.all([
-      this.sqlite.query(querySpec.structured),
-      this.agentdb.semanticSearch(querySpec.semantic)
-    ]);
+    const [structuredResults, semanticResults] = await Promise.all([this.sqlite.query(querySpec.structured), this.agentdb.semanticSearch(querySpec.semantic)])
 
     // Fusion scoring
     return this.fuseResults(structuredResults, semanticResults, {
       structuredWeight: querySpec.structuredWeight || 0.5,
       semanticWeight: querySpec.semanticWeight || 0.5,
-      rrf_k: 60  // Reciprocal Rank Fusion parameter
-    });
+      rrf_k: 60 // Reciprocal Rank Fusion parameter
+    })
   }
 
   // Result fusion with Reciprocal Rank Fusion
   fuseResults(structured, semantic, weights) {
-    const scores = new Map();
+    const scores = new Map()
 
     // Score structured results
     structured.forEach((item, rank) => {
-      const score = weights.structuredWeight / (weights.rrf_k + rank + 1);
-      scores.set(item.id, (scores.get(item.id) || 0) + score);
-    });
+      const score = weights.structuredWeight / (weights.rrf_k + rank + 1)
+      scores.set(item.id, (scores.get(item.id) || 0) + score)
+    })
 
     // Score semantic results
     semantic.forEach((item, rank) => {
-      const score = weights.semanticWeight / (weights.rrf_k + rank + 1);
-      scores.set(item.id, (scores.get(item.id) || 0) + score);
-    });
+      const score = weights.semanticWeight / (weights.rrf_k + rank + 1)
+      scores.set(item.id, (scores.get(item.id) || 0) + score)
+    })
 
     // Sort by combined score
     return Array.from(scores.entries())
       .sort((a, b) => b[1] - a[1])
-      .map(([id, score]) => ({ id, score }));
+      .map(([id, score]) => ({ id, score }))
   }
 }
 ```
@@ -225,84 +222,80 @@ class HybridMemoryBackend {
 class VectorQuantizer {
   constructor() {
     this.quantizationMethods = {
-      'float32': { bits: 32, factor: 1 },
-      'float16': { bits: 16, factor: 2 },
-      'int8':    { bits: 8,  factor: 4 },
-      'int4':    { bits: 4,  factor: 8 },
-      'binary':  { bits: 1,  factor: 32 }
-    };
+      float32: { bits: 32, factor: 1 },
+      float16: { bits: 16, factor: 2 },
+      int8: { bits: 8, factor: 4 },
+      int4: { bits: 4, factor: 8 },
+      binary: { bits: 1, factor: 32 }
+    }
   }
 
   // Quantize vectors with specified method
   async quantize(vectors, method = 'int8') {
-    const config = this.quantizationMethods[method];
-    if (!config) throw new Error(`Unknown quantization method: ${method}`);
+    const config = this.quantizationMethods[method]
+    if (!config) throw new Error(`Unknown quantization method: ${method}`)
 
-    const quantized = [];
+    const quantized = []
     const metadata = {
       method,
       originalDimensions: vectors[0].length,
       compressionRatio: config.factor,
       calibrationStats: await this.computeCalibrationStats(vectors)
-    };
-
-    for (const vector of vectors) {
-      quantized.push(await this.quantizeVector(vector, method, metadata.calibrationStats));
     }
 
-    return { quantized, metadata };
+    for (const vector of vectors) {
+      quantized.push(await this.quantizeVector(vector, method, metadata.calibrationStats))
+    }
+
+    return { quantized, metadata }
   }
 
   // Compute calibration statistics for quantization
   async computeCalibrationStats(vectors, percentile = 99.9) {
-    const allValues = vectors.flat();
-    allValues.sort((a, b) => a - b);
+    const allValues = vectors.flat()
+    allValues.sort((a, b) => a - b)
 
-    const idx = Math.floor(allValues.length * (percentile / 100));
-    const absMax = Math.max(Math.abs(allValues[0]), Math.abs(allValues[idx]));
+    const idx = Math.floor(allValues.length * (percentile / 100))
+    const absMax = Math.max(Math.abs(allValues[0]), Math.abs(allValues[idx]))
 
     return {
       min: allValues[0],
       max: allValues[allValues.length - 1],
       absMax,
       mean: allValues.reduce((a, b) => a + b) / allValues.length,
-      scale: absMax / 127  // For int8 quantization
-    };
+      scale: absMax / 127 // For int8 quantization
+    }
   }
 
   // INT8 symmetric quantization
   quantizeToInt8(vector, stats) {
-    return vector.map(v => {
-      const scaled = v / stats.scale;
-      return Math.max(-128, Math.min(127, Math.round(scaled)));
-    });
+    return vector.map((v) => {
+      const scaled = v / stats.scale
+      return Math.max(-128, Math.min(127, Math.round(scaled)))
+    })
   }
 
   // Dequantize for inference
   dequantize(quantizedVector, metadata) {
-    return quantizedVector.map(v => v * metadata.calibrationStats.scale);
+    return quantizedVector.map((v) => v * metadata.calibrationStats.scale)
   }
 
   // Product Quantization for extreme compression
   async productQuantize(vectors, numSubvectors = 8, numCentroids = 256) {
-    const dims = vectors[0].length;
-    const subvectorDim = dims / numSubvectors;
+    const dims = vectors[0].length
+    const subvectorDim = dims / numSubvectors
 
     // Train codebooks for each subvector
-    const codebooks = [];
+    const codebooks = []
     for (let i = 0; i < numSubvectors; i++) {
-      const subvectors = vectors.map(v =>
-        v.slice(i * subvectorDim, (i + 1) * subvectorDim)
-      );
-      codebooks.push(await this.trainCodebook(subvectors, numCentroids));
+      const subvectors = vectors.map((v) => v.slice(i * subvectorDim, (i + 1) * subvectorDim))
+      codebooks.push(await this.trainCodebook(subvectors, numCentroids))
     }
 
     // Encode vectors using codebooks
-    const encoded = vectors.map(v =>
-      this.encodeWithCodebooks(v, codebooks, subvectorDim)
-    );
+    const encoded = vectors.map((v) => this.encodeWithCodebooks(v, codebooks, subvectorDim))
 
-    return { encoded, codebooks, compressionRatio: dims / numSubvectors };
+    return { encoded, codebooks, compressionRatio: dims / numSubvectors }
   }
 }
 ```
@@ -314,92 +307,87 @@ class VectorQuantizer {
 class MemoryConsolidator {
   constructor() {
     this.consolidationStrategies = {
-      'temporal': new TemporalConsolidation(),
-      'semantic': new SemanticConsolidation(),
-      'importance': new ImportanceBasedConsolidation(),
-      'hybrid': new HybridConsolidation()
-    };
+      temporal: new TemporalConsolidation(),
+      semantic: new SemanticConsolidation(),
+      importance: new ImportanceBasedConsolidation(),
+      hybrid: new HybridConsolidation()
+    }
   }
 
   // Consolidate memory based on strategy
   async consolidate(namespace, strategy = 'hybrid') {
-    const consolidator = this.consolidationStrategies[strategy];
+    const consolidator = this.consolidationStrategies[strategy]
 
     // 1. Analyze current memory state
-    const analysis = await this.analyzeMemoryState(namespace);
+    const analysis = await this.analyzeMemoryState(namespace)
 
     // 2. Identify consolidation candidates
-    const candidates = await consolidator.identifyCandidates(analysis);
+    const candidates = await consolidator.identifyCandidates(analysis)
 
     // 3. Execute consolidation
-    const results = await this.executeConsolidation(candidates);
+    const results = await this.executeConsolidation(candidates)
 
     // 4. Update indexes
-    await this.rebuildIndexes(namespace);
+    await this.rebuildIndexes(namespace)
 
     // 5. Generate consolidation report
-    return this.generateReport(analysis, results);
+    return this.generateReport(analysis, results)
   }
 
   // Temporal consolidation - merge time-adjacent memories
   async temporalConsolidation(memories) {
-    const timeWindows = this.groupByTimeWindow(memories, 3600000); // 1 hour
-    const consolidated = [];
+    const timeWindows = this.groupByTimeWindow(memories, 3600000) // 1 hour
+    const consolidated = []
 
     for (const window of timeWindows) {
       if (window.memories.length > 1) {
-        const merged = await this.mergeMemories(window.memories);
-        consolidated.push(merged);
+        const merged = await this.mergeMemories(window.memories)
+        consolidated.push(merged)
       } else {
-        consolidated.push(window.memories[0]);
+        consolidated.push(window.memories[0])
       }
     }
 
-    return consolidated;
+    return consolidated
   }
 
   // Semantic consolidation - merge similar memories
   async semanticConsolidation(memories, similarityThreshold = 0.85) {
-    const clusters = await this.clusterBySimilarity(memories, similarityThreshold);
-    const consolidated = [];
+    const clusters = await this.clusterBySimilarity(memories, similarityThreshold)
+    const consolidated = []
 
     for (const cluster of clusters) {
       if (cluster.length > 1) {
         // Create representative memory from cluster
-        const representative = await this.createRepresentative(cluster);
-        consolidated.push(representative);
+        const representative = await this.createRepresentative(cluster)
+        consolidated.push(representative)
       } else {
-        consolidated.push(cluster[0]);
+        consolidated.push(cluster[0])
       }
     }
 
-    return consolidated;
+    return consolidated
   }
 
   // Importance-based consolidation
   async importanceConsolidation(memories, retentionRatio = 0.7) {
     // Score memories by importance
-    const scored = memories.map(m => ({
+    const scored = memories.map((m) => ({
       memory: m,
       score: this.calculateImportanceScore(m)
-    }));
+    }))
 
     // Sort by importance
-    scored.sort((a, b) => b.score - a.score);
+    scored.sort((a, b) => b.score - a.score)
 
     // Keep top N% based on retention ratio
-    const keepCount = Math.ceil(scored.length * retentionRatio);
-    return scored.slice(0, keepCount).map(s => s.memory);
+    const keepCount = Math.ceil(scored.length * retentionRatio)
+    return scored.slice(0, keepCount).map((s) => s.memory)
   }
 
   // Calculate importance score
   calculateImportanceScore(memory) {
-    return (
-      memory.accessCount * 0.3 +
-      memory.recency * 0.2 +
-      memory.relevanceScore * 0.3 +
-      memory.userExplicit * 0.2
-    );
+    return memory.accessCount * 0.3 + memory.recency * 0.2 + memory.relevanceScore * 0.3 + memory.userExplicit * 0.2
   }
 }
 ```
@@ -411,16 +399,16 @@ class MemoryConsolidator {
 class SessionPersistenceManager {
   constructor() {
     this.persistenceStrategies = {
-      'full': new FullPersistence(),
-      'incremental': new IncrementalPersistence(),
-      'differential': new DifferentialPersistence(),
-      'checkpoint': new CheckpointPersistence()
-    };
+      full: new FullPersistence(),
+      incremental: new IncrementalPersistence(),
+      differential: new DifferentialPersistence(),
+      checkpoint: new CheckpointPersistence()
+    }
   }
 
   // Save session state
   async saveSession(sessionId, state, strategy = 'incremental') {
-    const persister = this.persistenceStrategies[strategy];
+    const persister = this.persistenceStrategies[strategy]
 
     // Create session snapshot
     const snapshot = {
@@ -432,7 +420,7 @@ class SessionPersistenceManager {
         version: '3.0.0',
         checksum: await this.computeChecksum(state)
       }
-    };
+    }
 
     // Store snapshot
     await mcp.memory_usage({
@@ -441,12 +429,12 @@ class SessionPersistenceManager {
       key: `session:${sessionId}:snapshot`,
       value: JSON.stringify(snapshot),
       ttl: 30 * 24 * 60 * 60 * 1000 // 30 days
-    });
+    })
 
     // Store session index
-    await this.updateSessionIndex(sessionId, snapshot.metadata);
+    await this.updateSessionIndex(sessionId, snapshot.metadata)
 
-    return snapshot;
+    return snapshot
   }
 
   // Restore session state
@@ -456,35 +444,35 @@ class SessionPersistenceManager {
       action: 'retrieve',
       namespace: 'sessions',
       key: `session:${sessionId}:snapshot`
-    });
+    })
 
     if (!snapshotData) {
-      throw new Error(`Session ${sessionId} not found`);
+      throw new Error(`Session ${sessionId} not found`)
     }
 
-    const snapshot = JSON.parse(snapshotData);
+    const snapshot = JSON.parse(snapshotData)
 
     // Verify checksum
-    const isValid = await this.verifyChecksum(snapshot.state, snapshot.metadata.checksum);
+    const isValid = await this.verifyChecksum(snapshot.state, snapshot.metadata.checksum)
     if (!isValid) {
-      throw new Error(`Session ${sessionId} checksum verification failed`);
+      throw new Error(`Session ${sessionId} checksum verification failed`)
     }
 
     // Deserialize state
-    const persister = this.persistenceStrategies[snapshot.metadata.strategy];
-    return persister.deserialize(snapshot.state);
+    const persister = this.persistenceStrategies[snapshot.metadata.strategy]
+    return persister.deserialize(snapshot.state)
   }
 
   // Incremental session sync
   async syncSession(sessionId, changes) {
     // Get current session state
-    const currentState = await this.restoreSession(sessionId);
+    const currentState = await this.restoreSession(sessionId)
 
     // Apply changes incrementally
-    const updatedState = await this.applyChanges(currentState, changes);
+    const updatedState = await this.applyChanges(currentState, changes)
 
     // Save updated state
-    return this.saveSession(sessionId, updatedState, 'incremental');
+    return this.saveSession(sessionId, updatedState, 'incremental')
   }
 }
 ```
@@ -495,8 +483,8 @@ class SessionPersistenceManager {
 // Namespace Manager
 class NamespaceManager {
   constructor() {
-    this.namespaces = new Map();
-    this.isolationPolicies = new Map();
+    this.namespaces = new Map()
+    this.isolationPolicies = new Map()
   }
 
   // Create namespace with configuration
@@ -520,71 +508,71 @@ class NamespaceManager {
         sizeBytes: 0,
         lastAccess: Date.now()
       }
-    };
+    }
 
     // Initialize namespace storage
     await mcp.memory_namespace({
       namespace: name,
       action: 'create'
-    });
+    })
 
-    this.namespaces.set(name, namespace);
-    return namespace;
+    this.namespaces.set(name, namespace)
+    return namespace
   }
 
   // Namespace isolation policies
   async setIsolationPolicy(namespace, policy) {
     const validPolicies = {
-      'strict': {
+      strict: {
         crossNamespaceAccess: false,
         auditLogging: true,
         encryption: 'aes-256-gcm'
       },
-      'standard': {
+      standard: {
         crossNamespaceAccess: true,
         auditLogging: false,
         encryption: null
       },
-      'shared': {
+      shared: {
         crossNamespaceAccess: true,
         auditLogging: false,
         encryption: null,
         readOnly: false
       }
-    };
-
-    if (!validPolicies[policy]) {
-      throw new Error(`Unknown isolation policy: ${policy}`);
     }
 
-    this.isolationPolicies.set(namespace, validPolicies[policy]);
-    return validPolicies[policy];
+    if (!validPolicies[policy]) {
+      throw new Error(`Unknown isolation policy: ${policy}`)
+    }
+
+    this.isolationPolicies.set(namespace, validPolicies[policy])
+    return validPolicies[policy]
   }
 
   // Namespace hierarchy management
   async createHierarchy(rootNamespace, structure) {
-    const created = [];
+    const created = []
 
     const createRecursive = async (parent, children) => {
       for (const [name, substructure] of Object.entries(children)) {
-        const fullName = `${parent}/${name}`;
-        await this.createNamespace(fullName, substructure.config || {});
-        created.push(fullName);
+        const fullName = `${parent}/${name}`
+        await this.createNamespace(fullName, substructure.config || {})
+        created.push(fullName)
 
         if (substructure.children) {
-          await createRecursive(fullName, substructure.children);
+          await createRecursive(fullName, substructure.children)
         }
       }
-    };
-
-    await this.createNamespace(rootNamespace);
-    created.push(rootNamespace);
-
-    if (structure.children) {
-      await createRecursive(rootNamespace, structure.children);
     }
 
-    return created;
+    await this.createNamespace(rootNamespace)
+    created.push(rootNamespace)
+
+    if (structure.children) {
+      await createRecursive(rootNamespace, structure.children)
+    }
+
+    return created
   }
 }
 ```
@@ -596,84 +584,82 @@ class NamespaceManager {
 class DistributedMemorySync {
   constructor() {
     this.syncStrategies = {
-      'eventual': new EventualConsistencySync(),
-      'strong': new StrongConsistencySync(),
-      'causal': new CausalConsistencySync(),
-      'crdt': new CRDTSync()
-    };
+      eventual: new EventualConsistencySync(),
+      strong: new StrongConsistencySync(),
+      causal: new CausalConsistencySync(),
+      crdt: new CRDTSync()
+    }
 
     this.conflictResolvers = {
-      'last-write-wins': (a, b) => a.timestamp > b.timestamp ? a : b,
-      'first-write-wins': (a, b) => a.timestamp < b.timestamp ? a : b,
-      'merge': (a, b) => this.mergeValues(a, b),
+      'last-write-wins': (a, b) => (a.timestamp > b.timestamp ? a : b),
+      'first-write-wins': (a, b) => (a.timestamp < b.timestamp ? a : b),
+      merge: (a, b) => this.mergeValues(a, b),
       'vector-clock': (a, b) => this.vectorClockResolve(a, b)
-    };
+    }
   }
 
   // Sync memory across agents
   async syncWithPeers(localState, peers, strategy = 'crdt') {
-    const syncer = this.syncStrategies[strategy];
+    const syncer = this.syncStrategies[strategy]
 
     // Collect peer states
-    const peerStates = await Promise.all(
-      peers.map(peer => this.fetchPeerState(peer))
-    );
+    const peerStates = await Promise.all(peers.map((peer) => this.fetchPeerState(peer)))
 
     // Merge states
-    const mergedState = await syncer.merge(localState, peerStates);
+    const mergedState = await syncer.merge(localState, peerStates)
 
     // Resolve conflicts
-    const resolvedState = await this.resolveConflicts(mergedState);
+    const resolvedState = await this.resolveConflicts(mergedState)
 
     // Propagate updates
-    await this.propagateUpdates(resolvedState, peers);
+    await this.propagateUpdates(resolvedState, peers)
 
-    return resolvedState;
+    return resolvedState
   }
 
   // CRDT-based synchronization (Conflict-free Replicated Data Types)
   async crdtSync(localCRDT, remoteCRDT) {
     // G-Counter merge
     if (localCRDT.type === 'g-counter') {
-      return this.mergeGCounter(localCRDT, remoteCRDT);
+      return this.mergeGCounter(localCRDT, remoteCRDT)
     }
 
     // LWW-Register merge
     if (localCRDT.type === 'lww-register') {
-      return this.mergeLWWRegister(localCRDT, remoteCRDT);
+      return this.mergeLWWRegister(localCRDT, remoteCRDT)
     }
 
     // OR-Set merge
     if (localCRDT.type === 'or-set') {
-      return this.mergeORSet(localCRDT, remoteCRDT);
+      return this.mergeORSet(localCRDT, remoteCRDT)
     }
 
-    throw new Error(`Unknown CRDT type: ${localCRDT.type}`);
+    throw new Error(`Unknown CRDT type: ${localCRDT.type}`)
   }
 
   // Vector clock conflict resolution
   vectorClockResolve(a, b) {
-    const aVC = a.vectorClock;
-    const bVC = b.vectorClock;
+    const aVC = a.vectorClock
+    const bVC = b.vectorClock
 
-    let aGreater = false;
-    let bGreater = false;
+    let aGreater = false
+    let bGreater = false
 
-    const allNodes = new Set([...Object.keys(aVC), ...Object.keys(bVC)]);
+    const allNodes = new Set([...Object.keys(aVC), ...Object.keys(bVC)])
 
     for (const node of allNodes) {
-      const aVal = aVC[node] || 0;
-      const bVal = bVC[node] || 0;
+      const aVal = aVC[node] || 0
+      const bVal = bVC[node] || 0
 
-      if (aVal > bVal) aGreater = true;
-      if (bVal > aVal) bGreater = true;
+      if (aVal > bVal) aGreater = true
+      if (bVal > aVal) bGreater = true
     }
 
-    if (aGreater && !bGreater) return a;
-    if (bGreater && !aGreater) return b;
+    if (aGreater && !bGreater) return a
+    if (bGreater && !aGreater) return b
 
     // Concurrent - need application-specific resolution
-    return this.concurrentResolution(a, b);
+    return this.concurrentResolution(a, b)
   }
 }
 ```
@@ -686,108 +672,108 @@ Implements Elastic Weight Consolidation++ to preserve important learned patterns
 // EWC++ Implementation for Memory Preservation
 class EWCPlusPlusManager {
   constructor() {
-    this.fisherInformation = new Map();
-    this.optimalWeights = new Map();
-    this.lambda = 5000; // Regularization strength
-    this.gamma = 0.9;   // Decay factor for online EWC
+    this.fisherInformation = new Map()
+    this.optimalWeights = new Map()
+    this.lambda = 5000 // Regularization strength
+    this.gamma = 0.9 // Decay factor for online EWC
   }
 
   // Compute Fisher Information Matrix for memory importance
   async computeFisherInformation(memories, gradientFn) {
-    const fisher = {};
+    const fisher = {}
 
     for (const memory of memories) {
       // Compute gradient of log-likelihood
-      const gradient = await gradientFn(memory);
+      const gradient = await gradientFn(memory)
 
       // Square gradients for diagonal Fisher approximation
       for (const [key, value] of Object.entries(gradient)) {
-        if (!fisher[key]) fisher[key] = 0;
-        fisher[key] += value * value;
+        if (!fisher[key]) fisher[key] = 0
+        fisher[key] += value * value
       }
     }
 
     // Normalize by number of memories
     for (const key of Object.keys(fisher)) {
-      fisher[key] /= memories.length;
+      fisher[key] /= memories.length
     }
 
-    return fisher;
+    return fisher
   }
 
   // Update Fisher information online (EWC++)
   async updateFisherOnline(taskId, newFisher) {
-    const existingFisher = this.fisherInformation.get(taskId) || {};
+    const existingFisher = this.fisherInformation.get(taskId) || {}
 
     // Decay old Fisher information
     for (const key of Object.keys(existingFisher)) {
-      existingFisher[key] *= this.gamma;
+      existingFisher[key] *= this.gamma
     }
 
     // Add new Fisher information
     for (const [key, value] of Object.entries(newFisher)) {
-      existingFisher[key] = (existingFisher[key] || 0) + value;
+      existingFisher[key] = (existingFisher[key] || 0) + value
     }
 
-    this.fisherInformation.set(taskId, existingFisher);
-    return existingFisher;
+    this.fisherInformation.set(taskId, existingFisher)
+    return existingFisher
   }
 
   // Calculate EWC penalty for memory consolidation
   calculateEWCPenalty(currentWeights, taskId) {
-    const fisher = this.fisherInformation.get(taskId);
-    const optimal = this.optimalWeights.get(taskId);
+    const fisher = this.fisherInformation.get(taskId)
+    const optimal = this.optimalWeights.get(taskId)
 
-    if (!fisher || !optimal) return 0;
+    if (!fisher || !optimal) return 0
 
-    let penalty = 0;
+    let penalty = 0
     for (const key of Object.keys(fisher)) {
-      const diff = (currentWeights[key] || 0) - (optimal[key] || 0);
-      penalty += fisher[key] * diff * diff;
+      const diff = (currentWeights[key] || 0) - (optimal[key] || 0)
+      penalty += fisher[key] * diff * diff
     }
 
-    return (this.lambda / 2) * penalty;
+    return (this.lambda / 2) * penalty
   }
 
   // Consolidate memories while preventing forgetting
   async consolidateWithEWC(newMemories, existingMemories) {
     // Compute importance weights for existing memories
-    const importanceWeights = await this.computeImportanceWeights(existingMemories);
+    const importanceWeights = await this.computeImportanceWeights(existingMemories)
 
     // Calculate EWC penalty for each consolidation candidate
-    const candidates = newMemories.map(memory => ({
+    const candidates = newMemories.map((memory) => ({
       memory,
       penalty: this.calculateConsolidationPenalty(memory, importanceWeights)
-    }));
+    }))
 
     // Sort by penalty (lower penalty = safer to consolidate)
-    candidates.sort((a, b) => a.penalty - b.penalty);
+    candidates.sort((a, b) => a.penalty - b.penalty)
 
     // Consolidate with protection for important memories
-    const consolidated = [];
+    const consolidated = []
     for (const candidate of candidates) {
       if (candidate.penalty < this.lambda * 0.1) {
         // Safe to consolidate
-        consolidated.push(await this.safeConsolidate(candidate.memory, existingMemories));
+        consolidated.push(await this.safeConsolidate(candidate.memory, existingMemories))
       } else {
         // Add as new memory to preserve existing patterns
-        consolidated.push(candidate.memory);
+        consolidated.push(candidate.memory)
       }
     }
 
-    return consolidated;
+    return consolidated
   }
 
   // Memory importance scoring with EWC weights
   scoreMemoryImportance(memory, fisher) {
-    let score = 0;
-    const embedding = memory.embedding || [];
+    let score = 0
+    const embedding = memory.embedding || []
 
     for (let i = 0; i < embedding.length; i++) {
-      score += (fisher[i] || 0) * Math.abs(embedding[i]);
+      score += (fisher[i] || 0) * Math.abs(embedding[i])
     }
 
-    return score;
+    return score
   }
 }
 ```
@@ -799,26 +785,26 @@ class EWCPlusPlusManager {
 class PatternDistiller {
   constructor() {
     this.distillationMethods = {
-      'lora': new LoRADistillation(),
-      'pruning': new StructuredPruning(),
-      'quantization': new PostTrainingQuantization(),
-      'knowledge': new KnowledgeDistillation()
-    };
+      lora: new LoRADistillation(),
+      pruning: new StructuredPruning(),
+      quantization: new PostTrainingQuantization(),
+      knowledge: new KnowledgeDistillation()
+    }
   }
 
   // Distill patterns from memory corpus
   async distillPatterns(memories, targetSize) {
     // 1. Extract pattern embeddings
-    const embeddings = await this.extractEmbeddings(memories);
+    const embeddings = await this.extractEmbeddings(memories)
 
     // 2. Cluster similar patterns
-    const clusters = await this.clusterPatterns(embeddings, targetSize);
+    const clusters = await this.clusterPatterns(embeddings, targetSize)
 
     // 3. Create representative patterns
-    const distilled = await this.createRepresentatives(clusters);
+    const distilled = await this.createRepresentatives(clusters)
 
     // 4. Validate distillation quality
-    const quality = await this.validateDistillation(memories, distilled);
+    const quality = await this.validateDistillation(memories, distilled)
 
     return {
       patterns: distilled,
@@ -829,51 +815,49 @@ class PatternDistiller {
         distilledCount: distilled.length,
         clusterCount: clusters.length
       }
-    };
+    }
   }
 
   // LoRA-style distillation for memory compression
   async loraDistillation(memories, rank = 8) {
     // Decompose memory matrix into low-rank approximation
-    const memoryMatrix = this.memoriesToMatrix(memories);
+    const memoryMatrix = this.memoriesToMatrix(memories)
 
     // SVD decomposition
-    const { U, S, V } = await this.svd(memoryMatrix);
+    const { U, S, V } = await this.svd(memoryMatrix)
 
     // Keep top-k singular values
-    const Uk = U.slice(0, rank);
-    const Sk = S.slice(0, rank);
-    const Vk = V.slice(0, rank);
+    const Uk = U.slice(0, rank)
+    const Sk = S.slice(0, rank)
+    const Vk = V.slice(0, rank)
 
     // Reconstruct with low-rank approximation
-    const compressed = this.matrixToMemories(
-      this.multiplyMatrices(Uk, this.diag(Sk), Vk)
-    );
+    const compressed = this.matrixToMemories(this.multiplyMatrices(Uk, this.diag(Sk), Vk))
 
     return {
       compressed,
       rank,
       compressionRatio: memoryMatrix[0].length / rank,
       reconstructionError: this.calculateReconstructionError(memoryMatrix, compressed)
-    };
+    }
   }
 
   // Knowledge distillation from large to small memory
   async knowledgeDistillation(teacherMemories, studentCapacity, temperature = 2.0) {
     // Generate soft targets from teacher memories
-    const softTargets = await this.generateSoftTargets(teacherMemories, temperature);
+    const softTargets = await this.generateSoftTargets(teacherMemories, temperature)
 
     // Train student memory with soft targets
-    const studentMemories = await this.trainStudent(softTargets, studentCapacity);
+    const studentMemories = await this.trainStudent(softTargets, studentCapacity)
 
     // Validate knowledge transfer
-    const transferQuality = await this.validateTransfer(teacherMemories, studentMemories);
+    const transferQuality = await this.validateTransfer(teacherMemories, studentMemories)
 
     return {
       studentMemories,
       transferQuality,
       compressionRatio: teacherMemories.length / studentMemories.length
-    };
+    }
   }
 }
 ```
@@ -936,13 +920,13 @@ npx claude-flow@v3alpha memory quantize --namespace="embeddings" --method=int8
 
 ## Performance Targets
 
-| Metric | V2 Baseline | V3 Target | Improvement |
-|--------|-------------|-----------|-------------|
-| Vector Search | 1000ms | 0.8-6.7ms | 150x-12,500x |
-| Memory Usage | 100% | 25-50% | 2-4x reduction |
-| Index Build | 60s | 0.5s | 120x |
-| Query Latency (p99) | 500ms | <10ms | 50x |
-| Consolidation | Manual | Automatic | - |
+| Metric              | V2 Baseline | V3 Target | Improvement    |
+| ------------------- | ----------- | --------- | -------------- |
+| Vector Search       | 1000ms      | 0.8-6.7ms | 150x-12,500x   |
+| Memory Usage        | 100%        | 25-50%    | 2-4x reduction |
+| Index Build         | 60s         | 0.5s      | 120x           |
+| Query Latency (p99) | 500ms       | <10ms     | 50x            |
+| Consolidation       | Manual      | Automatic | -              |
 
 ## Best Practices
 
@@ -982,11 +966,13 @@ Namespace Hierarchy:
 ## ADR References
 
 ### ADR-006: Unified Memory Service
+
 - Single interface for all memory operations
 - Abstraction over multiple backends
 - Consistent API across storage types
 
 ### ADR-009: Hybrid Memory Backend
+
 - SQLite for structured data and metadata
 - AgentDB for vector embeddings
 - HNSW for fast similarity search

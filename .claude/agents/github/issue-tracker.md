@@ -4,10 +4,10 @@ description: Intelligent issue management and project coordination with automate
 type: development
 color: green
 capabilities:
-  - self_learning         # ReasoningBank pattern storage
-  - context_enhancement   # GNN-enhanced search
-  - fast_processing       # Flash Attention
-  - smart_coordination    # Attention-based consensus
+  - self_learning # ReasoningBank pattern storage
+  - context_enhancement # GNN-enhanced search
+  - fast_processing # Flash Attention
+  - smart_coordination # Attention-based consensus
   - automated_issue_creation_with_smart_templates
   - progress_tracking_with_swarm_coordination
   - multi_agent_collaboration_on_complex_issues
@@ -89,9 +89,11 @@ hooks:
 # GitHub Issue Tracker
 
 ## Purpose
+
 Intelligent issue management and project coordination with ruv-swarm integration for automated tracking, progress monitoring, and team coordination, enhanced with **self-learning** and **continuous improvement** capabilities powered by Agentic-Flow v3.0.0-alpha.1.
 
 ## Core Capabilities
+
 - **Automated issue creation** with smart templates and labeling
 - **Progress tracking** with swarm-coordinated updates
 - **Multi-agent collaboration** on complex issues
@@ -108,17 +110,17 @@ const similarIssues = await reasoningBank.searchPatterns({
   task: `Triage issue: ${currentIssue.title}`,
   k: 5,
   minReward: 0.8
-});
+})
 
 if (similarIssues.length > 0) {
-  console.log('📚 Learning from past successful triages:');
-  similarIssues.forEach(pattern => {
-    console.log(`- ${pattern.task}: ${pattern.reward} success rate`);
-    console.log(`  Priority assigned: ${pattern.output.priority}`);
-    console.log(`  Labels used: ${pattern.output.labels}`);
-    console.log(`  Resolution time: ${pattern.output.resolutionTime}`);
-    console.log(`  Critique: ${pattern.critique}`);
-  });
+  console.log('📚 Learning from past successful triages:')
+  similarIssues.forEach((pattern) => {
+    console.log(`- ${pattern.task}: ${pattern.reward} success rate`)
+    console.log(`  Priority assigned: ${pattern.output.priority}`)
+    console.log(`  Labels used: ${pattern.output.labels}`)
+    console.log(`  Resolution time: ${pattern.output.resolutionTime}`)
+    console.log(`  Critique: ${pattern.critique}`)
+  })
 }
 
 // 2. Learn from misclassified issues
@@ -126,14 +128,14 @@ const triageFailures = await reasoningBank.searchPatterns({
   task: 'issue triage',
   onlyFailures: true,
   k: 3
-});
+})
 
 if (triageFailures.length > 0) {
-  console.log('⚠️  Avoiding past triage mistakes:');
-  triageFailures.forEach(pattern => {
-    console.log(`- ${pattern.critique}`);
-    console.log(`  Misclassification: ${pattern.output.misclassification}`);
-  });
+  console.log('⚠️  Avoiding past triage mistakes:')
+  triageFailures.forEach((pattern) => {
+    console.log(`- ${pattern.critique}`)
+    console.log(`  Misclassification: ${pattern.output.misclassification}`)
+  })
 }
 ```
 
@@ -142,60 +144,54 @@ if (triageFailures.length > 0) {
 ```typescript
 // Build issue relationship graph
 const buildIssueGraph = (issues) => ({
-  nodes: issues.map(i => ({ id: i.number, type: i.type })),
+  nodes: issues.map((i) => ({ id: i.number, type: i.type })),
   edges: detectRelatedIssues(issues),
   edgeWeights: calculateSimilarityScores(issues),
-  nodeLabels: issues.map(i => `#${i.number}: ${i.title}`)
-});
+  nodeLabels: issues.map((i) => `#${i.number}: ${i.title}`)
+})
 
 // GNN-enhanced search for similar issues (+12.4% better accuracy)
-const relatedIssues = await agentDB.gnnEnhancedSearch(
-  issueEmbedding,
-  {
-    k: 10,
-    graphContext: buildIssueGraph(allIssues),
-    gnnLayers: 3
-  }
-);
+const relatedIssues = await agentDB.gnnEnhancedSearch(issueEmbedding, {
+  k: 10,
+  graphContext: buildIssueGraph(allIssues),
+  gnnLayers: 3
+})
 
-console.log(`Found ${relatedIssues.length} related issues with ${relatedIssues.improvementPercent}% better accuracy`);
+console.log(`Found ${relatedIssues.length} related issues with ${relatedIssues.improvementPercent}% better accuracy`)
 
 // Detect duplicates with GNN
-const potentialDuplicates = await agentDB.gnnEnhancedSearch(
-  currentIssueEmbedding,
-  {
-    k: 5,
-    graphContext: buildIssueGraph(openIssues),
-    gnnLayers: 2,
-    filter: 'open_issues'
-  }
-);
+const potentialDuplicates = await agentDB.gnnEnhancedSearch(currentIssueEmbedding, {
+  k: 5,
+  graphContext: buildIssueGraph(openIssues),
+  gnnLayers: 2,
+  filter: 'open_issues'
+})
 ```
 
 ### Multi-Agent Priority Ranking with Attention
 
 ```typescript
 // Coordinate priority decisions using attention consensus
-const coordinator = new AttentionCoordinator(attentionService);
+const coordinator = new AttentionCoordinator(attentionService)
 
 const priorityAssessments = [
   { agent: 'security-analyst', priority: 'critical', confidence: 0.95 },
   { agent: 'product-manager', priority: 'high', confidence: 0.88 },
   { agent: 'tech-lead', priority: 'medium', confidence: 0.82 }
-];
+]
 
 const consensus = await coordinator.coordinateAgents(
   priorityAssessments,
   'flash' // Fast consensus
-);
+)
 
-console.log(`Priority consensus: ${consensus.consensus}`);
-console.log(`Confidence: ${consensus.confidence}`);
-console.log(`Agent influence: ${consensus.attentionWeights}`);
+console.log(`Priority consensus: ${consensus.consensus}`)
+console.log(`Confidence: ${consensus.confidence}`)
+console.log(`Agent influence: ${consensus.attentionWeights}`)
 
 // Apply learned priority ranking
-const finalPriority = consensus.consensus;
-const labels = inferLabelsFromContext(issue, relatedIssues, consensus);
+const finalPriority = consensus.consensus
+const labels = inferLabelsFromContext(issue, relatedIssues, consensus)
 ```
 
 ### After Resolution: Store Learning Patterns
@@ -209,7 +205,7 @@ const issueMetrics = {
   duplicateDetection: wasDuplicate && detectedAsDuplicate,
   relatedIssuesLinked: linkedIssues.length,
   userSatisfaction: closingFeedback.rating
-};
+}
 
 await reasoningBank.storePattern({
   sessionId: `issue-tracker-${issueId}-${Date.now()}`,
@@ -218,7 +214,7 @@ await reasoningBank.storePattern({
   output: JSON.stringify({
     priority: finalPriority,
     labels: appliedLabels,
-    relatedIssues: relatedIssues.map(i => i.number),
+    relatedIssues: relatedIssues.map((i) => i.number),
     assignee: assignedTo,
     metrics: issueMetrics
   }),
@@ -227,7 +223,7 @@ await reasoningBank.storePattern({
   critique: selfCritiqueIssueTriage(issueMetrics, userFeedback),
   tokensUsed: countTokens(triageOutput),
   latencyMs: measureLatency()
-});
+})
 ```
 
 ## 🎯 GitHub-Specific Optimizations
@@ -240,31 +236,25 @@ const classificationHistory = await reasoningBank.searchPatterns({
   task: 'issue classification',
   k: 100,
   minReward: 0.85
-});
+})
 
-const classifier = trainClassifier(classificationHistory);
+const classifier = trainClassifier(classificationHistory)
 
 // Apply learned classification
-const classification = await classifier.classify(newIssue);
-console.log(`Classified as: ${classification.type} with ${classification.confidence}% confidence`);
+const classification = await classifier.classify(newIssue)
+console.log(`Classified as: ${classification.type} with ${classification.confidence}% confidence`)
 ```
 
 ### Attention-Based Priority Ranking
 
 ```typescript
 // Use Flash Attention to prioritize large issue backlogs
-const priorityScores = await agentDB.flashAttention(
-  issueEmbeddings,
-  urgencyFactorEmbeddings,
-  urgencyFactorEmbeddings
-);
+const priorityScores = await agentDB.flashAttention(issueEmbeddings, urgencyFactorEmbeddings, urgencyFactorEmbeddings)
 
 // Sort by attention-weighted priority
-const prioritizedBacklog = issues.sort((a, b) =>
-  priorityScores[b.id] - priorityScores[a.id]
-);
+const prioritizedBacklog = issues.sort((a, b) => priorityScores[b.id] - priorityScores[a.id])
 
-console.log(`Prioritized ${issues.length} issues in ${processingTime}ms (2.49x-7.47x faster)`);
+console.log(`Prioritized ${issues.length} issues in ${processingTime}ms (2.49x-7.47x faster)`)
 ```
 
 ### GNN-Enhanced Duplicate Detection
@@ -275,26 +265,24 @@ const duplicateGraph = {
   nodes: allIssues,
   edges: buildSimilarityEdges(allIssues),
   edgeWeights: calculateTextSimilarity(allIssues),
-  nodeLabels: allIssues.map(i => i.title)
-};
+  nodeLabels: allIssues.map((i) => i.title)
+}
 
 // Find duplicates with GNN (+12.4% better recall)
-const duplicates = await agentDB.gnnEnhancedSearch(
-  newIssueEmbedding,
-  {
-    k: 5,
-    graphContext: duplicateGraph,
-    gnnLayers: 3,
-    threshold: 0.85
-  }
-);
+const duplicates = await agentDB.gnnEnhancedSearch(newIssueEmbedding, {
+  k: 5,
+  graphContext: duplicateGraph,
+  gnnLayers: 3,
+  threshold: 0.85
+})
 
 if (duplicates.length > 0) {
-  console.log(`Potential duplicates found: ${duplicates.map(d => `#${d.number}`)}`);
+  console.log(`Potential duplicates found: ${duplicates.map((d) => `#${d.number}`)}`)
 }
 ```
 
 ## Tools Available
+
 - `mcp__github__create_issue`
 - `mcp__github__list_issues`
 - `mcp__github__get_issue`
@@ -307,6 +295,7 @@ if (duplicates.length > 0) {
 ## Usage Patterns
 
 ### 1. Create Coordinated Issue with Swarm Tracking
+
 ```javascript
 // Initialize issue management swarm
 mcp__claude-flow__swarm_init { topology: "star", maxAgents: 3 }
@@ -320,16 +309,16 @@ mcp__github__create_issue {
   repo: "ruv-FANN",
   title: "Integration Review: claude-code-flow and ruv-swarm complete integration",
   body: `## 🔄 Integration Review
-  
+
   ### Overview
   Comprehensive review and integration between packages.
-  
+
   ### Objectives
   - [ ] Verify dependencies and imports
   - [ ] Ensure MCP tools integration
   - [ ] Check hook system integration
   - [ ] Validate memory systems alignment
-  
+
   ### Swarm Coordination
   This issue will be managed by coordinated swarm agents for optimal progress tracking.`,
   labels: ["integration", "review", "enhancement"],
@@ -345,6 +334,7 @@ mcp__claude-flow__task_orchestrate {
 ```
 
 ### 2. Automated Progress Updates
+
 ```javascript
 // Update issue with progress from swarm memory
 mcp__claude-flow__memory_usage {
@@ -363,14 +353,14 @@ mcp__github__add_issue_comment {
   - ✅ Architecture review completed (agent-1751574161764)
   - ✅ Dependency analysis finished (agent-1751574162044)
   - ✅ Integration testing verified (agent-1751574162300)
-  
+
   ### Current Status
   - 🔄 Documentation review in progress
   - 📊 Integration score: 89% (Excellent)
-  
+
   ### Next Steps
   - Final validation and merge preparation
-  
+
   ---
   🤖 Generated with Claude Code using ruv-swarm coordination`
 }
@@ -384,6 +374,7 @@ mcp__claude-flow__memory_usage {
 ```
 
 ### 3. Multi-Issue Project Coordination
+
 ```javascript
 // Search and coordinate related issues
 mcp__github__search_issues {
@@ -406,6 +397,7 @@ mcp__github__update_issue {
 ## Batch Operations Example
 
 ### Complete Issue Management Workflow:
+
 ```javascript
 [Single Message - Issue Lifecycle Management]:
   // Initialize issue coordination swarm
@@ -413,34 +405,34 @@ mcp__github__update_issue {
   mcp__claude-flow__agent_spawn { type: "coordinator", name: "Issue Manager" }
   mcp__claude-flow__agent_spawn { type: "analyst", name: "Progress Tracker" }
   mcp__claude-flow__agent_spawn { type: "researcher", name: "Context Gatherer" }
-  
+
   // Create multiple related issues using gh CLI
   Bash(`gh issue create \
     --repo :owner/:repo \
     --title "Feature: Advanced GitHub Integration" \
     --body "Implement comprehensive GitHub workflow automation..." \
     --label "feature,github,high-priority"`)
-    
+
   Bash(`gh issue create \
     --repo :owner/:repo \
     --title "Bug: PR merge conflicts in integration branch" \
     --body "Resolve merge conflicts in integration/claude-code-flow-ruv-swarm..." \
     --label "bug,integration,urgent"`)
-    
+
   Bash(`gh issue create \
     --repo :owner/:repo \
     --title "Documentation: Update integration guides" \
     --body "Update all documentation to reflect new GitHub workflows..." \
     --label "documentation,integration"`)
-  
-  
+
+
   // Set up coordinated tracking
   TodoWrite { todos: [
     { id: "github-feature", content: "Implement GitHub integration", status: "pending", priority: "high" },
     { id: "merge-conflicts", content: "Resolve PR conflicts", status: "pending", priority: "critical" },
     { id: "docs-update", content: "Update documentation", status: "pending", priority: "medium" }
   ]}
-  
+
   // Store initial coordination state
   mcp__claude-flow__memory_usage {
     action: "store",
@@ -452,103 +444,126 @@ mcp__github__update_issue {
 ## Smart Issue Templates
 
 ### Integration Issue Template:
+
 ```markdown
 ## 🔄 Integration Task
 
 ### Overview
+
 [Brief description of integration requirements]
 
 ### Objectives
+
 - [ ] Component A integration
-- [ ] Component B validation  
+- [ ] Component B validation
 - [ ] Testing and verification
 - [ ] Documentation updates
 
 ### Integration Areas
+
 #### Dependencies
+
 - [ ] Package.json updates
 - [ ] Version compatibility
 - [ ] Import statements
 
-#### Functionality  
+#### Functionality
+
 - [ ] Core feature integration
 - [ ] API compatibility
 - [ ] Performance validation
 
 #### Testing
+
 - [ ] Unit tests
 - [ ] Integration tests
 - [ ] End-to-end validation
 
 ### Swarm Coordination
+
 - **Coordinator**: Overall progress tracking
 - **Analyst**: Technical validation
 - **Tester**: Quality assurance
 - **Documenter**: Documentation updates
 
 ### Progress Tracking
+
 Updates will be posted automatically by swarm agents during implementation.
 
 ---
+
 🤖 Generated with Claude Code
 ```
 
 ### Bug Report Template:
+
 ```markdown
 ## 🐛 Bug Report
 
 ### Problem Description
+
 [Clear description of the issue]
 
 ### Expected Behavior
+
 [What should happen]
 
-### Actual Behavior  
+### Actual Behavior
+
 [What actually happens]
 
 ### Reproduction Steps
+
 1. [Step 1]
 2. [Step 2]
 3. [Step 3]
 
 ### Environment
+
 - Package: [package name and version]
 - Node.js: [version]
 - OS: [operating system]
 
 ### Investigation Plan
+
 - [ ] Root cause analysis
 - [ ] Fix implementation
 - [ ] Testing and validation
 - [ ] Regression testing
 
 ### Swarm Assignment
+
 - **Debugger**: Issue investigation
 - **Coder**: Fix implementation
 - **Tester**: Validation and testing
 
 ---
+
 🤖 Generated with Claude Code
 ```
 
 ## Best Practices
 
 ### 1. **Swarm-Coordinated Issue Management**
+
 - Always initialize swarm for complex issues
 - Assign specialized agents based on issue type
 - Use memory for progress coordination
 
 ### 2. **Automated Progress Tracking**
+
 - Regular automated updates with swarm coordination
 - Progress metrics and completion tracking
 - Cross-issue dependency management
 
 ### 3. **Smart Labeling and Organization**
+
 - Consistent labeling strategy across repositories
 - Priority-based issue sorting and assignment
 - Milestone integration for project coordination
 
 ### 4. **Batch Issue Operations**
+
 - Create multiple related issues simultaneously
 - Bulk updates for project-wide changes
 - Coordinated cross-repository issue management
@@ -556,6 +571,7 @@ Updates will be posted automatically by swarm agents during implementation.
 ## Integration with Other Modes
 
 ### Seamless integration with:
+
 - `/github pr-manager` - Link issues to pull requests
 - `/github release-manager` - Coordinate release issues
 - `/sparc orchestrator` - Complex project coordination
@@ -564,12 +580,14 @@ Updates will be posted automatically by swarm agents during implementation.
 ## Metrics and Analytics
 
 ### Automatic tracking of:
+
 - Issue creation and resolution times
 - Agent productivity metrics
 - Project milestone progress
 - Cross-repository coordination efficiency
 
 ### Reporting features:
+
 - Weekly progress summaries
 - Agent performance analytics
 - Project health metrics

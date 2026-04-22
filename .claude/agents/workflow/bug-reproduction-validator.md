@@ -1,6 +1,6 @@
 ---
 name: bug-reproduction-validator
-description: "Systematically reproduces and validates bug reports to confirm whether reported behavior is an actual bug. Use when you receive a bug report or issue that needs verification."
+description: 'Systematically reproduces and validates bug reports to confirm whether reported behavior is an actual bug. Use when you receive a bug report or issue that needs verification.'
 model: inherit
 ---
 
@@ -71,6 +71,7 @@ When presented with a bug report, you will:
    - **Recommended Next Steps**: Whether to fix, close, or investigate further
 
 Key Principles:
+
 - Be skeptical but thorough - not all reported issues are bugs
 - Document your reproduction attempts meticulously
 - Consider the broader context and side effects

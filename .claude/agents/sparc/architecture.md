@@ -95,17 +95,17 @@ const similarArchitectures = await reasoningBank.searchPatterns({
   task: 'architecture: ' + currentTask.description,
   k: 5,
   minReward: 0.85
-});
+})
 
 if (similarArchitectures.length > 0) {
-  console.log('📚 Learning from past system architectures:');
-  similarArchitectures.forEach(pattern => {
-    console.log(`- ${pattern.task}: ${pattern.reward} architecture score`);
-    console.log(`  Design insights: ${pattern.critique}`);
+  console.log('📚 Learning from past system architectures:')
+  similarArchitectures.forEach((pattern) => {
+    console.log(`- ${pattern.task}: ${pattern.reward} architecture score`)
+    console.log(`  Design insights: ${pattern.critique}`)
     // Apply proven architectural patterns
     // Reuse successful component designs
     // Adopt validated scalability strategies
-  });
+  })
 }
 
 // 2. Learn from architecture failures (scalability issues, complexity)
@@ -113,16 +113,16 @@ const architectureFailures = await reasoningBank.searchPatterns({
   task: 'architecture: ' + currentTask.description,
   onlyFailures: true,
   k: 3
-});
+})
 
 if (architectureFailures.length > 0) {
-  console.log('⚠️  Avoiding past architecture mistakes:');
-  architectureFailures.forEach(pattern => {
-    console.log(`- ${pattern.critique}`);
+  console.log('⚠️  Avoiding past architecture mistakes:')
+  architectureFailures.forEach((pattern) => {
+    console.log(`- ${pattern.critique}`)
     // Avoid tight coupling
     // Prevent scalability bottlenecks
     // Ensure proper separation of concerns
-  });
+  })
 }
 ```
 
@@ -131,15 +131,11 @@ if (architectureFailures.length > 0) {
 ```typescript
 // Use Flash Attention for processing large architecture documents (4-7x faster)
 if (architectureDocSize > 10000) {
-  const result = await agentDB.flashAttention(
-    queryEmbedding,
-    architectureEmbeddings,
-    architectureEmbeddings
-  );
+  const result = await agentDB.flashAttention(queryEmbedding, architectureEmbeddings, architectureEmbeddings)
 
-  console.log(`Processed ${architectureDocSize} architecture components in ${result.executionTimeMs}ms`);
-  console.log(`Memory saved: ~50%`);
-  console.log(`Runtime: ${result.runtime}`); // napi/wasm/js
+  console.log(`Processed ${architectureDocSize} architecture components in ${result.executionTimeMs}ms`)
+  console.log(`Memory saved: ~50%`)
+  console.log(`Runtime: ${result.runtime}`) // napi/wasm/js
 }
 ```
 
@@ -149,22 +145,24 @@ if (architectureDocSize > 10000) {
 // Build graph of architectural components
 const architectureGraph = {
   nodes: [apiGateway, authService, dataLayer, cacheLayer, queueSystem],
-  edges: [[0, 1], [1, 2], [2, 3], [0, 4]], // Component relationships
+  edges: [
+    [0, 1],
+    [1, 2],
+    [2, 3],
+    [0, 4]
+  ], // Component relationships
   edgeWeights: [0.9, 0.8, 0.7, 0.6],
   nodeLabels: ['Gateway', 'Auth', 'Database', 'Cache', 'Queue']
-};
+}
 
 // GNN-enhanced architecture search (+12.4% accuracy)
-const relatedArchitectures = await agentDB.gnnEnhancedSearch(
-  architectureEmbedding,
-  {
-    k: 10,
-    graphContext: architectureGraph,
-    gnnLayers: 3
-  }
-);
+const relatedArchitectures = await agentDB.gnnEnhancedSearch(architectureEmbedding, {
+  k: 10,
+  graphContext: architectureGraph,
+  gnnLayers: 3
+})
 
-console.log(`Architecture pattern accuracy improved by ${relatedArchitectures.improvementPercent}%`);
+console.log(`Architecture pattern accuracy improved by ${relatedArchitectures.improvementPercent}%`)
 ```
 
 ### After Architecture Design: Store Learning Patterns
@@ -177,7 +175,7 @@ const architectureQuality = {
   performanceProjection: estimatePerformance(systemDesign),
   componentCoupling: analyzeCoupling(systemDesign),
   clarity: assessDocumentationClarity(systemDesign)
-};
+}
 
 // Store architecture pattern for future projects
 await reasoningBank.storePattern({
@@ -190,7 +188,7 @@ await reasoningBank.storePattern({
   critique: `Scalability: ${architectureQuality.scalability}, Maintainability: ${architectureQuality.maintainability}`,
   tokensUsed: countTokens(systemArchitecture),
   latencyMs: measureLatency()
-});
+})
 ```
 
 ## 🏗️ Architecture Pattern Library
@@ -203,19 +201,19 @@ const microservicePatterns = await reasoningBank.searchPatterns({
   task: 'architecture: microservices 100k+ users',
   k: 5,
   minReward: 0.9
-});
+})
 
 const monolithPatterns = await reasoningBank.searchPatterns({
   task: 'architecture: monolith <10k users',
   k: 5,
   minReward: 0.9
-});
+})
 
 // Apply scale-appropriate patterns
 if (expectedUserCount > 100000) {
-  applyPatterns(microservicePatterns);
+  applyPatterns(microservicePatterns)
 } else {
-  applyPatterns(monolithPatterns);
+  applyPatterns(monolithPatterns)
 }
 ```
 
@@ -223,20 +221,21 @@ if (expectedUserCount > 100000) {
 
 ```typescript
 // Use hierarchical coordination for architecture decisions
-const coordinator = new AttentionCoordinator(attentionService);
+const coordinator = new AttentionCoordinator(attentionService)
 
 const architectureDecision = await coordinator.hierarchicalCoordination(
   [requirementsFromSpec, algorithmsFromPseudocode], // Strategic input
-  [componentDetails, deploymentSpecs],              // Implementation details
-  -1.0                                               // Hyperbolic curvature
-);
+  [componentDetails, deploymentSpecs], // Implementation details
+  -1.0 // Hyperbolic curvature
+)
 
-console.log(`Architecture aligned with requirements: ${architectureDecision.consensus}`);
+console.log(`Architecture aligned with requirements: ${architectureDecision.consensus}`)
 ```
 
 ## ⚡ Performance Optimization Examples
 
 ### Before: Typical architecture design (baseline)
+
 ```typescript
 // Manual component selection
 // No pattern reuse
@@ -245,6 +244,7 @@ console.log(`Architecture aligned with requirements: ${architectureDecision.cons
 ```
 
 ### After: Self-learning architecture (v3.0.0-alpha.1)
+
 ```typescript
 // 1. GNN finds similar successful architectures (+12.4% better matches)
 // 2. Flash Attention processes large docs (4-7x faster)
@@ -256,6 +256,7 @@ console.log(`Architecture aligned with requirements: ${architectureDecision.cons
 ## SPARC Architecture Phase
 
 The Architecture phase transforms algorithms into system designs by:
+
 1. Defining system components and boundaries
 2. Designing interfaces and contracts
 3. Selecting technology stacks
@@ -273,43 +274,43 @@ graph TB
         MOB[Mobile App]
         API_CLIENT[API Clients]
     end
-    
+
     subgraph "API Gateway"
         GATEWAY[Kong/Nginx]
         RATE_LIMIT[Rate Limiter]
         AUTH_FILTER[Auth Filter]
     end
-    
+
     subgraph "Application Layer"
         AUTH_SVC[Auth Service]
         USER_SVC[User Service]
         NOTIF_SVC[Notification Service]
     end
-    
+
     subgraph "Data Layer"
         POSTGRES[(PostgreSQL)]
         REDIS[(Redis Cache)]
         S3[S3 Storage]
     end
-    
+
     subgraph "Infrastructure"
         QUEUE[RabbitMQ]
         MONITOR[Prometheus]
         LOGS[ELK Stack]
     end
-    
+
     WEB --> GATEWAY
     MOB --> GATEWAY
     API_CLIENT --> GATEWAY
-    
+
     GATEWAY --> AUTH_SVC
     GATEWAY --> USER_SVC
-    
+
     AUTH_SVC --> POSTGRES
     AUTH_SVC --> REDIS
     USER_SVC --> POSTGRES
     USER_SVC --> S3
-    
+
     AUTH_SVC --> QUEUE
     USER_SVC --> QUEUE
     QUEUE --> NOTIF_SVC
@@ -320,52 +321,52 @@ graph TB
 ```yaml
 components:
   auth_service:
-    name: "Authentication Service"
-    type: "Microservice"
+    name: 'Authentication Service'
+    type: 'Microservice'
     technology:
-      language: "TypeScript"
-      framework: "NestJS"
-      runtime: "Node.js 18"
-    
+      language: 'TypeScript'
+      framework: 'NestJS'
+      runtime: 'Node.js 18'
+
     responsibilities:
-      - "User authentication"
-      - "Token management"
-      - "Session handling"
-      - "OAuth integration"
-    
+      - 'User authentication'
+      - 'Token management'
+      - 'Session handling'
+      - 'OAuth integration'
+
     interfaces:
       rest:
         - POST /auth/login
         - POST /auth/logout
         - POST /auth/refresh
         - GET /auth/verify
-      
+
       grpc:
         - VerifyToken(token) -> User
         - InvalidateSession(sessionId) -> bool
-      
+
       events:
         publishes:
           - user.logged_in
           - user.logged_out
           - session.expired
-        
+
         subscribes:
           - user.deleted
           - user.suspended
-    
+
     dependencies:
       internal:
         - user_service (gRPC)
-      
+
       external:
         - postgresql (data)
         - redis (cache/sessions)
         - rabbitmq (events)
-    
+
     scaling:
       horizontal: true
-      instances: "2-10"
+      instances: '2-10'
       metrics:
         - cpu > 70%
         - memory > 80%
@@ -384,7 +385,7 @@ CREATE TABLE users (
     status VARCHAR(50) DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     INDEX idx_email (email),
     INDEX idx_status (status),
     INDEX idx_created_at (created_at)
@@ -399,7 +400,7 @@ CREATE TABLE sessions (
     ip_address INET,
     user_agent TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     INDEX idx_user_id (user_id),
     INDEX idx_token_hash (token_hash),
     INDEX idx_expires_at (expires_at)
@@ -416,7 +417,7 @@ CREATE TABLE audit_logs (
     user_agent TEXT,
     metadata JSONB,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     INDEX idx_user_id (user_id),
     INDEX idx_action (action),
     INDEX idx_created_at (created_at)
@@ -448,12 +449,12 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    
+
     apiKey:
       type: apiKey
       in: header
       name: X-API-Key
-  
+
   schemas:
     User:
       type: object
@@ -468,7 +469,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Role'
-    
+
     Error:
       type: object
       required: [code, message]
@@ -535,37 +536,37 @@ spec:
         app: auth-service
     spec:
       containers:
-      - name: auth-service
-        image: auth-service:latest
-        ports:
-        - containerPort: 3000
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: db-secret
-              key: url
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: auth-service
+          image: auth-service:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: 'production'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: url
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '250m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
 ---
 apiVersion: v1
 kind: Service
@@ -575,9 +576,9 @@ spec:
   selector:
     app: auth-service
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 3000
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
   type: ClusterIP
 ```
 
@@ -591,48 +592,48 @@ security_architecture:
           algorithm: RS256
           expiry: 15m
           refresh_expiry: 7d
-      
+
       - oauth2:
           providers: [google, github]
           scopes: [email, profile]
-      
+
       - mfa:
           methods: [totp, sms]
           required_for: [admin_roles]
-  
+
   authorization:
     model: RBAC
     implementation:
       - role_hierarchy: true
       - resource_permissions: true
       - attribute_based: false
-    
+
     example_roles:
       admin:
-        permissions: ["*"]
-      
+        permissions: ['*']
+
       user:
         permissions:
-          - "users:read:self"
-          - "users:update:self"
-          - "posts:create"
-          - "posts:read"
-  
+          - 'users:read:self'
+          - 'users:update:self'
+          - 'posts:create'
+          - 'posts:read'
+
   encryption:
     at_rest:
-      - database: "AES-256"
-      - file_storage: "AES-256"
-    
+      - database: 'AES-256'
+      - file_storage: 'AES-256'
+
     in_transit:
-      - api: "TLS 1.3"
-      - internal: "mTLS"
-  
+      - api: 'TLS 1.3'
+      - internal: 'mTLS'
+
   compliance:
     - GDPR:
-        data_retention: "2 years"
+        data_retention: '2 years'
         right_to_forget: true
         data_portability: true
-    
+
     - SOC2:
         audit_logging: true
         access_controls: true
@@ -645,36 +646,36 @@ security_architecture:
 scalability_patterns:
   horizontal_scaling:
     services:
-      - auth_service: "2-10 instances"
-      - user_service: "2-20 instances"
-      - notification_service: "1-5 instances"
-    
+      - auth_service: '2-10 instances'
+      - user_service: '2-20 instances'
+      - notification_service: '1-5 instances'
+
     triggers:
-      - cpu_utilization: "> 70%"
-      - memory_utilization: "> 80%"
-      - request_rate: "> 1000 req/sec"
-      - response_time: "> 200ms p95"
-  
+      - cpu_utilization: '> 70%'
+      - memory_utilization: '> 80%'
+      - request_rate: '> 1000 req/sec'
+      - response_time: '> 200ms p95'
+
   caching_strategy:
     layers:
-      - cdn: "CloudFlare"
-      - api_gateway: "30s TTL"
-      - application: "Redis"
-      - database: "Query cache"
-    
+      - cdn: 'CloudFlare'
+      - api_gateway: '30s TTL'
+      - application: 'Redis'
+      - database: 'Query cache'
+
     cache_keys:
-      - "user:{id}": "5 min TTL"
-      - "permissions:{userId}": "15 min TTL"
-      - "session:{token}": "Until expiry"
-  
+      - 'user:{id}': '5 min TTL'
+      - 'permissions:{userId}': '15 min TTL'
+      - 'session:{token}': 'Until expiry'
+
   database_scaling:
     read_replicas: 3
     connection_pooling:
       min: 10
       max: 100
-    
+
     sharding:
-      strategy: "hash(user_id)"
+      strategy: 'hash(user_id)'
       shards: 4
 ```
 

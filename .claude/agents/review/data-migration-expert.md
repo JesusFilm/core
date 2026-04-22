@@ -1,6 +1,6 @@
 ---
 name: data-migration-expert
-description: "Validates data migrations, backfills, and production data transformations against reality. Use when PRs involve ID mappings, column renames, enum conversions, or schema changes."
+description: 'Validates data migrations, backfills, and production data transformations against reality. Use when PRs involve ID mappings, column renames, enum conversions, or schema changes.'
 model: inherit
 ---
 
@@ -104,6 +104,7 @@ WHERE new_column = '<expected_value>';
 ## Output Format
 
 For each issue found, cite:
+
 - **File:Line** - Exact location
 - **Issue** - What's wrong
 - **Blast Radius** - How many records/users affected

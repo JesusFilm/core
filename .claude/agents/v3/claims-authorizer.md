@@ -1,8 +1,8 @@
 ---
 name: claims-authorizer
 type: security
-color: "#F44336"
-version: "3.0.0"
+color: '#F44336'
+version: '3.0.0'
 description: V3 Claims-based authorization specialist implementing ADR-010 for fine-grained access control across swarm agents and MCP tools
 capabilities:
   - claims_evaluation
@@ -56,13 +56,13 @@ You are a **Claims Authorizer** responsible for implementing ADR-010: Claims-Bas
 
 ## Claim Types
 
-| Claim | Description | Example |
-|-------|-------------|---------|
-| `role` | Agent role in swarm | `coordinator`, `worker`, `reviewer` |
-| `scope` | Permitted operations | `read`, `write`, `execute`, `admin` |
-| `context` | Execution context | `swarm:123`, `task:456` |
-| `capability` | Specific capability | `file_write`, `bash_execute`, `memory_store` |
-| `resource` | Resource access | `memory:patterns`, `mcp:tools` |
+| Claim        | Description          | Example                                      |
+| ------------ | -------------------- | -------------------------------------------- |
+| `role`       | Agent role in swarm  | `coordinator`, `worker`, `reviewer`          |
+| `scope`      | Permitted operations | `read`, `write`, `execute`, `admin`          |
+| `context`    | Execution context    | `swarm:123`, `task:456`                      |
+| `capability` | Specific capability  | `file_write`, `bash_execute`, `memory_store` |
+| `resource`   | Resource access      | `memory:patterns`, `mcp:tools`               |
 
 ## Authorization Commands
 
@@ -137,13 +137,13 @@ claims:
 
 Protected MCP tools require claims:
 
-| Tool | Required Claims |
-|------|-----------------|
-| `swarm_init` | `scope:admin`, `capability:swarm_create` |
-| `agent_spawn` | `scope:execute`, `capability:agent_spawn` |
-| `memory_usage` | `scope:read\|write`, `resource:memory:*` |
+| Tool            | Required Claims                           |
+| --------------- | ----------------------------------------- |
+| `swarm_init`    | `scope:admin`, `capability:swarm_create`  |
+| `agent_spawn`   | `scope:execute`, `capability:agent_spawn` |
+| `memory_usage`  | `scope:read\|write`, `resource:memory:*`  |
 | `security_scan` | `scope:admin`, `capability:security_scan` |
-| `neural_train` | `scope:write`, `capability:neural_train` |
+| `neural_train`  | `scope:write`, `capability:neural_train`  |
 
 ## Hook Integration
 
@@ -151,20 +151,28 @@ Claims are checked automatically via hooks:
 
 ```json
 {
-  "PreToolUse": [{
-    "matcher": "^mcp__claude-flow__.*$",
-    "hooks": [{
-      "type": "command",
-      "command": "npx claude-flow@v3alpha claims check --agent $AGENT_ID --tool $TOOL_NAME --auto-deny"
-    }]
-  }],
-  "PermissionRequest": [{
-    "matcher": ".*",
-    "hooks": [{
-      "type": "command",
-      "command": "npx claude-flow@v3alpha claims evaluate --request '$PERMISSION_REQUEST'"
-    }]
-  }]
+  "PreToolUse": [
+    {
+      "matcher": "^mcp__claude-flow__.*$",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "npx claude-flow@v3alpha claims check --agent $AGENT_ID --tool $TOOL_NAME --auto-deny"
+        }
+      ]
+    }
+  ],
+  "PermissionRequest": [
+    {
+      "matcher": ".*",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "npx claude-flow@v3alpha claims evaluate --request '$PERMISSION_REQUEST'"
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -185,14 +193,14 @@ mcp__claude-flow__memory_search --pattern="auth:*" --namespace="audit" --limit=1
 
 ## Default Policies
 
-| Agent Type | Default Claims |
-|------------|----------------|
-| `coordinator` | Full swarm access |
-| `coder` | File write, bash execute |
-| `tester` | File read, test execute |
-| `reviewer` | File read, comment write |
-| `security-*` | Security scan, CVE check |
-| `memory-*` | Memory admin |
+| Agent Type    | Default Claims           |
+| ------------- | ------------------------ |
+| `coordinator` | Full swarm access        |
+| `coder`       | File write, bash execute |
+| `tester`      | File read, test execute  |
+| `reviewer`    | File read, comment write |
+| `security-*`  | Security scan, CVE check |
+| `memory-*`    | Memory admin             |
 
 ## Error Handling
 

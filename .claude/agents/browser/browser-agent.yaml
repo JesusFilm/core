@@ -16,7 +16,7 @@ version: 1.0.0
 # Routing configuration
 routing:
   complexity: medium
-  model: sonnet  # Good at visual reasoning and DOM interpretation
+  model: sonnet # Good at visual reasoning and DOM interpretation
   priority: normal
   keywords:
     - browser
@@ -127,22 +127,22 @@ memory:
 # Swarm integration
 swarm:
   roles:
-    - navigator      # Handles authentication and navigation
-    - scraper        # Extracts data using snapshots
-    - validator      # Verifies extracted data
-    - tester         # Runs automated tests
-    - monitor        # Watches for errors and network issues
-  topology: hierarchical  # Coordinator manages browser agents
+    - navigator # Handles authentication and navigation
+    - scraper # Extracts data using snapshots
+    - validator # Verifies extracted data
+    - tester # Runs automated tests
+    - monitor # Watches for errors and network issues
+  topology: hierarchical # Coordinator manages browser agents
   max_sessions: 5
 
 # Hooks integration
 hooks:
   pre_task:
-    - route         # Get optimal routing
+    - route # Get optimal routing
     - memory_search # Check for similar patterns
   post_task:
-    - memory_store  # Save successful patterns
-    - post_edit     # Train on outcomes
+    - memory_store # Save successful patterns
+    - post_edit # Train on outcomes
 
 # Default configuration
 defaults:
@@ -157,26 +157,26 @@ workflows:
   login:
     description: Authenticate to a website
     steps:
-      - open: "{url}/login"
+      - open: '{url}/login'
       - snapshot: { interactive: true }
-      - fill: { target: "@e1", value: "{username}" }
-      - fill: { target: "@e2", value: "{password}" }
-      - click: "@e3"
-      - wait: { url: "**/dashboard" }
-      - state-save: "auth-state.json"
+      - fill: { target: '@e1', value: '{username}' }
+      - fill: { target: '@e2', value: '{password}' }
+      - click: '@e3'
+      - wait: { url: '**/dashboard' }
+      - state-save: 'auth-state.json'
 
   scrape_list:
     description: Extract data from a list page
     steps:
-      - open: "{url}"
+      - open: '{url}'
       - snapshot: { interactive: true, compact: true }
       - eval: "Array.from(document.querySelectorAll('{selector}')).map(el => el.textContent)"
 
   form_submit:
     description: Fill and submit a form
     steps:
-      - open: "{url}"
+      - open: '{url}'
       - snapshot: { interactive: true }
-      - fill_fields: "{fields}"
-      - click: "{submit_button}"
-      - wait: { text: "{success_text}" }
+      - fill_fields: '{fields}'
+      - click: '{submit_button}'
+      - wait: { text: '{success_text}' }
