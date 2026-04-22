@@ -1,5 +1,5 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@interfaceObject", "@key", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@interfaceObject", "@key", "@override", "@shareable"])
 
 interface Action {
   parentBlockId: ID!
@@ -1384,6 +1384,23 @@ input MultiselectSubmissionEventCreateInput {
 }
 
 type Mutation {
+  blockDuplicate(
+    id: ID!
+    parentOrder: Int
+    idMap: [BlockDuplicateIdMap!]
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+    x: Int
+    y: Int
+  ): [Block!]! @override(from: "api-journeys")
+  blockOrderUpdate(
+    id: ID!
+    parentOrder: Int!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): [Block!]! @override(from: "api-journeys")
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!
@@ -1453,6 +1470,7 @@ type Mutation {
   spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
   spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock!
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]! @override(from: "api-journeys")
   stepBlockUpdate(
     id: ID!
     input: StepBlockUpdateInput!
