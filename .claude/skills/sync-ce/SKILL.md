@@ -48,6 +48,7 @@ git clone --depth 1 --quiet https://github.com/EveryInc/compound-engineering-plu
 ```
 
 Then produce a brief summary:
+
 - List new skills (directories in upstream `skills/` not in `.claude/skills/`)
 - List removed skills (directories in `.claude/skills/` that came from CE but are no longer upstream)
 - List new agents (directories in upstream `agents/` not in `.claude/agents/`)
@@ -88,6 +89,7 @@ DD-MM-XX-chore-sync-ce-vX-Y-Z
 ```
 
 Where:
+
 - `DD-MM` is the current day and month (2-digit each)
 - `XX` is the user's 2-letter uppercase initials
 - `vX-Y-Z` is the upstream version with dots replaced by hyphens
@@ -166,6 +168,7 @@ git worktree remove ../sync-ce-worktree
 ### 12. Report
 
 Tell the user:
+
 - The PR URL
 - The branch name
 - That they are assigned as the reviewer
