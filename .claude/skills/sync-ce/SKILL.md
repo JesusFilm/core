@@ -89,6 +89,7 @@ The branch name MUST follow the project's naming convention:
 ```
 
 Where:
+
 - `XX` is the user's 2-letter uppercase initials
 - `vX-Y-Z` is the upstream version with dots replaced by hyphens (e.g. `v2-45-0`)
 
