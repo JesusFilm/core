@@ -6,5 +6,20 @@
       "Bash(docker run*-v /*)",
       "Bash(docker run*--privileged*)"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/compound-reminder.sh",
+            "if": "Bash(git push*)",
+            "statusMessage": "Checking for compound docs..."
+          }
+        ]
+      }
+    ]
   }
 }
