@@ -73,6 +73,7 @@ Scan all new and modified files in the upstream `skills/` and `agents/` director
 - **Destructive commands**: `rm -rf /`, `git push --force`, `DROP TABLE`, or similar
 
 For each flag, report:
+
 - The file path
 - The line or content that triggered the flag
 - A severity level: `HIGH` (likely malicious), `MEDIUM` (suspicious, needs review), `LOW` (probably fine but unusual)
