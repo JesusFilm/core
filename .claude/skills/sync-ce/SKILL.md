@@ -44,10 +44,14 @@ curl -s https://raw.githubusercontent.com/EveryInc/compound-engineering-plugin/m
 
 Clone the upstream repo to a temp directory and compare against the project snapshot:
 
+Resolve the version from step 2 to a specific git tag. Clone that tag (not `main`) so the scan and copy operate on a deterministic artifact:
+
 ```bash
 TEMP_DIR=$(mktemp -d)
-git clone --depth 1 --quiet https://github.com/EveryInc/compound-engineering-plugin.git "$TEMP_DIR"
+git clone --depth 1 --branch "v<upstream-version>" --quiet https://github.com/EveryInc/compound-engineering-plugin.git "$TEMP_DIR"
 ```
+
+If no matching tag exists, fall back to cloning `main` but warn the user that the clone is not pinned to a specific release.
 
 Read the existing `.ce-manifest` to know which skills and agents are CE-owned. Then compare:
 
@@ -62,6 +66,8 @@ Present this as a short summary table, not a full diff. Keep it under 20 lines.
 Do NOT delete the temp directory yet — it's needed if the user confirms.
 
 ### 5. Security scan of incoming changes
+
+This is a **best-effort heuristic screen**, not a deterministic security gate. It may miss obfuscated or novel patterns. Do not over-trust a clean scan — the user should still review the PR diff before merging.
 
 Scan all new and modified files in the upstream `skills/` and `agents/` directories for potentially malicious content. Check for:
 
@@ -138,11 +144,13 @@ Only delete files listed in the manifest — never touch files that aren't CE-ow
 
 ### 10. Copy updated files in the worktree
 
+**Important:** CE-owned files (those listed in `.ce-manifest`) are treated as read-only. Any local modifications to CE-owned files will be overwritten on sync. If you need to customize a CE skill, create a separate project-owned skill instead.
+
 ```bash
-# Copy skills
+# Copy skills (overwrites CE-owned files)
 cp -r "$TEMP_DIR/plugins/compound-engineering/skills/"* ../sync-ce-worktree/.claude/skills/
 
-# Copy agents
+# Copy agents (overwrites CE-owned files)
 cp -r "$TEMP_DIR/plugins/compound-engineering/agents/"* ../sync-ce-worktree/.claude/agents/
 
 # Copy LICENSE to both directories
@@ -227,5 +235,5 @@ Tell the user:
 
 - The PR URL
 - The branch name
-- That they are assigned as the reviewer
+- That they are assigned to the PR
 - Remind them to switch back to their original branch if needed
