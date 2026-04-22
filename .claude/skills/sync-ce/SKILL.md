@@ -85,11 +85,12 @@ Derive the user's initials from their git username for the branch name. Use 2-le
 The branch name MUST follow the project's naming convention:
 
 ```
-00-00-XX-chore-ce-sync
+00-00-XX-chore-ce-sync-vX-Y-Z
 ```
 
 Where:
 - `XX` is the user's 2-letter uppercase initials
+- `vX-Y-Z` is the upstream version with dots replaced by hyphens (e.g. `v2-45-0`)
 
 Create a git worktree for this branch:
 
