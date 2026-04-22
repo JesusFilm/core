@@ -85,14 +85,11 @@ Derive the user's initials from their git username for the branch name. Use 2-le
 The branch name MUST follow the project's naming convention:
 
 ```
-DD-MM-XX-chore-sync-ce-vX-Y-Z
+00-00-XX-chore-ce-sync
 ```
 
 Where:
-
-- `DD-MM` is the current day and month (2-digit each)
 - `XX` is the user's 2-letter uppercase initials
-- `vX-Y-Z` is the upstream version with dots replaced by hyphens
 
 Create a git worktree for this branch:
 
@@ -128,7 +125,7 @@ Working inside the worktree:
 ```bash
 cd ../sync-ce-worktree
 git add .claude/skills/ .claude/agents/ .ce-version
-git commit -m "chore: sync compound-engineering to vX.Y.Z"
+git commit -m "chore: sync compound-engineering skills and agents"
 git push -u origin <branch-name>
 ```
 
@@ -138,7 +135,7 @@ Create a PR using the GitHub CLI, assigned to the person who ran the command:
 
 ```bash
 gh pr create \
-  --title "chore: sync compound-engineering to vX.Y.Z" \
+  --title "chore: sync compound-engineering skills and agents" \
   --assignee "<github-username>" \
   --body "$(cat <<'PREOF'
 ## Summary
