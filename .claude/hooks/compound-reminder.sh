@@ -1,6 +1,7 @@
 #!/bin/bash
 # Compound reminder hook — checks if docs were created on this branch
 # Runs before git push to remind about /ce-compound
+# Version: 1.0.0
 
 BRANCH=$(git branch --show-current)
 
