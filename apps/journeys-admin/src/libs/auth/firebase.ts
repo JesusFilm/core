@@ -29,6 +29,15 @@ export async function loginWithCredential(
   credential: UserCredential
 ): Promise<void> {
   const idToken = await credential.user.getIdToken(true)
+  console.log('=== JWT AFTER FORCE REFRESH ===')
+  try {
+    const payload = JSON.parse(atob(idToken.split('.')[1]))
+    console.log('JWT name:', payload.name)
+    console.log('JWT picture:', payload.picture)
+    console.log('JWT email:', payload.email)
+  } catch (e) {
+    console.log('JWT parse error:', e)
+  }
   await login(idToken)
   window.location.reload()
 }
