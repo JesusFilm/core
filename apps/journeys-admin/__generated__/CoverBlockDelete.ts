@@ -25,9 +25,6 @@ export interface CoverBlockDelete_cardBlockUpdate {
 }
 
 export interface CoverBlockDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   blockDelete: CoverBlockDelete_blockDelete[];
   cardBlockUpdate: CoverBlockDelete_cardBlockUpdate;
 }
