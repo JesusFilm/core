@@ -285,6 +285,47 @@ describe('SignInServiceButton', () => {
       })
     })
 
+    it('should call getIdToken with force-refresh on the pending journey path', async () => {
+      const mockGetIdToken = jest.fn().mockResolvedValue('fresh-google-token')
+      mockLinkWithPopup.mockResolvedValueOnce({
+        user: {
+          displayName: 'Jane Smith',
+          email: 'jane@gmail.com',
+          getIdToken: mockGetIdToken
+        }
+      } as unknown as UserCredential)
+
+      mockUseRouter.mockReturnValueOnce({
+        back: jest.fn(),
+        push: jest.fn(),
+        query: {}
+      } as unknown as NextRouter)
+
+      const { getPendingGuestJourney } = jest.requireMock(
+        '../../../libs/pendingGuestJourney'
+      )
+      ;(getPendingGuestJourney as jest.Mock).mockReturnValueOnce({
+        journeyId: 'pending-journey-id'
+      })
+
+      render(
+        <MockedProvider>
+          <SignInServiceButton service="google.com" />
+        </MockedProvider>
+      )
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Continue with Google' })
+      )
+
+      await waitFor(() => {
+        expect(mockGetIdToken).toHaveBeenCalledWith(true)
+      })
+      await waitFor(() => {
+        expect(mockLogin).toHaveBeenCalledWith('fresh-google-token')
+      })
+    })
+
     it('should fallback to signInWithCredential when linkWithPopup fails with credential-already-in-use', async () => {
       const credentialAlreadyInUseError = Object.assign(
         new Error('credential already in use'),
