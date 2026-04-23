@@ -95,8 +95,8 @@ export function PromptInput({
         }}
         sx={{
           '& .MuiOutlinedInput-root': {
-            borderRadius: 3,
-            bgcolor: 'grey.50'
+            borderRadius: isFloating ? 9999 : 3,
+            bgcolor: isFloating ? 'transparent' : 'grey.50'
           },
           '& .MuiOutlinedInput-notchedOutline': {
             border: 'none'
