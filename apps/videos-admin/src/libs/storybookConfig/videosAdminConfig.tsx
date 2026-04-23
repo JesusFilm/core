@@ -3,7 +3,7 @@ import {
   ThemeProvider as MuiThemeProvider,
   useColorScheme
 } from '@mui/material/styles'
-import { Decorator, StoryContext } from '@storybook/nextjs'
+import type { DecoratorFunction as Decorator, StoryContext } from 'storybook/internal/csf'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 

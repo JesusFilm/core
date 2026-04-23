@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "outDir": "../../dist/out-tsc",
+    "types": [
+      "node",
+      "@nx/react/typings/cssmodule.d.ts",
+      "@nx/react/typings/image.d.ts"
+    ]
+  },
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ],
+  "include": [
+    "src/**/*.stories.ts",
+    "src/**/*.stories.tsx",
+    "src/lib/apiUsersConfig/**/*.ts",
+    "src/lib/apiUsersConfig/**/*.tsx"
+  ]
+}

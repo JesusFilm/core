@@ -1,10 +1,10 @@
-const { initialize: mswInitialize, mswLoader } = require('msw-storybook-addon')
-const { MockedProvider } = require('@apollo/client/testing')
-require('swiper/css')
-require('swiper/css/a11y')
-require('swiper/css/mousewheel')
-require('swiper/css/navigation')
-require('swiper/css/pagination')
+import { initialize as mswInitialize, mswLoader } from 'msw-storybook-addon'
+import { MockedProvider } from '@apollo/client/testing'
+import 'swiper/css'
+import 'swiper/css/a11y'
+import 'swiper/css/mousewheel'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 
 const customViewports = {
   mobileMin: {
@@ -37,37 +37,38 @@ mswInitialize({
   onUnhandledRequest: 'bypass'
 })
 
-module.exports = {
+export const parameters = {
+  backgrounds: {
+    grid: {
+      disable: true
+    },
+    disabled: true
+  },
+  chromatic: { viewports: [360, 1200] },
+  controls: { disable: true },
+  viewport: {
+    options: customViewports
+  },
+  apolloClient: {
+    MockedProvider
+  }
+}
+
+export const globalTypes = {
+  theme: {
+    name: 'Theme Mode',
+    description: 'Display mode for components',
+    defaultValue: 'all',
+    toolbar: {
+      icon: 'mirror',
+      items: ['light', 'dark', 'all']
+    }
+  }
+}
+
+export default {
   loaders: [mswLoader],
-
-  parameters: {
-    backgrounds: {
-      disable: true,
-      grid: {
-        disable: true
-      }
-    },
-    chromatic: { viewports: [360, 1200] },
-    controls: { disable: true },
-    viewport: {
-      viewports: customViewports
-    },
-    apolloClient: {
-      MockedProvider
-    }
-  },
-
-  globalTypes: {
-    theme: {
-      name: 'Theme Mode',
-      description: 'Display mode for components',
-      defaultValue: 'all',
-      toolbar: {
-        icon: 'mirror',
-        items: ['light', 'dark', 'all']
-      }
-    }
-  },
-
+  parameters,
+  globalTypes,
   tags: ['autodocs']
 }

@@ -1,7 +1,7 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
-import { StorybookConfig } from '@storybook/nextjs'
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
+import { StorybookConfig } from '@storybook/nextjs-vite'
 
 const require = createRequire(import.meta.url)
 
@@ -49,23 +49,12 @@ const config: StorybookConfig = {
 
   addons: [
     getAbsolutePath('@storybook/addon-a11y'),
-    getAbsolutePath('storybook-addon-apollo-client'),
     getAbsolutePath('@chromatic-com/storybook'),
     getAbsolutePath('@storybook/addon-docs')
   ],
 
-  webpackFinal: async (config) => {
-    const tsPaths = new TsconfigPathsPlugin({
-      configFile: './tsconfig.base.json'
-    })
-
-    if (config.resolve == null) config.resolve = {}
-
-    config.resolve.plugins
-      ? config.resolve.plugins.push(tsPaths)
-      : (config.resolve.plugins = [tsPaths])
-
-    // TODO: Remove once Storybook supports Emotion 11.
+  viteFinal: async (config) => {
+    config.resolve = config.resolve ?? {}
     config.resolve.alias = {
       ...config.resolve.alias,
       '@emotion/styled': require.resolve('@emotion/styled'),
@@ -74,18 +63,14 @@ const config: StorybookConfig = {
       '@emotion/react': require.resolve('@emotion/react'),
       '@emotion/cache': require.resolve('@emotion/cache')
     }
-
     return config
   },
 
   framework: {
-    name: getAbsolutePath('@storybook/nextjs'),
+    name: getAbsolutePath('@storybook/nextjs-vite'),
     options: {}
   },
   docs: {},
-  features: {
-    experimentalRSC: true
-  },
   typescript: {
     reactDocgen: 'react-docgen-typescript'
   }

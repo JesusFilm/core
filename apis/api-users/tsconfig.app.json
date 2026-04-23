@@ -4,6 +4,7 @@
     "jsx": "react-jsx",
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
+    "moduleResolution": "node",
     "types": [
       "node",
       "@nx/react/typings/cssmodule.d.ts",
@@ -14,8 +15,11 @@
   "exclude": [
     "**/*.spec.ts",
     "**/*.spec.tsx",
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
     "jest.config.ts",
-    "test/**/*.ts"
+    "test/**/*.ts",
+    "src/lib/apiUsersConfig/**"
   ],
   "include": ["**/*.ts", "**/*.tsx"]
 }

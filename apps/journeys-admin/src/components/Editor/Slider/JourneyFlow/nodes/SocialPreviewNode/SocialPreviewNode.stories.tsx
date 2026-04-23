@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { StoryObj } from '@storybook/nextjs'
+import { StoryObj } from '@storybook/nextjs-vite'
 import { SnackbarProvider } from 'notistack'
 import { Background, ReactFlow } from 'reactflow'
 
