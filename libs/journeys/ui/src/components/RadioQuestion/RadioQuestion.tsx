@@ -55,7 +55,7 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
  *
  * Features:
  * - Renders radio options as either GridVariant or ListVariant
- * - Tracks user selections and prevents multiple selections
+ * - Tracks user selections and allows changing selections
  * - Creates submission events for analytics (Plausible and GTM)
  * - Clears selection when navigating away from the block
  * - Supports custom wrappers for editor mode
@@ -104,6 +104,7 @@ export function RadioQuestion({
     radioOptionBlockId: string,
     radioOptionLabel: string
   ): void => {
+    if (radioOptionBlockId === selectedId) return
     if (variant === 'default' || variant === 'embed') {
       const id = uuid()
       const input: RadioQuestionSubmissionEventCreateInput = {
@@ -201,7 +202,7 @@ export function RadioQuestion({
           {...option}
           key={option.id}
           selected={selectedId === option.id}
-          disabled={Boolean(selectedId)}
+          dimmed={selectedId != null && selectedId !== option.id}
           onClick={handleClick}
           gridView={gridView}
         />

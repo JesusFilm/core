@@ -14,6 +14,7 @@ import { ListVariant } from './ListVariant/ListVariant'
 export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   selected?: boolean
   disabled?: boolean
+  dimmed?: boolean
   onClick?: (selectedId: string, selectedLabel: string) => void
   editableLabel?: ReactElement
   gridView?: boolean | null
@@ -25,6 +26,7 @@ export function RadioOption({
   id,
   disabled = false,
   selected = false,
+  dimmed = false,
   onClick,
   editableLabel,
   gridView = false,
@@ -48,6 +50,7 @@ export function RadioOption({
       label={resolvedLabel}
       disabled={disabled}
       selected={selected}
+      dimmed={dimmed}
       handleClick={handleClick}
       editableLabel={editableLabel}
       pollOptionImageBlockId={pollOptionImageBlockId}
@@ -58,6 +61,7 @@ export function RadioOption({
       label={resolvedLabel}
       disabled={disabled}
       selected={selected}
+      dimmed={dimmed}
       handleClick={handleClick}
       editableLabel={editableLabel}
     />

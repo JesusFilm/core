@@ -9,6 +9,21 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(({
 }) => {
   const borderStyles = getPollOptionBorderStyles(theme, { important: true })
 
+  const activeSelectedColors = {
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? 'rgba(255, 255, 255, 0.9)'
+        : 'rgba(0, 0, 0, 0.9)',
+    color:
+      theme.palette.mode === 'dark'
+        ? 'rgba(0, 0, 0, 0.9)'
+        : 'rgba(255, 255, 255, 0.95)',
+    boxShadow:
+      theme.palette.mode === 'dark'
+        ? '0 4px 16px rgba(0, 0, 0, 0.4)'
+        : '0 4px 16px rgba(0, 0, 0, 0.2)'
+  }
+
   return {
     fontFamily: theme.typography.button.fontFamily,
     fontSize: theme.typography.body1.fontSize,
@@ -55,21 +70,30 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(({
           : '0 4px 12px rgba(0, 0, 0, 0.15)'
     },
 
-    // Selected state
+    // Press state
     '&:active': {
       ...borderStyles['&:active'],
+      ...activeSelectedColors
+    },
+
+    // Selected state
+    '&.selected': {
+      ...borderStyles['&:active'],
+      ...activeSelectedColors,
+      opacity: 1
+    },
+
+    // Dimmed state (unselected option when another is selected)
+    '&.dimmed': {
+      ...borderStyles['&.disabled'],
       backgroundColor:
         theme.palette.mode === 'dark'
-          ? 'rgba(255, 255, 255, 0.9)'
-          : 'rgba(0, 0, 0, 0.9)',
+          ? 'rgba(255, 255, 255, 0.4)'
+          : 'rgba(0, 0, 0, 0.4)',
       color:
         theme.palette.mode === 'dark'
-          ? 'rgba(0, 0, 0, 0.9)'
-          : 'rgba(255, 255, 255, 0.95)',
-      boxShadow:
-        theme.palette.mode === 'dark'
-          ? '0 4px 16px rgba(0, 0, 0, 0.4)'
-          : '0 4px 16px rgba(0, 0, 0, 0.2)'
+          ? 'rgba(0, 0, 0, 0.5)'
+          : 'rgba(255, 255, 255, 0.7)'
     },
 
     // Disabled state
@@ -91,6 +115,7 @@ interface ListVariantProps {
   label: string
   selected?: boolean
   disabled?: boolean
+  dimmed?: boolean
   handleClick: (e: React.MouseEvent) => void
   editableLabel?: ReactElement
 }
@@ -99,9 +124,14 @@ export function ListVariant({
   label,
   selected = false,
   disabled = false,
+  dimmed = false,
   handleClick,
   editableLabel
 }: ListVariantProps): ReactElement {
+  const className = [selected ? 'selected' : '', dimmed ? 'dimmed' : '']
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <StyledListRadioOption
       variant="contained"
@@ -109,7 +139,7 @@ export function ListVariant({
       onClick={handleClick}
       fullWidth
       disableRipple
-      className={selected ? 'selected' : ''}
+      className={className}
       sx={
         editableLabel != null
           ? {
