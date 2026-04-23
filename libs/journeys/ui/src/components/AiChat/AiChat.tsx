@@ -3,10 +3,12 @@
 import { useChat } from '@ai-sdk/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
 import { DefaultChatTransport, UIMessage } from 'ai'
 import { useTranslation } from 'next-i18next'
 import {
   FormEvent,
+  KeyboardEvent,
   ReactElement,
   useCallback,
   useEffect,
@@ -139,7 +141,22 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { journey } = useJourney()
   const [input, setInput] = useState('')
+  const [collapsed, setCollapsed] = useState(false)
   const initialMessageSent = useRef(false)
+
+  const handleToggleCollapse = useCallback(() => {
+    setCollapsed((prev) => !prev)
+  }, [])
+
+  const handleHandleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLButtonElement>) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        setCollapsed((prev) => !prev)
+      }
+    },
+    []
+  )
 
   const languageBcp47 = journey?.language?.bcp47 ?? undefined
   const languageRef = useRef(languageBcp47)
@@ -199,6 +216,8 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
     return -1
   }, [messages])
 
+  const hasMessages = messages.length > 0
+
   return (
     <Box
       sx={{
@@ -208,51 +227,97 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
         minHeight: 0
       }}
     >
-      <Conversation>
-        {messages.map((message, index) => {
-          const text = getTextFromMessage(message)
-          const isLast = index === lastAssistantIndex
-          return (
-            <Box key={message.id}>
-              {message.role === 'assistant' ? (
-                <AssistantBubble
-                  text={text}
-                  animate={isLast}
-                  isStreaming={isLast && isLoading}
-                />
-              ) : (
-                <Message role="user">{text}</Message>
-              )}
-            </Box>
-          )
-        })}
-        {isLoading &&
-          (messages.length === 0 ||
-            messages[messages.length - 1]?.role === 'user') && (
-            <Message role="assistant">
-              <TypingIndicator />
-            </Message>
-          )}
-        {error != null && !isLoading && (
-          <Box>
-            <Message role="assistant">
-              <Box component="span" sx={{ opacity: 0.7 }}>
-                {t('Something went wrong. Please try again.')}
+      {hasMessages && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            flexShrink: 0
+          }}
+        >
+          <IconButton
+            onClick={handleToggleCollapse}
+            onKeyDown={handleHandleKeyDown}
+            tabIndex={0}
+            aria-label={collapsed ? t('Expand chat') : t('Collapse chat')}
+            aria-expanded={!collapsed}
+            disableRipple
+            sx={{
+              py: 1.25,
+              px: 3,
+              borderRadius: 9999,
+              '&:hover': { bgcolor: 'transparent' },
+              '&:hover .ChatCollapseHandle': { bgcolor: '#bdbdbd' }
+            }}
+          >
+            <Box
+              className="ChatCollapseHandle"
+              sx={{
+                width: 48,
+                height: 4,
+                borderRadius: 9999,
+                bgcolor: '#e0e0e0',
+                transition: 'background-color 150ms ease-out'
+              }}
+            />
+          </IconButton>
+        </Box>
+      )}
+
+      <Box
+        sx={{
+          display: collapsed ? 'none' : 'flex',
+          flex: 1,
+          flexDirection: 'column',
+          minHeight: 0
+        }}
+      >
+        <Conversation>
+          {messages.map((message, index) => {
+            const text = getTextFromMessage(message)
+            const isLast = index === lastAssistantIndex
+            return (
+              <Box key={message.id}>
+                {message.role === 'assistant' ? (
+                  <AssistantBubble
+                    text={text}
+                    animate={isLast}
+                    isStreaming={isLast && isLoading}
+                  />
+                ) : (
+                  <Message role="user">{text}</Message>
+                )}
               </Box>
-            </Message>
-            <Box sx={{ display: 'flex', px: 2, py: 0.25 }}>
-              <Button
-                size="small"
-                onClick={handleRetry}
-                aria-label={t('Retry')}
-                sx={{ fontSize: 12, color: 'text.secondary', minWidth: 0 }}
-              >
-                {t('Retry')}
-              </Button>
+            )
+          })}
+          {isLoading &&
+            (messages.length === 0 ||
+              messages[messages.length - 1]?.role === 'user') && (
+              <Message role="assistant">
+                <TypingIndicator />
+              </Message>
+            )}
+          {error != null && !isLoading && (
+            <Box>
+              <Message role="assistant">
+                <Box component="span" sx={{ opacity: 0.7 }}>
+                  {t('Something went wrong. Please try again.')}
+                </Box>
+              </Message>
+              <Box sx={{ display: 'flex', px: 2, py: 0.25 }}>
+                <Button
+                  size="small"
+                  onClick={handleRetry}
+                  aria-label={t('Retry')}
+                  sx={{ fontSize: 12, color: 'text.secondary', minWidth: 0 }}
+                >
+                  {t('Retry')}
+                </Button>
+              </Box>
             </Box>
-          </Box>
-        )}
-      </Conversation>
+          )}
+        </Conversation>
+      </Box>
 
       <PromptInput
         input={input}
