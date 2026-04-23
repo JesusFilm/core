@@ -185,6 +185,7 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
   const isLoading = status === 'submitted' || status === 'streaming'
 
   const handleRetry = useCallback(() => {
+    setCollapsed(false)
     void regenerate()
   }, [regenerate])
 
@@ -195,6 +196,7 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
       !initialMessageSent.current
     ) {
       initialMessageSent.current = true
+      setCollapsed(false)
       void sendMessage({ text: initialMessage })
     }
   }, [initialMessage, sendMessage])
@@ -203,6 +205,7 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
     (e: FormEvent) => {
       e.preventDefault()
       if (input.trim().length === 0 || isLoading) return
+      setCollapsed(false)
       void sendMessage({ text: input })
       setInput('')
     },
