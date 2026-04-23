@@ -50,6 +50,40 @@ describe('findOrFetchUser', () => {
     })
   })
 
+  it('should update profile fields when emailVerified transitions to true', async () => {
+    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
+    auth.getUser.mockReturnValueOnce({
+      emailVerified: true,
+      displayName: 'John Doe',
+      email: 'john@example.com',
+      photoURL: 'https://photo.example.com/john.jpg'
+    })
+
+    prismaMock.user.findUnique.mockResolvedValueOnce(user)
+    const updatedUser = {
+      ...user,
+      emailVerified: true,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john@example.com',
+      imageUrl: 'https://photo.example.com/john.jpg'
+    }
+    prismaMock.user.update.mockResolvedValueOnce(updatedUser)
+
+    const data = await findOrFetchUser({}, 'userId', undefined)
+    expect(data).toEqual(updatedUser)
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
+      where: { userId: 'userId' },
+      data: {
+        emailVerified: true,
+        email: 'john@example.com',
+        firstName: 'John',
+        lastName: 'Doe',
+        imageUrl: 'https://photo.example.com/john.jpg'
+      }
+    })
+  })
+
   it('should update emailverified on existing user', async () => {
     prismaMock.user.findUnique.mockResolvedValueOnce({
       ...user,
