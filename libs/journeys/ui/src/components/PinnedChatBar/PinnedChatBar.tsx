@@ -1,9 +1,9 @@
 'use client'
 
 import Box from '@mui/material/Box'
-import { SxProps, useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import { SxProps } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { FormEvent, ReactElement, useCallback, useState } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
@@ -23,9 +23,8 @@ interface PinnedChatBarProps {
 }
 
 export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
+  const { t } = useTranslation('libs-journeys-ui')
   const { variant } = useJourney()
-  const theme = useTheme()
-  const isDesktop = useMediaQuery(theme.breakpoints.up('sm'))
   const [input, setInput] = useState('')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [pendingMessage, setPendingMessage] = useState<string | undefined>(
@@ -85,7 +84,7 @@ export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
 
       {/* Full AiChat drawer — opens on submit with message pre-loaded */}
       <Drawer open={drawerOpen} onOpenChange={handleDrawerOpenChange}>
-        <DrawerContent title={'Chat'}>
+        <DrawerContent title={t('Chat')}>
           <AiChat initialMessage={pendingMessage} />
         </DrawerContent>
       </Drawer>

@@ -3,6 +3,7 @@ import StopRoundedIcon from '@mui/icons-material/StopRounded'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import TextField from '@mui/material/TextField'
+import { useTranslation } from 'next-i18next'
 import {
   FormEvent,
   KeyboardEvent,
@@ -26,6 +27,7 @@ export function PromptInput({
   isLoading,
   onStop
 }: PromptInputProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const handleKeyDown = useCallback(
@@ -69,14 +71,14 @@ export function PromptInput({
         inputRef={textareaRef}
         value={input}
         onChange={(e) => onInputChange(e.target.value)}
-        placeholder="Ask me anything"
+        placeholder={t('Ask me anything')}
         disabled={isLoading}
         multiline
         maxRows={6}
         size="small"
         fullWidth
         inputProps={{
-          'aria-label': 'Chat message input',
+          'aria-label': t('Chat message input'),
           onKeyDown: handleKeyDown
         }}
         sx={{
@@ -108,7 +110,7 @@ export function PromptInput({
         <IconButton
           type="button"
           onClick={onStop}
-          aria-label="Stop generating"
+          aria-label={t('Stop generating')}
           sx={{
             width: 36,
             height: 36,
@@ -125,7 +127,7 @@ export function PromptInput({
         <IconButton
           type="submit"
           disabled={!canSubmit}
-          aria-label="Send message"
+          aria-label={t('Send message')}
           sx={{
             width: 36,
             height: 36,

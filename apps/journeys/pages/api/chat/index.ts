@@ -74,9 +74,10 @@ function resolveChatModel():
     baseURL,
     apiKey
   })
-  // Model id matches the proven upstream smoke test
-  // (scripts/apologist-test.sh).
-  const modelId = 'openai/gpt/4o-mini'
+  // Gateway-specific id format with `/` separators (see
+  // scripts/apologist-stream-test.sh). Overridable via env for rotation
+  // without redeploy.
+  const modelId = process.env.APOLOGIST_MODEL_ID ?? 'openai/gpt/4o-mini'
   return {
     ok: true,
     resolved: {

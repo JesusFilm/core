@@ -4,7 +4,6 @@ import { ReactElement, ReactNode } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
-import { useIsLastCard } from '../../../libs/isLastCard'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getFooterMobileSpacing } from '../utils/getFooterElements'
 import { showHeader } from '../utils/getHeaderElements'
@@ -75,16 +74,18 @@ export function OverlayContent({
   const footerMobileSpacing = getFooterMobileSpacing({ journey, variant })
 
   const flags = useFlags()
-  const isLastCard = useIsLastCard()
   const pinnedChatActive =
     flags.apologistChat === true &&
-    isLastCard &&
     journey?.showAssistant === true &&
     variant !== 'admin' &&
     variant !== 'embed'
 
   const footerSpacing: SxProps = {
-    mb: { xs: pinnedChatActive ? '120px' : footerMobileSpacing, sm: 10 }
+    mb: {
+      xs: pinnedChatActive ? '120px' : footerMobileSpacing,
+      sm: pinnedChatActive ? '120px' : 10,
+      lg: 10
+    }
   }
 
   const hasHeader = showHeader(journey, variant)

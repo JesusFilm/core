@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import MuiDrawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
 interface DrawerContextValue {
@@ -39,6 +40,7 @@ export function DrawerContent({
   children,
   title
 }: DrawerContentProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   const ctx = useContext(DrawerContext)
   if (ctx == null) {
     throw new Error('DrawerContent must be rendered inside <Drawer>')
@@ -83,7 +85,7 @@ export function DrawerContent({
         />
         <IconButton
           onClick={() => onOpenChange(false)}
-          aria-label="Close chat"
+          aria-label={t('Close chat')}
           size="small"
           sx={{ position: 'absolute', top: 4, right: 8, color: '#666' }}
         >
