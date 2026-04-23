@@ -93,7 +93,7 @@ test.describe('GET /v2/media-languages', () => {
     )
     expect(languageIds).toContain(529)
     expect(languageIds).toContain(496)
-    expect(languageIds.length).toBe(2)
+    expect(languageIds).toHaveLength(2)
   })
 
   test('filters by BCP47 codes', async ({ request }) => {

@@ -2,6 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
+
 import { MessagePlatform } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../../__generated__/JourneyFields'
 
@@ -84,7 +86,9 @@ describe('ChatOption', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <ChatOption {...props} />
+          <CommandProvider>
+            <ChatOption {...props} />
+          </CommandProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -92,5 +96,88 @@ describe('ChatOption', () => {
     fireEvent.click(screen.getByText('TikTok'))
     fireEvent.click(screen.getByText('Snapchat'))
     expect(screen.getByRole('combobox')).toHaveTextContent('Snapchat')
+  })
+
+  it('should sync state when chatButton changes to a different button', () => {
+    const initialProps = {
+      title: 'Custom',
+      chatButton: {
+        id: 'button-1',
+        link: 'https://first.com',
+        platform: MessagePlatform.tikTok
+      } as unknown as ChatButton,
+      active: true,
+      journeyId: 'journeyId',
+      disableSelection: false,
+      enableIconSelect: true
+    }
+
+    const { rerender } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ChatOption {...initialProps} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('textbox')).toHaveValue('https://first.com')
+    expect(screen.getByRole('combobox')).toHaveTextContent('TikTok')
+
+    rerender(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ChatOption
+            {...initialProps}
+            chatButton={
+              {
+                id: 'button-2',
+                link: 'https://second.com',
+                platform: MessagePlatform.snapchat
+              } as unknown as ChatButton
+            }
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('textbox')).toHaveValue('https://second.com')
+    expect(screen.getByRole('combobox')).toHaveTextContent('Snapchat')
+  })
+
+  it('should preserve state when chatButton becomes undefined', () => {
+    const initialProps = {
+      title: 'Custom',
+      chatButton: {
+        id: 'button-1',
+        link: 'https://preserved.com',
+        platform: MessagePlatform.tikTok
+      } as unknown as ChatButton,
+      active: true,
+      journeyId: 'journeyId',
+      disableSelection: false,
+      enableIconSelect: true
+    }
+
+    const { rerender } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ChatOption {...initialProps} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('textbox')).toHaveValue('https://preserved.com')
+    expect(screen.getByRole('combobox')).toHaveTextContent('TikTok')
+
+    rerender(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ChatOption {...initialProps} chatButton={undefined} active={false} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('textbox')).toHaveValue('https://preserved.com')
+    expect(screen.getByRole('combobox')).toHaveTextContent('TikTok')
   })
 })

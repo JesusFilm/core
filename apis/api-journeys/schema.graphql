@@ -211,203 +211,14 @@ type Journey
   userJourneys: [UserJourney!]
 }
 
-input BlocksFilter {
-  journeyIds: [ID!]
-  typenames: [String!]
-}
-
 input BlockDuplicateIdMap {
   oldId: ID!
   newId: ID!
 }
 
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
-  blocks(where: BlocksFilter): [Block!]!
-  block(id: ID!): Block!
-  customDomain(id: ID!): CustomDomain!
-  customDomains(teamId: ID!): [CustomDomain!]!
-  hosts(teamId: ID!): [Host!]!
-  integrations(teamId: ID!): [Integration!]!
-  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  adminJourney(id: ID!, idType: IdType): Journey!
-  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
-  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
-  journeyCollection(id: ID!): JourneyCollection!
-  journeyCollections(teamId: ID!): [JourneyCollection]!
-  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
-  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
-  journeyTheme(journeyId: ID!): JourneyTheme
-
-  """Get a list of Visitor Information by Journey"""
-  journeyVisitorsConnection(
-    """Returns the elements in the list that match the specified filter."""
-    filter: JourneyVisitorFilter!
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-
-    """Specifies the sort field for the list."""
-    sort: JourneyVisitorSort
-  ): JourneyVisitorsConnection!
-
-  """Get a JourneyVisitor count by JourneyVisitorFilter"""
-  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
-  journeysEmailPreference(email: String!): JourneysEmailPreference
-  qrCode(id: ID!): QrCode!
-  qrCodes(where: QrCodesFilter!): [QrCode!]!
-  teams: [Team!]!
-  team(id: ID!): Team!
-  userInvites(journeyId: ID!): [UserInvite!]
-  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
-  userTeam(id: ID!): UserTeam!
-  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
-
-  """A list of visitors that are connected with a specific team."""
-  visitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-  ): VisitorsConnection!
-
-  """Get a single visitor"""
-  visitor(id: ID!): Visitor!
-}
-
 type Mutation {
-  """blockDelete returns the updated sibling blocks on successful delete"""
-  blockDelete(
-    id: ID!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-
-    """drop this parameter after merging teams"""
-    parentBlockId: ID
-  ): [Block!]!
-
-  """
-  blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
-  """
-  blockDuplicate(
-    id: ID!
-
-    """
-    parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
-    """
-    parentOrder: Int
-
-    """
-    idMap is used to set custom ids for the duplicated block and it's descendants.
-    """
-    idMap: [BlockDuplicateIdMap!]
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-
-    """
-    x is used to position a step block block horizontally in the journey flow diagram on
-    the editor.
-    """
-    x: Int
-
-    """
-    y is used to position a step block block vertically in the journey flow diagram on
-    the editor.
-    """
-    y: Int
-  ): [Block!]!
-  blockOrderUpdate(
-    id: ID!
-    parentOrder: Int!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): [Block!]!
-
   """blockRestore is used for redo/undo"""
   blockRestore(id: ID!): [Block!]!
-  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
-  cardBlockUpdate(
-    id: ID!
-    input: CardBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): CardBlock!
-  iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
-  iconBlockUpdate(
-    id: ID!
-    input: IconBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): IconBlock!
-  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
-  imageBlockUpdate(
-    id: ID!
-    input: ImageBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): ImageBlock!
-  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
-  radioOptionBlockUpdate(
-    id: ID!
-    input: RadioOptionBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): RadioOptionBlock!
-  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
-  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean): RadioQuestionBlock!
-  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
-  signUpBlockUpdate(
-    id: ID!
-    input: SignUpBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): SignUpBlock
-  spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
-  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock!
-  stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
-  stepBlockUpdate(
-    id: ID!
-    input: StepBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): StepBlock!
-  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]!
-  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
-  textResponseBlockUpdate(
-    id: ID!
-    input: TextResponseBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): TextResponseBlock
-  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
-  typographyBlockUpdate(
-    id: ID!
-    input: TypographyBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): TypographyBlock!
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
@@ -609,29 +420,6 @@ type CardBlock implements Block
   themeName: ThemeName @shareable
 }
 
-input CardBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  eventLabel: BlockEventLabel
-  backgroundColor: String
-  backdropBlur: Int
-  fullscreen: Boolean
-  themeMode: ThemeMode
-  themeName: ThemeName
-}
-
-input CardBlockUpdateInput {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  coverBlockId: ID
-  backgroundColor: String
-  backdropBlur: Int
-  fullscreen: Boolean
-  themeMode: ThemeMode
-  themeName: ThemeName
-}
-
 enum GridDirection {
   columnReverse
   column
@@ -739,24 +527,6 @@ type IconBlock implements Block
   size: IconSize @shareable
 }
 
-input IconBlockCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  parentBlockId: ID!
-  journeyId: ID!
-  name: IconName
-  color: IconColor
-  size: IconSize
-}
-
-input IconBlockUpdateInput {
-  name: IconName
-  color: IconColor
-  size: IconSize
-}
-
 type ImageBlock implements Block
   @shareable
 {
@@ -778,50 +548,6 @@ type ImageBlock implements Block
   focalTop: Int @shareable
   focalLeft: Int @shareable
   customizable: Boolean @shareable
-}
-
-input ImageBlockCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  parentBlockId: ID
-  journeyId: ID!
-  src: String
-  alt: String!
-
-  """
-  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
-  """
-  blurhash: String
-  width: Int
-  height: Int
-
-  """
-  True if the coverBlockId in a parent block should be set to this block's id.
-  """
-  isCover: Boolean
-  scale: Int
-  focalTop: Int
-  focalLeft: Int
-  customizable: Boolean
-}
-
-input ImageBlockUpdateInput {
-  parentBlockId: ID
-  src: String
-  alt: String
-
-  """
-  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
-  """
-  blurhash: String
-  width: Int
-  height: Int
-  scale: Int
-  focalTop: Int
-  focalLeft: Int
-  customizable: Boolean
 }
 
 type MultiselectBlock implements Block
@@ -858,21 +584,6 @@ type RadioOptionBlock implements Block
   pollOptionImageBlockId: ID @shareable
 }
 
-input RadioOptionBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  eventLabel: BlockEventLabel
-  label: String!
-}
-
-input RadioOptionBlockUpdateInput {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  label: String
-  pollOptionImageBlockId: ID
-}
-
 type RadioQuestionBlock implements Block
   @shareable
 {
@@ -881,12 +592,6 @@ type RadioQuestionBlock implements Block
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   gridView: Boolean @shareable
-}
-
-input RadioQuestionBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
 }
 
 type SignUpBlock implements Block
@@ -901,19 +606,6 @@ type SignUpBlock implements Block
   submitLabel: String @shareable
 }
 
-input SignUpBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  submitLabel: String!
-}
-
-input SignUpBlockUpdateInput {
-  parentBlockId: ID
-  submitIconId: ID
-  submitLabel: String
-}
-
 type SpacerBlock implements Block
   @shareable
 {
@@ -922,18 +614,6 @@ type SpacerBlock implements Block
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   spacing: Int @shareable
-}
-
-input SpacerBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  spacing: Int
-}
-
-input SpacerBlockUpdateInput {
-  parentBlockId: ID
-  spacing: Int
 }
 
 type StepBlock implements Block
@@ -978,57 +658,6 @@ type StepBlock implements Block
   slug: String @shareable
 }
 
-input StepBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  nextBlockId: ID
-  locked: Boolean
-
-  """
-  x is used to position the block horizontally in the journey flow diagram on
-  the editor.
-  """
-  x: Int
-
-  """
-  y is used to position the block vertically in the journey flow diagram on
-  the editor.
-  """
-  y: Int
-}
-
-input StepBlockUpdateInput {
-  nextBlockId: ID
-  locked: Boolean
-
-  """
-  x is used to position the block horizontally in the journey flow diagram on
-  the editor.
-  """
-  x: Int
-
-  """
-  y is used to position the block vertically in the journey flow diagram on
-  the editor.
-  """
-  y: Int
-
-  """
-  Slug should be unique amongst all blocks
-  (server will throw BAD_USER_INPUT error if not)
-  If not required will use the current block id
-  If the generated slug is not unique the uuid will be placed
-  at the end of the slug guaranteeing uniqueness
-  """
-  slug: String
-}
-
-input StepBlockPositionUpdateInput {
-  id: ID!
-  x: Int
-  y: Int
-}
-
 type TextResponseBlock implements Block
   @shareable
 {
@@ -1052,26 +681,6 @@ enum TextResponseType {
   name
   email
   phone
-}
-
-input TextResponseBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  label: String!
-}
-
-input TextResponseBlockUpdateInput {
-  parentBlockId: ID
-  label: String
-  placeholder: String
-  required: Boolean
-  hint: String
-  hideLabel: Boolean
-  minRows: Int
-  routeId: String
-  type: TextResponseType
-  integrationId: String
 }
 
 enum TypographyVariant {
@@ -1123,26 +732,6 @@ type TypographyBlock implements Block
   color: TypographyColor @shareable
   align: TypographyAlign @shareable
   settings: TypographyBlockSettings! @shareable
-}
-
-input TypographyBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  content: String!
-  variant: TypographyVariant
-  color: TypographyColor
-  align: TypographyAlign
-  settings: TypographyBlockSettingsInput
-}
-
-input TypographyBlockUpdateInput {
-  parentBlockId: ID
-  content: String
-  variant: TypographyVariant
-  color: TypographyColor
-  align: TypographyAlign
-  settings: TypographyBlockSettingsInput
 }
 
 extend type Video
@@ -1277,6 +866,9 @@ type VideoBlock implements Block
   subtitleLanguage: Language @shareable
   showGeneratedSubtitles: Boolean @shareable
   customizable: Boolean @shareable
+
+  """Publisher notes for template adapters (e.g. trailer, intro)."""
+  notes: String
 }
 
 """
@@ -1379,6 +971,74 @@ type CustomDomainVerificationResponse
 {
   code: String!
   message: String!
+}
+
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
+  customDomain(id: ID!): CustomDomain!
+  customDomains(teamId: ID!): [CustomDomain!]!
+  hosts(teamId: ID!): [Host!]!
+  integrations(teamId: ID!): [Integration!]!
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
+  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
+  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
+
+  """
+  Returns distinct language IDs from published global templates.
+  Used to dynamically populate the language filter on the templates page.
+  """
+  journeyTemplateLanguageIds: [String!]!
+  journeyCollection(id: ID!): JourneyCollection!
+  journeyCollections(teamId: ID!): [JourneyCollection]!
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
+  journeyTheme(journeyId: ID!): JourneyTheme
+
+  """Get a list of Visitor Information by Journey"""
+  journeyVisitorsConnection(
+    """Returns the elements in the list that match the specified filter."""
+    filter: JourneyVisitorFilter!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Specifies the sort field for the list."""
+    sort: JourneyVisitorSort
+  ): JourneyVisitorsConnection!
+
+  """Get a JourneyVisitor count by JourneyVisitorFilter"""
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
+  journeysEmailPreference(email: String!): JourneysEmailPreference
+  qrCode(id: ID!): QrCode!
+  qrCodes(where: QrCodesFilter!): [QrCode!]!
+  teams: [Team!]!
+  team(id: ID!): Team!
+  userInvites(journeyId: ID!): [UserInvite!]
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
+  userTeam(id: ID!): UserTeam!
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
+
+  """A list of visitors that are connected with a specific team."""
+  visitorsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+  ): VisitorsConnection!
+
+  """Get a single visitor"""
+  visitor(id: ID!): Visitor!
 }
 
 enum ButtonAction {
@@ -2067,6 +1727,7 @@ type IntegrationGoogle implements Integration
   team: Team!
   type: IntegrationType!
   user: User
+  userId: ID
   accountEmail: String
 }
 

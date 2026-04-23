@@ -333,6 +333,8 @@ model UserTeamInvite {
   @@index([email, acceptedAt, removedAt])
   @@index(email)
   @@index(teamId)
+  @@index(senderId)
+  @@index(receipientId)
 }
 
 enum UserTeamRole {
@@ -508,6 +510,7 @@ model UserInvite {
 
   @@unique([journeyId, email])
   @@index([email, acceptedAt, removedAt])
+  @@index(senderId)
 }
 
 enum VideoBlockObjectFit {
@@ -657,6 +660,7 @@ model Action {
   chatUrl       String?
 
   @@index(parentBlockId)
+  @@index(journeyId)
 }
 
 model JourneysEmailPreference {
@@ -741,6 +745,7 @@ model JourneyEventsExportLog {
 
   @@index(journeyId)
   @@index(createdAt)
+  @@index(userId)
 }
 
 model JourneyTheme {

@@ -1,11 +1,13 @@
 import { useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
+import { FirebaseError } from 'firebase/app'
 import type { AuthProvider, User } from 'firebase/auth'
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
   OAuthProvider,
   linkWithPopup,
+  signInWithCredential,
   signInWithPopup
 } from 'firebase/auth'
 import { useRouter } from 'next/router'
@@ -16,7 +18,8 @@ import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 import { OktaIcon } from '@core/shared/ui/icons/OktaIcon'
 
-import { getFirebaseAuth, loginWithCredential } from '../../../libs/auth'
+import { getFirebaseAuth, login, loginWithCredential } from '../../../libs/auth'
+import { getPendingGuestJourney } from '../../../libs/pendingGuestJourney'
 import { JOURNEY_PUBLISH } from '../RegisterPage/RegisterPage'
 import { getJourneyIdFromRedirect } from '../utils'
 
@@ -47,6 +50,17 @@ export function SignInServiceButton({
       await journeyPublish({ variables: { id: journeyId } })
     }
 
+    const pending = getPendingGuestJourney()
+    if (pending != null) {
+      const idToken = await user.getIdToken()
+      await login(idToken)
+      const existingRedirect = router.query.redirect as string | undefined
+      const redirectUrl =
+        existingRedirect ?? `/templates/${pending.journeyId}/customize`
+      window.location.href = `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`
+      return
+    }
+
     await loginWithCredential(userCredential)
   }
 
@@ -68,16 +82,41 @@ export function SignInServiceButton({
         const credential = await signInWithPopup(auth, authProvider)
         await loginWithCredential(credential)
       }
-    } catch (err) {
+    } catch (err: unknown) {
+      const firebaseErr = err as { code?: string }
+      if (firebaseErr.code === 'auth/credential-already-in-use') {
+        const oauthCredential = OAuthProvider.credentialFromError(
+          err as FirebaseError
+        )
+        if (oauthCredential != null) {
+          const userCredential = await signInWithCredential(
+            auth,
+            oauthCredential
+          )
+          const idToken = await userCredential.user.getIdToken()
+          await login(idToken)
+
+          const pending = getPendingGuestJourney()
+          if (pending != null) {
+            const existingRedirect = router.query.redirect as string | undefined
+            const redirectUrl =
+              existingRedirect ?? `/templates/${pending.journeyId}/customize`
+            window.location.href = `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`
+            return
+          }
+
+          window.location.reload()
+          return
+        }
+      }
       console.error(err)
     }
   }
 
   return (
     <Button
-      variant="outlined"
-      size="large"
-      color="secondary"
+      variant="blockOutlined"
+      color="solid"
       startIcon={
         service === 'google.com' ? (
           <GoogleIcon />

@@ -14,7 +14,7 @@ export interface TextResponseRequiredUpdate_textResponseBlockUpdate {
 }
 
 export interface TextResponseRequiredUpdate {
-  textResponseBlockUpdate: TextResponseRequiredUpdate_textResponseBlockUpdate | null;
+  textResponseBlockUpdate: TextResponseRequiredUpdate_textResponseBlockUpdate;
 }
 
 export interface TextResponseRequiredUpdateVariables {
