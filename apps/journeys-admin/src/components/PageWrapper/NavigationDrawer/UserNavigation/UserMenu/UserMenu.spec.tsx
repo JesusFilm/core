@@ -195,12 +195,8 @@ describe('UserMenu', () => {
 
     expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
+    await waitFor(() => expect(clearStore).toHaveBeenCalled())
     await waitFor(() => expect(mockLogout).toHaveBeenCalled())
-    await waitFor(() =>
-      expect(getByText('Logout successful')).toBeInTheDocument()
-    )
-    expect(getTeams.result).toHaveBeenCalled()
-    expect(clearStore).toHaveBeenCalled()
   })
 
   it('should open language selector', async () => {

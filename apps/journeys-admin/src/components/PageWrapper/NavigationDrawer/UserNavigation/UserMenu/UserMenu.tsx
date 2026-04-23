@@ -9,7 +9,6 @@ import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -37,7 +36,6 @@ export function UserMenu({
   handleProfileClose,
   user
 }: UserMenuProps): ReactElement {
-  const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const client = useApolloClient()
   const { setActiveTeam } = useTeam()
@@ -103,13 +101,9 @@ export function UserMenu({
           icon={<Logout2Icon fontSize="small" />}
           onClick={async () => {
             handleProfileClose()
+            setActiveTeam(null)
             await client.clearStore()
             await logout()
-            await enqueueSnackbar(t('Logout successful'), {
-              variant: 'success',
-              preventDuplicate: true
-            })
-            setActiveTeam(null)
           }}
           testId="LogOut"
         />

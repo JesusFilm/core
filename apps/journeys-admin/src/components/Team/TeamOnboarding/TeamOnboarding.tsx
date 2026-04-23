@@ -48,17 +48,15 @@ export function TeamOnboarding({ user }: TeamOnboardingProps): ReactElement {
             lastActiveTeamId: data.teamCreate.id
           }
         }
-      }),
-      await router.push(
-        router.query.redirect != null
-          ? new URL(
-              `${window.location.origin}${router.query.redirect as string}`
-            )
-          : '/?onboarding=true'
-      ),
-      query.refetch()
+      })
     ])
     setActiveTeam(data.teamCreate)
+    void query.refetch().catch(() => {})
+    await router.push(
+      router.query.redirect != null
+        ? new URL(router.query.redirect as string, window.location.origin)
+        : '/?onboarding=true'
+    )
   }
 
   return (
