@@ -1,5 +1,5 @@
 ---
-title: "Fix SignInTabs bounce-back caused by router-driven useEffect overwriting tab state"
+title: 'Fix SignInTabs bounce-back caused by router-driven useEffect overwriting tab state'
 date: 2026-04-23
 ticket: NES-1599
 category: ui-bugs
@@ -13,14 +13,14 @@ tags:
   - state-management
 symptoms:
   - "User selects 'Log In' tab on /users/sign-in and it snaps back to 'New account'"
-  - "Tab selection appears broken or uncontrollable"
-  - "MUI Tabs controlled component reverts to index 0 unexpectedly"
+  - 'Tab selection appears broken or uncontrollable'
+  - 'MUI Tabs controlled component reverts to index 0 unexpectedly'
 components:
-  - "apps/journeys-admin/src/components/SignInTabs/SignInTabs.tsx"
-  - "apps/journeys-admin/src/components/AccountCheckDialog/AccountCheckDialog.tsx"
-  - "apps/journeys-admin/src/components/CreateJourneyButton/CreateJourneyButton.tsx"
-  - "apps/journeys-admin/src/components/UseThisTemplateButton/UseThisTemplateButton.tsx"
-problem_type: "ui_bug"
+  - 'apps/journeys-admin/src/components/SignInTabs/SignInTabs.tsx'
+  - 'apps/journeys-admin/src/components/AccountCheckDialog/AccountCheckDialog.tsx'
+  - 'apps/journeys-admin/src/components/CreateJourneyButton/CreateJourneyButton.tsx'
+  - 'apps/journeys-admin/src/components/UseThisTemplateButton/UseThisTemplateButton.tsx'
+problem_type: 'ui_bug'
 ---
 
 # MUI Tabs Snapping Back to First Tab Due to Router-Driven useEffect
@@ -57,6 +57,7 @@ The Next.js Pages Router object is **not referentially stable** — it is replac
 Drop `useRouter`, `useEffect`, and the separate `handleTabChange` function. Tab state becomes pure local `useState(0)` with an inline `onChange` handler.
 
 **Before:**
+
 ```tsx
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
@@ -78,6 +79,7 @@ export function SignInTabs(): ReactElement {
 ```
 
 **After:**
+
 ```tsx
 import { ReactElement, useState } from 'react'
 
@@ -98,6 +100,7 @@ export function SignInTabs(): ReactElement {
 Change `handleSignIn` from `(login: boolean) => void` to `() => void`. Both buttons now invoke it with no arguments.
 
 **Before:**
+
 ```tsx
 interface AccountCheckDialogProps {
   handleSignIn: (login: boolean) => void
@@ -109,6 +112,7 @@ onClick={() => handleSignIn(false)}  // "Create a new account"
 ```
 
 **After:**
+
 ```tsx
 interface AccountCheckDialogProps {
   handleSignIn: () => void
@@ -124,6 +128,7 @@ onClick={() => handleSignIn()}
 In both `CreateJourneyButton.tsx` and `UseThisTemplateButton.tsx`, remove the `login` field from the `router.push` query object and the boolean parameter from `handleSignIn`.
 
 **Before:**
+
 ```tsx
 const handleSignIn = (login: boolean): void => {
   router.push({
@@ -137,6 +142,7 @@ const handleSignIn = (login: boolean): void => {
 ```
 
 **After:**
+
 ```tsx
 const handleSignIn = (): void => {
   router.push({
@@ -158,6 +164,7 @@ const handleSignIn = (): void => {
 The "Login with my account" button in `AccountCheckDialog` no longer pre-selects the "Log In" tab when landing on `/users/sign-in`. Previously, `login=true` in the URL initialized the tab to index 1. After this fix, the tab always starts at index 0 ("New account").
 
 This is acceptable because:
+
 - The tabs are cosmetic — they do not change the sign-in flow or identity verification path.
 - The broken bounce-back behavior was worse UX than losing the pre-selection hint.
 - Redirect behavior on sign-in completion is unchanged.
@@ -181,13 +188,16 @@ This is acceptable because:
 ## Test Cases
 
 **Stability of user selection**
+
 - Render `<SignInTabs>`, click tab 1, then simulate a router reference change (fire `routeChangeComplete` or update the `useRouter` mock to return a new object with identical query). Assert `aria-selected` is still on tab 1.
 - Render with `router.query = { login: 'true' }`, switch to tab 0 manually, then update mock router to a new object with the same query. Assert tab remains 0 (user's choice preserved).
 
 **Caller contract**
+
 - Unit-test `CreateJourneyButton`, `UseThisTemplateButton`, and `AccountCheckDialog` — assert `router.push` is not called with a `login` query param.
 
 **Isolation from navigation events**
+
 - Simulate a shallow route update (same page, different unrelated query param) — assert tab selection is unchanged.
 
 ## Best Practices: Next.js Pages Router + MUI Controlled Components
@@ -201,4 +211,4 @@ This is acceptable because:
 ## Related
 
 - [`docs/solutions/runtime-errors/reactflow-multiple-usenodesstate-infinite-rerender.md`](../runtime-errors/reactflow-multiple-usenodesstate-infinite-rerender.md) — same anti-pattern class: unstable effect dependency causes unexpected state resets. That fix uses a `useRef` to stabilize the dependency.
-- [`docs/plans/2026-03-25-002-fix-invitation-link-team-redirect-plan.md`](../../plans/2026-03-25-002-fix-invitation-link-team-redirect-plan.md) — documents the safe alternative when router query reading *is* required: capture once at mount via `useRef` + `window.location.search`, never via reactive `useEffect([router])`.
+- [`docs/plans/2026-03-25-002-fix-invitation-link-team-redirect-plan.md`](../../plans/2026-03-25-002-fix-invitation-link-team-redirect-plan.md) — documents the safe alternative when router query reading _is_ required: capture once at mount via `useRef` + `window.location.search`, never via reactive `useEffect([router])`.
