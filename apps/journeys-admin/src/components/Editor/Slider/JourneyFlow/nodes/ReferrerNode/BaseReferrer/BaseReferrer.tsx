@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
+import QrCode2 from '@core/shared/ui/icons/QrCode2'
 
 import { ReferrerValue } from '../ReferrerValue'
 
@@ -29,6 +30,9 @@ export function BaseReferrer({
       break
     case 'Direct / None':
       Icon = <LinkAngled sx={iconStyles} />
+      break
+    case 'QR Code':
+      Icon = <QrCode2 sx={iconStyles} />
       break
     case 'other sources':
       Icon = <ChevronDown sx={iconStyles} />
