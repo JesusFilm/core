@@ -41,9 +41,6 @@ export interface StepBlockDeleteFromAction_blockUpdateAction {
 }
 
 export interface StepBlockDeleteFromAction {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   blockDelete: StepBlockDeleteFromAction_blockDelete[];
   blockUpdateAction: StepBlockDeleteFromAction_blockUpdateAction;
 }

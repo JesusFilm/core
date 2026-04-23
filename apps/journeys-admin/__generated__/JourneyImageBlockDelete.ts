@@ -14,9 +14,6 @@ export interface JourneyImageBlockDelete_blockDelete {
 }
 
 export interface JourneyImageBlockDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   blockDelete: JourneyImageBlockDelete_blockDelete[];
 }
 
