@@ -1,5 +1,5 @@
 ---
-title: "feat: Auto-approve and auto-merge weekly Crowdin translation PR"
+title: 'feat: Auto-approve and auto-merge weekly Crowdin translation PR'
 type: feat
 status: active
 date: 2026-04-13
@@ -83,9 +83,11 @@ No prior documented solutions for CI/CD automation or Crowdin workflow improveme
 **Dependencies:** None — this is the only implementation unit.
 
 **Files:**
+
 - Create: `.github/workflows/crowdin-auto-merge.yml`
 
 **Approach:**
+
 - Trigger on `schedule` (weekly Monday 9am UTC: `cron: '0 9 * * 1'`) and `workflow_dispatch`
 - Set `permissions: contents: write, pull-requests: write`
 - Use `actions/create-github-app-token@v1` with `CI_BOT_APP_ID` / `CI_BOT_PRIVATE_KEY` (mirror `ai-build-spike.yml` pattern)
@@ -101,10 +103,12 @@ No prior documented solutions for CI/CD automation or Crowdin workflow improveme
 - Set `GH_TOKEN` to the CI Bot App token for all `gh` commands
 
 **Patterns to follow:**
+
 - `.github/workflows/housekeeping-cron.yml` — cron + `workflow_dispatch` structure, permissions block
 - `.github/workflows/ai-build-spike.yml` (lines 41-46) — GitHub App token generation pattern
 
 **Test scenarios:**
+
 - Happy path: Open Crowdin PR exists with only locale file changes -> PR is assigned, approved, auto-merge enabled
 - Happy path (manual trigger): `workflow_dispatch` trigger finds and processes the Crowdin PR
 - Edge case: No open Crowdin PR exists -> workflow exits gracefully with informational log, no error
@@ -113,6 +117,7 @@ No prior documented solutions for CI/CD automation or Crowdin workflow improveme
 - Error path: CI Bot token generation fails -> workflow fails with clear error
 
 **Verification:**
+
 - Workflow file passes YAML lint
 - Manual `workflow_dispatch` trigger successfully finds and processes the open Crowdin PR
 - When no Crowdin PR is open, the workflow exits cleanly without error status
@@ -123,16 +128,16 @@ No prior documented solutions for CI/CD automation or Crowdin workflow improveme
 - **Error propagation:** If the file validation fails, the workflow errors without approving — the PR stays open for manual review. If the merge queue checks fail, GitHub's auto-merge aborts and the PR stays open.
 - **State lifecycle risks:** If the cron fires multiple times before the PR merges (e.g., merge queue is slow), the concurrency group prevents parallel runs. The `--auto` flag is idempotent.
 - **API surface parity:** No API changes. This is purely CI/CD automation.
-- **Unchanged invariants:** All existing branch protection, required status checks, and merge queue behavior remain unchanged. The workflow works *within* these constraints, not around them.
+- **Unchanged invariants:** All existing branch protection, required status checks, and merge queue behavior remain unchanged. The workflow works _within_ these constraints, not around them.
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| Auto-merge must be enabled in repo settings | Verify this is enabled; if not, the `--auto` flag will fail with a clear error |
-| CI Bot App token may not have PR approval permissions | The app is already used to create PRs in `ai-build-spike.yml`; confirm it has `pull_requests: write` |
-| Crowdin PR branch name changes | The branch name `00-00-CI-chore-i10n-updates` is configured in `crowdin.yml` (root); if changed there, this workflow must be updated |
-| Non-locale files pushed to the Crowdin branch | The file-path safety guard (R2) prevents merging in this case |
+| Risk                                                  | Mitigation                                                                                                                           |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Auto-merge must be enabled in repo settings           | Verify this is enabled; if not, the `--auto` flag will fail with a clear error                                                       |
+| CI Bot App token may not have PR approval permissions | The app is already used to create PRs in `ai-build-spike.yml`; confirm it has `pull_requests: write`                                 |
+| Crowdin PR branch name changes                        | The branch name `00-00-CI-chore-i10n-updates` is configured in `crowdin.yml` (root); if changed there, this workflow must be updated |
+| Non-locale files pushed to the Crowdin branch         | The file-path safety guard (R2) prevents merging in this case                                                                        |
 
 ## Sources & References
 
