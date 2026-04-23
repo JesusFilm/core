@@ -28,7 +28,7 @@ export async function login(token: string): Promise<void> {
 export async function loginWithCredential(
   credential: UserCredential
 ): Promise<void> {
-  const idToken = await credential.user.getIdToken()
+  const idToken = await credential.user.getIdToken(true)
   await login(idToken)
   window.location.reload()
 }

@@ -52,7 +52,7 @@ export function SignInServiceButton({
 
     const pending = getPendingGuestJourney()
     if (pending != null) {
-      const idToken = await user.getIdToken()
+      const idToken = await user.getIdToken(true)
       await login(idToken)
       const existingRedirect = router.query.redirect as string | undefined
       const redirectUrl =
