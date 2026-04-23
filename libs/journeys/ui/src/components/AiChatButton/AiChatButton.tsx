@@ -2,28 +2,23 @@
 
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
 import IconButton from '@mui/material/IconButton'
-import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useState } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
-import { Drawer, DrawerContent } from '../Drawer'
-
-const AiChat = dynamic(
-  async () =>
-    await import(/* webpackChunkName: 'ai-chat' */ '../AiChat').then(
-      (mod) => mod.AiChat
-    ),
-  { ssr: false }
-)
+import { ChatOverlay } from '../ChatOverlay'
 
 export function AiChatButton(): ReactElement | null {
   const { t } = useTranslation('libs-journeys-ui')
   const { variant } = useJourney()
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [overlayOpen, setOverlayOpen] = useState(false)
 
   const handleClick = useCallback(() => {
-    setDrawerOpen(true)
+    setOverlayOpen(true)
+  }, [])
+
+  const handleClose = useCallback(() => {
+    setOverlayOpen(false)
   }, [])
 
   if (variant === 'admin' || variant === 'embed') {
@@ -54,11 +49,7 @@ export function AiChatButton(): ReactElement | null {
       >
         <AutoAwesomeRoundedIcon sx={{ fontSize: 20 }} />
       </IconButton>
-      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerContent title={t('Chat')}>
-          <AiChat collapsible={false} />
-        </DrawerContent>
-      </Drawer>
+      <ChatOverlay open={overlayOpen} onClose={handleClose} />
     </>
   )
 }

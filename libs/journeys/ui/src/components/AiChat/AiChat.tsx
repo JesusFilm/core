@@ -36,6 +36,12 @@ interface AiChatProps {
    * own close button) should pass false.
    */
   collapsible?: boolean
+  /**
+   * `panel` (default) renders bubble messages and a flat bottom input for
+   * use inside a card/drawer. `overlay` renders plain assistant prose and
+   * a floating capsule input for the desktop ambient overlay.
+   */
+  variant?: 'panel' | 'overlay'
 }
 
 function getTextFromMessage(message: UIMessage): string {
@@ -95,17 +101,19 @@ interface AssistantBubbleProps {
   text: string
   animate: boolean
   isStreaming: boolean
+  plain?: boolean
 }
 
 function AssistantBubble({
   text,
   animate,
-  isStreaming
+  isStreaming,
+  plain = false
 }: AssistantBubbleProps): ReactElement {
   const { display, isComplete } = useTypewriter(text, animate, isStreaming)
   return (
     <>
-      <Message role="assistant">
+      <Message role="assistant" plain={plain}>
         <Response content={display} />
       </Message>
       {isComplete && text.length > 0 && <Actions content={text} />}
@@ -148,8 +156,10 @@ function TypingIndicator(): ReactElement {
 
 export function AiChat({
   initialMessage,
-  collapsible = true
+  collapsible = true,
+  variant = 'panel'
 }: AiChatProps): ReactElement {
+  const isOverlay = variant === 'overlay'
   const { t } = useTranslation('libs-journeys-ui')
   const { journey } = useJourney()
   const [input, setInput] = useState('')
@@ -328,6 +338,7 @@ export function AiChat({
                     text={text}
                     animate={isLast}
                     isStreaming={isLast && isLoading}
+                    plain={isOverlay}
                   />
                 ) : (
                   <Message role="user">{text}</Message>
@@ -338,13 +349,13 @@ export function AiChat({
           {isLoading &&
             (messages.length === 0 ||
               messages[messages.length - 1]?.role === 'user') && (
-              <Message role="assistant">
+              <Message role="assistant" plain={isOverlay}>
                 <TypingIndicator />
               </Message>
             )}
           {error != null && !isLoading && (
             <Box>
-              <Message role="assistant">
+              <Message role="assistant" plain={isOverlay}>
                 <Box component="span" sx={{ opacity: 0.7 }}>
                   {t('Something went wrong. Please try again.')}
                 </Box>
@@ -368,7 +379,10 @@ export function AiChat({
         sx={{
           width: '100%',
           maxWidth: { xs: 'none', sm: '48rem' },
-          mx: 'auto'
+          mx: 'auto',
+          px: isOverlay ? { xs: 0, sm: 1 } : 0,
+          pb: isOverlay ? { xs: 0, sm: 1 } : 0,
+          pt: isOverlay ? { xs: 0, sm: 0.5 } : 0
         }}
       >
         <PromptInput
@@ -377,6 +391,7 @@ export function AiChat({
           onSubmit={handleSubmit}
           isLoading={isLoading}
           onStop={stop}
+          variant={isOverlay ? 'floating' : 'inline'}
         />
       </Box>
     </Box>

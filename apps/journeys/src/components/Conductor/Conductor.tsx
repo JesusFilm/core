@@ -229,7 +229,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                     ...mobileNotchStyling,
                     display: {
                       xs: showHeaderFooter ? 'flex' : 'none',
-                      lg: 'none'
+                      sm: 'none'
                     }
                   }}
                 />
@@ -244,14 +244,14 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   }}
                 />
               )}
-              {/* On desktop (lg+), always show StepFooter when pinned chat is active on mobile */}
+              {/* On sm+, show StepFooter (with AiChatButton → ChatOverlay) when pinned chat is active on mobile */}
               {showPinnedChat && (
                 <StepFooter
                   sx={{
                     ...mobileNotchStyling,
                     display: {
                       xs: 'none',
-                      lg: 'flex'
+                      sm: 'flex'
                     }
                   }}
                 />
