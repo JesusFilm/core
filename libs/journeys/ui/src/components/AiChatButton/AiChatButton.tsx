@@ -56,7 +56,7 @@ export function AiChatButton(): ReactElement | null {
       </IconButton>
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerContent title={t('Chat')}>
-          <AiChat />
+          <AiChat collapsible={false} />
         </DrawerContent>
       </Drawer>
     </>

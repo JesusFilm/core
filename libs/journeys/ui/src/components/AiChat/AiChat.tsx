@@ -1,6 +1,8 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
@@ -27,6 +29,13 @@ import { Response } from '../Response'
 interface AiChatProps {
   /** When provided, this message is sent automatically on first render */
   initialMessage?: string
+  /**
+   * When true (default) the chat shows inline collapse controls — a drag
+   * handle on mobile and a close button on wider viewports. Callers that
+   * wrap AiChat in their own dismissible container (e.g. a Drawer with its
+   * own close button) should pass false.
+   */
+  collapsible?: boolean
 }
 
 function getTextFromMessage(message: UIMessage): string {
@@ -137,7 +146,10 @@ function TypingIndicator(): ReactElement {
   )
 }
 
-export function AiChat({ initialMessage }: AiChatProps): ReactElement {
+export function AiChat({
+  initialMessage,
+  collapsible = true
+}: AiChatProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { journey } = useJourney()
   const [input, setInput] = useState('')
@@ -220,6 +232,7 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
   }, [messages])
 
   const hasMessages = messages.length > 0
+  const showCollapseControls = collapsible && hasMessages
 
   return (
     <Box
@@ -227,13 +240,14 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        minHeight: 0
+        minHeight: 0,
+        position: 'relative'
       }}
     >
-      {hasMessages && (
+      {showCollapseControls && (
         <Box
           sx={{
-            display: 'flex',
+            display: { xs: 'flex', sm: 'none' },
             justifyContent: 'center',
             flexShrink: 0
           }}
@@ -267,12 +281,40 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
         </Box>
       )}
 
+      {showCollapseControls && (
+        <IconButton
+          onClick={handleToggleCollapse}
+          tabIndex={0}
+          aria-label={collapsed ? t('Expand chat') : t('Collapse chat')}
+          aria-expanded={!collapsed}
+          size="small"
+          sx={{
+            display: { xs: 'none', sm: 'inline-flex' },
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            zIndex: 2,
+            color: 'text.secondary',
+            '&:hover': { color: 'text.primary', bgcolor: 'action.hover' }
+          }}
+        >
+          {collapsed ? (
+            <KeyboardArrowUpRoundedIcon fontSize="small" />
+          ) : (
+            <CloseRoundedIcon fontSize="small" />
+          )}
+        </IconButton>
+      )}
+
       <Box
         sx={{
           display: collapsed ? 'none' : 'flex',
           flex: 1,
           flexDirection: 'column',
-          minHeight: 0
+          minHeight: 0,
+          width: '100%',
+          maxWidth: { xs: 'none', sm: '48rem' },
+          mx: 'auto'
         }}
       >
         <Conversation>
@@ -322,13 +364,21 @@ export function AiChat({ initialMessage }: AiChatProps): ReactElement {
         </Conversation>
       </Box>
 
-      <PromptInput
-        input={input}
-        onInputChange={setInput}
-        onSubmit={handleSubmit}
-        isLoading={isLoading}
-        onStop={stop}
-      />
+      <Box
+        sx={{
+          width: '100%',
+          maxWidth: { xs: 'none', sm: '48rem' },
+          mx: 'auto'
+        }}
+      >
+        <PromptInput
+          input={input}
+          onInputChange={setInput}
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+          onStop={stop}
+        />
+      </Box>
     </Box>
   )
 }
