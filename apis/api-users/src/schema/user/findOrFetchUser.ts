@@ -30,15 +30,14 @@ export async function findOrFetchUser(
 
   if (existingUser != null && existingUser.emailVerified != null) {
     if (existingUser.emailVerified === false) {
-      const {
-        emailVerified,
-        displayName,
-        email,
-        photoURL
-      } = await auth.getUser(userId)
+      const { emailVerified, displayName, email, photoURL } =
+        await auth.getUser(userId)
       if (emailVerified) {
         const nameParts =
-          displayName?.trim().split(' ').filter((p) => p.length > 0) ?? []
+          displayName
+            ?.trim()
+            .split(' ')
+            .filter((p) => p.length > 0) ?? []
         const firstName =
           nameParts.length >= 1
             ? nameParts.length === 1
