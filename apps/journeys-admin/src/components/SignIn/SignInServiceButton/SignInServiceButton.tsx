@@ -40,6 +40,11 @@ export function SignInServiceButton({
   ): Promise<void> {
     const userCredential = await linkWithPopup(currentUser, authProvider)
     const user = userCredential.user
+    console.log('=== LINK WITH POPUP RESULT ===')
+    console.log('user.displayName:', user.displayName)
+    console.log('user.photoURL:', user.photoURL)
+    console.log('user.email:', user.email)
+    console.log('providerData:', JSON.stringify(user.providerData))
     const email = user.email?.trim().toLowerCase()
     if (email == null) return
 

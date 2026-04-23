@@ -29,6 +29,9 @@ export async function findOrFetchUser(
   }
 
   if (existingUser != null && existingUser.emailVerified != null) {
+    console.log('=== FIND OR FETCH USER ===')
+    console.log('emailVerified in DB:', existingUser.emailVerified)
+    console.log('email in DB:', existingUser.email)
     if (existingUser.emailVerified === false) {
       const { emailVerified, displayName, email, photoURL } =
         await auth.getUser(userId)

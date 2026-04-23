@@ -119,6 +119,9 @@ builder.queryFields((t) => ({
       if (user == null) return null
 
       // Return appropriate type based on whether user has email
+      console.log('=== ME QUERY CONVERSION ===')
+      console.log('ctx.currentUser:', JSON.stringify(ctx.currentUser))
+      console.log('existing user email:', user.email)
       if (user.email != null) {
         return user
       } else if (
