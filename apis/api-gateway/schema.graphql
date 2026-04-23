@@ -1137,7 +1137,7 @@ type CustomDomainVerificationResponse @join__type(graph: API_JOURNEYS)  {
 }
 
 type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
-  customDomain(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS) 
+  customDomain(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   customDomains(teamId: ID!) : [CustomDomain!]! @join__field(graph: API_JOURNEYS) 
   hosts(teamId: ID!) : [Host!]! @join__field(graph: API_JOURNEYS) 
   integrations(teamId: ID!) : [Integration!]! @join__field(graph: API_JOURNEYS) 
