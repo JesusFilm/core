@@ -35,7 +35,6 @@ export function ChatOverlay({
         position: 'fixed',
         inset: 0,
         zIndex: (theme) => theme.zIndex.modal,
-        pointerEvents: 'none',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-end',
@@ -44,9 +43,19 @@ export function ChatOverlay({
       }}
     >
       <Box
+        onClick={onClose}
+        aria-hidden
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          bgcolor: 'rgba(10, 10, 15, 0.55)',
+          backdropFilter: 'blur(6px)',
+          WebkitBackdropFilter: 'blur(6px)'
+        }}
+      />
+      <Box
         sx={{
           position: 'relative',
-          pointerEvents: 'auto',
           width: '100%',
           maxWidth: '48rem',
           maxHeight: '80vh',

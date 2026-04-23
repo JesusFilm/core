@@ -35,8 +35,16 @@ export function Message({
     >
       <Box
         sx={{
-          bgcolor: isUser ? '#6D28D9' : isPlainAssistant ? 'transparent' : '#f5f5f5',
-          color: isUser ? '#ffffff' : '#1a1a1a',
+          bgcolor: isUser
+            ? '#6D28D9'
+            : isPlainAssistant
+              ? 'transparent'
+              : '#f5f5f5',
+          color: isUser
+            ? '#ffffff'
+            : isPlainAssistant
+              ? 'rgba(255, 255, 255, 0.92)'
+              : '#1a1a1a',
           borderRadius: isUser
             ? '16px 16px 4px 16px'
             : isPlainAssistant

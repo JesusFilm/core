@@ -116,7 +116,9 @@ function AssistantBubble({
       <Message role="assistant" plain={plain}>
         <Response content={display} />
       </Message>
-      {isComplete && text.length > 0 && <Actions content={text} />}
+      {isComplete && text.length > 0 && (
+        <Actions content={text} plain={plain} />
+      )}
     </>
   )
 }
@@ -365,7 +367,13 @@ export function AiChat({
                   size="small"
                   onClick={handleRetry}
                   aria-label={t('Retry')}
-                  sx={{ fontSize: 12, color: 'text.secondary', minWidth: 0 }}
+                  sx={{
+                    fontSize: 12,
+                    color: isOverlay
+                      ? 'rgba(255, 255, 255, 0.7)'
+                      : 'text.secondary',
+                    minWidth: 0
+                  }}
                 >
                   {t('Retry')}
                 </Button>

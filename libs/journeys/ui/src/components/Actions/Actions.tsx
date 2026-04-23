@@ -5,9 +5,14 @@ import { ReactElement, useCallback } from 'react'
 
 interface ActionsProps {
   content: string
+  /** Use light colours suitable for a dark overlay backdrop. */
+  plain?: boolean
 }
 
-export function Actions({ content }: ActionsProps): ReactElement {
+export function Actions({
+  content,
+  plain = false
+}: ActionsProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
   const handleCopy = useCallback(async () => {
@@ -27,7 +32,15 @@ export function Actions({ content }: ActionsProps): ReactElement {
         size="small"
         onClick={handleCopy}
         aria-label={t('Copy message')}
-        sx={{ fontSize: 12, color: '#666', minWidth: 0 }}
+        sx={{
+          fontSize: 12,
+          color: plain ? 'rgba(255, 255, 255, 0.6)' : '#666',
+          minWidth: 0,
+          '&:hover': {
+            color: plain ? 'rgba(255, 255, 255, 0.9)' : '#666',
+            bgcolor: plain ? 'rgba(255, 255, 255, 0.08)' : undefined
+          }
+        }}
       >
         {t('Copy')}
       </Button>
