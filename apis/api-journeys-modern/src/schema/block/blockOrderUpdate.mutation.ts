@@ -30,6 +30,7 @@ builder.mutationField('blockOrderUpdate', (t) =>
     resolve: async (_parent, args, context) => {
       const { id, parentOrder } = args
 
+      // pr to update comment to trigger pr
       const block = await fetchBlockWithJourneyAcl(id)
       if (
         !ability(
