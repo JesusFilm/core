@@ -6,13 +6,18 @@ describe('AccountCheckDialog', () => {
   const onClose = jest.fn()
   const handleSignIn = jest.fn()
 
+  beforeEach(() => {
+    handleSignIn.mockClear()
+  })
+
   it('should call handleSignIn when login is clicked', () => {
     const { getByRole } = render(
       <AccountCheckDialog open onClose={onClose} handleSignIn={handleSignIn} />
     )
 
     fireEvent.click(getByRole('button', { name: 'Login with my account' }))
-    expect(handleSignIn).toHaveBeenCalled()
+    expect(handleSignIn).toHaveBeenCalledTimes(1)
+    expect(handleSignIn).toHaveBeenCalledWith()
   })
 
   it('should call handleSignIn when create account is clicked', () => {
@@ -21,6 +26,7 @@ describe('AccountCheckDialog', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Create a new account' }))
-    expect(handleSignIn).toHaveBeenCalled()
+    expect(handleSignIn).toHaveBeenCalledTimes(1)
+    expect(handleSignIn).toHaveBeenCalledWith()
   })
 })
