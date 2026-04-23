@@ -82,12 +82,12 @@ Includes `imageUrl` from `ctx.currentUser.imageUrl` when email is null but JWT h
 
 ### Edge cases and system-wide impact
 
-| Scenario | Behavior before fix | Behavior after fix |
-|---|---|---|
-| Fresh anon user (emailVerified: false in DB) converts via Google | `findOrFetchUser` Path C runs but may not see Google data if JWT stale; Firebase Admin may have propagation delay | Force-refresh JWT has Google claims; Path C fires with correct Firebase Admin data |
-| Legacy user (emailVerified: null in DB) converts via Google | Path B sets emailVerified: false, returns — profile NOT synced until next request | Path B runs on first load (unavoidable); on second load, Path C syncs all fields. Acceptable. |
-| User already converted (emailVerified: true in DB, email: null) | JWT fallback in `me` resolver has no imageUrl | After force-refresh, JWT has picture claim; `me` resolver fallback writes imageUrl |
-| Facebook / Okta guest conversion | Same issue as Google (same `loginWithCredential` call) | Force-refresh fixes all OAuth providers |
+| Scenario                                                         | Behavior before fix                                                                                               | Behavior after fix                                                                            |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Fresh anon user (emailVerified: false in DB) converts via Google | `findOrFetchUser` Path C runs but may not see Google data if JWT stale; Firebase Admin may have propagation delay | Force-refresh JWT has Google claims; Path C fires with correct Firebase Admin data            |
+| Legacy user (emailVerified: null in DB) converts via Google      | Path B sets emailVerified: false, returns — profile NOT synced until next request                                 | Path B runs on first load (unavoidable); on second load, Path C syncs all fields. Acceptable. |
+| User already converted (emailVerified: true in DB, email: null)  | JWT fallback in `me` resolver has no imageUrl                                                                     | After force-refresh, JWT has picture claim; `me` resolver fallback writes imageUrl            |
+| Facebook / Okta guest conversion                                 | Same issue as Google (same `loginWithCredential` call)                                                            | Force-refresh fixes all OAuth providers                                                       |
 
 ### displayName splitting
 
@@ -115,12 +115,12 @@ Google `photoURL` tokens expire but are periodically refreshed by Firebase Auth.
 
 ## Implementation Files
 
-| File | Change |
-|---|---|
-| `apps/journeys-admin/src/libs/auth/firebase.ts:31` | `getIdToken()` → `getIdToken(true)` |
-| `apps/journeys-admin/src/components/SignIn/SignInServiceButton/SignInServiceButton.tsx:55` | `getIdToken()` → `getIdToken(true)` |
-| `apis/api-users/src/schema/user/findOrFetchUser.ts:31–63` | Already fixed — verify tests pass |
-| `apis/api-users/src/schema/user/user.ts:130–140` | Already fixed — verify tests pass |
+| File                                                                                         | Change                                                              |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `apps/journeys-admin/src/libs/auth/firebase.ts:31`                                           | `getIdToken()` → `getIdToken(true)`                                 |
+| `apps/journeys-admin/src/components/SignIn/SignInServiceButton/SignInServiceButton.tsx:55`   | `getIdToken()` → `getIdToken(true)`                                 |
+| `apis/api-users/src/schema/user/findOrFetchUser.ts:31–63`                                    | Already fixed — verify tests pass                                   |
+| `apis/api-users/src/schema/user/user.ts:130–140`                                             | Already fixed — verify tests pass                                   |
 | `apps/journeys-admin/src/components/SignIn/SignInServiceButton/SignInServiceButton.spec.tsx` | Add test: after `linkWithPopup`, `getIdToken` is called with `true` |
 
 ## Sources & References
