@@ -18,6 +18,12 @@ interface PromptInputProps {
   onSubmit: (e: FormEvent) => void
   isLoading: boolean
   onStop?: () => void
+  /**
+   * `inline` (default) renders the input as a flat bar with a top border,
+   * suited to a panel context. `floating` renders it as a rounded capsule
+   * with a shadow, for overlay contexts with no surrounding chrome.
+   */
+  variant?: 'inline' | 'floating'
 }
 
 export function PromptInput({
@@ -25,7 +31,8 @@ export function PromptInput({
   onInputChange,
   onSubmit,
   isLoading,
-  onStop
+  onStop,
+  variant = 'inline'
 }: PromptInputProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -53,6 +60,7 @@ export function PromptInput({
   )
 
   const canSubmit = input.trim().length > 0
+  const isFloating = variant === 'floating'
 
   return (
     <Box
@@ -62,9 +70,13 @@ export function PromptInput({
         display: 'flex',
         alignItems: 'center',
         gap: 1,
-        p: 1.5,
+        p: isFloating ? 1 : 1.5,
         bgcolor: 'common.white',
-        borderTop: '1px solid #e0e0e0'
+        borderTop: isFloating ? 'none' : '1px solid #e0e0e0',
+        borderRadius: isFloating ? 9999 : 0,
+        boxShadow: isFloating
+          ? '0 10px 30px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1)'
+          : 'none'
       }}
     >
       <TextField
@@ -83,8 +95,8 @@ export function PromptInput({
         }}
         sx={{
           '& .MuiOutlinedInput-root': {
-            borderRadius: 3,
-            bgcolor: 'grey.50'
+            borderRadius: isFloating ? 9999 : 3,
+            bgcolor: isFloating ? 'transparent' : 'grey.50'
           },
           '& .MuiOutlinedInput-notchedOutline': {
             border: 'none'

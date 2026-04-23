@@ -55,8 +55,11 @@ export function DrawerContent({
       PaperProps={{
         sx: {
           maxHeight: '85vh',
-          borderTopLeftRadius: 16,
-          borderTopRightRadius: 16,
+          borderTopLeftRadius: { xs: 16, sm: 0 },
+          borderTopRightRadius: { xs: 16, sm: 0 },
+          width: { xs: '100%', sm: 'min(48rem, 100%)' },
+          left: { xs: 0, sm: 'max(0px, calc(50% - 24rem))' },
+          right: { xs: 0, sm: 'auto' },
           display: 'flex',
           flexDirection: 'column',
           bgcolor: 'common.white',
@@ -77,6 +80,7 @@ export function DrawerContent({
       >
         <Box
           sx={{
+            display: { xs: 'block', sm: 'none' },
             width: 48,
             height: 4,
             borderRadius: 9999,
