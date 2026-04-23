@@ -6,10 +6,10 @@ import type { VideoMetadata } from '../types'
 const execAsync = promisify(exec)
 
 export async function getVideoMetadata(
-  filePath: string
+  source: string
 ): Promise<VideoMetadata> {
   const { stdout } = await execAsync(
-    `ffprobe -v error -select_streams v:0 -show_entries stream=width,height -show_entries format=duration -of json "${filePath}"`
+    `ffprobe -v error -select_streams v:0 -show_entries stream=width,height -show_entries format=duration -of json "${source}"`
   )
   let metadata
   try {

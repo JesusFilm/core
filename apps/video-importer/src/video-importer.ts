@@ -7,6 +7,7 @@ import {
   AUDIO_PREVIEW_FILENAME_REGEX,
   processAudioPreviewFile
 } from './importers/audiopreview'
+import { processExistingR2Asset, readR2AssetsFromFile } from './importers/r2'
 import {
   SUBTITLE_FILENAME_REGEX,
   processSubtitleFile
@@ -20,6 +21,13 @@ program
   .option(
     '-f, --folder <path>',
     "Folder containing video files. Defaults to the executable's directory."
+  )
+  .option(
+    '--from-r2-file <path>',
+    'Reprocess existing Cloudflare R2 assets listed in a JSON file. ' +
+      'Each entry must include `publicUrl` and `originalFilename` (and optionally `id`). ' +
+      'Skips R2 upload and triggers Mux ingestion (and downstream VideoVariant creation) ' +
+      'directly from the asset publicUrl. Metadata is probed remotely via ffprobe.'
   )
   .option('--dry-run', 'Print actions without uploading', false)
   .parse(process.argv)
@@ -38,7 +46,68 @@ function getDefaultFolderPath(): string {
   return path.dirname(process.execPath)
 }
 
+async function runFromR2File(filePath: string): Promise<void> {
+  const resolved = path.resolve(filePath)
+  console.log(`Reading CloudflareR2 assets from ${resolved}...`)
+
+  let assets: Awaited<ReturnType<typeof readR2AssetsFromFile>>
+  try {
+    assets = await readR2AssetsFromFile(resolved)
+  } catch (err) {
+    console.error(`Failed to read R2 assets file: ${resolved}`, err)
+    process.exit(1)
+  }
+
+  const videoAssets = assets.filter((asset) =>
+    VIDEO_FILENAME_REGEX.test(asset.originalFilename)
+  )
+
+  console.log(
+    `Loaded ${assets.length} R2 asset${assets.length === 1 ? '' : 's'}, ` +
+      `${videoAssets.length} of which match the video filename convention.`
+  )
+
+  if (videoAssets.length === 0) return
+
+  const summary: ProcessingSummary = {
+    total: videoAssets.length,
+    successful: 0,
+    failed: 0
+  }
+
+  for (const asset of videoAssets) {
+    const label = asset.id
+      ? `${asset.originalFilename} (${asset.id})`
+      : asset.originalFilename
+    console.log(`\nProcessing R2 asset: ${label}`)
+
+    if (options.dryRun) {
+      console.log(
+        `[DRY RUN] Would queue Mux ingestion for ${asset.originalFilename} from ${asset.publicUrl}`
+      )
+      continue
+    }
+
+    try {
+      await processExistingR2Asset(asset, summary)
+    } catch (err) {
+      console.error(`Error processing R2 asset ${label}:`, err)
+      summary.failed++
+    }
+  }
+
+  console.log('\n=== Processing Summary ===')
+  console.log(`Total assets: ${summary.total}`)
+  console.log(`Successfully processed: ${summary.successful}`)
+  console.log(`Failed: ${summary.failed}`)
+}
+
 async function main() {
+  if (options.fromR2File) {
+    await runFromR2File(options.fromR2File)
+    return
+  }
+
   const defaultFolderPath = getDefaultFolderPath()
 
   const folderPath = options.folder

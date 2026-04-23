@@ -97,6 +97,36 @@ Before you can use the Video Importer binary, make sure you have the following:
      ```sh
      ./video-importer --skip-retry
      ```
+   - To reprocess existing Cloudflare R2 assets (no local files, no re-upload — probes the R2 `publicUrl` remotely with `ffprobe` and queues Mux ingestion):
+     ```sh
+     ./video-importer --from-r2-file ./r2-assets.json
+     ```
+
+     The file must be a JSON array (or an `{ "assets": [...] }` wrapper, or NDJSON). Each entry must include `publicUrl` and `originalFilename`, and may optionally include `id` (used only for logging). Example:
+
+     ```json
+     [
+       {
+         "id": "…",
+         "publicUrl": "https://cdn.example.com/1_jf-0-0/variants/185355/videos/…/185355_1_jf-0-0.mp4",
+         "originalFilename": "1_jf-0-0---ot---185355---1.mp4"
+       }
+     ]
+     ```
+
+     You can generate this directly from Postgres:
+
+     ```sql
+     SELECT json_agg(jsonb_build_object(
+       'id', id,
+       'publicUrl', "publicUrl",
+       'originalFilename', "originalFilename"
+     ))
+     FROM public."CloudflareR2"
+     WHERE "originalFilename" LIKE '%---185355---%';
+     ```
+
+     Only entries whose `originalFilename` matches the video naming convention (`<videoId>---<edition>---<languageId>---<version>.mp4`) are processed; others are ignored.
 
 3. **Troubleshoot as Necessary**
    - Review the output in your terminal for any errors or warnings.
