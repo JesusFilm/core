@@ -15,8 +15,20 @@ jest.mock('ai', () => ({
     pipeUIMessageStreamToResponse: jest.fn()
   }))
 }))
+jest.mock(
+  'langfuse',
+  () => ({
+    Langfuse: jest.fn()
+  }),
+  { virtual: true }
+)
 jest.mock('../../../src/libs/getFlags', () => ({
   getFlags: jest.fn()
+}))
+jest.mock('../../../src/libs/langfuse/client', () => ({
+  APOLOGIST_PROMPT_NAME: 'apologist-world-cup-chat',
+  getActivePromptLabel: jest.fn(() => 'Development'),
+  getLangfuse: jest.fn(() => null)
 }))
 
 const mockGetFlags = getFlags as jest.MockedFunction<typeof getFlags>

@@ -7,9 +7,15 @@ import {
   convertToModelMessages,
   streamText
 } from 'ai'
+import { Langfuse, TextPromptClient } from 'langfuse'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { getFlags } from '../../../src/libs/getFlags'
+import {
+  APOLOGIST_PROMPT_NAME,
+  getActivePromptLabel,
+  getLangfuse
+} from '../../../src/libs/langfuse/client'
 
 type ChatProvider = 'apologist' | 'gemini' | 'openai' | 'openrouter'
 
@@ -91,6 +97,8 @@ function resolveChatModel():
 interface ChatRequestBody {
   messages: UIMessage[]
   language?: string
+  sessionId?: string
+  journeyId?: string
 }
 
 export default async function handler(
@@ -109,7 +117,8 @@ export default async function handler(
     return
   }
 
-  const { messages, language } = req.body as ChatRequestBody
+  const { messages, language, sessionId, journeyId } =
+    req.body as ChatRequestBody
 
   if (!messages || messages.length === 0) {
     res.status(400).json({ error: 'messages are required' })
@@ -122,15 +131,33 @@ export default async function handler(
     return
   }
 
-  const systemMessage = buildSystemMessage({ language })
+  const langfuse = getLangfuse()
+  const { system, promptClient } = await resolveSystemMessage({
+    language,
+    langfuse
+  })
   const modelMessages = await convertToModelMessages(messages)
 
   const { provider, modelId } = modelResult.resolved
+  const ipCountry =
+    (req.headers['x-vercel-ip-country'] as string | undefined) ?? undefined
+
+  const trace = langfuse?.trace({
+    name: 'apologist-chat',
+    sessionId,
+    metadata: { journeyId, language, ipCountry, provider, modelId }
+  })
+  const generation = trace?.generation({
+    name: 'apologist-generation',
+    model: modelId,
+    input: modelMessages,
+    prompt: promptClient ?? undefined
+  })
 
   try {
     const result = streamText({
       model: modelResult.resolved.model,
-      system: systemMessage,
+      system,
       messages: modelMessages,
       onError: ({ error }) => {
         const err = error as Error
@@ -141,6 +168,28 @@ export default async function handler(
           message: err?.message,
           stack: err?.stack
         })
+      },
+      onFinish: async ({ text, usage, finishReason }) => {
+        if (finishReason === 'error') {
+          generation?.end({
+            level: 'ERROR',
+            statusMessage: `finishReason=${finishReason}`
+          })
+        } else {
+          generation?.end({
+            output: text,
+            usage:
+              usage != null
+                ? {
+                    input: usage.inputTokens,
+                    output: usage.outputTokens,
+                    unit: 'TOKENS'
+                  }
+                : undefined,
+            level: 'DEFAULT'
+          })
+        }
+        await langfuse?.flushAsync()
       }
     })
 
@@ -164,6 +213,11 @@ export default async function handler(
       name: err?.name,
       message: err?.message
     })
+    generation?.end({
+      level: 'ERROR',
+      statusMessage: err?.message ?? 'sync throw'
+    })
+    await langfuse?.flushAsync()
     if (!res.headersSent) {
       res
         .status(500)
@@ -174,7 +228,44 @@ export default async function handler(
   }
 }
 
-function buildSystemMessage({ language }: { language?: string }): string {
+async function resolveSystemMessage({
+  language,
+  langfuse
+}: {
+  language?: string
+  langfuse: Langfuse | null
+}): Promise<{ system: string; promptClient: TextPromptClient | null }> {
+  const fallback = buildFallbackSystemMessage({ language })
+  if (langfuse == null) return { system: fallback, promptClient: null }
+  try {
+    const promptClient = await langfuse.getPrompt(
+      APOLOGIST_PROMPT_NAME,
+      undefined,
+      { label: getActivePromptLabel() }
+    )
+    if (promptClient.type !== 'text') {
+      console.warn(
+        `[langfuse] expected text prompt for ${APOLOGIST_PROMPT_NAME}, got ${promptClient.type} — using fallback`
+      )
+      return { system: fallback, promptClient: null }
+    }
+    const compiled = promptClient.compile({ language: language ?? '' })
+    return { system: compiled, promptClient }
+  } catch (error) {
+    const err = error as Error
+    console.warn('[langfuse] getPrompt failed — using fallback', {
+      name: err?.name,
+      message: err?.message
+    })
+    return { system: fallback, promptClient: null }
+  }
+}
+
+function buildFallbackSystemMessage({
+  language
+}: {
+  language?: string
+}): string {
   const parts: string[] = [
     'You are a helpful Christian apologist and spiritual guide.',
     'Be warm, empathetic, and conversational.',
