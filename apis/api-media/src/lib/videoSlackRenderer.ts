@@ -1,45 +1,17 @@
-import fetch from 'node-fetch'
 import { Logger } from 'pino'
-
-import { logger } from '../logger'
 
 import {
   formatDateIso,
   ReportRow
 } from './videoSlackReport'
-
-const slackApiUrl = 'https://slack.com/api/chat.postMessage'
+import { slackChatPostMessage } from './slack/chatPostMessage'
+import { getMediaDataLangSlackConfig, type SlackBotChannelConfig } from './slack/config'
 /**
  * Slack `section` mrkdwn text must stay under 3000 chars, so large reports
  * intentionally continue in thread replies with repeated headers.
  */
 const tableFenceSoftLimit = 2650
 const threadPostDelayMs = 450
-
-interface SlackConfig {
-  channelId: string
-  token: string
-}
-
-interface SlackApiResponse {
-  ok?: boolean
-  error?: string
-  ts?: string
-}
-
-function getSlackConfig(): SlackConfig | null {
-  const token = process.env.STAGE_RESET_SLACK_BOT_TOKEN
-  const channelId = process.env.SLACK_DATA_LANGS_CHANNEL_ID
-
-  if (!token || !channelId) {
-    logger.warn(
-      'Skipping video Slack notification because STAGE_RESET_SLACK_BOT_TOKEN or SLACK_DATA_LANGS_CHANNEL_ID is missing'
-    )
-    return null
-  }
-
-  return { token, channelId }
-}
 
 function formatShortMonthDay(value: Date): string {
   const months = [
@@ -180,7 +152,7 @@ function fenceTableLines(lines: string[]): string {
 }
 
 async function postSlackMessage(args: {
-  config: SlackConfig
+  config: SlackBotChannelConfig
   text: string
   blocks: unknown[]
   threadTs?: string
@@ -189,7 +161,6 @@ async function postSlackMessage(args: {
   const { config, text, blocks, threadTs, childLogger } = args
 
   const body: Record<string, unknown> = {
-    channel: config.channelId,
     text,
     blocks
   }
@@ -197,41 +168,19 @@ async function postSlackMessage(args: {
     body.thread_ts = threadTs
   }
 
-  try {
-    const response = await fetch(slackApiUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json; charset=utf-8'
-      },
-      body: JSON.stringify(body)
-    })
-
-    const data = (await response.json()) as SlackApiResponse
-
-    if (!response.ok || data.ok !== true) {
-      childLogger.warn(
-        {
-          error: data.error,
-          status: response.status
-        },
-        threadTs != null
-          ? 'Weekly video Slack summary thread reply failed'
-          : 'Weekly video Slack summary failed'
-      )
-      return undefined
-    }
-
-    return data.ts
-  } catch (error) {
-    childLogger.warn(
-      { error },
+  return slackChatPostMessage({
+    config,
+    body,
+    log: childLogger,
+    failureMessage:
+      threadTs != null
+        ? 'Weekly video Slack summary thread reply failed'
+        : 'Weekly video Slack summary failed',
+    errorMessage:
       threadTs != null
         ? 'Weekly video Slack summary thread reply threw an error'
         : 'Weekly video Slack summary threw an error'
-    )
-    return undefined
-  }
+  })
 }
 
 const sleep = async (ms: number): Promise<void> => {
@@ -245,7 +194,7 @@ export async function postWeeklyVideoSlackMessages(args: {
   childLogger: Logger
 }): Promise<void> {
   const { rows, startDate, endDate, childLogger } = args
-  const config = getSlackConfig()
+  const config = getMediaDataLangSlackConfig(childLogger)
   if (config == null) {
     return
   }

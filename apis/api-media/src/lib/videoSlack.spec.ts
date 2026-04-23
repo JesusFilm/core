@@ -48,7 +48,7 @@ describe('videoSlack', () => {
     mockLoggerChild.mockReturnValue(logger as any)
     process.env = {
       ...originalEnv,
-      STAGE_RESET_SLACK_BOT_TOKEN: 'test-token',
+      SLACK_VIDEO_ADMIN_BOT_TOKEN: 'test-token',
       SLACK_DATA_LANGS_CHANNEL_ID: 'test-channel'
     }
     mockFetch.mockResolvedValue({
@@ -201,7 +201,7 @@ describe('videoSlack', () => {
   })
 
   it('should warn and skip when Slack env vars are missing', async () => {
-    delete process.env.STAGE_RESET_SLACK_BOT_TOKEN
+    delete process.env.SLACK_VIDEO_ADMIN_BOT_TOKEN
 
     mockVideoFindMany
       .mockResolvedValueOnce([
@@ -221,7 +221,7 @@ describe('videoSlack', () => {
 
     expect(mockFetch).not.toHaveBeenCalled()
     expect(mockLoggerWarn).toHaveBeenCalledWith(
-      'Skipping video Slack notification because STAGE_RESET_SLACK_BOT_TOKEN or SLACK_DATA_LANGS_CHANNEL_ID is missing'
+      'Skipping video Slack notification because SLACK_VIDEO_ADMIN_BOT_TOKEN or SLACK_DATA_LANGS_CHANNEL_ID is missing'
     )
   })
 
