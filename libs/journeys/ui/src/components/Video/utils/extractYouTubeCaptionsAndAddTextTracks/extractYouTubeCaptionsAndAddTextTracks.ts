@@ -11,6 +11,14 @@ interface ExtractYouTubeCaptionsAndAddTextTracksParams {
   subtitleLanguage: SubtitleLanguage | null
 }
 
+function matchesLanguageCode(
+  bcp47: string | null | undefined,
+  languageCode: string
+): boolean {
+  if (bcp47 == null) return false
+  return languageCode === bcp47 || languageCode.startsWith(`${bcp47}-`)
+}
+
 export function extractYouTubeCaptionsAndAddTextTracks({
   player,
   subtitleLanguage
@@ -24,24 +32,29 @@ export function extractYouTubeCaptionsAndAddTextTracks({
   // Unload YouTube captions to prevent duplicates
   unloadYouTubeCaptions(ytPlayer)
 
+  let captionTrackSet = false
+
   languages.forEach((language: YoutubeCaptionLanguages) => {
     if (language.languageCode != null && language.languageName != null) {
+      const isMatch =
+        !captionTrackSet &&
+        matchesLanguageCode(subtitleLanguage?.bcp47, language.languageCode)
+
       player.addRemoteTextTrack(
         {
           id: language.id,
           kind: 'captions',
           srclang: language.languageCode,
           label: language.languageName,
-          mode:
-            subtitleLanguage?.bcp47 === language.languageCode
-              ? 'showing'
-              : 'hidden'
+          mode: isMatch ? 'showing' : 'hidden'
         },
         true
       )
-    }
-    if (subtitleLanguage?.bcp47 === language.languageCode) {
-      setYouTubeCaptionTrack(ytPlayer, language.languageCode)
+
+      if (isMatch) {
+        setYouTubeCaptionTrack(ytPlayer, language.languageCode)
+        captionTrackSet = true
+      }
     }
   })
 }

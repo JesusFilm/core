@@ -384,6 +384,268 @@ describe('extractYouTubeCaptionsAndAddTextTracks', () => {
     expect(mockSetYouTubeCaptionTrack).not.toHaveBeenCalled()
   })
 
+  it('should match locale-variant languageCode to base bcp47', () => {
+    const subtitleLanguage: SubtitleLanguage = {
+      __typename: 'Language',
+      id: 'en-id',
+      bcp47: 'en'
+    }
+
+    const languages: YoutubeCaptionLanguages[] = [
+      {
+        id: 'en-GB',
+        languageCode: 'en-GB',
+        languageName: 'English (United Kingdom)',
+        displayName: 'English (United Kingdom)',
+        is_default: false,
+        is_servable: true,
+        is_translateable: false,
+        kind: 'captions',
+        name: 'English (United Kingdom)',
+        vss_id: 'en-GB'
+      },
+      {
+        id: 'es',
+        languageCode: 'es',
+        languageName: 'Spanish',
+        displayName: 'Spanish',
+        is_default: false,
+        is_servable: true,
+        is_translateable: false,
+        kind: 'captions',
+        name: 'Spanish',
+        vss_id: 'es'
+      }
+    ]
+    mockYtPlayer.getOption.mockReturnValue(languages)
+
+    extractYouTubeCaptionsAndAddTextTracks({
+      player: mockPlayer,
+      subtitleLanguage
+    })
+
+    expect(mockAddRemoteTextTrack).toHaveBeenCalledTimes(2)
+    expect(mockAddRemoteTextTrack).toHaveBeenCalledWith(
+      {
+        id: 'en-GB',
+        kind: 'captions',
+        srclang: 'en-GB',
+        label: 'English (United Kingdom)',
+        mode: 'showing'
+      },
+      true
+    )
+    expect(mockAddRemoteTextTrack).toHaveBeenCalledWith(
+      {
+        id: 'es',
+        kind: 'captions',
+        srclang: 'es',
+        label: 'Spanish',
+        mode: 'hidden'
+      },
+      true
+    )
+    expect(mockSetYouTubeCaptionTrack).toHaveBeenCalledTimes(1)
+    expect(mockSetYouTubeCaptionTrack).toHaveBeenCalledWith(
+      mockYtPlayer,
+      'en-GB'
+    )
+  })
+
+  it('should only activate first matching locale variant', () => {
+    const subtitleLanguage: SubtitleLanguage = {
+      __typename: 'Language',
+      id: 'en-id',
+      bcp47: 'en'
+    }
+
+    const languages: YoutubeCaptionLanguages[] = [
+      {
+        id: 'en-GB',
+        languageCode: 'en-GB',
+        languageName: 'English (United Kingdom)',
+        displayName: 'English (United Kingdom)',
+        is_default: false,
+        is_servable: true,
+        is_translateable: false,
+        kind: 'captions',
+        name: 'English (United Kingdom)',
+        vss_id: 'en-GB'
+      },
+      {
+        id: 'en-US',
+        languageCode: 'en-US',
+        languageName: 'English (United States)',
+        displayName: 'English (United States)',
+        is_default: false,
+        is_servable: true,
+        is_translateable: false,
+        kind: 'captions',
+        name: 'English (United States)',
+        vss_id: 'en-US'
+      }
+    ]
+    mockYtPlayer.getOption.mockReturnValue(languages)
+
+    extractYouTubeCaptionsAndAddTextTracks({
+      player: mockPlayer,
+      subtitleLanguage
+    })
+
+    expect(mockAddRemoteTextTrack).toHaveBeenCalledTimes(2)
+    expect(mockAddRemoteTextTrack).toHaveBeenCalledWith(
+      {
+        id: 'en-GB',
+        kind: 'captions',
+        srclang: 'en-GB',
+        label: 'English (United Kingdom)',
+        mode: 'showing'
+      },
+      true
+    )
+    expect(mockAddRemoteTextTrack).toHaveBeenCalledWith(
+      {
+        id: 'en-US',
+        kind: 'captions',
+        srclang: 'en-US',
+        label: 'English (United States)',
+        mode: 'hidden'
+      },
+      true
+    )
+    expect(mockSetYouTubeCaptionTrack).toHaveBeenCalledTimes(1)
+    expect(mockSetYouTubeCaptionTrack).toHaveBeenCalledWith(
+      mockYtPlayer,
+      'en-GB'
+    )
+  })
+
+  it('should not match partial language codes', () => {
+    const subtitleLanguage: SubtitleLanguage = {
+      __typename: 'Language',
+      id: 'en-id',
+      bcp47: 'en'
+    }
+
+    const languages: YoutubeCaptionLanguages[] = [
+      {
+        id: 'end',
+        languageCode: 'end',
+        languageName: 'Ende',
+        displayName: 'Ende',
+        is_default: false,
+        is_servable: true,
+        is_translateable: false,
+        kind: 'captions',
+        name: 'Ende',
+        vss_id: 'end'
+      }
+    ]
+    mockYtPlayer.getOption.mockReturnValue(languages)
+
+    extractYouTubeCaptionsAndAddTextTracks({
+      player: mockPlayer,
+      subtitleLanguage
+    })
+
+    expect(mockAddRemoteTextTrack).toHaveBeenCalledWith(
+      {
+        id: 'end',
+        kind: 'captions',
+        srclang: 'end',
+        label: 'Ende',
+        mode: 'hidden'
+      },
+      true
+    )
+    expect(mockSetYouTubeCaptionTrack).not.toHaveBeenCalled()
+  })
+
+  it('should match pt-BR locale variant to pt base code', () => {
+    const subtitleLanguage: SubtitleLanguage = {
+      __typename: 'Language',
+      id: 'pt-id',
+      bcp47: 'pt'
+    }
+
+    const languages: YoutubeCaptionLanguages[] = [
+      {
+        id: 'pt-BR',
+        languageCode: 'pt-BR',
+        languageName: 'Portuguese (Brazil)',
+        displayName: 'Portuguese (Brazil)',
+        is_default: false,
+        is_servable: true,
+        is_translateable: false,
+        kind: 'captions',
+        name: 'Portuguese (Brazil)',
+        vss_id: 'pt-BR'
+      }
+    ]
+    mockYtPlayer.getOption.mockReturnValue(languages)
+
+    extractYouTubeCaptionsAndAddTextTracks({
+      player: mockPlayer,
+      subtitleLanguage
+    })
+
+    expect(mockAddRemoteTextTrack).toHaveBeenCalledWith(
+      {
+        id: 'pt-BR',
+        kind: 'captions',
+        srclang: 'pt-BR',
+        label: 'Portuguese (Brazil)',
+        mode: 'showing'
+      },
+      true
+    )
+    expect(mockSetYouTubeCaptionTrack).toHaveBeenCalledWith(
+      mockYtPlayer,
+      'pt-BR'
+    )
+  })
+
+  it('should not match base languageCode when bcp47 is a locale variant', () => {
+    const subtitleLanguage: SubtitleLanguage = {
+      __typename: 'Language',
+      id: 'en-gb-id',
+      bcp47: 'en-GB'
+    }
+
+    const languages: YoutubeCaptionLanguages[] = [
+      {
+        id: 'en',
+        languageCode: 'en',
+        languageName: 'English',
+        displayName: 'English',
+        is_default: false,
+        is_servable: true,
+        is_translateable: false,
+        kind: 'captions',
+        name: 'English',
+        vss_id: 'en'
+      }
+    ]
+    mockYtPlayer.getOption.mockReturnValue(languages)
+
+    extractYouTubeCaptionsAndAddTextTracks({
+      player: mockPlayer,
+      subtitleLanguage
+    })
+
+    expect(mockAddRemoteTextTrack).toHaveBeenCalledWith(
+      {
+        id: 'en',
+        kind: 'captions',
+        srclang: 'en',
+        label: 'English',
+        mode: 'hidden'
+      },
+      true
+    )
+    expect(mockSetYouTubeCaptionTrack).not.toHaveBeenCalled()
+  })
+
   it('should set all tracks to hidden mode with null subtitle language', () => {
     const languages: YoutubeCaptionLanguages[] = [
       {

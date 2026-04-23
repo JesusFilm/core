@@ -19,7 +19,7 @@ const youTubeCaptionsResponseSchema = z.object({
     z.object({
       snippet: z.object({
         language: z.string(),
-        trackKind: z.enum(['standard', 'asr'])
+        trackKind: z.string()
       })
     })
   )
@@ -120,13 +120,16 @@ builder.queryFields((t) => ({
         throw new Error('Invalid YouTube API response format')
       }
 
-      const bcp47: string[] = []
+      const bcp47Set = new Set<string>()
 
       ytClosedCaptionResponse.items.forEach((item) => {
         if (item.snippet.trackKind === 'standard') {
-          bcp47.push(item.snippet.language.toLowerCase())
+          const code = item.snippet.language.toLowerCase()
+          bcp47Set.add(code.split('-')[0])
         }
       })
+
+      const bcp47 = [...bcp47Set]
 
       if (bcp47.length === 0) return []
 
