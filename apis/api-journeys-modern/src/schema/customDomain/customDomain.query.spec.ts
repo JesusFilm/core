@@ -122,9 +122,7 @@ describe('customDomain', () => {
       team: {
         id: 'teamId',
         userTeams: [],
-        journeys: [
-          { userJourneys: [{ userId: 'userId', role: 'owner' }] }
-        ]
+        journeys: [{ userJourneys: [{ userId: 'userId', role: 'owner' }] }]
       }
     }
     prismaMock.customDomain.findUnique.mockResolvedValue(
@@ -151,9 +149,7 @@ describe('customDomain', () => {
       team: {
         id: 'teamId',
         userTeams: [],
-        journeys: [
-          { userJourneys: [{ userId: 'userId', role: 'editor' }] }
-        ]
+        journeys: [{ userJourneys: [{ userId: 'userId', role: 'editor' }] }]
       }
     }
     prismaMock.customDomain.findUnique.mockResolvedValue(

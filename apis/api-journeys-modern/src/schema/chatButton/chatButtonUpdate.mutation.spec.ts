@@ -20,10 +20,9 @@ const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
   typeof getUserFromPayload
 >
 
-const mockRecalculate =
-  recalculateJourneyCustomizable as jest.MockedFunction<
-    typeof recalculateJourneyCustomizable
-  >
+const mockRecalculate = recalculateJourneyCustomizable as jest.MockedFunction<
+  typeof recalculateJourneyCustomizable
+>
 
 describe('chatButtonUpdate', () => {
   const mockUser = {
