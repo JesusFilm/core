@@ -1,14 +1,13 @@
 import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { Block, Prisma } from '@core/prisma/journeys/client'
+import { Block } from '@core/prisma/journeys/client'
 
-import { BlockDuplicateIdMap, BlocksFilter } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
-import { CaslAbility, CaslAccessible } from '../../lib/CaslAuthModule'
+import { CaslAbility } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 import { INCLUDE_JOURNEY_ACL } from '../journey/journey.acl'
 import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
@@ -26,170 +25,6 @@ export class BlockResolver {
   @ResolveField()
   __resolveType(obj: { __typename?: string; typename: string }): string {
     return obj.__typename ?? obj.typename
-  }
-
-  @Mutation()
-  @UseGuards(AppCaslGuard)
-  async blockOrderUpdate(
-    @CaslAbility() ability: AppAbility,
-    @Args('id') id: string,
-    @Args('parentOrder') parentOrder: number
-  ): Promise<Block[]> {
-    const block = await this.prismaService.block.findUnique({
-      where: { id, deletedAt: null },
-      include: {
-        action: true,
-        ...INCLUDE_JOURNEY_ACL
-      }
-    })
-
-    if (block == null)
-      throw new GraphQLError('block not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    if (!ability.can(Action.Update, subject('Journey', block.journey)))
-      throw new GraphQLError('user is not allowed to update block', {
-        extensions: { code: 'FORBIDDEN' }
-      })
-
-    return await this.prismaService.$transaction(async (tx) => {
-      const reorderedBlocks = await this.blockService.reorderBlock(
-        block,
-        parentOrder
-      )
-      await tx.journey.update({
-        where: {
-          id: block.journeyId
-        },
-        data: { updatedAt: new Date().toISOString() }
-      })
-      return reorderedBlocks
-    })
-  }
-
-  @Mutation()
-  @UseGuards(AppCaslGuard)
-  async blockDuplicate(
-    @CaslAbility() ability: AppAbility,
-    @Args('id') id: string,
-    @Args('parentOrder') parentOrder?: number,
-    @Args('idMap') idMap?: BlockDuplicateIdMap[],
-    @Args('x') x?: number,
-    @Args('y') y?: number
-  ): Promise<Block[]> {
-    const block = await this.prismaService.block.findUnique({
-      where: { id, deletedAt: null },
-      include: {
-        action: true,
-        ...INCLUDE_JOURNEY_ACL
-      }
-    })
-    const isStepBlock = block?.typename === 'StepBlock'
-
-    if (block == null)
-      throw new GraphQLError('block not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    if (!ability.can(Action.Update, subject('Journey', block.journey)))
-      throw new GraphQLError('user is not allowed to update block', {
-        extensions: { code: 'FORBIDDEN' }
-      })
-
-    const result = await this.prismaService.$transaction(async (tx) => {
-      const duplicatedBlocks = await this.blockService.duplicateBlock(
-        block,
-        isStepBlock,
-        parentOrder,
-        idMap,
-        x,
-        y
-      )
-      await tx.journey.update({
-        where: {
-          id: block.journeyId
-        },
-        data: { updatedAt: new Date().toISOString() }
-      })
-      return duplicatedBlocks
-    })
-    await this.journeyCustomizableService.recalculate(block.journeyId)
-    return result
-  }
-
-  @Mutation()
-  @UseGuards(AppCaslGuard)
-  async blockDelete(
-    @CaslAbility() ability: AppAbility,
-    @Args('id') id: string
-  ): Promise<Block[]> {
-    const block = await this.prismaService.block.findUnique({
-      where: { id, deletedAt: null },
-      include: {
-        action: true,
-        ...INCLUDE_JOURNEY_ACL
-      }
-    })
-
-    if (block == null)
-      throw new GraphQLError('block not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    if (!ability.can(Action.Update, subject('Journey', block.journey)))
-      throw new GraphQLError('user is not allowed to delete block', {
-        extensions: { code: 'FORBIDDEN' }
-      })
-    return await this.blockService.removeBlockAndChildren(block)
-  }
-
-  @Query()
-  @UseGuards(AppCaslGuard)
-  async block(
-    @CaslAbility() ability: AppAbility,
-    @Args('id') id: string
-  ): Promise<Block> {
-    const block = await this.prismaService.block.findUnique({
-      where: { id, deletedAt: null },
-      include: {
-        action: true,
-        ...INCLUDE_JOURNEY_ACL
-      }
-    })
-
-    if (block == null) {
-      throw new GraphQLError('block not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    }
-    if (!ability.can(Action.Read, subject('Journey', block.journey)))
-      throw new GraphQLError('user is not allowed to read block', {
-        extensions: { code: 'FORBIDDEN' }
-      })
-    return block
-  }
-
-  @Query()
-  @UseGuards(AppCaslGuard)
-  async blocks(
-    @CaslAccessible('Block') accessibleBlocks: Prisma.BlockWhereInput,
-    @Args('where') where?: BlocksFilter
-  ): Promise<Block[]> {
-    const filter: Prisma.BlockWhereInput = {
-      deletedAt: null
-    }
-
-    if (where?.typenames != null) filter.typename = { in: where.typenames }
-    if (where?.journeyIds != null) filter.journeyId = { in: where.journeyIds }
-
-    const blocks = await this.prismaService.block.findMany({
-      where: {
-        AND: [accessibleBlocks, filter]
-      },
-      include: {
-        action: true,
-        ...INCLUDE_JOURNEY_ACL
-      }
-    })
-    return blocks
   }
 
   @Mutation()

@@ -44,29 +44,11 @@ export interface MultiselectWithButtonDelete_multiselect {
 }
 
 export interface MultiselectWithButtonDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   endIcon: MultiselectWithButtonDelete_endIcon[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   startIcon: MultiselectWithButtonDelete_startIcon[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   button: MultiselectWithButtonDelete_button[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   option2: MultiselectWithButtonDelete_option2[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   option1: MultiselectWithButtonDelete_option1[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   multiselect: MultiselectWithButtonDelete_multiselect[];
 }
 
