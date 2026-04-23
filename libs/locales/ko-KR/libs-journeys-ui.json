@@ -1,6 +1,7 @@
 {
   "Submit": "제출하기",
   "Button": "버튼",
+  "None": "없음",
   "This field is required": "이 필드는 필수 입력 사항입니다.",
   "Name must be 2 characters or more": "이름은 2자 이상이어야 합니다.",
   "Name must be 50 characters or less": "이름은 50자 이내여야 합니다.",

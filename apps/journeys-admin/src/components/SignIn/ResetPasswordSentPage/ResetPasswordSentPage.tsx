@@ -26,9 +26,8 @@ export function ResetPasswordSentPage({
           </Typography>
         </Stack>
         <Button
-          variant="contained"
-          size="large"
-          color="secondary"
+          variant="blockContained"
+          color="solid"
           type="submit"
           fullWidth
           onClick={() => setActivePage?.('home')}

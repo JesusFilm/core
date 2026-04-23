@@ -3,7 +3,8 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
-import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
+import { generateCacheKey } from '../../../../lib/cache'
+import { getWithStaleCacheForRequest } from '../../../../lib/cacheBypass'
 
 import { taxonomiesWithCategory } from './[category]'
 import { TaxonomyGroup, findBestMatchingName } from './lib'
@@ -98,7 +99,7 @@ taxonomies.openapi(listTaxonomiesRoute, async (c) => {
 
   const cacheKey = generateCacheKey(['taxonomies', ...metadataLanguageTags])
 
-  const response = await getWithStaleCache(cacheKey, async () => {
+  const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
     const { data } = await getApolloClient().query<
       ResultOf<typeof GET_TAXONOMIES>
     >({
@@ -118,7 +119,10 @@ taxonomies.openapi(listTaxonomiesRoute, async (c) => {
 
     filteredTaxonomies.forEach((taxonomy) => {
       const matchingName = findBestMatchingName(
-        taxonomy.name as Array<{ label: string; language: { bcp47: string } }>,
+        taxonomy.name as Array<{
+          label: string
+          language: { bcp47: string }
+        }>,
         metadataLanguageTags
       )
 
@@ -149,7 +153,9 @@ taxonomies.openapi(listTaxonomiesRoute, async (c) => {
 
     return {
       _links: {
-        self: { href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}` }
+        self: {
+          href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}`
+        }
       },
       _embedded: { taxonomies: groupedTaxonomies }
     }
