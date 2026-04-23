@@ -25,9 +25,6 @@ export interface PosterImageBlockDelete_videoBlockUpdate {
 }
 
 export interface PosterImageBlockDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   blockDelete: PosterImageBlockDelete_blockDelete[];
   videoBlockUpdate: PosterImageBlockDelete_videoBlockUpdate;
 }

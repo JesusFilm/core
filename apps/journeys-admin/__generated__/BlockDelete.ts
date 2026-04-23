@@ -27,9 +27,6 @@ export interface BlockDelete_blockDelete_StepBlock {
 export type BlockDelete_blockDelete = BlockDelete_blockDelete_ImageBlock | BlockDelete_blockDelete_StepBlock;
 
 export interface BlockDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   blockDelete: BlockDelete_blockDelete[];
 }
 
