@@ -30,11 +30,33 @@ export async function findOrFetchUser(
 
   if (existingUser != null && existingUser.emailVerified != null) {
     if (existingUser.emailVerified === false) {
-      const { emailVerified } = await auth.getUser(userId)
+      const {
+        emailVerified,
+        displayName,
+        email,
+        photoURL
+      } = await auth.getUser(userId)
       if (emailVerified) {
+        const nameParts =
+          displayName?.trim().split(' ').filter((p) => p.length > 0) ?? []
+        const firstName =
+          nameParts.length >= 1
+            ? nameParts.length === 1
+              ? nameParts[0]
+              : nameParts.slice(0, -1).join(' ')
+            : undefined
+        const lastName =
+          nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined
+
         return await prisma.user.update({
           where: { userId },
-          data: { emailVerified: true }
+          data: {
+            emailVerified: true,
+            ...(email != null && { email: email.trim().toLowerCase() }),
+            ...(firstName != null && { firstName }),
+            ...(lastName != null && { lastName }),
+            ...(photoURL != null && { imageUrl: photoURL })
+          }
         })
       }
     }
