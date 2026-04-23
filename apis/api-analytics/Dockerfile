@@ -18,6 +18,6 @@ COPY ./libs/prisma/analytics/prisma.config.ts ./prisma/prisma.config.ts
 
 COPY ./apis/api-analytics/docker-entrypoint.sh ./docker-entrypoint.sh
 
-RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
+RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 RUN pnpm install --prod --silent
 ENTRYPOINT ["./docker-entrypoint.sh"]

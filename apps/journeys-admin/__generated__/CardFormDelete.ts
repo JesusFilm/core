@@ -96,37 +96,13 @@ export interface CardFormDelete_cardBlockUpdate {
 }
 
 export interface CardFormDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   body: CardFormDelete_body[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   endIcon: CardFormDelete_endIcon[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   startIcon: CardFormDelete_startIcon[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   button: CardFormDelete_button[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   textResponse: CardFormDelete_textResponse[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   title: CardFormDelete_title[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   subtitle: CardFormDelete_subtitle[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   image: CardFormDelete_image[];
   cardBlockUpdate: CardFormDelete_cardBlockUpdate;
 }
