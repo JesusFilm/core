@@ -832,8 +832,10 @@ describe('CopyToTeamDialog', () => {
       window.sessionStorage.clear()
     })
 
-    it('should default the team dropdown to the active team when the user has multiple teams', async () => {
-      const result = jest.fn(() => ({
+    function renderWithLastActiveTeam(
+      lastActiveTeamId: string | null
+    ): ReturnType<typeof render> & { queryResult: jest.Mock } {
+      const queryResult = jest.fn(() => ({
         data: {
           teams: [
             { id: 'team-a', title: 'Team A', __typename: 'Team' },
@@ -841,19 +843,16 @@ describe('CopyToTeamDialog', () => {
           ],
           getJourneyProfile: {
             __typename: 'JourneyProfile',
-            lastActiveTeamId: 'team-b'
+            lastActiveTeamId
           }
         }
       }))
-
-      const { getByRole } = render(
+      const utils = render(
         <MockedProvider
           mocks={[
             {
-              request: {
-                query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-              },
-              result
+              request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+              result: queryResult
             }
           ]}
         >
@@ -876,8 +875,12 @@ describe('CopyToTeamDialog', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
+      return { ...utils, queryResult }
+    }
 
-      await waitFor(() => expect(result).toHaveBeenCalled())
+    it('should default the team dropdown to the active team when the user has multiple teams', async () => {
+      const { getByRole, queryResult } = renderWithLastActiveTeam('team-b')
+      await waitFor(() => expect(queryResult).toHaveBeenCalled())
       await waitFor(() =>
         expect(
           getByRole('combobox', { name: 'Select Team' })
@@ -886,51 +889,8 @@ describe('CopyToTeamDialog', () => {
     })
 
     it('should leave the team dropdown empty when the user has multiple teams and no active team', async () => {
-      const result = jest.fn(() => ({
-        data: {
-          teams: [
-            { id: 'team-a', title: 'Team A', __typename: 'Team' },
-            { id: 'team-b', title: 'Team B', __typename: 'Team' }
-          ],
-          getJourneyProfile: {
-            __typename: 'JourneyProfile',
-            lastActiveTeamId: null
-          }
-        }
-      }))
-
-      const { getByRole } = render(
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-              },
-              result
-            }
-          ]}
-        >
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
-              <TeamProvider>
-                <CopyToTeamDialog
-                  open
-                  title="Copy To Journey"
-                  onClose={handleCloseMenuMock}
-                  submitAction={handleSubmitActionMock}
-                />
-              </TeamProvider>
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-
-      await waitFor(() => expect(result).toHaveBeenCalled())
+      const { getByRole, queryResult } = renderWithLastActiveTeam(null)
+      await waitFor(() => expect(queryResult).toHaveBeenCalled())
       const teamSelect = getByRole('combobox', { name: 'Select Team' })
       expect(teamSelect).not.toHaveTextContent('Team A')
       expect(teamSelect).not.toHaveTextContent('Team B')
