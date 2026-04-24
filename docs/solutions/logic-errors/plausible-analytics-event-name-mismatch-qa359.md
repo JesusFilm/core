@@ -16,12 +16,16 @@ tags:
   - type-safety
   - react-hooks
   - journeys-ui
+  - pii
+  - json-parse-safety
+  - testing
 components:
   - plausibleHelpers.ts
   - RadioQuestion.tsx
   - Button.tsx
   - VideoEvents.tsx
   - plausibleHelpers.spec.ts
+  - transformBreakdownResults.ts
 symptoms: 'Decision for Christ capture stat showed all radio option clicks, not just the one tagged with the event label — inflated count visible in Plausible dashboard'
 root_cause_types:
   - naming_mismatch
@@ -29,6 +33,10 @@ root_cause_types:
   - stale_closure
   - type_safety
   - duplicate_code
+  - type_safety_yagni
+  - pii_footgun
+  - unsafe_json_parse
+  - weak_enum_typing
 ---
 
 ## Problem
@@ -274,6 +282,172 @@ The server-side map handles historical Plausible events recorded before this fix
 
 Mismatches between the two maps cause historical events to aggregate under a different name than new events, corrupting template stats breakdown.
 
+## Secondary Review Findings (Second-Pass CE Review)
+
+A second CE code review pass on PR #9075 found 8 additional issues beyond the original 6, documenting further opportunities to harden `fireCaptureEvent` and the surrounding analytics pipeline.
+
+### P2 — Finding 1: YAGNI Generic + Dead Branches in `fireCaptureEvent`
+
+**File:** `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts:220–262`
+
+Three overlapping simplification problems:
+
+1. `<TInput extends object>` generic is immediately erased by an `as Props` cast — provides zero type safety.
+2. `target?: Action | string | null` — the `string` union is dead; no caller passes a plain string.
+3. `stepId: string` in options is always `input.stepId ?? ''` at all 5 call sites.
+
+**Recommended fix:** Remove the generic, narrow `target` to `Action | null`, derive `stepId` internally:
+
+```ts
+interface FireCaptureEventOptions {
+  u: string
+  input: object
+  blockId: string
+  target?: Action | null
+  templateTarget?: string | null
+  journeyId?: string
+}
+
+export function fireCaptureEvent(
+  plausible: ReturnType<typeof usePlausible<JourneyPlausibleEvents>>,
+  eventLabel: BlockEventLabel | null | undefined,
+  { u, input, blockId, target, templateTarget, journeyId }: FireCaptureEventOptions
+): void {
+  const captureEvent =
+    eventLabel != null ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel] : null
+  if (captureEvent == null) return
+
+  const stepId = (input as { stepId?: string | null }).stepId ?? ''
+  plausible(captureEvent, {
+    u,
+    props: {
+      ...input,
+      blockId,
+      key: keyify({ stepId, event: captureEvent, blockId, target, journeyId }),
+      simpleKey: keyify({ stepId, event: captureEvent, blockId, journeyId }),
+      templateKey: templateKeyify({ event: captureEvent, target: templateTarget, journeyId })
+    } as Props
+  })
+}
+```
+
+Tracked in: [todo 001](../../todos/001-pending-p2-simplify-fire-capture-event.md)
+
+---
+
+### P2 — Finding 2: Server `EVENT_TO_CAPTURE_MAP` Has No Type Enforcement
+
+**File:** `apis/api-journeys-modern/src/schema/plausible/templateFamilyStatsBreakdown/utils/transformBreakdownResults.ts:16–27`
+
+`EVENT_TO_CAPTURE_MAP: Record<string, string>` has no TypeScript link to `BlockEventLabel`. The frontend map is exhaustive-checked; the server map is completely open. Adding a new capture goal to the frontend will not trigger any compile error on the server, creating a silent drift risk.
+
+**Recommended fix:**
+
+```ts
+import { BlockEventLabel } from '../../../../../__generated__/graphql'
+
+const EVENT_TO_CAPTURE_MAP: Partial<Record<BlockEventLabel, string>> = {
+  [BlockEventLabel.decisionForChrist]: 'christDecisionCapture',
+  // ... same 10 entries
+}
+```
+
+Tracked in: [todo 002](../../todos/002-pending-p2-server-event-map-type-enforcement.md)
+
+---
+
+### P2 — Finding 3: PII Footgun — `...input` Spread Has No Guard
+
+**File:** `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts:247–262`
+
+`fireCaptureEvent` spreads `...input` directly into Plausible event props (third-party). Current callers pass safe types. However, the `input: object` interface has no type guard preventing future callers from passing PII-containing types (e.g. `SignUpSubmissionEventCreateInput` with `name` and `email`).
+
+**Minimum fix:** Add JSDoc to `FireCaptureEventOptions.input`:
+
+```ts
+/**
+ * Event input object — spread directly into Plausible event props.
+ * MUST NOT contain user-submitted PII (email, name, phone, etc.).
+ * Safe types: ButtonClickEventCreateInput, RadioQuestionSubmissionEventCreateInput,
+ *   VideoStartEventCreateInput, VideoCompleteEventCreateInput.
+ */
+input: object
+```
+
+Tracked in: [todo 003](../../todos/003-pending-p2-fire-capture-event-pii-guard.md)
+
+---
+
+### P2 — Finding 4: `reverseKeyify` `JSON.parse` Has No Error Handling
+
+**File:** `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts:145–153`
+
+`reverseKeyify` calls `JSON.parse(key)` on data from Plausible's API response with no `try/catch`. Malformed or unexpected data causes an uncaught exception crashing the analytics transformation pipeline.
+
+**Recommended fix:**
+
+```ts
+export function reverseKeyify(key: string): {
+  stepId: string
+  event: string
+  blockId: string
+  target?: string
+  journeyId?: string
+} | null {
+  try {
+    const parsed = JSON.parse(key)
+    if (
+      typeof parsed?.stepId !== 'string' ||
+      typeof parsed?.event !== 'string' ||
+      typeof parsed?.blockId !== 'string'
+    ) {
+      return null
+    }
+    return parsed
+  } catch {
+    return null
+  }
+}
+```
+
+Update call site in `transformJourneyAnalytics.ts:149` to handle `null`.
+
+Tracked in: [todo 004](../../todos/004-pending-p2-reverse-keyify-json-parse-safety.md)
+
+---
+
+### P3 — Finding 5: Missing Direct Unit Tests for `fireCaptureEvent`
+
+`plausibleHelpers.spec.ts` covers `BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT` exhaustively but has no tests for `fireCaptureEvent` itself. Missing: `eventLabel=null`, `eventLabel=undefined`, null-mapped labels (`inviteFriend`, `share`).
+
+Tracked in: [todo 005](../../todos/005-pending-p3-fire-capture-event-unit-tests.md)
+
+---
+
+### P3 — Finding 6: Missing `afterEach` NODE_ENV Restoration
+
+`describe('appendEventToGoogleSheets')` in `utils.spec.ts` sets `NODE_ENV=undefined` in `beforeEach` but its `afterEach` only calls `jest.useRealTimers()` — NODE_ENV restoration is missing, relying on the outer describe's `afterEach` which may not run after failures.
+
+Tracked in: [todo 006](../../todos/006-pending-p3-after-each-node-env-restoration.md)
+
+---
+
+### P3 — Finding 7: Duplicate Import + Lint Suppress in `RadioQuestion.tsx`
+
+`actionToTarget` is imported from both the barrel (`../../libs/plausibleHelpers`) and directly from `plausibleHelpers.ts` with `// eslint-disable-next-line import/no-cycle`. The barrel already re-exports `actionToTarget` (index.ts line 2) — the direct import and lint suppress are unnecessary.
+
+Tracked in: [todo 007](../../todos/007-pending-p3-radioquestion-duplicate-import.md)
+
+---
+
+### P3 — Finding 8: Missing JSDoc for `target`/`templateTarget` in `FireCaptureEventOptions`
+
+`target` (Action object → used in `key`) and `templateTarget` (pre-resolved string → used in `templateKey`) serve distinct purposes not evident from their names. VideoEvents omit both; Button/RadioQuestion pass both.
+
+Tracked in: [todo 008](../../todos/008-pending-p3-fire-capture-event-options-jsdoc.md)
+
+---
+
 ## Prevention Strategies
 
 ### Event Name Mismatches
@@ -297,19 +471,60 @@ Mismatches between the two maps cause historical events to aggregate under a dif
 ### Dual-Map Sync (BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT ↔ EVENT_TO_CAPTURE_MAP)
 
 - Any PR touching one map must update the other — enforce in PR checklist
+- Key `EVENT_TO_CAPTURE_MAP` on `Partial<Record<BlockEventLabel, string>>`, not `Record<string, string>`
 - Both files contain cross-reference comments pointing to the other
 - Consider generating the server-side map from the client-side constant during build to make sync automatic
 
+### Third-Party / External Data Boundaries
+
+- **No `...spread` at third-party API call sites** — build outbound payloads from explicit allow-lists
+- **Document `input` contracts** — any helper that spreads an input object into a third-party payload must JSDoc which types are safe to pass
+- **`JSON.parse` on external data must use try/catch** — or a shared `safeJsonParse<T>` utility returning `T | null`
+- **External API responses are typed `unknown`** — validate shape before operating on them
+
+### Type Safety for Event Utilities
+
+- **Generics erased by `as Type` casts are YAGNI** — remove the generic and use the widened type directly
+- **`Record<string, ...>` key types for enum-backed maps are a code smell** — use `Record<TEnum, ...>` or `Partial<Record<TEnum, ...>>`
+- **Dead union branches must be removed at PR time** — any union member with zero call-site usage is premature
+- **Repeated identical arguments across ≥3 call sites signal a missing abstraction** — move the derivation inside the helper
+
+### Test Coverage for Event Utilities
+
+- **Newly extracted utilities ship with direct unit tests in the same PR**
+- **Event-firing utilities test**: null label, undefined label, null-mapped label, happy path, plausible client throws
+- **Any test mutating `process.env` or global state has a matching `afterEach` restore**
+
 ### Code Review Checklist for Analytics Events
 
+**Event correctness:**
 - [ ] Capture event uses the registered Plausible goal name, not the raw enum string
 - [ ] `u:` parameter uses `stepId`, not `blockId`
 - [ ] `templateKey` includes `target` for journey-map breakdown
 - [ ] `BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT` is `Record<BlockEventLabel, ...>` (exhaustive)
+- [ ] `EVENT_TO_CAPTURE_MAP` is `Partial<Record<BlockEventLabel, string>>` (not `Record<string, string>`)
 - [ ] If adding a new label, both frontend and server maps are updated
 - [ ] If using `useEffect`, all referenced props are in the dependency array
 - [ ] `fireCaptureEvent` helper is used instead of duplicating the dispatch pattern
+
+**Type safety:**
+- [ ] No generics erased by a downstream `as WiderType` cast
+- [ ] No dead union branches with zero call-site usage
+- [ ] No repeated boilerplate across ≥3 call sites — derive or abstract
+
+**Third-party boundaries:**
+- [ ] No `...spread` in outbound Plausible/analytics payloads
+- [ ] No user-submitted PII fields reach external analytics endpoints
+- [ ] Any `JSON.parse` on external data is wrapped in try/catch
+
+**Tests:**
+- [ ] New utility function has direct unit tests (not just integration coverage)
 - [ ] Unit test covers the new mapping entry and verifies payload structure
+- [ ] Tests that mutate `process.env` have matching `afterEach` restore
+
+**Documentation:**
+- [ ] Non-obvious interface fields have JSDoc
+- [ ] No `eslint-disable` added without written justification in PR description
 
 ## Related
 
