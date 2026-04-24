@@ -370,11 +370,7 @@ export function reverseKeyify(key: string): {
 } | null {
   try {
     const parsed = JSON.parse(key)
-    if (
-      typeof parsed?.stepId !== 'string' ||
-      typeof parsed?.event !== 'string' ||
-      typeof parsed?.blockId !== 'string'
-    ) return null
+    if (typeof parsed?.stepId !== 'string' || typeof parsed?.event !== 'string' || typeof parsed?.blockId !== 'string') return null
     return parsed
   } catch {
     return null
