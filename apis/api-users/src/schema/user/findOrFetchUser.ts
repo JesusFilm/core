@@ -1,8 +1,34 @@
 import { Prisma, User, prisma } from '@core/prisma/users/client'
-import { auth } from '@core/yoga/firebaseClient'
+import {
+  type UserRecord,
+  auth,
+  sanitizeDisplayName,
+  sanitizePhotoURL,
+  splitDisplayName
+} from '@core/yoga/firebaseClient'
 
 import { type AppType } from './enums/app'
 import { verifyUser } from './verifyUser'
+
+// linkWithPopup on an anonymous user does not promote the provider's
+// displayName/photoURL onto the top-level Firebase user record, so
+// auth.getUser() returns null for those fields even when the provider data is
+// populated. Fall back to any linked (non-firebase) provider so conversions
+// pick up the profile. Values are sanitized to defend against hostile IdPs.
+function resolveProviderProfile(firebaseUser: UserRecord): {
+  displayName: string | null
+  photoURL: string | null
+} {
+  const linked = firebaseUser.providerData?.find(
+    (p) => p.providerId !== 'firebase'
+  )
+  return {
+    displayName: sanitizeDisplayName(
+      firebaseUser.displayName ?? linked?.displayName
+    ),
+    photoURL: sanitizePhotoURL(firebaseUser.photoURL ?? linked?.photoURL)
+  }
+}
 
 export async function findOrFetchUser(
   query: { select?: Prisma.UserSelect; include?: undefined },
@@ -29,34 +55,22 @@ export async function findOrFetchUser(
   }
 
   if (existingUser != null && existingUser.emailVerified != null) {
-    console.log('=== FIND OR FETCH USER ===')
-    console.log('emailVerified in DB:', existingUser.emailVerified)
-    console.log('email in DB:', existingUser.email)
     if (existingUser.emailVerified === false) {
-      const { emailVerified, displayName, email, photoURL } =
-        await auth.getUser(userId)
-      if (emailVerified) {
-        const nameParts =
-          displayName
-            ?.trim()
-            .split(' ')
-            .filter((p) => p.length > 0) ?? []
-        const firstName =
-          nameParts.length >= 1
-            ? nameParts.length === 1
-              ? nameParts[0]
-              : nameParts.slice(0, -1).join(' ')
-            : undefined
-        const lastName =
-          nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined
-
+      const firebaseUser = await auth.getUser(userId)
+      if (firebaseUser.emailVerified) {
+        const { displayName, photoURL } = resolveProviderProfile(firebaseUser)
+        const split = splitDisplayName(displayName)
         return await prisma.user.update({
           where: { userId },
           data: {
             emailVerified: true,
-            ...(email != null && { email: email.trim().toLowerCase() }),
-            ...(firstName != null && { firstName }),
-            ...(lastName != null && { lastName }),
+            ...(split != null && {
+              firstName: split.firstName,
+              lastName: split.lastName
+            }),
+            ...(firebaseUser.email != null && {
+              email: firebaseUser.email.trim().toLowerCase()
+            }),
             ...(photoURL != null && { imageUrl: photoURL })
           }
         })
@@ -65,41 +79,16 @@ export async function findOrFetchUser(
     return existingUser
   }
 
-  const {
-    displayName,
-    email,
-    emailVerified,
-    photoURL: imageUrl
-  } = await auth.getUser(userId)
-
-  // Extract firstName and lastName from displayName with better fallbacks
-  let firstName = ''
-  let lastName = ''
-
-  if (displayName?.trim()) {
-    const nameParts = displayName
-      .trim()
-      .split(' ')
-      .filter((part) => part.length > 0)
-    if (nameParts.length === 1) {
-      // Single name - use as firstName
-      firstName = nameParts[0]
-    } else if (nameParts.length > 1) {
-      // Multiple parts - first parts as firstName, last part as lastName
-      firstName = nameParts.slice(0, -1).join(' ')
-      lastName = nameParts[nameParts.length - 1]
-    }
-  }
-
-  // Ensure firstName is never empty for database constraint
-  if (!firstName.trim()) {
-    firstName = 'Unknown User'
-  }
+  const firebaseUser = await auth.getUser(userId)
+  const { email, emailVerified } = firebaseUser
+  const { displayName, photoURL: imageUrl } =
+    resolveProviderProfile(firebaseUser)
+  const split = splitDisplayName(displayName)
 
   const data = {
     userId,
-    firstName,
-    lastName,
+    firstName: split?.firstName ?? 'Unknown User',
+    lastName: split?.lastName ?? '',
     email: email ?? null,
     imageUrl,
     emailVerified
