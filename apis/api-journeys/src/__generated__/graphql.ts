@@ -1849,10 +1849,8 @@ export type Mutation = {
   bibleCitationCreate?: Maybe<BibleCitation>;
   bibleCitationDelete?: Maybe<Scalars['Boolean']['output']>;
   bibleCitationUpdate?: Maybe<BibleCitation>;
-  /** blockDelete returns the updated sibling blocks on successful delete */
   blockDelete: Array<Block>;
   blockDeleteAction: Block;
-  /** blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate */
   blockDuplicate: Array<Block>;
   blockOrderUpdate: Array<Block>;
   /** blockRestore is used for redo/undo */
