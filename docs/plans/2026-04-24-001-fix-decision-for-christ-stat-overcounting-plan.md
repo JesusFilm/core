@@ -1,5 +1,5 @@
 ---
-title: "fix: Decision for Christ stats counting all radio option selections"
+title: 'fix: Decision for Christ stats counting all radio option selections'
 type: fix
 status: active
 date: 2026-04-24
@@ -18,6 +18,7 @@ Template roll-up stats show the "Decision for Christ" capture event counting for
 `libs/journeys/ui/src/components/RadioQuestion/RadioQuestion.tsx:103-188`
 
 The `handleClick(radioOptionBlockId, radioOptionLabel)` handler:
+
 1. Fires `radioQuestionSubmissionEventCreate` mutation for ALL option clicks
 2. Finds the specific clicked option: `children.find(child => child.id === radioOptionBlockId)`
 3. Fires `plausible('radioQuestionSubmit', {...})` for ALL options
@@ -34,11 +35,11 @@ The `handleClick(radioOptionBlockId, radioOptionLabel)` handler:
 
 ### 3. The naming mismatch (confirmed)
 
-| Layer | Event name used |
-|---|---|
-| `BlockEventLabel` enum | `decisionForChrist`, `gospelPresentationStart`, ... |
-| `JourneyPlausibleEvents` type / registered Plausible goals | `christDecisionCapture`, `gospelStartCapture`, ... |
-| `EVENT_TO_CAPTURE_MAP` in `transformBreakdownResults.ts` | Maps `decisionForChrist` → `christDecisionCapture` |
+| Layer                                                      | Event name used                                     |
+| ---------------------------------------------------------- | --------------------------------------------------- |
+| `BlockEventLabel` enum                                     | `decisionForChrist`, `gospelPresentationStart`, ... |
+| `JourneyPlausibleEvents` type / registered Plausible goals | `christDecisionCapture`, `gospelStartCapture`, ...  |
+| `EVENT_TO_CAPTURE_MAP` in `transformBreakdownResults.ts`   | Maps `decisionForChrist` → `christDecisionCapture`  |
 
 **The mapping exists and is correct** (added in `bd75f00bc`). However, there is no TypeScript enforcement preventing the wrong event name from being passed — `plausible(radioOptionBlock.eventLabel)` passes a `BlockEventLabel` string directly, and the `JourneyPlausibleEvents` interface uses the `*Capture` variant names. Only the `[K: string]: any` index signature on the base `Events` interface prevents a compile error.
 
@@ -47,6 +48,7 @@ The `handleClick(radioOptionBlockId, radioOptionLabel)` handler:
 **Bug A — Wrong URL in capture event (`u` parameter)**
 
 `RadioQuestion.tsx:154`:
+
 ```ts
 // Capture event (decisionForChrist):
 u: `${window.location.origin}/${journey.id}/${input.blockId}` // blockId = RadioQuestion block ID!
@@ -60,6 +62,7 @@ u: `${window.location.origin}/${journey.id}/${input.stepId}` // stepId = Step bl
 **Bug B — templateKey missing `target` for capture events**
 
 `RadioQuestion.tsx:168-173`:
+
 ```ts
 // Capture event templateKey (no target):
 templateKeyify({ event: radioOptionBlock.eventLabel, journeyId: journey?.id })
@@ -79,11 +82,13 @@ The `JourneyPlausibleEvents` interface includes `christDecisionCapture` but NOT 
 `apps/journeys/src/components/JourneyPageWrapper/JourneyPageWrapper.tsx:40-47`
 
 `PlausibleProvider` sends ALL events to three domains simultaneously:
+
 - Journey site: `api-journeys-journey-${journeyId}`
 - Team site: `api-journeys-team-${teamId}`
 - Template site: `api-journeys-template-${fromTemplateId}`
 
 All capture events ARE being sent to the template site. The Plausible goals registered on the template site (via `apis/api-journeys-modern/src/workers/plausible/service.ts:91-126`) include `christDecisionCapture`, but NOT `decisionForChrist`. This means:
+
 - Plausible **goal conversion** tracking won't fire for `decisionForChrist` events
 - However, the **breakdown API** by `event:props:templateKey` returns all custom events regardless of goals
 
@@ -93,18 +98,18 @@ All capture events ARE being sent to the template site. The Plausible goals regi
 Journey user clicks "Yes" (decisionForChrist option)
   → plausible('radioQuestionSubmit', { templateKey: {"event":"radioQuestionSubmit","target":"","journeyId":"xxx"} })
   → plausible('decisionForChrist',   { templateKey: {"event":"decisionForChrist","target":"","journeyId":"xxx"} })
-  
+
 Template site receives both events
 
 templateFamilyStatsBreakdown query:
   → GET /api/v1/stats/breakdown?property=event:props:templateKey (NO event name filter)
   → Returns all events by unique templateKey value
-  
+
 transformBreakdownResults:
   → Parses each templateKey JSON
   → Maps 'decisionForChrist' → 'christDecisionCapture' via EVENT_TO_CAPTURE_MAP
   → Groups by journeyId
-  
+
 Frontend filters stats to only show: [christDecisionCapture, gospelStartCapture, ...]
 ```
 
@@ -123,6 +128,7 @@ Frontend filters stats to only show: [christDecisionCapture, gospelStartCapture,
 **1. Fix Bug A — Correct the URL for capture events in `RadioQuestion.tsx`**
 
 Change `input.blockId` → `input.stepId` in the capture event's `u` parameter:
+
 ```ts
 // libs/journeys/ui/src/components/RadioQuestion/RadioQuestion.tsx
 plausible(radioOptionBlock.eventLabel, {
@@ -146,6 +152,7 @@ templateKey: templateKeyify({
 **3. Fix Bug C — Add type-safe mapping for BlockEventLabel → JourneyPlausibleEvents**
 
 Create a mapping function in `plausibleHelpers.ts`:
+
 ```ts
 // libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts
 export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Partial<Record<BlockEventLabel, keyof JourneyPlausibleEvents>> = {
@@ -158,11 +165,12 @@ export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Partial<Record<BlockEventLabe
   [BlockEventLabel.specialVideoComplete]: 'specialVideoCompleteCapture',
   [BlockEventLabel.custom1]: 'custom1Capture',
   [BlockEventLabel.custom2]: 'custom2Capture',
-  [BlockEventLabel.custom3]: 'custom3Capture',
+  [BlockEventLabel.custom3]: 'custom3Capture'
 }
 ```
 
 Use this in `RadioQuestion.tsx`:
+
 ```ts
 // Replace:
 if (radioOptionBlock.eventLabel != null) {
@@ -187,6 +195,7 @@ if (captureEvent != null) {
 ```
 
 This fires `christDecisionCapture` directly instead of `decisionForChrist`, making:
+
 - The fired event name match the registered Plausible goal ✅
 - The templateKey's `event` field use the correct name ✅
 - The `EVENT_TO_CAPTURE_MAP` in `transformBreakdownResults.ts` potentially unnecessary for NEW data (keep for backward compatibility with old data)
@@ -196,6 +205,7 @@ Apply the same pattern to `Button.tsx`, `Card.tsx`, and `VideoEvents.tsx`.
 ### Phase 2: Apply same fixes to all other event label components
 
 Check these files for the same URL and type-safety issues:
+
 - `libs/journeys/ui/src/components/Button/Button.tsx`
 - `libs/journeys/ui/src/components/Card/Card.tsx`
 - `libs/journeys/ui/src/components/VideoEvents/VideoEvents.tsx`
