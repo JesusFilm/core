@@ -88,9 +88,7 @@ export function createGeminiFallbackSession(): GeminiFallbackSession {
   let useFallback = false
 
   return {
-    async execute<T>(
-      operation: (model: AIModel) => Promise<T>
-    ): Promise<T> {
+    async execute<T>(operation: (model: AIModel) => Promise<T>): Promise<T> {
       if (useFallback) {
         return retryWithBackoff(fallbackModel, operation, maxRetries)
       }

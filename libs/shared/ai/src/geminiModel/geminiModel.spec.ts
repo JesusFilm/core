@@ -77,13 +77,17 @@ describe('geminiModel', () => {
   describe('getGeminiFallbackModel', () => {
     it('should use google/gemini-2.5-flash via openrouter by default', () => {
       getGeminiFallbackModel()
-      expect(mockedOpenrouter.chat).toHaveBeenCalledWith('google/gemini-2.5-flash')
+      expect(mockedOpenrouter.chat).toHaveBeenCalledWith(
+        'google/gemini-2.5-flash'
+      )
     })
 
     it('should use OPENROUTER_FALLBACK_MODEL env var when set', () => {
       process.env.OPENROUTER_FALLBACK_MODEL = 'google/gemini-2.0-flash'
       getGeminiFallbackModel()
-      expect(mockedOpenrouter.chat).toHaveBeenCalledWith('google/gemini-2.0-flash')
+      expect(mockedOpenrouter.chat).toHaveBeenCalledWith(
+        'google/gemini-2.0-flash'
+      )
     })
   })
 

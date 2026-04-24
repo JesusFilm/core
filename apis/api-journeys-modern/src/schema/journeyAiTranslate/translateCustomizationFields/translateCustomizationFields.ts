@@ -2,8 +2,8 @@ import { Output, generateText } from 'ai'
 import { z } from 'zod'
 
 import { JourneyCustomizationField } from '@core/prisma/journeys/client'
-import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 import { withGeminiFallback } from '@core/shared/ai/geminiModel'
+import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 const CUSTOMIZATION_SYSTEM_PROMPT = `${preSystemPrompt}
 
@@ -172,7 +172,7 @@ export async function translateCustomizationFields({
             targetLanguageName,
             journeyAnalysis
           })
-        : Promise.resolve([] as string[]),
+        : Promise.resolve([]),
 
       defaultValueEntries.length > 0
         ? translateBatch({
@@ -181,7 +181,7 @@ export async function translateCustomizationFields({
             targetLanguageName: effectiveDefaultValueTarget,
             journeyAnalysis
           })
-        : Promise.resolve([] as string[]),
+        : Promise.resolve([]),
 
       hasDescription
         ? translateCustomizationDescription({
