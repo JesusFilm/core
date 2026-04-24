@@ -58,17 +58,22 @@ export const globalTypes = {
   theme: {
     name: 'Theme Mode',
     description: 'Display mode for components',
-    defaultValue: 'all',
     toolbar: {
+      title: 'Theme Mode',
       icon: 'mirror',
       items: ['light', 'dark', 'all']
     }
   }
 }
 
+export const initialGlobals = {
+  theme: 'all'
+}
+
 export default {
   loaders: [mswLoader],
   parameters,
   globalTypes,
+  initialGlobals,
   tags: ['autodocs']
 }
