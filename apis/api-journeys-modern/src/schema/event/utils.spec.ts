@@ -51,12 +51,20 @@ describe('event utils', () => {
     __setEmailQueueForTests(mockEmailQueue)
     __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueue)
     // Clear NODE_ENV to allow queue to work
-    delete process.env.NODE_ENV
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: undefined,
+      writable: true,
+      configurable: true
+    })
   })
 
   afterEach(() => {
     // Restore test environment
-    process.env.NODE_ENV = 'test'
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'test',
+      writable: true,
+      configurable: true
+    })
   })
 
   describe('validateBlockEvent', () => {
@@ -376,7 +384,11 @@ describe('event utils', () => {
   describe('sendEventsEmail', () => {
     beforeEach(() => {
       __setEmailQueueForTests(mockEmailQueue)
-      delete process.env.NODE_ENV
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: undefined,
+        writable: true,
+        configurable: true
+      })
     })
 
     it('should add email job to queue', async () => {
@@ -423,7 +435,11 @@ describe('event utils', () => {
   describe('resetEventsEmailDelay', () => {
     beforeEach(() => {
       __setEmailQueueForTests(mockEmailQueue)
-      delete process.env.NODE_ENV
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: undefined,
+        writable: true,
+        configurable: true
+      })
     })
 
     it('should change delay of existing job', async () => {
@@ -474,7 +490,11 @@ describe('event utils', () => {
     beforeEach(() => {
       jest.clearAllMocks()
       __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueue)
-      delete process.env.NODE_ENV
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: undefined,
+        writable: true,
+        configurable: true
+      })
       mockLogger.warn.mockClear()
       // Pin clock to a known mid-minute time so delay calculations are deterministic
       jest.useFakeTimers()
