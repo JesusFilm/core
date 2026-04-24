@@ -18,6 +18,7 @@ module.exports = {
   ...i18nextConfigBase,
   extract: {
     ...i18nextConfigBase.extract,
+    defaultNS: 'PROJECT_NAMESPACE', // e.g. 'apps-journeys' or 'libs-journeys-ui'
     input: ['src/**/*.{js,jsx,ts,tsx}']
   }
 }
