@@ -50,7 +50,6 @@ export const SUPPORTED_LANGUAGE_IDS = [
   '10393', // Norwegian
   '21064', // Portuguese, Portugal
   '5546', // Romanian
-  '5541', // Serbian
   '13172', // Sinhala
   '5545', // Slovak
   '1112', // Slovenian
