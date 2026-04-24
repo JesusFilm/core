@@ -143,7 +143,8 @@ describe('SignInServiceButton', () => {
     const linkedUserCredential = {
       user: {
         displayName: 'First name last name',
-        email: 'example@example.com'
+        email: 'example@example.com',
+        getIdToken: jest.fn().mockResolvedValue('guest-linked-token')
       }
     } as unknown as UserCredential
 
