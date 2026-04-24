@@ -26,6 +26,7 @@ export function canAccessCustomDomain(
   if (
     action === Action.Create ||
     action === Action.Update ||
+    action === Action.Delete ||
     action === Action.Manage
   ) {
     return userTeam?.role === UserTeamRole.manager

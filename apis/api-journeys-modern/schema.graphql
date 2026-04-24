@@ -1520,6 +1520,7 @@ type Mutation {
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction!
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @override(from: "api-journeys")
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @override(from: "api-journeys")
+  customDomainDelete(id: ID!): CustomDomain! @override(from: "api-journeys")
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain! @override(from: "api-journeys")
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
