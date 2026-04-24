@@ -1,5 +1,5 @@
 ---
-title: "feat: Default Copy To Team Dialog to the active team"
+title: 'feat: Default Copy To Team Dialog to the active team'
 type: feat
 status: active
 date: 2026-04-24
@@ -40,7 +40,7 @@ The dialog is reused by:
 - `apps/journeys-admin/src/components/Team/CopyToTeamMenuItem/CopyToTeamMenuItem.tsx` — copy template to team (works for both team templates and global templates)
 - `apps/journeys-admin/src/components/**/DuplicateJourneyMenuItem` — duplicate journey
 
-In every invocation the user is asking *"which team do I want this in?"* and the correct presumptive answer is *"the team I am currently working in"*. Conditionally defaulting only for team templates would (a) require a new prop to carry "this is a team template" down to the dialog (the dialog currently has no signal for this — `journeyIsTemplate` is true for both team and global templates), and (b) leave global-template and duplicate flows with an unnecessarily empty dropdown. A single unconditional default is both simpler and better UX.
+In every invocation the user is asking _"which team do I want this in?"_ and the correct presumptive answer is _"the team I am currently working in"_. Conditionally defaulting only for team templates would (a) require a new prop to carry "this is a team template" down to the dialog (the dialog currently has no signal for this — `journeyIsTemplate` is true for both team and global templates), and (b) leave global-template and duplicate flows with an unnecessarily empty dropdown. A single unconditional default is both simpler and better UX.
 
 If the reviewer disagrees and wants the narrow scope only, the alternative in **Alternative Approaches Considered** describes the extra prop plumbing required.
 
@@ -57,7 +57,7 @@ The `JourneyDuplicate` mutation (`libs/journeys/ui/src/libs/useJourneyDuplicateM
 
 ## System-Wide Impact
 
-- **Interaction graph:** User clicks *Use this Template* (or *Duplicate* in a journey menu) → dialog opens → Formik initializes with new default → user clicks Submit → `submitAction` → `JourneyDuplicate` mutation → `updateLastActiveTeamId` mutation → `GetAdminJourneys` refetch. The chain is unchanged; only the initial field value changes.
+- **Interaction graph:** User clicks _Use this Template_ (or _Duplicate_ in a journey menu) → dialog opens → Formik initializes with new default → user clicks Submit → `submitAction` → `JourneyDuplicate` mutation → `updateLastActiveTeamId` mutation → `GetAdminJourneys` refetch. The chain is unchanged; only the initial field value changes.
 - **Error propagation:** No new error paths. Form validation on `teamSelect` (`required`, line 156) still fires if somehow the default resolves to `''`.
 - **State lifecycle risks:** None. `resetForm()` is still called on submit (line 140) and on close (line 210), so subsequent opens pick up the latest `activeTeam` cleanly.
 - **API surface parity:** No mutation signature changes. Both callers (`CopyToTeamMenuItem`, `DuplicateJourneyMenuItem`) inherit the new default without code changes.
@@ -84,12 +84,12 @@ The `JourneyDuplicate` mutation (`libs/journeys/ui/src/libs/useJourneyDuplicateM
 
 - **Dependency:** `TeamProvider` must be an ancestor of `CopyToTeamDialog`. Already the case in every invocation (journeys-admin wraps the admin shell in `TeamProvider`, and both `CopyToTeamMenuItem` and `DuplicateJourneyMenuItem` render inside it).
 - **Risk:** A Jest test that previously asserted the combobox was empty after load (when `lastActiveTeamId` was set) could start failing. Grep for such assertions during implementation — plan research already catalogs the two relevant spec files.
-- **Risk:** If a future caller mounts `CopyToTeamDialog` *outside* a `TeamProvider`, `useTeam()` returns `{} as Context` (line 34 in `TeamProvider.tsx`) and `activeTeam` is `undefined`. The `?? fallback` chain handles this gracefully (behaves exactly like today). No regression.
+- **Risk:** If a future caller mounts `CopyToTeamDialog` _outside_ a `TeamProvider`, `useTeam()` returns `{} as Context` (line 34 in `TeamProvider.tsx`) and `activeTeam` is `undefined`. The `?? fallback` chain handles this gracefully (behaves exactly like today). No regression.
 
 ## Alternative Approaches Considered
 
 1. **Narrow to team templates only.** Would require passing a new `sourceJourneyTeamId` prop (or similar) from `CopyToTeamMenuItem` down to the dialog so it could toggle default behavior. Rejected: the broader default is strictly better UX in all call sites, and adding a prop purely to gate behavior adds dead weight.
-2. **Default to `journey.team.id` (team that *owns* the template) rather than `activeTeam.id`.** Rejected: Lucinda's ask is explicitly *"the team you are on"*, which is `activeTeam`. For team templates these usually coincide, but `activeTeam` is the true signal for "where the user is working right now."
+2. **Default to `journey.team.id` (team that _owns_ the template) rather than `activeTeam.id`.** Rejected: Lucinda's ask is explicitly _"the team you are on"_, which is `activeTeam`. For team templates these usually coincide, but `activeTeam` is the true signal for "where the user is working right now."
 3. **Move the default logic into `CopyToTeamMenuItem` / `DuplicateJourneyMenuItem` instead of the dialog.** Rejected: the dialog is the lowest common point for both call sites, and the logic is a one-liner — centralising in the dialog avoids duplication.
 4. **Backend change: have `JourneyDuplicate` infer `teamId` from the authenticated user's last active team if omitted.** Rejected: scope creep, requires a migration of the mutation input type, and the client already knows the answer.
 
@@ -107,12 +107,14 @@ Single pass, single commit:
    - Existing single-team test remains unchanged.
 
 3. **Run tests for the library:**
+
    ```bash
    npx jest --config libs/journeys/ui/jest.config.ts --no-coverage \
      'libs/journeys/ui/src/components/CopyToTeamDialog'
    ```
 
 4. **Run caller tests to confirm no regression:**
+
    ```bash
    npx jest --config apps/journeys-admin/jest.config.ts --no-coverage \
      'apps/journeys-admin/src/components/Team/CopyToTeamMenuItem'
@@ -122,13 +124,13 @@ Single pass, single commit:
 
 ## Test Plan (manual)
 
-| # | Setup | Expect |
-|---|---|---|
-| 1 | Log in as a user with ≥2 teams. Switch active team to Team A. Navigate to *Templates* → open any team template → click **Use this Template** → (customize → Copy). | Team dropdown pre-selects **Team A**. |
-| 2 | Same as #1 but switch active team to the "Shared with me" view (`activeTeam === null`). | Team dropdown is empty, user must pick. |
-| 3 | Same as #1 but use a *global* (JFP) template. | Team dropdown pre-selects **Team A** (same improved behavior, acknowledged scope). |
-| 4 | Log in as a user with exactly one team. Repeat #1. | Team dropdown pre-selects the single team (unchanged behavior). |
-| 5 | Open any journey's **Duplicate** menu item while on Team A. | Team dropdown pre-selects **Team A** (improved behavior in duplicate flow). |
+| #   | Setup                                                                                                                                                              | Expect                                                                             |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| 1   | Log in as a user with ≥2 teams. Switch active team to Team A. Navigate to _Templates_ → open any team template → click **Use this Template** → (customize → Copy). | Team dropdown pre-selects **Team A**.                                              |
+| 2   | Same as #1 but switch active team to the "Shared with me" view (`activeTeam === null`).                                                                            | Team dropdown is empty, user must pick.                                            |
+| 3   | Same as #1 but use a _global_ (JFP) template.                                                                                                                      | Team dropdown pre-selects **Team A** (same improved behavior, acknowledged scope). |
+| 4   | Log in as a user with exactly one team. Repeat #1.                                                                                                                 | Team dropdown pre-selects the single team (unchanged behavior).                    |
+| 5   | Open any journey's **Duplicate** menu item while on Team A.                                                                                                        | Team dropdown pre-selects **Team A** (improved behavior in duplicate flow).        |
 
 ## Sources & References
 

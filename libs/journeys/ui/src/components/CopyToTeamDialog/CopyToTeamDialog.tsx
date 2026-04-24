@@ -170,8 +170,7 @@ export function CopyToTeamDialog({
   return (
     <Formik<FormValues>
       initialValues={{
-        teamSelect:
-          activeTeam?.id ?? (teams.length === 1 ? teams[0].id : ''),
+        teamSelect: activeTeam?.id ?? (teams.length === 1 ? teams[0].id : ''),
         languageSelect: undefined,
         showTranslation: false
       }}
