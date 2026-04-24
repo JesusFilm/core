@@ -826,4 +826,74 @@ describe('CopyToTeamDialog', () => {
       expect(getByRole('button', { name: 'Copy' })).toBeDisabled()
     })
   })
+
+  describe('default team selection from active team', () => {
+    beforeEach(() => {
+      window.sessionStorage.clear()
+    })
+
+    function renderWithLastActiveTeam(
+      lastActiveTeamId: string | null
+    ): ReturnType<typeof render> & { queryResult: jest.Mock } {
+      const queryResult = jest.fn(() => ({
+        data: {
+          teams: [
+            { id: 'team-a', title: 'Team A', __typename: 'Team' },
+            { id: 'team-b', title: 'Team B', __typename: 'Team' }
+          ],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            lastActiveTeamId
+          }
+        }
+      }))
+      const utils = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+              result: queryResult
+            }
+          ]}
+        >
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { id: 'journeyId' } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <TeamProvider>
+                <CopyToTeamDialog
+                  open
+                  title="Copy To Journey"
+                  onClose={handleCloseMenuMock}
+                  submitAction={handleSubmitActionMock}
+                />
+              </TeamProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      return { ...utils, queryResult }
+    }
+
+    it('should default the team dropdown to the active team when the user has multiple teams', async () => {
+      const { getByRole, queryResult } = renderWithLastActiveTeam('team-b')
+      await waitFor(() => expect(queryResult).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(
+          getByRole('combobox', { name: 'Select Team' })
+        ).toHaveTextContent('Team B')
+      )
+    })
+
+    it('should leave the team dropdown empty when the user has multiple teams and no active team', async () => {
+      const { getByRole, queryResult } = renderWithLastActiveTeam(null)
+      await waitFor(() => expect(queryResult).toHaveBeenCalled())
+      const teamSelect = getByRole('combobox', { name: 'Select Team' })
+      expect(teamSelect).not.toHaveTextContent('Team A')
+      expect(teamSelect).not.toHaveTextContent('Team B')
+    })
+  })
 })

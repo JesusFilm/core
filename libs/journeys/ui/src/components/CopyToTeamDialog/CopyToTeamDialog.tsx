@@ -89,7 +89,7 @@ export function CopyToTeamDialog({
   journeyFromTemplateId
 }: CopyToTeamDialogProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const { query, setActiveTeam } = useTeam()
+  const { query, setActiveTeam, activeTeam } = useTeam()
   const teams = query?.data?.teams ?? []
   const [updateLastActiveTeamId, { client }] =
     useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
@@ -170,7 +170,7 @@ export function CopyToTeamDialog({
   return (
     <Formik<FormValues>
       initialValues={{
-        teamSelect: teams.length === 1 ? teams[0].id : '',
+        teamSelect: activeTeam?.id ?? (teams.length === 1 ? teams[0].id : ''),
         languageSelect: undefined,
         showTranslation: false
       }}
