@@ -1,4 +1,9 @@
+import path from 'node:path'
+
 import type { FullConfig } from '@playwright/test'
+
+const { loadPlaywrightEnv } = require('../../../tools/e2e/playwright-load-env.cjs')
+loadPlaywrightEnv(path.join(__dirname, '..'))
 
 async function waitForHealthy(url: string, timeoutMs: number): Promise<void> {
   const start = Date.now()

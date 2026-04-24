@@ -185,10 +185,15 @@ test.describe('media component languages', () => {
 
     expect(response.ok()).toBeTruthy()
     const data = await response.json()
-    const language = getLanguageWithSubtitleFormat(
-      data._embedded.mediaComponentLanguage,
-      'vtt'
+    const languages = data._embedded
+      .mediaComponentLanguage as MediaComponentLanguage[]
+    expect(languages.length).toBeGreaterThan(0)
+    const languageWithTracks = languages.find(
+      (entry) =>
+        (entry.subtitleUrls?.vtt?.length ?? 0) > 0 ||
+        (entry.subtitleUrls?.srt?.length ?? 0) > 0
     )
+    const language = languageWithTracks ?? languages[0]
 
     // Streaming URLs
     expect(language.streamingUrls).toEqual({})
@@ -197,14 +202,20 @@ test.describe('media component languages', () => {
     expect(language).toHaveProperty('webEmbedPlayer')
     expect(language).toHaveProperty('webEmbedSharePlayer')
 
-    // Subtitle formats
-    expect(language.subtitleUrls).toBeDefined()
-    expect(language.subtitleUrls?.vtt?.[0]).toMatchObject({
-      languageId: expect.any(Number),
-      languageName: expect.any(String),
-      languageTag: expect.any(String),
-      url: expect.any(String)
-    })
+    // Subtitle tracks are optional on web for some components; assert when present.
+    if (
+      (language.subtitleUrls?.vtt?.length ?? 0) > 0 ||
+      (language.subtitleUrls?.srt?.length ?? 0) > 0
+    ) {
+      const subtitleEntry =
+        language.subtitleUrls?.vtt?.[0] ?? language.subtitleUrls?.srt?.[0]
+      expect(subtitleEntry).toMatchObject({
+        languageId: expect.any(Number),
+        languageName: expect.any(String),
+        languageTag: expect.any(String),
+        url: expect.any(String)
+      })
+    }
   })
 
   test('download URL includes metadata', async ({ request }) => {

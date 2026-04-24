@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { defineConfig, devices } from '@playwright/test'
 
 /**
- * Read environment variables from file.
+ * Read environment variables from `apps/watch-modern-e2e/.env`.
  * https://github.com/motdotla/dotenv
  */
-require('dotenv').config()
+const { loadPlaywrightEnv } = require('../../tools/e2e/playwright-load-env.cjs')
+loadPlaywrightEnv(__dirname)
 
 export default defineConfig({
   testDir: './src/e2e',
@@ -23,8 +25,14 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] }
+      name: 'chrome-desktop',
+      use: {
+        ...devices['Desktop Chrome'],
+        channel:
+          process.platform === 'linux' && process.arch === 'arm64'
+            ? 'chromium'
+            : 'chrome'
+      }
     }
   ]
 })

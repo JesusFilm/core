@@ -2,10 +2,11 @@
 import { defineConfig, devices } from '@playwright/test'
 
 /**
- * Read environment variables from file.
+ * Read environment variables from `apps/journeys-e2e/.env`.
  * https://github.com/motdotla/dotenv
  */
-require('dotenv').config()
+const { loadPlaywrightEnv } = require('../../tools/e2e/playwright-load-env.cjs')
+loadPlaywrightEnv(__dirname)
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -60,8 +61,20 @@ export default defineConfig({
     // // By default it's using chromium channel, changed it to chrome so it can play the video
     {
       name: 'chrome-mobile',
+      testIgnore: '**/journeys.spec.ts',
       use: {
         ...devices['Pixel 7'],
+        channel:
+          process.platform === 'linux' && process.arch === 'arm64'
+            ? 'chromium'
+            : 'chrome'
+      }
+    },
+    {
+      name: 'chrome-desktop',
+      testMatch: '**/journeys.spec.ts',
+      use: {
+        ...devices['Desktop Chrome'],
         channel:
           process.platform === 'linux' && process.arch === 'arm64'
             ? 'chromium'

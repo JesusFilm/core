@@ -1,6 +1,9 @@
+import path from 'node:path'
+
 import dayjs from 'dayjs'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require('dotenv').config()
+
+const { loadPlaywrightEnv } = require('../../../../tools/e2e/playwright-load-env.cjs')
+loadPlaywrightEnv(path.join(__dirname, '..', '..'))
 
 async function getCredentials(
   accountKey: string

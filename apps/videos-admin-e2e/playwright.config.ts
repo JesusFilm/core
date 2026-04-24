@@ -2,10 +2,11 @@
 import { defineConfig, devices } from '@playwright/test'
 
 /**
- * Read environment variables from file.
+ * Read environment variables from `apps/videos-admin-e2e/.env`.
  * https://github.com/motdotla/dotenv
  */
-require('dotenv').config()
+const { loadPlaywrightEnv } = require('../../tools/e2e/playwright-load-env.cjs')
+loadPlaywrightEnv(__dirname)
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -60,10 +61,15 @@ export default defineConfig({
     //   use: { ...devices['iPhone 12'] },
     // },
 
-    /* Others. */
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] }
+      name: 'chrome-desktop',
+      use: {
+        ...devices['Desktop Chrome'],
+        channel:
+          process.platform === 'linux' && process.arch === 'arm64'
+            ? 'chromium'
+            : 'chrome'
+      }
     }
 
     // {

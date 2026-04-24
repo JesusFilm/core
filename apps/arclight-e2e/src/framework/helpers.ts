@@ -1,14 +1,20 @@
+import path from 'node:path'
+
 import { testData } from '../utils/testData'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require('dotenv').config()
+const { loadPlaywrightEnv } = require('../../../../tools/e2e/playwright-load-env.cjs')
+loadPlaywrightEnv(path.join(__dirname, '..', '..'))
 
 export async function getBaseUrl(): Promise<string> {
-  const baseUrl = process.env.DEPLOYMENT_URL?.toString()
+  const baseUrl =
+    process.env.ARCLIGHT_DAILY_E2E?.toString() ??
+    process.env.DEPLOYMENT_URL?.toString()
   if (!baseUrl) {
-    throw new Error('baseUrl was not provided via environment variable')
+    throw new Error(
+      'baseUrl was not provided via environment variable (set ARCLIGHT_DAILY_E2E or DEPLOYMENT_URL)'
+    )
   }
-  return baseUrl
+  return baseUrl.replace(/\/$/, '')
 }
 
 export function createQueryParams(

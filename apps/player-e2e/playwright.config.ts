@@ -1,10 +1,11 @@
 import { defineConfig, devices } from '@playwright/test'
 
 /**
- * Read environment variables from file.
+ * Read environment variables from `apps/player-e2e/.env`.
  * https://github.com/motdotla/dotenv
  */
-require('dotenv').config()
+const { loadPlaywrightEnv } = require('../../tools/e2e/playwright-load-env.cjs')
+loadPlaywrightEnv(__dirname)
 
 export default defineConfig({
   testDir: './src/e2e',

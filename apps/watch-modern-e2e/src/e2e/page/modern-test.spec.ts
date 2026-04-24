@@ -3,7 +3,8 @@ import { expect, test } from '@playwright/test'
 test('modern test page shows architecture and routing copy', async ({
   page
 }) => {
-  await page.goto('/modern-test')
+  // `watch-modern` sets Next `basePath: '/watch'` — the route is not at the deployment origin root.
+  await page.goto('/watch/modern-test')
 
   await expect(
     page.getByRole('heading', { name: 'Modern Test Page', exact: true })
