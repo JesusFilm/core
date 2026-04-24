@@ -9,12 +9,14 @@ export function SignInTabs(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [tabValue, setTabValue] = useState(0)
 
+  function handleTabChange(_: unknown, newValue: number): void {
+    setTabValue(newValue)
+  }
+
   return (
     <Tabs
       value={tabValue}
-      onChange={(_, newValue) => {
-        setTabValue(newValue)
-      }}
+      onChange={handleTabChange}
       variant="fullWidth"
       sx={{ borderBottom: 1, borderColor: 'divider' }}
     >

@@ -56,7 +56,7 @@ export function AccountCheckDialog({
             variant="outlined"
             size="large"
             color="secondary"
-            onClick={() => handleSignIn()}
+            onClick={handleSignIn}
           >
             {t('Login with my account')}
           </Button>
@@ -65,7 +65,7 @@ export function AccountCheckDialog({
             variant="outlined"
             size="large"
             color="secondary"
-            onClick={() => handleSignIn()}
+            onClick={handleSignIn}
           >
             {t('Create a new account')}
           </Button>

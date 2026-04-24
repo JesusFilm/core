@@ -16,10 +16,10 @@ symptoms:
   - 'Tab selection appears broken or uncontrollable'
   - 'MUI Tabs controlled component reverts to index 0 unexpectedly'
 components:
-  - 'apps/journeys-admin/src/components/SignInTabs/SignInTabs.tsx'
-  - 'apps/journeys-admin/src/components/AccountCheckDialog/AccountCheckDialog.tsx'
-  - 'apps/journeys-admin/src/components/CreateJourneyButton/CreateJourneyButton.tsx'
-  - 'apps/journeys-admin/src/components/UseThisTemplateButton/UseThisTemplateButton.tsx'
+  - 'apps/journeys-admin/src/components/SignIn/SignInTabs/SignInTabs.tsx'
+  - 'libs/journeys/ui/src/components/TemplateView/AccountCheckDialog/AccountCheckDialog.tsx'
+  - 'libs/journeys/ui/src/components/TemplateView/CreateJourneyButton/CreateJourneyButton.tsx'
+  - 'libs/journeys/ui/src/components/TemplateView/UseThisTemplateButton/UseThisTemplateButton.tsx'
 problem_type: 'ui_bug'
 ---
 
@@ -46,9 +46,9 @@ The Next.js Pages Router object is **not referentially stable** — it is replac
 
 1. **`SignInTabs.tsx`** — confirmed that `useEffect([router])` was the direct cause. The `router` reference instability in Next.js Pages Router means the effect fires far more often than intended.
 
-2. **What the tabs actually controlled** — the tabs were purely cosmetic for the first step of the sign-in flow. Real branching (new account vs. existing account) happens after email submission via `fetchSignInMethodsForEmail`. The tabs did not switch forms, routes, or pages.
+2. **What the tabs actually controlled** — the tabs in `apps/journeys-admin/src/components/SignIn/SignInTabs/SignInTabs.tsx` were purely cosmetic for the first step of the sign-in flow. Real branching (new account vs. existing account) happens after email submission via `fetchSignInMethodsForEmail`. The tabs did not switch forms, routes, or pages.
 
-3. **`AccountCheckDialog.tsx`** — the only two callers that ever set `login` in the query were `CreateJourneyButton` and `UseThisTemplateButton` via `AccountCheckDialog`. The `handleSignIn(login: boolean)` callback passed `true` for "Login with my account" and `false` for "Create a new account", appending `login: true/false` to the `router.push` query for `/users/sign-in`. Since tabs were cosmetic and did not affect identity verification, this pre-selection hint provided no functional value.
+3. **`libs/journeys/ui/src/components/TemplateView/AccountCheckDialog/AccountCheckDialog.tsx`** — the only two callers that ever set `login` in the query were `CreateJourneyButton` and `UseThisTemplateButton` (both under `libs/journeys/ui/src/components/TemplateView/`) via `AccountCheckDialog`. The `handleSignIn(login: boolean)` callback passed `true` for "Login with my account" and `false` for "Create a new account", appending `login: true/false` to the `router.push` query for `/users/sign-in`. Since tabs were cosmetic and did not affect identity verification, this pre-selection hint provided no functional value.
 
 ## Solution
 
