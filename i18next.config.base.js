@@ -6,6 +6,7 @@ module.exports = {
     nsSeparator: false,
     keySeparator: false,
     defaultValue: (key) => key,
-    removeUnusedKeys: true
+    removeUnusedKeys: false,
+    sort: false
   }
 }

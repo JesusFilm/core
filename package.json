@@ -424,6 +424,13 @@
   "pnpm": {
     "overrides": {
       "strapi-blurhash>canvas": "^3.2.1"
+    },
+    "packageExtensions": {
+      "i18next-cli": {
+        "dependencies": {
+          "i18next": "^26.0.1"
+        }
+      }
     }
   }
 }
