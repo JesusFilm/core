@@ -16,7 +16,11 @@ export function Actions({
   const { t } = useTranslation('libs-journeys-ui')
 
   const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(content)
+    try {
+      await navigator.clipboard.writeText(content)
+    } catch (error) {
+      console.warn('Failed to copy message to clipboard', error)
+    }
   }, [content])
 
   return (

@@ -10,7 +10,6 @@ import { DefaultChatTransport, UIMessage } from 'ai'
 import { useTranslation } from 'next-i18next'
 import {
   FormEvent,
-  KeyboardEvent,
   ReactElement,
   useCallback,
   useEffect,
@@ -124,9 +123,10 @@ function AssistantBubble({
 }
 
 function TypingIndicator(): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   return (
     <Box
-      aria-label="Assistant is typing"
+      aria-label={t('Assistant is typing')}
       sx={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -171,16 +171,6 @@ export function AiChat({
   const handleToggleCollapse = useCallback(() => {
     setCollapsed((prev) => !prev)
   }, [])
-
-  const handleHandleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLButtonElement>) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        setCollapsed((prev) => !prev)
-      }
-    },
-    []
-  )
 
   const languageBcp47 = journey?.language?.bcp47 ?? undefined
   const languageRef = useRef(languageBcp47)
@@ -266,7 +256,6 @@ export function AiChat({
         >
           <IconButton
             onClick={handleToggleCollapse}
-            onKeyDown={handleHandleKeyDown}
             tabIndex={0}
             aria-label={collapsed ? t('Expand chat') : t('Collapse chat')}
             aria-expanded={!collapsed}

@@ -56,6 +56,10 @@ export async function getLaunchDarklyClient(user?: LDUser): Promise<LDClient> {
       'LaunchDarkly client initiation failed or timed out, using stub client:',
       error
     )
+    // Clear the cached client so the next call can spawn a fresh one and
+    // benefit from a new initialization attempt, rather than re-racing the
+    // same stuck instance and paying the timeout on every request.
+    globalForLD.__launchDarklyClient = undefined
 
     return stubClient
   }
