@@ -134,10 +134,11 @@ export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Record<BlockEventLabel, keyof
 Replace the 5 duplicated dispatch blocks with a single shared helper:
 
 ```ts
+// Note: the shipped version uses <TInput extends object> generic which is dead weight
+// (the as Props cast inside erases it) — tracked in todo 007 for removal.
 interface FireCaptureEventOptions {
   u: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  input: Record<string, any>
+  input: Record<string, unknown>
   stepId: string
   blockId: string
   target?: Action | string | null
@@ -282,51 +283,19 @@ The server-side map handles historical Plausible events recorded before this fix
 
 Mismatches between the two maps cause historical events to aggregate under a different name than new events, corrupting template stats breakdown.
 
-## Secondary Review Findings (Second-Pass CE Review)
+## Secondary Review Findings (CE Code Review — All Passes)
 
-A second CE code review pass on PR #9075 found 8 additional issues beyond the original 6, documenting further opportunities to harden `fireCaptureEvent` and the surrounding analytics pipeline.
+Multiple CE code review passes on PR #9075 surfaced the following issues beyond the original 6 bugs. Each is tracked in a todo file.
 
-### P2 — Finding 1: YAGNI Generic + Dead Branches in `fireCaptureEvent`
+### P2 — Finding 1: Dead Generic `<TInput extends object>` on `fireCaptureEvent`
 
-**File:** `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts:220–262`
+**File:** `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts`
 
-Three overlapping simplification problems:
+`fireCaptureEvent<TInput extends object>` declares a generic type parameter, but inside the function body the spread is immediately cast `as Props` — which has a `[K: string]: any` index signature. `TInput` is erased at that point. All 5 call sites pass input objects with no generic annotation. The generic adds visual noise and misleads readers.
 
-1. `<TInput extends object>` generic is immediately erased by an `as Props` cast — provides zero type safety.
-2. `target?: Action | string | null` — the `string` union is dead; no caller passes a plain string.
-3. `stepId: string` in options is always `input.stepId ?? ''` at all 5 call sites.
+**Recommended fix:** Remove the generic entirely. Use `input: Record<string, unknown>` or match the `Props` index signature with `Record<string, any>`.
 
-**Recommended fix:** Remove the generic, narrow `target` to `Action | null`, derive `stepId` internally:
-
-```ts
-interface FireCaptureEventOptions {
-  u: string
-  input: object
-  blockId: string
-  target?: Action | null
-  templateTarget?: string | null
-  journeyId?: string
-}
-
-export function fireCaptureEvent(plausible: ReturnType<typeof usePlausible<JourneyPlausibleEvents>>, eventLabel: BlockEventLabel | null | undefined, { u, input, blockId, target, templateTarget, journeyId }: FireCaptureEventOptions): void {
-  const captureEvent = eventLabel != null ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel] : null
-  if (captureEvent == null) return
-
-  const stepId = (input as { stepId?: string | null }).stepId ?? ''
-  plausible(captureEvent, {
-    u,
-    props: {
-      ...input,
-      blockId,
-      key: keyify({ stepId, event: captureEvent, blockId, target, journeyId }),
-      simpleKey: keyify({ stepId, event: captureEvent, blockId, journeyId }),
-      templateKey: templateKeyify({ event: captureEvent, target: templateTarget, journeyId })
-    } as Props
-  })
-}
-```
-
-Tracked in: [todo 001](../../todos/001-pending-p2-simplify-fire-capture-event.md)
+Tracked in: [007-pending-p2-firecaptureevent-dead-generic-type.md](../../todos/007-pending-p2-firecaptureevent-dead-generic-type.md)
 
 ---
 
@@ -347,15 +316,27 @@ const EVENT_TO_CAPTURE_MAP: Partial<Record<BlockEventLabel, string>> = {
 }
 ```
 
-Tracked in: [todo 002](../../todos/002-pending-p2-server-event-map-type-enforcement.md)
+Tracked in: [003-pending-p2-dual-mapping-sync-missing-test.md](../../todos/003-pending-p2-dual-mapping-sync-missing-test.md)
 
 ---
 
-### P2 — Finding 3: PII Footgun — `...input` Spread Has No Guard
+### P2 — Finding 3: `EVENT_TO_CAPTURE_MAP` Backward-Compat Path Has No Test
 
-**File:** `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts:247–262`
+**File:** `apis/api-journeys-modern/src/schema/plausible/templateFamilyStatsBreakdown/utils/transformBreakdownResults.spec.ts`
 
-`fireCaptureEvent` spreads `...input` directly into Plausible event props (third-party). Current callers pass safe types. However, the `input: object` interface has no type guard preventing future callers from passing PII-containing types (e.g. `SignUpSubmissionEventCreateInput` with `name` and `email`).
+Historical Plausible events used raw `BlockEventLabel` strings (e.g., `'decisionForChrist'`). `EVENT_TO_CAPTURE_MAP` maps these to canonical goal names for backward-compat. No test exercises this rename path — if the map is removed or a key mistyped, historical data becomes invisible with no failing test.
+
+**Recommended fix:** Add a test asserting that a breakdown row with `event: 'decisionForChrist'` maps to `christDecisionCapture` in the output.
+
+Tracked in: [009-pending-p2-server-event-to-capture-map-backward-compat-untested.md](../../todos/009-pending-p2-server-event-to-capture-map-backward-compat-untested.md)
+
+---
+
+### P2 — Finding 4: PII Footgun — `...input` Spread Has No Guard
+
+**File:** `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts`
+
+`fireCaptureEvent` spreads `...input` directly into Plausible event props (third-party). Current callers pass safe types. However, the `input` interface has no type guard preventing future callers from passing PII-containing types (e.g. `SignUpSubmissionEventCreateInput` with `name` and `email`).
 
 **Minimum fix:** Add JSDoc to `FireCaptureEventOptions.input`:
 
@@ -366,14 +347,12 @@ Tracked in: [todo 002](../../todos/002-pending-p2-server-event-map-type-enforcem
  * Safe types: ButtonClickEventCreateInput, RadioQuestionSubmissionEventCreateInput,
  *   VideoStartEventCreateInput, VideoCompleteEventCreateInput.
  */
-input: object
+input: Record<string, unknown>
 ```
-
-Tracked in: [todo 003](../../todos/003-pending-p2-fire-capture-event-pii-guard.md)
 
 ---
 
-### P2 — Finding 4: `reverseKeyify` `JSON.parse` Has No Error Handling
+### P2 — Finding 5: `reverseKeyify` `JSON.parse` Has No Error Handling
 
 **File:** `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts:145–153`
 
@@ -391,9 +370,11 @@ export function reverseKeyify(key: string): {
 } | null {
   try {
     const parsed = JSON.parse(key)
-    if (typeof parsed?.stepId !== 'string' || typeof parsed?.event !== 'string' || typeof parsed?.blockId !== 'string') {
-      return null
-    }
+    if (
+      typeof parsed?.stepId !== 'string' ||
+      typeof parsed?.event !== 'string' ||
+      typeof parsed?.blockId !== 'string'
+    ) return null
     return parsed
   } catch {
     return null
@@ -401,41 +382,37 @@ export function reverseKeyify(key: string): {
 }
 ```
 
-Update call site in `transformJourneyAnalytics.ts:149` to handle `null`.
-
-Tracked in: [todo 004](../../todos/004-pending-p2-reverse-keyify-json-parse-safety.md)
+Update call site in `transformJourneyAnalytics.ts` to handle `null`.
 
 ---
 
-### P3 — Finding 5: Missing Direct Unit Tests for `fireCaptureEvent`
+### P2 — Finding 6: Missing Direct Unit Tests for `fireCaptureEvent`
 
-`plausibleHelpers.spec.ts` covers `BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT` exhaustively but has no tests for `fireCaptureEvent` itself. Missing: `eventLabel=null`, `eventLabel=undefined`, null-mapped labels (`inviteFriend`, `share`).
+`plausibleHelpers.spec.ts` covers `BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT` entries but has no tests for `fireCaptureEvent` itself. The helper is the core correctness claim of QA-359 — if its null-guard or dispatch logic regresses, component tests may not catch it.
 
-Tracked in: [todo 005](../../todos/005-pending-p3-fire-capture-event-unit-tests.md)
+**Minimum tests needed:** `eventLabel=null` → no-op; `eventLabel=inviteFriend` (null-mapped) → no-op; `eventLabel=decisionForChrist` → plausible called with `'christDecisionCapture'` and correct `blockId` override.
 
----
-
-### P3 — Finding 6: Missing `afterEach` NODE_ENV Restoration
-
-`describe('appendEventToGoogleSheets')` in `utils.spec.ts` sets `NODE_ENV=undefined` in `beforeEach` but its `afterEach` only calls `jest.useRealTimers()` — NODE_ENV restoration is missing, relying on the outer describe's `afterEach` which may not run after failures.
-
-Tracked in: [todo 006](../../todos/006-pending-p3-after-each-node-env-restoration.md)
+Tracked in: [008-pending-p2-firecaptureevent-no-direct-unit-tests.md](../../todos/008-pending-p2-firecaptureevent-no-direct-unit-tests.md)
 
 ---
 
-### P3 — Finding 7: Duplicate Import + Lint Suppress in `RadioQuestion.tsx`
+### P3 — Finding 7: Verbose Per-Enum-Value Tests for Mapping
 
-`actionToTarget` is imported from both the barrel (`../../libs/plausibleHelpers`) and directly from `plausibleHelpers.ts` with `// eslint-disable-next-line import/no-cycle`. The barrel already re-exports `actionToTarget` (index.ts line 2) — the direct import and lint suppress are unnecessary.
+`plausibleHelpers.spec.ts` has 12 individual `it()` blocks for `BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT` — one per `BlockEventLabel`. A single `toEqual` test on the full object is equivalent coverage in ~10 lines vs ~80, and fails with a clearer diff when any entry is wrong.
 
-Tracked in: [todo 007](../../todos/007-pending-p3-radioquestion-duplicate-import.md)
+Tracked in: [010-pending-p3-mapping-spec-verbosity.md](../../todos/010-pending-p3-mapping-spec-verbosity.md)
 
 ---
 
-### P3 — Finding 8: Missing JSDoc for `target`/`templateTarget` in `FireCaptureEventOptions`
+### P3 — Finding 8: Duplicate Import + Lint Suppress in `RadioQuestion.tsx`
 
-`target` (Action object → used in `key`) and `templateTarget` (pre-resolved string → used in `templateKey`) serve distinct purposes not evident from their names. VideoEvents omit both; Button/RadioQuestion pass both.
+`actionToTarget` is imported from both the barrel (`../../libs/plausibleHelpers`) and directly from `plausibleHelpers.ts` with `// eslint-disable-next-line import/no-cycle`. The barrel already re-exports `actionToTarget` — the direct import and lint suppress are unnecessary.
 
-Tracked in: [todo 008](../../todos/008-pending-p3-fire-capture-event-options-jsdoc.md)
+---
+
+### Agent-Native Parity: PASS
+
+A dedicated agent-native parity review confirmed all capabilities touched by this PR — setting `eventLabel` on blocks, reading capture event stats via `templateFamilyStatsBreakdown` — were already fully accessible through existing GraphQL mutations and queries before this PR and remain so after it. No new UI-only flows were introduced.
 
 ---
 
