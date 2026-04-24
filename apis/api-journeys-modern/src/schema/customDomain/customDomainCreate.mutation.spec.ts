@@ -86,9 +86,7 @@ describe('customDomainCreate', () => {
     ...mockCustomDomain,
     team: {
       id: 'teamId',
-      userTeams: [
-        { userId: 'userId', role: UserTeamRole.manager }
-      ]
+      userTeams: [{ userId: 'userId', role: UserTeamRole.manager }]
     }
   }
 
