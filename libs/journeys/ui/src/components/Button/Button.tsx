@@ -25,9 +25,9 @@ import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import {
-  BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT,
   JourneyPlausibleEvents,
   actionToTarget,
+  fireCaptureEvent,
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
@@ -212,36 +212,16 @@ export function Button({
             })
           }
         })
-        const clickCaptureEvent =
-          eventLabel != null
-            ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel]
-            : null
-        if (clickCaptureEvent != null) {
-          plausible(clickCaptureEvent, {
-            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
-            props: {
-              ...input,
-              key: keyify({
-                stepId: input.stepId ?? '',
-                event: clickCaptureEvent,
-                blockId: input.blockId,
-                target: action,
-                journeyId: journey.id
-              }),
-              simpleKey: keyify({
-                stepId: input.stepId ?? '',
-                event: clickCaptureEvent,
-                blockId: input.blockId,
-                journeyId: journey.id
-              }),
-              templateKey: templateKeyify({
-                event: clickCaptureEvent,
-                target: actionToTarget(action),
-                journeyId: journey?.id
-              })
-            }
-          })
-        }
+        fireCaptureEvent(plausible, eventLabel, {
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          input: input as Record<string, any>,
+          stepId: input.stepId ?? '',
+          blockId: input.blockId,
+          target: action,
+          templateTarget: actionToTarget(action),
+          journeyId: journey?.id
+        })
       }
       addEventToDataLayer(id)
     }
@@ -286,36 +266,16 @@ export function Button({
             })
           }
         })
-        const chatCaptureEvent =
-          eventLabel != null
-            ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel]
-            : null
-        if (chatCaptureEvent != null) {
-          plausible(chatCaptureEvent, {
-            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
-            props: {
-              ...input,
-              key: keyify({
-                stepId: input.stepId ?? '',
-                event: chatCaptureEvent,
-                blockId: input.blockId,
-                target: action,
-                journeyId: journey.id
-              }),
-              simpleKey: keyify({
-                stepId: input.stepId ?? '',
-                event: chatCaptureEvent,
-                blockId: input.blockId,
-                journeyId: journey.id
-              }),
-              templateKey: templateKeyify({
-                event: chatCaptureEvent,
-                target: actionToTarget(action),
-                journeyId: journey?.id
-              })
-            }
-          })
-        }
+        fireCaptureEvent(plausible, eventLabel, {
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          input: input as Record<string, any>,
+          stepId: input.stepId ?? '',
+          blockId: input.blockId,
+          target: action,
+          templateTarget: 'chat',
+          journeyId: journey?.id
+        })
       }
       addEventToDataLayer(id)
     }

@@ -11,8 +11,8 @@ import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import {
-  BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT,
   JourneyPlausibleEvents,
+  fireCaptureEvent,
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
@@ -150,36 +150,16 @@ export function RadioQuestion({
             })
           }
         })
-        const captureEvent =
-          radioOptionBlock.eventLabel != null
-            ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[radioOptionBlock.eventLabel]
-            : null
-        if (captureEvent != null) {
-          plausible(captureEvent, {
-            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
-            props: {
-              ...input,
-              key: keyify({
-                stepId: input.stepId ?? '',
-                event: captureEvent,
-                blockId: radioOptionBlock.id,
-                target: radioOptionBlock.action,
-                journeyId: journey?.id
-              }),
-              simpleKey: keyify({
-                stepId: input.stepId ?? '',
-                event: captureEvent,
-                blockId: radioOptionBlock.id,
-                journeyId: journey?.id
-              }),
-              templateKey: templateKeyify({
-                event: captureEvent,
-                target: actionToTarget(radioOptionBlock.action),
-                journeyId: journey?.id
-              })
-            }
-          })
-        }
+        fireCaptureEvent(plausible, radioOptionBlock.eventLabel, {
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          input: input as Record<string, any>,
+          stepId: input.stepId ?? '',
+          blockId: radioOptionBlock.id,
+          target: radioOptionBlock.action,
+          templateTarget: actionToTarget(radioOptionBlock.action),
+          journeyId: journey?.id
+        })
       }
       sendGTMEvent({
         event: 'radio_question_submission',

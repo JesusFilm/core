@@ -1,7 +1,9 @@
+import { BlockEventLabel } from '../../../__generated__/globalTypes'
 import { ActionFields as Action } from '../action/__generated__/ActionFields'
 import { BlockFields_ButtonBlock_action as ButtonBlockAction } from '../block/__generated__/BlockFields'
 
 import {
+  BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT,
   actionToTarget,
   getTargetEventKey,
   templateKeyify
@@ -229,6 +231,86 @@ describe('PlausibleHelpers', () => {
           journeyId: undefined
         })
       )
+    })
+  })
+
+  describe('BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT', () => {
+    it('maps decisionForChrist to christDecisionCapture', () => {
+      expect(
+        BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.decisionForChrist]
+      ).toBe('christDecisionCapture')
+    })
+
+    it('maps gospelPresentationStart to gospelStartCapture', () => {
+      expect(
+        BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[
+          BlockEventLabel.gospelPresentationStart
+        ]
+      ).toBe('gospelStartCapture')
+    })
+
+    it('maps gospelPresentationComplete to gospelCompleteCapture', () => {
+      expect(
+        BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[
+          BlockEventLabel.gospelPresentationComplete
+        ]
+      ).toBe('gospelCompleteCapture')
+    })
+
+    it('maps prayerRequest to prayerRequestCapture', () => {
+      expect(
+        BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.prayerRequest]
+      ).toBe('prayerRequestCapture')
+    })
+
+    it('maps rsvp to rsvpCapture', () => {
+      expect(
+        BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.rsvp]
+      ).toBe('rsvpCapture')
+    })
+
+    it('maps specialVideoStart to specialVideoStartCapture', () => {
+      expect(
+        BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.specialVideoStart]
+      ).toBe('specialVideoStartCapture')
+    })
+
+    it('maps specialVideoComplete to specialVideoCompleteCapture', () => {
+      expect(
+        BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[
+          BlockEventLabel.specialVideoComplete
+        ]
+      ).toBe('specialVideoCompleteCapture')
+    })
+
+    it('maps custom1 to custom1Capture', () => {
+      expect(
+        BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.custom1]
+      ).toBe('custom1Capture')
+    })
+
+    it('maps custom2 to custom2Capture', () => {
+      expect(
+        BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.custom2]
+      ).toBe('custom2Capture')
+    })
+
+    it('maps custom3 to custom3Capture', () => {
+      expect(
+        BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.custom3]
+      ).toBe('custom3Capture')
+    })
+
+    it('returns null for inviteFriend (no registered Plausible goal)', () => {
+      expect(
+        BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.inviteFriend]
+      ).toBeNull()
+    })
+
+    it('returns null for share (no registered Plausible goal)', () => {
+      expect(
+        BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.share]
+      ).toBeNull()
     })
   })
 

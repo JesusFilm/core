@@ -1,3 +1,5 @@
+import { usePlausible } from 'next-plausible'
+
 import {
   BlockEventLabel,
   ButtonClickEventCreateInput,
@@ -189,8 +191,15 @@ export function templateKeyify({
   })
 }
 
-export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Partial<
-  Record<BlockEventLabel, keyof JourneyPlausibleEvents>
+// Maps BlockEventLabel enum values to their registered Plausible capture goal names.
+// Uses Record (not Partial) so TypeScript requires an explicit entry for every BlockEventLabel.
+// Adding a new BlockEventLabel without updating this map is a compile error.
+// Server-side counterpart: EVENT_TO_CAPTURE_MAP in
+// apis/api-journeys-modern/src/schema/plausible/templateFamilyStatsBreakdown/utils/transformBreakdownResults.ts
+// Both maps must stay in sync.
+export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Record<
+  BlockEventLabel,
+  keyof JourneyPlausibleEvents | null
 > = {
   [BlockEventLabel.decisionForChrist]: 'christDecisionCapture',
   [BlockEventLabel.gospelPresentationStart]: 'gospelStartCapture',
@@ -201,7 +210,42 @@ export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Partial<
   [BlockEventLabel.specialVideoComplete]: 'specialVideoCompleteCapture',
   [BlockEventLabel.custom1]: 'custom1Capture',
   [BlockEventLabel.custom2]: 'custom2Capture',
-  [BlockEventLabel.custom3]: 'custom3Capture'
+  [BlockEventLabel.custom3]: 'custom3Capture',
+  // No Plausible capture goals are registered for these labels.
+  // If goals are added for them in service.ts, add entries here and in EVENT_TO_CAPTURE_MAP.
+  [BlockEventLabel.inviteFriend]: null,
+  [BlockEventLabel.share]: null
+}
+
+interface FireCaptureEventOptions {
+  u: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  input: Record<string, any>
+  stepId: string
+  blockId: string
+  target?: Action | string | null
+  templateTarget?: string | null
+  journeyId?: string
+}
+
+export function fireCaptureEvent(
+  plausible: ReturnType<typeof usePlausible<JourneyPlausibleEvents>>,
+  eventLabel: BlockEventLabel | null | undefined,
+  { u, input, stepId, blockId, target, templateTarget, journeyId }: FireCaptureEventOptions
+): void {
+  const captureEvent =
+    eventLabel != null ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel] : null
+  if (captureEvent == null) return
+
+  plausible(captureEvent, {
+    u,
+    props: {
+      ...input,
+      key: keyify({ stepId, event: captureEvent, blockId, target, journeyId }),
+      simpleKey: keyify({ stepId, event: captureEvent, blockId, journeyId }),
+      templateKey: templateKeyify({ event: captureEvent, target: templateTarget, journeyId })
+    }
+  })
 }
 
 export function actionToTarget(action: Action | null): 'link' | 'chat' | null {

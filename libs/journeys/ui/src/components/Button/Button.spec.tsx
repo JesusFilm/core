@@ -1049,7 +1049,7 @@ describe('Button', () => {
         }),
         templateKey: templateKeyify({
           event: 'custom2Capture',
-          target: actionToTarget(action),
+          target: 'chat',
           journeyId: 'journey.id'
         })
       }

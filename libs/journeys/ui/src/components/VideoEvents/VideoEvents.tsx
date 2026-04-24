@@ -19,8 +19,8 @@ import {
 import { useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import {
-  BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT,
   JourneyPlausibleEvents,
+  fireCaptureEvent,
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
@@ -467,30 +467,14 @@ export function VideoEvents({
               })
             }
           })
-          const startCaptureEvent =
-            eventLabel != null
-              ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel]
-              : null
-          if (startCaptureEvent != null) {
-            const startCaptureKey = keyify({
-              stepId: input.stepId ?? '',
-              event: startCaptureEvent,
-              blockId: input.blockId,
-              journeyId: journey?.id
-            })
-            plausible(startCaptureEvent, {
-              u: `${window.location.origin}/${journey.id}/${input.stepId}`,
-              props: {
-                ...input,
-                key: startCaptureKey,
-                simpleKey: startCaptureKey,
-                templateKey: templateKeyify({
-                  event: startCaptureEvent,
-                  journeyId: journey?.id
-                })
-              }
-            })
-          }
+          fireCaptureEvent(plausible, eventLabel, {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            input: input as Record<string, any>,
+            stepId: input.stepId ?? '',
+            blockId: input.blockId,
+            journeyId: journey?.id
+          })
         }
         sendGTMEvent({
           event: 'video_start',
@@ -515,7 +499,8 @@ export function VideoEvents({
     stepId,
     source,
     journey,
-    plausible
+    plausible,
+    eventLabel
   ])
 
   // PROGRESS 25% event
@@ -763,30 +748,14 @@ export function VideoEvents({
               })
             }
           })
-          const completeCaptureEvent =
-            endEventLabel != null
-              ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[endEventLabel]
-              : null
-          if (completeCaptureEvent != null) {
-            const completeCaptureKey = keyify({
-              stepId: input.stepId ?? '',
-              event: completeCaptureEvent,
-              blockId: input.blockId,
-              journeyId: journey?.id
-            })
-            plausible(completeCaptureEvent, {
-              u: `${window.location.origin}/${journey.id}/${input.stepId}`,
-              props: {
-                ...input,
-                key: completeCaptureKey,
-                simpleKey: completeCaptureKey,
-                templateKey: templateKeyify({
-                  event: completeCaptureEvent,
-                  journeyId: journey?.id
-                })
-              }
-            })
-          }
+          fireCaptureEvent(plausible, endEventLabel, {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            input: input as Record<string, any>,
+            stepId: input.stepId ?? '',
+            blockId: input.blockId,
+            journeyId: journey?.id
+          })
         }
         sendGTMEvent({
           event: 'video_complete',
@@ -812,7 +781,8 @@ export function VideoEvents({
     source,
     journey,
     plausible,
-    action
+    action,
+    endEventLabel
   ])
 
   return <></>
