@@ -38,18 +38,20 @@ const EVENT_TO_CAPTURE_MAP: Partial<Record<BlockEventLabel, string>> = {
   [BlockEventLabel.specialVideoComplete]: 'specialVideoCompleteCapture',
   [BlockEventLabel.custom1]: 'custom1Capture',
   [BlockEventLabel.custom2]: 'custom2Capture',
-  [BlockEventLabel.custom3]: 'custom3Capture',
+  [BlockEventLabel.custom3]: 'custom3Capture'
 }
 ```
 
 Using `Partial` (not full `Record`) is appropriate because `inviteFriend` and `share` have no registered goals and the server map only handles historical raw-enum events — labels with no registered goal never appeared in the Plausible data stream.
 
 **Pros:**
+
 - IDE autocomplete and refactoring tools now understand the keys
 - New `BlockEventLabel` values show up as IDE suggestions
 - No cross-package changes needed
 
 **Cons:**
+
 - Still not compile-time exhaustive (Partial allows omitting entries without error)
 - Does not prevent silent omissions for new labels with registered goals
 
@@ -63,10 +65,12 @@ Using `Partial` (not full `Record`) is appropriate because `inviteFriend` and `s
 **Approach:** Move `BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT` to a shared library (`libs/journeys/data` or similar) importable from both `libs/journeys/ui` and `apis/api-journeys-modern`. Derive `EVENT_TO_CAPTURE_MAP` from the same constant rather than duplicating.
 
 **Pros:**
+
 - Single source of truth; impossible to diverge
 - Compile-time exhaustiveness enforced at both boundaries
 
 **Cons:**
+
 - Requires new shared lib + Nx project config
 - Cross-package build dependency change
 - Significant scope increase
@@ -93,9 +97,11 @@ _To be filled during triage._
 ## Technical Details
 
 **Affected files:**
+
 - `apis/api-journeys-modern/src/schema/plausible/templateFamilyStatsBreakdown/utils/transformBreakdownResults.ts:16–27`
 
 **Related files:**
+
 - `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts:194–218` — frontend counterpart
 
 ## Resources
@@ -117,5 +123,6 @@ _To be filled during triage._
 **By:** CE Review (architecture-strategist + kieran-typescript-reviewer)
 
 **Actions:**
+
 - Identified type mismatch between frontend exhaustive map and server `Record<string, string>`
 - Confirmed `BlockEventLabel` enum is available in both packages via GraphQL code generation

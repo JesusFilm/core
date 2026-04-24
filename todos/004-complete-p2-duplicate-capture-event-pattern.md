@@ -38,6 +38,7 @@ if (captureEvent != null) {
 ```
 
 Inconsistencies already present across sites:
+
 - VideoEvents (`startCaptureKey` / `completeCaptureKey`) reuses the same value for both `key` and `simpleKey` (no `target` distinction)
 - RadioQuestion and Button compute `key` with target and `simpleKey` without — different from VideoEvents pattern
 - Button `createChatEvent` templateKey uses `actionToTarget(action)` while the primary `chatButtonClick` event uses the literal `'chat'`
@@ -60,7 +61,7 @@ export function fireCaptureEvent(
     input,
     stepId,
     blockId,
-    target,
+    target
   }: {
     journey: { id: string }
     input: Record<string, unknown>
@@ -85,11 +86,13 @@ export function fireCaptureEvent(
 ```
 
 **Pros:**
+
 - Single place to update for all capture events
 - Eliminates copy-paste drift
 - Makes inconsistencies visible and forces a deliberate decision
 
 **Cons:**
+
 - Adds abstraction; requires agreeing on the unified signature
 - May need different `target` handling for VideoEvents (no action) vs RadioQuestion/Button (has action)
 - Medium effort — needs careful review of each call site to confirm the unified signature covers all cases
@@ -105,10 +108,12 @@ export function fireCaptureEvent(
 **Approach:** Add a `// See also: Button.tsx:215, VideoEvents.tsx:470` comment at each site to make the connection visible.
 
 **Pros:**
+
 - Zero behaviour risk
 - Minimal effort
 
 **Cons:**
+
 - Doesn't eliminate drift risk
 - Comments rot
 
@@ -123,6 +128,7 @@ Option 1 as a follow-up PR (not this PR — the fix is already shipped and corre
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts` — new helper
 - `libs/journeys/ui/src/components/RadioQuestion/RadioQuestion.tsx`
 - `libs/journeys/ui/src/components/Button/Button.tsx`
@@ -146,5 +152,6 @@ Option 1 as a follow-up PR (not this PR — the fix is already shipped and corre
 **By:** code-simplicity-reviewer, architecture-strategist agents
 
 **Actions:**
+
 - Counted 5 near-identical dispatch blocks across 3 files
 - Identified pre-existing drift between VideoEvents and Button/RadioQuestion key patterns

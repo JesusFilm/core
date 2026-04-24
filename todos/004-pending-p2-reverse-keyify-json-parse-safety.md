@@ -34,11 +34,7 @@ This is a pre-existing issue in the module this PR touches. While not introduced
 export function reverseKeyify(key: string): { stepId: string; event: string; blockId: string; target?: string; journeyId?: string } | null {
   try {
     const parsed = JSON.parse(key)
-    if (
-      typeof parsed?.stepId !== 'string' ||
-      typeof parsed?.event !== 'string' ||
-      typeof parsed?.blockId !== 'string'
-    ) {
+    if (typeof parsed?.stepId !== 'string' || typeof parsed?.event !== 'string' || typeof parsed?.blockId !== 'string') {
       return null
     }
     return parsed
@@ -51,11 +47,13 @@ export function reverseKeyify(key: string): { stepId: string; event: string; blo
 Update call site in `transformJourneyAnalytics.ts` to skip the entry when `reverseKeyify` returns `null`.
 
 **Pros:**
+
 - Prevents analytics transformation crash on bad Plausible data
 - Validates required fields at runtime
 - Safe null return is easy to handle at call site
 
 **Cons:**
+
 - Requires updating call site(s) to handle `null`
 - Silent failures could mask data quality issues (add a `console.warn` in catch)
 
@@ -89,6 +87,7 @@ _To be filled during triage._
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts:145–153` — `reverseKeyify` function
 - `libs/journeys/ui/src/libs/useJourneyAnalyticsQuery/transformJourneyAnalytics/transformJourneyAnalytics.ts:149` — call site
 
@@ -112,6 +111,7 @@ _To be filled during triage._
 **By:** CE Review (security-sentinel)
 
 **Actions:**
+
 - Identified bare `JSON.parse` in `reverseKeyify` on Plausible API data
 - Confirmed no try/catch or schema validation exists
 - Identified single call site in `transformJourneyAnalytics.ts`

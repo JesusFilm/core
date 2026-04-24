@@ -308,13 +308,8 @@ interface FireCaptureEventOptions {
   journeyId?: string
 }
 
-export function fireCaptureEvent(
-  plausible: ReturnType<typeof usePlausible<JourneyPlausibleEvents>>,
-  eventLabel: BlockEventLabel | null | undefined,
-  { u, input, blockId, target, templateTarget, journeyId }: FireCaptureEventOptions
-): void {
-  const captureEvent =
-    eventLabel != null ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel] : null
+export function fireCaptureEvent(plausible: ReturnType<typeof usePlausible<JourneyPlausibleEvents>>, eventLabel: BlockEventLabel | null | undefined, { u, input, blockId, target, templateTarget, journeyId }: FireCaptureEventOptions): void {
+  const captureEvent = eventLabel != null ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel] : null
   if (captureEvent == null) return
 
   const stepId = (input as { stepId?: string | null }).stepId ?? ''
@@ -347,7 +342,7 @@ Tracked in: [todo 001](../../todos/001-pending-p2-simplify-fire-capture-event.md
 import { BlockEventLabel } from '../../../../../__generated__/graphql'
 
 const EVENT_TO_CAPTURE_MAP: Partial<Record<BlockEventLabel, string>> = {
-  [BlockEventLabel.decisionForChrist]: 'christDecisionCapture',
+  [BlockEventLabel.decisionForChrist]: 'christDecisionCapture'
   // ... same 10 entries
 }
 ```
@@ -396,11 +391,7 @@ export function reverseKeyify(key: string): {
 } | null {
   try {
     const parsed = JSON.parse(key)
-    if (
-      typeof parsed?.stepId !== 'string' ||
-      typeof parsed?.event !== 'string' ||
-      typeof parsed?.blockId !== 'string'
-    ) {
+    if (typeof parsed?.stepId !== 'string' || typeof parsed?.event !== 'string' || typeof parsed?.blockId !== 'string') {
       return null
     }
     return parsed
@@ -498,6 +489,7 @@ Tracked in: [todo 008](../../todos/008-pending-p3-fire-capture-event-options-jsd
 ### Code Review Checklist for Analytics Events
 
 **Event correctness:**
+
 - [ ] Capture event uses the registered Plausible goal name, not the raw enum string
 - [ ] `u:` parameter uses `stepId`, not `blockId`
 - [ ] `templateKey` includes `target` for journey-map breakdown
@@ -508,21 +500,25 @@ Tracked in: [todo 008](../../todos/008-pending-p3-fire-capture-event-options-jsd
 - [ ] `fireCaptureEvent` helper is used instead of duplicating the dispatch pattern
 
 **Type safety:**
+
 - [ ] No generics erased by a downstream `as WiderType` cast
 - [ ] No dead union branches with zero call-site usage
 - [ ] No repeated boilerplate across ≥3 call sites — derive or abstract
 
 **Third-party boundaries:**
+
 - [ ] No `...spread` in outbound Plausible/analytics payloads
 - [ ] No user-submitted PII fields reach external analytics endpoints
 - [ ] Any `JSON.parse` on external data is wrapped in try/catch
 
 **Tests:**
+
 - [ ] New utility function has direct unit tests (not just integration coverage)
 - [ ] Unit test covers the new mapping entry and verifies payload structure
 - [ ] Tests that mutate `process.env` have matching `afterEach` restore
 
 **Documentation:**
+
 - [ ] Non-obvious interface fields have JSDoc
 - [ ] No `eslint-disable` added without written justification in PR description
 

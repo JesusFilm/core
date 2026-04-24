@@ -34,10 +34,12 @@ In `Button.tsx` `createChatEvent`, the base `chatButtonClick` Plausible event fi
 **Approach:** Change the hardcoded `target: 'chat'` in the primary `chatButtonClick` templateKey to `target: actionToTarget(action)` for consistency.
 
 **Pros:**
+
 - Both events derive `target` the same way
 - Eliminates the inconsistency
 
 **Cons:**
+
 - `actionToTarget` can return `null` for non-chat actions, but `createChatEvent` is only called for chat buttons so this is safe
 - Minor change to existing base event behaviour (though the value at runtime is identical)
 
@@ -52,9 +54,11 @@ In `Button.tsx` `createChatEvent`, the base `chatButtonClick` Plausible event fi
 **Approach:** Change the capture event to use `target: 'chat'` matching the base event, since `createChatEvent` by definition only fires for chat interactions.
 
 **Pros:**
+
 - Makes the intent explicit — this is always a chat event
 
 **Cons:**
+
 - Bypasses `actionToTarget` which is the canonical way to derive target strings
 
 **Effort:** 5 minutes
@@ -68,6 +72,7 @@ Option 2 (literal `'chat'`) is marginally clearer given that `createChatEvent` o
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/components/Button/Button.tsx` — `createChatEvent` capture event `templateKey`
 - `libs/journeys/ui/src/components/Button/Button.spec.tsx` — test expectation for `templateKey` in chat capture event
 
@@ -89,5 +94,6 @@ Option 2 (literal `'chat'`) is marginally clearer given that `createChatEvent` o
 **By:** CE review agents
 
 **Actions:**
+
 - Compared templateKey construction in chatButtonClick and its capture shadow in createChatEvent
 - Verified that actionToTarget(action) returns 'chat' for all valid chat button actions

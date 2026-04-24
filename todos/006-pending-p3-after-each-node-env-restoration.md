@@ -76,6 +76,7 @@ _To be filled during triage._
 ## Technical Details
 
 **Affected files:**
+
 - `apis/api-journeys-modern/src/schema/event/utils.spec.ts:489–508`
 
 ## Resources
@@ -96,5 +97,6 @@ _To be filled during triage._
 **By:** CE Review (security-sentinel)
 
 **Actions:**
+
 - Identified missing `NODE_ENV` restoration in `appendEventToGoogleSheets` `afterEach`
 - Confirmed introduced by this branch's Object.defineProperty migration

@@ -28,11 +28,13 @@ Two `useEffect` hooks in `VideoEvents.tsx` close over `eventLabel` and `endEvent
 **Approach:** Add `eventLabel` to the START `useEffect` dep array and `endEventLabel` to the COMPLETE `useEffect` dep array. This matches the rule of hooks and is the minimal correct fix.
 
 **Pros:**
+
 - Correct by React spec
 - Fixes exhaustive-deps lint warning
 - Minimal change
 
 **Cons:**
+
 - May cause the player listeners to be re-registered slightly more often if parent re-renders (acceptable — player `.off` / `.on` is cheap)
 
 **Effort:** 15 minutes
@@ -46,9 +48,11 @@ Two `useEffect` hooks in `VideoEvents.tsx` close over `eventLabel` and `endEvent
 **Approach:** Add `// eslint-disable-next-line react-hooks/exhaustive-deps` with a comment explaining that `eventLabel` is set by the block data at mount time and never changes.
 
 **Pros:**
+
 - Avoids re-registering listeners
 
 **Cons:**
+
 - Incorrect by React spec — the assumption may not hold forever
 - Lint suppression without a defensive check is a code smell
 
@@ -63,9 +67,11 @@ Use Option 1. Add the props to the dep arrays. The cost is negligible and the co
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/components/VideoEvents/VideoEvents.tsx` — START useEffect dep array and COMPLETE useEffect dep array
 
 **Related components:**
+
 - `VideoEvents` component receives `eventLabel?: BlockEventLabel | null` and `endEventLabel?: BlockEventLabel | null` as props
 
 ## Resources
@@ -87,8 +93,10 @@ Use Option 1. Add the props to the dep arrays. The cost is negligible and the co
 **By:** CE review agent (kieran-typescript-reviewer)
 
 **Actions:**
+
 - Identified missing deps in both VideoEvents capture event useEffect hooks
 - Confirmed both props are closed over inside the listener functions
 
 **Learnings:**
+
 - The bug is dormant today because block props don't change at runtime, but is a React correctness violation

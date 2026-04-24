@@ -31,23 +31,22 @@ This also means future developers adding new `BlockEventLabel` values have no cl
 **Approach:** Replace `Partial<Record<...>>` with `Record<BlockEventLabel, keyof JourneyPlausibleEvents | null>`. Set `inviteFriend` and `share` to `null` explicitly (with a comment). Every future addition to `BlockEventLabel` will then require a conscious decision in the mapping.
 
 ```ts
-export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Record<
-  BlockEventLabel,
-  keyof JourneyPlausibleEvents | null
-> = {
+export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Record<BlockEventLabel, keyof JourneyPlausibleEvents | null> = {
   [BlockEventLabel.decisionForChrist]: 'christDecisionCapture',
   // ...
   [BlockEventLabel.inviteFriend]: null, // no Plausible goal registered
-  [BlockEventLabel.share]: null,        // no Plausible goal registered
+  [BlockEventLabel.share]: null // no Plausible goal registered
 }
 ```
 
 **Pros:**
+
 - Compile-time exhaustiveness — new `BlockEventLabel` values cause a TypeScript error until explicitly handled
 - Makes intentional exclusions visible in code
 - Eliminates silent data gaps forever
 
 **Cons:**
+
 - Requires updating the null-check in each component from `!= null` (which already handles `undefined`) to just `!= null` (same — `null` is caught too, so no component change needed)
 
 **Effort:** 30 minutes
@@ -67,10 +66,12 @@ export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Partial<...> = { ... }
 ```
 
 **Pros:**
+
 - Minimal change
 - Documents intent
 
 **Cons:**
+
 - Still no compile-time enforcement — future additions to `BlockEventLabel` remain silently unhandled
 
 **Effort:** 5 minutes
@@ -84,6 +85,7 @@ Option 1 is strongly preferred. The `Partial<Record<...>>` type is the root caus
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts` — type and mapping definition
 - Components (`RadioQuestion.tsx`, `Button.tsx`, `VideoEvents.tsx`) — null-check guards (no change needed; `captureEvent != null` already handles `null`)
 
@@ -106,6 +108,7 @@ Option 1 is strongly preferred. The `Partial<Record<...>>` type is the root caus
 **By:** CE review agents
 
 **Actions:**
+
 - Cross-referenced `BlockEventLabel` enum against mapping constant and server-side goals array
 - Confirmed `inviteFriend` and `share` have no registered Plausible goals in service.ts
 - Identified that `Partial<Record>` type silently allows future omissions

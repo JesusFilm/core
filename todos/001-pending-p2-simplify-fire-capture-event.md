@@ -39,13 +39,8 @@ interface FireCaptureEventOptions {
   journeyId?: string
 }
 
-export function fireCaptureEvent(
-  plausible: ReturnType<typeof usePlausible<JourneyPlausibleEvents>>,
-  eventLabel: BlockEventLabel | null | undefined,
-  { u, input, blockId, target, templateTarget, journeyId }: FireCaptureEventOptions
-): void {
-  const captureEvent =
-    eventLabel != null ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel] : null
+export function fireCaptureEvent(plausible: ReturnType<typeof usePlausible<JourneyPlausibleEvents>>, eventLabel: BlockEventLabel | null | undefined, { u, input, blockId, target, templateTarget, journeyId }: FireCaptureEventOptions): void {
+  const captureEvent = eventLabel != null ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel] : null
   if (captureEvent == null) return
 
   const stepId = (input as { stepId?: string | null }).stepId ?? ''
@@ -63,11 +58,13 @@ export function fireCaptureEvent(
 ```
 
 **Pros:**
+
 - Removes 3 lines from function + 1 line per call site (5 call sites = −8 total LOC)
 - Dead `string` surface removed from interface
 - Simpler generic-free signature
 
 **Cons:**
+
 - `stepId` derivation is a type assertion inside the helper — readers need to understand the convention that all event inputs have `stepId`
 - Requires updating all 5 call sites to remove `stepId:` option
 
@@ -93,6 +90,7 @@ _To be filled during triage._
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts:220–262` — function + interface
 - `libs/journeys/ui/src/components/RadioQuestion/RadioQuestion.tsx:153–162` — call site
 - `libs/journeys/ui/src/components/Button/Button.tsx:214–224` — call site (click event)
@@ -120,6 +118,7 @@ _To be filled during triage._
 **By:** CE Review (code-simplicity-reviewer + kieran-typescript-reviewer)
 
 **Actions:**
+
 - Identified 3 overlapping simplification opportunities in `fireCaptureEvent`
 - Confirmed no caller passes a string for `target`
 - Confirmed all call sites compute `stepId: input.stepId ?? ''` identically

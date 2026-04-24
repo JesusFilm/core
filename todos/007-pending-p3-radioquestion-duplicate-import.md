@@ -16,12 +16,7 @@ dependencies: []
 
 - `libs/journeys/ui/src/components/RadioQuestion/RadioQuestion.tsx:12–21` — two imports:
   ```ts
-  import {
-    JourneyPlausibleEvents,
-    fireCaptureEvent,
-    keyify,
-    templateKeyify
-  } from '../../libs/plausibleHelpers'
+  import { JourneyPlausibleEvents, fireCaptureEvent, keyify, templateKeyify } from '../../libs/plausibleHelpers'
   // eslint-disable-next-line import/no-cycle
   import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
   ```
@@ -36,13 +31,7 @@ dependencies: []
 **Approach:** Combine both imports into one:
 
 ```ts
-import {
-  JourneyPlausibleEvents,
-  actionToTarget,
-  fireCaptureEvent,
-  keyify,
-  templateKeyify
-} from '../../libs/plausibleHelpers'
+import { JourneyPlausibleEvents, actionToTarget, fireCaptureEvent, keyify, templateKeyify } from '../../libs/plausibleHelpers'
 ```
 
 Remove the direct import line and the `eslint-disable-next-line` comment.
@@ -60,6 +49,7 @@ _To be filled during triage._
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/components/RadioQuestion/RadioQuestion.tsx:12–21`
 
 ## Resources
@@ -82,5 +72,6 @@ _To be filled during triage._
 **By:** CE Review (kieran-typescript-reviewer)
 
 **Actions:**
+
 - Identified duplicate import and unnecessary lint suppression
 - Confirmed `actionToTarget` is already in `index.ts`

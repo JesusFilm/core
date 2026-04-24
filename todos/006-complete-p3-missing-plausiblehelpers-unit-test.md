@@ -23,6 +23,7 @@ dependencies: ['002']
 ### Option 1: Add tests for BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT in plausibleHelpers.spec.ts
 
 **Approach:**
+
 ```ts
 describe('BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT', () => {
   it('maps decisionForChrist to christDecisionCapture', () => {
@@ -37,10 +38,12 @@ describe('BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT', () => {
 ```
 
 **Pros:**
+
 - Documents the expected mappings as executable specs
 - Catches regressions if Plausible goal names are renamed
 
 **Cons:**
+
 - Tests data rather than behaviour; pure "snapshot" style
 
 **Effort:** 30 minutes
@@ -54,6 +57,7 @@ Add direct tests for the mapping constant in `plausibleHelpers.spec.ts`. This is
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.spec.ts`
 
 ## Resources

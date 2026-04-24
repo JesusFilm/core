@@ -63,6 +63,7 @@ _To be filled during triage._
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts:220–228`
 
 ## Resources
@@ -84,5 +85,6 @@ _To be filled during triage._
 **By:** CE Review (architecture-strategist + kieran-typescript-reviewer)
 
 **Actions:**
+
 - Identified two undocumented fields that are easily confused
 - Wrote proposed JSDoc content

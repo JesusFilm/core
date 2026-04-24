@@ -67,6 +67,7 @@ interface FireCaptureEventOptions<TInput extends object> {
 
 **Pros:** Compile-time enforcement — passing a PII type produces a TypeScript error.
 **Cons:**
+
 - Re-introduces the generic (conflicts with todo #001 to remove the generic)
 - Conditional types add complexity
 - Does not prevent PII being added to currently-safe types in the future
@@ -82,9 +83,7 @@ interface FireCaptureEventOptions<TInput extends object> {
 
 ```ts
 const PII_FIELDS = ['email', 'name', 'phone', 'address'] as const
-const safeInput = Object.fromEntries(
-  Object.entries(input as Record<string, unknown>).filter(([k]) => !PII_FIELDS.includes(k as never))
-)
+const safeInput = Object.fromEntries(Object.entries(input as Record<string, unknown>).filter(([k]) => !PII_FIELDS.includes(k as never)))
 ```
 
 **Pros:** Belt-and-suspenders defence even if a PII type is accidentally passed.
@@ -100,9 +99,11 @@ _To be filled during triage._ Option 1 is the minimum viable action for this PR.
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts:220–228` — interface definition
 
 **Related pre-existing issue:**
+
 - `libs/journeys/ui/src/components/SignUp/SignUp.tsx:122–145` — spreads PII directly to Plausible (separate fix needed)
 
 ## Resources
@@ -124,6 +125,7 @@ _To be filled during triage._ Option 1 is the minimum viable action for this PR.
 **By:** CE Review (security-sentinel)
 
 **Actions:**
+
 - Identified `...input` spread as a PII transmission footgun
 - Confirmed current callers are safe
 - Flagged pre-existing `SignUp.tsx` pattern as separate issue

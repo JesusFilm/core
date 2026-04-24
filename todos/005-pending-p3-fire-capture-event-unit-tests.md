@@ -72,6 +72,7 @@ describe('fireCaptureEvent', () => {
 ```
 
 **Pros:**
+
 - Fast unit tests, no component rendering needed
 - Directly validates the helper's null-guard, mapping lookup, and prop construction
 - Proves the fix for QA-359 at the unit level
@@ -88,6 +89,7 @@ _To be filled during triage._
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.spec.ts` — add new describe block
 
 ## Resources
@@ -111,5 +113,6 @@ _To be filled during triage._
 **By:** CE Review (kieran-typescript-reviewer)
 
 **Actions:**
+
 - Confirmed no direct unit tests for `fireCaptureEvent` in spec file
 - Listed 4 missing test scenarios

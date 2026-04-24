@@ -25,14 +25,17 @@ The PR introduces a client-side `BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT` (in `plau
 ### Option 1: Add a cross-package integration test asserting map equivalence
 
 **Approach:** In the `transformBreakdownResults.spec.ts` (or a new spec), import `BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT` and `EVENT_TO_CAPTURE_MAP` and assert:
+
 - Every key in `EVENT_TO_CAPTURE_MAP` equals a key in `BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT`
 - Every non-null value in `BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT` appears in `EVENT_TO_CAPTURE_MAP`'s values
 
 **Pros:**
+
 - Catches drift at CI time
 - Documents the relationship explicitly in executable form
 
 **Cons:**
+
 - Cross-package import may require build/jest config adjustments in the Nx monorepo
 - Adds a test that tests data rather than behaviour
 
@@ -53,10 +56,12 @@ The PR introduces a client-side `BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT` (in `plau
 ```
 
 **Pros:**
+
 - Zero effort
 - Makes the relationship visible
 
 **Cons:**
+
 - Comments can be ignored; no enforcement
 
 **Effort:** 15 minutes
@@ -70,6 +75,7 @@ Option 2 as an immediate improvement in this PR; Option 1 as a follow-up task. C
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts`
 - `apis/api-journeys-modern/src/schema/plausible/templateFamilyStatsBreakdown/utils/transformBreakdownResults.ts`
 - `apis/api-journeys-modern/src/workers/plausible/service.ts` (goals array — third related list)
@@ -92,5 +98,6 @@ Option 2 as an immediate improvement in this PR; Option 1 as a follow-up task. C
 **By:** architecture-strategist agent
 
 **Actions:**
+
 - Identified both maps in separate packages encoding the same domain knowledge
 - Confirmed there is no test or type assertion linking them

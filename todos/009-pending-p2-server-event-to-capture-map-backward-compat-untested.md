@@ -26,9 +26,7 @@ dependencies: []
 
 ```ts
 it('maps historical decisionForChrist events to christDecisionCapture via EVENT_TO_CAPTURE_MAP', () => {
-  const breakdown = [
-    { property: JSON.stringify({ event: 'decisionForChrist', target: '', journeyId: 'j1' }), visitors: 3 }
-  ]
+  const breakdown = [{ property: JSON.stringify({ event: 'decisionForChrist', target: '', journeyId: 'j1' }), visitors: 3 }]
   const result = transformBreakdownResults(breakdown, { journeyId: 'j1' })
   expect(result.christDecisionCapture).toBe(3)
   expect(result.decisionForChrist).toBeUndefined()
@@ -38,10 +36,12 @@ it('maps historical decisionForChrist events to christDecisionCapture via EVENT_
 Add similar cases for `gospelPresentationStart` → `gospelStartCapture`, etc. (or at minimum the most critical rename).
 
 **Pros:**
+
 - Directly tests backward compatibility — the key value of `EVENT_TO_CAPTURE_MAP`
 - Fast to add (one `it()` per rename, or one data-driven test for all)
 
 **Cons:**
+
 - Requires understanding the `transformBreakdownResults` API shape
 
 **Effort:** Small | **Risk:** Low
@@ -49,6 +49,7 @@ Add similar cases for `gospelPresentationStart` → `gospelStartCapture`, etc. (
 ### Option 2: Add a single parameterized test covering all EVENT_TO_CAPTURE_MAP entries
 
 **Approach:** Use `it.each` over all map entries:
+
 ```ts
 it.each(Object.entries(EVENT_TO_CAPTURE_MAP))('maps historical %s to %s', (oldName, newName) => {
   ...
@@ -67,11 +68,13 @@ Option 1 for the critical rename (`decisionForChrist` → `christDecisionCapture
 ## Technical Details
 
 **Affected files:**
+
 - `apis/api-journeys-modern/src/schema/plausible/templateFamilyStatsBreakdown/utils/transformBreakdownResults.spec.ts`
 
 **Jest config:** `apis/api-journeys-modern/jest.config.ts`
 
 **Run command:**
+
 ```bash
 npx jest --config apis/api-journeys-modern/jest.config.ts --no-coverage 'apis/api-journeys-modern/src/schema/plausible/templateFamilyStatsBreakdown/utils/transformBreakdownResults.spec.ts'
 ```

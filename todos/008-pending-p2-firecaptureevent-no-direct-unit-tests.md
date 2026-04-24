@@ -21,6 +21,7 @@ dependencies: ['007']
 - Raised by `kieran-typescript-reviewer` (P1) and `architecture-strategist` (P1) during ce-review of PR #9075
 
 **Untested behaviors:**
+
 1. When `eventLabel` is `null` → `fireCaptureEvent` should be a no-op (plausible not called)
 2. When `eventLabel` maps to `null` (e.g., `inviteFriend`, `share`) → no-op
 3. When `eventLabel` maps to a capture goal → plausible called with correct `key`, `simpleKey`, `templateKey`, `u`, and spread of `input`
@@ -50,23 +51,28 @@ describe('fireCaptureEvent', () => {
 
   it('fires christDecisionCapture for decisionForChrist label', () => {
     fireCaptureEvent(mockPlausible, BlockEventLabel.decisionForChrist, { u: 'http://x', input: { id: 'e1', blockId: 'b1' }, stepId: 's1', blockId: 'opt1', journeyId: 'j1' })
-    expect(mockPlausible).toHaveBeenCalledWith('christDecisionCapture', expect.objectContaining({
-      u: 'http://x',
-      props: expect.objectContaining({
-        blockId: 'opt1',  // override, not input.blockId
-        id: 'e1'
+    expect(mockPlausible).toHaveBeenCalledWith(
+      'christDecisionCapture',
+      expect.objectContaining({
+        u: 'http://x',
+        props: expect.objectContaining({
+          blockId: 'opt1', // override, not input.blockId
+          id: 'e1'
+        })
       })
-    }))
+    )
   })
 })
 ```
 
 **Pros:**
+
 - Tests the exact behavior that caused QA-359
 - Isolated from component rendering complexity
 - Catches regressions without running component tests
 
 **Cons:**
+
 - Requires mocking `usePlausible` return type — same pattern used in component specs already
 
 **Effort:** Small | **Risk:** Low
@@ -87,11 +93,13 @@ Option 1 — full coverage for `fireCaptureEvent`. The helper is thin but its co
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.spec.ts`
 
 **Jest config:** `libs/journeys/ui/jest.config.ts`
 
 **Run command:**
+
 ```bash
 npx jest --config libs/journeys/ui/jest.config.ts --no-coverage 'libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.spec.ts'
 ```

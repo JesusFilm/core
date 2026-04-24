@@ -27,11 +27,13 @@ dependencies: []
 **Approach:** Strip `<TInput extends object>` from both the interface and function. Change `input: TInput` to `input: Record<string, unknown>` (stricter than `any`).
 
 **Pros:**
+
 - Accurate: callers spread arbitrary GraphQL input objects, and `as Props` already permits any shape
 - ~4 lines removed, no call site changes
 - Honest about the type contract
 
 **Cons:**
+
 - Forces callers to assert if they want to extract typed fields from `input` post-call (but no caller does this)
 
 **Effort:** Small | **Risk:** None — pure type change, no runtime effect
@@ -60,9 +62,11 @@ Option 1 — remove the generic entirely. The function's type contract is "pass 
 ## Technical Details
 
 **Affected files:**
+
 - `libs/journeys/ui/src/libs/plausibleHelpers/plausibleHelpers.ts`
 
 **Change:**
+
 ```ts
 // Before
 interface FireCaptureEventOptions<TInput extends object> {
