@@ -5,8 +5,8 @@ import { prisma } from '@core/prisma/journeys/client'
 import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
 
-import { canAccessCustomDomain } from './customDomain.acl'
 import { CustomDomainRef } from './customDomain'
+import { canAccessCustomDomain } from './customDomain.acl'
 import { CustomDomainUpdateInput } from './inputs'
 
 builder.mutationField('customDomainUpdate', (t) =>
@@ -34,9 +34,7 @@ builder.mutationField('customDomainUpdate', (t) =>
           })
         }
 
-        if (
-          !canAccessCustomDomain(Action.Update, customDomain, context.user)
-        ) {
+        if (!canAccessCustomDomain(Action.Update, customDomain, context.user)) {
           throw new GraphQLError(
             'user is not allowed to update custom domain',
             { extensions: { code: 'FORBIDDEN' } }
