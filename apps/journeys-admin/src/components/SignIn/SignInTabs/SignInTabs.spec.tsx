@@ -18,6 +18,4 @@ describe('SignInTabs', () => {
     fireEvent.click(getByRole('tab', { name: 'Log In' }))
     expect(getByRole('tab', { selected: true })).toHaveTextContent('Log In')
   })
-
-
 })
