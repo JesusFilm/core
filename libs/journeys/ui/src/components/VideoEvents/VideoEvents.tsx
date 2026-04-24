@@ -469,8 +469,7 @@ export function VideoEvents({
           })
           fireCaptureEvent(plausible, eventLabel, {
             u: `${window.location.origin}/${journey.id}/${input.stepId}`,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            input: input as Record<string, any>,
+            input,
             stepId: input.stepId ?? '',
             blockId: input.blockId,
             journeyId: journey?.id
@@ -750,8 +749,7 @@ export function VideoEvents({
           })
           fireCaptureEvent(plausible, endEventLabel, {
             u: `${window.location.origin}/${journey.id}/${input.stepId}`,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            input: input as Record<string, any>,
+            input,
             stepId: input.stepId ?? '',
             blockId: input.blockId,
             journeyId: journey?.id

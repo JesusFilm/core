@@ -217,10 +217,9 @@ export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Record<
   [BlockEventLabel.share]: null
 }
 
-interface FireCaptureEventOptions {
+interface FireCaptureEventOptions<TInput extends object> {
   u: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  input: Record<string, any>
+  input: TInput
   stepId: string
   blockId: string
   target?: Action | string | null
@@ -228,7 +227,7 @@ interface FireCaptureEventOptions {
   journeyId?: string
 }
 
-export function fireCaptureEvent(
+export function fireCaptureEvent<TInput extends object>(
   plausible: ReturnType<typeof usePlausible<JourneyPlausibleEvents>>,
   eventLabel: BlockEventLabel | null | undefined,
   {
@@ -239,7 +238,7 @@ export function fireCaptureEvent(
     target,
     templateTarget,
     journeyId
-  }: FireCaptureEventOptions
+  }: FireCaptureEventOptions<TInput>
 ): void {
   const captureEvent =
     eventLabel != null ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel] : null
@@ -257,7 +256,7 @@ export function fireCaptureEvent(
         target: templateTarget,
         journeyId
       })
-    }
+    } as Props
   })
 }
 

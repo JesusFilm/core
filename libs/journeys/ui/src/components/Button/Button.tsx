@@ -214,8 +214,7 @@ export function Button({
         })
         fireCaptureEvent(plausible, eventLabel, {
           u: `${window.location.origin}/${journey.id}/${input.stepId}`,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          input: input as Record<string, any>,
+          input,
           stepId: input.stepId ?? '',
           blockId: input.blockId,
           target: action,
@@ -268,8 +267,7 @@ export function Button({
         })
         fireCaptureEvent(plausible, eventLabel, {
           u: `${window.location.origin}/${journey.id}/${input.stepId}`,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          input: input as Record<string, any>,
+          input,
           stepId: input.stepId ?? '',
           blockId: input.blockId,
           target: action,
