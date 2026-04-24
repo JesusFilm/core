@@ -195,7 +195,10 @@ describe('findOrFetchUser', () => {
     await findOrFetchUser({}, 'userId', undefined)
     const updateCall = prismaMock.user.update.mock.calls[0][0]
     // "John" and "Doe" concatenated after RLO strip become "JohnDoe" single token
-    expect(updateCall.data).toMatchObject({ firstName: 'JohnDoe', lastName: '' })
+    expect(updateCall.data).toMatchObject({
+      firstName: 'JohnDoe',
+      lastName: ''
+    })
   })
 
   it('should preserve existing firstName/lastName when provider yields no displayName', async () => {
@@ -208,7 +211,10 @@ describe('findOrFetchUser', () => {
     })
 
     prismaMock.user.findUnique.mockResolvedValueOnce(user)
-    prismaMock.user.update.mockResolvedValueOnce({ ...user, emailVerified: true })
+    prismaMock.user.update.mockResolvedValueOnce({
+      ...user,
+      emailVerified: true
+    })
 
     await findOrFetchUser({}, 'userId', undefined)
     expect(prismaMock.user.update).toHaveBeenCalledWith({
