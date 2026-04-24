@@ -476,6 +476,13 @@ describe('event utils', () => {
       __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueue)
       delete process.env.NODE_ENV
       mockLogger.warn.mockClear()
+      // Pin clock to a known mid-minute time so delay calculations are deterministic
+      jest.useFakeTimers()
+      jest.setSystemTime(new Date('2024-01-01T00:00:30.000Z'))
+    })
+
+    afterEach(() => {
+      jest.useRealTimers()
     })
 
     it('should return early when no sync config exists', async () => {
@@ -539,11 +546,10 @@ describe('event utils', () => {
         })
       )
 
-      // Verify delay is between 1-60 seconds (1000-60000ms)
+      // Clock is pinned to :30s, so next minute boundary is exactly 30 seconds away
       const callArgs = mockGoogleSheetsSyncQueue.add.mock.calls[0]
       const delay = callArgs[2]?.delay
-      expect(delay).toBeGreaterThanOrEqual(1000)
-      expect(delay).toBeLessThanOrEqual(60000)
+      expect(delay).toBe(30000)
     })
 
     it('should skip syncs without integrationId', async () => {
