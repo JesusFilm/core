@@ -14,22 +14,22 @@ Add 14 languages to the journey builder's translation target allowlist so Core T
 
 Target languages:
 
-| # | Name | Notes |
-|---|------|-------|
-| 1 | Amharic | — |
-| 2 | Bangla | Distinct from Indian Bengali (which is already supported as id `139081`) |
-| 3 | Fula | — |
-| 4 | Hausa | — |
-| 5 | Kazakh | — |
-| 6 | Mongolian | — |
-| 7 | Portuguese (Portugal) | Distinct from Brazilian Portuguese (already supported as id `584`) |
-| 8 | Sinhala | — |
-| 9 | Tagalog | — |
-| 10 | Tajik | — |
-| 11 | Tamil | — |
-| 12 | Urdu (Pakistan) | — |
-| 13 | Uzbek | — |
-| 14 | Yoruba | — |
+| #   | Name                  | Notes                                                                    |
+| --- | --------------------- | ------------------------------------------------------------------------ |
+| 1   | Amharic               | —                                                                        |
+| 2   | Bangla                | Distinct from Indian Bengali (which is already supported as id `139081`) |
+| 3   | Fula                  | —                                                                        |
+| 4   | Hausa                 | —                                                                        |
+| 5   | Kazakh                | —                                                                        |
+| 6   | Mongolian             | —                                                                        |
+| 7   | Portuguese (Portugal) | Distinct from Brazilian Portuguese (already supported as id `584`)       |
+| 8   | Sinhala               | —                                                                        |
+| 9   | Tagalog               | —                                                                        |
+| 10  | Tajik                 | —                                                                        |
+| 11  | Tamil                 | —                                                                        |
+| 12  | Urdu (Pakistan)       | —                                                                        |
+| 13  | Uzbek                 | —                                                                        |
+| 14  | Yoruba                | —                                                                        |
 
 ## Problem Statement
 
@@ -112,12 +112,12 @@ Append each new entry under the `// supported by AI model:` section, each on its
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Mitigation |
-|---|---|---|
-| A requested language row doesn't exist in the languages DB | Low-Medium (Fula and Tajik are the highest-risk) | Surface gap immediately; coordinate with Mike before proceeding. Do not ship the PR partial. |
-| Picking the wrong variant (Bangla vs. Bengali, Portugal vs. Brazil Portuguese, Pakistan Urdu vs. generic) | Medium | Verify each variant-sensitive pick against BCP-47 and native name **before** committing. Document choice in PR description. |
-| AI translation model produces poor-quality output for rarer languages (e.g. Fula dialects) | Medium | Out of scope for this ticket — editorial decision to expose is Lucinda's. Note in PR description that translation quality for less-resourced languages may vary. |
-| Tagalog vs. Filipino confusion — `fil` is the ISO macro-code and `tl` is the individual language | Low | User said "Tagalog". Prefer `tl` / `tgl` row; if only `fil` exists in DB, use that and note in PR. |
+| Risk                                                                                                      | Likelihood                                       | Mitigation                                                                                                                                                       |
+| --------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A requested language row doesn't exist in the languages DB                                                | Low-Medium (Fula and Tajik are the highest-risk) | Surface gap immediately; coordinate with Mike before proceeding. Do not ship the PR partial.                                                                     |
+| Picking the wrong variant (Bangla vs. Bengali, Portugal vs. Brazil Portuguese, Pakistan Urdu vs. generic) | Medium                                           | Verify each variant-sensitive pick against BCP-47 and native name **before** committing. Document choice in PR description.                                      |
+| AI translation model produces poor-quality output for rarer languages (e.g. Fula dialects)                | Medium                                           | Out of scope for this ticket — editorial decision to expose is Lucinda's. Note in PR description that translation quality for less-resourced languages may vary. |
+| Tagalog vs. Filipino confusion — `fil` is the ISO macro-code and `tl` is the individual language          | Low                                              | User said "Tagalog". Prefer `tl` / `tgl` row; if only `fil` exists in DB, use that and note in PR.                                                               |
 
 ## Implementation Steps (for ce:work)
 
