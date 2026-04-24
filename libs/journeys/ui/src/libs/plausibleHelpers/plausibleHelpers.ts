@@ -231,7 +231,15 @@ interface FireCaptureEventOptions {
 export function fireCaptureEvent(
   plausible: ReturnType<typeof usePlausible<JourneyPlausibleEvents>>,
   eventLabel: BlockEventLabel | null | undefined,
-  { u, input, stepId, blockId, target, templateTarget, journeyId }: FireCaptureEventOptions
+  {
+    u,
+    input,
+    stepId,
+    blockId,
+    target,
+    templateTarget,
+    journeyId
+  }: FireCaptureEventOptions
 ): void {
   const captureEvent =
     eventLabel != null ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel] : null
@@ -244,7 +252,11 @@ export function fireCaptureEvent(
       blockId,
       key: keyify({ stepId, event: captureEvent, blockId, target, journeyId }),
       simpleKey: keyify({ stepId, event: captureEvent, blockId, journeyId }),
-      templateKey: templateKeyify({ event: captureEvent, target: templateTarget, journeyId })
+      templateKey: templateKeyify({
+        event: captureEvent,
+        target: templateTarget,
+        journeyId
+      })
     }
   })
 }

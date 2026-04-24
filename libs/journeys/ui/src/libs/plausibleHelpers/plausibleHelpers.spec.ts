@@ -264,9 +264,9 @@ describe('PlausibleHelpers', () => {
     })
 
     it('maps rsvp to rsvpCapture', () => {
-      expect(
-        BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.rsvp]
-      ).toBe('rsvpCapture')
+      expect(BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.rsvp]).toBe(
+        'rsvpCapture'
+      )
     })
 
     it('maps specialVideoStart to specialVideoStartCapture', () => {

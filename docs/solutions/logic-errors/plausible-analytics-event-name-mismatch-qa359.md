@@ -1,8 +1,8 @@
 ---
-title: "Plausible Analytics Capture Events Overcounting — Event Name Mismatch, Wrong URL Parameter, and Missing templateKey Target"
+title: 'Plausible Analytics Capture Events Overcounting — Event Name Mismatch, Wrong URL Parameter, and Missing templateKey Target'
 date: 2026-04-24
-ticket: "QA-359"
-pr: "#9075"
+ticket: 'QA-359'
+pr: '#9075'
 status: solved
 severity: high
 category: logic-errors
@@ -22,7 +22,7 @@ components:
   - Button.tsx
   - VideoEvents.tsx
   - plausibleHelpers.spec.ts
-symptoms: "Decision for Christ capture stat showed all radio option clicks, not just the one tagged with the event label — inflated count visible in Plausible dashboard"
+symptoms: 'Decision for Christ capture stat showed all radio option clicks, not just the one tagged with the event label — inflated count visible in Plausible dashboard'
 root_cause_types:
   - naming_mismatch
   - wrong_parameter
@@ -43,17 +43,17 @@ Three compounding primary bugs, plus four secondary bugs found during code revie
 
 **Bug 1 — Event name mismatch:** Frontend code fired `plausible('decisionForChrist', ...)` using the raw `BlockEventLabel` enum string, but the registered Plausible goals used a different naming convention:
 
-| `BlockEventLabel` value | Registered Plausible goal |
-|---|---|
-| `decisionForChrist` | `christDecisionCapture` |
-| `gospelPresentationStart` | `gospelStartCapture` |
-| `gospelPresentationComplete` | `gospelCompleteCapture` |
-| `prayerRequest` | `prayerRequestCapture` |
-| `rsvp` | `rsvpCapture` |
-| `specialVideoStart` | `specialVideoStartCapture` |
-| `specialVideoComplete` | `specialVideoCompleteCapture` |
+| `BlockEventLabel` value         | Registered Plausible goal                            |
+| ------------------------------- | ---------------------------------------------------- |
+| `decisionForChrist`             | `christDecisionCapture`                              |
+| `gospelPresentationStart`       | `gospelStartCapture`                                 |
+| `gospelPresentationComplete`    | `gospelCompleteCapture`                              |
+| `prayerRequest`                 | `prayerRequestCapture`                               |
+| `rsvp`                          | `rsvpCapture`                                        |
+| `specialVideoStart`             | `specialVideoStartCapture`                           |
+| `specialVideoComplete`          | `specialVideoCompleteCapture`                        |
 | `custom1`, `custom2`, `custom3` | `custom1Capture`, `custom2Capture`, `custom3Capture` |
-| `inviteFriend`, `share` | (no registered goal) |
+| `inviteFriend`, `share`         | (no registered goal)                                 |
 
 Plausible silently discarded events that didn't match a registered goal name, meaning no captures were being recorded correctly under the intended goals.
 
@@ -102,10 +102,7 @@ Add `BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT` to `libs/journeys/ui/src/libs/plausib
 // Server-side counterpart: EVENT_TO_CAPTURE_MAP in
 // apis/api-journeys-modern/src/schema/plausible/templateFamilyStatsBreakdown/utils/transformBreakdownResults.ts
 // Both maps must stay in sync.
-export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Record<
-  BlockEventLabel,
-  keyof JourneyPlausibleEvents | null
-> = {
+export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Record<BlockEventLabel, keyof JourneyPlausibleEvents | null> = {
   [BlockEventLabel.decisionForChrist]: 'christDecisionCapture',
   [BlockEventLabel.gospelPresentationStart]: 'gospelStartCapture',
   [BlockEventLabel.gospelPresentationComplete]: 'gospelCompleteCapture',
@@ -140,13 +137,8 @@ interface FireCaptureEventOptions {
   journeyId?: string
 }
 
-export function fireCaptureEvent(
-  plausible: ReturnType<typeof usePlausible<JourneyPlausibleEvents>>,
-  eventLabel: BlockEventLabel | null | undefined,
-  { u, input, stepId, blockId, target, templateTarget, journeyId }: FireCaptureEventOptions
-): void {
-  const captureEvent =
-    eventLabel != null ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel] : null
+export function fireCaptureEvent(plausible: ReturnType<typeof usePlausible<JourneyPlausibleEvents>>, eventLabel: BlockEventLabel | null | undefined, { u, input, stepId, blockId, target, templateTarget, journeyId }: FireCaptureEventOptions): void {
+  const captureEvent = eventLabel != null ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel] : null
   if (captureEvent == null) return
 
   plausible(captureEvent, {
@@ -247,8 +239,7 @@ In `plausibleHelpers.spec.ts`, add tests for every `BlockEventLabel` entry:
 ```ts
 describe('BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT', () => {
   it('maps decisionForChrist to christDecisionCapture', () => {
-    expect(BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.decisionForChrist])
-      .toBe('christDecisionCapture')
+    expect(BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.decisionForChrist]).toBe('christDecisionCapture')
   })
   // ... one test per enum value
   it('returns null for inviteFriend (no registered Plausible goal)', () => {
@@ -275,6 +266,7 @@ describe('BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT', () => {
 The server-side map handles historical Plausible events recorded before this fix, which used raw `BlockEventLabel` string values (e.g., `'decisionForChrist'`) as the event name. Both maps cover the same 10 labels (excluding `inviteFriend` and `share` which have no registered goals).
 
 **When adding a new `BlockEventLabel`:**
+
 1. Add the entry to `BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT` — TypeScript compile error enforces this
 2. Add the entry to `EVENT_TO_CAPTURE_MAP` on the server — no enforcement; manual process
 3. Register the new goal in the Plausible dashboard
