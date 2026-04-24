@@ -445,7 +445,7 @@ describe('RadioQuestion', () => {
       u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
-        blockId: 'RadioQuestion1',
+        blockId: 'RadioOption1',
         label: 'Step {{number}}',
         radioOptionBlockId: 'RadioOption1',
         stepId: 'step.id',

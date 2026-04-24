@@ -241,6 +241,7 @@ export function fireCaptureEvent(
     u,
     props: {
       ...input,
+      blockId,
       key: keyify({ stepId, event: captureEvent, blockId, target, journeyId }),
       simpleKey: keyify({ stepId, event: captureEvent, blockId, journeyId }),
       templateKey: templateKeyify({ event: captureEvent, target: templateTarget, journeyId })
