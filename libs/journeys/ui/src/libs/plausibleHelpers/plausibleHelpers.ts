@@ -1,4 +1,5 @@
 import {
+  BlockEventLabel,
   ButtonClickEventCreateInput,
   ChatOpenEventCreateInput,
   MultiselectSubmissionEventCreateInput,
@@ -186,6 +187,21 @@ export function templateKeyify({
     target: targetId,
     journeyId
   })
+}
+
+export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Partial<
+  Record<BlockEventLabel, keyof JourneyPlausibleEvents>
+> = {
+  [BlockEventLabel.decisionForChrist]: 'christDecisionCapture',
+  [BlockEventLabel.gospelPresentationStart]: 'gospelStartCapture',
+  [BlockEventLabel.gospelPresentationComplete]: 'gospelCompleteCapture',
+  [BlockEventLabel.prayerRequest]: 'prayerRequestCapture',
+  [BlockEventLabel.rsvp]: 'rsvpCapture',
+  [BlockEventLabel.specialVideoStart]: 'specialVideoStartCapture',
+  [BlockEventLabel.specialVideoComplete]: 'specialVideoCompleteCapture',
+  [BlockEventLabel.custom1]: 'custom1Capture',
+  [BlockEventLabel.custom2]: 'custom2Capture',
+  [BlockEventLabel.custom3]: 'custom3Capture'
 }
 
 export function actionToTarget(action: Action | null): 'link' | 'chat' | null {

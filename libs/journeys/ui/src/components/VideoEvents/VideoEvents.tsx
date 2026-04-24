@@ -19,6 +19,7 @@ import {
 import { useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import {
+  BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT,
   JourneyPlausibleEvents,
   keyify,
   templateKeyify
@@ -466,21 +467,25 @@ export function VideoEvents({
               })
             }
           })
-          if (eventLabel != null) {
-            const eventLabelKey = keyify({
+          const startCaptureEvent =
+            eventLabel != null
+              ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel]
+              : null
+          if (startCaptureEvent != null) {
+            const startCaptureKey = keyify({
               stepId: input.stepId ?? '',
-              event: eventLabel,
+              event: startCaptureEvent,
               blockId: input.blockId,
               journeyId: journey?.id
             })
-            plausible(eventLabel, {
-              u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            plausible(startCaptureEvent, {
+              u: `${window.location.origin}/${journey.id}/${input.stepId}`,
               props: {
                 ...input,
-                key: eventLabelKey,
-                simpleKey: eventLabelKey,
+                key: startCaptureKey,
+                simpleKey: startCaptureKey,
                 templateKey: templateKeyify({
-                  event: eventLabel,
+                  event: startCaptureEvent,
                   journeyId: journey?.id
                 })
               }
@@ -758,21 +763,25 @@ export function VideoEvents({
               })
             }
           })
-          if (endEventLabel != null) {
-            const endEventLabelKey = keyify({
+          const completeCaptureEvent =
+            endEventLabel != null
+              ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[endEventLabel]
+              : null
+          if (completeCaptureEvent != null) {
+            const completeCaptureKey = keyify({
               stepId: input.stepId ?? '',
-              event: endEventLabel,
+              event: completeCaptureEvent,
               blockId: input.blockId,
               journeyId: journey?.id
             })
-            plausible(endEventLabel, {
-              u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            plausible(completeCaptureEvent, {
+              u: `${window.location.origin}/${journey.id}/${input.stepId}`,
               props: {
                 ...input,
-                key: endEventLabelKey,
-                simpleKey: endEventLabelKey,
+                key: completeCaptureKey,
+                simpleKey: completeCaptureKey,
                 templateKey: templateKeyify({
-                  event: endEventLabel,
+                  event: completeCaptureEvent,
                   journeyId: journey?.id
                 })
               }

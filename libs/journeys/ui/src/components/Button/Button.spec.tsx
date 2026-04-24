@@ -931,8 +931,8 @@ describe('Button', () => {
       'buttonClick',
       expect.any(Object)
     )
-    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom1, {
-      u: expect.stringContaining(`/journey.id/button`),
+    expect(mockPlausible).toHaveBeenCalledWith('custom1Capture', {
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: 'button',
@@ -943,19 +943,20 @@ describe('Button', () => {
         actionValue: undefined,
         key: keyify({
           stepId: 'step.id',
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           blockId: 'button',
           target: null,
           journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           blockId: 'button',
           journeyId: 'journey.id'
         }),
         templateKey: templateKeyify({
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
+          target: actionToTarget(null),
           journeyId: 'journey.id'
         })
       }
@@ -1026,8 +1027,8 @@ describe('Button', () => {
       'chatButtonClick',
       expect.any(Object)
     )
-    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom2, {
-      u: expect.stringContaining(`/journey.id/button`),
+    expect(mockPlausible).toHaveBeenCalledWith('custom2Capture', {
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: 'button',
@@ -1035,19 +1036,20 @@ describe('Button', () => {
         value: 'facebook',
         key: keyify({
           stepId: 'step.id',
-          event: BlockEventLabel.custom2,
+          event: 'custom2Capture',
           blockId: 'button',
           target: action,
           journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
-          event: BlockEventLabel.custom2,
+          event: 'custom2Capture',
           blockId: 'button',
           journeyId: 'journey.id'
         }),
         templateKey: templateKeyify({
-          event: BlockEventLabel.custom2,
+          event: 'custom2Capture',
+          target: actionToTarget(action),
           journeyId: 'journey.id'
         })
       }

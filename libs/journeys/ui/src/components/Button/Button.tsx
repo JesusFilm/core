@@ -25,6 +25,7 @@ import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import {
+  BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT,
   JourneyPlausibleEvents,
   actionToTarget,
   keyify,
@@ -211,26 +212,31 @@ export function Button({
             })
           }
         })
-        if (eventLabel != null) {
-          plausible(eventLabel, {
-            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+        const clickCaptureEvent =
+          eventLabel != null
+            ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel]
+            : null
+        if (clickCaptureEvent != null) {
+          plausible(clickCaptureEvent, {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key: keyify({
                 stepId: input.stepId ?? '',
-                event: eventLabel,
+                event: clickCaptureEvent,
                 blockId: input.blockId,
                 target: action,
                 journeyId: journey.id
               }),
               simpleKey: keyify({
                 stepId: input.stepId ?? '',
-                event: eventLabel,
+                event: clickCaptureEvent,
                 blockId: input.blockId,
                 journeyId: journey.id
               }),
               templateKey: templateKeyify({
-                event: eventLabel,
+                event: clickCaptureEvent,
+                target: actionToTarget(action),
                 journeyId: journey?.id
               })
             }
@@ -280,26 +286,31 @@ export function Button({
             })
           }
         })
-        if (eventLabel != null) {
-          plausible(eventLabel, {
-            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+        const chatCaptureEvent =
+          eventLabel != null
+            ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[eventLabel]
+            : null
+        if (chatCaptureEvent != null) {
+          plausible(chatCaptureEvent, {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key: keyify({
                 stepId: input.stepId ?? '',
-                event: eventLabel,
+                event: chatCaptureEvent,
                 blockId: input.blockId,
                 target: action,
                 journeyId: journey.id
               }),
               simpleKey: keyify({
                 stepId: input.stepId ?? '',
-                event: eventLabel,
+                event: chatCaptureEvent,
                 blockId: input.blockId,
                 journeyId: journey.id
               }),
               templateKey: templateKeyify({
-                event: eventLabel,
+                event: chatCaptureEvent,
+                target: actionToTarget(action),
                 journeyId: journey?.id
               })
             }

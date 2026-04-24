@@ -11,6 +11,7 @@ import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import {
+  BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT,
   JourneyPlausibleEvents,
   keyify,
   templateKeyify
@@ -149,26 +150,31 @@ export function RadioQuestion({
             })
           }
         })
-        if (radioOptionBlock.eventLabel != null) {
-          plausible(radioOptionBlock.eventLabel, {
-            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+        const captureEvent =
+          radioOptionBlock.eventLabel != null
+            ? BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[radioOptionBlock.eventLabel]
+            : null
+        if (captureEvent != null) {
+          plausible(captureEvent, {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key: keyify({
                 stepId: input.stepId ?? '',
-                event: radioOptionBlock.eventLabel,
+                event: captureEvent,
                 blockId: radioOptionBlock.id,
                 target: radioOptionBlock.action,
                 journeyId: journey?.id
               }),
               simpleKey: keyify({
                 stepId: input.stepId ?? '',
-                event: radioOptionBlock.eventLabel,
+                event: captureEvent,
                 blockId: radioOptionBlock.id,
                 journeyId: journey?.id
               }),
               templateKey: templateKeyify({
-                event: radioOptionBlock.eventLabel,
+                event: captureEvent,
+                target: actionToTarget(radioOptionBlock.action),
                 journeyId: journey?.id
               })
             }
