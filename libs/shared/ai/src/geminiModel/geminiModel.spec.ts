@@ -1,4 +1,4 @@
-import { google } from '@ai-sdk/google'
+import { openrouter } from '@openrouter/ai-sdk-provider'
 
 import {
   createGeminiFallbackSession,
@@ -9,21 +9,32 @@ import {
   withGeminiFallback
 } from './geminiModel'
 
-jest.mock('@ai-sdk/google', () => ({
-  google: jest.fn((modelId: string) => ({ modelId }))
+jest.mock('@openrouter/ai-sdk-provider', () => ({
+  openrouter: Object.assign(
+    jest.fn((modelId: string) => ({
+      modelId,
+      provider: 'openrouter'
+    })),
+    {
+      chat: jest.fn((modelId: string) => ({
+        modelId,
+        provider: 'openrouter'
+      }))
+    }
+  )
 }))
 
-const mockedGoogle = jest.mocked(google)
+const mockedOpenrouter = jest.mocked(openrouter)
 
 describe('geminiModel', () => {
   const originalEnv = process.env
 
   beforeEach(() => {
     process.env = { ...originalEnv }
-    delete process.env.GEMINI_MODEL
-    delete process.env.GEMINI_FALLBACK_MODEL
+    delete process.env.OPENROUTER_MODEL
+    delete process.env.OPENROUTER_FALLBACK_MODEL
     delete process.env.GEMINI_MAX_RETRIES
-    mockedGoogle.mockClear()
+    mockedOpenrouter.chat.mockClear()
   })
 
   afterAll(() => {
@@ -31,40 +42,48 @@ describe('geminiModel', () => {
   })
 
   describe('getGeminiModel', () => {
-    it('should use gemini-2.5-flash by default', () => {
+    it('should use google/gemma-4-26b-a4b-it via openrouter by default', () => {
       getGeminiModel()
-      expect(mockedGoogle).toHaveBeenCalledWith('gemini-2.5-flash')
+      expect(mockedOpenrouter.chat).toHaveBeenCalledWith(
+        'google/gemma-4-26b-a4b-it'
+      )
     })
 
-    it('should use GEMINI_MODEL env var when set', () => {
-      process.env.GEMINI_MODEL = 'gemini-2.0-flash'
+    it('should use OPENROUTER_MODEL env var when set', () => {
+      process.env.OPENROUTER_MODEL = 'anthropic/claude-3.5-sonnet'
       getGeminiModel()
-      expect(mockedGoogle).toHaveBeenCalledWith('gemini-2.0-flash')
+      expect(mockedOpenrouter.chat).toHaveBeenCalledWith(
+        'anthropic/claude-3.5-sonnet'
+      )
     })
 
     it('should fall back to default for empty string', () => {
-      process.env.GEMINI_MODEL = ''
+      process.env.OPENROUTER_MODEL = ''
       getGeminiModel()
-      expect(mockedGoogle).toHaveBeenCalledWith('gemini-2.5-flash')
+      expect(mockedOpenrouter.chat).toHaveBeenCalledWith(
+        'google/gemma-4-26b-a4b-it'
+      )
     })
 
     it('should fall back to default for whitespace-only string', () => {
-      process.env.GEMINI_MODEL = '   '
+      process.env.OPENROUTER_MODEL = '   '
       getGeminiModel()
-      expect(mockedGoogle).toHaveBeenCalledWith('gemini-2.5-flash')
+      expect(mockedOpenrouter.chat).toHaveBeenCalledWith(
+        'google/gemma-4-26b-a4b-it'
+      )
     })
   })
 
   describe('getGeminiFallbackModel', () => {
-    it('should use gemini-2.0-flash by default', () => {
+    it('should use google/gemini-2.5-flash via openrouter by default', () => {
       getGeminiFallbackModel()
-      expect(mockedGoogle).toHaveBeenCalledWith('gemini-2.0-flash')
+      expect(mockedOpenrouter.chat).toHaveBeenCalledWith('google/gemini-2.5-flash')
     })
 
-    it('should use GEMINI_FALLBACK_MODEL env var when set', () => {
-      process.env.GEMINI_FALLBACK_MODEL = 'gemini-2.5-flash-lite'
+    it('should use OPENROUTER_FALLBACK_MODEL env var when set', () => {
+      process.env.OPENROUTER_FALLBACK_MODEL = 'google/gemini-2.0-flash'
       getGeminiFallbackModel()
-      expect(mockedGoogle).toHaveBeenCalledWith('gemini-2.5-flash-lite')
+      expect(mockedOpenrouter.chat).toHaveBeenCalledWith('google/gemini-2.0-flash')
     })
   })
 
@@ -152,7 +171,7 @@ describe('geminiModel', () => {
       expect(result).toBe('ok')
       expect(operation).toHaveBeenCalledTimes(1)
       expect(operation).toHaveBeenCalledWith(
-        expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+        expect.objectContaining({ modelId: 'google/gemma-4-26b-a4b-it' })
       )
     })
 
@@ -178,7 +197,7 @@ describe('geminiModel', () => {
       expect(operation).toHaveBeenCalledTimes(3)
       for (const call of operation.mock.calls) {
         expect(call[0]).toEqual(
-          expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+          expect.objectContaining({ modelId: 'google/gemma-4-26b-a4b-it' })
         )
       }
     })
@@ -202,13 +221,13 @@ describe('geminiModel', () => {
       expect(result).toBe('fallback-ok')
       expect(operation).toHaveBeenCalledTimes(3)
       expect(operation.mock.calls[0][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+        expect.objectContaining({ modelId: 'google/gemma-4-26b-a4b-it' })
       )
       expect(operation.mock.calls[1][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+        expect.objectContaining({ modelId: 'google/gemma-4-26b-a4b-it' })
       )
       expect(operation.mock.calls[2][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.0-flash' })
+        expect.objectContaining({ modelId: 'google/gemini-2.5-flash' })
       )
     })
 
@@ -227,10 +246,10 @@ describe('geminiModel', () => {
       expect(result).toBe('fallback-ok')
       expect(operation).toHaveBeenCalledTimes(2)
       expect(operation.mock.calls[0][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+        expect.objectContaining({ modelId: 'google/gemma-4-26b-a4b-it' })
       )
       expect(operation.mock.calls[1][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.0-flash' })
+        expect.objectContaining({ modelId: 'google/gemini-2.5-flash' })
       )
     })
 
@@ -292,7 +311,7 @@ describe('geminiModel', () => {
       expect(result).toBe('ok')
       expect(operation).toHaveBeenCalledTimes(1)
       expect(operation).toHaveBeenCalledWith(
-        expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+        expect.objectContaining({ modelId: 'google/gemma-4-26b-a4b-it' })
       )
     })
 
@@ -306,10 +325,10 @@ describe('geminiModel', () => {
       expect(await session.execute(op2)).toBe('second')
 
       expect(op1.mock.calls[0][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+        expect.objectContaining({ modelId: 'google/gemma-4-26b-a4b-it' })
       )
       expect(op2.mock.calls[0][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+        expect.objectContaining({ modelId: 'google/gemma-4-26b-a4b-it' })
       )
     })
 
@@ -334,7 +353,7 @@ describe('geminiModel', () => {
       expect(operation).toHaveBeenCalledTimes(3)
       for (const call of operation.mock.calls) {
         expect(call[0]).toEqual(
-          expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+          expect.objectContaining({ modelId: 'google/gemma-4-26b-a4b-it' })
         )
       }
     })
@@ -358,13 +377,13 @@ describe('geminiModel', () => {
       expect(result).toBe('fallback-ok')
       expect(operation).toHaveBeenCalledTimes(3)
       expect(operation.mock.calls[0][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+        expect.objectContaining({ modelId: 'google/gemma-4-26b-a4b-it' })
       )
       expect(operation.mock.calls[1][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+        expect.objectContaining({ modelId: 'google/gemma-4-26b-a4b-it' })
       )
       expect(operation.mock.calls[2][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.0-flash' })
+        expect.objectContaining({ modelId: 'google/gemini-2.5-flash' })
       )
     })
 
@@ -384,10 +403,10 @@ describe('geminiModel', () => {
 
       expect(result1).toBe('first-fallback')
       expect(op1.mock.calls[0][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+        expect.objectContaining({ modelId: 'google/gemma-4-26b-a4b-it' })
       )
       expect(op1.mock.calls[1][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.0-flash' })
+        expect.objectContaining({ modelId: 'google/gemini-2.5-flash' })
       )
 
       // Second call: goes straight to fallback, primary never called
@@ -397,14 +416,14 @@ describe('geminiModel', () => {
       expect(result2).toBe('second-fallback')
       expect(op2).toHaveBeenCalledTimes(1)
       expect(op2.mock.calls[0][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.0-flash' })
+        expect.objectContaining({ modelId: 'google/gemini-2.5-flash' })
       )
 
       // Third call: still fallback
       const op3 = jest.fn().mockResolvedValue('third-fallback')
       await session.execute(op3)
       expect(op3.mock.calls[0][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.0-flash' })
+        expect.objectContaining({ modelId: 'google/gemini-2.5-flash' })
       )
     })
 
@@ -439,10 +458,10 @@ describe('geminiModel', () => {
       expect(result2).toBe('fallback-retry-ok')
       expect(op2).toHaveBeenCalledTimes(2)
       expect(op2.mock.calls[0][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.0-flash' })
+        expect.objectContaining({ modelId: 'google/gemini-2.5-flash' })
       )
       expect(op2.mock.calls[1][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.0-flash' })
+        expect.objectContaining({ modelId: 'google/gemini-2.5-flash' })
       )
     })
 
@@ -502,7 +521,7 @@ describe('geminiModel', () => {
       expect(op2).toHaveBeenCalledTimes(2)
       for (const call of op2.mock.calls) {
         expect(call[0]).toEqual(
-          expect.objectContaining({ modelId: 'gemini-2.0-flash' })
+          expect.objectContaining({ modelId: 'google/gemini-2.5-flash' })
         )
       }
     })
@@ -528,7 +547,7 @@ describe('geminiModel', () => {
       await expect(session.execute(op2)).rejects.toThrow('bad request')
       expect(op2).toHaveBeenCalledTimes(1)
       expect(op2.mock.calls[0][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.0-flash' })
+        expect.objectContaining({ modelId: 'google/gemini-2.5-flash' })
       )
     })
 
@@ -574,10 +593,10 @@ describe('geminiModel', () => {
       // B: primary 0, fallback 0 = 2 calls — primary 1 was skipped due to bail-out
       expect(opB).toHaveBeenCalledTimes(2)
       expect(opB.mock.calls[0][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.5-flash' })
+        expect.objectContaining({ modelId: 'google/gemma-4-26b-a4b-it' })
       )
       expect(opB.mock.calls[1][0]).toEqual(
-        expect.objectContaining({ modelId: 'gemini-2.0-flash' })
+        expect.objectContaining({ modelId: 'google/gemini-2.5-flash' })
       )
     })
   })

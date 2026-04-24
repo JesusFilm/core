@@ -1,9 +1,9 @@
-import { google } from '@ai-sdk/google'
 import { Output, generateText } from 'ai'
 import { z } from 'zod'
 
 import { JourneyCustomizationField } from '@core/prisma/journeys/client'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
+import { withGeminiFallback } from '@core/shared/ai/geminiModel'
 
 const CUSTOMIZATION_SYSTEM_PROMPT = `${preSystemPrompt}
 
@@ -55,17 +55,19 @@ Return translations in the same order as input.
 
 ${numberedValues}`
 
-  const { output } = await generateText({
-    model: google('gemini-2.5-flash'),
-    messages: [
-      { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
-      {
-        role: 'user',
-        content: [{ type: 'text', text: prompt }]
-      }
-    ],
-    output: Output.object({ schema: BatchTranslationSchema })
-  })
+  const { output } = await withGeminiFallback((model) =>
+    generateText({
+      model,
+      messages: [
+        { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
+        {
+          role: 'user',
+          content: [{ type: 'text', text: prompt }]
+        }
+      ],
+      output: Output.object({ schema: BatchTranslationSchema })
+    })
+  )
 
   return values.map((original, i) => output.translations[i] ?? original)
 }
@@ -248,19 +250,21 @@ ${fieldContext}
 Description:
 ${hardenPrompt(description)}`
 
-  const { output } = await generateText({
-    model: google('gemini-2.5-flash'),
-    messages: [
-      { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
-      {
-        role: 'user',
-        content: [{ type: 'text', text: prompt }]
-      }
-    ],
-    output: Output.object({
-      schema: CustomizationDescriptionTranslationSchema
+  const { output } = await withGeminiFallback((model) =>
+    generateText({
+      model,
+      messages: [
+        { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
+        {
+          role: 'user',
+          content: [{ type: 'text', text: prompt }]
+        }
+      ],
+      output: Output.object({
+        schema: CustomizationDescriptionTranslationSchema
+      })
     })
-  })
+  )
 
   if (fieldMatches.length > 0) {
     const translatedTokens: string[] = []

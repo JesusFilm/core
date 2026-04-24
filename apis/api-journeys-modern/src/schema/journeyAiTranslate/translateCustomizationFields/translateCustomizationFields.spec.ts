@@ -2,8 +2,10 @@ import { generateText } from 'ai'
 
 import { translateCustomizationFields } from './translateCustomizationFields'
 
-jest.mock('@ai-sdk/google', () => ({
-  google: jest.fn(() => 'mocked-google-model')
+jest.mock('@openrouter/ai-sdk-provider', () => ({
+  openrouter: {
+    chat: jest.fn(() => 'mocked-openrouter-model')
+  }
 }))
 
 jest.mock('ai', () => ({

@@ -1,18 +1,20 @@
-import { google } from '@ai-sdk/google'
+import { openrouter } from '@openrouter/ai-sdk-provider'
 
-const DEFAULT_MODEL = 'gemini-2.5-flash'
-const DEFAULT_FALLBACK_MODEL = 'gemini-2.0-flash'
+const DEFAULT_MODEL = 'google/gemma-4-26b-a4b-it'
+const DEFAULT_FALLBACK_MODEL = 'google/gemini-2.5-flash'
 const DEFAULT_MAX_RETRIES = 3
 const BACKOFF_BASE_MS = 1000
 
-export function getGeminiModel() {
-  const model = process.env.GEMINI_MODEL?.trim()
-  return google(model || DEFAULT_MODEL)
+type AIModel = ReturnType<typeof openrouter.chat>
+
+export function getGeminiModel(): AIModel {
+  const model = process.env.OPENROUTER_MODEL?.trim()
+  return openrouter.chat(model || DEFAULT_MODEL)
 }
 
-export function getGeminiFallbackModel() {
-  const fallback = process.env.GEMINI_FALLBACK_MODEL?.trim()
-  return google(fallback || DEFAULT_FALLBACK_MODEL)
+export function getGeminiFallbackModel(): AIModel {
+  const fallback = process.env.OPENROUTER_FALLBACK_MODEL?.trim()
+  return openrouter.chat(fallback || DEFAULT_FALLBACK_MODEL)
 }
 
 export function getGeminiMaxRetries(): number {
@@ -41,8 +43,8 @@ export function isRateLimitError(error: unknown): boolean {
  *   primary retries.
  */
 async function retryWithBackoff<T>(
-  model: ReturnType<typeof google>,
-  operation: (model: ReturnType<typeof google>) => Promise<T>,
+  model: AIModel,
+  operation: (model: AIModel) => Promise<T>,
   maxRetries: number,
   shouldAbort?: () => boolean
 ): Promise<T> {
@@ -67,9 +69,7 @@ async function retryWithBackoff<T>(
 }
 
 export interface GeminiFallbackSession {
-  execute<T>(
-    operation: (model: ReturnType<typeof google>) => Promise<T>
-  ): Promise<T>
+  execute<T>(operation: (model: AIModel) => Promise<T>): Promise<T>
 }
 
 /**
@@ -89,7 +89,7 @@ export function createGeminiFallbackSession(): GeminiFallbackSession {
 
   return {
     async execute<T>(
-      operation: (model: ReturnType<typeof google>) => Promise<T>
+      operation: (model: AIModel) => Promise<T>
     ): Promise<T> {
       if (useFallback) {
         return retryWithBackoff(fallbackModel, operation, maxRetries)
@@ -118,7 +118,7 @@ export function createGeminiFallbackSession(): GeminiFallbackSession {
  * Kept for backward compatibility with callers that don't need cross-call state.
  */
 export async function withGeminiFallback<T>(
-  operation: (model: ReturnType<typeof google>) => Promise<T>
+  operation: (model: AIModel) => Promise<T>
 ): Promise<T> {
   return createGeminiFallbackSession().execute(operation)
 }

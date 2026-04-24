@@ -5,8 +5,10 @@ import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import { translateCustomizationDescription } from './translateCustomizationFields/translateCustomizationFields'
 
-jest.mock('@ai-sdk/google', () => ({
-  google: jest.fn(() => 'mocked-google-model')
+jest.mock('@openrouter/ai-sdk-provider', () => ({
+  openrouter: {
+    chat: jest.fn(() => 'mocked-openrouter-model')
+  }
 }))
 
 jest.mock('ai', () => ({

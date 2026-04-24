@@ -9,8 +9,10 @@ import { getCardBlocksContent } from './getCardBlocksContent'
 import { translateCustomizationFields } from './translateCustomizationFields/translateCustomizationFields'
 
 // Mock all external dependencies
-jest.mock('@ai-sdk/google', () => ({
-  google: jest.fn(() => 'mocked-google-model')
+jest.mock('@openrouter/ai-sdk-provider', () => ({
+  openrouter: {
+    chat: jest.fn(() => 'mocked-openrouter-model')
+  }
 }))
 
 jest.mock('ai', () => ({
@@ -320,7 +322,7 @@ describe('journeyAiTranslateCreate mutation', () => {
     expect(mockOutputArray).toHaveBeenCalled()
     expect(mockGenerateText).toHaveBeenCalledWith(
       expect.objectContaining({
-        model: 'mocked-google-model',
+        model: 'mocked-openrouter-model',
         output: expect.any(Object),
         messages: expect.arrayContaining([
           expect.objectContaining({
