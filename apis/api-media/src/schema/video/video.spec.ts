@@ -20,6 +20,7 @@ import {
 } from '@core/prisma/media/client'
 import { ResultOf, graphql } from '@core/shared/gql'
 
+import { notifyVideoSlackOfMutation } from '../../lib/slack'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
@@ -27,6 +28,10 @@ import { getLanguageIdFromInfo } from './video'
 
 jest.mock('./lib/updateAvailableLanguages', () => ({
   updateVideoAvailableLanguages: jest.fn()
+}))
+
+jest.mock('../../lib/slack', () => ({
+  notifyVideoSlackOfMutation: jest.fn()
 }))
 
 describe('video', () => {
@@ -2583,6 +2588,12 @@ describe('video', () => {
         expect(result).toHaveProperty('data.videoCreate', {
           id: 'id'
         })
+        expect(notifyVideoSlackOfMutation).toHaveBeenCalledWith(
+          expect.objectContaining({
+            kind: 'create',
+            video: expect.objectContaining({ id: 'id', label: 'featureFilm' })
+          })
+        )
       })
 
       it('should fail if not publisher', async () => {
@@ -2787,6 +2798,12 @@ describe('video', () => {
         expect(result).toHaveProperty('data.videoUpdate', {
           id: 'id'
         })
+        expect(notifyVideoSlackOfMutation).toHaveBeenCalledWith(
+          expect.objectContaining({
+            kind: 'update',
+            video: expect.objectContaining({ id: 'id', label: 'episode' })
+          })
+        )
       })
 
       it('should update video with child relations when childIds are provided', async () => {
