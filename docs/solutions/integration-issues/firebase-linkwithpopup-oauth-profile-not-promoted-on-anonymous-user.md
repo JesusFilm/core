@@ -71,9 +71,7 @@ const user = userCredential.user
 // the top-level Firebase user, so the next ID token refresh would be
 // missing the name/picture claims. Copy them from providerData.
 try {
-  const linkedProvider = user.providerData?.find(
-    (p) => p.providerId === authProvider.providerId
-  )
+  const linkedProvider = user.providerData?.find((p) => p.providerId === authProvider.providerId)
   const profileUpdates: { displayName?: string; photoURL?: string } = {}
   if (user.displayName == null && linkedProvider?.displayName != null) {
     profileUpdates.displayName = linkedProvider.displayName
@@ -105,13 +103,9 @@ function resolveProviderProfile(firebaseUser: UserRecord): {
   displayName: string | null
   photoURL: string | null
 } {
-  const linked = firebaseUser.providerData?.find(
-    (p) => p.providerId !== 'firebase'
-  )
+  const linked = firebaseUser.providerData?.find((p) => p.providerId !== 'firebase')
   return {
-    displayName: sanitizeDisplayName(
-      firebaseUser.displayName ?? linked?.displayName
-    ),
+    displayName: sanitizeDisplayName(firebaseUser.displayName ?? linked?.displayName),
     photoURL: sanitizePhotoURL(firebaseUser.photoURL ?? linked?.photoURL)
   }
 }
