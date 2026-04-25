@@ -35,9 +35,7 @@ jest.mock('@core/journeys/ui/TeamProvider', () => ({
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const mockedUseTranslation = useTranslation as jest.MockedFunction<
-  typeof useTranslation
->
+const mockedUseTranslation = jest.mocked(useTranslation)
 const mockedUseTeam = useTeam as jest.MockedFunction<typeof useTeam>
 
 const mockRenderList = jest.fn(() => (

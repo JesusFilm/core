@@ -18,10 +18,10 @@
     "baseUrl": ".",
     "paths": {
       "next-i18next/pages": [
-        "node_modules/next-i18next/dist/pagesRouter/index.d.cts"
+        "node_modules/next-i18next/dist/pagesRouter/index.cjs"
       ],
       "next-i18next/pages/serverSideTranslations": [
-        "node_modules/next-i18next/dist/pagesRouter/serverSideTranslations.d.cts"
+        "node_modules/next-i18next/dist/pagesRouter/serverSideTranslations.cjs"
       ],
       "@core/journeys/ui/*": [
         "libs/journeys/ui/src/components/*",

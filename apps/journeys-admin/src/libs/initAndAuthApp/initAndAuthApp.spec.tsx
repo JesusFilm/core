@@ -21,8 +21,7 @@ jest.mock('../checkConditionalRedirect')
 jest.mock('firebase/app')
 jest.mock('firebase/auth')
 
-const serverSideTranslationsMock =
-  serverSideTranslations as jest.MockedFunction<typeof serverSideTranslations>
+const serverSideTranslationsMock = jest.mocked(serverSideTranslations)
 const getLaunchDarklyClientMock = getLaunchDarklyClient as jest.MockedFunction<
   typeof getLaunchDarklyClient
 >
