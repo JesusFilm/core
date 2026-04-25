@@ -8,7 +8,11 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
-import { SSRConfig, appWithTranslation, useTranslation } from 'next-i18next/pages'
+import {
+  SSRConfig,
+  appWithTranslation,
+  useTranslation
+} from 'next-i18next/pages'
 import { DefaultSeo } from 'next-seo'
 import { SnackbarKey, SnackbarProvider, closeSnackbar } from 'notistack'
 import { ReactElement, useEffect } from 'react'
