@@ -7,7 +7,7 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import logo from '../../../public/logo.svg'

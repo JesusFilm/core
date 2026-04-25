@@ -1,6 +1,6 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { GetStaticProps } from 'next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import type { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
 import {

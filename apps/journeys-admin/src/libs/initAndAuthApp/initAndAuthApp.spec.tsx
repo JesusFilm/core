@@ -2,8 +2,8 @@ import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { LDClient } from '@launchdarkly/node-server-sdk'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
-import { SSRConfig } from 'next-i18next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { SSRConfig } from 'next-i18next/pages'
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 
@@ -14,7 +14,7 @@ import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
 import { ACCEPT_ALL_INVITES, initAndAuthApp } from './initAndAuthApp'
 
-jest.mock('next-i18next/serverSideTranslations')
+jest.mock('next-i18next/pages/serverSideTranslations')
 jest.mock('@core/shared/ui/getLaunchDarklyClient')
 jest.mock('../apolloClient')
 jest.mock('../checkConditionalRedirect')

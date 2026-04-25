@@ -1,6 +1,6 @@
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode } from 'react'
 
 import { Dialog as SharedUiDialog } from '@core/shared/ui/Dialog'

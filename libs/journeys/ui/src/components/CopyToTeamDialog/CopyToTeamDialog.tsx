@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import { Formik, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 import { boolean, object, string } from 'yup'
 

@@ -185,7 +185,7 @@
     "next": "^15.5.7",
     "next-firebase-auth-edge": "^1.7.0-canary.2",
     "next-i18n-router": "^5.5.5",
-    "next-i18next": "15.4.2",
+    "next-i18next": "^16.0.5",
     "next-intl": "^4.4.0",
     "next-logger": "^5.0.0",
     "next-plausible": "^3.12.0",

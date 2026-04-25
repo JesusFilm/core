@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode } from 'react'
 import { Controls as Control, ControlButton, useReactFlow } from 'reactflow'
 

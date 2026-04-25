@@ -12,7 +12,7 @@ if (isBrowser) {
 }
 
 /**
- * @type {import('next-i18next').UserConfig}
+ * @type {import('next-i18next/pages').UserConfig}
  **/
 const i18nConfig = {
   i18n: {

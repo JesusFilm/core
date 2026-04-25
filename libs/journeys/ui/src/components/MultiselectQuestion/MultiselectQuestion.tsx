@@ -4,7 +4,7 @@ import ButtonGroup from '@mui/material/ButtonGroup'
 import { SimplePaletteColorOptions, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useFormikContext } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
