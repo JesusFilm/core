@@ -71,7 +71,9 @@ describe('customDomainDelete', () => {
       userId: mockUser.id,
       roles: []
     } as any)
-    prismaMock.$transaction.mockImplementation(async (fn: any) => fn(prismaMock))
+    prismaMock.$transaction.mockImplementation(async (fn: any) =>
+      fn(prismaMock)
+    )
   })
 
   it('should delete custom domain when authorized', async () => {
