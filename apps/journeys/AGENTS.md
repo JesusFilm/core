@@ -48,24 +48,29 @@ ComponentName/
 
 Page-level wrapping order (from `_app.tsx` and `JourneyPageWrapper`):
 
-1. `AppCacheProvider` — MUI Emotion cache for SSR
-2. `ApolloProvider` — GraphQL client
-3. `SnackbarProvider` — toast notifications
-4. `PlausibleProvider` — analytics (per journey)
-5. `JourneyProvider` — journey data context (`useJourney()`)
-6. `ThemeProvider` — per-step theming with custom fonts
+1. `FlagsProvider` — LaunchDarkly feature flags (outermost)
+2. `AppCacheProvider` — MUI Emotion cache for SSR
+3. `ApolloProvider` — GraphQL client
+4. `SnackbarProvider` — toast notifications
+5. `PlausibleProvider` — analytics (per journey)
+6. `JourneyProvider` — journey data context (`useJourney()`)
+7. `ThemeProvider` — per-step theming with custom fonts
 
 Tests must wrap components in the required providers:
 
 ```tsx
-<MockedProvider mocks={[...]}>
-  <SnackbarProvider>
-    <JourneyProvider value={{ journey }}>
-      <Component />
-    </JourneyProvider>
-  </SnackbarProvider>
-</MockedProvider>
+<FlagsProvider flags={{ apologistChat: true }}>
+  <MockedProvider mocks={[...]}>
+    <SnackbarProvider>
+      <JourneyProvider value={{ journey }}>
+        <Component />
+      </JourneyProvider>
+    </SnackbarProvider>
+  </MockedProvider>
+</FlagsProvider>
 ```
+
+Note: `FlagsProvider` is optional in tests unless the component under test uses `useFlags()`. Components that consume flags should be wrapped to ensure flag values are provided.
 
 ## Data model — blocks and trees
 

@@ -15,7 +15,6 @@ builder.mutationField('typographyBlockCreate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: TypographyBlock,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       input: t.arg({ type: TypographyBlockCreateInput, required: true })
     },

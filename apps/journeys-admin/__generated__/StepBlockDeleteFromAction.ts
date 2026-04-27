@@ -10,7 +10,7 @@ import { BlockUpdateActionInput } from "./globalTypes";
 // ====================================================
 
 export interface StepBlockDeleteFromAction_blockDelete_ImageBlock {
-  __typename: "ImageBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "ButtonBlock" | "CardBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
@@ -29,7 +29,7 @@ export interface StepBlockDeleteFromAction_blockDelete_StepBlock {
 export type StepBlockDeleteFromAction_blockDelete = StepBlockDeleteFromAction_blockDelete_ImageBlock | StepBlockDeleteFromAction_blockDelete_StepBlock;
 
 export interface StepBlockDeleteFromAction_blockUpdateAction_parentBlock {
-  __typename: "ImageBlock" | "StepBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "ButtonBlock" | "CardBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -41,9 +41,6 @@ export interface StepBlockDeleteFromAction_blockUpdateAction {
 }
 
 export interface StepBlockDeleteFromAction {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   blockDelete: StepBlockDeleteFromAction_blockDelete[];
   blockUpdateAction: StepBlockDeleteFromAction_blockUpdateAction;
 }

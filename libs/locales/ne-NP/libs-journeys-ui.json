@@ -1,6 +1,7 @@
 {
   "Submit": "पेश गर्नुहोस्",
   "Button": "बटन",
+  "None": "कुनै पनि होइन",
   "This field is required": "यो क्षेत्र आवश्यक छ।",
   "Name must be 2 characters or more": "नाम २ वा सोभन्दा बढी वर्णको हुनुपर्छ।",
   "Name must be 50 characters or less": "नाम ५० वर्ण वा कमको हुनुपर्छ।",
@@ -102,6 +103,5 @@
   "{{count}} Cards_one": "{{count}} कार्डहरू",
   "{{count}} Cards_other": "{{count}} कार्डहरू",
   "{{count}} Videos_one": "{{count}} भिडियोहरू",
-  "{{count}} Videos_other": "{{count}} भिडियोहरू",
-  "None": "None"
+  "{{count}} Videos_other": "{{count}} भिडियोहरू"
 }
