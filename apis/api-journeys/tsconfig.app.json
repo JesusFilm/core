@@ -5,6 +5,7 @@
     "esModuleInterop": true,
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
+    "moduleResolution": "node",
     "types": [
       "node",
       "@nx/react/typings/cssmodule.d.ts",

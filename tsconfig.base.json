@@ -4,12 +4,12 @@
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es2015",
-    "module": "commonjs",
+    "module": "esnext",
     "lib": ["es2021", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
@@ -17,12 +17,6 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "next-i18next/pages": [
-        "node_modules/next-i18next/dist/pagesRouter/index.cjs"
-      ],
-      "next-i18next/pages/serverSideTranslations": [
-        "node_modules/next-i18next/dist/pagesRouter/serverSideTranslations.cjs"
-      ],
       "@core/journeys/ui/*": [
         "libs/journeys/ui/src/components/*",
         "libs/journeys/ui/src/libs/*"
