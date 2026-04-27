@@ -1,3 +1,5 @@
+<!-- Keep in sync with .cursor/skills/write-qa-requirements/SKILL.md -->
+
 # Writing QA Requirements
 
 **Applies when:** The user asks to write, draft, or review QA requirements for a Linear ticket.

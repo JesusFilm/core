@@ -3,6 +3,8 @@ name: write-qa-requirements
 description: Writes QA requirements for a Linear ticket based on branch changes. Use when asked to write, draft, or review QA requirements.
 ---
 
+<!-- Keep in sync with .claude/commands/write-qa-requirements.md -->
+
 # Writing QA Requirements
 
 **Applies when:** The user asks to write, draft, or review QA requirements for a Linear ticket.
