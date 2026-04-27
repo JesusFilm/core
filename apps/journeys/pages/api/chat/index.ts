@@ -154,12 +154,21 @@ export default async function handler(
     prompt: promptClient ?? undefined
   })
 
+  let generationEnded = false
+  const endGenerationIfPending = (
+    args: Parameters<NonNullable<typeof generation>['end']>[0]
+  ): void => {
+    if (generationEnded) return
+    generationEnded = true
+    generation?.end(args)
+  }
+
   try {
     const result = streamText({
       model: modelResult.resolved.model,
       system,
       messages: modelMessages,
-      onError: ({ error }) => {
+      onError: async ({ error }) => {
         const err = error as Error
         console.error('[chat] streamText onError', {
           provider,
@@ -168,15 +177,20 @@ export default async function handler(
           message: err?.message,
           stack: err?.stack
         })
+        endGenerationIfPending({
+          level: 'ERROR',
+          statusMessage: err?.message ?? 'stream error'
+        })
+        await langfuse?.flushAsync()
       },
       onFinish: async ({ text, usage, finishReason }) => {
         if (finishReason === 'error') {
-          generation?.end({
+          endGenerationIfPending({
             level: 'ERROR',
             statusMessage: `finishReason=${finishReason}`
           })
         } else {
-          generation?.end({
+          endGenerationIfPending({
             output: text,
             usage:
               usage != null
@@ -213,7 +227,7 @@ export default async function handler(
       name: err?.name,
       message: err?.message
     })
-    generation?.end({
+    endGenerationIfPending({
       level: 'ERROR',
       statusMessage: err?.message ?? 'sync throw'
     })
