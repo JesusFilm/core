@@ -1,5 +1,5 @@
 ---
-title: "fix: Hausa language should render LTR, not RTL"
+title: 'fix: Hausa language should render LTR, not RTL'
 type: fix
 status: active
 date: 2026-04-27
@@ -69,7 +69,7 @@ Hausa is written predominantly in the Boko (Latin) script, which is LTR. The leg
 
 ### Resolved During Planning
 
-- *Should we keep the case and return `false` explicitly?* — No. The `default` branch already returns `false`; removing the case keeps the switch tidy and consistent with how other LTR locales are handled.
+- _Should we keep the case and return `false` explicitly?_ — No. The `default` branch already returns `false`; removing the case keeps the switch tidy and consistent with how other LTR locales are handled.
 
 ### Deferred to Implementation
 
@@ -88,23 +88,28 @@ Hausa is written predominantly in the Boko (Latin) script, which is LTR. The leg
 **Dependencies:** None
 
 **Files:**
+
 - Modify: `libs/shared/ui/src/libs/rtl/rtl.ts`
 - Modify: `libs/shared/ui/src/libs/rtl/rtl.spec.tsx`
 
 **Approach:**
+
 - Delete the `case 'ha':` line from the switch in `getLocaleRTL`
 - In the spec, move the `'ha'` assertion from the RTL block to the LTR (default-false) block, asserting `toBe(false)`
 
 **Patterns to follow:**
+
 - Existing structure of `getLocaleRTL` and its spec — keep the alphabetical grouping and matching test coverage style
 
 **Test scenarios:**
+
 - Happy path: `getLocaleRTL('ha')` returns `false`
 - Happy path: `getLocaleRTL('HA')` returns `false` (case-insensitivity preserved)
 - Happy path: `getLocaleRTL('ha-Latn')` returns `false` (subtag stripping preserved)
 - Edge case: every other RTL locale in the existing spec (`ar`, `arc`, `dv`, `fa`, `he`, `khw`, `ks`, `ku`, `ps`, `ur`, `yi`) still returns `true`
 
 **Verification:**
+
 - `npx jest --config libs/shared/ui/jest.config.ts --no-coverage 'libs/shared/ui/src/libs/rtl/rtl.spec.tsx'` passes
 - `npx jest --config libs/journeys/ui/jest.config.ts --no-coverage 'libs/journeys/ui/src/libs/rtl/rtl.spec.tsx'` still passes (downstream wrapper unaffected)
 
@@ -112,10 +117,10 @@ Hausa is written predominantly in the Boko (Latin) script, which is LTR. The leg
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| A consumer somewhere relies on Hausa being RTL | Grep showed `getLocaleRTL` / `getJourneyRTL` are the only RTL gatekeepers; flipping the source of truth is the correct lever |
-| Hausa-Ajami users (RTL script) get wrong layout | Out of scope — current product uses Hausa-Latin only. Documented in Scope Boundaries |
+| Risk                                            | Mitigation                                                                                                                   |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| A consumer somewhere relies on Hausa being RTL  | Grep showed `getLocaleRTL` / `getJourneyRTL` are the only RTL gatekeepers; flipping the source of truth is the correct lever |
+| Hausa-Ajami users (RTL script) get wrong layout | Out of scope — current product uses Hausa-Latin only. Documented in Scope Boundaries                                         |
 
 ---
 
