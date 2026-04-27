@@ -913,7 +913,7 @@ describe('LanguageScreen', () => {
           journeys: [
             {
               __typename: 'Journey' as const,
-              id: 'sibling-child-id',
+              id: 'current-child-id',
               fromTemplateId: 'template-duplicate',
               language: {
                 __typename: 'Language' as const,
@@ -947,7 +947,7 @@ describe('LanguageScreen', () => {
             },
             {
               __typename: 'Journey' as const,
-              id: 'current-child-id',
+              id: 'sibling-child-id',
               fromTemplateId: 'template-duplicate',
               language: {
                 __typename: 'Language' as const,
@@ -1731,7 +1731,7 @@ describe('LanguageScreen', () => {
             result: mockGetLastActiveTeamIdAndTeamsResult
           },
           createGetLanguagesMock([
-            { id: '21028', slug: 'spanish', value: 'Spanish' }
+            { id: '532', slug: 'spanish', value: 'Spanish' }
           ]),
           mockGetChildJourneysFromTemplateId,
           mockGetParentJourneysFromTemplateId,

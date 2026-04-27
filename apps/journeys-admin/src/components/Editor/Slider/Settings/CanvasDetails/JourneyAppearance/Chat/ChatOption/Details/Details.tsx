@@ -7,7 +7,6 @@ import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useMemo, useState } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -66,7 +65,6 @@ export function Details({
   enableIconSelect
 }: DetailsProps): ReactElement {
   const [open, setOpen] = useState(false)
-  const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { add } = useCommand()
@@ -79,54 +77,72 @@ export function Details({
     [t]
   )
 
-  async function handleUpdate(
-    type: 'link' | 'platform',
-    value?: string
-  ): Promise<void> {
-    let input
+  function handleUpdate(type: 'link' | 'platform', value?: string): void {
+    if (chatButtonId == null) return
+
     if (type === 'link') {
       const hasProtocolPrefix = /^\w+:\/\//
-      const link =
+      const newLink =
         value === ''
           ? ''
           : hasProtocolPrefix.test(value ?? '')
-            ? value
+            ? (value ?? '')
             : `https://${value}`
+      const oldLink = currentLink
 
-      input = {
-        link,
-        platform: currentPlatform
-      }
-      setCurrentLink(link ?? '')
-    } else {
-      input = {
-        link: currentLink,
-        platform: value as MessagePlatform
-      }
-      setCurrentPlatform(value as MessagePlatform)
-    }
-
-    if (chatButtonId == null) return
-    const { data } = await journeyChatButtonUpdate({
-      variables: {
-        chatButtonUpdateId: chatButtonId,
-        journeyId,
-        input
-      },
-      optimisticResponse: {
-        chatButtonUpdate: {
-          __typename: 'ChatButton',
-          id: chatButtonId,
-          ...input,
-          customizable: currentCustomizable ?? null
+      add({
+        parameters: {
+          execute: { link: newLink },
+          undo: { link: oldLink }
+        },
+        execute({ link }) {
+          setCurrentLink(link)
+          void journeyChatButtonUpdate({
+            variables: {
+              chatButtonUpdateId: chatButtonId,
+              journeyId,
+              input: { link }
+            },
+            optimisticResponse: {
+              chatButtonUpdate: {
+                __typename: 'ChatButton',
+                id: chatButtonId,
+                link,
+                platform: currentPlatform,
+                customizable: currentCustomizable ?? null
+              }
+            }
+          })
         }
-      }
-    })
+      })
+    } else {
+      const newPlatform = value as MessagePlatform
+      const oldPlatform = currentPlatform
 
-    if (data != null) {
-      enqueueSnackbar(t('Button updated.'), {
-        variant: 'success',
-        preventDuplicate: true
+      add({
+        parameters: {
+          execute: { platform: newPlatform },
+          undo: { platform: oldPlatform }
+        },
+        execute({ platform }) {
+          setCurrentPlatform(platform)
+          void journeyChatButtonUpdate({
+            variables: {
+              chatButtonUpdateId: chatButtonId,
+              journeyId,
+              input: { platform }
+            },
+            optimisticResponse: {
+              chatButtonUpdate: {
+                __typename: 'ChatButton',
+                id: chatButtonId,
+                link: currentLink,
+                platform,
+                customizable: currentCustomizable ?? null
+              }
+            }
+          })
+        }
       })
     }
   }
@@ -173,9 +189,7 @@ export function Details({
               labelId="icon-select"
               value={currentPlatform}
               displayEmpty
-              onChange={async (event) =>
-                await handleUpdate('platform', event.target.value)
-              }
+              onChange={(event) => handleUpdate('platform', event.target.value)}
               IconComponent={ChevronDownIcon}
               renderValue={(selected) => (
                 <Stack direction="row" spacing={5} alignItems="center">
@@ -204,7 +218,7 @@ export function Details({
           id={currentPlatform as string}
           label={t('Paste URL here')}
           initialValue={currentLink}
-          onSubmit={async (value) => await handleUpdate('link', value)}
+          onSubmit={(value) => handleUpdate('link', value)}
         />
         {helperInfo != null && (
           <Typography variant="caption">{helperInfo}</Typography>

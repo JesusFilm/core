@@ -1,6 +1,7 @@
 {
   "Submit": "Submit",
   "Button": "Button",
+  "None": "None",
   "This field is required": "This field is required",
   "Name must be 2 characters or more": "Name must be 2 characters or more",
   "Name must be 50 characters or less": "Name must be 50 characters or less",
@@ -102,6 +103,5 @@
   "{{count}} Cards_one": "{{count}} Card",
   "{{count}} Cards_other": "{{count}} Cards",
   "{{count}} Videos_one": "{{count}} Video",
-  "{{count}} Videos_other": "{{count}} Videos",
-  "None": "None"
+  "{{count}} Videos_other": "{{count}} Videos"
 }

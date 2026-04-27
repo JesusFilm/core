@@ -177,6 +177,7 @@ import Plus1 from './Plus1'
 import Plus2 from './Plus2'
 import Plus3 from './Plus3'
 import Presentation1 from './Presentation1'
+import QrCode2 from './QrCode2'
 import Search1 from './Search1'
 import Search2 from './Search2'
 import Send1 from './Send1'
@@ -413,6 +414,7 @@ export type IconName =
   | 'Plus2'
   | 'Plus3'
   | 'Presentation1'
+  | 'QrCode2'
   | 'Search1'
   | 'Search2'
   | 'Send1'
@@ -653,6 +655,7 @@ const iconComponents: IconComponents = {
   Plus2,
   Plus3,
   Presentation1,
+  QrCode2,
   Search1,
   Search2,
   Send1,

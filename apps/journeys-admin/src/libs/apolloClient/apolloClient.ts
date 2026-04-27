@@ -17,6 +17,7 @@ import { getMainDefinition } from '@apollo/client/utilities'
 import DebounceLink from 'apollo-link-debounce'
 import { getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
+import { print } from 'graphql'
 import { createClient } from 'graphql-sse'
 import { useMemo } from 'react'
 import { Observable } from 'zen-observable-ts'
@@ -30,40 +31,36 @@ let apolloClient: ApolloClient<NormalizedCacheObject>
 
 const DEFAULT_DEBOUNCE_TIMEOUT = 500
 
-// Custom Apollo Link for Server-Sent Events using graphql-sse
-class SSELink extends ApolloLink {
+// Custom Apollo Link for Server-Sent Events using graphql-sse.
+// A new graphql-sse Client is created per request so each subscription
+// captures its own auth headers in a closure, avoiding race conditions
+// between concurrent subscriptions sharing mutable state.
+export class SSELink extends ApolloLink {
   private url: string
-  private options: any
 
-  constructor(url: string, options?: any) {
+  constructor(url: string) {
     super()
     this.url = url
-    this.options = options || {}
   }
 
   public request(
     operation: Operation,
-    forward?: NextLink
+    _forward?: NextLink
   ): Observable<FetchResult> | null {
-    return new Observable<FetchResult>((observer) => {
-      // Get headers from operation context
-      const context = operation.getContext()
-      const headers = context.headers || {}
-
-      // Create a new client instance with current headers
-      const client = createClient({
-        url: this.url,
-        ...this.options,
-        headers: {
-          ...headers,
-          'Content-Type': 'application/json',
-          Accept: 'text/event-stream'
-        }
+    const headers = operation.getContext().headers ?? {}
+    const client = createClient({
+      url: this.url,
+      headers: () => ({
+        ...headers,
+        'Content-Type': 'application/json',
+        Accept: 'text/event-stream'
       })
+    })
 
+    return new Observable<FetchResult>((observer) => {
       const unsubscribe = client.subscribe(
         {
-          query: operation.query.loc?.source?.body || '',
+          query: print(operation.query),
           variables: operation.variables,
           operationName: operation.operationName
         },
@@ -88,6 +85,25 @@ class SSELink extends ApolloLink {
       }
     })
   }
+}
+
+// Creates the error link that handles UNAUTHENTICATED errors by logging the
+// user out and propagating a settled error observable.
+export function createErrorLink(): ApolloLink {
+  return onError(({ graphQLErrors }) => {
+    if (
+      !ssrMode &&
+      graphQLErrors?.some((e) => e.extensions?.code === 'UNAUTHENTICATED') ===
+        true
+    ) {
+      void logout()
+      // Propagate a settled error so any awaiting promise rejects cleanly
+      // while logout() clears the Firebase token and redirects to sign-in
+      return new Observable((observer) => {
+        observer.error(new Error('Session expired'))
+      })
+    }
+  })
 }
 
 export function createApolloClient(
@@ -121,20 +137,7 @@ export function createApolloClient(
     }
   })
 
-  const errorLink = onError(({ graphQLErrors }) => {
-    if (
-      !ssrMode &&
-      graphQLErrors?.some((e) => e.extensions?.code === 'UNAUTHENTICATED') ===
-        true
-    ) {
-      void logout()
-      // Propagate a settled error so any awaiting promise rejects cleanly
-      // while logout() clears the Firebase token and redirects to sign-in
-      return new Observable((observer) => {
-        observer.error(new Error('Session expired'))
-      })
-    }
-  })
+  const errorLink = createErrorLink()
 
   const mutationQueueLink = new MutationQueueLink()
   const debounceLink = new DebounceLink(DEFAULT_DEBOUNCE_TIMEOUT)
