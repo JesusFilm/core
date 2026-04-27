@@ -1,10 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import {
-  Prisma,
-  UserTeamRole,
-  prisma
-} from '@core/prisma/journeys/client'
+import { Prisma, UserTeamRole, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
