@@ -138,10 +138,10 @@ export function LanguageScreen({
       ([langId, journeyId]) =>
         langId !== currentLanguageId || journeyId === currentJourneyId
     )
-    if (isParentTemplate && journey?.language?.id != null) {
-      mapArray.push([journey.language.id, journey.id ?? ''])
-    }
     const map = Object.fromEntries(mapArray)
+    if (journey?.language?.id != null && journey?.id != null) {
+      map[journey.language.id] = journey.id
+    }
     return map
   })()
   const languagesJourneyMap = {

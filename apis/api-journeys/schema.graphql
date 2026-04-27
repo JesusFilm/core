@@ -211,140 +211,14 @@ type Journey
   userJourneys: [UserJourney!]
 }
 
-input BlocksFilter {
-  journeyIds: [ID!]
-  typenames: [String!]
-}
-
 input BlockDuplicateIdMap {
   oldId: ID!
   newId: ID!
 }
 
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
-  blocks(where: BlocksFilter): [Block!]!
-  block(id: ID!): Block!
-  customDomain(id: ID!): CustomDomain!
-  customDomains(teamId: ID!): [CustomDomain!]!
-  hosts(teamId: ID!): [Host!]!
-  integrations(teamId: ID!): [Integration!]!
-  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
-  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
-
-  """
-  Returns distinct language IDs from published global templates.
-  Used to dynamically populate the language filter on the templates page.
-  """
-  journeyTemplateLanguageIds: [String!]!
-  journeyCollection(id: ID!): JourneyCollection!
-  journeyCollections(teamId: ID!): [JourneyCollection]!
-  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
-  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
-  journeyTheme(journeyId: ID!): JourneyTheme
-
-  """Get a list of Visitor Information by Journey"""
-  journeyVisitorsConnection(
-    """Returns the elements in the list that match the specified filter."""
-    filter: JourneyVisitorFilter!
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-
-    """Specifies the sort field for the list."""
-    sort: JourneyVisitorSort
-  ): JourneyVisitorsConnection!
-
-  """Get a JourneyVisitor count by JourneyVisitorFilter"""
-  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
-  journeysEmailPreference(email: String!): JourneysEmailPreference
-  qrCode(id: ID!): QrCode!
-  qrCodes(where: QrCodesFilter!): [QrCode!]!
-  teams: [Team!]!
-  team(id: ID!): Team!
-  userInvites(journeyId: ID!): [UserInvite!]
-  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
-  userTeam(id: ID!): UserTeam!
-  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
-
-  """A list of visitors that are connected with a specific team."""
-  visitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-  ): VisitorsConnection!
-
-  """Get a single visitor"""
-  visitor(id: ID!): Visitor!
-}
-
 type Mutation {
-  """blockDelete returns the updated sibling blocks on successful delete"""
-  blockDelete(
-    id: ID!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-
-    """drop this parameter after merging teams"""
-    parentBlockId: ID
-  ): [Block!]!
-
-  """
-  blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
-  """
-  blockDuplicate(
-    id: ID!
-
-    """
-    parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
-    """
-    parentOrder: Int
-
-    """
-    idMap is used to set custom ids for the duplicated block and it's descendants.
-    """
-    idMap: [BlockDuplicateIdMap!]
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-
-    """
-    x is used to position a step block block horizontally in the journey flow diagram on
-    the editor.
-    """
-    x: Int
-
-    """
-    y is used to position a step block block vertically in the journey flow diagram on
-    the editor.
-    """
-    y: Int
-  ): [Block!]!
-  blockOrderUpdate(
-    id: ID!
-    parentOrder: Int!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): [Block!]!
-
   """blockRestore is used for redo/undo"""
   blockRestore(id: ID!): [Block!]!
-  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]!
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
@@ -784,12 +658,6 @@ type StepBlock implements Block
   slug: String @shareable
 }
 
-input StepBlockPositionUpdateInput {
-  id: ID!
-  x: Int
-  y: Int
-}
-
 type TextResponseBlock implements Block
   @shareable
 {
@@ -1103,6 +971,74 @@ type CustomDomainVerificationResponse
 {
   code: String!
   message: String!
+}
+
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
+  customDomain(id: ID!): CustomDomain!
+  customDomains(teamId: ID!): [CustomDomain!]!
+  hosts(teamId: ID!): [Host!]!
+  integrations(teamId: ID!): [Integration!]!
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
+  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
+  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
+
+  """
+  Returns distinct language IDs from published global templates.
+  Used to dynamically populate the language filter on the templates page.
+  """
+  journeyTemplateLanguageIds: [String!]!
+  journeyCollection(id: ID!): JourneyCollection!
+  journeyCollections(teamId: ID!): [JourneyCollection]!
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
+  journeyTheme(journeyId: ID!): JourneyTheme
+
+  """Get a list of Visitor Information by Journey"""
+  journeyVisitorsConnection(
+    """Returns the elements in the list that match the specified filter."""
+    filter: JourneyVisitorFilter!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Specifies the sort field for the list."""
+    sort: JourneyVisitorSort
+  ): JourneyVisitorsConnection!
+
+  """Get a JourneyVisitor count by JourneyVisitorFilter"""
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
+  journeysEmailPreference(email: String!): JourneysEmailPreference
+  qrCode(id: ID!): QrCode!
+  qrCodes(where: QrCodesFilter!): [QrCode!]!
+  teams: [Team!]!
+  team(id: ID!): Team!
+  userInvites(journeyId: ID!): [UserInvite!]
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
+  userTeam(id: ID!): UserTeam!
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
+
+  """A list of visitors that are connected with a specific team."""
+  visitorsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+  ): VisitorsConnection!
+
+  """Get a single visitor"""
+  visitor(id: ID!): Visitor!
 }
 
 enum ButtonAction {
