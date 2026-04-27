@@ -238,11 +238,10 @@ async function resolveSystemMessage({
   const fallback = buildFallbackSystemMessage({ language })
   if (langfuse == null) return { system: fallback, promptClient: null }
   try {
-    const promptClient = await langfuse.getPrompt(
-      APOLOGIST_PROMPT_NAME,
-      undefined,
-      { label: getActivePromptLabel() }
+    console.warn(
+      `[langfuse] DIAGNOSTIC: fetching ${APOLOGIST_PROMPT_NAME} WITHOUT label (intended label was ${getActivePromptLabel()})`
     )
+    const promptClient = await langfuse.getPrompt(APOLOGIST_PROMPT_NAME)
     if (promptClient.type !== 'text') {
       console.warn(
         `[langfuse] expected text prompt for ${APOLOGIST_PROMPT_NAME}, got ${promptClient.type} — using fallback`
