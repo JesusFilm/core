@@ -35,5 +35,5 @@ export function getLangfuse(): Langfuse | null {
 }
 
 export function getActivePromptLabel(): string {
-  return process.env.VERCEL_ENV === 'production' ? 'Production' : 'Development'
+  return process.env.VERCEL_ENV === 'production' ? 'production' : 'development'
 }
