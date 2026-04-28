@@ -311,13 +311,16 @@ describe('VideoDetails', () => {
     )
     fireEvent.click(getByRole('button', { name: 'clear-video' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(onSelect).toHaveBeenCalledWith({
-      source: VideoBlockSource.internal,
-      videoId: null,
-      posterBlockId: null,
-      videoVariantLanguageId: null,
-      startAt: null,
-      endAt: null
-    })
+    expect(onSelect).toHaveBeenCalledWith(
+      {
+        source: VideoBlockSource.internal,
+        videoId: null,
+        posterBlockId: null,
+        videoVariantLanguageId: null,
+        startAt: null,
+        endAt: null
+      },
+      false
+    )
   })
 })

@@ -26,7 +26,7 @@ export interface VideoDetailsProps {
   open: boolean
   id: string
   onClose: (closeParent?: boolean) => void
-  onSelect: (block: VideoBlockUpdateInput) => void
+  onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
   source: VideoBlockSource
   activeVideoBlock?: TreeBlock<VideoBlock>
 }
@@ -101,14 +101,17 @@ export function VideoDetails({
         }
       })
     }
-    onSelect({
-      videoId: null,
-      videoVariantLanguageId: null,
-      posterBlockId: null,
-      source: VideoBlockSource.internal,
-      startAt: null,
-      endAt: null
-    })
+    onSelect(
+      {
+        videoId: null,
+        videoVariantLanguageId: null,
+        posterBlockId: null,
+        source: VideoBlockSource.internal,
+        startAt: null,
+        endAt: null
+      },
+      false
+    )
   }
 
   return (
