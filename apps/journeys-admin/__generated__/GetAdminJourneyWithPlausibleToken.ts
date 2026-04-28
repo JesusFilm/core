@@ -860,6 +860,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
    * used to display quick start label on customizable templates
    */
   customizable: boolean | null;
+  showAssistant: boolean | null;
   /**
    * used in a plausible share link to embed report
    */
