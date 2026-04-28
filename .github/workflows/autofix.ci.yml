@@ -9,6 +9,7 @@ on:
     branches: [main]
 jobs:
   lint:
+    if: ${{ !contains(github.head_ref, 'chore-ce-sync') }}
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
