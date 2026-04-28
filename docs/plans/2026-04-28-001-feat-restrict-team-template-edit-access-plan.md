@@ -1,5 +1,5 @@
 ---
-title: "feat: Restrict Team Template Edit Access to Managers and Creators (NES-1610)"
+title: 'feat: Restrict Team Template Edit Access to Managers and Creators (NES-1610)'
 type: feat
 status: active
 date: 2026-04-28
@@ -149,10 +149,7 @@ can(Action.Manage, 'Journey', {
     { teamId: { not: 'jfp-team' } },
     { restrictEditing: { equals: false } }, // NEW — only when NOT restricted
     {
-      OR: [
-        { team: { is: { userTeams: { some: { userId, role: { in: [UserTeamRole.member, UserTeamRole.manager] } } } } } },
-        { userJourneys: { some: { userId, role: { in: [UserJourneyRole.editor, UserJourneyRole.owner] } } } }
-      ]
+      OR: [{ team: { is: { userTeams: { some: { userId, role: { in: [UserTeamRole.member, UserTeamRole.manager] } } } } } }, { userJourneys: { some: { userId, role: { in: [UserJourneyRole.editor, UserJourneyRole.owner] } } } }]
     }
   ]
 })
@@ -164,10 +161,7 @@ can(Action.Manage, 'Journey', {
     { teamId: { not: 'jfp-team' } },
     { restrictEditing: { equals: true } },
     {
-      OR: [
-        { team: { is: { userTeams: { some: { userId, role: UserTeamRole.manager } } } } },
-        { userJourneys: { some: { userId, role: UserJourneyRole.owner } } }
-      ]
+      OR: [{ team: { is: { userTeams: { some: { userId, role: UserTeamRole.manager } } } } }, { userJourneys: { some: { userId, role: UserJourneyRole.owner } } }]
     }
   ]
 })
@@ -193,8 +187,8 @@ function update(journey: Partial<Journey>, user: User): boolean {
 
   if (isRestricted) {
     // Only owner (creator) and team manager may update
-    const isOwner = journey.userJourneys?.some(uj => uj.userId === user.id && uj.role === UserJourneyRole.owner)
-    const isManager = journey.team?.userTeams?.some(ut => ut.userId === user.id && ut.role === UserTeamRole.manager)
+    const isOwner = journey.userJourneys?.some((uj) => uj.userId === user.id && uj.role === UserJourneyRole.owner)
+    const isManager = journey.team?.userTeams?.some((ut) => ut.userId === user.id && ut.role === UserTeamRole.manager)
     return Boolean(isOwner) || Boolean(isManager)
   }
 
@@ -325,15 +319,15 @@ Read-only editor surface is **out of scope for v1** (cost too high — Editor is
 
 These are decisions baked into the resolvers, not just the ACL. Each must have a unit test.
 
-| Operation | Source `restrictEditing` | New row `restrictEditing` |
-|---|---|---|
-| `journeyTemplate` flip `template: false → true` | n/a (was a regular journey) | `false` (default — opt-in) |
-| `journeyTemplate` flip `template: true → false` | any | `false` (cleared — non-templates can't be restricted) |
-| `journeyDuplicate` template → template (same team, by manager) | `true` | `true` (inherit) |
-| `journeyDuplicate` template → regular journey (any user) | `true` | `false` (the duplicate is owned by the duplicator and is a regular journey) |
-| `journeyDuplicate` template → another team (`Copy to Team`) | `true` | `false` (each team manages its own restriction state) |
-| `journeyTranslate` (creates a new journey) | `true` | `false` (the translation is a separate journey owned by the translator) |
-| Publisher promotes local → global (`teamId = 'jfp-team'`) | `true` | `false` (cleared — global templates use the publisher rule instead) |
+| Operation                                                      | Source `restrictEditing`    | New row `restrictEditing`                                                   |
+| -------------------------------------------------------------- | --------------------------- | --------------------------------------------------------------------------- |
+| `journeyTemplate` flip `template: false → true`                | n/a (was a regular journey) | `false` (default — opt-in)                                                  |
+| `journeyTemplate` flip `template: true → false`                | any                         | `false` (cleared — non-templates can't be restricted)                       |
+| `journeyDuplicate` template → template (same team, by manager) | `true`                      | `true` (inherit)                                                            |
+| `journeyDuplicate` template → regular journey (any user)       | `true`                      | `false` (the duplicate is owned by the duplicator and is a regular journey) |
+| `journeyDuplicate` template → another team (`Copy to Team`)    | `true`                      | `false` (each team manages its own restriction state)                       |
+| `journeyTranslate` (creates a new journey)                     | `true`                      | `false` (the translation is a separate journey owned by the translator)     |
+| Publisher promotes local → global (`teamId = 'jfp-team'`)      | `true`                      | `false` (cleared — global templates use the publisher rule instead)         |
 
 The `from`-template descendants tracked via `Journey.fromTemplateId` (`schema.prisma:468`) are independent journeys and never inherit the flag.
 
@@ -342,20 +336,20 @@ The `from`-template descendants tracked via `Journey.fromTemplateId` (`schema.pr
 #### Interaction Graph
 
 `User toggles RestrictEditingToggle` →
-  `useJourneyUpdateMutation` →
-    Apollo `journeyUpdate` mutation →
-      `journey.resolver.ts:journeyUpdate` (legacy) →
-        `caslGuard` → `journey.acl.ts:Manage on Journey/restrictEditing` (NEW) →
-          `prisma.journey.update({ data: { restrictEditing: true } })` →
-            Apollo cache write back to client →
-              `JourneyCard` re-renders with new chip + toggle state.
+`useJourneyUpdateMutation` →
+Apollo `journeyUpdate` mutation →
+`journey.resolver.ts:journeyUpdate` (legacy) →
+`caslGuard` → `journey.acl.ts:Manage on Journey/restrictEditing` (NEW) →
+`prisma.journey.update({ data: { restrictEditing: true } })` →
+Apollo cache write back to client →
+`JourneyCard` re-renders with new chip + toggle state.
 
 `Restricted member tries to edit a step block` →
-  Editor calls `blockUpdate` mutation →
-    `block.resolver.ts:49` → `ability.can(Action.Update, subject('Journey', block.journey))` →
-      `journey.acl.ts` (NEW restricted rule) → returns `false` →
-        `caslGuard` throws `ForbiddenException` →
-          Apollo error → existing snackbar + retry handler in editor.
+Editor calls `blockUpdate` mutation →
+`block.resolver.ts:49` → `ability.can(Action.Update, subject('Journey', block.journey))` →
+`journey.acl.ts` (NEW restricted rule) → returns `false` →
+`caslGuard` throws `ForbiddenException` →
+Apollo error → existing snackbar + retry handler in editor.
 
 #### Error & Failure Propagation
 
@@ -540,17 +534,17 @@ Reuse the existing request-access UX for the AccessDenied variant. Rejected beca
 
 ## Risk Analysis & Mitigation
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| Missing a block-level resolver in the ACL audit | Medium | High (partial bypass) | Enumerate every `subject('Journey', ...)` site in PR #1; integration test scenario #1 explicitly tests `customizable` toggle (the seminar trigger). |
-| ACL parity drift between legacy and modern | Medium | High (silent inconsistency) | One PR adds rules to BOTH files, with side-by-side spec tests. CI runs both suites. |
-| Apollo cache shows stale `restrictEditing = undefined` after partial deploy | Low | Low (UI degrades to "unrestricted") | Backend defaults to `false`. Frontend uses `journey.restrictEditing ?? false`. Apollo `errorPolicy: 'all'` on the affected queries (per `pothos-query-parameter-ignored-nested-resolution-failure.md` learning). |
-| User mid-edit when flag flips ON loses work on next save | Low | Medium | Best-effort: clear toast + redirect on the next 403. Document in QA as a known v1 limitation. |
-| Owner leaves team, only managers can edit | Low | Low | Acceptable. Document in PR description. |
-| Field name `restrictEditing` is ambiguous in support tickets | Low | Low | Schema doc-comment + GraphQL field description fully document the semantic. |
-| Codegen on FE before BE merges produces "field does not exist" gateway error | Medium | Medium | Hard gate: PR #2 cannot merge until PR #1 is in `main` and gateway codegen has propagated. CI on PR #2 should fail until then. |
-| Migration on staging takes longer than expected on the Journey table | Low | Medium | Adding a `Boolean DEFAULT false` column is a metadata-only Postgres operation — fast on any size table. |
-| Spec gap: what if owner is also a non-manager member? | Verified | None | Owner is granted via `UserJourney.role = owner` regardless of UserTeam role. Existing pattern. |
+| Risk                                                                         | Likelihood | Impact                              | Mitigation                                                                                                                                                                                                       |
+| ---------------------------------------------------------------------------- | ---------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Missing a block-level resolver in the ACL audit                              | Medium     | High (partial bypass)               | Enumerate every `subject('Journey', ...)` site in PR #1; integration test scenario #1 explicitly tests `customizable` toggle (the seminar trigger).                                                              |
+| ACL parity drift between legacy and modern                                   | Medium     | High (silent inconsistency)         | One PR adds rules to BOTH files, with side-by-side spec tests. CI runs both suites.                                                                                                                              |
+| Apollo cache shows stale `restrictEditing = undefined` after partial deploy  | Low        | Low (UI degrades to "unrestricted") | Backend defaults to `false`. Frontend uses `journey.restrictEditing ?? false`. Apollo `errorPolicy: 'all'` on the affected queries (per `pothos-query-parameter-ignored-nested-resolution-failure.md` learning). |
+| User mid-edit when flag flips ON loses work on next save                     | Low        | Medium                              | Best-effort: clear toast + redirect on the next 403. Document in QA as a known v1 limitation.                                                                                                                    |
+| Owner leaves team, only managers can edit                                    | Low        | Low                                 | Acceptable. Document in PR description.                                                                                                                                                                          |
+| Field name `restrictEditing` is ambiguous in support tickets                 | Low        | Low                                 | Schema doc-comment + GraphQL field description fully document the semantic.                                                                                                                                      |
+| Codegen on FE before BE merges produces "field does not exist" gateway error | Medium     | Medium                              | Hard gate: PR #2 cannot merge until PR #1 is in `main` and gateway codegen has propagated. CI on PR #2 should fail until then.                                                                                   |
+| Migration on staging takes longer than expected on the Journey table         | Low        | Medium                              | Adding a `Boolean DEFAULT false` column is a metadata-only Postgres operation — fast on any size table.                                                                                                          |
+| Spec gap: what if owner is also a non-manager member?                        | Verified   | None                                | Owner is granted via `UserJourney.role = owner` regardless of UserTeam role. Existing pattern.                                                                                                                   |
 
 ## Resource Requirements
 

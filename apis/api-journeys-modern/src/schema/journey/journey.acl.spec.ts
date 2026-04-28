@@ -390,15 +390,15 @@ describe('journeyAcl', () => {
 
     describe('update on restricted local template', () => {
       it('allows when user is team manager', () => {
-        expect(can(Action.Update, restrictedTemplateUserTeamManager, user)).toBe(
-          true
-        )
+        expect(
+          can(Action.Update, restrictedTemplateUserTeamManager, user)
+        ).toBe(true)
       })
 
       it('allows when user is journey owner (creator)', () => {
-        expect(can(Action.Update, restrictedTemplateUserJourneyOwner, user)).toBe(
-          true
-        )
+        expect(
+          can(Action.Update, restrictedTemplateUserJourneyOwner, user)
+        ).toBe(true)
       })
 
       it('denies when user is team member', () => {
@@ -408,23 +408,23 @@ describe('journeyAcl', () => {
       })
 
       it('denies when user is journey editor', () => {
-        expect(can(Action.Update, restrictedTemplateUserJourneyEditor, user)).toBe(
-          false
-        )
+        expect(
+          can(Action.Update, restrictedTemplateUserJourneyEditor, user)
+        ).toBe(false)
       })
     })
 
     describe('delete on restricted local template', () => {
       it('allows when user is team manager', () => {
-        expect(can(Action.Delete, restrictedTemplateUserTeamManager, user)).toBe(
-          true
-        )
+        expect(
+          can(Action.Delete, restrictedTemplateUserTeamManager, user)
+        ).toBe(true)
       })
 
       it('allows when user is journey owner', () => {
-        expect(can(Action.Delete, restrictedTemplateUserJourneyOwner, user)).toBe(
-          true
-        )
+        expect(
+          can(Action.Delete, restrictedTemplateUserJourneyOwner, user)
+        ).toBe(true)
       })
 
       it('denies when user is team member', () => {
@@ -434,9 +434,9 @@ describe('journeyAcl', () => {
       })
 
       it('denies when user is journey editor', () => {
-        expect(can(Action.Delete, restrictedTemplateUserJourneyEditor, user)).toBe(
-          false
-        )
+        expect(
+          can(Action.Delete, restrictedTemplateUserJourneyEditor, user)
+        ).toBe(false)
       })
     })
 
@@ -460,9 +460,9 @@ describe('journeyAcl', () => {
       })
 
       it('still allows when user is journey editor', () => {
-        expect(can(Action.Read, restrictedTemplateUserJourneyEditor, user)).toBe(
-          true
-        )
+        expect(
+          can(Action.Read, restrictedTemplateUserJourneyEditor, user)
+        ).toBe(true)
       })
     })
 
