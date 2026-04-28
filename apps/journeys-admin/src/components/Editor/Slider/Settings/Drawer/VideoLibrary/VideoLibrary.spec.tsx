@@ -62,6 +62,51 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 jest.mock('react-instantsearch')
 
+jest.mock('./VideoFromMux', () => ({
+  __esModule: true,
+  VideoFromMux: ({
+    onSelect
+  }: {
+    onSelect: (block: unknown, shouldCloseDrawer?: boolean) => void
+  }) => (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          onSelect(
+            {
+              duration: 0,
+              endAt: 0,
+              startAt: 0,
+              source: 'mux',
+              videoId: 'mux-id',
+              videoVariantLanguageId: null
+            },
+            false
+          )
+        }
+      >
+        mux-background-upload
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          onSelect({
+            duration: 0,
+            endAt: 0,
+            startAt: 0,
+            source: 'mux',
+            videoId: 'mux-id-final',
+            videoVariantLanguageId: null
+          })
+        }
+      >
+        mux-final-select
+      </button>
+    </>
+  )
+}))
+
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
@@ -419,7 +464,63 @@ describe('VideoLibrary', () => {
       },
       true
     )
+    expect(onClose).toHaveBeenCalled()
   })
+
+  it('should NOT close the drawer when onSelect is called with shouldCloseDrawer=false (background MUX upload)', async () => {
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+    mockRouter()
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'mux-background-upload' })
+      ).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'mux-background-upload' }))
+
+    expect(onSelect).toHaveBeenCalledWith(expect.any(Object), false)
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('should close the drawer when onSelect is called with shouldCloseDrawer default (e.g. final MUX select)', async () => {
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+    mockRouter()
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'mux-final-select' })
+      ).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'mux-final-select' }))
+
+    expect(onSelect).toHaveBeenCalledWith(expect.any(Object), true)
+    expect(onClose).toHaveBeenCalled()
+  })
+
 
   it('should render video details if videoId is not null', async () => {
     mswServer.use(getPlaylistItemsEmpty, getVideosWithOffsetAndUrl)

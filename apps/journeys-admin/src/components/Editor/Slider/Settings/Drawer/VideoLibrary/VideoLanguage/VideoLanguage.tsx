@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -9,39 +9,35 @@ import {
 } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetLanguages_languages as Language } from '../../../../../../../../__generated__/GetLanguages'
-import { Drawer } from '../../Drawer'
 
-interface VideoLanguageProps {
-  open?: boolean
-  onClose: () => void
+export interface VideoLanguagePickerProps {
   onChange: (language: LanguageOption) => void
   language: LanguageOption
   languages?: Language[]
   loading: boolean
 }
 
-export function VideoLanguage({
-  open,
-  onClose,
+export function VideoLanguagePicker({
   onChange,
   language,
   languages,
   loading
-}: VideoLanguageProps): ReactElement {
+}: VideoLanguagePickerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
-    <Drawer title={t('Available Languages')} open={open} onClose={onClose}>
-      <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 6 }}>
-        <LanguageAutocomplete
-          onChange={onChange}
-          value={language}
-          languages={languages}
-          loading={loading}
-        />
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 3 }}>
-        <Button onClick={onClose}>{t('Apply')}</Button>
-      </Box>
-    </Drawer>
+    <Box
+      sx={{ p: 4, width: { xs: 280, sm: 360 } }}
+      data-testid="VideoLanguagePicker"
+    >
+      <Typography variant="subtitle2" sx={{ mb: 2 }}>
+        {t('Available Languages')}
+      </Typography>
+      <LanguageAutocomplete
+        onChange={onChange}
+        value={language}
+        languages={languages}
+        loading={loading}
+      />
+    </Box>
   )
 }

@@ -1,12 +1,13 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
+import Popover from '@mui/material/Popover'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
@@ -21,7 +22,7 @@ import { GetVideo } from '../../../../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { VideoDescription } from '../../VideoDescription'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
-import { VideoLanguage } from '../../VideoLanguage'
+import { VideoLanguagePicker } from '../../VideoLanguage'
 
 import 'video.js/dist/video-js.css'
 
@@ -74,7 +75,8 @@ export function LocalDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
   const [playing, setPlaying] = useState(false)
-  const [openLanguage, setOpenLanguage] = useState(false)
+  const [languageAnchorEl, setLanguageAnchorEl] =
+    useState<HTMLElement | null>(null)
   const [selectedLanguage, setSelectedLanguage] =
     useState<LanguageOption>(DEFAULT_LANGUAGE)
 
@@ -92,14 +94,12 @@ export function LocalDetails({
     variables: { id, languageId }
   })
 
-  const handleChange = (selectedLanguage: LanguageOption): void => {
-    setSelectedLanguage(selectedLanguage)
-  }
+  const time = data?.video?.variant?.duration ?? 0
 
-  const handleSelect = (): void => {
+  const commitSelection = (language: LanguageOption): void => {
     onSelect({
       videoId: id,
-      videoVariantLanguageId: selectedLanguage?.id,
+      videoVariantLanguageId: language?.id,
       duration: time,
       source: VideoBlockSource.internal,
       startAt: videoBlock?.videoId === id ? videoBlock?.startAt : 0,
@@ -107,7 +107,26 @@ export function LocalDetails({
     })
   }
 
-  const time = data?.video?.variant?.duration ?? 0
+  const handleLanguageChipClick = (event: MouseEvent<HTMLElement>): void => {
+    setLanguageAnchorEl(event.currentTarget)
+  }
+
+  const handleLanguagePopoverClose = (): void => {
+    setLanguageAnchorEl(null)
+  }
+
+  const handleLanguageChange = (language: LanguageOption): void => {
+    setSelectedLanguage(language)
+    setLanguageAnchorEl(null)
+    if (isPreselected) {
+      commitSelection(language)
+    }
+  }
+
+  const handleSelect = (): void => {
+    commitSelection(selectedLanguage)
+  }
+
   const duration =
     time < 3600
       ? new Date(time * 1000).toISOString().substring(14, 19)
@@ -167,6 +186,7 @@ export function LocalDetails({
     }
   }, [open, loadVideo])
   const { t } = useTranslation('apps-journeys-admin')
+  const languagePopoverOpen = Boolean(languageAnchorEl)
   return (
     <Stack spacing={4} sx={{ p: 6 }}>
       {loading ? (
@@ -239,34 +259,45 @@ export function LocalDetails({
       >
         <Chip
           label={selectedLanguage?.localName ?? selectedLanguage?.nativeName}
-          onClick={() => setOpenLanguage(true)}
+          onClick={handleLanguageChipClick}
           avatar={<ChevronDownIcon />}
           disabled={loading}
+          aria-haspopup="dialog"
+          aria-expanded={languagePopoverOpen}
           sx={{
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis'
           }}
         />
-        <Button
-          variant="contained"
-          startIcon={<CheckIcon />}
-          onClick={handleSelect}
-          size="small"
-          sx={{ backgroundColor: 'secondary.dark' }}
-          disabled={loading && !isPreselected}
-        >
-          {t('Select')}
-        </Button>
+        {!isPreselected && (
+          <Button
+            variant="contained"
+            startIcon={<CheckIcon />}
+            onClick={handleSelect}
+            size="small"
+            sx={{ backgroundColor: 'secondary.dark' }}
+            disabled={loading}
+          >
+            {t('Select')}
+          </Button>
+        )}
       </Stack>
-      <VideoLanguage
-        open={openLanguage}
-        onClose={() => setOpenLanguage(false)}
-        onChange={handleChange}
-        language={selectedLanguage}
-        languages={data?.video?.variantLanguages}
-        loading={loading}
-      />
+      <Popover
+        open={languagePopoverOpen}
+        anchorEl={languageAnchorEl}
+        onClose={handleLanguagePopoverClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        slotProps={{ paper: { 'aria-label': t('Available Languages') } }}
+      >
+        <VideoLanguagePicker
+          onChange={handleLanguageChange}
+          language={selectedLanguage}
+          languages={data?.video?.variantLanguages}
+          loading={loading}
+        />
+      </Popover>
     </Stack>
   )
 }
