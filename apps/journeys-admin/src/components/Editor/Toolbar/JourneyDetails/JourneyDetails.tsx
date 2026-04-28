@@ -33,7 +33,7 @@ export function JourneyDetails(): ReactElement {
         >
           <Stack
             direction="row"
-            alignItems="center"
+            alignItems={{ xs: 'flex-start', md: 'center' }}
             gap={1}
             sx={{ minWidth: 0 }}
           >
