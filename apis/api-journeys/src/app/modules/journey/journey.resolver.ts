@@ -528,6 +528,13 @@ export class JourneyResolver {
     )
     const isLocalTemplate = journey.teamId !== 'jfp-team' && journey.template
     const duplicateAsTemplate = forceNonTemplate ? false : isLocalTemplate
+    // restrictEditing only carries forward on same-team template-to-template
+    // duplicates. Cross-team copies and template-to-regular conversions reset
+    // the flag so each new journey is governed by its own team.
+    const duplicateRestrictEditing =
+      duplicateAsTemplate === true && journey.teamId === teamId
+        ? (journey.restrictEditing ?? false)
+        : false
     const duplicateStatus =
       duplicateAsDraft === true ? JourneyStatus.draft : JourneyStatus.published
 
@@ -554,6 +561,7 @@ export class JourneyResolver {
                   'journeyTheme',
                   'templateSite',
                   'customizable',
+                  'restrictEditing',
                   'chatButtons'
                 ]),
                 id: duplicateJourneyId,
@@ -572,6 +580,7 @@ export class JourneyResolver {
                 customizable: duplicateAsTemplate
                   ? (journey.customizable ?? false)
                   : false,
+                restrictEditing: duplicateRestrictEditing,
                 fromTemplateId: journey.template
                   ? id
                   : (journey.fromTemplateId ?? null),
@@ -771,6 +780,18 @@ export class JourneyResolver {
       throw new GraphQLError('user is not allowed to update journey', {
         extensions: { code: 'FORBIDDEN' }
       })
+    if (
+      input.restrictEditing != null &&
+      ability.cannot(
+        Action.Manage,
+        subject('Journey', journey),
+        'restrictEditing'
+      )
+    )
+      throw new GraphQLError(
+        'user is not allowed to change template edit restriction',
+        { extensions: { code: 'FORBIDDEN' } }
+      )
     if (input.slug != null)
       input.slug = slugify(input.slug, {
         lower: true,
@@ -1039,12 +1060,16 @@ export class JourneyResolver {
       }
     })
     const isGlobalTemplate = journey?.team?.id === 'jfp-team'
+    const isRestrictedLocalTemplate =
+      !isGlobalTemplate &&
+      journey?.template === true &&
+      journey?.restrictEditing === true
     if (journey == null)
       throw new GraphQLError('journey not found', {
         extensions: { code: 'NOT_FOUND' }
       })
     if (
-      isGlobalTemplate &&
+      (isGlobalTemplate || isRestrictedLocalTemplate) &&
       ability.cannot(Action.Manage, subject('Journey', journey), 'template')
     )
       throw new GraphQLError(
@@ -1070,7 +1095,12 @@ export class JourneyResolver {
 
     const updatedJourney = await this.prismaService.journey.update({
       where: { id },
-      data: input
+      data: {
+        ...input,
+        // Restricting edit access only applies while the journey is a
+        // template — clear the flag when converting back to a regular journey.
+        ...(input.template === false ? { restrictEditing: false } : {})
+      }
     })
     await this.journeyCustomizableService.recalculate(id)
     return updatedJourney

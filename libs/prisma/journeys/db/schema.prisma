@@ -423,6 +423,11 @@ model Journey {
   template                        Boolean?                    @default(false)
   templateSite                    Boolean?                    @default(false)
   customizable                    Boolean?                    @default(false)
+  /// When true on a template, only the journey owner (creator) and team
+  /// managers may mutate the journey. Plain team members and journey editors
+  /// retain read access. Has no effect on non-templates and on global
+  /// templates (teamId = 'jfp-team' is governed by the publisher rule).
+  restrictEditing                 Boolean?                    @default(false)
   teamId                          String
   hostId                          String?
   themeMode                       ThemeMode?                  @default(light)

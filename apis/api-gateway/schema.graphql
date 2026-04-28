@@ -661,6 +661,12 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   """
   customizable: Boolean
   """
+  When true on a template, only the journey owner (creator) and team
+  managers may mutate the journey. Plain team members and journey editors
+  retain read access. Has no effect on non-templates and on global templates.
+  """
+  restrictEditing: Boolean
+  """
   used in a plausible share link to embed report
   """
   plausibleToken: String
@@ -4372,6 +4378,12 @@ input JourneyUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: AP
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
+  """
+  Restrict edit access on a team (local) template to managers and the
+  journey creator (owner). Only flippable by team managers. No effect on
+  non-templates or on global templates (teamId = 'jfp-team').
+  """
+  restrictEditing: Boolean
 }
 
 input JourneyTemplateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {

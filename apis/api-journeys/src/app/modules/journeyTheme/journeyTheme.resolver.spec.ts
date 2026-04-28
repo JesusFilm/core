@@ -80,7 +80,8 @@ describe('JourneyThemeResolver', () => {
     journeyCustomizationDescription: null,
     showAssistant: null,
     templateSite: null,
-    customizable: null
+    customizable: null,
+    restrictEditing: false
   }
 
   const journeyWithUserTeam = {

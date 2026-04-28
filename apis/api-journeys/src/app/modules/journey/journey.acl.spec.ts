@@ -97,6 +97,36 @@ describe('journeyAcl', () => {
     id: 'journeyId',
     teamId: 'jfp-team'
   } as unknown as Journey)
+  const restrictedLocalTemplateUserTeamManager = subject('Journey', {
+    id: 'journeyId',
+    template: true,
+    teamId: 'local-team-id',
+    restrictEditing: true,
+    team: {
+      userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
+    }
+  } as unknown as Journey)
+  const restrictedLocalTemplateUserTeamMember = subject('Journey', {
+    id: 'journeyId',
+    template: true,
+    teamId: 'local-team-id',
+    restrictEditing: true,
+    team: { userTeams: [{ userId: user.id, role: UserTeamRole.member }] }
+  } as unknown as Journey)
+  const restrictedLocalTemplateUserJourneyOwner = subject('Journey', {
+    id: 'journeyId',
+    template: true,
+    teamId: 'local-team-id',
+    restrictEditing: true,
+    userJourneys: [{ userId: user.id, role: UserJourneyRole.owner }]
+  } as unknown as Journey)
+  const restrictedLocalTemplateUserJourneyEditor = subject('Journey', {
+    id: 'journeyId',
+    template: true,
+    teamId: 'local-team-id',
+    restrictEditing: true,
+    userJourneys: [{ userId: user.id, role: UserJourneyRole.editor }]
+  } as unknown as Journey)
 
   describe('create', () => {
     it('allow when user is team member', () => {
@@ -279,6 +309,162 @@ describe('journeyAcl', () => {
 
     it('deny when user has no userTeam or userJourneys', () => {
       expect(ability.can(Action.Update, journeyEmpty)).toBe(false)
+    })
+  })
+
+  describe('restrictEditing', () => {
+    describe('update on restricted local template', () => {
+      it('allow when user is team manager', () => {
+        expect(
+          ability.can(Action.Update, restrictedLocalTemplateUserTeamManager)
+        ).toBe(true)
+      })
+
+      it('allow when user is journey owner (creator)', () => {
+        expect(
+          ability.can(Action.Update, restrictedLocalTemplateUserJourneyOwner)
+        ).toBe(true)
+      })
+
+      it('deny when user is team member', () => {
+        expect(
+          ability.can(Action.Update, restrictedLocalTemplateUserTeamMember)
+        ).toBe(false)
+      })
+
+      it('deny when user is journey editor', () => {
+        expect(
+          ability.can(Action.Update, restrictedLocalTemplateUserJourneyEditor)
+        ).toBe(false)
+      })
+    })
+
+    describe('manage on restricted local template', () => {
+      it('allow when user is team manager', () => {
+        expect(
+          ability.can(Action.Manage, restrictedLocalTemplateUserTeamManager)
+        ).toBe(true)
+      })
+
+      it('allow when user is journey owner', () => {
+        expect(
+          ability.can(Action.Manage, restrictedLocalTemplateUserJourneyOwner)
+        ).toBe(true)
+      })
+
+      it('deny when user is team member', () => {
+        expect(
+          ability.can(Action.Manage, restrictedLocalTemplateUserTeamMember)
+        ).toBe(false)
+      })
+
+      it('deny when user is journey editor', () => {
+        expect(
+          ability.can(Action.Manage, restrictedLocalTemplateUserJourneyEditor)
+        ).toBe(false)
+      })
+    })
+
+    describe('manage template field on restricted local template', () => {
+      it('allow when user is team manager', () => {
+        expect(
+          ability.can(
+            Action.Manage,
+            restrictedLocalTemplateUserTeamManager,
+            'template'
+          )
+        ).toBe(true)
+      })
+
+      it('allow when user is journey owner', () => {
+        expect(
+          ability.can(
+            Action.Manage,
+            restrictedLocalTemplateUserJourneyOwner,
+            'template'
+          )
+        ).toBe(true)
+      })
+
+      it('deny when user is team member', () => {
+        expect(
+          ability.can(
+            Action.Manage,
+            restrictedLocalTemplateUserTeamMember,
+            'template'
+          )
+        ).toBe(false)
+      })
+
+      it('deny when user is journey editor', () => {
+        expect(
+          ability.can(
+            Action.Manage,
+            restrictedLocalTemplateUserJourneyEditor,
+            'template'
+          )
+        ).toBe(false)
+      })
+    })
+
+    describe('manage restrictEditing field', () => {
+      it('allow when user is team manager of local template', () => {
+        expect(
+          ability.can(
+            Action.Manage,
+            localTemplateUserTeamManager,
+            'restrictEditing'
+          )
+        ).toBe(true)
+      })
+
+      it('deny when user is team member of local template', () => {
+        expect(
+          ability.can(
+            Action.Manage,
+            localTemplateUserTeamMember,
+            'restrictEditing'
+          )
+        ).toBe(false)
+      })
+
+      it('deny when user is journey owner but not team manager', () => {
+        expect(
+          ability.can(
+            Action.Manage,
+            localTemplateUserJourneyOwner,
+            'restrictEditing'
+          )
+        ).toBe(false)
+      })
+
+      it('deny when user is journey editor', () => {
+        expect(
+          ability.can(
+            Action.Manage,
+            localTemplateUserJourneyEditor,
+            'restrictEditing'
+          )
+        ).toBe(false)
+      })
+    })
+
+    describe('publisher on restricted local template', () => {
+      beforeEach(async () => {
+        ability = await factory.createAbility({ ...user, roles: ['publisher'] })
+      })
+
+      it('allow update', () => {
+        expect(
+          ability.can(Action.Update, restrictedLocalTemplateUserTeamManager)
+        ).toBe(true)
+      })
+
+      it('allow manage', () => {
+        expect(
+          ability.can(Action.Manage, restrictedLocalTemplateUserTeamManager)
+        ).toBe(true)
+      })
     })
   })
 })
