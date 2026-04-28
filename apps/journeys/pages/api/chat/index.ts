@@ -59,7 +59,7 @@ function resolveChatModel():
       apiKey
     })
     const modelId =
-      process.env.OPENROUTER_MODEL ?? 'google/gemini-2.5-flash-lite'
+      process.env.OPENROUTER_MODEL ?? 'google/gemini-3-flash-preview'
     return {
       ok: true,
       resolved: { model: openrouter.chatModel(modelId), provider, modelId }
