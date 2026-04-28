@@ -90,7 +90,9 @@ async function main(): Promise<void> {
           : new Date(),
     options: {
       startDate:
-        parsed.startIso != null ? parseIso(parsed.startIso, 'start') : undefined,
+        parsed.startIso != null
+          ? parseIso(parsed.startIso, 'start')
+          : undefined,
       endDate:
         parsed.endIso != null ? parseIso(parsed.endIso, 'end') : undefined
     }

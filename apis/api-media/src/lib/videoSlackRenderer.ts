@@ -3,12 +3,9 @@ import { Logger } from 'pino'
 import { slackChatPostMessage } from './slack/chatPostMessage'
 import {
   type SlackBotChannelConfig,
-  getMediaDataLangSlackConfig,
+  getMediaDataLangSlackConfig
 } from './slack/config'
-import {
-  type ReportRow,
-  formatDateIso
-} from './videoSlackReport'
+import { type ReportRow, formatDateIso } from './videoSlackReport'
 /**
  * Slack `section` mrkdwn text must stay under 3000 chars, so large reports
  * intentionally split into month-part messages with repeated headers.
@@ -241,7 +238,9 @@ export async function postWeeklyVideoSlackMessages(args: {
   }
 
   const windowText = `${formatDateIso(startDate)} → ${formatDateIso(endDate)}`
-  const newUploads = rows.filter((row) => row.changeType === 'New Upload').length
+  const newUploads = rows.filter(
+    (row) => row.changeType === 'New Upload'
+  ).length
   const updates = rows.filter((row) => row.changeType === 'Update').length
   const variantUpdates = rows.filter(
     (row) => row.updateSource === 'Variant Updated'

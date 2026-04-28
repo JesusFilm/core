@@ -223,7 +223,9 @@ export async function postBulkVideoSlackMessages(args: {
   for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
     const group = groups[groupIndex]
     const rowChunks =
-      group.rowChunks.length > 0 ? group.rowChunks : [[] as BulkVideoReportRow[]]
+      group.rowChunks.length > 0
+        ? group.rowChunks
+        : [[] as BulkVideoReportRow[]]
 
     for (let partIndex = 0; partIndex < rowChunks.length; partIndex++) {
       if (groupIndex > 0 || partIndex > 0) {
