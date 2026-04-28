@@ -86,6 +86,8 @@ export const yoga = createYoga<
             'Journey.blockTypenames': 0,
             'Query.adminJourney': 0,
             'Query.adminJourneys': 0,
+            'Query.customDomain': 0,
+            'Query.customDomains': 0,
             // Private per-user data — must not be served from a global shared
             // cache (session: () => null). TTL 0 disables caching entirely for
             // this field, preventing cross-user profile contamination that caused
