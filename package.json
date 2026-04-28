@@ -368,7 +368,7 @@
     "file-loader": "^6.2.0",
     "http-server": "^14.1.1",
     "husky": "^8.0.3",
-    "i18next-parser": "^9.0.0",
+    "i18next-cli": "^1.56.0",
     "jest": "30.2.0",
     "jest-environment-jsdom": "30.2.0",
     "jest-fixed-jsdom": "^0.0.10",
@@ -420,7 +420,7 @@
     "workerDirectory": "./.storybook/static"
   },
   "overrides": {
-    "next": "15.5.7",
+    "next": "15.5.10",
     "react-is": "^19.0.0",
     "html-tokenize": {
       "readable-stream": "^3.6.0"
@@ -429,6 +429,13 @@
   "pnpm": {
     "overrides": {
       "strapi-blurhash>canvas": "^3.2.1"
+    },
+    "packageExtensions": {
+      "i18next-cli": {
+        "dependencies": {
+          "i18next": "^26.0.1"
+        }
+      }
     }
   }
 }

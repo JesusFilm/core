@@ -521,8 +521,7 @@ describe('CreateJourneyButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   '/templates/journeyId?createNew=true'
-                ),
-                login: true
+                )
               }
             },
             undefined,
@@ -548,8 +547,7 @@ describe('CreateJourneyButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   '/templates/journeyId?createNew=true'
-                ),
-                login: false
+                )
               }
             },
             undefined,
@@ -594,8 +592,7 @@ describe('CreateJourneyButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   '/templates/journeyId?createNew=true'
-                ),
-                login: true
+                )
               }
             },
             undefined,
@@ -620,8 +617,7 @@ describe('CreateJourneyButton', () => {
               pathname: 'http://localhost:4200/users/sign-in',
               query: {
                 redirect:
-                  'http://localhost:4200/templates/journeyId?createNew=true',
-                login: false
+                  'http://localhost:4200/templates/journeyId?createNew=true'
               }
             },
             undefined,
@@ -666,8 +662,7 @@ describe('CreateJourneyButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   '/templates/journeyId?createNew=true'
-                ),
-                login: true
+                )
               }
             },
             undefined,
@@ -692,8 +687,7 @@ describe('CreateJourneyButton', () => {
               pathname: 'http://localhost:4200/users/sign-in',
               query: {
                 redirect:
-                  'http://localhost:4200/templates/journeyId?createNew=true',
-                login: false
+                  'http://localhost:4200/templates/journeyId?createNew=true'
               }
             },
             undefined,
