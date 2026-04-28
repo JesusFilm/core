@@ -1,6 +1,7 @@
 {
   "Submit": "ส่ง",
   "Button": "ปุ่ม",
+  "None": "ไม่มี",
   "This field is required": "ข้อมูลนี้จำเป็น",
   "Name must be 2 characters or more": "ชื่อจะต้องมี 2 ตัวอักษรหรือมากกว่า",
   "Name must be 50 characters or less": "ชื่อจะต้องมี 50 ตัวอักษรหรือน้อยกว่า",

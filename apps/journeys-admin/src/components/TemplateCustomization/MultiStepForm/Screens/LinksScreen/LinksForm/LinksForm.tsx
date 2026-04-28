@@ -117,7 +117,7 @@ export function LinksForm({
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <Typography variant="h6" color="text.primary">
+                <Typography variant="subtitle2" color="text.primary">
                   {link.label}
                 </Typography>
                 <IconButton

@@ -1,6 +1,7 @@
 {
   "Submit": "Envía",
   "Button": "Botón",
+  "None": "Ninguno",
   "This field is required": "Este campo es obligatorio",
   "Name must be 2 characters or more": "El nombre debe tener 2 caracteres o más",
   "Name must be 50 characters or less": "El nombre debe tener 50 caracteres o menos",

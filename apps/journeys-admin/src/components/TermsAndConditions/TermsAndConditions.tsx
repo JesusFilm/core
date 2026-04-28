@@ -1,7 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
-import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -182,23 +181,18 @@ export function TermsAndConditions(): ReactElement {
       </List>
       <Button
         data-testid="TermsAndConditionsNextButton"
-        variant="contained"
+        variant="blockContained"
+        color="solid"
         disabled={!accepted || loading}
+        loading={loading}
         onClick={handleJourneyProfileCreate}
         sx={{
           height: 54,
-          width: '100%',
-          borderRadius: '12px',
-          bgcolor: 'secondary.dark',
-          py: 3.25,
-          color: 'secondary.contrastText',
-          '&:hover': {
-            bgcolor: 'secondary.dark'
-          }
+          width: '100%'
         }}
-        endIcon={!loading && <ArrowRightSmIcon />}
+        endIcon={<ArrowRightSmIcon />}
       >
-        {loading ? <CircularProgress size={20} /> : t('Next')}
+        {t('Next')}
       </Button>
     </>
   )

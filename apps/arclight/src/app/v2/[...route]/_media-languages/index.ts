@@ -5,7 +5,8 @@ import { timeout } from 'hono/timeout'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
-import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
+import { generateCacheKey } from '../../../../lib/cache'
+import { getWithStaleCacheForRequest } from '../../../../lib/cacheBypass'
 import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
 
 import { mediaLanguage } from './[languageId]'
@@ -239,7 +240,7 @@ mediaLanguages.openapi(route, async (c) => {
     ...metadataLanguageTags
   ])
 
-  const response = await getWithStaleCache(cacheKey, async () => {
+  const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
     try {
       // Get total count
       const countResult = await getApolloClient().query<

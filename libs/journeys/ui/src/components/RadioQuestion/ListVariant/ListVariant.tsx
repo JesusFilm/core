@@ -52,7 +52,7 @@ export function ListVariant({
   addOption,
   blockId
 }: ListVariantProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-ui')
+  const { t } = useTranslation('libs-journeys-ui')
   return (
     <StyledListRadioQuestion
       data-testid={`JourneysRadioQuestionList-${blockId}`}

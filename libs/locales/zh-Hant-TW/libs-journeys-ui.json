@@ -1,6 +1,7 @@
 {
   "Submit": "提交",
   "Button": "按鈕",
+  "None": "沒有任何",
   "This field is required": "此欄位必須填寫",
   "Name must be 2 characters or more": "名稱必須為 2 個字元以上",
   "Name must be 50 characters or less": "名稱必須少於 50 個字元",
