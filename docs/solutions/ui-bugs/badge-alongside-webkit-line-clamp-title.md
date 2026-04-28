@@ -26,12 +26,7 @@ When you place a small label/badge (e.g. an MUI `Chip`) next to a title that use
 Wrap the existing `Typography` and the new `Chip` in a `Stack direction="row"` with **breakpoint-aware** `alignItems`. Keep the title shrinkable, the chip not.
 
 ```tsx
-<Stack
-  direction="row"
-  alignItems={{ xs: 'flex-start', md: 'center' }}
-  gap={1}
-  sx={{ minWidth: 0 }}
->
+<Stack direction="row" alignItems={{ xs: 'flex-start', md: 'center' }} gap={1} sx={{ minWidth: 0 }}>
   <Typography
     sx={{
       display: { xs: '-webkit-box', md: 'unset' },
@@ -45,11 +40,7 @@ Wrap the existing `Typography` and the new `Chip` in a `Stack direction="row"` w
   >
     {title}
   </Typography>
-  <Chip
-    label="TEMPLATE"
-    size="small"
-    sx={{ flexShrink: 0, height: 20, fontSize: 10 }}
-  />
+  <Chip label="TEMPLATE" size="small" sx={{ flexShrink: 0, height: 20, fontSize: 10 }} />
 </Stack>
 ```
 

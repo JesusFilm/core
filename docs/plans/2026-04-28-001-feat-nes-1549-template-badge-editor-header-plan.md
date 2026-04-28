@@ -25,12 +25,14 @@ Show a styled "TEMPLATE" pill next to the journey title in the editor header bar
 ## Context
 
 ### Where the editor header lives
+
 - Editor header bar: [apps/journeys-admin/src/components/Editor/Toolbar/Toolbar.tsx](apps/journeys-admin/src/components/Editor/Toolbar/Toolbar.tsx)
 - Title is rendered inside a child component, [JourneyDetails.tsx](apps/journeys-admin/src/components/Editor/Toolbar/JourneyDetails/JourneyDetails.tsx) — `journey.title` at line 42, wrapped in a Typography with `-webkit-line-clamp` ellipsis.
 - `journey` comes from `useJourney()` (already imported in `JourneyDetails`).
 - `journey.template` is already used elsewhere in the toolbar (`Menu/Menu.tsx:52`, `Items/Items.tsx:13`, `Toolbar.tsx:170`) — pattern: `journey?.template === true`.
 
 ### Existing badge precedent
+
 [JourneyCard.tsx:165](apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCard.tsx) already uses a small MUI `Chip` for the "New" badge:
 
 ```tsx
@@ -53,6 +55,7 @@ Show a styled "TEMPLATE" pill next to the journey title in the editor header bar
 The TEMPLATE chip should use the same compact silhouette (size="small", height ~20-22, fontSize 10) but with a subtler colour (primary or secondary) so it reads as a category label rather than an alert.
 
 ### i18n
+
 The toolbar uses `useTranslation('apps-journeys-admin')`. Translation keys are extracted from `t(...)` literals — use `t('TEMPLATE')` so it remains translatable.
 
 ## Proposed Implementation
@@ -69,12 +72,7 @@ import { useTranslation } from 'next-i18next'
 
 // ...inside the journey != null branch, replace the existing
 // <Typography>{journey.title}</Typography> block with:
-<Stack
-  direction="row"
-  alignItems="center"
-  gap={1}
-  sx={{ minWidth: 0 }}
->
+;<Stack direction="row" alignItems="center" gap={1} sx={{ minWidth: 0 }}>
   <Typography
     sx={{
       display: { xs: '-webkit-box', md: 'unset' },
@@ -114,6 +112,7 @@ import { useTranslation } from 'next-i18next'
 #### `apps/journeys-admin/src/components/Editor/Toolbar/JourneyDetails/JourneyDetails.spec.tsx`
 
 Add cases:
+
 - Template journey (`template: true`) renders `TemplateBadge` with text "TEMPLATE".
 - Non-template journey (existing default mock) does not render `TemplateBadge`.
 
