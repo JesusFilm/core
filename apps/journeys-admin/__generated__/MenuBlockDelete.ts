@@ -10,7 +10,7 @@ import { JourneyUpdateInput } from "./globalTypes";
 // ====================================================
 
 export interface MenuBlockDelete_stepDelete {
-  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "ButtonBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
@@ -47,9 +47,6 @@ export interface MenuBlockDelete_journeyUpdate {
 }
 
 export interface MenuBlockDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   stepDelete: MenuBlockDelete_stepDelete[];
   journeyUpdate: MenuBlockDelete_journeyUpdate;
 }

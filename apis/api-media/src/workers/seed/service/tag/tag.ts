@@ -76,7 +76,8 @@ export async function seedTags(): Promise<void> {
   await upsertTag('Audience', [
     'Catholic/Orthodox',
     'Muslim',
-    'Hindu/Buddist',
+    'Hindu',
+    'Buddhist',
     'Atheist/Agnostic',
     'Seeker',
     'New Believer',

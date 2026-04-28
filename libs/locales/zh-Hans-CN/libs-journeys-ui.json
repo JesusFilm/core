@@ -1,6 +1,7 @@
 {
   "Submit": "提交",
   "Button": "按钮",
+  "None": "没有任何",
   "This field is required": "该字段为必填字段",
   "Name must be 2 characters or more": "姓名必须为 2 个字符或更多",
   "Name must be 50 characters or less": "姓名必须少于或等于 50 个字符",

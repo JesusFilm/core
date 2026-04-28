@@ -15,7 +15,7 @@ import { TemplateCardPreviewItem } from '@core/journeys/ui/TemplateView/Template
 import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import ArrowRightContained1Icon from '@core/shared/ui/icons/ArrowRightContained1'
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
@@ -117,29 +117,37 @@ export function DoneScreen(): ReactElement {
       footer={
         <Button
           data-testid="ProjectsDashboardButton"
+          variant="text"
+          color="primary"
           onClick={handleGoToProjectsDashboard}
           loading={navigating}
-          endIcon={<ArrowRightContained1Icon />}
-          sx={{ mt: 4 }}
+          endIcon={<ChevronRightIcon />}
+          sx={{ width: { xs: '100%', sm: 'auto' }, mt: 4 }}
         >
-          <Typography variant="subtitle2">
-            {t('Go To Projects Dashboard')}
-          </Typography>
+          {t('Go To Projects Dashboard')}
         </Button>
       }
     >
       {steps.length > 0 && (
         <Box
           sx={{
-            transform: `scale(${PREVIEW_SCALE})`,
-            transformOrigin: 'top center',
             height: {
               xs: VARIANT_CONFIGS.guestPreview.cardHeight.xs * PREVIEW_SCALE,
               sm: VARIANT_CONFIGS.guestPreview.cardHeight.sm * PREVIEW_SCALE
             }
           }}
         >
-          <TemplateCardPreviewItem step={steps[0]} variant="guestPreview" />
+          <Box
+            sx={{
+              transform: `scale(${PREVIEW_SCALE})`,
+              transformOrigin: 'top center',
+              borderRadius: 4,
+              boxShadow:
+                '4px 4px 8px rgba(0, 0, 0, 0.3), -2px 2px 4px rgba(0, 0, 0, 0.15)'
+            }}
+          >
+            <TemplateCardPreviewItem step={steps[0]} variant="guestPreview" />
+          </Box>
         </Box>
       )}
 
@@ -158,31 +166,25 @@ export function DoneScreen(): ReactElement {
         >
           <Button
             data-testid="DoneScreenPreviewButton"
-            variant="outlined"
-            color="secondary"
+            variant="blockOutlined"
+            color="solid"
             href={href}
             component={href != null ? 'a' : 'button'}
             target={href != null ? '_blank' : undefined}
             startIcon={<Play3Icon />}
-            sx={{
-              borderWidth: 2,
-              borderRadius: 2,
-              height: 48,
-              width: { xs: '100%', sm: 216 },
-              borderColor: 'secondary.light'
-            }}
+            sx={{ width: { xs: '100%', sm: 216 } }}
           >
-            <Typography variant="subtitle2">{t('Preview')}</Typography>
+            {t('Preview')}
           </Button>
           <ShareItem
             variant="button"
             journey={journey}
             buttonVariant="icon"
             buttonProps={{
+              variant: 'blockContained',
+              color: 'solid',
               sx: {
-                width: { xs: '100%', sm: 216 },
-                height: 48,
-                borderRadius: 2
+                width: { xs: '100%', sm: 216 }
               }
             }}
           />

@@ -10,7 +10,7 @@ import { StepBlockUpdateInput } from "./globalTypes";
 // ====================================================
 
 export interface StepBlockDeleteFromStep_blockDelete_ImageBlock {
-  __typename: "ImageBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "ButtonBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
@@ -39,9 +39,6 @@ export interface StepBlockDeleteFromStep_stepBlockUpdate {
 }
 
 export interface StepBlockDeleteFromStep {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   blockDelete: StepBlockDeleteFromStep_blockDelete[];
   stepBlockUpdate: StepBlockDeleteFromStep_stepBlockUpdate;
 }

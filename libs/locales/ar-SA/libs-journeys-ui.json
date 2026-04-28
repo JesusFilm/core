@@ -1,6 +1,7 @@
 {
   "Submit": "إرسال",
   "Button": "الزر",
+  "None": "لا يوجد",
   "This field is required": "هذا الحقل مطلوب",
   "Name must be 2 characters or more": "يجب أن يتكون الاسم من حرفين أو أكثر",
   "Name must be 50 characters or less": "يجب أن يتكون الاسم من 50 حرفاً أو أقل",

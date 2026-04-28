@@ -1,4 +1,4 @@
-FROM node:22-alpine3.20
+FROM node:24-alpine3.23
 
 EXPOSE 4005
 
@@ -19,7 +19,7 @@ COPY ./libs/prisma/languages/db ./prisma-languages/db
 COPY ./libs/prisma/languages/prisma.config.ts ./prisma-languages/prisma.config.ts
 COPY ./apis/api-media/docker-entrypoint.sh ./docker-entrypoint.sh
 
-RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
+RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 RUN pnpm install --prod --silent
 
 ENTRYPOINT ["./docker-entrypoint.sh"]

@@ -10,7 +10,7 @@ import { VideoBlockSource, VideoBlockObjectFit, ContactActionType, BlockEventLab
 // ====================================================
 
 export interface CardVideoDelete_video_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "ButtonBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
 }
 
 export interface CardVideoDelete_video_VideoBlock_subtitleLanguage {
@@ -204,9 +204,6 @@ export interface CardVideoDelete_video_VideoBlock {
 export type CardVideoDelete_video = CardVideoDelete_video_ImageBlock | CardVideoDelete_video_VideoBlock;
 
 export interface CardVideoDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   video: CardVideoDelete_video[];
 }
 

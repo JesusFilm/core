@@ -112,10 +112,33 @@ async function refreshCacheInBackground<T>(
   // Lock will auto-expire after REFRESH_LOCK_TTL seconds
 }
 
+export interface CacheOptions {
+  bypass?: boolean
+}
+
 export async function getWithStaleCache<T>(
   key: string,
-  fetchFn: () => Promise<T>
+  fetchFn: () => Promise<T>,
+  options?: CacheOptions
 ): Promise<T> {
+  if (options?.bypass) {
+    logger.debug({ key }, 'Cache bypass enabled, fetching fresh data')
+    const fresh = await fetchFn()
+    try {
+      await setInCache(key, fresh)
+    } catch (cacheError) {
+      logger.error(
+        {
+          error:
+            cacheError instanceof Error ? cacheError.message : 'Unknown error',
+          key
+        },
+        'Failed to cache fresh data after bypass for key'
+      )
+    }
+    return fresh
+  }
+
   try {
     // Try fresh cache first
     const cached = await getFromCache<T>(key)
@@ -166,8 +189,27 @@ export async function getWithStaleCache<T>(
 export async function getWithStrictCache<T>(
   key: string,
   fetchFn: () => Promise<T>,
-  ttlSeconds: number = 30
+  ttlSeconds: number = 30,
+  options?: CacheOptions
 ): Promise<T> {
+  if (options?.bypass) {
+    logger.debug({ key }, 'Cache bypass enabled, fetching fresh data (strict)')
+    const fresh = await fetchFn()
+    try {
+      await redis.set(key, JSON.stringify(fresh), 'EX', ttlSeconds)
+    } catch (cacheError) {
+      logger.error(
+        {
+          error:
+            cacheError instanceof Error ? cacheError.message : 'Unknown error',
+          key
+        },
+        'Failed to cache fresh data after bypass for key'
+      )
+    }
+    return fresh
+  }
+
   try {
     const cached = await getFromCache<T>(key)
     if (cached) {
