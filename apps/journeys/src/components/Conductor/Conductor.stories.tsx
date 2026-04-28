@@ -103,7 +103,8 @@ const defaultJourney: Journey = {
   fromTemplateId: null,
   socialNodeX: null,
   socialNodeY: null,
-  customizable: null
+  customizable: null,
+  showAssistant: null
 }
 
 type Story = StoryObj<ComponentProps<typeof Conductor> & { journey?: Journey }>

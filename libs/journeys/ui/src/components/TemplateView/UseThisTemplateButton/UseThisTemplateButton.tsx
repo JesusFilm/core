@@ -51,7 +51,7 @@ export function UseThisTemplateButton({
     }
   }
 
-  const handleSignIn = (login: boolean): void => {
+  const handleSignIn = (): void => {
     // Use env var if outside journeys-admin project
     const domain =
       process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
@@ -61,8 +61,7 @@ export function UseThisTemplateButton({
       {
         pathname: `${domain}/users/sign-in`,
         query: {
-          redirect: url.includes('createNew') ? url : `${url}?createNew=true`,
-          login: login ?? false
+          redirect: url.includes('createNew') ? url : `${url}?createNew=true`
         }
       },
       undefined,
