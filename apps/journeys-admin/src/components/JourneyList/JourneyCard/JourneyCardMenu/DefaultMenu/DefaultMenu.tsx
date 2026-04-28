@@ -37,6 +37,7 @@ import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
+import { RestrictEditingToggle } from '../RestrictEditingToggle'
 
 import { ArchiveJourney } from './ArchiveJourney'
 
@@ -288,6 +289,13 @@ export function DefaultMenu({
             journey={journey}
             refetchTemplateStats={refetchTemplateStats}
           />
+          {isLocalTemplate && (
+            <RestrictEditingToggle
+              journey={journey}
+              teamRole={teamRole}
+              handleCloseMenu={handleCloseMenu}
+            />
+          )}
           <Divider />
         </>
       )}

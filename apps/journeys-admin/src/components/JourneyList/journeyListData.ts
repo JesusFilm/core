@@ -92,7 +92,8 @@ export const defaultJourney: Journey = {
   template: false,
   primaryImageBlock: null,
   fromTemplateId: null,
-  customizable: null
+  customizable: null,
+  restrictEditing: null
 }
 
 export const journeyWithImage: Journey = {
@@ -169,6 +170,7 @@ export const templateJourneyFromTemplate: Journey = {
 export const customizableTemplateJourney: Journey = {
   ...templateJourney,
   customizable: true,
+  restrictEditing: null,
   journeyCustomizationDescription: 'a customizable template journey',
   journeyCustomizationFields: [
     {
@@ -198,6 +200,7 @@ export const customizableWebsiteTemplateJourney: Journey = {
   website: true,
   template: true,
   customizable: true,
+  restrictEditing: null,
   journeyCustomizationDescription: 'a customizable website template journey',
   journeyCustomizationFields: [
     {

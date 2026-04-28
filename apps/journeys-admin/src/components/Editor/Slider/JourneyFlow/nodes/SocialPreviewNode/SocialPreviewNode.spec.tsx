@@ -101,6 +101,7 @@ describe('SocialPreviewNode', () => {
     socialNodeX: null,
     socialNodeY: null,
     customizable: null,
+    restrictEditing: null,
     showAssistant: null
   }
 

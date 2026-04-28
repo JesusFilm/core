@@ -63,7 +63,8 @@ export const defaultTemplate: Journey = {
   primaryImageBlock: null,
   trashedAt: null,
   fromTemplateId: null,
-  customizable: null
+  customizable: null,
+  restrictEditing: null
 }
 
 export const oldTemplate: Journey = {

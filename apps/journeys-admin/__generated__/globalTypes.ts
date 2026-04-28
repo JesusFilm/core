@@ -696,6 +696,7 @@ export interface JourneyUpdateInput {
   logoImageBlockId?: string | null;
   socialNodeX?: number | null;
   socialNodeY?: number | null;
+  restrictEditing?: boolean | null;
 }
 
 export interface JourneyVisitorFilter {

@@ -117,6 +117,7 @@ const journeyWithMatchingVideoBlock: Journey = {
   socialNodeX: null,
   socialNodeY: null,
   customizable: null,
+  restrictEditing: null,
   showAssistant: null
 }
 

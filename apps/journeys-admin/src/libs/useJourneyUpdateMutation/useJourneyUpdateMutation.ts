@@ -43,6 +43,7 @@ export const JOURNEY_SETTINGS_UPDATE = gql`
       }
       socialNodeX
       socialNodeY
+      restrictEditing
     }
   }
 `
