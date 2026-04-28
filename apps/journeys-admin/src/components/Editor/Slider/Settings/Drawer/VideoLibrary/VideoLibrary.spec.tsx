@@ -54,9 +54,7 @@ jest.mock('./VideoFromMux', () => ({
     <button
       type="button"
       data-testid="mock-mux-background-complete"
-      onClick={() =>
-        onSelect({ videoId: 'mux-bg-id', source: 'mux' }, false)
-      }
+      onClick={() => onSelect({ videoId: 'mux-bg-id', source: 'mux' }, false)}
     >
       simulate-mux-background-complete
     </button>
