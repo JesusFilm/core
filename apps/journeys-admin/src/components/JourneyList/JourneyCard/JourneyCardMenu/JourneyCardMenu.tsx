@@ -7,10 +7,13 @@ import { ReactElement, useState } from 'react'
 
 import MoreIcon from '@core/shared/ui/icons/More'
 
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
   GetAdminJourneys,
   GetAdminJourneys_journeys as Journey
 } from '../../../../../__generated__/GetAdminJourneys'
+import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 const AccessDialog = dynamic(
@@ -55,6 +58,15 @@ const JourneyDetailsDialog = dynamic(
       /* webpackChunkName: "JourneyDetailsDialog" */
       '../../../Editor/Toolbar/JourneyDetails/JourneyDetailsDialog'
     ).then((mod) => mod.JourneyDetailsDialog),
+  { ssr: false }
+)
+
+const LocalTemplateDetailsDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "LocalTemplateDetailsDialog" */
+      '../../../Editor/Toolbar/JourneyDetails/LocalTemplateDetailsDialog'
+    ).then((mod) => mod.LocalTemplateDetailsDialog),
   { ssr: false }
 )
 
@@ -304,16 +316,32 @@ export function JourneyCardMenu({
           refetch={refetch}
         />
       )}
-      {openDetailsDialog != null && (
-        <JourneyDetailsDialog
-          open={openDetailsDialog}
-          onClose={() => {
-            setOpenDetailsDialog(false)
-            setHasOpenDialog?.(false)
-          }}
-          journey={journey}
-        />
-      )}
+      {openDetailsDialog != null &&
+        (journey?.template === true && journey?.team?.id !== 'jfp-team' ? (
+          <JourneyProvider
+            value={{
+              journey: journey as unknown as JourneyFields,
+              variant: 'admin'
+            }}
+          >
+            <LocalTemplateDetailsDialog
+              open={openDetailsDialog}
+              onClose={() => {
+                setOpenDetailsDialog(false)
+                setHasOpenDialog?.(false)
+              }}
+            />
+          </JourneyProvider>
+        ) : (
+          <JourneyDetailsDialog
+            open={openDetailsDialog}
+            onClose={() => {
+              setOpenDetailsDialog(false)
+              setHasOpenDialog?.(false)
+            }}
+            journey={journey}
+          />
+        ))}
       {openTranslateDialog != null && (
         <TranslateJourneyDialog
           open={openTranslateDialog}

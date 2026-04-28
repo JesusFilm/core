@@ -57,6 +57,14 @@ const JourneyDetailsDialog = dynamic(
   { ssr: false }
 )
 
+const LocalTemplateDetailsDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/Toolbar/JourneyDetails/LocalTemplateDetailsDialog" */ './JourneyDetails/LocalTemplateDetailsDialog'
+    ).then((mod) => mod.LocalTemplateDetailsDialog),
+  { ssr: false }
+)
+
 interface ToolbarProps {
   user?: User | null
 }
@@ -154,8 +162,12 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     })
   }
 
+  // Local templates: template === true AND team.id !== "jfp-team"
+  const isLocalTemplate =
+    journey?.template === true && journey?.team?.id !== 'jfp-team'
+
   function handleDialogOpen(): void {
-    setRoute('journeyDetails')
+    setRoute(isLocalTemplate ? 'templateDetails' : 'journeyDetails')
     setDialogOpen(true)
   }
 
@@ -164,12 +176,8 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   }
 
   // Determine the home href based on journey properties
-  // Local templates: template === true AND team.id !== "jfp-team" → templates tab
-  // Regular journeys: template === false → journeys tab
-  const homeHref =
-    journey?.template === true && journey?.team?.id !== 'jfp-team'
-      ? '/?type=templates'
-      : '/?type=journeys'
+  // Local templates → templates tab; regular journeys → journeys tab
+  const homeHref = isLocalTemplate ? '/?type=templates' : '/?type=journeys'
 
   return (
     <Stack
@@ -313,12 +321,18 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                 </Button>
               </Tooltip>
             </Box>
-            {dialogOpen != null && (
-              <JourneyDetailsDialog
-                open={dialogOpen}
-                onClose={handleDialogClose}
-              />
-            )}
+            {dialogOpen != null &&
+              (isLocalTemplate ? (
+                <LocalTemplateDetailsDialog
+                  open={dialogOpen}
+                  onClose={handleDialogClose}
+                />
+              ) : (
+                <JourneyDetailsDialog
+                  open={dialogOpen}
+                  onClose={handleDialogClose}
+                />
+              ))}
           </Stack>
         ) : (
           <Stack flexGrow={1}>

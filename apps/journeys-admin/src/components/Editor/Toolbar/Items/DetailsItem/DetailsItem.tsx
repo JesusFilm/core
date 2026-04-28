@@ -17,6 +17,14 @@ const JourneyDetailsDialog = dynamic(
   { ssr: false }
 )
 
+const LocalTemplateDetailsDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/Toolbar/JourneyDetails/LocalTemplateDetailsDialog" */ '../../JourneyDetails/LocalTemplateDetailsDialog'
+    ).then((mod) => mod.LocalTemplateDetailsDialog),
+  { ssr: false }
+)
+
 interface DetailsItemProps {
   variant: ComponentProps<typeof Item>['variant']
   onClose?: () => void
@@ -30,6 +38,8 @@ export function DetailsItem({
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const [dialogOpen, setDialogOpen] = useState<boolean | null>(null)
+  const isLocalTemplate =
+    journey?.template === true && journey?.team?.id !== 'jfp-team'
 
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {
@@ -41,7 +51,7 @@ export function DetailsItem({
   }
 
   function handleClick(): void {
-    setRoute('journeyDetails')
+    setRoute(isLocalTemplate ? 'templateDetails' : 'journeyDetails')
     setDialogOpen(true)
     onClose?.()
   }
@@ -59,7 +69,16 @@ export function DetailsItem({
         onClick={handleClick}
       />
       {journey?.id != null && dialogOpen != null && (
-        <JourneyDetailsDialog open={dialogOpen} onClose={handleClose} />
+        <>
+          {isLocalTemplate ? (
+            <LocalTemplateDetailsDialog
+              open={dialogOpen}
+              onClose={handleClose}
+            />
+          ) : (
+            <JourneyDetailsDialog open={dialogOpen} onClose={handleClose} />
+          )}
+        </>
       )}
     </>
   )

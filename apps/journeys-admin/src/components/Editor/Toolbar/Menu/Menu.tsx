@@ -91,7 +91,7 @@ export function Menu({ user }: MenuProps): ReactElement {
         {!mdUp && <JourneyDetails />}
         <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
         {!mdUp && <Divider data-testid="details-menu-divider" />}
-        {isTemplate && (
+        {isTemplate && !isLocalTemplate && (
           <TemplateSettingsItem variant="menu-item" onClose={handleCloseMenu} />
         )}
         {!isLocalTemplate && (
