@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/react'
 
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../../../__generated__/GetVideo'
 
-import { VideoLanguage } from '.'
+import { VideoLanguagePicker } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -59,29 +59,28 @@ const languages: Language[] = [
 ]
 
 const handleChange = jest.fn()
-const handleClose = jest.fn()
 
-describe('VideoLanguage', () => {
-  it('should call onClose when closed', () => {
-    const { getByRole } = render(
-      <VideoLanguage
-        open
-        onClose={handleClose}
-        onChange={handleChange}
-        language={{ id: '529', localName: undefined, nativeName: 'English' }}
-        languages={languages}
-        loading={false}
-      />
-    )
-    fireEvent.click(getByRole('button', { name: 'close-image-library' }))
-    expect(handleClose).toHaveBeenCalled()
+describe('VideoLanguagePicker', () => {
+  beforeEach(() => {
+    handleChange.mockClear()
   })
 
-  it('should select language', () => {
+  it('should render the autocomplete with the current language', () => {
+    const { getByRole, getByText } = render(
+      <VideoLanguagePicker
+        onChange={handleChange}
+        language={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={languages}
+        loading={false}
+      />
+    )
+    expect(getByText('Available Languages')).toBeInTheDocument()
+    expect(getByRole('combobox')).toHaveValue('English')
+  })
+
+  it('should call onChange when a language is selected', () => {
     const { getByRole } = render(
-      <VideoLanguage
-        open
-        onClose={handleClose}
+      <VideoLanguagePicker
         onChange={handleChange}
         language={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}
@@ -89,7 +88,6 @@ describe('VideoLanguage', () => {
       />
     )
 
-    expect(getByRole('combobox')).toHaveValue('English')
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     fireEvent.click(getByRole('option', { name: 'French Français' }))
@@ -100,20 +98,5 @@ describe('VideoLanguage', () => {
       nativeName: 'Français',
       slug: 'french'
     })
-  })
-
-  it('should call onClose when Apply clicked', async () => {
-    const { getByRole } = render(
-      <VideoLanguage
-        open
-        onClose={handleClose}
-        onChange={handleChange}
-        language={{ id: '529', localName: undefined, nativeName: 'English' }}
-        languages={languages}
-        loading={false}
-      />
-    )
-    fireEvent.click(getByRole('button', { name: 'Apply' }))
-    expect(handleClose).toHaveBeenCalled()
   })
 })

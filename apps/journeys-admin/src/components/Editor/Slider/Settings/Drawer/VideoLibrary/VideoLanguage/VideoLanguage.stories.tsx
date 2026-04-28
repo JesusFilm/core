@@ -6,15 +6,17 @@ import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../../../__generated__/GetVideo'
 
-import { VideoLanguage } from '.'
+import { VideoLanguagePicker } from '.'
 
-const VideoLanguageStory: Meta<
-  ComponentProps<typeof VideoLanguage> & { onSelect: { action: string } }
+const VideoLanguagePickerStory: Meta<
+  ComponentProps<typeof VideoLanguagePicker> & {
+    onSelect: { action: string }
+  }
 > = {
   ...simpleComponentConfig,
-  component: VideoLanguage,
+  component: VideoLanguagePicker,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoLanguage',
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoLanguagePicker',
   argTypes: { onSelect: { action: 'onSelect' } }
 }
 
@@ -67,8 +69,7 @@ const languages: Language[] = [
   }
 ]
 
-const VideoLanguageComponent = ({ onSelect }): ReactElement => {
-  const [open, setOpen] = useState(true)
+const VideoLanguagePickerComponent = ({ onSelect }): ReactElement => {
   const [language, setLanguage] = useState<LanguageOption>({
     id: '529',
     localName: undefined,
@@ -80,9 +81,7 @@ const VideoLanguageComponent = ({ onSelect }): ReactElement => {
   }
 
   return (
-    <VideoLanguage
-      open={open}
-      onClose={() => setOpen(false)}
+    <VideoLanguagePicker
       onChange={handleChange}
       language={language}
       languages={languages}
@@ -92,11 +91,13 @@ const VideoLanguageComponent = ({ onSelect }): ReactElement => {
 }
 
 const Template: StoryObj<
-  ComponentProps<typeof VideoLanguage> & { onSelect: { action: string } }
+  ComponentProps<typeof VideoLanguagePicker> & {
+    onSelect: { action: string }
+  }
 > = {
-  render: ({ onSelect }) => <VideoLanguageComponent onSelect={onSelect} />
+  render: ({ onSelect }) => <VideoLanguagePickerComponent onSelect={onSelect} />
 }
 
 export const Default = { ...Template }
 
-export default VideoLanguageStory
+export default VideoLanguagePickerStory
