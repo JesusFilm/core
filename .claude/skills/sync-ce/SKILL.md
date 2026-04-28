@@ -122,6 +122,8 @@ Where:
 - `XX` is the user's 2-letter uppercase initials
 - `vX-Y-Z` is the upstream version with dots replaced by hyphens (e.g. `v2-45-0`)
 
+> **Do not change this branch format without updating CI.** The `-chore-ce-sync-` segment is matched by `.github/workflows/autofix.ci.yml` to skip the lint job on sync PRs. Without that skip, autofix.ci reformats CE-managed files and adds a 150+ file commit on every sync. If you change this format, update the workflow's `if:` condition in lockstep.
+
 Create a git worktree for this branch:
 
 ```bash
