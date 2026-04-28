@@ -280,6 +280,28 @@ describe('LocalDetails', () => {
     })
   })
 
+  it('should not commit a language when popover is dismissed via Escape (not preselected)', async () => {
+    const onSelect = jest.fn()
+    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const { getByRole, queryByTestId } = render(
+      <MockedProvider mocks={[{ ...getVideoMock, result }]}>
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    fireEvent.click(getByRole('button', { name: 'English' }))
+    expect(queryByTestId('VideoLanguagePicker')).toBeInTheDocument()
+
+    fireEvent.keyDown(getByRole('combobox'), { key: 'Escape' })
+
+    await waitFor(() =>
+      expect(queryByTestId('VideoLanguagePicker')).not.toBeInTheDocument()
+    )
+    expect(onSelect).not.toHaveBeenCalled()
+    expect(getByRole('button', { name: 'English' })).toBeInTheDocument()
+  })
+
   it('should auto-save language change immediately when preselected', async () => {
     const onSelect = jest.fn()
     const { getByRole, queryByRole, queryByTestId } = render(
