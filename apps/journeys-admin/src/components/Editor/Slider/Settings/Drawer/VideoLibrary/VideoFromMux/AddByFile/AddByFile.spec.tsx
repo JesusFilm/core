@@ -85,6 +85,7 @@ const mockJourney: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   customizable: null,
+  restrictEditing: null,
   showAssistant: null
 }
 

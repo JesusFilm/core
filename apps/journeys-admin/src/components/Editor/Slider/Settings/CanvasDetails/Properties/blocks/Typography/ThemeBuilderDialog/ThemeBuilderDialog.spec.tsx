@@ -87,6 +87,7 @@ describe('ThemeBuilderDialog', () => {
     journeyCustomizationFields: [],
     fromTemplateId: null,
     customizable: null,
+    restrictEditing: null,
     showAssistant: null
   }
 

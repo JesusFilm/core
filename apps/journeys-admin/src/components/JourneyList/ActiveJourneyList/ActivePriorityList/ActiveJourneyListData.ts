@@ -88,7 +88,8 @@ export const defaultJourney: Journey = {
   template: false,
   primaryImageBlock: null,
   fromTemplateId: null,
-  customizable: null
+  customizable: null,
+  restrictEditing: null
 }
 
 export const journey: Journey = {

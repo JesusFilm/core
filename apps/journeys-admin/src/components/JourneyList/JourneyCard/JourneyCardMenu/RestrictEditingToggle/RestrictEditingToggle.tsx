@@ -39,7 +39,7 @@ export function RestrictEditingToggle({
 }: RestrictEditingToggleProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const [journeyUpdate] = useJourneyUpdateMutation()
+  const [journeyUpdate, { loading }] = useJourneyUpdateMutation()
 
   if (journey == null) return null
 
@@ -51,34 +51,13 @@ export function RestrictEditingToggle({
   const checked = journey.restrictEditing === true
 
   const handleToggle = async (): Promise<void> => {
-    if (!isManager) return
+    if (!isManager || loading) return
     const next = !checked
     try {
       await journeyUpdate({
         variables: {
           id: journey.id,
           input: { restrictEditing: next }
-        },
-        optimisticResponse: {
-          journeyUpdate: {
-            __typename: 'Journey',
-            id: journey.id,
-            title: journey.title,
-            description: journey.description,
-            strategySlug: null,
-            language: journey.language,
-            tags: [],
-            website: journey.website,
-            showShareButton: null,
-            showLikeButton: null,
-            showDislikeButton: null,
-            displayTitle: null,
-            menuButtonIcon: null,
-            menuStepBlock: null,
-            socialNodeX: null,
-            socialNodeY: null,
-            restrictEditing: next
-          }
         }
       })
       enqueueSnackbar(
@@ -87,20 +66,19 @@ export function RestrictEditingToggle({
           : t('Editing unlocked for the team'),
         { variant: 'success', preventDuplicate: true }
       )
+      handleCloseMenu()
     } catch {
       enqueueSnackbar(t('Could not change template edit restriction'), {
         variant: 'error',
         preventDuplicate: true
       })
-    } finally {
-      handleCloseMenu()
     }
   }
 
   return (
     <MenuItem
       onClick={handleToggle}
-      disabled={!isManager}
+      disabled={!isManager || loading}
       data-testid="RestrictEditingToggle"
     >
       <ListItemIcon>
@@ -119,9 +97,12 @@ export function RestrictEditingToggle({
       <Switch
         edge="end"
         checked={checked}
-        disabled={!isManager}
+        disabled={!isManager || loading}
         inputProps={{
-          'aria-label': t('Restrict editing to managers')
+          'aria-label': t('Restrict editing to managers'),
+          // Prevent double-activation: MenuItem onClick already triggers
+          // the toggle, so the Switch should not be a separate tab stop.
+          tabIndex: -1
         }}
       />
     </MenuItem>

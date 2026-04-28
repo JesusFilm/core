@@ -178,6 +178,7 @@ describe('Goals', () => {
     socialNodeY: null,
     journeyTheme: null,
     customizable: null,
+    restrictEditing: null,
     showAssistant: null
   }
 

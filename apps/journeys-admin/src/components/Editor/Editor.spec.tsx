@@ -105,6 +105,7 @@ describe('Editor', () => {
     socialNodeX: null,
     socialNodeY: null,
     customizable: null,
+    restrictEditing: null,
     showAssistant: null
   }
 

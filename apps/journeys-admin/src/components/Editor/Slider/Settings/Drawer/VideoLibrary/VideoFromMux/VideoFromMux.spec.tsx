@@ -131,6 +131,7 @@ const mockJourneyWithValidLanguage: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   customizable: null,
+  restrictEditing: null,
   showAssistant: null
 }
 
