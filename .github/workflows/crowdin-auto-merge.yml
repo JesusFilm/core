@@ -195,14 +195,23 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           PR_NUMBER: ${{ steps.find-pr.outputs.number }}
+          BOT_LOGIN: ${{ steps.bot-login.outputs.login }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail
-          echo "Submitting approval review for PR #$PR_NUMBER"
-          gh pr review "$PR_NUMBER" --approve \
-            --body "Auto-approved by [workflow run]($RUN_URL) — all changes are under \`libs/locales/\`."
-          echo "Approval submitted."
-          echo "| Approval | Submitted |" >> "$GITHUB_STEP_SUMMARY"
+          # Skip if the bot has already approved the current HEAD — branch protection dismisses stale approvals on new commits, so any remaining APPROVED state is for the current SHA.
+          ALREADY=$(gh pr view "$PR_NUMBER" --json reviews \
+            --jq ".reviews[] | select(.author.login==\"$BOT_LOGIN\" and .state==\"APPROVED\") | .id" | head -1)
+          if [ -n "$ALREADY" ]; then
+            echo "::notice::Already approved by $BOT_LOGIN — skipping"
+            echo "| Approval | Skipped (already approved) |" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Submitting approval review for PR #$PR_NUMBER"
+            gh pr review "$PR_NUMBER" --approve \
+              --body "Auto-approved by [workflow run]($RUN_URL) — all changes are under \`libs/locales/\`."
+            echo "Approval submitted."
+            echo "| Approval | Submitted |" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Rerun failed required checks (fire-and-forget)
         if: steps.find-pr.outputs.found == 'true'
