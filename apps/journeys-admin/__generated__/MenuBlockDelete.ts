@@ -47,9 +47,6 @@ export interface MenuBlockDelete_journeyUpdate {
 }
 
 export interface MenuBlockDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   stepDelete: MenuBlockDelete_stepDelete[];
   journeyUpdate: MenuBlockDelete_journeyUpdate;
 }

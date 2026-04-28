@@ -45,6 +45,7 @@ export function transformJourneyAnalytics(
     journeyStepsActions,
     journeyVisitorsPageExits,
     journeyReferrer,
+    journeyUtmCampaign,
     journeyAggregateVisitors,
     journeyActionsSums
   } = data
@@ -104,7 +105,24 @@ export function transformJourneyAnalytics(
     }
   })
 
-  const referrers = transformReferrers(journeyReferrer)
+  const qrCodeVisitors = journeyUtmCampaign.reduce(
+    (sum, campaign) => sum + (campaign.visitors ?? 0),
+    0
+  )
+
+  const allReferrers =
+    qrCodeVisitors > 0
+      ? [
+          ...journeyReferrer,
+          {
+            __typename: 'PlausibleStatsResponse' as const,
+            property: 'QR Code',
+            visitors: qrCodeVisitors
+          }
+        ]
+      : journeyReferrer
+
+  const referrers = transformReferrers(allReferrers)
 
   return {
     totalVisitors: journeyAggregateVisitors.visitors?.value ?? 0,
