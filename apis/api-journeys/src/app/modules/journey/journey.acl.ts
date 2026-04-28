@@ -203,11 +203,13 @@ export const journeyAcl: AppAclFn = ({
       }
     }
   })
-  // Only team managers may flip the restrictEditing field, and only on team
-  // (local) templates — global templates use the publisher rule instead.
+  // Only team managers may set the restrictEditing field. The flag is a
+  // no-op on non-templates and on global templates (which use the publisher
+  // rule instead) — but the field-level Manage rule must permit benign
+  // writes (e.g. a frontend that echoes restrictEditing on every save) so
+  // it scopes by team membership only, not by template/teamId.
   cannot(Action.Manage, 'Journey', 'restrictEditing')
   can(Action.Manage, 'Journey', 'restrictEditing', {
-    template: true,
     teamId: { not: 'jfp-team' },
     team: {
       is: {

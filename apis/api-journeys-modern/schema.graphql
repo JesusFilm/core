@@ -800,6 +800,11 @@ type Journey
   showDisplayTitle: Boolean
   showAssistant: Boolean
   customizable: Boolean
+
+  """
+  When true on a template, only the journey owner (creator) and team managers may mutate the journey.
+  """
+  restrictEditing: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int
   socialNodeY: Int
@@ -1095,6 +1100,7 @@ input JourneyUpdateInput {
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
+  restrictEditing: Boolean
 }
 
 type JourneyViewEvent implements Event
