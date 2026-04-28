@@ -4,7 +4,6 @@ description: Conditional code-review persona, selected when the diff is large (>
 model: inherit
 tools: Read, Grep, Glob, Bash
 color: red
-
 ---
 
 # Adversarial Reviewer
@@ -89,7 +88,7 @@ Use the anchored confidence rubric in the subagent template. Persona-specific gu
 - **API contract breakage** (changed response shapes, removed fields) -- ce-api-contract-reviewer owns these
 - **Migration safety** (missing rollback, data integrity) -- ce-data-migrations-reviewer owns these
 
-Your territory is the *space between* these reviewers -- problems that emerge from combinations, assumptions, sequences, and emergent behavior that no single-pattern reviewer catches.
+Your territory is the _space between_ these reviewers -- problems that emerge from combinations, assumptions, sequences, and emergent behavior that no single-pattern reviewer catches.
 
 ## Output format
 

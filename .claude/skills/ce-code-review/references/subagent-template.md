@@ -6,7 +6,7 @@ This template is used by the orchestrator to spawn each reviewer sub-agent. Vari
 
 ## Template
 
-```
+````
 You are a specialist code reviewer.
 
 <persona>
@@ -84,7 +84,7 @@ Example of a schema-valid finding (all required fields, correct enum values, cor
   ],
   "pre_existing": false
 }
-```
+````
 
 The `confidence: 100` is justified because the issue is verifiable from the code alone — the controller fetches by user-supplied ID and returns data without any guard, and the parallel pattern in shipments_controller.rb confirms the project's own convention is being violated.
 
@@ -129,6 +129,7 @@ False-positive categories to actively suppress. Do NOT emit a finding when any o
 **Precedence over the false-positive catalog.** The false-positive catalog above is stricter than the advisory rule — if a shape matches the FP catalog, it is a non-finding and must be suppressed entirely. Do NOT route it to anchor `50` / advisory. The advisory rule applies only to shapes that are NOT in the FP catalog.
 
 Rules:
+
 - You are a leaf reviewer inside an already-running compound-engineering review workflow. Do not invoke compound-engineering skills or agents unless this template explicitly instructs you to. Perform your analysis directly and return findings in the required output format only.
 - Suppress any finding you cannot honestly anchor at `50` or higher (the actionable floor is `50`; anchors `0` and `25` are suppressed by synthesis anyway, so emitting them only adds noise). If your persona's domain description sets a stricter floor (e.g., anchor `75` minimum), honor it.
 - Every finding in the full artifact file MUST include at least one evidence item grounded in the actual code. The compact return omits evidence -- the evidence requirement applies to the disk artifact only.
@@ -148,6 +149,7 @@ Rules:
   - `advisory`: Report-only items that should not become code-fix work. Examples: noting a design asymmetry the PR improves but doesn't fully resolve, flagging a residual risk, deployment notes.
 
   Do not default to `advisory` when uncertain — if a concrete fix is obvious, classify it as `safe_auto` or `gated_auto`. Do not default to `gated_auto` when the fix is mechanical but the change feels substantive — apply the safe_auto test above. The "feels risky" reflex is exactly the asymmetry this rubric is designed to neutralize.
+
 - Set `owner` to the default next actor for this finding: `review-fixer`, `downstream-resolver`, `human`, or `release`.
 - Set `requires_verification` to true whenever the likely fix needs targeted tests, a focused re-review, or operational validation before it should be trusted.
 - **Propose a `suggested_fix` whenever any defensible code change is reachable from the diff and surrounding code.** This is the persona's commitment that "I, the reviewer with the diff and evidence in front of me, can articulate what the fix looks like." The suggested fix becomes the authoritative signal that downstream surfaces use to decide whether the agent can act on the finding. Three rules:
@@ -158,15 +160,15 @@ Rules:
     - Pagination strategy unclear → propose offset pagination matching the existing pattern at `file:line`, with assumption named. If product needs cursor-based, the user can switch.
     - Rate limit value uncertain → propose the value that matches existing rate limits in the project, with assumption named. The user can tune.
     - Auth model unknown → propose authentication via the existing middleware pattern at `file:line`, with assumption named. If a different service owns the auth flow, the user can route through it.
-    The "I need `<specific input>` before I can commit" framing is a soft punt. The question to ask instead is "what code change would I propose if I had to choose now?" — and propose that, with the assumption named so the user can correct it.
+      The "I need `<specific input>` before I can commit" framing is a soft punt. The question to ask instead is "what code change would I propose if I had to choose now?" — and propose that, with the assumption named so the user can correct it.
   - **Genuinely-omit cases are rare.** Omit `suggested_fix` only when there is no code-level change to propose — for example:
     - The finding is a question, not a fix request: "What is the intended SLA here?" with no clear default to assume.
     - The resolution is purely organizational with no code component: legal sign-off, business policy decision, or a process change that doesn't touch code.
-    These shapes are the exception, not the norm. Most "manual" findings in code review have a defensible code-level proposal even when context is incomplete. A `manual` finding without `suggested_fix` routes to the best-judgment path's `failed` bucket with reason "no fix proposed by reviewer" — owning that omission is the persona's responsibility.
-  A bad fix suggestion is still worse than none — the false-positive catalog and grounding rule above prevent that. The bias is toward proposing when you can; the omission case is narrow.
+      These shapes are the exception, not the norm. Most "manual" findings in code review have a defensible code-level proposal even when context is incomplete. A `manual` finding without `suggested_fix` routes to the best-judgment path's `failed` bucket with reason "no fix proposed by reviewer" — owning that omission is the persona's responsibility.
+      A bad fix suggestion is still worse than none — the false-positive catalog and grounding rule above prevent that. The bias is toward proposing when you can; the omission case is narrow.
 - If you find no issues, return an empty findings array. Still populate residual_risks and testing_gaps if applicable.
 - **Intent verification:** Compare the code changes against the stated intent (and PR title/body when available). If the code does something the intent does not describe, or fails to do something the intent promises, flag it as a finding. Mismatches between stated intent and actual code are high-value findings.
-</output-contract>
+  </output-contract>
 
 <pr-context>
 {pr_metadata}
@@ -183,6 +185,7 @@ Changed files: {file_list}
 Diff:
 {diff}
 </review-context>
+
 ```
 
 ## Variable Reference
@@ -198,3 +201,4 @@ Diff:
 | `{diff}` | Stage 1 output | The actual diff content to review |
 | `{run_id}` | Stage 4 output | Unique review run identifier for the artifact directory |
 | `{reviewer_name}` | Stage 3 output | Persona or agent name used as the artifact filename stem |
+```

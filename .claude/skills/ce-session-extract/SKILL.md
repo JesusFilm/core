@@ -1,6 +1,6 @@
 ---
 name: ce-session-extract
-description: "Extract conversation skeleton or error signals from a single session file at a given path. Invoked by session-research agents after they have selected which sessions to deep-dive — not intended for direct user queries."
+description: 'Extract conversation skeleton or error signals from a single session file at a given path. Invoked by session-research agents after they have selected which sessions to deep-dive — not intended for direct user queries.'
 user-invocable: false
 context: fork
 ---
@@ -17,7 +17,7 @@ Space-separated positional args:
 
 1. `<file>` — absolute path to a session JSONL file (typically a `file` value returned by `ce-session-inventory`).
 2. `<mode>` — `skeleton` or `errors`.
-3. `<limit>` *(optional)* — `head:N` or `tail:N` to cap output at N lines (e.g., `head:200`). Omit to return full extraction.
+3. `<limit>` _(optional)_ — `head:N` or `tail:N` to cap output at N lines (e.g., `head:200`). Omit to return full extraction.
 
 ## Execution
 

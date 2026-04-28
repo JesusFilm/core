@@ -1,8 +1,8 @@
 ---
 name: ce-polish-beta
-description: "[BETA] Start the dev server, open the feature in a browser, and iterate on improvements together."
+description: '[BETA] Start the dev server, open the feature in a browser, and iterate on improvements together.'
 disable-model-invocation: true
-argument-hint: "[PR number, branch name, or blank for current branch]"
+argument-hint: '[PR number, branch name, or blank for current branch]'
 ---
 
 # Polish
@@ -27,17 +27,17 @@ Run `bash scripts/detect-project-type.sh` to identify the framework.
 
 Route by type to the matching recipe reference for start command and port defaults:
 
-| Type | Recipe |
-|------|--------|
-| `rails` | `references/dev-server-rails.md` |
-| `next` | `references/dev-server-next.md` |
-| `vite` | `references/dev-server-vite.md` |
-| `nuxt` | `references/dev-server-nuxt.md` |
-| `astro` | `references/dev-server-astro.md` |
-| `remix` | `references/dev-server-remix.md` |
-| `sveltekit` | `references/dev-server-sveltekit.md` |
-| `procfile` | `references/dev-server-procfile.md` |
-| `unknown` | Ask the user how to start the project |
+| Type        | Recipe                                |
+| ----------- | ------------------------------------- |
+| `rails`     | `references/dev-server-rails.md`      |
+| `next`      | `references/dev-server-next.md`       |
+| `vite`      | `references/dev-server-vite.md`       |
+| `nuxt`      | `references/dev-server-nuxt.md`       |
+| `astro`     | `references/dev-server-astro.md`      |
+| `remix`     | `references/dev-server-remix.md`      |
+| `sveltekit` | `references/dev-server-sveltekit.md`  |
+| `procfile`  | `references/dev-server-procfile.md`   |
+| `unknown`   | Ask the user how to start the project |
 
 For framework types that need a package manager, run `bash scripts/resolve-package-manager.sh` and substitute the result into the start command.
 
@@ -52,6 +52,7 @@ Start the dev server in the background, log output to a temp file. Probe `http:/
 Load `references/ide-detection.md` for the env-var probe table. Open the browser using the IDE's mechanism (Claude Code → `open`, Cursor → Cursor browser, VS Code → Simple Browser).
 
 Tell the user:
+
 ```
 Dev server running on http://localhost:<port>
 Browse the feature and tell me what could be better.
@@ -70,6 +71,7 @@ No checklist. No envelope. Just conversation.
 ## References
 
 Reference files (loaded on demand):
+
 - `references/launch-json-schema.md` — launch.json schema + per-framework stubs
 - `references/ide-detection.md` — host IDE detection and browser-handoff
 - `references/dev-server-detection.md` — port resolution documentation
@@ -83,6 +85,7 @@ Reference files (loaded on demand):
 - `references/dev-server-procfile.md` — Procfile-based dev-server defaults
 
 Scripts (invoked via `bash scripts/<name>`):
+
 - `scripts/read-launch-json.sh` — launch.json reader
 - `scripts/detect-project-type.sh` — project-type classifier
 - `scripts/resolve-package-manager.sh` — lockfile-based package-manager resolver

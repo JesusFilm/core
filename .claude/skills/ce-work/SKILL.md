@@ -1,7 +1,7 @@
 ---
 name: ce-work
 description: Execute work efficiently while maintaining quality and finishing features
-argument-hint: "[Plan doc path or description of work. Blank to auto use latest plan doc]"
+argument-hint: '[Plan doc path or description of work. Blank to auto use latest plan doc]'
 ---
 
 # Work Execution Command
@@ -27,25 +27,23 @@ Determine how to proceed based on what was provided in `<input_document>`.
 **Bare prompt** (input is a description of work, not a file path):
 
 1. **Scan the work area**
-
    - Identify files likely to change based on the prompt
    - Find existing test files for those areas (search for test/spec files that import, reference, or share names with the implementation files)
    - Note local patterns and conventions in the affected areas
 
 2. **Assess complexity and route**
 
-   | Complexity | Signals | Action |
-   |-----------|---------|--------|
-   | **Trivial** | 1-2 files, no behavioral change (typo, config, rename) | Proceed to Phase 1 step 2 (environment setup), then implement directly — no task list, no execution loop. Apply Test Discovery if the change touches behavior-bearing code |
-   | **Small / Medium** | Clear scope, under ~10 files | Build a task list from discovery. Proceed to Phase 1 step 2 |
-   | **Large** | Cross-cutting, architectural decisions, 10+ files, touches auth/payments/migrations | Inform the user this would benefit from `/ce-brainstorm` or `/ce-plan` to surface edge cases and scope boundaries. Honor their choice. If proceeding, build a task list and continue to Phase 1 step 2 |
+   | Complexity         | Signals                                                                             | Action                                                                                                                                                                                                 |
+   | ------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+   | **Trivial**        | 1-2 files, no behavioral change (typo, config, rename)                              | Proceed to Phase 1 step 2 (environment setup), then implement directly — no task list, no execution loop. Apply Test Discovery if the change touches behavior-bearing code                             |
+   | **Small / Medium** | Clear scope, under ~10 files                                                        | Build a task list from discovery. Proceed to Phase 1 step 2                                                                                                                                            |
+   | **Large**          | Cross-cutting, architectural decisions, 10+ files, touches auth/payments/migrations | Inform the user this would benefit from `/ce-brainstorm` or `/ce-plan` to surface edge cases and scope boundaries. Honor their choice. If proceeding, build a task list and continue to Phase 1 step 2 |
 
 ---
 
 ### Phase 1: Quick Start
 
 1. **Read Plan and Clarify** _(skip if arriving from Phase 0 with a bare prompt)_
-
    - Read the work document completely
    - Treat the plan as a decision artifact, not an execution script
    - If the plan includes sections such as `Implementation Units`, `Work Breakdown`, `Requirements Trace`, `Files`, `Test Scenarios`, or `Verification`, use those as the primary source material for execution
@@ -78,9 +76,11 @@ Determine how to proceed based on what was provided in `<input_document>`.
    First, check whether the branch name is **meaningful** — a name like `feat/crowd-sniff` or `fix/email-validation` tells future readers what the work is about. Auto-generated worktree names (e.g., `worktree-jolly-beaming-raven`) or other opaque names do not.
 
    If the branch name is meaningless or auto-generated, suggest renaming it before continuing:
+
    ```bash
    git branch -m <meaningful-name>
    ```
+
    Derive the new name from the plan title or work description (e.g., `feat/crowd-sniff`). Present the rename as a recommended option alongside continuing as-is.
 
    Then ask: "Continue working on `[current_branch]`, or create a new branch?"
@@ -90,13 +90,16 @@ Determine how to proceed based on what was provided in `<input_document>`.
    **If on the default branch**, choose how to proceed:
 
    **Option A: Create a new branch**
+
    ```bash
    git pull origin [default_branch]
    git checkout -b feature-branch-name
    ```
+
    Use a meaningful name based on the work (e.g., `feat/user-authentication`, `fix/email-validation`).
 
    **Option B: Use a worktree (recommended for parallel development)**
+
    ```bash
    skill: ce-worktree
    # The skill will create a new branch from the default branch in an isolated worktree
@@ -129,14 +132,13 @@ Determine how to proceed based on what was provided in `<input_document>`.
 
    After creating the task list, decide how to execute based on the plan's size and dependency structure:
 
-   | Strategy | When to use |
-   |----------|-------------|
-   | **Inline** | 1-2 small tasks, or tasks needing user interaction mid-flight. **Default for bare-prompt work** — bare prompts rarely produce enough structured context to justify subagent dispatch |
-   | **Serial subagents** | 3+ tasks with dependencies between them. Each subagent gets a fresh context window focused on one unit — prevents context degradation across many tasks. Requires plan-unit metadata (Goal, Files, Approach, Test scenarios) |
-   | **Parallel subagents** | 3+ tasks that pass the Parallel Safety Check (below). Dispatch independent units simultaneously, run dependent units after their prerequisites complete. Requires plan-unit metadata |
+   | Strategy               | When to use                                                                                                                                                                                                                  |
+   | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | **Inline**             | 1-2 small tasks, or tasks needing user interaction mid-flight. **Default for bare-prompt work** — bare prompts rarely produce enough structured context to justify subagent dispatch                                         |
+   | **Serial subagents**   | 3+ tasks with dependencies between them. Each subagent gets a fresh context window focused on one unit — prevents context degradation across many tasks. Requires plan-unit metadata (Goal, Files, Approach, Test scenarios) |
+   | **Parallel subagents** | 3+ tasks that pass the Parallel Safety Check (below). Dispatch independent units simultaneously, run dependent units after their prerequisites complete. Requires plan-unit metadata                                         |
 
    **Parallel Safety Check** — required before choosing parallel dispatch:
-
    1. Build a file-to-unit mapping from every candidate unit's `Files:` section (Create, Modify, and Test paths)
    2. Check for intersection — any file path appearing in 2+ units means overlap
    3. **If overlap is found AND worktree isolation is unavailable**: downgrade to serial subagents. Log the reason (e.g., "Units 2 and 4 share `config/routes.rb` — using serial dispatch"). Serial subagents still provide context-window isolation without shared-directory write races.
@@ -182,7 +184,7 @@ Determine how to proceed based on what was provided in `<input_document>`.
 
    **After all parallel subagents in a batch complete (shared-directory fallback):**
    1. Wait for every subagent in the current parallel batch to finish before acting on any of their results
-   2. Cross-check for discovered file collisions: compare the actual files modified by all subagents in the batch (not just their declared `Files:` lists). Subagents may create or modify files not anticipated during planning — this is expected, since plans describe *what* not *how*. A collision only matters when 2+ subagents in the same batch modified the same file. In a shared working directory, only the last writer's version survives — the other unit's changes to that file are lost. If a collision is detected: commit all non-colliding files from all units first, then re-run the affected units serially for the shared file so each builds on the other's committed work
+   2. Cross-check for discovered file collisions: compare the actual files modified by all subagents in the batch (not just their declared `Files:` lists). Subagents may create or modify files not anticipated during planning — this is expected, since plans describe _what_ not _how_. A collision only matters when 2+ subagents in the same batch modified the same file. In a shared working directory, only the last writer's version survives — the other unit's changes to that file are lost. If a collision is detected: commit all non-colliding files from all units first, then re-run the affected units serially for the shared file so each builds on the other's committed work
    3. For each completed unit, in dependency order: review the diff, run the relevant test suite, stage only that unit's files, and commit with a conventional message derived from the unit's Goal
    4. If tests fail after committing a unit's changes, diagnose and fix before committing the next unit
    5. Update the task list (do not edit the plan body — progress is carried by the commits just made)
@@ -222,44 +224,44 @@ Determine how to proceed based on what was provided in `<input_document>`.
 
    **Test Scenario Completeness** — Before writing tests for a feature-bearing unit, check whether the plan's `Test scenarios` cover all categories that apply to this unit. If a category is missing or scenarios are vague (e.g., "validates correctly" without naming inputs and expected outcomes), supplement from the unit's own context before writing tests:
 
-   | Category | When it applies | How to derive if missing |
-   |----------|----------------|------------------------|
-   | **Happy path** | Always for feature-bearing units | Read the unit's Goal and Approach for core input/output pairs |
-   | **Edge cases** | When the unit has meaningful boundaries (inputs, state, concurrency) | Identify boundary values, empty/nil inputs, and concurrent access patterns |
+   | Category                | When it applies                                                           | How to derive if missing                                                                                                             |
+   | ----------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+   | **Happy path**          | Always for feature-bearing units                                          | Read the unit's Goal and Approach for core input/output pairs                                                                        |
+   | **Edge cases**          | When the unit has meaningful boundaries (inputs, state, concurrency)      | Identify boundary values, empty/nil inputs, and concurrent access patterns                                                           |
    | **Error/failure paths** | When the unit has failure modes (validation, external calls, permissions) | Enumerate invalid inputs the unit should reject, permission/auth denials it should enforce, and downstream failures it should handle |
-   | **Integration** | When the unit crosses layers (callbacks, middleware, multi-service) | Identify the cross-layer chain and write a scenario that exercises it without mocks |
+   | **Integration**         | When the unit crosses layers (callbacks, middleware, multi-service)       | Identify the cross-layer chain and write a scenario that exercises it without mocks                                                  |
 
    **System-Wide Test Check** — Before marking a task done, pause and ask:
 
-   | Question | What to do |
-   |----------|------------|
-   | **What fires when this runs?** Callbacks, middleware, observers, event handlers — trace two levels out from your change. | Read the actual code (not docs) for callbacks on models you touch, middleware in the request chain, `after_*` hooks. |
-   | **Do my tests exercise the real chain?** If every dependency is mocked, the test proves your logic works *in isolation* — it says nothing about the interaction. | Write at least one integration test that uses real objects through the full callback/middleware chain. No mocks for the layers that interact. |
+   | Question                                                                                                                                                                                       | What to do                                                                                                                                    |
+   | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+   | **What fires when this runs?** Callbacks, middleware, observers, event handlers — trace two levels out from your change.                                                                       | Read the actual code (not docs) for callbacks on models you touch, middleware in the request chain, `after_*` hooks.                          |
+   | **Do my tests exercise the real chain?** If every dependency is mocked, the test proves your logic works _in isolation_ — it says nothing about the interaction.                               | Write at least one integration test that uses real objects through the full callback/middleware chain. No mocks for the layers that interact. |
    | **Can failure leave orphaned state?** If your code persists state (DB row, cache, file) before calling an external service, what happens when the service fails? Does retry create duplicates? | Trace the failure path with real objects. If state is created before the risky call, test that failure cleans up or that retry is idempotent. |
-   | **What other interfaces expose this?** Mixins, DSLs, alternative entry points (Agent vs Chat vs ChatMethods). | Grep for the method/behavior in related classes. If parity is needed, add it now — not as a follow-up. |
-   | **Do error strategies align across layers?** Retry middleware + application fallback + framework error handling — do they conflict or create double execution? | List the specific error classes at each layer. Verify your rescue list matches what the lower layer actually raises. |
+   | **What other interfaces expose this?** Mixins, DSLs, alternative entry points (Agent vs Chat vs ChatMethods).                                                                                  | Grep for the method/behavior in related classes. If parity is needed, add it now — not as a follow-up.                                        |
+   | **Do error strategies align across layers?** Retry middleware + application fallback + framework error handling — do they conflict or create double execution?                                 | List the specific error classes at each layer. Verify your rescue list matches what the lower layer actually raises.                          |
 
    **When to skip:** Leaf-node changes with no callbacks, no state persistence, no parallel interfaces. If the change is purely additive (new helper method, new view partial), the check takes 10 seconds and the answer is "nothing fires, skip."
 
    **When this matters most:** Any change that touches models with callbacks, error handling with fallback/retry, or functionality exposed through multiple interfaces.
 
-
 2. **Incremental Commits**
 
    After completing each task, evaluate whether to create an incremental commit:
 
-   | Commit when... | Don't commit when... |
-   |----------------|---------------------|
-   | Logical unit complete (model, service, component) | Small part of a larger unit |
-   | Tests pass + meaningful progress | Tests failing |
-   | About to switch contexts (backend → frontend) | Purely scaffolding with no behavior |
-   | About to attempt risky/uncertain changes | Would need a "WIP" commit message |
+   | Commit when...                                    | Don't commit when...                |
+   | ------------------------------------------------- | ----------------------------------- |
+   | Logical unit complete (model, service, component) | Small part of a larger unit         |
+   | Tests pass + meaningful progress                  | Tests failing                       |
+   | About to switch contexts (backend → frontend)     | Purely scaffolding with no behavior |
+   | About to attempt risky/uncertain changes          | Would need a "WIP" commit message   |
 
    **Heuristic:** "Can I write a commit message that describes a complete, valuable change? If yes, commit. If the message would be 'WIP' or 'partial X', wait."
 
    If the plan has Implementation Units, use them as a starting guide for commit boundaries — but adapt based on what you find during implementation. A unit might need multiple commits if it's larger than expected, or small related units might land together. Use each unit's Goal to inform the commit message.
 
    **Commit workflow:**
+
    ```bash
    # 1. Verify tests pass (use project's test command)
    # Examples: bin/rails test, npm test, pytest, go test, etc.
@@ -280,7 +282,6 @@ Determine how to proceed based on what was provided in `<input_document>`.
    - **Shared-directory fallback:** subagents do not commit; the orchestrator stages and commits each unit after the entire parallel batch completes.
 
 3. **Follow Existing Patterns**
-
    - The plan should reference similar code - read those files first
    - Match naming conventions exactly
    - Reuse existing components where possible
@@ -288,7 +289,6 @@ Determine how to proceed based on what was provided in `<input_document>`.
    - When in doubt, grep for similar implementations
 
 4. **Test Continuously**
-
    - Run relevant tests after each significant change
    - Don't wait until the end to test
    - Fix failures immediately
@@ -306,13 +306,12 @@ Determine how to proceed based on what was provided in `<input_document>`.
 6. **Figma Design Sync** (if applicable)
 
    For UI work with Figma designs:
-
    - Implement components following design specs
    - Use ce-figma-design-sync agent iteratively to compare
    - Fix visual differences identified
    - Repeat until implementation matches design
 
-6. **Track Progress**
+7. **Track Progress**
    - Keep the task list updated as you complete tasks
    - Note any blockers or unexpected discoveries
    - Create new tasks if scope expands

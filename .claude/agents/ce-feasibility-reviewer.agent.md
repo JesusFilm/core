@@ -1,6 +1,6 @@
 ---
 name: ce-feasibility-reviewer
-description: "Evaluates whether proposed technical approaches in planning documents will survive contact with reality -- architecture conflicts, dependency gaps, migration risks, and implementability. Spawned by the document-review skill."
+description: 'Evaluates whether proposed technical approaches in planning documents will survive contact with reality -- architecture conflicts, dependency gaps, migration risks, and implementability. Spawned by the document-review skill.'
 model: inherit
 tools: Read, Grep, Glob, Bash
 ---

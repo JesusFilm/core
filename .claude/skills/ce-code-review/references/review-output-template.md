@@ -14,33 +14,34 @@ Use this **exact format** when presenting synthesized review findings. Findings 
 **Mode:** autofix
 
 **Reviewers:** correctness, testing, maintainability, security, api-contract
+
 - security -- new public endpoint accepts user-provided format parameter
 - api-contract -- new /api/orders/export route with response schema
 
 ### P0 -- Critical
 
-| # | File | Issue | Reviewer | Confidence | Route |
-|---|------|-------|----------|------------|-------|
-| 1 | `orders_controller.rb:42` | User-supplied ID in account lookup without ownership check | security | 100 | `gated_auto -> downstream-resolver` |
+| #   | File                      | Issue                                                      | Reviewer | Confidence | Route                               |
+| --- | ------------------------- | ---------------------------------------------------------- | -------- | ---------- | ----------------------------------- |
+| 1   | `orders_controller.rb:42` | User-supplied ID in account lookup without ownership check | security | 100        | `gated_auto -> downstream-resolver` |
 
 ### P1 -- High
 
-| # | File | Issue | Reviewer | Confidence | Route |
-|---|------|-------|----------|------------|-------|
-| 2 | `export_service.rb:87` | Loads all orders into memory -- unbounded for large accounts | performance | 100 | `safe_auto -> review-fixer` |
-| 3 | `export_service.rb:91` | No pagination -- response size grows linearly with order count | api-contract, performance | 75 | `manual -> downstream-resolver` |
+| #   | File                   | Issue                                                          | Reviewer                  | Confidence | Route                           |
+| --- | ---------------------- | -------------------------------------------------------------- | ------------------------- | ---------- | ------------------------------- |
+| 2   | `export_service.rb:87` | Loads all orders into memory -- unbounded for large accounts   | performance               | 100        | `safe_auto -> review-fixer`     |
+| 3   | `export_service.rb:91` | No pagination -- response size grows linearly with order count | api-contract, performance | 75         | `manual -> downstream-resolver` |
 
 ### P2 -- Moderate
 
-| # | File | Issue | Reviewer | Confidence | Route |
-|---|------|-------|----------|------------|-------|
-| 4 | `export_service.rb:45` | Missing error handling for CSV serialization failure | correctness | 75 | `safe_auto -> review-fixer` |
+| #   | File                   | Issue                                                | Reviewer    | Confidence | Route                       |
+| --- | ---------------------- | ---------------------------------------------------- | ----------- | ---------- | --------------------------- |
+| 4   | `export_service.rb:45` | Missing error handling for CSV serialization failure | correctness | 75         | `safe_auto -> review-fixer` |
 
 ### P3 -- Low
 
-| # | File | Issue | Reviewer | Confidence | Route |
-|---|------|-------|----------|------------|-------|
-| 5 | `export_helper.rb:12` | Format detection could use early return instead of nested conditional | maintainability | 75 | `advisory -> human` |
+| #   | File                  | Issue                                                                 | Reviewer        | Confidence | Route               |
+| --- | --------------------- | --------------------------------------------------------------------- | --------------- | ---------- | ------------------- |
+| 5   | `export_helper.rb:12` | Format detection could use early return instead of nested conditional | maintainability | 75         | `advisory -> human` |
 
 ### Applied Fixes
 
@@ -48,16 +49,16 @@ Use this **exact format** when presenting synthesized review findings. Findings 
 
 ### Residual Actionable Work
 
-| # | File | Issue | Route | Next Step |
-|---|------|-------|-------|-----------|
-| 1 | `orders_controller.rb:42` | Ownership check missing on export lookup | `gated_auto -> downstream-resolver` | Defer via tracker (requires explicit approval before behavior change) |
-| 2 | `export_service.rb:91` | Pagination contract needs a broader API decision | `manual -> downstream-resolver` | Defer via tracker with contract and client impact details |
+| #   | File                      | Issue                                            | Route                               | Next Step                                                             |
+| --- | ------------------------- | ------------------------------------------------ | ----------------------------------- | --------------------------------------------------------------------- |
+| 1   | `orders_controller.rb:42` | Ownership check missing on export lookup         | `gated_auto -> downstream-resolver` | Defer via tracker (requires explicit approval before behavior change) |
+| 2   | `export_service.rb:91`    | Pagination contract needs a broader API decision | `manual -> downstream-resolver`     | Defer via tracker with contract and client impact details             |
 
 ### Pre-existing Issues
 
-| # | File | Issue | Reviewer |
-|---|------|-------|----------|
-| 1 | `orders_controller.rb:12` | Broad rescue masking failed permission check | correctness |
+| #   | File                      | Issue                                        | Reviewer    |
+| --- | ------------------------- | -------------------------------------------- | ----------- |
+| 1   | `orders_controller.rb:12` | Broad rescue masking failed permission check | correctness |
 
 ### Learnings & Past Solutions
 
@@ -120,7 +121,7 @@ This fails because: no pipe-delimited tables, no severity-grouped `###` headers,
 - **Always include file:line location** for code review issues
 - **Reviewer column** shows which persona(s) flagged the issue. Multiple reviewers = cross-reviewer agreement.
 - **Confidence column** shows the finding's anchor as an integer (`50`, `75`, or `100`). Never render as a float.
-- **Route column** shows the synthesized handling decision as ``<autofix_class> -> <owner>``.
+- **Route column** shows the synthesized handling decision as `<autofix_class> -> <owner>`.
 - **Header includes** scope, intent, and reviewer team with per-conditional justifications
 - **Mode line** -- include `interactive`, `autofix`, `report-only`, or `headless`
 - **Applied Fixes section** -- include only when a fix phase ran in this review invocation

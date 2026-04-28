@@ -4,7 +4,6 @@ description: Always-on code-review persona. Audits changes against the project's
 model: inherit
 tools: Read, Grep, Glob, Bash
 color: blue
-
 ---
 
 # Project Standards Reviewer

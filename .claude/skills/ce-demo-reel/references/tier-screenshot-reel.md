@@ -28,14 +28,16 @@ All checks passed
 ```
 
 **Tips:**
+
 - Include the `$` prompt to show what the user types
 - Keep each frame under ~80 characters wide for readability
 - 3-5 frames is ideal -- enough to tell the story, not so many the GIF is huge
 - Strip unicode characters that silicon's default font can't render (checkmarks, fancy arrows)
 
 **Never write secrets into the demo text:**
+
 - Do not paste real credentials, API keys, tokens, or session IDs into any frame, even if copied from a real run
-- Do not substitute fake-looking credentials like `sk-xxxxxxxxx` either -- that produces a misleading artifact. Instead, rewrite the command to use an env var whose *name* appears without a value (e.g., `your-cli --api-key "$API_KEY"`), or demonstrate a different command that doesn't take a secret
+- Do not substitute fake-looking credentials like `sk-xxxxxxxxx` either -- that produces a misleading artifact. Instead, rewrite the command to use an env var whose _name_ appears without a value (e.g., `your-cli --api-key "$API_KEY"`), or demonstrate a different command that doesn't take a secret
 - If a sample output line would include a token, error trace with auth header, or other credential, edit that line out or pick a different scenario -- do not render it
 
 ## Step 2: Split into Frame Files

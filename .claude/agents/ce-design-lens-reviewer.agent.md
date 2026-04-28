@@ -1,6 +1,6 @@
 ---
 name: ce-design-lens-reviewer
-description: "Reviews planning documents for missing design decisions -- information architecture, interaction states, user flows, and AI slop risk. Uses dimensional rating to identify gaps. Spawned by the document-review skill."
+description: 'Reviews planning documents for missing design decisions -- information architecture, interaction states, user flows, and AI slop risk. Uses dimensional rating to identify gaps. Spawned by the document-review skill.'
 model: sonnet
 tools: Read, Grep, Glob, Bash
 ---
@@ -24,6 +24,7 @@ For each applicable dimension, rate 0-10: "[Dimension]: [N]/10 -- it's a [N] bec
 ## AI slop check
 
 Flag plans that would produce generic AI-generated interfaces:
+
 - 3-column feature grids, purple/blue gradients, icons in colored circles
 - Uniform border-radius everywhere, stock-photo heroes
 - "Modern and clean" as the entire design direction

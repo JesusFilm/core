@@ -1,6 +1,6 @@
 ---
 name: ce-framework-docs-researcher
-description: "Gathers comprehensive documentation and best practices for frameworks, libraries, or dependencies. Use when you need official docs, version-specific constraints, or implementation patterns."
+description: 'Gathers comprehensive documentation and best practices for frameworks, libraries, or dependencies. Use when you need official docs, version-specific constraints, or implementation patterns.'
 model: inherit
 tools: Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__context7__*
 ---

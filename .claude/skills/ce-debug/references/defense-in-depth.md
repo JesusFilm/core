@@ -14,12 +14,12 @@ Skip when the root cause is a one-off logic error with no realistic recurrence p
 
 Pick the layers that apply. Not every bug needs all four.
 
-| Layer | Purpose | Apply when | Example |
-|-------|---------|------------|---------|
-| 1. Entry validation | Reject obviously invalid input at the API boundary | The bug was caused by a caller passing bad data that should have been rejected | Throw if `workingDirectory` is empty or doesn't exist, before any downstream code touches it |
-| 2. Invariant / business-logic check | Enforce that data makes sense for this operation | The operation has preconditions that entry validation cannot express | Assert `user.state === 'verified'` before issuing a password reset |
-| 3. Environment guard | Refuse dangerous operations in contexts where they make no sense | The operation can be catastrophic if run in the wrong environment | In tests (`NODE_ENV === 'test'`), refuse `git init` outside the OS temp dir |
-| 4. Diagnostic breadcrumb | Capture forensic context before the risky operation | Other layers might still be bypassed; future failures need evidence | Log `{ directory, cwd, env, stack }` immediately before `git init` |
+| Layer                               | Purpose                                                          | Apply when                                                                     | Example                                                                                      |
+| ----------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| 1. Entry validation                 | Reject obviously invalid input at the API boundary               | The bug was caused by a caller passing bad data that should have been rejected | Throw if `workingDirectory` is empty or doesn't exist, before any downstream code touches it |
+| 2. Invariant / business-logic check | Enforce that data makes sense for this operation                 | The operation has preconditions that entry validation cannot express           | Assert `user.state === 'verified'` before issuing a password reset                           |
+| 3. Environment guard                | Refuse dangerous operations in contexts where they make no sense | The operation can be catastrophic if run in the wrong environment              | In tests (`NODE_ENV === 'test'`), refuse `git init` outside the OS temp dir                  |
+| 4. Diagnostic breadcrumb            | Capture forensic context before the risky operation              | Other layers might still be bypassed; future failures need evidence            | Log `{ directory, cwd, env, stack }` immediately before `git init`                           |
 
 ## Applying the pattern
 

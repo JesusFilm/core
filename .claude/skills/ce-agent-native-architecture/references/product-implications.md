@@ -3,6 +3,7 @@ Agent-native architecture has consequences for how products feel, not just how t
 </overview>
 
 <progressive_disclosure>
+
 ## Progressive Disclosure of Complexity
 
 The best agent-native applications are simple to start but endlessly powerful.
@@ -18,12 +19,14 @@ Claude Code has this quality: fix a typo, or refactor an entire codebase. The in
 Agent-native applications should aspire to this:
 
 **Simple entry:** Basic requests work immediately with no learning curve
+
 ```
 User: "Organize my downloads"
 Agent: [Does it immediately, no configuration needed]
 ```
 
 **Discoverable depth:** Users find they can do more as they explore
+
 ```
 User: "Organize my downloads by project"
 Agent: [Adapts to preference]
@@ -33,6 +36,7 @@ Agent: [Sets up recurring workflow]
 ```
 
 **No ceiling:** Power users can push the system in ways you didn't anticipate
+
 ```
 User: "Cross-reference my downloads with my calendar and flag
        anything I downloaded during a meeting that I haven't
@@ -57,9 +61,10 @@ The agent meets users where they are.
 - **Don't hide capabilities** - Make them discoverable through use
 - **Don't cap complexity** - If the agent can do it, let users ask for it
 - **Do provide hints** - Help users discover what's possible
-</progressive_disclosure>
+  </progressive_disclosure>
 
 <latent_demand_discovery>
+
 ## Latent Demand Discovery
 
 Traditional product development: imagine what users want, build it, see if you're right.
@@ -69,6 +74,7 @@ Agent-native product development: build a capable foundation, observe what users
 ### The Shift
 
 **Traditional approach:**
+
 ```
 1. Imagine features users might want
 2. Build them
@@ -78,6 +84,7 @@ Agent-native product development: build a capable foundation, observe what users
 ```
 
 **Agent-native approach:**
+
 ```
 1. Build capable foundation (atomic tools, parity)
 2. Ship
@@ -108,49 +115,55 @@ Add domain tools or prompts to optimize common patterns
 ### What You Learn
 
 **When users ask and the agent succeeds:**
+
 - This is a real need
 - Your architecture supports it
 - Consider optimizing with a domain tool if it's common
 
 **When users ask and the agent fails:**
+
 - This is a real need
 - You have a capability gap
 - Fix the gap: add tool, fix parity, improve context
 
 **When users don't ask for something:**
+
 - Maybe they don't need it
 - Or maybe they don't know it's possible (capability hiding)
 
 ### Implementation
 
 **Log agent requests:**
+
 ```typescript
 async function handleAgentRequest(request: string) {
   // Log what users are asking for
   await analytics.log({
     type: 'agent_request',
     request: request,
-    timestamp: Date.now(),
-  });
+    timestamp: Date.now()
+  })
 
   // Process request...
 }
 ```
 
 **Track success/failure:**
+
 ```typescript
 async function completeAgentSession(session: AgentSession) {
   await analytics.log({
     type: 'agent_session',
     request: session.initialRequest,
     succeeded: session.status === 'completed',
-    toolsUsed: session.toolCalls.map(t => t.name),
-    iterations: session.iterationCount,
-  });
+    toolsUsed: session.toolCalls.map((t) => t.name),
+    iterations: session.iterationCount
+  })
 }
 ```
 
 **Review patterns:**
+
 - What are users asking for most?
 - What's failing? Why?
 - What would benefit from a domain tool?
@@ -176,6 +189,7 @@ You didn't have to guess that weekly review would be popular. You discovered it.
 </latent_demand_discovery>
 
 <approval_and_agency>
+
 ## Approval and User Agency
 
 When agents take unsolicited actions—doing things on their own rather than responding to explicit requests—you need to decide how much autonomy to grant.
@@ -185,50 +199,59 @@ When agents take unsolicited actions—doing things on their own rather than res
 ### The Stakes/Reversibility Matrix
 
 Consider two dimensions:
+
 - **Stakes:** How much does it matter if this goes wrong?
 - **Reversibility:** How easy is it to undo?
 
-| Stakes | Reversibility | Pattern | Example |
-|--------|---------------|---------|---------|
-| Low | Easy | **Auto-apply** | Organizing files |
-| Low | Hard | **Quick confirm** | Publishing to a private feed |
-| High | Easy | **Suggest + apply** | Code changes with undo |
-| High | Hard | **Explicit approval** | Sending emails, payments |
+| Stakes | Reversibility | Pattern               | Example                      |
+| ------ | ------------- | --------------------- | ---------------------------- |
+| Low    | Easy          | **Auto-apply**        | Organizing files             |
+| Low    | Hard          | **Quick confirm**     | Publishing to a private feed |
+| High   | Easy          | **Suggest + apply**   | Code changes with undo       |
+| High   | Hard          | **Explicit approval** | Sending emails, payments     |
 
 ### Patterns in Detail
 
 **Auto-apply (low stakes, easy reversal):**
+
 ```
 Agent: [Organizes files into folders]
 Agent: "I organized your downloads into folders by type.
         You can undo with Cmd+Z or move them back."
 ```
+
 User doesn't need to approve—it's easy to undo and doesn't matter much.
 
 **Quick confirm (low stakes, hard reversal):**
+
 ```
 Agent: "I've drafted a post about your reading insights.
         Publish to your feed?"
         [Publish] [Edit first] [Cancel]
 ```
+
 One-tap confirm because stakes are low, but it's hard to un-publish.
 
 **Suggest + apply (high stakes, easy reversal):**
+
 ```
 Agent: "I recommend these code changes to fix the bug:
         [Shows diff]
         Apply? Changes can be reverted with git."
         [Apply] [Modify] [Cancel]
 ```
+
 Shows what will happen, makes reversal clear.
 
 **Explicit approval (high stakes, hard reversal):**
+
 ```
 Agent: "I've drafted this email to your team about the deadline change:
         [Shows full email]
         This will send immediately and cannot be unsent.
         Type 'send' to confirm."
 ```
+
 Requires explicit action, makes consequences clear.
 
 ### Implementation
@@ -300,9 +323,11 @@ func agentSelfModify(change: PromptChange) async {
     await applyChange(change)
 }
 ```
+
 </approval_and_agency>
 
 <capability_visibility>
+
 ## Capability Visibility
 
 Users need to discover what the agent can do. Hidden capabilities lead to underutilization.
@@ -321,6 +346,7 @@ The agent can do these things, but the user doesn't know.
 ### Solutions
 
 **Onboarding hints:**
+
 ```
 Agent: "I can help you with your reading in several ways:
         - Research any book (web search + save findings)
@@ -331,6 +357,7 @@ Agent: "I can help you with your reading in several ways:
 ```
 
 **Contextual suggestions:**
+
 ```
 User: "I just finished reading 1984"
 Agent: "Great choice! Would you like me to:
@@ -340,6 +367,7 @@ Agent: "Great choice! Would you like me to:
 ```
 
 **Progressive revelation:**
+
 ```
 // After user uses basic features
 Agent: "By the way, you can also ask me to set up
@@ -353,9 +381,10 @@ Agent: "By the way, you can also ask me to set up
 - **Do reveal** capabilities naturally through use
 - **Don't assume** users will discover things on their own
 - **Do make** capabilities visible when relevant
-</capability_visibility>
+  </capability_visibility>
 
 <designing_for_trust>
+
 ## Designing for Trust
 
 Agent-native apps require trust. Users are giving an AI significant capability. Build trust through:
@@ -407,37 +436,43 @@ struct AgentTransparency {
     }
 }
 ```
+
 </designing_for_trust>
 
 <checklist>
 ## Product Design Checklist
 
 ### Progressive Disclosure
+
 - [ ] Basic requests work immediately (no config)
 - [ ] Depth is discoverable through use
 - [ ] No artificial ceiling on complexity
 - [ ] Capability hints provided
 
 ### Latent Demand Discovery
+
 - [ ] Agent requests are logged
 - [ ] Success/failure is tracked
 - [ ] Patterns are reviewed regularly
 - [ ] Common patterns formalized into tools/prompts
 
 ### Approval & Agency
+
 - [ ] Stakes assessed for each action type
 - [ ] Reversibility assessed for each action type
 - [ ] Approval pattern matches stakes/reversibility
 - [ ] Self-modification is legible (visible, understandable, reversible)
 
 ### Capability Visibility
+
 - [ ] Onboarding reveals key capabilities
 - [ ] Contextual suggestions provided
 - [ ] Users aren't expected to guess what's possible
 
 ### Trust
+
 - [ ] Agent actions are transparent
 - [ ] Behavior is predictable
 - [ ] Actions are reversible
 - [ ] User has control
-</checklist>
+      </checklist>

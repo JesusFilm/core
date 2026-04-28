@@ -1,6 +1,6 @@
 ---
 name: ce-scope-guardian-reviewer
-description: "Reviews planning documents for scope alignment and unjustified complexity -- challenges unnecessary abstractions, premature frameworks, and scope that exceeds stated goals. Spawned by the document-review skill."
+description: 'Reviews planning documents for scope alignment and unjustified complexity -- challenges unnecessary abstractions, premature frameworks, and scope that exceeds stated goals. Spawned by the document-review skill.'
 model: sonnet
 tools: Read, Grep, Glob, Bash
 ---
@@ -31,6 +31,7 @@ You ask two questions about every plan: "Is this right-sized for its goals?" and
 ### 4. Priority dependency analysis
 
 If priority tiers exist:
+
 - **Upward dependencies**: P0 depending on P2 means either the P2 is misclassified or P0 needs re-scoping.
 - **Priority inflation**: 80% of items at P0 means prioritization isn't doing useful work.
 - **Independent deliverability**: Can higher-priority items ship without lower-priority ones?

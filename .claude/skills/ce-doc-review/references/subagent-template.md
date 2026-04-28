@@ -6,7 +6,7 @@ This template is used by the ce-doc-review orchestrator to spawn each reviewer s
 
 ## Template
 
-```
+````
 You are a specialist document reviewer.
 
 <persona>
@@ -59,7 +59,7 @@ Example of a schema-valid finding (all required fields, correct enum values, cor
     "If after, new code temporarily sees old entries until migration runs."
   ]
 }
-```
+````
 
 The `confidence: 100` in the example is justified because all three anchor-100 criteria hold: the reviewer double-checked (the plan literally names both orderings and resolves neither), the evidence directly confirms the outcome (quoted text shows each branch produces incorrect state), and the issue will happen frequently in practice (every deploy is subject to it).
 
@@ -93,7 +93,7 @@ Rules:
   - Framework-native-API substitutions — a hand-rolled implementation duplicates first-class framework behavior (cite the framework API in `why_it_matters`)
   - Completeness additions mechanically implied by the document's own explicit decisions (not high-level goals — a goal can be satisfied by multiple valid requirements)
 
-- **Classify your `suggested_fix` by what's written, not by the minimum fix that would have resolved the finding.** Ask: *"What's the smallest fix that addresses this issue?"* If your `suggested_fix` is larger — adds inferred claims, opportunistic refactors, or asserts things the document doesn't establish — those additions are part of what the user has to evaluate, so the higher tier applies. Two responses: **trim** the fix back to the minimum to keep `safe_auto` (and emit the trimmed-out content as a separate finding if it carries its own evidence at anchor 50+), or **gate** at `gated_auto` so the user can see and confirm the inferred scope. Trim when the additions are weak or speculative; gate when they're substantively right but the document doesn't compel them.
+- **Classify your `suggested_fix` by what's written, not by the minimum fix that would have resolved the finding.** Ask: _"What's the smallest fix that addresses this issue?"_ If your `suggested_fix` is larger — adds inferred claims, opportunistic refactors, or asserts things the document doesn't establish — those additions are part of what the user has to evaluate, so the higher tier applies. Two responses: **trim** the fix back to the minimum to keep `safe_auto` (and emit the trimmed-out content as a separate finding if it carries its own evidence at anchor 50+), or **gate** at `gated_auto` so the user can see and confirm the inferred scope. Trim when the additions are weak or speculative; gate when they're substantively right but the document doesn't compel them.
 
   Example: a finding flags that Phase B doesn't surface a U6→U7 sequencing dependency declared on U7. The minimum fix — `Add a Phase B note that U7 follows U6` — is `safe_auto` (purely mechanical, the dependency is on the page, just not in this section). Appending `and U4, U5, U8 can proceed in parallel` goes beyond the minimum because the document doesn't establish those units as independent — that's a persona inference. Trim the parallelism claim to recover `safe_auto`, or emit the bundled fix at `gated_auto`.
 
@@ -105,6 +105,7 @@ Rules:
   - A composite where you considered alternatives and concluded the right move combines two or more (e.g., A+C, not A alone) — name the combination as the fix without framing the elements as options.
 
   What's not allowed is an alternative menu that punts the choice to Apply time: `(a)/(b)/(c)` lists, "either X or Y", "consider A, B, or C", "add A or, alternatively, B." The test: at Apply time, would the agent still need to pick which sub-option to implement? If yes, rewrite as the committed choice (single, multi-facet, or composite). If the alternatives are genuinely independent and each worth taking on its own, emit N findings instead. Negative example to avoid: `Add a Validation section that (a) confirms the mechanism works, (b) flags ritualization, and (c) gates Phase B` — leaves the user guessing whether Apply will write all three, pick one, or paraphrase. If the persona's actual recommendation is "do (a) and (c) together," the fix should say so directly: `Add a Validation section that names correction-vs-confirm rate as the working signal and gates Phase B on Phase A's observed value.`
+
 - If you find no issues, return an empty findings array. Still populate residual_risks and deferred_questions if applicable.
 - Use your suppress conditions. Do not flag issues that belong to other personas.
 
@@ -169,4 +170,7 @@ When the `<prior-decisions>` block above lists entries (round 2+), honor them:
 
 This is a soft instruction; the orchestrator enforces the rule authoritatively via synthesis-level suppression (R29) regardless of persona behavior. Following the primer here reduces noisy re-raises and keeps the Coverage section clean.
 </decision-primer-rules>
+
+```
+
 ```

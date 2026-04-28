@@ -66,19 +66,19 @@ Focus on implementing the hypothesis well. The orchestrator will measure and eva
 
 ## Variable Reference
 
-| Variable | Source | Description |
-|----------|--------|-------------|
-| `{iteration}` | Experiment counter | Sequential experiment number |
-| `{spec_name}` | Spec file `name` field | Optimization target identifier |
-| `{hypothesis_description}` | Hypothesis backlog | What this experiment should try |
-| `{hypothesis_category}` | Hypothesis backlog | Category (signal-extraction, algorithm, etc.) |
-| `{current_best_metrics}` | Experiment log `best` section | Current best metric values (compact YAML or key: value pairs) |
-| `{baseline_metrics}` | Experiment log `baseline` section | Original baseline before any optimization |
-| `{scope_mutable}` | Spec `scope.mutable` | List of files/dirs the worker may modify |
-| `{scope_immutable}` | Spec `scope.immutable` | List of files/dirs the worker must not touch |
-| `{constraints}` | Spec `constraints` | Free-text constraints to follow |
-| `{approved_dependencies}` | Spec `dependencies.approved` | Dependencies approved for use |
-| `{recent_experiment_summaries}` | Rolling window (last 10) from experiment log | Compact summaries: hypothesis, outcome, learnings |
+| Variable                        | Source                                       | Description                                                   |
+| ------------------------------- | -------------------------------------------- | ------------------------------------------------------------- |
+| `{iteration}`                   | Experiment counter                           | Sequential experiment number                                  |
+| `{spec_name}`                   | Spec file `name` field                       | Optimization target identifier                                |
+| `{hypothesis_description}`      | Hypothesis backlog                           | What this experiment should try                               |
+| `{hypothesis_category}`         | Hypothesis backlog                           | Category (signal-extraction, algorithm, etc.)                 |
+| `{current_best_metrics}`        | Experiment log `best` section                | Current best metric values (compact YAML or key: value pairs) |
+| `{baseline_metrics}`            | Experiment log `baseline` section            | Original baseline before any optimization                     |
+| `{scope_mutable}`               | Spec `scope.mutable`                         | List of files/dirs the worker may modify                      |
+| `{scope_immutable}`             | Spec `scope.immutable`                       | List of files/dirs the worker must not touch                  |
+| `{constraints}`                 | Spec `constraints`                           | Free-text constraints to follow                               |
+| `{approved_dependencies}`       | Spec `dependencies.approved`                 | Dependencies approved for use                                 |
+| `{recent_experiment_summaries}` | Rolling window (last 10) from experiment log | Compact summaries: hypothesis, outcome, learnings             |
 
 ## Notes
 

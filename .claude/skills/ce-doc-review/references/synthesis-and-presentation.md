@@ -18,13 +18,13 @@ Check each agent's returned JSON against the findings schema:
 
 Gate findings by their `confidence` anchor value. Anchors are discrete integers (`0`, `25`, `50`, `75`, `100`) with behavioral definitions documented in `references/findings-schema.json` and embedded in the persona rubric (`references/subagent-template.md`). This replaces the prior continuous 0.0-1.0 scale with per-severity gates — doc-review economics do not warrant threshold gradation by severity, and coarse anchors prevent false-precision gaming.
 
-| Anchor | Meaning | Route |
-|--------|---------|-------|
-| `0`    | False positive or pre-existing issue | Drop silently |
-| `25`   | Might be real but could not verify | Drop silently |
-| `50`   | Verified real but nitpick / advisory / not very important | Surface in FYI subsection |
+| Anchor | Meaning                                                            | Route                                               |
+| ------ | ------------------------------------------------------------------ | --------------------------------------------------- |
+| `0`    | False positive or pre-existing issue                               | Drop silently                                       |
+| `25`   | Might be real but could not verify                                 | Drop silently                                       |
+| `50`   | Verified real but nitpick / advisory / not very important          | Surface in FYI subsection                           |
 | `75`   | Double-checked, will hit in practice, directly impacts correctness | Enter actionable tier (classify by `autofix_class`) |
-| `100`  | Evidence directly confirms; will happen frequently | Enter actionable tier (classify by `autofix_class`) |
+| `100`  | Evidence directly confirms; will happen frequently                 | Enter actionable tier (classify by `autofix_class`) |
 
 - **Dropped silently** (anchors `0` and `25`): these do not surface in any output bucket — not as findings, not as FYI observations, not as residual concerns. Record the total drop count as a Coverage footnote line when non-zero: `Dropped: N (anchors 0/25 suppressed)`. The footnote appears below the Coverage table, alongside the `Chains:` footnote when both apply. This is the canonical location for drop-count reporting — not the summary line and not a per-persona Coverage column. Omit the footnote when N is zero.
 - **FYI-subsection** (anchor `50`): surface in the presentation layer's FYI subsection regardless of `autofix_class`. These do not enter the walk-through or any bulk action — observational value without forcing a decision. Advisory observations ("nothing breaks, but...") naturally land here.
@@ -58,7 +58,7 @@ For each cluster of size N ≥ 3:
 - Demote the remaining N-1 findings to FYI-subsection status (anchor `50`), regardless of their original anchor
 - On the kept finding, note in the Reviewer column that the persona raised N-1 related variants (e.g., `product-lens (+4 related variants demoted to FYI)`)
 
-This runs per-persona before 3.4 cross-persona boost. Cross-persona agreement across the *kept* finding still qualifies for the anchor-step promotion in 3.4; demoted variants do not participate in cross-persona promotion (they are observational only after collapse).
+This runs per-persona before 3.4 cross-persona boost. Cross-persona agreement across the _kept_ finding still qualifies for the anchor-step promotion in 3.4; demoted variants do not participate in cross-persona promotion (they are observational only after collapse).
 
 Do NOT collapse across personas at this step — different personas surfacing the same concern is exactly the independence signal the cross-persona boost rewards. Collapse applies within one persona's output only.
 
@@ -133,7 +133,7 @@ If multiple candidates match the criteria, elevate ALL of them. The criteria abo
 
 **Peer vs nested test.** Two candidate roots are peers when accepting root A's proposed fix would not resolve root B's concern (and vice versa). They are nested when one root's fix would moot the other — in which case the subsumed candidate becomes a dependent of the surviving root, not a peer root. Apply the test symmetrically: check both directions before deciding.
 
-**Surviving-root selection under asymmetric subsumption.** When nested, the surviving root is the one whose fix moots the other — **not** the one with higher confidence. If accepting Root A's fix moots Root B's concern, but accepting Root B's fix leaves Root A's concern standing, A is the surviving root and B becomes its dependent, regardless of which candidate scored higher confidence. The subsumption direction determines scope (broader premise wins); confidence determines strength, not scope. Confidence is used for tie-breaking *among peers*, not for deciding which of two nested candidates dominates.
+**Surviving-root selection under asymmetric subsumption.** When nested, the surviving root is the one whose fix moots the other — **not** the one with higher confidence. If accepting Root A's fix moots Root B's concern, but accepting Root B's fix leaves Root A's concern standing, A is the surviving root and B becomes its dependent, regardless of which candidate scored higher confidence. The subsumption direction determines scope (broader premise wins); confidence determines strength, not scope. Confidence is used for tie-breaking _among peers_, not for deciding which of two nested candidates dominates.
 
 **Sanity diagnostic.** If more than 3 candidates match, reconsider whether the criteria are being applied correctly — it is unusual for a single document to contain more than 3 genuinely distinct premise-level challenges. Do not silently drop candidates; either confirm each one independently meets the criteria (and surface them all), or tighten the application of the criteria. If the count is legitimately high, surfacing all of them is more useful than hiding any.
 
@@ -207,15 +207,15 @@ Do not promote if the finding involves scope or priority changes where the autho
 
 Findings reaching 3.7 have already been gated to anchors `50`, `75`, or `100` by 3.2 (anchors `0` and `25` were dropped).
 
-| Anchor | Autofix Class | Route |
-|--------|---------------|-------|
-| `100`  | `safe_auto`   | Apply silently in Phase 4. Requires `suggested_fix`. Demote to `gated_auto` if missing. |
-| `100`  | `gated_auto`  | Enter the per-finding walk-through with Apply marked (recommended). Requires `suggested_fix`. Demote to `manual` if missing. |
-| `100`  | `manual`      | Enter the per-finding walk-through with user-judgment framing. `suggested_fix` is optional. |
+| Anchor | Autofix Class | Route                                                                                                                                                                                        |
+| ------ | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `100`  | `safe_auto`   | Apply silently in Phase 4. Requires `suggested_fix`. Demote to `gated_auto` if missing.                                                                                                      |
+| `100`  | `gated_auto`  | Enter the per-finding walk-through with Apply marked (recommended). Requires `suggested_fix`. Demote to `manual` if missing.                                                                 |
+| `100`  | `manual`      | Enter the per-finding walk-through with user-judgment framing. `suggested_fix` is optional.                                                                                                  |
 | `75`   | `safe_auto`   | Demote to `gated_auto` before routing — silent apply is reserved for anchor `100` findings where evidence directly confirms the fix. Enter the walk-through with Apply marked (recommended). |
-| `75`   | `gated_auto`  | Enter the per-finding walk-through with Apply marked (recommended). Requires `suggested_fix`. Demote to `manual` if missing. |
-| `75`   | `manual`      | Enter the per-finding walk-through with user-judgment framing. `suggested_fix` is optional. |
-| `50`   | any           | Surface in the FYI subsection regardless of `autofix_class`. Do not enter the walk-through or any bulk action. These are observations, not decisions. |
+| `75`   | `gated_auto`  | Enter the per-finding walk-through with Apply marked (recommended). Requires `suggested_fix`. Demote to `manual` if missing.                                                                 |
+| `75`   | `manual`      | Enter the per-finding walk-through with user-judgment framing. `suggested_fix` is optional.                                                                                                  |
+| `50`   | any           | Surface in the FYI subsection regardless of `autofix_class`. Do not enter the walk-through or any bulk action. These are observations, not decisions.                                        |
 
 **Auto-eligible patterns for safe_auto:** summary/detail mismatch (body authoritative over overview), wrong counts, missing list entries derivable from elsewhere in the document, stale internal cross-references, terminology drift, prose/diagram contradictions where prose is more detailed, missing steps mechanically implied by other content, unstated thresholds implied by surrounding context.
 
@@ -357,7 +357,7 @@ These are pipeline artifacts and must not be flagged for removal.
 
 **Headless mode:** Return "Review complete" immediately. Do not ask questions. The caller receives the text envelope from Phase 4 and handles any remaining findings.
 
-**Interactive mode:** fire the terminal question using the platform's blocking question tool (`AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini, `ask_user` in Pi (requires the `pi-ask-user` extension)). In Claude Code the tool should already be loaded from the Interactive-mode pre-load step in `SKILL.md` — if it isn't, call `ToolSearch` with `select:AskUserQuestion` now. Fall back to numbered options in chat only when no blocking tool exists in the harness or the call errors (e.g., Codex edit modes) — not because a schema load is required. Never silently skip the question. This question is distinct from the mid-flow routing question (`references/walkthrough.md`) — the routing question chooses *how* to engage with findings, this one chooses *what to do next* once engagement is complete. Do not merge them.
+**Interactive mode:** fire the terminal question using the platform's blocking question tool (`AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini, `ask_user` in Pi (requires the `pi-ask-user` extension)). In Claude Code the tool should already be loaded from the Interactive-mode pre-load step in `SKILL.md` — if it isn't, call `ToolSearch` with `select:AskUserQuestion` now. Fall back to numbered options in chat only when no blocking tool exists in the harness or the call errors (e.g., Codex edit modes) — not because a schema load is required. Never silently skip the question. This question is distinct from the mid-flow routing question (`references/walkthrough.md`) — the routing question chooses _how_ to engage with findings, this one chooses _what to do next_ once engagement is complete. Do not merge them.
 
 **Stem:** `Apply decisions and what next?`
 

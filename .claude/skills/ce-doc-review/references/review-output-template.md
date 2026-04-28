@@ -18,6 +18,7 @@ This template describes the Phase 4 interactive presentation — what the user s
 **Document:** docs/plans/2026-03-15-feat-user-auth-plan.md
 **Type:** plan
 **Reviewers:** coherence, feasibility, security-lens, scope-guardian
+
 - security-lens -- plan adds public API endpoint with auth flow
 - scope-guardian -- plan has 15 requirements across 3 priority levels
 
@@ -35,65 +36,65 @@ Applied 5 fixes. 4 items need attention (2 errors, 2 omissions). 2 FYI observati
 
 #### Errors
 
-| # | Section | Issue | Reviewer | Confidence | Tier |
-|---|---------|-------|----------|------------|------|
-| 1 | Requirements Trace | Goal states "offline support" but technical approach assumes persistent connectivity | coherence | 100 | manual |
+| #   | Section            | Issue                                                                                | Reviewer  | Confidence | Tier   |
+| --- | ------------------ | ------------------------------------------------------------------------------------ | --------- | ---------- | ------ |
+| 1   | Requirements Trace | Goal states "offline support" but technical approach assumes persistent connectivity | coherence | 100        | manual |
 
 ### P1 — Should Fix
 
 #### Errors
 
-| # | Section | Issue | Reviewer | Confidence | Tier |
-|---|---------|-------|----------|------------|------|
-| 2 | Scope Boundaries | 8 of 12 units build admin infrastructure; only 2 touch stated goal | scope-guardian | 75 | manual |
+| #   | Section          | Issue                                                              | Reviewer       | Confidence | Tier   |
+| --- | ---------------- | ------------------------------------------------------------------ | -------------- | ---------- | ------ |
+| 2   | Scope Boundaries | 8 of 12 units build admin infrastructure; only 2 touch stated goal | scope-guardian | 75         | manual |
 
 #### Omissions
 
-| # | Section | Issue | Reviewer | Confidence | Tier |
-|---|---------|-------|----------|------------|------|
-| 3 | Implementation Unit 3 | Plan proposes custom auth but does not mention existing Devise setup or migration path | feasibility | 100 | gated_auto |
+| #   | Section               | Issue                                                                                  | Reviewer    | Confidence | Tier       |
+| --- | --------------------- | -------------------------------------------------------------------------------------- | ----------- | ---------- | ---------- |
+| 3   | Implementation Unit 3 | Plan proposes custom auth but does not mention existing Devise setup or migration path | feasibility | 100        | gated_auto |
 
 ### P2 — Consider Fixing
 
 #### Omissions
 
-| # | Section | Issue | Reviewer | Confidence | Tier |
-|---|---------|-------|----------|------------|------|
-| 4 | API Design | Public webhook endpoint has no rate limiting mentioned | security-lens | 75 | gated_auto |
+| #   | Section    | Issue                                                  | Reviewer      | Confidence | Tier       |
+| --- | ---------- | ------------------------------------------------------ | ------------- | ---------- | ---------- |
+| 4   | API Design | Public webhook endpoint has no rate limiting mentioned | security-lens | 75         | gated_auto |
 
 ### FYI Observations
 
 Low-confidence observations surfaced without requiring a decision. Content advisory only.
 
-| # | Section | Observation | Reviewer | Confidence |
-|---|---------|-------------|----------|------------|
-| 1 | Naming | Filename `plan.md` is asymmetric with command name `user-auth`; could go either way | coherence | 50 |
-| 2 | Risk Analysis | Rollout-cadence decision may benefit from monitoring thresholds, though not blocking | scope-guardian | 50 |
+| #   | Section       | Observation                                                                          | Reviewer       | Confidence |
+| --- | ------------- | ------------------------------------------------------------------------------------ | -------------- | ---------- |
+| 1   | Naming        | Filename `plan.md` is asymmetric with command name `user-auth`; could go either way  | coherence      | 50         |
+| 2   | Risk Analysis | Rollout-cadence decision may benefit from monitoring thresholds, though not blocking | scope-guardian | 50         |
 
 ### Residual Concerns
 
 Residual concerns are issues the reviewers noticed but could not confirm at confidence anchor `50` or higher. These are not actionable; they appear here for transparency only and are not promoted into the review surface.
 
-| # | Concern | Source |
-|---|---------|--------|
-| 1 | Migration rollback strategy not addressed for Phase 2 data changes | feasibility |
+| #   | Concern                                                            | Source      |
+| --- | ------------------------------------------------------------------ | ----------- |
+| 1   | Migration rollback strategy not addressed for Phase 2 data changes | feasibility |
 
 ### Deferred Questions
 
-| # | Question | Source |
-|---|---------|--------|
-| 1 | Should the API use versioned endpoints from launch? | feasibility, security-lens |
+| #   | Question                                            | Source                     |
+| --- | --------------------------------------------------- | -------------------------- |
+| 1   | Should the API use versioned endpoints from launch? | feasibility, security-lens |
 
 ### Coverage
 
-| Persona | Status | Findings | Auto | Proposed | Decisions | FYI | Residual |
-|---------|--------|----------|------|----------|-----------|-----|----------|
-| coherence | completed | 5 | 3 | 0 | 1 | 1 | 0 |
-| feasibility | completed | 3 | 1 | 1 | 0 | 0 | 1 |
-| security-lens | completed | 2 | 1 | 1 | 0 | 0 | 0 |
-| scope-guardian | completed | 2 | 0 | 0 | 1 | 1 | 0 |
-| product-lens | not activated | -- | -- | -- | -- | -- | -- |
-| design-lens | not activated | -- | -- | -- | -- | -- | -- |
+| Persona        | Status        | Findings | Auto | Proposed | Decisions | FYI | Residual |
+| -------------- | ------------- | -------- | ---- | -------- | --------- | --- | -------- |
+| coherence      | completed     | 5        | 3    | 0        | 1         | 1   | 0        |
+| feasibility    | completed     | 3        | 1    | 1        | 0         | 0   | 1        |
+| security-lens  | completed     | 2        | 1    | 1        | 0         | 0   | 0        |
+| scope-guardian | completed     | 2        | 0    | 0        | 1         | 1   | 0        |
+| product-lens   | not activated | --       | --   | --       | --        | --  | --       |
+| design-lens    | not activated | --       | --   | --       | --        | --  | --       |
 
 Dropped: 3 (anchors 0/25 suppressed)
 Chains: 1 root with 2 dependents

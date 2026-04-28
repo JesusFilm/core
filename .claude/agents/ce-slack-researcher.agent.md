@@ -1,6 +1,6 @@
 ---
 name: ce-slack-researcher
-description: "Searches Slack for organizational context relevant to the current task -- decisions, constraints, and discussions that may not be documented elsewhere. Use when the user explicitly asks to search Slack for context during ideation, planning, or brainstorming. Always surfaces the workspace identity so the user can verify the correct Slack instance was searched."
+description: 'Searches Slack for organizational context relevant to the current task -- decisions, constraints, and discussions that may not be documented elsewhere. Use when the user explicitly asks to search Slack for context during ideation, planning, or brainstorming. Always surfaces the workspace identity so the user can verify the correct Slack instance was searched.'
 model: sonnet
 ---
 
@@ -102,12 +102,14 @@ If the caller passed a channel hint, read recent history from those channels usi
 Open the digest with a workspace identifier and a one-line research value assessment so consumers can weight the findings and verify the correct workspace was searched:
 
 Format:
+
 ```
 **Workspace: mycompany.slack.com**
 **Research value: high** -- [one-sentence justification]
 ```
 
 Research value levels:
+
 - **high** -- Decisions, constraints, or substantial context directly relevant to the task.
 - **moderate** -- Useful background context but no direct decisions or constraints found.
 - **low** -- Only tangential mentions; unlikely to change the caller's approach.

@@ -1,6 +1,7 @@
 # Controllers - DHH Rails Style
 
 <rest_mapping>
+
 ## Everything Maps to CRUD
 
 Custom actions become new resources. Instead of verbs on existing resources, create noun resources:
@@ -18,6 +19,7 @@ POST /cards/:id/archival     # create archival
 ```
 
 **Real examples from 37signals:**
+
 ```ruby
 resources :cards do
   resource :closure       # closing/reopening
@@ -31,11 +33,13 @@ Each resource gets its own controller with standard CRUD actions.
 </rest_mapping>
 
 <controller_concerns>
+
 ## Concerns for Shared Behavior
 
 Controllers use concerns extensively. Common patterns:
 
 **CardScoped** - loads @card, @board, provides render_card_replacement
+
 ```ruby
 module CardScoped
   extend ActiveSupport::Concern
@@ -67,6 +71,7 @@ end
 </controller_concerns>
 
 <authorization_patterns>
+
 ## Authorization Patterns
 
 Controllers check permissions via before_action, models define what permissions mean:
@@ -93,6 +98,7 @@ end
 ```
 
 **Model-level authorization:**
+
 ```ruby
 class Board < ApplicationRecord
   def editable_by?(user)
@@ -109,6 +115,7 @@ Keep authorization simple, readable, colocated with domain.
 </authorization_patterns>
 
 <security_concerns>
+
 ## Security Concerns
 
 **Sec-Fetch-Site CSRF Protection:**
@@ -135,6 +142,7 @@ end
 ```
 
 **Rate Limiting (Rails 8+):**
+
 ```ruby
 class MagicLinksController < ApplicationController
   rate_limit to: 10, within: 15.minutes, only: :create
@@ -145,9 +153,11 @@ Apply to: auth endpoints, email sending, external API calls, resource creation.
 </security_concerns>
 
 <request_context>
+
 ## Request Context Concerns
 
 **CurrentRequest** - populates Current with HTTP metadata:
+
 ```ruby
 module CurrentRequest
   extend ActiveSupport::Concern
@@ -167,6 +177,7 @@ end
 ```
 
 **CurrentTimezone** - wraps requests in user's timezone:
+
 ```ruby
 module CurrentTimezone
   extend ActiveSupport::Concern
@@ -188,6 +199,7 @@ end
 ```
 
 **SetPlatform** - detects mobile/desktop:
+
 ```ruby
 module SetPlatform
   extend ActiveSupport::Concern
@@ -201,9 +213,11 @@ module SetPlatform
   end
 end
 ```
+
 </request_context>
 
 <turbo_responses>
+
 ## Turbo Stream Responses
 
 Use Turbo Streams for partial updates:
@@ -225,12 +239,15 @@ end
 ```
 
 For complex updates, use morphing:
+
 ```ruby
 render turbo_stream: turbo_stream.morph(@card)
 ```
+
 </turbo_responses>
 
 <api_patterns>
+
 ## API Design
 
 Same controllers, different format. Convention for responses:
@@ -265,13 +282,15 @@ end
 ```
 
 **Status codes:**
+
 - Create: 201 Created + Location header
 - Update: 204 No Content
 - Delete: 204 No Content
 - Bearer token authentication
-</api_patterns>
+  </api_patterns>
 
 <http_caching>
+
 ## HTTP Caching
 
 Extensive use of ETags and conditional GETs:
@@ -293,6 +312,7 @@ end
 Key insight: Times render server-side in user's timezone, so timezone must affect the ETag to prevent serving wrong times to other timezones.
 
 **ApplicationController global etag:**
+
 ```ruby
 class ApplicationController < ActionController::Base
   etag { "v1" }  # Bump to invalidate all caches

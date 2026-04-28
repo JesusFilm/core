@@ -3,6 +3,7 @@
 `schema.yaml` in this directory is the canonical contract for `docs/solutions/` frontmatter written by `ce-compound`.
 
 Use this file as the quick reference for:
+
 - required fields
 - enum values
 - validation expectations
@@ -13,9 +14,9 @@ Use this file as the quick reference for:
 
 The `problem_type` determines which **track** applies. Each track has different required and optional fields.
 
-| Track | problem_types | Description |
-|-------|--------------|-------------|
-| **Bug** | `build_error`, `test_failure`, `runtime_error`, `performance_issue`, `database_issue`, `security_issue`, `ui_bug`, `integration_issue`, `logic_error` | Defects and failures that were diagnosed and fixed |
+| Track         | problem_types                                                                                                                                              | Description                                                                                                                                                    |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Bug**       | `build_error`, `test_failure`, `runtime_error`, `performance_issue`, `database_issue`, `security_issue`, `ui_bug`, `integration_issue`, `logic_error`      | Defects and failures that were diagnosed and fixed                                                                                                             |
 | **Knowledge** | `best_practice`, `documentation_gap`, `workflow_issue`, `developer_experience`, `architecture_pattern`, `design_pattern`, `tooling_decision`, `convention` | Practices, patterns, conventions, decisions, workflow improvements, and documentation. Prefer the narrowest applicable value; `best_practice` is the fallback. |
 
 ## Required Fields (both tracks)
@@ -29,6 +30,7 @@ The `problem_type` determines which **track** applies. Each track has different 
 ## Bug Track Fields
 
 Required:
+
 - **symptoms**: YAML array with 1-5 observable symptoms (errors, broken behavior)
 - **root_cause**: One of `missing_association`, `missing_include`, `missing_index`, `wrong_api`, `scope_issue`, `thread_violation`, `async_timing`, `memory_leak`, `config_error`, `logic_error`, `test_isolation`, `missing_validation`, `missing_permission`, `missing_workflow_step`, `inadequate_documentation`, `missing_tooling`, `incomplete_setup`
 - **resolution_type**: One of `code_fix`, `migration`, `config_change`, `test_fix`, `dependency_update`, `environment_setup`, `workflow_improvement`, `documentation_update`, `tooling_addition`, `seed_data_update`

@@ -13,11 +13,12 @@ Loaded when `detect-project-type.sh` returns `rails` and there is no `.claude/la
 bin/dev
 ```
 
-`bin/dev` is the Rails 7+ convention for "start everything" (web + assets watcher + optional workers). It is a one-liner script that invokes `foreman start -f Procfile.dev` under the hood, so `Procfile.dev` is the canonical place to read the *actual* command if `bin/dev` is missing or non-executable.
+`bin/dev` is the Rails 7+ convention for "start everything" (web + assets watcher + optional workers). It is a one-liner script that invokes `foreman start -f Procfile.dev` under the hood, so `Procfile.dev` is the canonical place to read the _actual_ command if `bin/dev` is missing or non-executable.
 
 ## Port
 
 Default: `3000`. Overrides follow the cascade in `references/dev-server-detection.md`:
+
 1. `Procfile.dev` `web:` line may contain `-p <n>`
 2. `config/puma.rb` may bind to a non-default port
 3. `.env` / `.env.development` `PORT=<n>`

@@ -76,6 +76,7 @@ When using conventional commits, choose the type that most precisely describes t
 Before staging everything together, scan the changed files for naturally distinct concerns. If modified files clearly group into separate logical changes (e.g., a refactor in one directory and a new feature in another, or test files for a different change than source files), create separate commits for each group.
 
 Keep this lightweight:
+
 - Group at the **file level only** -- do not use `git add -p` or try to split hunks within a file.
 - If the separation is obvious (different features, unrelated fixes), split. If it's ambiguous, one commit is fine.
 - Two or three logical commits is the sweet spot. Do not over-slice into many tiny commits.
@@ -85,7 +86,8 @@ Keep this lightweight:
 If the current branch from the context above is `main`, `master`, or the resolved default branch from Step 1, warn the user and ask whether to continue committing here or create a feature branch first. Use the platform's blocking question tool: `AskUserQuestion` in Claude Code (call `ToolSearch` with `select:AskUserQuestion` first if its schema isn't loaded), `request_user_input` in Codex, `ask_user` in Gemini, `ask_user` in Pi (requires the `pi-ask-user` extension). Fall back to presenting options in chat only when no blocking tool exists in the harness or the call errors (e.g., Codex edit modes) — not because a schema load is required. Never silently skip the question. If the user chooses to create a branch, derive the name from the change content, create it with `git checkout -b <branch-name>`, then continue.
 
 Write the commit message:
-- **Subject line**: Concise, imperative mood, focused on *why* not *what*. Follow the convention determined in Step 2.
+
+- **Subject line**: Concise, imperative mood, focused on _why_ not _what_. Follow the convention determined in Step 2.
 - **Body** (when needed): Add a body separated by a blank line for non-trivial changes. Explain motivation, trade-offs, or anything a future reader would need. Omit the body for obvious single-purpose changes.
 
 For each commit group, stage and commit in a single call. Prefer staging specific files by name over `git add -A` or `git add .` to avoid accidentally including sensitive files (.env, credentials) or unrelated changes. Use a heredoc to preserve formatting:

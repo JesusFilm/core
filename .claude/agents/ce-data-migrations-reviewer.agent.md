@@ -4,7 +4,6 @@ description: Conditional code-review persona, selected when the diff touches mig
 model: inherit
 tools: Read, Grep, Glob, Bash
 color: blue
-
 ---
 
 # Data Migrations Reviewer

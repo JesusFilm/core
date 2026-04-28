@@ -40,6 +40,7 @@ A tracker can be surfaced via MCP tool (e.g., a Linear MCP server), CLI (e.g., `
 ```
 
 Where:
+
 - `tracker_name` — human-readable name ("Linear", "GitHub Issues", "Jira"), or `null` when detection cannot identify a specific tracker
 - `confidence` — `high` when the tracker is named explicitly in documentation (or via a linked URL to a specific project/workspace) and is unambiguously the project's canonical tracker; `low` when the signal is thin, conflicting, or implied only
 - `named_sink_available` — `true` only when the agent can actually invoke the detected tracker (MCP tool is loaded, CLI is authenticated, or API credentials are in environment); `false` when the tracker is documented but no tool reaches it, or when no tracker is found at all. Drives label confidence: inline tracker naming requires this to be `true`.
@@ -112,9 +113,11 @@ When ticket creation fails at execution (API error, auth expiry mid-session, rat
 **Interactive mode:** surface the failure inline and ask the user using the platform's blocking question tool.
 
 Stem:
+
 > Defer failed: <tracker name> returned <error summary>. How should the agent handle this finding?
 
 Options:
+
 - `Retry on <tracker>` — re-attempt the same tracker once more (useful for transient errors)
 - `Fall back to next sink` — move this finding's Defer to the next tier in the fallback chain (e.g., from Linear to GitHub Issues)
 - `Convert to Skip — record the failure` — abandon this Defer, note the failure in the completion report's failure section, and continue the walk-through or bulk flow
@@ -131,12 +134,12 @@ Only when `ToolSearch` explicitly returns no match or the tool call errors — o
 
 Concrete behavior per tracker at execution time. The agent may invoke any of these through the appropriate interface (MCP, CLI, or API) — the choice depends on what is available in the current environment.
 
-| Tracker | Interface | Invocation sketch | Body format | Labels |
-|---------|-----------|-------------------|-------------|--------|
-| Linear | MCP (preferred) or API | Create issue in the project/workspace identified by documentation; assign to the reporter if the MCP tool exposes user context | Markdown | Severity priority field if the MCP exposes it; otherwise include severity in body |
-| GitHub Issues | `gh issue create` | Repo defaults to the current repo. Use `--label` for severity tag when labels exist; omit `--label` if the repo has no label fixture. Fall back to a label-less issue on first failure. | Markdown | `--label P0` / `--label P1` / etc. when labels exist |
-| Jira | MCP or API | Create issue in the project identified by documentation; Jira's markdown dialect differs from GitHub's — use plain text in the body when MCP does not handle conversion | Plain text when MCP does not handle markdown | Severity priority field |
-| No sink available | — | Interactive: Defer option omitted, findings remain in the report's residual-work section. Non-interactive: findings returned in the `no_sink` bucket for caller routing. | — | — |
+| Tracker           | Interface              | Invocation sketch                                                                                                                                                                       | Body format                                  | Labels                                                                            |
+| ----------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | --------------------------------------------------------------------------------- |
+| Linear            | MCP (preferred) or API | Create issue in the project/workspace identified by documentation; assign to the reporter if the MCP tool exposes user context                                                          | Markdown                                     | Severity priority field if the MCP exposes it; otherwise include severity in body |
+| GitHub Issues     | `gh issue create`      | Repo defaults to the current repo. Use `--label` for severity tag when labels exist; omit `--label` if the repo has no label fixture. Fall back to a label-less issue on first failure. | Markdown                                     | `--label P0` / `--label P1` / etc. when labels exist                              |
+| Jira              | MCP or API             | Create issue in the project identified by documentation; Jira's markdown dialect differs from GitHub's — use plain text in the body when MCP does not handle conversion                 | Plain text when MCP does not handle markdown | Severity priority field                                                           |
+| No sink available | —                      | Interactive: Defer option omitted, findings remain in the report's residual-work section. Non-interactive: findings returned in the `no_sink` bucket for caller routing.                | —                                            | —                                                                                 |
 
 When uncertain, prefer "drop with explicit user-facing notice" over "pass through silently and hope." A Defer that produces no durable artifact and no user message is data loss.
 

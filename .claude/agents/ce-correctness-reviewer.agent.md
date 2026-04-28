@@ -4,7 +4,6 @@ description: Always-on code-review persona. Reviews code for logic errors, edge 
 model: inherit
 tools: Read, Grep, Glob, Bash
 color: blue
-
 ---
 
 # Correctness Reviewer

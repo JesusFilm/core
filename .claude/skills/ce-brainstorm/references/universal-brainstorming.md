@@ -21,6 +21,7 @@ Drop to prose only when (a) the answer is inherently narrative ("walk me through
 ## How to start
 
 **Assess scope first.** Not every brainstorm needs deep exploration:
+
 - **Quick** (user has a clear goal, just needs a sounding board): Confirm understanding, offer a few targeted suggestions or reactions, done in 2-3 exchanges.
 - **Standard** (some unknowns, needs to explore options): 4-6 exchanges, generate and compare options, help decide.
 - **Full** (vague goal, lots of uncertainty, or high-stakes decision): Deep exploration, many exchanges, structured convergence.
@@ -34,6 +35,7 @@ Drop to prose only when (a) the answer is inherently narrative ("walk me through
 ## How to explore and generate
 
 **Use diverse angles to avoid repetitive ideas.** When generating options, vary your approach across exchanges:
+
 - Inversion: "What if you did the opposite of the obvious choice?"
 - Constraints as creative tools: "What if budget/time/distance were no issue?" then "What if you had to do it for free?"
 - Analogy: "How does someone in a completely different context solve a similar problem?"

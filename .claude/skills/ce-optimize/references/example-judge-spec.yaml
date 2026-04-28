@@ -11,10 +11,10 @@ metric:
     direction: maximize
   degenerate_gates:
     - name: result_count
-      check: ">= 5"
+      check: '>= 5'
       description: Return enough results to judge quality
     - name: empty_query_failures
-      check: "== 0"
+      check: '== 0'
       description: Empty or trivial queries must not fail
   diagnostics:
     - name: latency_ms
@@ -40,18 +40,18 @@ metric:
     max_total_cost_usd: 5
 
 measurement:
-  command: "python eval_search.py"
+  command: 'python eval_search.py'
   timeout_seconds: 300
-  working_directory: "tools/eval"
+  working_directory: 'tools/eval'
 
 scope:
   mutable:
-    - "src/search/"
-    - "config/search.yaml"
+    - 'src/search/'
+    - 'config/search.yaml'
   immutable:
-    - "tools/eval/eval_search.py"
-    - "tests/fixtures/"
-    - "docs/"
+    - 'tools/eval/eval_search.py'
+    - 'tests/fixtures/'
+    - 'docs/'
 
 execution:
   mode: serial
@@ -66,8 +66,8 @@ dependencies:
   approved: []
 
 constraints:
-  - "Preserve the existing search response shape"
-  - "Do not add new dependencies on the first run"
+  - 'Preserve the existing search response shape'
+  - 'Do not add new dependencies on the first run'
 
 stopping:
   max_iterations: 4

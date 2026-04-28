@@ -5,9 +5,11 @@ A structured discipline for ensuring agents can do everything users can do. Ever
 </overview>
 
 <why_parity>
+
 ## Why Action Parity Matters
 
 **The failure case:**
+
 ```
 User: "Write something about Catherine the Great in my reading feed"
 Agent: "What system are you referring to? I'm not sure what reading feed means."
@@ -18,26 +20,28 @@ The user could publish to their feed through the UI. But the agent had no `publi
 **Every action a user can take through the UI must have an equivalent tool the agent can call.**
 
 Without this parity:
+
 - Users ask agents to do things they can't do
 - Agents ask clarifying questions about features they should understand
 - The agent feels limited compared to direct app usage
 - Users lose trust in the agent's capabilities
-</why_parity>
+  </why_parity>
 
 <capability_mapping>
+
 ## The Capability Map
 
 Maintain a structured map of UI actions to agent tools:
 
-| UI Action | UI Location | Agent Tool | System Prompt Reference |
-|-----------|-------------|------------|-------------------------|
-| View library | Library tab | `read_library` | "View books and highlights" |
-| Add book | Library → Add | `add_book` | "Add books to library" |
-| Publish insight | Analysis view | `publish_to_feed` | "Create insights for Feed tab" |
-| Start research | Book detail | `start_research` | "Research books via web search" |
-| Edit profile | Settings | `write_file(profile.md)` | "Update reading profile" |
-| Take screenshot | Camera | N/A (user action) | — |
-| Search web | Chat | `web_search` | "Search the internet" |
+| UI Action       | UI Location   | Agent Tool               | System Prompt Reference         |
+| --------------- | ------------- | ------------------------ | ------------------------------- |
+| View library    | Library tab   | `read_library`           | "View books and highlights"     |
+| Add book        | Library → Add | `add_book`               | "Add books to library"          |
+| Publish insight | Analysis view | `publish_to_feed`        | "Create insights for Feed tab"  |
+| Start research  | Book detail   | `start_research`         | "Research books via web search" |
+| Edit profile    | Settings      | `write_file(profile.md)` | "Update reading profile"        |
+| Take screenshot | Camera        | N/A (user action)        | —                               |
+| Search web      | Chat          | `web_search`             | "Search the internet"           |
 
 **Update this table whenever adding features.**
 
@@ -46,20 +50,22 @@ Maintain a structured map of UI actions to agent tools:
 ```markdown
 # Capability Map - [Your App Name]
 
-| UI Action | UI Location | Agent Tool | System Prompt | Status |
-|-----------|-------------|------------|---------------|--------|
-| | | | | ⚠️ Missing |
-| | | | | ✅ Done |
-| | | | | 🚫 N/A |
+| UI Action | UI Location | Agent Tool | System Prompt | Status     |
+| --------- | ----------- | ---------- | ------------- | ---------- |
+|           |             |            |               | ⚠️ Missing |
+|           |             |            |               | ✅ Done    |
+|           |             |            |               | 🚫 N/A     |
 ```
 
 Status meanings:
+
 - ✅ Done: Tool exists and is documented in system prompt
 - ⚠️ Missing: UI action exists but no agent equivalent
 - 🚫 N/A: User-only action (e.g., biometric auth, camera capture)
-</capability_mapping>
+  </capability_mapping>
 
 <parity_workflow>
+
 ## The Action Parity Workflow
 
 ### When Adding a New Feature
@@ -100,9 +106,11 @@ Add to your PR template:
 - [ ] Capability map updated
 - [ ] Tested with natural language request
 ```
+
 </parity_workflow>
 
 <parity_audit>
+
 ## The Parity Audit
 
 Periodically audit your app for action parity gaps:
@@ -170,22 +178,26 @@ For each action, verify:
 Not all gaps are equal:
 
 **High priority (users will ask for this):**
+
 - Add new book
 - Create/edit/delete content
 - Core workflow actions
 
 **Medium priority (occasional requests):**
+
 - Filter/search variations
 - Export functionality
 - Sharing features
 
 **Low priority (rarely requested via agent):**
+
 - Theme changes
 - Account deletion
 - Settings that are UI-preference
-</parity_audit>
+  </parity_audit>
 
 <tool_design_for_parity>
+
 ## Designing Tools for Parity
 
 ### Match Tool Granularity to UI Granularity
@@ -222,16 +234,18 @@ If the UI shows a confirmation with details, the tool should too:
 ```typescript
 // UI shows: "Added 'Moby Dick' to your library"
 // Tool should return the same:
-tool("add_book", async ({ title, author }) => {
-  const book = await library.add({ title, author });
+tool('add_book', async ({ title, author }) => {
+  const book = await library.add({ title, author })
   return {
     text: `Added "${book.title}" by ${book.author} to your library (id: ${book.id})`
-  };
-});
+  }
+})
 ```
+
 </tool_design_for_parity>
 
 <context_parity>
+
 ## Context Parity
 
 Whatever the user sees, the agent should be able to access.
@@ -270,12 +284,14 @@ let systemPrompt = """
 ### Context Parity Checklist
 
 For each screen in your app:
+
 - [ ] What data does this screen display?
 - [ ] Is that data available to the agent?
 - [ ] Can the agent access the same level of detail?
-</context_parity>
+      </context_parity>
 
 <continuous_parity>
+
 ## Maintaining Parity Over Time
 
 ### Git Hooks / CI Checks
@@ -303,20 +319,20 @@ fi
 ```typescript
 // parity.test.ts
 describe('Action Parity', () => {
-  const capabilityMap = loadCapabilityMap();
+  const capabilityMap = loadCapabilityMap()
 
   for (const [action, toolName] of Object.entries(capabilityMap)) {
-    if (toolName === 'N/A') continue;
+    if (toolName === 'N/A') continue
 
     test(`${action} has agent tool: ${toolName}`, () => {
-      expect(agentTools.map(t => t.name)).toContain(toolName);
-    });
+      expect(agentTools.map((t) => t.name)).toContain(toolName)
+    })
 
     test(`${toolName} is documented in system prompt`, () => {
-      expect(systemPrompt).toContain(toolName);
-    });
+      expect(systemPrompt).toContain(toolName)
+    })
   }
-});
+})
 ```
 
 ### Regular Audits
@@ -332,6 +348,7 @@ Schedule periodic reviews:
 4. Update capability map
 5. Test with natural language requests
 ```
+
 </continuous_parity>
 
 <examples>
@@ -345,6 +362,7 @@ Agent: "I'm not sure what system you're referring to. Could you clarify?"
 ```
 
 **Diagnosis:**
+
 - ✅ UI action: User can publish insights from the analysis view
 - ❌ Agent tool: No `publish_to_feed` tool
 - ❌ System prompt: No mention of "feed" or how to publish
@@ -383,17 +401,20 @@ where insights appear. Use `publish_to_feed` to create content there.
 ```
 
 **After:**
+
 ```
 User: "Write something about Catherine the Great in my reading feed"
 Agent: [Uses publish_to_feed to create insight]
        "Done! I've published 'The Enlightened Empress' to your reading feed."
 ```
+
 </examples>
 
 <checklist>
 ## Action Parity Checklist
 
 For every PR with UI changes:
+
 - [ ] Listed all new UI actions
 - [ ] Verified agent tool exists for each action
 - [ ] Updated system prompt with new capabilities
@@ -401,9 +422,10 @@ For every PR with UI changes:
 - [ ] Tested with natural language request
 
 For periodic audits:
+
 - [ ] Walked through every screen
 - [ ] Listed all possible user actions
 - [ ] Checked tool coverage for each
 - [ ] Prioritized gaps by likelihood of user request
 - [ ] Created issues for high-priority gaps
-</checklist>
+      </checklist>

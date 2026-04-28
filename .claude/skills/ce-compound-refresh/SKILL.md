@@ -11,10 +11,10 @@ Maintain the quality of `docs/solutions/` over time. This workflow reviews exist
 
 Check if `$ARGUMENTS` contains `mode:autofix`. If present, strip it from arguments (use the remainder as a scope hint) and run in **autofix mode**.
 
-| Mode | When | Behavior |
-|------|------|----------|
-| **Interactive** (default) | User is present and can answer questions | Ask for decisions on ambiguous cases, confirm actions |
-| **Autofix** | `mode:autofix` in arguments | No user interaction. Apply all unambiguous actions (Keep, Update, Consolidate, auto-Delete, Replace with sufficient evidence). Mark ambiguous cases as stale. Generate a summary report at the end. |
+| Mode                      | When                                     | Behavior                                                                                                                                                                                            |
+| ------------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Interactive** (default) | User is present and can answer questions | Ask for decisions on ambiguous cases, confirm actions                                                                                                                                               |
+| **Autofix**               | `mode:autofix` in arguments              | No user interaction. Apply all unambiguous actions (Keep, Update, Consolidate, auto-Delete, Replace with sufficient evidence). Mark ambiguous cases as stale. Generate a summary report at the end. |
 
 ### Autofix mode rules
 
@@ -59,13 +59,13 @@ If the user starts by naming a pattern doc, you may begin there to understand th
 
 For each candidate artifact, classify it into one of five outcomes:
 
-| Outcome | Meaning | Default action |
-|---------|---------|----------------|
-| **Keep** | Still accurate and still useful | No file edit by default; report that it was reviewed and remains trustworthy |
-| **Update** | Core solution is still correct, but references drifted | Apply evidence-backed in-place edits |
-| **Consolidate** | Two or more docs overlap heavily but are both correct | Merge unique content into the canonical doc, delete the subsumed doc |
-| **Replace** | The old artifact is now misleading, but there is a known better replacement | Create a trustworthy successor, then delete the old artifact |
-| **Delete** | No longer useful, applicable, or distinct | Delete the file — git history preserves it if anyone needs to recover it later |
+| Outcome         | Meaning                                                                     | Default action                                                                 |
+| --------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **Keep**        | Still accurate and still useful                                             | No file edit by default; report that it was reviewed and remains trustworthy   |
+| **Update**      | Core solution is still correct, but references drifted                      | Apply evidence-backed in-place edits                                           |
+| **Consolidate** | Two or more docs overlap heavily but are both correct                       | Merge unique content into the canonical doc, delete the subsumed doc           |
+| **Replace**     | The old artifact is now misleading, but there is a known better replacement | Create a trustworthy successor, then delete the old artifact                   |
+| **Delete**      | No longer useful, applicable, or distinct                                   | Delete the file — git history preserves it if anyone needs to recover it later |
 
 ## Core Rules
 
@@ -121,11 +121,11 @@ Before asking the user to classify anything:
 
 ### Route by Scope
 
-| Scope | When to use it | Interaction style |
-|-------|----------------|-------------------|
-| **Focused** | 1-2 likely files or user named a specific doc | Investigate directly, then present a recommendation |
-| **Batch** | Up to ~8 mostly independent docs | Investigate first, then present grouped recommendations |
-| **Broad** | 9+ docs, ambiguous, or repo-wide stale-doc sweep | Triage first, then investigate in batches |
+| Scope       | When to use it                                   | Interaction style                                       |
+| ----------- | ------------------------------------------------ | ------------------------------------------------------- |
+| **Focused** | 1-2 likely files or user named a specific doc    | Investigate directly, then present a recommendation     |
+| **Batch**   | Up to ~8 mostly independent docs                 | Investigate first, then present grouped recommendations |
+| **Broad**   | 9+ docs, ambiguous, or repo-wide stale-doc sweep | Triage first, then investigate in batches               |
 
 ### Broad Scope Triage
 
@@ -177,6 +177,7 @@ The critical distinction is whether the drift is **cosmetic** (references moved 
 **The boundary:** if you find yourself rewriting the solution section or changing what the learning recommends, stop — that is Replace, not Update.
 
 **Memory-sourced drift signals** are supplementary, not primary. A memory note describing a different approach does not alone justify Replace or Delete. Use memory signals to:
+
 - Corroborate codebase-sourced drift (strengthens the case for Replace)
 - Prompt deeper investigation when codebase evidence is borderline
 - Add context to the evidence report ("(auto memory [claude]) notes suggest approach X may have changed since this learning was written")
@@ -234,6 +235,7 @@ For each topic cluster (docs sharing a problem domain), identify which doc is th
 - The one that other docs should point to, not duplicate
 
 All other docs in the cluster are either:
+
 - **Distinct** — they cover a meaningfully different sub-problem and have independent retrieval value. Keep them separate.
 - **Subsumed** — their unique content fits as a section in the canonical doc. Consolidate.
 - **Redundant** — they add nothing the canonical doc doesn't already say. Delete.
@@ -243,6 +245,7 @@ All other docs in the cluster are either:
 Before recommending that two docs stay separate, apply this test: "If a maintainer searched for this topic six months from now, would having these as separate docs improve discoverability, or just create drift risk?"
 
 Separate docs earn their keep only when:
+
 - They cover genuinely different sub-problems that someone might search for independently
 - They target different audiences or contexts (e.g., one is about debugging, another about prevention)
 - Merging them would create an unwieldy doc that is harder to navigate than two focused ones
@@ -252,6 +255,7 @@ If none of these apply, prefer consolidation. Two docs covering the same ground 
 ### Cross-Doc Conflict Check
 
 Look for outright contradictions between docs in scope:
+
 - Doc A says "always use approach X" while Doc B says "avoid approach X"
 - Doc A references a file path that Doc B says was deprecated
 - Doc A and Doc B describe different root causes for what appears to be the same problem
@@ -262,12 +266,12 @@ Contradictions between docs are more urgent than individual staleness — they a
 
 Use subagents for context isolation when investigating multiple artifacts — not just because the task sounds complex. Choose the lightest approach that fits:
 
-| Approach | When to use |
-|----------|-------------|
-| **Main thread only** | Small scope, short docs |
-| **Sequential subagents** | 1-2 artifacts with many supporting files to read |
-| **Parallel subagents** | 3+ truly independent artifacts with low overlap |
-| **Batched subagents** | Broad sweeps — narrow scope first, then investigate in batches |
+| Approach                 | When to use                                                    |
+| ------------------------ | -------------------------------------------------------------- |
+| **Main thread only**     | Small scope, short docs                                        |
+| **Sequential subagents** | 1-2 artifacts with many supporting files to read               |
+| **Parallel subagents**   | 3+ truly independent artifacts with low overlap                |
+| **Batched subagents**    | Broad sweeps — narrow scope first, then investigate in batches |
 
 **When spawning any subagent**, omit the `mode` parameter so the user's configured permission settings apply. Include this instruction in its task prompt:
 
@@ -326,9 +330,9 @@ By the time you identify a Replace candidate, Phase 1 investigation has already 
 
 - **Sufficient evidence** — you understand both what the old learning recommended AND what the current approach is. The investigation found the current code patterns, the new file locations, the changed architecture. → Proceed to write the replacement (see Phase 4 Replace Flow).
 - **Insufficient evidence** — the drift is so fundamental that you cannot confidently document the current approach. The entire subsystem was replaced, or the new architecture is too complex to understand from a file scan alone. → Mark as stale in place:
-   - Add `status: stale`, `stale_reason: [what you found]`, `stale_date: YYYY-MM-DD` to the frontmatter
-   - Report what evidence you found and what is missing
-   - Recommend the user run `ce-compound` after their next encounter with that area, when they have fresh problem-solving context
+  - Add `status: stale`, `stale_reason: [what you found]`, `stale_date: YYYY-MM-DD` to the frontmatter
+  - Report what evidence you found and what is missing
+  - Recommend the user run `ce-compound` after their next encounter with that area, when they have fresh problem-solving context
 
 ### Delete
 
@@ -552,6 +556,7 @@ Marked stale: S
 ```
 
 Then for EVERY file processed, list:
+
 - The file path
 - The classification (Keep/Update/Consolidate/Replace/Delete/Stale)
 - What evidence was found -- tag any memory-sourced findings with "(auto memory [claude])" to distinguish them from codebase-sourced evidence
@@ -567,6 +572,7 @@ In autofix mode, the report is the sole deliverable — there is no user present
 Split actions into two sections:
 
 **Applied** (writes that succeeded):
+
 - For each **Updated** file: the file path, what references were fixed, and why
 - For each **Consolidated** cluster: the canonical doc, what unique content was merged from each subsumed doc, and the subsumed docs that were deleted
 - For each **Replaced** file: what the old learning recommended vs what the current code does, and the path to the new successor
@@ -574,12 +580,14 @@ Split actions into two sections:
 - For each **Marked stale** file: the file path, what evidence was found, and why it was ambiguous
 
 **Recommended** (actions that could not be written — e.g., permission denied):
+
 - Same detail as above, but framed as recommendations for a human to apply
 - Include enough context that the user can apply the change manually or re-run the skill interactively
 
 If all writes succeed, the Recommended section is empty. If no writes succeed (e.g., read-only invocation), all actions appear under Recommended — the report becomes a maintenance plan.
 
 **Legacy cleanup** (if `docs/solutions/_archived/` exists):
+
 - List archived files found and recommend disposition: restore (if still relevant), delete (if truly obsolete), or consolidate (if overlapping with active docs)
 
 ## Phase 5: Commit Changes
@@ -589,6 +597,7 @@ After all actions are executed and the report is generated, handle committing th
 ### Detect git context
 
 Before offering options, check:
+
 1. Which branch is currently checked out (main/master vs feature branch)
 2. Whether the working tree has other uncommitted changes beyond what compound-refresh modified
 3. Recent commit messages to match the repo's commit style
@@ -597,11 +606,11 @@ Before offering options, check:
 
 Use sensible defaults — no user to ask:
 
-| Context | Default action |
-|---------|---------------|
-| On main/master | Create a branch named for what was refreshed (e.g., `docs/refresh-auth-and-ci-learnings`), commit, attempt to open a PR. If PR creation fails, report the branch name. |
-| On a feature branch | Commit as a separate commit on the current branch |
-| Git operations fail | Include the recommended git commands in the report and continue |
+| Context             | Default action                                                                                                                                                         |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| On main/master      | Create a branch named for what was refreshed (e.g., `docs/refresh-auth-and-ci-learnings`), commit, attempt to open a PR. If PR creation fails, report the branch name. |
+| On a feature branch | Commit as a separate commit on the current branch                                                                                                                      |
+| Git operations fail | Include the recommended git commands in the report and continue                                                                                                        |
 
 Stage only the files that compound-refresh modified — not other dirty files in the working tree.
 
@@ -629,6 +638,7 @@ First, run `git branch --show-current` to determine the current branch. Then pre
 ### Commit message
 
 Write a descriptive commit message that:
+
 - Summarizes what was refreshed (e.g., "update 3 stale learnings, consolidate 2 overlapping docs, delete 1 obsolete doc")
 - Follows the repo's existing commit conventions (check recent git log for style)
 - Is succinct — the details are in the changed files themselves
@@ -659,21 +669,24 @@ After the refresh report is generated, check whether the project's instruction f
    a. Based on the file's existing structure, tone, and density, identify where a mention fits naturally. Before creating a new section, check whether the information could be a single line in the closest related section — an architecture tree, a directory listing, a documentation section, or a conventions block. A line added to an existing section is almost always better than a new headed section. Only add a new section as a last resort when the file has clear sectioned structure and nothing is even remotely related.
    b. Draft the smallest addition that communicates the three things. Match the file's existing style and density. The addition should describe the knowledge store itself, not the plugin.
 
-      Keep the tone informational, not imperative. Express timing as description, not instruction — "relevant when implementing or debugging in documented areas" rather than "check before implementing or debugging." Imperative directives like "always search before implementing" cause redundant reads when a workflow already includes a dedicated search step. The goal is awareness: agents learn the folder exists and what's in it, then use their own judgment about when to consult it.
+   Keep the tone informational, not imperative. Express timing as description, not instruction — "relevant when implementing or debugging in documented areas" rather than "check before implementing or debugging." Imperative directives like "always search before implementing" cause redundant reads when a workflow already includes a dedicated search step. The goal is awareness: agents learn the folder exists and what's in it, then use their own judgment about when to consult it.
 
-      Examples of calibration (not templates — adapt to the file):
+   Examples of calibration (not templates — adapt to the file):
 
-      When there's an existing directory listing or architecture section — add a line:
-      ```
-      docs/solutions/  # documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (module, tags, problem_type)
-      ```
+   When there's an existing directory listing or architecture section — add a line:
 
-      When nothing in the file is a natural fit — a small headed section is appropriate:
-      ```
-      ## Documented Solutions
+   ```
+   docs/solutions/  # documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (module, tags, problem_type)
+   ```
 
-      `docs/solutions/` — documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`). Relevant when implementing or debugging in documented areas.
-      ```
+   When nothing in the file is a natural fit — a small headed section is appropriate:
+
+   ```
+   ## Documented Solutions
+
+   `docs/solutions/` — documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`). Relevant when implementing or debugging in documented areas.
+   ```
+
    c. In interactive mode, explain to the user why this matters — agents working in this repo (including fresh sessions, other tools, or collaborators without the plugin) won't know to check `docs/solutions/` unless the instruction file surfaces it. Show the proposed change and where it would go, then use the platform's blocking question tool to get consent before making the edit: `AskUserQuestion` in Claude Code (call `ToolSearch` with `select:AskUserQuestion` first if its schema isn't loaded), `request_user_input` in Codex, `ask_user` in Gemini, `ask_user` in Pi (requires the `pi-ask-user` extension). Fall back to presenting the proposal in chat only when no blocking tool exists in the harness or the call errors (e.g., Codex edit modes) — not because a schema load is required. Never silently skip the question. In autofix mode, include it as a "Discoverability recommendation" line in the report — do not attempt to edit instruction files (autofix scope is doc maintenance, not project config).
 
 5. **Amend or create a follow-up commit when the check produces edits.** If step 4 resulted in an edit to an instruction file and Phase 5 already committed the refresh changes, stage the newly edited file and either amend the existing commit (if still on the same branch and no push has occurred) or create a small follow-up commit (e.g., `docs: add docs/solutions/ discoverability to AGENTS.md`). If Phase 5 already pushed the branch to a remote (e.g., the branch+PR path), push the follow-up commit as well so the open PR includes the discoverability change. This keeps the working tree clean and the remote in sync at the end of the run. If the user chose "Don't commit" in Phase 5, leave the instruction-file edit unstaged alongside the other uncommitted refresh changes — no separate commit logic needed.

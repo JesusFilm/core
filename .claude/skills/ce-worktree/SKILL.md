@@ -19,10 +19,12 @@ bash scripts/worktree-manager.sh create <branch-name> [from-branch]
 ```
 
 Defaults:
+
 - `from-branch` defaults to origin's default branch (or `main` if that cannot be resolved)
 - The new branch is created at `origin/<from-branch>` (or the local ref if the remote is unavailable)
 
 Examples:
+
 ```bash
 bash scripts/worktree-manager.sh create feat/login
 bash scripts/worktree-manager.sh create fix/email-validation develop
@@ -42,6 +44,7 @@ cd "$(git rev-parse --show-toplevel)"      # return to main checkout
 ```
 
 To copy `.env*` files into an existing worktree created without them, run this from the main repo (not from inside the worktree, since branch names often contain slashes like `feat/login`):
+
 ```bash
 cp .env* .worktrees/<branch>/
 ```
@@ -58,6 +61,7 @@ Modified configs are never auto-trusted. The script prints the manual trust comm
 ## When to create a worktree
 
 Create a worktree when:
+
 - Reviewing a PR while keeping the main checkout free for other work
 - Running multiple features in parallel without branch-switching overhead
 - Keeping the default branch free of in-progress state

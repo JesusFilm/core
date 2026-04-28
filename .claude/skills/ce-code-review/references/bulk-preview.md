@@ -85,6 +85,7 @@ After the preview body is rendered, ask the user using the platform's blocking q
 Stem: `The agent is about to file the tickets above. Proceed?`
 
 Options (exactly two):
+
 - `Proceed` — file every ticket in the preview
 - `Cancel` — do nothing, return to the routing question
 

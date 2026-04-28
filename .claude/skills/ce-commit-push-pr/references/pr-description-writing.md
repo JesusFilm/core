@@ -71,6 +71,7 @@ Then re-run the merge-base + log + diff with the new `$PR_HEAD_SHA`.
 ### Case B — API only
 
 Use Case B when:
+
 - No local remote matches the PR's base repo (fork-PR, cross-repo PR), OR
 - Case A's fetches all fail (offline, restricted network, expired auth, GHES quirks blocking both SHA and `refs/pull/N/head`).
 
@@ -107,6 +108,7 @@ Decide whether to include an evidence section in the body.
 **Evidence is possible** when the diff changes observable behavior demonstrable from the workspace: UI, CLI output, API behavior with runnable code, generated artifacts, or workflow output.
 
 **Evidence is not possible** for:
+
 - Docs-only, markdown-only, changelog-only, release metadata, CI/config-only, test-only, or pure internal refactors
 - Behavior requiring unavailable credentials, paid/cloud services, bot tokens, deploy-only infrastructure, or hardware not provided
 
@@ -135,13 +137,13 @@ This frame becomes the opening. For small+simple PRs, the "after" sentence alone
 
 Assess size (files, diff volume) and complexity (design decisions, trade-offs, cross-cutting concerns) to select description depth:
 
-| Change profile | Description approach |
-|---|---|
-| Small + simple (typo, config, dep bump) | 1-2 sentences, no headers. Under ~300 characters. |
-| Small + non-trivial (bugfix, behavioral change) | Short narrative, ~3-5 sentences. No headers unless two distinct concerns. |
-| Medium feature or refactor | Narrative frame (before/after/scope), then what changed and why. Call out design decisions. |
-| Large or architecturally significant | Narrative frame + up to 3-5 design-decision callouts + 1-2 sentence test summary + key docs links. Target ~100 lines, cap ~150. For PRs with many mechanisms, use a Summary-level table to list them; do NOT create an H3 subsection per mechanism. Reviewers scrutinize decisions, not inventories — the diff and spec files carry the detail. If you find yourself writing 10+ subsections, consolidate to a table. |
-| Performance improvement | Include before/after measurements if available. Markdown table works well. |
+| Change profile                                  | Description approach                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Small + simple (typo, config, dep bump)         | 1-2 sentences, no headers. Under ~300 characters.                                                                                                                                                                                                                                                                                                                                                                     |
+| Small + non-trivial (bugfix, behavioral change) | Short narrative, ~3-5 sentences. No headers unless two distinct concerns.                                                                                                                                                                                                                                                                                                                                             |
+| Medium feature or refactor                      | Narrative frame (before/after/scope), then what changed and why. Call out design decisions.                                                                                                                                                                                                                                                                                                                           |
+| Large or architecturally significant            | Narrative frame + up to 3-5 design-decision callouts + 1-2 sentence test summary + key docs links. Target ~100 lines, cap ~150. For PRs with many mechanisms, use a Summary-level table to list them; do NOT create an H3 subsection per mechanism. Reviewers scrutinize decisions, not inventories — the diff and spec files carry the detail. If you find yourself writing 10+ subsections, consolidate to a table. |
+| Performance improvement                         | Include before/after measurements if available. Markdown table works well.                                                                                                                                                                                                                                                                                                                                            |
 
 When in doubt, shorter is better. Match description weight to change weight. Large PRs need MORE selectivity, not MORE content.
 
@@ -187,25 +189,27 @@ Architecture changes are almost always topology (components + edges), so Mermaid
 
 **When to include (prefer Mermaid, not a table, for architecture/flow):**
 
-| PR changes... | Visual aid |
-|---|---|
-| Architecture touching 3+ interacting components (the components have *directed relationships* — who calls whom, who owns what, which skill delegates to which) | **Mermaid** component or interaction diagram. Do not substitute a table — tables cannot show edges. |
-| Multi-step workflow or data flow with non-obvious sequencing | **Mermaid** flow diagram |
-| State machine with 3+ states and non-trivial transitions | **Mermaid** state diagram |
-| Data model changes with 3+ related entities | **Mermaid** ERD |
-| Before/after performance or behavioral measurements (same metric, different values) | **Markdown table** |
-| Option or flag trade-offs (same attributes evaluated across variants) | **Markdown table** |
-| Feature matrix / compatibility grid | **Markdown table** |
+| PR changes...                                                                                                                                                  | Visual aid                                                                                          |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Architecture touching 3+ interacting components (the components have _directed relationships_ — who calls whom, who owns what, which skill delegates to which) | **Mermaid** component or interaction diagram. Do not substitute a table — tables cannot show edges. |
+| Multi-step workflow or data flow with non-obvious sequencing                                                                                                   | **Mermaid** flow diagram                                                                            |
+| State machine with 3+ states and non-trivial transitions                                                                                                       | **Mermaid** state diagram                                                                           |
+| Data model changes with 3+ related entities                                                                                                                    | **Mermaid** ERD                                                                                     |
+| Before/after performance or behavioral measurements (same metric, different values)                                                                            | **Markdown table**                                                                                  |
+| Option or flag trade-offs (same attributes evaluated across variants)                                                                                          | **Markdown table**                                                                                  |
+| Feature matrix / compatibility grid                                                                                                                            | **Markdown table**                                                                                  |
 
 **When in doubt, ask: "Does the information have edges (A → B) or does it have rows (attribute × variant)?"** Edges → Mermaid. Rows → table. Architecture has edges almost by definition.
 
 **When to skip any visual:**
+
 - Sizing routes to "1-2 sentences"
 - Prose already communicates clearly
 - The diagram would just restate the diff visually
 - Mechanical changes (renames, dep bumps, config, formatting)
 
 **Format details:**
+
 - **Mermaid** (default for topology). 5-10 nodes typical, up to 15 for genuinely complex changes. Use `TB` direction. Source should be readable as fallback.
 - **ASCII diagrams** for annotated flows needing rich in-box content. 80-column max.
 - **Markdown tables** for parallel-variation data only.
@@ -260,11 +264,11 @@ Assemble the body in this order:
 
 **Harness lookup:**
 
-| Harness | `LOGO` | `COLOR` |
-|---------|--------|---------|
-| Claude Code | `claude` | `D97757` |
-| Codex | (omit logo param) | `000000` |
-| Gemini CLI | `googlegemini` | `4285F4` |
+| Harness     | `LOGO`            | `COLOR`  |
+| ----------- | ----------------- | -------- |
+| Claude Code | `claude`          | `D97757` |
+| Codex       | (omit logo param) | `000000` |
+| Gemini CLI  | `googlegemini`    | `4285F4` |
 
 **Model slug:** Replace spaces with underscores. Append context window and thinking level in parentheses if known. Examples: `Opus_4.6_(1M,_Extended_Thinking)`, `Sonnet_4.6_(200K)`, `Gemini_3.1_Pro`.
 

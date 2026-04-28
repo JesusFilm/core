@@ -84,9 +84,11 @@ Then stop.
 > "compound-engineering is on **v{currently loaded}** but **v{latest upstream}** is available.
 >
 > Update with:
+>
 > ```
 > claude plugin update compound-engineering@{marketplace-name}
 > ```
+>
 > Then restart Claude Code to apply."
 
 The `claude plugin update` command ships with Claude Code itself and updates

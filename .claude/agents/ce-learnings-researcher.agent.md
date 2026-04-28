@@ -1,6 +1,6 @@
 ---
 name: ce-learnings-researcher
-description: "Searches docs/solutions/ for applicable past learnings by frontmatter metadata. Use before implementing features, making decisions, or starting work in a documented area — surfaces prior bugs, architecture patterns, design patterns, tooling decisions, conventions, and workflow learnings so institutional knowledge carries forward."
+description: 'Searches docs/solutions/ for applicable past learnings by frontmatter metadata. Use before implementing features, making decisions, or starting work in a documented area — surfaces prior bugs, architecture patterns, design patterns, tooling decisions, conventions, and workflow learnings so institutional knowledge carries forward.'
 model: inherit
 tools: Read, Grep, Glob, Bash
 ---
@@ -183,17 +183,20 @@ Structure findings as follows:
 ## Institutional Learnings Search Results
 
 ### Search Context
+
 - **Feature/Task**: [Summary of the caller's activity, decision, or problem — works for bugs, architecture decisions, design patterns, tooling choices, or conventions.]
 - **Keywords Used**: [tags, modules, concepts, domains searched]
 - **Files Scanned**: [X total files]
 - **Relevant Matches**: [Y files]
 
 ### Critical Patterns
+
 [Include only when `docs/solutions/patterns/critical-patterns.md` exists and has relevant content. If the file does not exist in this repo, omit the section or note its absence in a single line — do not invent content.]
 
 ### Relevant Learnings
 
 #### 1. [Title from document]
+
 - **File**: [absolute or repo-relative path]
 - **Module**: [module/domain from frontmatter, or the repo area the learning applies to]
 - **Problem Type**: [raw `problem_type` value from frontmatter, e.g. `architecture_pattern`, `design_pattern`, `tooling_decision`, `runtime_error`. Mark as "inferred" when the entry has no `problem_type`.]
@@ -202,9 +205,11 @@ Structure findings as follows:
 - **Severity**: [severity level, when present in frontmatter; omit the line otherwise]
 
 #### 2. [Title]
+
 ...
 
 ### Recommendations
+
 - [Specific actions or decisions to consider based on the surfaced learnings]
 - [Patterns to follow or mirror]
 - [Past mis-steps worth avoiding, where applicable]

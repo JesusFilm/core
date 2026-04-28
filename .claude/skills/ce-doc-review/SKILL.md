@@ -1,7 +1,7 @@
 ---
 name: ce-doc-review
 description: Review requirements or plan documents using parallel persona agents that surface role-specific issues. Use when a requirements document or plan document exists and the user wants to improve it.
-argument-hint: "[mode:headless] [path/to/document.md]"
+argument-hint: '[mode:headless] [path/to/document.md]'
 ---
 
 # Document Review
@@ -46,6 +46,7 @@ If `mode:headless` is not present, the skill runs in its default interactive mod
 ### Classify Document Type
 
 After reading, classify the document:
+
 - **requirements** -- from `docs/brainstorms/`, focuses on what to build and why
 - **plan** -- from `docs/plans/`, focuses on how to build it with implementation details
 
@@ -55,31 +56,36 @@ Analyze the document content to determine which conditional personas to activate
 
 **product-lens** -- activate when the document makes challengeable claims about what to build and why, or when the proposed work carries strategic weight beyond the immediate problem. The system's users may be end users, developers, operators, maintainers, or any other audience -- the criteria are domain-agnostic. Check for either leg:
 
-*Leg 1 — Premise claims:* The document stakes a position on what to build or why that a knowledgeable stakeholder could reasonably challenge -- not merely describing a task or restating known requirements:
+_Leg 1 — Premise claims:_ The document stakes a position on what to build or why that a knowledgeable stakeholder could reasonably challenge -- not merely describing a task or restating known requirements:
+
 - Problem framing where the stated need is non-obvious or debatable, not self-evident from existing context
 - Solution selection where alternatives plausibly exist (implicit or explicit)
 - Prioritization decisions that explicitly rank what gets built vs deferred
 - Goal statements that predict specific user outcomes, not just restate constraints or describe deliverables
 
-*Leg 2 — Strategic weight:* The proposed work could affect system trajectory, user perception, or competitive positioning, even if the premise is sound:
+_Leg 2 — Strategic weight:_ The proposed work could affect system trajectory, user perception, or competitive positioning, even if the premise is sound:
+
 - Changes that shape how the system is perceived or what it becomes known for
 - Complexity or simplicity bets that affect adoption, onboarding, or cognitive load
 - Work that opens or closes future directions (path dependencies, architectural commitments)
 - Opportunity cost implications -- building this means not building something else
 
 **design-lens** -- activate when the document contains:
+
 - UI/UX references, frontend components, or visual design language
 - User flows, wireframes, screen/page/view mentions
 - Interaction descriptions (forms, buttons, navigation, modals)
 - References to responsive behavior or accessibility
 
 **security-lens** -- activate when the document contains:
+
 - Auth/authorization mentions, login flows, session management
 - API endpoints exposed to external clients
 - Data handling, PII, payments, tokens, credentials, encryption
 - Third-party integrations with trust boundary implications
 
 **scope-guardian** -- activate when the document contains:
+
 - Multiple priority tiers (P0/P1/P2, must-have/should-have/nice-to-have)
 - Large requirement count (>8 distinct requirements or implementation units)
 - Stretch goals, nice-to-haves, or "future work" sections
@@ -87,6 +93,7 @@ Analyze the document content to determine which conditional personas to activate
 - Goals that don't clearly connect to requirements
 
 **adversarial** -- activate when the document contains:
+
 - More than 5 distinct requirements or implementation units
 - Explicit architectural or scope decisions with stated rationale
 - High-stakes domains (auth, payments, data migrations, external integrations)
@@ -109,10 +116,12 @@ Reviewing with:
 ### Build Agent List
 
 Always include:
+
 - `ce-coherence-reviewer`
 - `ce-feasibility-reviewer`
 
 Add activated conditional personas:
+
 - `ce-product-lens-reviewer`
 - `ce-design-lens-reviewer`
 - `ce-security-lens-reviewer`
@@ -123,14 +132,14 @@ Add activated conditional personas:
 
 Dispatch all agents in **parallel** using the platform's subagent primitive (e.g., `Agent` in Claude Code, `spawn_agent` in Codex, `subagent` in Pi via the `pi-subagents` extension). Omit the `mode` parameter so the user's configured permission settings apply. Each agent receives the prompt built from the subagent template included below with these variables filled:
 
-| Variable | Value |
-|----------|-------|
-| `{persona_file}` | Full content of the agent's markdown file |
-| `{schema}` | Content of the findings schema included below |
-| `{document_type}` | "requirements" or "plan" from Phase 1 classification |
-| `{document_path}` | Path to the document |
-| `{document_content}` | Full text of the document |
-| `{decision_primer}` | Cumulative prior-round decisions in the current session, or an empty `<prior-decisions>` block on round 1. See "Decision primer" below. |
+| Variable             | Value                                                                                                                                   |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `{persona_file}`     | Full content of the agent's markdown file                                                                                               |
+| `{schema}`           | Content of the findings schema included below                                                                                           |
+| `{document_type}`    | "requirements" or "plan" from Phase 1 classification                                                                                    |
+| `{document_path}`    | Path to the document                                                                                                                    |
+| `{document_content}` | Full text of the document                                                                                                               |
+| `{decision_primer}`  | Cumulative prior-round decisions in the current session, or an empty `<prior-decisions>` block on round 1. See "Decision primer" below. |
 
 Pass each agent the **full document** — do not split into sections.
 

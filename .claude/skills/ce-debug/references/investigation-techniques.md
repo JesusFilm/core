@@ -115,12 +115,14 @@ for i in $(seq 1 20); do echo "Run $i:"; <test-command> && echo "PASS" || echo "
 A 5% reproduction rate confirms the bug exists but suggests timing or data sensitivity.
 
 **Environment isolation.** Systematically eliminate variables:
+
 - Same test, different machine?
 - Same test, different data seed?
 - Same test, serial vs parallel execution?
 - Same test, with vs without network access?
 
 **Data-dependent triggers.** If the bug only appears with certain data, identify the trigger condition:
+
 - What is unique about the failing input?
 - Does the input size, encoding, or edge value matter?
 - Is the data order significant (sorted vs random)?
@@ -165,18 +167,21 @@ The minimized repro often reveals the root cause directly — "the bug only trig
 ## Framework-Specific Debugging
 
 ### Rails
+
 - Check callbacks: `before_save`, `after_commit`, `around_action` — these execute implicitly and can alter state
 - Check middleware chain: `rake middleware` lists the full stack
 - Check Active Record query generation: `.to_sql` on any relation
 - Use `Rails.logger.debug` with tagged logging for request tracing
 
 ### Node.js
+
 - Async stack traces: run with `--async-stack-traces` flag for full async call chains
 - Unhandled rejections: check for missing `.catch()` or `await` on promises
 - Event loop delays: `process.hrtime()` before and after suspect operations
 - Memory leaks: `--inspect` flag + Chrome DevTools heap snapshots
 
 ### Python
+
 - Traceback enrichment: `traceback.print_exc()` in except blocks
 - `pdb.set_trace()` or `breakpoint()` for interactive debugging
 - `sys.settrace()` for execution tracing
@@ -195,14 +200,14 @@ Mixed use is common: instrument first to localize, then attach a debugger at the
 
 **Entry points by language:**
 
-| Language | Interactive breakpoint | Attach to running process |
-|----------|------------------------|---------------------------|
-| Python | `breakpoint()` in code, or `python -m pdb script.py` | `python -m pdb -p <pid>` (Python 3.14+ only); on earlier versions, instrument the target with `rpdb` / `remote-pdb` and connect after it triggers |
-| Node.js | `debugger;` in code + `node --inspect-brk`, then connect via Chrome DevTools or VS Code | `kill -SIGUSR1 <pid>` to enable the inspector on the running process (Linux/macOS), then connect Chrome DevTools or VS Code to the default port 9229 |
-| Ruby | `binding.irb` (stdlib), `binding.pry` (pry gem), `debugger` (debug gem), `rdbg` | `rdbg --attach <pid>` with `debug` gem loaded |
-| Go | `dlv debug` or `dlv test`, then `break`, `continue`, `print` | `dlv attach <pid>` |
-| Rust / C / C++ | `lldb target/debug/binary` or `gdb binary`, then `break`, `run`, `print` | `lldb -p <pid>` / `gdb -p <pid>` |
-| Browser JS | `debugger;` in code, or DevTools Sources → set breakpoint | DevTools attaches to page automatically |
+| Language       | Interactive breakpoint                                                                  | Attach to running process                                                                                                                            |
+| -------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Python         | `breakpoint()` in code, or `python -m pdb script.py`                                    | `python -m pdb -p <pid>` (Python 3.14+ only); on earlier versions, instrument the target with `rpdb` / `remote-pdb` and connect after it triggers    |
+| Node.js        | `debugger;` in code + `node --inspect-brk`, then connect via Chrome DevTools or VS Code | `kill -SIGUSR1 <pid>` to enable the inspector on the running process (Linux/macOS), then connect Chrome DevTools or VS Code to the default port 9229 |
+| Ruby           | `binding.irb` (stdlib), `binding.pry` (pry gem), `debugger` (debug gem), `rdbg`         | `rdbg --attach <pid>` with `debug` gem loaded                                                                                                        |
+| Go             | `dlv debug` or `dlv test`, then `break`, `continue`, `print`                            | `dlv attach <pid>`                                                                                                                                   |
+| Rust / C / C++ | `lldb target/debug/binary` or `gdb binary`, then `break`, `run`, `print`                | `lldb -p <pid>` / `gdb -p <pid>`                                                                                                                     |
+| Browser JS     | `debugger;` in code, or DevTools Sources → set breakpoint                               | DevTools attaches to page automatically                                                                                                              |
 
 For test runs, most test runners integrate with the above — e.g., `node --inspect-brk $(which jest)`, `pytest --pdb`, `rspec` with `binding.pry`, `dlv test`. Prefer the runner's integration over trying to attach post-hoc.
 
@@ -220,11 +225,13 @@ await new Promise(r => setTimeout(r, 100));
 ```
 
 **Shared mutable state.** Search for variables, caches, or database rows accessed by multiple threads or processes without synchronization. Common patterns:
+
 - Global or module-level mutable state
 - Cache reads without locks
 - Database rows read then updated without optimistic locking
 
 **Async ordering.** Check whether operations assume a specific execution order that is not guaranteed:
+
 - Promise.all with dependent operations
 - Event handlers that assume emission order
 - Database writes that assume read consistency
@@ -233,12 +240,12 @@ await new Promise(r => setTimeout(r, 100));
 
 ```typescript
 // before: races under load
-await new Promise(r => setTimeout(r, 50));
-expect(getResult()).toBeDefined();
+await new Promise((r) => setTimeout(r, 50))
+expect(getResult()).toBeDefined()
 
 // after: waits for the condition
-await waitFor(() => getResult() !== undefined, 'result available', 5000);
-expect(getResult()).toBeDefined();
+await waitFor(() => getResult() !== undefined, 'result available', 5000)
+expect(getResult()).toBeDefined()
 ```
 
 Arbitrary delays remain correct only when testing actual timing behavior (debounce intervals, throttle windows) — in that case, comment why the specific duration is needed.

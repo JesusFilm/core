@@ -26,36 +26,35 @@
 # ============================================================================
 
 structure:
-
   spec:
     type: string
     required: true
-    description: "Name of the optimization spec this log belongs to"
+    description: 'Name of the optimization spec this log belongs to'
 
   run_id:
     type: string
     required: true
-    description: "Unique identifier for this optimization run (timestamp-based). Distinguishes resumed runs from fresh starts."
+    description: 'Unique identifier for this optimization run (timestamp-based). Distinguishes resumed runs from fresh starts.'
 
   started_at:
     type: string
-    format: "ISO 8601 timestamp"
+    format: 'ISO 8601 timestamp'
     required: true
 
   baseline:
     type: object
     required: true
-    description: "Metrics measured on the original code before any optimization"
+    description: 'Metrics measured on the original code before any optimization'
     children:
       timestamp:
         type: string
-        format: "ISO 8601 timestamp"
+        format: 'ISO 8601 timestamp'
       gates:
         type: object
-        description: "Key-value pairs of gate metric names to their baseline values"
+        description: 'Key-value pairs of gate metric names to their baseline values'
       diagnostics:
         type: object
-        description: "Key-value pairs of diagnostic metric names to their baseline values"
+        description: 'Key-value pairs of diagnostic metric names to their baseline values'
       judge:
         type: object
         description: "Judge scores on the baseline (only when primary type is 'judge')"
@@ -70,7 +69,7 @@ structure:
   experiments:
     type: array
     required: true
-    description: "Ordered list of all experiments, including kept, reverted, errored, and deferred"
+    description: 'Ordered list of all experiments, including kept, reverted, errored, and deferred'
     items:
       type: object
       # See EXPERIMENT ENTRY below
@@ -78,24 +77,24 @@ structure:
   best:
     type: object
     required: true
-    description: "Summary of the current best result"
+    description: 'Summary of the current best result'
     children:
       iteration:
         type: integer
-        description: "Iteration number of the best experiment (use 0 for the baseline snapshot before any experiment is kept)"
+        description: 'Iteration number of the best experiment (use 0 for the baseline snapshot before any experiment is kept)'
       metrics:
         type: object
-        description: "All metric values from the current best state (seed with baseline metrics during CP-1)"
+        description: 'All metric values from the current best state (seed with baseline metrics during CP-1)'
       judge:
         type: object
         description: "Judge scores from the best experiment (only when primary type is 'judge')"
       total_judge_cost_usd:
         type: number
-        description: "Running total of all judge costs across all experiments"
+        description: 'Running total of all judge costs across all experiments'
 
   hypothesis_backlog:
     type: array
-    description: "Remaining hypotheses not yet tested"
+    description: 'Remaining hypotheses not yet tested'
     items:
       type: object
       children:
@@ -120,35 +119,34 @@ structure:
 
 experiment_entry:
   required_children:
-
     iteration:
       type: integer
-      description: "Sequential experiment number (1-indexed, monotonically increasing)"
+      description: 'Sequential experiment number (1-indexed, monotonically increasing)'
 
     batch:
       type: integer
-      description: "Batch number this experiment was part of. Multiple experiments in the same batch ran in parallel."
+      description: 'Batch number this experiment was part of. Multiple experiments in the same batch ran in parallel.'
 
     hypothesis:
       type: string
-      description: "Human-readable description of what this experiment tried"
+      description: 'Human-readable description of what this experiment tried'
 
     category:
       type: string
-      description: "Category for grouping and diversity selection (e.g., signal-extraction, graph-signals, embedding, algorithm, preprocessing)"
+      description: 'Category for grouping and diversity selection (e.g., signal-extraction, graph-signals, embedding, algorithm, preprocessing)'
 
     outcome:
       type: enum
       values:
-        - measured                # measurement finished and metrics were persisted, awaiting batch evaluation
-        - kept                    # primary metric improved, gates passed -> merged to optimization branch
-        - reverted                # primary metric did not improve or was worse -> changes discarded
-        - degenerate              # degenerate gate failed -> immediately reverted, no judge evaluation
-        - error                   # measurement command crashed, timed out, or produced malformed output
+        - measured # measurement finished and metrics were persisted, awaiting batch evaluation
+        - kept # primary metric improved, gates passed -> merged to optimization branch
+        - reverted # primary metric did not improve or was worse -> changes discarded
+        - degenerate # degenerate gate failed -> immediately reverted, no judge evaluation
+        - error # measurement command crashed, timed out, or produced malformed output
         - deferred_needs_approval # experiment needs an unapproved dependency -> set aside for batch approval
-        - timeout                 # measurement command exceeded timeout_seconds
-        - runner_up_kept          # file-disjoint runner-up that was cherry-picked and re-measured successfully
-        - runner_up_reverted      # file-disjoint runner-up that was cherry-picked but combined measurement was not better
+        - timeout # measurement command exceeded timeout_seconds
+        - runner_up_kept # file-disjoint runner-up that was cherry-picked and re-measured successfully
+        - runner_up_reverted # file-disjoint runner-up that was cherry-picked but combined measurement was not better
       description: >
         Load-bearing state: the loop branches on this value.
         'measured' is the only non-terminal state and exists so CP-3 can persist
@@ -158,10 +156,9 @@ experiment_entry:
         All other states are terminal for that experiment.
 
   optional_children:
-
     changes:
       type: array
-      description: "Files modified by this experiment"
+      description: 'Files modified by this experiment'
       items:
         type: object
         children:
@@ -172,15 +169,15 @@ experiment_entry:
 
     gates:
       type: object
-      description: "Gate metric values from the measurement command"
+      description: 'Gate metric values from the measurement command'
 
     gates_passed:
       type: boolean
-      description: "Whether all degenerate gates passed"
+      description: 'Whether all degenerate gates passed'
 
     diagnostics:
       type: object
-      description: "Diagnostic metric values from the measurement command"
+      description: 'Diagnostic metric values from the measurement command'
 
     judge:
       type: object
@@ -190,7 +187,7 @@ experiment_entry:
         # Plus:
         judge_cost_usd:
           type: number
-          description: "Cost of judge calls for this experiment"
+          description: 'Cost of judge calls for this experiment'
 
     primary_delta:
       type: string
@@ -198,7 +195,7 @@ experiment_entry:
 
     learnings:
       type: string
-      description: "What was learned from this experiment. The agent reads these to avoid re-trying similar approaches and to inform new hypothesis generation."
+      description: 'What was learned from this experiment. The agent reads these to avoid re-trying similar approaches and to inform new hypothesis generation.'
 
     commit:
       type: string
@@ -215,7 +212,6 @@ experiment_entry:
     merged_with:
       type: integer
       description: "Iteration number of the experiment this was merged with (only for 'runner_up_kept' and 'runner_up_reverted')"
-
 # ============================================================================
 # OUTCOME STATE TRANSITIONS
 # ============================================================================

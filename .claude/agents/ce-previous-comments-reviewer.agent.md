@@ -4,7 +4,6 @@ description: Conditional code-review persona, selected when reviewing a PR that 
 model: inherit
 tools: Read, Grep, Glob, Bash
 color: yellow
-
 ---
 
 # Previous Comments Reviewer

@@ -23,6 +23,7 @@ Present the preview URL to the user and ask how to handle the evidence. Use the 
 **Question:** "Evidence preview (1h link): [PREVIEW_URL]. Where should the evidence go?"
 
 **Options:**
+
 1. **Upload to catbox (public URL)** -- promote to permanent hosting for PR embedding
 2. **Save locally** -- save to a stable OS-temp path (/tmp/compound-engineering/ce-demo-reel/)
 3. **Recapture** -- provide instructions on what to change

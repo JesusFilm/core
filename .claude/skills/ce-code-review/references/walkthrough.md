@@ -55,10 +55,10 @@ Substitutions:
 - **`suggested_fix`:** from the merged finding's `suggested_fix` field. Render as prose describing **intent**, not as syntax. The fixer subagent owns the exact code — the walk-through just needs enough for the user to trust or reject the action. Rules:
   - **Default — one sentence describing the effect.** What does the fix achieve, and where does it live? Prefer intent language over quoted code.
     - ✅ `Throw on non-2xx response before parsing JSON.`
-    - ✅ `` Replace `==` with `===` on line 42. ``
-    - ✅ `` Add a `response.ok` check after the fetch and throw on non-2xx. ``
+    - ✅ ``Replace `==` with `===` on line 42.``
+    - ✅ ``Add a `response.ok` check after the fetch and throw on non-2xx.``
     - ✅ `Extract the request-building logic into a helper and call it from both sites.`
-    - ❌ `` Add `if (!response.ok) throw new Error(`HTTP ${response.status}`);` after the `await fetch(...)` call, before `response.json()`. `` — nested backticks, multiple code spans, full statement quoted; renders broken in terminal.
+    - ❌ ``Add `if (!response.ok) throw new Error(`HTTP ${response.status}`);` after the `await fetch(...)` call, before `response.json()`.`` — nested backticks, multiple code spans, full statement quoted; renders broken in terminal.
   - **Code-span budget: at most 2 inline backtick spans per sentence, each a single identifier, operator, or short phrase** (e.g., `` `response.ok` ``, `` `===` ``, `` `fetchUserById` ``). Never embed full statements, template literals, or code requiring nested backticks. If the intent can't be stated within that budget, the prose is too close to syntax — restate at a higher level, or switch to summary + artifact pointer.
   - **Always leave a space before and after every backtick span.** Without it, the terminal's markdown renderer eats the delimiters and runs the words together.
   - **Raw code block — only for short (≤5 line) genuinely additive new code** where no before-state exists (new file, new function, new guard at the top of an empty body). Above 5 lines, switch to summary + pointer.
@@ -81,7 +81,7 @@ Finding {N} of {M} — {severity} {short handle}.
 Where:
 
 - **Short handle:** matches the `{plain-English title}` from the terminal block heading.
-- **Action framing:** one phrase describing what the *single recommended action* does, as a yes/no question. Examples: `Apply the format-validation + path.resolve guard?`, `Skip the fix since the fixture is being deleted?`, `Defer and file a rotation ticket?`.
+- **Action framing:** one phrase describing what the _single recommended action_ does, as a yes/no question. Examples: `Apply the format-validation + path.resolve guard?`, `Skip the fix since the fixture is being deleted?`, `Defer and file a rotation ticket?`.
 
 Never enumerate alternatives in the stem. One recommendation as a yes/no — the option list carries the alternatives. When the recommendation is close, surface the disagreement in the R15 conflict context line, not as a multi-option stem.
 

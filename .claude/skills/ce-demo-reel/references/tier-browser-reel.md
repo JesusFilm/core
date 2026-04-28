@@ -27,21 +27,27 @@ Once accessible, note the base URL (e.g., `http://localhost:3000`).
 **For Electron/desktop apps** -- connect via Chrome DevTools Protocol (CDP):
 
 1. Check if the app is already running with CDP enabled by probing common ports:
+
    ```bash
    curl -s http://localhost:9222/json/version
    ```
+
    If that returns a JSON response, the app is ready -- connect agent-browser to it:
+
    ```bash
    agent-browser connect 9222
    ```
 
 2. If not running, the app needs to be launched with `--remote-debugging-port`. Detect the entry point from `package.json` (look for the `main` field or `electron` in scripts), then ask the user to launch it with:
+
    ```
    your-electron-app --remote-debugging-port=9222
    ```
+
    If port 9222 is busy, try 9223-9230.
 
 3. Poll until CDP is ready (timeout after 30 seconds):
+
    ```bash
    curl -s http://localhost:9222/json/version
    ```
@@ -84,12 +90,14 @@ agent-browser screenshot [RUN_DIR]/frame-01-initial.png
 ```
 
 **Capture tips:**
+
 - Use URL navigation (`agent-browser open URL`) rather than clicking SPA elements (clicks often fail on React/Vue/Svelte SPAs)
 - Wait for `--load networkidle` after navigation, then a short fixed buffer for any post-fetch render. A fixed `wait 2000` alone is not enough on SPAs that fetch data after paint -- screenshots will capture the empty shell.
 - For pages that keep network activity open (websockets, long-polling), use `agent-browser wait --text "<known content>"` to wait for a specific string from the populated UI, or `agent-browser wait --fn "<expression>"` for a custom readiness condition.
 - Capture the full viewport (sidebar, header give reviewers context)
 
 **Keep secrets out of frame:**
+
 - Do not open DevTools, the Network panel, or Application/Storage -- these expose auth headers, cookies, session storage, and tokens in plain view
 - Skip pages that display raw credentials (unmasked API-key settings, OAuth consent screens, `.env` viewers, billing/payment detail)
 - Check the URL bar before each screenshot -- if it carries a session token or credential query param (`?access_token=`, `?api_key=`, `#id_token=`), navigate to the clean canonical URL first

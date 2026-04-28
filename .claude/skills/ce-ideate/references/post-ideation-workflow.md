@@ -11,6 +11,7 @@ Do not generate replacement ideas in this phase unless explicitly refining.
 For each rejected idea, write a one-line reason.
 
 Rejection criteria:
+
 - too vague
 - not actionable
 - duplicates a stronger idea
@@ -25,6 +26,7 @@ Rejection criteria:
 Score survivors using a consistent rubric weighing: groundedness in stated context, **warrant strength** (`direct:` > `external:` > `reasoned:`; none excluded, but direct-evidence ideas score higher all else equal), expected value, novelty, pragmatism, leverage on future work, implementation burden, and overlap with stronger ideas.
 
 Target output:
+
 - keep 5-7 survivors by default
 - if too many survive, run a second stricter pass
 - if fewer than 5 survive, report that honestly rather than lowering the bar
@@ -57,12 +59,12 @@ When the user picks an option in Phase 6 that requires a durable record (Open an
 
 **Mode-determined defaults:**
 
-| Action | Repo mode default | Elsewhere mode default |
-|---|---|---|
-| Save | `docs/ideation/YYYY-MM-DD-<topic>-ideation.md` | Proof |
-| Share | Proof (additional) | Proof (primary) |
-| Brainstorm handoff | `ce-brainstorm` | `ce-brainstorm` (universal-brainstorming) |
-| End | Conversation only is fine | Conversation only is fine |
+| Action             | Repo mode default                              | Elsewhere mode default                    |
+| ------------------ | ---------------------------------------------- | ----------------------------------------- |
+| Save               | `docs/ideation/YYYY-MM-DD-<topic>-ideation.md` | Proof                                     |
+| Share              | Proof (additional)                             | Proof (primary)                           |
+| Brainstorm handoff | `ce-brainstorm`                                | `ce-brainstorm` (universal-brainstorming) |
+| End                | Conversation only is fine                      | Conversation only is fine                 |
 
 Either mode can also use the other destination on explicit request ("save to Proof even though this is repo mode", "save to a local file even though this is elsewhere"). Honor such overrides directly.
 
@@ -87,11 +89,13 @@ mode: <repo-grounded | elsewhere-software | elsewhere-non-software>
 # Ideation: <Title>
 
 ## Grounding Context
+
 [Grounding summary from Phase 1 — labeled "Codebase Context" in repo mode, "Topic Context" in elsewhere mode]
 
 ## Ranked Ideas
 
 ### 1. <Idea Title>
+
 **Description:** [Concrete explanation]
 **Warrant:** [`direct:` / `external:` / `reasoned:` — the actual basis, quoted or cited]
 **Rationale:** [How the warrant connects to the move's significance]
@@ -102,12 +106,13 @@ mode: <repo-grounded | elsewhere-software | elsewhere-non-software>
 
 ## Rejection Summary
 
-| # | Idea | Reason Rejected |
-|---|------|-----------------|
-| 1 | <Idea> | <Reason rejected> |
+| #   | Idea   | Reason Rejected   |
+| --- | ------ | ----------------- |
+| 1   | <Idea> | <Reason rejected> |
 ```
 
 If resuming:
+
 - update the existing file in place
 - preserve explored markers
 
@@ -127,8 +132,8 @@ The Proof failure ladder in Phase 6.5 governs what happens when this hand-off fa
 **Caller-aware return.** The return-rule bullets below describe the default control flow, but the next step depends on which Phase 6 option invoked the Proof save. Apply the right branch for the caller:
 
 - **§6.2 Open and iterate in Proof.** Behavior is mode-aware:
-    - *Repo mode:* return to the Phase 6 menu on every status. The Proof-reviewed content is now synced locally, and the user typically has a follow-up action in the repo (brainstorm toward a plan, save and end, or keep refining).
-    - *Elsewhere mode:* on a successful Proof return (`proceeded` or `done_for_now`), exit cleanly — narrate that the artifact lives at `docUrl` (including any stale-local note if applicable) and stop. Proof iteration is often the terminal act in elsewhere mode; forcing another menu choice after the user already got what they came for produces decision fatigue. Only the `aborted` branch returns to the Phase 6 menu so the user can retry or pick another path.
+  - _Repo mode:_ return to the Phase 6 menu on every status. The Proof-reviewed content is now synced locally, and the user typically has a follow-up action in the repo (brainstorm toward a plan, save and end, or keep refining).
+  - _Elsewhere mode:_ on a successful Proof return (`proceeded` or `done_for_now`), exit cleanly — narrate that the artifact lives at `docUrl` (including any stale-local note if applicable) and stop. Proof iteration is often the terminal act in elsewhere mode; forcing another menu choice after the user already got what they came for produces decision fatigue. Only the `aborted` branch returns to the Phase 6 menu so the user can retry or pick another path.
 - **§6.3 Brainstorm a selected idea.** On a successful Proof return (`proceeded` or `done_for_now`), do **not** stop at the Phase 6 menu — after applying the per-status handling below (including any stale-local pull offer), continue into §6.3's remaining bullets (mark the chosen idea as `Explored`, then load `ce-brainstorm`). Only the `aborted` branch returns to the Phase 6 menu, since no durable record was written.
 - **§6.4 Save and end.** On a successful Proof return (`proceeded` or `done_for_now`), exit cleanly: narrate that the ideation was saved, surface the `docUrl` (and the local-path note if applicable), and stop. Do **not** re-ask the Phase 6 question — the user already chose to end. Only the `aborted` branch returns to the Phase 6 menu so the user can retry or pick a different path.
 

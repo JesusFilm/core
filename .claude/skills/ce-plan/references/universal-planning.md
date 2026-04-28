@@ -25,19 +25,21 @@ Evaluate two things before planning:
 
 **Research need — does this plan depend on facts that change faster than training data?**
 
-| Research need | Signals | Action |
-|--------------|---------|--------|
-| **None** | Generic, timeless, or conceptual plan (study curriculum methodology, project management approach, personal goal breakdown) | Skip research. Model knowledge is sufficient. After structuring the plan, offer: "I based this on general knowledge. Want me to search for [specific thing research would improve]?" — e.g., sourced recipes, current product recommendations, expert frameworks. Only if the user accepts. |
-| **Recommended** | Plan references specific locations, venues, dates, prices, schedules, seasonal availability, or current events — anything where stale information would break the plan (closed restaurants, changed prices, cancelled events, wrong seasonal dates). | Research before planning. Decompose into 2-5 focused research questions and dispatch parallel web searches. In Claude Code, use the Agent tool with `model: "haiku"` for each search to reduce cost. Collate findings before structuring the plan. |
+| Research need   | Signals                                                                                                                                                                                                                                              | Action                                                                                                                                                                                                                                                                                      |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **None**        | Generic, timeless, or conceptual plan (study curriculum methodology, project management approach, personal goal breakdown)                                                                                                                           | Skip research. Model knowledge is sufficient. After structuring the plan, offer: "I based this on general knowledge. Want me to search for [specific thing research would improve]?" — e.g., sourced recipes, current product recommendations, expert frameworks. Only if the user accepts. |
+| **Recommended** | Plan references specific locations, venues, dates, prices, schedules, seasonal availability, or current events — anything where stale information would break the plan (closed restaurants, changed prices, cancelled events, wrong seasonal dates). | Research before planning. Decompose into 2-5 focused research questions and dispatch parallel web searches. In Claude Code, use the Agent tool with `model: "haiku"` for each search to reduce cost. Collate findings before structuring the plan.                                          |
 
 When research is recommended, do it — don't just offer. Stale recommendations (closed restaurants, rethemed attractions, outdated prices) are worse than no recommendations. The user invoked `/ce-plan` because they want a good plan, not a disclaimer about training data.
 
 **Research decomposition pattern:**
+
 1. Identify 2-5 independent research questions based on the task. Good questions target facts the model is least confident about: current prices, hours, availability, recent changes, seasonal specifics.
 2. Dispatch parallel research. Prefer user-named surfaces first per Core Principle 8 in SKILL.md; fall back to web search for questions those surfaces don't cover.
 3. Collate findings into a brief research summary before proceeding to planning.
 
 Example for "plan a date night in Seattle this Saturday":
+
 - "Best restaurants open late Saturday in Capitol Hill Seattle 2026"
 - "Events happening in Seattle [specific date]"
 - "Seattle waterfront current status and hours"
@@ -47,6 +49,7 @@ Example for "plan a date night in Seattle this Saturday":
 Ask up to 3 questions targeting the unknowns that would most change the plan. Use the platform's blocking question tool: `AskUserQuestion` in Claude Code (call `ToolSearch` with `select:AskUserQuestion` first if its schema isn't loaded), `request_user_input` in Codex, `ask_user` in Gemini, `ask_user` in Pi (requires the `pi-ask-user` extension). Fall back to numbered options in chat only when no blocking tool exists or the call errors (e.g., Codex edit modes) — not because a schema load is required. Never silently skip the question.
 
 **How to ask well:**
+
 - Offer informed options, not open-ended blanks. Instead of "When are you going?", try "Mid-week visits have 30-40% shorter lines — are you flexible on timing?" The question should give the user a frame of reference, not just extract information.
 - Use multi-select when several independent choices can be captured in one question. This is compact and respects the user's time.
 - Always include a final option like **"Skip — just make the plan with reasonable assumptions"** so the user can opt out at any point.
@@ -61,11 +64,11 @@ Create a structured plan guided by these quality principles. Do NOT use the soft
 
 Not every plan should be a single linear path. Match the format to the task:
 
-| Task type | Best format | Why |
-|-----------|------------|-----|
-| **High personal preference** (food, entertainment, activities, gifts) | Curated options per category — present 2-3 choices and let the user compose | Preferences vary; a single pick may miss. Options respect the user's taste. |
-| **Logical sequence** (study plan, project timeline, multi-day trip logistics) | Single prescriptive path with clear ordering | Sequencing matters; options at each step create decision paralysis. |
-| **Hybrid** (event with fixed structure but variable details) | Fixed structure with choice points marked | The skeleton is set but specific vendors/venues/activities are options. |
+| Task type                                                                     | Best format                                                                 | Why                                                                         |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| **High personal preference** (food, entertainment, activities, gifts)         | Curated options per category — present 2-3 choices and let the user compose | Preferences vary; a single pick may miss. Options respect the user's taste. |
+| **Logical sequence** (study plan, project timeline, multi-day trip logistics) | Single prescriptive path with clear ordering                                | Sequencing matters; options at each step create decision paralysis.         |
+| **Hybrid** (event with fixed structure but variable details)                  | Fixed structure with choice points marked                                   | The skeleton is set but specific vendors/venues/activities are options.     |
 
 Example: A date night plan should present 2-3 restaurant options, 2-3 activity options, and a suggested flow — not pick one restaurant and build the whole evening around it. A study plan should prescribe a single weekly progression — not present 3 different curricula to choose from.
 

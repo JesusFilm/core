@@ -3,6 +3,7 @@ Agent execution patterns for building robust agent loops. This covers how agents
 </overview>
 
 <completion_signals>
+
 ## Completion Signals
 
 Agents need an explicit way to say "I'm done."
@@ -21,20 +22,25 @@ These break in edge cases and create unpredictable behavior.
 ### Pattern: Explicit Completion Tool
 
 Provide a `complete_task` tool that:
+
 - Takes a summary of what was accomplished
 - Returns a signal that stops the loop
 - Works identically across all agent types
 
 ```typescript
-tool("complete_task", {
-  summary: z.string().describe("Summary of what was accomplished"),
-  status: z.enum(["success", "partial", "blocked"]).optional(),
-}, async ({ summary, status = "success" }) => {
-  return {
-    text: summary,
-    shouldContinue: false,  // Key: signals loop should stop
-  };
-});
+tool(
+  'complete_task',
+  {
+    summary: z.string().describe('Summary of what was accomplished'),
+    status: z.enum(['success', 'partial', 'blocked']).optional()
+  },
+  async ({ summary, status = 'success' }) => {
+    return {
+      text: summary,
+      shouldContinue: false // Key: signals loop should stop
+    }
+  }
+)
 ```
 
 ### The ToolResult Pattern
@@ -76,15 +82,15 @@ extension ToolResult {
 
 ```typescript
 // Examples:
-read_file("/missing.txt")
+read_file('/missing.txt')
 // → { success: false, output: "File not found", shouldContinue: true }
 // Agent can try a different file or ask for clarification
 
-complete_task("Organized all downloads into folders")
+complete_task('Organized all downloads into folders')
 // → { success: true, output: "...", shouldContinue: false }
 // Agent is done
 
-write_file("/output.md", content)
+write_file('/output.md', content)
 // → { success: true, output: "Wrote file", shouldContinue: true }
 // Agent keeps working toward the goal
 ```
@@ -97,17 +103,21 @@ Tell the agent when to complete:
 ## Completing Tasks
 
 When you've accomplished the user's request:
+
 1. Verify your work (read back files you created, check results)
 2. Call `complete_task` with a summary of what you did
 3. Don't keep working after the goal is achieved
 
 If you're blocked and can't proceed:
+
 - Call `complete_task` with status "blocked" and explain why
 - Don't loop forever trying the same thing
 ```
+
 </completion_signals>
 
 <partial_completion>
+
 ## Partial Completion
 
 For multi-step tasks, track progress at the task level for resume capability.
@@ -160,16 +170,19 @@ Progress: 3/5 tasks complete (60%)
 ### Partial Completion Scenarios
 
 **Agent hits max iterations before finishing:**
+
 - Some tasks completed, some pending
 - Checkpoint saved with current state
 - Resume continues from where it left off, not from beginning
 
 **Agent fails on one task:**
+
 - Task marked `.failed` with error in notes
 - Other tasks may continue (agent decides)
 - Orchestrator doesn't automatically abort entire session
 
 **Network error mid-task:**
+
 - Current iteration throws
 - Session marked `.failed`
 - Checkpoint preserves messages up to that point
@@ -205,24 +218,25 @@ struct AgentCheckpoint: Codable {
 4. On dismiss:
    - Delete checkpoint
    - Start fresh if user tries again
-</partial_completion>
+     </partial_completion>
 
 <model_tier_selection>
+
 ## Model Tier Selection
 
 Different agents need different intelligence levels. Use the cheapest model that achieves the outcome.
 
 ### Tier Guidelines
 
-| Agent Type | Recommended Tier | Reasoning |
-|------------|-----------------|-----------|
-| Chat/Conversation | Balanced (Sonnet) | Fast responses, good reasoning |
-| Research | Balanced (Sonnet) | Tool loops, not ultra-complex synthesis |
-| Content Generation | Balanced (Sonnet) | Creative but not synthesis-heavy |
-| Complex Analysis | Powerful (Opus) | Multi-document synthesis, nuanced judgment |
-| Profile Generation | Powerful (Opus) | Photo analysis, complex pattern recognition |
-| Quick Queries | Fast (Haiku) | Simple lookups, quick transformations |
-| Simple Classification | Fast (Haiku) | High volume, simple decisions |
+| Agent Type            | Recommended Tier  | Reasoning                                   |
+| --------------------- | ----------------- | ------------------------------------------- |
+| Chat/Conversation     | Balanced (Sonnet) | Fast responses, good reasoning              |
+| Research              | Balanced (Sonnet) | Tool loops, not ultra-complex synthesis     |
+| Content Generation    | Balanced (Sonnet) | Creative but not synthesis-heavy            |
+| Complex Analysis      | Powerful (Opus)   | Multi-document synthesis, nuanced judgment  |
+| Profile Generation    | Powerful (Opus)   | Photo analysis, complex pattern recognition |
+| Quick Queries         | Fast (Haiku)      | Simple lookups, quick transformations       |
+| Simple Classification | Fast (Haiku)      | High volume, simple decisions               |
 
 ### Implementation
 
@@ -274,9 +288,10 @@ let quickLookupConfig = AgentConfig(
 3. **Reserve powerful tier for synthesis tasks** (comparing multiple sources)
 4. **Consider token limits per turn** to control costs
 5. **Cache expensive operations** to avoid repeated calls
-</model_tier_selection>
+   </model_tier_selection>
 
 <context_limits>
+
 ## Context Limits
 
 Agent sessions can extend indefinitely, but context windows don't. Design for bounded context from the start.
@@ -317,19 +332,24 @@ tool("search_files", {
 Give agents a way to consolidate learnings mid-session:
 
 ```typescript
-tool("summarize_and_continue", {
-  keyPoints: z.array(z.string()),
-  nextSteps: z.array(z.string()),
-}, async ({ keyPoints, nextSteps }) => {
-  // Store summary, potentially truncate earlier messages
-  await saveSessionSummary({ keyPoints, nextSteps });
-  return { text: "Summary saved. Continuing with focus on: " + nextSteps.join(", ") };
-});
+tool(
+  'summarize_and_continue',
+  {
+    keyPoints: z.array(z.string()),
+    nextSteps: z.array(z.string())
+  },
+  async ({ keyPoints, nextSteps }) => {
+    // Store summary, potentially truncate earlier messages
+    await saveSessionSummary({ keyPoints, nextSteps })
+    return { text: 'Summary saved. Continuing with focus on: ' + nextSteps.join(', ') }
+  }
+)
 ```
 
 **3. Design for truncation**
 
 Assume the orchestrator may truncate early messages. Important context should be:
+
 - In the system prompt (always present)
 - In files (can be re-read)
 - Summarized in context.md
@@ -361,15 +381,18 @@ class AgentOrchestrator {
 ## Managing Context
 
 For long tasks, periodically consolidate what you've learned:
+
 1. If you've gathered a lot of information, summarize key points
 2. Save important findings to files (they persist beyond context)
 3. Use `summarize_and_continue` if the conversation is getting long
 
 Don't try to hold everything in memory. Write it down.
 ```
+
 </context_limits>
 
 <orchestrator_pattern>
+
 ## Unified Agent Orchestrator
 
 One execution engine, many agent types. All agents use the same orchestrator with different configurations.
@@ -436,32 +459,36 @@ class AgentOrchestrator {
 - Shared tool protocol
 - Easy to add new agent types
 - Centralized error handling and logging
-</orchestrator_pattern>
+  </orchestrator_pattern>
 
 <checklist>
 ## Agent Execution Checklist
 
 ### Completion Signals
+
 - [ ] `complete_task` tool provided (explicit completion)
 - [ ] No heuristic completion detection
 - [ ] Tool results include `shouldContinue` flag
 - [ ] System prompt guides when to complete
 
 ### Partial Completion
+
 - [ ] Tasks tracked with status (pending, in_progress, completed, failed)
 - [ ] Checkpoints saved for resume
 - [ ] Progress visible to user
 - [ ] Resume continues from where left off
 
 ### Model Tiers
+
 - [ ] Tier selected based on task complexity
 - [ ] Cost optimization considered
 - [ ] Fast tier for simple operations
 - [ ] Powerful tier reserved for synthesis
 
 ### Context Limits
+
 - [ ] Tools support iterative refinement (preview vs full)
 - [ ] Consolidation mechanism available
 - [ ] Important context persisted to files
 - [ ] Truncation strategy defined
-</checklist>
+      </checklist>

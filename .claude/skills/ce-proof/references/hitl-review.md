@@ -70,6 +70,7 @@ Headers: x-share-token: <token>
 ```
 
 Capture:
+
 - `markdown` (current body — includes any user direct edits and accepted suggestions)
 - `revision`
 - `marks` (object keyed by markId)
@@ -95,11 +96,11 @@ Real feedback blends types — "this is wrong, rename to Y" is both objection an
 
 **Is this a question with a clear answer?** Answer in-thread. Resolve if the answer stands on its own. If answering surfaces a new decision the user should weigh in on, leave open and surface it in the terminal report.
 
-**Is this a disagreement?** ("this is wrong", "contradicts §2", "this won't work"). Evaluate the claim against current content. If the agent agrees, fix and reply "Agreed — updated to X". If the agent disagrees, reply with the reasoning and leave open. Don't silently apply an objection without evaluating it — the whole point is that the user flagged it *because* they think the plan is wrong.
+**Is this a disagreement?** ("this is wrong", "contradicts §2", "this won't work"). Evaluate the claim against current content. If the agent agrees, fix and reply "Agreed — updated to X". If the agent disagrees, reply with the reasoning and leave open. Don't silently apply an objection without evaluating it — the whole point is that the user flagged it _because_ they think the plan is wrong.
 
 **Is the intent genuinely unclear?** First try: attempt the most reasonable interpretation, apply it, and reply "I read this as X — let me know if I should revert." That's cheaper than a round-trip when stakes are low. Ask for clarification only when the interpretations lead to meaningfully different outcomes. When asking, use the platform's blocking question tool for a quick multiple-choice when the options are discrete, or leave it as an open thread comment when free-form response is more natural. Either way the thread stays open so the next pass picks up the user's reply.
 
-**Invariant:** every attention-needing mark ends the pass with an agent reply in its thread. Unreplied = "still to do" — the next pass re-classifies it. This is what makes the loop idempotent without a sidecar: mark state *is* the state. Even when the agent disagrees or can't decide, reply (with reasoning or a question) rather than silently skip.
+**Invariant:** every attention-needing mark ends the pass with an agent reply in its thread. Unreplied = "still to do" — the next pass re-classifies it. This is what makes the loop idempotent without a sidecar: mark state _is_ the state. Even when the agent disagrees or can't decide, reply (with reasoning or a question) rather than silently skip.
 
 **Parallelize independent thread ops.** `comment.reply` and `comment.resolve` across different marks don't conflict — they touch different thread state and a stale `baseToken` on one doesn't poison another (retry-on-`STALE_BASE` is cheap, per-mark, and local). When there are more than ~3 attention-needing marks that classify as plain replies or resolves, dispatch them in parallel — either via multiple tool calls in one turn or via sub-agents (`Agent`/`Task` in Claude Code, `spawn_agent` in Codex, `subagent` in Pi). Keep block-mutating edits (`suggestion.add`, `/edit/v2`) sequential or batch them through one `/edit/v2` call — concurrent block edits can stale one another's `baseToken` and force retries, and they interact in ways that are easier to reason about as an ordered sequence.
 
@@ -107,10 +108,10 @@ Real feedback blends types — "this is wrong, rename to Y" is both objection an
 
 The user is collaborating in the doc, not waiting on approval. Every mutation works with live clients — only whole-doc `rewrite.apply` is gated. Pick the tool that matches intent:
 
-**Default: `suggestion.add` with `status: "accepted"`** for content changes anchored on a quote (reword, rename, clarify, correct, add a sentence inline). One call creates a tracked suggestion mark *and* commits the change. The user sees committed text (no pending approval needed), and the mark persists as audit trail with per-edit attribution and a one-click reject-to-revert. This is the right primitive for HITL auto-applied edits — it gives the user a reversible trail without asking them to re-review anything.
+**Default: `suggestion.add` with `status: "accepted"`** for content changes anchored on a quote (reword, rename, clarify, correct, add a sentence inline). One call creates a tracked suggestion mark _and_ commits the change. The user sees committed text (no pending approval needed), and the mark persists as audit trail with per-edit attribution and a one-click reject-to-revert. This is the right primitive for HITL auto-applied edits — it gives the user a reversible trail without asking them to re-review anything.
 
 ```json
-{"type":"suggestion.add","kind":"replace","quote":"<anchor>","content":"<new>","by":"ai:compound-engineering","status":"accepted","baseToken":"<token>"}
+{ "type": "suggestion.add", "kind": "replace", "quote": "<anchor>", "content": "<new>", "by": "ai:compound-engineering", "status": "accepted", "baseToken": "<token>" }
 ```
 
 Use `kind: "insert" | "delete" | "replace"` as appropriate; all three support `status: "accepted"`.
@@ -118,7 +119,7 @@ Use `kind: "insert" | "delete" | "replace"` as appropriate; all three support `s
 **Use `/edit/v2` silently** only when the trail is actively wrong or technically blocked:
 
 - **Atomicity is required** — multiple coordinated edits must commit together or not at all (e.g., insert new section + update a reference in another block + delete the obsolete paragraph). `/edit/v2` takes an `operations` array that commits atomically; separate `suggestion.add` calls can partially succeed.
-- **Pre-user self-correction** — the agent is fixing its own output *before* the user has looked at the doc (e.g., spotted a mistake mid-ingest-pass). A tracked mark would imply "there was an old version," which is misleading from the user's perspective.
+- **Pre-user self-correction** — the agent is fixing its own output _before_ the user has looked at the doc (e.g., spotted a mistake mid-ingest-pass). A tracked mark would imply "there was an old version," which is misleading from the user's perspective.
 - **Pure structural insertion with no quote anchor** — adding an entirely new block/section where no existing text serves as an anchor. `suggestion.add` requires a `quote`; `/edit/v2` has `insert_before` / `insert_after` keyed on block `ref`.
 - **Structural list-item or block removal** — `suggestion.add` with `kind: "delete"` only deletes the text inside a list item; the bullet marker (`*`, `-`, or numeric `1.`) stays behind as an orphan line. Use `/edit/v2 delete_block` to remove an entire block, or `find_replace_in_block` to splice out the item plus its surrounding whitespace cleanly.
 
@@ -258,12 +259,14 @@ Runs when the user selects **Proceed**. Before prompting anything, check whether
 6. Display one of:
 
    Synced:
+
    ```
    Doc synced to <localPath> (revision <N>).
    Doc: <tokenUrl>
    ```
 
    Declined:
+
    ```
    Review complete. Local file kept as-is — pull from Proof when ready.
    Doc: <tokenUrl>
@@ -362,6 +365,7 @@ When extracting fields from API responses with jq's `//` alternative operator, p
 ### Identity
 
 All ops must include:
+
 - `by: "ai:compound-engineering"` in the request body
 - `X-Agent-Id: ai:compound-engineering` in headers (required for presence; recommended for ops for consistent attribution)
 

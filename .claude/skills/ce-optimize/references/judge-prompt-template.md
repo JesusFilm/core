@@ -3,6 +3,7 @@
 This template is used by the orchestrator to dispatch batched LLM-as-judge evaluation calls. Each judge sub-agent evaluates a batch of sampled output items and returns structured JSON scores.
 
 The orchestrator:
+
 1. Reads the experiment's output
 2. Selects samples per the stratification config (using fixed seed)
 3. Groups samples into batches of `judge.batch_size`
@@ -93,13 +94,13 @@ Rules:
 
 ## Variable Reference
 
-| Variable | Source | Description |
-|----------|--------|-------------|
-| `{rubric}` | Spec `metric.judge.rubric` | User-defined scoring rubric |
-| `{items_json}` | Sampled output items | JSON array of items to evaluate (one batch worth) |
-| `{singleton_rubric}` | Spec `metric.judge.singleton_rubric` | User-defined rubric for singleton evaluation |
-| `{singletons_json}` | Sampled singleton items | JSON array of singleton items to evaluate |
-| `{cluster_summaries}` | Experiment output | Summary of existing clusters (titles/themes) for singleton reference |
+| Variable              | Source                               | Description                                                          |
+| --------------------- | ------------------------------------ | -------------------------------------------------------------------- |
+| `{rubric}`            | Spec `metric.judge.rubric`           | User-defined scoring rubric                                          |
+| `{items_json}`        | Sampled output items                 | JSON array of items to evaluate (one batch worth)                    |
+| `{singleton_rubric}`  | Spec `metric.judge.singleton_rubric` | User-defined rubric for singleton evaluation                         |
+| `{singletons_json}`   | Sampled singleton items              | JSON array of singleton items to evaluate                            |
+| `{cluster_summaries}` | Experiment output                    | Summary of existing clusters (titles/themes) for singleton reference |
 
 ## Notes
 

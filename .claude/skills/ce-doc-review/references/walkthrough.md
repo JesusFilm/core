@@ -97,7 +97,7 @@ Section: {section}
 
 Substitutions:
 
-- **`{plain-English title}`** — a 3–8 word summary suitable as a heading. Derived from the merged finding's `title` field but rephrased so it reads as observable consequence (e.g., "Implementers will pick different tiers" rather than "Section X-Y lists four tiers"). For document-review findings, observable consequence is the *effect on a reader, implementer, or downstream decision*, not runtime behavior.
+- **`{plain-English title}`** — a 3–8 word summary suitable as a heading. Derived from the merged finding's `title` field but rephrased so it reads as observable consequence (e.g., "Implementers will pick different tiers" rather than "Section X-Y lists four tiers"). For document-review findings, observable consequence is the _effect on a reader, implementer, or downstream decision_, not runtime behavior.
 - **`{section}`** — from the finding's `section` field.
 - **`why_it_matters`** — from the merged finding's `why_it_matters` field. Rendered as-is; the subagent template's framing guidance ensures it's already observable-consequence-first.
 - **`suggested_fix`** — from the merged finding's `suggested_fix` field. Render as prose describing intent, not as raw markup. The user's job is to trust or reject the action — they don't need to review exact text. Rules:

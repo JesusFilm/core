@@ -4,10 +4,11 @@ Architectural patterns for building agent-native systems. These patterns emerge 
 Features are outcomes achieved by agents operating in a loop, not functions you write. Tools are atomic primitives. The agent applies judgment; the prompt defines the outcome.
 
 See also:
+
 - [files-universal-interface.md](./files-universal-interface.md) for file organization and context.md patterns
 - [agent-execution-patterns.md](./agent-execution-patterns.md) for completion signals and partial completion
 - [product-implications.md](./product-implications.md) for progressive disclosure and approval patterns
-</overview>
+  </overview>
 
 <pattern name="event-driven-agent">
 ## Event-Driven Agent Architecture
@@ -32,22 +33,24 @@ The agent runs as a long-lived process that responds to events. Events become pr
 ```
 
 **Key characteristics:**
+
 - Events (messages, webhooks, timers) trigger agent turns
 - Agent decides how to respond based on system prompt
 - Tools are primitives for IO, not business logic
 - State persists between events via data tools
 
 **Example: Discord feedback bot**
+
 ```typescript
 // Event source
-client.on("messageCreate", (message) => {
+client.on('messageCreate', (message) => {
   if (!message.author.bot) {
     runAgent({
       userMessage: `New message from ${message.author}: "${message.content}"`,
-      channelId: message.channelId,
-    });
+      channelId: message.channelId
+    })
   }
-});
+})
 
 // System prompt defines behavior
 const systemPrompt = `
@@ -58,8 +61,9 @@ When someone shares feedback:
 4. Update the feedback site
 
 Use your judgment about importance and categorization.
-`;
+`
 ```
+
 </pattern>
 
 <pattern name="two-layer-git">
@@ -94,11 +98,12 @@ For self-modifying agents, separate code (shared) from data (instance-specific).
 ```
 
 **Why this works:**
+
 - Code and site are version controlled (GitHub)
 - Raw data stays local (instance-specific)
 - Site is generated from data, so reproducible
 - Automatic rollback via git history
-</pattern>
+  </pattern>
 
 <pattern name="multi-instance">
 ## Multi-Instance Branching
@@ -121,11 +126,13 @@ main                        # Shared features, bug fixes
 | Instance data | instance branch | Done |
 
 **Sync tools:**
+
 ```typescript
 tool("self_deploy", "Pull latest from main, rebuild, restart", ...)
 tool("sync_from_instance", "Merge from another instance", ...)
 tool("propose_to_main", "Create PR to share improvements", ...)
 ```
+
 </pattern>
 
 <pattern name="site-as-output">
@@ -153,17 +160,20 @@ Site updates automatically
 ## Site Management
 
 You maintain a public feedback site. When feedback comes in:
+
 1. Use write_file to update site/public/content/feedback.json
 2. If the site's React components need improvement, modify them
 3. Commit changes and push to trigger Vercel deploy
 
 The site should be:
+
 - Clean, modern dashboard aesthetic
 - Clear visual hierarchy
 - Status organization (Inbox, Active, Done)
 
 You decide the structure. Make it good.
 ```
+
 </pattern>
 
 <pattern name="approval-gates">
@@ -173,42 +183,44 @@ Separate "propose" from "apply" for dangerous operations.
 
 ```typescript
 // Pending changes stored separately
-const pendingChanges = new Map<string, string>();
+const pendingChanges = new Map<string, string>()
 
-tool("write_file", async ({ path, content }) => {
+tool('write_file', async ({ path, content }) => {
   if (requiresApproval(path)) {
     // Store for approval
-    pendingChanges.set(path, content);
-    const diff = generateDiff(path, content);
+    pendingChanges.set(path, content)
+    const diff = generateDiff(path, content)
     return {
       text: `Change requires approval.\n\n${diff}\n\nReply "yes" to apply.`
-    };
+    }
   } else {
     // Apply immediately
-    writeFileSync(path, content);
-    return { text: `Wrote ${path}` };
+    writeFileSync(path, content)
+    return { text: `Wrote ${path}` }
   }
-});
+})
 
-tool("apply_pending", async () => {
+tool('apply_pending', async () => {
   for (const [path, content] of pendingChanges) {
-    writeFileSync(path, content);
+    writeFileSync(path, content)
   }
-  pendingChanges.clear();
-  return { text: "Applied all pending changes" };
-});
+  pendingChanges.clear()
+  return { text: 'Applied all pending changes' }
+})
 ```
 
 **What requires approval:**
-- src/*.ts (agent code)
+
+- src/\*.ts (agent code)
 - package.json (dependencies)
 - system prompt changes
 
 **What doesn't:**
-- data/* (instance data)
-- site/* (generated content)
-- docs/* (documentation)
-</pattern>
+
+- data/\* (instance data)
+- site/\* (generated content)
+- docs/\* (documentation)
+  </pattern>
 
 <pattern name="unified-agent-architecture">
 ## Unified Agent Architecture
@@ -284,12 +296,13 @@ struct ChatAgent {
 ```
 
 **Benefits:**
+
 - Consistent lifecycle management across all agent types
 - Automatic checkpoint/resume (critical for mobile)
 - Shared tool protocol
 - Easy to add new agent types
 - Centralized error handling and logging
-</pattern>
+  </pattern>
 
 <pattern name="agent-to-ui-communication">
 ## Agent-to-UI Communication
@@ -403,6 +416,7 @@ struct FeedView: View {
     let items = database.query("feed")  // Stale!
 }
 ```
+
 </pattern>
 
 <pattern name="model-tier-selection">
@@ -410,14 +424,14 @@ struct FeedView: View {
 
 Different agents need different intelligence levels. Use the cheapest model that achieves the outcome.
 
-| Agent Type | Recommended Tier | Reasoning |
-|------------|-----------------|-----------|
-| Chat/Conversation | Balanced | Fast responses, good reasoning |
-| Research | Balanced | Tool loops, not ultra-complex synthesis |
-| Content Generation | Balanced | Creative but not synthesis-heavy |
-| Complex Analysis | Powerful | Multi-document synthesis, nuanced judgment |
-| Profile/Onboarding | Powerful | Photo analysis, complex pattern recognition |
-| Simple Queries | Fast/Haiku | Quick lookups, simple transformations |
+| Agent Type         | Recommended Tier | Reasoning                                   |
+| ------------------ | ---------------- | ------------------------------------------- |
+| Chat/Conversation  | Balanced         | Fast responses, good reasoning              |
+| Research           | Balanced         | Tool loops, not ultra-complex synthesis     |
+| Content Generation | Balanced         | Creative but not synthesis-heavy            |
+| Complex Analysis   | Powerful         | Multi-document synthesis, nuanced judgment  |
+| Profile/Onboarding | Powerful         | Photo analysis, complex pattern recognition |
+| Simple Queries     | Fast/Haiku       | Quick lookups, simple transformations       |
 
 **Implementation:**
 
@@ -457,13 +471,15 @@ let lookupConfig = AgentConfig(
 ```
 
 **Cost optimization strategies:**
+
 - Start with balanced tier, only upgrade if quality insufficient
 - Use fast tier for tool-heavy loops where each turn is simple
 - Reserve powerful tier for synthesis tasks (comparing multiple sources)
 - Consider token limits per turn to control costs
-</pattern>
+  </pattern>
 
 <design_questions>
+
 ## Questions to Ask When Designing
 
 1. **What events trigger agent turns?** (messages, webhooks, timers, user requests)
@@ -475,4 +491,4 @@ let lookupConfig = AgentConfig(
 7. **How does the UI know when agent changes state?** (shared store, file watching, events)
 8. **What model tier does each agent type need?** (fast, balanced, powerful)
 9. **How do agents share infrastructure?** (unified orchestrator, shared tools)
-</design_questions>
+   </design_questions>

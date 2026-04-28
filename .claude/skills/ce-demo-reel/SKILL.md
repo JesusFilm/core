@@ -1,6 +1,6 @@
 ---
 name: ce-demo-reel
-description: "Capture a visual demo reel (GIF, terminal recording, screenshots) for PR descriptions. Use when shipping UI changes, CLI features, or any work with observable behavior that benefits from visual proof. Also use when asked to add a demo, record a GIF, screenshot a feature, show what changed visually, create a demo reel, capture evidence, add proof to a PR, or create a before/after comparison."
+description: 'Capture a visual demo reel (GIF, terminal recording, screenshots) for PR descriptions. Use when shipping UI changes, CLI features, or any work with observable behavior that benefits from visual proof. Also use when asked to add a demo, record a GIF, screenshot a feature, show what changed visually, create a demo reel, capture evidence, add proof to a PR, or create a before/after comparison.'
 argument-hint: "[what to capture, e.g. 'the new settings page' or 'CLI output of the migrate command']"
 ---
 
@@ -18,17 +18,18 @@ Never generate fake or placeholder image/GIF URLs. If upload fails, report the f
 
 Recordings must never contain credentials — not in commands, output, URL bars, or on-screen UI. If the demo needs a credential, set it before the recording starts, outside the recorded region.
 
-**Core principle:** secrets should affect the environment, not the visible transcript. Hidden *real* setup beats visible *fake* setup — fake setup breaks the demo and still leaks the secret's shape.
+**Core principle:** secrets should affect the environment, not the visible transcript. Hidden _real_ setup beats visible _fake_ setup — fake setup breaks the demo and still leaks the secret's shape.
 
 - **Plan it out of frame.** Route every surface where a secret could appear (env exports, CLI flag values, command output, auth headers, URL params, DevTools, config pages) out of the recorded region. Use VHS `Hide`/`Show`; invoke CLIs via env vars, not secret flag values; stay on user-facing pages. Show the authenticated result, not the auth step.
 - **Do not substitute placeholders inside the recording.** Typing a fake `sk-xxxxx` produces a misleading artifact; recapture with the real credential set out of frame instead. Two specific failures:
-  - Re-exporting a fake value visibly (`export API_KEY=REDACTED`) overwrites the real env var, so the demo breaks (401, `Unauthorized`, `0 credits remaining`, empty output). You leak the variable name *and* ship a broken product.
+  - Re-exporting a fake value visibly (`export API_KEY=REDACTED`) overwrites the real env var, so the demo breaks (401, `Unauthorized`, `0 credits remaining`, empty output). You leak the variable name _and_ ship a broken product.
   - Planning to blur or crop later. Assume anything shown is leaked; recapture is the only remediation.
 - **Scan before upload.** Look for `sk-`, `ghp_`, `ghs_`, `xoxb-`, `Bearer `, `Authorization:`, `?token=`, `api_key=`, long hex/base64 near credential-sounding labels, or visible `.env` contents. If any appear, discard and recapture. Never blur or crop.
 
 ## Arguments
 
 Parse `$ARGUMENTS`:
+
 - **What to capture**: A description of the feature or behavior to demonstrate. If provided, use it to guide which pages to visit, commands to run, or states to capture.
 - If blank, infer what to capture from recoverable branch or PR context. If the target remains ambiguous after that, ask the user what they want to demonstrate before proceeding.
 
@@ -84,10 +85,10 @@ If arguments describe what to capture, classify based on the description. Otherw
 1. **Involves motion or interaction?** (animations, typing flows, drag-and-drop, real-time updates, continuous CLI output) -> classify as `motion`.
 2. **Involves discrete states?** (before/after UI, new page, command with output, API response) -> classify as `states`.
 
-| Change characteristic | Classification |
-|---|---|
-| Animations, typing, drag-and-drop, streaming output | `motion` |
-| New UI, before/after, command output, API responses | `states` |
+| Change characteristic                               | Classification |
+| --------------------------------------------------- | -------------- |
+| Animations, typing, drag-and-drop, streaming output | `motion`       |
+| New UI, before/after, command output, API responses | `states`       |
 
 **Feature vs bug fix -- what to demonstrate:**
 
@@ -131,6 +132,7 @@ Present the available tiers to the user via the platform's blocking question too
 **Question:** "How should evidence be captured for this change?"
 
 **Options** (show only tiers from the `available` list, order by recommendation):
+
 1. **Browser reel** -- Agent-browser screenshots stitched into animated GIF. Best for web apps.
 2. **Terminal recording** -- VHS terminal recording to GIF. Best for CLI tools with interaction/motion.
 3. **Screenshot reel** -- Styled terminal frames stitched into animated GIF. Best for discrete CLI steps.
@@ -178,6 +180,7 @@ The `Description` is a 1-line summary derived from the capture hypothesis in Ste
 - For all non-skipped tiers, exactly one of `URL` or `Path` contains a real value; the other is `"none"`.
 
 **Label convention:**
+
 - Browser reel, terminal recording, screenshot reel: label as "Demo"
 - Static screenshots: label as "Screenshots"
 - The caller applies the label when formatting. ce-demo-reel does not generate markdown.

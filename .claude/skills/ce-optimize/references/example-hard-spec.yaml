@@ -11,19 +11,19 @@ metric:
     direction: minimize
   degenerate_gates:
     - name: build_passed
-      check: "== 1"
+      check: '== 1'
       description: The build must stay green
     - name: test_pass_rate
-      check: ">= 1.0"
+      check: '>= 1.0'
       description: Required tests must keep passing
   diagnostics:
     - name: artifact_size_mb
     - name: peak_memory_mb
 
 measurement:
-  command: "python evaluate.py"
+  command: 'python evaluate.py'
   timeout_seconds: 300
-  working_directory: "tools/eval"
+  working_directory: 'tools/eval'
   stability:
     mode: repeat
     repeat_count: 3
@@ -32,12 +32,12 @@ measurement:
 
 scope:
   mutable:
-    - "src/build/"
-    - "config/build.yaml"
+    - 'src/build/'
+    - 'config/build.yaml'
   immutable:
-    - "tools/eval/evaluate.py"
-    - "tests/fixtures/"
-    - "scripts/ci/"
+    - 'tools/eval/evaluate.py'
+    - 'tests/fixtures/'
+    - 'scripts/ci/'
 
 execution:
   mode: serial
@@ -52,8 +52,8 @@ dependencies:
   approved: []
 
 constraints:
-  - "Keep output artifacts backward compatible"
-  - "Do not skip required validation steps"
+  - 'Keep output artifacts backward compatible'
+  - 'Do not skip required validation steps'
 
 stopping:
   max_iterations: 4

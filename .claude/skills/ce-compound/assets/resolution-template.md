@@ -29,24 +29,31 @@ tags: [keyword-one, keyword-two]
 # [Clear problem title]
 
 ## Problem
+
 [1-2 sentence description of the issue and user-visible impact]
 
 ## Symptoms
+
 - [Observable symptom or error]
 
 ## What Didn't Work
+
 - [Attempted fix and why it failed]
 
 ## Solution
+
 [The fix that worked, including code snippets when useful]
 
 ## Why This Works
+
 [Root cause explanation and why the fix addresses it]
 
 ## Prevention
+
 - [Concrete practice, test, or guardrail]
 
 ## Related Issues
+
 - [Related docs or issues, if any]
 ```
 
@@ -75,20 +82,26 @@ tags: [keyword-one, keyword-two]
 # [Clear, descriptive title]
 
 ## Context
+
 [What situation, gap, or friction prompted this guidance]
 
 ## Guidance
+
 [The practice, pattern, or recommendation with code examples when useful]
 
 ## Why This Matters
+
 [Rationale and impact of following or not following this guidance]
 
 ## When to Apply
+
 - [Conditions or situations where this applies]
 
 ## Examples
+
 [Concrete before/after or usage examples showing the practice in action]
 
 ## Related
+
 - [Related docs or issues, if any]
 ```

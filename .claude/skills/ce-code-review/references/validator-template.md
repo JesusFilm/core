@@ -6,7 +6,7 @@ This template is used by Stage 5b to spawn one validator sub-agent per surviving
 
 ## Template
 
-```
+````
 You are an independent validator for a code review finding. Another reviewer flagged the issue described below. Your job is to verify whether the finding holds up under fresh inspection.
 
 You have no commitment to the original finding. If it is wrong, say so. False positives are common; do not feel pressure to confirm.
@@ -53,7 +53,7 @@ Return ONLY this JSON, no prose:
   "validated": true | false,
   "reason": "<one sentence explaining the verdict>"
 }
-```
+````
 
 Examples:
 
@@ -63,11 +63,13 @@ Examples:
 - `{ "validated": false, "reason": "Framework handles the timeout case via Faraday default; no application-level retry needed." }`
 
 Rules:
+
 - Be honest. If the original reviewer was right, validate. If they were wrong, reject. Conservative bias is preferred — when in doubt, reject.
 - Do not invent new findings. Your scope is this one finding; surface anything else as a no-vote with reason.
 - Do not edit, commit, push, or modify any files. You are operationally read-only.
 - If you cannot read the cited file, return `{ "validated": false, "reason": "Could not access file path to verify." }` rather than guessing.
 - Return JSON only. No prose, no markdown, no explanation outside the JSON object.
+
 ```
 
 ## Variable Reference
@@ -83,3 +85,4 @@ Rules:
 | `{finding_reviewer}` | Stage 5 merged finding | Original persona name (informational; helps validator interpret the framing) |
 | `{finding_confidence}` | Stage 5 merged finding | The persona's anchor (informational) |
 | `{diff}` | Stage 1 output | Full diff for context |
+```

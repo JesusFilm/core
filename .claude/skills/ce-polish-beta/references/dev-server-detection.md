@@ -17,17 +17,17 @@ This cascade runs **only when** `.claude/launch.json` is absent or has no `port`
 
 ## Framework defaults
 
-| Framework | Default port |
-|-----------|-------------|
-| Rails | 3000 |
-| Next.js | 3000 |
-| Nuxt | 3000 |
-| Remix (classic) | 3000 |
-| Vite | 5173 |
-| SvelteKit | 5173 |
-| Astro | 4321 |
-| Procfile | 3000 |
-| Unknown | 3000 |
+| Framework       | Default port |
+| --------------- | ------------ |
+| Rails           | 3000         |
+| Next.js         | 3000         |
+| Nuxt            | 3000         |
+| Remix (classic) | 3000         |
+| Vite            | 5173         |
+| SvelteKit       | 5173         |
+| Astro           | 4321         |
+| Procfile        | 3000         |
+| Unknown         | 3000         |
 
 ## Sync-note block
 

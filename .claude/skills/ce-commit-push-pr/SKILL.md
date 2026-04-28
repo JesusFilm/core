@@ -13,7 +13,7 @@ Go from working changes to an open pull request, rewrite an existing PR descript
 
 Three flavors of intent. Pick one and follow the matching path; otherwise default to the full workflow.
 
-- **Description-only generation.** If the user asked for *just* a PR description with no commit or push intent (e.g., "write a PR description", "draft a PR description for this branch", "describe this PR", or pasted a PR URL/number alone), skip Steps 4–5 AND Step 1's decision tree (its stop gates are full-workflow only and would terminate common cases like "feature branch, all pushed, open PR → stop"). Use the data from the Context section above instead. Then go to Step 6 to compose. If the user pasted a PR URL/number, pass it to Step 6 as the PR ref so Pre-A resolves the right commit range (otherwise Pre-A defaults to current-branch mode). Print the result back to the user; apply via `gh pr edit`/`gh pr create` only if the user asks.
+- **Description-only generation.** If the user asked for _just_ a PR description with no commit or push intent (e.g., "write a PR description", "draft a PR description for this branch", "describe this PR", or pasted a PR URL/number alone), skip Steps 4–5 AND Step 1's decision tree (its stop gates are full-workflow only and would terminate common cases like "feature branch, all pushed, open PR → stop"). Use the data from the Context section above instead. Then go to Step 6 to compose. If the user pasted a PR URL/number, pass it to Step 6 as the PR ref so Pre-A resolves the right commit range (otherwise Pre-A defaults to current-branch mode). Print the result back to the user; apply via `gh pr edit`/`gh pr create` only if the user asks.
 - **Description update on existing PR.** If the user is asking to update, refresh, or rewrite an existing PR description (with no mention of committing or pushing), follow the Description Update workflow below. The user may also provide a focus (e.g., "update the PR description and add the benchmarking results"). Note any focus for DU-3.
 - **Full workflow.** Otherwise, follow the Full workflow below.
 
@@ -101,6 +101,7 @@ gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name'
 If both fail, fall back to `main`.
 
 If the current branch is empty (detached HEAD), explain that a branch is required. Ask whether to create a feature branch now.
+
 - If yes, derive a branch name from the change content, create with `git checkout -b <branch-name>`, and use that for the rest of the workflow.
 - If no, stop.
 

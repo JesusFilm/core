@@ -1,6 +1,6 @@
 ---
 name: ce-security-lens-reviewer
-description: "Evaluates planning documents for security gaps at the plan level -- auth/authz assumptions, data exposure risks, API surface vulnerabilities, and missing threat model elements. Spawned by the document-review skill."
+description: 'Evaluates planning documents for security gaps at the plan level -- auth/authz assumptions, data exposure risks, API surface vulnerabilities, and missing threat model elements. Spawned by the document-review skill.'
 model: sonnet
 tools: Read, Grep, Glob, Bash
 ---

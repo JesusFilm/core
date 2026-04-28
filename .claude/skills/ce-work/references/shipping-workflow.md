@@ -75,6 +75,7 @@ This file contains the shipping workflow (Phase 3-4). Load it only when all Phas
 2. **Update Plan Status**
 
    If the input document has YAML frontmatter with a `status` field, update it to `completed`:
+
    ```
    status: active  ->  status: completed
    ```
@@ -123,6 +124,7 @@ Every change gets reviewed. The tier determines depth, not whether review happen
 **Tier 2 (full review)** -- REQUIRED default. Invoke `ce-code-review mode:autofix` with `plan:<path>` when available. Safe fixes are applied automatically; residual work is recorded in the run artifact for downstream routing. Always use this tier unless all four Tier 1 criteria are explicitly confirmed.
 
 **Tier 1 (inline self-review)** -- permitted only when all four are true (state each explicitly before choosing):
+
 - Purely additive (new files only, no existing behavior modified)
 - Single concern (one skill, one component -- not cross-cutting)
 - Pattern-following (mirrors an existing example, no novel logic)

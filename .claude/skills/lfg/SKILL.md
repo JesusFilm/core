@@ -1,7 +1,7 @@
 ---
 name: lfg
 description: Full autonomous engineering workflow
-argument-hint: "[feature description]"
+argument-hint: '[feature description]'
 disable-model-invocation: true
 ---
 
@@ -28,7 +28,6 @@ When invoking any skill referenced below, resolve its name against the available
 5. **Autonomous residual handoff** (only when step 3 reported one or more residual `downstream-resolver` findings; skip when it reported `Residual actionable work: none.`)
 
    Do not prompt the user. This step embraces the autopilot contract: residuals must become durable before DONE, but the agent never stops to ask.
-
    1. Load `references/tracker-defer.md` in **non-interactive mode**. Pass the residual actionable findings from step 3's summary (or the run artifact when the summary was truncated).
    2. Collect the structured return: `{ filed: [...], failed: [...], no_sink: [...] }`.
    3. Compose a `## Residual Review Findings` markdown section from the structured return:

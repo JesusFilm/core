@@ -1,7 +1,7 @@
 ---
 name: ce-debug
-description: 'Systematically find root causes and fix bugs. Use when debugging errors, investigating test failures, reproducing bugs from issue trackers (GitHub, Linear, Jira), or when stuck on a problem after failed fix attempts. Also use when the user says ''debug this'', ''why is this failing'', ''fix this bug'', ''trace this error'', or pastes stack traces, error messages, or issue references.'
-argument-hint: "[issue reference, error message, test path, or description of broken behavior]"
+description: "Systematically find root causes and fix bugs. Use when debugging errors, investigating test failures, reproducing bugs from issue trackers (GitHub, Linear, Jira), or when stuck on a problem after failed fix attempts. Also use when the user says 'debug this', 'why is this failing', 'fix this bug', 'trace this error', or pastes stack traces, error messages, or issue references."
+argument-hint: '[issue reference, error message, test path, or description of broken behavior]'
 ---
 
 # Debug and Fix
@@ -21,13 +21,13 @@ These principles govern every phase. They are repeated at decision points becaus
 
 ## Execution Flow
 
-| Phase | Name | Purpose |
-|-------|------|---------|
-| 0 | Triage | Parse input, fetch issue if referenced, proceed to investigation |
-| 1 | Investigate | Reproduce the bug, trace the code path |
-| 2 | Root Cause | Form hypotheses with predictions for uncertain links, test them, **causal chain gate**, smart escalation |
-| 3 | Fix | Only if user chose to fix. Test-first fix with workspace safety checks |
-| 4 | Handoff | Structured summary, then prompt the user for the next action |
+| Phase | Name        | Purpose                                                                                                  |
+| ----- | ----------- | -------------------------------------------------------------------------------------------------------- |
+| 0     | Triage      | Parse input, fetch issue if referenced, proceed to investigation                                         |
+| 1     | Investigate | Reproduce the bug, trace the code path                                                                   |
+| 2     | Root Cause  | Form hypotheses with predictions for uncertain links, test them, **causal chain gate**, smart escalation |
+| 3     | Fix         | Only if user chose to fix. Test-first fix with workspace safety checks                                   |
+| 4     | Handoff     | Structured summary, then prompt the user for the next action                                             |
 
 All phases self-size — a simple bug flows through them in seconds, a complex bug spends more time in each naturally. No complexity classification, no phase skipping.
 
@@ -38,6 +38,7 @@ All phases self-size — a simple bug flows through them in seconds, a complex b
 Parse the input and reach a clear problem statement.
 
 **If the input references an issue tracker**, fetch it:
+
 - GitHub (`#123`, `org/repo#123`, github.com URL): Parse the issue reference from `<bug_description>` and fetch with `gh issue view <number> --json title,body,comments,labels`. For URLs, pass the URL directly to `gh`.
 - Other trackers (Linear URL/ID, Jira URL/key, any tracker URL): Attempt to fetch using available MCP tools or by fetching the URL content. If the fetch fails — auth, missing tool, non-public page — ask the user to paste the relevant issue content. Ensure the fetch includes the full comment thread, not just the opening description.
 
@@ -46,6 +47,7 @@ Read the full conversation — the original description AND every comment, with 
 **Everything else** (stack traces, test paths, error messages, descriptions of broken behavior): Proceed directly to Phase 1.
 
 **Questions:**
+
 - Do not ask questions by default — investigate first (read code, run tests, trace errors)
 - Only ask when a genuine ambiguity blocks investigation and cannot be resolved by reading code or running tests
 - When asking, ask one specific question
@@ -74,7 +76,7 @@ Before deep code tracing, confirm the environment is what you think it is:
 - Expected interpreter or runtime version (check `.tool-versions`, `.nvmrc`, `Gemfile`, etc. against what's actually active)
 - Required env vars present and non-empty
 - No stale build artifacts (`dist/`, `.next/`, compiled binaries from an earlier branch)
-- Dependent local services (database, cache, queue) running at expected versions *when the bug plausibly involves them*
+- Dependent local services (database, cache, queue) running at expected versions _when the bug plausibly involves them_
 
 #### 1.3 Trace the code path
 
@@ -86,6 +88,7 @@ Read the relevant source files. Follow the execution path from entry point to wh
 - Do not stop at the first function that looks wrong — the root cause is where bad state originates, not where it is first observed
 
 As you trace:
+
 - Check recent changes in files you are reading: `git log --oneline -10 -- [file]`
 - If the bug looks like a regression ("it worked before"), use `git bisect` (see `references/investigation-techniques.md`)
 - Check the project's observability tools for additional evidence:
@@ -99,13 +102,14 @@ As you trace:
 
 ### Phase 2: Root Cause
 
-*Reminder: investigate before fixing. Do not propose a fix until you can explain the full causal chain from trigger to symptom with no gaps.*
+_Reminder: investigate before fixing. Do not propose a fix until you can explain the full causal chain from trigger to symptom with no gaps._
 
 Read `references/anti-patterns.md` before forming hypotheses.
 
-**Assumption audit (before hypothesis formation):** List the concrete "this must be true" beliefs your understanding depends on — the framework behaves as expected here, this function returns what its name implies, the config loads before this runs, the caller passes a non-null value, the database is in the state the test implies. For each, mark *verified* (you read the code, checked state, or ran it) or *assumed*. Assumptions are the most common source of stuck debugging. Many "wrong hypotheses" are actually correct hypotheses tested against a wrong assumption.
+**Assumption audit (before hypothesis formation):** List the concrete "this must be true" beliefs your understanding depends on — the framework behaves as expected here, this function returns what its name implies, the config loads before this runs, the caller passes a non-null value, the database is in the state the test implies. For each, mark _verified_ (you read the code, checked state, or ran it) or _assumed_. Assumptions are the most common source of stuck debugging. Many "wrong hypotheses" are actually correct hypotheses tested against a wrong assumption.
 
 **Form hypotheses** ranked by likelihood. For each, state:
+
 - What is wrong and where (file:line)
 - The causal chain: how the trigger leads to the observed symptom, step by step
 - **For uncertain links in the chain**: a prediction — something in a different code path or scenario that must also be true if this link is correct
@@ -116,11 +120,12 @@ Before forming a new hypothesis, review what has already been ruled out and why.
 
 **Causal chain gate:** Do not proceed to Phase 3 until you can explain the full causal chain — from the original trigger through every step to the observed symptom — with no gaps. The user can explicitly authorize proceeding with the best-available hypothesis if investigation is stuck.
 
-*Reminder: if a prediction was wrong but the fix appears to work, you found a symptom. The real cause is still active.*
+_Reminder: if a prediction was wrong but the fix appears to work, you found a symptom. The real cause is still active._
 
 #### Present findings
 
 Once the root cause is confirmed, present:
+
 - The root cause (causal chain summary with file:line references)
 - The proposed fix and which files would change
 - Which tests to add or modify to prevent recurrence (specific test file, test case description, what the assertion should verify)
@@ -150,12 +155,12 @@ Do not suggest brainstorm for bugs that are large but have a clear fix — size 
 
 If 2-3 hypotheses are exhausted without confirmation, diagnose why:
 
-| Pattern | Diagnosis | Next move |
-|---------|-----------|-----------|
-| Hypotheses point to different subsystems | Architecture/design problem, not a localized bug | Present findings, suggest `/ce-brainstorm` |
-| Evidence contradicts itself | Wrong mental model of the code | Step back, re-read the code path without assumptions |
-| Works locally, fails in CI/prod | Environment problem | Focus on env differences, config, dependencies, timing |
-| Fix works but prediction was wrong | Symptom fix, not root cause | The real cause is still active — keep investigating |
+| Pattern                                  | Diagnosis                                        | Next move                                              |
+| ---------------------------------------- | ------------------------------------------------ | ------------------------------------------------------ |
+| Hypotheses point to different subsystems | Architecture/design problem, not a localized bug | Present findings, suggest `/ce-brainstorm`             |
+| Evidence contradicts itself              | Wrong mental model of the code                   | Step back, re-read the code path without assumptions   |
+| Works locally, fails in CI/prod          | Environment problem                              | Focus on env differences, config, dependencies, timing |
+| Fix works but prediction was wrong       | Symptom fix, not root cause                      | The real cause is still active — keep investigating    |
 
 **Parallel investigation option:** When hypotheses are evidence-bottlenecked across clearly independent subsystems, dispatch read-only sub-agents in parallel, each with an explicit hypothesis and structured evidence-return format. No code edits by sub-agents, and skip this when hypotheses depend on each other's outcomes. If the platform does not support parallel sub-agent dispatch, run the same hypothesis probes sequentially in ranked-likelihood order instead — the parallelism is a latency optimization, not a correctness requirement.
 
@@ -165,7 +170,7 @@ Present the diagnosis to the user before proceeding.
 
 ### Phase 3: Fix
 
-*Reminder: one change at a time. If you are changing multiple things, stop.*
+_Reminder: one change at a time. If you are changing multiple things, stop._
 
 If the user chose "Diagnosis only" at the end of Phase 2, skip this phase and go straight to Phase 4 for the summary — the skill's job was the diagnosis. If they chose "Rethink the design", control has transferred to `/ce-brainstorm` and this skill ends.
 
@@ -175,6 +180,7 @@ If the user chose "Diagnosis only" at the end of Phase 2, skip this phase and go
 - If the current branch is the default branch, ask whether to create a feature branch first using the platform's blocking question tool (see Phase 2 for the per-platform names). To detect the default branch, compare against `main`, `master`, or the value of `git rev-parse --abbrev-ref origin/HEAD` with its `origin/` prefix stripped (the raw output is `origin/<name>`, so an unstripped comparison will never match the local branch name). Default to creating one; derive a name from the bug and run `git checkout -b <name>`. On any other branch, proceed.
 
 **Test-first:**
+
 1. Write a failing test that captures the bug (or use the existing failing test)
 2. Verify it fails for the right reason — the root cause, not unrelated setup
 3. Implement the minimal fix — address the root cause and nothing else

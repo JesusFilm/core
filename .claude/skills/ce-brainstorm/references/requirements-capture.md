@@ -10,19 +10,19 @@ The requirements document is for product definition and scope control. Do **not*
 
 ## Section matrix
 
-| Section | Lightweight | Standard / Deep-feature | Deep-product |
-|---|---|---|---|
-| Problem Frame | Required | Required | Required |
-| Actors | Omit unless triggered | Triggered (see below) | Triggered (see below) |
-| Key Flows | Omit unless triggered | Triggered (see below) | Expected by default |
-| Requirements | Required | Required (with R-IDs) | Required (with R-IDs) |
-| Acceptance Examples | Omit unless triggered | Triggered (see below) | Triggered (see below) |
-| Success Criteria | Required | Required | Required |
-| Scope Boundaries | Required (single list) | Required (single list) | Required (split into "Deferred for later" and "Outside this product's identity") |
-| Key Decisions | Include when material | Include when material | Include when material |
-| Dependencies / Assumptions | Include when material | Include when material | Include when material |
-| Outstanding Questions | Include when material | Include when material | Include when material |
-| Next Steps | Required | Required | Required |
+| Section                    | Lightweight            | Standard / Deep-feature | Deep-product                                                                     |
+| -------------------------- | ---------------------- | ----------------------- | -------------------------------------------------------------------------------- |
+| Problem Frame              | Required               | Required                | Required                                                                         |
+| Actors                     | Omit unless triggered  | Triggered (see below)   | Triggered (see below)                                                            |
+| Key Flows                  | Omit unless triggered  | Triggered (see below)   | Expected by default                                                              |
+| Requirements               | Required               | Required (with R-IDs)   | Required (with R-IDs)                                                            |
+| Acceptance Examples        | Omit unless triggered  | Triggered (see below)   | Triggered (see below)                                                            |
+| Success Criteria           | Required               | Required                | Required                                                                         |
+| Scope Boundaries           | Required (single list) | Required (single list)  | Required (split into "Deferred for later" and "Outside this product's identity") |
+| Key Decisions              | Include when material  | Include when material   | Include when material                                                            |
+| Dependencies / Assumptions | Include when material  | Include when material   | Include when material                                                            |
+| Outstanding Questions      | Include when material  | Include when material   | Include when material                                                            |
+| Next Steps                 | Required               | Required                | Required                                                                         |
 
 ## Triggered sections — when to include
 
@@ -77,10 +77,12 @@ topic: <kebab-case-topic>
 [Group under bold inline headers when requirements span distinct concerns. Keep R-IDs sequential across groups — numbering does not restart per group.]
 
 **[Group header, e.g., "Brainstorming workflow"]**
+
 - R1. [Concrete requirement]
 - R2. [Concrete requirement]
 
 **[Group header, e.g., "Output document"]**
+
 - R3. [Concrete requirement]
 
 ---

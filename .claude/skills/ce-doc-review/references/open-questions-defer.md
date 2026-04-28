@@ -138,7 +138,6 @@ Starting document state:
   The alias exists without documented external consumers...
 
   <!-- dedup-key: section="risks" title="alias compatibilitytheater concern" evidence="the alias exists without documented external consumers" -->
-
 ```
 
 After appending two findings in a 2026-04-18 session:

@@ -14,6 +14,7 @@ The Phase 4 menu's visible option count varies by state: no requirements doc hid
 Never silently skip the question.
 
 If `Resolve Before Planning` contains any items:
+
 - Ask the blocking questions now, one at a time, by default
 - If the user explicitly wants to proceed anyway, first convert each remaining item into an explicit decision, assumption, or `Deferred to Planning` question
 - If the user chooses to pause instead, present the handoff as paused or blocked rather than complete

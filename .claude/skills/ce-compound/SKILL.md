@@ -101,6 +101,7 @@ If no relevant entries are found, proceed to Phase 1 without passing memory cont
 Launch research subagents. Each returns text data to the orchestrator.
 
 **Dispatch order:**
+
 - Launch `Context Analyzer`, `Solution Extractor`, and `Related Docs Finder` in parallel (background)
 - Then dispatch `ce-session-historian` in foreground — it reads session files outside the working directory that background agents may not have access to
 - The foreground dispatch runs while the background agents work, adding no wall-clock time
@@ -108,97 +109,102 @@ Launch research subagents. Each returns text data to the orchestrator.
 <parallel_tasks>
 
 #### 1. **Context Analyzer**
-   - Extracts conversation history
-   - Reads `references/schema.yaml` for enum validation and **track classification**
-   - Determines the track (bug or knowledge) from the problem_type
-   - Identifies problem type, component, and track-appropriate fields:
-     - **Bug track**: symptoms, root_cause, resolution_type
-     - **Knowledge track**: applies_when (symptoms/root_cause/resolution_type optional)
-   - Incorporates auto memory excerpts (if provided by the orchestrator) as supplementary evidence
-   - Reads `references/yaml-schema.md` for category mapping into `docs/solutions/`
-   - Suggests a filename using the pattern `[sanitized-problem-slug]-[date].md`
-   - Returns: YAML frontmatter skeleton (must include `category:` field mapped from problem_type), category directory path, suggested filename, and which track applies
-   - Does not invent enum values, categories, or frontmatter fields from memory; reads the schema and mapping files above
-   - Does not force bug-track fields onto knowledge-track learnings or vice versa
+
+- Extracts conversation history
+- Reads `references/schema.yaml` for enum validation and **track classification**
+- Determines the track (bug or knowledge) from the problem_type
+- Identifies problem type, component, and track-appropriate fields:
+  - **Bug track**: symptoms, root_cause, resolution_type
+  - **Knowledge track**: applies_when (symptoms/root_cause/resolution_type optional)
+- Incorporates auto memory excerpts (if provided by the orchestrator) as supplementary evidence
+- Reads `references/yaml-schema.md` for category mapping into `docs/solutions/`
+- Suggests a filename using the pattern `[sanitized-problem-slug]-[date].md`
+- Returns: YAML frontmatter skeleton (must include `category:` field mapped from problem_type), category directory path, suggested filename, and which track applies
+- Does not invent enum values, categories, or frontmatter fields from memory; reads the schema and mapping files above
+- Does not force bug-track fields onto knowledge-track learnings or vice versa
 
 #### 2. **Solution Extractor**
-   - Reads `references/schema.yaml` for track classification (bug vs knowledge)
-   - Adapts output structure based on the problem_type track
-   - Incorporates auto memory excerpts (if provided by the orchestrator) as supplementary evidence -- conversation history and the verified fix take priority; if memory notes contradict the conversation, note the contradiction as cautionary context
 
-   **Bug track output sections:**
+- Reads `references/schema.yaml` for track classification (bug vs knowledge)
+- Adapts output structure based on the problem_type track
+- Incorporates auto memory excerpts (if provided by the orchestrator) as supplementary evidence -- conversation history and the verified fix take priority; if memory notes contradict the conversation, note the contradiction as cautionary context
 
-   - **Problem**: 1-2 sentence description of the issue
-   - **Symptoms**: Observable symptoms (error messages, behavior)
-   - **What Didn't Work**: Failed investigation attempts and why they failed
-   - **Solution**: The actual fix with code examples (before/after when applicable)
-   - **Why This Works**: Root cause explanation and why the solution addresses it
-   - **Prevention**: Strategies to avoid recurrence, best practices, and test cases. Include concrete code examples where applicable (e.g., gem configurations, test assertions, linting rules)
+**Bug track output sections:**
 
-   **Knowledge track output sections:**
+- **Problem**: 1-2 sentence description of the issue
+- **Symptoms**: Observable symptoms (error messages, behavior)
+- **What Didn't Work**: Failed investigation attempts and why they failed
+- **Solution**: The actual fix with code examples (before/after when applicable)
+- **Why This Works**: Root cause explanation and why the solution addresses it
+- **Prevention**: Strategies to avoid recurrence, best practices, and test cases. Include concrete code examples where applicable (e.g., gem configurations, test assertions, linting rules)
 
-   - **Context**: What situation, gap, or friction prompted this guidance
-   - **Guidance**: The practice, pattern, or recommendation with code examples when useful
-   - **Why This Matters**: Rationale and impact of following or not following this guidance
-   - **When to Apply**: Conditions or situations where this applies
-   - **Examples**: Concrete before/after or usage examples showing the practice in action
+**Knowledge track output sections:**
+
+- **Context**: What situation, gap, or friction prompted this guidance
+- **Guidance**: The practice, pattern, or recommendation with code examples when useful
+- **Why This Matters**: Rationale and impact of following or not following this guidance
+- **When to Apply**: Conditions or situations where this applies
+- **Examples**: Concrete before/after or usage examples showing the practice in action
 
 #### 3. **Related Docs Finder**
-   - Searches `docs/solutions/` for related documentation
-   - Identifies cross-references and links
-   - Finds related GitHub issues
-   - Flags any related learning or pattern docs that may now be stale, contradicted, or overly broad
-   - **Assesses overlap** with the new doc being created across five dimensions: problem statement, root cause, solution approach, referenced files, and prevention rules. Score as:
-     - **High**: 4-5 dimensions match — essentially the same problem solved again
-     - **Moderate**: 2-3 dimensions match — same area but different angle or solution
-     - **Low**: 0-1 dimensions match — related but distinct
-   - Returns: Links, relationships, refresh candidates, and overlap assessment (score + which dimensions matched)
 
-   **Search strategy (grep-first filtering for efficiency):**
+- Searches `docs/solutions/` for related documentation
+- Identifies cross-references and links
+- Finds related GitHub issues
+- Flags any related learning or pattern docs that may now be stale, contradicted, or overly broad
+- **Assesses overlap** with the new doc being created across five dimensions: problem statement, root cause, solution approach, referenced files, and prevention rules. Score as:
+  - **High**: 4-5 dimensions match — essentially the same problem solved again
+  - **Moderate**: 2-3 dimensions match — same area but different angle or solution
+  - **Low**: 0-1 dimensions match — related but distinct
+- Returns: Links, relationships, refresh candidates, and overlap assessment (score + which dimensions matched)
 
-   1. Extract keywords from the problem context: module names, technical terms, error messages, component types
-   2. If the problem category is clear, narrow search to the matching `docs/solutions/<category>/` directory
-   3. Use the native content-search tool (e.g., Grep in Claude Code) to pre-filter candidate files BEFORE reading any content. Run multiple searches in parallel, case-insensitive, targeting frontmatter fields. These are template patterns -- substitute actual keywords:
-      - `title:.*<keyword>`
-      - `tags:.*(<keyword1>|<keyword2>)`
-      - `module:.*<module name>`
-      - `component:.*<component>`
-   4. If search returns >25 candidates, re-run with more specific patterns. If <3, broaden to full content search
-   5. Read only frontmatter (first 30 lines) of candidate files to score relevance
-   6. Fully read only strong/moderate matches
-   7. Return distilled links and relationships, not raw file contents
+**Search strategy (grep-first filtering for efficiency):**
 
-   **GitHub issue search:**
+1.  Extract keywords from the problem context: module names, technical terms, error messages, component types
+2.  If the problem category is clear, narrow search to the matching `docs/solutions/<category>/` directory
+3.  Use the native content-search tool (e.g., Grep in Claude Code) to pre-filter candidate files BEFORE reading any content. Run multiple searches in parallel, case-insensitive, targeting frontmatter fields. These are template patterns -- substitute actual keywords:
+    - `title:.*<keyword>`
+    - `tags:.*(<keyword1>|<keyword2>)`
+    - `module:.*<module name>`
+    - `component:.*<component>`
+4.  If search returns >25 candidates, re-run with more specific patterns. If <3, broaden to full content search
+5.  Read only frontmatter (first 30 lines) of candidate files to score relevance
+6.  Fully read only strong/moderate matches
+7.  Return distilled links and relationships, not raw file contents
 
-   Prefer the `gh` CLI for searching related issues: `gh issue list --search "<keywords>" --state all --limit 5`. If `gh` is not installed, fall back to the GitHub MCP tools (e.g., `unblocked` data_retrieval) if available. If neither is available, skip GitHub issue search and note it was skipped in the output.
+**GitHub issue search:**
+
+Prefer the `gh` CLI for searching related issues: `gh issue list --search "<keywords>" --state all --limit 5`. If `gh` is not installed, fall back to the GitHub MCP tools (e.g., `unblocked` data_retrieval) if available. If neither is available, skip GitHub issue search and note it was skipped in the output.
 
 </parallel_tasks>
 
 #### 4. **Session Historian** (foreground, after launching the above — only if the user opted in)
-   - **Skip entirely** if the user declined session history in the follow-up question
-   - Dispatched as `ce-session-historian`
-   - Dispatch in **foreground** — this agent reads session files outside the working directory (`~/.claude/projects/`, `~/.codex/sessions/`, `~/.cursor/projects/`) which background agents may not have access to
-   - Omit the `mode` parameter so the user's configured permission settings apply
-   - Dispatch on the mid-tier model (e.g., `model: "sonnet"` in Claude Code) — the synthesis feeds into compound assembly and doesn't need frontier reasoning
 
-   **Dispatch prompt — keep tight.** A long, keyword-rich prompt licenses the agent to keep widening. Use this shape:
+- **Skip entirely** if the user declined session history in the follow-up question
+- Dispatched as `ce-session-historian`
+- Dispatch in **foreground** — this agent reads session files outside the working directory (`~/.claude/projects/`, `~/.codex/sessions/`, `~/.cursor/projects/`) which background agents may not have access to
+- Omit the `mode` parameter so the user's configured permission settings apply
+- Dispatch on the mid-tier model (e.g., `model: "sonnet"` in Claude Code) — the synthesis feeds into compound assembly and doesn't need frontier reasoning
 
-   - **Pre-resolved context** (only if values resolved cleanly above; otherwise omit and let the agent derive): repo name, current git branch.
-   - **Time window**: explicit `7 days` unless the documented problem clearly spans a longer arc.
-   - **Problem topic**: one sentence naming the concrete issue — error message, module name, what broke and how it was fixed. Not a paragraph; not a bullet list of related topics.
-   - **Filter rule (one line)**: "Only surface findings directly relevant to this specific problem. Ignore unrelated work from the same sessions or branches."
-   - **Output schema**:
+**Dispatch prompt — keep tight.** A long, keyword-rich prompt licenses the agent to keep widening. Use this shape:
 
-     ```
-     Structure your response with these sections (omit any with no findings):
-     - What was tried before
-     - What didn't work
-     - Key decisions
-     - Related context
-     ```
+- **Pre-resolved context** (only if values resolved cleanly above; otherwise omit and let the agent derive): repo name, current git branch.
+- **Time window**: explicit `7 days` unless the documented problem clearly spans a longer arc.
+- **Problem topic**: one sentence naming the concrete issue — error message, module name, what broke and how it was fixed. Not a paragraph; not a bullet list of related topics.
+- **Filter rule (one line)**: "Only surface findings directly relevant to this specific problem. Ignore unrelated work from the same sessions or branches."
+- **Output schema**:
 
-   Do not append additional context blocks, exclusion lists, or topic-keyword bullets — verbose dispatch prompts give the agent license to keep widening the search and rapidly compound wall time. If the agent needs keyword search, it owns that decision via the `--keyword` mode on `ce-session-inventory`.
-   - Returns: structured digest of findings from prior sessions, or "no relevant prior sessions" if none found
+  ```
+  Structure your response with these sections (omit any with no findings):
+  - What was tried before
+  - What didn't work
+  - Key decisions
+  - Related context
+  ```
+
+Do not append additional context blocks, exclusion lists, or topic-keyword bullets — verbose dispatch prompts give the agent license to keep widening the search and rapidly compound wall time. If the agent needs keyword search, it owns that decision via the `--keyword` mode on `ce-session-inventory`.
+
+- Returns: structured digest of findings from prior sessions, or "no relevant prior sessions" if none found
 
 ### Phase 2: Assembly & Write
 
@@ -211,11 +217,11 @@ The orchestrating agent (main conversation) performs these steps:
 1. Collect all text results from Phase 1 subagents
 2. **Check the overlap assessment** from the Related Docs Finder before deciding what to write:
 
-   | Overlap | Action |
-   |---------|--------|
-   | **High** — existing doc covers the same problem, root cause, and solution | **Update the existing doc** with fresher context (new code examples, updated references, additional prevention tips) rather than creating a duplicate. The existing doc's path and structure stay the same. |
-   | **Moderate** — same problem area but different angle, root cause, or solution | **Create the new doc** normally. Flag the overlap for Phase 2.5 to recommend consolidation review. |
-   | **Low or none** | **Create the new doc** normally. |
+   | Overlap                                                                       | Action                                                                                                                                                                                                      |
+   | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | **High** — existing doc covers the same problem, root cause, and solution     | **Update the existing doc** with fresher context (new code examples, updated references, additional prevention tips) rather than creating a duplicate. The existing doc's path and structure stay the same. |
+   | **Moderate** — same problem area but different angle, root cause, or solution | **Create the new doc** normally. Flag the overlap for Phase 2.5 to recommend consolidation review.                                                                                                          |
+   | **Low or none**                                                               | **Create the new doc** normally.                                                                                                                                                                            |
 
    The reason to update rather than create: two docs describing the same problem and solution will inevitably drift apart. The newer context is fresher and more trustworthy, so fold it into the existing doc rather than creating a second one that immediately needs consolidation.
 
@@ -301,21 +307,24 @@ After the learning is written and the refresh decision is made, check whether th
    a. Based on the file's existing structure, tone, and density, identify where a mention fits naturally. Before creating a new section, check whether the information could be a single line in the closest related section — an architecture tree, a directory listing, a documentation section, or a conventions block. A line added to an existing section is almost always better than a new headed section. Only add a new section as a last resort when the file has clear sectioned structure and nothing is even remotely related.
    b. Draft the smallest addition that communicates the three things. Match the file's existing style and density. The addition should describe the knowledge store itself, not the plugin — an agent without the plugin should still find value in it.
 
-      Keep the tone informational, not imperative. Express timing as description, not instruction — "relevant when implementing or debugging in documented areas" rather than "check before implementing or debugging." Imperative directives like "always search before implementing" cause redundant reads when a workflow already includes a dedicated search step. The goal is awareness: agents learn the folder exists and what's in it, then use their own judgment about when to consult it.
+   Keep the tone informational, not imperative. Express timing as description, not instruction — "relevant when implementing or debugging in documented areas" rather than "check before implementing or debugging." Imperative directives like "always search before implementing" cause redundant reads when a workflow already includes a dedicated search step. The goal is awareness: agents learn the folder exists and what's in it, then use their own judgment about when to consult it.
 
-      Examples of calibration (not templates — adapt to the file):
+   Examples of calibration (not templates — adapt to the file):
 
-      When there's an existing directory listing or architecture section — add a line:
-      ```
-      docs/solutions/  # documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (module, tags, problem_type)
-      ```
+   When there's an existing directory listing or architecture section — add a line:
 
-      When nothing in the file is a natural fit — a small headed section is appropriate:
-      ```
-      ## Documented Solutions
+   ```
+   docs/solutions/  # documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (module, tags, problem_type)
+   ```
 
-      `docs/solutions/` — documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`). Relevant when implementing or debugging in documented areas.
-      ```
+   When nothing in the file is a natural fit — a small headed section is appropriate:
+
+   ```
+   ## Documented Solutions
+
+   `docs/solutions/` — documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`). Relevant when implementing or debugging in documented areas.
+   ```
+
    c. In full mode, explain to the user why this matters — agents working in this repo (including fresh sessions, other tools, or collaborators without the plugin) won't know to check `docs/solutions/` unless the instruction file surfaces it. Show the proposed change and where it would go, then use the platform's blocking question tool to get consent before making the edit: `AskUserQuestion` in Claude Code (call `ToolSearch` with `select:AskUserQuestion` first if its schema isn't loaded), `request_user_input` in Codex, `ask_user` in Gemini, `ask_user` in Pi (requires the `pi-ask-user` extension). Fall back to presenting the proposal in chat only when no blocking tool exists in the harness or the call errors (e.g., Codex edit modes) — not because a schema load is required. Never silently skip the question. In lightweight mode, output a one-liner note and move on
 
 ### Phase 3: Optional Enhancement
@@ -358,6 +367,7 @@ The orchestrator (main conversation) performs ALL of the following in one sequen
 4. **Skip specialized agent reviews** (Phase 3) to conserve context
 
 **Lightweight output:**
+
 ```
 ✓ Documentation complete (lightweight mode)
 
@@ -411,6 +421,7 @@ In lightweight mode, the overlap check is skipped (no Related Docs Finder subage
 **Categories auto-detected from problem:**
 
 Bug track:
+
 - build-errors/
 - test-failures/
 - runtime-errors/
@@ -422,6 +433,7 @@ Bug track:
 - logic-errors/
 
 Knowledge track:
+
 - architecture-patterns/ — architectural or structural patterns (agent/skill/pipeline/workflow shape decisions)
 - design-patterns/ — reusable non-architectural design approaches (content generation, interaction patterns, prompt shapes)
 - tooling-decisions/ — language, library, or tool choices with durable rationale
@@ -433,12 +445,12 @@ Knowledge track:
 
 ## Common Mistakes to Avoid
 
-| ❌ Wrong | ✅ Correct |
-|----------|-----------|
-| Subagents write files like `context-analysis.md`, `solution-draft.md` | Subagents return text data; orchestrator writes one final file |
-| Research and assembly run in parallel | Research completes → then assembly runs |
-| Multiple files created during workflow | One solution doc written or updated: `docs/solutions/[category]/[filename].md` (plus an optional small edit to a project instruction file for discoverability) |
-| Creating a new doc when an existing doc covers the same problem | Check overlap assessment; update the existing doc when overlap is high |
+| ❌ Wrong                                                              | ✅ Correct                                                                                                                                                     |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Subagents write files like `context-analysis.md`, `solution-draft.md` | Subagents return text data; orchestrator writes one final file                                                                                                 |
+| Research and assembly run in parallel                                 | Research completes → then assembly runs                                                                                                                        |
+| Multiple files created during workflow                                | One solution doc written or updated: `docs/solutions/[category]/[filename].md` (plus an optional small edit to a project instruction file for discoverability) |
+| Creating a new doc when an existing doc covers the same problem       | Check overlap assessment; update the existing doc when overlap is high                                                                                         |
 
 ## Success Output
 
@@ -521,6 +533,7 @@ Writes the final learning directly into `docs/solutions/`.
 Based on problem type, these agents can enhance documentation:
 
 ### Code Quality & Review
+
 - **ce-kieran-rails-reviewer**: Reviews code examples for Rails best practices
 - **ce-kieran-python-reviewer**: Reviews code examples for Python best practices
 - **ce-kieran-typescript-reviewer**: Reviews code examples for TypeScript best practices
@@ -528,15 +541,18 @@ Based on problem type, these agents can enhance documentation:
 - **ce-pattern-recognition-specialist**: Identifies anti-patterns or repeating issues
 
 ### Specific Domain Experts
+
 - **ce-performance-oracle**: Analyzes performance_issue category solutions
 - **ce-security-sentinel**: Reviews security_issue solutions for vulnerabilities
 - **ce-data-integrity-guardian**: Reviews database_issue migrations and queries
 
 ### Enhancement & Research
+
 - **ce-best-practices-researcher**: Enriches solution with industry best practices
 - **ce-framework-docs-researcher**: Links to framework/library documentation references
 
 ### When to Invoke
+
 - **Auto-triggered** (optional): Agents can run post-documentation for enhancement
 - **Manual trigger**: User can invoke agents after /ce-compound completes for deeper review
 

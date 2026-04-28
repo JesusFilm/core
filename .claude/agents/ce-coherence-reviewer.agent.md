@@ -1,6 +1,6 @@
 ---
 name: ce-coherence-reviewer
-description: "Reviews planning documents for internal consistency -- contradictions between sections, terminology drift, structural issues, and ambiguity where readers would diverge. Spawned by the document-review skill."
+description: 'Reviews planning documents for internal consistency -- contradictions between sections, terminology drift, structural issues, and ambiguity where readers would diverge. Spawned by the document-review skill.'
 model: haiku
 tools: Read, Grep, Glob, Bash
 ---

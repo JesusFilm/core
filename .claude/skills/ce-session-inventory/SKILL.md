@@ -1,6 +1,6 @@
 ---
 name: ce-session-inventory
-description: "Discover session files for a repo across Claude Code, Codex, and Cursor, and extract session metadata (timestamps, branch, cwd, size, platform). Invoked by session-research agents — not intended for direct user queries."
+description: 'Discover session files for a repo across Claude Code, Codex, and Cursor, and extract session metadata (timestamps, branch, cwd, size, platform). Invoked by session-research agents — not intended for direct user queries.'
 user-invocable: false
 context: fork
 ---
@@ -17,8 +17,8 @@ Space-separated positional args:
 
 1. `<repo>` — repo folder name (e.g., `my-project`). Used for directory matching in Claude Code and Cursor, and as the CWD filter for Codex sessions.
 2. `<days>` — scan window in days (e.g., `7`). Session files older than this are skipped.
-3. `<platform>` *(optional)* — one of `claude`, `codex`, `cursor`. Omit to search all three.
-4. `--keyword K1[,K2,...]` *(optional)* — filter to sessions whose full file content matches at least one of the comma-separated keywords (case-insensitive substring). Each emitted session line gains `match_count` and `keyword_matches` ({K: N, ...}) fields, and the `_meta` line gains `files_matched`. Use this instead of rolling per-file `grep -l` calls when ranking many sessions by topical relevance.
+3. `<platform>` _(optional)_ — one of `claude`, `codex`, `cursor`. Omit to search all three.
+4. `--keyword K1[,K2,...]` _(optional)_ — filter to sessions whose full file content matches at least one of the comma-separated keywords (case-insensitive substring). Each emitted session line gains `match_count` and `keyword_matches` ({K: N, ...}) fields, and the `_meta` line gains `files_matched`. Use this instead of rolling per-file `grep -l` calls when ranking many sessions by topical relevance.
 
 ## Execution
 

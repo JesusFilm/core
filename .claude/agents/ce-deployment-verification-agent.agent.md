@@ -1,6 +1,6 @@
 ---
 name: ce-deployment-verification-agent
-description: "Produces Go/No-Go deployment checklists with SQL verification queries, rollback procedures, and monitoring plans. Use when PRs touch production data, migrations, or risky data changes."
+description: 'Produces Go/No-Go deployment checklists with SQL verification queries, rollback procedures, and monitoring plans. Use when PRs touch production data, migrations, or risky data changes.'
 model: inherit
 tools: Read, Grep, Glob, Bash
 ---
@@ -47,6 +47,7 @@ SELECT id, name, type FROM lookup_table ORDER BY id;
 ```
 
 **Expected Results:**
+
 - Document expected values and tolerances
 - Any deviation from expected = STOP deployment
 
@@ -54,11 +55,11 @@ SELECT id, name, type FROM lookup_table ORDER BY id;
 
 For each destructive step:
 
-| Step | Command | Estimated Runtime | Batching | Rollback |
-|------|---------|-------------------|----------|----------|
-| 1. Add column | `rails db:migrate` | < 1 min | N/A | Drop column |
-| 2. Backfill data | `rake data:backfill` | ~10 min | 1000 rows | Restore from backup |
-| 3. Enable feature | Set flag | Instant | N/A | Disable flag |
+| Step              | Command              | Estimated Runtime | Batching  | Rollback            |
+| ----------------- | -------------------- | ----------------- | --------- | ------------------- |
+| 1. Add column     | `rails db:migrate`   | < 1 min           | N/A       | Drop column         |
+| 2. Backfill data  | `rake data:backfill` | ~10 min           | 1000 rows | Restore from backup |
+| 3. Enable feature | Set flag             | Instant           | N/A       | Disable flag        |
 
 ### 4. Post-Deploy Verification (Within 5 Minutes)
 
@@ -82,12 +83,14 @@ SELECT status, COUNT(*) FROM records GROUP BY status;
 ### 5. Rollback Plan
 
 **Can we roll back?**
+
 - [ ] Yes - dual-write kept legacy column populated
 - [ ] Yes - have database backup from before migration
 - [ ] Partial - can revert code but data needs manual fix
 - [ ] No - irreversible change (document why this is acceptable)
 
 **Rollback Steps:**
+
 1. Deploy previous commit
 2. Run rollback migration (if applicable)
 3. Restore data from backup (if needed)
@@ -95,13 +98,14 @@ SELECT status, COUNT(*) FROM records GROUP BY status;
 
 ### 6. Post-Deploy Monitoring (First 24 Hours)
 
-| Metric/Log | Alert Condition | Dashboard Link |
-|------------|-----------------|----------------|
-| Error rate | > 1% for 5 min | /dashboard/errors |
-| Missing data count | > 0 for 5 min | /dashboard/data |
-| User reports | Any report | Support queue |
+| Metric/Log         | Alert Condition | Dashboard Link    |
+| ------------------ | --------------- | ----------------- |
+| Error rate         | > 1% for 5 min  | /dashboard/errors |
+| Missing data count | > 0 for 5 min   | /dashboard/data   |
+| User reports       | Any report      | Support queue     |
 
 **Sample console verification (run 1 hour after deploy):**
+
 ```ruby
 # Quick sanity check
 Record.where(new_column: nil, old_column: [present values]).count
@@ -120,28 +124,33 @@ Produce a complete Go/No-Go checklist that an engineer can literally execute:
 # Deployment Checklist: [PR Title]
 
 ## 🔴 Pre-Deploy (Required)
+
 - [ ] Run baseline SQL queries
 - [ ] Save expected values
 - [ ] Verify staging test passed
 - [ ] Confirm rollback plan reviewed
 
 ## 🟡 Deploy Steps
+
 1. [ ] Deploy commit [sha]
 2. [ ] Run migration
 3. [ ] Enable feature flag
 
 ## 🟢 Post-Deploy (Within 5 Minutes)
+
 - [ ] Run verification queries
 - [ ] Compare with baseline
 - [ ] Check error dashboard
 - [ ] Spot check in console
 
 ## 🔵 Monitoring (24 Hours)
+
 - [ ] Set up alerts
 - [ ] Check metrics at +1h, +4h, +24h
 - [ ] Close deployment ticket
 
 ## 🔄 Rollback (If Needed)
+
 1. [ ] Disable feature flag
 2. [ ] Deploy rollback commit
 3. [ ] Run data restoration
@@ -151,6 +160,7 @@ Produce a complete Go/No-Go checklist that an engineer can literally execute:
 ## When to Use This Agent
 
 Invoke this agent when:
+
 - PR touches database migrations with data changes
 - PR modifies data processing logic
 - PR involves backfills or data transformations

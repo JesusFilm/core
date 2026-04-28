@@ -57,6 +57,7 @@ Sleep 2s
 **Why this shape:** success of the visible command is itself evidence the credential was set — no need to show the auth step. Never add a visible `export SECRET=...` with a fake value: it leaks the variable name and breaks the demo.
 
 **Key .tape directives:**
+
 - `Output [path]` -- Where to write the GIF (must be first line)
 - `Set FontSize [14-18]` -- Larger for readability
 - `Set Width/Height [pixels]` -- Match content needs
@@ -68,6 +69,7 @@ Sleep 2s
 - `Sleep [duration]` -- Wait for output to render
 
 **Avoid:**
+
 - Non-deterministic output (random IDs, timestamps that change between runs)
 - Commands that require interactive input (prompts, password entry)
 - Very long output that scrolls off screen
