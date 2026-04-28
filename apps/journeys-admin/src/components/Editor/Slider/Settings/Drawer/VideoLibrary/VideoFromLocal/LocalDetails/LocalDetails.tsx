@@ -75,8 +75,9 @@ export function LocalDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
   const [playing, setPlaying] = useState(false)
-  const [languageAnchorEl, setLanguageAnchorEl] =
-    useState<HTMLElement | null>(null)
+  const [languageAnchorEl, setLanguageAnchorEl] = useState<HTMLElement | null>(
+    null
+  )
   const [selectedLanguage, setSelectedLanguage] =
     useState<LanguageOption>(DEFAULT_LANGUAGE)
 

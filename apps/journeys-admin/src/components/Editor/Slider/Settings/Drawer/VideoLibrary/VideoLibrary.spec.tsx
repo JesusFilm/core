@@ -488,7 +488,9 @@ describe('VideoLibrary', () => {
         screen.getByRole('button', { name: 'mux-background-upload' })
       ).toBeInTheDocument()
     )
-    fireEvent.click(screen.getByRole('button', { name: 'mux-background-upload' }))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'mux-background-upload' })
+    )
 
     expect(onSelect).toHaveBeenCalledWith(expect.any(Object), false)
     expect(onClose).not.toHaveBeenCalled()
@@ -520,7 +522,6 @@ describe('VideoLibrary', () => {
     expect(onSelect).toHaveBeenCalledWith(expect.any(Object), true)
     expect(onClose).toHaveBeenCalled()
   })
-
 
   it('should render video details if videoId is not null', async () => {
     mswServer.use(getPlaylistItemsEmpty, getVideosWithOffsetAndUrl)

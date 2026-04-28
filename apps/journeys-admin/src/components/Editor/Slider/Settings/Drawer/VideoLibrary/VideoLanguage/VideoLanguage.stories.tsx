@@ -95,9 +95,7 @@ const Template: StoryObj<
     onSelect: { action: string }
   }
 > = {
-  render: ({ onSelect }) => (
-    <VideoLanguagePickerComponent onSelect={onSelect} />
-  )
+  render: ({ onSelect }) => <VideoLanguagePickerComponent onSelect={onSelect} />
 }
 
 export const Default = { ...Template }
