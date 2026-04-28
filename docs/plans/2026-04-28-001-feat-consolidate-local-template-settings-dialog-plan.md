@@ -1,7 +1,7 @@
 ---
 title: 'feat: Consolidate Template Settings and Template Details dialogs for local templates (NES-1543)'
 type: feat
-status: active
+status: completed
 date: 2026-04-28
 ticket: NES-1543
 ---
