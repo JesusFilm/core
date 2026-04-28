@@ -5,10 +5,7 @@
     "jsxImportSource": "@emotion/react",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "types": [
-      "node",
-      "jest"
-    ],
+    "types": ["node", "jest"],
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
@@ -31,8 +28,5 @@
     "next-env.d.ts",
     "../../dist/apps/journeys-admin/.next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "jest.config.ts"
-  ]
+  "exclude": ["node_modules", "jest.config.ts"]
 }

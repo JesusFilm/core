@@ -12,10 +12,7 @@
     "isolatedModules": true,
     "incremental": true,
     "tsBuildInfoFile": "../../.cache/arclight/tsc/.tsbuildinfo",
-    "types": [
-      "jest",
-      "node"
-    ],
+    "types": ["jest", "node"],
     "plugins": [
       {
         "name": "next"
@@ -33,8 +30,5 @@
     "postcss.config.mjs",
     "../../dist/apps/arclight/.next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }
