@@ -1,4 +1,3 @@
-
 import { prisma as languagesPrisma } from '@core/prisma/languages/client'
 import { prisma } from '@core/prisma/media/client'
 
