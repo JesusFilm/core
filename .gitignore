@@ -104,3 +104,4 @@ sea-prep.blob
 # Strapi CMS compiled config files
 apis/cms/config/*.js
 apis/cms/config/*.js.map
+.worktrees

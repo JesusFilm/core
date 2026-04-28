@@ -1,9 +1,11 @@
 import Stack from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
+import { MyCloudflareImagesGrid } from '../MyCloudflareImagesGrid'
 
 import { CustomUrl } from './CustomUrl'
 import { ImageUpload } from './ImageUpload'
@@ -23,6 +25,7 @@ export function CustomImage({
   loading,
   error
 }: CustomImageProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Stack sx={{ bgcolor: 'background.paper' }} data-testid="CustomImage">
       <ImageUpload
@@ -34,6 +37,12 @@ export function CustomImage({
       />
       <Divider sx={{ my: 4 }} />
       <CustomUrl onChange={onChange} />
+      <Divider sx={{ my: 4 }} />
+      <MyCloudflareImagesGrid
+        title={t('Your uploads')}
+        selectedSrc={selectedBlock?.src}
+        onSelect={onChange}
+      />
     </Stack>
   )
 }
