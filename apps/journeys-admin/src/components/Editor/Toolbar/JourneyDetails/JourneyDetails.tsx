@@ -1,13 +1,16 @@
 import Box from '@mui/material/Box'
+import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 export function JourneyDetails(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const nativeName = journey?.language?.name.find(
     ({ primary }) => !primary
@@ -28,19 +31,46 @@ export function JourneyDetails(): ReactElement {
             maxWidth: { xs: 220, md: '100%' }
           }}
         >
-          <Typography
-            sx={{
-              display: { xs: '-webkit-box', md: 'unset' },
-              '-webkit-line-clamp': { xs: '2', md: '1' },
-              '-webkit-box-orient': 'vertical',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              color: 'secondary.dark',
-              typography: { xs: 'subtitle2', md: 'subtitle1' }
-            }}
+          <Stack
+            direction="row"
+            alignItems="center"
+            gap={1}
+            sx={{ minWidth: 0 }}
           >
-            {journey.title}
-          </Typography>
+            <Typography
+              sx={{
+                display: { xs: '-webkit-box', md: 'unset' },
+                '-webkit-line-clamp': { xs: '2', md: '1' },
+                '-webkit-box-orient': 'vertical',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                color: 'secondary.dark',
+                typography: { xs: 'subtitle2', md: 'subtitle1' },
+                minWidth: 0,
+                flexShrink: 1
+              }}
+            >
+              {journey.title}
+            </Typography>
+            {journey.template === true && (
+              <Chip
+                label={t('TEMPLATE')}
+                size="small"
+                data-testid="TemplateBadge"
+                sx={{
+                  flexShrink: 0,
+                  height: 20,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: '0.5px',
+                  bgcolor: 'primary.main',
+                  color: 'primary.contrastText',
+                  borderRadius: 11,
+                  px: 0.5
+                }}
+              />
+            )}
+          </Stack>
           <Box
             sx={{
               display: { xs: '-webkit-box', md: 'flex' },
