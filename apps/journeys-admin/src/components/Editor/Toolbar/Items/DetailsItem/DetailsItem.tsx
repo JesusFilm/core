@@ -7,6 +7,7 @@ import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
+import { getIsLocalTemplate } from '../../../../../libs/getIsLocalTemplate'
 import { Item } from '../Item'
 
 const JourneyDetailsDialog = dynamic(
@@ -38,8 +39,7 @@ export function DetailsItem({
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const [dialogOpen, setDialogOpen] = useState<boolean | null>(null)
-  const isLocalTemplate =
-    journey?.template === true && journey?.team?.id !== 'jfp-team'
+  const isLocalTemplate = getIsLocalTemplate(journey)
 
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {
@@ -68,18 +68,13 @@ export function DetailsItem({
         icon={<Edit2Icon />}
         onClick={handleClick}
       />
-      {journey?.id != null && dialogOpen != null && (
-        <>
-          {isLocalTemplate ? (
-            <LocalTemplateDetailsDialog
-              open={dialogOpen}
-              onClose={handleClose}
-            />
-          ) : (
-            <JourneyDetailsDialog open={dialogOpen} onClose={handleClose} />
-          )}
-        </>
-      )}
+      {journey?.id != null &&
+        dialogOpen != null &&
+        (isLocalTemplate ? (
+          <LocalTemplateDetailsDialog open={dialogOpen} onClose={handleClose} />
+        ) : (
+          <JourneyDetailsDialog open={dialogOpen} onClose={handleClose} />
+        ))}
     </>
   )
 }

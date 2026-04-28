@@ -5,7 +5,6 @@ import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import MoreIcon from '@core/shared/ui/icons/More'
 
 import {
@@ -13,7 +12,7 @@ import {
   GetAdminJourneys_journeys as Journey
 } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { JourneyFields } from '../../../../../__generated__/JourneyFields'
+import { getIsLocalTemplate } from '../../../../libs/getIsLocalTemplate'
 
 const AccessDialog = dynamic(
   async () =>
@@ -316,21 +315,15 @@ export function JourneyCardMenu({
         />
       )}
       {openDetailsDialog != null &&
-        (journey?.template === true && journey?.team?.id !== 'jfp-team' ? (
-          <JourneyProvider
-            value={{
-              journey: journey as unknown as JourneyFields,
-              variant: 'admin'
+        (getIsLocalTemplate(journey) ? (
+          <LocalTemplateDetailsDialog
+            open={openDetailsDialog}
+            onClose={() => {
+              setOpenDetailsDialog(false)
+              setHasOpenDialog?.(false)
             }}
-          >
-            <LocalTemplateDetailsDialog
-              open={openDetailsDialog}
-              onClose={() => {
-                setOpenDetailsDialog(false)
-                setHasOpenDialog?.(false)
-              }}
-            />
-          </JourneyProvider>
+            journey={journey}
+          />
         ) : (
           <JourneyDetailsDialog
             open={openDetailsDialog}

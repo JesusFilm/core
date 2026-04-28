@@ -6,8 +6,8 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { publishedLocalTemplate } from '@core/journeys/ui/TemplateView/data'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
+import { JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE } from '../../../../../libs/useJourneyCustomizationDescriptionUpdateMutation'
 import { TITLE_DESC_LANGUAGE_UPDATE } from '../../../../../libs/useTitleDescLanguageUpdateMutation/useTitleDescLanguageUpdateMutation'
-import { JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE } from '../../Items/TemplateSettingsItem/TemplateSettingsDialog/TemplateSettingsDialog'
 
 import { LocalTemplateDetailsDialog } from './LocalTemplateDetailsDialog'
 
@@ -220,7 +220,7 @@ describe('LocalTemplateDetailsDialog', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalled())
   })
 
-  it('does not submit when the title is empty', async () => {
+  it('shows a "Required" error and blocks submit when the title is empty', async () => {
     const titleMock = makeTitleDescLanguageMock({
       title: '',
       description: publishedLocalTemplate.description ?? null,
@@ -236,13 +236,30 @@ describe('LocalTemplateDetailsDialog', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.change(screen.getAllByRole('textbox')[0], {
+    fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
       target: { value: '' }
     })
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(await screen.findByText('Required')).toBeInTheDocument()
     expect(titleMock.result).not.toHaveBeenCalled()
     expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('renders via journey prop when no JourneyProvider is present', () => {
+    render(
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <SnackbarProvider>
+          <LocalTemplateDetailsDialog
+            open
+            onClose={onClose}
+            journey={publishedLocalTemplate}
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(
+      screen.getByRole('dialog', { name: 'Template Details' })
+    ).toBeInTheDocument()
   })
 
   it('does not call any mutation when the form is unchanged', async () => {

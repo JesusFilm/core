@@ -1,4 +1,4 @@
-import { ApolloError, useMutation } from '@apollo/client'
+import { ApolloError } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
@@ -6,80 +6,136 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { object, string } from 'yup'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider, useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { JourneyCustomizationDescriptionUpdate } from '../../../../../../__generated__/JourneyCustomizationDescriptionUpdate'
+import { JourneyFields as JourneyContext } from '../../../../../../__generated__/JourneyFields'
+import { useJourneyCustomizationDescriptionUpdateMutation } from '../../../../../libs/useJourneyCustomizationDescriptionUpdateMutation'
 import { useTitleDescLanguageUpdateMutation } from '../../../../../libs/useTitleDescLanguageUpdateMutation'
 import { CustomizeTemplate } from '../../Items/TemplateSettingsItem/TemplateSettingsDialog/AboutTabPanel/CustomizeTemplate'
 import { MetadataTabPanel } from '../../Items/TemplateSettingsItem/TemplateSettingsDialog/MetadataTabPanel'
-import { JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE } from '../../Items/TemplateSettingsItem/TemplateSettingsDialog/TemplateSettingsDialog'
-import { TemplateSettingsFormValues } from '../../Items/TemplateSettingsItem/TemplateSettingsDialog/useTemplateSettingsForm'
 import { formatTemplateCustomizationString } from '../../Items/TemplateSettingsItem/TemplateSettingsDialog/utils/formatTemplateCustomizationString'
 import { getTemplateCustomizationFields } from '../../Items/TemplateSettingsItem/TemplateSettingsDialog/utils/getTemplateCustomizationFields'
+
+// Subset of journey fields the dialog actually consumes — kept loose so that
+// both `JourneyFields` and `GetAdminJourneys_journeys` (the template-list
+// shape) satisfy it without an unsafe cast.
+interface DialogJourney {
+  id: string
+  title?: string | null
+  description?: string | null
+  language: { id: string }
+  journeyCustomizationDescription?: string | null
+}
+
+interface LocalTemplateDetailsFormValues {
+  title: string
+  description: string
+  languageId: string
+  journeyCustomizationDescription: string
+}
 
 interface LocalTemplateDetailsDialogProps {
   open: boolean
   onClose: () => void
+  /**
+   * Optional explicit journey override. When provided, the dialog uses this
+   * value instead of (or in addition to) the journey from {@link JourneyProvider}.
+   * The template-list context menu passes the card's journey here because that
+   * page does not provide a JourneyProvider.
+   */
+  journey?: DialogJourney | null
 }
 
 /**
  * LocalTemplateDetailsDialog — single unified editor for LOCAL templates only
- * (journey.template === true && journey.team.id !== 'jfp-team').
- *
- * Replaces the pair of "Edit Details" (JourneyDetailsDialog) and
- * "Template Settings" (TemplateSettingsDialog) dialogs for local templates.
- * Global templates continue to use {@link TemplateSettingsDialog} unchanged.
- *
- * Submit routes by dirty subset:
- * - title / description / languageId → useTitleDescLanguageUpdateMutation
- *   (preserves the subscription path + `updatedAt` consumed by translation polling)
- * - journeyCustomizationDescription → journeyCustomizationFieldPublisherUpdate
+ * (template === true && team.id !== 'jfp-team'). Dispatches title/description/
+ * language through `useTitleDescLanguageUpdateMutation` so the translation-poll
+ * subscription path keeps emitting `updatedAt`. The customization description
+ * goes through `useJourneyCustomizationDescriptionUpdateMutation` and the
+ * Apollo cache is patched directly (the response is a customization-fields
+ * payload, not a Journey).
  */
 export function LocalTemplateDetailsDialog({
   open,
-  onClose
+  onClose,
+  journey: journeyProp
 }: LocalTemplateDetailsDialogProps): ReactElement {
+  const { journey: journeyFromContext } = useJourney()
+
+  // The dialog's children (MetadataTabPanel, CustomizeTemplate) read journey
+  // from JourneyProvider. When `journey` is supplied as a prop (e.g. from the
+  // template-list context menu, which has no provider in scope) we bridge it
+  // into context with a local provider so the prop takes precedence.
+  if (journeyProp != null) {
+    return (
+      <JourneyProvider
+        value={{
+          journey: journeyProp as unknown as JourneyContext,
+          variant: 'admin'
+        }}
+      >
+        <LocalTemplateDetailsDialogBody open={open} onClose={onClose} />
+      </JourneyProvider>
+    )
+  }
+  if (journeyFromContext == null) return <></>
+  return <LocalTemplateDetailsDialogBody open={open} onClose={onClose} />
+}
+
+function LocalTemplateDetailsDialogBody({
+  open,
+  onClose
+}: Omit<LocalTemplateDetailsDialogProps, 'journey'>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey } = useJourney()
   const [titleDescLanguageUpdate] = useTitleDescLanguageUpdateMutation()
   const [journeyCustomizationDescriptionUpdate] =
-    useMutation<JourneyCustomizationDescriptionUpdate>(
-      JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE
-    )
+    useJourneyCustomizationDescriptionUpdateMutation()
   const { enqueueSnackbar } = useSnackbar()
 
-  const validationSchema = object({
-    title: string().trim().required(t('Required'))
-  })
+  const validationSchema = useMemo(
+    () =>
+      object({
+        title: string().trim().required(t('Required'))
+      }),
+    [t]
+  )
 
-  const initialValues: TemplateSettingsFormValues = {
-    title: journey?.title,
-    description: journey?.description,
-    featured: false,
-    strategySlug: journey?.strategySlug,
-    tagIds: journey?.tags.map(({ id }) => id),
-    creatorDescription: journey?.creatorDescription,
-    languageId: journey?.language?.id,
-    journeyCustomizationDescription:
-      journey?.journeyCustomizationDescription ??
-      formatTemplateCustomizationString(getTemplateCustomizationFields(journey))
-  }
+  // Captured once at mount so dirty detection survives JourneyProvider
+  // updates from translation polling. Without `enableReinitialize`, Formik
+  // also keeps the user's in-progress edits stable across context refreshes.
+  const initialValues = useMemo<LocalTemplateDetailsFormValues>(
+    () => ({
+      title: journey?.title ?? '',
+      description: journey?.description ?? '',
+      languageId: journey?.language?.id ?? '',
+      journeyCustomizationDescription:
+        journey?.journeyCustomizationDescription ??
+        formatTemplateCustomizationString(
+          getTemplateCustomizationFields(journey)
+        )
+    }),
+    // Re-seed only when the journey identity changes — opening the dialog for
+    // a different template should refresh defaults; mid-edit polling should not.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [journey?.id]
+  )
 
   function handleClose(resetForm: () => void): () => void {
     return () => {
       onClose()
-      // wait for dialog animation to complete before resetting form values
-      setTimeout(() => resetForm())
+      // 300ms aligns with MUI's default Dialog exit transition.
+      setTimeout(() => resetForm(), 300)
     }
   }
 
   async function handleSubmit(
-    values: TemplateSettingsFormValues
+    values: LocalTemplateDetailsFormValues
   ): Promise<void> {
     if (journey == null) return
     const titleDescLangDirty =
@@ -90,9 +146,10 @@ export function LocalTemplateDetailsDialog({
       values.journeyCustomizationDescription !==
       initialValues.journeyCustomizationDescription
 
-    try {
-      if (titleDescLangDirty) {
-        await titleDescLanguageUpdate({
+    const tasks: Array<Promise<unknown>> = []
+    if (titleDescLangDirty) {
+      tasks.push(
+        titleDescLanguageUpdate({
           variables: {
             id: journey.id,
             input: {
@@ -100,44 +157,76 @@ export function LocalTemplateDetailsDialog({
               description: values.description,
               languageId: values.languageId
             }
+          },
+          optimisticResponse: {
+            journeyUpdate: {
+              __typename: 'Journey',
+              id: journey.id,
+              title: values.title,
+              description: values.description,
+              language: {
+                __typename: 'Language',
+                id: values.languageId,
+                bcp47: null,
+                iso3: null,
+                name: journey.language?.name ?? []
+              },
+              updatedAt: null
+            }
           }
         })
-      }
-      if (customizationDirty) {
-        await journeyCustomizationDescriptionUpdate({
+      )
+    }
+    if (customizationDirty) {
+      tasks.push(
+        journeyCustomizationDescriptionUpdate({
           variables: {
             journeyId: journey.id,
             string: values.journeyCustomizationDescription
           },
-          refetchQueries: ['GetPublisherTemplate']
+          // Mutation result returns customization fields, not a Journey, so we
+          // patch the Journey entity in cache so reopening the dialog (and any
+          // GetPublisherTemplate consumer on the gallery view) sees the new value.
+          update(cache) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
+              fields: {
+                journeyCustomizationDescription() {
+                  return values.journeyCustomizationDescription
+                }
+              }
+            })
+          }
         })
-      }
+      )
+    }
+
+    if (tasks.length === 0) {
+      onClose()
+      return
+    }
+
+    const results = await Promise.allSettled(tasks)
+    const failed = results.find((r) => r.status === 'rejected')
+
+    if (failed == null) {
       enqueueSnackbar(t('Template details saved'), {
         variant: 'success',
         preventDuplicate: true
       })
       onClose()
-    } catch (error) {
-      if (error instanceof ApolloError && error.networkError != null) {
-        enqueueSnackbar(
-          t('Field update failed. Reload the page or try again.'),
-          {
-            variant: 'error',
-            preventDuplicate: true
-          }
-        )
-        return
-      }
-      if (error instanceof Error) {
-        enqueueSnackbar(
-          t('Something went wrong, please reload the page and try again'),
-          {
-            variant: 'error',
-            preventDuplicate: true
-          }
-        )
-      }
+      return
     }
+
+    const networkError =
+      failed.reason instanceof ApolloError &&
+      failed.reason.networkError != null
+    enqueueSnackbar(
+      networkError
+        ? t('Field update failed. Reload the page or try again.')
+        : t('Something went wrong, please reload the page and try again'),
+      { variant: 'error', preventDuplicate: true }
+    )
   }
 
   return (
@@ -145,7 +234,6 @@ export function LocalTemplateDetailsDialog({
       initialValues={initialValues}
       onSubmit={handleSubmit}
       validationSchema={validationSchema}
-      enableReinitialize
     >
       {({ handleSubmit, isSubmitting, resetForm }) => (
         <Form>

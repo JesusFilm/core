@@ -38,6 +38,7 @@ import {
 } from '../../../../__generated__/UpdatePlausibleJourneyFlowViewed'
 import logo from '../../../../public/taskbar-icon.svg'
 import { User } from '../../../libs/auth'
+import { getIsLocalTemplate } from '../../../libs/getIsLocalTemplate'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { NotificationPopover } from '../../NotificationPopover'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
@@ -162,9 +163,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     })
   }
 
-  // Local templates: template === true AND team.id !== "jfp-team"
-  const isLocalTemplate =
-    journey?.template === true && journey?.team?.id !== 'jfp-team'
+  const isLocalTemplate = getIsLocalTemplate(journey)
 
   function handleDialogOpen(): void {
     setRoute(isLocalTemplate ? 'templateDetails' : 'journeyDetails')

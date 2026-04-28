@@ -14,6 +14,7 @@ import MoreIcon from '@core/shared/ui/icons/More'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { User } from '../../../../libs/auth'
+import { getIsLocalTemplate } from '../../../../libs/getIsLocalTemplate'
 import { HelpScoutBeacon } from '../../../HelpScoutBeacon'
 import { AccessItem } from '../Items/AccessItem'
 import { AnalyticsItem } from '../Items/AnalyticsItem'
@@ -50,7 +51,7 @@ export function Menu({ user }: MenuProps): ReactElement {
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const isTemplate = journey?.template === true
-  const isLocalTemplate = isTemplate && journey?.team?.id !== 'jfp-team'
+  const isLocalTemplate = getIsLocalTemplate(journey)
 
   function handleShowMenu(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
