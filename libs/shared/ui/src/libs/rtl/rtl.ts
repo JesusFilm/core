@@ -8,7 +8,6 @@ export function getLocaleRTL(locale: string): boolean {
     case 'arc':
     case 'dv':
     case 'fa':
-    case 'ha':
     case 'he':
     case 'khw':
     case 'ks':
