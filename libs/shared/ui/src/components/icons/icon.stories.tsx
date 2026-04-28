@@ -187,6 +187,7 @@ const iconNames: IconName[] = [
   'Plus2',
   'Plus3',
   'Presentation1',
+  'QrCode2',
   'Search1',
   'Search2',
   'Send1',
