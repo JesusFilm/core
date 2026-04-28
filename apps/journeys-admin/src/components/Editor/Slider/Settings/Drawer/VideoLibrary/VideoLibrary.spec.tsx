@@ -39,6 +39,30 @@ import {
 
 import { VideoLibrary } from '.'
 
+// Stub VideoFromMux so we can drive the documented background-upload contract
+// (onSelect with shouldCloseDrawer=false) directly from a test.
+jest.mock('./VideoFromMux', () => ({
+  __esModule: true,
+  VideoFromMux: ({
+    onSelect
+  }: {
+    onSelect: (
+      block: { videoId: string; source: 'mux' },
+      shouldCloseDrawer?: boolean
+    ) => void
+  }) => (
+    <button
+      type="button"
+      data-testid="mock-mux-background-complete"
+      onClick={() =>
+        onSelect({ videoId: 'mux-bg-id', source: 'mux' }, false)
+      }
+    >
+      simulate-mux-background-complete
+    </button>
+  )
+}))
+
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
@@ -419,6 +443,7 @@ describe('VideoLibrary', () => {
       },
       true
     )
+    expect(onClose).toHaveBeenCalled()
   })
 
   it('should render video details if videoId is not null', async () => {
@@ -862,6 +887,8 @@ describe('VideoLibrary', () => {
         { shallow: true }
       )
     })
+    // Change Video must keep the outer Video Library drawer open
+    expect(onClose).not.toHaveBeenCalled()
   })
 
   it('should navigate to Upload tab when clicking Change Video on a mux video', async () => {
@@ -933,5 +960,158 @@ describe('VideoLibrary', () => {
         { shallow: true }
       )
     })
+    // Change Video must keep the outer Video Library drawer open
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('should close both drawers when Apply is clicked in the language picker for an existing internal video', async () => {
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+    const mocks = [
+      {
+        request: {
+          query: GET_VIDEO,
+          variables: { id: 'videoId', languageId: '529' }
+        },
+        result: {
+          data: {
+            video: {
+              id: 'videoId',
+              primaryLanguageId: '529',
+              images: [],
+              title: [
+                { primary: true, value: 'title1', __typename: 'Language' }
+              ],
+              description: [
+                { primary: true, value: 'desc', __typename: 'Language' }
+              ],
+              variant: {
+                id: 'v1',
+                duration: 144,
+                hls: 'https://example.com/video.m3u8',
+                __typename: 'VideoVariant'
+              },
+              variantLanguages: [
+                {
+                  __typename: 'Language',
+                  id: '529',
+                  slug: 'english',
+                  name: [
+                    {
+                      value: 'English',
+                      primary: true,
+                      __typename: 'LanguageName'
+                    }
+                  ]
+                }
+              ],
+              __typename: 'Video'
+            }
+          }
+        }
+      }
+    ]
+
+    mockRouter()
+
+    render(
+      <MockedProvider mocks={mocks}>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary
+              open
+              selectedBlock={{
+                id: 'video1.id',
+                __typename: 'VideoBlock',
+                parentBlockId: 'card1.id',
+                videoId: 'videoId',
+                videoVariantLanguageId: '529',
+                parentOrder: 0,
+                action: null,
+                muted: false,
+                autoplay: true,
+                startAt: 0,
+                endAt: 144,
+                fullsize: true,
+                title: null,
+                description: null,
+                duration: 144,
+                image: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: null,
+                mediaVideo: null,
+                objectFit: null,
+                posterBlockId: null,
+                eventLabel: null,
+                endEventLabel: null,
+                customizable: null,
+                notes: null,
+                children: [],
+                source: VideoBlockSource.internal
+              }}
+              onSelect={onSelect}
+              onClose={onClose}
+            />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(screen.getByText('Video Details')).toBeVisible())
+    // wait for variant data to load so the language chip is enabled
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'English' })).toBeEnabled()
+    )
+    // open the language picker
+    fireEvent.click(screen.getByRole('button', { name: 'English' }))
+    expect(screen.getByText('Available Languages')).toBeInTheDocument()
+    // click Apply: commits language and closes both drawers
+    fireEvent.click(screen.getByRole('button', { name: 'Apply' }))
+    expect(onSelect).toHaveBeenCalledWith(
+      {
+        duration: 144,
+        endAt: 144,
+        startAt: 0,
+        source: VideoBlockSource.internal,
+        videoId: 'videoId',
+        videoVariantLanguageId: '529'
+      },
+      true
+    )
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  it('should not close the outer drawer when onSelect is called with shouldCloseDrawer=false (background mux upload)', async () => {
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+
+    mockRouter()
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
+    await waitFor(() =>
+      expect(
+        screen.getByTestId('mock-mux-background-complete')
+      ).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByTestId('mock-mux-background-complete'))
+
+    // Background completions pass shouldCloseDrawer=false: the parent
+    // onSelect is invoked with shouldFocus=false and the outer Video
+    // Library drawer must remain open.
+    expect(onSelect).toHaveBeenCalledWith(
+      { videoId: 'mux-bg-id', source: 'mux' },
+      false
+    )
+    expect(onClose).not.toHaveBeenCalled()
   })
 })

@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -224,6 +224,35 @@ describe('LocalDetails', () => {
     expect(getByRole('button', { name: 'Select' })).toBeDisabled()
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(getByRole('button', { name: 'Select' })).not.toBeDisabled()
+  })
+
+  it('should commit the language change and close the picker when Apply is clicked', async () => {
+    const onSelect = jest.fn()
+    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    render(
+      <MockedProvider mocks={[{ ...getVideoMock, result }]}>
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    // open the language picker
+    fireEvent.click(screen.getByRole('button', { name: 'English' }))
+    expect(screen.getByText('Available Languages')).toBeInTheDocument()
+    const applyButton = screen.getByRole('button', { name: 'Apply' })
+    expect(applyButton).toBeVisible()
+    // click Apply: commits the language change and dismisses the picker
+    fireEvent.click(applyButton)
+    expect(onSelect).toHaveBeenCalledWith({
+      duration: 144,
+      endAt: 144,
+      startAt: 0,
+      source: VideoBlockSource.internal,
+      videoId: '2_Acts7302-0-0',
+      videoVariantLanguageId: '529'
+    })
+    // the language picker drawer is dismissed (its Apply button is no longer
+    // visible once the transition starts)
+    await waitFor(() => expect(applyButton).not.toBeVisible())
   })
 
   it('should keep startAt and endAt values if already exist on select click', async () => {
