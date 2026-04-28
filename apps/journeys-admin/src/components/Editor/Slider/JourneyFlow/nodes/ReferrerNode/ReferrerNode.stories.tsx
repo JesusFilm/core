@@ -68,6 +68,26 @@ export const Default = {
   }
 }
 
+export const QRCode = {
+  ...Template,
+  args: {
+    ...defaultFlowProps,
+    nodes: [
+      {
+        id: 'QR Code',
+        type: 'Referrer',
+        data: {
+          __typename: 'PlausibleStatsResponse',
+          property: 'QR Code',
+          visitors: 7
+        },
+        position: { x: 100, y: 0 }
+      }
+    ],
+    initialState: {}
+  }
+}
+
 export const Other = {
   ...Template,
   args: {

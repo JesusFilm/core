@@ -14,9 +14,6 @@ export interface BlockDeleteForCoverImage_blockDelete {
 }
 
 export interface BlockDeleteForCoverImage {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   blockDelete: BlockDeleteForCoverImage_blockDelete[];
 }
 

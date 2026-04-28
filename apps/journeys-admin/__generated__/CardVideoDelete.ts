@@ -204,9 +204,6 @@ export interface CardVideoDelete_video_VideoBlock {
 export type CardVideoDelete_video = CardVideoDelete_video_ImageBlock | CardVideoDelete_video_VideoBlock;
 
 export interface CardVideoDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   video: CardVideoDelete_video[];
 }
 
