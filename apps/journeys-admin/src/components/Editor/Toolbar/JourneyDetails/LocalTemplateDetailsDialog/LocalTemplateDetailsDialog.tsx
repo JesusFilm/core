@@ -219,8 +219,7 @@ function LocalTemplateDetailsDialogBody({
     }
 
     const networkError =
-      failed.reason instanceof ApolloError &&
-      failed.reason.networkError != null
+      failed.reason instanceof ApolloError && failed.reason.networkError != null
     enqueueSnackbar(
       networkError
         ? t('Field update failed. Reload the page or try again.')

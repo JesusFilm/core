@@ -46,17 +46,22 @@ Reach for it whenever you are:
 **Pattern.** Compare each field in `values` to the captured `initialValues`, push into a tasks array per dirty subset, then `Promise.allSettled`. On any rejection, surface a single error snackbar and keep the dialog open; on all-success, close.
 
 ```ts
-const titleDescLangDirty =
-  values.title !== initialValues.title ||
-  values.description !== initialValues.description ||
-  values.languageId !== initialValues.languageId
-const customizationDirty =
-  values.journeyCustomizationDescription !==
-  initialValues.journeyCustomizationDescription
+const titleDescLangDirty = values.title !== initialValues.title || values.description !== initialValues.description || values.languageId !== initialValues.languageId
+const customizationDirty = values.journeyCustomizationDescription !== initialValues.journeyCustomizationDescription
 
 const tasks: Array<Promise<unknown>> = []
-if (titleDescLangDirty) tasks.push(titleDescLanguageUpdate({ /* ... */ }))
-if (customizationDirty) tasks.push(journeyCustomizationDescriptionUpdate({ /* ... */ }))
+if (titleDescLangDirty)
+  tasks.push(
+    titleDescLanguageUpdate({
+      /* ... */
+    })
+  )
+if (customizationDirty)
+  tasks.push(
+    journeyCustomizationDescriptionUpdate({
+      /* ... */
+    })
+  )
 
 if (tasks.length === 0) {
   onClose()
@@ -70,14 +75,8 @@ if (failed == null) {
   onClose()
   return
 }
-const networkError =
-  failed.reason instanceof ApolloError && failed.reason.networkError != null
-enqueueSnackbar(
-  networkError
-    ? t('Field update failed. Reload the page or try again.')
-    : t('Something went wrong, please reload the page and try again'),
-  { variant: 'error' }
-)
+const networkError = failed.reason instanceof ApolloError && failed.reason.networkError != null
+enqueueSnackbar(networkError ? t('Field update failed. Reload the page or try again.') : t('Something went wrong, please reload the page and try again'), { variant: 'error' })
 ```
 
 Reference: [`LocalTemplateDetailsDialog.tsx`](apps/journeys-admin/src/components/Editor/Toolbar/JourneyDetails/LocalTemplateDetailsDialog/LocalTemplateDetailsDialog.tsx).
@@ -159,11 +158,7 @@ The magic string `'jfp-team'` drifts the moment global-template ownership moves 
 
 ```ts
 // apps/journeys-admin/src/libs/getIsLocalTemplate/getIsLocalTemplate.ts
-export function getIsLocalTemplate(
-  journey?:
-    | { template?: boolean | null; team?: { id?: string | null } | null }
-    | null
-): boolean {
+export function getIsLocalTemplate(journey?: { template?: boolean | null; team?: { id?: string | null } | null } | null): boolean {
   return journey?.template === true && journey?.team?.id !== 'jfp-team'
 }
 ```
@@ -182,8 +177,7 @@ Behaviour matches the prior inline check verbatim, including the quirk that a te
 
 ```ts
 // In the legacy dialog file, replace the inline gql with:
-export { JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE } from
-  '../../../../../../libs/useJourneyCustomizationDescriptionUpdateMutation'
+export { JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE } from '../../../../../../libs/useJourneyCustomizationDescriptionUpdateMutation'
 ```
 
 The same shape exists for `useTitleDescLanguageUpdateMutation`, `useJourneyUpdateMutation`, `useLanguagesQuery`. Follow that convention for any mutation/query consumed by more than one component.

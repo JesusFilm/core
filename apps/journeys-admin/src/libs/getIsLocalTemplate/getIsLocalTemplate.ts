@@ -4,12 +4,10 @@
  * editable in-place and not surfaced in the public gallery.
  */
 export function getIsLocalTemplate(
-  journey?:
-    | {
-        template?: boolean | null
-        team?: { id?: string | null } | null
-      }
-    | null
+  journey?: {
+    template?: boolean | null
+    team?: { id?: string | null } | null
+  } | null
 ): boolean {
   return journey?.template === true && journey?.team?.id !== 'jfp-team'
 }
