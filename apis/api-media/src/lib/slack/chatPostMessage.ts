@@ -35,7 +35,8 @@ export async function slackChatPostMessage(args: {
         Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json; charset=utf-8'
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      timeout: 10000
     })
 
     const data = (await response.json()) as SlackApiResponse
@@ -52,8 +53,8 @@ export async function slackChatPostMessage(args: {
     }
 
     return data.ts
-  } catch (error) {
-    log.warn({ error }, errorMessage)
+  } catch (err) {
+    log.warn({ err }, errorMessage)
     return undefined
   }
 }
