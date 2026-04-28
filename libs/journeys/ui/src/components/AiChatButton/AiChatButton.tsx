@@ -2,7 +2,7 @@
 
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
 import IconButton from '@mui/material/IconButton'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useCallback, useState } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
