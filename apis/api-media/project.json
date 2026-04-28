@@ -168,6 +168,13 @@
         "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-weekly-video-slack-summary.ts"
       }
     },
+    "run-weekly-video-slack-bulk-summary": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["prisma-media:prisma-generate"],
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-weekly-video-slack-bulk-summary.ts"
+      }
+    },
     "populate-crowdin-ids": {
       "executor": "nx:run-commands",
       "options": {

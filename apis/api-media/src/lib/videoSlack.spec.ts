@@ -6,6 +6,8 @@ import { prisma } from '@core/prisma/media/client'
 import { logger } from '../logger'
 
 import { sendWeeklyVideoSummary } from './videoSlack'
+import { postWeeklyVideoSlackMessages } from './videoSlackRenderer'
+import type { ReportRow } from './videoSlackReport'
 
 jest.mock('node-fetch')
 jest.mock('@core/prisma/languages/client', () => ({
@@ -42,6 +44,19 @@ describe('videoSlack', () => {
   const mockLoggerInfo = jest.mocked(logger.info)
   const mockLoggerChild = jest.mocked(logger.child)
   const originalEnv = process.env
+
+  function reportRow(overrides: Partial<ReportRow>): ReportRow {
+    return {
+      production: 'Production',
+      mediaComponentId: 'media-id',
+      languageName: 'English',
+      changeType: 'New Upload',
+      updateSource: 'New Video',
+      changeDate: new Date('2026-01-01T00:00:00.000Z'),
+      total: 1,
+      ...overrides
+    }
+  }
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -150,6 +165,65 @@ describe('videoSlack', () => {
     expect(body.text).toContain('1 row')
     expect(JSON.stringify(body.blocks)).toContain('meta-only')
     expect(JSON.stringify(body.blocks)).toContain('Update')
+  })
+
+  it('should post separate root messages grouped by month', async () => {
+    await postWeeklyVideoSlackMessages({
+      rows: [
+        reportRow({
+          mediaComponentId: 'january-video',
+          changeDate: new Date('2026-01-15T00:00:00.000Z')
+        }),
+        reportRow({
+          mediaComponentId: 'february-video',
+          changeDate: new Date('2026-02-15T00:00:00.000Z')
+        })
+      ],
+      startDate: new Date('2026-01-01T00:00:00.000Z'),
+      endDate: new Date('2026-02-28T00:00:00.000Z'),
+      childLogger: logger as any
+    })
+
+    expect(mockFetch).toHaveBeenCalledTimes(2)
+
+    const januaryBody = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
+    const februaryBody = JSON.parse(mockFetch.mock.calls[1][1]?.body as string)
+
+    expect(januaryBody.thread_ts).toBeUndefined()
+    expect(februaryBody.thread_ts).toBeUndefined()
+    expect(januaryBody.text).toContain('January 2026 (UTC)')
+    expect(februaryBody.text).toContain('February 2026 (UTC)')
+    expect(JSON.stringify(januaryBody.blocks)).toContain('january-video')
+    expect(JSON.stringify(februaryBody.blocks)).toContain('february-video')
+  })
+
+  it('should split a large month into part messages without thread replies', async () => {
+    await postWeeklyVideoSlackMessages({
+      rows: Array.from({ length: 800 }, (_, index) =>
+        reportRow({
+          production: `November Production ${index} with a deliberately long title`,
+          mediaComponentId: `november-video-${index}`,
+          changeDate: new Date('2026-11-15T00:00:00.000Z')
+        })
+      ),
+      startDate: new Date('2026-11-01T00:00:00.000Z'),
+      endDate: new Date('2026-11-30T00:00:00.000Z'),
+      childLogger: logger as any
+    })
+
+    expect(mockFetch.mock.calls.length).toBeGreaterThan(1)
+
+    const bodies = mockFetch.mock.calls.map(([, options]) =>
+      JSON.parse(options?.body as string)
+    )
+
+    expect(bodies[0].text).toContain('November 2026 (UTC) part 1')
+    expect(bodies[1].text).toContain('November 2026 (UTC) part 2')
+    expect(
+      bodies[0].blocks.filter((block: { type: string }) => block.type === 'section')
+        .length
+    ).toBeGreaterThan(2)
+    expect(bodies.every((body) => body.thread_ts == null)).toBe(true)
   })
 
   it('should use language package totals for feature films with translated clips', async () => {

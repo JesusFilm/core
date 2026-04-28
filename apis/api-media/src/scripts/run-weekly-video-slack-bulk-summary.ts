@@ -1,24 +1,19 @@
 /**
- * Manual trigger for the weekly video Slack summary (same logic as the worker).
+ * Manual trigger for the condensed weekly video Slack bulk summary.
  *
  * Usage (from repo root). Load secrets first — e.g. create `apis/api-media/.env` via
  * `pnpm exec nx run api-media:fetch-secrets` (needs `DOPPLER_API_MEDIA_TOKEN`), then:
  *
- *   set -a && source apis/api-media/.env && set +a && pnpm exec nx run api-media:run-weekly-video-slack-summary
- *
- * Nx runs `prisma-media:prisma-generate` before the script. Same env + args with tsx only:
- *
- *   set -a && source apis/api-media/.env && set +a && pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-weekly-video-slack-summary.ts
+ *   set -a && source apis/api-media/.env && set +a && pnpm exec nx run api-media:run-weekly-video-slack-bulk-summary
  *
  * Optional positional as-of date:
- *   ... run-weekly-video-slack-summary.ts 2026-03-20T12:00:00.000Z
+ *   ... run-weekly-video-slack-bulk-summary.ts 2026-03-20T12:00:00.000Z
  *
  * Explicit window bounds:
- *   ... run-weekly-video-slack-summary.ts --start 2025-03-01T00:00:00.000Z --end 2025-04-01T00:00:00.000Z
- *
- * If only --end is provided, start defaults to end-7d.
+ *   ... run-weekly-video-slack-bulk-summary.ts --start 2025-03-01T00:00:00.000Z --end 2025-04-01T00:00:00.000Z
  */
-import { sendWeeklyVideoSummary } from '../lib/videoSlack'
+import { postBulkVideoSlackMessages } from '../lib/videoSlackBulkRenderer'
+import { loadBulkVideoReport } from '../lib/videoSlackBulkReport'
 import {
   isValidWeeklyVideoSummaryWindow,
   resolveWeeklyVideoSummaryWindow
@@ -101,10 +96,21 @@ async function main(): Promise<void> {
   }
 
   console.log(
-    `Running weekly summary window: ${startDate.toISOString()} -> ${endDate.toISOString()}`
+    `Running weekly bulk summary window: ${startDate.toISOString()} -> ${endDate.toISOString()}`
   )
-  await sendWeeklyVideoSummary(endDate, logger, { startDate, endDate })
-  console.log('sendWeeklyVideoSummary finished')
+  const rows = await loadBulkVideoReport({ startDate, endDate })
+  if (rows.length === 0) {
+    logger.info(
+      {
+        windowStart: startDate.toISOString(),
+        windowEnd: endDate.toISOString()
+      },
+      'Bulk video Slack summary skipped: no videos changed in the window'
+    )
+    return
+  }
+  await postBulkVideoSlackMessages({ rows, startDate, endDate, childLogger: logger })
+  console.log('postBulkVideoSlackMessages finished')
 }
 
 main().catch((error) => {

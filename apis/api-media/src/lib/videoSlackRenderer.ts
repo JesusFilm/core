@@ -1,17 +1,23 @@
 import { Logger } from 'pino'
 
-import {
-  formatDateIso,
-  ReportRow
-} from './videoSlackReport'
 import { slackChatPostMessage } from './slack/chatPostMessage'
-import { getMediaDataLangSlackConfig, type SlackBotChannelConfig } from './slack/config'
+import {
+  type SlackBotChannelConfig,
+  getMediaDataLangSlackConfig,
+} from './slack/config'
+import {
+  type ReportRow,
+  formatDateIso
+} from './videoSlackReport'
 /**
  * Slack `section` mrkdwn text must stay under 3000 chars, so large reports
- * intentionally continue in thread replies with repeated headers.
+ * intentionally split into month-part messages with repeated headers.
  */
-const tableFenceSoftLimit = 2650
-const threadPostDelayMs = 450
+const tableFenceSoftLimit = 2900
+const maxBlocksPerMessage = 40
+const baseBlocksPerMessage = 5
+const maxTableChunksPerMessage = maxBlocksPerMessage - baseBlocksPerMessage
+const postDelayMs = 450
 
 function formatShortMonthDay(value: Date): string {
   const months = [
@@ -47,6 +53,13 @@ function formatMonthYearUtc(value: Date): string {
     'December'
   ]
   return `${months[value.getUTCMonth()]} ${value.getUTCFullYear()} (UTC)`
+}
+
+function getMonthKey(value: Date): string {
+  return `${value.getUTCFullYear()}-${String(value.getUTCMonth() + 1).padStart(
+    2,
+    '0'
+  )}`
 }
 
 function sanitizeCell(value: string): string {
@@ -151,35 +164,63 @@ function fenceTableLines(lines: string[]): string {
   return ['```', ...lines, '```'].join('\n')
 }
 
+interface MonthGroup {
+  key: string
+  label: string
+  rows: ReportRow[]
+}
+
+function groupRowsByMonth(rows: ReportRow[]): MonthGroup[] {
+  const groups = new Map<string, MonthGroup>()
+
+  for (const row of rows) {
+    const key = getMonthKey(row.changeDate)
+    const existing = groups.get(key)
+    if (existing != null) {
+      existing.rows.push(row)
+      continue
+    }
+    groups.set(key, {
+      key,
+      label: formatMonthYearUtc(row.changeDate),
+      rows: [row]
+    })
+  }
+
+  return Array.from(groups.values()).sort((a, b) => a.key.localeCompare(b.key))
+}
+
+function chunkTableChunksForMessage(tableChunks: string[][]): string[][][] {
+  const chunks: string[][][] = []
+  for (
+    let index = 0;
+    index < tableChunks.length;
+    index += maxTableChunksPerMessage
+  ) {
+    chunks.push(tableChunks.slice(index, index + maxTableChunksPerMessage))
+  }
+  return chunks
+}
+
 async function postSlackMessage(args: {
   config: SlackBotChannelConfig
   text: string
   blocks: unknown[]
-  threadTs?: string
   childLogger: Logger
 }): Promise<string | undefined> {
-  const { config, text, blocks, threadTs, childLogger } = args
+  const { config, text, blocks, childLogger } = args
 
   const body: Record<string, unknown> = {
     text,
     blocks
-  }
-  if (threadTs != null) {
-    body.thread_ts = threadTs
   }
 
   return slackChatPostMessage({
     config,
     body,
     log: childLogger,
-    failureMessage:
-      threadTs != null
-        ? 'Weekly video Slack summary thread reply failed'
-        : 'Weekly video Slack summary failed',
-    errorMessage:
-      threadTs != null
-        ? 'Weekly video Slack summary thread reply threw an error'
-        : 'Weekly video Slack summary threw an error'
+    failureMessage: 'Weekly video Slack summary failed',
+    errorMessage: 'Weekly video Slack summary threw an error'
   })
 }
 
@@ -209,110 +250,121 @@ export async function postWeeklyVideoSlackMessages(args: {
     (row) => row.updateSource === 'Video Metadata'
   ).length
 
-  const dataLines = rows.map(buildTableDataLine)
-  const tableChunks = chunkDataRowsForFence(dataLines, tableFenceSoftLimit)
+  const monthGroups = groupRowsByMonth(rows)
+  const chunkedMonthGroups = monthGroups.map((group) => ({
+    ...group,
+    tableChunks: chunkDataRowsForFence(
+      group.rows.map(buildTableDataLine),
+      tableFenceSoftLimit
+    )
+  }))
+  const monthMessageGroups = chunkedMonthGroups.map((group) => ({
+    ...group,
+    tableChunkGroups: chunkTableChunksForMessage(group.tableChunks)
+  }))
+  const totalMessageCount = monthMessageGroups.reduce(
+    (count, group) => count + Math.max(group.tableChunkGroups.length, 1),
+    0
+  )
 
-  const summaryBlocks: unknown[] = [
-    {
-      type: 'header',
-      text: {
-        type: 'plain_text',
-        text: truncateEnd(`Production · ${formatMonthYearUtc(endDate)}`, 150)
+  for (
+    let groupIndex = 0;
+    groupIndex < monthMessageGroups.length;
+    groupIndex++
+  ) {
+    const group = monthMessageGroups[groupIndex]
+    const tableChunkGroups =
+      group.tableChunkGroups.length > 0
+        ? group.tableChunkGroups
+        : [[[] as string[]]]
+
+    for (let partIndex = 0; partIndex < tableChunkGroups.length; partIndex++) {
+      if (groupIndex > 0 || partIndex > 0) {
+        await sleep(postDelayMs)
       }
-    },
-    {
-      type: 'section',
-      fields: [
+
+      const tableChunks = tableChunkGroups[partIndex]
+      const partText =
+        tableChunkGroups.length > 1 ? ` part ${partIndex + 1}` : ''
+      const title = `Production · ${group.label}${partText}`
+      const blocks: unknown[] = [
         {
-          type: 'mrkdwn',
-          text: `*Reporting window (UTC)*\n\`${windowText}\``
+          type: 'header',
+          text: {
+            type: 'plain_text',
+            text: truncateEnd(title, 150)
+          }
         },
         {
-          type: 'mrkdwn',
-          text: `*Row counts*\nNew Upload rows: *${newUploads}*\nUpdate rows: *${updates}* (variant: *${variantUpdates}*, metadata: *${metadataUpdates}*)\nTotal lines: *${rows.length}*`
+          type: 'section',
+          fields: [
+            {
+              type: 'mrkdwn',
+              text: `*Reporting window (UTC)*\n\`${windowText}\``
+            },
+            {
+              type: 'mrkdwn',
+              text: `*Row counts*\nNew Upload rows: *${newUploads}*\nUpdate rows: *${updates}* (variant: *${variantUpdates}*, metadata: *${metadataUpdates}*)\nTotal lines: *${rows.length}*`
+            },
+            {
+              type: 'mrkdwn',
+              text: `*Month rows*\n${group.label}: *${group.rows.length}* row(s)${
+                tableChunkGroups.length > 1
+                  ? ` · part *${partIndex + 1}/${tableChunkGroups.length}*`
+                  : ''
+              }`
+            },
+            {
+              type: 'mrkdwn',
+              text:
+                totalMessageCount > 1
+                  ? `*Delivery*\n${totalMessageCount} month-grouped messages.`
+                  : `*Delivery*\nSingle message.`
+            }
+          ]
         },
-        {
-          type: 'mrkdwn',
-          text: `*Scope*\nVideos with label \`collection\` are excluded. *Update* rows come from \`VideoVariant.updatedAt\` (per language) **or** \`Video.updatedAt\` when the video changed but no variant row is listed (primary language, de-duped). *New Upload* = one row per new video.`
-        },
-        {
-          type: 'mrkdwn',
-          text:
-            tableChunks.length > 1
-              ? `*Delivery*\n${tableChunks.length} messages in *this thread* (Slack size limits).`
-              : `*Delivery*\nSingle message.`
-        }
-      ]
-    },
-    { type: 'divider' }
-  ]
-
-  if (tableChunks.length === 0) {
-    summaryBlocks.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: '_No table rows after filters._'
-      }
-    })
-  } else {
-    summaryBlocks.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: fenceTableLines([
-          buildTableHeaderLine(),
-          buildTableSeparatorLine(),
-          ...tableChunks[0]
-        ])
-      }
-    })
-  }
-
-  summaryBlocks.push({
-    type: 'context',
-    elements: [
-      {
-        type: 'mrkdwn',
-        text: 'api-media · `collection` excluded · language names: English gloss (`529`) · `Total` = translated package size for `series` / `featureFilm`, otherwise `1`'
-      }
-    ]
-  })
-
-  const rootTs = await postSlackMessage({
-    config,
-    text: `Weekly production report · ${rows.length} row(s) · ${formatMonthYearUtc(endDate)}`,
-    blocks: summaryBlocks,
-    childLogger
-  })
-
-  if (rootTs == null) {
-    return
-  }
-
-  for (let index = 1; index < tableChunks.length; index++) {
-    await sleep(threadPostDelayMs)
-    const threadTs = await postSlackMessage({
-      config,
-      text: `Weekly production report (continued ${index + 1}/${tableChunks.length})`,
-      blocks: [
         {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: fenceTableLines([
-              buildTableHeaderLine(),
-              buildTableSeparatorLine(),
-              ...tableChunks[index]
-            ])
+            text: `*Scope*\nVideos with label \`collection\` are excluded. *Update* rows come from \`VideoVariant.updatedAt\` (per language) **or** \`Video.updatedAt\` when the video changed but no variant row is listed (primary language, de-duped). *New Upload* = one row per new video.`
           }
+        },
+        { type: 'divider' },
+        ...tableChunks.map((chunk) => ({
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text:
+              chunk.length === 0
+                ? '_No table rows after filters._'
+                : fenceTableLines([
+                    buildTableHeaderLine(),
+                    buildTableSeparatorLine(),
+                    ...chunk
+                  ])
+          }
+        })),
+        {
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: 'api-media · `collection` excluded · language names: English gloss (`529`) · `Total` = translated package size for `series` / `featureFilm`, otherwise `1`'
+            }
+          ]
         }
-      ],
-      threadTs: rootTs,
-      childLogger
-    })
-    if (threadTs == null) {
-      break
+      ]
+
+      const ts = await postSlackMessage({
+        config,
+        text: `Weekly production report · ${group.label}${partText} · ${group.rows.length} row(s)`,
+        blocks,
+        childLogger
+      })
+      if (ts == null) {
+        return
+      }
     }
   }
 }
