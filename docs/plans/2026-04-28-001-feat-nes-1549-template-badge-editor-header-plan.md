@@ -26,14 +26,14 @@ Show a styled "TEMPLATE" pill next to the journey title in the editor header bar
 
 ### Where the editor header lives
 
-- Editor header bar: [apps/journeys-admin/src/components/Editor/Toolbar/Toolbar.tsx](apps/journeys-admin/src/components/Editor/Toolbar/Toolbar.tsx)
-- Title is rendered inside a child component, [JourneyDetails.tsx](apps/journeys-admin/src/components/Editor/Toolbar/JourneyDetails/JourneyDetails.tsx) — `journey.title` at line 42, wrapped in a Typography with `-webkit-line-clamp` ellipsis.
+- Editor header bar: [apps/journeys-admin/src/components/Editor/Toolbar/Toolbar.tsx](../../apps/journeys-admin/src/components/Editor/Toolbar/Toolbar.tsx)
+- Title is rendered inside a child component, [JourneyDetails.tsx](../../apps/journeys-admin/src/components/Editor/Toolbar/JourneyDetails/JourneyDetails.tsx) — `journey.title` at line 42, wrapped in a Typography with `-webkit-line-clamp` ellipsis.
 - `journey` comes from `useJourney()` (already imported in `JourneyDetails`).
 - `journey.template` is already used elsewhere in the toolbar (`Menu/Menu.tsx:52`, `Items/Items.tsx:13`, `Toolbar.tsx:170`) — pattern: `journey?.template === true`.
 
 ### Existing badge precedent
 
-[JourneyCard.tsx:165](apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCard.tsx) already uses a small MUI `Chip` for the "New" badge:
+[JourneyCard.tsx:165](../../apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCard.tsx) already uses a small MUI `Chip` for the "New" badge:
 
 ```tsx
 <Chip
@@ -130,9 +130,9 @@ Add a `Template` story variant that injects `template: true` into the journey, s
 ## Sources
 
 - Linear: NES-1549
-- Editor header: [Toolbar.tsx](apps/journeys-admin/src/components/Editor/Toolbar/Toolbar.tsx)
-- Title host: [JourneyDetails.tsx](apps/journeys-admin/src/components/Editor/Toolbar/JourneyDetails/JourneyDetails.tsx)
-- Existing chip pattern: [JourneyCard.tsx:165](apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCard.tsx)
+- Editor header: [Toolbar.tsx](../../apps/journeys-admin/src/components/Editor/Toolbar/Toolbar.tsx)
+- Title host: [JourneyDetails.tsx](../../apps/journeys-admin/src/components/Editor/Toolbar/JourneyDetails/JourneyDetails.tsx)
+- Existing chip pattern: [JourneyCard.tsx:165](../../apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCard.tsx)
 - Existing `journey.template` checks: `Menu/Menu.tsx:52`, `Items/Items.tsx:13`, `Toolbar.tsx:170`
-- Frontend rules: [.claude/rules/frontend/apps.md](.claude/rules/frontend/apps.md) — MUI components, descriptive names, accessibility
-- Jest rule: [.claude/rules/running-jest-tests.md](.claude/rules/running-jest-tests.md) — use `npx jest --config <app>/jest.config.ts --no-coverage <path>`
+- Frontend rules: [.claude/rules/frontend/apps.md](../../.claude/rules/frontend/apps.md) — MUI components, descriptive names, accessibility
+- Jest rule: [.claude/rules/running-jest-tests.md](../../.claude/rules/running-jest-tests.md) — use `npx jest --config <app>/jest.config.ts --no-coverage <path>`

@@ -52,7 +52,7 @@ Key bits:
 
 ## Where this came up
 
-Adding the "TEMPLATE" badge to the journey editor toolbar header — see [JourneyDetails.tsx](../../apps/journeys-admin/src/components/Editor/Toolbar/JourneyDetails/JourneyDetails.tsx). The original title `Typography` was the direct child of a vertical `Stack` and the line-clamp + ellipsis behaviour was clean. Wrapping it in a horizontal `Stack` re-introduced the issue above.
+Adding the "TEMPLATE" badge to the journey editor toolbar header — see [JourneyDetails.tsx](../../../apps/journeys-admin/src/components/Editor/Toolbar/JourneyDetails/JourneyDetails.tsx). The original title `Typography` was the direct child of a vertical `Stack` and the line-clamp + ellipsis behaviour was clean. Wrapping it in a horizontal `Stack` re-introduced the issue above.
 
 ## Prevention
 
@@ -66,5 +66,5 @@ A quick visual check at xs in Storybook with a long title is the cheapest way to
 
 ## Related
 
-- MUI `Chip` precedent for compact pill badges: [JourneyCard.tsx](../../apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCard.tsx) ("New" badge).
+- MUI `Chip` precedent for compact pill badges: [JourneyCard.tsx](../../../apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCard.tsx) ("New" badge).
 - Existing `journey.template === true` checks: `Toolbar.tsx`, `Menu.tsx`, `Items.tsx`.
