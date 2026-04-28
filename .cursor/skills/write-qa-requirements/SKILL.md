@@ -3,6 +3,8 @@ name: write-qa-requirements
 description: Writes QA requirements for a Linear ticket based on branch changes. Use when asked to write, draft, or review QA requirements.
 ---
 
+<!-- Keep in sync with .claude/commands/write-qa-requirements.md -->
+
 # Writing QA Requirements
 
 **Applies when:** The user asks to write, draft, or review QA requirements for a Linear ticket.
@@ -119,6 +121,13 @@ Use this analysis to inform both the acceptance scenarios and the regression sce
 - Verify items test observable outcomes only
 - Specify the User Role if relevant (e.g. "As a publisher", "As an editor")
 - Include environment or timing notes when relevant (e.g. "requires staging environment", "wait for page to fully reload")
+- When the component has responsive breakpoints, specify that QA should test in both **desktop and mobile** viewports
+
+## Previewing Journeys
+
+- Journeys are published by default when created — never use "publish the journey" in setup steps
+- When a scenario requires viewing the journey outside the editor, use "preview the journey" wording
+- Include the **Vercel preview URL** from the PR for scenarios that test the live journey. Format: `journeys-{PR#}-jesusfilm.vercel.app/[journeyId]`. Find the PR number from the ticket's attachments on Linear.
 
 ## Scenario Design
 
