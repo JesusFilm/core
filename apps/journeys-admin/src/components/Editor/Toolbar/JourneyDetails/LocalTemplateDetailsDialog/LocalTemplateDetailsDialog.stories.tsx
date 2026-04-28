@@ -8,17 +8,16 @@ import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { LocalTemplateDetailsDialog } from './LocalTemplateDetailsDialog'
 
-const LocalTemplateDetailsDialogStory: Meta<
-  typeof LocalTemplateDetailsDialog
-> = {
-  ...simpleComponentConfig,
-  component: LocalTemplateDetailsDialog,
-  title: 'Journeys-Admin/Editor/Toolbar/LocalTemplateDetailsDialog',
-  parameters: {
-    ...simpleComponentConfig.parameters,
-    layout: 'fullscreen'
+const LocalTemplateDetailsDialogStory: Meta<typeof LocalTemplateDetailsDialog> =
+  {
+    ...simpleComponentConfig,
+    component: LocalTemplateDetailsDialog,
+    title: 'Journeys-Admin/Editor/Toolbar/LocalTemplateDetailsDialog',
+    parameters: {
+      ...simpleComponentConfig.parameters,
+      layout: 'fullscreen'
+    }
   }
-}
 
 const getLanguagesMock = {
   request: {
