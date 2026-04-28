@@ -76,6 +76,12 @@ export interface JourneySettingsUpdate_journeyUpdate {
   menuStepBlock: JourneySettingsUpdate_journeyUpdate_menuStepBlock | null;
   socialNodeX: number | null;
   socialNodeY: number | null;
+  /**
+   * When true on a template, only the journey owner (creator) and team
+   * managers may mutate the journey. Plain team members and journey editors
+   * retain read access. Has no effect on non-templates and on global templates.
+   */
+  restrictEditing: boolean | null;
 }
 
 export interface JourneySettingsUpdate {

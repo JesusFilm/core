@@ -121,6 +121,7 @@ export const JOURNEY_FIELDS = gql`
     }
     fromTemplateId
     customizable
+    restrictEditing
     showAssistant
   }
 `

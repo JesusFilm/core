@@ -860,6 +860,12 @@ export interface GetPublisherTemplate_publisherTemplate {
    * used to display quick start label on customizable templates
    */
   customizable: boolean | null;
+  /**
+   * When true on a template, only the journey owner (creator) and team
+   * managers may mutate the journey. Plain team members and journey editors
+   * retain read access. Has no effect on non-templates and on global templates.
+   */
+  restrictEditing: boolean | null;
   showAssistant: boolean | null;
 }
 

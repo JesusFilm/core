@@ -76,6 +76,7 @@ export const GET_ADMIN_JOURNEYS = gql`
       }
       website
       customizable
+      restrictEditing
     }
   }
 `
