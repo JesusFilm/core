@@ -5,16 +5,15 @@ import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
-import MoreIcon from '@core/shared/ui/icons/More'
-
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import MoreIcon from '@core/shared/ui/icons/More'
 
 import {
   GetAdminJourneys,
   GetAdminJourneys_journeys as Journey
 } from '../../../../../__generated__/GetAdminJourneys'
-import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 
 const AccessDialog = dynamic(
   async () =>
