@@ -18,9 +18,9 @@ tags:
   - journey-builder
   - mui
 symptoms:
-  - "Clicking Apply in the language picker dismissed the picker but did not commit the new language to the video block"
-  - "Users had to click Select in the Video Details panel as a redundant second step to actually persist the language change"
-  - "After clicking Select, the outer Video Library browse list (Library / YouTube / Upload tabs) was visible underneath, looking like the UI was asking for a different video"
+  - 'Clicking Apply in the language picker dismissed the picker but did not commit the new language to the video block'
+  - 'Users had to click Select in the Video Details panel as a redundant second step to actually persist the language change'
+  - 'After clicking Select, the outer Video Library browse list (Library / YouTube / Upload tabs) was visible underneath, looking like the UI was asking for a different video'
 components:
   - 'apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/VideoLibrary/VideoLibrary.tsx'
   - 'apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/VideoLibrary/VideoLanguage/VideoLanguage.tsx'
@@ -37,7 +37,7 @@ When a Journey Builder user changed the audio language of an existing JF Interna
 ## Symptoms
 
 - Clicking Apply closed only the language picker drawer; the new language was not persisted.
-- After Apply, the user landed on the Video Details panel with the *outer* Video Library browse list visible behind it.
+- After Apply, the user landed on the Video Details panel with the _outer_ Video Library browse list visible behind it.
 - Persisting the change required a second click on **Select** — undocumented and not signalled by the UI.
 - The flow was perceived as broken even after Select, because the browse list flashed underneath before the user manually closed it.
 
@@ -69,7 +69,7 @@ const handleApplyClick = (): void => {
   onClose()
 }
 // ...
-<Button onClick={handleApplyClick}>{t('Apply')}</Button>
+;<Button onClick={handleApplyClick}>{t('Apply')}</Button>
 ```
 
 **`LocalDetails.tsx`** — extract `commitSelection` so both Select and Apply share one commit path; wire `handleApplyLanguage` to `VideoLanguage.onApply`.
@@ -93,7 +93,7 @@ const handleApplyLanguage = (): void => {
   setOpenLanguage(false)
 }
 
-<VideoLanguage
+;<VideoLanguage
   open={openLanguage}
   onClose={() => setOpenLanguage(false)}
   onChange={handleChange}
@@ -117,20 +117,21 @@ if (shouldCloseDrawer) onClose?.()
 **`VideoDetails.tsx`** — `handleClearVideo` (trash icon) must NOT close the outer drawer; pass `shouldCloseDrawer=false` explicitly. (This was a regression introduced by the new gate parameter and caught by `ce-code-review`'s correctness persona before merge — see Prevention.)
 
 ```tsx
-onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
-
-// in handleClearVideo:
-onSelect(
-  {
-    videoId: null,
-    videoVariantLanguageId: null,
-    posterBlockId: null,
-    source: VideoBlockSource.internal,
-    startAt: null,
-    endAt: null
-  },
-  false
-)
+onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) =>
+  void (
+    // in handleClearVideo:
+    onSelect(
+      {
+        videoId: null,
+        videoVariantLanguageId: null,
+        posterBlockId: null,
+        source: VideoBlockSource.internal,
+        startAt: null,
+        endAt: null
+      },
+      false
+    )
+  )
 ```
 
 ## Why This Works
@@ -153,10 +154,7 @@ When introducing a behavioural gate parameter on a shared handler, **audit every
 ```tsx
 // Trash icon must keep the outer drawer open
 fireEvent.click(getByRole('button', { name: 'clear-video' }))
-expect(onSelect).toHaveBeenCalledWith(
-  expect.objectContaining({ videoId: null }),
-  false
-)
+expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ videoId: null }), false)
 
 // Apply / Select must close the outer drawer
 fireEvent.click(getByRole('button', { name: 'Apply' }))
