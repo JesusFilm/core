@@ -83,8 +83,7 @@ export function OverlayContent({
   const footerSpacing: SxProps = {
     mb: {
       xs: pinnedChatActive ? '120px' : footerMobileSpacing,
-      sm: pinnedChatActive ? '120px' : 10,
-      lg: 10
+      sm: 10
     }
   }
 

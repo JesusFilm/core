@@ -860,7 +860,7 @@ export interface GetJourney_journey {
    * used to display quick start label on customizable templates
    */
   customizable: boolean | null;
-  showAssistant?: boolean | null;
+  showAssistant: boolean | null;
 }
 
 export interface GetJourney {
