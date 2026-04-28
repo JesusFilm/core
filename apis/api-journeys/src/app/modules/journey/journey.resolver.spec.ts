@@ -2547,7 +2547,9 @@ describe('JourneyResolver', () => {
           resolver.journeyUpdate(ability, 'journeyId', {
             restrictEditing: true
           })
-        ).rejects.toThrow('user is not allowed to change template edit restriction')
+        ).rejects.toThrow(
+          'user is not allowed to change template edit restriction'
+        )
       })
 
       it('does not perform field-level check when restrictEditing is not in input', async () => {
