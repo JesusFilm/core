@@ -174,11 +174,11 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     setDialogOpen(false)
   }
 
-  // Back-link target follows whether this is *any* template (local or global)
-  // — both should land in the templates tab. Dialog routing uses the narrower
-  // isLocalTemplate above; do not collapse the two.
-  const homeHref =
-    journey?.template === true ? '/?type=templates' : '/?type=journeys'
+  // Local templates → templates tab; everything else (regular journeys AND
+  // global templates) → journeys tab. Behavior preserved from PR #8510 where
+  // this predicate was originally introduced — global templates intentionally
+  // fall through to journeys.
+  const homeHref = isLocalTemplate ? '/?type=templates' : '/?type=journeys'
 
   return (
     <Stack
