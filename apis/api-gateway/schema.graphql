@@ -118,13 +118,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockRestore is used for redo/undo
   """
   blockRestore(id: ID!) : [Block!]! @join__field(graph: API_JOURNEYS) 
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  chatButtonRemove(id: ID!) : ChatButton! @join__field(graph: API_JOURNEYS) 
-  customDomainCreate(input: CustomDomainCreateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS) 
-  customDomainDelete(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS) 
-  customDomainCheck(id: ID!) : CustomDomainCheck! @join__field(graph: API_JOURNEYS) 
   """
   Creates a JourneyViewEvent, returns null if attempting to create another
   JourneyViewEvent with the same userId, journeyId, and within the same 24hr
@@ -374,6 +367,13 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID) : NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN) 
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID) : PhoneAction! @join__field(graph: API_JOURNEYS_MODERN) 
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID) : ChatAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  chatButtonRemove(id: ID!) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  customDomainCheck(id: ID!) : CustomDomainCheck! @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomainDelete(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomainCreate(input: CustomDomainCreateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
   buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!) : RadioQuestionSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -1103,285 +1103,6 @@ type CustomDomain @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURN
   routeAllTeamJourneys: Boolean!
 }
 
-type CustomDomainCheck @join__type(graph: API_JOURNEYS)  {
-  """
-  Is the domain correctly configured in the DNS?
-  If false, A Record and CNAME Record should be added by the user.
-  """
-  configured: Boolean!
-  """
-  Does the domain belong to the team?
-  If false, verification and verificationResponse will be populated.
-  """
-  verified: Boolean!
-  """
-  Verification records to be added to the DNS to confirm ownership.
-  """
-  verification: [CustomDomainVerification!]
-  """
-  Reasoning as to why verification is required.
-  """
-  verificationResponse: CustomDomainVerificationResponse
-}
-
-type CustomDomainVerification @join__type(graph: API_JOURNEYS)  {
-  type: String!
-  domain: String!
-  value: String!
-  reason: String!
-}
-
-type CustomDomainVerificationResponse @join__type(graph: API_JOURNEYS)  {
-  code: String!
-  message: String!
-}
-
-type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
-  customDomain(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  customDomains(teamId: ID!) : [CustomDomain!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  hosts(teamId: ID!) : [Host!]! @join__field(graph: API_JOURNEYS) 
-  integrations(teamId: ID!) : [Integration!]! @join__field(graph: API_JOURNEYS) 
-  adminJourneysReport(reportType: JourneysReportType!) : PowerBiEmbed @join__field(graph: API_JOURNEYS) 
-  journeys(where: JourneysFilter, options: JourneysQueryOptions) : [Journey!]! @join__field(graph: API_JOURNEYS) 
-  journey(id: ID!, idType: IdType, options: JourneysQueryOptions) : Journey! @join__field(graph: API_JOURNEYS) 
-  """
-  Returns distinct language IDs from published global templates.
-  Used to dynamically populate the language filter on the templates page.
-  """
-  journeyTemplateLanguageIds: [String!]! @join__field(graph: API_JOURNEYS) 
-  journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
-  journeyCollections(teamId: ID!) : [JourneyCollection]! @join__field(graph: API_JOURNEYS) 
-  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS) 
-  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter) : Int! @join__field(graph: API_JOURNEYS) 
-  journeyTheme(journeyId: ID!) : JourneyTheme @join__field(graph: API_JOURNEYS) 
-  """
-  Get a list of Visitor Information by Journey
-  """
-  journeyVisitorsConnection(
-    """
-    Returns the elements in the list that match the specified filter.
-    """
-    filter: JourneyVisitorFilter!
-    """
-    Returns the first n elements from the list.
-    """
-    first: Int
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-    """
-    Specifies the sort field for the list.
-    """
-    sort: JourneyVisitorSort
-  ): JourneyVisitorsConnection! @join__field(graph: API_JOURNEYS) 
-  """
-  Get a JourneyVisitor count by JourneyVisitorFilter
-  """
-  journeyVisitorCount(filter: JourneyVisitorFilter!) : Int! @join__field(graph: API_JOURNEYS) 
-  journeysEmailPreference(email: String!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS) 
-  qrCode(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS) 
-  qrCodes(where: QrCodesFilter!) : [QrCode!]! @join__field(graph: API_JOURNEYS) 
-  teams: [Team!]! @join__field(graph: API_JOURNEYS) 
-  team(id: ID!) : Team! @join__field(graph: API_JOURNEYS) 
-  userInvites(journeyId: ID!) : [UserInvite!] @join__field(graph: API_JOURNEYS) 
-  userTeams(teamId: ID!, where: UserTeamFilterInput) : [UserTeam!]! @join__field(graph: API_JOURNEYS) 
-  userTeam(id: ID!) : UserTeam! @join__field(graph: API_JOURNEYS) 
-  userTeamInvites(teamId: ID!) : [UserTeamInvite!]! @join__field(graph: API_JOURNEYS) 
-  """
-  A list of visitors that are connected with a specific team.
-  """
-  visitorsConnection(
-    """
-    Returns the visitor items related to a specific team.
-    """
-    teamId: String
-    """
-    Returns the first n elements from the list.
-    """
-    first: Int
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-  ): VisitorsConnection! @join__field(graph: API_JOURNEYS) 
-  """
-  Get a single visitor
-  """
-  visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS) 
-  block(id: ID!) : Block! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blocks(where: BlocksFilter) : [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
-  nodes(ids: [ID!]!) : [Node]! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
-  googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
-  integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
-  adminJourney(id: ID!, idType: IdType = slug) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
-  adminJourneys(
-    status: [JourneyStatus!]
-    template: Boolean
-    teamId: ID
-    useLastActiveTeamId: Boolean
-  ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
-  getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS_MODERN) 
-  """
-  Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
-  """
-  journeyVisitorExport(
-    journeyId: ID!
-    filter: JourneyEventsFilter
-    select: JourneyVisitorExportSelect
-    """
-    IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.
-    """
-    timezone: String
-  ): String @join__field(graph: API_JOURNEYS_MODERN) 
-  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType = slug) : PlausibleStatsAggregateResponse! @join__field(graph: API_JOURNEYS_MODERN) 
-  """
-  This endpoint allows you to break down your stats by some property.
-  If you are familiar with SQL family databases, this endpoint corresponds to
-  running `GROUP BY` on a certain property in your stats, then ordering by the
-  count.
-  Check out the [properties](https://plausible.io/docs/stats-api#properties)
-  section for a reference of all the properties you can use in this query.
-  This endpoint can be used to fetch data for `Top sources`, `Top pages`,
-  `Top countries` and similar reports.
-  Currently, it is only possible to break down on one property at a time.
-  Using a list of properties with one query is not supported. So if you want
-  a breakdown by both `event:page` and `visit:source` for example, you would
-  have to make multiple queries (break down on one property and filter on
-   another) and then manually/programmatically group the results together in one
-   report. This also applies for breaking down by time periods. To get a daily
-   breakdown for every page, you would have to break down on `event:page` and
-   make multiple queries for each date.
-  """
-  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType = slug) : [PlausibleStatsResponse!]! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType = slug) : Int! @join__field(graph: API_JOURNEYS_MODERN) 
-  """
-  This endpoint provides timeseries data over a certain time period.
-  If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
-  """
-  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug) : [PlausibleStatsResponse!]! @join__field(graph: API_JOURNEYS_MODERN) 
-  templateFamilyStatsAggregate(id: ID!, idType: IdType = slug, where: PlausibleStatsAggregateFilter!) : TemplateFamilyStatsAggregateResponse @join__field(graph: API_JOURNEYS_MODERN) 
-  templateFamilyStatsBreakdown(
-    id: ID!
-    idType: IdType = slug
-    where: PlausibleStatsBreakdownFilter!
-    """
-    Filter results to only include the specified events. If null or empty, all events are returned.
-    """
-    events: [PlausibleEvent!]
-    """
-    Filter results to only include the specified status. If null or empty, all statuses are returned.
-    """
-    status: [JourneyStatus!]
-  ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
-  getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN) 
-  language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
-  languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
-  languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
-  country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
-  countries(term: String, ids: [ID!], where: CountriesFilter) : [Country!]! @join__field(graph: API_LANGUAGES) 
-  getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
-  getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
-  listUnsplashCollectionPhotos(
-    collectionId: String!
-    page: Int
-    perPage: Int
-    orientation: UnsplashPhotoOrientation
-  ): [UnsplashPhoto!]! @join__field(graph: API_MEDIA) 
-  searchUnsplashPhotos(
-    query: String!
-    page: Int
-    perPage: Int
-    orderBy: UnsplashOrderBy
-    collections: [String!]
-    contentFilter: UnsplashContentFilter
-    color: UnsplashColor
-    orientation: UnsplashPhotoOrientation
-  ): UnsplashQueryResponse! @join__field(graph: API_MEDIA) 
-  bibleBooks(where: BibleBooksFilter) : [BibleBook!]! @join__field(graph: API_MEDIA) 
-  bibleCitations(videoId: ID) : [BibleCitation!]! @join__field(graph: API_MEDIA) 
-  bibleCitation(id: ID!) : BibleCitation! @join__field(graph: API_MEDIA) 
-  keywords(where: KeywordsFilter) : [Keyword!]! @join__field(graph: API_MEDIA) 
-  getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
-  getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
-  getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
-  getMyGeneratedMuxSubtitleTrack(muxVideoId: ID!, bcp47: String!, userGenerated: Boolean) : QueryGetMyGeneratedMuxSubtitleTrackResult! @join__field(graph: API_MEDIA) 
-  playlists: [Playlist!] @join__field(graph: API_MEDIA) 
-  playlist(id: ID!, idType: IdType! = databaseId) : QueryPlaylistResult @join__field(graph: API_MEDIA) 
-  """
-  List of short link domains that can be used for short links
-  """
-  shortLinkDomains(
-    """
-    Filter by service (including domains with no services set)
-    """
-    service: Service
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): QueryShortLinkDomainsConnection! @join__field(graph: API_MEDIA) 
-  """
-  Find a short link domain by id
-  """
-  shortLinkDomain(id: String!) : QueryShortLinkDomainResult! @join__field(graph: API_MEDIA) 
-  """
-  find a short link by path and hostname
-  """
-  shortLinkByPath(
-    """
-    short link path not including the leading slash
-    """
-    pathname: String!
-    """
-    the hostname including subdomain, domain, and TLD, but excluding port
-    """
-    hostname: String!
-  ): QueryShortLinkByPathResult! @join__field(graph: API_MEDIA) 
-  """
-  find a short link by id
-  """
-  shortLink(id: String!) : QueryShortLinkResult! @join__field(graph: API_MEDIA) 
-  """
-  find all short links with optional hostname filter
-  """
-  shortLinks(
-    """
-    the hostname including subdomain, domain, and TLD, but excluding port
-    """
-    hostname: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): QueryShortLinksConnection! @join__field(graph: API_MEDIA) 
-  userMediaProfile: UserMediaProfile @join__field(graph: API_MEDIA) 
-  videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
-  videoVariants(input: VideoVariantFilter, offset: Int, limit: Int) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
-  videoVariantsCount(input: VideoVariantFilter) : Int! @join__field(graph: API_MEDIA) 
-  adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
-  adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
-  adminVideosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
-  video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
-  videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
-  videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
-  checkVideoInAlgolia(videoId: ID!) : CheckVideoInAlgoliaResult! @join__field(graph: API_MEDIA) 
-  checkVideoVariantsInAlgolia(videoId: ID!) : CheckVideoVariantsInAlgoliaResult! @join__field(graph: API_MEDIA) 
-  videoOrigins: [VideoOrigin!]! @join__field(graph: API_MEDIA) 
-  videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
-  videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
-  tags: [Tag!]! @join__field(graph: API_MEDIA) 
-  taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
-  youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
-  arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
-  arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
-  me(input: MeInput) : User @join__field(graph: API_USERS) 
-  user(id: ID!) : AuthenticatedUser @join__field(graph: API_USERS) 
-  userByEmail(email: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
-}
-
 type ButtonClickEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
   id: ID!
   """
@@ -1827,6 +1548,252 @@ type Host @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODE
   location: String
   src1: String
   src2: String
+}
+
+type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
+  hosts(teamId: ID!) : [Host!]! @join__field(graph: API_JOURNEYS) 
+  integrations(teamId: ID!) : [Integration!]! @join__field(graph: API_JOURNEYS) 
+  adminJourneysReport(reportType: JourneysReportType!) : PowerBiEmbed @join__field(graph: API_JOURNEYS) 
+  journeys(where: JourneysFilter, options: JourneysQueryOptions) : [Journey!]! @join__field(graph: API_JOURNEYS) 
+  journey(id: ID!, idType: IdType, options: JourneysQueryOptions) : Journey! @join__field(graph: API_JOURNEYS) 
+  """
+  Returns distinct language IDs from published global templates.
+  Used to dynamically populate the language filter on the templates page.
+  """
+  journeyTemplateLanguageIds: [String!]! @join__field(graph: API_JOURNEYS) 
+  journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
+  journeyCollections(teamId: ID!) : [JourneyCollection]! @join__field(graph: API_JOURNEYS) 
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS) 
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter) : Int! @join__field(graph: API_JOURNEYS) 
+  journeyTheme(journeyId: ID!) : JourneyTheme @join__field(graph: API_JOURNEYS) 
+  """
+  Get a list of Visitor Information by Journey
+  """
+  journeyVisitorsConnection(
+    """
+    Returns the elements in the list that match the specified filter.
+    """
+    filter: JourneyVisitorFilter!
+    """
+    Returns the first n elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+    """
+    Specifies the sort field for the list.
+    """
+    sort: JourneyVisitorSort
+  ): JourneyVisitorsConnection! @join__field(graph: API_JOURNEYS) 
+  """
+  Get a JourneyVisitor count by JourneyVisitorFilter
+  """
+  journeyVisitorCount(filter: JourneyVisitorFilter!) : Int! @join__field(graph: API_JOURNEYS) 
+  journeysEmailPreference(email: String!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS) 
+  qrCode(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS) 
+  qrCodes(where: QrCodesFilter!) : [QrCode!]! @join__field(graph: API_JOURNEYS) 
+  teams: [Team!]! @join__field(graph: API_JOURNEYS) 
+  team(id: ID!) : Team! @join__field(graph: API_JOURNEYS) 
+  userInvites(journeyId: ID!) : [UserInvite!] @join__field(graph: API_JOURNEYS) 
+  userTeams(teamId: ID!, where: UserTeamFilterInput) : [UserTeam!]! @join__field(graph: API_JOURNEYS) 
+  userTeam(id: ID!) : UserTeam! @join__field(graph: API_JOURNEYS) 
+  userTeamInvites(teamId: ID!) : [UserTeamInvite!]! @join__field(graph: API_JOURNEYS) 
+  """
+  A list of visitors that are connected with a specific team.
+  """
+  visitorsConnection(
+    """
+    Returns the visitor items related to a specific team.
+    """
+    teamId: String
+    """
+    Returns the first n elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+  ): VisitorsConnection! @join__field(graph: API_JOURNEYS) 
+  """
+  Get a single visitor
+  """
+  visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS) 
+  block(id: ID!) : Block! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blocks(where: BlocksFilter) : [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  customDomains(teamId: ID!) : [CustomDomain!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomain(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
+  node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
+  nodes(ids: [ID!]!) : [Node]! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
+  googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
+  adminJourney(id: ID!, idType: IdType = slug) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
+  adminJourneys(
+    status: [JourneyStatus!]
+    template: Boolean
+    teamId: ID
+    useLastActiveTeamId: Boolean
+  ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
+  """
+  journeyVisitorExport(
+    journeyId: ID!
+    filter: JourneyEventsFilter
+    select: JourneyVisitorExportSelect
+    """
+    IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.
+    """
+    timezone: String
+  ): String @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType = slug) : PlausibleStatsAggregateResponse! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  This endpoint allows you to break down your stats by some property.
+  If you are familiar with SQL family databases, this endpoint corresponds to
+  running `GROUP BY` on a certain property in your stats, then ordering by the
+  count.
+  Check out the [properties](https://plausible.io/docs/stats-api#properties)
+  section for a reference of all the properties you can use in this query.
+  This endpoint can be used to fetch data for `Top sources`, `Top pages`,
+  `Top countries` and similar reports.
+  Currently, it is only possible to break down on one property at a time.
+  Using a list of properties with one query is not supported. So if you want
+  a breakdown by both `event:page` and `visit:source` for example, you would
+  have to make multiple queries (break down on one property and filter on
+   another) and then manually/programmatically group the results together in one
+   report. This also applies for breaking down by time periods. To get a daily
+   breakdown for every page, you would have to break down on `event:page` and
+   make multiple queries for each date.
+  """
+  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType = slug) : [PlausibleStatsResponse!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType = slug) : Int! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  This endpoint provides timeseries data over a certain time period.
+  If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
+  """
+  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug) : [PlausibleStatsResponse!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  templateFamilyStatsAggregate(id: ID!, idType: IdType = slug, where: PlausibleStatsAggregateFilter!) : TemplateFamilyStatsAggregateResponse @join__field(graph: API_JOURNEYS_MODERN) 
+  templateFamilyStatsBreakdown(
+    id: ID!
+    idType: IdType = slug
+    where: PlausibleStatsBreakdownFilter!
+    """
+    Filter results to only include the specified events. If null or empty, all events are returned.
+    """
+    events: [PlausibleEvent!]
+    """
+    Filter results to only include the specified status. If null or empty, all statuses are returned.
+    """
+    status: [JourneyStatus!]
+  ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
+  getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN) 
+  language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
+  languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
+  languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
+  country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
+  countries(term: String, ids: [ID!], where: CountriesFilter) : [Country!]! @join__field(graph: API_LANGUAGES) 
+  getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
+  getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
+  listUnsplashCollectionPhotos(
+    collectionId: String!
+    page: Int
+    perPage: Int
+    orientation: UnsplashPhotoOrientation
+  ): [UnsplashPhoto!]! @join__field(graph: API_MEDIA) 
+  searchUnsplashPhotos(
+    query: String!
+    page: Int
+    perPage: Int
+    orderBy: UnsplashOrderBy
+    collections: [String!]
+    contentFilter: UnsplashContentFilter
+    color: UnsplashColor
+    orientation: UnsplashPhotoOrientation
+  ): UnsplashQueryResponse! @join__field(graph: API_MEDIA) 
+  bibleBooks(where: BibleBooksFilter) : [BibleBook!]! @join__field(graph: API_MEDIA) 
+  bibleCitations(videoId: ID) : [BibleCitation!]! @join__field(graph: API_MEDIA) 
+  bibleCitation(id: ID!) : BibleCitation! @join__field(graph: API_MEDIA) 
+  keywords(where: KeywordsFilter) : [Keyword!]! @join__field(graph: API_MEDIA) 
+  getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
+  getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
+  getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
+  getMyGeneratedMuxSubtitleTrack(muxVideoId: ID!, bcp47: String!, userGenerated: Boolean) : QueryGetMyGeneratedMuxSubtitleTrackResult! @join__field(graph: API_MEDIA) 
+  playlists: [Playlist!] @join__field(graph: API_MEDIA) 
+  playlist(id: ID!, idType: IdType! = databaseId) : QueryPlaylistResult @join__field(graph: API_MEDIA) 
+  """
+  List of short link domains that can be used for short links
+  """
+  shortLinkDomains(
+    """
+    Filter by service (including domains with no services set)
+    """
+    service: Service
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): QueryShortLinkDomainsConnection! @join__field(graph: API_MEDIA) 
+  """
+  Find a short link domain by id
+  """
+  shortLinkDomain(id: String!) : QueryShortLinkDomainResult! @join__field(graph: API_MEDIA) 
+  """
+  find a short link by path and hostname
+  """
+  shortLinkByPath(
+    """
+    short link path not including the leading slash
+    """
+    pathname: String!
+    """
+    the hostname including subdomain, domain, and TLD, but excluding port
+    """
+    hostname: String!
+  ): QueryShortLinkByPathResult! @join__field(graph: API_MEDIA) 
+  """
+  find a short link by id
+  """
+  shortLink(id: String!) : QueryShortLinkResult! @join__field(graph: API_MEDIA) 
+  """
+  find all short links with optional hostname filter
+  """
+  shortLinks(
+    """
+    the hostname including subdomain, domain, and TLD, but excluding port
+    """
+    hostname: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): QueryShortLinksConnection! @join__field(graph: API_MEDIA) 
+  userMediaProfile: UserMediaProfile @join__field(graph: API_MEDIA) 
+  videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
+  videoVariants(input: VideoVariantFilter, offset: Int, limit: Int) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
+  videoVariantsCount(input: VideoVariantFilter) : Int! @join__field(graph: API_MEDIA) 
+  adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
+  adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
+  adminVideosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
+  video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
+  videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
+  videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
+  checkVideoInAlgolia(videoId: ID!) : CheckVideoInAlgoliaResult! @join__field(graph: API_MEDIA) 
+  checkVideoVariantsInAlgolia(videoId: ID!) : CheckVideoVariantsInAlgoliaResult! @join__field(graph: API_MEDIA) 
+  videoOrigins: [VideoOrigin!]! @join__field(graph: API_MEDIA) 
+  videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
+  videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
+  tags: [Tag!]! @join__field(graph: API_MEDIA) 
+  taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
+  youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
+  arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
+  arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
+  me(input: MeInput) : User @join__field(graph: API_USERS) 
+  user(id: ID!) : AuthenticatedUser @join__field(graph: API_USERS) 
+  userByEmail(email: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
 }
 
 type IntegrationGoogle implements Integration @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Integration")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Integration")  {
@@ -2363,6 +2330,25 @@ type VisitorsConnection @join__type(graph: API_JOURNEYS)  {
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
+}
+
+type CustomDomainCheck @join__type(graph: API_JOURNEYS_MODERN)  {
+  configured: Boolean!
+  verified: Boolean!
+  verification: [CustomDomainVerification!]
+  verificationResponse: CustomDomainVerificationResponse
+}
+
+type CustomDomainVerification @join__type(graph: API_JOURNEYS_MODERN)  {
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+  code: String!
+  message: String!
 }
 
 type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3681,6 +3667,14 @@ enum MessagePlatform @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JO
   weChat @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+enum ButtonAction @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  NavigateToBlockAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  LinkAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  EmailAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  PhoneAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  ChatAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum JourneysReportType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   multipleFull @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   multipleSummary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3692,14 +3686,6 @@ enum JourneyVisitorSort @join__type(graph: API_JOURNEYS)  @join__type(graph: API
   date @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   duration @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   activity @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-}
-
-enum ButtonAction @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  NavigateToBlockAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  LinkAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  EmailAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  PhoneAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  ChatAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum IntegrationType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3980,30 +3966,6 @@ input ButtonBlockSettingsInput @join__type(graph: API_JOURNEYS)  @join__type(gra
 
 input TypographyBlockSettingsInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   color: String
-}
-
-input ChatButtonCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  link: String
-  platform: MessagePlatform
-}
-
-input ChatButtonUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  link: String
-  platform: MessagePlatform
-  customizable: Boolean
-}
-
-input CustomDomainCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  teamId: String!
-  name: String!
-  journeyCollectionId: ID
-  routeAllTeamJourneys: Boolean
-}
-
-input CustomDomainUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  journeyCollectionId: ID
-  routeAllTeamJourneys: Boolean
 }
 
 input JourneyViewEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4635,6 +4597,17 @@ input ChatActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   parentStepId: String
 }
 
+input ChatButtonCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  link: String
+  platform: MessagePlatform
+}
+
+input ChatButtonUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  link: String
+  platform: MessagePlatform
+  customizable: Boolean
+}
+
 input ChatOpenEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -4657,6 +4630,19 @@ input CreateGoogleSheetsSyncInput @join__type(graph: API_JOURNEYS_MODERN)  {
   spreadsheetId: ID!
   sheetName: String!
   folderId: String
+}
+
+input CustomDomainCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  teamId: String!
+  name: String!
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
+}
+
+input CustomDomainUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
 }
 
 input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
