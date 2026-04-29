@@ -2,6 +2,7 @@ import type { ProcessingSummary } from '../types'
 import { parseImporterFilenameForTable } from '../utils/importerFilenameDisplay'
 
 const SLACK_CHAT_POST_MESSAGE = 'https://slack.com/api/chat.postMessage'
+const SLACK_POST_TIMEOUT_MS = 10_000
 
 /** Slack Block Kit payloads (subset we use). */
 type SlackMrkdwn = { type: 'mrkdwn'; text: string }
@@ -362,7 +363,8 @@ export async function postVideoImporterSlackSummary(params: {
         channel: channelId,
         text,
         blocks
-      })
+      }),
+      signal: AbortSignal.timeout(SLACK_POST_TIMEOUT_MS)
     })
   } catch (err) {
     console.error('[video-importer] Failed to reach Slack API:', err)

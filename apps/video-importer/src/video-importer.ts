@@ -180,14 +180,18 @@ async function main() {
 
   if (
     !options.dryRun &&
-    !options.noSlack &&
+    options.slack &&
     slackTokenConfigured &&
     slackChannelConfigured
   ) {
-    const { postVideoImporterSlackSummary } = await import(
-      /* webpackChunkName: "video-importer-slack" */ './services/slack'
-    )
-    await postVideoImporterSlackSummary({ folderPath, summary })
+    try {
+      const { postVideoImporterSlackSummary } = await import(
+        /* webpackChunkName: "video-importer-slack" */ './services/slack'
+      )
+      await postVideoImporterSlackSummary({ folderPath, summary })
+    } catch (err) {
+      console.error('[video-importer] Slack notification failed:', err)
+    }
   }
 
   // Errors are logged inline where they occur

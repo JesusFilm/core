@@ -9,7 +9,8 @@ export function toErrorMessage(error: unknown): string {
   }
 
   try {
-    return JSON.stringify(error)
+    const result = JSON.stringify(error)
+    return result ?? String(error)
   } catch {
     return String(error)
   }

@@ -75,4 +75,15 @@ describe('parseVideoFilename', () => {
   it('returns null for non-mp4 files', () => {
     assert.equal(parseVideoFilename('1_jf-0-0---ot---529---1.srt'), null)
   })
+
+  it('returns null when only one of the burned-in segments is zero/blank', () => {
+    assert.equal(
+      parseVideoFilename('1_jf6138-0-0---OT---529---1234---6440---0.mp4'),
+      null
+    )
+    assert.equal(
+      parseVideoFilename('1_jf6138-0-0---OT---529---1234---0---28288.mp4'),
+      null
+    )
+  })
 })

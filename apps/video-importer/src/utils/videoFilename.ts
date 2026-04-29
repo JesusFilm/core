@@ -89,8 +89,12 @@ export function parseVideoFilename(file: string): ParsedVideoFilename | null {
 
   const [audioLanguageId, audioVersion, burnedLanguageId, burnedVersion] =
     variantSegments
-  const burnedIn =
-    !isZeroPlaceholder(burnedLanguageId) && !isZeroPlaceholder(burnedVersion)
+  const burnedLanguageZero = isZeroPlaceholder(burnedLanguageId)
+  const burnedVersionZero = isZeroPlaceholder(burnedVersion)
+  if (burnedLanguageZero !== burnedVersionZero) {
+    return null
+  }
+  const burnedIn = !burnedLanguageZero && !burnedVersionZero
 
   return {
     videoId,
