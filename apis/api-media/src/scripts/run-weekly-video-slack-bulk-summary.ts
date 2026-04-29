@@ -26,12 +26,20 @@ interface ParsedCliArgs {
   positionalAsOf?: string
 }
 
+function readFlagValue(argv: string[], index: number, flag: string): string {
+  const value = argv[index]
+  if (value == null || value.startsWith('--')) {
+    throw new Error(`${flag} requires a value (ISO-8601 date string)`)
+  }
+  return value
+}
+
 function parseCliArgs(argv: string[]): ParsedCliArgs {
   const parsed: ParsedCliArgs = {}
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
     if (arg === '--start') {
-      parsed.startIso = argv[i + 1]
+      parsed.startIso = readFlagValue(argv, i + 1, '--start')
       i++
       continue
     }
@@ -40,7 +48,7 @@ function parseCliArgs(argv: string[]): ParsedCliArgs {
       continue
     }
     if (arg === '--end') {
-      parsed.endIso = argv[i + 1]
+      parsed.endIso = readFlagValue(argv, i + 1, '--end')
       i++
       continue
     }
