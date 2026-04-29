@@ -55,18 +55,20 @@ export function JourneyDetails(): ReactElement {
             {journey.template === true && (
               <Chip
                 label={t('TEMPLATE')}
-                size="small"
                 data-testid="TemplateBadge"
                 sx={{
                   flexShrink: 0,
-                  height: 20,
-                  fontSize: 10,
-                  fontWeight: 700,
-                  letterSpacing: '0.5px',
-                  bgcolor: 'primary.main',
-                  color: 'primary.contrastText',
-                  borderRadius: 11,
-                  px: 0.5
+                  height: 28,
+                  borderRadius: '4px',
+                  bgcolor: '#DEDFE0',
+                  color: '#444451',
+                  fontFamily: '"Open Sans", sans-serif',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  lineHeight: '20px',
+                  '& .MuiChip-label': {
+                    px: 1
+                  }
                 }}
               />
             )}
