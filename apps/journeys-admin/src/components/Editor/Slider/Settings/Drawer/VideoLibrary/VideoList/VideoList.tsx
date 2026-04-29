@@ -16,7 +16,7 @@ import { VideoListItem } from './VideoListItem'
 import { VideoListItemProps } from './VideoListItem/VideoListItem'
 
 export interface VideoListProps {
-  onSelect: (block: VideoBlockUpdateInput) => void
+  onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
   loading: boolean
   videos?: Array<
     Pick<

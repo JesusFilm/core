@@ -11,7 +11,7 @@ import { VideoList } from '../VideoList'
 import { VideoSearch } from '../VideoSearch'
 
 interface VideoFromLocalProps {
-  onSelect: (block: VideoBlockUpdateInput) => void
+  onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
 }
 
 export function VideoFromLocal({

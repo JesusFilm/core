@@ -120,6 +120,10 @@ export function VideoLibrary({
 
     if (handleSelect != null) handleSelect(block, shouldFocus)
     setOpenVideoDetails(false)
+    // close the outer Video Library drawer when the select originated from a
+    // user-driven commit (Select / Apply). Background paths such as MUX upload
+    // completion pass shouldCloseDrawer=false to keep the library open.
+    if (shouldCloseDrawer) onClose?.()
   }
 
   const handleVideoDetailsClose = (closeParent?: boolean): void => {
