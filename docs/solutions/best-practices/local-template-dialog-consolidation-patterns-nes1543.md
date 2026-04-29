@@ -238,7 +238,7 @@ If `screen.getByTestId('YourDialog')` mysteriously can't find a rendered dialog,
 
 **Problem.** Multi-agent reviews (CodeRabbit, ce-review subagents, etc.) surface a mix of genuine improvements and confidently-stated false positives. The bot tone makes both feel equally authoritative. Accepting everything wholesale ships regressions.
 
-**Real example from this PR.** A CodeRabbit pass surfaced 4 actionable inline comments + 3 nitpicks. After accepting all 6 actionable suggestions in commit `3ac45373c`, a verification pass identified **two false positives**:
+**Real example from this PR.** A CodeRabbit pass surfaced 4 actionable inline comments + 3 nitpicks + 1 outside-diff suggestion (8 total findings, 6 net acceptances after grouping the three ThemeProvider mentions into one). All 6 were applied in commit `3ac45373c`. A follow-up verification pass then identified **two false positives**:
 
 a. **`Toolbar.tsx` `homeHref` "fix"** — bot said "global templates should also route to /?type=templates." But the original predicate was deliberately scoped to local templates only (PR #8510, commit `60c1aa36a`, with an explicit code comment documenting the intent). Accepting the suggestion would have shipped an untested behaviour change to global templates — silent regression risk.
 
