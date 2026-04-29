@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import map from 'lodash/map'
 import take from 'lodash/take'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo } from 'react'
 import { SwiperOptions } from 'swiper/types'
 

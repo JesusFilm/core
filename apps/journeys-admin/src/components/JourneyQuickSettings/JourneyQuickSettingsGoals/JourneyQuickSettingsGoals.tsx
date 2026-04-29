@@ -7,7 +7,7 @@ import { Theme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
 import { getLinkActionGoal } from '@core/journeys/ui/Button/utils/getLinkActionGoal'

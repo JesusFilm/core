@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import InputAdornment from '@mui/material/InputAdornment'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { enqueueSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 

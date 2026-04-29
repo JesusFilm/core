@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { useRouter } from 'next/compat/router'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { type MouseEvent, type ReactElement, useState } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'

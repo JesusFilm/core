@@ -8,7 +8,7 @@ import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { formatISO } from 'date-fns'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
