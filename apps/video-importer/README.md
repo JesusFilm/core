@@ -202,7 +202,7 @@ If you want to manually handle failed files:
 
 **Example:**
 
-- Filename: `1_jf6113---ot---23924.mp4`
+- Filename: `1_jf6113---ot---23924---1.mp4`
 - Video ID: `1_jf6113` ← This video must exist in the database first
 
 ### Authentication/Permission Errors
@@ -238,8 +238,11 @@ If you want to manually handle failed files:
 **Solution:**
 
 1. Double-check file naming follows the exact pattern:
-   - Videos: `<videoId>---<edition>---<languageId>.mp4`
-   - Subtitles: `<videoId>---<edition>---<languageId>.(srt|vtt)`
+   - Videos (classic, 4 segments): `<videoId>---<edition>---<languageId>---<version>.mp4`
+   - Videos (burned-in aware, 6 segments): `<videoId>---<edition>---<audioLanguageId>---<audioVersion>---<burnedLanguageId>---<burnedVersion>.mp4`
+     - When `<burnedLanguageId>` and `<burnedVersion>` are both non-zero, the variant's `languageId` / `version` is the burned-in pair (audio pair is logged for diagnostics only).
+     - When both burned-in segments are `0` (or blank), the audio pair becomes the variant's `languageId` / `version` — equivalent to the 4-segment shape.
+   - Subtitles: `<videoId>---<edition>---<languageId>[---extra].(srt|vtt)`
    - Audio: `<languageId>.aac`
 2. Ensure file extensions are lowercase
 3. Verify no extra spaces or special characters
