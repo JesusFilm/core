@@ -56,7 +56,7 @@ The bot needs the `chat:write` scope (and access to the chosen channel).
 - **Format:** `.mp4` only
 - **Naming Convention (classic, 4 segments):**
 
-  ```
+  ```text
   <videoId>---<edition>---<languageId>---<version>.mp4
   ```
 
@@ -64,7 +64,7 @@ The bot needs the `chat:write` scope (and access to the chosen channel).
 
 - **Naming Convention (burned-in aware, 6 segments):**
 
-  ```
+  ```text
   <videoId>---<edition>---<audioLanguageId>---<audioVersion>---<burnedLanguageId>---<burnedVersion>.mp4
   ```
 
