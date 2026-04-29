@@ -45,20 +45,14 @@ export async function sendWeeklyVideoSummary(
       endDate
     })
 
-    if (
-      counts.newVideos === 0 &&
-      counts.variantUpdateRows === 0 &&
-      counts.videoMetadataOnlyRows === 0
-    ) {
+    if (counts.newVariants === 0) {
       childLogger.info(
         {
           windowStart: formatDateIso(startDate),
           windowEnd: formatDateIso(endDate),
-          newVideos: counts.newVideos,
-          variantUpdateRows: counts.variantUpdateRows,
-          videoMetadataOnlyRows: counts.videoMetadataOnlyRows
+          newVariants: counts.newVariants
         },
-        'Weekly video Slack summary: posting empty-week message — no new videos, no variant updates, and no metadata-only video updates in the window'
+        'Weekly video Slack summary: posting empty-week message — no new variants in the window'
       )
       await postEmptyWeeklyVideoSlackMessage({
         startDate,

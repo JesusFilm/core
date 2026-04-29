@@ -16,22 +16,41 @@ const baseBlocksPerMessage = 5
 const maxTableChunksPerMessage = maxBlocksPerMessage - baseBlocksPerMessage
 const postDelayMs = 450
 
-function formatShortMonthDay(value: Date): string {
+function ordinalSuffix(day: number): string {
+  if (day >= 11 && day <= 13) {
+    return 'th'
+  }
+  switch (day % 10) {
+    case 1:
+      return 'st'
+    case 2:
+      return 'nd'
+    case 3:
+      return 'rd'
+    default:
+      return 'th'
+  }
+}
+
+function formatLongDateUtc(value: Date): string {
   const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
+    'January',
+    'February',
+    'March',
+    'April',
     'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec'
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
   ]
-  return `${months[value.getUTCMonth()]} ${value.getUTCDate()}`
+  const month = months[value.getUTCMonth()]
+  const day = value.getUTCDate()
+  const year = value.getUTCFullYear()
+  return `${month} ${day}${ordinalSuffix(day)}, ${year}`
 }
 
 function formatMonthYearUtc(value: Date): string {
@@ -77,10 +96,10 @@ function padCell(value: string, width: number): string {
 const col = {
   production: 32,
   mediaId: 24,
+  languageId: 12,
   language: 24,
   changeType: 12,
-  updateSource: 16,
-  date: 8,
+  date: 20,
   total: 6
 } as const
 
@@ -88,10 +107,10 @@ function buildTableHeaderLine(): string {
   return [
     padCell('Production', col.production),
     padCell('Media Component ID', col.mediaId),
+    padCell('Language ID', col.languageId),
     padCell('Language Name', col.language),
     padCell('Change Type', col.changeType),
-    padCell('Update Source', col.updateSource),
-    padCell('Date', col.date),
+    padCell('Month', col.date),
     padCell('Total', col.total)
   ].join(' | ')
 }
@@ -100,9 +119,9 @@ function buildTableSeparatorLine(): string {
   return [
     '-'.repeat(col.production),
     '-'.repeat(col.mediaId),
+    '-'.repeat(col.languageId),
     '-'.repeat(col.language),
     '-'.repeat(col.changeType),
-    '-'.repeat(col.updateSource),
     '-'.repeat(col.date),
     '-'.repeat(col.total)
   ].join('-|-')
@@ -112,10 +131,10 @@ function buildTableDataLine(row: ReportRow): string {
   return [
     padCell(row.production, col.production),
     padCell(row.mediaComponentId, col.mediaId),
+    padCell(row.languageId, col.languageId),
     padCell(row.languageName, col.language),
     padCell(row.changeType, col.changeType),
-    padCell(row.updateSource, col.updateSource),
-    padCell(formatShortMonthDay(row.changeDate), col.date),
+    padCell(formatLongDateUtc(row.changeDate), col.date),
     padCell(String(row.total), col.total)
   ].join(' | ')
 }
@@ -270,12 +289,6 @@ export async function postWeeklyVideoSlackMessages(args: {
     (row) => row.changeType === 'New Upload'
   ).length
   const updates = rows.filter((row) => row.changeType === 'Update').length
-  const variantUpdates = rows.filter(
-    (row) => row.updateSource === 'Variant Updated'
-  ).length
-  const metadataUpdates = rows.filter(
-    (row) => row.updateSource === 'Video Metadata'
-  ).length
 
   const monthGroups = groupRowsByMonth(rows)
   const chunkedMonthGroups = monthGroups.map((group) => ({
@@ -331,7 +344,7 @@ export async function postWeeklyVideoSlackMessages(args: {
             },
             {
               type: 'mrkdwn',
-              text: `*Row counts*\nNew Upload rows: *${newUploads}*\nUpdate rows: *${updates}* (variant: *${variantUpdates}*, metadata: *${metadataUpdates}*)\nTotal lines: *${rows.length}*`
+              text: `*Row counts*\nNew Upload rows: *${newUploads}*\nUpdate rows: *${updates}*\nTotal lines: *${rows.length}*`
             },
             {
               type: 'mrkdwn',
@@ -354,7 +367,7 @@ export async function postWeeklyVideoSlackMessages(args: {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `*Scope*\nVideos with label \`collection\` are excluded. *Update* rows come from \`VideoVariant.updatedAt\` (per language) **or** \`Video.updatedAt\` when the video changed but no variant row is listed (primary language, de-duped). *New Upload* = one row per new video.`
+            text: `*Scope*\nOne row per newly-created \`VideoVariant\` (\`createdAt\` in window). Videos with label \`collection\` are excluded. *New Upload* = parent video was also created in the window. *Update* = new variant added to a video created earlier.`
           }
         },
         { type: 'divider' },

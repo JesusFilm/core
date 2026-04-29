@@ -110,14 +110,18 @@ async function main(): Promise<void> {
     throw new Error('--start must be less than or equal to --end')
   }
 
-  console.log(
-    `Running weekly summary window: ${startDate.toISOString()} -> ${endDate.toISOString()}`
+  logger.info(
+    {
+      windowStart: startDate.toISOString(),
+      windowEnd: endDate.toISOString()
+    },
+    'Running weekly summary window'
   )
   await sendWeeklyVideoSummary(endDate, logger, { startDate, endDate })
-  console.log('sendWeeklyVideoSummary finished')
+  logger.info('sendWeeklyVideoSummary finished')
 }
 
 main().catch((error) => {
-  console.error(error)
+  logger.error({ error }, 'run-weekly-video-slack-summary failed')
   process.exit(1)
 })

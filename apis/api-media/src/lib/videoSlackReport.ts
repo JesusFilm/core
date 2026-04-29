@@ -11,9 +11,9 @@ const packageChildLabels = new Set(['episode', 'segment'])
 export interface ReportRow {
   production: string
   mediaComponentId: string
+  languageId: string
   languageName: string
   changeType: 'New Upload' | 'Update'
-  updateSource: 'New Video' | 'Variant Updated' | 'Video Metadata'
   changeDate: Date
   total: number
 }
@@ -30,32 +30,19 @@ interface WeeklyVideoSummaryWindow {
 
 interface ReportRowSeed extends ReportRow {
   videoLabel: string
-  languageId: string
 }
 
-interface CreatedVideoRow {
-  id: string
-  label: string
-  slug: string | null
-  primaryLanguageId: string
-  createdAt: Date
-  title: Array<{ value: string }>
-}
-
-interface UpdatedVariantRow {
+interface NewVariantRow {
   videoId: string
   languageId: string
-  updatedAt: Date
+  createdAt: Date
   video: {
     id: string
     label: string
     slug: string | null
+    createdAt: Date
     title: Array<{ value: string }>
   } | null
-}
-
-interface VideoMetadataOnlyRow extends CreatedVideoRow {
-  updatedAt: Date
 }
 
 export function formatDateIso(value: Date): string {
@@ -85,28 +72,16 @@ export function isValidWeeklyVideoSummaryWindow(
   return window.startDate.getTime() <= window.endDate.getTime()
 }
 
-const createdVideoSelect = {
-  id: true,
-  label: true,
-  slug: true,
-  primaryLanguageId: true,
-  createdAt: true,
-  title: {
-    where: { primary: true },
-    take: 1,
-    select: { value: true }
-  }
-} as const
-
-const updatedVariantSelect = {
+const newVariantSelect = {
   videoId: true,
   languageId: true,
-  updatedAt: true,
+  createdAt: true,
   video: {
     select: {
       id: true,
       label: true,
       slug: true,
+      createdAt: true,
       title: {
         where: { primary: true },
         take: 1,
@@ -140,83 +115,24 @@ function sortReportRows<T extends ReportRow>(rows: T[]): T[] {
   })
 }
 
-async function getCreatedVideosForReport(
+async function getNewVariantsForReport(
   startDate: Date,
   endDate: Date
-): Promise<CreatedVideoRow[]> {
-  return await prisma.video.findMany({
+): Promise<NewVariantRow[]> {
+  return await prisma.videoVariant.findMany({
     where: {
-      label: { not: 'collection' },
       createdAt: {
         gte: startDate,
         lte: endDate
+      },
+      video: {
+        label: { not: 'collection' }
       }
     },
     orderBy: {
       createdAt: 'desc'
     },
-    select: createdVideoSelect
-  })
-}
-
-async function getUpdatedVariantsForReport(
-  startDate: Date,
-  endDate: Date
-): Promise<UpdatedVariantRow[]> {
-  return await prisma.videoVariant.findMany({
-    where: {
-      updatedAt: {
-        gte: startDate,
-        lte: endDate
-      },
-      video: {
-        label: { not: 'collection' },
-        createdAt: {
-          lt: startDate
-        }
-      }
-    },
-    orderBy: {
-      updatedAt: 'desc'
-    },
-    select: updatedVariantSelect
-  })
-}
-
-async function getVideosMetadataOnlyUpdates(
-  startDate: Date,
-  endDate: Date,
-  videoIdsWithVariantUpdates: Set<string>
-): Promise<VideoMetadataOnlyRow[]> {
-  const where: {
-    label: { not: 'collection' }
-    createdAt: { lt: Date }
-    updatedAt: { gte: Date; lte: Date }
-    id?: { notIn: string[] }
-  } = {
-    label: { not: 'collection' },
-    createdAt: {
-      lt: startDate
-    },
-    updatedAt: {
-      gte: startDate,
-      lte: endDate
-    }
-  }
-
-  if (videoIdsWithVariantUpdates.size > 0) {
-    where.id = { notIn: [...videoIdsWithVariantUpdates] }
-  }
-
-  return await prisma.video.findMany({
-    where,
-    orderBy: {
-      updatedAt: 'desc'
-    },
-    select: {
-      ...createdVideoSelect,
-      updatedAt: true
-    }
+    select: newVariantSelect
   })
 }
 
@@ -348,73 +264,48 @@ async function getLanguagePackageTotals(
 }
 
 async function buildReportRows(args: {
-  createdVideos: CreatedVideoRow[]
-  updatedVariants: UpdatedVariantRow[]
-  videosMetadataOnly: VideoMetadataOnlyRow[]
+  newVariants: NewVariantRow[]
+  windowStart: Date
+  windowEnd: Date
   languageNames: Map<string, string>
 }): Promise<ReportRow[]> {
-  const { createdVideos, updatedVariants, videosMetadataOnly, languageNames } =
-    args
+  const { newVariants, windowStart, windowEnd, languageNames } = args
 
-  const createdRows: ReportRowSeed[] = createdVideos.map((video) => ({
-    production: productionLabel(video),
-    mediaComponentId: video.id,
-    languageName:
-      languageNames.get(video.primaryLanguageId) ?? video.primaryLanguageId,
-    changeType: 'New Upload',
-    updateSource: 'New Video',
-    changeDate: video.createdAt,
-    total: 1,
-    videoLabel: video.label,
-    languageId: video.primaryLanguageId
-  }))
-
-  const variantUpdateRows: ReportRowSeed[] = updatedVariants
+  const rowSeeds: ReportRowSeed[] = newVariants
     .filter(
       (
         variant
-      ): variant is UpdatedVariantRow & {
-        video: NonNullable<UpdatedVariantRow['video']>
+      ): variant is NewVariantRow & {
+        video: NonNullable<NewVariantRow['video']>
       } => variant.video != null
     )
-    .map((variant) => ({
-      production: productionLabel(variant.video),
-      mediaComponentId: variant.video.id,
-      languageName: languageNames.get(variant.languageId) ?? variant.languageId,
-      changeType: 'Update' as const,
-      updateSource: 'Variant Updated' as const,
-      changeDate: variant.updatedAt,
-      total: 1,
-      videoLabel: variant.video.label,
-      languageId: variant.languageId
-    }))
+    .map((variant) => {
+      const videoCreatedAt = variant.video.createdAt.getTime()
+      const isNewUpload =
+        videoCreatedAt >= windowStart.getTime() &&
+        videoCreatedAt <= windowEnd.getTime()
+      return {
+        production: productionLabel(variant.video),
+        mediaComponentId: variant.video.id,
+        languageName:
+          languageNames.get(variant.languageId) ?? variant.languageId,
+        changeType: isNewUpload ? ('New Upload' as const) : ('Update' as const),
+        changeDate: variant.createdAt,
+        total: 1,
+        videoLabel: variant.video.label,
+        languageId: variant.languageId
+      }
+    })
 
-  const metadataOnlyRows: ReportRowSeed[] = videosMetadataOnly.map((video) => ({
-    production: productionLabel(video),
-    mediaComponentId: video.id,
-    languageName:
-      languageNames.get(video.primaryLanguageId) ?? video.primaryLanguageId,
-    changeType: 'Update',
-    updateSource: 'Video Metadata',
-    changeDate: video.updatedAt,
-    total: 1,
-    videoLabel: video.label,
-    languageId: video.primaryLanguageId
-  }))
+  const sortedSeeds = sortReportRows(rowSeeds)
+  const packageTotals = await getLanguagePackageTotals(sortedSeeds)
 
-  const rowSeeds = sortReportRows([
-    ...createdRows,
-    ...variantUpdateRows,
-    ...metadataOnlyRows
-  ])
-  const packageTotals = await getLanguagePackageTotals(rowSeeds)
-
-  return rowSeeds.map((row) => ({
+  return sortedSeeds.map((row) => ({
     production: row.production,
     mediaComponentId: row.mediaComponentId,
+    languageId: row.languageId,
     languageName: row.languageName,
     changeType: row.changeType,
-    updateSource: row.updateSource,
     changeDate: row.changeDate,
     total: packageTotals.get(`${row.mediaComponentId}:${row.languageId}`) ?? 1
   }))
@@ -426,45 +317,25 @@ export async function loadWeeklyVideoReport(args: {
 }): Promise<{
   rows: ReportRow[]
   counts: {
-    newVideos: number
-    variantUpdateRows: number
-    videoMetadataOnlyRows: number
+    newVariants: number
   }
 }> {
   const { startDate, endDate } = args
-  const [createdVideos, updatedVariants] = await Promise.all([
-    getCreatedVideosForReport(startDate, endDate),
-    getUpdatedVariantsForReport(startDate, endDate)
-  ])
-
-  const videoIdsWithVariantUpdates = new Set(
-    updatedVariants
-      .map((variant) => variant.videoId)
-      .filter((id): id is string => typeof id === 'string' && id.length > 0)
+  const newVariants = await getNewVariantsForReport(startDate, endDate)
+  const languageNames = await loadLanguageNames(
+    newVariants.map((variant) => variant.languageId)
   )
-  const videosMetadataOnly = await getVideosMetadataOnlyUpdates(
-    startDate,
-    endDate,
-    videoIdsWithVariantUpdates
-  )
-  const languageNames = await loadLanguageNames([
-    ...createdVideos.map((video) => video.primaryLanguageId),
-    ...updatedVariants.map((variant) => variant.languageId),
-    ...videosMetadataOnly.map((video) => video.primaryLanguageId)
-  ])
   const rows = await buildReportRows({
-    createdVideos,
-    updatedVariants,
-    videosMetadataOnly,
+    newVariants,
+    windowStart: startDate,
+    windowEnd: endDate,
     languageNames
   })
 
   return {
     rows,
     counts: {
-      newVideos: createdVideos.length,
-      variantUpdateRows: updatedVariants.length,
-      videoMetadataOnlyRows: videosMetadataOnly.length
+      newVariants: newVariants.length
     }
   }
 }

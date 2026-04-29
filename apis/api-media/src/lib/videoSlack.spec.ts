@@ -46,7 +46,7 @@ function languageRow(overrides: Partial<LanguageRow>): LanguageRow {
 function videoRow(overrides: Partial<VideoRow>): VideoRow {
   return {
     id: 'video',
-    label: 'featureFilm',
+    label: 'shortFilm',
     primaryLanguageId: '529',
     published: true,
     slug: null,
@@ -132,9 +132,9 @@ describe('videoSlack', () => {
     return {
       production: 'Production',
       mediaComponentId: 'media-id',
+      languageId: '529',
       languageName: 'English',
       changeType: 'New Upload',
-      updateSource: 'New Video',
       changeDate: new Date('2026-01-01T00:00:00.000Z'),
       total: 1,
       ...overrides
@@ -171,28 +171,27 @@ describe('videoSlack', () => {
   })
 
   it('should post a production-style weekly report to Slack', async () => {
-    mockMediaPrisma.video.findMany
-      .mockResolvedValueOnce([
-        videoRow({
+    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([
+      videoVariantRow({
+        videoId: 'created-video',
+        languageId: '529',
+        createdAt: new Date('2026-04-02T00:00:00.000Z'),
+        video: videoRow({
           id: 'created-video',
           slug: 'created-slug',
-          primaryLanguageId: '529',
           createdAt: new Date('2026-04-01T00:00:00.000Z'),
-          title: [{ value: 'Created Production' }],
-          _count: { variants: 3 }
+          title: [{ value: 'Created Production' }]
         })
-      ])
-      .mockResolvedValueOnce([])
-    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([
+      }),
       videoVariantRow({
         videoId: 'updated-video',
         languageId: '529',
-        updatedAt: new Date('2026-04-04T00:00:00.000Z'),
+        createdAt: new Date('2026-04-04T00:00:00.000Z'),
         video: videoRow({
           id: 'updated-video',
           slug: 'updated-slug',
-          title: [{ value: 'Updated Production' }],
-          _count: { variants: 5 }
+          createdAt: new Date('2025-01-01T00:00:00.000Z'),
+          title: [{ value: 'Updated Production' }]
         })
       })
     ])
@@ -226,32 +225,6 @@ describe('videoSlack', () => {
     expect(blocksText).toContain('New Upload')
     expect(blocksText).toContain('Update')
     expect(blocksText).toContain('English')
-  })
-
-  it('should post when only Video.updatedAt moved (no variant rows)', async () => {
-    mockMediaPrisma.video.findMany
-      .mockResolvedValueOnce([])
-      .mockResolvedValueOnce([
-        videoRow({
-          id: 'meta-only',
-          slug: 'meta-slug',
-          primaryLanguageId: '529',
-          createdAt: new Date('2025-01-01T00:00:00.000Z'),
-          updatedAt: new Date('2026-04-05T00:00:00.000Z'),
-          title: [{ value: 'Metadata Only Production' }],
-          _count: { variants: 2 }
-        })
-      ])
-    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([])
-
-    await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
-
-    expect(mockFetch).toHaveBeenCalled()
-    const [, options] = mockFetch.mock.calls[0]
-    const body = JSON.parse(options?.body as string)
-    expect(body.text).toContain('1 row')
-    expect(JSON.stringify(body.blocks)).toContain('meta-only')
-    expect(JSON.stringify(body.blocks)).toContain('Update')
   })
 
   it('should post separate root messages grouped by month', async () => {
@@ -315,36 +288,36 @@ describe('videoSlack', () => {
   })
 
   it('should use language package totals for feature films with translated clips', async () => {
-    mockMediaPrisma.video.findMany
-      .mockResolvedValueOnce([
-        videoRow({
-          id: 'jf-parent',
-          label: 'featureFilm',
-          slug: 'jesus-film',
-          primaryLanguageId: '529',
-          createdAt: new Date('2026-04-08T00:00:00.000Z'),
-          title: [{ value: 'JESUS' }],
-          _count: { variants: 99 }
-        })
-      ])
-      .mockResolvedValueOnce([])
-      .mockResolvedValueOnce([
-        videoRow({
-          id: 'jf-parent',
-          children: [
-            { id: 'jf-segment-1', label: 'segment' },
-            { id: 'jf-segment-2', label: 'segment' },
-            { id: 'jf-segment-3', label: 'segment' }
-          ]
-        })
-      ])
     mockMediaPrisma.videoVariant.findMany
-      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([
+        videoVariantRow({
+          videoId: 'jf-parent',
+          languageId: '529',
+          createdAt: new Date('2026-04-09T00:00:00.000Z'),
+          video: videoRow({
+            id: 'jf-parent',
+            label: 'featureFilm',
+            slug: 'jesus-film',
+            createdAt: new Date('2026-04-08T00:00:00.000Z'),
+            title: [{ value: 'JESUS' }]
+          })
+        })
+      ])
       .mockResolvedValueOnce([
         videoVariantRow({ languageId: '529', videoId: 'jf-parent' }),
         videoVariantRow({ languageId: '529', videoId: 'jf-segment-1' }),
         videoVariantRow({ languageId: '529', videoId: 'jf-segment-3' })
       ])
+    mockMediaPrisma.video.findMany.mockResolvedValueOnce([
+      videoRow({
+        id: 'jf-parent',
+        children: [
+          { id: 'jf-segment-1', label: 'segment' },
+          { id: 'jf-segment-2', label: 'segment' },
+          { id: 'jf-segment-3', label: 'segment' }
+        ]
+      })
+    ])
 
     await sendWeeklyVideoSummary(new Date('2026-04-10T00:00:00.000Z'))
 
@@ -365,19 +338,19 @@ describe('videoSlack', () => {
   it('should warn and skip when Slack env vars are missing', async () => {
     delete process.env.SLACK_VIDEO_ADMIN_BOT_TOKEN
 
-    mockMediaPrisma.video.findMany
-      .mockResolvedValueOnce([
-        videoRow({
+    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([
+      videoVariantRow({
+        videoId: 'created-video',
+        languageId: '529',
+        createdAt: new Date('2026-04-02T00:00:00.000Z'),
+        video: videoRow({
           id: 'created-video',
           slug: 'x',
-          primaryLanguageId: '529',
           createdAt: new Date('2026-04-01T00:00:00.000Z'),
-          title: [{ value: 'P' }],
-          _count: { variants: 1 }
+          title: [{ value: 'P' }]
         })
-      ])
-      .mockResolvedValueOnce([])
-    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([])
+      })
+    ])
 
     await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
 
@@ -387,10 +360,7 @@ describe('videoSlack', () => {
     )
   })
 
-  it('should post a simple empty-week message when there are no weekly changes', async () => {
-    mockMediaPrisma.video.findMany
-      .mockResolvedValueOnce([])
-      .mockResolvedValueOnce([])
+  it('should post a simple empty-week message when there are no new variants', async () => {
     mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([])
 
     await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
@@ -405,28 +375,26 @@ describe('videoSlack', () => {
     )
     expect(mockLoggerInfo).toHaveBeenCalledWith(
       expect.objectContaining({
-        newVideos: 0,
-        variantUpdateRows: 0,
-        videoMetadataOnlyRows: 0
+        newVariants: 0
       }),
-      'Weekly video Slack summary: posting empty-week message — no new videos, no variant updates, and no metadata-only video updates in the window'
+      'Weekly video Slack summary: posting empty-week message — no new variants in the window'
     )
   })
 
   it('should warn when Slack API returns an error response', async () => {
-    mockMediaPrisma.video.findMany
-      .mockResolvedValueOnce([
-        videoRow({
+    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([
+      videoVariantRow({
+        videoId: 'created-video',
+        languageId: '529',
+        createdAt: new Date('2026-04-02T00:00:00.000Z'),
+        video: videoRow({
           id: 'created-video',
           slug: 'x',
-          primaryLanguageId: '529',
           createdAt: new Date('2026-04-01T00:00:00.000Z'),
-          title: [{ value: 'P' }],
-          _count: { variants: 1 }
+          title: [{ value: 'P' }]
         })
-      ])
-      .mockResolvedValueOnce([])
-    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([])
+      })
+    ])
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
