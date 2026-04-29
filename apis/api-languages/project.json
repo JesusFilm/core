@@ -96,6 +96,13 @@
       "options": {
         "command": "pnpm exec tsx apis/api-languages/src/scripts/data-import.ts"
       }
+    },
+    "wess-languages-import": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["prisma-languages:prisma-generate"],
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json apis/api-languages/src/scripts/wess-languages-import.ts"
+      }
     }
   }
 }

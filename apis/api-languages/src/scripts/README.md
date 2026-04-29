@@ -49,3 +49,28 @@ The script includes error handling for various scenarios:
 - Database connection issues
 
 If any error occurs, the script will exit with a non-zero code and display an appropriate error message.
+
+## WESS Languages Import Script
+
+Imports language rows from the WESS Query API into the `Language` and
+`LanguageName` tables.
+
+### Usage
+
+```bash
+nx run api-languages:wess-languages-import
+```
+
+### Environment Variables
+
+- `WESS_API_TOKEN` (required): API token sent as `token` header
+- `WESS_API_BASE_URL` (optional): defaults to `https://www.mydigitalwork.space`
+- `WESS_LANGUAGES_QUERY_ID` (optional): defaults to `154`
+- `PG_DATABASE_URL_LANGUAGES` (required): languages database connection
+
+### Notes
+
+- Sends `GET /QueryRunner/rest/QueryAPI/GetData?QueryId=<id>`
+- Expects an array JSON payload from WESS
+- Upserts `Language` by `id` and updates `bcp47`, `iso3`, `slug`, `hasVideos`
+- Upserts a self-name row in `LanguageName` when a row includes a name
