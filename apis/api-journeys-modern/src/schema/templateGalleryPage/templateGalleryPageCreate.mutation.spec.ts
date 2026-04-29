@@ -1,3 +1,4 @@
+import { Prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
@@ -197,5 +198,105 @@ describe('templateGalleryPageCreate', () => {
       ]
     })
     expect(prismaMock.templateGalleryPage.create).not.toHaveBeenCalled()
+  })
+
+  it('retries once on P2002 (slug uniqueness race) and succeeds on second attempt', async () => {
+    prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockResolvedValue([] as any)
+    const p2002 = new Prisma.PrismaClientKnownRequestError(
+      'unique constraint failed',
+      { code: 'P2002', clientVersion: '7.0.0' }
+    )
+    prismaMock.templateGalleryPage.create
+      .mockRejectedValueOnce(p2002)
+      .mockResolvedValueOnce({
+        id: 'p1',
+        title: 'My Welcome',
+        slug: 'my-welcome-2',
+        status: 'draft',
+        description: '',
+        creatorName: 'Alice',
+        mediaUrl: null
+      } as any)
+
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_CREATE,
+      variables: {
+        input: {
+          teamId: 'team-1',
+          title: 'My Welcome',
+          creatorName: 'Alice'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: {
+        templateGalleryPageCreate: {
+          id: 'p1',
+          title: 'My Welcome',
+          slug: 'my-welcome-2',
+          status: 'draft',
+          description: '',
+          creatorName: 'Alice',
+          mediaUrl: null
+        }
+      }
+    })
+    expect(prismaMock.templateGalleryPage.create).toHaveBeenCalledTimes(2)
+  })
+
+  it('does NOT retry on a second P2002 (caps retries at one)', async () => {
+    prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockResolvedValue([] as any)
+    const p2002 = new Prisma.PrismaClientKnownRequestError(
+      'unique constraint failed',
+      { code: 'P2002', clientVersion: '7.0.0' }
+    )
+    prismaMock.templateGalleryPage.create
+      .mockRejectedValueOnce(p2002)
+      .mockRejectedValueOnce(p2002)
+
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_CREATE,
+      variables: {
+        input: {
+          teamId: 'team-1',
+          title: 'X',
+          creatorName: 'Alice'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [expect.anything()]
+    })
+    expect(prismaMock.templateGalleryPage.create).toHaveBeenCalledTimes(2)
+  })
+
+  it('does NOT retry on non-P2002 errors (lets them propagate immediately)', async () => {
+    prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockResolvedValue([] as any)
+    prismaMock.templateGalleryPage.create.mockRejectedValueOnce(
+      new Error('disk full')
+    )
+
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_CREATE,
+      variables: {
+        input: {
+          teamId: 'team-1',
+          title: 'X',
+          creatorName: 'Alice'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [expect.anything()]
+    })
+    expect(prismaMock.templateGalleryPage.create).toHaveBeenCalledTimes(1)
   })
 })
