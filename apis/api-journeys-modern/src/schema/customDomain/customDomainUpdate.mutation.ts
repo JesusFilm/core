@@ -38,15 +38,42 @@ builder.mutationField('customDomainUpdate', (t) =>
         })
       }
 
+      let journeyCollectionUpdate:
+        | { connect: { id: string } }
+        | { disconnect: true }
+        | undefined
+
+      if ('journeyCollectionId' in input) {
+        if (input.journeyCollectionId == null) {
+          journeyCollectionUpdate = { disconnect: true }
+        } else {
+          const journeyCollection =
+            await prisma.journeyCollection.findFirst({
+              where: {
+                id: input.journeyCollectionId,
+                teamId: customDomain.teamId
+              }
+            })
+
+          if (journeyCollection == null) {
+            throw new GraphQLError(
+              'journey collection not found for this custom domain team',
+              { extensions: { code: 'FORBIDDEN' } }
+            )
+          }
+
+          journeyCollectionUpdate = {
+            connect: { id: input.journeyCollectionId }
+          }
+        }
+      }
+
       return await prisma.customDomain.update({
         ...query,
         where: { id },
         data: {
           routeAllTeamJourneys: input.routeAllTeamJourneys ?? undefined,
-          journeyCollection:
-            input.journeyCollectionId != null
-              ? { connect: { id: input.journeyCollectionId } }
-              : undefined
+          journeyCollection: journeyCollectionUpdate
         }
       })
     }
