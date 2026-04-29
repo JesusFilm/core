@@ -3,20 +3,24 @@
 We make use of [react-i18next](https://react.i18next.com/), a powerful internationalization framework for React / React Native which is based on [i18next](http://i18next.com/). In certain projects we also use:
 
 - [next-i18next](https://github.com/isaachinman/next-i18next)
-- [i18next-parser](https://github.com/i18next/i18next-parser)
+- [i18next-cli](https://github.com/i18next/i18next-cli)
 
 In order to understand how this repository implements i18n, it is important to understand how these libraries work. The remainder of this document assumes a working knowledge of these libraries.
 
 ## Adding i18n to your project
 
-1. add i18next-parser.config.js to project root.
+1. add i18next.config.js to project root.
 
 ```JS
-const i18nextParserConfigBase = require('../../i18next-parser.config.base') // this file is located in the workspace root
+const i18nextConfigBase = require('../../i18next.config.base') // this file is located in the workspace root
 
 module.exports = {
-  ...i18nextParserConfigBase,
-  input: ['src/**/*.{js,jsx,ts,tsx}']
+  ...i18nextConfigBase,
+  extract: {
+    ...i18nextConfigBase.extract,
+    defaultNS: 'PROJECT_NAMESPACE', // e.g. 'apps-journeys' or 'libs-journeys-ui'
+    input: ['src/**/*.{js,jsx,ts,tsx}']
+  }
 }
 ```
 
@@ -32,7 +36,7 @@ module.exports = {
       "options": {
         "commands": [
           {
-            "command": "npx i18next --config PROJECT_PATH/i18next-parser.config.js"
+            "command": "pnpm exec i18next-cli extract --config PROJECT_PATH/i18next.config.js"
           }
         ]
       }
@@ -60,14 +64,17 @@ function Component() {
 
 ## Next.js configuration
 
-1. update input in i18next-parser.config.js located in the project root
+1. update input in i18next.config.js located in the project root
 
 ```JS
-const i18nextParserConfigBase = require('../../i18next-parser.config.base')
+const i18nextConfigBase = require('../../i18next.config.base')
 
 module.exports = {
-  ...i18nextParserConfigBase,
-  input: ['src/**/*.{js,jsx,ts,tsx}', 'pages/**/*.{js,jsx,ts,tsx}']
+  ...i18nextConfigBase,
+  extract: {
+    ...i18nextConfigBase.extract,
+    input: ['src/**/*.{js,jsx,ts,tsx}', 'pages/**/*.{js,jsx,ts,tsx}']
+  }
 }
 ```
 

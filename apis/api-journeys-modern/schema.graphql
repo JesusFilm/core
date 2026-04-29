@@ -1522,6 +1522,7 @@ type Mutation {
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @override(from: "api-journeys")
   customDomainDelete(id: ID!): CustomDomain! @override(from: "api-journeys")
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain! @override(from: "api-journeys")
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain! @override(from: "api-journeys")
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
@@ -1872,6 +1873,8 @@ input QrCodesFilter {
 type Query {
   block(id: ID!): Block! @override(from: "api-journeys")
   blocks(where: BlocksFilter): [Block!]! @override(from: "api-journeys")
+  customDomains(teamId: ID!): [CustomDomain!]! @override(from: "api-journeys")
+  customDomain(id: ID!): CustomDomain! @override(from: "api-journeys")
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
