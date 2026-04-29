@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { enqueueSnackbar } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
 

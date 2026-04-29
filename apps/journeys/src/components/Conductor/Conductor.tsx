@@ -11,9 +11,11 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { blockHistoryVar, useBlocks } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { PinnedChatBar } from '@core/journeys/ui/PinnedChatBar'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { FontFamilies, ThemeName } from '@core/shared/ui/themes'
 
@@ -50,6 +52,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const theme = useTheme()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
+  const flags = useFlags()
+  const apologistChatEnabled = flags.apologistChat === true
 
   // Create font family strings based on journey theme
   const fontFamilies: FontFamilies = {
@@ -68,6 +72,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
+
+  const showPinnedChat =
+    apologistChatEnabled &&
+    journey?.showAssistant === true &&
+    variant !== 'admin' &&
+    variant !== 'embed'
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -213,15 +223,39 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 variant={rtl ? 'previous' : 'next'}
                 alignment="right"
               />
-              <StepFooter
-                sx={{
-                  ...mobileNotchStyling,
-                  display: {
-                    xs: showHeaderFooter ? 'flex' : 'none',
-                    lg: 'flex'
-                  }
-                }}
-              />
+              {showPinnedChat ? (
+                <PinnedChatBar
+                  sx={{
+                    ...mobileNotchStyling,
+                    display: {
+                      xs: showHeaderFooter ? 'flex' : 'none',
+                      sm: 'none'
+                    }
+                  }}
+                />
+              ) : (
+                <StepFooter
+                  sx={{
+                    ...mobileNotchStyling,
+                    display: {
+                      xs: showHeaderFooter ? 'flex' : 'none',
+                      lg: 'flex'
+                    }
+                  }}
+                />
+              )}
+              {/* On sm+, show StepFooter (with AiChatButton → ChatOverlay) when pinned chat is active on mobile */}
+              {showPinnedChat && (
+                <StepFooter
+                  sx={{
+                    ...mobileNotchStyling,
+                    display: {
+                      xs: 'none',
+                      sm: 'flex'
+                    }
+                  }}
+                />
+              )}
             </Stack>
           </Box>
         </Stack>

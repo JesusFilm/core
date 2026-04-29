@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'

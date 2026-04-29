@@ -18,7 +18,7 @@ import {
 
 import { VideosSection } from './VideosSection'
 
-jest.mock('next-i18next', () => ({
+jest.mock('next-i18next/pages', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
@@ -116,7 +116,8 @@ const journeyWithMatchingVideoBlock: Journey = {
   fromTemplateId: null,
   socialNodeX: null,
   socialNodeY: null,
-  customizable: null
+  customizable: null,
+  showAssistant: null
 }
 
 const journeyWithNoMatchingVideoBlock: Journey = {

@@ -1,5 +1,5 @@
 import IconButton from '@mui/material/IconButton'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
