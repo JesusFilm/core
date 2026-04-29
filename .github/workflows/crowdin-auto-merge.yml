@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Skip the merge-queue enqueue step (default: true for safety)"
+        description: 'Skip the merge-queue enqueue step (default: true for safety)'
         type: boolean
         default: true
   # schedule:
