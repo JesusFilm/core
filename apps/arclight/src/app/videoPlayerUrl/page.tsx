@@ -111,18 +111,15 @@ export default async function Page(props: {
 
   // Validate time parameters
   if (startTime != null && (isNaN(startTime) || startTime < 0)) {
-    // eslint-disable-next-line i18next/no-literal-string
-    return <p>Invalid start time parameter</p>
+    notFound()
   }
 
   if (endTime != null && (isNaN(endTime) || endTime < 0)) {
-    // eslint-disable-next-line i18next/no-literal-string
-    return <p>Invalid end time parameter</p>
+    notFound()
   }
 
   if (startTime != null && endTime != null && endTime <= startTime) {
-    // eslint-disable-next-line i18next/no-literal-string
-    return <p>End time must be greater than start time</p>
+    notFound()
   }
 
   const { data } = await getApolloClient().query({

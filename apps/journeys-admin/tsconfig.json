@@ -13,6 +13,8 @@
     "isolatedModules": true,
     "incremental": true,
     "tsBuildInfoFile": "../../.cache/journeys-admin/tsc/.tsbuildinfo",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "plugins": [
       {
         "name": "next"
