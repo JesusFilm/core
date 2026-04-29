@@ -106,6 +106,10 @@ describe('customDomainUpdate', () => {
     prismaMock.customDomain.findUnique.mockResolvedValue(
       mockCustomDomain as any
     )
+    prismaMock.journeyCollection.findFirst.mockResolvedValue({
+      id: 'collectionId',
+      teamId: 'teamId'
+    } as any)
     prismaMock.customDomain.update.mockResolvedValue({
       ...mockCustomDomain,
       journeyCollectionId: 'collectionId'
@@ -130,6 +134,9 @@ describe('customDomainUpdate', () => {
       }
     })
 
+    expect(prismaMock.journeyCollection.findFirst).toHaveBeenCalledWith({
+      where: { id: 'collectionId', teamId: 'teamId' }
+    })
     expect(prismaMock.customDomain.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id: 'customDomainId' },
@@ -139,6 +146,74 @@ describe('customDomainUpdate', () => {
         }
       })
     )
+  })
+
+  it('should disconnect journeyCollection when journeyCollectionId is null', async () => {
+    prismaMock.customDomain.findUnique.mockResolvedValue(
+      mockCustomDomain as any
+    )
+    prismaMock.customDomain.update.mockResolvedValue({
+      ...mockCustomDomain,
+      journeyCollectionId: null
+    } as any)
+
+    const result = await authClient({
+      document: CUSTOM_DOMAIN_UPDATE_MUTATION,
+      variables: {
+        id: 'customDomainId',
+        input: { journeyCollectionId: null }
+      }
+    })
+
+    expect(result).toEqual({
+      data: {
+        customDomainUpdate: {
+          id: 'customDomainId',
+          name: 'example.com',
+          apexName: 'example.com',
+          routeAllTeamJourneys: true
+        }
+      }
+    })
+
+    expect(prismaMock.customDomain.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'customDomainId' },
+        data: {
+          routeAllTeamJourneys: undefined,
+          journeyCollection: { disconnect: true }
+        }
+      })
+    )
+  })
+
+  it('should return FORBIDDEN when journeyCollectionId belongs to another team', async () => {
+    prismaMock.customDomain.findUnique.mockResolvedValue(
+      mockCustomDomain as any
+    )
+    prismaMock.journeyCollection.findFirst.mockResolvedValue(null)
+
+    const result = await authClient({
+      document: CUSTOM_DOMAIN_UPDATE_MUTATION,
+      variables: {
+        id: 'customDomainId',
+        input: { journeyCollectionId: 'otherTeamCollectionId' }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'journey collection not found for this custom domain team'
+        })
+      ]
+    })
+
+    expect(prismaMock.journeyCollection.findFirst).toHaveBeenCalledWith({
+      where: { id: 'otherTeamCollectionId', teamId: 'teamId' }
+    })
+    expect(prismaMock.customDomain.update).not.toHaveBeenCalled()
   })
 
   it('should return NOT_FOUND when custom domain does not exist', async () => {
