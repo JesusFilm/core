@@ -1,4 +1,8 @@
 import './customDomain'
+import './customDomainCheck'
+import './customDomainCheck.mutation'
+import './customDomainDelete.mutation'
+import './customDomainUpdate.mutation'
 import './customDomainCreate.mutation'
 import './customDomains.query'
 import './inputs'
