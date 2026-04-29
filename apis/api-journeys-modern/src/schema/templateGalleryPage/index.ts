@@ -1,0 +1,11 @@
+import './enums'
+import './inputs'
+import './templateGalleryPage'
+import './templateGalleryPageBySlug.query'
+import './templateGalleryPages.query'
+import './templateGalleryPageCreate.mutation'
+import './templateGalleryPageUpdate.mutation'
+import './templateGalleryPagePublish.mutation'
+import './templateGalleryPageDelete.mutation'
+
+export { TemplateGalleryPageRef } from './templateGalleryPage'

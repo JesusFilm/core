@@ -407,6 +407,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     timezone: String
   ): JourneyVisitorGoogleSheetExportResult! @join__field(graph: API_JOURNEYS_MODERN) 
+  templateGalleryPageCreate(input: TemplateGalleryPageCreateInput!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  templateGalleryPageUpdate(id: ID!, input: TemplateGalleryPageUpdateInput!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  templateGalleryPagePublish(id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  templateGalleryPageDelete(id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
   userDeleteJourneysCheck(userId: String!) : UserDeleteJourneysCheckResult! @join__field(graph: API_JOURNEYS_MODERN) 
   userDeleteJourneysConfirm(userId: String!) : UserDeleteJourneysConfirmResult! @join__field(graph: API_JOURNEYS_MODERN) 
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
@@ -1276,6 +1280,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
+  templateGalleryPageBySlug(slug: String!) : TemplateGalleryPage @join__field(graph: API_JOURNEYS_MODERN) 
+  templateGalleryPages(teamId: ID!) : [TemplateGalleryPage!]! @join__field(graph: API_JOURNEYS_MODERN) 
   getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
@@ -2545,6 +2551,22 @@ type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN
 type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   event: String!
   visitors: Int!
+}
+
+type TemplateGalleryPage @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID!
+  title: String!
+  description: String!
+  slug: String!
+  status: TemplateGalleryPageStatus!
+  creatorName: String!
+  creatorImageBlock: Block
+  mediaUrl: String
+  publishedAt: DateTimeISO
+  createdAt: DateTimeISO!
+  updatedAt: DateTimeISO!
+  team: Team!
+  templates: [Journey!]!
 }
 
 type UserDeleteJourneysCheckResult @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3818,6 +3840,11 @@ enum PlausibleEvent @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyResponses @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+enum TemplateGalleryPageStatus @join__type(graph: API_JOURNEYS_MODERN)  {
+  draft @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  published @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum USER_DELETE_LOG_LEVEL @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
   INFO @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_USERS) 
   WARN @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_USERS) 
@@ -5062,6 +5089,26 @@ input StepBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   Slug should be unique amongst all blocks (server will throw BAD_USER_INPUT error if not). If not required will use the current block id. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness
   """
   slug: String
+}
+
+input TemplateGalleryPageCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  teamId: ID!
+  title: String!
+  description: String
+  creatorName: String!
+  creatorImageBlockId: ID
+  mediaUrl: String
+  journeyIds: [ID!]
+}
+
+input TemplateGalleryPageUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  title: String
+  description: String
+  slug: String
+  creatorName: String
+  creatorImageBlockId: ID
+  mediaUrl: String
+  journeyIds: [ID!]
 }
 
 input TextResponseBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
