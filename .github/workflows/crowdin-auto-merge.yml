@@ -221,10 +221,16 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Fetch the failed required check links. Separate step so a real
-          # `gh pr checks` failure surfaces as a step failure, not as "no reruns."
-          FAILED_LINKS=$(gh pr checks "$PR_NUMBER" --required --json bucket,link \
-            | jq -r '.[] | select(.bucket == "fail") | .link')
+          # `gh pr checks` exits 1 when any required check is failing and 8 when any is pending — both are expected states here, not script errors. Capture exit code explicitly and only treat unexpected codes as failures.
+          set +e
+          CHECKS_JSON=$(gh pr checks "$PR_NUMBER" --required --json bucket,link 2>&1)
+          RC=$?
+          set -e
+          if [ "$RC" -ne 0 ] && [ "$RC" -ne 1 ] && [ "$RC" -ne 8 ]; then
+            echo "::error::gh pr checks failed (exit $RC): $CHECKS_JSON"
+            exit 1
+          fi
+          FAILED_LINKS=$(echo "$CHECKS_JSON" | jq -r '.[] | select(.bucket == "fail") | .link')
 
           if [ -z "$FAILED_LINKS" ]; then
             echo "No failed required checks. Nothing to rerun."

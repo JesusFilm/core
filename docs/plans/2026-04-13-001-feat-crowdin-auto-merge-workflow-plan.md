@@ -58,7 +58,7 @@ No prior documented solutions for CI/CD automation or Crowdin workflow improveme
 - **Separate workflow file**: Keep the auto-merge concern separate from the existing `crowdin.yml` sync workflow. Different triggers, different responsibilities.
 - **File-path safety guard**: Before approving, verify that all changed files are under `libs/locales/`. This prevents auto-merging if someone pushes non-translation changes to the Crowdin branch.
 - **Use `gh pr merge --auto --squash`**: This enqueues the PR into the existing merge queue rather than bypassing branch protection. All required status checks still run.
-- **Weekly Monday 9am UTC schedule**: Aligns with the existing weekly Crowdin merge cadence. `workflow_dispatch` provides a manual fallback.
+- **Weekly Friday 01:00 UTC schedule** (`0 1 * * 5`, ~1pm NZST / 2pm NZDT): gives translators a full work-week to deliver translations before the merge cuts off, and lands the merge during NZ business hours so any failure is noticed same-day. `workflow_dispatch` provides a manual fallback.
 
 ## Open Questions
 
@@ -88,7 +88,7 @@ No prior documented solutions for CI/CD automation or Crowdin workflow improveme
 
 **Approach:**
 
-- Trigger on `schedule` (weekly Monday 9am UTC: `cron: '0 9 * * 1'`) and `workflow_dispatch`
+- Trigger on `schedule` (weekly Friday 01:00 UTC: `cron: '0 1 * * 5'`) and `workflow_dispatch`
 - Set `permissions: contents: write, pull-requests: write`
 - Use `actions/create-github-app-token@v1` with `CI_BOT_APP_ID` / `CI_BOT_PRIVATE_KEY` (mirror `ai-build-spike.yml` pattern)
 - Find the open PR using `gh pr list` filtering by head branch `00-00-CI-chore-i10n-updates` and state `open`
