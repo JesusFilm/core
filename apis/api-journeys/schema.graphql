@@ -219,9 +219,6 @@ input BlockDuplicateIdMap {
 type Mutation {
   """blockRestore is used for redo/undo"""
   blockRestore(id: ID!): [Block!]!
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
-  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
-  chatButtonRemove(id: ID!): ChatButton!
 
   """
   Creates a JourneyViewEvent, returns null if attempting to create another
@@ -891,17 +888,6 @@ type ChatButton
   @shareable
 {
   id: ID!
-  link: String
-  platform: MessagePlatform
-  customizable: Boolean
-}
-
-input ChatButtonCreateInput {
-  link: String
-  platform: MessagePlatform
-}
-
-input ChatButtonUpdateInput {
   link: String
   platform: MessagePlatform
   customizable: Boolean

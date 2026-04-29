@@ -761,8 +761,6 @@ export abstract class IMutation {
 
     abstract blockRestore(id: string): Block[] | Promise<Block[]>;
 
-    abstract chatButtonRemove(id: string): ChatButton | Promise<ChatButton>;
-
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): Nullable<JourneyViewEvent> | Promise<Nullable<JourneyViewEvent>>;
 
     abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;

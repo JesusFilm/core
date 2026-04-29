@@ -8,7 +8,3 @@ type ChatButton @shareable {
 extend type Journey {
   chatButtons: [ChatButton!]!
 }
-
-extend type Mutation {
-  chatButtonRemove(id: ID!): ChatButton!
-}
