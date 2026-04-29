@@ -183,11 +183,15 @@ export function AiChat({
 
   const [sessionId] = useState<string | undefined>(() => {
     if (typeof window === 'undefined') return undefined
-    const existing = window.sessionStorage.getItem('aiChat.sessionId')
-    if (existing != null && existing.length > 0) return existing
-    const fresh = uuidv4()
-    window.sessionStorage.setItem('aiChat.sessionId', fresh)
-    return fresh
+    try {
+      const existing = window.sessionStorage.getItem('aiChat.sessionId')
+      if (existing != null && existing.length > 0) return existing
+      const fresh = uuidv4()
+      window.sessionStorage.setItem('aiChat.sessionId', fresh)
+      return fresh
+    } catch {
+      return uuidv4()
+    }
   })
   const sessionIdRef = useRef(sessionId)
   sessionIdRef.current = sessionId
