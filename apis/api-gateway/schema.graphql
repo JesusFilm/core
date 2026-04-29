@@ -1282,7 +1282,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
   country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
   countries(term: String, ids: [ID!], where: CountriesFilter) : [Country!]! @join__field(graph: API_LANGUAGES) 
-  getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
+  getMyCloudflareImages(isAi: Boolean, before: String, after: String, first: Int, last: Int) : QueryGetMyCloudflareImagesConnection @join__field(graph: API_MEDIA) 
   getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
   listUnsplashCollectionPhotos(
     collectionId: String!
@@ -2718,6 +2718,7 @@ type CloudflareImage @join__type(graph: API_MEDIA)  {
   thumbnail: String
   videoStill: String
   blurhash: String
+  isAi: Boolean
 }
 
 type CloudflareR2 @join__type(graph: API_MEDIA)  {
@@ -2934,6 +2935,16 @@ type PlaylistItem @join__type(graph: API_MEDIA)  {
   updatedAt: DateTime!
   videoVariant: VideoVariant!
   playlist: Playlist!
+}
+
+type QueryGetMyCloudflareImagesConnection @join__type(graph: API_MEDIA)  {
+  pageInfo: PageInfo!
+  edges: [QueryGetMyCloudflareImagesConnectionEdge]
+}
+
+type QueryGetMyCloudflareImagesConnectionEdge @join__type(graph: API_MEDIA)  {
+  node: CloudflareImage
+  cursor: String!
 }
 
 type QueryGetMyGeneratedMuxSubtitleTrackSuccess @join__type(graph: API_MEDIA)  {

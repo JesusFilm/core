@@ -63,24 +63,29 @@ describe('cloudflareImage', () => {
   describe('queries', () => {
     describe('getMyCloudflareImages', () => {
       const GET_MY_CLOUDFLARE_IMAGES_QUERY = graphql(`
-        query getMyCloudflareImages($offset: Int, $limit: Int) {
-          getMyCloudflareImages(offset: $offset, limit: $limit) {
-            id
-            uploadUrl
-            userId
-            aspectRatio
-            url
-            mobileCinematicHigh
-            mobileCinematicLow
-            mobileCinematicVeryLow
-            thumbnail
-            videoStill
-            blurhash
+        query getMyCloudflareImages(
+          $first: Int
+          $after: String
+          $isAi: Boolean
+        ) {
+          getMyCloudflareImages(first: $first, after: $after, isAi: $isAi) {
+            edges {
+              cursor
+              node {
+                id
+                url
+                isAi
+              }
+            }
+            pageInfo {
+              endCursor
+              hasNextPage
+            }
           }
         }
       `)
 
-      it('should return cloudflare images', async () => {
+      it('should return cloudflare images as a connection', async () => {
         prismaMock.cloudflareImage.findMany.mockResolvedValue([
           {
             id: 'testId',
@@ -92,96 +97,49 @@ describe('cloudflareImage', () => {
             aspectRatio: ImageAspectRatio.hd,
             videoId: null,
             blurhash: 'testBlurhash',
-            blurhashAttemptedAt: null
-          }
-        ])
-        const result = await authClient({
-          document: GET_MY_CLOUDFLARE_IMAGES_QUERY
-        })
-        expect(result).toEqual({
-          data: {
-            getMyCloudflareImages: [
-              {
-                id: 'testId',
-                uploadUrl: 'testUrl',
-                userId: 'testUserId',
-                aspectRatio: ImageAspectRatio.hd,
-                url: `https://imagedelivery.net/${
-                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
-                }/testId`,
-                mobileCinematicHigh: null,
-                mobileCinematicLow: null,
-                mobileCinematicVeryLow: null,
-                thumbnail: `https://imagedelivery.net/${
-                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
-                }/testId/f=jpg,w=120,h=68,q=95`,
-                videoStill: `https://imagedelivery.net/${
-                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
-                }/testId/f=jpg,w=1920,h=1080,q=95`,
-                blurhash: 'testBlurhash'
-              }
-            ]
-          }
-        })
-        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId' }
-        })
-      })
-
-      it('should return cloudflare images with pagination', async () => {
-        prismaMock.cloudflareImage.findMany.mockResolvedValue([
-          {
-            id: 'testId',
-            uploaded: true,
-            userId: 'testUserId',
-            uploadUrl: 'testUrl',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            aspectRatio: ImageAspectRatio.banner,
-            videoId: null,
-            blurhash: null,
-            blurhashAttemptedAt: null
+            blurhashAttemptedAt: null,
+            isAi: false
           }
         ])
         const result = await authClient({
           document: GET_MY_CLOUDFLARE_IMAGES_QUERY,
-          variables: {
-            offset: 0,
-            limit: 10
-          }
+          variables: { first: 10 }
         })
         expect(result).toEqual({
           data: {
-            getMyCloudflareImages: [
-              {
-                id: 'testId',
-                uploadUrl: 'testUrl',
-                userId: 'testUserId',
-                aspectRatio: ImageAspectRatio.banner,
-                url: `https://imagedelivery.net/${
-                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
-                }/testId`,
-                mobileCinematicHigh: `https://imagedelivery.net/${
-                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
-                }/testId/f=jpg,w=1280,h=600,q=95`,
-                mobileCinematicLow: `https://imagedelivery.net/${
-                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
-                }/testId/f=jpg,w=640,h=300,q=95`,
-                mobileCinematicVeryLow: `https://imagedelivery.net/${
-                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
-                }/testId/f=webp,w=640,h=300,q=50`,
-                thumbnail: null,
-                videoStill: null,
-                blurhash: null
+            getMyCloudflareImages: {
+              edges: [
+                {
+                  cursor: expect.any(String),
+                  node: {
+                    id: 'testId',
+                    url: `https://imagedelivery.net/${
+                      process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+                    }/testId`,
+                    isAi: false
+                  }
+                }
+              ],
+              pageInfo: {
+                endCursor: expect.any(String),
+                hasNextPage: false
               }
-            ]
+            }
           }
         })
-        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId' },
-          take: 10,
-          skip: 0
+      })
+
+      it('should filter by isAi', async () => {
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([])
+        await authClient({
+          document: GET_MY_CLOUDFLARE_IMAGES_QUERY,
+          variables: { first: 10, isAi: true }
         })
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { userId: 'testUserId', isAi: true }
+          })
+        )
       })
     })
 

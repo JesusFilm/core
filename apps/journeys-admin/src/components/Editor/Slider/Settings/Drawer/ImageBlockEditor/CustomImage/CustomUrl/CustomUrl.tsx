@@ -31,8 +31,12 @@ interface CustomUrlProps {
 export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [open, setOpen] = useState(false)
-  const [createCloudflareUploadByUrl] =
-    useMutation<CreateCloudflareUploadByUrl>(CREATE_CLOUDFLARE_UPLOAD_BY_URL)
+  const [createCloudflareUploadByUrl] = useMutation<CreateCloudflareUploadByUrl>(
+    CREATE_CLOUDFLARE_UPLOAD_BY_URL,
+    {
+      refetchQueries: ['GetMyCloudflareImages']
+    }
+  )
 
   const handleChange = async (url: string): Promise<void> => {
     const { data } = await createCloudflareUploadByUrl({

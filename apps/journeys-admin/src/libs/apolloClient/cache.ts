@@ -1,5 +1,8 @@
 import { InMemoryCache } from '@apollo/client'
-import { offsetLimitPagination } from '@apollo/client/utilities'
+import {
+  offsetLimitPagination,
+  relayStylePagination
+} from '@apollo/client/utilities'
 
 export const cache = (): InMemoryCache =>
   new InMemoryCache({
@@ -42,6 +45,7 @@ export const cache = (): InMemoryCache =>
       Query: {
         fields: {
           videos: offsetLimitPagination(['where']),
+          getMyCloudflareImages: relayStylePagination(['isAi']),
           searchUnsplashPhotos: {
             keyArgs: ['query'],
             merge(existing, incoming) {

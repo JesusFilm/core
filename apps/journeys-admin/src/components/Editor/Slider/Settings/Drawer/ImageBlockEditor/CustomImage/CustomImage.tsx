@@ -42,6 +42,8 @@ export function CustomImage({
         title={t('Your uploads')}
         selectedSrc={selectedBlock?.src}
         onSelect={onChange}
+        isAi={false}
+        uploading={loading}
       />
     </Stack>
   )
