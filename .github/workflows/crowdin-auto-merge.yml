@@ -6,8 +6,8 @@ on:
         description: 'Skip the merge-queue enqueue step (default: true for safety)'
         type: boolean
         default: true
-  # schedule:
-  #   - cron: '0 1 * * 5'  # Friday 01:00 UTC = Friday 1pm NZST / 2pm NZDT
+  schedule:
+    - cron: '0 1 * * 5' # Friday 01:00 UTC = Friday 1pm NZST / 2pm NZDT
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
