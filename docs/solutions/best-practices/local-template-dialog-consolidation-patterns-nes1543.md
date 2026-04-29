@@ -234,6 +234,41 @@ The cast is now constrained to one place, the prop type is the documented contra
 
 If `screen.getByTestId('YourDialog')` mysteriously can't find a rendered dialog, this is the first thing to check.
 
+## Pattern 8 — Verify automated review suggestions against actual codebase convention before accepting
+
+**Problem.** Multi-agent reviews (CodeRabbit, ce-review subagents, etc.) surface a mix of genuine improvements and confidently-stated false positives. The bot tone makes both feel equally authoritative. Accepting everything wholesale ships regressions.
+
+**Real example from this PR.** A CodeRabbit pass surfaced 4 actionable inline comments + 3 nitpicks. After accepting all 6 actionable suggestions in commit `3ac45373c`, a verification pass identified **two false positives**:
+
+a. **`Toolbar.tsx` `homeHref` "fix"** — bot said "global templates should also route to /?type=templates." But the original predicate was deliberately scoped to local templates only (PR #8510, commit `60c1aa36a`, with an explicit code comment documenting the intent). Accepting the suggestion would have shipped an untested behaviour change to global templates — silent regression risk.
+
+b. **`ThemeProvider` "convention" addition** — bot said "the journeys-admin test guidelines require ThemeProvider." Empirical reality: only ~12% of `apps/journeys-admin/src/components/Editor/**/*.spec.tsx` files use `ThemeProvider`, and **zero** of the 10 sibling specs in `Editor/Toolbar/Items/*` do. The bot's "guideline" was a generalised heuristic that did not match the local convention; adopting it in three new specs would have created inconsistency without changing test outcomes.
+
+The remaining four CodeRabbit suggestions (`journey != null` runtime guard, two named-only barrel exports, code-fence language identifier, PR title length) were all genuine improvements that matched codebase reality. Reverted in commit `8e5e817ed`; the kept fixes survive in `3ac45373c`.
+
+**Verification techniques (the takeaway):**
+
+1. **`git show origin/main:<file>` + `git blame`** — confirm pre-PR intent and find the originating commit/PR for any suggested behaviour change. A bot that says "this should also do X" doesn't know whether the absence of X was intentional.
+2. **Quantify "convention" claims with grep.** Before accepting "the project requires X," count how many neighbouring files actually do X:
+   ```bash
+   grep -l "ThemeProvider" apps/journeys-admin/src/components/Editor/**/*.spec.tsx | wc -l
+   find apps/journeys-admin/src/components/Editor -name "*.spec.tsx" | wc -l
+   ```
+   If the ratio is ≪50% in the relevant subtree, the "convention" is the bot's generalisation, not your codebase's.
+3. **Confirm "defensive guard" reachability.** A guard against an unreachable null is dead weight. A guard that matches the type signature (e.g., `journey?: Journey` declared optional in `JourneyCardMenuProps`) is correct narrowing and worth keeping. Read every caller before deciding.
+4. **Cross-check `export *` vs `export { X }` libs.** `find apps/<app>/src/libs -name "index.ts" | xargs grep -l "^export \*" | wc -l` vs `xargs grep -l "^export {"` — accept the bot's preference only if it matches the dominant pattern.
+
+**Heuristic for accepting bot suggestions:**
+
+| Outcome | Suggestion type |
+|---|---|
+| ✅ Almost always correct | Lint, format, typecheck fixes; obvious type-safety hardening that matches the actual signature |
+| ✅ Verify, then accept | Suggestions backed by a "codebase convention" you've confirmed by grep |
+| ⚠️ Verify before accepting | Generic "project guidelines" claims; defensive guards in untested paths |
+| ❌ Default to skeptical | Behaviour changes to untested code paths; "this should also do X" without an originating issue |
+
+**Cost of skipping verification.** The `homeHref` accept would have shipped a regression to global-template back-link navigation. Untested → CI green → users see it. The cost of one `git show origin/main:...` + 30 seconds of `git blame` is much less than the cost of a UI regression.
+
 ## Prevention checklist (drop-in for code review)
 
 - [ ] Form fires two mutations? Use dirty-subset routing + `Promise.allSettled` (Pattern 1).
@@ -243,6 +278,7 @@ If `screen.getByTestId('YourDialog')` mysteriously can't find a rendered dialog,
 - [ ] Importing a `gql` document from a sibling component file? Hoist to a lib hook (Pattern 5).
 - [ ] Dialog needs to work outside the editor's `JourneyProvider`? Use the optional-prop + self-bridge pattern (Pattern 6).
 - [ ] Setting test IDs on `Dialog`? Use `testId`, not `data-testid` (Pattern 7).
+- [ ] Did you verify automated-review suggestions against actual codebase convention (grep frequencies, originating-commit intent) before accepting? (Pattern 8).
 - [ ] Spec of `useTitleDescLanguageUpdateMutation` still hits the wire on title/desc/lang edits? (Translation polling regression bait.)
 
 ## Reference files

@@ -175,9 +175,8 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   }
 
   // Local templates → templates tab; everything else (regular journeys AND
-  // global templates) → journeys tab. Behavior preserved from PR #8510 where
-  // this predicate was originally introduced — global templates intentionally
-  // fall through to journeys.
+  // global templates) → journeys tab. Predicate preserved from PR #8510
+  // (commit 60c1aa36a) — global templates intentionally fall through.
   const homeHref = isLocalTemplate ? '/?type=templates' : '/?type=journeys'
 
   return (
