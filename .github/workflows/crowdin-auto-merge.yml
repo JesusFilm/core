@@ -58,6 +58,11 @@ jobs:
           app-id: ${{ secrets.CI_BOT_APP_ID }}
           private-key: ${{ secrets.CI_BOT_PRIVATE_KEY }}
 
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          token: ${{ steps.app-token.outputs.token }}
+
       - name: Resolve CI Bot identity
         id: bot-login
         env:
