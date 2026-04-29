@@ -1,5 +1,5 @@
-import type { DecoratorFunction as Decorator } from 'storybook/internal/csf'
 import { SnackbarProvider } from 'notistack'
+import type { DecoratorFunction as Decorator } from 'storybook/internal/csf'
 
 import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
