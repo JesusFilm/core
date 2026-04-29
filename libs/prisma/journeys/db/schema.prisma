@@ -237,22 +237,23 @@ model JourneyVisitor {
 }
 
 model Team {
-  id                 String              @id @default(uuid())
-  title              String
-  publicTitle        String?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  plausibleToken     String?
-  visitors           Visitor[]
-  userTeams          UserTeam[]
-  journeys           Journey[]
-  hosts              Host[]
-  UserTeamInvites    UserTeamInvite[]
-  journeyCollections JourneyCollection[]
-  customDomains      CustomDomain[]
-  integrations       Integration[]
-  qrCodes            QrCode[]
-  googleSheetsSync   GoogleSheetsSync[]
+  id                   String                @id @default(uuid())
+  title                String
+  publicTitle          String?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  plausibleToken       String?
+  visitors             Visitor[]
+  userTeams            UserTeam[]
+  journeys             Journey[]
+  hosts                Host[]
+  UserTeamInvites      UserTeamInvite[]
+  journeyCollections   JourneyCollection[]
+  customDomains        CustomDomain[]
+  integrations         Integration[]
+  qrCodes              QrCode[]
+  googleSheetsSync     GoogleSheetsSync[]
+  templateGalleryPages TemplateGalleryPage[]
 
   @@index(title)
 }
@@ -470,6 +471,7 @@ model Journey {
   journeyCustomizationDescription String?
   journeyCustomizationFields      JourneyCustomizationField[]
   googleSheetsSync                GoogleSheetsSync[]
+  templateGalleryPageTemplates    TemplateGalleryPageTemplate[] @relation("JourneyTemplateGalleryPageTemplate")
 
   @@index(title)
 }
@@ -618,6 +620,7 @@ model Block {
   pollOptionImageBlockParent Block?               @relation("PollOptionImageBlock")
   primaryImageBlockParent    Journey?             @relation("PrimaryImageBlock")
   creatorImageBlockParent    Journey?             @relation("CreatorImageBlock")
+  templateGalleryPagesAsCreatorImage TemplateGalleryPage[] @relation("TemplateGalleryPageCreatorImageBlock")
   nextBlock                  Block?               @relation("NextBlock", fields: [nextBlockId], references: [id])
   nextBlockParents           Block[]              @relation("NextBlock")
   parentBlock                Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
@@ -718,6 +721,43 @@ model JourneyCollectionJourneys {
 
   @@unique([journeyCollectionId, journeyId])
   @@unique([journeyCollectionId, order])
+}
+
+enum TemplateGalleryPageStatus {
+  draft
+  published
+}
+
+model TemplateGalleryPage {
+  id                  String                        @id @default(uuid())
+  teamId              String
+  title               String
+  description         String                        @default("")
+  slug                String                        @unique
+  status              TemplateGalleryPageStatus     @default(draft)
+  creatorName         String
+  creatorImageBlockId String?
+  mediaUrl            String?
+  publishedAt         DateTime?
+  createdAt           DateTime                      @default(now())
+  updatedAt           DateTime                      @updatedAt
+  team                Team                          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creatorImageBlock   Block?                        @relation("TemplateGalleryPageCreatorImageBlock", fields: [creatorImageBlockId], references: [id], onDelete: SetNull)
+  templates           TemplateGalleryPageTemplate[]
+
+  @@index([teamId, createdAt(sort: Desc)])
+}
+
+model TemplateGalleryPageTemplate {
+  id                    String              @id @default(uuid())
+  templateGalleryPageId String
+  journeyId             String
+  order                 Int
+  templateGalleryPage   TemplateGalleryPage @relation(fields: [templateGalleryPageId], references: [id], onDelete: Cascade)
+  journey               Journey             @relation("JourneyTemplateGalleryPageTemplate", fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@unique([templateGalleryPageId, journeyId])
+  @@unique([templateGalleryPageId, order])
 }
 
 model QrCode {
