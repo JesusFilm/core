@@ -1,10 +1,6 @@
 import { ExecutionResult } from 'graphql'
 
-import {
-  CustomDomain,
-  Prisma,
-  UserTeamRole
-} from '@core/prisma/journeys/client'
+import { CustomDomain, Prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
@@ -13,7 +9,6 @@ import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import {
   createVercelDomain,
-  deleteVercelDomain,
   isDomainValid,
   updateTeamShortLinks
 } from './service'
@@ -25,7 +20,6 @@ jest.mock('@core/yoga/firebaseClient', () => ({
 jest.mock('./service', () => ({
   isDomainValid: jest.fn(),
   createVercelDomain: jest.fn(),
-  deleteVercelDomain: jest.fn(),
   updateTeamShortLinks: jest.fn()
 }))
 
@@ -38,9 +32,6 @@ const mockIsDomainValid = isDomainValid as jest.MockedFunction<
 >
 const mockCreateVercelDomain = createVercelDomain as jest.MockedFunction<
   typeof createVercelDomain
->
-const mockDeleteVercelDomain = deleteVercelDomain as jest.MockedFunction<
-  typeof deleteVercelDomain
 >
 const mockUpdateTeamShortLinks = updateTeamShortLinks as jest.MockedFunction<
   typeof updateTeamShortLinks
@@ -82,14 +73,6 @@ describe('customDomainCreate', () => {
     journeyCollectionId: null
   }
 
-  const mockCustomDomainWithTeam = {
-    ...mockCustomDomain,
-    team: {
-      id: 'teamId',
-      userTeams: [{ userId: 'userId', role: UserTeamRole.manager }]
-    }
-  }
-
   beforeEach(() => {
     jest.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
@@ -101,6 +84,13 @@ describe('customDomainCreate', () => {
     prismaMock.$transaction.mockImplementation(
       async (cb: any) => await cb(prismaMock)
     )
+    // Pass isTeamManager auth scope
+    prismaMock.userTeam.findFirst.mockResolvedValue({
+      id: 'userTeamId',
+      userId: mockUser.id,
+      teamId: 'teamId',
+      role: 'manager'
+    } as any)
   })
 
   it('should create a custom domain when authorized', async () => {
@@ -109,9 +99,7 @@ describe('customDomainCreate', () => {
       name: 'www.example.com',
       apexName: 'example.com'
     })
-    prismaMock.customDomain.create.mockResolvedValue(
-      mockCustomDomainWithTeam as any
-    )
+    prismaMock.customDomain.create.mockResolvedValue(mockCustomDomain)
     mockUpdateTeamShortLinks.mockResolvedValue()
 
     const result = (await authClient({
@@ -147,9 +135,7 @@ describe('customDomainCreate', () => {
       name: 'www.example.com',
       apexName: 'example.com'
     })
-    prismaMock.customDomain.create.mockResolvedValue(
-      mockCustomDomainWithTeam as any
-    )
+    prismaMock.customDomain.create.mockResolvedValue(mockCustomDomain)
     mockUpdateTeamShortLinks.mockResolvedValue()
 
     const result = (await authClient({
@@ -203,20 +189,8 @@ describe('customDomainCreate', () => {
     expect(mockCreateVercelDomain).not.toHaveBeenCalled()
   })
 
-  it('should return FORBIDDEN and delete vercel domain when user lacks team access', async () => {
-    mockIsDomainValid.mockReturnValue(true)
-    mockCreateVercelDomain.mockResolvedValue({
-      name: 'www.example.com',
-      apexName: 'example.com'
-    })
-    prismaMock.customDomain.create.mockResolvedValue({
-      ...mockCustomDomain,
-      team: {
-        id: 'teamId',
-        userTeams: []
-      }
-    } as any)
-    mockDeleteVercelDomain.mockResolvedValue(true)
+  it('should return FORBIDDEN when user is not a team manager', async () => {
+    prismaMock.userTeam.findFirst.mockResolvedValue(null)
 
     const result = (await authClient({
       document: MUTATION,
@@ -229,10 +203,8 @@ describe('customDomainCreate', () => {
     })) as ExecutionResult
 
     expect(result.errors).toBeDefined()
-    expect(result.errors?.[0]?.message).toBe(
-      'user is not allowed to create custom domain'
-    )
-    expect(mockDeleteVercelDomain).toHaveBeenCalledWith('www.example.com')
+    expect(result.errors?.[0]?.message).toContain('Not authorized')
+    expect(mockCreateVercelDomain).not.toHaveBeenCalled()
     expect(mockUpdateTeamShortLinks).not.toHaveBeenCalled()
   })
 
