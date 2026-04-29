@@ -1,6 +1,7 @@
 {
   "Submit": "Ipasa",
   "Button": "Button",
+  "None": "wala",
   "This field is required": "This field is required",
   "Name must be 2 characters or more": "Name must be 2 characters or more",
   "Name must be 50 characters or less": "Name must be 50 characters or less",

@@ -40,20 +40,15 @@ function UploadButton({
       <input {...getInputProps()} />
       <Button
         data-testid="VideosSection-upload-button"
-        size="medium"
-        color="secondary"
-        variant="outlined"
+        variant="blockOutlined"
+        color="solid"
         disabled={loading}
         onClick={open}
         sx={{
-          borderWidth: 2,
-          borderRadius: 2,
-          height: 48,
-          width: '100%',
-          borderColor: 'secondary.light'
+          width: '100%'
         }}
       >
-        <Typography variant="subtitle2">{label}</Typography>
+        {label}
       </Button>
       {errorMessage != null && (
         <Typography

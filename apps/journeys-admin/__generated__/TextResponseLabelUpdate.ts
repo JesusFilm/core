@@ -14,7 +14,7 @@ export interface TextResponseLabelUpdate_textResponseBlockUpdate {
 }
 
 export interface TextResponseLabelUpdate {
-  textResponseBlockUpdate: TextResponseLabelUpdate_textResponseBlockUpdate | null;
+  textResponseBlockUpdate: TextResponseLabelUpdate_textResponseBlockUpdate;
 }
 
 export interface TextResponseLabelUpdateVariables {
