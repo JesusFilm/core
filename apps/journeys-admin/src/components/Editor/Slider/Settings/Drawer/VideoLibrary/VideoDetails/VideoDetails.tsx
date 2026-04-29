@@ -26,7 +26,7 @@ export interface VideoDetailsProps {
   open: boolean
   id: string
   onClose: (closeParent?: boolean) => void
-  onSelect: (block: VideoBlockUpdateInput) => void
+  onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
   source: VideoBlockSource
   activeVideoBlock?: TreeBlock<VideoBlock>
 }
@@ -84,8 +84,11 @@ export function VideoDetails({
       break
   }
 
-  const handleSelect = (block: VideoBlockUpdateInput): void => {
-    onSelect(block)
+  const handleSelect = (
+    block: VideoBlockUpdateInput,
+    shouldCloseDrawer?: boolean
+  ): void => {
+    onSelect(block, shouldCloseDrawer)
   }
 
   const handleClearVideo = async (): Promise<void> => {
@@ -101,14 +104,17 @@ export function VideoDetails({
         }
       })
     }
-    onSelect({
-      videoId: null,
-      videoVariantLanguageId: null,
-      posterBlockId: null,
-      source: VideoBlockSource.internal,
-      startAt: null,
-      endAt: null
-    })
+    onSelect(
+      {
+        videoId: null,
+        videoVariantLanguageId: null,
+        posterBlockId: null,
+        source: VideoBlockSource.internal,
+        startAt: null,
+        endAt: null
+      },
+      false
+    )
   }
 
   return (
