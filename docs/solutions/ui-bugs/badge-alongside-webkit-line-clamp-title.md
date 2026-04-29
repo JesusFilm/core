@@ -40,7 +40,7 @@ Wrap the existing `Typography` and the new `Chip` in a `Stack direction="row"` w
   >
     {title}
   </Typography>
-  <Chip label="TEMPLATE" size="small" sx={{ flexShrink: 0, height: 20, fontSize: 10 }} />
+  <Chip label="TEMPLATE" sx={{ flexShrink: 0 /* + visual styling per Figma */ }} />
 </Stack>
 ```
 
