@@ -9,7 +9,7 @@ date: 2026-04-29
 
 ## Overview
 
-PR [#9095](https://github.com/JesusFilm/core/pull/9095) added a job-level `if:` to `autofix.ci.yml` so the `lint` job skips on `/sync-ce`-generated PRs (branches matching `*-chore-ce-sync-*`). The job-level skip works as designed — but a *required* status check that concludes `SKIPPED` is treated by the `main` ruleset as **not passing**, so `/sync-ce` PRs are now `BLOCKED` from merging instead of breezing through.
+PR [#9095](https://github.com/JesusFilm/core/pull/9095) added a job-level `if:` to `autofix.ci.yml` so the `lint` job skips on `/sync-ce`-generated PRs (branches matching `*-chore-ce-sync-*`). The job-level skip works as designed — but a _required_ status check that concludes `SKIPPED` is treated by the `main` ruleset as **not passing**, so `/sync-ce` PRs are now `BLOCKED` from merging instead of breezing through.
 
 This plan replaces the job-level skip with the GitHub-native **wrapper-job pattern**: rename the existing job to `lint-work` (gate intact) and add a thin always-running `lint` wrapper that resolves the required check to `SUCCESS` when `lint-work` either succeeded or was skipped, and `FAILURE` otherwise. Required-check name is preserved, so no ruleset change is needed.
 
