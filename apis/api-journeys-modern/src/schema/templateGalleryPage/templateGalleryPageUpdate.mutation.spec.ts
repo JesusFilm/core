@@ -257,4 +257,114 @@ describe('templateGalleryPageUpdate', () => {
       ]
     })
   })
+
+  it('connects a new creatorImageBlock when validated', async () => {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'p1',
+      teamId: 'team-1'
+    } as any)
+    prismaMock.block.findUnique.mockResolvedValue({
+      journey: { teamId: 'team-1' }
+    } as any)
+    prismaMock.templateGalleryPage.update.mockResolvedValue({
+      id: 'p1',
+      title: 'T',
+      slug: 's'
+    } as any)
+
+    await authClient({
+      document: TEMPLATE_GALLERY_PAGE_UPDATE,
+      variables: {
+        id: 'p1',
+        input: { creatorImageBlockId: 'block-1' }
+      }
+    })
+
+    expect(prismaMock.templateGalleryPage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'p1' },
+        data: expect.objectContaining({
+          creatorImageBlock: { connect: { id: 'block-1' } }
+        })
+      })
+    )
+  })
+
+  it('disconnects creatorImageBlock when input is explicitly null', async () => {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'p1',
+      teamId: 'team-1'
+    } as any)
+    prismaMock.templateGalleryPage.update.mockResolvedValue({
+      id: 'p1',
+      title: 'T',
+      slug: 's'
+    } as any)
+
+    await authClient({
+      document: TEMPLATE_GALLERY_PAGE_UPDATE,
+      variables: {
+        id: 'p1',
+        input: { creatorImageBlockId: null }
+      }
+    })
+
+    expect(prismaMock.templateGalleryPage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          creatorImageBlock: { disconnect: true }
+        })
+      })
+    )
+    expect(prismaMock.block.findUnique).not.toHaveBeenCalled()
+  })
+
+  it('leaves creatorImageBlock alone when input is undefined', async () => {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'p1',
+      teamId: 'team-1'
+    } as any)
+    prismaMock.templateGalleryPage.update.mockResolvedValue({
+      id: 'p1',
+      title: 'T',
+      slug: 's'
+    } as any)
+
+    await authClient({
+      document: TEMPLATE_GALLERY_PAGE_UPDATE,
+      variables: {
+        id: 'p1',
+        input: { title: 'just title' }
+      }
+    })
+
+    const updateCall = prismaMock.templateGalleryPage.update.mock.calls[0][0]
+    expect(updateCall.data).not.toHaveProperty('creatorImageBlock')
+  })
+
+  it('clears mediaUrl when input is explicitly null', async () => {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'p1',
+      teamId: 'team-1'
+    } as any)
+    prismaMock.templateGalleryPage.update.mockResolvedValue({
+      id: 'p1',
+      title: 'T',
+      slug: 's'
+    } as any)
+
+    await authClient({
+      document: TEMPLATE_GALLERY_PAGE_UPDATE,
+      variables: {
+        id: 'p1',
+        input: { mediaUrl: null }
+      }
+    })
+
+    expect(prismaMock.templateGalleryPage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ mediaUrl: null })
+      })
+    )
+  })
 })
