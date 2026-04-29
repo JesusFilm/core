@@ -122,6 +122,9 @@ Where:
 - `XX` is the user's 2-letter uppercase initials
 - `vX-Y-Z` is the upstream version with dots replaced by hyphens (e.g. `v2-45-0`)
 
+> **Branch format is load-bearing.** `.github/workflows/autofix.ci.yml` matches `-chore-ce-sync-` to skip lint on sync PRs.
+> If you change this format, update the workflow's `if:` condition in lockstep.
+
 Create a git worktree for this branch:
 
 ```bash
