@@ -1,4 +1,5 @@
 <!-- test: verifying crowdin-auto-merge file-path guard rejects non-locale changes (will be reverted) -->
+
 # Core Unified Product Suite
 
 Core is Jesus Film Project's modern, developer-friendly solution that makes building large, feature-rich javascript projects painless. It contains all the tools you need to start building modern react applications ontop of a robust GraphQL Supergraph, using battle-tested front-end and back-end development tools and practices.
