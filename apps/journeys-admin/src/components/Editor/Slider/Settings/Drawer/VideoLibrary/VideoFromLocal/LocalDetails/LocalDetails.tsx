@@ -96,15 +96,29 @@ export function LocalDetails({
     setSelectedLanguage(selectedLanguage)
   }
 
-  const handleSelect = (): void => {
+  const commitSelection = (language: LanguageOption): void => {
     onSelect({
       videoId: id,
-      videoVariantLanguageId: selectedLanguage?.id,
+      videoVariantLanguageId: language?.id,
       duration: time,
       source: VideoBlockSource.internal,
       startAt: videoBlock?.videoId === id ? videoBlock?.startAt : 0,
       endAt: videoBlock?.videoId === id ? videoBlock?.endAt : time
     })
+  }
+
+  const handleSelect = (): void => {
+    commitSelection(selectedLanguage)
+  }
+
+  const handleApplyLanguage = (): void => {
+    // Apply commits the staged language change and exits the language picker.
+    // The downstream onSelect (VideoLibrary.onSelect) closes the inner Video
+    // Details drawer and the outer Video Library drawer, returning the user
+    // to the video properties panel — fixing the QA-221 / NES-1568 trap where
+    // Apply only dismissed the picker.
+    commitSelection(selectedLanguage)
+    setOpenLanguage(false)
   }
 
   const time = data?.video?.variant?.duration ?? 0
@@ -125,7 +139,7 @@ export function LocalDetails({
       const { name } = videoVariant
       const localName = name?.find(({ primary }) => !primary)?.value
       const nativeName = name?.find(({ primary }) => primary)?.value
-      return { id, localName, nativeName }
+      return { id: videoVariant.id, localName, nativeName }
     }
   }
 
@@ -263,6 +277,7 @@ export function LocalDetails({
         open={openLanguage}
         onClose={() => setOpenLanguage(false)}
         onChange={handleChange}
+        onApply={handleApplyLanguage}
         language={selectedLanguage}
         languages={data?.video?.variantLanguages}
         loading={loading}
