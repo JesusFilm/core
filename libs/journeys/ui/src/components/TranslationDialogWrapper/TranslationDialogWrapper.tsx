@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode } from 'react'
@@ -26,6 +27,7 @@ interface TranslationDialogWrapperProps {
     progress: number
     message: string
   }
+  sx?: SxProps
 }
 
 /**
@@ -67,7 +69,8 @@ export function TranslationDialogWrapper({
   submitLabel,
   divider,
   isTranslation,
-  translationProgress
+  translationProgress,
+  sx
 }: TranslationDialogWrapperProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const defaultLoadingText = t('Translating your journey...')
@@ -113,6 +116,7 @@ export function TranslationDialogWrapper({
         </>
       }
       testId={testId}
+      sx={sx}
     >
       {loading && isTranslation ? (
         <Box

@@ -37,6 +37,7 @@ import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQ
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
+import { usePageWrapperStyles } from '../../../../PageWrapper/utils/usePageWrapperStyles'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview } from '../LinksScreen/CardsPreview'
 import { ScreenWrapper } from '../ScreenWrapper'
@@ -75,6 +76,7 @@ export function LanguageScreen({
   const [loading, setLoading] = useState(false)
   const isSignedIn = user?.email != null && user?.id != null
   const isGuestFlowEnabled = templateCustomizationGuestFlow === true
+  const { navbar } = usePageWrapperStyles()
   // Guests don't have teams yet — only block on team load errors for signed-in users
   const isDataReady = journey != null && (!isSignedIn || query?.data != null)
   const hasTeamLoadError = isSignedIn && query?.error != null
@@ -591,6 +593,12 @@ export function LanguageScreen({
                     isTranslation
                     translationProgress={translationProgress}
                     testId="LanguageScreenTranslationDialog"
+                    sx={{
+                      left: { md: navbar.width },
+                      '& .MuiBackdrop-root': {
+                        left: { md: navbar.width }
+                      }
+                    }}
                   >
                     <></>
                   </TranslationDialogWrapper>
