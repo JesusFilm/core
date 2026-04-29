@@ -1,5 +1,5 @@
 ---
-title: "feat: Signal — Internal Usage Analytics"
+title: 'feat: Signal — Internal Usage Analytics'
 type: feat
 status: active
 date: 2026-04-29
@@ -16,7 +16,8 @@ linear: NES-1613
 **Sections materially revised:** Hashing & salt rotation; wire schema for `eventType`; `description` validation; `useTrackEvent` loading-state behaviour; mutation idempotency; gateway auth wiring; read-side authorization scope.
 
 ### Key changes from v1 of this plan
-1. **Eliminated the `Salt` table.** Review (security + simplicity) converged: persisting the daily salt in the same DB as `Event` makes hashes trivially reversible while the salt is live. Plausible's reference implementation *destroys* old salts. We adopt a deterministic salt: `salt = HMAC_SHA256(SIGNALS_SALT_SECRET, utc_date)`. The env secret never lives in the DB. No rotation logic, no race condition, stronger privacy. ([Plausible discussion #601](https://github.com/plausible/analytics/discussions/601), [EDPB 01/2025 on pseudonymisation](https://www.edpb.europa.eu/system/files/2025-01/edpb_guidelines_202501_pseudonymisation_en.pdf))
+
+1. **Eliminated the `Salt` table.** Review (security + simplicity) converged: persisting the daily salt in the same DB as `Event` makes hashes trivially reversible while the salt is live. Plausible's reference implementation _destroys_ old salts. We adopt a deterministic salt: `salt = HMAC_SHA256(SIGNALS_SALT_SECRET, utc_date)`. The env secret never lives in the DB. No rotation logic, no race condition, stronger privacy. ([Plausible discussion #601](https://github.com/plausible/analytics/discussions/601), [EDPB 01/2025 on pseudonymisation](https://www.edpb.europa.eu/system/files/2025-01/edpb_guidelines_202501_pseudonymisation_en.pdf))
 2. **Hash construction tightened.** `HMAC-SHA256(salt, host || \x1f || ip || \x1f || normalisedUA)`, where `normalisedUA = {browser_family, major, os_family}` from `ua-parser` and known bots are dropped at the resolver.
 3. **`eventType` becomes `String!` on the wire,** validated at the resolver against an allowlist. Pothos enum stays internal for query strictness. Reason: GraphQL enums hard-reject removed values; deployed admin bundles after a value is dropped would silently lose every event until reload. String + allowlist gracefully drops unknowns with a Datadog warn.
 4. **`description` validation added server-side.** Max 2KB, recursive denylist on PII-shaped keys (`email`, `name`, `phone`, `userId`, etc.), optional per-eventType zod schema. Reason: the brainstorm relied on code review to keep PII out; review correctly flagged this as too weak for a privacy-claimed system.
@@ -27,6 +28,7 @@ linear: NES-1613
 9. **Simplifications adopted:** dropped JSON-path filtering from v1, dropped `prismaConnection` cursor pagination from v1 (simple `limit` + `orderBy desc`), trimmed Phase 3 to a one-page operator note.
 
 ### Simplifications rejected
+
 - "Land `Event` in `libs/prisma/journeys` instead of new `prisma-signals` domain" — semantic drift cost > the short-term scaffold saving. Keep the new domain.
 
 ### Schema iteration (post-deepen review with team)
@@ -63,13 +65,13 @@ From the origin requirements doc — settled and not re-litigated here:
 
 - **Storage:** Own table queried via `api-analytics` GraphQL surface (R1, R4).
 - **Schema:** `id`, `createdAt`, `eventType` (allowlisted), `userHash`, `description` (Json) (R2).
-- **Taxonomy:** Allowlisted enum + free-form JSON `description` (R3) — *with new server-side validation, see § Description Validation*.
-- **Filtering on `eventType` and date range from day one** (R4) — *JSON-path filtering deferred to v2*.
-- **Attribution:** No raw `userId` (R5) — *implementation switched from `sha256(salt+...)` to `HMAC(salt, ...)` with deterministic salt; see § Hashing*.
+- **Taxonomy:** Allowlisted enum + free-form JSON `description` (R3) — _with new server-side validation, see § Description Validation_.
+- **Filtering on `eventType` and date range from day one** (R4) — _JSON-path filtering deferred to v2_.
+- **Attribution:** No raw `userId` (R5) — _implementation switched from `sha256(salt+...)` to `HMAC(salt, ...)` with deterministic salt; see § Hashing_.
 - **Internal-user exclusion:** Client-side, Doppler-managed env var (R6).
 - **v1 events:** `journey_create_clicked`, `journey_create_from_template`, `editor_overlay_opened`, `ai_translation_language_picked` (R7).
 - **Failure isolation:** Fire-and-forget, Datadog log, never break the user flow (R8).
-- **No T&Cs change for v1** (origin Key Decisions). *Caveat from EDPB guidance: hashes are pseudonymous personal data **while the day's salt is derivable** (i.e. while `SIGNALS_SALT_SECRET` exists). Document this position in the operator note. Rotating `SIGNALS_SALT_SECRET` invalidates all prior hashes irretrievably.*
+- **No T&Cs change for v1** (origin Key Decisions). _Caveat from EDPB guidance: hashes are pseudonymous personal data **while the day's salt is derivable** (i.e. while `SIGNALS_SALT_SECRET` exists). Document this position in the operator note. Rotating `SIGNALS_SALT_SECRET` invalidates all prior hashes irretrievably._
 
 ## Decisions Required Before Implementation
 
@@ -209,75 +211,68 @@ No `Salt` table. The active salt is **never persisted** anywhere durable. The on
 
 ### Why each column exists
 
-| Column | Why |
-|---|---|
-| `id`, `createdAt` | Standard. `createdAt` is server-side `now()`. |
-| `appName` | Multi-app slicing. Without this, "journeys-admin vs videos-admin" can't be sliced. |
-| `eventType` | Identity of the action ("which button"). Allowlisted; old admin bundles can't pollute via removed values (graceful warn + drop). |
-| `route` | Which page produced the event. Cheap; saves every call site from putting it in `description`. |
-| `entityType + entityId` | The thing the event is *about*, polymorphic across apps. Resolver validates `entityType ∈ allowlist` and ID format per type via zod. Trade-off vs per-entity columns: adds a soft-constraint string column instead of a typed UUID column, recovered by resolver-side validation. Net win is no migration when a new app's primary entity appears. |
-| `userHash` | Pseudonymous identifier; daily-rotating via HMAC. Daily distinct counts are exact; cross-day distinct is intentionally broken (privacy choice). |
-| `sessionId` | Per-tab UUID in `sessionStorage`. Survives mobile IP churn (which fragments `userHash`). Counts tabs cleanly. Pairs with `userHash` for upper/lower bounds on distinct people. |
-| `deviceType`, `browserFamily`, `osFamily` | Coarse UA buckets — already computed in the hash pipeline; persisting them is free. Coarse enough not to re-identify (no version, no minor). |
-| `clientEventId` | Client-generated UUID per call. `@unique` index. Defeats Apollo mutation dedup so rapid double-clicks count twice; gives free idempotency if retries are added; debug correlation key. |
-| `description` | Free-form extras. 2KB cap + recursive PII-key denylist enforced at resolver. |
+| Column                                    | Why                                                                                                                                                                                                                                                                                                                                                |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`, `createdAt`                         | Standard. `createdAt` is server-side `now()`.                                                                                                                                                                                                                                                                                                      |
+| `appName`                                 | Multi-app slicing. Without this, "journeys-admin vs videos-admin" can't be sliced.                                                                                                                                                                                                                                                                 |
+| `eventType`                               | Identity of the action ("which button"). Allowlisted; old admin bundles can't pollute via removed values (graceful warn + drop).                                                                                                                                                                                                                   |
+| `route`                                   | Which page produced the event. Cheap; saves every call site from putting it in `description`.                                                                                                                                                                                                                                                      |
+| `entityType + entityId`                   | The thing the event is _about_, polymorphic across apps. Resolver validates `entityType ∈ allowlist` and ID format per type via zod. Trade-off vs per-entity columns: adds a soft-constraint string column instead of a typed UUID column, recovered by resolver-side validation. Net win is no migration when a new app's primary entity appears. |
+| `userHash`                                | Pseudonymous identifier; daily-rotating via HMAC. Daily distinct counts are exact; cross-day distinct is intentionally broken (privacy choice).                                                                                                                                                                                                    |
+| `sessionId`                               | Per-tab UUID in `sessionStorage`. Survives mobile IP churn (which fragments `userHash`). Counts tabs cleanly. Pairs with `userHash` for upper/lower bounds on distinct people.                                                                                                                                                                     |
+| `deviceType`, `browserFamily`, `osFamily` | Coarse UA buckets — already computed in the hash pipeline; persisting them is free. Coarse enough not to re-identify (no version, no minor).                                                                                                                                                                                                       |
+| `clientEventId`                           | Client-generated UUID per call. `@unique` index. Defeats Apollo mutation dedup so rapid double-clicks count twice; gives free idempotency if retries are added; debug correlation key.                                                                                                                                                             |
+| `description`                             | Free-form extras. 2KB cap + recursive PII-key denylist enforced at resolver.                                                                                                                                                                                                                                                                       |
 
 ### Why these indexes
 
-| Index | Answers |
-|---|---|
-| `[appName, eventType, createdAt]` | Dominant slice: "in app X, how many times did Y happen, in window Z" |
-| `[entityType, entityId, createdAt]` | "Show me everything that happened to journey/video/template ABC" |
-| `[userHash, createdAt]` | Daily distinct-user counts; per-user activity feeds within a day |
+| Index                               | Answers                                                              |
+| ----------------------------------- | -------------------------------------------------------------------- |
+| `[appName, eventType, createdAt]`   | Dominant slice: "in app X, how many times did Y happen, in window Z" |
+| `[entityType, entityId, createdAt]` | "Show me everything that happened to journey/video/template ABC"     |
+| `[userHash, createdAt]`             | Daily distinct-user counts; per-user activity feeds within a day     |
 
 ### Hashing
 
 ```ts
 // apis/api-analytics/src/schema/event/lib/hash.ts
-import { createHmac } from 'node:crypto';
+import { createHmac } from 'node:crypto'
 
-const FIELD_SEP = '\x1f'; // ASCII unit-separator — never appears in valid UA / host
+const FIELD_SEP = '\x1f' // ASCII unit-separator — never appears in valid UA / host
 
 export function dailySalt(secret: string, now = new Date()): Buffer {
-  const utcDate = now.toISOString().slice(0, 10); // YYYY-MM-DD
-  return createHmac('sha256', secret).update(utcDate).digest();
+  const utcDate = now.toISOString().slice(0, 10) // YYYY-MM-DD
+  return createHmac('sha256', secret).update(utcDate).digest()
 }
 
-export function computeUserHash(
-  secret: string,
-  host: string,
-  ip: string,
-  normalisedUserAgent: string,
-  now = new Date(),
-): string {
-  const salt = dailySalt(secret, now);
-  return createHmac('sha256', salt)
-    .update([host, ip, normalisedUserAgent].join(FIELD_SEP))
-    .digest('hex');
+export function computeUserHash(secret: string, host: string, ip: string, normalisedUserAgent: string, now = new Date()): string {
+  const salt = dailySalt(secret, now)
+  return createHmac('sha256', salt).update([host, ip, normalisedUserAgent].join(FIELD_SEP)).digest('hex')
 }
 ```
 
 Properties:
+
 - **Privacy floor:** breach of the events DB alone yields nothing — the salt secret is not stored there. Without `SIGNALS_SALT_SECRET`, hashes are not reversible.
 - **Daily rotation:** automatic via UTC-date input; no DB writes, no race condition.
-- **Forward erasure:** rotating `SIGNALS_SALT_SECRET` invalidates *all* historical hashes irretrievably (use as a kill switch).
+- **Forward erasure:** rotating `SIGNALS_SALT_SECRET` invalidates _all_ historical hashes irretrievably (use as a kill switch).
 - **EDPB stance:** while the secret exists, current-day hashes are pseudonymous (not anonymous) per [EDPB 01/2025](https://www.edpb.europa.eu/system/files/2025-01/edpb_guidelines_202501_pseudonymisation_en.pdf). Document in operator note; treat the dataset as in-scope for DSAR if one ever lands.
 
 ### User-Agent Normalisation & Bot Filter
 
 ```ts
 // apis/api-analytics/src/schema/event/lib/ua.ts
-import { UAParser } from 'ua-parser-js';
-import isbot from 'isbot';
+import { UAParser } from 'ua-parser-js'
+import isbot from 'isbot'
 
 export function normaliseUserAgent(raw: string | undefined | null): string | null {
-  if (!raw) return ''; // hash an empty string deterministically
-  if (isbot(raw)) return null; // signal: drop the event
-  const ua = UAParser(raw);
-  const browserFamily = ua.browser.name ?? 'unknown';
-  const major = (ua.browser.version ?? '').split('.')[0] ?? '';
-  const osFamily = ua.os.name ?? 'unknown';
-  return `${browserFamily}|${major}|${osFamily}`;
+  if (!raw) return '' // hash an empty string deterministically
+  if (isbot(raw)) return null // signal: drop the event
+  const ua = UAParser(raw)
+  const browserFamily = ua.browser.name ?? 'unknown'
+  const major = (ua.browser.version ?? '').split('.')[0] ?? ''
+  const osFamily = ua.os.name ?? 'unknown'
+  return `${browserFamily}|${major}|${osFamily}`
 }
 ```
 
@@ -297,57 +292,49 @@ The subgraph receives the client IP from a gateway-set forwarded-IP header. The 
 
 ```ts
 // apis/api-analytics/src/schema/event/lib/validate.ts
-const ALLOWED_EVENT_TYPES = new Set([
-  'journey_create_clicked',
-  'journey_create_from_template',
-  'editor_analytics_overlay_opened',
-  'editor_strategy_overlay_opened',
-  'editor_helpscout_overlay_opened',
-  'editor_social_preview_overlay_opened',
-  'ai_translation_language_picked',
-] as const);
-type AllowedEventType = typeof ALLOWED_EVENT_TYPES extends Set<infer T> ? T : never;
+const ALLOWED_EVENT_TYPES = new Set(['journey_create_clicked', 'journey_create_from_template', 'editor_analytics_overlay_opened', 'editor_strategy_overlay_opened', 'editor_helpscout_overlay_opened', 'editor_social_preview_overlay_opened', 'ai_translation_language_picked'] as const)
+type AllowedEventType = typeof ALLOWED_EVENT_TYPES extends Set<infer T> ? T : never
 
 const ALLOWED_APP_NAMES = new Set([
   'journeys-admin',
   'videos-admin',
-  'cms',
+  'cms'
   // add more as new admin apps adopt useTrackEvent
-] as const);
+] as const)
 
 const ALLOWED_ENTITY_TYPES = new Set([
   'journey',
   'video',
-  'template',
+  'template'
   // add more as needed; each entry should pair with an ID-format zod schema below
-] as const);
+] as const)
 
 const ENTITY_ID_FORMAT: Record<string, z.ZodType<string>> = {
   journey: z.string().uuid(),
   video: z.string().uuid(),
-  template: z.string().uuid(),
-};
+  template: z.string().uuid()
+}
 
-const PII_KEY = /^(email|e_mail|name|first_?name|last_?name|phone|user_?id|token|password)$/i;
-const MAX_DESCRIPTION_BYTES = 2048;
+const PII_KEY = /^(email|e_mail|name|first_?name|last_?name|phone|user_?id|token|password)$/i
+const MAX_DESCRIPTION_BYTES = 2048
 
 export function validateDescription(description: unknown): { ok: true } | { ok: false; reason: string } {
-  if (description == null) return { ok: true };
-  const json = JSON.stringify(description);
-  if (Buffer.byteLength(json, 'utf8') > MAX_DESCRIPTION_BYTES) return { ok: false, reason: 'description too large' };
-  if (containsPiiKey(description)) return { ok: false, reason: 'description contains PII-shaped key' };
-  return { ok: true };
+  if (description == null) return { ok: true }
+  const json = JSON.stringify(description)
+  if (Buffer.byteLength(json, 'utf8') > MAX_DESCRIPTION_BYTES) return { ok: false, reason: 'description too large' }
+  if (containsPiiKey(description)) return { ok: false, reason: 'description contains PII-shaped key' }
+  return { ok: true }
 }
 
 function containsPiiKey(node: unknown): boolean {
-  if (Array.isArray(node)) return node.some(containsPiiKey);
+  if (Array.isArray(node)) return node.some(containsPiiKey)
   if (node && typeof node === 'object') {
     for (const k of Object.keys(node)) {
-      if (PII_KEY.test(k)) return true;
-      if (containsPiiKey((node as Record<string, unknown>)[k])) return true;
+      if (PII_KEY.test(k)) return true
+      if (containsPiiKey((node as Record<string, unknown>)[k])) return true
     }
   }
-  return false;
+  return false
 }
 ```
 
@@ -356,8 +343,8 @@ function containsPiiKey(node: unknown): boolean {
 ### Per-eventType zod schemas (optional v1, recommended)
 
 ```ts
-const editorOverlayOpenedSchema = z.object({ overlay: z.enum(['analytics', 'strategy', 'helpscout', 'social_media_preview']) });
-const aiTranslationLanguagePickedSchema = z.object({ language: z.string().max(64) });
+const editorOverlayOpenedSchema = z.object({ overlay: z.enum(['analytics', 'strategy', 'helpscout', 'social_media_preview']) })
+const aiTranslationLanguagePickedSchema = z.object({ language: z.string().max(64) })
 // ...
 ```
 
@@ -411,7 +398,7 @@ input EventFilter {
 }
 
 type Mutation {
-  eventCreate(input: EventCreateInput!): Event   # nullable on dropped events (bot, rate-limited, invalid)
+  eventCreate(input: EventCreateInput!): Event # nullable on dropped events (bot, rate-limited, invalid)
 }
 
 type Query {
@@ -420,6 +407,7 @@ type Query {
 ```
 
 Implementation notes:
+
 - Apply null→undefined coercion at the filter boundary per `docs/solutions/integration-issues/pothos-prisma-datetimefilter-null-type-mismatch.md`.
 - Register `DateTime` and `Json` scalars in `apis/api-analytics/src/schema/builder.ts` per `docs/solutions/integration-issues/federation-subgraph-scalar-registration-hidden-prerequisites.md`.
 - `limit` is clamped server-side to `Math.min(limit ?? 100, 1000)`.
@@ -429,97 +417,92 @@ Implementation notes:
 
 - Add `useForwardedJWT({})` and `useHmacSignatureValidation` to `apis/api-analytics/src/yoga.ts`, mirroring `apis/api-media/src/yoga.ts:32-53`.
 - Refactor `Context` in `apis/api-analytics/src/schema/builder.ts` into a discriminated union (`apiKey | authenticated | public`) per `apis/api-media/src/schema/builder.ts:51-114`. Existing Plausible types declare `authScopes: { isApiKeyUser: true }`; new types declare `{ isAuthenticated: true }` or `{ isAdmin: true }`.
-- Plugin order: `RelayPlugin` *before* `ScopeAuthPlugin` — Pothos requires this so global IDs are parsed before auth checks see them.
+- Plugin order: `RelayPlugin` _before_ `ScopeAuthPlugin` — Pothos requires this so global IDs are parsed before auth checks see them.
 - Run `nx run-many -t codegen` and commit `apis/api-gateway/schema.graphql` in the same PR.
 
 ### Client Hook (admin) — revised
 
 ```ts
 // apps/journeys-admin/src/libs/useTrackEvent/useTrackEvent.ts
-import { v4 as uuid } from 'uuid';
-import { useRouter } from 'next/router';
+import { v4 as uuid } from 'uuid'
+import { useRouter } from 'next/router'
 
 const INTERNAL_EMAILS = new Set(
   (process.env.NEXT_PUBLIC_INTERNAL_USER_EMAILS ?? '')
     .split(',')
     .map((e) => e.trim().toLowerCase())
-    .filter(Boolean),
-);
+    .filter(Boolean)
+)
 
-const APP_NAME = 'journeys-admin'; // replace per-app when copied to videos-admin/cms
+const APP_NAME = 'journeys-admin' // replace per-app when copied to videos-admin/cms
 
-type Entity =
-  | { type: 'journey'; id: string }
-  | { type: 'video'; id: string }
-  | { type: 'template'; id: string };
+type Entity = { type: 'journey'; id: string } | { type: 'video'; id: string } | { type: 'template'; id: string }
 
 function getOrCreateSessionId(): string {
-  if (typeof window === 'undefined') return '';
-  const KEY = 'signal.sessionId';
-  let id = window.sessionStorage.getItem(KEY);
+  if (typeof window === 'undefined') return ''
+  const KEY = 'signal.sessionId'
+  let id = window.sessionStorage.getItem(KEY)
   if (!id) {
-    id = uuid();
-    window.sessionStorage.setItem(KEY, id);
+    id = uuid()
+    window.sessionStorage.setItem(KEY, id)
   }
-  return id;
+  return id
 }
 
 export function useTrackEvent() {
-  const [mutate] = useMutation(EVENT_CREATE);
-  const { user } = useUser();
-  const router = useRouter();
+  const [mutate] = useMutation(EVENT_CREATE)
+  const { user } = useUser()
+  const router = useRouter()
 
   return useCallback(
-    (
-      eventType: AllowedEventType,
-      opts?: { entity?: Entity; description?: Record<string, unknown> },
-    ) => {
-      if (!user?.email) return;                                     // fail closed during loading / unauthenticated
-      if (INTERNAL_EMAILS.has(user.email.toLowerCase())) return;    // internal user exclusion
+    (eventType: AllowedEventType, opts?: { entity?: Entity; description?: Record<string, unknown> }) => {
+      if (!user?.email) return // fail closed during loading / unauthenticated
+      if (INTERNAL_EMAILS.has(user.email.toLowerCase())) return // internal user exclusion
       mutate({
         variables: {
           input: {
             eventType,
             appName: APP_NAME,
-            route: router.pathname,                                  // Next.js dynamic-route template, e.g. /journeys/[journeyId]/edit
+            route: router.pathname, // Next.js dynamic-route template, e.g. /journeys/[journeyId]/edit
             entityType: opts?.entity?.type ?? null,
             entityId: opts?.entity?.id ?? null,
             sessionId: getOrCreateSessionId(),
             description: opts?.description,
-            clientEventId: uuid(),
-          },
-        },
+            clientEventId: uuid()
+          }
+        }
       }).catch((e) => {
         datadogLogs?.logger.warn('useTrackEvent failed', {
           eventType,
-          error: e?.name ?? 'unknown',                              // sanitised — never log description
-        });
-      });
+          error: e?.name ?? 'unknown' // sanitised — never log description
+        })
+      })
     },
-    [mutate, user?.email, router.pathname],
-  );
+    [mutate, user?.email, router.pathname]
+  )
 }
 ```
 
 Notes on `route`: prefer `router.pathname` (the dynamic-route template like `/journeys/[journeyId]/edit`) over `router.asPath` so URLs aren't IDs in your indexes — it groups every visit to that page shape under one `route` value.
 
 Notes:
+
 - `AllowedEventType` is the TS string-literal union from `ALLOWED_EVENT_TYPES` (single-sourced from server).
 - `clientEventId` defeats Apollo's mutation dedup so rapid double-clicks count twice.
-- Loading-state guard is *fail-closed* — events drop until `user.email` resolves. That's correct: a tracked click during initial hydration was leaking past the internal-user list.
+- Loading-state guard is _fail-closed_ — events drop until `user.email` resolves. That's correct: a tracked click during initial hydration was leaking past the internal-user list.
 - Only `eventType` + sanitised error name are logged. `description` is never echoed to Datadog.
 
 ### v1 Event Call Sites
 
-| Event | File | `entity` | `description` shape |
-|---|---|---|---|
-| `journey_create_clicked` | `apps/journeys-admin/src/components/Team/TeamSelect/TeamSelect.tsx` (and `OnboardingPanel/CreateJourneyButton/CreateJourneyButton.tsx` if both reachable) | none (no journey yet) | `{}` |
-| `journey_create_from_template` | `apps/journeys-admin/src/components/TemplateCustomization/MultiStepForm/Screens/JourneyCustomizeTeamSelect/JourneyCustomizeTeamSelect.tsx` (fire on final create) | `{ type: 'template', id: <templateId> }` | `{}` |
-| `editor_analytics_overlay_opened` | `Editor/Toolbar/Items/AnalyticsItem` | `{ type: 'journey', id: <journeyId> }` | `{}` |
-| `editor_strategy_overlay_opened` | `Editor/Toolbar/Items/StrategyItem` | `{ type: 'journey', id: <journeyId> }` | `{}` |
-| `editor_helpscout_overlay_opened` | `apps/journeys-admin/src/components/HelpScoutBeacon/*` | `{ type: 'journey', id: <journeyId> }` if available, else none | `{}` |
-| `editor_social_preview_overlay_opened` | `Editor/Slider/JourneyFlow/nodes/SocialPreviewNode/SocialPreviewNode.tsx` | `{ type: 'journey', id: <journeyId> }` | `{}` |
-| `ai_translation_language_picked` *(pending D4)* | `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TranslateJourneyDialog/TranslateJourneyDialog.tsx` | `{ type: 'journey', id: <journeyId> }` | `{ language: string }` |
+| Event                                           | File                                                                                                                                                              | `entity`                                                       | `description` shape    |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------- |
+| `journey_create_clicked`                        | `apps/journeys-admin/src/components/Team/TeamSelect/TeamSelect.tsx` (and `OnboardingPanel/CreateJourneyButton/CreateJourneyButton.tsx` if both reachable)         | none (no journey yet)                                          | `{}`                   |
+| `journey_create_from_template`                  | `apps/journeys-admin/src/components/TemplateCustomization/MultiStepForm/Screens/JourneyCustomizeTeamSelect/JourneyCustomizeTeamSelect.tsx` (fire on final create) | `{ type: 'template', id: <templateId> }`                       | `{}`                   |
+| `editor_analytics_overlay_opened`               | `Editor/Toolbar/Items/AnalyticsItem`                                                                                                                              | `{ type: 'journey', id: <journeyId> }`                         | `{}`                   |
+| `editor_strategy_overlay_opened`                | `Editor/Toolbar/Items/StrategyItem`                                                                                                                               | `{ type: 'journey', id: <journeyId> }`                         | `{}`                   |
+| `editor_helpscout_overlay_opened`               | `apps/journeys-admin/src/components/HelpScoutBeacon/*`                                                                                                            | `{ type: 'journey', id: <journeyId> }` if available, else none | `{}`                   |
+| `editor_social_preview_overlay_opened`          | `Editor/Slider/JourneyFlow/nodes/SocialPreviewNode/SocialPreviewNode.tsx`                                                                                         | `{ type: 'journey', id: <journeyId> }`                         | `{}`                   |
+| `ai_translation_language_picked` _(pending D4)_ | `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TranslateJourneyDialog/TranslateJourneyDialog.tsx`                                    | `{ type: 'journey', id: <journeyId> }`                         | `{ language: string }` |
 
 For all journeys-admin call sites: `appName='journeys-admin'`, `route` = current Next.js pathname, `sessionId` = lazily-initialised UUID stored in `sessionStorage` under a fixed key (e.g. `signal.sessionId`).
 
@@ -530,6 +513,7 @@ Each call site adds one `useTrackEvent` invocation in the existing `handle*` han
 ### Phase 1: Foundation (server)
 
 **Tasks**
+
 - Resolve D1, D2, D3, D4.
 - Create `libs/prisma/signals` Prisma domain — `schema.prisma`, generated client, nx targets, env var `PG_DATABASE_URL_SIGNALS`.
 - Initial migration: `Event` only (with all v3 columns + indexes).
@@ -543,6 +527,7 @@ Each call site adds one `useTrackEvent` invocation in the existing `handle*` han
 - Run `nx run-many -t codegen` to update `apis/api-gateway/schema.graphql`.
 
 **Success criteria**
+
 - `npx jest --config apis/api-analytics/jest.config.ts --no-coverage apis/api-analytics/src/schema/event` green.
 - `pnpm run build` green.
 - Federation composes; gateway exposes `events` + `eventCreate`.
@@ -550,23 +535,27 @@ Each call site adds one `useTrackEvent` invocation in the existing `handle*` han
 ### Phase 2: Client wiring + v1 events
 
 **Tasks**
+
 - Add `useTrackEvent` hook + spec under `apps/journeys-admin/src/libs/useTrackEvent/`.
 - Add `NEXT_PUBLIC_INTERNAL_USER_EMAILS` to Doppler dev/stage/prod (coordinate with ops). Document fallback when unset.
 - Wire v1 events at the four call sites.
-- Component specs: assert `useTrackEvent` is called with the right payload on click; assert *not* called when `useUser()` is loading; assert *not* called when the email matches the internal list.
+- Component specs: assert `useTrackEvent` is called with the right payload on click; assert _not_ called when `useUser()` is loading; assert _not_ called when the email matches the internal list.
 - Verify D4 first; if duplicate, omit `ai_translation_language_picked`.
 
 **Success criteria**
+
 - Each tracked component's `*.spec.tsx` covers the tracking contract (event fired, payload correct, internal-user skip, loading-state skip).
 - Manual smoke: click each tracked control in dev with `SIGNALS_SALT_SECRET` set, observe a row in `Event` with the expected `eventType` and a stable `userHash` for the day. Re-click rapidly and observe two distinct rows (`clientEventId` differs).
 
 ### Phase 3: Polish (slim)
 
 **Tasks**
+
 - Write `docs/solutions/patterns/signal-usage-analytics.md`: how to add a new event end-to-end, the salt-derivation invariant, the EDPB pseudonymous-vs-anonymous note, the `SIGNALS_SALT_SECRET` rotation procedure (kill switch), and the operator note that this dataset is in-scope for DSAR while the secret exists.
 - Add a Datadog dashboard widget filtering on the `useTrackEvent failed` warn pattern.
 
 **Success criteria**
+
 - Doc reviewed by one teammate; merged.
 - A new contributor can add a fifth event end-to-end in <½ day.
 
@@ -602,6 +591,7 @@ Each call site adds one `useTrackEvent` invocation in the existing `handle*` han
 ## Acceptance Criteria
 
 ### Functional
+
 - [ ] D1, D2, D3 resolved and recorded inline in this plan and/or `docs/solutions/patterns/signal-usage-analytics.md`.
 - [ ] D4 verified.
 - [ ] `Event` table exists with the schema above (incl. `appName`, `route`, `entityType`, `entityId`, `sessionId`, `deviceType`, `browserFamily`, `osFamily`, `clientEventId`). No `Salt` table.
@@ -616,6 +606,7 @@ Each call site adds one `useTrackEvent` invocation in the existing `handle*` han
 - [ ] Tracking failures never break user flow; failures land in Datadog as `logger.warn` with sanitised payload.
 
 ### Non-Functional
+
 - [ ] Hash mechanism: HMAC-SHA256 with deterministic daily salt (`HMAC(SIGNALS_SALT_SECRET, utc_date)`). No salt in the DB.
 - [ ] UA normalised; bots dropped via `isbot`.
 - [ ] Zero raw user identifiers persisted.
@@ -623,6 +614,7 @@ Each call site adds one `useTrackEvent` invocation in the existing `handle*` han
 - [ ] No PII in `description` JSON — enforced server-side via size cap + key denylist + per-eventType zod where defined.
 
 ### Quality Gates
+
 - [ ] Unit tests for hash determinism within a day, divergence across days, salt-secret rotation invalidation.
 - [ ] Auth tests for both mutation and query.
 - [ ] Validation tests for each rejection branch (oversize, PII key, unknown type, bot UA, rate limit).
@@ -633,7 +625,7 @@ Each call site adds one `useTrackEvent` invocation in the existing `handle*` han
 ## Success Metrics
 
 - After 7 days in prod: each v1 `eventType` has a non-zero count, OR we explicitly conclude a feature is genuinely unused (the original goal).
-- After 30 days: a teammate can self-serve, via a single GraphQL query (or a Metabase wrapper over Postgres), **counts of any tracked event broken down by app, route, device, and entity** for any window. They can also self-serve **daily distinct users** for a single UTC day. *Cross-day distinct-user counts are intentionally not supported* — they were determined to be non-load-bearing for usage decisions.
+- After 30 days: a teammate can self-serve, via a single GraphQL query (or a Metabase wrapper over Postgres), **counts of any tracked event broken down by app, route, device, and entity** for any window. They can also self-serve **daily distinct users** for a single UTC day. _Cross-day distinct-user counts are intentionally not supported_ — they were determined to be non-load-bearing for usage decisions.
 - Adding a fifth event end-to-end (allowlist entry → call site → spec → query) takes <½ day from "decide" to "merged" (origin success criterion).
 
 ### Metric definitions for the operator note
@@ -665,24 +657,27 @@ Listed explicitly so future-us doesn't expand scope mid-build:
 
 - **Dependency:** Doppler — `SIGNALS_SALT_SECRET` and `NEXT_PUBLIC_INTERNAL_USER_EMAILS` (and `PG_DATABASE_URL_SIGNALS`) configured across dev/stage/prod.
 - **Dependency:** New Postgres database/schema for `prisma-signals` (D1 outcome).
-- **Risk:** Gateway IP forwarding misconfigured → empty `ip` in hash → degraded uniqueness. *Mitigation:* assert presence of forwarded IP in resolver, Datadog-warn if missing in non-dev; insert with empty IP rather than fail.
-- **Risk:** Distinct-user counts biased by IP/UA churn. *Mitigation:* document in operator note; treat as a known limit on the "distinct users" metric.
-- **Risk:** Internal-user exclusion is client-side only and the email list is build-time inlined (becomes public). *Mitigation:* accepted — list is staff emails, not secrets. Document.
-- **Risk:** EDPB stance — within-day hashes are pseudonymous personal data. *Mitigation:* document in operator note. Treat the dataset as in-scope for DSAR while `SIGNALS_SALT_SECRET` exists. Rotating the secret is the kill switch.
-- **Risk:** Federation drift. *Mitigation:* run `nx run-many -t codegen` and commit the regenerated `apis/api-gateway/schema.graphql` in the same PR.
-- **Risk:** Rate limiter is in-process; if `api-analytics` ever scales out, per-user limits become per-replica. *Mitigation:* document; trivial swap to Redis when needed.
+- **Risk:** Gateway IP forwarding misconfigured → empty `ip` in hash → degraded uniqueness. _Mitigation:_ assert presence of forwarded IP in resolver, Datadog-warn if missing in non-dev; insert with empty IP rather than fail.
+- **Risk:** Distinct-user counts biased by IP/UA churn. _Mitigation:_ document in operator note; treat as a known limit on the "distinct users" metric.
+- **Risk:** Internal-user exclusion is client-side only and the email list is build-time inlined (becomes public). _Mitigation:_ accepted — list is staff emails, not secrets. Document.
+- **Risk:** EDPB stance — within-day hashes are pseudonymous personal data. _Mitigation:_ document in operator note. Treat the dataset as in-scope for DSAR while `SIGNALS_SALT_SECRET` exists. Rotating the secret is the kill switch.
+- **Risk:** Federation drift. _Mitigation:_ run `nx run-many -t codegen` and commit the regenerated `apis/api-gateway/schema.graphql` in the same PR.
+- **Risk:** Rate limiter is in-process; if `api-analytics` ever scales out, per-user limits become per-replica. _Mitigation:_ document; trivial swap to Redis when needed.
 
 ## Sources & References
 
 ### Origin
+
 - **`docs/brainstorms/2026-04-29-signal-usage-analytics-requirements.md`** — full set of carried-forward decisions. Major decisions retained: storage = own table via api-analytics surface, attribution = no raw userId, taxonomy = allowlist + JSON description, exclusion = client-side via Doppler.
 
 ### External (Plausible + privacy)
+
 - [Plausible data policy](https://plausible.io/data-policy) — canonical formula: `hash(daily_salt + domain + ip + user_agent)`, salt rotated and **deleted** every 24h.
 - [Plausible discussion #601 — hash internals](https://github.com/plausible/analytics/discussions/601) — uses SipHash-128 in their reference; salt deletion is the load-bearing privacy step.
 - [EDPB Guidelines 01/2025 on Pseudonymisation (PDF)](https://www.edpb.europa.eu/system/files/2025-01/edpb_guidelines_202501_pseudonymisation_en.pdf) — keyed hashes are pseudonymous (still personal data) while the key is recoverable; trend toward anonymous after key destruction.
 
 ### Internal references
+
 - `apis/api-analytics/src/schema/builder.ts` — current Pothos builder + scopes.
 - `apis/api-analytics/src/lib/auth/auth.ts` — Plausible API-key-only path (D2 gap).
 - `apis/api-analytics/src/yoga.ts` — current Yoga config (needs `useForwardedJWT`).
@@ -700,6 +695,7 @@ Listed explicitly so future-us doesn't expand scope mid-build:
 - `docs/solutions/logic-errors/plausible-analytics-event-name-mismatch-qa359.md` — single-source enum to avoid drift (now applied via shared TS allowlist constant).
 
 ### v1 call-site files
+
 - `apps/journeys-admin/src/components/Team/TeamSelect/TeamSelect.tsx`
 - `apps/journeys-admin/src/components/OnboardingPanel/CreateJourneyButton/CreateJourneyButton.tsx`
 - `apps/journeys-admin/src/components/TemplateCustomization/MultiStepForm/Screens/JourneyCustomizeTeamSelect/JourneyCustomizeTeamSelect.tsx`
@@ -707,7 +703,8 @@ Listed explicitly so future-us doesn't expand scope mid-build:
 - `apps/journeys-admin/src/components/Editor/Toolbar/Items/StrategyItem/StrategyItem.tsx`
 - `apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/nodes/SocialPreviewNode/SocialPreviewNode.tsx`
 - `apps/journeys-admin/src/components/HelpScoutBeacon/HelpScoutBeacon.spec.tsx` (component dir)
-- `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TranslateJourneyDialog/TranslateJourneyDialog.tsx` *(pending D4)*
+- `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TranslateJourneyDialog/TranslateJourneyDialog.tsx` _(pending D4)_
 
 ### Linear
+
 - NES-1613 — Brainstorm: Signal usage analytics approach (parent).

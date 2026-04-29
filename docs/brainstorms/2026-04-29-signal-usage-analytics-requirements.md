@@ -44,11 +44,11 @@ Audience for v1 is internal (engineering + product). Stakeholder-facing dashboar
 
 ## Key Decisions
 
-- **Storage: own table in `api-analytics`, not Plausible custom events.** *Rationale:* Plausible's API is weak at multi-prop filtering and pagination, both v1 requirements. The analytics DB and Prisma scaffold already exist.
-- **Attribution: daily-salted hash only.** *Rationale:* Resolves Jaco/Siyang PII tension, mirrors Plausible's privacy model, and per Anthropic-standard EU/NZ guidance probably exempts us from a T&Cs change. Documented; no T&Cs update planned for v1.
-- **Taxonomy: TS enum + JSON description blob.** *Rationale:* Strict event names prevent typos and make queries predictable; JSON blob keeps adding context cheap. Matches Siyang's proposal.
-- **Internal-user exclusion: client-side skip.** *Rationale:* Server can't filter on a hash, so the only place the check works is before the call fires. Doppler env var keeps the list maintainable.
-- **No T&Cs / privacy update for v1.** *Rationale:* Hashed-only data is treated as non-PII. Re-evaluate if v2 introduces raw user identifiers or stakeholder-facing surfaces.
+- **Storage: own table in `api-analytics`, not Plausible custom events.** _Rationale:_ Plausible's API is weak at multi-prop filtering and pagination, both v1 requirements. The analytics DB and Prisma scaffold already exist.
+- **Attribution: daily-salted hash only.** _Rationale:_ Resolves Jaco/Siyang PII tension, mirrors Plausible's privacy model, and per Anthropic-standard EU/NZ guidance probably exempts us from a T&Cs change. Documented; no T&Cs update planned for v1.
+- **Taxonomy: TS enum + JSON description blob.** _Rationale:_ Strict event names prevent typos and make queries predictable; JSON blob keeps adding context cheap. Matches Siyang's proposal.
+- **Internal-user exclusion: client-side skip.** _Rationale:_ Server can't filter on a hash, so the only place the check works is before the call fires. Doppler env var keeps the list maintainable.
+- **No T&Cs / privacy update for v1.** _Rationale:_ Hashed-only data is treated as non-PII. Re-evaluate if v2 introduces raw user identifiers or stakeholder-facing surfaces.
 
 ## Dependencies / Assumptions
 
@@ -60,7 +60,7 @@ Audience for v1 is internal (engineering + product). Stakeholder-facing dashboar
 
 ### Resolve Before Planning
 
-*(none — all blocking product decisions resolved)*
+_(none — all blocking product decisions resolved)_
 
 ### Deferred to Planning
 
