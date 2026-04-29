@@ -3,6 +3,7 @@ export {
   hasHostAvatar,
   hasHostDetails,
   hasChatWidget,
+  hasAiChatButton,
   getTitle,
   hasCombinedFooter,
   getFooterMobileSpacing,

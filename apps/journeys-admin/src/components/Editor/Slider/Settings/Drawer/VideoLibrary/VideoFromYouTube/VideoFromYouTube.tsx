@@ -16,7 +16,7 @@ import { VideoListProps } from '../VideoList/VideoList'
 import { VideoSearch } from '../VideoSearch'
 
 interface VideoFromYouTubeProps {
-  onSelect: (block: VideoBlockUpdateInput) => void
+  onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
 }
 
 export interface YoutubeVideo {
