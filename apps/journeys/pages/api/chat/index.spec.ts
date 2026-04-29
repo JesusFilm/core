@@ -10,8 +10,12 @@ import {
 
 import handler from './index'
 
-jest.mock('@ai-sdk/google', () => ({ google: jest.fn(() => ({ id: 'gemini' })) }))
-jest.mock('@ai-sdk/openai', () => ({ openai: jest.fn(() => ({ id: 'openai' })) }))
+jest.mock('@ai-sdk/google', () => ({
+  google: jest.fn(() => ({ id: 'gemini' }))
+}))
+jest.mock('@ai-sdk/openai', () => ({
+  openai: jest.fn(() => ({ id: 'openai' }))
+}))
 jest.mock('@ai-sdk/openai-compatible', () => ({
   createOpenAICompatible: jest.fn(() => ({
     chatModel: jest.fn(() => ({ id: 'compat' }))
@@ -43,9 +47,8 @@ const mockGetActivePromptLabel = getActivePromptLabel as jest.MockedFunction<
   typeof getActivePromptLabel
 >
 const mockStreamText = streamText as unknown as jest.Mock
-const mockCreateOpenAICompatible = createOpenAICompatible as jest.MockedFunction<
-  typeof createOpenAICompatible
->
+const mockCreateOpenAICompatible =
+  createOpenAICompatible as jest.MockedFunction<typeof createOpenAICompatible>
 
 interface CapturedRes {
   res: NextApiResponse
@@ -95,7 +98,8 @@ function makeFakeLangfuse(
   const trace = jest.fn(() => ({ generation }))
   const flushAsync = jest.fn().mockResolvedValue(undefined)
   const compile = jest.fn(
-    (vars: { language?: string }) => `compiled-system[lang=${vars.language ?? ''}]`
+    (vars: { language?: string }) =>
+      `compiled-system[lang=${vars.language ?? ''}]`
   )
   const getPrompt = jest.fn(async () => {
     if (opts.promptError != null) throw opts.promptError
@@ -109,19 +113,17 @@ function makeFakeLangfuse(
   return { trace, generation, generationEnd, flushAsync, getPrompt, compile }
 }
 
-let lastStreamConfig:
-  | {
-      onError?: (args: { error: unknown }) => Promise<void> | void
-      onFinish?: (args: {
-        text: string
-        usage?: { inputTokens?: number; outputTokens?: number }
-        finishReason: string
-      }) => Promise<void> | void
-      system: string
-      messages: unknown
-      model: unknown
-    }
-  | null = null
+let lastStreamConfig: {
+  onError?: (args: { error: unknown }) => Promise<void> | void
+  onFinish?: (args: {
+    text: string
+    usage?: { inputTokens?: number; outputTokens?: number }
+    finishReason: string
+  }) => Promise<void> | void
+  system: string
+  messages: unknown
+  model: unknown
+} | null = null
 let mockPipeStream: jest.Mock
 
 function installStreamTextSuccess(): void {
