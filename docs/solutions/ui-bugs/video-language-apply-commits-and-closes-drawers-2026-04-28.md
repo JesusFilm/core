@@ -1,6 +1,7 @@
 ---
 title: 'Apply button in language picker is a dead-end action that strands the user in the Video Library drawer'
 date: 2026-04-28
+last_updated: 2026-04-29
 ticket: NES-1568
 category: ui-bugs
 module: journeys-admin
@@ -147,7 +148,14 @@ One handler, one parameter, two correct behaviours — instead of duplicating th
 
 ## Prevention
 
-When introducing a behavioural gate parameter on a shared handler, **audit every caller** of that handler in the same PR — not just the one that motivated the change. The MUX upload caller correctly opted out of outer-close with `shouldCloseDrawer=false`, but the trash-icon `handleClearVideo` caller in `VideoDetails.tsx` was missed in the first pass — it would have unexpectedly closed the outer Video Library drawer when a user just wanted to clear the current video. `ce-code-review`'s correctness persona caught this regression before merge.
+**Audit every caller — including intermediate wrappers — when adding a behavioural gate parameter.** The MUX upload caller correctly opted out of outer-close with `shouldCloseDrawer=false`, but two callers were missed in the first pass:
+
+- The trash-icon `handleClearVideo` caller in `VideoDetails.tsx` would have unexpectedly closed the outer Video Library drawer when a user just wanted to clear the current video. `ce-code-review`'s correctness persona caught this before merge.
+- A `handleSelect` wrapper at `VideoDetails.tsx:87-89` silently dropped the new arg (`onSelect(block)` instead of `onSelect(block, shouldCloseDrawer)`). The type system didn't complain because the narrower function is assignable to the wider signature. Caught in PR review by Siyang.
+
+**Watch for latent bugs that become reachable when a no-op action is promoted to a commit action.** A separate `getVideoVariantLanguage` helper returned the closed-over `id` prop (the video id) as `LanguageOption.id` instead of `videoVariant.id`. Pre-PR this was harmless because Apply was a no-op — the user always picked a fresh language via the autocomplete (which produced a properly-shaped `LanguageOption`) before Select would commit. Post-PR, Apply commits, which made the buggy path reachable: opening the picker on an existing video block and clicking Apply without changing anything would commit `videoVariantLanguageId` equal to the video id. Dormant bugs in the downstream code path of an affordance can become live the moment the affordance changes shape — when promoting an action from "dismiss" to "commit", scan the data shapes the new commit path now carries.
+
+**Propagate the new type signature through every intermediate layer, not just the endpoints.** The optional `shouldCloseDrawer` parameter was added to `VideoLibrary.onSelect` and `VideoDetails.onSelect`, but `VideoFromLocal`, `VideoFromYouTube`, `VideoList`, and `VideoListItem` continued to type their `onSelect` prop as `(block) => void`. TypeScript didn't complain because the narrower function is assignable, but it meant callers reaching `VideoLibrary.onSelect` through those layers literally could not opt out of closing the drawer. Widen the type at every layer so the contract matches reality at the entry, the exit, and every wrapper in between.
 
 **Suggested regression-test pattern.** When a parameter gates a side effect, write a unit test that asserts on the parameter value at each call site:
 
@@ -173,5 +181,5 @@ expect(onSelect).toHaveBeenCalledWith(
 - [NES-1568](https://linear.app/jesus-film-project/issue/NES-1568) — this fix.
 - [QA-221](https://linear.app/jesus-film-project/issue/QA-221) — broader redesign of the language picker (replace side drawer with inline popover). Prototype lives in PR #9090, parked.
 - PR #9043 — original surface-fix attempt; closed in favour of PR #9089.
-- PR #9089 — the fix documented here.
+- PR #9089 — the fix documented here. Two follow-up commits (`fix: commit matching language id from getVideoVariantLanguage`, `refactor: forward shouldCloseDrawer through onSelect chain`) addressed PR-review feedback from Siyang covering the dormant-bug and contract-honesty insights captured above.
 - Sibling docs in `docs/solutions/ui-bugs/` — `mobile-snackbar-blocking-ui-no-dismiss-button.md` shares the "audit every callsite" prevention rule.
