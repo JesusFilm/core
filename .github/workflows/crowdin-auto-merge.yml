@@ -182,19 +182,6 @@ jobs:
           echo "All $FILE_COUNT changed files are under libs/locales/. Safe to proceed."
           echo "| Files changed | $FILE_COUNT (all under \`libs/locales/\`) |" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Assign PR to CI Bot
-        if: steps.find-pr.outputs.found == 'true'
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          PR_NUMBER: ${{ steps.find-pr.outputs.number }}
-          BOT_LOGIN: ${{ steps.bot-login.outputs.login }}
-        run: |
-          set -euo pipefail
-          echo "Assigning PR #$PR_NUMBER to $BOT_LOGIN"
-          gh pr edit "$PR_NUMBER" --add-assignee "$BOT_LOGIN"
-          echo "Assigned successfully."
-          echo "| Assignee | \`$BOT_LOGIN\` |" >> "$GITHUB_STEP_SUMMARY"
-
       - name: Approve PR
         if: steps.find-pr.outputs.found == 'true'
         env:
