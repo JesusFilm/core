@@ -139,7 +139,7 @@ export function LocalDetails({
       const { name } = videoVariant
       const localName = name?.find(({ primary }) => !primary)?.value
       const nativeName = name?.find(({ primary }) => primary)?.value
-      return { id, localName, nativeName }
+      return { id: videoVariant.id, localName, nativeName }
     }
   }
 
