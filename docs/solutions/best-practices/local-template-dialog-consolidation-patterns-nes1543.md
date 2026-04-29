@@ -260,12 +260,12 @@ The remaining four CodeRabbit suggestions (`journey != null` runtime guard, two 
 
 **Heuristic for accepting bot suggestions:**
 
-| Outcome | Suggestion type |
-|---|---|
-| ✅ Almost always correct | Lint, format, typecheck fixes; obvious type-safety hardening that matches the actual signature |
-| ✅ Verify, then accept | Suggestions backed by a "codebase convention" you've confirmed by grep |
-| ⚠️ Verify before accepting | Generic "project guidelines" claims; defensive guards in untested paths |
-| ❌ Default to skeptical | Behaviour changes to untested code paths; "this should also do X" without an originating issue |
+| Outcome                    | Suggestion type                                                                                |
+| -------------------------- | ---------------------------------------------------------------------------------------------- |
+| ✅ Almost always correct   | Lint, format, typecheck fixes; obvious type-safety hardening that matches the actual signature |
+| ✅ Verify, then accept     | Suggestions backed by a "codebase convention" you've confirmed by grep                         |
+| ⚠️ Verify before accepting | Generic "project guidelines" claims; defensive guards in untested paths                        |
+| ❌ Default to skeptical    | Behaviour changes to untested code paths; "this should also do X" without an originating issue |
 
 **Cost of skipping verification.** The `homeHref` accept would have shipped a regression to global-template back-link navigation. Untested → CI green → users see it. The cost of one `git show origin/main:...` + 30 seconds of `git blame` is much less than the cost of a UI regression.
 
