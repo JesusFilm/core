@@ -84,8 +84,11 @@ export function VideoDetails({
       break
   }
 
-  const handleSelect = (block: VideoBlockUpdateInput): void => {
-    onSelect(block)
+  const handleSelect = (
+    block: VideoBlockUpdateInput,
+    shouldCloseDrawer?: boolean
+  ): void => {
+    onSelect(block, shouldCloseDrawer)
   }
 
   const handleClearVideo = async (): Promise<void> => {

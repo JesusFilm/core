@@ -207,14 +207,17 @@ describe('VideoDetails', () => {
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Select' }))
-    expect(onSelect).toHaveBeenCalledWith({
-      duration: 144,
-      endAt: 144,
-      startAt: 0,
-      source: VideoBlockSource.internal,
-      videoId: '2_Acts7302-0-0',
-      videoVariantLanguageId: '529'
-    })
+    expect(onSelect).toHaveBeenCalledWith(
+      {
+        duration: 144,
+        endAt: 144,
+        startAt: 0,
+        source: VideoBlockSource.internal,
+        videoId: '2_Acts7302-0-0',
+        videoVariantLanguageId: '529'
+      },
+      undefined
+    )
   })
 
   it('should call onClose on changeVideo click', () => {
