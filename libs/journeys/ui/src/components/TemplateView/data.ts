@@ -121,7 +121,8 @@ export const defaultJourney: Journey = {
   fromTemplateId: null,
   socialNodeX: null,
   socialNodeY: null,
-  customizable: null
+  customizable: null,
+  showAssistant: null
 }
 
 export const publishedJourney: Journey = {

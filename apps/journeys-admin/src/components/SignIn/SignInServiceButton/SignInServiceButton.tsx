@@ -8,11 +8,12 @@ import {
   OAuthProvider,
   linkWithPopup,
   signInWithCredential,
-  signInWithPopup
+  signInWithPopup,
+  updateProfile
 } from 'firebase/auth'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
@@ -33,6 +34,7 @@ export function SignInServiceButton({
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [journeyPublish] = useMutation(JOURNEY_PUBLISH)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   async function linkAnonymousUserWithProvider(
     currentUser: User,
@@ -40,6 +42,33 @@ export function SignInServiceButton({
   ): Promise<void> {
     const userCredential = await linkWithPopup(currentUser, authProvider)
     const user = userCredential.user
+    // linkWithPopup does not promote the provider's displayName/photoURL onto
+    // the top-level Firebase user, so the next ID token refresh would be
+    // missing the name/picture claims. Copy them from providerData so the JWT
+    // carries the profile. Best-effort: the server has a providerData fallback
+    // in findOrFetchUser, so failures here shouldn't abort sign-in.
+    try {
+      const linkedProvider = user.providerData?.find(
+        (p) => p.providerId === authProvider.providerId
+      )
+      const profileUpdates: { displayName?: string; photoURL?: string } = {}
+      if (user.displayName == null && linkedProvider?.displayName != null) {
+        profileUpdates.displayName = linkedProvider.displayName
+      }
+      if (user.photoURL == null && linkedProvider?.photoURL != null) {
+        profileUpdates.photoURL = linkedProvider.photoURL
+      }
+      if (Object.keys(profileUpdates).length > 0) {
+        await updateProfile(user, profileUpdates)
+        await user.reload()
+      }
+    } catch (error) {
+      console.warn('failed to promote provider profile after link', error)
+    }
+    // Force-refresh once so the new claims are in the token Apollo attaches to
+    // journeyPublish and that /api/login exchanges for the session cookie.
+    const idToken = await user.getIdToken(true)
+
     const email = user.email?.trim().toLowerCase()
     if (email == null) return
 
@@ -52,7 +81,6 @@ export function SignInServiceButton({
 
     const pending = getPendingGuestJourney()
     if (pending != null) {
-      const idToken = await user.getIdToken()
       await login(idToken)
       const existingRedirect = router.query.redirect as string | undefined
       const redirectUrl =
@@ -65,6 +93,8 @@ export function SignInServiceButton({
   }
 
   async function handleSignIn(): Promise<void> {
+    if (isSubmitting) return
+    setIsSubmitting(true)
     const auth = getFirebaseAuth()
     const currentUser = auth.currentUser
     const authProvider =
@@ -110,6 +140,8 @@ export function SignInServiceButton({
         }
       }
       console.error(err)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -127,6 +159,7 @@ export function SignInServiceButton({
         )
       }
       onClick={handleSignIn}
+      disabled={isSubmitting}
       fullWidth
     >
       {t('Continue with {{service}}', {
