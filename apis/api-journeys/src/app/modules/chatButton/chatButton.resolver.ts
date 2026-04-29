@@ -2,10 +2,6 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 
 import { ChatButton } from '@core/prisma/journeys/client'
 
-import {
-  ChatButtonCreateInput,
-  ChatButtonUpdateInput
-} from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
@@ -15,48 +11,6 @@ export class ChatButtonResolver {
     private readonly prismaService: PrismaService,
     private readonly journeyCustomizableService: JourneyCustomizableService
   ) {}
-
-  @Mutation()
-  async chatButtonCreate(
-    @Args('journeyId') journeyId: string,
-    @Args('input') input: ChatButtonCreateInput
-  ): Promise<ChatButton> {
-    const chatButtons = await this.prismaService.chatButton.findMany({
-      where: { journeyId }
-    })
-
-    if (chatButtons.length < 2) {
-      return await this.prismaService.chatButton.create({
-        data: {
-          journeyId,
-          ...input
-        }
-      })
-    } else {
-      throw new Error(
-        'There are already 2 chat buttons associated with the given journey'
-      )
-    }
-  }
-
-  @Mutation()
-  async chatButtonUpdate(
-    @Args('id') id: string,
-    @Args('journeyId') journeyId: string,
-    @Args('input') input: ChatButtonUpdateInput
-  ): Promise<ChatButton> {
-    const result = await this.prismaService.chatButton.update({
-      where: {
-        id
-      },
-      data: {
-        journeyId,
-        ...input
-      }
-    })
-    await this.journeyCustomizableService.recalculate(journeyId)
-    return result
-  }
 
   @Mutation()
   async chatButtonRemove(@Args('id') id: string): Promise<ChatButton> {

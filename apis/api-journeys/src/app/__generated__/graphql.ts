@@ -320,17 +320,6 @@ export class TypographyBlockSettingsInput {
     color?: Nullable<string>;
 }
 
-export class ChatButtonCreateInput {
-    link?: Nullable<string>;
-    platform?: Nullable<MessagePlatform>;
-}
-
-export class ChatButtonUpdateInput {
-    link?: Nullable<string>;
-    platform?: Nullable<MessagePlatform>;
-    customizable?: Nullable<boolean>;
-}
-
 export class JourneyViewEventCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -771,10 +760,6 @@ export abstract class IMutation {
     __typename?: 'IMutation';
 
     abstract blockRestore(id: string): Block[] | Promise<Block[]>;
-
-    abstract chatButtonCreate(journeyId: string, input?: Nullable<ChatButtonCreateInput>): ChatButton | Promise<ChatButton>;
-
-    abstract chatButtonUpdate(id: string, journeyId: string, input: ChatButtonUpdateInput): ChatButton | Promise<ChatButton>;
 
     abstract chatButtonRemove(id: string): ChatButton | Promise<ChatButton>;
 
