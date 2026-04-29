@@ -93,7 +93,9 @@ async function main(): Promise<void> {
           : new Date(),
     options: {
       startDate:
-        parsed.startIso != null ? parseIso(parsed.startIso, 'start') : undefined,
+        parsed.startIso != null
+          ? parseIso(parsed.startIso, 'start')
+          : undefined,
       endDate:
         parsed.endIso != null ? parseIso(parsed.endIso, 'end') : undefined
     }
@@ -117,7 +119,12 @@ async function main(): Promise<void> {
     )
     return
   }
-  await postBulkVideoSlackMessages({ rows, startDate, endDate, childLogger: logger })
+  await postBulkVideoSlackMessages({
+    rows,
+    startDate,
+    endDate,
+    childLogger: logger
+  })
   console.log('postBulkVideoSlackMessages finished')
 }
 

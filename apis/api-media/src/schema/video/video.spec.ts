@@ -20,9 +20,10 @@ import {
 } from '@core/prisma/media/client'
 import { ResultOf, graphql } from '@core/shared/gql'
 
-import { notifyVideoSlackOfMutation } from '../../lib/slack'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { notifyVideoSlackOfMutation } from '../../lib/slack'
+
 import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
 import { getLanguageIdFromInfo } from './video'
 
@@ -2718,7 +2719,6 @@ describe('video', () => {
           }
         })
       })
-
     })
 
     describe('videoUpdate', () => {

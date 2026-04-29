@@ -309,8 +309,9 @@ describe('videoSlack', () => {
     expect(bodies[0].text).toContain('November 2026 (UTC) part 1')
     expect(bodies[1].text).toContain('November 2026 (UTC) part 2')
     expect(
-      bodies[0].blocks.filter((block: { type: string }) => block.type === 'section')
-        .length
+      bodies[0].blocks.filter(
+        (block: { type: string }) => block.type === 'section'
+      ).length
     ).toBeGreaterThan(2)
     expect(bodies.every((body) => body.thread_ts == null)).toBe(true)
   })
@@ -429,7 +430,9 @@ describe('videoSlack', () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
-      json: jest.fn().mockResolvedValue({ ok: false, error: 'channel_not_found' })
+      json: jest
+        .fn()
+        .mockResolvedValue({ ok: false, error: 'channel_not_found' })
     } as any)
 
     await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))

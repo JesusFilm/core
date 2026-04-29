@@ -1,7 +1,7 @@
-import { logger } from '../logger'
-
 import { prisma as languagesPrisma } from '@core/prisma/languages/client'
 import { prisma } from '@core/prisma/media/client'
+
+import { logger } from '../logger'
 
 const oneWeekInDays = 7
 const englishLanguageIdForNames = '529'
@@ -46,14 +46,12 @@ interface UpdatedVariantRow {
   videoId: string
   languageId: string
   updatedAt: Date
-  video:
-    | {
-        id: string
-        label: string
-        slug: string | null
-        title: Array<{ value: string }>
-      }
-    | null
+  video: {
+    id: string
+    label: string
+    slug: string | null
+    title: Array<{ value: string }>
+  } | null
 }
 
 interface VideoMetadataOnlyRow extends CreatedVideoRow {
@@ -331,8 +329,9 @@ async function getLanguagePackageTotals(
 
   const totals = new Map<string, number>()
   for (const row of eligibleRows) {
-    const packageMembers =
-      packageMembersByParentId.get(row.mediaComponentId) ?? [row.mediaComponentId]
+    const packageMembers = packageMembersByParentId.get(
+      row.mediaComponentId
+    ) ?? [row.mediaComponentId]
     const languageVideoIds = variantVideoIdsByLanguage.get(row.languageId)
     const countForLanguage =
       languageVideoIds == null
