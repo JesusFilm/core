@@ -11,31 +11,40 @@ describe('processSubtitleFile', () => {
   })
 
   it('should fail before uploading subtitle content when languageId is blank', async () => {
+    const originalSkipEnvValidation = process.env.SKIP_ENV_VALIDATION
     process.env.SKIP_ENV_VALIDATION = '1'
 
-    const subtitleModule = await import('./subtitle')
-    const { processSubtitleFile } = getModuleExports(subtitleModule)
+    try {
+      const subtitleModule = await import('./subtitle')
+      const { processSubtitleFile } = getModuleExports(subtitleModule)
 
-    const consoleErrorMock = mock.method(console, 'error', () => {})
+      const consoleErrorMock = mock.method(console, 'error', () => {})
 
-    const summary = {
-      total: 1,
-      successful: 0,
-      failed: 0
+      const summary = {
+        total: 1,
+        successful: 0,
+        failed: 0
+      }
+
+      await processSubtitleFile(
+        'video123---ot---   .srt',
+        '/tmp/video123---ot---   .srt',
+        100,
+        summary
+      )
+
+      assert.equal(consoleErrorMock.mock.calls.length, 1)
+      assert.deepEqual(summary, {
+        total: 1,
+        successful: 0,
+        failed: 1
+      })
+    } finally {
+      if (originalSkipEnvValidation === undefined) {
+        delete process.env.SKIP_ENV_VALIDATION
+      } else {
+        process.env.SKIP_ENV_VALIDATION = originalSkipEnvValidation
+      }
     }
-
-    await processSubtitleFile(
-      'video123---ot---   .srt',
-      '/tmp/video123---ot---   .srt',
-      100,
-      summary
-    )
-
-    assert.equal(consoleErrorMock.mock.calls.length, 1)
-    assert.deepEqual(summary, {
-      total: 1,
-      successful: 0,
-      failed: 1
-    })
   })
 })

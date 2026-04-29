@@ -228,6 +228,34 @@ const sleep = async (ms: number): Promise<void> => {
   await new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+export async function postEmptyWeeklyVideoSlackMessage(args: {
+  startDate: Date
+  endDate: Date
+  childLogger: Logger
+}): Promise<void> {
+  const { startDate, endDate, childLogger } = args
+  const config = getMediaDataLangSlackConfig(childLogger)
+  if (config == null) {
+    return
+  }
+
+  const windowText = `${formatDateIso(startDate)} → ${formatDateIso(endDate)}`
+  await postSlackMessage({
+    config,
+    text: `Weekly production report · no videos activated · ${windowText}`,
+    blocks: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*No videos were activated this week*\n\`${windowText}\``
+        }
+      }
+    ],
+    childLogger
+  })
+}
+
 export async function postWeeklyVideoSlackMessages(args: {
   rows: ReportRow[]
   startDate: Date

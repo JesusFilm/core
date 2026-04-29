@@ -388,20 +388,27 @@ describe('videoSlack', () => {
     )
   })
 
-  it('should not post when there are no weekly changes', async () => {
+  it('should post a simple empty-week message when there are no weekly changes', async () => {
     mockMediaPrisma.video.findMany.mockResolvedValueOnce([]).mockResolvedValueOnce([])
     mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([])
 
     await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
 
-    expect(mockFetch).not.toHaveBeenCalled()
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+    const [, options] = mockFetch.mock.calls[0]
+    const body = JSON.parse(options?.body as string)
+    expect(body.channel).toBe('test-channel')
+    expect(body.text).toContain('no videos activated')
+    expect(JSON.stringify(body.blocks)).toContain(
+      'No videos were activated this week'
+    )
     expect(mockLoggerInfo).toHaveBeenCalledWith(
       expect.objectContaining({
         newVideos: 0,
         variantUpdateRows: 0,
         videoMetadataOnlyRows: 0
       }),
-      'Weekly video Slack summary skipped: no new videos, no variant updates, and no metadata-only video updates in the window'
+      'Weekly video Slack summary: posting empty-week message — no new videos, no variant updates, and no metadata-only video updates in the window'
     )
   })
 

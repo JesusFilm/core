@@ -2,7 +2,10 @@ import { Logger } from 'pino'
 
 import { logger } from '../logger'
 
-import { postWeeklyVideoSlackMessages } from './videoSlackRenderer'
+import {
+  postEmptyWeeklyVideoSlackMessage,
+  postWeeklyVideoSlackMessages
+} from './videoSlackRenderer'
 import {
   WeeklyVideoSummaryOptions,
   formatDateIso,
@@ -55,8 +58,13 @@ export async function sendWeeklyVideoSummary(
           variantUpdateRows: counts.variantUpdateRows,
           videoMetadataOnlyRows: counts.videoMetadataOnlyRows
         },
-        'Weekly video Slack summary skipped: no new videos, no variant updates, and no metadata-only video updates in the window'
+        'Weekly video Slack summary: posting empty-week message — no new videos, no variant updates, and no metadata-only video updates in the window'
       )
+      await postEmptyWeeklyVideoSlackMessage({
+        startDate,
+        endDate,
+        childLogger
+      })
       return
     }
 
