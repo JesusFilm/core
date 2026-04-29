@@ -66,8 +66,11 @@ export function JourneyDetails(): ReactElement {
                   fontSize: 14,
                   fontWeight: 600,
                   lineHeight: '20px',
+                  px: 2,
+                  py: 1,
                   '& .MuiChip-label': {
-                    px: 1
+                    px: 0,
+                    py: 0
                   }
                 }}
               />
