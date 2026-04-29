@@ -139,8 +139,7 @@ export default async function handler(
   const modelMessages = await convertToModelMessages(messages)
 
   const { provider, modelId } = modelResult.resolved
-  const ipCountry =
-    (req.headers['x-vercel-ip-country'] as string | undefined) ?? undefined
+  const ipCountry = req.headers['x-vercel-ip-country'] as string | undefined
 
   const trace = langfuse?.trace({
     name: 'apologist-chat',
@@ -216,6 +215,11 @@ export default async function handler(
           name: err?.name,
           message: err?.message
         })
+        endGenerationIfPending({
+          level: 'ERROR',
+          statusMessage: err?.message ?? 'pipe error'
+        })
+        void langfuse?.flushAsync()
         return err?.message ?? 'stream failed'
       }
     })
@@ -263,7 +267,9 @@ async function resolveSystemMessage({
       )
       return { system: fallback, promptClient: null }
     }
-    const compiled = promptClient.compile({ language: language ?? '' })
+    const variables: Record<string, string> =
+      language != null && language.length > 0 ? { language } : {}
+    const compiled = promptClient.compile(variables)
     return { system: compiled, promptClient }
   } catch (error) {
     const err = error as Error

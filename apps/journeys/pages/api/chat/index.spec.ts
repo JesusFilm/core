@@ -458,13 +458,13 @@ describe('/api/chat handler', () => {
       expect(lastStreamConfig?.system).toBe('compiled-system[lang=French]')
     })
 
-    it('passes empty-string language to compile when none is supplied', async () => {
+    it('omits the language variable from compile when none is supplied', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
 
       await handler(postReq(), makeRes().res)
 
-      expect(fake.compile).toHaveBeenCalledWith({ language: '' })
+      expect(fake.compile).toHaveBeenCalledWith({})
     })
 
     it('forwards the active prompt label from getActivePromptLabel', async () => {
