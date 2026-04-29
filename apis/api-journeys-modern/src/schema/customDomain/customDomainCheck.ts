@@ -14,8 +14,9 @@ interface VerificationResponseShape {
   message: string
 }
 
-const CustomDomainVerification =
-  builder.objectRef<VerificationShape>('CustomDomainVerification')
+const CustomDomainVerification = builder.objectRef<VerificationShape>(
+  'CustomDomainVerification'
+)
 
 builder.objectType(CustomDomainVerification, {
   shareable: true,
