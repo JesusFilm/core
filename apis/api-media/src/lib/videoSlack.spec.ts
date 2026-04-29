@@ -67,9 +67,7 @@ function videoRow(overrides: Partial<VideoRow>): VideoRow {
   }
 }
 
-function videoVariantRow(
-  overrides: Partial<VideoVariantRow>
-): VideoVariantRow {
+function videoVariantRow(overrides: Partial<VideoVariantRow>): VideoVariantRow {
   return {
     id: 'variant',
     hls: null,
@@ -390,7 +388,9 @@ describe('videoSlack', () => {
   })
 
   it('should post a simple empty-week message when there are no weekly changes', async () => {
-    mockMediaPrisma.video.findMany.mockResolvedValueOnce([]).mockResolvedValueOnce([])
+    mockMediaPrisma.video.findMany
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
     mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([])
 
     await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
