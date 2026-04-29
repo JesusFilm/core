@@ -47,13 +47,12 @@ builder.mutationField('customDomainUpdate', (t) =>
         if (input.journeyCollectionId == null) {
           journeyCollectionUpdate = { disconnect: true }
         } else {
-          const journeyCollection =
-            await prisma.journeyCollection.findFirst({
-              where: {
-                id: input.journeyCollectionId,
-                teamId: customDomain.teamId
-              }
-            })
+          const journeyCollection = await prisma.journeyCollection.findFirst({
+            where: {
+              id: input.journeyCollectionId,
+              teamId: customDomain.teamId
+            }
+          })
 
           if (journeyCollection == null) {
             throw new GraphQLError(
