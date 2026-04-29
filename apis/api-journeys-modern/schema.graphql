@@ -346,6 +346,15 @@ type CustomDomain
   journeyCollection: JourneyCollection
 }
 
+type CustomDomainCheck
+  @shareable
+{
+  configured: Boolean!
+  verified: Boolean!
+  verification: [CustomDomainVerification!]
+  verificationResponse: CustomDomainVerificationResponse
+}
+
 input CustomDomainCreateInput {
   id: ID
   teamId: String!
@@ -357,6 +366,22 @@ input CustomDomainCreateInput {
 input CustomDomainUpdateInput {
   journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
+}
+
+type CustomDomainVerification
+  @shareable
+{
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse
+  @shareable
+{
+  code: String!
+  message: String!
 }
 
 """
@@ -1520,7 +1545,10 @@ type Mutation {
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction!
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @override(from: "api-journeys")
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @override(from: "api-journeys")
-  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain! @override(from: "api-journeys")
+  customDomainCheck(id: ID!): CustomDomainCheck!
+  customDomainDelete(id: ID!): CustomDomain!
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
@@ -1871,8 +1899,8 @@ input QrCodesFilter {
 type Query {
   block(id: ID!): Block! @override(from: "api-journeys")
   blocks(where: BlocksFilter): [Block!]! @override(from: "api-journeys")
-  customDomains(teamId: ID!): [CustomDomain!]! @override(from: "api-journeys")
-  customDomain(id: ID!): CustomDomain! @override(from: "api-journeys")
+  customDomains(teamId: ID!): [CustomDomain!]!
+  customDomain(id: ID!): CustomDomain!
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
