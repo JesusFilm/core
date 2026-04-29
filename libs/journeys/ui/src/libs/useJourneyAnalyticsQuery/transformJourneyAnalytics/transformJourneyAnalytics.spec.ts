@@ -192,6 +192,13 @@ describe('transformJourneyAnalytics', () => {
       referrers: {
         edges: [
           {
+            id: 'QR Code->SocialPreview',
+            source: 'QR Code',
+            target: 'SocialPreview',
+            type: 'Referrer',
+            updatable: false
+          },
+          {
             id: 'Direct / None->SocialPreview',
             source: 'Direct / None',
             target: 'SocialPreview',
@@ -199,21 +206,28 @@ describe('transformJourneyAnalytics', () => {
             updatable: false
           },
           {
-            id: 'tiktok->SocialPreview',
-            source: 'tiktok',
-            target: 'SocialPreview',
-            type: 'Referrer',
-            updatable: false
-          },
-          {
-            id: 'facebook->SocialPreview',
-            source: 'facebook',
+            id: 'other sources->SocialPreview',
+            source: 'other sources',
             target: 'SocialPreview',
             type: 'Referrer',
             updatable: false
           }
         ],
         nodes: [
+          {
+            data: {
+              __typename: 'PlausibleStatsResponse',
+              property: 'QR Code',
+              visitors: 10
+            },
+            draggable: false,
+            id: 'QR Code',
+            position: {
+              x: -600,
+              y: -46
+            },
+            type: 'Referrer'
+          },
           {
             data: {
               __typename: 'PlausibleStatsResponse',
@@ -224,32 +238,28 @@ describe('transformJourneyAnalytics', () => {
             id: 'Direct / None',
             position: {
               x: -600,
-              y: -46
-            },
-            type: 'Referrer'
-          },
-          {
-            data: {
-              __typename: 'PlausibleStatsResponse',
-              property: 'tiktok',
-              visitors: 3
-            },
-            draggable: false,
-            id: 'tiktok',
-            position: {
-              x: -600,
               y: 19
             },
             type: 'Referrer'
           },
           {
             data: {
-              __typename: 'PlausibleStatsResponse',
-              property: 'facebook',
-              visitors: 2
+              property: 'other sources',
+              referrers: [
+                {
+                  __typename: 'PlausibleStatsResponse',
+                  property: 'tiktok',
+                  visitors: 3
+                },
+                {
+                  __typename: 'PlausibleStatsResponse',
+                  property: 'facebook',
+                  visitors: 2
+                }
+              ]
             },
             draggable: false,
-            id: 'facebook',
+            id: 'other sources',
             position: {
               x: -600,
               y: 84
@@ -644,5 +654,45 @@ describe('transformJourneyAnalytics', () => {
     // Should count all phone actions and chat buttons as chats started
     expect(result?.chatsStarted).toBe(6) // 2 phone button + 3 phone video + 1 footer chat
     expect(result?.linksVisited).toBe(2) // Only the regular link
+  })
+
+  it('should not add QR Code referrer when UTM campaign visitors sum to zero', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [],
+      journeyStepsActions: [],
+      journeyReferrer: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: 'Direct / None',
+          visitors: 5
+        }
+      ],
+      journeyUtmCampaign: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: 'shortLink1',
+          visitors: 0
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: 'shortLink2',
+          visitors: null
+        }
+      ],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 5
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    expect(result?.referrers.nodes).toHaveLength(1)
+    expect(result?.referrers.nodes[0].id).toBe('Direct / None')
   })
 })

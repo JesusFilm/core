@@ -1,4 +1,4 @@
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement } from 'react'
 import { useReactFlow } from 'reactflow'
 

@@ -121,53 +121,17 @@ export interface CardCtaDelete_imageDelete {
 
 export interface CardCtaDelete {
   cardBlockUpdate: CardCtaDelete_cardBlockUpdate;
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   endIcon3Delete: CardCtaDelete_endIcon3Delete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   startIcon3Delete: CardCtaDelete_startIcon3Delete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   button3Delete: CardCtaDelete_button3Delete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   endIcon2Delete: CardCtaDelete_endIcon2Delete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   startIcon2Delete: CardCtaDelete_startIcon2Delete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   button2Delete: CardCtaDelete_button2Delete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   endIcon1Delete: CardCtaDelete_endIcon1Delete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   startIcon1Delete: CardCtaDelete_startIcon1Delete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   button1Delete: CardCtaDelete_button1Delete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   titleDelete: CardCtaDelete_titleDelete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   subtitleDelete: CardCtaDelete_subtitleDelete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   imageDelete: CardCtaDelete_imageDelete[];
 }
 

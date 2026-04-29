@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'

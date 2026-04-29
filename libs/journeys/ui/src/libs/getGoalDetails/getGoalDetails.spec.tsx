@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 
 import BibleIcon from '@core/shared/ui/icons/Bible'
 import EmailIcon from '@core/shared/ui/icons/Email'

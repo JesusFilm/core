@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -224,6 +224,78 @@ describe('LocalDetails', () => {
     expect(getByRole('button', { name: 'Select' })).toBeDisabled()
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(getByRole('button', { name: 'Select' })).not.toBeDisabled()
+  })
+
+  it('should commit the language change and close the picker when Apply is clicked', async () => {
+    const onSelect = jest.fn()
+    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    render(
+      <MockedProvider mocks={[{ ...getVideoMock, result }]}>
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    // open the language picker
+    fireEvent.click(screen.getByRole('button', { name: 'English' }))
+    expect(screen.getByText('Available Languages')).toBeInTheDocument()
+    const applyButton = screen.getByRole('button', { name: 'Apply' })
+    expect(applyButton).toBeVisible()
+    // click Apply: commits the language change and dismisses the picker
+    fireEvent.click(applyButton)
+    expect(onSelect).toHaveBeenCalledWith({
+      duration: 144,
+      endAt: 144,
+      startAt: 0,
+      source: VideoBlockSource.internal,
+      videoId: '2_Acts7302-0-0',
+      videoVariantLanguageId: '529'
+    })
+    // the language picker drawer is dismissed (its Apply button is no longer
+    // visible once the transition starts)
+    await waitFor(() => expect(applyButton).not.toBeVisible())
+  })
+
+  it('should commit the matching language id (not the video id) when Apply is clicked on an existing video block without changing language', async () => {
+    const onSelect = jest.fn()
+    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    render(
+      <MockedProvider mocks={[{ ...getVideoMock, result }]}>
+        <EditorProvider
+          initialState={{
+            selectedBlock: {
+              id: 'videoId',
+              videoId: '2_Acts7302-0-0',
+              source: VideoBlockSource.internal,
+              duration: 144,
+              startAt: 7,
+              endAt: 60,
+              videoVariantLanguageId: '529',
+              mediaVideo: {
+                __typename: 'Video',
+                id: '2_Acts7302-0-0'
+              }
+            } as unknown as TreeBlock<VideoBlock>
+          }}
+        >
+          <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    // chip reflects the matched language (English) from variantLanguages
+    fireEvent.click(screen.getByRole('button', { name: 'English' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Apply' }))
+    // videoVariantLanguageId must be the language id ('529'), not the video id
+    // ('2_Acts7302-0-0'). Pre-fix, getVideoVariantLanguage returned the video
+    // id by mistake; this test pins the correct shape on the Apply path.
+    expect(onSelect).toHaveBeenCalledWith({
+      duration: 144,
+      endAt: 60,
+      startAt: 7,
+      source: VideoBlockSource.internal,
+      videoId: '2_Acts7302-0-0',
+      videoVariantLanguageId: '529'
+    })
   })
 
   it('should keep startAt and endAt values if already exist on select click', async () => {

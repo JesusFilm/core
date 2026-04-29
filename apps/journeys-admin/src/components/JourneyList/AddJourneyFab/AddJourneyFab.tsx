@@ -1,5 +1,5 @@
 import Fab from '@mui/material/Fab'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import Plus2Icon from '@core/shared/ui/icons/Plus2'

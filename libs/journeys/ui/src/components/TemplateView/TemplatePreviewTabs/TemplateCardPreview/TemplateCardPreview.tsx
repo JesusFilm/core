@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import take from 'lodash/take'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
@@ -307,7 +307,7 @@ export function TemplateCardPreview({
             >
               {t('Use this template to see more!')}
             </Typography>
-            <TemplateActionButton signedIn={authUser?.id != null} />
+            <TemplateActionButton signedIn={authUser?.email != null} />
           </Stack>
           <Box
             sx={{

@@ -3,7 +3,7 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'

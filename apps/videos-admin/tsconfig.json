@@ -12,6 +12,8 @@
     "isolatedModules": true,
     "incremental": true,
     "tsBuildInfoFile": "../../.cache/videos-admin/tsc/.tsbuildinfo",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "strictNullChecks": true,
     "plugins": [
       {

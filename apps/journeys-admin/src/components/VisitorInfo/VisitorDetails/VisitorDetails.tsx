@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import Iphone1Icon from '@core/shared/ui/icons/Iphone1'

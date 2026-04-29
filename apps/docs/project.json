@@ -77,7 +77,7 @@
       "options": {
         "commands": [
           {
-            "command": "pnpm exec i18next --config apps/docs/i18next-parser.config.js"
+            "command": "pnpm exec i18next-cli extract --config apps/docs/i18next.config.js"
           }
         ]
       }

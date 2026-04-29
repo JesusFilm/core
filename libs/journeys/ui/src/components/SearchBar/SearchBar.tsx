@@ -9,7 +9,7 @@ import TextField, {
 } from '@mui/material/TextField'
 import { Formik } from 'formik'
 import dynamic from 'next/dynamic'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import {
   type ReactElement,
   useCallback,

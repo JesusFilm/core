@@ -2,7 +2,7 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { ParentTagIcon } from '@core/journeys/ui/ParentTagIcon'

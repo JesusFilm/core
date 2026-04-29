@@ -93,7 +93,7 @@ next-env.d.ts
 .claude/commands/*.dev.md
 .claude/rules/preferences.md
 .claude/rules/workflows.md
-.claude/rules/*.dev.md
+.claude/rules/**/*.dev.md
 .claude/worktrees
 
 # ignore exports

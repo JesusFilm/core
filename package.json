@@ -2,7 +2,7 @@
   "name": "core",
   "version": "0.0.0",
   "license": "MIT",
-  "packageManager": "pnpm@10.15.1",
+  "packageManager": "pnpm@10.33.2+sha512.a90faf6feeab71ad6c6e57f94e0fe1a12f5dcc22cd754db40ae9593eb6a3e0b6b12e3540218bb37ae083404b1f2ce6db2a4121e979829b4aff94b99f49da1cf8",
   "scripts": {
     "nx": "nx",
     "start": "nx serve",
@@ -36,6 +36,9 @@
   "dependencies": {
     "@adobe/apollo-link-mutation-queue": "^1.1.0",
     "@ai-sdk/google": "^3.0.43",
+    "@ai-sdk/openai": "^3.0.53",
+    "@ai-sdk/openai-compatible": "^2.0.41",
+    "@ai-sdk/react": "^3.0.164",
     "@algolia/client-search": "^5.0.0",
     "@apollo/client": "^3.8.3",
     "@apollo/client-integration-nextjs": "^0.12.0",
@@ -185,7 +188,7 @@
     "next": "^16.2.3",
     "next-firebase-auth-edge": "^1.7.0-canary.2",
     "next-i18n-router": "^5.5.5",
-    "next-i18next": "15.4.2",
+    "next-i18next": "^16.0.5",
     "next-intl": "^4.4.0",
     "next-logger": "^5.0.0",
     "next-plausible": "^3.12.0",
@@ -215,6 +218,7 @@
     "react-instantsearch-router-nextjs": "^7.12.3",
     "react-is": "^19.0.0",
     "react-loading-hook": "^1.1.2",
+    "react-markdown": "^10.1.0",
     "react-simple-timefield": "^3.3.1",
     "react-swipeable": "^7.0.1",
     "react-transition-group": "^4.4.5",
@@ -239,6 +243,7 @@
     "tw-animate-css": "^1.3.4",
     "ua-parser-js": "^1.0.33",
     "unsplash-js": "^7.0.19",
+    "use-stick-to-bottom": "^1.1.3",
     "util": "^0.12.4",
     "uuid": "^10.0.0",
     "vercel": "^51.5.1",
@@ -364,7 +369,7 @@
     "file-loader": "^6.2.0",
     "http-server": "^14.1.1",
     "husky": "^8.0.3",
-    "i18next-parser": "^9.0.0",
+    "i18next-cli": "^1.56.0",
     "jest": "30.2.0",
     "jest-environment-jsdom": "30.2.0",
     "jest-fixed-jsdom": "^0.0.10",
@@ -404,7 +409,7 @@
     "validate-branch-name": "^1.3.0",
     "vite": "7.1.9",
     "vitest": "^2.1.9",
-    "webpack": "5.101.3",
+    "webpack": "5.104.1",
     "webpack-dev-server": "5.2.2",
     "webpack-merge": "^6.0.0",
     "webpack-node-externals": "^3.0.0",
@@ -424,6 +429,13 @@
   "pnpm": {
     "overrides": {
       "strapi-blurhash>canvas": "^3.2.1"
+    },
+    "packageExtensions": {
+      "i18next-cli": {
+        "dependencies": {
+          "i18next": "^26.0.1"
+        }
+      }
     }
   }
 }
