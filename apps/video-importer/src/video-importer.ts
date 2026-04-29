@@ -172,7 +172,11 @@ async function main() {
     typeof process.env.SLACK_CHANNEL_ID === 'string' &&
     process.env.SLACK_CHANNEL_ID.trim().length > 0
 
-  if (slackTokenConfigured !== slackChannelConfigured) {
+  if (
+    !options.dryRun &&
+    !options.noSlack &&
+    slackTokenConfigured !== slackChannelConfigured
+  ) {
     console.warn(
       '[video-importer] Slack is partially configured: set both SLACK_BOT_TOKEN and SLACK_CHANNEL_ID to enable notifications.'
     )

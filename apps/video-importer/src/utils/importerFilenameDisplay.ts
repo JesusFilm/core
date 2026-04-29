@@ -68,53 +68,11 @@ export function parseImporterFilenameForTable(
   }
 
   if (file.toLowerCase().endsWith('.mp4')) {
-    const stem = file.slice(0, -'.mp4'.length)
-    const parts = stem.split('---').filter((p) => p.length > 0)
-
-    if (parts.length >= 4) {
-      const [videoId, edition, rawLang, fourth, ...extras] = parts
-      const version =
-        extras.length > 0 ? `${fourth} +${extras.length} extra` : fourth
-
-      return {
-        file,
-        production: editionProduction(edition),
-        mediaComponentId: videoId,
-        languageId: rawLang.trim(),
-        kind: 'Video',
-        version
-      }
-    }
-
-    if (parts.length === 3) {
-      const [videoId, edition, rawLang] = parts
-
-      return {
-        file,
-        production: editionProduction(edition),
-        mediaComponentId: videoId,
-        languageId: rawLang.trim(),
-        kind: 'Video',
-        version: '—'
-      }
-    }
-
-    if (parts.length === 2) {
-      const [videoId, edition] = parts
-
-      return {
-        file,
-        production: editionProduction(edition),
-        mediaComponentId: videoId,
-        languageId: '—',
-        kind: 'Video',
-        version: '—'
-      }
-    }
-
     const m = file.match(VIDEO_FILENAME_REGEX)
     if (m) {
-      const [, videoId, editionName, rawLanguageId, version] = m
+      const [, videoId, editionName, rawLanguageId, version, extra] = m
+      const versionDisplay =
+        extra != null && extra.length > 0 ? `${version} +1 extra` : version
 
       return {
         file,
@@ -122,7 +80,7 @@ export function parseImporterFilenameForTable(
         mediaComponentId: videoId,
         languageId: rawLanguageId.trim(),
         kind: 'Video',
-        version
+        version: versionDisplay
       }
     }
 

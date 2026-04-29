@@ -24,6 +24,10 @@ type SlackBlock =
 
 const MRKDWN_SECTION_BUDGET = 2800
 const FOLDER_PATH_MAX = 200
+// Slack messages are capped at 50 blocks. Reserve room for header, summary,
+// context, and the truncation notice; cap table sections accordingly.
+const MAX_TABLE_SECTIONS = 45
+const SLACK_REQUEST_TIMEOUT_MS = 5000
 
 interface ColumnSpec {
   title: string
@@ -223,8 +227,9 @@ function pushRunLogTable(blocks: SlackBlock[], rows: TableRow[]): void {
   const staticOverhead = 12 + '```\n\n```'.length
   let currentStart = 0
   let attempted = rows.length
+  let tableSections = 0
 
-  while (currentStart < rows.length) {
+  while (currentStart < rows.length && tableSections < MAX_TABLE_SECTIONS) {
     const slice = rows.slice(currentStart, currentStart + attempted)
     const tableText = renderAlignedTable(slice)
     const section = `\`\`\`\n${tableText}\n\`\`\``
@@ -237,12 +242,24 @@ function pushRunLogTable(blocks: SlackBlock[], rows: TableRow[]): void {
         type: 'section',
         text: { type: 'mrkdwn', text: section }
       })
+      tableSections++
       currentStart += slice.length
       attempted = Math.max(1, rows.length - currentStart)
       continue
     }
 
     attempted = Math.max(1, Math.floor(slice.length / 2))
+  }
+
+  if (currentStart < rows.length) {
+    const omitted = rows.length - currentStart
+    blocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `_…and *${omitted}* more row${omitted === 1 ? '' : 's'} omitted to stay within Slack's block limit._`
+      }
+    })
   }
 }
 
@@ -350,6 +367,9 @@ export async function postVideoImporterSlackSummary(params: {
   const text = buildNotificationPlainText(params)
   const blocks = buildSlackBlocks(params)
 
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), SLACK_REQUEST_TIMEOUT_MS)
+
   let response: Response
   try {
     response = await fetch(SLACK_CHAT_POST_MESSAGE, {
@@ -362,11 +382,20 @@ export async function postVideoImporterSlackSummary(params: {
         channel: channelId,
         text,
         blocks
-      })
+      }),
+      signal: controller.signal
     })
   } catch (err) {
-    console.error('[video-importer] Failed to reach Slack API:', err)
+    if ((err as { name?: string }).name === 'AbortError') {
+      console.error(
+        `[video-importer] Slack API request timed out after ${SLACK_REQUEST_TIMEOUT_MS}ms`
+      )
+    } else {
+      console.error('[video-importer] Failed to reach Slack API:', err)
+    }
     return false
+  } finally {
+    clearTimeout(timeout)
   }
 
   let body: unknown
