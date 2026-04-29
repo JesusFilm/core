@@ -16,7 +16,6 @@ builder.mutationField('customDomainDelete', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: CustomDomainRef,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
