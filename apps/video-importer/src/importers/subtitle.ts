@@ -7,7 +7,7 @@ import { markFileAsCompleted } from '../utils/fileUtils'
 import { validateVideoAndEdition } from '../utils/videoEditionValidator'
 
 export const SUBTITLE_FILENAME_REGEX =
-  /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.(srt|vtt)$/
+  /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))?\.(srt|vtt)$/
 
 export async function processSubtitleFile(
   file: string,

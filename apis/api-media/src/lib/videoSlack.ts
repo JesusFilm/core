@@ -19,46 +19,47 @@ export async function sendWeeklyVideoSummary(
   const childLogger = currentLogger.child({
     report: 'weekly-video-summary'
   })
-  const { startDate, endDate } = resolveWeeklyVideoSummaryWindow({
-    currentDate,
-    options
-  })
-
-  if (!isValidWeeklyVideoSummaryWindow({ startDate, endDate })) {
-    childLogger.warn(
-      {
-        windowStart: formatDateIso(startDate),
-        windowEnd: formatDateIso(endDate)
-      },
-      'Weekly video Slack summary skipped: startDate is after endDate'
-    )
-    return
-  }
-
-  const { rows, counts } = await loadWeeklyVideoReport({
-    startDate,
-    endDate
-  })
-
-  if (
-    counts.newVideos === 0 &&
-    counts.variantUpdateRows === 0 &&
-    counts.videoMetadataOnlyRows === 0
-  ) {
-    childLogger.info(
-      {
-        windowStart: formatDateIso(startDate),
-        windowEnd: formatDateIso(endDate),
-        newVideos: counts.newVideos,
-        variantUpdateRows: counts.variantUpdateRows,
-        videoMetadataOnlyRows: counts.videoMetadataOnlyRows
-      },
-      'Weekly video Slack summary skipped: no new videos, no variant updates, and no metadata-only video updates in the window'
-    )
-    return
-  }
 
   try {
+    const { startDate, endDate } = resolveWeeklyVideoSummaryWindow({
+      currentDate,
+      options
+    })
+
+    if (!isValidWeeklyVideoSummaryWindow({ startDate, endDate })) {
+      childLogger.warn(
+        {
+          windowStart: formatDateIso(startDate),
+          windowEnd: formatDateIso(endDate)
+        },
+        'Weekly video Slack summary skipped: startDate is after endDate'
+      )
+      return
+    }
+
+    const { rows, counts } = await loadWeeklyVideoReport({
+      startDate,
+      endDate
+    })
+
+    if (
+      counts.newVideos === 0 &&
+      counts.variantUpdateRows === 0 &&
+      counts.videoMetadataOnlyRows === 0
+    ) {
+      childLogger.info(
+        {
+          windowStart: formatDateIso(startDate),
+          windowEnd: formatDateIso(endDate),
+          newVideos: counts.newVideos,
+          variantUpdateRows: counts.variantUpdateRows,
+          videoMetadataOnlyRows: counts.videoMetadataOnlyRows
+        },
+        'Weekly video Slack summary skipped: no new videos, no variant updates, and no metadata-only video updates in the window'
+      )
+      return
+    }
+
     await postWeeklyVideoSlackMessages({
       rows,
       startDate,
