@@ -29,6 +29,22 @@ linear: NES-1613
 ### Simplifications rejected
 - "Land `Event` in `libs/prisma/journeys` instead of new `prisma-signals` domain" — semantic drift cost > the short-term scaffold saving. Keep the new domain.
 
+### Schema iteration (post-deepen review with team)
+
+After re-examining the schema for cross-app extensibility and query ergonomics, the following columns were added or reshaped. Rationale for each is in § Data Model.
+
+1. **`appName`** added — multi-app slicing from day 1 (`journeys-admin`, `videos-admin`, future apps).
+2. **`route`** added — Next.js pathname; "which page produced this event" without forcing every call site to encode it in `description`.
+3. **`entityType + entityId`** (polymorphic pair) added in place of any per-app entity column. Lets every admin app reuse the table with no migrations: `entityType='journey', entityId=<uuid>` for journeys-admin; `entityType='video', entityId=<uuid>` for videos-admin; etc. Type safety recovered at the resolver via Pothos enum + zod ID-format validation.
+4. **`sessionId`** added — per-tab UUID stored in `sessionStorage`. Survives mobile IP rotation, which `userHash` doesn't. Strengthens "distinct sessions on feature X" counts; pairs with `userHash` for upper/lower bounds on distinct people.
+5. **`deviceType`, `browserFamily`, `osFamily`** added — coarse UA-derived buckets. The hash pipeline already normalises UA via `ua-parser-js`; persisting the buckets is free. Answers "is this feature used on mobile" / "is anything broken on Safari" without follow-up events.
+6. **`clientEventId`** persisted with `@unique` index — already in the mutation as the Apollo-dedup nonce; persisting it gives free idempotency and a frontend↔backend correlation key for debugging.
+7. **Editor overlay events split** from one `editor_overlay_opened` + `description.overlay` into four named event types (`editor_analytics_overlay_opened`, `editor_strategy_overlay_opened`, `editor_helpscout_overlay_opened`, `editor_social_preview_overlay_opened`). Eliminates the JSON-path filter on a frequent slice and keeps the allowlist reading as a clean catalogue of tracked interactions.
+8. **Indexes:** `[appName, eventType, createdAt]`, `[entityType, entityId, createdAt]`, `[userHash, createdAt]` — match the dominant query shapes.
+9. **Retention policy** (180 days) added to the operator note. Daily DELETE of events older than the window. Privacy + storage hygiene.
+10. **Success criterion rewritten.** Cross-day distinct-user counting is intentionally broken by the daily-rotating salt — that's the privacy/utility trade we accepted. Origin's "distinct users in last 30 days" success line is replaced with "events per day/week broken down by app/device/route/entity, plus daily distinct users on a given day". The team agreed cross-day distinct counts are not actually load-bearing for usage decisions.
+11. **Dwell time / time-on-page out of scope.** Schema can absorb it later (heartbeat events using existing columns, no migration); not part of v1.
+
 ---
 
 ## Overview
@@ -94,21 +110,28 @@ A new domain (`signals`) backs a small Pothos schema added to `api-analytics`:
 ### Architecture
 
 ```
-journeys-admin (Next.js)
-  └── useTrackEvent(eventType, description?)
+journeys-admin / videos-admin / ... (Next.js)
+  └── useTrackEvent({ eventType, entity?, description? })
         ├── if !user?.email                                     → return (loading or unauthenticated)
         ├── if user.email ∈ NEXT_PUBLIC_INTERNAL_USER_EMAILS    → return
-        └── Apollo mutation { eventType, description, clientEventId } → api-gateway
+        └── Apollo mutation {
+              eventType, appName, route, entityType?, entityId?,
+              sessionId, description?, clientEventId
+            } → api-gateway
                 └── api-analytics
                       ├── eventCreate (gateway-JWT, rate-limited)
                       │     ├── validate eventType ∈ allowlist (else warn + drop)
+                      │     ├── validate appName ∈ allowlist
+                      │     ├── validate entityType ∈ allowlist (if present); ID format per type
                       │     ├── validate description (size, PII denylist, optional zod)
-                      │     ├── normalise UA, drop if bot
+                      │     ├── normalise UA → { deviceType, browserFamily, osFamily }
+                      │     ├── if isbot(UA) → drop (silent)
                       │     ├── salt = HMAC_SHA256(SIGNALS_SALT_SECRET, utc_date)
                       │     ├── userHash = HMAC_SHA256(salt, host || \x1f || ip || \x1f || normalisedUA)
                       │     └── prisma.event.create
                       └── events query (gateway-JWT, admin-only)
-                            └── filter eventType + createdAt range, limit + orderBy
+                            └── filter (appName, eventType, entityType, entityId, route,
+                                        deviceType, sessionId, createdAt range), limit + orderBy
 ```
 
 ### Data Model
@@ -127,14 +150,36 @@ datasource db {
 }
 
 model Event {
-  id          String   @id @default(uuid()) @db.Uuid
-  createdAt   DateTime @default(now())
-  eventType   String                                          // allowlist enforced at resolver
-  userHash    String                                          // 64 hex chars (sha256 hex)
-  description Json?
+  id            String   @id @default(uuid()) @db.Uuid
+  createdAt     DateTime @default(now())
 
-  @@index([eventType, createdAt])
-  @@index([createdAt])
+  // What & where
+  appName       String                                         // 'journeys-admin' | 'videos-admin' | ...
+  eventType     String                                         // allowlist enforced at resolver
+  route         String?                                        // Next.js pathname
+
+  // What it's about (polymorphic; nullable when not entity-bound)
+  entityType    String?                                        // 'journey' | 'video' | 'template' | ...
+  entityId      String?                                        // ID within entityType (UUID/string)
+
+  // Who (pseudonymous)
+  userHash      String                                         // HMAC-derived, daily-rotating
+  sessionId     String?                                        // per-tab UUID, sessionStorage
+
+  // Coarse environment (derived from UA at write time)
+  deviceType    String?                                        // 'mobile' | 'tablet' | 'desktop'
+  browserFamily String?                                        // 'Chrome' | 'Safari' | 'Firefox' | ...
+  osFamily      String?                                        // 'macOS' | 'iOS' | 'Windows' | 'Android' | 'Linux'
+
+  // Idempotency / correlation
+  clientEventId String?  @unique                               // defeats Apollo dedup; idempotency key
+
+  // Free-form extras
+  description   Json?                                          // 2KB cap, recursive PII-key denylist
+
+  @@index([appName, eventType, createdAt])
+  @@index([entityType, entityId, createdAt])
+  @@index([userHash, createdAt])
 }
 ```
 
@@ -145,13 +190,45 @@ erDiagram
   EVENT {
     uuid id PK
     timestamp createdAt
+    string appName
     string eventType
+    string route
+    string entityType
+    string entityId
     string userHash
+    string sessionId
+    string deviceType
+    string browserFamily
+    string osFamily
+    string clientEventId
     json description
   }
 ```
 
 No `Salt` table. The active salt is **never persisted** anywhere durable. The only thing that exists across requests is `SIGNALS_SALT_SECRET` (Doppler env, server-only), and the active hash inputs (in-memory per request).
+
+### Why each column exists
+
+| Column | Why |
+|---|---|
+| `id`, `createdAt` | Standard. `createdAt` is server-side `now()`. |
+| `appName` | Multi-app slicing. Without this, "journeys-admin vs videos-admin" can't be sliced. |
+| `eventType` | Identity of the action ("which button"). Allowlisted; old admin bundles can't pollute via removed values (graceful warn + drop). |
+| `route` | Which page produced the event. Cheap; saves every call site from putting it in `description`. |
+| `entityType + entityId` | The thing the event is *about*, polymorphic across apps. Resolver validates `entityType ∈ allowlist` and ID format per type via zod. Trade-off vs per-entity columns: adds a soft-constraint string column instead of a typed UUID column, recovered by resolver-side validation. Net win is no migration when a new app's primary entity appears. |
+| `userHash` | Pseudonymous identifier; daily-rotating via HMAC. Daily distinct counts are exact; cross-day distinct is intentionally broken (privacy choice). |
+| `sessionId` | Per-tab UUID in `sessionStorage`. Survives mobile IP churn (which fragments `userHash`). Counts tabs cleanly. Pairs with `userHash` for upper/lower bounds on distinct people. |
+| `deviceType`, `browserFamily`, `osFamily` | Coarse UA buckets — already computed in the hash pipeline; persisting them is free. Coarse enough not to re-identify (no version, no minor). |
+| `clientEventId` | Client-generated UUID per call. `@unique` index. Defeats Apollo mutation dedup so rapid double-clicks count twice; gives free idempotency if retries are added; debug correlation key. |
+| `description` | Free-form extras. 2KB cap + recursive PII-key denylist enforced at resolver. |
+
+### Why these indexes
+
+| Index | Answers |
+|---|---|
+| `[appName, eventType, createdAt]` | Dominant slice: "in app X, how many times did Y happen, in window Z" |
+| `[entityType, entityId, createdAt]` | "Show me everything that happened to journey/video/template ABC" |
+| `[userHash, createdAt]` | Daily distinct-user counts; per-user activity feeds within a day |
 
 ### Hashing
 
@@ -206,6 +283,8 @@ export function normaliseUserAgent(raw: string | undefined | null): string | nul
 
 In the resolver: if `normaliseUserAgent` returns `null`, swallow the event silently (don't bill bots into our metrics). Both `ua-parser-js` and `isbot` are tiny, well-maintained, and already-in-graph candidates.
 
+The resolver also persists the parsed buckets directly to `Event.deviceType`, `Event.browserFamily`, `Event.osFamily` so they're queryable without re-parsing.
+
 ### IP Trust Boundary
 
 The subgraph receives the client IP from a gateway-set forwarded-IP header. The resolver:
@@ -221,10 +300,33 @@ The subgraph receives the client IP from a gateway-set forwarded-IP header. The 
 const ALLOWED_EVENT_TYPES = new Set([
   'journey_create_clicked',
   'journey_create_from_template',
-  'editor_overlay_opened',
+  'editor_analytics_overlay_opened',
+  'editor_strategy_overlay_opened',
+  'editor_helpscout_overlay_opened',
+  'editor_social_preview_overlay_opened',
   'ai_translation_language_picked',
 ] as const);
 type AllowedEventType = typeof ALLOWED_EVENT_TYPES extends Set<infer T> ? T : never;
+
+const ALLOWED_APP_NAMES = new Set([
+  'journeys-admin',
+  'videos-admin',
+  'cms',
+  // add more as new admin apps adopt useTrackEvent
+] as const);
+
+const ALLOWED_ENTITY_TYPES = new Set([
+  'journey',
+  'video',
+  'template',
+  // add more as needed; each entry should pair with an ID-format zod schema below
+] as const);
+
+const ENTITY_ID_FORMAT: Record<string, z.ZodType<string>> = {
+  journey: z.string().uuid(),
+  video: z.string().uuid(),
+  template: z.string().uuid(),
+};
 
 const PII_KEY = /^(email|e_mail|name|first_?name|last_?name|phone|user_?id|token|password)$/i;
 const MAX_DESCRIPTION_BYTES = 2048;
@@ -270,20 +372,40 @@ Per gateway-resolved user (or per IP if anonymous slips through), 60 events/min.
 ```graphql
 input EventCreateInput {
   eventType: String!
+  appName: String!
+  route: String
+  entityType: String
+  entityId: ID
+  sessionId: ID
   description: Json
-  clientEventId: ID!     # nonce; defeats Apollo dedup; server stores it on the row optionally for idempotency
+  clientEventId: ID!
 }
 
 type Event {
   id: ID!
   createdAt: DateTime!
+  appName: String!
   eventType: String!
+  route: String
+  entityType: String
+  entityId: ID
   userHash: String!
+  sessionId: ID
+  deviceType: String
+  browserFamily: String
+  osFamily: String
+  clientEventId: ID
   description: Json
 }
 
 input EventFilter {
+  appName: String
   eventType: String
+  entityType: String
+  entityId: ID
+  route: String
+  deviceType: String
+  sessionId: ID
   createdAtGte: DateTime
   createdAtLte: DateTime
 }
@@ -315,6 +437,7 @@ Implementation notes:
 ```ts
 // apps/journeys-admin/src/libs/useTrackEvent/useTrackEvent.ts
 import { v4 as uuid } from 'uuid';
+import { useRouter } from 'next/router';
 
 const INTERNAL_EMAILS = new Set(
   (process.env.NEXT_PUBLIC_INTERNAL_USER_EMAILS ?? '')
@@ -323,16 +446,49 @@ const INTERNAL_EMAILS = new Set(
     .filter(Boolean),
 );
 
+const APP_NAME = 'journeys-admin'; // replace per-app when copied to videos-admin/cms
+
+type Entity =
+  | { type: 'journey'; id: string }
+  | { type: 'video'; id: string }
+  | { type: 'template'; id: string };
+
+function getOrCreateSessionId(): string {
+  if (typeof window === 'undefined') return '';
+  const KEY = 'signal.sessionId';
+  let id = window.sessionStorage.getItem(KEY);
+  if (!id) {
+    id = uuid();
+    window.sessionStorage.setItem(KEY, id);
+  }
+  return id;
+}
+
 export function useTrackEvent() {
   const [mutate] = useMutation(EVENT_CREATE);
   const { user } = useUser();
+  const router = useRouter();
 
   return useCallback(
-    (eventType: AllowedEventType, description?: Record<string, unknown>) => {
+    (
+      eventType: AllowedEventType,
+      opts?: { entity?: Entity; description?: Record<string, unknown> },
+    ) => {
       if (!user?.email) return;                                     // fail closed during loading / unauthenticated
       if (INTERNAL_EMAILS.has(user.email.toLowerCase())) return;    // internal user exclusion
       mutate({
-        variables: { input: { eventType, description, clientEventId: uuid() } },
+        variables: {
+          input: {
+            eventType,
+            appName: APP_NAME,
+            route: router.pathname,                                  // Next.js dynamic-route template, e.g. /journeys/[journeyId]/edit
+            entityType: opts?.entity?.type ?? null,
+            entityId: opts?.entity?.id ?? null,
+            sessionId: getOrCreateSessionId(),
+            description: opts?.description,
+            clientEventId: uuid(),
+          },
+        },
       }).catch((e) => {
         datadogLogs?.logger.warn('useTrackEvent failed', {
           eventType,
@@ -340,10 +496,12 @@ export function useTrackEvent() {
         });
       });
     },
-    [mutate, user?.email],
+    [mutate, user?.email, router.pathname],
   );
 }
 ```
+
+Notes on `route`: prefer `router.pathname` (the dynamic-route template like `/journeys/[journeyId]/edit`) over `router.asPath` so URLs aren't IDs in your indexes — it groups every visit to that page shape under one `route` value.
 
 Notes:
 - `AllowedEventType` is the TS string-literal union from `ALLOWED_EVENT_TYPES` (single-sourced from server).
@@ -353,12 +511,17 @@ Notes:
 
 ### v1 Event Call Sites
 
-| Event | File | `description` shape |
-|---|---|---|
-| `journey_create_clicked` | `apps/journeys-admin/src/components/Team/TeamSelect/TeamSelect.tsx` (and `OnboardingPanel/CreateJourneyButton/CreateJourneyButton.tsx` if both reachable) | `{}` |
-| `journey_create_from_template` | `apps/journeys-admin/src/components/TemplateCustomization/MultiStepForm/Screens/JourneyCustomizeTeamSelect/JourneyCustomizeTeamSelect.tsx` (fire on final create) | `{ templateId? }` |
-| `editor_overlay_opened` | `Editor/Toolbar/Items/AnalyticsItem`, `Editor/Toolbar/Items/StrategyItem`, `Editor/Slider/JourneyFlow/nodes/SocialPreviewNode/SocialPreviewNode.tsx`, `apps/journeys-admin/src/components/HelpScoutBeacon/*` | `{ overlay: 'analytics' \| 'strategy' \| 'helpscout' \| 'social_media_preview' }` |
-| `ai_translation_language_picked` *(pending D4)* | `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TranslateJourneyDialog/TranslateJourneyDialog.tsx` | `{ language: string }` |
+| Event | File | `entity` | `description` shape |
+|---|---|---|---|
+| `journey_create_clicked` | `apps/journeys-admin/src/components/Team/TeamSelect/TeamSelect.tsx` (and `OnboardingPanel/CreateJourneyButton/CreateJourneyButton.tsx` if both reachable) | none (no journey yet) | `{}` |
+| `journey_create_from_template` | `apps/journeys-admin/src/components/TemplateCustomization/MultiStepForm/Screens/JourneyCustomizeTeamSelect/JourneyCustomizeTeamSelect.tsx` (fire on final create) | `{ type: 'template', id: <templateId> }` | `{}` |
+| `editor_analytics_overlay_opened` | `Editor/Toolbar/Items/AnalyticsItem` | `{ type: 'journey', id: <journeyId> }` | `{}` |
+| `editor_strategy_overlay_opened` | `Editor/Toolbar/Items/StrategyItem` | `{ type: 'journey', id: <journeyId> }` | `{}` |
+| `editor_helpscout_overlay_opened` | `apps/journeys-admin/src/components/HelpScoutBeacon/*` | `{ type: 'journey', id: <journeyId> }` if available, else none | `{}` |
+| `editor_social_preview_overlay_opened` | `Editor/Slider/JourneyFlow/nodes/SocialPreviewNode/SocialPreviewNode.tsx` | `{ type: 'journey', id: <journeyId> }` | `{}` |
+| `ai_translation_language_picked` *(pending D4)* | `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TranslateJourneyDialog/TranslateJourneyDialog.tsx` | `{ type: 'journey', id: <journeyId> }` | `{ language: string }` |
+
+For all journeys-admin call sites: `appName='journeys-admin'`, `route` = current Next.js pathname, `sessionId` = lazily-initialised UUID stored in `sessionStorage` under a fixed key (e.g. `signal.sessionId`).
 
 Each call site adds one `useTrackEvent` invocation in the existing `handle*` handler. Test descriptions begin with "should…" per memory feedback.
 
@@ -369,7 +532,7 @@ Each call site adds one `useTrackEvent` invocation in the existing `handle*` han
 **Tasks**
 - Resolve D1, D2, D3, D4.
 - Create `libs/prisma/signals` Prisma domain — `schema.prisma`, generated client, nx targets, env var `PG_DATABASE_URL_SIGNALS`.
-- Initial migration: `Event` only.
+- Initial migration: `Event` only (with all v3 columns + indexes).
 - Wire `@core/prisma/signals/client` into `apis/api-analytics`.
 - Register `DateTime` + `Json` scalars in `apis/api-analytics/src/schema/builder.ts` if not already.
 - Refactor `apis/api-analytics/src/schema/builder.ts` `Context` into discriminated union; add `isAuthenticated` and `isAdmin` scopes.
@@ -415,6 +578,8 @@ Each call site adds one `useTrackEvent` invocation in the existing `handle*` han
 - **Persisted `Salt` table with rotation cron.** Rejected during deepen pass — review showed it makes hashes trivially reversible (salt + hash both in one DB) and creates a midnight race window. Deterministic HMAC is simpler and stronger.
 - **`eventType` as Pothos GraphQL enum.** Rejected — old admin bundles after a value is dropped silently lose every event.
 - **Cursor `prismaConnection` + JSON-path filter in v1.** Deferred — internal volumes don't need either; ship simple `limit` + `orderBy` and revisit when a real query exceeds the cap.
+- **Per-entity columns (`journeyId`, `videoId`, `templateId`, …) instead of polymorphic `entityType + entityId`.** Rejected — would require a migration every time a new admin app's primary entity appears. Polymorphic is more scalable; type safety recovered via resolver-side allowlist + zod ID-format validation.
+- **One `editor_overlay_opened` event with `description.overlay`.** Rejected (was the v1+v2 design). Switched to four named event types (`editor_analytics_overlay_opened`, etc.). Faster queries (no JSONB path), cleaner allowlist.
 
 ## System-Wide Impact
 
@@ -439,10 +604,13 @@ Each call site adds one `useTrackEvent` invocation in the existing `handle*` han
 ### Functional
 - [ ] D1, D2, D3 resolved and recorded inline in this plan and/or `docs/solutions/patterns/signal-usage-analytics.md`.
 - [ ] D4 verified.
-- [ ] `Event` table exists with the schema above. No `Salt` table.
-- [ ] `eventCreate` mutation persists rows with hashed attribution; rejects unauthenticated; honours rate limit; rejects oversize/PII descriptions; drops bot UAs and unknown event types with a Datadog warn.
-- [ ] `events` query supports `eventType`, `createdAtGte`/`createdAtLte`, `limit` (clamped). Restricted to admin role.
-- [ ] `eventType` allowlist single-sourced; admin imports the TS union.
+- [ ] `Event` table exists with the schema above (incl. `appName`, `route`, `entityType`, `entityId`, `sessionId`, `deviceType`, `browserFamily`, `osFamily`, `clientEventId`). No `Salt` table.
+- [ ] `eventCreate` mutation persists rows with hashed attribution; rejects unauthenticated; honours rate limit; validates `appName` / `entityType` / `entityId` against allowlists + format; rejects oversize/PII descriptions; drops bot UAs and unknown event types with a Datadog warn.
+- [ ] `events` query supports filtering by `appName`, `eventType`, `entityType+entityId`, `route`, `deviceType`, `sessionId`, `createdAtGte`/`createdAtLte`, `limit` (clamped). Restricted to admin role.
+- [ ] `eventType`, `appName`, `entityType` allowlists single-sourced; admin imports the TS union(s).
+- [ ] Coarse UA buckets (`deviceType`, `browserFamily`, `osFamily`) populated from the same `ua-parser` call used for the hash input.
+- [ ] `sessionId` generated lazily client-side and stored in `sessionStorage` under a fixed key.
+- [ ] 180-day retention job in place (or scheduled).
 - [ ] `useTrackEvent` skips firing when `useUser()` is loading and when the email is in `NEXT_PUBLIC_INTERNAL_USER_EMAILS`.
 - [ ] All four v1 events (or three, if D4 drops one) fire from their call sites.
 - [ ] Tracking failures never break user flow; failures land in Datadog as `logger.warn` with sanitised payload.
@@ -465,8 +633,33 @@ Each call site adds one `useTrackEvent` invocation in the existing `handle*` han
 ## Success Metrics
 
 - After 7 days in prod: each v1 `eventType` has a non-zero count, OR we explicitly conclude a feature is genuinely unused (the original goal).
-- After 30 days: a teammate can self-serve "how many distinct users used X in the last week" via a single GraphQL query (or a Metabase wrapper over the Postgres) without engineering help. Note the IP/UA-volatility caveat in the operator doc — distinct counts have a known split-bias on mobile networks and DevTools UA overrides.
-- Adding a fifth event takes <½ day from "decide" to "merged" (origin success criterion).
+- After 30 days: a teammate can self-serve, via a single GraphQL query (or a Metabase wrapper over Postgres), **counts of any tracked event broken down by app, route, device, and entity** for any window. They can also self-serve **daily distinct users** for a single UTC day. *Cross-day distinct-user counts are intentionally not supported* — they were determined to be non-load-bearing for usage decisions.
+- Adding a fifth event end-to-end (allowlist entry → call site → spec → query) takes <½ day from "decide" to "merged" (origin success criterion).
+
+### Metric definitions for the operator note
+
+- **"Event count"** — `COUNT(*)` over `eventType` and any combination of `appName`, `route`, `entityType+entityId`, `deviceType`, `createdAt` window. Exact.
+- **"Daily Active Users (DAU) for feature X"** — `COUNT(DISTINCT userHash) WHERE eventType=… AND date_trunc('day', createdAt)=…`. Exact for a single UTC day.
+- **"Weekly Visitors (Plausible-style)"** — `SUM(daily_uniques)` over the 7-day window. Known overestimate of distinct people. Use only when a Plausible-style summed-uniques number is explicitly desired.
+- **"Distinct sessions on feature X"** — `COUNT(DISTINCT sessionId) WHERE eventType=… AND createdAt BETWEEN …`. Exact for the tab/session level (overcounts users who use multiple tabs, undercounts users across days).
+
+## Out of Scope (v1)
+
+Listed explicitly so future-us doesn't expand scope mid-build:
+
+- **Cross-day distinct-user counts.** Privacy-preserving daily-rotating salt makes this structurally impossible. Use daily uniques (exact) or summed daily uniques (Plausible-style overestimate) instead. Team agreed this is not a load-bearing question for usage decisions.
+- **Dwell time / time-on-page.** Schema can support it later (heartbeat or paired enter/exit events using existing `sessionId` + `route` columns; no migration). Not part of v1. Confirm whether the existing Plausible setup already covers admin-page dwell.
+- **Cursor pagination + JSON-path filtering on the `events` query.** Deferred. Plain `limit + orderBy` is sufficient at v1 volumes.
+- **Stakeholder-facing dashboards.** Internal queries only. A future `eventStats` aggregation query (counts only, no raw rows) is the proposed broader-audience surface.
+- **`country` / `region` derived from IP.** Optional addition; deferred unless a real query needs it.
+- **`appVersion` / release SHA on each row.** Useful but requires build-time injection per app.
+- **`pageTitle`.** Redundant with `route`.
+
+## Retention
+
+- **Default: 180 days.** Daily scheduled `DELETE FROM "Event" WHERE "createdAt" < now() - interval '180 days'`. Implement as a small cron in `api-analytics` or a Postgres-native scheduled function — pick during Phase 1.
+- Reasons: (a) shrink the long-tail re-identification window post-EDPB; (b) bound table growth.
+- Tunable per-deployment if a regulatory or product reason emerges.
 
 ## Dependencies & Risks
 
