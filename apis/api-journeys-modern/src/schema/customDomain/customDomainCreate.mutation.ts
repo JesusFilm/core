@@ -6,7 +6,11 @@ import { builder } from '../builder'
 
 import { CustomDomainRef } from './customDomain'
 import { CustomDomainCreateInput } from './inputs'
-import { createVercelDomain, isDomainValid, updateTeamShortLinks } from './service'
+import {
+  createVercelDomain,
+  isDomainValid,
+  updateTeamShortLinks
+} from './service'
 
 const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
