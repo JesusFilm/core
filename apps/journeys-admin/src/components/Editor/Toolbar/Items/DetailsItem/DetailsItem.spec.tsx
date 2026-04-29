@@ -9,6 +9,8 @@ import {
   publishedLocalTemplate
 } from '@core/journeys/ui/TemplateView/data'
 
+import { ThemeProvider } from '../../../../ThemeProvider'
+
 import { DetailsItem } from './DetailsItem'
 
 jest.mock('next/router', () => ({
@@ -75,13 +77,15 @@ describe('DetailsItem', () => {
 
   it('opens LocalTemplateDetailsDialog and sets templateDetails param for a local template', async () => {
     render(
-      <MockedProvider mocks={[]}>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey: publishedLocalTemplate }}>
-            <DetailsItem variant="menu-item" />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <ThemeProvider>
+            <JourneyProvider value={{ journey: publishedLocalTemplate }}>
+              <DetailsItem variant="menu-item" />
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     fireEvent.click(screen.getByText('Edit Details'))

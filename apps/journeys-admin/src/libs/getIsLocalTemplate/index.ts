@@ -1,1 +1,1 @@
-export * from './getIsLocalTemplate'
+export { getIsLocalTemplate } from './getIsLocalTemplate'

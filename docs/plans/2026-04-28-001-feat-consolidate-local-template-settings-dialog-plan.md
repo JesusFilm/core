@@ -133,7 +133,7 @@ export function LocalTemplateDetailsDialog({ open, onClose }: LocalTemplateDetai
 
 ### Mutation routing
 
-```
+```ts
 onSubmit(values, { initialValues }):
   if (dirtySubset(values, ['title', 'description', 'languageId'])):
     titleDescLanguageUpdate({

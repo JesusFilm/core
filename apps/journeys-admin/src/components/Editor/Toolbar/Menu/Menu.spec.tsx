@@ -12,6 +12,7 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { Role } from '../../../../../__generated__/globalTypes'
+import { ThemeProvider } from '../../../ThemeProvider'
 
 import { GET_ROLE } from './Menu'
 
@@ -371,26 +372,28 @@ describe('Toolbar Menu', () => {
       render(
         <SnackbarProvider>
           <MockedProvider>
-            <JourneyProvider
-              value={{
-                journey: {
-                  id: 'journeyId',
-                  title: 'Some title',
-                  description: 'Some description',
-                  slug: 'my-journey',
-                  template: true,
-                  tags: [],
-                  language,
-                  team: {
-                    id: 'local-team-id'
-                  }
-                } as unknown as Journey
-              }}
-            >
-              <EditorProvider initialState={{ selectedBlock }}>
-                <Menu />
-              </EditorProvider>
-            </JourneyProvider>
+            <ThemeProvider>
+              <JourneyProvider
+                value={{
+                  journey: {
+                    id: 'journeyId',
+                    title: 'Some title',
+                    description: 'Some description',
+                    slug: 'my-journey',
+                    template: true,
+                    tags: [],
+                    language,
+                    team: {
+                      id: 'local-team-id'
+                    }
+                  } as unknown as Journey
+                }}
+              >
+                <EditorProvider initialState={{ selectedBlock }}>
+                  <Menu />
+                </EditorProvider>
+              </JourneyProvider>
+            </ThemeProvider>
           </MockedProvider>
         </SnackbarProvider>
       )

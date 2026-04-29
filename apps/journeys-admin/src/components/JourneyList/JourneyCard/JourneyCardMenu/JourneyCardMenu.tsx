@@ -315,6 +315,7 @@ export function JourneyCardMenu({
         />
       )}
       {openDetailsDialog != null &&
+        journey != null &&
         (getIsLocalTemplate(journey) ? (
           <LocalTemplateDetailsDialog
             open={openDetailsDialog}

@@ -174,9 +174,11 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     setDialogOpen(false)
   }
 
-  // Determine the home href based on journey properties
-  // Local templates → templates tab; regular journeys → journeys tab
-  const homeHref = isLocalTemplate ? '/?type=templates' : '/?type=journeys'
+  // Back-link target follows whether this is *any* template (local or global)
+  // — both should land in the templates tab. Dialog routing uses the narrower
+  // isLocalTemplate above; do not collapse the two.
+  const homeHref =
+    journey?.template === true ? '/?type=templates' : '/?type=journeys'
 
   return (
     <Stack

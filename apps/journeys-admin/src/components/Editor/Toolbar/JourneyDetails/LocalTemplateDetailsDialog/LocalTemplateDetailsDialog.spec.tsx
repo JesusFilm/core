@@ -1,6 +1,7 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { ReactElement, ReactNode } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { publishedLocalTemplate } from '@core/journeys/ui/TemplateView/data'
@@ -8,6 +9,7 @@ import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE } from '../../../../../libs/useJourneyCustomizationDescriptionUpdateMutation'
 import { TITLE_DESC_LANGUAGE_UPDATE } from '../../../../../libs/useTitleDescLanguageUpdateMutation/useTitleDescLanguageUpdateMutation'
+import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { LocalTemplateDetailsDialog } from './LocalTemplateDetailsDialog'
 
@@ -94,18 +96,43 @@ function makeTitleDescLanguageMock(input: {
   }
 }
 
+interface ProvidersProps {
+  mocks?: MockedResponse[]
+  withJourneyProvider?: boolean
+  children: ReactNode
+}
+
+// Standard provider stack per project test conventions:
+// SnackbarProvider → MockedProvider → ThemeProvider → (JourneyProvider) → component.
+function Providers({
+  mocks = [],
+  withJourneyProvider = true,
+  children
+}: ProvidersProps): ReactElement {
+  const inner = withJourneyProvider ? (
+    <JourneyProvider value={{ journey: publishedLocalTemplate }}>
+      {children}
+    </JourneyProvider>
+  ) : (
+    <>{children}</>
+  )
+  return (
+    <SnackbarProvider>
+      <MockedProvider mocks={mocks}>
+        <ThemeProvider>{inner}</ThemeProvider>
+      </MockedProvider>
+    </SnackbarProvider>
+  )
+}
+
 describe('LocalTemplateDetailsDialog', () => {
   beforeEach(() => jest.clearAllMocks())
 
   it('renders the dialog with "Template Details" title', () => {
     render(
-      <MockedProvider mocks={[getLanguagesMock]}>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey: publishedLocalTemplate }}>
-            <LocalTemplateDetailsDialog open onClose={onClose} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
+      <Providers mocks={[getLanguagesMock]}>
+        <LocalTemplateDetailsDialog open onClose={onClose} />
+      </Providers>
     )
     expect(
       screen.getByRole('dialog', { name: 'Template Details' })
@@ -114,13 +141,9 @@ describe('LocalTemplateDetailsDialog', () => {
 
   it('does not render Categories, Featured, Strategy, or Creator info', () => {
     render(
-      <MockedProvider mocks={[getLanguagesMock]}>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey: publishedLocalTemplate }}>
-            <LocalTemplateDetailsDialog open onClose={onClose} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
+      <Providers mocks={[getLanguagesMock]}>
+        <LocalTemplateDetailsDialog open onClose={onClose} />
+      </Providers>
     )
     expect(
       screen.queryByRole('tab', { name: 'Categories' })
@@ -144,13 +167,9 @@ describe('LocalTemplateDetailsDialog', () => {
     })
 
     render(
-      <MockedProvider mocks={[getLanguagesMock, mock]}>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey: publishedLocalTemplate }}>
-            <LocalTemplateDetailsDialog open onClose={onClose} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
+      <Providers mocks={[getLanguagesMock, mock]}>
+        <LocalTemplateDetailsDialog open onClose={onClose} />
+      </Providers>
     )
 
     fireEvent.change(screen.getAllByRole('textbox')[0], {
@@ -183,7 +202,7 @@ describe('LocalTemplateDetailsDialog', () => {
     }))
 
     render(
-      <MockedProvider
+      <Providers
         mocks={[
           getLanguagesMock,
           titleMock,
@@ -199,12 +218,8 @@ describe('LocalTemplateDetailsDialog', () => {
           }
         ]}
       >
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey: publishedLocalTemplate }}>
-            <LocalTemplateDetailsDialog open onClose={onClose} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
+        <LocalTemplateDetailsDialog open onClose={onClose} />
+      </Providers>
     )
 
     const customizationField = screen
@@ -228,13 +243,9 @@ describe('LocalTemplateDetailsDialog', () => {
     })
 
     render(
-      <MockedProvider mocks={[getLanguagesMock, titleMock]}>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey: publishedLocalTemplate }}>
-            <LocalTemplateDetailsDialog open onClose={onClose} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
+      <Providers mocks={[getLanguagesMock, titleMock]}>
+        <LocalTemplateDetailsDialog open onClose={onClose} />
+      </Providers>
     )
     fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
       target: { value: '' }
@@ -247,15 +258,13 @@ describe('LocalTemplateDetailsDialog', () => {
 
   it('renders via journey prop when no JourneyProvider is present', () => {
     render(
-      <MockedProvider mocks={[getLanguagesMock]}>
-        <SnackbarProvider>
-          <LocalTemplateDetailsDialog
-            open
-            onClose={onClose}
-            journey={publishedLocalTemplate}
-          />
-        </SnackbarProvider>
-      </MockedProvider>
+      <Providers mocks={[getLanguagesMock]} withJourneyProvider={false}>
+        <LocalTemplateDetailsDialog
+          open
+          onClose={onClose}
+          journey={publishedLocalTemplate}
+        />
+      </Providers>
     )
     expect(
       screen.getByRole('dialog', { name: 'Template Details' })
@@ -270,13 +279,9 @@ describe('LocalTemplateDetailsDialog', () => {
     })
 
     render(
-      <MockedProvider mocks={[getLanguagesMock, titleMock]}>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey: publishedLocalTemplate }}>
-            <LocalTemplateDetailsDialog open onClose={onClose} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
+      <Providers mocks={[getLanguagesMock, titleMock]}>
+        <LocalTemplateDetailsDialog open onClose={onClose} />
+      </Providers>
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
