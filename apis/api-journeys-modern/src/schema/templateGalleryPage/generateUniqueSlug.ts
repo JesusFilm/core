@@ -1,10 +1,15 @@
 import { GraphQLError } from 'graphql'
-import { nanoid } from 'nanoid'
+import { customAlphabet } from 'nanoid'
 import slugify from 'slugify'
 
 import { prisma } from '@core/prisma/journeys/client'
 
-export const RESERVED_SLUGS = new Set([
+// Lowercase + digits only. Default `nanoid` includes uppercase, hyphens, and
+// underscores — `_` would later fail SLUG_PATTERN and render the page
+// unreachable by slug, so we restrict the alphabet up front.
+const slugSuffix = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 6)
+
+export const RESERVED_SLUGS: ReadonlySet<string> = new Set([
   'admin',
   'api',
   'app',
@@ -21,6 +26,9 @@ export const RESERVED_SLUGS = new Set([
   'webhook',
   'webhooks'
 ])
+
+export const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/
+export const SLUG_MAX_LENGTH = 200
 
 export class SlugReservedError extends GraphQLError {
   constructor(slug: string) {
@@ -45,9 +53,6 @@ export class SlugInvalidError extends GraphQLError {
     })
   }
 }
-
-const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/
-const SLUG_MAX_LENGTH = 200
 
 /**
  * Generate a unique slug for a TemplateGalleryPage from a title.
@@ -82,7 +87,7 @@ export async function generateUniqueSlug(
     const candidate = `${base}-${suffix}`
     if (!taken.has(candidate)) return candidate
   }
-  return `${base}-${nanoid(6).toLowerCase()}`
+  return `${base}-${slugSuffix()}`
 }
 
 /**

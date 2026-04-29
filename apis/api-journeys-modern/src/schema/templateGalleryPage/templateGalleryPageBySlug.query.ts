@@ -2,20 +2,19 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
+import { SLUG_MAX_LENGTH, SLUG_PATTERN } from './generateUniqueSlug'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 
-const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/
-const SLUG_MAX_LENGTH = 200
-
+// Public, unauthenticated query. This is the first resolver in
+// api-journeys-modern that serves PublicContext requests — there is no
+// `withAuth` block and no type-level scope on TemplateGalleryPage to opt
+// out of. The `where: { status: 'published' }` filter is the actual
+// gatekeeper: drafts and unknown slugs return null (frontend interprets
+// as 404).
 builder.queryField('templateGalleryPageBySlug', (t) =>
-  // No withAuth — public, unauthenticated query. The first resolver in
-  // api-journeys-modern that serves PublicContext requests directly. The
-  // `where: { status: 'published' }` filter is the actual gatekeeper —
-  // drafts and unknown slugs return null (frontend interprets as 404).
   t.prismaField({
     type: TemplateGalleryPageRef,
     nullable: true,
-    skipTypeScopes: true,
     args: {
       slug: t.arg.string({ required: true })
     },

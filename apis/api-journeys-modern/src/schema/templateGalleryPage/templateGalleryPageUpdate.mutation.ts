@@ -47,15 +47,20 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
           ? await validateUserSuppliedSlug(input.slug, id)
           : undefined
 
-      if (input.creatorImageBlockId != null) {
-        await validateCreatorImageBlock(
-          prisma,
-          page.teamId,
-          input.creatorImageBlockId
-        )
-      }
-
       return await prisma.$transaction(async (tx) => {
+        // Block ownership validation runs INSIDE the transaction (parity with
+        // the Create path). If we validated against the live prisma client
+        // outside the tx, a publisher could pass an owned Block id and then
+        // transfer the parent journey to another team in the window before
+        // the update lands — leaving a foreign-team Block id on a future-public page.
+        if (input.creatorImageBlockId != null) {
+          await validateCreatorImageBlock(
+            tx,
+            page.teamId,
+            input.creatorImageBlockId
+          )
+        }
+
         if (input.journeyIds !== undefined && input.journeyIds !== null) {
           await tx.templateGalleryPageTemplate.deleteMany({
             where: { templateGalleryPageId: id }
@@ -82,10 +87,13 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
           title: input.title ?? undefined,
           description: input.description ?? undefined,
           slug,
-          creatorName: input.creatorName ?? undefined,
-          mediaUrl: input.mediaUrl ?? undefined
+          creatorName: input.creatorName ?? undefined
         }
-        // creatorImageBlockId: undefined leaves alone, null clears it
+        // mediaUrl: undefined leaves alone, null clears it.
+        if (input.mediaUrl !== undefined) {
+          data.mediaUrl = input.mediaUrl
+        }
+        // creatorImageBlockId: undefined leaves alone, null clears it.
         if (input.creatorImageBlockId !== undefined) {
           data.creatorImageBlock =
             input.creatorImageBlockId === null
