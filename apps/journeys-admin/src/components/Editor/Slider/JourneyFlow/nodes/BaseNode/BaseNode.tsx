@@ -4,8 +4,8 @@ import {
   Handle,
   OnConnect,
   Position,
-  useOnSelectionChange,
-  useStore
+  useConnection,
+  useOnSelectionChange
 } from '@xyflow/react'
 import isFunction from 'lodash/isFunction'
 import { useTranslation } from 'next-i18next'
@@ -40,10 +40,6 @@ export enum HandleVariant {
 }
 
 const StyledHandle = styled(Handle)(() => ({}))
-const connectionHandleIdSelector = (state): string | null =>
-  state.connectionHandleId
-const connectionNodeIdSelector = (state): string | null =>
-  state.connectionNodeId
 
 interface BaseNodeProps {
   id?: string
@@ -78,11 +74,11 @@ export function BaseNode({
     state: { showAnalytics }
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
-  const connectionHandleId = useStore(connectionHandleIdSelector)
-  const connectionNodeId = useStore(connectionNodeIdSelector)
+  const connection = useConnection()
+  const connectionHandleId = connection.fromHandle?.id ?? null
+  const connectionNodeId = connection.fromHandle?.nodeId ?? null
   const isConnecting =
-    (connectionHandleId != null || connectionNodeId != null) &&
-    id !== connectionNodeId
+    connection.inProgress && id !== connectionNodeId
   const [targetSelected, setTargetSelected] = useState(false)
   const [sourceSelected, setSourceSelected] = useState(false)
 
