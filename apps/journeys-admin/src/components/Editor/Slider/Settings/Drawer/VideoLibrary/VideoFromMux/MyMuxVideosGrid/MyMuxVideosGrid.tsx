@@ -12,111 +12,116 @@ import { ReactElement, useState } from 'react'
 
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
-import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
+import {
+  VideoBlockSource,
+  VideoBlockUpdateInput
+} from '../../../../../../../../../__generated__/globalTypes'
+import { VideoDetails } from '../../VideoDetails'
 
-export const GET_MY_CLOUDFLARE_IMAGES = gql`
-  query GetMyCloudflareImages($offset: Int, $limit: Int, $isAi: Boolean) {
-    getMyCloudflareImages(offset: $offset, limit: $limit, isAi: $isAi) {
+export const GET_MY_MUX_VIDEOS = gql`
+  query GetMyMuxVideos($offset: Int, $limit: Int) {
+    getMyMuxVideos(offset: $offset, limit: $limit) {
       id
-      url
-      blurhash
+      playbackId
+      readyToStream
     }
   }
 `
 
-interface CloudflareImage {
+interface MuxVideoNode {
   id: string
-  url: string | null
-  blurhash: string | null
+  playbackId: string | null
+  readyToStream: boolean
 }
 
-interface GetMyCloudflareImagesData {
-  getMyCloudflareImages: CloudflareImage[]
+interface GetMyMuxVideosData {
+  getMyMuxVideos: MuxVideoNode[]
 }
 
-interface GetMyCloudflareImagesVariables {
+interface GetMyMuxVideosVariables {
   offset?: number
   limit?: number
-  isAi?: boolean
 }
 
-interface MyCloudflareImagesGridProps {
+interface MyMuxVideosGridProps {
   title: string
-  selectedSrc?: string | null
-  onSelect: (input: ImageBlockUpdateInput) => void
-  isAi?: boolean
+  selectedVideoId?: string | null
+  onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
   uploading?: boolean
 }
 
 const PAGE_SIZE = 9
 
-export function MyCloudflareImagesGrid({
+export function MyMuxVideosGrid({
   title,
-  selectedSrc,
+  selectedVideoId,
   onSelect,
-  isAi,
   uploading
-}: MyCloudflareImagesGridProps): ReactElement | null {
+}: MyMuxVideosGridProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
+  const [previewVideo, setPreviewVideo] = useState<{
+    id: string
+    playbackId: string
+  } | null>(null)
+
   const [hasMore, setHasMore] = useState(true)
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<
-    GetMyCloudflareImagesData,
-    GetMyCloudflareImagesVariables
-  >(GET_MY_CLOUDFLARE_IMAGES, {
-    variables: { offset: 0, limit: PAGE_SIZE, isAi },
+    GetMyMuxVideosData,
+    GetMyMuxVideosVariables
+  >(GET_MY_MUX_VIDEOS, {
+    variables: { offset: 0, limit: PAGE_SIZE },
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
     onCompleted: (result) => {
-      setHasMore((result.getMyCloudflareImages ?? []).length >= PAGE_SIZE)
+      setHasMore((result.getMyMuxVideos ?? []).length >= PAGE_SIZE)
     }
   })
 
   const isFetchingMore = networkStatus === NetworkStatus.fetchMore
 
-  const images = (data?.getMyCloudflareImages ?? [])
+  const videos = (data?.getMyMuxVideos ?? [])
     .filter(
-      (node): node is CloudflareImage => node != null && node.url != null
+      (node): node is MuxVideoNode =>
+        node != null && node.readyToStream && node.playbackId != null
     )
     .map((node) => ({
-      ...node,
-      src: `${node.url as string}/public`
+      id: node.id,
+      playbackId: node.playbackId as string,
+      thumbnail: `https://image.mux.com/${node.playbackId as string}/thumbnail.png?time=1`
     }))
 
-  if (
-    !loading &&
-    error == null &&
-    images.length === 0 &&
-    uploading !== true
-  )
+  if (!loading && error == null && videos.length === 0 && uploading !== true)
     return null
 
-  const handleClick = (img: { src: string; blurhash: string | null }): void => {
-    onSelect({
-      src: img.src,
-      blurhash: img.blurhash,
-      scale: 100,
-      focalLeft: 50,
-      focalTop: 50,
-      customizable: null
-    })
+  const handleClick = (video: { id: string; playbackId: string }): void => {
+    setPreviewVideo({ id: video.id, playbackId: video.playbackId })
+  }
+
+  const handlePreviewClose = (): void => {
+    setPreviewVideo(null)
+  }
+
+  const handlePreviewSelect = (block: VideoBlockUpdateInput): void => {
+    onSelect(block, true)
+    setPreviewVideo(null)
   }
 
   return (
-    <Stack sx={{ px: 6, pb: 4, pt: 2 }} data-testid="MyCloudflareImagesGrid">
+    <Stack sx={{ px: 6, pb: 4, pt: 2 }} data-testid="MyMuxVideosGrid">
       <Typography variant="overline" color="primary" sx={{ pb: 1 }}>
         {title}
       </Typography>
       {error != null && (
         <Typography color="error" variant="body2">
-          {t('Could not load your images.')}
+          {t('Could not load your videos.')}
         </Typography>
       )}
       <ImageList gap={8} cols={3} sx={{ overflowY: 'visible', m: 0 }}>
         {uploading === true && (
           <ImageListItem
-            data-testid="my-cloudflare-image-uploading"
+            data-testid="my-mux-video-uploading"
             sx={{
               background: (theme) => theme.palette.divider,
               borderRadius: 2,
@@ -137,16 +142,16 @@ export function MyCloudflareImagesGrid({
             </Box>
           </ImageListItem>
         )}
-        {images.map((img) => (
+        {videos.map((video) => (
           <ImageListItem
-            key={img.id}
-            data-testid={`my-cloudflare-image-${img.id}`}
+            key={video.id}
+            data-testid={`my-mux-video-${video.id}`}
             sx={{
               background: (theme) => theme.palette.divider,
               outline: '2px solid',
               transition: (theme) => theme.transitions.create('outline-color'),
               outlineColor: (theme) =>
-                selectedSrc === img.src
+                selectedVideoId === video.id
                   ? theme.palette.primary.main
                   : 'transparent',
               borderRadius: 2,
@@ -155,10 +160,13 @@ export function MyCloudflareImagesGrid({
               overflow: 'hidden'
             }}
           >
-            <ButtonBase onClick={() => handleClick(img)}>
+            <ButtonBase
+              onClick={() => handleClick(video)}
+              aria-label={t('Select uploaded video')}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={img.src}
+                src={video.thumbnail}
                 alt=""
                 loading="lazy"
                 decoding="async"
@@ -183,10 +191,10 @@ export function MyCloudflareImagesGrid({
           variant="outlined"
           onClick={() =>
             void fetchMore({
-              variables: { offset: images.length, limit: PAGE_SIZE, isAi }
+              variables: { offset: videos.length, limit: PAGE_SIZE }
             }).then((result) => {
               setHasMore(
-                (result.data?.getMyCloudflareImages ?? []).length >= PAGE_SIZE
+                (result.data?.getMyMuxVideos ?? []).length >= PAGE_SIZE
               )
             })
           }
@@ -198,6 +206,17 @@ export function MyCloudflareImagesGrid({
         >
           {isFetchingMore ? t('Loading...') : t('Load More')}
         </Button>
+      )}
+      {previewVideo != null && (
+        <VideoDetails
+          key={previewVideo.id}
+          id={previewVideo.id}
+          playbackId={previewVideo.playbackId}
+          open
+          source={VideoBlockSource.mux}
+          onClose={handlePreviewClose}
+          onSelect={handlePreviewSelect}
+        />
       )}
     </Stack>
   )

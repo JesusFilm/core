@@ -68,25 +68,27 @@ builder.prismaObject('CloudflareImage', {
 })
 
 builder.queryFields((t) => ({
-  getMyCloudflareImages: t
-    .withAuth({ isAuthenticated: true })
-    .prismaConnection({
-      type: 'CloudflareImage',
-      cursor: 'id',
-      args: {
-        isAi: t.arg.boolean({ required: false })
-      },
-      resolve: async (query, _root, { isAi }, { user }) => {
-        return await prisma.cloudflareImage.findMany({
-          ...query,
-          where: {
-            userId: user.id,
-            ...(isAi != null ? { isAi } : {})
-          },
-          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
-        })
-      }
-    }),
+  getMyCloudflareImages: t.withAuth({ isAuthenticated: true }).prismaField({
+    type: ['CloudflareImage'],
+    nullable: false,
+    args: {
+      offset: t.arg.int({ required: false }),
+      limit: t.arg.int({ required: false }),
+      isAi: t.arg.boolean({ required: false })
+    },
+    resolve: async (query, _root, { offset, limit, isAi }, { user }) => {
+      return await prisma.cloudflareImage.findMany({
+        ...query,
+        where: {
+          userId: user.id,
+          ...(isAi != null ? { isAi } : {})
+        },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        take: limit ?? undefined,
+        skip: offset ?? undefined
+      })
+    }
+  }),
   getMyCloudflareImage: t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'CloudflareImage',
     nullable: false,

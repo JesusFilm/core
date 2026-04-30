@@ -29,6 +29,8 @@ export interface VideoDetailsProps {
   onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
   source: VideoBlockSource
   activeVideoBlock?: TreeBlock<VideoBlock>
+  /** Mux playbackId for the previewed video. Avoids a redundant fetch when the caller already has it. */
+  playbackId?: string | null
 }
 
 export const BLOCK_DELETE_FOR_COVER_IMAGE = gql`
@@ -54,7 +56,8 @@ export function VideoDetails({
   onClose,
   onSelect,
   source,
-  activeVideoBlock
+  activeVideoBlock,
+  playbackId
 }: VideoDetailsProps): ReactElement {
   const [blockDeleteForCoverImage] = useMutation<BlockDeleteForCoverImage>(
     BLOCK_DELETE_FOR_COVER_IMAGE
@@ -65,7 +68,7 @@ export function VideoDetails({
   let Details: (
     props: Pick<
       VideoDetailsProps,
-      'id' | 'open' | 'onSelect' | 'activeVideoBlock'
+      'id' | 'open' | 'onSelect' | 'activeVideoBlock' | 'playbackId'
     >
   ) => ReactElement
 
@@ -168,6 +171,7 @@ export function VideoDetails({
               open={open}
               onSelect={handleSelect}
               activeVideoBlock={activeVideoBlock}
+              playbackId={playbackId}
             />
           )}
         </Box>

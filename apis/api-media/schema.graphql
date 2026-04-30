@@ -713,7 +713,7 @@ input PlaylistUpdateInput {
 }
 
 type Query {
-  getMyCloudflareImages(isAi: Boolean, before: String, after: String, first: Int, last: Int): QueryGetMyCloudflareImagesConnection
+  getMyCloudflareImages(offset: Int, limit: Int, isAi: Boolean): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
@@ -782,16 +782,6 @@ type Query {
   youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
-}
-
-type QueryGetMyCloudflareImagesConnection {
-  pageInfo: PageInfo!
-  edges: [QueryGetMyCloudflareImagesConnectionEdge]
-}
-
-type QueryGetMyCloudflareImagesConnectionEdge {
-  node: CloudflareImage
-  cursor: String!
 }
 
 union QueryGetMyGeneratedMuxSubtitleTrackResult = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess
