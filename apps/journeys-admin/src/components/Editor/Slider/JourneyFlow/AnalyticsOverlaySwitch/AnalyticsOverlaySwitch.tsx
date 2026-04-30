@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { parseISO, startOfToday } from 'date-fns'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { enqueueSnackbar } from 'notistack'
 import { ReactElement, useMemo, useState } from 'react'
 

@@ -12,7 +12,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "tsBuildInfoFile": "../../.cache/resources/tsc/.tsbuildinfo"
+    "tsBuildInfoFile": "../../.cache/resources/tsc/.tsbuildinfo",
+    "module": "esnext",
+    "moduleResolution": "bundler"
   },
   "include": [
     "**/*.ts",

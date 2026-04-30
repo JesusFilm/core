@@ -4,7 +4,7 @@ import VolumeOff from '@mui/icons-material/VolumeOff'
 import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
 import clsx from 'clsx'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { usePlayer } from '../../../libs/playerContext'

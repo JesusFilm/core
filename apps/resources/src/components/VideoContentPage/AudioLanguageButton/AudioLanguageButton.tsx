@@ -6,7 +6,7 @@ import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'

@@ -3,7 +3,7 @@ import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import pick from 'lodash/pick'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 

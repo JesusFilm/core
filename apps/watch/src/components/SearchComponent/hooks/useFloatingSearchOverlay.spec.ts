@@ -14,7 +14,7 @@ jest.mock('react-instantsearch', () => ({
   useSearchBox: (...args: unknown[]) => mockUseSearchBox(...args)
 }))
 
-jest.mock('next-i18next', () => ({
+jest.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) => {
       if (key === 'popularSearches' && options?.returnObjects === true) {
