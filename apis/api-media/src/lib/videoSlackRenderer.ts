@@ -5,10 +5,10 @@ import {
   type SlackBotChannelConfig,
   getMediaDataLangSlackConfig
 } from './slack/config'
-import { type ReportRow, formatDateIso } from './videoSlackReport'
+import { type ReportRow } from './videoSlackReport'
 /**
  * Slack `section` mrkdwn text must stay under 3000 chars, so large reports
- * intentionally split into month-part messages with repeated headers.
+ * are split across multiple messages with repeated headers.
  */
 const tableFenceSoftLimit = 2900
 const maxBlocksPerMessage = 40
@@ -53,31 +53,6 @@ function formatLongDateUtc(value: Date): string {
   return `${month} ${day}${ordinalSuffix(day)}, ${year}`
 }
 
-function formatMonthYearUtc(value: Date): string {
-  const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-  ]
-  return `${months[value.getUTCMonth()]} ${value.getUTCFullYear()} (UTC)`
-}
-
-function getMonthKey(value: Date): string {
-  return `${value.getUTCFullYear()}-${String(value.getUTCMonth() + 1).padStart(
-    2,
-    '0'
-  )}`
-}
-
 function sanitizeCell(value: string): string {
   return value.replace(/[\n\r|]/g, ' ').trim()
 }
@@ -98,10 +73,17 @@ const col = {
   mediaId: 24,
   languageId: 12,
   language: 24,
-  changeType: 12,
+  changeType: 18,
   date: 20,
-  total: 6
+  total: 12
 } as const
+
+function formatTotal(row: ReportRow): string {
+  if (row.total < row.packageSize) {
+    return `${row.total} / ${row.packageSize} ⚠`
+  }
+  return String(row.total)
+}
 
 function buildTableHeaderLine(): string {
   return [
@@ -110,7 +92,7 @@ function buildTableHeaderLine(): string {
     padCell('Language ID', col.languageId),
     padCell('Language Name', col.language),
     padCell('Change Type', col.changeType),
-    padCell('Month', col.date),
+    padCell('Date', col.date),
     padCell('Total', col.total)
   ].join(' | ')
 }
@@ -135,7 +117,7 @@ function buildTableDataLine(row: ReportRow): string {
     padCell(row.languageName, col.language),
     padCell(row.changeType, col.changeType),
     padCell(formatLongDateUtc(row.changeDate), col.date),
-    padCell(String(row.total), col.total)
+    padCell(formatTotal(row), col.total)
   ].join(' | ')
 }
 
@@ -180,32 +162,6 @@ function fenceTableLines(lines: string[]): string {
   return ['```', ...lines, '```'].join('\n')
 }
 
-interface MonthGroup {
-  key: string
-  label: string
-  rows: ReportRow[]
-}
-
-function groupRowsByMonth(rows: ReportRow[]): MonthGroup[] {
-  const groups = new Map<string, MonthGroup>()
-
-  for (const row of rows) {
-    const key = getMonthKey(row.changeDate)
-    const existing = groups.get(key)
-    if (existing != null) {
-      existing.rows.push(row)
-      continue
-    }
-    groups.set(key, {
-      key,
-      label: formatMonthYearUtc(row.changeDate),
-      rows: [row]
-    })
-  }
-
-  return Array.from(groups.values()).sort((a, b) => a.key.localeCompare(b.key))
-}
-
 function chunkTableChunksForMessage(tableChunks: string[][]): string[][][] {
   const chunks: string[][][] = []
   for (
@@ -228,7 +184,9 @@ async function postSlackMessage(args: {
 
   const body: Record<string, unknown> = {
     text,
-    blocks
+    blocks,
+    unfurl_links: false,
+    unfurl_media: false
   }
 
   return slackChatPostMessage({
@@ -255,16 +213,16 @@ export async function postEmptyWeeklyVideoSlackMessage(args: {
     return
   }
 
-  const windowText = `${formatDateIso(startDate)} → ${formatDateIso(endDate)}`
+  const windowText = `${formatLongDateUtc(startDate)} → ${formatLongDateUtc(endDate)}`
   await postSlackMessage({
     config,
-    text: `Weekly production report · no videos activated · ${windowText}`,
+    text: `Weekly Video Report · no new videos · ${windowText}`,
     blocks: [
       {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `*No videos were activated this week*\n\`${windowText}\``
+          text: `*No new videos this week*\n${windowText}`
         }
       }
     ],
@@ -284,127 +242,79 @@ export async function postWeeklyVideoSlackMessages(args: {
     return
   }
 
-  const windowText = `${formatDateIso(startDate)} → ${formatDateIso(endDate)}`
-  const newUploads = rows.filter(
-    (row) => row.changeType === 'New Upload'
-  ).length
-  const updates = rows.filter((row) => row.changeType === 'Update').length
+  const windowText = `${formatLongDateUtc(startDate)} → ${formatLongDateUtc(endDate)}`
 
-  const monthGroups = groupRowsByMonth(rows)
-  const chunkedMonthGroups = monthGroups.map((group) => ({
-    ...group,
-    tableChunks: chunkDataRowsForFence(
-      group.rows.map(buildTableDataLine),
-      tableFenceSoftLimit
-    )
-  }))
-  const monthMessageGroups = chunkedMonthGroups.map((group) => ({
-    ...group,
-    tableChunkGroups: chunkTableChunksForMessage(group.tableChunks)
-  }))
-  const totalMessageCount = monthMessageGroups.reduce(
-    (count, group) => count + Math.max(group.tableChunkGroups.length, 1),
-    0
+  const tableChunks = chunkDataRowsForFence(
+    rows.map(buildTableDataLine),
+    tableFenceSoftLimit
   )
+  const tableChunkGroups = chunkTableChunksForMessage(tableChunks)
+  const messageGroups =
+    tableChunkGroups.length > 0 ? tableChunkGroups : [[[] as string[]]]
 
-  for (
-    let groupIndex = 0;
-    groupIndex < monthMessageGroups.length;
-    groupIndex++
-  ) {
-    const group = monthMessageGroups[groupIndex]
-    const tableChunkGroups =
-      group.tableChunkGroups.length > 0
-        ? group.tableChunkGroups
-        : [[[] as string[]]]
+  for (let partIndex = 0; partIndex < messageGroups.length; partIndex++) {
+    if (partIndex > 0) {
+      await sleep(postDelayMs)
+    }
 
-    for (let partIndex = 0; partIndex < tableChunkGroups.length; partIndex++) {
-      if (groupIndex > 0 || partIndex > 0) {
-        await sleep(postDelayMs)
-      }
+    const messageChunks = messageGroups[partIndex]
+    const partText = messageGroups.length > 1 ? ` part ${partIndex + 1}` : ''
+    const title = `Weekly Video Report${partText}`
 
-      const tableChunks = tableChunkGroups[partIndex]
-      const partText =
-        tableChunkGroups.length > 1 ? ` part ${partIndex + 1}` : ''
-      const title = `Production · ${group.label}${partText}`
-      const blocks: unknown[] = [
-        {
-          type: 'header',
-          text: {
-            type: 'plain_text',
-            text: truncateEnd(title, 150)
-          }
-        },
-        {
-          type: 'section',
-          fields: [
-            {
-              type: 'mrkdwn',
-              text: `*Reporting window (UTC)*\n\`${windowText}\``
-            },
-            {
-              type: 'mrkdwn',
-              text: `*Row counts*\nNew Upload rows: *${newUploads}*\nUpdate rows: *${updates}*\nTotal lines: *${rows.length}*`
-            },
-            {
-              type: 'mrkdwn',
-              text: `*Month rows*\n${group.label}: *${group.rows.length}* row(s)${
-                tableChunkGroups.length > 1
-                  ? ` · part *${partIndex + 1}/${tableChunkGroups.length}*`
-                  : ''
-              }`
-            },
-            {
-              type: 'mrkdwn',
-              text:
-                totalMessageCount > 1
-                  ? `*Delivery*\n${totalMessageCount} month-grouped messages.`
-                  : `*Delivery*\nSingle message.`
-            }
-          ]
-        },
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `*Scope*\nOne row per newly-created \`VideoVariant\` (\`createdAt\` in window). Videos with label \`collection\` are excluded. *New Upload* = parent video was also created in the window. *Update* = new variant added to a video created earlier.`
-          }
-        },
-        { type: 'divider' },
-        ...tableChunks.map((chunk) => ({
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text:
-              chunk.length === 0
-                ? '_No table rows after filters._'
-                : fenceTableLines([
-                    buildTableHeaderLine(),
-                    buildTableSeparatorLine(),
-                    ...chunk
-                  ])
-          }
-        })),
-        {
-          type: 'context',
-          elements: [
-            {
-              type: 'mrkdwn',
-              text: 'api-media · `collection` excluded · language names: English gloss (`529`) · `Total` = translated package size for `series` / `featureFilm`, otherwise `1`'
-            }
-          ]
+    const blocks: unknown[] = [
+      {
+        type: 'header',
+        text: {
+          type: 'plain_text',
+          text: truncateEnd(title, 150)
         }
-      ]
+      },
+      {
+        type: 'section',
+        fields: [
+          {
+            type: 'mrkdwn',
+            text: `*Week*\n${windowText}`
+          },
+          {
+            type: 'mrkdwn',
+            text: `*Total*\n${rows.length} videos updated`
+          }
+        ]
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text:
+            '*About this report*\nEach row is a video that got new content this week. *Total* shows how many videos in a series were updated. ⚠ means the series isn’t fully translated yet.'
+        }
+      },
+      { type: 'divider' },
+      ...messageChunks.map((chunk) => ({
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text:
+            chunk.length === 0
+              ? '_No videos this week._'
+              : fenceTableLines([
+                  buildTableHeaderLine(),
+                  buildTableSeparatorLine(),
+                  ...chunk
+                ])
+        }
+      }))
+    ]
 
-      const ts = await postSlackMessage({
-        config,
-        text: `Weekly production report · ${group.label}${partText} · ${group.rows.length} row(s)`,
-        blocks,
-        childLogger
-      })
-      if (ts == null) {
-        return
-      }
+    const ts = await postSlackMessage({
+      config,
+      text: `Weekly Video Report${partText} · ${rows.length} videos updated`,
+      blocks,
+      childLogger
+    })
+    if (ts == null) {
+      return
     }
   }
 }

@@ -13,9 +13,10 @@ export interface ReportRow {
   mediaComponentId: string
   languageId: string
   languageName: string
-  changeType: 'New Upload' | 'Update'
+  changeType: 'New Video' | 'New AudioLanguage'
   changeDate: Date
   total: number
+  packageSize: number
 }
 
 export interface WeeklyVideoSummaryOptions {
@@ -109,7 +110,7 @@ function productionLabel(video: {
 function sortReportRows<T extends ReportRow>(rows: T[]): T[] {
   return [...rows].sort((a, b) => {
     if (a.changeType !== b.changeType) {
-      return a.changeType === 'New Upload' ? -1 : 1
+      return a.changeType === 'New Video' ? -1 : 1
     }
     return b.changeDate.getTime() - a.changeDate.getTime()
   })
@@ -150,8 +151,7 @@ async function loadLanguageNames(ids: string[]): Promise<Map<string, string>> {
         id: true,
         name: {
           where: {
-            languageId: englishLanguageIdForNames,
-            primary: true
+            languageId: englishLanguageIdForNames
           },
           select: { value: true }
         }
@@ -178,89 +178,108 @@ async function loadLanguageNames(ids: string[]): Promise<Map<string, string>> {
   return map
 }
 
-async function getLanguagePackageTotals(
-  rowSeeds: ReportRowSeed[]
-): Promise<Map<string, number>> {
-  const eligibleRows = rowSeeds.filter((row) =>
-    packageParentLabels.has(row.videoLabel)
-  )
-  if (eligibleRows.length === 0) {
-    return new Map()
+interface PackageRoot {
+  id: string
+  label: string
+  slug: string | null
+  createdAt: Date
+  title: Array<{ value: string }>
+  packageSize: number
+}
+
+async function loadPackageRoots(args: {
+  newVariants: ValidNewVariant[]
+}): Promise<{
+  packageRootById: Map<string, PackageRoot>
+  childToPackageRoot: Map<string, PackageRoot>
+}> {
+  const { newVariants } = args
+  const packageRootById = new Map<string, PackageRoot>()
+  const childToPackageRoot = new Map<string, PackageRoot>()
+
+  const childCandidateIds = new Set<string>()
+  const directParentIds = new Set<string>()
+  for (const variant of newVariants) {
+    if (packageChildLabels.has(variant.video.label)) {
+      childCandidateIds.add(variant.video.id)
+    }
+    if (packageParentLabels.has(variant.video.label)) {
+      directParentIds.add(variant.video.id)
+    }
   }
 
-  const parentIds = [
-    ...new Set(eligibleRows.map((row) => row.mediaComponentId))
-  ]
-  const languageIds = [...new Set(eligibleRows.map((row) => row.languageId))]
+  if (childCandidateIds.size === 0 && directParentIds.size === 0) {
+    return { packageRootById, childToPackageRoot }
+  }
 
-  const parentVideos = await prisma.video.findMany({
-    where: {
-      id: { in: parentIds }
+  const packageRootSelect = {
+    id: true,
+    label: true,
+    slug: true,
+    createdAt: true,
+    title: {
+      where: { primary: true },
+      take: 1,
+      select: { value: true }
     },
-    select: {
-      id: true,
-      children: {
-        select: {
-          id: true,
-          label: true
-        }
+    children: {
+      select: {
+        id: true,
+        label: true
       }
     }
-  })
+  } as const
 
-  const packageVideoIds = new Set<string>()
-  const packageMembersByParentId = new Map<string, string[]>()
-
-  for (const parent of parentVideos) {
-    const memberIds = [
-      parent.id,
-      ...parent.children
-        .filter((child) => packageChildLabels.has(child.label))
-        .map((child) => child.id)
-    ]
-    packageMembersByParentId.set(parent.id, memberIds)
-    for (const id of memberIds) {
-      packageVideoIds.add(id)
-    }
+  const orFilters: Array<Record<string, unknown>> = []
+  if (childCandidateIds.size > 0) {
+    orFilters.push({
+      label: { in: [...packageParentLabels] },
+      children: { some: { id: { in: [...childCandidateIds] } } }
+    })
+  }
+  if (directParentIds.size > 0) {
+    orFilters.push({ id: { in: [...directParentIds] } })
   }
 
-  const packageVariants = await prisma.videoVariant.findMany({
-    where: {
-      languageId: { in: languageIds },
-      videoId: { in: [...packageVideoIds] }
-    },
-    select: {
-      languageId: true,
-      videoId: true
-    }
+  const parents = await prisma.video.findMany({
+    where: { OR: orFilters },
+    select: packageRootSelect
   })
 
-  const variantVideoIdsByLanguage = new Map<string, Set<string>>()
-  for (const variant of packageVariants) {
-    const videoIds =
-      variantVideoIdsByLanguage.get(variant.languageId) ?? new Set<string>()
-    videoIds.add(variant.videoId)
-    variantVideoIdsByLanguage.set(variant.languageId, videoIds)
-  }
-
-  const totals = new Map<string, number>()
-  for (const row of eligibleRows) {
-    const packageMembers = packageMembersByParentId.get(
-      row.mediaComponentId
-    ) ?? [row.mediaComponentId]
-    const languageVideoIds = variantVideoIdsByLanguage.get(row.languageId)
-    const countForLanguage =
-      languageVideoIds == null
-        ? 1
-        : packageMembers.filter((id) => languageVideoIds.has(id)).length
-
-    totals.set(
-      `${row.mediaComponentId}:${row.languageId}`,
-      Math.max(1, countForLanguage)
+  for (const parent of parents) {
+    const qualifyingChildren = parent.children.filter((child) =>
+      packageChildLabels.has(child.label)
     )
+    const root: PackageRoot = {
+      id: parent.id,
+      label: parent.label,
+      slug: parent.slug,
+      createdAt: parent.createdAt,
+      title: parent.title,
+      packageSize: 1 + qualifyingChildren.length
+    }
+    packageRootById.set(parent.id, root)
+    for (const child of qualifyingChildren) {
+      childToPackageRoot.set(child.id, root)
+    }
   }
 
-  return totals
+  return { packageRootById, childToPackageRoot }
+}
+
+interface ValidNewVariant {
+  videoId: string
+  languageId: string
+  createdAt: Date
+  video: NonNullable<NewVariantRow['video']>
+}
+
+interface VariantGroup {
+  packageRoot: PackageRoot | null
+  fallbackVideo: ValidNewVariant['video']
+  languageId: string
+  variants: ValidNewVariant[]
+  latestChangeDate: Date
 }
 
 async function buildReportRows(args: {
@@ -271,43 +290,83 @@ async function buildReportRows(args: {
 }): Promise<ReportRow[]> {
   const { newVariants, windowStart, windowEnd, languageNames } = args
 
-  const rowSeeds: ReportRowSeed[] = newVariants
-    .filter(
-      (
-        variant
-      ): variant is NewVariantRow & {
-        video: NonNullable<NewVariantRow['video']>
-      } => variant.video != null
-    )
-    .map((variant) => {
-      const videoCreatedAt = variant.video.createdAt.getTime()
-      const isNewUpload =
-        videoCreatedAt >= windowStart.getTime() &&
-        videoCreatedAt <= windowEnd.getTime()
-      return {
-        production: productionLabel(variant.video),
-        mediaComponentId: variant.video.id,
-        languageName:
-          languageNames.get(variant.languageId) ?? variant.languageId,
-        changeType: isNewUpload ? ('New Upload' as const) : ('Update' as const),
-        changeDate: variant.createdAt,
-        total: 1,
-        videoLabel: variant.video.label,
-        languageId: variant.languageId
+  const validVariants: ValidNewVariant[] = newVariants.filter(
+    (variant): variant is ValidNewVariant => variant.video != null
+  )
+
+  const { packageRootById, childToPackageRoot } = await loadPackageRoots({
+    newVariants: validVariants
+  })
+
+  const groupsByKey = new Map<string, VariantGroup>()
+  for (const variant of validVariants) {
+    const label = variant.video.label
+    let packageRoot: PackageRoot | null = null
+    if (packageParentLabels.has(label)) {
+      packageRoot = packageRootById.get(variant.video.id) ?? null
+    } else if (packageChildLabels.has(label)) {
+      packageRoot = childToPackageRoot.get(variant.video.id) ?? null
+    }
+
+    const rootId = packageRoot?.id ?? variant.video.id
+    const key = `${rootId}:${variant.languageId}`
+    const existing = groupsByKey.get(key)
+    if (existing != null) {
+      existing.variants.push(variant)
+      if (variant.createdAt > existing.latestChangeDate) {
+        existing.latestChangeDate = variant.createdAt
       }
+      continue
+    }
+    groupsByKey.set(key, {
+      packageRoot,
+      fallbackVideo: variant.video,
+      languageId: variant.languageId,
+      variants: [variant],
+      latestChangeDate: variant.createdAt
     })
+  }
 
-  const sortedSeeds = sortReportRows(rowSeeds)
-  const packageTotals = await getLanguagePackageTotals(sortedSeeds)
+  const rowSeeds: ReportRowSeed[] = Array.from(groupsByKey.values()).map(
+    (group) => {
+      const root = group.packageRoot
+      const labelSource = root ?? group.fallbackVideo
+      const rowVideo = root ?? group.fallbackVideo
+      const packageSize = root?.packageSize ?? 1
+      const total = Math.min(group.variants.length, packageSize)
+      const rootCreatedAt = labelSource.createdAt.getTime()
+      const isNewVideo =
+        rootCreatedAt >= windowStart.getTime() &&
+        rootCreatedAt <= windowEnd.getTime()
+      return {
+        production: productionLabel(rowVideo),
+        mediaComponentId: rowVideo.id,
+        languageId: group.languageId,
+        languageName: languageNames.get(group.languageId) ?? group.languageId,
+        changeType: isNewVideo
+          ? ('New Video' as const)
+          : ('New AudioLanguage' as const),
+        changeDate: group.latestChangeDate,
+        total,
+        packageSize,
+        videoLabel: labelSource.label
+      }
+    }
+  )
 
-  return sortedSeeds.map((row) => ({
+  const filteredSeeds = rowSeeds.filter(
+    (row) => !row.mediaComponentId.startsWith('0')
+  )
+
+  return sortReportRows(filteredSeeds).map((row) => ({
     production: row.production,
     mediaComponentId: row.mediaComponentId,
     languageId: row.languageId,
     languageName: row.languageName,
     changeType: row.changeType,
     changeDate: row.changeDate,
-    total: packageTotals.get(`${row.mediaComponentId}:${row.languageId}`) ?? 1
+    total: row.total,
+    packageSize: row.packageSize
   }))
 }
 

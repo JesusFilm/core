@@ -134,9 +134,10 @@ describe('videoSlack', () => {
       mediaComponentId: 'media-id',
       languageId: '529',
       languageName: 'English',
-      changeType: 'New Upload',
+      changeType: 'New Video',
       changeDate: new Date('2026-01-01T00:00:00.000Z'),
       total: 1,
+      packageSize: 1,
       ...overrides
     }
   }
@@ -215,19 +216,19 @@ describe('videoSlack', () => {
     expect(body).toMatchObject({
       channel: 'test-channel'
     })
-    expect(body.text).toContain('Weekly production report')
-    expect(body.text).toContain('2 row')
+    expect(body.text).toContain('Weekly Video Report')
+    expect(body.text).toContain('2 videos updated')
 
     const blocksText = JSON.stringify(body.blocks)
     expect(blocksText).toContain('Media Component ID')
     expect(blocksText).toContain('created-video')
     expect(blocksText).toContain('updated-video')
-    expect(blocksText).toContain('New Upload')
-    expect(blocksText).toContain('Update')
+    expect(blocksText).toContain('New Video')
+    expect(blocksText).toContain('New AudioLanguage')
     expect(blocksText).toContain('English')
   })
 
-  it('should post separate root messages grouped by month', async () => {
+  it('should post a single message regardless of date range spanning months', async () => {
     await postWeeklyVideoSlackMessages({
       rows: [
         reportRow({
@@ -244,25 +245,23 @@ describe('videoSlack', () => {
       childLogger: logger as any
     })
 
-    expect(mockFetch).toHaveBeenCalledTimes(2)
+    expect(mockFetch).toHaveBeenCalledTimes(1)
 
-    const januaryBody = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
-    const februaryBody = JSON.parse(mockFetch.mock.calls[1][1]?.body as string)
-
-    expect(januaryBody.thread_ts).toBeUndefined()
-    expect(februaryBody.thread_ts).toBeUndefined()
-    expect(januaryBody.text).toContain('January 2026 (UTC)')
-    expect(februaryBody.text).toContain('February 2026 (UTC)')
-    expect(JSON.stringify(januaryBody.blocks)).toContain('january-video')
-    expect(JSON.stringify(februaryBody.blocks)).toContain('february-video')
+    const body = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
+    expect(body.thread_ts).toBeUndefined()
+    expect(body.text).toContain('Weekly Video Report')
+    expect(body.text).toContain('2 videos updated')
+    const blocksText = JSON.stringify(body.blocks)
+    expect(blocksText).toContain('january-video')
+    expect(blocksText).toContain('february-video')
   })
 
-  it('should split a large month into part messages without thread replies', async () => {
+  it('should split a very large report into part messages without thread replies', async () => {
     await postWeeklyVideoSlackMessages({
       rows: Array.from({ length: 800 }, (_, index) =>
         reportRow({
-          production: `November Production ${index} with a deliberately long title`,
-          mediaComponentId: `november-video-${index}`,
+          production: `Production ${index} with a deliberately long title`,
+          mediaComponentId: `video-${index}`,
           changeDate: new Date('2026-11-15T00:00:00.000Z')
         })
       ),
@@ -277,8 +276,8 @@ describe('videoSlack', () => {
       JSON.parse(options?.body as string)
     )
 
-    expect(bodies[0].text).toContain('November 2026 (UTC) part 1')
-    expect(bodies[1].text).toContain('November 2026 (UTC) part 2')
+    expect(bodies[0].text).toContain('Weekly Video Report part 1')
+    expect(bodies[1].text).toContain('Weekly Video Report part 2')
     expect(
       bodies[0].blocks.filter(
         (block: { type: string }) => block.type === 'section'
@@ -287,30 +286,54 @@ describe('videoSlack', () => {
     expect(bodies.every((body) => body.thread_ts == null)).toBe(true)
   })
 
-  it('should use language package totals for feature films with translated clips', async () => {
-    mockMediaPrisma.videoVariant.findMany
-      .mockResolvedValueOnce([
-        videoVariantRow({
-          videoId: 'jf-parent',
-          languageId: '529',
-          createdAt: new Date('2026-04-09T00:00:00.000Z'),
-          video: videoRow({
-            id: 'jf-parent',
-            label: 'featureFilm',
-            slug: 'jesus-film',
-            createdAt: new Date('2026-04-08T00:00:00.000Z'),
-            title: [{ value: 'JESUS' }]
-          })
-        })
-      ])
-      .mockResolvedValueOnce([
-        videoVariantRow({ languageId: '529', videoId: 'jf-parent' }),
-        videoVariantRow({ languageId: '529', videoId: 'jf-segment-1' }),
-        videoVariantRow({ languageId: '529', videoId: 'jf-segment-3' })
-      ])
+  it('should group feature film + segments into a single row and flag incomplete packages', async () => {
+    const jfParentVideo = videoRow({
+      id: 'jf-parent',
+      label: 'featureFilm',
+      slug: 'jesus-film',
+      createdAt: new Date('2025-01-01T00:00:00.000Z'),
+      title: [{ value: 'JESUS' }]
+    })
+    const jfSegment1Video = videoRow({
+      id: 'jf-segment-1',
+      label: 'segment',
+      createdAt: new Date('2025-01-01T00:00:00.000Z'),
+      title: [{ value: 'JESUS Segment 1' }]
+    })
+    const jfSegment3Video = videoRow({
+      id: 'jf-segment-3',
+      label: 'segment',
+      createdAt: new Date('2025-01-01T00:00:00.000Z'),
+      title: [{ value: 'JESUS Segment 3' }]
+    })
+
+    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([
+      videoVariantRow({
+        videoId: 'jf-parent',
+        languageId: '529',
+        createdAt: new Date('2026-04-09T00:00:00.000Z'),
+        video: jfParentVideo
+      }),
+      videoVariantRow({
+        videoId: 'jf-segment-1',
+        languageId: '529',
+        createdAt: new Date('2026-04-09T00:00:00.000Z'),
+        video: jfSegment1Video
+      }),
+      videoVariantRow({
+        videoId: 'jf-segment-3',
+        languageId: '529',
+        createdAt: new Date('2026-04-09T00:00:00.000Z'),
+        video: jfSegment3Video
+      })
+    ])
     mockMediaPrisma.video.findMany.mockResolvedValueOnce([
       videoRow({
         id: 'jf-parent',
+        label: 'featureFilm',
+        slug: 'jesus-film',
+        createdAt: new Date('2025-01-01T00:00:00.000Z'),
+        title: [{ value: 'JESUS' }],
         children: [
           { id: 'jf-segment-1', label: 'segment' },
           { id: 'jf-segment-2', label: 'segment' },
@@ -327,12 +350,16 @@ describe('videoSlack', () => {
       .map((block) => block.text?.text)
       .filter((text): text is string => text != null)
       .join('\n')
-    const jesusLine = sectionTexts
+    const jesusLines = sectionTexts
       .split('\n')
-      .find((line) => line.includes('jf-parent'))
+      .filter((line) => line.includes('jf-parent'))
+    const segmentLines = sectionTexts
+      .split('\n')
+      .filter((line) => line.includes('jf-segment'))
 
-    expect(jesusLine).toBeDefined()
-    expect(jesusLine).toContain(' | 3')
+    expect(jesusLines).toHaveLength(1)
+    expect(segmentLines).toHaveLength(0)
+    expect(jesusLines[0]).toContain('3 / 4 ⚠')
   })
 
   it('should warn and skip when Slack env vars are missing', async () => {
@@ -369,10 +396,10 @@ describe('videoSlack', () => {
     const [, options] = mockFetch.mock.calls[0]
     const body = JSON.parse(options?.body as string)
     expect(body.channel).toBe('test-channel')
-    expect(body.text).toContain('no videos activated')
-    expect(JSON.stringify(body.blocks)).toContain(
-      'No videos were activated this week'
-    )
+    expect(body.text).toContain('no new videos')
+    expect(JSON.stringify(body.blocks)).toContain('No new videos this week')
+    expect(JSON.stringify(body.blocks)).toContain('March 31st, 2026')
+    expect(JSON.stringify(body.blocks)).toContain('April 7th, 2026')
     expect(mockLoggerInfo).toHaveBeenCalledWith(
       expect.objectContaining({
         newVariants: 0
