@@ -130,11 +130,12 @@ describe('videoSlack', () => {
 
   function reportRow(overrides: Partial<ReportRow>): ReportRow {
     return {
+      version: 1,
       production: 'Production',
       mediaComponentId: 'media-id',
       languageId: '529',
       languageName: 'English',
-      changeType: 'New Video',
+      changeType: 'New',
       changeDate: new Date('2026-01-01T00:00:00.000Z'),
       total: 1,
       packageSize: 1,
@@ -223,8 +224,8 @@ describe('videoSlack', () => {
     expect(blocksText).toContain('Media Component ID')
     expect(blocksText).toContain('created-video')
     expect(blocksText).toContain('updated-video')
-    expect(blocksText).toContain('New Video')
-    expect(blocksText).toContain('New AudioLanguage')
+    expect(blocksText).toContain('New')
+    expect(blocksText).toContain('Update')
     expect(blocksText).toContain('English')
   })
 
@@ -360,6 +361,21 @@ describe('videoSlack', () => {
     expect(jesusLines).toHaveLength(1)
     expect(segmentLines).toHaveLength(0)
     expect(jesusLines[0]).toContain('3 / 4 ⚠')
+  })
+
+  it('should only query published variants of published videos', async () => {
+    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([])
+
+    await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
+
+    const variantQueries = mockMediaPrisma.videoVariant.findMany.mock.calls
+    expect(variantQueries.length).toBeGreaterThan(0)
+    expect(variantQueries[0][0]).toMatchObject({
+      where: {
+        published: true,
+        video: expect.objectContaining({ published: true })
+      }
+    })
   })
 
   it('should warn and skip when Slack env vars are missing', async () => {

@@ -9,11 +9,12 @@ const packageParentLabels = new Set(['series', 'featureFilm'])
 const packageChildLabels = new Set(['episode', 'segment'])
 
 export interface ReportRow {
+  version: number
   production: string
   mediaComponentId: string
   languageId: string
   languageName: string
-  changeType: 'New Video' | 'New AudioLanguage'
+  changeType: 'New' | 'Update'
   changeDate: Date
   total: number
   packageSize: number
@@ -37,6 +38,7 @@ interface NewVariantRow {
   videoId: string
   languageId: string
   createdAt: Date
+  version: number
   video: {
     id: string
     label: string
@@ -77,6 +79,7 @@ const newVariantSelect = {
   videoId: true,
   languageId: true,
   createdAt: true,
+  version: true,
   video: {
     select: {
       id: true,
@@ -109,8 +112,9 @@ function productionLabel(video: {
 
 function sortReportRows<T extends ReportRow>(rows: T[]): T[] {
   return [...rows].sort((a, b) => {
-    if (a.changeType !== b.changeType) {
-      return a.changeType === 'New Video' ? -1 : 1
+    const idCompare = a.mediaComponentId.localeCompare(b.mediaComponentId)
+    if (idCompare !== 0) {
+      return idCompare
     }
     return b.changeDate.getTime() - a.changeDate.getTime()
   })
@@ -122,12 +126,14 @@ async function getNewVariantsForReport(
 ): Promise<NewVariantRow[]> {
   return await prisma.videoVariant.findMany({
     where: {
+      published: true,
       createdAt: {
         gte: startDate,
         lte: endDate
       },
       video: {
-        label: { not: 'collection' }
+        label: { not: 'collection' },
+        published: true
       }
     },
     orderBy: {
@@ -234,6 +240,7 @@ async function loadPackageRoots(args: {
   if (childCandidateIds.size > 0) {
     orFilters.push({
       label: { in: [...packageParentLabels] },
+      published: true,
       children: { some: { id: { in: [...childCandidateIds] } } }
     })
   }
@@ -271,6 +278,7 @@ interface ValidNewVariant {
   videoId: string
   languageId: string
   createdAt: Date
+  version: number
   video: NonNullable<NewVariantRow['video']>
 }
 
@@ -338,14 +346,20 @@ async function buildReportRows(args: {
       const isNewVideo =
         rootCreatedAt >= windowStart.getTime() &&
         rootCreatedAt <= windowEnd.getTime()
+      const versionVariant =
+        root != null
+          ? (group.variants.find((variant) => variant.videoId === root.id) ??
+            group.variants[0])
+          : group.variants[0]
       return {
+        version: versionVariant.version,
         production: productionLabel(rowVideo),
         mediaComponentId: rowVideo.id,
         languageId: group.languageId,
         languageName: languageNames.get(group.languageId) ?? group.languageId,
         changeType: isNewVideo
-          ? ('New Video' as const)
-          : ('New AudioLanguage' as const),
+          ? ('New' as const)
+          : ('Update' as const),
         changeDate: group.latestChangeDate,
         total,
         packageSize,
@@ -359,6 +373,7 @@ async function buildReportRows(args: {
   )
 
   return sortReportRows(filteredSeeds).map((row) => ({
+    version: row.version,
     production: row.production,
     mediaComponentId: row.mediaComponentId,
     languageId: row.languageId,
