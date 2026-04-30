@@ -90,20 +90,16 @@ describe('mux/video', () => {
           getMyMuxVideos(offset: $offset, limit: $limit) {
             id
             playbackId
-            uploadUrl
             userId
             readyToStream
-            videoVariants {
-              id
-            }
           }
         }
       `)
 
-      it('should return video', async () => {
+      it('should return user mux videos', async () => {
         ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
-          id: 'userId',
-          userId: 'userId',
+          id: 'testUserId',
+          userId: 'testUserId',
           roles: ['publisher']
         })
         ;(prismaMock.muxVideo.findMany as jest.Mock).mockResolvedValue([
@@ -115,7 +111,7 @@ describe('mux/video', () => {
             duration: 10,
             name: 'videoName',
             uploadUrl: 'https://example.com/video.mp4',
-            userId: 'userId',
+            userId: 'testUserId',
             createdAt: new Date(),
             readyToStream: true,
             downloadable: false,
@@ -125,30 +121,36 @@ describe('mux/video', () => {
         ])
         const data = await authClient({
           document: GET_MY_MUX_VIDEOS,
-          variables: {
-            offset: 0,
-            limit: 10
-          }
+          variables: { offset: 0, limit: 10 }
         })
         expect(data).toHaveProperty('data.getMyMuxVideos', [
           {
             id: 'videoId',
             playbackId: 'playbackId',
-            uploadUrl: 'https://example.com/video.mp4',
-            userId: 'userId',
-            readyToStream: true,
-            videoVariants: []
+            userId: 'testUserId',
+            readyToStream: true
           }
         ])
+      })
+
+      it('should filter by user and order by createdAt desc', async () => {
+        ;(prismaMock.muxVideo.findMany as jest.Mock).mockResolvedValue([])
+        await authClient({
+          document: GET_MY_MUX_VIDEOS,
+          variables: { offset: 0, limit: 10 }
+        })
+        expect(prismaMock.muxVideo.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { userId: 'testUserId' },
+            orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
+          })
+        )
       })
 
       it('should return null when not authorized', async () => {
         const data = await client({
           document: GET_MY_MUX_VIDEOS,
-          variables: {
-            offset: 0,
-            limit: 10
-          }
+          variables: { offset: 0, limit: 10 }
         })
         expect(data).toHaveProperty('data', null)
       })

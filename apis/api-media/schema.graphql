@@ -91,6 +91,7 @@ type CloudflareImage {
   thumbnail: String
   videoStill: String
   blurhash: String
+  isAi: Boolean
 }
 
 type CloudflareR2 {
@@ -712,7 +713,7 @@ input PlaylistUpdateInput {
 }
 
 type Query {
-  getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
+  getMyCloudflareImages(offset: Int, limit: Int, isAi: Boolean): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!

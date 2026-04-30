@@ -11,6 +11,8 @@ import {
   SegmindModel
 } from '../../../../../../../../__generated__/globalTypes'
 
+import { MyCloudflareImagesGrid } from '../MyCloudflareImagesGrid'
+
 import { AIPrompt } from './AIPrompt'
 
 export const CREATE_AI_IMAGE = gql`
@@ -36,7 +38,9 @@ export function AIGallery({
 }: AIGalleryProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
+  const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE, {
+    refetchQueries: ['GetMyCloudflareImages']
+  })
 
   const handleSubmit = async ({ prompt }): Promise<void> => {
     setUploading?.(true)
@@ -83,6 +87,13 @@ export function AIGallery({
         handleSubmit={handleSubmit}
         loading={loading}
         selectedBlock={selectedBlock}
+      />
+      <MyCloudflareImagesGrid
+        title={t('Your generations')}
+        selectedSrc={selectedBlock?.src}
+        onSelect={onChange}
+        isAi={true}
+        uploading={loading}
       />
     </Box>
   )

@@ -22,6 +22,20 @@ jest.mock('../../../../../../../libs/validateMuxLanguage', () => ({
   validateMuxLanguage: jest.fn()
 }))
 
+jest.mock('../../../../../../MuxVideoUploadProvider', () => ({
+  __esModule: true,
+  useMuxVideoUpload: () => ({
+    getUploadStatus: () => null,
+    addUploadTask: jest.fn(),
+    cancelUploadForBlock: jest.fn()
+  })
+}))
+
+jest.mock('./MyMuxVideosGrid', () => ({
+  __esModule: true,
+  MyMuxVideosGrid: () => <div data-testid="mock-my-mux-videos-grid" />
+}))
+
 jest.mock('./AddByFile', () => {
   const Button = require('@mui/material/Button').default
 

@@ -1,4 +1,4 @@
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { gql, useApolloClient, useLazyQuery, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import {
@@ -106,6 +106,8 @@ export function MuxVideoUploadProvider({
     [enqueueSnackbar, closeSnackbar]
   )
 
+  const apolloClient = useApolloClient()
+
   const handlePollingCompleteCallback = useCallback(
     async (videoId: string) => {
       await handlePollingComplete(videoId, {
@@ -115,8 +117,9 @@ export function MuxVideoUploadProvider({
         t,
         pollingIntervalsRef
       })
+      void apolloClient.refetchQueries({ include: ['GetMyMuxVideos'] })
     },
-    [showSnackbar, t, pollingTasks, pollingIntervalsRef]
+    [showSnackbar, t, pollingTasks, pollingIntervalsRef, apolloClient]
   )
 
   const handlePollingErrorCallback = useCallback(

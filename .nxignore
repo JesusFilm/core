@@ -1,1 +1,3 @@
 apps/**/src/locales
+.worktrees
+.claude/worktrees

@@ -451,6 +451,7 @@ export type CloudflareImage = {
   blurhash?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
+  isAi?: Maybe<Scalars['Boolean']['output']>;
   mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
   mobileCinematicLow?: Maybe<Scalars['String']['output']>;
   mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
@@ -3804,7 +3805,7 @@ export type Query = {
   getJourneyProfile?: Maybe<JourneyProfile>;
   getMuxVideo?: Maybe<MuxVideo>;
   getMyCloudflareImage: CloudflareImage;
-  getMyCloudflareImages: Array<CloudflareImage>;
+  getMyCloudflareImages?: Maybe<QueryGetMyCloudflareImagesConnection>;
   getMyGeneratedMuxSubtitleTrack: QueryGetMyGeneratedMuxSubtitleTrackResult;
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
@@ -4023,8 +4024,11 @@ export type QueryGetMyCloudflareImageArgs = {
 
 
 export type QueryGetMyCloudflareImagesArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  isAi?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -4389,6 +4393,18 @@ export type QueryVisitorsConnectionArgs = {
 
 export type QueryYoutubeClosedCaptionLanguagesArgs = {
   videoId: Scalars['ID']['input'];
+};
+
+export type QueryGetMyCloudflareImagesConnection = {
+  __typename?: 'QueryGetMyCloudflareImagesConnection';
+  edges?: Maybe<Array<Maybe<QueryGetMyCloudflareImagesConnectionEdge>>>;
+  pageInfo: PageInfo;
+};
+
+export type QueryGetMyCloudflareImagesConnectionEdge = {
+  __typename?: 'QueryGetMyCloudflareImagesConnectionEdge';
+  cursor: Scalars['String']['output'];
+  node?: Maybe<CloudflareImage>;
 };
 
 export type QueryGetMyGeneratedMuxSubtitleTrackResult = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess;

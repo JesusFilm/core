@@ -21,6 +21,7 @@ const Template: StoryObj<typeof MuxDetails> = {
   render: ({ activeVideoBlock, onSelect }) => {
     return (
       <MuxDetails
+        id={activeVideoBlock?.videoId ?? ''}
         activeVideoBlock={activeVideoBlock}
         open
         onSelect={onSelect}

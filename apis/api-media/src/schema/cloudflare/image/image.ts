@@ -62,7 +62,8 @@ builder.prismaObject('CloudflareImage', {
       resolve: ({ id, aspectRatio }) =>
         aspectRatio === 'hd' ? `${baseUrl(id)}/f=jpg,w=1920,h=1080,q=95` : null
     }),
-    blurhash: t.exposeString('blurhash', { nullable: true })
+    blurhash: t.exposeString('blurhash', { nullable: true }),
+    isAi: t.exposeBoolean('isAi', { nullable: true })
   })
 })
 
@@ -72,12 +73,17 @@ builder.queryFields((t) => ({
     nullable: false,
     args: {
       offset: t.arg.int({ required: false }),
-      limit: t.arg.int({ required: false })
+      limit: t.arg.int({ required: false }),
+      isAi: t.arg.boolean({ required: false })
     },
-    resolve: async (query, _root, { offset, limit }, { user }) => {
+    resolve: async (query, _root, { offset, limit, isAi }, { user }) => {
       return await prisma.cloudflareImage.findMany({
         ...query,
-        where: { userId: user.id },
+        where: {
+          userId: user.id,
+          ...(isAi != null ? { isAi } : {})
+        },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         take: limit ?? undefined,
         skip: offset ?? undefined
       })
@@ -117,7 +123,8 @@ builder.mutationFields((t) => ({
             uploadUrl: uploadURL,
             userId: user.id,
             aspectRatio: input?.aspectRatio ?? undefined,
-            videoId: input?.videoId ?? undefined
+            videoId: input?.videoId ?? undefined,
+            isAi: false
           }
         })
       }
@@ -140,7 +147,8 @@ builder.mutationFields((t) => ({
             userId: user?.id ?? 'system-ai',
             uploaded: true,
             aspectRatio: input?.aspectRatio ?? undefined,
-            videoId: input?.videoId ?? undefined
+            videoId: input?.videoId ?? undefined,
+            isAi: false
           }
         })
 
@@ -172,7 +180,8 @@ builder.mutationFields((t) => ({
             userId: user.id,
             uploaded: true,
             aspectRatio: input?.aspectRatio ?? undefined,
-            videoId: input?.videoId ?? undefined
+            videoId: input?.videoId ?? undefined,
+            isAi: true
           }
         })
 
