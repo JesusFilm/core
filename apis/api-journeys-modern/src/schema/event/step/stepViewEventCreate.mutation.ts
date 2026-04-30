@@ -22,8 +22,11 @@ builder.mutationField('stepViewEventCreate', (t) =>
         throw new Error('User not authenticated')
       }
 
-      const { visitor, journeyVisitor, journeyId } =
-        await validateBlockEvent(userId, input.blockId, input.blockId)
+      const { visitor, journeyVisitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.blockId
+      )
 
       const [stepViewEvent] = await Promise.all([
         prisma.event.create({
@@ -42,9 +45,8 @@ builder.mutationField('stepViewEventCreate', (t) =>
             duration: Math.min(
               1200,
               Math.floor(
-                Math.abs(
-                  Date.now() - new Date(visitor.createdAt).getTime()
-                ) / 1000
+                Math.abs(Date.now() - new Date(visitor.createdAt).getTime()) /
+                  1000
               )
             ),
             lastStepViewedAt: new Date()
