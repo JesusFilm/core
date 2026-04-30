@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 

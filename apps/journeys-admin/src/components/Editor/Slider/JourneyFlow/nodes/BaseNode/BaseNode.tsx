@@ -8,7 +8,7 @@ import {
   useOnSelectionChange
 } from '@xyflow/react'
 import isFunction from 'lodash/isFunction'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import {
   ComponentProps,
   ReactElement,

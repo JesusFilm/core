@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 import { array, object, string } from 'yup'
 
 import { TextResponseType } from '../../../../../__generated__/globalTypes'

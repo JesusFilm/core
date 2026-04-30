@@ -1,5 +1,5 @@
 import { useReactFlow } from '@xyflow/react'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'

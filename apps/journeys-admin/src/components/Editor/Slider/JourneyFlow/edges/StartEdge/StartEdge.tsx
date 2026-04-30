@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { EdgeLabelRenderer, EdgeProps, getBezierPath } from '@xyflow/react'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { BaseEdge } from '../BaseEdge'
