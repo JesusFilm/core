@@ -17,6 +17,7 @@ import {
   useRef,
   useState
 } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import { useJourney } from '../../libs/JourneyProvider'
 import { Actions } from '../Actions'
@@ -176,11 +177,34 @@ export function AiChat({
   const languageRef = useRef(languageBcp47)
   languageRef.current = languageBcp47
 
+  const journeyId = journey?.id
+  const journeyIdRef = useRef(journeyId)
+  journeyIdRef.current = journeyId
+
+  const [sessionId] = useState<string | undefined>(() => {
+    if (typeof window === 'undefined') return undefined
+    try {
+      const existing = window.sessionStorage.getItem('aiChat.sessionId')
+      if (existing != null && existing.length > 0) return existing
+      const fresh = uuidv4()
+      window.sessionStorage.setItem('aiChat.sessionId', fresh)
+      return fresh
+    } catch {
+      return uuidv4()
+    }
+  })
+  const sessionIdRef = useRef(sessionId)
+  sessionIdRef.current = sessionId
+
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
         api: '/api/chat',
-        body: () => ({ language: languageRef.current })
+        body: () => ({
+          language: languageRef.current,
+          sessionId: sessionIdRef.current,
+          journeyId: journeyIdRef.current
+        })
       }),
     []
   )
