@@ -1,5 +1,6 @@
 import Autocomplete, {
-  AutocompleteRenderInputParams
+  AutocompleteRenderInputParams,
+  createFilterOptions
 } from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -77,8 +78,37 @@ export function LanguageAutocomplete({
       }
 
       const { id, name, slug, ...rest } = language
-      const localLanguageName = name.find(({ primary }) => !primary)?.value
-      const nativeLanguageName = name.find(({ primary }) => primary)?.value
+      let localLanguageName: string | undefined
+      let nativeLanguageName: string | undefined
+
+      const nonPrimary = name.find(({ primary }) => !primary)
+      const primary = name.find(({ primary: p }) => p)
+
+      if (nonPrimary != null || primary != null) {
+        localLanguageName = nonPrimary?.value
+        nativeLanguageName = primary?.value
+      }
+
+      if (
+        localLanguageName == null &&
+        nativeLanguageName == null &&
+        name.length >= 2
+      ) {
+        localLanguageName = name[1].value
+        nativeLanguageName = name[0].value
+      } else if (localLanguageName == null && nativeLanguageName == null) {
+        nativeLanguageName = name[0]?.value
+      }
+
+      if (
+        localLanguageName == null &&
+        nativeLanguageName != null &&
+        name.length >= 2
+      ) {
+        localLanguageName = name.find(
+          ({ value }) => value !== nativeLanguageName
+        )?.value
+      }
 
       validOptions.push({
         id,
@@ -102,6 +132,15 @@ export function LanguageAutocomplete({
     }
     return options
   }, [options, disableSort])
+
+  const filterOptions = useMemo(
+    () =>
+      createFilterOptions<LanguageOption>({
+        stringify: (option) =>
+          [option.localName, option.nativeName].filter(Boolean).join(' ')
+      }),
+    []
+  )
 
   const defaultRenderInput = (
     params: AutocompleteRenderInputParams
@@ -189,6 +228,7 @@ export function LanguageAutocomplete({
           handleChange(option)
         }}
         options={sortedOptions}
+        filterOptions={filterOptions}
         loading={loading}
         disabled={disabled}
         disablePortal={process.env.NODE_ENV === 'test'}

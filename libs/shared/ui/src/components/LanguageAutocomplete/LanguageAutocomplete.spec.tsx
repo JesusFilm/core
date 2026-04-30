@@ -485,6 +485,68 @@ describe('LanguageAutocomplete', () => {
     expect(getAllByTestId('test-option').length).toBeGreaterThan(0)
   })
 
+  it('should handle languages where all names have primary: true', async () => {
+    const allPrimaryLanguages: Language[] = [
+      {
+        id: '496',
+        slug: 'french',
+        name: [
+          { value: 'Français', primary: true },
+          { value: 'French', primary: true }
+        ]
+      },
+      {
+        id: '1106',
+        slug: 'german-standard',
+        name: [
+          { value: 'Deutsche', primary: true },
+          { value: 'German, Standard', primary: true }
+        ]
+      },
+      {
+        id: '529',
+        slug: 'english',
+        name: [{ value: 'English', primary: true }]
+      }
+    ]
+
+    const handleChange = jest.fn()
+    const { getByRole, queryAllByRole } = render(
+      <LanguageAutocomplete
+        onChange={handleChange}
+        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={allPrimaryLanguages}
+        loading={false}
+      />
+    )
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+
+    const options = queryAllByRole('option')
+    expect(options.length).toBeGreaterThanOrEqual(3)
+    expect(options[0]).toHaveTextContent('English')
+    expect(options[1]).toHaveTextContent('French')
+    expect(options[2]).toHaveTextContent('German, Standard')
+  })
+
+  it('should filter by both local and native name', async () => {
+    const handleChange = jest.fn()
+    const { getByRole, queryAllByRole } = render(
+      <LanguageAutocomplete
+        onChange={handleChange}
+        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={languages}
+        loading={false}
+      />
+    )
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.change(getByRole('combobox'), { target: { value: 'Français' } })
+
+    const options = queryAllByRole('option')
+    expect(options.length).toBeGreaterThanOrEqual(1)
+    expect(options[0]).toHaveTextContent('French')
+  })
+
   it('should have a virtualized list', () => {
     const renderInput = (params: AutocompleteRenderInputParams): ReactNode => (
       <TextField
