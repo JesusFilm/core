@@ -1,6 +1,7 @@
 // This file has been automatically migrated to valid ESM format by Storybook.
 import { createRequire } from 'node:module'
-import { dirname, join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { StorybookConfig } from '@storybook/nextjs-vite'
 
 const require = createRequire(import.meta.url)
@@ -54,6 +55,7 @@ const config: StorybookConfig = {
   ],
 
   viteFinal: async (config) => {
+    const __dirname = dirname(fileURLToPath(import.meta.url))
     config.resolve = config.resolve ?? {}
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -61,7 +63,13 @@ const config: StorybookConfig = {
       '@emotion/core': require.resolve('@emotion/react'),
       '@emotion-theming': require.resolve('@emotion/react'),
       '@emotion/react': require.resolve('@emotion/react'),
-      '@emotion/cache': require.resolve('@emotion/cache')
+      '@emotion/cache': require.resolve('@emotion/cache'),
+      // @mui/material-nextjs/v15-pagesRouter uses Node-only modules (html-tokenize,
+      // buffer-from) that crash in Vite/browser. Replace with a browser-safe stub.
+      '@mui/material-nextjs/v15-pagesRouter': resolve(
+        __dirname,
+        'mocks/mui-material-nextjs.js'
+      )
     }
     return config
   },
