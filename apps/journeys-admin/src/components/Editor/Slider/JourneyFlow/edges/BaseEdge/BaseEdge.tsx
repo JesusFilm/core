@@ -1,5 +1,8 @@
 import { alpha, useTheme } from '@mui/material/styles'
-import { BaseEdge as DefaultBaseEdge, useOnSelectionChange } from '@xyflow/react'
+import {
+  BaseEdge as DefaultBaseEdge,
+  useOnSelectionChange
+} from '@xyflow/react'
 import { CSSProperties, ReactElement, ReactNode, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
