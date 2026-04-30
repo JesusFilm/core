@@ -69,7 +69,13 @@ function makeRes(headersSent = false): CapturedRes {
       end,
       json,
       setHeader,
-      headersSent
+      headersSent,
+      // The handler waits for the response to finish writing before its
+      // final flushAsync. In production that's driven by Node's
+      // ServerResponse stream; in unit tests we stub it as already-ended
+      // so the await resolves synchronously and we can drive callbacks.
+      writableEnded: true,
+      once: jest.fn()
     } as unknown as NextApiResponse,
     status,
     end,
@@ -570,17 +576,17 @@ describe('/api/chat handler', () => {
       expect(mockStreamText).toHaveBeenCalledTimes(1)
       expect(mockPipeStream).toHaveBeenCalledTimes(1)
 
-      await expect(
+      expect(() =>
         lastStreamConfig?.onFinish?.({
           text: 'reply',
           usage: { inputTokens: 1, outputTokens: 2 },
           finishReason: 'stop'
         })
-      ).resolves.not.toThrow()
+      ).not.toThrow()
 
-      await expect(
+      expect(() =>
         lastStreamConfig?.onError?.({ error: new Error('mid-stream') })
-      ).resolves.not.toThrow()
+      ).not.toThrow()
 
       errorSpy.mockRestore()
     })
@@ -643,7 +649,7 @@ describe('/api/chat handler', () => {
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
     })
 
-    it('ends with ERROR and flushes when onError fires (mid-stream failure)', async () => {
+    it('ends with ERROR when onError fires (mid-stream failure)', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
       const errorSpy = jest.spyOn(console, 'error').mockImplementation()
@@ -657,6 +663,9 @@ describe('/api/chat handler', () => {
         level: 'ERROR',
         statusMessage: 'socket hangup'
       })
+      // Flushing is owned by the post-response handler tail, not the
+      // callback — so the count here reflects the handler's single flush,
+      // independent of whether onError fired.
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
       errorSpy.mockRestore()
     })

@@ -167,7 +167,7 @@ export default async function handler(
       model: modelResult.resolved.model,
       system,
       messages: modelMessages,
-      onError: async ({ error }) => {
+      onError: ({ error }) => {
         const err = error as Error
         console.error('[chat] streamText onError', {
           provider,
@@ -180,9 +180,8 @@ export default async function handler(
           level: 'ERROR',
           statusMessage: err?.message ?? 'stream error'
         })
-        await langfuse?.flushAsync()
       },
-      onFinish: async ({ text, usage, finishReason }) => {
+      onFinish: ({ text, usage, finishReason }) => {
         if (finishReason === 'error') {
           endGenerationIfPending({
             level: 'ERROR',
@@ -202,7 +201,6 @@ export default async function handler(
             level: 'DEFAULT'
           })
         }
-        await langfuse?.flushAsync()
       }
     })
 
@@ -219,7 +217,6 @@ export default async function handler(
           level: 'ERROR',
           statusMessage: err?.message ?? 'pipe error'
         })
-        void langfuse?.flushAsync()
         return err?.message ?? 'stream failed'
       }
     })
@@ -235,7 +232,6 @@ export default async function handler(
       level: 'ERROR',
       statusMessage: err?.message ?? 'sync throw'
     })
-    await langfuse?.flushAsync()
     if (!res.headersSent) {
       res
         .status(500)
@@ -244,6 +240,20 @@ export default async function handler(
       res.end()
     }
   }
+
+  // Keep the lambda alive until the response stream has actually finished
+  // writing, then ship the trace in a single awaited flush. This is the
+  // only place data is sent to Langfuse — every callback above only updates
+  // local state via endGenerationIfPending. Awaiting here guarantees the
+  // HTTPS POST completes before Vercel can freeze the function.
+  await new Promise<void>((resolve) => {
+    if (res.writableEnded) {
+      resolve()
+      return
+    }
+    res.once('close', resolve)
+  })
+  await langfuse?.flushAsync()
 }
 
 async function resolveSystemMessage({
