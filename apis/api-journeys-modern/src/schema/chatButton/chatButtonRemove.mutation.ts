@@ -4,32 +4,25 @@ import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCust
 import { builder } from '../builder'
 
 import { ChatButtonRef } from './chatButton'
-import { ChatButtonUpdateInput } from './inputs'
 
-builder.mutationField('chatButtonUpdate', (t) =>
+builder.mutationField('chatButtonRemove', (t) =>
   t
     .withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })
     .prismaField({
       type: ChatButtonRef,
       nullable: false,
       args: {
-        id: t.arg({ type: 'ID', required: true }),
-        journeyId: t.arg({ type: 'ID', required: true }),
-        input: t.arg({ type: ChatButtonUpdateInput, required: true })
+        id: t.arg({ type: 'ID', required: true })
       },
       resolve: async (query, _parent, args, _context) => {
-        const { id, journeyId, input } = args
+        const { id } = args
 
-        const result = await prisma.chatButton.update({
+        const result = await prisma.chatButton.delete({
           ...query,
-          where: { id },
-          data: {
-            journeyId,
-            ...input
-          }
+          where: { id }
         })
 
-        await recalculateJourneyCustomizable(journeyId)
+        await recalculateJourneyCustomizable(result.journeyId)
 
         return result
       }
