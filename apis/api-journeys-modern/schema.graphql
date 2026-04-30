@@ -346,6 +346,15 @@ type CustomDomain
   journeyCollection: JourneyCollection
 }
 
+type CustomDomainCheck
+  @shareable
+{
+  configured: Boolean!
+  verified: Boolean!
+  verification: [CustomDomainVerification!]
+  verificationResponse: CustomDomainVerificationResponse
+}
+
 input CustomDomainCreateInput {
   id: ID
   teamId: String!
@@ -357,6 +366,22 @@ input CustomDomainCreateInput {
 input CustomDomainUpdateInput {
   journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
+}
+
+type CustomDomainVerification
+  @shareable
+{
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse
+  @shareable
+{
+  code: String!
+  message: String!
 }
 
 """
@@ -1518,15 +1543,24 @@ type Mutation {
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction!
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction!
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction!
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @override(from: "api-journeys")
-  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @override(from: "api-journeys")
-  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain! @override(from: "api-journeys")
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
+  chatButtonRemove(id: ID!): ChatButton!
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
+  customDomainCheck(id: ID!): CustomDomainCheck!
+  customDomainDelete(id: ID!): CustomDomain!
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent @override(from: "api-journeys")
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @override(from: "api-journeys")
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent!
+  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent! @override(from: "api-journeys")
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent! @override(from: "api-journeys")
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
   googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!
@@ -1871,8 +1905,8 @@ input QrCodesFilter {
 type Query {
   block(id: ID!): Block! @override(from: "api-journeys")
   blocks(where: BlocksFilter): [Block!]! @override(from: "api-journeys")
-  customDomains(teamId: ID!): [CustomDomain!]! @override(from: "api-journeys")
-  customDomain(id: ID!): CustomDomain! @override(from: "api-journeys")
+  customDomains(teamId: ID!): [CustomDomain!]!
+  customDomain(id: ID!): CustomDomain!
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
