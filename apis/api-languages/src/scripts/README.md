@@ -52,8 +52,7 @@ If any error occurs, the script will exit with a non-zero code and display an ap
 
 ## WESS Languages Import Script
 
-Imports language rows from the WESS Query API into the `Language` and
-`LanguageName` tables.
+Imports language rows from the WESS Query API into `Language` and `LanguageName` via Prisma.
 
 ### Usage
 
@@ -61,16 +60,16 @@ Imports language rows from the WESS Query API into the `Language` and
 nx run api-languages:wess-languages-import
 ```
 
-### Environment Variables
+### Environment variables (secrets only)
 
-- `WESS_API_TOKEN` (required): API token sent as `token` header
-- `WESS_API_BASE_URL` (optional): defaults to `https://www.mydigitalwork.space`
-- `WESS_LANGUAGES_QUERY_ID` (optional): defaults to `154`
-- `PG_DATABASE_URL_LANGUAGES` (required): languages database connection
+- `WESS_API_TOKEN` (required): WESS API token — **only** supplied via this env var (never hardcoded in the script). Sent as the HTTP header named in `wess-languages-import.ts` (`WESS_TOKEN_HEADER_NAME`, default `token`).
+- `PG_DATABASE_URL_LANGUAGES` (required): PostgreSQL URL for the languages database.
+
+### Configuration in code
+
+Base URL, query id, English `Language.id` for `LanguageName` rows, and the token header name are **constants at the top of** `wess-languages-import.ts` — edit there instead of using extra env vars.
 
 ### Notes
 
-- Sends `GET /QueryRunner/rest/QueryAPI/GetData?QueryId=<id>`
-- Expects an array JSON payload from WESS
-- Upserts `Language` by `id` and updates `bcp47`, `iso3`, `slug`, `hasVideos`
-- Upserts a self-name row in `LanguageName` when a row includes a name
+- **Slug:** derived from WESS `slug` if set, otherwise display name, otherwise `id` — lowercased, spaces/commas/underscores and other non-alphanumeric runs become `-`, collisions get `-2`, `-3`, … . Set on **create**, and on **update** only when `slug` is currently null or empty (existing non-empty slugs are not overwritten).
+- After a successful run with at least one row, `ImportTimes` is updated for `wessLanguageImport`.
