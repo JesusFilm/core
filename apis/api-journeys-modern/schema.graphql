@@ -1559,6 +1559,7 @@ type Mutation {
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent!
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent! @override(from: "api-journeys")
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
   googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!
