@@ -11,7 +11,7 @@ import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../libs/useC
 
 import { IMAGE_BLOCK_UPDATE, ImagesSection } from './ImagesSection'
 
-jest.mock('next-i18next', () => ({
+jest.mock('next-i18next/pages', () => ({
   __esModule: true,
   useTranslation: () => {
     return {

@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 
 import { BlockEventLabel } from '../../../../../../../../../../../__generated__/globalTypes'
 import { eventLabelOptions } from '../eventLabels'

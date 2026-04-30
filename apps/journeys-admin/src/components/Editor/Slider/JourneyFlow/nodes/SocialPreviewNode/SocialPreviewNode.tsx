@@ -6,7 +6,7 @@ import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 import { OnConnect, useStore } from 'reactflow'
 
