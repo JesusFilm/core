@@ -10,7 +10,7 @@ import { markFileAsCompleted } from '../utils/fileUtils'
 import { validateVideoAndEdition } from '../utils/videoEditionValidator'
 
 export const VIDEO_FILENAME_REGEX =
-  /^([^.]+?)---([^.]+?)---([^-]+)---([^-]+)(?:---([^-]+))?\.mp4$/
+  /^([^.]+?)---([^.]+?)---([^-]+)---([^-]+)(?:---([^-]+))*\.mp4$/
 
 export async function processVideoFile(
   file: string,
