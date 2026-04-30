@@ -286,8 +286,7 @@ export async function postWeeklyVideoSlackMessages(args: {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text:
-            '*About this report*\nEach row is a video that got new content this week. *Total* shows how many videos in a series were updated. ⚠ means the series isn’t fully translated yet.'
+          text: '*About this report*\nEach row is a video that got new content this week. *Total* shows how many videos in a series were updated. ⚠ means the series isn’t fully translated yet.'
         }
       },
       { type: 'divider' },
