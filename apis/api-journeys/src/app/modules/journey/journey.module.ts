@@ -6,7 +6,6 @@ import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { DateTimeScalar } from '../../lib/dateTime/dateTime.provider'
 import { prismaServiceProvider } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
-import { ChatButtonResolver } from '../chatButton/chatButton.resolver'
 import { QrCodeService } from '../qrCode/qrCode.service'
 
 import { JourneyResolver } from './journey.resolver'
@@ -25,7 +24,6 @@ import { JourneyCustomizableService } from './journeyCustomizable.service'
     JourneyCustomizableService,
     BlockService,
     DateTimeScalar,
-    ChatButtonResolver,
     prismaServiceProvider,
     QrCodeService
   ]
