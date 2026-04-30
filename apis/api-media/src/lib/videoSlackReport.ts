@@ -357,9 +357,7 @@ async function buildReportRows(args: {
         mediaComponentId: rowVideo.id,
         languageId: group.languageId,
         languageName: languageNames.get(group.languageId) ?? group.languageId,
-        changeType: isNewVideo
-          ? ('New' as const)
-          : ('Update' as const),
+        changeType: isNewVideo ? ('New' as const) : ('Update' as const),
         changeDate: group.latestChangeDate,
         total,
         packageSize,
