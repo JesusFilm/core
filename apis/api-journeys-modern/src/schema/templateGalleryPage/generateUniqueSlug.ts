@@ -69,10 +69,14 @@ export async function generateUniqueSlug(
   title: string,
   excludeId?: string
 ): Promise<string> {
-  const base = slugify(title, { lower: true, strict: true })
-  if (base === '' || RESERVED_SLUGS.has(base)) {
-    throw new SlugReservedError(base === '' ? '(empty)' : base)
+  const normalized = slugify(title, { lower: true, strict: true })
+  if (normalized === '' || RESERVED_SLUGS.has(normalized)) {
+    throw new SlugReservedError(normalized === '' ? '(empty)' : normalized)
   }
+  // Truncate to SLUG_MAX_LENGTH so the resulting slug never overflows the
+  // public-query regex (which rejects slugs longer than 200 chars). Without
+  // this, a long title would mint a slug nobody could later read back.
+  const base = normalized.slice(0, SLUG_MAX_LENGTH)
 
   const collisions = await prisma.templateGalleryPage.findMany({
     where: { slug: { startsWith: base } },
@@ -84,10 +88,13 @@ export async function generateUniqueSlug(
 
   if (!taken.has(base)) return base
   for (let suffix = 2; suffix <= 50; suffix++) {
-    const candidate = `${base}-${suffix}`
+    const suffixPart = `-${suffix}`
+    const candidate = `${base.slice(0, SLUG_MAX_LENGTH - suffixPart.length)}${suffixPart}`
     if (!taken.has(candidate)) return candidate
   }
-  return `${base}-${slugSuffix()}`
+  // Pathological — 50 collisions on the same base. Fall back to entropy.
+  const randomSuffix = `-${slugSuffix()}`
+  return `${base.slice(0, SLUG_MAX_LENGTH - randomSuffix.length)}${randomSuffix}`
 }
 
 /**

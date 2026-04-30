@@ -35,7 +35,7 @@ related_docs:
 
 Symptoms during implementation:
 
-```
+```text
 expect(received).toEqual(expected)
 - Expected
 + Received

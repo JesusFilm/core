@@ -33,8 +33,7 @@ builder.mutationField('templateGalleryPagePublish', (t) =>
         )
       }
 
-      // Idempotent: if already published, return unchanged. publishedAt is
-      // monotonic — set on first publish only.
+      // Idempotent: if already published, return unchanged.
       if (page.status === 'published') {
         return await prisma.templateGalleryPage.findUniqueOrThrow({
           ...query,
@@ -42,13 +41,29 @@ builder.mutationField('templateGalleryPagePublish', (t) =>
         })
       }
 
-      return await prisma.templateGalleryPage.update({
-        ...query,
-        where: { id },
+      // First-publish-wins under concurrent calls. The `status: 'draft'`
+      // predicate makes the update atomic — at most one of N concurrent
+      // publishers matches a row to update. The losers' updateMany returns
+      // count 0 and falls through to the same canonical-read path as a
+      // re-publish, preserving the winner's publishedAt timestamp.
+      const result = await prisma.templateGalleryPage.updateMany({
+        where: { id, status: 'draft' },
         data: {
           status: 'published',
-          publishedAt: page.publishedAt ?? new Date()
+          publishedAt: new Date()
         }
+      })
+      if (result.count === 0) {
+        // Another publisher won the race between our findUnique and update.
+        // Return the canonical row with the winner's publishedAt.
+        return await prisma.templateGalleryPage.findUniqueOrThrow({
+          ...query,
+          where: { id }
+        })
+      }
+      return await prisma.templateGalleryPage.findUniqueOrThrow({
+        ...query,
+        where: { id }
       })
     }
   })

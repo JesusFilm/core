@@ -59,7 +59,10 @@ describe('templateGalleryPagePublish', () => {
       status: 'draft',
       publishedAt: null
     } as any)
-    prismaMock.templateGalleryPage.update.mockResolvedValue({
+    prismaMock.templateGalleryPage.updateMany.mockResolvedValue({
+      count: 1
+    } as any)
+    prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue({
       id: 'p1',
       status: 'published',
       publishedAt: new Date('2026-04-29T00:00:00Z')
@@ -79,15 +82,50 @@ describe('templateGalleryPagePublish', () => {
         }
       }
     })
-    expect(prismaMock.templateGalleryPage.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id: 'p1' },
-        data: expect.objectContaining({
-          status: 'published',
-          publishedAt: expect.any(Date)
-        })
+    // Atomic transition: updateMany filters on status:draft so the write is
+    // a no-op for any concurrent caller that already lost the race.
+    expect(prismaMock.templateGalleryPage.updateMany).toHaveBeenCalledWith({
+      where: { id: 'p1', status: 'draft' },
+      data: expect.objectContaining({
+        status: 'published',
+        publishedAt: expect.any(Date)
       })
-    )
+    })
+  })
+
+  it('returns the canonical row when the publish race is lost (updateMany count=0)', async () => {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'p1',
+      teamId: 'team-1',
+      status: 'draft',
+      publishedAt: null
+    } as any)
+    // Race lost — another publisher already flipped status to published
+    // between our findUnique and updateMany.
+    prismaMock.templateGalleryPage.updateMany.mockResolvedValue({
+      count: 0
+    } as any)
+    const winnerPublishedAt = new Date('2026-04-28T11:59:59Z')
+    prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue({
+      id: 'p1',
+      status: 'published',
+      publishedAt: winnerPublishedAt
+    } as any)
+
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_PUBLISH,
+      variables: { id: 'p1' }
+    })
+
+    expect(result).toEqual({
+      data: {
+        templateGalleryPagePublish: {
+          id: 'p1',
+          status: 'published',
+          publishedAt: '2026-04-28T11:59:59.000Z'
+        }
+      }
+    })
   })
 
   it('is idempotent — preserves publishedAt when already published', async () => {
@@ -118,7 +156,7 @@ describe('templateGalleryPagePublish', () => {
         }
       }
     })
-    expect(prismaMock.templateGalleryPage.update).not.toHaveBeenCalled()
+    expect(prismaMock.templateGalleryPage.updateMany).not.toHaveBeenCalled()
   })
 
   it('throws NOT_FOUND when page does not exist', async () => {
