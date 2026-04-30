@@ -3,10 +3,10 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { Form, Formik } from 'formik'
+import { Form, Formik, FormikProps } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 import { object, string } from 'yup'
 
 import { JourneyProvider, useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -106,24 +106,36 @@ function LocalTemplateDetailsDialogBody({
     [t]
   )
 
-  // Captured once at mount so dirty detection survives JourneyProvider
-  // updates from translation polling. Without `enableReinitialize`, Formik
-  // also keeps the user's in-progress edits stable across context refreshes.
-  const initialValues = useMemo<LocalTemplateDetailsFormValues>(
-    () => ({
-      title: journey?.title ?? '',
-      description: journey?.description ?? '',
-      languageId: journey?.language?.id ?? '',
-      journeyCustomizationDescription:
-        journey?.journeyCustomizationDescription ??
-        formatTemplateCustomizationString(
-          getTemplateCustomizationFields(journey)
-        )
-    }),
-    // Re-seed only when the journey identity changes — opening the dialog for
-    // a different template should refresh defaults; mid-edit polling should not.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [journey?.id]
+  // initialValues is recomputed every render from the latest journey, so
+  // when Formik does (re)mount it always reads current cache state.
+  const initialValues: LocalTemplateDetailsFormValues = {
+    title: journey?.title ?? '',
+    description: journey?.description ?? '',
+    languageId: journey?.language?.id ?? '',
+    journeyCustomizationDescription:
+      journey?.journeyCustomizationDescription ??
+      formatTemplateCustomizationString(getTemplateCustomizationFields(journey))
+  }
+
+  // Bug fix (NES-1543): without this, opening the dialog → saving → closing →
+  // reopening shows the pre-save data because Formik does not re-read
+  // initialValues across the same mount and `enableReinitialize` would
+  // clobber the user's in-progress edits during translation polling. Instead,
+  // bump a counter on every open transition and put it in Formik's `key` so
+  // Formik remounts on each open, captures the latest journey, and stays
+  // stable for the lifetime of one editing session.
+  const [openSession, setOpenSession] = useState(0)
+  const wasOpen = useRef(false)
+  useEffect(() => {
+    if (open && !wasOpen.current) setOpenSession((n) => n + 1)
+    wasOpen.current = open
+  }, [open])
+
+  // Dirty detection compares against Formik's CAPTURED initial values (set at
+  // mount/remount), not the latest journey context — so translation polling
+  // mid-edit cannot make a real edit look unchanged or vice versa.
+  const formikRef = useRef<FormikProps<LocalTemplateDetailsFormValues> | null>(
+    null
   )
 
   function handleClose(resetForm: () => void): () => void {
@@ -138,13 +150,16 @@ function LocalTemplateDetailsDialogBody({
     values: LocalTemplateDetailsFormValues
   ): Promise<void> {
     if (journey == null) return
+    // Read what Formik captured when this open session mounted — not the
+    // potentially-newer values from a translation-polling refetch.
+    const captured = formikRef.current?.initialValues ?? initialValues
     const titleDescLangDirty =
-      values.title !== initialValues.title ||
-      values.description !== initialValues.description ||
-      values.languageId !== initialValues.languageId
+      values.title !== captured.title ||
+      values.description !== captured.description ||
+      values.languageId !== captured.languageId
     const customizationDirty =
       values.journeyCustomizationDescription !==
-      initialValues.journeyCustomizationDescription
+      captured.journeyCustomizationDescription
 
     const tasks: Array<Promise<unknown>> = []
     if (titleDescLangDirty) {
@@ -230,6 +245,8 @@ function LocalTemplateDetailsDialogBody({
 
   return (
     <Formik
+      key={`${journey?.id ?? 'no-journey'}-${openSession}`}
+      innerRef={formikRef}
       initialValues={initialValues}
       onSubmit={handleSubmit}
       validationSchema={validationSchema}

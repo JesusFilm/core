@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { publishedLocalTemplate } from '@core/journeys/ui/TemplateView/data'
@@ -260,6 +261,74 @@ describe('LocalTemplateDetailsDialog', () => {
     expect(
       screen.getByRole('dialog', { name: 'Template Details' })
     ).toBeInTheDocument()
+  })
+
+  it('shows fresh values when reopened after the journey context updated (regression: same-mount stale memo)', async () => {
+    // Repros the bug Esther reported: edit via one entry point + save, then
+    // reopen the dialog (same mount), and the form shows STALE pre-save data
+    // because initialValues was memoized by journey.id and never re-seeded.
+    function Harness(): ReactElement {
+      const [open, setOpen] = useState(true)
+      const [journey, setJourney] = useState({
+        ...publishedLocalTemplate,
+        title: 'Old Title'
+      })
+      return (
+        <>
+          <button
+            data-testid="bumpJourney"
+            onClick={() => {
+              setJourney((prev) => ({ ...prev, title: 'New Title' }))
+              setOpen(false)
+            }}
+          >
+            bump
+          </button>
+          <button
+            data-testid="reopenDialog"
+            onClick={() => setOpen(true)}
+          >
+            reopen
+          </button>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <LocalTemplateDetailsDialog open={open} onClose={() => setOpen(false)} />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </>
+      )
+    }
+
+    render(
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <Harness />
+      </MockedProvider>
+    )
+
+    // First mount: title field shows the original value.
+    await waitFor(() =>
+      expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue(
+        'Old Title'
+      )
+    )
+
+    // Simulate: user saved → cache (and so the journey prop) updated to new
+    // title → onClose was called → dialog stays mounted with open={false}.
+    act(() => {
+      fireEvent.click(screen.getByTestId('bumpJourney'))
+    })
+
+    // User reopens the dialog (same mount).
+    act(() => {
+      fireEvent.click(screen.getByTestId('reopenDialog'))
+    })
+
+    // Form should show the fresh post-save title, not the stale pre-save one.
+    await waitFor(() =>
+      expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue(
+        'New Title'
+      )
+    )
   })
 
   it('does not call any mutation when the form is unchanged', async () => {
