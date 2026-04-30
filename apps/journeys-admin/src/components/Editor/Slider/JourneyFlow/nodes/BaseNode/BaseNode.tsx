@@ -77,8 +77,7 @@ export function BaseNode({
   const connection = useConnection()
   const connectionHandleId = connection.fromHandle?.id ?? null
   const connectionNodeId = connection.fromHandle?.nodeId ?? null
-  const isConnecting =
-    connection.inProgress && id !== connectionNodeId
+  const isConnecting = connection.inProgress && id !== connectionNodeId
   const [targetSelected, setTargetSelected] = useState(false)
   const [sourceSelected, setSourceSelected] = useState(false)
 
