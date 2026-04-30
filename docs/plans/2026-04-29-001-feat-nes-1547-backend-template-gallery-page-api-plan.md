@@ -91,9 +91,9 @@ Build a single new Pothos schema module `apis/api-journeys-modern/src/schema/tem
 
 Add two new Prisma models — `TemplateGalleryPage` and `TemplateGalleryPageTemplate` (the ordered join table) — plus a new enum `TemplateGalleryPageStatus { draft, published }`. Migrate via `nx prisma-migrate prisma-journeys`.
 
-Auth uses the existing `isInTeam` scope (any team member, manager **or** member, can create / read / update / publish / delete). Cross-team isolation is enforced at write time by filtering input `journeyIds` to `{ template: true, teamId: page.teamId }` and silently dropping disallowed IDs (mirrors legacy `journeyCollectionCreate` behaviour). This validation is extracted to a single helper file (`lib/validateJourneyIds.ts`) so the rule can be relaxed later without touching every resolver.
+Auth uses the existing `isInTeam` scope (any team member, manager **or** member, can create / read / update / publish / delete). Cross-team isolation is enforced at write time by filtering input `journeyIds` to `{ template: true, teamId: page.teamId }` and silently dropping disallowed IDs (mirrors legacy `journeyCollectionCreate` behaviour). This validation is extracted to a single helper file (`filterToTeamTemplates.ts`) so the rule can be relaxed later without touching every resolver.
 
-Slug generation uses a small new helper `lib/generateUniqueSlug.ts` that applies `slugify`-style transformation, then loops with a numeric suffix until the DB unique constraint passes — same shape as `apis/api-languages/src/lib/slugify/slugify.ts`, but DB-backed for uniqueness because slugs are mutable.
+Slug generation uses a small new helper `generateUniqueSlug.ts` that applies `slugify`-style transformation, then loops with a numeric suffix until the DB unique constraint passes — same shape as `apis/api-languages/src/lib/slugify/slugify.ts`, but DB-backed for uniqueness because slugs are mutable.
 
 Publish is a separate mutation `templateGalleryPagePublish(id)` to keep the state transition explicit and to make the "set `publishedAt` on first publish only" rule trivial to enforce. Re-publishing an already-published page is a no-op (returns the page unchanged, does not bump `publishedAt`).
 
@@ -109,7 +109,7 @@ Three layers, each with a single responsibility:
 
 #### File map (new) — flat, mirroring `chatButton/` and `customDomain/`
 
-```
+```text
 apis/api-journeys-modern/src/schema/templateGalleryPage/
 ├── index.ts                                            # barrel: imports all sibling files (side-effect registration)
 ├── templateGalleryPage.ts                              # builder.prismaObject('TemplateGalleryPage', …) + templates field

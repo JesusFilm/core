@@ -73,6 +73,25 @@ describe('generateUniqueSlug', () => {
       SlugReservedError
     )
   })
+
+  it('truncates long titles to SLUG_MAX_LENGTH so the page stays reachable', async () => {
+    prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
+    // 300 a's slugified is 300 a's; the helper must truncate to 200.
+    const slug = await generateUniqueSlug('a'.repeat(300))
+    expect(slug.length).toBeLessThanOrEqual(200)
+    expect(slug).toBe('a'.repeat(200))
+  })
+
+  it('reserves space for numeric suffix when the truncated base collides', async () => {
+    // Base is 200 a's. Caller-supplied collision means we need `-2` suffix,
+    // which requires trimming 2 chars off the base before appending.
+    prismaMock.templateGalleryPage.findMany.mockResolvedValue([
+      { id: 'other', slug: 'a'.repeat(200) }
+    ] as any)
+    const slug = await generateUniqueSlug('a'.repeat(300))
+    expect(slug.length).toBeLessThanOrEqual(200)
+    expect(slug).toBe(`${'a'.repeat(198)}-2`)
+  })
 })
 
 describe('validateUserSuppliedSlug', () => {
