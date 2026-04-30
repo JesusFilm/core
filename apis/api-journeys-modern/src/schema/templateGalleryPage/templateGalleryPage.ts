@@ -40,18 +40,23 @@ export const TemplateGalleryPageRef = builder.prismaObject(
       // its `template` flag was flipped to false after being added to the
       // gallery, only same-team published templates surface here.
       // - The SQL `where` filters non-template / non-published rows out.
-      // - parent.teamId equality is enforced in the resolve callback because
-      //   Pothos does not support referencing the parent inside `select.where`.
-      // - `nestedSelection(true)` lets Pothos prune Journey columns to only
-      //   what the client actually selected, mirroring the inverse field on
-      //   journeyCollection.ts:33-39.
+      // - The in-memory filter enforces parent.teamId equality (Pothos does
+      //   not let `select.where` reference the parent).
+      //
+      // We deliberately use `include: { journey: true }` rather than
+      // `nestedSelection(true)`. nestedSelection only selects Pothos-exposed
+      // scalars + client-requested fields, and Journey.teamId is not exposed
+      // on JourneyRef. With nestedSelection the in-memory filter would
+      // compare `undefined === <string>` and silently drop every template
+      // (CodeRabbit caught this in PR #9119). Fetching all Journey scalars
+      // is a minor over-fetch; correctness wins.
       templates: t.field({
         type: [JourneyRef],
         nullable: false,
-        select: (_args, _ctx, nestedSelection) => ({
+        select: {
           teamId: true,
           templates: {
-            include: { journey: nestedSelection(true) },
+            include: { journey: true },
             where: {
               journey: {
                 template: true,
@@ -60,7 +65,7 @@ export const TemplateGalleryPageRef = builder.prismaObject(
             },
             orderBy: { order: 'asc' }
           }
-        }),
+        },
         resolve: (page) =>
           page.templates
             .filter((tpt) => tpt.journey.teamId === page.teamId)

@@ -20,7 +20,9 @@ export async function filterToTeamTemplates(
 
   const dedup = [...new Set(journeyIds)]
   const found = await tx.journey.findMany({
-    where: { id: { in: dedup }, teamId, template: true },
+    // `deletedAt: null` honors the project-wide soft-delete convention so
+    // soft-deleted journeys can never be added as gallery templates.
+    where: { id: { in: dedup }, teamId, template: true, deletedAt: null },
     select: { id: true }
   })
   const validSet = new Set(found.map((j) => j.id))
