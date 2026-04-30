@@ -18,9 +18,9 @@ describe('extractLanguageNames', () => {
   })
 
   it('returns only nativeName for a single primary-true entry', () => {
-    expect(
-      extractLanguageNames([{ value: 'English', primary: true }])
-    ).toEqual({ localName: undefined, nativeName: 'English' })
+    expect(extractLanguageNames([{ value: 'English', primary: true }])).toEqual(
+      { localName: undefined, nativeName: 'English' }
+    )
   })
 
   it('handles all-primary entries by treating index 0 as native and index 1 as local', () => {
@@ -54,8 +54,8 @@ describe('extractLanguageNames', () => {
   })
 
   it('returns localName (no nativeName) for a single non-primary entry', () => {
-    expect(
-      extractLanguageNames([{ value: 'French', primary: false }])
-    ).toEqual({ localName: 'French', nativeName: undefined })
+    expect(extractLanguageNames([{ value: 'French', primary: false }])).toEqual(
+      { localName: 'French', nativeName: undefined }
+    )
   })
 })
