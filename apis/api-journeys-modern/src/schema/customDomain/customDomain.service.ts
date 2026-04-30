@@ -89,9 +89,7 @@ async function buildJourneyUrl(
   const customDomainName = newCustomDomain ?? customDomain?.name
 
   const base =
-    customDomainName != null
-      ? `https://${customDomainName}`
-      : env.JOURNEYS_URL
+    customDomainName != null ? `https://${customDomainName}` : env.JOURNEYS_URL
 
   const blockPath = blockId != null ? `/${blockId}` : ''
   const path = `${journey.slug}${blockPath}`
