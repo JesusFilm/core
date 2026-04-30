@@ -17,19 +17,18 @@ import {
 } from 'react'
 import { List } from 'react-window'
 
+import { extractLanguageNames } from '../../libs/extractLanguageNames'
+import type { Translation } from '../../libs/extractLanguageNames'
 import { ResizeObserverPolyfill } from '../ResizeObserverPolyfill'
 
 import { defaultRenderOption } from './defaultRenderOption'
+
+export type { Translation }
 
 export interface Language {
   id: string
   name: Translation[]
   slug: string | null
-}
-
-export interface Translation {
-  value: string
-  primary: boolean
 }
 
 export interface LanguageOption {
@@ -72,48 +71,15 @@ export function LanguageAutocomplete({
     const validOptions: LanguageOption[] = []
 
     for (const language of languages) {
-      // Skip languages with empty or null name arrays
-      if (!language.name || language.name.length === 0) {
-        continue
-      }
+      if (!language.name || language.name.length === 0) continue
 
       const { id, name, slug, ...rest } = language
-      let localLanguageName: string | undefined
-      let nativeLanguageName: string | undefined
-
-      const nonPrimary = name.find(({ primary }) => !primary)
-      const primary = name.find(({ primary: p }) => p)
-
-      if (nonPrimary != null || primary != null) {
-        localLanguageName = nonPrimary?.value
-        nativeLanguageName = primary?.value
-      }
-
-      if (
-        localLanguageName == null &&
-        nativeLanguageName == null &&
-        name.length >= 2
-      ) {
-        localLanguageName = name[1].value
-        nativeLanguageName = name[0].value
-      } else if (localLanguageName == null && nativeLanguageName == null) {
-        nativeLanguageName = name[0]?.value
-      }
-
-      if (
-        localLanguageName == null &&
-        nativeLanguageName != null &&
-        name.length >= 2
-      ) {
-        localLanguageName = name.find(
-          ({ value }) => value !== nativeLanguageName
-        )?.value
-      }
+      const { localName, nativeName } = extractLanguageNames(name)
 
       validOptions.push({
         id,
-        localName: localLanguageName,
-        nativeName: nativeLanguageName,
+        localName,
+        nativeName,
         slug,
         ...rest // Preserve additional properties like __type
       })
