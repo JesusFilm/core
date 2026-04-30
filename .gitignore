@@ -107,3 +107,4 @@ apis/cms/config/*.js.map
 
 # storybook
 storybook-static/
+debug-storybook.log
