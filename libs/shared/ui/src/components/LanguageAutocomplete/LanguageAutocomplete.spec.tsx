@@ -523,7 +523,7 @@ describe('LanguageAutocomplete', () => {
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
 
     const options = queryAllByRole('option')
-    expect(options.length).toBeGreaterThanOrEqual(3)
+    expect(options).toHaveLength(3)
     expect(options[0]).toHaveTextContent('English')
     expect(options[1]).toHaveTextContent('French')
     expect(options[2]).toHaveTextContent('German, Standard')
@@ -543,7 +543,7 @@ describe('LanguageAutocomplete', () => {
     fireEvent.change(getByRole('combobox'), { target: { value: 'Français' } })
 
     const options = queryAllByRole('option')
-    expect(options.length).toBeGreaterThanOrEqual(1)
+    expect(options).toHaveLength(1)
     expect(options[0]).toHaveTextContent('French')
   })
 
