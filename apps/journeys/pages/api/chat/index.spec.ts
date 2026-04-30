@@ -69,13 +69,7 @@ function makeRes(headersSent = false): CapturedRes {
       end,
       json,
       setHeader,
-      headersSent,
-      // The handler waits for the response to finish writing before its
-      // final flushAsync. In production that's driven by Node's
-      // ServerResponse stream; in unit tests we stub it as already-ended
-      // so the await resolves synchronously and we can drive callbacks.
-      writableEnded: true,
-      once: jest.fn()
+      headersSent
     } as unknown as NextApiResponse,
     status,
     end,
@@ -576,17 +570,17 @@ describe('/api/chat handler', () => {
       expect(mockStreamText).toHaveBeenCalledTimes(1)
       expect(mockPipeStream).toHaveBeenCalledTimes(1)
 
-      expect(() =>
+      await expect(
         lastStreamConfig?.onFinish?.({
           text: 'reply',
           usage: { inputTokens: 1, outputTokens: 2 },
           finishReason: 'stop'
         })
-      ).not.toThrow()
+      ).resolves.not.toThrow()
 
-      expect(() =>
+      await expect(
         lastStreamConfig?.onError?.({ error: new Error('mid-stream') })
-      ).not.toThrow()
+      ).resolves.not.toThrow()
 
       errorSpy.mockRestore()
     })
@@ -649,7 +643,7 @@ describe('/api/chat handler', () => {
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
     })
 
-    it('ends with ERROR when onError fires (mid-stream failure)', async () => {
+    it('ends with ERROR and flushes when onError fires (mid-stream failure)', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
       const errorSpy = jest.spyOn(console, 'error').mockImplementation()
@@ -663,9 +657,6 @@ describe('/api/chat handler', () => {
         level: 'ERROR',
         statusMessage: 'socket hangup'
       })
-      // Flushing is owned by the post-response handler tail, not the
-      // callback — so the count here reflects the handler's single flush,
-      // independent of whether onError fired.
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
       errorSpy.mockRestore()
     })
@@ -731,7 +722,8 @@ describe('/api/chat handler', () => {
       })
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
       expect(status).toHaveBeenCalledWith(500)
-      expect(json).toHaveBeenCalledWith({ error: 'sync boom' })
+      // Generic message; raw 'sync boom' stays in server logs.
+      expect(json).toHaveBeenCalledWith({ error: 'upstream streamText failed' })
       errorSpy.mockRestore()
     })
 

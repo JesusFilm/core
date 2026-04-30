@@ -167,8 +167,10 @@ export default async function handler(
       model: modelResult.resolved.model,
       system,
       messages: modelMessages,
-      onError: ({ error }) => {
+      onError: async ({ error }) => {
         const err = error as Error
+        // TODO(NES-1615): swap console for structured pino + dd-trace logger
+        // so this reaches Datadog instead of dying in Vercel runtime logs.
         console.error('[chat] streamText onError', {
           provider,
           modelId,
@@ -176,12 +178,14 @@ export default async function handler(
           message: err?.message,
           stack: err?.stack
         })
+        // streamText errors are LLM lifecycle events — record in Langfuse.
         endGenerationIfPending({
           level: 'ERROR',
           statusMessage: err?.message ?? 'stream error'
         })
+        await langfuse?.flushAsync()
       },
-      onFinish: ({ text, usage, finishReason }) => {
+      onFinish: async ({ text, usage, finishReason }) => {
         if (finishReason === 'error') {
           endGenerationIfPending({
             level: 'ERROR',
@@ -201,59 +205,52 @@ export default async function handler(
             level: 'DEFAULT'
           })
         }
+        await langfuse?.flushAsync()
       }
     })
 
     result.pipeUIMessageStreamToResponse(res, {
       onError: (error) => {
         const err = error as Error
+        // TODO(NES-1615): pipe-step failures (write to closed socket etc.)
+        // are infrastructure errors, not LLM events — they belong in
+        // Datadog, not Langfuse. Swap console for structured pino logger
+        // once the journeys app has dd-trace + next-logger wired up
+        // (mirror apps/journeys-admin/next-logger.config.js).
         console.error('[chat] pipe onError', {
           provider,
           modelId,
           name: err?.name,
           message: err?.message
         })
-        endGenerationIfPending({
-          level: 'ERROR',
-          statusMessage: err?.message ?? 'pipe error'
-        })
-        return err?.message ?? 'stream failed'
+        // Generic message back to the client — never leak raw error
+        // details into the SSE error chunk.
+        return 'stream failed'
       }
     })
   } catch (error) {
     const err = error as Error
+    // TODO(NES-1615): structured logger so sync throws reach Datadog.
     console.error('[chat] synchronous error', {
       provider,
       modelId,
       name: err?.name,
       message: err?.message
     })
+    // Sync throws happen before the LLM call, but the trace + generation
+    // were already created above — close the lifecycle so Langfuse
+    // doesn't carry a dangling unfinished span.
     endGenerationIfPending({
       level: 'ERROR',
       statusMessage: err?.message ?? 'sync throw'
     })
+    await langfuse?.flushAsync()
     if (!res.headersSent) {
-      res
-        .status(500)
-        .json({ error: err?.message ?? 'upstream streamText failed' })
+      res.status(500).json({ error: 'upstream streamText failed' })
     } else {
       res.end()
     }
   }
-
-  // Keep the lambda alive until the response stream has actually finished
-  // writing, then ship the trace in a single awaited flush. This is the
-  // only place data is sent to Langfuse — every callback above only updates
-  // local state via endGenerationIfPending. Awaiting here guarantees the
-  // HTTPS POST completes before Vercel can freeze the function.
-  await new Promise<void>((resolve) => {
-    if (res.writableEnded) {
-      resolve()
-      return
-    }
-    res.once('close', resolve)
-  })
-  await langfuse?.flushAsync()
 }
 
 async function resolveSystemMessage({
