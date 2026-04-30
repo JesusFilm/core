@@ -73,7 +73,8 @@ async function buildJourneyUrl(
   shortLinkId: string,
   teamId: string,
   journeyId: string,
-  blockId?: string | null
+  blockId?: string | null,
+  newCustomDomain?: string
 ): Promise<string> {
   const journey = await prisma.journey.findUniqueOrThrow({
     where: { id: journeyId }
@@ -85,9 +86,11 @@ async function buildJourneyUrl(
     })
   )[0]
 
+  const customDomainName = newCustomDomain ?? customDomain?.name
+
   const base =
-    customDomain?.name != null
-      ? `https://${customDomain.name}`
+    customDomainName != null
+      ? `https://${customDomainName}`
       : env.JOURNEYS_URL
 
   const blockPath = blockId != null ? `/${blockId}` : ''
@@ -114,7 +117,8 @@ export async function updateTeamShortLinks(
       qrCode.id,
       qrCode.teamId,
       qrCode.toJourneyId,
-      qrCode.toBlockId
+      qrCode.toBlockId,
+      customDomainName
     )
 
     await apollo.mutate({
