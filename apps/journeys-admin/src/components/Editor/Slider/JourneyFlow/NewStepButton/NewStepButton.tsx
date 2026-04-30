@@ -1,6 +1,6 @@
+import { useReactFlow } from '@xyflow/react'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement } from 'react'
-import { useReactFlow } from 'reactflow'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Plus3Icon from '@core/shared/ui/icons/Plus3'
