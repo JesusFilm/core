@@ -45,14 +45,15 @@ export async function sendWeeklyVideoSummary(
       endDate
     })
 
-    if (counts.newVariants === 0) {
+    if (rows.length === 0) {
       childLogger.info(
         {
           windowStart: formatDateIso(startDate),
           windowEnd: formatDateIso(endDate),
-          newVariants: counts.newVariants
+          newVariants: counts.newVariants,
+          renderedRows: rows.length
         },
-        'Weekly video Slack summary: posting empty-week message — no new variants in the window'
+        'Weekly video Slack summary: posting empty-week message — no rows to render in the window'
       )
       await postEmptyWeeklyVideoSlackMessage({
         startDate,

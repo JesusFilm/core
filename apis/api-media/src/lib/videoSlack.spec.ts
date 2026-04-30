@@ -420,7 +420,7 @@ describe('videoSlack', () => {
       expect.objectContaining({
         newVariants: 0
       }),
-      'Weekly video Slack summary: posting empty-week message — no new variants in the window'
+      'Weekly video Slack summary: posting empty-week message — no rows to render in the window'
     )
   })
 

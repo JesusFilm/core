@@ -59,11 +59,16 @@ export function resolveWeeklyVideoSummaryWindow(args: {
   const { currentDate = new Date(), options = {} } = args
   const endDate =
     options.endDate != null ? new Date(options.endDate) : new Date(currentDate)
+  if (options.endDate == null) {
+    endDate.setUTCHours(23, 59, 59, 999)
+  }
+
   const startDate =
     options.startDate != null ? new Date(options.startDate) : new Date(endDate)
 
   if (options.startDate == null) {
     startDate.setUTCDate(startDate.getUTCDate() - oneWeekInDays)
+    startDate.setUTCHours(0, 0, 0, 0)
   }
 
   return { startDate, endDate }
