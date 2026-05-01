@@ -1,5 +1,5 @@
-import { Decorator } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
+import type { DecoratorFunction as Decorator } from 'storybook/internal/csf'
 
 import { ThemeProvider } from '../../components/ThemeProvider'
 import { sharedUiConfig } from '../sharedUiConfig'

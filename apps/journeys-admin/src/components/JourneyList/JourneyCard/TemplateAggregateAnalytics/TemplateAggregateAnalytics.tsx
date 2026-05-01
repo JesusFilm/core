@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 

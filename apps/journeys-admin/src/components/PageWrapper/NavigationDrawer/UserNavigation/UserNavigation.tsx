@@ -8,7 +8,7 @@ import compact from 'lodash/compact'
 import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, useEffect, useState } from 'react'
 
 import BoxIcon from '@core/shared/ui/icons/Box'

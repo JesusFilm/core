@@ -5,7 +5,7 @@ import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { FormObject } from '@core/journeys/ui/beaconHooks'
