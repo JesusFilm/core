@@ -1,5 +1,5 @@
 ---
-title: "feat: NES-1547 Backend Template Gallery Page API"
+title: 'feat: NES-1547 Backend Template Gallery Page API'
 type: feat
 status: active
 date: 2026-04-29
@@ -17,35 +17,35 @@ deepened: 2026-04-29
 
 ### Material changes from initial draft
 
-| # | Change | Source | Severity |
-|---|---|---|---|
-| 1 | Add same-team validation for `creatorImageBlockId` (Block-content leak via public query) | security-sentinel H1 | **High** |
-| 2 | Read-time filter on `templates` field (`status: published`, `template: true`, `teamId === page.teamId`) to defend against stale rows after journey transfer/archive | security-sentinel H2, spec-flow #3-4 | **High** |
-| 3 | Set `onDelete: Cascade` on `TemplateGalleryPage.team` relation (default Restrict silently breaks team deletion) | data-integrity-guardian, spec-flow #2 | **High** |
-| 4 | Replace single-column `@@index(status)` with composite `@@index([teamId, createdAt(sort: Desc)])` (selectivity + covers list query) | performance-oracle, data-integrity-guardian | Medium |
-| 5 | Move slug-gen out of `$transaction`; replace N-round-trip loop with single `WHERE slug LIKE 'base%'` query + `P2002` catch-and-retry-once | performance-oracle, data-integrity-guardian | Medium |
-| 6 | Use existing `slugify` npm package (already a repo dep, used in `block/step/stepBlockUpdate.mutation.ts`) instead of inlining `convertToSlug` from api-languages | pattern-recognition-specialist | Medium |
-| 7 | Drop `lib/` subfolder — no precedent in any sibling module; flatten helpers to siblings | pattern-recognition-specialist, code-simplicity-reviewer | Medium |
-| 8 | Drop `templateGalleryPage.acl.ts` — no-op for "any team member" rule; resolvers call `isInTeam` directly | code-simplicity-reviewer | Medium |
-| 9 | Public query uses `t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })` — match `adminJourney.query.ts` precedent rather than inventing a no-`withAuth` pattern | architecture-strategist A1 | Medium |
-| 10 | Add `'Query.templateGalleryPageBySlug': 60_000` to `useResponseCache` `ttlPerSchemaCoordinate` in `yoga.ts` (or document why default suffices) | performance-oracle, learnings-researcher | Medium |
-| 11 | Validate `mediaUrl` scheme is `https:` (defense-in-depth against SSRF in any downstream proxy) | security-sentinel M3 | Medium |
-| 12 | Validate `slug` arg shape (`/^[a-z0-9-]{1,200}$/`) at the resolver layer | security-sentinel M1, spec-flow #11 | Medium |
-| 13 | Use `nestedSelection` in the `templates` field (column pruning, mirrors `journeyCollection.ts:33-39`) | kieran-typescript-reviewer | Low |
-| 14 | Concrete TS samples added for input fields (`t.id`, `t.string`, `t.idList`) and `prismaObject` fields (`t.exposeID`, `t.expose`, `t.relation`) — implementer no longer has to guess | kieran-typescript-reviewer | Low |
-| 15 | Reserved-slug list (`admin`, `api`, `templates`, etc.) rejected with `SLUG_RESERVED` | spec-flow #11 | Low |
-| 16 | Drop type-shape `templateGalleryPage.spec.ts` — no precedent (e.g., `journeyCollection/` has none); 5 specs total | pattern-recognition-specialist, code-simplicity-reviewer | Low |
-| 17 | Defer `prismaObjectField` extension on `Journey` to NES-1548 (no current consumer) | architecture-strategist A2, code-simplicity-reviewer | Low |
-| 18 | Use `description: input.description ?? undefined` (let `@default("")` apply) — avoid resolver/schema coupling on the empty-string convention | kieran-typescript-reviewer | Low |
-| 19 | Document `t.withAuth(fn)` precedent vs Pothos docs (the docs only show static map; the repo uses the function form per `googleCreate.mutation.ts:30-37`) | framework-docs-researcher | Note |
-| 20 | Repo uses `@prisma/client ^7.0.0` — confirm 7.x compound-key/`$transaction` semantics still apply | framework-docs-researcher | Note |
+| #   | Change                                                                                                                                                                              | Source                                                   | Severity |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | -------- |
+| 1   | Add same-team validation for `creatorImageBlockId` (Block-content leak via public query)                                                                                            | security-sentinel H1                                     | **High** |
+| 2   | Read-time filter on `templates` field (`status: published`, `template: true`, `teamId === page.teamId`) to defend against stale rows after journey transfer/archive                 | security-sentinel H2, spec-flow #3-4                     | **High** |
+| 3   | Set `onDelete: Cascade` on `TemplateGalleryPage.team` relation (default Restrict silently breaks team deletion)                                                                     | data-integrity-guardian, spec-flow #2                    | **High** |
+| 4   | Replace single-column `@@index(status)` with composite `@@index([teamId, createdAt(sort: Desc)])` (selectivity + covers list query)                                                 | performance-oracle, data-integrity-guardian              | Medium   |
+| 5   | Move slug-gen out of `$transaction`; replace N-round-trip loop with single `WHERE slug LIKE 'base%'` query + `P2002` catch-and-retry-once                                           | performance-oracle, data-integrity-guardian              | Medium   |
+| 6   | Use existing `slugify` npm package (already a repo dep, used in `block/step/stepBlockUpdate.mutation.ts`) instead of inlining `convertToSlug` from api-languages                    | pattern-recognition-specialist                           | Medium   |
+| 7   | Drop `lib/` subfolder — no precedent in any sibling module; flatten helpers to siblings                                                                                             | pattern-recognition-specialist, code-simplicity-reviewer | Medium   |
+| 8   | Drop `templateGalleryPage.acl.ts` — no-op for "any team member" rule; resolvers call `isInTeam` directly                                                                            | code-simplicity-reviewer                                 | Medium   |
+| 9   | Public query uses `t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })` — match `adminJourney.query.ts` precedent rather than inventing a no-`withAuth` pattern      | architecture-strategist A1                               | Medium   |
+| 10  | Add `'Query.templateGalleryPageBySlug': 60_000` to `useResponseCache` `ttlPerSchemaCoordinate` in `yoga.ts` (or document why default suffices)                                      | performance-oracle, learnings-researcher                 | Medium   |
+| 11  | Validate `mediaUrl` scheme is `https:` (defense-in-depth against SSRF in any downstream proxy)                                                                                      | security-sentinel M3                                     | Medium   |
+| 12  | Validate `slug` arg shape (`/^[a-z0-9-]{1,200}$/`) at the resolver layer                                                                                                            | security-sentinel M1, spec-flow #11                      | Medium   |
+| 13  | Use `nestedSelection` in the `templates` field (column pruning, mirrors `journeyCollection.ts:33-39`)                                                                               | kieran-typescript-reviewer                               | Low      |
+| 14  | Concrete TS samples added for input fields (`t.id`, `t.string`, `t.idList`) and `prismaObject` fields (`t.exposeID`, `t.expose`, `t.relation`) — implementer no longer has to guess | kieran-typescript-reviewer                               | Low      |
+| 15  | Reserved-slug list (`admin`, `api`, `templates`, etc.) rejected with `SLUG_RESERVED`                                                                                                | spec-flow #11                                            | Low      |
+| 16  | Drop type-shape `templateGalleryPage.spec.ts` — no precedent (e.g., `journeyCollection/` has none); 5 specs total                                                                   | pattern-recognition-specialist, code-simplicity-reviewer | Low      |
+| 17  | Defer `prismaObjectField` extension on `Journey` to NES-1548 (no current consumer)                                                                                                  | architecture-strategist A2, code-simplicity-reviewer     | Low      |
+| 18  | Use `description: input.description ?? undefined` (let `@default("")` apply) — avoid resolver/schema coupling on the empty-string convention                                        | kieran-typescript-reviewer                               | Low      |
+| 19  | Document `t.withAuth(fn)` precedent vs Pothos docs (the docs only show static map; the repo uses the function form per `googleCreate.mutation.ts:30-37`)                            | framework-docs-researcher                                | Note     |
+| 20  | Repo uses `@prisma/client ^7.0.0` — confirm 7.x compound-key/`$transaction` semantics still apply                                                                                   | framework-docs-researcher                                | Note     |
 
 ### Decisions explicitly rejected from review feedback (with rationale)
 
 - **`@sindresorhus/slugify`** (best-practices-researcher BP1): rejected. Pattern-recognition-specialist showed `slugify` is already a repo dep (`block/step/stepBlockUpdate.mutation.ts:2`); introducing a second slug library is inconsistency for marginal Unicode benefit. Use the existing package.
-- **Slug-alias table for SEO 301 redirects** (best-practices-researcher BP3): deferred. Out of scope for NES-1547. Logged in *Future Considerations* with a follow-up flag.
+- **Slug-alias table for SEO 301 redirects** (best-practices-researcher BP3): deferred. Out of scope for NES-1547. Logged in _Future Considerations_ with a follow-up flag.
 - **`templateGalleryPageUnpublish` mutation** (spec-flow #7): deferred. Spec explicitly says draft → published only; no archive/unpublish. Hard delete + recreate is the temporary unpublish path.
-- **i18n on title/description/creatorName** (spec-flow #9): deferred. Confirmed with the resolved-decisions list — single language for MVP. Logged in *Future Considerations*; if product needs multi-lingual, revisit before migration runs.
+- **i18n on title/description/creatorName** (spec-flow #9): deferred. Confirmed with the resolved-decisions list — single language for MVP. Logged in _Future Considerations_; if product needs multi-lingual, revisit before migration runs.
 - **Optimistic locking via `expectedUpdatedAt`** (spec-flow #8): deferred. Not blocking for MVP; admin UI (NES-1548) can add it client-side if needed.
 - **Increase default builder `nullable` for list items** (kieran-typescript-reviewer #9): leave to verify-in-place — implementer reads `builder.ts` and matches.
 
@@ -69,7 +69,7 @@ This work is the **API half** of the broader Template Gallery Pages feature (roa
 
 ### What we're solving
 
-Today, anyone landing on `/templates/<journey-slug>` sees a single template journey from JFP's central catalogue. There is no way for a team to publish *their own* curated, branded landing page that bundles several of their templates with descriptive copy, an ordering, and a memorable URL. Teams that want this currently link to individual journey pages or build offsite landing pages that drift from the canonical template content.
+Today, anyone landing on `/templates/<journey-slug>` sees a single template journey from JFP's central catalogue. There is no way for a team to publish _their own_ curated, branded landing page that bundles several of their templates with descriptive copy, an ordering, and a memorable URL. Teams that want this currently link to individual journey pages or build offsite landing pages that drift from the canonical template content.
 
 ### Why now
 
@@ -145,10 +145,10 @@ apis/api-journeys-modern/src/schema/templateGalleryPage/
 
 #### File map (modified)
 
-| File | Change |
-|---|---|
-| `libs/prisma/journeys/db/schema.prisma` | Add `TemplateGalleryPageStatus` enum, `TemplateGalleryPage` model, `TemplateGalleryPageTemplate` join model. Add back-references to `Team`, `Journey`, `Block`. |
-| `apis/api-journeys-modern/src/schema/schema.ts` | Add `import './templateGalleryPage'` (alphabetical: between `team` and `user`, but follow existing ordering — `team` is at the bottom, so insert before `user`). |
+| File                                                     | Change                                                                                                                                                                                                                                                                            |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `libs/prisma/journeys/db/schema.prisma`                  | Add `TemplateGalleryPageStatus` enum, `TemplateGalleryPage` model, `TemplateGalleryPageTemplate` join model. Add back-references to `Team`, `Journey`, `Block`.                                                                                                                   |
+| `apis/api-journeys-modern/src/schema/schema.ts`          | Add `import './templateGalleryPage'` (alphabetical: between `team` and `user`, but follow existing ordering — `team` is at the bottom, so insert before `user`).                                                                                                                  |
 | `apis/api-journeys-modern/src/schema/journey/journey.ts` | (Optional, ship-with) Extend `JourneyRef` with a `templateGalleryPages` field via `builder.prismaObjectField('Journey', …)` — same pattern as `journeyCollection.ts:29-46`. **Not strictly required for NES-1547**; deferred unless the admin UI wants it. Flag in PR for review. |
 
 #### Prisma schema — exact additions
@@ -197,11 +197,11 @@ model TemplateGalleryPageTemplate {
 
 Back-references to add to existing models:
 
-| Model | Field to add |
-|---|---|
-| `Team` ([schema.prisma:239-258](libs/prisma/journeys/db/schema.prisma:239)) | `templateGalleryPages TemplateGalleryPage[]` |
-| `Journey` (~line 444 area, near `journeyCollectionJourneys`) | `templateGalleryPageTemplates TemplateGalleryPageTemplate[] @relation("JourneyTemplateGalleryPageTemplate")` |
-| `Block` (creator image FK) | `templateGalleryPagesAsCreatorImage TemplateGalleryPage[] @relation("TemplateGalleryPageCreatorImageBlock")` |
+| Model                                                                       | Field to add                                                                                                 |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `Team` ([schema.prisma:239-258](libs/prisma/journeys/db/schema.prisma:239)) | `templateGalleryPages TemplateGalleryPage[]`                                                                 |
+| `Journey` (~line 444 area, near `journeyCollectionJourneys`)                | `templateGalleryPageTemplates TemplateGalleryPageTemplate[] @relation("JourneyTemplateGalleryPageTemplate")` |
+| `Block` (creator image FK)                                                  | `templateGalleryPagesAsCreatorImage TemplateGalleryPage[] @relation("TemplateGalleryPageCreatorImageBlock")` |
 
 #### ERD
 
@@ -245,7 +245,7 @@ import { JourneyRef } from '../journey/journey'
 import { TemplateGalleryPageStatusRef } from './enums'
 
 export const TemplateGalleryPageRef = builder.prismaObject('TemplateGalleryPage', {
-  shareable: false,  // no other subgraph defines this type yet — see architecture review A2
+  shareable: false, // no other subgraph defines this type yet — see architecture review A2
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     title: t.exposeString('title', { nullable: false }),
@@ -258,7 +258,7 @@ export const TemplateGalleryPageRef = builder.prismaObject('TemplateGalleryPage'
     publishedAt: t.expose('publishedAt', { type: 'DateTimeISO', nullable: true }),
     createdAt: t.expose('createdAt', { type: 'DateTimeISO', nullable: false }),
     updatedAt: t.expose('updatedAt', { type: 'DateTimeISO', nullable: false }),
-    team: t.relation('team', { nullable: false }),
+    team: t.relation('team', { nullable: false })
     // `templates` field — see §"Read-time templates filter" above for full body
   })
 })
@@ -273,11 +273,11 @@ export const TemplateGalleryPageCreateInput = builder.inputType('TemplateGallery
   fields: (t) => ({
     teamId: t.id({ required: true }),
     title: t.string({ required: true }),
-    description: t.string(),                     // optional; defaults to "" via Prisma
+    description: t.string(), // optional; defaults to "" via Prisma
     creatorName: t.string({ required: true }),
     creatorImageBlockId: t.id(),
-    mediaUrl: t.string(),                        // server validates https:// at write time
-    journeyIds: t.idList()                       // optional; ordering = array order
+    mediaUrl: t.string(), // server validates https:// at write time
+    journeyIds: t.idList() // optional; ordering = array order
   })
 })
 ```
@@ -291,11 +291,11 @@ export const TemplateGalleryPageUpdateInput = builder.inputType('TemplateGallery
   fields: (t) => ({
     title: t.string(),
     description: t.string(),
-    slug: t.string(),                            // server normalizes via slugify({lower:true,strict:true}) and rejects reserved/duplicate
+    slug: t.string(), // server normalizes via slugify({lower:true,strict:true}) and rejects reserved/duplicate
     creatorName: t.string(),
-    creatorImageBlockId: t.id(),                 // null clears, undefined leaves alone
+    creatorImageBlockId: t.id(), // null clears, undefined leaves alone
     mediaUrl: t.string(),
-    journeyIds: t.idList()                       // undefined leaves join table; [] clears; non-empty replaces
+    journeyIds: t.idList() // undefined leaves join table; [] clears; non-empty replaces
   })
 })
 ```
@@ -325,7 +325,7 @@ type TemplateGalleryPage {
   createdAt: DateTimeISO!
   updatedAt: DateTimeISO!
   team: Team!
-  templates: [Journey!]!     # already ordered by `order` asc — see select in resolver
+  templates: [Journey!]! # already ordered by `order` asc — see select in resolver
 }
 
 input TemplateGalleryPageCreateInput {
@@ -335,22 +335,22 @@ input TemplateGalleryPageCreateInput {
   creatorName: String!
   creatorImageBlockId: ID
   mediaUrl: String
-  journeyIds: [ID!]          # optional; ordering = array order
+  journeyIds: [ID!] # optional; ordering = array order
 }
 
 input TemplateGalleryPageUpdateInput {
   title: String
   description: String
-  slug: String               # MUTABLE
+  slug: String # MUTABLE
   creatorName: String
   creatorImageBlockId: ID
   mediaUrl: String
-  journeyIds: [ID!]          # if provided, REPLACES join table; ordering = array order
+  journeyIds: [ID!] # if provided, REPLACES join table; ordering = array order
 }
 
 type Query {
-  templateGalleryPages(teamId: ID!): [TemplateGalleryPage!]!     # team auth (isInTeam)
-  templateGalleryPageBySlug(slug: String!): TemplateGalleryPage  # PUBLIC; published-only; null if draft or missing
+  templateGalleryPages(teamId: ID!): [TemplateGalleryPage!]! # team auth (isInTeam)
+  templateGalleryPageBySlug(slug: String!): TemplateGalleryPage # PUBLIC; published-only; null if draft or missing
 }
 
 type Mutation {
@@ -373,7 +373,7 @@ useResponseCache({
   // ...existing config
   ttlPerSchemaCoordinate: {
     // ...existing entries
-    'Query.templateGalleryPageBySlug': 60_000,  // 1 minute — bounds staleness if mutation invalidation is bypassed (e.g., direct DB edit during a backfill)
+    'Query.templateGalleryPageBySlug': 60_000 // 1 minute — bounds staleness if mutation invalidation is bypassed (e.g., direct DB edit during a backfill)
   }
 })
 ```
@@ -416,21 +416,23 @@ if (!(await isInTeam({ context, teamId: page.teamId }))) {
 `generateUniqueSlug.ts` — **single LIKE query (not N round-trips), runs OUTSIDE the transaction, with `P2002` retry-once for the rare TOCTOU race**:
 
 ```typescript
-import slugify from 'slugify'  // already a repo dependency; used in apis/api-journeys-modern/src/schema/block/step/stepBlockUpdate.mutation.ts:2
+import slugify from 'slugify' // already a repo dependency; used in apis/api-journeys-modern/src/schema/block/step/stepBlockUpdate.mutation.ts:2
 import { prisma } from '@core/prisma/journeys/client'
 
-const RESERVED_SLUGS = new Set([
-  'admin', 'api', 'templates', 'journey', 'journeys',
-  'static', 'public', 'app', 'auth', 'sign-in', 'sign-up',
-  'health', 'graphql', 'webhook', 'webhooks'
-])
+const RESERVED_SLUGS = new Set(['admin', 'api', 'templates', 'journey', 'journeys', 'static', 'public', 'app', 'auth', 'sign-in', 'sign-up', 'health', 'graphql', 'webhook', 'webhooks'])
 
 export class SlugTakenError extends Error {
-  constructor() { super('slug already in use'); this.name = 'SlugTakenError' }
+  constructor() {
+    super('slug already in use')
+    this.name = 'SlugTakenError'
+  }
 }
 
 export class SlugReservedError extends Error {
-  constructor(slug: string) { super(`slug "${slug}" is reserved`); this.name = 'SlugReservedError' }
+  constructor(slug: string) {
+    super(`slug "${slug}" is reserved`)
+    this.name = 'SlugReservedError'
+  }
 }
 
 /**
@@ -443,7 +445,7 @@ export class SlugReservedError extends Error {
  */
 export async function generateUniqueSlug(
   title: string,
-  excludeId?: string  // for update: ignore self when checking conflicts
+  excludeId?: string // for update: ignore self when checking conflicts
 ): Promise<string> {
   const base = slugify(title, { lower: true, strict: true })
   if (base === '' || RESERVED_SLUGS.has(base)) throw new SlugReservedError(base || '(empty)')
@@ -452,9 +454,7 @@ export async function generateUniqueSlug(
     where: { slug: { startsWith: base } },
     select: { id: true, slug: true }
   })
-  const taken = new Set(
-    collisions.filter(c => c.id !== excludeId).map(c => c.slug)
-  )
+  const taken = new Set(collisions.filter((c) => c.id !== excludeId).map((c) => c.slug))
 
   if (!taken.has(base)) return base
   for (let suffix = 2; suffix <= 50; suffix++) {
@@ -470,10 +470,7 @@ export async function generateUniqueSlug(
  * Validate a user-supplied slug (update flow only).
  * Slug must match the canonical shape, not be reserved, and not collide.
  */
-export async function validateUserSuppliedSlug(
-  rawSlug: string,
-  excludeId: string
-): Promise<string> {
+export async function validateUserSuppliedSlug(rawSlug: string, excludeId: string): Promise<string> {
   const slug = slugify(rawSlug, { lower: true, strict: true })
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug) || slug.length > 200) {
     throw new GraphQLError('invalid slug shape', {
@@ -500,11 +497,11 @@ while (true) {
     return await prisma.$transaction(async (tx) => {
       const validJourneyIds = await filterToTeamTemplates(tx, teamId, journeyIds ?? [])
       if (creatorImageBlockId != null) await validateCreatorImageBlock(tx, teamId, creatorImageBlockId)
-      return tx.templateGalleryPage.create({ ...query, data: { /* ... */ slug, /* ... */ } })
+      return tx.templateGalleryPage.create({ ...query, data: { /* ... */ slug /* ... */ } })
     })
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002' && attempt === 0) {
-      attempt += 1  // retry once with a fresh slug computation
+      attempt += 1 // retry once with a fresh slug computation
       continue
     }
     throw e
@@ -513,6 +510,7 @@ while (true) {
 ```
 
 **Why this shape** (vs. original draft's loop-inside-transaction):
+
 - N database round-trips collapsed to 1 (the `LIKE` SELECT).
 - Slug-gen runs **before** opening the transaction — does not pin a connection.
 - DB unique constraint backstops the TOCTOU race; one retry is sufficient (a third concurrent collision on the exact same suffix is statistically negligible and the second retry would mask a real bug).
@@ -531,19 +529,15 @@ while (true) {
  * The dropped count is returned so the caller MAY surface it to the admin UI
  * (NES-1548 already plans a "we removed N journeys you don't have access to" toast).
  */
-export async function filterToTeamTemplates(
-  tx: Prisma.TransactionClient,
-  teamId: string,
-  journeyIds: string[]
-): Promise<{ validIds: string[]; droppedCount: number }> {
+export async function filterToTeamTemplates(tx: Prisma.TransactionClient, teamId: string, journeyIds: string[]): Promise<{ validIds: string[]; droppedCount: number }> {
   if (journeyIds.length === 0) return { validIds: [], droppedCount: 0 }
   const dedup = [...new Set(journeyIds)]
   const found = await tx.journey.findMany({
     where: { id: { in: dedup }, teamId, template: true },
     select: { id: true }
   })
-  const validSet = new Set(found.map(j => j.id))
-  const validIds = dedup.filter(id => validSet.has(id))  // preserves input ordering
+  const validSet = new Set(found.map((j) => j.id))
+  const validIds = dedup.filter((id) => validSet.has(id)) // preserves input ordering
   return { validIds, droppedCount: dedup.length - validIds.length }
 }
 ```
@@ -568,11 +562,7 @@ import { Prisma } from '@core/prisma/journeys/client'
  * Same class of bug as docs/solutions/security-issues/google-sync-missing-integration-ownership-guard.md
  * — accepting a foreign-key id without verifying requester owns the referenced resource.
  */
-export async function validateCreatorImageBlock(
-  tx: Prisma.TransactionClient,
-  teamId: string,
-  blockId: string
-): Promise<void> {
+export async function validateCreatorImageBlock(tx: Prisma.TransactionClient, teamId: string, blockId: string): Promise<void> {
   const block = await tx.block.findUnique({
     where: { id: blockId },
     select: { typename: true, journey: { select: { teamId: true } } }
@@ -601,24 +591,24 @@ templates: t.field({
   // SDL: [Journey!]! — verify nullable list-item config in apis/api-journeys-modern/src/schema/builder.ts
   nullable: false,
   select: (_args, _ctx, nestedSelection) => ({
-    teamId: true,  // pin parent.teamId for the filter below (Pothos parent-selection)
+    teamId: true, // pin parent.teamId for the filter below (Pothos parent-selection)
     templates: {
       where: {
         // Defense-in-depth: even if a join row is stale, only same-team published templates surface.
         journey: {
           template: true,
-          status: 'published',
+          status: 'published'
           // teamId equality enforced via parent.teamId; for cross-team future, relax here too.
         }
       },
-      include: { journey: nestedSelection(true) },  // column pruning per kieran-typescript-reviewer #9
+      include: { journey: nestedSelection(true) }, // column pruning per kieran-typescript-reviewer #9
       orderBy: { order: 'asc' }
     }
   }),
   resolve: (page) => {
     return page.templates
-      .filter(tpt => tpt.journey?.teamId === page.teamId)  // belt + braces beside the where clause above
-      .map(tpt => tpt.journey)
+      .filter((tpt) => tpt.journey?.teamId === page.teamId) // belt + braces beside the where clause above
+      .map((tpt) => tpt.journey)
   }
 })
 ```
@@ -674,7 +664,7 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
                 data: {
                   team: { connect: { id: teamId } },
                   title,
-                  description: description ?? undefined,  // honor @default("")
+                  description: description ?? undefined, // honor @default("")
                   slug,
                   status: 'draft',
                   creatorName,
@@ -756,7 +746,7 @@ Idempotent so the admin UI can call it repeatedly without side effects (e.g., a 
 ```typescript
 builder.queryField('templateGalleryPageBySlug', (t) =>
   t
-    .withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })  // matches adminJourney precedent
+    .withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }) // matches adminJourney precedent
     .prismaField({
       type: TemplateGalleryPageRef,
       nullable: true,
@@ -775,6 +765,7 @@ builder.queryField('templateGalleryPageBySlug', (t) =>
 ```
 
 Returns `null` on:
+
 - malformed slug (regex reject before DB)
 - unknown slug
 - draft / status !== 'published'
@@ -846,15 +837,15 @@ The `templates` field defined above (in §"Read-time templates filter") handles 
 
 ## Alternative Approaches Considered
 
-| Approach | Why considered | Why rejected |
-|---|---|---|
-| **Add to legacy `api-journeys` (NestJS)** | Existing journeyCollection lives there; copy-paste would be faster. | Spec mandates Pothos. New work goes to `api-journeys-modern`; legacy is on the way out. |
-| **Reuse `JourneyCollection` model** | Same shape — title, ordered journeys, teamId. | Different lifecycle (drafts, publish, slugs, public access, creator metadata). Overloading `JourneyCollection` would couple two product surfaces and defeat the resolved decision to track status separately. |
-| **Single mutation `templateGalleryPageSave` covering create + update + publish** | Fewer GQL surface points. | Hides state transitions; makes ACL/audit reasoning harder; spec explicitly calls for a separate `Publish` mutation. |
-| **Soft delete (status: archived)** | Recoverable. | Spec says hard delete. Templates Gallery Pages aren't a regulated artefact; cascade is fine. |
-| **Slug auto-regenerate on title change** | Convenience. | Silently breaks any external link to the published page. Slug change is now an explicit, rare admin operation. |
-| **Backend LD flag check on the API** | Defence in depth. | No backend LD client exists, and the API is invisible until the admin UI ships behind the flag. Adding LD client purely for one flag check would be over-engineering. The PR can land before the LD flag flips on. |
-| **CRUD via a single REST router** | Simpler. | Inconsistent with the rest of the API surface. All other journey-domain CRUD is GraphQL. |
+| Approach                                                                         | Why considered                                                      | Why rejected                                                                                                                                                                                                       |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Add to legacy `api-journeys` (NestJS)**                                        | Existing journeyCollection lives there; copy-paste would be faster. | Spec mandates Pothos. New work goes to `api-journeys-modern`; legacy is on the way out.                                                                                                                            |
+| **Reuse `JourneyCollection` model**                                              | Same shape — title, ordered journeys, teamId.                       | Different lifecycle (drafts, publish, slugs, public access, creator metadata). Overloading `JourneyCollection` would couple two product surfaces and defeat the resolved decision to track status separately.      |
+| **Single mutation `templateGalleryPageSave` covering create + update + publish** | Fewer GQL surface points.                                           | Hides state transitions; makes ACL/audit reasoning harder; spec explicitly calls for a separate `Publish` mutation.                                                                                                |
+| **Soft delete (status: archived)**                                               | Recoverable.                                                        | Spec says hard delete. Templates Gallery Pages aren't a regulated artefact; cascade is fine.                                                                                                                       |
+| **Slug auto-regenerate on title change**                                         | Convenience.                                                        | Silently breaks any external link to the published page. Slug change is now an explicit, rare admin operation.                                                                                                     |
+| **Backend LD flag check on the API**                                             | Defence in depth.                                                   | No backend LD client exists, and the API is invisible until the admin UI ships behind the flag. Adding LD client purely for one flag check would be over-engineering. The PR can land before the LD flag flips on. |
+| **CRUD via a single REST router**                                                | Simpler.                                                            | Inconsistent with the rest of the API surface. All other journey-domain CRUD is GraphQL.                                                                                                                           |
 
 ## System-Wide Impact
 
@@ -867,14 +858,14 @@ The `templates` field defined above (in §"Read-time templates filter") handles 
 
 ### Error & Failure Propagation
 
-| Failure point | Surface to client |
-|---|---|
-| Auth scope fails (`isInTeam` returns false) | Pothos default: `not authorized` GraphQLError, code 401/403 (depends on Pothos config). Confirm by checking `builder.ts` scope-auth options. |
+| Failure point                                                 | Surface to client                                                                                                                                    |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Auth scope fails (`isInTeam` returns false)                   | Pothos default: `not authorized` GraphQLError, code 401/403 (depends on Pothos config). Confirm by checking `builder.ts` scope-auth options.         |
 | Slug collision in transaction (extremely rare given pre-loop) | Postgres unique violation → Prisma `P2002` → caught by transaction → re-throw as GraphQLError `code: SLUG_TAKEN`. Catch explicitly in create/update. |
-| Journey ID belongs to other team / not a template | Silently filtered by `filterToTeamTemplates`. No error. Match legacy behaviour. |
-| `creatorImageBlockId` does not exist | FK constraint violation → Prisma `P2003` → re-throw as `BAD_USER_INPUT` with code `INVALID_CREATOR_IMAGE_BLOCK`. |
-| Page not found on update/publish/delete | Resolver fetches first; throw `NOT_FOUND` GraphQLError. Match `customDomain.query.ts:32-35` pattern. |
-| Public query — page is draft or missing | Return `null` (not throw). Document in SDL comment. |
+| Journey ID belongs to other team / not a template             | Silently filtered by `filterToTeamTemplates`. No error. Match legacy behaviour.                                                                      |
+| `creatorImageBlockId` does not exist                          | FK constraint violation → Prisma `P2003` → re-throw as `BAD_USER_INPUT` with code `INVALID_CREATOR_IMAGE_BLOCK`.                                     |
+| Page not found on update/publish/delete                       | Resolver fetches first; throw `NOT_FOUND` GraphQLError. Match `customDomain.query.ts:32-35` pattern.                                                 |
+| Public query — page is draft or missing                       | Return `null` (not throw). Document in SDL comment.                                                                                                  |
 
 ### State Lifecycle Risks
 
@@ -889,7 +880,7 @@ The `templates` field defined above (in §"Read-time templates filter") handles 
 
 - `apis/api-journeys` (legacy NestJS) does **not** re-expose `TemplateGalleryPage`. Only `api-journeys-modern` owns this type. Verified by federation `override` not being used.
 - The shared Prisma schema means `api-journeys` resolvers compile against the new types automatically — none reference the new tables, but the regeneration step is mandatory after the migration.
-- No watch-modern, journeys-admin, or journeys consumer is *required* to update (codegen produces types; consumers will land in NES-1548 / NES-1549).
+- No watch-modern, journeys-admin, or journeys consumer is _required_ to update (codegen produces types; consumers will land in NES-1548 / NES-1549).
 
 ### Integration Test Scenarios
 
@@ -945,30 +936,30 @@ These are deliberately cross-layer scenarios that unit-with-mocks cannot cover. 
 
 ## Dependencies & Prerequisites
 
-| Dependency | State |
-|---|---|
-| `prisma-pothos-types` plugin | Already wired in `builder.ts` |
-| `isInTeam` scope | Implemented at `apis/api-journeys-modern/src/schema/authScopes.ts:47-59,111` |
-| Slugify pattern | Reference: `apis/api-languages/src/lib/slugify/slugify.ts:1-37` (copied inline, not imported) |
-| `prisma.$transaction` | Already used by every multi-write mutation |
-| Federation compose tooling | `nx generate-graphql api-gateway` runs Hive |
-| LaunchDarkly `templateGalleryPage` flag | Frontend-only; created by ops in dashboard, off by default. **Not** a blocker for this PR. |
-| NES-1607 product spec | Resolved decisions captured in this plan |
+| Dependency                              | State                                                                                         |
+| --------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `prisma-pothos-types` plugin            | Already wired in `builder.ts`                                                                 |
+| `isInTeam` scope                        | Implemented at `apis/api-journeys-modern/src/schema/authScopes.ts:47-59,111`                  |
+| Slugify pattern                         | Reference: `apis/api-languages/src/lib/slugify/slugify.ts:1-37` (copied inline, not imported) |
+| `prisma.$transaction`                   | Already used by every multi-write mutation                                                    |
+| Federation compose tooling              | `nx generate-graphql api-gateway` runs Hive                                                   |
+| LaunchDarkly `templateGalleryPage` flag | Frontend-only; created by ops in dashboard, off by default. **Not** a blocker for this PR.    |
+| NES-1607 product spec                   | Resolved decisions captured in this plan                                                      |
 
 No blockers. Ready to begin.
 
 ## Risk Analysis & Mitigation
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| Stale cross-team rows after journey transfer / template-flag flip leak to public page | Med | High | Read-time `templates` filter (security H2) — see §"Read-time templates filter". |
-| `creatorImageBlockId` set to another team's Block leaks Block content via public query | Med | High | `validateCreatorImageBlock` runs on Create + Update (security H1). |
-| Slug uniqueness race under concurrent same-title creates | Low | Med | DB unique constraint + one-shot `P2002` retry with re-computed slug. After two collisions on the same auto-generated slug, throw — bug-not-feature. |
-| Federation compose fails on type name clash | Low | Med | New names (`TemplateGalleryPage*`) checked against existing schema (none collide). Gate landing on `generate-graphql api-gateway` succeeding locally. |
-| Codegen breaks downstream apps | Low | Med | Codegen runs on every CI; failure is loud; mitigated by running locally before push. |
-| Public query abuse / scraping / slug enumeration | Med | Low | Existing Yoga rate-limiting + response cache (`ttlPerSchemaCoordinate`); regex-reject malformed slugs before DB hit; bounded slug character set. |
-| Spec changes "any team member" → "managers only" mid-flight | Low | Low | One-line change in each of four resolvers (`isInTeam` → `isTeamManager`); minor scope. |
-| `useResponseCache` lacks `session` config and bleeds authed responses to anonymous | Low | High | Verify `session` is configured in `yoga.ts` before NES-1548 ships authed mutations that rely on cache invalidation. **Out of scope for NES-1547** (no authed cached responses introduced here), but flag in PR. |
+| Risk                                                                                   | Likelihood | Impact | Mitigation                                                                                                                                                                                                      |
+| -------------------------------------------------------------------------------------- | ---------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stale cross-team rows after journey transfer / template-flag flip leak to public page  | Med        | High   | Read-time `templates` filter (security H2) — see §"Read-time templates filter".                                                                                                                                 |
+| `creatorImageBlockId` set to another team's Block leaks Block content via public query | Med        | High   | `validateCreatorImageBlock` runs on Create + Update (security H1).                                                                                                                                              |
+| Slug uniqueness race under concurrent same-title creates                               | Low        | Med    | DB unique constraint + one-shot `P2002` retry with re-computed slug. After two collisions on the same auto-generated slug, throw — bug-not-feature.                                                             |
+| Federation compose fails on type name clash                                            | Low        | Med    | New names (`TemplateGalleryPage*`) checked against existing schema (none collide). Gate landing on `generate-graphql api-gateway` succeeding locally.                                                           |
+| Codegen breaks downstream apps                                                         | Low        | Med    | Codegen runs on every CI; failure is loud; mitigated by running locally before push.                                                                                                                            |
+| Public query abuse / scraping / slug enumeration                                       | Med        | Low    | Existing Yoga rate-limiting + response cache (`ttlPerSchemaCoordinate`); regex-reject malformed slugs before DB hit; bounded slug character set.                                                                |
+| Spec changes "any team member" → "managers only" mid-flight                            | Low        | Low    | One-line change in each of four resolvers (`isInTeam` → `isTeamManager`); minor scope.                                                                                                                          |
+| `useResponseCache` lacks `session` config and bleeds authed responses to anonymous     | Low        | High   | Verify `session` is configured in `yoga.ts` before NES-1548 ships authed mutations that rely on cache invalidation. **Out of scope for NES-1547** (no authed cached responses introduced here), but flag in PR. |
 
 ## Resource Requirements
 
