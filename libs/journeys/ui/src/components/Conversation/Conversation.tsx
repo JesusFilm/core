@@ -49,6 +49,15 @@ export function Conversation({
   const evaluateAtBottom = useCallback(() => {
     const el = scrollRef.current
     if (el == null) return
+    // No visible scroll area (e.g. parent sheet collapsed to a thin
+    // handle) means there's nothing to scroll. Treat as at-bottom so
+    // the pill doesn't render — otherwise scrollHeight - 0 - 0 reads
+    // as "far above bottom" and the chevron leaks through.
+    if (el.clientHeight === 0) {
+      wasNearBottomRef.current = true
+      setIsAtBottom(true)
+      return
+    }
     const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight
     const nearBottom = distanceFromBottom <= NEAR_BOTTOM_THRESHOLD_PX
     wasNearBottomRef.current = nearBottom
