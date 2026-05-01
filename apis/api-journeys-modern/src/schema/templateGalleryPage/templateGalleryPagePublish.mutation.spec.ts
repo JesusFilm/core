@@ -1,3 +1,4 @@
+import { Prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
@@ -165,6 +166,38 @@ describe('templateGalleryPagePublish', () => {
     const result = await authClient({
       document: TEMPLATE_GALLERY_PAGE_PUBLISH,
       variables: { id: 'missing' }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'template gallery page not found'
+        })
+      ]
+    })
+  })
+
+  it('rewraps Prisma P2025 (page deleted between fetch and re-read) as NOT_FOUND GraphQL error', async () => {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'p1',
+      teamId: 'team-1',
+      status: 'draft',
+      publishedAt: null
+    } as any)
+    prismaMock.templateGalleryPage.updateMany.mockResolvedValue({
+      count: 1
+    } as any)
+    prismaMock.templateGalleryPage.findUniqueOrThrow.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('record not found', {
+        code: 'P2025',
+        clientVersion: '7.0.0'
+      })
+    )
+
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_PUBLISH,
+      variables: { id: 'p1' }
     })
 
     expect(result).toEqual({

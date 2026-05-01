@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '@core/prisma/journeys/client'
+import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { isInTeam } from '../authScopes'
 import { builder } from '../builder'
@@ -33,38 +33,47 @@ builder.mutationField('templateGalleryPagePublish', (t) =>
         )
       }
 
-      // Idempotent: if already published, return unchanged.
-      if (page.status === 'published') {
-        return await prisma.templateGalleryPage.findUniqueOrThrow({
-          ...query,
-          where: { id }
+      // Atomic transition under concurrent publishes: the `status: 'draft'`
+      // predicate makes updateMany a no-op for any caller that lost the race.
+      // First-publish wins, and `publishedAt` is set on the winning
+      // transition only — never re-stamped (monotonic).
+      //
+      // Idempotent re-publish: when status is already 'published' we skip
+      // updateMany entirely and return the canonical row. Avoids a redundant
+      // SQL round-trip on the hot read-modify path.
+      if (page.status !== 'published') {
+        await prisma.templateGalleryPage.updateMany({
+          where: { id, status: 'draft' },
+          data: {
+            status: 'published',
+            publishedAt: new Date()
+          }
         })
       }
 
-      // First-publish-wins under concurrent calls. The `status: 'draft'`
-      // predicate makes the update atomic — at most one of N concurrent
-      // publishers matches a row to update. The losers' updateMany returns
-      // count 0 and falls through to the same canonical-read path as a
-      // re-publish, preserving the winner's publishedAt timestamp.
-      const result = await prisma.templateGalleryPage.updateMany({
-        where: { id, status: 'draft' },
-        data: {
-          status: 'published',
-          publishedAt: new Date()
-        }
-      })
-      if (result.count === 0) {
-        // Another publisher won the race between our findUnique and update.
-        // Return the canonical row with the winner's publishedAt.
+      // Re-read canonically. Whether we won the race, lost it, or no-op'd
+      // (already published), we want the current row with whichever
+      // publishedAt the winner stamped.
+      try {
         return await prisma.templateGalleryPage.findUniqueOrThrow({
           ...query,
           where: { id }
         })
+      } catch (error) {
+        // Edge case: the page was deleted between our auth-fetch and the
+        // re-read. Surface as the same NOT_FOUND GraphQLError the earlier
+        // existence check would have thrown — keep the client error shape
+        // consistent instead of leaking a Prisma P2025 as an unwrapped 500.
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === 'P2025'
+        ) {
+          throw new GraphQLError('template gallery page not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        }
+        throw error
       }
-      return await prisma.templateGalleryPage.findUniqueOrThrow({
-        ...query,
-        where: { id }
-      })
     }
   })
 )
