@@ -121,6 +121,16 @@ export function journeyAcl(
     return false
   }
 
+  // Restricted local templates: only owners (creators), team managers, and
+  // publishers (handled above) may update. Plain team members and journey
+  // editors retain Read access only.
+  if (
+    isRestrictedLocalTemplate(journey) &&
+    (action === Action.Update || action === Action.Delete)
+  ) {
+    return ownerOrManager(journey, user)
+  }
+
   switch (action) {
     case Action.Create:
       return create(journey, user)
@@ -138,6 +148,27 @@ export function journeyAcl(
     default:
       return false
   }
+}
+
+function isRestrictedLocalTemplate(journey: Partial<Journey>): boolean {
+  return (
+    journey.template === true &&
+    journey.teamId !== 'jfp-team' &&
+    journey.restrictEditing === true
+  )
+}
+
+function ownerOrManager(journey: Partial<Journey>, user: User): boolean {
+  const isOwner = journey?.userJourneys?.some(
+    (userJourney) =>
+      userJourney.userId === user.id &&
+      userJourney.role === UserJourneyRole.owner
+  )
+  const isManager = journey?.team?.userTeams?.some(
+    (userTeam) =>
+      userTeam.userId === user.id && userTeam.role === UserTeamRole.manager
+  )
+  return Boolean(isOwner) || Boolean(isManager)
 }
 
 // team managers and journeys owners can manage the journey

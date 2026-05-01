@@ -523,6 +523,7 @@ export class JourneyUpdateInput {
     logoImageBlockId?: Nullable<string>;
     socialNodeX?: Nullable<number>;
     socialNodeY?: Nullable<number>;
+    restrictEditing?: Nullable<boolean>;
 }
 
 export class JourneyTemplateInput {
@@ -757,6 +758,7 @@ export class Journey {
     journeyCollections: JourneyCollection[];
     templateSite?: Nullable<boolean>;
     customizable?: Nullable<boolean>;
+    restrictEditing?: Nullable<boolean>;
     plausibleToken?: Nullable<string>;
     website?: Nullable<boolean>;
     showShareButton?: Nullable<boolean>;

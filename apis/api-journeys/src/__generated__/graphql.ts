@@ -1119,6 +1119,12 @@ export type Journey = {
   plausibleToken?: Maybe<Scalars['String']['output']>;
   primaryImageBlock?: Maybe<ImageBlock>;
   publishedAt?: Maybe<Scalars['DateTime']['output']>;
+  /**
+   * When true on a template, only the journey owner (creator) and team
+   * managers may mutate the journey. Plain team members and journey editors
+   * retain read access. Has no effect on non-templates and on global templates.
+   */
+  restrictEditing?: Maybe<Scalars['Boolean']['output']>;
   seoDescription?: Maybe<Scalars['String']['output']>;
   /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
@@ -1407,6 +1413,12 @@ export type JourneyUpdateInput = {
   menuButtonIcon?: InputMaybe<JourneyMenuButtonIcon>;
   menuStepBlockId?: InputMaybe<Scalars['ID']['input']>;
   primaryImageBlockId?: InputMaybe<Scalars['ID']['input']>;
+  /**
+   * Restrict edit access on a team (local) template to managers and the
+   * journey creator (owner). Only flippable by team managers. No effect on
+   * non-templates or on global templates (teamId = 'jfp-team').
+   */
+  restrictEditing?: InputMaybe<Scalars['Boolean']['input']>;
   seoDescription?: InputMaybe<Scalars['String']['input']>;
   seoTitle?: InputMaybe<Scalars['String']['input']>;
   showChatButtons?: InputMaybe<Scalars['Boolean']['input']>;

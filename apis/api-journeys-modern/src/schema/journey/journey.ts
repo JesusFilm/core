@@ -172,6 +172,11 @@ export const JourneyRef = builder.prismaObject('Journey', {
     customizable: t.exposeBoolean('customizable', {
       nullable: true
     }),
+    restrictEditing: t.exposeBoolean('restrictEditing', {
+      nullable: true,
+      description:
+        'When true on a template, only the journey owner (creator) and team managers may mutate the journey.'
+    }),
 
     // UI Configuration Fields
     menuButtonIcon: t.field({

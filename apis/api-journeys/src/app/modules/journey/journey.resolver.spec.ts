@@ -111,7 +111,8 @@ describe('JourneyResolver', () => {
     journeyCustomizationDescription: null,
     showAssistant: null,
     templateSite: null,
-    customizable: null
+    customizable: null,
+    restrictEditing: false
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -2221,6 +2222,79 @@ describe('JourneyResolver', () => {
         })
       )
     })
+
+    describe('restrictEditing inheritance', () => {
+      const restrictedLocalTemplate = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        template: true,
+        teamId: 'teamId',
+        restrictEditing: true
+      }
+
+      it('inherits restrictEditing when duplicating a restricted template within the same team', async () => {
+        prismaService.journey.findUnique
+          .mockReset()
+          .mockResolvedValueOnce(restrictedLocalTemplate)
+          .mockResolvedValueOnce(journeyWithUserTeam)
+        prismaService.journey.findMany.mockReset().mockResolvedValueOnce([])
+
+        await resolver.journeyDuplicate(
+          ability,
+          'journeyId',
+          'userId',
+          'teamId'
+        )
+
+        expect(prismaService.journey.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ restrictEditing: true })
+          })
+        )
+      })
+
+      it('clears restrictEditing when duplicating a restricted template to a different team', async () => {
+        prismaService.journey.findUnique
+          .mockReset()
+          .mockResolvedValueOnce(restrictedLocalTemplate)
+          .mockResolvedValueOnce(journeyWithUserTeam)
+        prismaService.journey.findMany.mockReset().mockResolvedValueOnce([])
+
+        await resolver.journeyDuplicate(
+          ability,
+          'journeyId',
+          'userId',
+          'differentTeamId'
+        )
+
+        expect(prismaService.journey.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ restrictEditing: false })
+          })
+        )
+      })
+
+      it('clears restrictEditing when duplicating a restricted template with forceNonTemplate', async () => {
+        prismaService.journey.findUnique
+          .mockReset()
+          .mockResolvedValueOnce(restrictedLocalTemplate)
+          .mockResolvedValueOnce(journeyWithUserTeam)
+        prismaService.journey.findMany.mockReset().mockResolvedValueOnce([])
+
+        await resolver.journeyDuplicate(
+          ability,
+          'journeyId',
+          'userId',
+          'teamId',
+          true
+        )
+
+        expect(prismaService.journey.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ restrictEditing: false })
+          })
+        )
+      })
+    })
   })
 
   describe('journeyUpdate', () => {
@@ -2430,6 +2504,65 @@ describe('JourneyResolver', () => {
         title: 'new title'
       })
       expect(journeyCustomizableService.recalculate).not.toHaveBeenCalled()
+    })
+
+    describe('restrictEditing field-level guard', () => {
+      const localTemplateOwnedByMember = {
+        ...journey,
+        template: true,
+        teamId: 'local-team-id',
+        team: {
+          id: 'local-team-id',
+          userTeams: [{ userId: 'userId', role: UserTeamRole.member }]
+        },
+        userJourneys: [{ userId: 'userId', role: UserJourneyRole.owner }]
+      }
+      const localTemplateOwnedByManager = {
+        ...journey,
+        template: true,
+        teamId: 'local-team-id',
+        team: {
+          id: 'local-team-id',
+          userTeams: [{ userId: 'userId', role: UserTeamRole.manager }]
+        },
+        userJourneys: []
+      }
+
+      it('allows manager to set restrictEditing', async () => {
+        prismaService.journey.findUnique.mockResolvedValueOnce(
+          localTemplateOwnedByManager as unknown as Journey
+        )
+        prismaService.journey.update.mockResolvedValueOnce(journey)
+        await resolver.journeyUpdate(ability, 'journeyId', {
+          restrictEditing: true
+        })
+        expect(prismaService.journey.update).toHaveBeenCalled()
+      })
+
+      it('throws FORBIDDEN when journey owner (non-manager) tries to set restrictEditing', async () => {
+        prismaService.journey.findUnique.mockResolvedValueOnce(
+          localTemplateOwnedByMember as unknown as Journey
+        )
+        await expect(
+          resolver.journeyUpdate(ability, 'journeyId', {
+            restrictEditing: true
+          })
+        ).rejects.toThrow(
+          'user is not allowed to change template edit restriction'
+        )
+      })
+
+      it('does not perform field-level check when restrictEditing is not in input', async () => {
+        prismaService.journey.findUnique.mockResolvedValueOnce(
+          localTemplateOwnedByMember as unknown as Journey
+        )
+        prismaService.journey.update.mockResolvedValueOnce(journey)
+        // Owner can update other fields without restrictEditing field-level check
+        await resolver.journeyUpdate(ability, 'journeyId', {
+          title: 'new title'
+        })
+        expect(prismaService.journey.update).toHaveBeenCalled()
+      })
     })
   })
 
@@ -2787,6 +2920,76 @@ describe('JourneyResolver', () => {
             removeOnFail: { age: 432000, count: 50 }
           }
         )
+      })
+    })
+
+    describe('restrictEditing', () => {
+      const restrictedLocalTemplateAsManager = {
+        ...journey,
+        template: true,
+        teamId: 'local-team-id',
+        restrictEditing: true,
+        team: {
+          id: 'local-team-id',
+          userTeams: [{ userId: 'userId', role: UserTeamRole.manager }]
+        },
+        userJourneys: []
+      }
+      const restrictedLocalTemplateAsMember = {
+        ...journey,
+        template: true,
+        teamId: 'local-team-id',
+        restrictEditing: true,
+        team: {
+          id: 'local-team-id',
+          userTeams: [{ userId: 'userId', role: UserTeamRole.member }]
+        },
+        userJourneys: []
+      }
+
+      it('clears restrictEditing when converting a restricted template back to a regular journey', async () => {
+        prismaService.journey.findUnique.mockResolvedValueOnce(
+          restrictedLocalTemplateAsManager as unknown as Journey
+        )
+        await resolver.journeyTemplate(ability, 'journeyId', {
+          template: false
+        })
+        expect(prismaService.journey.update).toHaveBeenCalledWith({
+          where: { id: 'journeyId' },
+          data: { template: false, restrictEditing: false }
+        })
+      })
+
+      it('does not touch restrictEditing when input.template is true', async () => {
+        prismaService.journey.findUnique.mockResolvedValueOnce(
+          journeyWithUserTeam
+        )
+        await resolver.journeyTemplate(ability, 'journeyId', { template: true })
+        expect(prismaService.journey.update).toHaveBeenCalledWith({
+          where: { id: 'journeyId' },
+          data: { template: true }
+        })
+      })
+
+      it('throws FORBIDDEN when non-manager non-owner tries to flip a restricted local template', async () => {
+        prismaService.journey.findUnique.mockResolvedValueOnce(
+          restrictedLocalTemplateAsMember as unknown as Journey
+        )
+        await expect(
+          resolver.journeyTemplate(ability, 'journeyId', { template: false })
+        ).rejects.toThrow(
+          'user is not allowed to change journey to or from a template'
+        )
+      })
+
+      it('allows manager to flip a restricted local template back', async () => {
+        prismaService.journey.findUnique.mockResolvedValueOnce(
+          restrictedLocalTemplateAsManager as unknown as Journey
+        )
+        await resolver.journeyTemplate(ability, 'journeyId', {
+          template: false
+        })
+        expect(prismaService.journey.update).toHaveBeenCalled()
       })
     })
   })

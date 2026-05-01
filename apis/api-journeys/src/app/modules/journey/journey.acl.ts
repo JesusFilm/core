@@ -83,10 +83,11 @@ export const journeyAcl: AppAclFn = ({
     template: true,
     status: JourneyStatus.published
   })
-  // Team members can manage local templates
+  // Team members can manage unrestricted local templates
   can(Action.Manage, 'Journey', {
     template: true,
     teamId: { not: 'jfp-team' },
+    restrictEditing: { not: true },
     team: {
       is: {
         userTeams: {
@@ -98,10 +99,11 @@ export const journeyAcl: AppAclFn = ({
       }
     }
   })
-  // Journey editors can manage local templates
+  // Journey editors can manage unrestricted local templates
   can(Action.Manage, 'Journey', {
     template: true,
     teamId: { not: 'jfp-team' },
+    restrictEditing: { not: true },
     userJourneys: {
       some: {
         userId: user.id,
@@ -109,11 +111,47 @@ export const journeyAcl: AppAclFn = ({
       }
     }
   })
+  // Block Update on restricted local templates (re-granted for managers and
+  // journey owners below, plus publishers in the publisher block).
+  cannot(Action.Update, 'Journey', {
+    template: true,
+    teamId: { not: 'jfp-team' },
+    restrictEditing: true
+  })
+  // Re-grant Update on restricted local templates to team managers
+  can(Action.Update, 'Journey', {
+    template: true,
+    teamId: { not: 'jfp-team' },
+    restrictEditing: true,
+    team: {
+      is: {
+        userTeams: {
+          some: {
+            userId: user.id,
+            role: UserTeamRole.manager
+          }
+        }
+      }
+    }
+  })
+  // Re-grant Update on restricted local templates to journey owners (the creator)
+  can(Action.Update, 'Journey', {
+    template: true,
+    teamId: { not: 'jfp-team' },
+    restrictEditing: true,
+    userJourneys: {
+      some: {
+        userId: user.id,
+        role: UserJourneyRole.owner
+      }
+    }
+  })
   cannot(Action.Manage, 'Journey', 'template')
-  // Team managers/members can manage template field for local templates
+  // Team managers/members can manage template field for unrestricted local templates
   can(Action.Manage, 'Journey', 'template', {
     template: true,
     teamId: { not: 'jfp-team' },
+    restrictEditing: { not: true },
     team: {
       is: {
         userTeams: {
@@ -125,14 +163,62 @@ export const journeyAcl: AppAclFn = ({
       }
     }
   })
-  // Journey owners/editors can manage template field for local templates
+  // Journey owners/editors can manage template field for unrestricted local templates
   can(Action.Manage, 'Journey', 'template', {
     template: true,
     teamId: { not: 'jfp-team' },
+    restrictEditing: { not: true },
     userJourneys: {
       some: {
         userId: user.id,
         role: { in: [UserJourneyRole.owner, UserJourneyRole.editor] }
+      }
+    }
+  })
+  // Team managers can manage template field on restricted local templates
+  can(Action.Manage, 'Journey', 'template', {
+    template: true,
+    teamId: { not: 'jfp-team' },
+    restrictEditing: true,
+    team: {
+      is: {
+        userTeams: {
+          some: {
+            userId: user.id,
+            role: UserTeamRole.manager
+          }
+        }
+      }
+    }
+  })
+  // Journey owners can manage template field on restricted local templates
+  can(Action.Manage, 'Journey', 'template', {
+    template: true,
+    teamId: { not: 'jfp-team' },
+    restrictEditing: true,
+    userJourneys: {
+      some: {
+        userId: user.id,
+        role: UserJourneyRole.owner
+      }
+    }
+  })
+  // Only team managers may set the restrictEditing field. The flag is a
+  // no-op on non-templates and on global templates (which use the publisher
+  // rule instead) — but the field-level Manage rule must permit benign
+  // writes (e.g. a frontend that echoes restrictEditing on every save) so
+  // it scopes by team membership only, not by template/teamId.
+  cannot(Action.Manage, 'Journey', 'restrictEditing')
+  can(Action.Manage, 'Journey', 'restrictEditing', {
+    teamId: { not: 'jfp-team' },
+    team: {
+      is: {
+        userTeams: {
+          some: {
+            userId: user.id,
+            role: UserTeamRole.manager
+          }
+        }
       }
     }
   })

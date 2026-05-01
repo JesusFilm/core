@@ -265,7 +265,8 @@ describe('HostResolver', () => {
       journeyCustomizationDescription: null,
       showAssistant: null,
       templateSite: null,
-      customizable: null
+      customizable: null,
+      restrictEditing: false
     }
 
     it('deletes an existing host', async () => {
