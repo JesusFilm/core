@@ -284,15 +284,15 @@ describe('LocalTemplateDetailsDialog', () => {
           >
             bump
           </button>
-          <button
-            data-testid="reopenDialog"
-            onClick={() => setOpen(true)}
-          >
+          <button data-testid="reopenDialog" onClick={() => setOpen(true)}>
             reopen
           </button>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
-              <LocalTemplateDetailsDialog open={open} onClose={() => setOpen(false)} />
+              <LocalTemplateDetailsDialog
+                open={open}
+                onClose={() => setOpen(false)}
+              />
             </JourneyProvider>
           </SnackbarProvider>
         </>
