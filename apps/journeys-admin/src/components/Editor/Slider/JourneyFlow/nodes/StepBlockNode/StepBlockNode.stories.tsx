@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { Background, ReactFlow } from '@xyflow/react'
 import { ComponentPropsWithoutRef } from 'react'
 import { userEvent, waitFor, within } from 'storybook/test'

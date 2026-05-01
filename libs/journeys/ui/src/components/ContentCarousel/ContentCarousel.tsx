@@ -13,8 +13,7 @@ import {
 } from 'react'
 import { A11y, FreeMode, Mousewheel, Navigation } from 'swiper/modules'
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
-import { SwiperOptions } from 'swiper/types'
-import { type NavigationOptions } from 'swiper/types'
+import type { NavigationOptions, SwiperOptions } from 'swiper/types'
 
 import { NavButton } from './NavButton'
 

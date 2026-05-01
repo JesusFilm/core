@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { videos } from '../../../Videos/__generated__/testData'
