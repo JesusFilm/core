@@ -1555,6 +1555,7 @@ type Mutation {
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent @override(from: "api-journeys")
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @override(from: "api-journeys")
   stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent! @override(from: "api-journeys")
+  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent! @override(from: "api-journeys")
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
