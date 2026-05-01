@@ -346,6 +346,15 @@ type CustomDomain
   journeyCollection: JourneyCollection
 }
 
+type CustomDomainCheck
+  @shareable
+{
+  configured: Boolean!
+  verified: Boolean!
+  verification: [CustomDomainVerification!]
+  verificationResponse: CustomDomainVerificationResponse
+}
+
 input CustomDomainCreateInput {
   id: ID
   teamId: String!
@@ -357,6 +366,22 @@ input CustomDomainCreateInput {
 input CustomDomainUpdateInput {
   journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
+}
+
+type CustomDomainVerification
+  @shareable
+{
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse
+  @shareable
+{
+  code: String!
+  message: String!
 }
 
 """
@@ -1520,6 +1545,8 @@ type Mutation {
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction!
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @override(from: "api-journeys")
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @override(from: "api-journeys")
+  customDomainCheck(id: ID!): CustomDomainCheck! @override(from: "api-journeys")
+  customDomainDelete(id: ID!): CustomDomain! @override(from: "api-journeys")
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain! @override(from: "api-journeys")
   customDomainCreate(input: CustomDomainCreateInput!): CustomDomain! @override(from: "api-journeys")
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!

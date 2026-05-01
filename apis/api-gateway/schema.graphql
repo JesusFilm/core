@@ -123,8 +123,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   chatButtonRemove(id: ID!) : ChatButton! @join__field(graph: API_JOURNEYS) 
   customDomainCreate(input: CustomDomainCreateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  customDomainDelete(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS) 
-  customDomainCheck(id: ID!) : CustomDomainCheck! @join__field(graph: API_JOURNEYS) 
+  customDomainDelete(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  customDomainCheck(id: ID!) : CustomDomainCheck! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   """
   Creates a JourneyViewEvent, returns null if attempting to create another
   JourneyViewEvent with the same userId, journeyId, and within the same 24hr
@@ -1103,7 +1103,7 @@ type CustomDomain @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURN
   routeAllTeamJourneys: Boolean!
 }
 
-type CustomDomainCheck @join__type(graph: API_JOURNEYS)  {
+type CustomDomainCheck @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   Is the domain correctly configured in the DNS?
   If false, A Record and CNAME Record should be added by the user.
@@ -1124,14 +1124,14 @@ type CustomDomainCheck @join__type(graph: API_JOURNEYS)  {
   verificationResponse: CustomDomainVerificationResponse
 }
 
-type CustomDomainVerification @join__type(graph: API_JOURNEYS)  {
+type CustomDomainVerification @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   type: String!
   domain: String!
   value: String!
   reason: String!
 }
 
-type CustomDomainVerificationResponse @join__type(graph: API_JOURNEYS)  {
+type CustomDomainVerificationResponse @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   code: String!
   message: String!
 }

@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps, ReactElement, useState } from 'react'
 
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
