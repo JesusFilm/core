@@ -382,7 +382,7 @@ export function LanguageScreen({
 
       if (duplicatedJourneyId == null) return
 
-      if (needsTranslation && isSignedIn) {
+      if (needsTranslation && (isSignedIn || isGuestFlowEnabled)) {
         const sourceLanguageName =
           journey.language.name.find((name) => !name.primary)?.value ?? ''
         const targetLanguageName =

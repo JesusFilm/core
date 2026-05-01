@@ -318,7 +318,7 @@ const JourneyAiTranslateInput = builder.inputType('JourneyAiTranslateInput', {
 })
 
 builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
-  t.withAuth({ isAuthenticated: true }).field({
+  t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: JourneyAiTranslateProgressRef,
     nullable: false,
     args: {
