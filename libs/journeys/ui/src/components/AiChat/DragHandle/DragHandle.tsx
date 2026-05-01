@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next/pages'
 import {
-  ReactElement,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
+  ReactElement,
   TouchEvent as ReactTouchEvent,
   useCallback,
   useEffect,
@@ -15,18 +15,18 @@ import { DIVIDER, TEXT_SECONDARY } from '../tokens'
 
 interface DragHandleProps {
   collapsed: boolean
-  onToggle: () => void
-  /** Called when the user drags the handle down past the threshold. */
+  /** Drag down past the threshold collapses the sheet to a thin handle. */
   onCollapse: () => void
+  /** Drag up past the threshold expands the sheet back to active height. */
+  onExpand: () => void
 }
 
-const DRAG_COLLAPSE_THRESHOLD_PX = 32
-const TAP_THRESHOLD_PX = 4
+const DRAG_THRESHOLD_PX = 32
 
 export function DragHandle({
   collapsed,
-  onToggle,
-  onCollapse
+  onCollapse,
+  onExpand
 }: DragHandleProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const [dragging, setDragging] = useState(false)
@@ -43,6 +43,9 @@ export function DragHandle({
     const handleTouchMove = (e: TouchEvent): void => {
       if (startYRef.current == null || e.touches.length === 0) return
       movedRef.current = e.touches[0].clientY - startYRef.current
+      // Stop the page (or the conversation underneath) from scrolling
+      // while the user is dragging the handle.
+      e.preventDefault()
     }
     const handleUp = (): void => {
       if (!draggingRef.current) return
@@ -51,15 +54,17 @@ export function DragHandle({
       setDragging(false)
       startYRef.current = null
       movedRef.current = 0
-      if (moved > DRAG_COLLAPSE_THRESHOLD_PX) {
+      if (moved > DRAG_THRESHOLD_PX) {
         onCollapse()
-      } else if (Math.abs(moved) < TAP_THRESHOLD_PX) {
-        onToggle()
+      } else if (moved < -DRAG_THRESHOLD_PX) {
+        onExpand()
       }
+      // Smaller deltas (including taps) intentionally do nothing — the
+      // handle is drag-only so a click can't trigger an artifact.
     }
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('mouseup', handleUp)
-    window.addEventListener('touchmove', handleTouchMove, { passive: true })
+    window.addEventListener('touchmove', handleTouchMove, { passive: false })
     window.addEventListener('touchend', handleUp)
     window.addEventListener('touchcancel', handleUp)
     return () => {
@@ -69,7 +74,7 @@ export function DragHandle({
       window.removeEventListener('touchend', handleUp)
       window.removeEventListener('touchcancel', handleUp)
     }
-  }, [dragging, onCollapse, onToggle])
+  }, [dragging, onCollapse, onExpand])
 
   const handleStart = useCallback((clientY: number) => {
     startYRef.current = clientY
@@ -93,14 +98,20 @@ export function DragHandle({
     [handleStart]
   )
 
+  // Keyboard accessibility: Enter/Space toggles between expanded and
+  // collapsed so non-pointer users still have a way to control the sheet.
+  // (Mouse/touch is drag-only by product decision.)
   const handleKeyDown = useCallback(
     (e: ReactKeyboardEvent<HTMLDivElement>) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        onToggle()
+      if (e.key !== 'Enter' && e.key !== ' ') return
+      e.preventDefault()
+      if (collapsed) {
+        onExpand()
+      } else {
+        onCollapse()
       }
     },
-    [onToggle]
+    [collapsed, onCollapse, onExpand]
   )
 
   return (

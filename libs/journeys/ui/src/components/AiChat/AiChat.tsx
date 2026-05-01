@@ -44,12 +44,18 @@ interface AiChatProps {
    */
   variant?: 'panel' | 'overlay'
   /**
-   * Notifies the parent when the active vs idle state changes. The pinned
-   * sheet uses this to switch between auto-height (idle) and 80% height
-   * (active) per the design spec.
+   * Notifies the parent when the sheet's logical state changes:
+   *  - 'idle' — no messages yet; show header + input naturally.
+   *  - 'active' — messages present and expanded; full conversation visible.
+   *  - 'collapsed' — messages present but collapsed; only the drag handle
+   *    is shown so the journey content underneath is unobstructed.
+   *
+   * The pinned sheet uses this to choose the right height + animation.
    */
-  onActiveChange?: (active: boolean) => void
+  onSheetStateChange?: (state: 'idle' | 'active' | 'collapsed') => void
 }
+
+export type AiChatSheetState = 'idle' | 'active' | 'collapsed'
 
 function getTextFromMessage(message: UIMessage): string {
   return message.parts
@@ -165,7 +171,7 @@ export function AiChat({
   initialMessage,
   collapsible = true,
   variant = 'panel',
-  onActiveChange
+  onSheetStateChange
 }: AiChatProps): ReactElement {
   const isOverlay = variant === 'overlay'
   const isPanel = !isOverlay
@@ -175,12 +181,12 @@ export function AiChat({
   const [collapsed, setCollapsed] = useState(false)
   const initialMessageSent = useRef(false)
 
-  const handleToggleCollapse = useCallback(() => {
-    setCollapsed((prev) => !prev)
-  }, [])
-
   const handleCollapse = useCallback(() => {
     setCollapsed(true)
+  }, [])
+
+  const handleExpand = useCallback(() => {
+    setCollapsed(false)
   }, [])
 
   const languageBcp47 = journey?.language?.bcp47 ?? undefined
@@ -263,14 +269,23 @@ export function AiChat({
     return -1
   }, [messages])
 
-  // Active = has messages and user has not collapsed back to idle.
-  const isActive = messages.length > 0 && !collapsed
+  const hasMessages = messages.length > 0
+  const sheetState: AiChatSheetState = !hasMessages
+    ? 'idle'
+    : collapsed
+      ? 'collapsed'
+      : 'active'
   useEffect(() => {
-    onActiveChange?.(isActive)
-  }, [isActive, onActiveChange])
+    onSheetStateChange?.(sheetState)
+  }, [sheetState, onSheetStateChange])
 
   const showDragHandle = isPanel && collapsible
-  const showHeader = isPanel
+  // When the sheet is collapsed with messages we strip everything except
+  // the handle so the user sees a single thin line over the journey card.
+  const isCollapsedWithMessages = sheetState === 'collapsed'
+  const showHeader = isPanel && !isCollapsedWithMessages
+  const showInput = !isCollapsedWithMessages
+  const showConversation = !isCollapsedWithMessages
 
   return (
     <Box
@@ -287,8 +302,8 @@ export function AiChat({
           {showDragHandle && (
             <DragHandle
               collapsed={collapsed}
-              onToggle={handleToggleCollapse}
               onCollapse={handleCollapse}
+              onExpand={handleExpand}
             />
           )}
           {showHeader && <ChatHeader />}
@@ -297,7 +312,7 @@ export function AiChat({
 
       <Box
         sx={{
-          display: collapsed ? 'none' : 'flex',
+          display: showConversation ? 'flex' : 'none',
           flex: 1,
           flexDirection: 'column',
           minHeight: 0,
@@ -370,6 +385,7 @@ export function AiChat({
 
       <Box
         sx={{
+          display: showInput ? 'block' : 'none',
           width: '100%',
           maxWidth: { xs: 'none', sm: '48rem' },
           mx: 'auto',
@@ -385,7 +401,7 @@ export function AiChat({
           isLoading={isLoading}
           onStop={stop}
           variant={isOverlay ? 'floating' : 'inline'}
-          showTopBorder={messages.length > 0}
+          showTopBorder={hasMessages}
         />
       </Box>
     </Box>
