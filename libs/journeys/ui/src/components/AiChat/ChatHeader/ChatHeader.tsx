@@ -115,10 +115,10 @@ export function ChatHeader({ onClose }: ChatHeaderProps): ReactElement {
           variant="subtitle1"
           sx={{
             color: ASSISTANT_FG,
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: 600,
-            lineHeight: '20px',
-            letterSpacing: 2
+            lineHeight: '22px',
+            letterSpacing: 0
           }}
         >
           {t('Ask a question')}
