@@ -43,17 +43,13 @@ export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
   }
 
   let height: string
-  let maxHeight: string
   if (sheetState === 'active') {
     height = '80%'
-    maxHeight = '80%'
   } else if (sheetState === 'collapsed') {
     height = `${COLLAPSED_HEIGHT_PX}px`
-    maxHeight = `${COLLAPSED_HEIGHT_PX}px`
   } else {
     // Idle — fixed height so the transition into 'active' interpolates.
     height = `${IDLE_HEIGHT_PX}px`
-    maxHeight = `${IDLE_HEIGHT_PX}px`
   }
 
   return (
@@ -67,7 +63,8 @@ export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
         left: 0,
         right: 0,
         height,
-        maxHeight,
+        // No maxHeight: it would clamp instantly on state change and short-
+        // circuit the height transition (collapse looked instant before this).
         // Drag-driven collapse/expand animates between explicit numeric
         // heights via CSS rather than position-tracking, per product spec.
         transition: 'height 280ms cubic-bezier(0.4, 0, 0.2, 1)',
