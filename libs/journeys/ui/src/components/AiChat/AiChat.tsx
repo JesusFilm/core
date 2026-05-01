@@ -123,9 +123,7 @@ function AssistantBubble({
       <Message role="assistant" plain surface={surface}>
         <Response content={display} />
       </Message>
-      {isComplete && text.length > 0 && (
-        <Actions content={text} plain />
-      )}
+      {isComplete && text.length > 0 && <Actions content={text} plain />}
     </>
   )
 }
