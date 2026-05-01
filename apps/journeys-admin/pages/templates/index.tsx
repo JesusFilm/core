@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { GetStaticProps } from 'next'
+import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
 import { NextSeo } from 'next-seo'
@@ -29,6 +29,7 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { JOURNEY_NOT_FOUND_ERROR } from '../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
 import { useAuth } from '../../src/libs/auth'
+import { getAuthTokens, toUser } from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function TemplateIndexPage(): ReactElement {
@@ -104,10 +105,18 @@ function TemplateIndexPage(): ReactElement {
   )
 }
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const { apolloClient, translations } = await initAndAuthApp({
-    locale
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  const user = tokens != null ? toUser(tokens) : null
+
+  const { apolloClient, redirect, translations, flags } = await initAndAuthApp({
+    user,
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl,
+    allowGuest: true
   })
+
+  if (redirect != null) return { redirect }
 
   // Fetch dynamic template language IDs first (sequential — result feeds into GET_LANGUAGES)
   const { data: languageIdsData } = await apolloClient.query<{
@@ -152,10 +161,11 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 
   return {
     props: {
+      userSerialized: user != null ? JSON.stringify(user) : null,
       ...translations,
+      flags,
       initialApolloState: apolloClient.cache.extract()
-    },
-    revalidate: 60
+    }
   }
 }
 
