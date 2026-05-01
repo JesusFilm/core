@@ -65,8 +65,8 @@ export function Message({
             : isPlainAssistant
               ? 0
               : '16px 16px 16px 4px',
-          px: isPlainAssistant ? 0 : 1.75,
-          py: isPlainAssistant ? 0 : 1.25,
+          px: isPlainAssistant ? 0 : 2.5,
+          py: isPlainAssistant ? 0 : 1.5,
           maxWidth: isPlainAssistant ? '100%' : '80%',
           wordBreak: 'break-word'
         }}
