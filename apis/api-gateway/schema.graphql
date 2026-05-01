@@ -410,6 +410,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   templateGalleryPageCreate(input: TemplateGalleryPageCreateInput!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
   templateGalleryPageUpdate(id: ID!, input: TemplateGalleryPageUpdateInput!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
   templateGalleryPagePublish(id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  templateGalleryPageUnpublish(id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
   templateGalleryPageDelete(id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
   userDeleteJourneysCheck(userId: String!) : UserDeleteJourneysCheckResult! @join__field(graph: API_JOURNEYS_MODERN) 
   userDeleteJourneysConfirm(userId: String!) : UserDeleteJourneysConfirmResult! @join__field(graph: API_JOURNEYS_MODERN) 
