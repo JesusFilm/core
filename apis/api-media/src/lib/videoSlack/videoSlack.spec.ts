@@ -13,7 +13,7 @@ import type {
 } from '@core/prisma/media/client'
 import { prisma } from '@core/prisma/media/client'
 
-import { logger } from '../logger'
+import { logger } from '../../logger'
 
 import { sendWeeklyVideoSummary } from './videoSlack'
 import { postWeeklyVideoSlackMessages } from './videoSlackRenderer'
@@ -110,7 +110,7 @@ jest.mock('@core/prisma/media/client', () => {
     )
   return { prisma: mockDeep<MediaPrismaClient>() }
 })
-jest.mock('../logger', () => ({
+jest.mock('../../logger', () => ({
   logger: {
     warn: jest.fn(),
     info: jest.fn(),

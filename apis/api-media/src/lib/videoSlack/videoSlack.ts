@@ -1,6 +1,6 @@
 import { Logger } from 'pino'
 
-import { logger } from '../logger'
+import { logger } from '../../logger'
 
 import {
   postEmptyWeeklyVideoSlackMessage,

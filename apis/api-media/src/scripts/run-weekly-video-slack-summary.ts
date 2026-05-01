@@ -18,11 +18,11 @@
  *
  * If only --end is provided, start defaults to end-7d.
  */
-import { sendWeeklyVideoSummary } from '../lib/videoSlack'
 import {
   isValidWeeklyVideoSummaryWindow,
-  resolveWeeklyVideoSummaryWindow
-} from '../lib/videoSlackReport'
+  resolveWeeklyVideoSummaryWindow,
+  sendWeeklyVideoSummary
+} from '../lib/videoSlack'
 import { logger } from '../logger'
 
 interface ParsedCliArgs {
