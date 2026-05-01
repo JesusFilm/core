@@ -90,7 +90,8 @@ export function PromptInput({
         display: 'flex',
         alignItems: 'center',
         gap: 1,
-        px: 0.75,
+        pl: 0.75,
+        pr: 1.5,
         py: 0.75,
         bgcolor: isFloating
           ? 'rgba(38, 38, 46, 0.78)'
