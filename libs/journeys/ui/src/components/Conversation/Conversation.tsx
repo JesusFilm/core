@@ -100,14 +100,18 @@ export function Conversation({
     }
   }, [scrollKey, scrollToBottom])
 
-  // Track when the content size changes (e.g. streaming text growing,
-  // image load, viewport resize). Without this the at-bottom flag only
-  // updates on scroll events, so the pill stayed hidden while the
-  // streamed response pushed content below the visible area.
+  // Track size changes on both the scrollable container AND the
+  // content. Content resizes happen when streaming text grows or
+  // images load (need to recheck because scrollHeight changed beneath
+  // the user). Container resizes happen when the parent sheet
+  // collapses/expands (clientHeight changes — without this the pill
+  // would keep rendering against a 0-height scrollable area).
   useEffect(() => {
+    const scrollEl = scrollRef.current
     const contentEl = contentRef.current
-    if (contentEl == null) return undefined
+    if (scrollEl == null || contentEl == null) return undefined
     const observer = new ResizeObserver(() => evaluateAtBottom())
+    observer.observe(scrollEl)
     observer.observe(contentEl)
     return () => observer.disconnect()
   }, [evaluateAtBottom])
