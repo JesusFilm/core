@@ -58,26 +58,53 @@ export function ChatHeader({ onClose }: ChatHeaderProps): ReactElement {
             width: 18,
             height: 'auto',
             color: PRIMARY_ON,
-            // Subtle breathe — signals "AI alive" without competing with
-            // the conversation. transform-origin keeps the logo centred
-            // inside its parent circle while it scales.
-            transformOrigin: 'center center',
-            animation: 'jfpMarkBreathe 3s ease-in-out infinite',
-            '@keyframes jfpMarkBreathe': {
-              '0%, 100%': { transform: 'scale(0.96)', opacity: 0.9 },
-              '50%': { transform: 'scale(1.04)', opacity: 1 }
+            overflow: 'visible',
+            // Two-beat "thinking" rhythm — the top and bottom halves of the
+            // mark scale and tilt out of phase, like two halves in dialogue.
+            // transform-box/origin keeps each path scaling around its own
+            // centre inside the SVG coordinate space.
+            '& .jfp-mark-shape': {
+              transformBox: 'fill-box',
+              transformOrigin: 'center'
+            },
+            '& .jfp-mark-top': {
+              animation: 'jfpMarkTop 1.6s ease-in-out infinite'
+            },
+            '& .jfp-mark-bottom': {
+              animation: 'jfpMarkBottom 1.6s ease-in-out infinite'
+            },
+            '@keyframes jfpMarkTop': {
+              '0%, 100%': {
+                transform: 'scale(0.92) rotate(-2deg)',
+                opacity: 0.7
+              },
+              '50%': {
+                transform: 'scale(1.04) rotate(2deg)',
+                opacity: 0.9
+              }
+            },
+            '@keyframes jfpMarkBottom': {
+              '0%, 100%': {
+                transform: 'scale(1.04) rotate(2deg)',
+                opacity: 1
+              },
+              '50%': {
+                transform: 'scale(0.92) rotate(-2deg)',
+                opacity: 0.85
+              }
             },
             '@media (prefers-reduced-motion: reduce)': {
-              animation: 'none'
+              '& .jfp-mark-top, & .jfp-mark-bottom': { animation: 'none' }
             }
           }}
         >
           <path
+            className="jfp-mark-shape jfp-mark-top"
             d="m8.22217 2c0-1.104569.89543-2 2.00003-2h18.2222c1.1046 0 2 .895431 2 2v15.5449c0 1.4001-1.4016 2.3669-2.7104 1.8696l-18.22227-6.9245c-.77632-.295-1.28956-1.039-1.28956-1.8695z"
             fill="currentColor"
-            opacity={0.78}
           />
           <path
+            className="jfp-mark-shape jfp-mark-bottom"
             d="m22.2222 23c0 1.1046-.8955 2-2 2h-18.22226c-1.104565 0-1.9999946-.8954-1.9999946-2v-15.54491c0-1.40014 1.4016146-2.36692 2.7104346-1.86957l18.22222 6.92448c.7763.295 1.2896 1.039 1.2896 1.8695z"
             fill="currentColor"
           />
