@@ -1,3 +1,5 @@
+import { type Mock, type MockedFunction } from 'vitest'
+
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { render, screen, waitFor } from '@testing-library/react'
@@ -32,27 +34,52 @@ import {
 
 import { WebView } from '.'
 
-jest.mock('@core/shared/ui/useBreakpoints', () => ({
+const noopJourneyViewMock: MockedResponse = {
+  request: { query: JOURNEY_VIEW_EVENT_CREATE },
+  variableMatcher: () => true,
+  maxUsageCount: Infinity,
+  delay: 99999999,
+  result: {
+    data: {
+      journeyViewEventCreate: { id: 'noop', __typename: 'JourneyViewEvent' }
+    }
+  }
+}
+
+const noopStepViewMock: MockedResponse = {
+  request: { query: STEP_VIEW_EVENT_CREATE },
+  variableMatcher: () => true,
+  maxUsageCount: Infinity,
+  result: {
+    data: {
+      stepViewEventCreate: { id: 'noop', __typename: 'StepViewEvent' }
+    }
+  }
+}
+
+const sideEffectMocks = [noopJourneyViewMock, noopStepViewMock]
+
+vi.mock('@core/shared/ui/useBreakpoints', () => ({
   __esModule: true,
-  useBreakpoints: jest.fn()
+  useBreakpoints: vi.fn()
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as unknown as MockedFunction<typeof uuidv4>
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+const mockedSendGTMEvent = sendGTMEvent as unknown as MockedFunction<
   typeof sendGTMEvent
 >
 
-global.fetch = jest.fn(
+global.fetch = vi.fn(
   async () =>
     await Promise.resolve({
       json: async () =>
@@ -62,16 +89,16 @@ global.fetch = jest.fn(
           country: 'New Zealand'
         })
     })
-) as jest.Mock
+) as Mock
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
 describe('WebView', () => {
   beforeEach(() => {
-    const useBreakpointsMock = useBreakpoints as jest.Mock
+    const useBreakpointsMock = useBreakpoints as Mock
     useBreakpointsMock.mockReturnValue({
       xs: false,
       sm: false,
@@ -94,7 +121,7 @@ describe('WebView', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         visitorUpdateForCurrentUser: { id: 'uuid', __typename: 'Visitor' }
       }
@@ -116,7 +143,7 @@ describe('WebView', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         journeyViewEventCreate: {
           id: 'uuid',
@@ -193,9 +220,9 @@ describe('WebView', () => {
     })
   })
 
-  it('should render block', () => {
+  it('should render block', async () => {
     render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider mocks={[...sideEffectMocks]}>
         <JourneyProvider value={{ journey }}>
           <SnackbarProvider>
             <WebView
@@ -209,12 +236,14 @@ describe('WebView', () => {
 
     expect(screen.getByTestId('JourneysStepHeader')).toBeInTheDocument()
     expect(screen.getByTestId('JourneysStepFooter')).toBeInTheDocument()
-    expect(screen.getByText('Step 1')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByText('Step 1')).toBeInTheDocument()
+    )
   })
 
   it('should not render step footer if there is a video block', () => {
     render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider mocks={[...sideEffectMocks]}>
         <JourneyProvider value={{ journey }}>
           <SnackbarProvider>
             <WebView
@@ -290,7 +319,7 @@ describe('WebView', () => {
       }
     ]
     render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider mocks={[...sideEffectMocks]}>
         <JourneyProvider value={{ journey }}>
           <SnackbarProvider>
             <WebView
@@ -307,7 +336,7 @@ describe('WebView', () => {
 
   it('should have active-card class for fullscreen support', () => {
     render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider mocks={[...sideEffectMocks]}>
         <JourneyProvider value={{ journey }}>
           <SnackbarProvider>
             <WebView

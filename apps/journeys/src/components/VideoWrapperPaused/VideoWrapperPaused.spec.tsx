@@ -1,3 +1,5 @@
+import { type Mock } from 'vitest'
+
 import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -7,14 +9,14 @@ import { VideoBlockSource } from '../../../__generated__/globalTypes'
 
 import { VideoWrapperPaused } from './VideoWrapperPaused'
 
-jest.mock('@core/journeys/ui/Video', () => ({
+vi.mock('@core/journeys/ui/Video', () => ({
   __esModule: true,
-  Video: jest.fn(() => <></>)
+  Video: vi.fn(() => <></>)
 }))
 
 describe('VideoWrapper', () => {
   beforeEach(() => {
-    ;(Video as jest.Mock).mockClear()
+    ;(Video as Mock).mockClear()
   })
 
   it('should set videoId to null', () => {

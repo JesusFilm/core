@@ -1,6 +1,7 @@
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import { streamText } from 'ai'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { getFlags } from '../../../src/libs/getFlags'
 import {
@@ -10,59 +11,60 @@ import {
 
 import handler from './index'
 
-jest.mock('@ai-sdk/google', () => ({
-  google: jest.fn(() => ({ id: 'gemini' }))
+vi.mock('@ai-sdk/google', () => ({
+  google: vi.fn(() => ({ id: 'gemini' }))
 }))
-jest.mock('@ai-sdk/openai', () => ({
-  openai: jest.fn(() => ({ id: 'openai' }))
+vi.mock('@ai-sdk/openai', () => ({
+  openai: vi.fn(() => ({ id: 'openai' }))
 }))
-jest.mock('@ai-sdk/openai-compatible', () => ({
-  createOpenAICompatible: jest.fn(() => ({
-    chatModel: jest.fn(() => ({ id: 'compat' }))
+vi.mock('@ai-sdk/openai-compatible', () => ({
+  createOpenAICompatible: vi.fn(() => ({
+    chatModel: vi.fn(() => ({ id: 'compat' }))
   }))
 }))
-jest.mock('ai', () => ({
-  convertToModelMessages: jest.fn((messages) => messages),
-  streamText: jest.fn()
+vi.mock('ai', () => ({
+  convertToModelMessages: vi.fn((messages) => messages),
+  streamText: vi.fn()
 }))
-jest.mock(
-  'langfuse',
-  () => ({
-    Langfuse: jest.fn()
-  }),
-  { virtual: true }
-)
-jest.mock('../../../src/libs/getFlags', () => ({
-  getFlags: jest.fn()
+vi.mock('langfuse', () => ({
+  Langfuse: vi.fn()
 }))
-jest.mock('../../../src/libs/langfuse/client', () => ({
+vi.mock('../../../src/libs/getFlags', () => ({
+  getFlags: vi.fn()
+}))
+vi.mock('../../../src/libs/langfuse/client', () => ({
   APOLOGIST_PROMPT_NAME: 'apologist-world-cup-chat',
-  getActivePromptLabel: jest.fn(() => 'development'),
-  getLangfuse: jest.fn(() => null)
+  getActivePromptLabel: vi.fn(() => 'development'),
+  getLangfuse: vi.fn(() => null)
 }))
 
-const mockGetFlags = getFlags as jest.MockedFunction<typeof getFlags>
-const mockGetLangfuse = getLangfuse as jest.MockedFunction<typeof getLangfuse>
-const mockGetActivePromptLabel = getActivePromptLabel as jest.MockedFunction<
-  typeof getActivePromptLabel
+const mockGetFlags = getFlags as unknown as MockedFunction<typeof getFlags>
+const mockGetLangfuse = getLangfuse as unknown as MockedFunction<
+  typeof getLangfuse
 >
-const mockStreamText = streamText as unknown as jest.Mock
+const mockGetActivePromptLabel =
+  getActivePromptLabel as unknown as MockedFunction<
+    typeof getActivePromptLabel
+  >
+const mockStreamText = streamText as unknown as Mock
 const mockCreateOpenAICompatible =
-  createOpenAICompatible as jest.MockedFunction<typeof createOpenAICompatible>
+  createOpenAICompatible as unknown as MockedFunction<
+    typeof createOpenAICompatible
+  >
 
 interface CapturedRes {
   res: NextApiResponse
-  status: jest.Mock
-  end: jest.Mock
-  json: jest.Mock
-  setHeader: jest.Mock
+  status: Mock
+  end: Mock
+  json: Mock
+  setHeader: Mock
 }
 
 function makeRes(headersSent = false): CapturedRes {
-  const status = jest.fn().mockReturnThis()
-  const end = jest.fn().mockReturnThis()
-  const json = jest.fn().mockReturnThis()
-  const setHeader = jest.fn().mockReturnThis()
+  const status = vi.fn().mockReturnThis()
+  const end = vi.fn().mockReturnThis()
+  const json = vi.fn().mockReturnThis()
+  const setHeader = vi.fn().mockReturnThis()
   return {
     res: {
       status,
@@ -79,12 +81,12 @@ function makeRes(headersSent = false): CapturedRes {
 }
 
 interface FakeLangfuse {
-  trace: jest.Mock
-  generation: jest.Mock
-  generationEnd: jest.Mock
-  flushAsync: jest.Mock
-  getPrompt: jest.Mock
-  compile: jest.Mock
+  trace: Mock
+  generation: Mock
+  generationEnd: Mock
+  flushAsync: Mock
+  getPrompt: Mock
+  compile: Mock
 }
 
 function makeFakeLangfuse(
@@ -93,15 +95,15 @@ function makeFakeLangfuse(
     promptError?: Error
   } = {}
 ): FakeLangfuse {
-  const generationEnd = jest.fn()
-  const generation = jest.fn(() => ({ end: generationEnd }))
-  const trace = jest.fn(() => ({ generation }))
-  const flushAsync = jest.fn().mockResolvedValue(undefined)
-  const compile = jest.fn(
+  const generationEnd = vi.fn()
+  const generation = vi.fn(() => ({ end: generationEnd }))
+  const trace = vi.fn(() => ({ generation }))
+  const flushAsync = vi.fn().mockResolvedValue(undefined)
+  const compile = vi.fn(
     (vars: { language?: string }) =>
       `compiled-system[lang=${vars.language ?? ''}]`
   )
-  const getPrompt = jest.fn(async () => {
+  const getPrompt = vi.fn(async () => {
     if (opts.promptError != null) throw opts.promptError
     return (
       opts.promptResult ?? {
@@ -124,10 +126,10 @@ let lastStreamConfig: {
   messages: unknown
   model: unknown
 } | null = null
-let mockPipeStream: jest.Mock
+let mockPipeStream: Mock
 
 function installStreamTextSuccess(): void {
-  mockPipeStream = jest.fn()
+  mockPipeStream = vi.fn()
   mockStreamText.mockImplementation((config) => {
     lastStreamConfig = config as typeof lastStreamConfig
     return { pipeUIMessageStreamToResponse: mockPipeStream }
@@ -135,7 +137,7 @@ function installStreamTextSuccess(): void {
 }
 
 function installStreamTextSyncThrow(error: Error): void {
-  mockPipeStream = jest.fn()
+  mockPipeStream = vi.fn()
   mockStreamText.mockImplementation(() => {
     throw error
   })
@@ -145,7 +147,7 @@ const ORIGINAL_ENV = process.env
 
 describe('/api/chat handler', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = { ...ORIGINAL_ENV }
     delete process.env.CHAT_PROVIDER
     delete process.env.OPENROUTER_API_KEY
@@ -416,7 +418,7 @@ describe('/api/chat handler', () => {
         })
       })
       mockGetLangfuse.mockReturnValue(fake as never)
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -430,10 +432,10 @@ describe('/api/chat handler', () => {
 
     it("falls back when prompt type is not 'text'", async () => {
       const fake = makeFakeLangfuse({
-        promptResult: { type: 'chat', compile: jest.fn() }
+        promptResult: { type: 'chat', compile: vi.fn() }
       })
       mockGetLangfuse.mockReturnValue(fake as never)
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -552,7 +554,7 @@ describe('/api/chat handler', () => {
         promptError: new Error('boom')
       })
       mockGetLangfuse.mockReturnValue(fake as never)
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -563,7 +565,7 @@ describe('/api/chat handler', () => {
 
     it('does not create a trace, generation, or flush when langfuse is null', async () => {
       mockGetLangfuse.mockReturnValue(null)
-      const errorSpy = jest.spyOn(console, 'error').mockImplementation()
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -646,7 +648,7 @@ describe('/api/chat handler', () => {
     it('ends with ERROR and flushes when onError fires (mid-stream failure)', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
-      const errorSpy = jest.spyOn(console, 'error').mockImplementation()
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -664,7 +666,7 @@ describe('/api/chat handler', () => {
     it('ends the generation exactly once when onError fires before onFinish', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
-      const errorSpy = jest.spyOn(console, 'error').mockImplementation()
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -686,7 +688,7 @@ describe('/api/chat handler', () => {
     it('ends the generation exactly once when onFinish fires before onError', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
-      const errorSpy = jest.spyOn(console, 'error').mockImplementation()
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -710,7 +712,7 @@ describe('/api/chat handler', () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
       installStreamTextSyncThrow(new Error('sync boom'))
-      const errorSpy = jest.spyOn(console, 'error').mockImplementation()
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
       const { res, status, json } = makeRes(false)
       await handler(postReq(), res)
@@ -731,7 +733,7 @@ describe('/api/chat handler', () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
       installStreamTextSyncThrow(new Error('post-headers boom'))
-      const errorSpy = jest.spyOn(console, 'error').mockImplementation()
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
       const { res, status, json, end } = makeRes(true)
       await handler(postReq(), res)

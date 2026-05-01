@@ -1,24 +1,26 @@
 import { LDClient } from '@launchdarkly/node-server-sdk'
+import { type MockedFunction } from 'vitest'
 
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 
 import { getFlags } from './getFlags'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   v4: () => 'mock-uuid'
 }))
 
-jest.mock('@core/shared/ui/getLaunchDarklyClient')
+vi.mock('@core/shared/ui/getLaunchDarklyClient')
 
-const mockGetLaunchDarklyClient = getLaunchDarklyClient as jest.MockedFunction<
-  typeof getLaunchDarklyClient
->
+const mockGetLaunchDarklyClient =
+  getLaunchDarklyClient as unknown as MockedFunction<
+    typeof getLaunchDarklyClient
+  >
 
 describe('getFlags', () => {
-  const mockAllFlagsState = jest.fn()
+  const mockAllFlagsState = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetLaunchDarklyClient.mockResolvedValue({
       allFlagsState: mockAllFlagsState
     } as unknown as LDClient)
