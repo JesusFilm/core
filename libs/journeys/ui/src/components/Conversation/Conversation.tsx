@@ -34,17 +34,26 @@ export function Conversation({
 }: ConversationProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const scrollRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
   const wasNearBottomRef = useRef(true)
   const isFirstRenderRef = useRef(true)
   const [isAtBottom, setIsAtBottom] = useState(true)
 
-  const handleScroll = useCallback((e: UIEvent<HTMLDivElement>) => {
-    const el = e.currentTarget
+  const evaluateAtBottom = useCallback(() => {
+    const el = scrollRef.current
+    if (el == null) return
     const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight
     const nearBottom = distanceFromBottom <= NEAR_BOTTOM_THRESHOLD_PX
     wasNearBottomRef.current = nearBottom
     setIsAtBottom(nearBottom)
   }, [])
+
+  const handleScroll = useCallback(
+    (_e: UIEvent<HTMLDivElement>) => {
+      evaluateAtBottom()
+    },
+    [evaluateAtBottom]
+  )
 
   const scrollToBottom = useCallback((smooth: boolean) => {
     const el = scrollRef.current
@@ -74,6 +83,18 @@ export function Conversation({
       scrollToBottom(true)
     }
   }, [scrollKey, scrollToBottom])
+
+  // Track when the content size changes (e.g. streaming text growing,
+  // image load, viewport resize). Without this the at-bottom flag only
+  // updates on scroll events, so the pill stayed hidden while the
+  // streamed response pushed content below the visible area.
+  useEffect(() => {
+    const contentEl = contentRef.current
+    if (contentEl == null) return undefined
+    const observer = new ResizeObserver(() => evaluateAtBottom())
+    observer.observe(contentEl)
+    return () => observer.disconnect()
+  }, [evaluateAtBottom])
 
   return (
     <Box sx={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex' }}>
@@ -105,6 +126,7 @@ export function Conversation({
         }}
       >
         <Box
+          ref={contentRef}
           sx={{
             display: 'flex',
             flexDirection: 'column',
