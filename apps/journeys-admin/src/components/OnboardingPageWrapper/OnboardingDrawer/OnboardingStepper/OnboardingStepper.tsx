@@ -9,7 +9,7 @@ import Stepper from '@mui/material/Stepper'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode } from 'react'
 
 import Circle from '@core/shared/ui/icons/Circle'

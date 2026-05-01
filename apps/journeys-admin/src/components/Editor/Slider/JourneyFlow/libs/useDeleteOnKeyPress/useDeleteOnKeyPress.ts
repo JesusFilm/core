@@ -1,5 +1,5 @@
+import { Edge, OnSelectionChangeFunc, useKeyPress } from '@xyflow/react'
 import { useEffect, useState } from 'react'
-import { Edge, OnSelectionChangeFunc, useKeyPress } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
