@@ -104,11 +104,14 @@ export function PromptInput({
           onKeyDown: handleKeyDown
         }}
         sx={{
+          height: '44px',
           '& .MuiOutlinedInput-root': {
             borderRadius: isFloating ? 9999 : '22px',
             bgcolor: isFloating ? 'transparent' : INPUT_FILL,
-            height: 44,
-            px: '16px'
+            height: '44px',
+            px: '16px',
+            display: 'flex',
+            alignItems: 'center'
           },
           '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
           '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
@@ -117,13 +120,16 @@ export function PromptInput({
           '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline':
             { border: 'none' },
           // Keep font-size >= 16px to suppress iOS Safari's auto-zoom on focus
-          // (regression guard from the M1 fix).
+          // (regression guard from the M1 fix). Setting height equal to the
+          // capsule lets the browser vertically centre the placeholder/value
+          // natively for single-line inputs.
           '& .MuiInputBase-input': {
             fontSize: 16,
-            lineHeight: '24px',
+            lineHeight: 'normal',
             color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
             padding: 0,
-            height: '24px'
+            height: '44px',
+            boxSizing: 'border-box'
           },
           '& .MuiInputBase-input::placeholder': {
             color: TEXT_SECONDARY,
