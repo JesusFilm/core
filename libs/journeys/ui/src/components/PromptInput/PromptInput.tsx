@@ -2,9 +2,9 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import StopRoundedIcon from '@mui/icons-material/StopRounded'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next/pages'
 import {
+  ChangeEvent,
   FormEvent,
   KeyboardEvent,
   ReactElement,
@@ -68,6 +68,13 @@ export function PromptInput({
     [input, isLoading, onSubmit]
   )
 
+  const handleInputChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      onInputChange(e.target.value)
+    },
+    [onInputChange]
+  )
+
   const canSubmit = input.trim().length > 0
   const isFloating = variant === 'floating'
 
@@ -91,50 +98,38 @@ export function PromptInput({
         boxShadow: 'none'
       }}
     >
-      <TextField
-        inputRef={inputRef}
+      <Box
+        component="input"
+        ref={inputRef}
+        type="text"
         value={input}
-        onChange={(e) => onInputChange(e.target.value)}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
         placeholder={t('Ask anything…')}
         disabled={isLoading}
-        size="small"
-        fullWidth
-        inputProps={{
-          'aria-label': t('Chat message input'),
-          onKeyDown: handleKeyDown
-        }}
+        aria-label={t('Chat message input')}
         sx={{
+          flex: 1,
+          minWidth: 0,
           height: '44px',
-          '& .MuiOutlinedInput-root': {
-            borderRadius: isFloating ? 9999 : '22px',
-            bgcolor: isFloating ? 'transparent' : INPUT_FILL,
-            height: '44px',
-            px: '16px',
-            display: 'flex',
-            alignItems: 'center'
-          },
-          '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-          '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-            border: 'none'
-          },
-          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline':
-            { border: 'none' },
-          // Keep font-size >= 16px to suppress iOS Safari's auto-zoom on focus
-          // (regression guard from the M1 fix). Setting height equal to the
-          // capsule lets the browser vertically centre the placeholder/value
-          // natively for single-line inputs.
-          '& .MuiInputBase-input': {
-            fontSize: 16,
-            lineHeight: 'normal',
-            color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
-            padding: 0,
-            height: '44px',
-            boxSizing: 'border-box'
-          },
-          '& .MuiInputBase-input::placeholder': {
+          border: 'none',
+          outline: 'none',
+          background: isFloating ? 'transparent' : INPUT_FILL,
+          borderRadius: isFloating ? 9999 : '22px',
+          px: '16px',
+          // font-size >= 16px keeps iOS Safari from auto-zooming on focus
+          // (regression guard from the M1 fix).
+          fontSize: 16,
+          lineHeight: 'normal',
+          fontFamily: 'inherit',
+          color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
+          boxSizing: 'border-box',
+          '&::placeholder': {
             color: TEXT_SECONDARY,
             opacity: 1
-          }
+          },
+          '&:focus': { outline: 'none' },
+          '&:disabled': { color: TEXT_SECONDARY }
         }}
       />
       {isLoading ? (
