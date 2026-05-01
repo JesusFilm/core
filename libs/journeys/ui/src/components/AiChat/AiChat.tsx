@@ -45,10 +45,11 @@ interface AiChatProps {
   variant?: 'panel' | 'overlay'
   /**
    * Notifies the parent when the sheet's logical state changes:
-   *  - 'idle' — no messages yet; show header + input naturally.
-   *  - 'active' — messages present and expanded; full conversation visible.
-   *  - 'collapsed' — messages present but collapsed; only the drag handle
-   *    is shown so the journey content underneath is unobstructed.
+   *  - 'idle' — no messages yet, sheet expanded; show header + input.
+   *  - 'active' — messages present, sheet expanded; full conversation.
+   *  - 'collapsed' — user has dragged the sheet down; only the drag
+   *    handle is shown over the journey card. Reachable from either
+   *    idle or active.
    *
    * The pinned sheet uses this to choose the right height + animation.
    */
@@ -270,11 +271,13 @@ export function AiChat({
   }, [messages])
 
   const hasMessages = messages.length > 0
-  const sheetState: AiChatSheetState = !hasMessages
-    ? 'idle'
-    : collapsed
-      ? 'collapsed'
-      : 'active'
+  // Collapse wins over message presence so the user can dismiss the
+  // sheet from idle (empty chat) as well as from active.
+  const sheetState: AiChatSheetState = collapsed
+    ? 'collapsed'
+    : hasMessages
+      ? 'active'
+      : 'idle'
   useEffect(() => {
     onSheetStateChange?.(sheetState)
   }, [sheetState, onSheetStateChange])
