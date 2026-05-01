@@ -53,14 +53,16 @@ export function Response({ content }: ResponseProps): ReactElement {
           textUnderlineOffset: '2px'
         },
         '& code': {
-          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+          fontFamily:
+            'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
           fontSize: '0.92em',
           padding: '1px 5px',
           borderRadius: 4,
           background: 'rgba(38,38,46,0.06)'
         },
         '& pre': {
-          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+          fontFamily:
+            'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
           fontSize: '0.92em',
           padding: '10px 12px',
           borderRadius: 8,
