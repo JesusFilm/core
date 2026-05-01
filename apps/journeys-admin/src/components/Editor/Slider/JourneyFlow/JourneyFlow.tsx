@@ -434,10 +434,29 @@ export function JourneyFlow(): ReactElement {
     return endDragTimeStamp - dragTimeStampRef.current < 150
   }
 
+  const isMenuElement = (target: HTMLElement): boolean => {
+    return (
+      (target.parentNode as HTMLElement)?.id === 'StepBlockNodeMenuIcon' ||
+      target.id === 'StepBlockNodeMenuIcon' ||
+      target.id === 'edit-step'
+    )
+  }
+
+  const handleNodeClick = useCallback(
+    (event: MouseEvent, node: Node) => {
+      if (node.type !== 'StepBlock') return
+
+      const target = event.target as HTMLElement
+      if (isMenuElement(target)) return
+
+      handleStepSelection(node.id)
+    },
+    [handleStepSelection]
+  )
+
   const onNodeDragStop: OnNodeDrag = (event, node): void => {
     if (node.type !== 'StepBlock' && node.type !== 'SocialPreview') return
 
-    // x and y position of node before onNodeDragStop was called
     let prevX
     let prevY
 
@@ -450,20 +469,7 @@ export function JourneyFlow(): ReactElement {
       prevX = step.x
       prevY = step.y
 
-      // if click or tap, go through step selection logic
-      // else go through standard positioning logic below
-      if (isClickOrTouch(event.timeStamp)) {
-        const target = event.target as HTMLElement
-        // if the clicked/tapped element is the StepBlockNodeMenu, don't call handleStepSelection hook https://github.com/JesusFilm/core/pull/4736
-        const menuButtonClicked =
-          (target.parentNode as HTMLElement).id === 'StepBlockNodeMenuIcon' ||
-          target.id === 'StepBlockNodeMenuIcon' ||
-          target.id === 'edit-step'
-        if (menuButtonClicked) return
-
-        handleStepSelection(step.id)
-        return
-      }
+      if (isClickOrTouch(event.timeStamp)) return
     } else if (node.type === 'SocialPreview') {
       prevX = journey?.socialNodeX
       prevY = journey?.socialNodeY
@@ -618,6 +624,7 @@ export function JourneyFlow(): ReactElement {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
+        onNodeClick={handleNodeClick}
         onNodeDragStart={(event) => {
           dragTimeStampRef.current = event.timeStamp
         }}
