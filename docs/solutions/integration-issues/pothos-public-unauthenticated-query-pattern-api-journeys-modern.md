@@ -68,14 +68,14 @@ export async function authScopes(context: Context) {
       return {
         ...defaultScopes,
         isAuthenticated: context.user?.email != null,
-        isAnonymous: context.user != null && context.user.email == null,
+        isAnonymous: context.user != null && context.user.email == null
         // ...
       }
     }
     case 'interop':
       return { ...defaultScopes, isValidInterop: true }
     default:
-      return defaultScopes  // PublicContext lands here — every scope is false
+      return defaultScopes // PublicContext lands here — every scope is false
   }
 }
 ```
@@ -145,14 +145,21 @@ The matching spec uses `getClient()` with no `headers.authorization` to exercise
 
 ```typescript
 // apis/api-journeys-modern/src/schema/templateGalleryPage/templateGalleryPageBySlug.query.spec.ts
-const publicClient = getClient()  // no auth header → PublicContext
+const publicClient = getClient() // no auth header → PublicContext
 
 it('returns a published page to an unauthenticated visitor', async () => {
   prismaMock.templateGalleryPage.findFirst.mockResolvedValue({
-    id: 'p1', title: 'Hello', slug: 'hello', status: 'published'
+    id: 'p1',
+    title: 'Hello',
+    slug: 'hello',
+    status: 'published'
   } as any)
-  const result = await publicClient({ /* ... */ })
-  expect(result.data.templateGalleryPageBySlug).toEqual({ /* ... */ })
+  const result = await publicClient({
+    /* ... */
+  })
+  expect(result.data.templateGalleryPageBySlug).toEqual({
+    /* ... */
+  })
 })
 ```
 
