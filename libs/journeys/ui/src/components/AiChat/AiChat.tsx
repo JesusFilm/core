@@ -108,23 +108,23 @@ interface AssistantBubbleProps {
   text: string
   animate: boolean
   isStreaming: boolean
-  plain?: boolean
+  surface?: 'light' | 'dark'
 }
 
 function AssistantBubble({
   text,
   animate,
   isStreaming,
-  plain = false
+  surface = 'light'
 }: AssistantBubbleProps): ReactElement {
   const { display, isComplete } = useTypewriter(text, animate, isStreaming)
   return (
     <>
-      <Message role="assistant" plain={plain}>
+      <Message role="assistant" plain surface={surface}>
         <Response content={display} />
       </Message>
       {isComplete && text.length > 0 && (
-        <Actions content={text} plain={plain} />
+        <Actions content={text} plain />
       )}
     </>
   )
@@ -319,7 +319,7 @@ export function AiChat({
                     text={text}
                     animate={isLast}
                     isStreaming={isLast && isLoading}
-                    plain={isOverlay}
+                    surface={isOverlay ? 'dark' : 'light'}
                   />
                 ) : (
                   <Message role="user">{text}</Message>
@@ -330,13 +330,21 @@ export function AiChat({
           {isLoading &&
             (messages.length === 0 ||
               messages[messages.length - 1]?.role === 'user') && (
-              <Message role="assistant" plain={isOverlay}>
+              <Message
+                role="assistant"
+                plain
+                surface={isOverlay ? 'dark' : 'light'}
+              >
                 <TypingIndicator />
               </Message>
             )}
           {error != null && !isLoading && (
             <Box>
-              <Message role="assistant" plain={isOverlay}>
+              <Message
+                role="assistant"
+                plain
+                surface={isOverlay ? 'dark' : 'light'}
+              >
                 <Box component="span" sx={{ opacity: 0.7 }}>
                   {t('Something went wrong. Please try again.')}
                 </Box>
@@ -379,6 +387,7 @@ export function AiChat({
           isLoading={isLoading}
           onStop={stop}
           variant={isOverlay ? 'floating' : 'inline'}
+          showTopBorder={messages.length > 0}
         />
       </Box>
     </Box>

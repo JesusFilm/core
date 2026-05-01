@@ -33,6 +33,12 @@ interface PromptInputProps {
    * `floating` — rounded pill on a dark blurred backdrop for the desktop overlay.
    */
   variant?: 'inline' | 'floating'
+  /**
+   * Show the top divider above the input. Set to false when the input
+   * sits directly under another bordered element (idle pinned bar) so
+   * we don't render a visually doubled line.
+   */
+  showTopBorder?: boolean
 }
 
 export function PromptInput({
@@ -41,7 +47,8 @@ export function PromptInput({
   onSubmit,
   isLoading,
   onStop,
-  variant = 'inline'
+  variant = 'inline',
+  showTopBorder = true
 }: PromptInputProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -92,9 +99,11 @@ export function PromptInput({
         WebkitBackdropFilter: isFloating ? 'blur(20px) saturate(180%)' : 'none',
         borderRadius: isFloating ? 9999 : 0,
         border: isFloating ? '1px solid rgba(255,255,255,0.12)' : 'none',
-        borderTop: isFloating
-          ? '1px solid rgba(255,255,255,0.12)'
-          : `1px solid ${DIVIDER}`,
+        borderTop: !showTopBorder
+          ? 'none'
+          : isFloating
+            ? '1px solid rgba(255,255,255,0.12)'
+            : `1px solid ${DIVIDER}`,
         boxShadow: 'none'
       }}
     >

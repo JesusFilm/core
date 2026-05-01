@@ -10,6 +10,7 @@ import {
 } from '../AiChat/tokens'
 
 type MessageRole = 'user' | 'assistant'
+type MessageSurface = 'light' | 'dark'
 
 interface MessageProps {
   role: MessageRole
@@ -19,15 +20,24 @@ interface MessageProps {
    * (ChatGPT-style). User messages retain their pill regardless.
    */
   plain?: boolean
+  /**
+   * Background context the message sits on. Light = white pinned bar;
+   * dark = blurred desktop overlay. Only affects plain assistant text
+   * colour — bubble messages always have enough contrast on either.
+   */
+  surface?: MessageSurface
 }
 
 export function Message({
   role,
   children,
-  plain = false
+  plain = false,
+  surface = 'light'
 }: MessageProps): ReactElement {
   const isUser = role === 'user'
   const isPlainAssistant = plain && !isUser
+  const plainAssistantColor =
+    surface === 'dark' ? 'rgba(255, 255, 255, 0.92)' : ASSISTANT_FG
 
   return (
     <Box
@@ -48,7 +58,7 @@ export function Message({
           color: isUser
             ? PRIMARY_ON
             : isPlainAssistant
-              ? 'rgba(255, 255, 255, 0.92)'
+              ? plainAssistantColor
               : ASSISTANT_FG,
           borderRadius: isUser
             ? '16px'
