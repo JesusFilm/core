@@ -1,23 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { mockDeep } from 'jest-mock-extended'
 
 import {
   StepNextEventCreateInput,
-  StepPreviousEventCreateInput,
-  StepViewEventCreateInput
+  StepPreviousEventCreateInput
 } from '../../../__generated__/graphql'
-import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
 
 import {
   StepNextEventResolver,
-  StepPreviousEventResolver,
-  StepViewEventResolver
+  StepPreviousEventResolver
 } from './step.resolver'
 
 describe('Step', () => {
-  let prismaService: PrismaService, eService: EventService
-
   beforeAll(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date('2021-02-18'))
@@ -26,14 +20,6 @@ describe('Step', () => {
   afterAll(() => {
     jest.useRealTimers()
   })
-
-  const eventService = {
-    provide: EventService,
-    useFactory: () => ({
-      save: jest.fn((event) => event),
-      validateBlockEvent: jest.fn(() => response)
-    })
-  }
 
   const response = {
     visitor: {
@@ -48,90 +34,13 @@ describe('Step', () => {
     journeyId: 'journey.id'
   }
 
-  describe('stepViewEventCreate', () => {
-    let resolver: StepViewEventResolver
-
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          StepViewEventResolver,
-          eventService,
-          { provide: PrismaService, useValue: mockDeep<PrismaService>() }
-        ]
-      }).compile()
-      resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
-      eService = module.get<EventService>(EventService)
-      prismaService = module.get<PrismaService>(PrismaService)
-      prismaService.visitor.update = jest.fn().mockResolvedValueOnce(null)
-      prismaService.journeyVisitor.update = jest
-        .fn()
-        .mockResolvedValueOnce(null)
+  const eventService = {
+    provide: EventService,
+    useFactory: () => ({
+      save: jest.fn((event) => event),
+      validateBlockEvent: jest.fn(() => response)
     })
-
-    it('returns StepViewEvent', async () => {
-      const input: StepViewEventCreateInput = {
-        id: '1',
-        blockId: 'block.id',
-        value: 'stepName'
-      }
-
-      expect(await resolver.stepViewEventCreate('userId', input)).toEqual({
-        ...input,
-        typename: 'StepViewEvent',
-        visitor: {
-          connect: { id: 'visitor.id' }
-        },
-        journey: { connect: { id: 'journey.id' } },
-        stepId: input.blockId
-      })
-    })
-
-    it('should update visitor last event at', async () => {
-      const input: StepViewEventCreateInput = {
-        id: '1',
-        blockId: 'block.id',
-        value: 'stepName'
-      }
-      await resolver.stepViewEventCreate('userId', input)
-
-      expect(prismaService.visitor.update).toHaveBeenCalledWith({
-        where: { id: 'visitor.id' },
-        data: {
-          duration: 300,
-          lastStepViewedAt: new Date()
-        }
-      })
-    })
-
-    it('should have a max duration of 20 minutes', async () => {
-      const input: StepViewEventCreateInput = {
-        id: '1',
-        blockId: 'block.id',
-        value: 'stepName'
-      }
-      prismaService.visitor.update = jest.fn().mockResolvedValueOnce(null)
-      eService.validateBlockEvent = jest.fn().mockResolvedValueOnce({
-        ...response,
-        visitor: {
-          ...response.visitor,
-          createdAt: new Date(new Date('2021-02-18').setMinutes(-25))
-        },
-        journeyVisitor: {
-          ...response.journeyVisitor,
-          createdAt: new Date(new Date('2021-02-18').setMinutes(-25))
-        }
-      })
-      await resolver.stepViewEventCreate('userId', input)
-
-      expect(prismaService.visitor.update).toHaveBeenCalledWith({
-        where: { id: 'visitor.id' },
-        data: {
-          duration: 1200,
-          lastStepViewedAt: new Date()
-        }
-      })
-    })
-  })
+  }
 
   describe('StepNextEventResolver', () => {
     let resolver: StepNextEventResolver

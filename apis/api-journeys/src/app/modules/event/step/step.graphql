@@ -120,7 +120,6 @@ type StepPreviousEvent implements Event @shareable {
 }
 
 extend type Mutation {
-  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
   stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
   stepPreviousEventCreate(
     input: StepPreviousEventCreateInput!

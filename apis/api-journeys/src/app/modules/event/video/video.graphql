@@ -370,18 +370,3 @@ type VideoProgressEvent implements Event @shareable {
   progress: Int!
 }
 
-extend type Mutation {
-  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
-  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
-  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
-  videoCompleteEventCreate(
-    input: VideoCompleteEventCreateInput!
-  ): VideoCompleteEvent!
-  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
-  videoCollapseEventCreate(
-    input: VideoCollapseEventCreateInput!
-  ): VideoCollapseEvent!
-  videoProgressEventCreate(
-    input: VideoProgressEventCreateInput!
-  ): VideoProgressEvent!
-}
