@@ -6,9 +6,8 @@ import dynamic from 'next/dynamic'
 import { ReactElement, useCallback, useState } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
-import { SHEET_TOP_SHADOW, SURFACE } from '../AiChat/tokens'
-
 import type { AiChatSheetState } from '../AiChat/AiChat'
+import { SHEET_TOP_SHADOW, SURFACE } from '../AiChat/tokens'
 
 const AiChat = dynamic(
   async () =>

@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next/pages'
 import {
+  ReactElement,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
-  ReactElement,
   TouchEvent as ReactTouchEvent,
   useCallback,
   useEffect,
