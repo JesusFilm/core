@@ -2,6 +2,13 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
 
+import {
+  ASSISTANT_BG,
+  ASSISTANT_FG,
+  PRIMARY,
+  PRIMARY_ON
+} from '../AiChat/tokens'
+
 type MessageRole = 'user' | 'assistant'
 
 interface MessageProps {
@@ -9,9 +16,7 @@ interface MessageProps {
   children: ReactNode
   /**
    * When true, assistant messages render as plain prose with no bubble
-   * (ChatGPT-style). User messages retain their pill regardless. Used by
-   * the desktop ChatOverlay; the default bubble layout is used everywhere
-   * else.
+   * (ChatGPT-style). User messages retain their pill regardless.
    */
   plain?: boolean
 }
@@ -36,17 +41,17 @@ export function Message({
       <Box
         sx={{
           bgcolor: isUser
-            ? '#6D28D9'
+            ? PRIMARY
             : isPlainAssistant
               ? 'transparent'
-              : '#f5f5f5',
+              : ASSISTANT_BG,
           color: isUser
-            ? '#ffffff'
+            ? PRIMARY_ON
             : isPlainAssistant
               ? 'rgba(255, 255, 255, 0.92)'
-              : '#1a1a1a',
+              : ASSISTANT_FG,
           borderRadius: isUser
-            ? '16px 16px 4px 16px'
+            ? '16px'
             : isPlainAssistant
               ? 0
               : '16px 16px 16px 4px',

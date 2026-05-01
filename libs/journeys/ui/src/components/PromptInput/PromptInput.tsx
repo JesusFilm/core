@@ -12,6 +12,16 @@ import {
   useRef
 } from 'react'
 
+import {
+  ASSISTANT_FG,
+  DIVIDER,
+  INPUT_FILL,
+  PRIMARY,
+  PRIMARY_ON,
+  SURFACE,
+  TEXT_SECONDARY
+} from '../AiChat/tokens'
+
 interface PromptInputProps {
   input: string
   onInputChange: (value: string) => void
@@ -19,9 +29,8 @@ interface PromptInputProps {
   isLoading: boolean
   onStop?: () => void
   /**
-   * `inline` (default) renders the input as a flat bar with a top border,
-   * suited to a panel context. `floating` renders it as a rounded capsule
-   * with a shadow, for overlay contexts with no surrounding chrome.
+   * `inline` (default) — flat capsule for the pinned bar.
+   * `floating` — rounded pill on a dark blurred backdrop for the desktop overlay.
    */
   variant?: 'inline' | 'floating'
 }
@@ -70,20 +79,23 @@ export function PromptInput({
         display: 'flex',
         alignItems: 'center',
         gap: 1,
-        p: isFloating ? 1 : 1.5,
-        bgcolor: 'common.white',
-        borderTop: isFloating ? 'none' : '1px solid #e0e0e0',
+        p: isFloating ? 0.75 : 1.5,
+        bgcolor: isFloating ? 'rgba(38,38,46,0.78)' : SURFACE,
+        backdropFilter: isFloating ? 'blur(20px) saturate(180%)' : 'none',
+        WebkitBackdropFilter: isFloating ? 'blur(20px) saturate(180%)' : 'none',
         borderRadius: isFloating ? 9999 : 0,
-        boxShadow: isFloating
-          ? '0 10px 30px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1)'
-          : 'none'
+        border: isFloating ? '1px solid rgba(255,255,255,0.12)' : 'none',
+        borderTop: isFloating
+          ? '1px solid rgba(255,255,255,0.12)'
+          : `1px solid ${DIVIDER}`,
+        boxShadow: 'none'
       }}
     >
       <TextField
         inputRef={textareaRef}
         value={input}
         onChange={(e) => onInputChange(e.target.value)}
-        placeholder={t('Ask me anything')}
+        placeholder={t('Ask anything…')}
         disabled={isLoading}
         multiline
         maxRows={6}
@@ -95,25 +107,28 @@ export function PromptInput({
         }}
         sx={{
           '& .MuiOutlinedInput-root': {
-            borderRadius: isFloating ? 9999 : 3,
-            bgcolor: isFloating ? 'transparent' : 'grey.50'
+            borderRadius: isFloating ? 9999 : '22px',
+            bgcolor: isFloating ? 'transparent' : INPUT_FILL,
+            minHeight: 44,
+            py: '10px',
+            px: '16px'
           },
-          '& .MuiOutlinedInput-notchedOutline': {
-            border: 'none'
-          },
+          '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
           '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
             border: 'none'
           },
           '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline':
-            {
-              border: 'none'
-            },
+            { border: 'none' },
+          // Keep font-size >= 16px to suppress iOS Safari's auto-zoom on focus
+          // (regression guard from the M1 fix).
           '& .MuiInputBase-input': {
             fontSize: 16,
-            color: '#1a1a1a'
+            lineHeight: '24px',
+            color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
+            padding: 0
           },
           '& .MuiInputBase-input::placeholder': {
-            color: '#9e9e9e',
+            color: TEXT_SECONDARY,
             opacity: 1
           }
         }}
@@ -124,13 +139,13 @@ export function PromptInput({
           onClick={onStop}
           aria-label={t('Stop generating')}
           sx={{
-            width: 36,
-            height: 36,
+            width: 40,
+            height: 40,
             flexShrink: 0,
             p: 0,
-            bgcolor: '#e0e0e0',
-            color: '#666',
-            '&:hover': { bgcolor: '#d0d0d0' }
+            bgcolor: PRIMARY,
+            color: PRIMARY_ON,
+            '&:hover': { bgcolor: PRIMARY }
           }}
         >
           <StopRoundedIcon fontSize="small" />
@@ -141,18 +156,30 @@ export function PromptInput({
           disabled={!canSubmit}
           aria-label={t('Send message')}
           sx={{
-            width: 36,
-            height: 36,
+            width: 40,
+            height: 40,
             flexShrink: 0,
             p: 0,
-            bgcolor: canSubmit ? '#6D28D9' : '#e0e0e0',
-            color: canSubmit ? '#ffffff' : '#999',
+            bgcolor: canSubmit
+              ? PRIMARY
+              : isFloating
+                ? 'rgba(255,255,255,0.18)'
+                : DIVIDER,
+            color: canSubmit
+              ? PRIMARY_ON
+              : isFloating
+                ? 'rgba(255,255,255,0.6)'
+                : TEXT_SECONDARY,
             '&:hover': {
-              bgcolor: canSubmit ? '#5B21B6' : '#d0d0d0'
+              bgcolor: canSubmit
+                ? PRIMARY
+                : isFloating
+                  ? 'rgba(255,255,255,0.18)'
+                  : DIVIDER
             },
             '&.Mui-disabled': {
-              bgcolor: '#e0e0e0',
-              color: '#999'
+              bgcolor: isFloating ? 'rgba(255,255,255,0.18)' : DIVIDER,
+              color: isFloating ? 'rgba(255,255,255,0.6)' : TEXT_SECONDARY
             }
           }}
         >

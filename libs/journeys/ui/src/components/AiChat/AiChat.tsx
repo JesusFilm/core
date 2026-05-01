@@ -1,11 +1,8 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
 import { DefaultChatTransport, UIMessage } from 'ai'
 import { useTranslation } from 'next-i18next/pages'
 import {
@@ -26,22 +23,31 @@ import { Message } from '../Message'
 import { PromptInput } from '../PromptInput'
 import { Response } from '../Response'
 
+import { ChatHeader } from './ChatHeader'
+import { DragHandle } from './DragHandle'
+
 interface AiChatProps {
   /** When provided, this message is sent automatically on first render */
   initialMessage?: string
   /**
    * When true (default) the chat shows inline collapse controls — a drag
-   * handle on mobile and a close button on wider viewports. Callers that
-   * wrap AiChat in their own dismissible container (e.g. a Drawer with its
-   * own close button) should pass false.
+   * handle on mobile. Callers that wrap AiChat in their own dismissible
+   * container (e.g. a Drawer with its own close button) should pass false.
    */
   collapsible?: boolean
   /**
-   * `panel` (default) renders bubble messages and a flat bottom input for
-   * use inside a card/drawer. `overlay` renders plain assistant prose and
-   * a floating capsule input for the desktop ambient overlay.
+   * `panel` (default) renders the bubble layout for the pinned mobile bar
+   * (header + drag handle + bubbles + capsule input). `overlay` renders
+   * plain assistant prose and a floating capsule input for the desktop
+   * ambient overlay.
    */
   variant?: 'panel' | 'overlay'
+  /**
+   * Notifies the parent when the active vs idle state changes. The pinned
+   * sheet uses this to switch between auto-height (idle) and 80% height
+   * (active) per the design spec.
+   */
+  onActiveChange?: (active: boolean) => void
 }
 
 function getTextFromMessage(message: UIMessage): string {
@@ -53,7 +59,7 @@ function getTextFromMessage(message: UIMessage): string {
     .join('')
 }
 
-const TYPEWRITER_CHARS_PER_SEC = 200
+const TYPEWRITER_CHARS_PER_SEC = 280
 
 interface TypewriterResult {
   display: string
@@ -124,10 +130,9 @@ function AssistantBubble({
 }
 
 function TypingIndicator(): ReactElement {
-  const { t } = useTranslation('libs-journeys-ui')
   return (
     <Box
-      aria-label={t('Assistant is typing')}
+      aria-label="Assistant is typing"
       sx={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -160,9 +165,11 @@ function TypingIndicator(): ReactElement {
 export function AiChat({
   initialMessage,
   collapsible = true,
-  variant = 'panel'
+  variant = 'panel',
+  onActiveChange
 }: AiChatProps): ReactElement {
   const isOverlay = variant === 'overlay'
+  const isPanel = !isOverlay
   const { t } = useTranslation('libs-journeys-ui')
   const { journey } = useJourney()
   const [input, setInput] = useState('')
@@ -171,6 +178,10 @@ export function AiChat({
 
   const handleToggleCollapse = useCallback(() => {
     setCollapsed((prev) => !prev)
+  }, [])
+
+  const handleCollapse = useCallback(() => {
+    setCollapsed(true)
   }, [])
 
   const languageBcp47 = journey?.language?.bcp47 ?? undefined
@@ -183,15 +194,11 @@ export function AiChat({
 
   const [sessionId] = useState<string | undefined>(() => {
     if (typeof window === 'undefined') return undefined
-    try {
-      const existing = window.sessionStorage.getItem('aiChat.sessionId')
-      if (existing != null && existing.length > 0) return existing
-      const fresh = uuidv4()
-      window.sessionStorage.setItem('aiChat.sessionId', fresh)
-      return fresh
-    } catch {
-      return uuidv4()
-    }
+    const existing = window.sessionStorage.getItem('aiChat.sessionId')
+    if (existing != null && existing.length > 0) return existing
+    const fresh = uuidv4()
+    window.sessionStorage.setItem('aiChat.sessionId', fresh)
+    return fresh
   })
   const sessionIdRef = useRef(sessionId)
   sessionIdRef.current = sessionId
@@ -257,8 +264,14 @@ export function AiChat({
     return -1
   }, [messages])
 
-  const hasMessages = messages.length > 0
-  const showCollapseControls = collapsible && hasMessages
+  // Active = has messages and user has not collapsed back to idle.
+  const isActive = messages.length > 0 && !collapsed
+  useEffect(() => {
+    onActiveChange?.(isActive)
+  }, [isActive, onActiveChange])
+
+  const showDragHandle = isPanel && collapsible
+  const showHeader = isPanel
 
   return (
     <Box
@@ -270,66 +283,15 @@ export function AiChat({
         position: 'relative'
       }}
     >
-      {showCollapseControls && (
-        <Box
-          sx={{
-            display: { xs: 'flex', sm: 'none' },
-            justifyContent: 'center',
-            flexShrink: 0
-          }}
-        >
-          <IconButton
-            onClick={handleToggleCollapse}
-            tabIndex={0}
-            aria-label={collapsed ? t('Expand chat') : t('Collapse chat')}
-            aria-expanded={!collapsed}
-            disableRipple
-            sx={{
-              py: 1.25,
-              px: 3,
-              borderRadius: 9999,
-              '&:hover': { bgcolor: 'transparent' },
-              '&:hover .ChatCollapseHandle': { bgcolor: '#bdbdbd' }
-            }}
-          >
-            <Box
-              className="ChatCollapseHandle"
-              sx={{
-                width: 48,
-                height: 4,
-                borderRadius: 9999,
-                bgcolor: '#e0e0e0',
-                transition: 'background-color 150ms ease-out'
-              }}
-            />
-          </IconButton>
-        </Box>
+      {showDragHandle && (
+        <DragHandle
+          collapsed={collapsed}
+          onToggle={handleToggleCollapse}
+          onCollapse={handleCollapse}
+        />
       )}
 
-      {showCollapseControls && (
-        <IconButton
-          onClick={handleToggleCollapse}
-          tabIndex={0}
-          aria-label={collapsed ? t('Expand chat') : t('Collapse chat')}
-          aria-expanded={!collapsed}
-          size="small"
-          sx={{
-            display: { xs: 'none', sm: 'inline-flex' },
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            zIndex: 2,
-            color: 'text.secondary',
-            '&:hover': { color: 'text.primary', bgcolor: 'action.hover' }
-          }}
-        >
-          {collapsed ? (
-            <KeyboardArrowUpRoundedIcon fontSize="small" />
-          ) : (
-            <CloseRoundedIcon fontSize="small" />
-          )}
-        </IconButton>
-      )}
+      {showHeader && <ChatHeader />}
 
       <Box
         sx={{
