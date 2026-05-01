@@ -145,8 +145,8 @@ export function PromptInput({
           onClick={onStop}
           aria-label={t('Stop generating')}
           sx={{
-            width: 40,
-            height: 40,
+            width: 32,
+            height: 32,
             flexShrink: 0,
             p: 0,
             bgcolor: PRIMARY,
@@ -162,8 +162,8 @@ export function PromptInput({
           disabled={!canSubmit}
           aria-label={t('Send message')}
           sx={{
-            width: 40,
-            height: 40,
+            width: 32,
+            height: 32,
             flexShrink: 0,
             p: 0,
             bgcolor: canSubmit
