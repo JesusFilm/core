@@ -434,13 +434,8 @@ export function JourneyFlow(): ReactElement {
     return endDragTimeStamp - dragTimeStampRef.current < 150
   }
 
-  const isMenuElement = (target: HTMLElement): boolean => {
-    return (
-      (target.parentNode as HTMLElement)?.id === 'StepBlockNodeMenuIcon' ||
-      target.id === 'StepBlockNodeMenuIcon' ||
-      target.id === 'edit-step'
-    )
-  }
+  const isMenuElement = (target: Element): boolean =>
+    target.closest('#StepBlockNodeMenuIcon, #edit-step') != null
 
   const handleNodeClick = useCallback(
     (event: MouseEvent, node: Node) => {
