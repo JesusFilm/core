@@ -324,7 +324,10 @@ export function AiChat({
           mx: 'auto'
         }}
       >
-        <Conversation scrollKey={messages.length}>
+        <Conversation
+          scrollKey={messages.length}
+          bottomClearance={isPanel ? 72 : 0}
+        >
           {messages.map((message, index) => {
             const text = getTextFromMessage(message)
             const isLast = index === lastAssistantIndex
@@ -388,13 +391,22 @@ export function AiChat({
 
       <Box
         sx={{
-          flexShrink: 0,
-          width: '100%',
-          maxWidth: { xs: 'none', sm: '48rem' },
+          position: 'absolute',
+          left: 8,
+          right: 8,
+          bottom: 'calc(env(safe-area-inset-bottom) + 8px)',
+          zIndex: 2,
           mx: 'auto',
-          px: isOverlay ? { xs: 0, sm: 1 } : 0,
-          pb: isOverlay ? { xs: 0, sm: 1 } : 0,
-          pt: isOverlay ? { xs: 0, sm: 0.5 } : 0
+          maxWidth: { xs: 'none', sm: '48rem' },
+          // Slide the floating input out the bottom when the sheet is
+          // collapsed. Synced to the same 280ms cubic-bezier as the
+          // PinnedChatBar height transition so they animate together.
+          transform:
+            sheetState === 'collapsed' ? 'translateY(140%)' : 'translateY(0)',
+          opacity: sheetState === 'collapsed' ? 0 : 1,
+          pointerEvents: sheetState === 'collapsed' ? 'none' : 'auto',
+          transition:
+            'transform 280ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease-out'
         }}
       >
         <PromptInput
@@ -404,7 +416,6 @@ export function AiChat({
           isLoading={isLoading}
           onStop={stop}
           variant={isOverlay ? 'floating' : 'inline'}
-          showTopBorder={hasMessages}
         />
       </Box>
     </Box>

@@ -24,13 +24,20 @@ interface ConversationProps {
    * "scroll to latest" pill is the way back when they fall behind.
    */
   scrollKey?: number
+  /**
+   * Bottom padding (px) on the scrollable content. Use to leave
+   * clearance for a floating absolute-positioned input below so the
+   * last message isn't permanently obscured.
+   */
+  bottomClearance?: number
 }
 
 const NEAR_BOTTOM_THRESHOLD_PX = 24
 
 export function Conversation({
   children,
-  scrollKey
+  scrollKey,
+  bottomClearance = 0
 }: ConversationProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -131,7 +138,8 @@ export function Conversation({
             display: 'flex',
             flexDirection: 'column',
             gap: 1,
-            py: 1
+            pt: 1,
+            pb: `${8 + bottomClearance}px`
           }}
         >
           {children}
@@ -145,7 +153,9 @@ export function Conversation({
           data-testid="ScrollToBottomPill"
           sx={{
             position: 'absolute',
-            bottom: 8,
+            // Sit above any floating input clearance so the pill never
+            // hides behind the absolute-positioned capsule.
+            bottom: `${bottomClearance + 8}px`,
             left: '50%',
             transform: 'translateX(-50%)',
             width: 32,

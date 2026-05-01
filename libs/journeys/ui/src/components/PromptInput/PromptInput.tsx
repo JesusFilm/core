@@ -15,10 +15,8 @@ import {
 import {
   ASSISTANT_FG,
   DIVIDER,
-  INPUT_FILL,
   PRIMARY,
   PRIMARY_ON,
-  SURFACE,
   TEXT_SECONDARY
 } from '../AiChat/tokens'
 
@@ -29,16 +27,12 @@ interface PromptInputProps {
   isLoading: boolean
   onStop?: () => void
   /**
-   * `inline` (default) — flat capsule for the pinned bar.
-   * `floating` — rounded pill on a dark blurred backdrop for the desktop overlay.
+   * `inline` (default) — floating rounded capsule for the pinned bar
+   * (semi-transparent white surface, drop shadow, backdrop blur).
+   * `floating` — same form-factor on a dark blurred backdrop for the
+   * desktop ambient overlay.
    */
   variant?: 'inline' | 'floating'
-  /**
-   * Show the top divider above the input. Set to false when the input
-   * sits directly under another bordered element (idle pinned bar) so
-   * we don't render a visually doubled line.
-   */
-  showTopBorder?: boolean
 }
 
 export function PromptInput({
@@ -47,8 +41,7 @@ export function PromptInput({
   onSubmit,
   isLoading,
   onStop,
-  variant = 'inline',
-  showTopBorder = true
+  variant = 'inline'
 }: PromptInputProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -85,6 +78,10 @@ export function PromptInput({
   const canSubmit = input.trim().length > 0
   const isFloating = variant === 'floating'
 
+  // Both variants render a floating pill. `inline` sits over a light
+  // surface (pinned bar) and `floating` sits over a dark journey/overlay
+  // backdrop. The form itself IS the visible capsule — no separate
+  // inputFill layer underneath.
   return (
     <Box
       component="form"
@@ -93,18 +90,20 @@ export function PromptInput({
         display: 'flex',
         alignItems: 'center',
         gap: 1,
-        p: isFloating ? 0.75 : 1.5,
-        bgcolor: isFloating ? 'rgba(38,38,46,0.78)' : SURFACE,
-        backdropFilter: isFloating ? 'blur(20px) saturate(180%)' : 'none',
-        WebkitBackdropFilter: isFloating ? 'blur(20px) saturate(180%)' : 'none',
-        borderRadius: isFloating ? 9999 : 0,
-        border: isFloating ? '1px solid rgba(255,255,255,0.12)' : 'none',
-        borderTop: !showTopBorder
-          ? 'none'
-          : isFloating
-            ? '1px solid rgba(255,255,255,0.12)'
-            : `1px solid ${DIVIDER}`,
-        boxShadow: 'none'
+        px: 0.75,
+        py: 0.75,
+        bgcolor: isFloating
+          ? 'rgba(38, 38, 46, 0.78)'
+          : 'rgba(255, 255, 255, 0.85)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        borderRadius: 9999,
+        border: isFloating
+          ? '1px solid rgba(255, 255, 255, 0.12)'
+          : '1px solid rgba(38, 38, 46, 0.06)',
+        boxShadow: isFloating
+          ? '0 10px 30px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1)'
+          : '0 4px 12px rgba(38, 38, 46, 0.10), 0 1px 2px rgba(38, 38, 46, 0.06)'
       }}
     >
       <Box
@@ -120,12 +119,11 @@ export function PromptInput({
         sx={{
           flex: 1,
           minWidth: 0,
-          height: '44px',
+          height: '40px',
           border: 'none',
           outline: 'none',
-          background: isFloating ? 'transparent' : INPUT_FILL,
-          borderRadius: isFloating ? 9999 : '22px',
-          px: '16px',
+          background: 'transparent',
+          px: '14px',
           // font-size >= 16px keeps iOS Safari from auto-zooming on focus
           // (regression guard from the M1 fix).
           fontSize: 16,
@@ -134,7 +132,7 @@ export function PromptInput({
           color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
           boxSizing: 'border-box',
           '&::placeholder': {
-            color: TEXT_SECONDARY,
+            color: isFloating ? 'rgba(255, 255, 255, 0.6)' : TEXT_SECONDARY,
             opacity: 1
           },
           '&:focus': { outline: 'none' },
@@ -171,23 +169,23 @@ export function PromptInput({
             bgcolor: canSubmit
               ? PRIMARY
               : isFloating
-                ? 'rgba(255,255,255,0.18)'
+                ? 'rgba(255, 255, 255, 0.18)'
                 : DIVIDER,
             color: canSubmit
               ? PRIMARY_ON
               : isFloating
-                ? 'rgba(255,255,255,0.6)'
+                ? 'rgba(255, 255, 255, 0.6)'
                 : TEXT_SECONDARY,
             '&:hover': {
               bgcolor: canSubmit
                 ? PRIMARY
                 : isFloating
-                  ? 'rgba(255,255,255,0.18)'
+                  ? 'rgba(255, 255, 255, 0.18)'
                   : DIVIDER
             },
             '&.Mui-disabled': {
-              bgcolor: isFloating ? 'rgba(255,255,255,0.18)' : DIVIDER,
-              color: isFloating ? 'rgba(255,255,255,0.6)' : TEXT_SECONDARY
+              bgcolor: isFloating ? 'rgba(255, 255, 255, 0.18)' : DIVIDER,
+              color: isFloating ? 'rgba(255, 255, 255, 0.6)' : TEXT_SECONDARY
             }
           }}
         >
