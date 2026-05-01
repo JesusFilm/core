@@ -2,10 +2,7 @@ import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { GetServerSidePropsContext } from 'next'
 
 import { User } from '../../src/libs/auth/authContext'
-import {
-  getAuthTokens,
-  toUser
-} from '../../src/libs/auth/getAuthTokens'
+import { getAuthTokens, toUser } from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 import { getServerSideProps } from './index'

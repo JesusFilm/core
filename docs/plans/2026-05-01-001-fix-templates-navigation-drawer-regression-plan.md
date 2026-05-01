@@ -21,7 +21,7 @@ The bug has now re-appeared: signed-in users navigating to **Templates Library**
 
 The previous fix is still in `apps/journeys-admin/src/libs/auth/AuthProvider.tsx` and unchanged. The regression therefore comes from outside that file. Most plausible contributors:
 
-- **Firebase v9 → v10 upgrade** (commit `a8d7e1b05`, 2026-03-24, *after* the QA pass). Firebase 10 changed initialization timing in some environments; on cold load or fast client-side navigation the `onAuthStateChanged` callback can fire later than the templates page's first paint.
+- **Firebase v9 → v10 upgrade** (commit `a8d7e1b05`, 2026-03-24, _after_ the QA pass). Firebase 10 changed initialization timing in some environments; on cold load or fast client-side navigation the `onAuthStateChanged` callback can fire later than the templates page's first paint.
 - The `/templates` page uses `getStaticProps`, so `pageProps.userSerialized` is never set. The page is the **only authenticated-aware page in the app that does not serialize the user server-side** — the previous fix masked this by relying on Firebase resolving on the client before the user notices. Any change that delays Firebase resolution (v10 upgrade, network latency, cookie/IndexedDB state) re-exposes the gap.
 
 The fix restores deterministic behavior by removing the dependency on Firebase client-side timing for the navbar.
@@ -88,8 +88,8 @@ The fix restores deterministic behavior by removing the dependency on Firebase c
 
 ### Resolved During Planning
 
-- *Do we need to keep `getStaticProps` for SEO?* — No. `/templates` is behind a sign-in flow for editing and behind public browsing for guests; the gallery is not optimized as a discoverable SEO surface. The `[journeyId]` page (which is the actual marketed template page) already uses `getServerSideProps`.
-- *Should we remove the in-component email-verification redirect after adding it to SSR?* — Keep both. The SSR path covers initial loads; the client `GetMe` query covers the post-mutation case where `data.me.emailVerified` flips to false during a session.
+- _Do we need to keep `getStaticProps` for SEO?_ — No. `/templates` is behind a sign-in flow for editing and behind public browsing for guests; the gallery is not optimized as a discoverable SEO surface. The `[journeyId]` page (which is the actual marketed template page) already uses `getServerSideProps`.
+- _Should we remove the in-component email-verification redirect after adding it to SSR?_ — Keep both. The SSR path covers initial loads; the client `GetMe` query covers the post-mutation case where `data.me.emailVerified` flips to false during a session.
 
 ### Deferred to Implementation
 
@@ -108,10 +108,12 @@ The fix restores deterministic behavior by removing the dependency on Firebase c
 **Dependencies:** None.
 
 **Files:**
+
 - Modify: `apps/journeys-admin/pages/templates/index.tsx`
-- Test: `apps/journeys-admin/pages/templates/index.spec.tsx` *(create if missing — see U2)*
+- Test: `apps/journeys-admin/pages/templates/index.spec.tsx` _(create if missing — see U2)_
 
 **Approach:**
+
 - Replace the `import { GetStaticProps } from 'next'` with `import { GetServerSidePropsContext } from 'next'`.
 - Remove the existing `export const getStaticProps: GetStaticProps = async ({ locale }) => { ... }` export.
 - Add `export const getServerSideProps = async (ctx: GetServerSidePropsContext) => { ... }` mirroring the structure of `pages/templates/[journeyId].tsx`:
@@ -125,16 +127,19 @@ The fix restores deterministic behavior by removing the dependency on Firebase c
 - Leave the page component body unchanged (the `useAuth()` / `userSignedIn` / `PageWrapper` props, the email-verification client-side redirect, and the JOURNEY_NOT_FOUND_ERROR snackbar are all still correct).
 
 **Patterns to follow:**
+
 - `apps/journeys-admin/pages/templates/[journeyId].tsx` — direct precedent: same `allowGuest: true` story, same conditional `userSerialized` serialization.
 - `apps/journeys-admin/pages/journeys/[journeyId].tsx` — for `redirect` propagation from `initAndAuthApp`.
 
 **Test scenarios:**
+
 - Happy path: `getServerSideProps` is called with a request that has valid auth cookies → returns `userSerialized` as a JSON string of the user, returns gallery data in `initialApolloState`, returns `flags`, returns `translations`. (Covers R1, R3, R6.)
 - Edge case (signed-out): `getServerSideProps` is called with no auth cookies (`getAuthTokens` returns null) → returns `userSerialized: null`, still returns gallery data, no redirect. (Covers R2, R3.)
 - Error/redirect path: `initAndAuthApp` returns a `redirect` (e.g. unverified email) → `getServerSideProps` returns `{ redirect }` and does **not** continue to the data queries. (Covers R4.)
 - Edge case (template language IDs empty): `GET_JOURNEY_TEMPLATE_LANGUAGE_IDS` returns empty/null → page still returns successfully with empty `ids` for the `GET_LANGUAGES` query (preserve current `console.warn` behavior). (Covers R3.)
 
 **Verification:**
+
 - Manual: signed-in user clicks Projects → Templates → navigation drawer remains visible across the transition. Reload `/templates` directly → navigation drawer is visible from first paint.
 - Manual: log out, navigate to `/templates` directly → navigation drawer is **not** visible.
 - `pageProps.userSerialized` is a non-null JSON string when the request has valid auth cookies, and `null` otherwise (verifiable via React DevTools or by inspecting `_app.tsx`'s parsed `user`).
@@ -150,23 +155,28 @@ The fix restores deterministic behavior by removing the dependency on Firebase c
 **Dependencies:** U1.
 
 **Files:**
+
 - Create or modify: `apps/journeys-admin/pages/templates/index.spec.tsx`
 
 **Approach:**
+
 - Mirror the test setup used in similar `getServerSideProps` specs in this repo. Search the repo for an existing `pages/**/*.spec.tsx` that exercises `getServerSideProps` (e.g. for `pages/index.tsx` or `pages/templates/[journeyId].tsx`) and follow that mocking pattern.
 - Mock `getAuthTokens`, `toUser`, and `initAndAuthApp`. Drive the three scenarios listed in U1's test scenarios.
 - The implementer should use `--no-coverage` per `.claude/rules/running-jest-tests.md`: `npx jest --config apps/journeys-admin/jest.config.ts --no-coverage 'apps/journeys-admin/pages/templates/index.spec.tsx'`.
 
 **Patterns to follow:**
+
 - Whatever existing `getServerSideProps` spec the implementer locates first in `apps/journeys-admin/pages/`. Likely candidates: `pages/users/sign-in` tests or `pages/templates/[journeyId]` adjacent specs.
 - `apps/journeys-admin/src/libs/auth/AuthProvider.spec.tsx` — for an example of mocking auth helpers in this app.
 
 **Test scenarios:**
+
 - Happy path: signed-in user → `userSerialized` is a JSON string, no redirect.
 - Edge case: signed-out user → `userSerialized: null`, no redirect, gallery data still returned.
 - Error path: `initAndAuthApp` returns a `redirect` → `getServerSideProps` returns the redirect and does not call the gallery queries.
 
 **Verification:**
+
 - All three test cases pass via `npx jest --config apps/journeys-admin/jest.config.ts --no-coverage 'apps/journeys-admin/pages/templates/index.spec.tsx'`.
 
 ---
@@ -187,12 +197,12 @@ The fix restores deterministic behavior by removing the dependency on Firebase c
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| Removing `revalidate: 60` increases per-request load on the gallery queries. | The same query set already runs on every request for `/templates/[journeyId]` and other server-rendered authenticated pages. Apollo cache and the gateway's own caching absorb most of this. Re-introduce ISR later if production load metrics show a regression. |
-| `getServerSideProps` may break when the request has no `req.cookies` access (e.g. some CDN edge cases). | We use `getAuthTokens(ctx)` which already wraps `getTokensFromObject(ctx.req.cookies, authConfig)` in a try/catch returning `null` on failure. Signed-out guests already follow this path. |
-| The previous fix relied on Firebase client fallback; future regressions in `getStaticProps`-style pages won't be caught by the fix here. | Out of scope. `AuthProvider`'s Firebase fallback stays in place to cover any other page that adopts `getStaticProps` later. |
-| Test infrastructure for `pages/**/*.spec.tsx` may differ from the existing test for `[journeyId]`. | U2 explicitly directs the implementer to copy an existing `getServerSideProps` spec pattern from this repo before writing new mocks. |
+| Risk                                                                                                                                     | Mitigation                                                                                                                                                                                                                                                        |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Removing `revalidate: 60` increases per-request load on the gallery queries.                                                             | The same query set already runs on every request for `/templates/[journeyId]` and other server-rendered authenticated pages. Apollo cache and the gateway's own caching absorb most of this. Re-introduce ISR later if production load metrics show a regression. |
+| `getServerSideProps` may break when the request has no `req.cookies` access (e.g. some CDN edge cases).                                  | We use `getAuthTokens(ctx)` which already wraps `getTokensFromObject(ctx.req.cookies, authConfig)` in a try/catch returning `null` on failure. Signed-out guests already follow this path.                                                                        |
+| The previous fix relied on Firebase client fallback; future regressions in `getStaticProps`-style pages won't be caught by the fix here. | Out of scope. `AuthProvider`'s Firebase fallback stays in place to cover any other page that adopts `getStaticProps` later.                                                                                                                                       |
+| Test infrastructure for `pages/**/*.spec.tsx` may differ from the existing test for `[journeyId]`.                                       | U2 explicitly directs the implementer to copy an existing `getServerSideProps` spec pattern from this repo before writing new mocks.                                                                                                                              |
 
 ---
 
