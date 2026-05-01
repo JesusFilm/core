@@ -19,5 +19,5 @@ export default [
       '@typescript-eslint/no-require-imports': 'warn',
       '@typescript-eslint/require-await': 'warn'
     }
-  }
+  },
 ]

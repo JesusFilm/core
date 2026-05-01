@@ -84,6 +84,7 @@ const nextConfig = {
   },
   productionBrowserSourceMaps: true,
   typescript: {
+    // handled by github actions
     ignoreBuildErrors: process.env.CI === 'true'
   },
   transpilePackages: [

@@ -57,6 +57,7 @@ const nextConfig = {
   reactCompiler: true,
   productionBrowserSourceMaps: true,
   typescript: {
+    // handled by github actions
     ignoreBuildErrors: env.CI
   },
   basePath: '/watch',

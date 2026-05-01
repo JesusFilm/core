@@ -122,5 +122,5 @@
   "tui": {
     "enabled": false
   },
-  "analytics": true
+  "analytics": false
 }

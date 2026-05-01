@@ -227,16 +227,7 @@ const commonConfig = [
       '**/*.stories.js',
       '**/*.stories.jsx'
     ],
-    ...tseslint.configs.disableTypeChecked,
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        project: null,
-        projectService: false
-      }
-    },
     rules: {
-      ...tseslint.configs.disableTypeChecked.rules,
       'i18next/no-literal-string': 'off'
     }
   },
