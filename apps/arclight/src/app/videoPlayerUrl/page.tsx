@@ -1,5 +1,3 @@
-import { notFound } from 'next/navigation'
-
 import { graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../lib/apolloClient'
@@ -100,24 +98,38 @@ export default async function Page(props: {
 }) {
   const searchParams = await props.searchParams
   if (!searchParams.refId) {
-    notFound()
+    return {
+      message: 'Missing refId parameter',
+      status: 404
+    }
   }
 
+  // Parse start and end times, ensuring they are valid numbers
   const startTime = searchParams.start ? Number(searchParams.start) : undefined
   const endTime = searchParams.end ? Number(searchParams.end) : undefined
   const subonRaw = searchParams.subon ?? null
   const sublangidsRaw = searchParams.sublangids ?? null
 
+  // Validate time parameters
   if (startTime != null && (isNaN(startTime) || startTime < 0)) {
-    notFound()
+    return {
+      message: 'Invalid start time parameter',
+      status: 400
+    }
   }
 
   if (endTime != null && (isNaN(endTime) || endTime < 0)) {
-    notFound()
+    return {
+      message: 'Invalid end time parameter',
+      status: 400
+    }
   }
 
   if (startTime != null && endTime != null && endTime <= startTime) {
-    notFound()
+    return {
+      message: 'End time must be greater than start time',
+      status: 400
+    }
   }
 
   const { data } = await getApolloClient().query({
@@ -126,15 +138,9 @@ export default async function Page(props: {
       id: searchParams.refId
     }
   })
-
-  const videoVariant = data?.videoVariant
-  if (!videoVariant?.hls || !videoVariant.videoId) {
-    notFound()
-  }
-
   const { data: videoTitleData } = await getApolloClient().query({
     query: GET_VIDEO_TITLE,
-    variables: { id: videoVariant.videoId }
+    variables: { id: data?.videoVariant?.videoId ?? '' }
   })
 
   const { activeSubLangId, acceptedSubLangIds } = handleSubtitles(
@@ -142,10 +148,10 @@ export default async function Page(props: {
     sublangidsRaw
   )
 
-  const hlsUrl = videoVariant.hls
+  const hlsUrl = data?.videoVariant?.hls
   const videoTitle = videoTitleData?.video?.title?.[0]?.value
   const thumbnail = videoTitleData?.video?.images?.[0]?.mobileCinematicHigh
-  const subtitles = videoVariant.subtitle
+  const subtitles = data?.videoVariant?.subtitle
     ?.filter((subtitle) =>
       acceptedSubLangIds.includes(subtitle.language?.id ?? '')
     )
@@ -157,6 +163,13 @@ export default async function Page(props: {
       langId: subtitle.language?.id ?? '',
       default: activeSubLangId === subtitle.language?.id
     }))
+
+  if (!hlsUrl) {
+    return {
+      message: 'No video URL found for ID: ' + searchParams.refId,
+      status: 404
+    }
+  }
 
   return (
     <VideoPlayer

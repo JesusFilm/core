@@ -15,11 +15,9 @@
     "../**/*.spec.jsx"
   ],
   "include": [
-    "src/**/*.stories.ts",
-    "src/**/*.stories.js",
-    "src/**/*.stories.jsx",
-    "src/**/*.stories.tsx",
-    "src/libs/storybook/**/*.ts",
-    "src/libs/storybook/**/*.tsx"
+    "../src/**/*.stories.ts",
+    "../src/**/*.stories.js",
+    "../src/**/*.stories.jsx",
+    "../src/**/*.stories.tsx"
   ]
 }

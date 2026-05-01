@@ -3,11 +3,7 @@ import nextConfig from '../../libs/shared/eslint/next.mjs'
 export default [
   ...nextConfig,
   {
-    ignores: [
-      'apps/journeys/jest.config.ts',
-      'apps/journeys/next.config.js',
-      'apps/journeys/i18next-parser.config.js'
-    ]
+    ignores: ['apps/journeys/jest.config.ts', 'apps/journeys/next.config.js']
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
@@ -17,7 +13,6 @@ export default [
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
-    ignores: ['**/*.stories.ts', '**/*.stories.tsx'],
     rules: {
       'no-void': ['error', { allowAsStatement: true }],
       '@typescript-eslint/no-misused-promises': 'off',
