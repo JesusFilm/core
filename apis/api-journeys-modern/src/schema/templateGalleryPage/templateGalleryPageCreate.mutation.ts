@@ -48,11 +48,7 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
                 journeyIds ?? []
               )
               if (creatorImageBlockId != null) {
-                await validateCreatorImageBlock(
-                  tx,
-                  teamId,
-                  creatorImageBlockId
-                )
+                await validateCreatorImageBlock(tx, teamId, creatorImageBlockId)
               }
               return await tx.templateGalleryPage.create({
                 ...query,

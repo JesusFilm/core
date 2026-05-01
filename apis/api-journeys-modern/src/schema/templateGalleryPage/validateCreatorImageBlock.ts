@@ -29,11 +29,8 @@ export async function validateCreatorImageBlock(
   }
 
   if (block.journey?.teamId !== teamId) {
-    throw new GraphQLError(
-      'creator image block does not belong to your team',
-      {
-        extensions: { code: 'FORBIDDEN', field: 'creatorImageBlockId' }
-      }
-    )
+    throw new GraphQLError('creator image block does not belong to your team', {
+      extensions: { code: 'FORBIDDEN', field: 'creatorImageBlockId' }
+    })
   }
 }
