@@ -4,7 +4,7 @@ import FormGroup from '@mui/material/FormGroup'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { format, parseISO } from 'date-fns'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'

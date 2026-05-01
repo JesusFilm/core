@@ -13,7 +13,7 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
-jest.mock('next-i18next', () => ({
+jest.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (str: string) => str
   })

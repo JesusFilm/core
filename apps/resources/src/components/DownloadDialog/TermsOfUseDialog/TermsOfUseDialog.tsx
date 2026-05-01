@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography'
-import { Trans, useTranslation } from 'next-i18next'
+import { Trans, useTranslation } from 'next-i18next/pages'
 import { ComponentProps, ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'

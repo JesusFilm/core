@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps } from 'react'
 
 import Header1Icon from '@core/shared/ui/icons/Header1'

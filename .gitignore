@@ -104,3 +104,7 @@ sea-prep.blob
 # Strapi CMS compiled config files
 apis/cms/config/*.js
 apis/cms/config/*.js.map
+
+# storybook
+storybook-static/
+debug-storybook.log

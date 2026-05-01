@@ -1,7 +1,7 @@
 import { ApolloQueryResult, gql, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
