@@ -280,12 +280,12 @@ export function AiChat({
   }, [sheetState, onSheetStateChange])
 
   const showDragHandle = isPanel && collapsible
-  // When the sheet is collapsed with messages we strip everything except
-  // the handle so the user sees a single thin line over the journey card.
-  const isCollapsedWithMessages = sheetState === 'collapsed'
-  const showHeader = isPanel && !isCollapsedWithMessages
-  const showInput = !isCollapsedWithMessages
-  const showConversation = !isCollapsedWithMessages
+  const showHeader = isPanel
+  // We keep header/conversation/input mounted in every state and rely on
+  // the parent sheet's height transition + overflow:hidden to clip them
+  // as the sheet collapses. Hiding via display:none would short-circuit
+  // the animation — the content would vanish instantly while only the
+  // empty box height transitioned, which reads as "no animation at all".
 
   return (
     <Box
@@ -312,7 +312,7 @@ export function AiChat({
 
       <Box
         sx={{
-          display: showConversation ? 'flex' : 'none',
+          display: 'flex',
           flex: 1,
           flexDirection: 'column',
           minHeight: 0,
@@ -385,7 +385,7 @@ export function AiChat({
 
       <Box
         sx={{
-          display: showInput ? 'block' : 'none',
+          flexShrink: 0,
           width: '100%',
           maxWidth: { xs: 'none', sm: '48rem' },
           mx: 'auto',
