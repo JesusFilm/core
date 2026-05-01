@@ -2,28 +2,84 @@ import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownR
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, ReactNode, useCallback } from 'react'
-import { useStickToBottom } from 'use-stick-to-bottom'
+import {
+  ReactElement,
+  ReactNode,
+  UIEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 
 import { ASSISTANT_FG, DIVIDER, SURFACE } from '../AiChat/tokens'
 
 interface ConversationProps {
   children: ReactNode
+  /**
+   * Increments when a new message is appended. The conversation
+   * scrolls to the bottom on change (only when the user was already
+   * near the bottom). Streaming text growth deliberately does not
+   * trigger a scroll — readers control their own pace, and the
+   * "scroll to latest" pill is the way back when they fall behind.
+   */
+  scrollKey?: number
 }
 
-export function Conversation({ children }: ConversationProps): ReactElement {
-  const { t } = useTranslation('libs-journeys-ui')
-  const { scrollRef, contentRef, isAtBottom, scrollToBottom } =
-    useStickToBottom()
+const NEAR_BOTTOM_THRESHOLD_PX = 24
 
-  const handleScrollToBottom = useCallback(() => {
-    void scrollToBottom()
+export function Conversation({
+  children,
+  scrollKey
+}: ConversationProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const wasNearBottomRef = useRef(true)
+  const isFirstRenderRef = useRef(true)
+  const [isAtBottom, setIsAtBottom] = useState(true)
+
+  const handleScroll = useCallback((e: UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight
+    const nearBottom = distanceFromBottom <= NEAR_BOTTOM_THRESHOLD_PX
+    wasNearBottomRef.current = nearBottom
+    setIsAtBottom(nearBottom)
+  }, [])
+
+  const scrollToBottom = useCallback((smooth: boolean) => {
+    const el = scrollRef.current
+    if (el == null) return
+    el.scrollTo({
+      top: el.scrollHeight,
+      behavior: smooth ? 'smooth' : 'auto'
+    })
+  }, [])
+
+  const handleScrollToBottomClick = useCallback(() => {
+    scrollToBottom(true)
   }, [scrollToBottom])
+
+  // On mount: jump to bottom (no animation) so the latest message is
+  // visible immediately. On subsequent message appends: animate to the
+  // bottom, but only if the reader was near the bottom — if they had
+  // scrolled up to read older content we leave them alone, and the
+  // pill makes the new traffic discoverable.
+  useEffect(() => {
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false
+      scrollToBottom(false)
+      return
+    }
+    if (wasNearBottomRef.current) {
+      scrollToBottom(true)
+    }
+  }, [scrollKey, scrollToBottom])
 
   return (
     <Box sx={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex' }}>
       <Box
         ref={scrollRef}
+        onScroll={handleScroll}
         sx={{
           flex: 1,
           overflowY: 'auto',
@@ -49,7 +105,6 @@ export function Conversation({ children }: ConversationProps): ReactElement {
         }}
       >
         <Box
-          ref={contentRef}
           sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -62,7 +117,7 @@ export function Conversation({ children }: ConversationProps): ReactElement {
       </Box>
       {!isAtBottom && (
         <IconButton
-          onClick={handleScrollToBottom}
+          onClick={handleScrollToBottomClick}
           aria-label={t('Scroll to latest message')}
           tabIndex={0}
           data-testid="ScrollToBottomPill"

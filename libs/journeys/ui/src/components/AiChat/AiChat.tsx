@@ -321,7 +321,7 @@ export function AiChat({
           mx: 'auto'
         }}
       >
-        <Conversation>
+        <Conversation scrollKey={messages.length}>
           {messages.map((message, index) => {
             const text = getTextFromMessage(message)
             const isLast = index === lastAssistantIndex
