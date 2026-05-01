@@ -1,7 +1,7 @@
 import last from 'lodash/last'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import Play3 from '@core/shared/ui/icons/Play3'

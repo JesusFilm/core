@@ -5,7 +5,7 @@ import { Theme } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useMemo } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'

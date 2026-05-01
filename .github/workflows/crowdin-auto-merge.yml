@@ -1,0 +1,292 @@
+name: Crowdin Auto Merge
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Skip the merge-queue enqueue step (default: true for safety)'
+        type: boolean
+        default: true
+  schedule:
+    - cron: '0 1 * * 5' # Friday 01:00 UTC = Friday 1pm NZST / 2pm NZDT
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+jobs:
+  auto-merge:
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    timeout-minutes: 10
+    permissions:
+      pull-requests: write
+      actions: write
+    steps:
+      - name: Determine mode
+        id: mode
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            DRY_RUN="$INPUT_DRY_RUN"
+          else
+            DRY_RUN="false"
+          fi
+          echo "dry_run=$DRY_RUN" >> "$GITHUB_OUTPUT"
+
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "::notice::Mode: DRY RUN — merge-queue enqueue will be skipped"
+          else
+            echo "::notice::Mode: LIVE — full workflow including auto-merge"
+          fi
+
+          {
+            echo "## Crowdin Auto-Merge Run Summary"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "| Mode | DRY RUN |"
+            else
+              echo "| Mode | LIVE |"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.CI_BOT_APP_ID }}
+          private-key: ${{ secrets.CI_BOT_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Resolve CI Bot identity
+        id: bot-login
+        env:
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          set -euo pipefail
+          if [ -z "$APP_SLUG" ]; then
+            echo "::error::app-slug output is empty. Check actions/create-github-app-token version."
+            exit 1
+          fi
+          BOT_LOGIN="${APP_SLUG}[bot]"
+          echo "slug=$APP_SLUG" >> "$GITHUB_OUTPUT"
+          echo "login=$BOT_LOGIN" >> "$GITHUB_OUTPUT"
+          echo "CI Bot slug:  $APP_SLUG"
+          echo "CI Bot login: $BOT_LOGIN"
+          echo "| CI Bot | \`$BOT_LOGIN\` |" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Find open Crowdin PR
+        id: find-pr
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          set -euo pipefail
+          # `gh pr list --head` only filters by branch name — the `owner:branch`
+          # form silently matches nothing. Identity guards live in the jq filter
+          # below (non-cross-repo + headRepositoryOwner == JesusFilm) which is
+          # where those fields are actually available.
+          if ! PR_JSON=$(gh pr list \
+            --head "00-00-CI-chore-i10n-updates" \
+            --state open \
+            --json number,title,url,author,headRefName,commits,isCrossRepository,headRepositoryOwner 2>&1); then
+            echo "::error::gh pr list failed: $PR_JSON"
+            exit 1
+          fi
+
+          PR=$(echo "$PR_JSON" | jq -r '[.[] | select(
+              .title == "chore: new crowdin translations"
+              and .isCrossRepository == false
+              and .headRepositoryOwner.login == "JesusFilm"
+            )] | .[0]')
+          PR_NUMBER=$(echo "$PR" | jq -r '.number // empty')
+
+          if [ -z "$PR_NUMBER" ]; then
+            ANY_NUMBER=$(echo "$PR_JSON" | jq -r '.[0].number // empty')
+            if [ -n "$ANY_NUMBER" ]; then
+              # Anomaly: a PR exists on the Crowdin branch but the title
+              # doesn't match. Fail loudly — this is almost always a real
+              # issue (Crowdin config change, manual push, upstream rename)
+              # and should not be swallowed as "no work to do".
+              ANY_TITLE=$(echo "$PR_JSON" | jq -r '.[0].title // empty')
+              echo "::error::PR #$ANY_NUMBER exists on branch but title does not match: '$ANY_TITLE'"
+              echo "| Crowdin PR | **title mismatch** — PR #$ANY_NUMBER |" >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
+            echo "::warning::No open Crowdin translation PR found."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "| Crowdin PR | **none found** |" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          PR_TITLE=$(echo "$PR" | jq -r '.title')
+          PR_URL=$(echo "$PR" | jq -r '.url')
+          PR_AUTHOR=$(echo "$PR" | jq -r '.author.login')
+          PR_COMMITS=$(echo "$PR" | jq -r '.commits | length')
+
+          echo "Found PR #$PR_NUMBER"
+          echo "  Title:   $PR_TITLE"
+          echo "  URL:     $PR_URL"
+          echo "  Author:  $PR_AUTHOR"
+          echo "  Commits: $PR_COMMITS"
+
+          echo "found=true" >> "$GITHUB_OUTPUT"
+          echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "url=$PR_URL" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "| Crowdin PR | [#$PR_NUMBER]($PR_URL) |"
+            echo "| Title | $PR_TITLE |"
+            echo "| Author | \`$PR_AUTHOR\` |"
+            echo "| Commits | $PR_COMMITS |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Validate only locale files changed
+        if: steps.find-pr.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.find-pr.outputs.number }}
+        run: |
+          set -euo pipefail
+          if ! CHANGED_FILES=$(gh pr diff "$PR_NUMBER" --name-only 2>&1); then
+            echo "::error::gh pr diff failed: $CHANGED_FILES"
+            exit 1
+          fi
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "::error::PR has no changed files."
+            exit 1
+          fi
+
+          FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l)
+          echo "Total changed files: $FILE_COUNT"
+
+          echo "::group::Changed files"
+          echo "$CHANGED_FILES"
+          echo "::endgroup::"
+
+          NON_LOCALE_FILES=$(echo "$CHANGED_FILES" | grep -v '^libs/locales/' || true)
+
+          if [ -n "$NON_LOCALE_FILES" ]; then
+            echo "::error::Crowdin PR contains non-locale files:"
+            echo "$NON_LOCALE_FILES"
+            echo "::error::Skipping auto-merge for safety."
+            echo "| File validation | **FAILED** — non-locale files detected |" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          echo "All $FILE_COUNT changed files are under libs/locales/. Safe to proceed."
+          echo "| Files changed | $FILE_COUNT (all under \`libs/locales/\`) |" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Approve PR
+        if: steps.find-pr.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.find-pr.outputs.number }}
+          BOT_LOGIN: ${{ steps.bot-login.outputs.login }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          # Skip if the bot has already approved the current HEAD — branch protection dismisses stale approvals on new commits, so any remaining APPROVED state is for the current SHA.
+          ALREADY=$(gh pr view "$PR_NUMBER" --json reviews \
+            --jq ".reviews[] | select(.author.login==\"$BOT_LOGIN\" and .state==\"APPROVED\") | .id" | head -1)
+          if [ -n "$ALREADY" ]; then
+            echo "::notice::Already approved by $BOT_LOGIN — skipping"
+            echo "| Approval | Skipped (already approved) |" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Submitting approval review for PR #$PR_NUMBER"
+            gh pr review "$PR_NUMBER" --approve \
+              --body "Auto-approved by [workflow run]($RUN_URL) — all changes are under \`libs/locales/\`."
+            echo "Approval submitted."
+            echo "| Approval | Submitted |" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Rerun failed required checks (fire-and-forget)
+        if: steps.find-pr.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.find-pr.outputs.number }}
+        run: |
+          set -euo pipefail
+
+          # `gh pr checks` exits 1 when any required check is failing and 8 when any is pending — both are expected states here, not script errors. Capture exit code explicitly and only treat unexpected codes as failures.
+          set +e
+          CHECKS_JSON=$(gh pr checks "$PR_NUMBER" --required --json bucket,link 2>&1)
+          RC=$?
+          set -e
+          if [ "$RC" -ne 0 ] && [ "$RC" -ne 1 ] && [ "$RC" -ne 8 ]; then
+            echo "::error::gh pr checks failed (exit $RC): $CHECKS_JSON"
+            exit 1
+          fi
+          FAILED_LINKS=$(echo "$CHECKS_JSON" | jq -r '.[] | select(.bucket == "fail") | .link')
+
+          if [ -z "$FAILED_LINKS" ]; then
+            echo "No failed required checks. Nothing to rerun."
+            echo "| Reruns | None needed |" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          # Extract unique run IDs. `|| true` because grep returns 1 when no
+          # match is found, which is not a real error here.
+          FAILED_RUN_IDS=$(echo "$FAILED_LINKS" \
+            | grep -oE '/runs/[0-9]+' \
+            | grep -oE '[0-9]+' \
+            | sort -u || true)
+
+          if [ -z "$FAILED_RUN_IDS" ]; then
+            echo "::warning::Found failed checks but could not extract run IDs from links."
+            echo "Failed links: $FAILED_LINKS"
+            echo "| Reruns | Could not extract run IDs |" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "Failed required run IDs: $FAILED_RUN_IDS"
+          SUCCESS=0
+          FAILED=0
+          for RUN_ID in $FAILED_RUN_IDS; do
+            echo "::group::Rerun run $RUN_ID"
+            set +e
+            OUTPUT=$(gh run rerun "$RUN_ID" --failed 2>&1)
+            RC=$?
+            set -e
+            if [ "$RC" -eq 0 ]; then
+              echo "Triggered rerun for run $RUN_ID"
+              SUCCESS=$((SUCCESS + 1))
+            else
+              echo "::warning::Rerun failed for run $RUN_ID: $OUTPUT"
+              FAILED=$((FAILED + 1))
+            fi
+            echo "::endgroup::"
+          done
+
+          echo "Reruns: $SUCCESS triggered, $FAILED failed."
+          echo "| Reruns | $SUCCESS triggered, $FAILED failed |" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Enable auto-merge
+        if: steps.find-pr.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.find-pr.outputs.number }}
+          PR_URL: ${{ steps.find-pr.outputs.url }}
+          DRY_RUN: ${{ steps.mode.outputs.dry_run }}
+        run: |
+          set -euo pipefail
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "::notice::DRY RUN — skipping merge-queue enqueue"
+            echo "Would execute: gh pr merge $PR_NUMBER --auto --squash"
+            echo "Would enqueue PR #$PR_NUMBER ($PR_URL) into the merge queue."
+            echo "All required status checks would run before the PR actually merges."
+            echo "| Auto-merge | **Skipped (dry run)** |" >> "$GITHUB_STEP_SUMMARY"
+          else
+            gh pr merge "$PR_NUMBER" --auto --squash
+            echo "Auto-merge enabled for PR #$PR_NUMBER."
+            echo "| Auto-merge | Enabled |" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "::group::Final check status for PR #$PR_NUMBER"
+          gh pr checks "$PR_NUMBER" || true
+          echo "::endgroup::"

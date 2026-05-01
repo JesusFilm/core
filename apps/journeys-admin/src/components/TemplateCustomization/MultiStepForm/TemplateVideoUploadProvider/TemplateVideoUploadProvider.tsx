@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client'
 import { UpChunk } from '@mux/upchunk'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import {
   ReactElement,

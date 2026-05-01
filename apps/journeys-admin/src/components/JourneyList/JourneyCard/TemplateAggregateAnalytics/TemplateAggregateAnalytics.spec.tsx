@@ -10,7 +10,7 @@ import { GET_TEMPLATE_FAMILY_STATS_AGGREGATE } from '../../../../libs/useTemplat
 
 import { TemplateAggregateAnalytics } from './TemplateAggregateAnalytics'
 
-jest.mock('next-i18next', () => ({
+jest.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: { language: 'en' }

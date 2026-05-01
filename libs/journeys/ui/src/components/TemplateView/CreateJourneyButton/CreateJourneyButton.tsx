@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem'
 import { sendGTMEvent } from '@next/third-parties/google'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 

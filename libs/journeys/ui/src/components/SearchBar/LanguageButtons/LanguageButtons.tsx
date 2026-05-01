@@ -3,7 +3,7 @@ import Divider from '@mui/material/Divider'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement } from 'react'
 
 import { LanguageButton } from './LanguageButton'

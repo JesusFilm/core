@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import noop from 'lodash/noop'
 
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
