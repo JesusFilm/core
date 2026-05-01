@@ -6,6 +6,7 @@ import './templateGalleryPages.query'
 import './templateGalleryPageCreate.mutation'
 import './templateGalleryPageUpdate.mutation'
 import './templateGalleryPagePublish.mutation'
+import './templateGalleryPageUnpublish.mutation'
 import './templateGalleryPageDelete.mutation'
 
 export { TemplateGalleryPageRef } from './templateGalleryPage'
