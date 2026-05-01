@@ -1,3 +1,4 @@
+import { type MockedFunction } from 'vitest'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
@@ -9,18 +10,18 @@ import { StepViewEventCreate } from '../../../../__generated__/StepViewEventCrea
 
 import { DynamicCardList } from './DynamicCardList'
 
-jest.mock('@core/journeys/ui/block', () => ({
+vi.mock('@core/journeys/ui/block', async () => ({
   __esModule: true,
-  ...jest.requireActual('@core/journeys/ui/block'),
-  useBlocks: jest.fn()
+  ...await vi.importActual<typeof import('@core/journeys/ui/block')>('@core/journeys/ui/block'),
+  useBlocks: vi.fn()
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
   v4: () => 'uuid'
 }))
 
-const mockUseBlocks = useBlocks as jest.MockedFunction<typeof useBlocks>
+const mockUseBlocks = useBlocks as unknown as MockedFunction<typeof useBlocks>
 
 describe('DynamicCardList', () => {
   const step1: TreeBlock<StepBlock> = {
@@ -88,17 +89,17 @@ describe('DynamicCardList', () => {
     blockHistory: [step1, step2],
     treeBlocks: [step1, step2, step3, step4],
     getNextBlock: () => step3,
-    setShowNavigation: jest.fn(),
-    setShowHeaderFooter: jest.fn(),
-    previousActiveBlock: jest.fn(),
-    nextActiveBlock: jest.fn(),
-    setTreeBlocks: jest.fn(),
+    setShowNavigation: vi.fn(),
+    setShowHeaderFooter: vi.fn(),
+    previousActiveBlock: vi.fn(),
+    nextActiveBlock: vi.fn(),
+    setTreeBlocks: vi.fn(),
     showHeaderFooter: true,
     showNavigation: true
   }
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should prerender cards', () => {
@@ -117,7 +118,7 @@ describe('DynamicCardList', () => {
   })
 
   it('should show navigation arrows on click', () => {
-    const mockSetShowNavigation = jest.fn()
+    const mockSetShowNavigation = vi.fn()
     mockUseBlocks.mockReturnValue({
       ...defaultUseBlockMocks,
       setShowNavigation: mockSetShowNavigation
@@ -134,7 +135,7 @@ describe('DynamicCardList', () => {
   })
 
   it('should set showHeaderAndFooter to true', async () => {
-    const mockSetShowHeaderFooter = jest.fn()
+    const mockSetShowHeaderFooter = vi.fn()
     mockUseBlocks.mockReturnValue({
       ...defaultUseBlockMocks,
       setShowHeaderFooter: mockSetShowHeaderFooter

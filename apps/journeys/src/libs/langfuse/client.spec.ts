@@ -1,17 +1,19 @@
-const mockLangfuseConstructor = jest.fn()
+import { type MockInstance } from 'vitest'
 
-jest.mock('langfuse', () => ({
+const mockLangfuseConstructor = vi.fn()
+
+vi.mock('langfuse', () => ({
   Langfuse: mockLangfuseConstructor
 }))
 
 describe('langfuse client', () => {
   const ORIGINAL_ENV = process.env
-  let warnSpy: jest.SpyInstance
+  let warnSpy: MockInstance
 
   beforeEach(() => {
-    jest.resetModules()
+    vi.resetModules()
     mockLangfuseConstructor.mockClear()
-    warnSpy = jest.spyOn(console, 'warn').mockImplementation()
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     process.env = { ...ORIGINAL_ENV }
     delete process.env.LANGFUSE_PUBLIC_KEY
     delete process.env.LANGFUSE_SECRET_KEY

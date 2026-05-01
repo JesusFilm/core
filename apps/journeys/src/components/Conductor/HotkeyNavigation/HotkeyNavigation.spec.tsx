@@ -1,3 +1,4 @@
+import { type MockedFunction } from 'vitest'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { act, render, waitFor } from '@testing-library/react'
@@ -25,27 +26,27 @@ import {
 
 import { HotkeyNavigation } from '.'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as unknown as MockedFunction<typeof uuidv4>
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+const mockedSendGTMEvent = sendGTMEvent as unknown as MockedFunction<
   typeof sendGTMEvent
 >
 
-jest.mock('next-plausible', () => ({
+vi.mock('next-plausible', () => ({
   __esModule: true,
-  usePlausible: jest.fn()
+  usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.MockedFunction<
+const mockUsePlausible = usePlausible as unknown as MockedFunction<
   typeof usePlausible
 >
 
@@ -86,7 +87,7 @@ const journey = {
 
 describe('HotkeyNavigation', () => {
   mockUuidv4.mockReturnValue('uuid')
-  const stepNextResult = jest.fn(() => ({
+  const stepNextResult = vi.fn(() => ({
     data: {
       stepNextEventCreate: {
         id: 'uuid',
@@ -94,7 +95,7 @@ describe('HotkeyNavigation', () => {
       } satisfies StepNextCreateResult
     }
   }))
-  const stepPreviousResult = jest.fn(() => ({
+  const stepPreviousResult = vi.fn(() => ({
     data: {
       stepPreviousEventCreate: {
         id: 'uuid',
@@ -138,7 +139,7 @@ describe('HotkeyNavigation', () => {
   it('should create next event', async () => {
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     render(
@@ -192,7 +193,7 @@ describe('HotkeyNavigation', () => {
   it('should create previous event', async () => {
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1, step2])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     render(

@@ -1,4 +1,5 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { type Mock, type MockedFunction } from 'vitest'
+import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -9,7 +10,12 @@ import {
   blockHistoryVar,
   treeBlocksVar
 } from '@core/journeys/ui/block'
+import {
+  STEP_NEXT_EVENT_CREATE,
+  STEP_PREVIOUS_EVENT_CREATE
+} from '@core/journeys/ui/Card/Card'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import {
@@ -27,27 +33,27 @@ import { JOURNEY_VIEW_EVENT_CREATE, JOURNEY_VISITOR_UPDATE } from './Conductor'
 
 import { Conductor } from '.'
 
-jest.mock('@core/shared/ui/useBreakpoints', () => ({
+vi.mock('@core/shared/ui/useBreakpoints', () => ({
   __esModule: true,
-  useBreakpoints: jest.fn()
+  useBreakpoints: vi.fn()
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as unknown as MockedFunction<typeof uuidv4>
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+const mockedSendGTMEvent = sendGTMEvent as unknown as MockedFunction<
   typeof sendGTMEvent
 >
 
-global.fetch = jest.fn(
+global.fetch = vi.fn(
   async () =>
     await Promise.resolve({
       json: async () =>
@@ -57,16 +63,71 @@ global.fetch = jest.fn(
           country: 'New Zealand'
         })
     })
-) as jest.Mock
+) as Mock
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
+const noopJourneyViewMock: MockedResponse = {
+  request: { query: JOURNEY_VIEW_EVENT_CREATE },
+  variableMatcher: () => true,
+  maxUsageCount: Infinity,
+  delay: 99999999,
+  result: {
+    data: {
+      journeyViewEventCreate: { id: 'noop', __typename: 'JourneyViewEvent' }
+    }
+  }
+}
+
+const noopStepViewMock: MockedResponse = {
+  request: { query: STEP_VIEW_EVENT_CREATE },
+  variableMatcher: () => true,
+  maxUsageCount: Infinity,
+  result: {
+    data: {
+      stepViewEventCreate: { id: 'noop', __typename: 'StepViewEvent' }
+    }
+  }
+}
+
+const noopStepNextMock: MockedResponse = {
+  request: { query: STEP_NEXT_EVENT_CREATE },
+  variableMatcher: () => true,
+  maxUsageCount: Infinity,
+  result: {
+    data: {
+      stepNextEventCreate: { id: 'noop', __typename: 'StepNextEvent' }
+    }
+  }
+}
+
+const noopStepPreviousMock: MockedResponse = {
+  request: { query: STEP_PREVIOUS_EVENT_CREATE },
+  variableMatcher: () => true,
+  maxUsageCount: Infinity,
+  result: {
+    data: {
+      stepPreviousEventCreate: {
+        id: 'noop',
+        __typename: 'StepPreviousEvent'
+      }
+    }
+  }
+}
+
+const sideEffectMocks = [
+  noopJourneyViewMock,
+  noopStepViewMock,
+  noopStepNextMock,
+  noopStepPreviousMock
+]
+
 describe('Conductor', () => {
   beforeEach(() => {
-    const useBreakpointsMock = useBreakpoints as jest.Mock
+    const useBreakpointsMock = useBreakpoints as Mock
     useBreakpointsMock.mockReturnValue({
       xs: false,
       sm: false,
@@ -167,7 +228,7 @@ describe('Conductor', () => {
   it('should create a journeyViewEvent', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyViewEventCreate: {
           id: 'uuid',
@@ -256,7 +317,7 @@ describe('Conductor', () => {
   it('should sets block history to first block when blocks change', () => {
     const blocks: TreeBlock[] = []
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[...sideEffectMocks]}>
         <SnackbarProvider>
           <Conductor blocks={blocks} />
         </SnackbarProvider>
@@ -269,7 +330,7 @@ describe('Conductor', () => {
   describe('ltr journey', () => {
     it('should navigate back and forth', () => {
       const { getByTestId } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={[...sideEffectMocks]}>
           <SnackbarProvider>
             <JourneyProvider value={{ journey: defaultJourney }}>
               <Conductor blocks={basic} />
@@ -301,7 +362,7 @@ describe('Conductor', () => {
   describe('rtl journey', () => {
     it('should navigate back and forth', () => {
       const { getByTestId } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={[...sideEffectMocks]}>
           <SnackbarProvider>
             <JourneyProvider
               value={{ journey: { ...defaultJourney, language: rtlLanguage } }}

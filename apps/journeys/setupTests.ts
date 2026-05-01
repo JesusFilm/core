@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest'
 import { ReadableStream, TransformStream, WritableStream } from 'stream/web'
 
 import { configure } from '@testing-library/react'
@@ -9,7 +9,4 @@ if (typeof globalThis.TransformStream === 'undefined') {
 
 configure({ asyncUtilTimeout: 2500 })
 
-jest.mock('next/router', () => require('next-router-mock'))
-
-if (process.env.CI === 'true')
-  jest.retryTimes(3, { logErrorsBeforeRetry: true })
+vi.mock('next/router', () => import('next-router-mock'))
