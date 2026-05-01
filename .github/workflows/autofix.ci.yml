@@ -85,7 +85,7 @@ jobs:
         with:
           commit-message: 'fix: lint issues'
 
-  # Required-check shim. Resolves `lint (22)` to SUCCESS when lint-work
+  # Required-check wrapper. Resolves `lint (22)` to SUCCESS when lint-work
   # succeeded OR was skipped (e.g. /sync-ce PRs), and FAILURE otherwise.
   # Matrix `node-version: [22]` mirrors the original `lint` job so the
   # check name reported to the ruleset stays `lint (22)`.
@@ -102,7 +102,9 @@ jobs:
         run: |
           result='${{ needs.lint-work.result }}'
           echo "lint-work concluded: $result"
-          case "$result" in
-            success|skipped) exit 0 ;;
-            *)               exit 1 ;;
-          esac
+          # Pass on success or skipped (sync-ce PRs); fail closed on everything else.
+          if [ "$result" = "success" ] || [ "$result" = "skipped" ]; then
+            exit 0
+          else
+            exit 1
+          fi
