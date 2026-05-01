@@ -25,6 +25,7 @@ import { Response } from '../Response'
 
 import { ChatHeader } from './ChatHeader'
 import { DragHandle } from './DragHandle'
+import { HEADER_WASH } from './tokens'
 
 interface AiChatProps {
   /** When provided, this message is sent automatically on first render */
@@ -283,15 +284,18 @@ export function AiChat({
         position: 'relative'
       }}
     >
-      {showDragHandle && (
-        <DragHandle
-          collapsed={collapsed}
-          onToggle={handleToggleCollapse}
-          onCollapse={handleCollapse}
-        />
+      {(showDragHandle || showHeader) && (
+        <Box sx={{ background: HEADER_WASH, flexShrink: 0 }}>
+          {showDragHandle && (
+            <DragHandle
+              collapsed={collapsed}
+              onToggle={handleToggleCollapse}
+              onCollapse={handleCollapse}
+            />
+          )}
+          {showHeader && <ChatHeader />}
+        </Box>
       )}
-
-      {showHeader && <ChatHeader />}
 
       <Box
         sx={{

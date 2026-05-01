@@ -44,11 +44,11 @@ export function PromptInput({
   variant = 'inline'
 }: PromptInputProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
         e.preventDefault()
         if (input.trim().length > 0 && !isLoading) {
           onSubmit(e as unknown as FormEvent)
@@ -92,13 +92,11 @@ export function PromptInput({
       }}
     >
       <TextField
-        inputRef={textareaRef}
+        inputRef={inputRef}
         value={input}
         onChange={(e) => onInputChange(e.target.value)}
         placeholder={t('Ask anything…')}
         disabled={isLoading}
-        multiline
-        maxRows={6}
         size="small"
         fullWidth
         inputProps={{
@@ -109,8 +107,7 @@ export function PromptInput({
           '& .MuiOutlinedInput-root': {
             borderRadius: isFloating ? 9999 : '22px',
             bgcolor: isFloating ? 'transparent' : INPUT_FILL,
-            minHeight: 44,
-            py: '10px',
+            height: 44,
             px: '16px'
           },
           '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
@@ -125,7 +122,8 @@ export function PromptInput({
             fontSize: 16,
             lineHeight: '24px',
             color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
-            padding: 0
+            padding: 0,
+            height: '24px'
           },
           '& .MuiInputBase-input::placeholder': {
             color: TEXT_SECONDARY,

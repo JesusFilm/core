@@ -9,7 +9,6 @@ import { ReactElement } from 'react'
 import {
   ASSISTANT_FG,
   DIVIDER,
-  HEADER_WASH,
   PRIMARY_ON,
   SPARKLE_AVATAR_SHADOW,
   SPARKLE_GRADIENT,
@@ -35,7 +34,6 @@ export function ChatHeader({ onClose }: ChatHeaderProps): ReactElement {
         pb: 1.5,
         px: 1.75,
         borderBottom: `1px solid ${DIVIDER}`,
-        background: HEADER_WASH,
         flexShrink: 0
       }}
     >
