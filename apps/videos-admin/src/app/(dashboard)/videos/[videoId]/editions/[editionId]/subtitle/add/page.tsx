@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, use, useEffect, useRef, useState } from 'react'
 
 import { VariablesOf, graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -62,15 +62,16 @@ const GET_VIDEO_EDITION = graphql(`
 `)
 
 interface SubtitleCreateProps {
-  params: {
+  params: Promise<{
     editionId: string
     videoId: string
-  }
+  }>
 }
 
 export default function SubtitleCreate({
-  params: { editionId, videoId }
+  params
 }: SubtitleCreateProps): ReactElement {
+  const { editionId, videoId } = use(params)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const abortController = useRef<AbortController | null>(null)

@@ -6,7 +6,7 @@ import type FormDataType from 'form-data'
 import { useRouter } from 'next/navigation'
 import fetch from 'node-fetch'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, use, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -52,15 +52,14 @@ const DELETE_VIDEO_CLOUDFLARE_IMAGE = graphql(`
 `)
 
 interface VideoImageProps {
-  params: {
+  params: Promise<{
     videoId: string
     aspectRatio: string
-  }
+  }>
 }
 
-export default function VideoImage({
-  params: { videoId, aspectRatio: aspectRatioParam }
-}: VideoImageProps): ReactElement {
+export default function VideoImage({ params }: VideoImageProps): ReactElement {
+  const { videoId, aspectRatio: aspectRatioParam } = use(params)
   const aspectRatio = ImageAspectRatio[aspectRatioParam]
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()

@@ -4,6 +4,9 @@ import { SnackbarProvider } from 'notistack'
 
 import SubtitleDeletePage from './page'
 
+const resolvedParams = <T,>(value: T): Promise<T> =>
+  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+
 // Mock the Apollo Client hooks
 jest.mock('@apollo/client', () => ({
   useMutation: jest.fn(() => [jest.fn(), { loading: false }])
@@ -41,11 +44,11 @@ describe('SubtitleDeletePage', () => {
     render(
       <SnackbarProvider>
         <SubtitleDeletePage
-          params={{
+          params={resolvedParams({
             videoId: 'video-123',
             editionId: 'edition-123',
             subtitleId: 'subtitle-123'
-          }}
+          })}
         />
       </SnackbarProvider>
     )
@@ -79,11 +82,11 @@ describe('SubtitleDeletePage', () => {
     render(
       <SnackbarProvider>
         <SubtitleDeletePage
-          params={{
+          params={resolvedParams({
             videoId: 'video-123',
             editionId: 'edition-123',
             subtitleId: 'subtitle-123'
-          }}
+          })}
         />
       </SnackbarProvider>
     )
@@ -107,11 +110,11 @@ describe('SubtitleDeletePage', () => {
     render(
       <SnackbarProvider>
         <SubtitleDeletePage
-          params={{
+          params={resolvedParams({
             videoId: 'video-123',
             editionId: 'edition-123',
             subtitleId: 'subtitle-123'
-          }}
+          })}
         />
       </SnackbarProvider>
     )

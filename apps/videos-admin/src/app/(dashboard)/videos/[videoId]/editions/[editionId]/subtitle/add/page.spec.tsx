@@ -97,10 +97,10 @@ describe('SubtitleCreate', () => {
 
   const setup = () => {
     // Mock implementation
-    ;(SubtitleCreate as jest.Mock).mockImplementation(({ params }) => (
+    ;(SubtitleCreate as jest.Mock).mockImplementation(() => (
       <div data-testid="subtitle-create">
-        <div data-testid="video-id">{params.videoId}</div>
-        <div data-testid="edition-id">{params.editionId}</div>
+        <div data-testid="video-id">{mockVideoId}</div>
+        <div data-testid="edition-id">{mockEditionId}</div>
         <form data-testid="SubtitleForm">
           <select data-testid="language-select"></select>
           <div data-testid="vtt-file-upload">VTT File Upload</div>
@@ -157,7 +157,10 @@ describe('SubtitleCreate', () => {
     return render(
       <MockedProvider mocks={mocks}>
         <SubtitleCreate
-          params={{ videoId: mockVideoId, editionId: mockEditionId }}
+          params={Promise.resolve({
+            videoId: mockVideoId,
+            editionId: mockEditionId
+          })}
         />
       </MockedProvider>
     )

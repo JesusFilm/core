@@ -5,6 +5,9 @@ import { SnackbarProvider } from 'notistack'
 // Import the component under test
 import VariantDialog from './layout'
 
+const resolvedParams = <T,>(value: T): Promise<T> =>
+  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+
 // Mock VariantVideo component
 jest.mock('../_VariantVideo', () => ({
   VariantVideo: ({ hlsSrc }) => (
@@ -303,7 +306,10 @@ describe('VariantDialog', () => {
       <MockedProvider>
         <SnackbarProvider>
           <VariantDialog
-            params={{ variantId: mockVariantId, videoId: mockVideoId }}
+            params={resolvedParams({
+              variantId: mockVariantId,
+              videoId: mockVideoId
+            })}
           >
             <div>Child content</div>
           </VariantDialog>

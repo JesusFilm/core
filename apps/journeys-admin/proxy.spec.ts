@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 
-import middleware, { COOKIE_FINGERPRINT } from './middleware'
+import proxy, { COOKIE_FINGERPRINT } from './proxy'
 
 jest.mock('next-firebase-auth-edge', () => ({
   authMiddleware: jest.fn(
@@ -13,7 +13,7 @@ jest.mock('next-firebase-auth-edge', () => ({
   )
 }))
 
-describe('middleware', () => {
+describe('proxy', () => {
   const url = 'http://localhost:4200/'
   const requestInit = {
     nextConfig: { i18n: { defaultLocale: 'en', locales: ['ar', 'en', 'ja'] } }
@@ -25,7 +25,7 @@ describe('middleware', () => {
         headers: new Headers({})
       })
       const req = new NextRequest(request, requestInit)
-      const result = await middleware(req)
+      const result = await proxy(req)
 
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBeUndefined()
       expect(result?.status).toBe(200)
@@ -42,7 +42,7 @@ describe('middleware', () => {
         })
       })
       const req = new NextRequest(request, requestInit)
-      const result = await middleware(req)
+      const result = await proxy(req)
 
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBeUndefined()
       expect(result?.status).toBe(307) // checks for temporary redirect
@@ -60,7 +60,7 @@ describe('middleware', () => {
         })
       })
       const req = new NextRequest(request, requestInit)
-      const result = await middleware(req)
+      const result = await proxy(req)
 
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBeUndefined()
       expect(result?.status).toBe(307) // checks for temporary redirect
@@ -78,7 +78,7 @@ describe('middleware', () => {
         })
       })
       const req = new NextRequest(request, requestInit)
-      const result = await middleware(req)
+      const result = await proxy(req)
 
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBeUndefined()
       expect(result?.status).toBe(307) // checks for temporary redirect
@@ -100,7 +100,7 @@ describe('middleware', () => {
         })
       })
       const req = new NextRequest(request, requestInit)
-      const result = await middleware(req)
+      const result = await proxy(req)
 
       expect(req.nextUrl.locale).toBe('en')
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBe(
@@ -118,7 +118,7 @@ describe('middleware', () => {
         })
       })
       const req = new NextRequest(request, requestInit)
-      const result = await middleware(req)
+      const result = await proxy(req)
 
       expect(req.nextUrl.locale).toBe('en')
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBe(
@@ -139,7 +139,7 @@ describe('middleware', () => {
         })
       })
       const req = new NextRequest(request, requestInit)
-      const result = await middleware(req)
+      const result = await proxy(req)
 
       expect(req.nextUrl.locale).toBe('en')
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBe(
