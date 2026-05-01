@@ -227,9 +227,7 @@ const commonConfig = [
       '**/*.stories.js',
       '**/*.stories.jsx'
     ],
-    rules: {
-      'i18next/no-literal-string': 'off'
-    }
+    rules: { 'i18next/no-literal-string': 'off' }
   },
   {
     files: ['**/jest.config.ts'],

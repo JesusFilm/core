@@ -25,5 +25,5 @@ export default [
       '@typescript-eslint/no-misused-promises': 'off',
       '@typescript-eslint/no-unnecessary-type-assertion': 'warn'
     }
-  },
+  }
 ]
