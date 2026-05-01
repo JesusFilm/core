@@ -94,16 +94,16 @@ export function PromptInput({
         py: 0.75,
         bgcolor: isFloating
           ? 'rgba(38, 38, 46, 0.78)'
-          : 'rgba(255, 255, 255, 0.85)',
+          : 'rgba(255, 255, 255, 0.96)',
         backdropFilter: 'blur(20px) saturate(180%)',
         WebkitBackdropFilter: 'blur(20px) saturate(180%)',
         borderRadius: 9999,
         border: isFloating
           ? '1px solid rgba(255, 255, 255, 0.12)'
-          : '1px solid rgba(38, 38, 46, 0.06)',
+          : '1px solid rgba(38, 38, 46, 0.12)',
         boxShadow: isFloating
           ? '0 10px 30px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1)'
-          : '0 4px 12px rgba(38, 38, 46, 0.10), 0 1px 2px rgba(38, 38, 46, 0.06)'
+          : '0 6px 18px rgba(38, 38, 46, 0.16), 0 1px 3px rgba(38, 38, 46, 0.10)'
       }}
     >
       <Box

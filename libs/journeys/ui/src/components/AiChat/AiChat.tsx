@@ -389,6 +389,25 @@ export function AiChat({
         </Conversation>
       </Box>
 
+      {isPanel && (
+        <Box
+          aria-hidden
+          sx={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 140,
+            pointerEvents: 'none',
+            zIndex: 1,
+            background:
+              'linear-gradient(to bottom, rgba(38, 38, 46, 0) 0%, rgba(38, 38, 46, 0.04) 50%, rgba(38, 38, 46, 0.08) 100%)',
+            opacity: sheetState === 'collapsed' ? 0 : 1,
+            transition: 'opacity 200ms ease-out'
+          }}
+        />
+      )}
+
       <Box
         sx={{
           position: 'absolute',
