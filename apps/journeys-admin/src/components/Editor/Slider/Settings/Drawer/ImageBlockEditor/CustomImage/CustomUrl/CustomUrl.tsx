@@ -5,7 +5,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Button from '@mui/material/ListItemButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ClipboardEvent, ReactElement, useState } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'

@@ -1,6 +1,6 @@
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import VolumeOff from '@mui/icons-material/VolumeOff'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { usePlayer } from '../../../../../libs/playerContext'

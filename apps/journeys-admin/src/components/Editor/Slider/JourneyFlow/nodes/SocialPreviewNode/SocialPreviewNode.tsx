@@ -4,11 +4,11 @@ import CardMedia from '@mui/material/CardMedia'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { OnConnect, useStore } from '@xyflow/react'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
-import { OnConnect, useStore } from 'reactflow'
 
 import {
   ActiveContent,

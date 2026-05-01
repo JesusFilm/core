@@ -25,9 +25,6 @@ export interface RadioOptionImageDelete_radioOptionBlockUpdate {
 }
 
 export interface RadioOptionImageDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   blockDelete: RadioOptionImageDelete_blockDelete[];
   radioOptionBlockUpdate: RadioOptionImageDelete_radioOptionBlockUpdate;
 }

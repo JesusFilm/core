@@ -860,6 +860,7 @@ export interface GetPublisherTemplate_publisherTemplate {
    * used to display quick start label on customizable templates
    */
   customizable: boolean | null;
+  showAssistant: boolean | null;
 }
 
 export interface GetPublisherTemplate {

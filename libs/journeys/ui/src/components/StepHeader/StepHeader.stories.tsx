@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { SnackbarProvider } from 'notistack'
 import { ComponentPropsWithoutRef } from 'react'
 
@@ -81,7 +81,8 @@ const defaultJourney: Journey = {
   fromTemplateId: null,
   socialNodeX: null,
   socialNodeY: null,
-  customizable: null
+  customizable: null,
+  showAssistant: null
 }
 
 const step1: TreeBlock<StepBlock> = {

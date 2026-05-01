@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
@@ -117,8 +117,8 @@ export function DoneScreen(): ReactElement {
       footer={
         <Button
           data-testid="ProjectsDashboardButton"
-          variant="blockContained"
-          color="solid"
+          variant="text"
+          color="primary"
           onClick={handleGoToProjectsDashboard}
           loading={navigating}
           endIcon={<ChevronRightIcon />}

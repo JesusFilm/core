@@ -10,7 +10,7 @@ import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import uniqBy from 'lodash/uniqBy'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
@@ -37,6 +37,7 @@ import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQ
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
+import { usePageWrapperStyles } from '../../../../PageWrapper/utils/usePageWrapperStyles'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview } from '../LinksScreen/CardsPreview'
 import { ScreenWrapper } from '../ScreenWrapper'
@@ -75,6 +76,7 @@ export function LanguageScreen({
   const [loading, setLoading] = useState(false)
   const isSignedIn = user?.email != null && user?.id != null
   const isGuestFlowEnabled = templateCustomizationGuestFlow === true
+  const { navbar } = usePageWrapperStyles()
   // Guests don't have teams yet — only block on team load errors for signed-in users
   const isDataReady = journey != null && (!isSignedIn || query?.data != null)
   const hasTeamLoadError = isSignedIn && query?.error != null
@@ -138,10 +140,10 @@ export function LanguageScreen({
       ([langId, journeyId]) =>
         langId !== currentLanguageId || journeyId === currentJourneyId
     )
-    if (isParentTemplate && journey?.language?.id != null) {
-      mapArray.push([journey.language.id, journey.id ?? ''])
-    }
     const map = Object.fromEntries(mapArray)
+    if (journey?.language?.id != null && journey?.id != null) {
+      map[journey.language.id] = journey.id
+    }
     return map
   })()
   const languagesJourneyMap = {
@@ -591,6 +593,12 @@ export function LanguageScreen({
                     isTranslation
                     translationProgress={translationProgress}
                     testId="LanguageScreenTranslationDialog"
+                    sx={{
+                      left: { md: navbar.width },
+                      '& .MuiBackdrop-root': {
+                        left: { md: navbar.width }
+                      }
+                    }}
                   >
                     <></>
                   </TranslationDialogWrapper>

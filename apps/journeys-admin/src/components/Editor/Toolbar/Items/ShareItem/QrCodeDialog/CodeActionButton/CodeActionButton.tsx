@@ -7,7 +7,7 @@ import MenuList from '@mui/material/MenuList'
 import Paper from '@mui/material/Paper'
 import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { enqueueSnackbar } from 'notistack'
 import { MouseEvent, ReactElement, useState } from 'react'
 

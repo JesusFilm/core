@@ -1,5 +1,5 @@
 import { Reference, gql, useMutation } from '@apollo/client'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'

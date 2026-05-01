@@ -33,9 +33,6 @@ export interface StepBlockDeleteFromSocialPreview_blockOrderUpdate {
 }
 
 export interface StepBlockDeleteFromSocialPreview {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   blockDelete: StepBlockDeleteFromSocialPreview_blockDelete[];
   blockOrderUpdate: StepBlockDeleteFromSocialPreview_blockOrderUpdate[];
 }
