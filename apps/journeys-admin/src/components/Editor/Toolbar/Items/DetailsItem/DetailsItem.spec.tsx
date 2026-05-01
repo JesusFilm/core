@@ -1,9 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import {
+  defaultJourney,
+  publishedLocalTemplate
+} from '@core/journeys/ui/TemplateView/data'
 
 import { DetailsItem } from './DetailsItem'
 
@@ -67,5 +71,30 @@ describe('DetailsItem', () => {
       undefined,
       { shallow: true }
     )
+  })
+
+  it('opens LocalTemplateDetailsDialog and sets templateDetails param for a local template', async () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: publishedLocalTemplate }}>
+            <DetailsItem variant="menu-item" />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByText('Edit Details'))
+    expect(push).toHaveBeenCalledWith(
+      { query: { param: 'templateDetails' } },
+      undefined,
+      { shallow: true }
+    )
+    await waitFor(() =>
+      expect(
+        screen.getByTestId('LocalTemplateDetailsDialog')
+      ).toBeInTheDocument()
+    )
+    expect(screen.queryByTestId('JourneyDetailsDialog')).not.toBeInTheDocument()
   })
 })

@@ -15,8 +15,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
-import { JourneyCustomizationDescriptionUpdate } from '../../../../../../../__generated__/JourneyCustomizationDescriptionUpdate'
 import { JourneyFeature } from '../../../../../../../__generated__/JourneyFeature'
+import { useJourneyCustomizationDescriptionUpdateMutation } from '../../../../../../libs/useJourneyCustomizationDescriptionUpdateMutation'
 import { useJourneyUpdateMutation } from '../../../../../../libs/useJourneyUpdateMutation'
 
 import { AboutTabPanel } from './AboutTabPanel'
@@ -26,27 +26,14 @@ import { TemplateSettingsFormValues } from './useTemplateSettingsForm'
 import { formatTemplateCustomizationString } from './utils/formatTemplateCustomizationString'
 import { getTemplateCustomizationFields } from './utils/getTemplateCustomizationFields'
 
+// Re-exported for backwards compatibility with the existing spec file.
+export { JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE } from '../../../../../../libs/useJourneyCustomizationDescriptionUpdateMutation'
+
 export const JOURNEY_FEATURE_UPDATE = gql`
   mutation JourneyFeature($id: ID!, $feature: Boolean!) {
     journeyFeature(id: $id, feature: $feature) {
       id
       featuredAt
-    }
-  }
-`
-
-export const JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE = gql`
-  mutation JourneyCustomizationDescriptionUpdate(
-    $journeyId: ID!
-    $string: String!
-  ) {
-    journeyCustomizationFieldPublisherUpdate(
-      journeyId: $journeyId
-      string: $string
-    ) {
-      id
-      key
-      value
     }
   }
 `
@@ -67,9 +54,7 @@ export function TemplateSettingsDialog({
   const [journeySettingsUpdate] = useJourneyUpdateMutation()
   const [journeyFeature] = useMutation<JourneyFeature>(JOURNEY_FEATURE_UPDATE)
   const [journeyCustomizationDescriptionUpdate] =
-    useMutation<JourneyCustomizationDescriptionUpdate>(
-      JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE
-    )
+    useJourneyCustomizationDescriptionUpdateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const isGlobalTemplate = journey?.team?.id === 'jfp-team'
 
