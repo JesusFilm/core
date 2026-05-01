@@ -60,7 +60,12 @@ export const TemplateGalleryPageRef = builder.prismaObject(
             where: {
               journey: {
                 template: true,
-                status: 'published'
+                status: 'published',
+                // Honor the project-wide soft-delete convention so a journey
+                // soft-deleted after being added to a gallery cannot leak to
+                // anonymous viewers via the public slug query. Mirrors the
+                // write-time filter in filterToTeamTemplates.ts.
+                deletedAt: null
               }
             },
             orderBy: { order: 'asc' }
