@@ -5,7 +5,7 @@ status: active
 date: 2026-04-28
 origin: docs/brainstorms/2026-04-28-editor-asset-library-requirements.md
 deepened: 2026-04-28
-revised: 2026-04-28
+revised: 2026-05-01
 ---
 
 # Editor Asset Library
@@ -56,6 +56,120 @@ The revised v1 work is roughly:
 2. Add a "Your generations" grid component to the AI tab, backed by the same query (or a filtered variant once `source` is added to `CloudflareImage`).
 3. Defer Unsplash history.
 4. Optional: add `source` enum + `prompt` column to `CloudflareImage`, populate on the relevant mutations.
+
+---
+
+## 2026-05-01 v1 shipped + v1.1 team scope plan — supersedes ACTIVE_TEAM material in prior sections
+
+### What v1 actually shipped (per-tab history, personal scope only)
+
+Implementation against the 2026-04-28 pivot landed in PR #9102. Production state:
+
+**Image picker (`ImageBlockEditor`):**
+- "Your uploads" grid in Custom tab.
+- "Your generations" grid in AI tab.
+- Backed by existing `getMyCloudflareImages(offset, limit, isAi): [CloudflareImage!]!` — additive `isAi` arg only, no schema-breaking change.
+- New nullable `CloudflareImage.isAi` column populated by upload/URL/AI mutations. Existing 38k rows stay NULL and are excluded from both grids (no backfill — accepted limitation).
+- Frontend: offset/limit pagination with `length >= PAGE_SIZE` heuristic for "Load More". `offsetLimitPagination(['isAi'])` cache config.
+
+**Video picker (`VideoFromMux`):**
+- "Your uploads" grid below the Mux upload form.
+- Backed by existing `getMyMuxVideos(offset, limit): [MuxVideo!]!` — no schema change. Resolver only added a deterministic `orderBy [createdAt desc, id desc]` (correctness for offset pagination, not a UI preference).
+- Click-a-tile opens existing `VideoDetails` + `MuxDetails` with a Select button. Gallery flow reuses the same preview infrastructure as the active-block flow; `playbackId` is threaded through to avoid a redundant fetch. `MuxDetails.dispose()` fix shipped alongside.
+- `MuxVideoUploadProvider` refetches `GetMyMuxVideos` after polling completes so freshly-ready uploads surface in the gallery.
+- `VideoLibrary.onSelect` now closes the outer drawer when `shouldCloseDrawer` is true so picking the same video as the active block still navigates back to Properties.
+
+The "fourth Library tab" with `imageBlocksConnection` from the original plan **is permanently dropped**. Per-tab history covers the user's mental model. Don't reintroduce it without explicit product re-validation.
+
+The `Connection`-style refactor of `getMyCloudflareImages` and `getMyMuxVideos` was prototyped and **reverted** before merge — overengineered for the actual UX requirement. Both resolvers ship as backward-compatible flat arrays with offset/limit pagination. Documented for posterity so the next person doesn't re-introduce it.
+
+### v1.1 — team-shared visibility (replaces the ACTIVE_TEAM material in original Backend / Architecture / Implementation Phases sections)
+
+Goal: the same per-tab grids surface assets uploaded by *teammates* in the user's active team, alongside their own.
+
+#### Locked decisions
+
+- **Ownership stays with the user.** `MuxVideo.userId` / `CloudflareImage.userId` is canonical owner; team affiliation is *not* persisted on the asset.
+- **Visibility = own ∪ active-team-members'.** Single team scope at a time. The user's *list of teams* is on the session; *active team* is the lens.
+- **Active team passed per-request** from the editor (header or arg). The frontend already knows it via `useTeam()` and feeds it to journey scoping elsewhere.
+- **Membership lookup**: `api-media` directly imports `prisma-journeys`. Same precedent already established by `api-journeys-modern`'s user-delete flow (which imports both `prisma-users` and `prisma-journeys`). Latency ~2–5ms per lookup, always fresh, no token-staleness window.
+- **No schema changes** to `MuxVideo` / `CloudflareImage`. No `teamId` column, no migration, no backfill — team affiliation is computed dynamically from current `UserTeam` rows.
+- **Account deletion is already handled correctly** — verified against `api-users/userDeleteConfirm` + `api-journeys-modern/userDeleteJourneysConfirm`. Neither flow touches `MuxVideo` or `CloudflareImage`. A deleted user's `UserTeam` rows are hard-deleted; their assets automatically vanish from team galleries (the `userId IN (...)` set no longer includes them) while existing journey blocks keep playing — Mux/Cloudflare playback URLs are public, so playback survives. The lingering `userId` reference is a UUID tombstone with no PII attached.
+- **Out of scope** for v1.1: deletion/management of teammates' assets, multi-team merged views, signed/private playback IDs, uploader attribution UI (deferred to v1.2 if product asks), backfilling team scope onto historical assets, storage quotas per team.
+
+#### Resolver changes (additive, non-breaking)
+
+```graphql
+getMyMuxVideos(offset: Int, limit: Int, teamId: ID): [MuxVideo!]!
+getMyCloudflareImages(offset: Int, limit: Int, isAi: Boolean, teamId: ID): [CloudflareImage!]!
+```
+
+Both resolvers' implementation:
+1. **`teamId` omitted** → existing behavior (own assets only). Backward compatible.
+2. **`teamId` provided**:
+   - **Membership precheck**: `journeysPrisma.userTeam.findUnique({ where: { teamId_userId: { teamId, userId: caller } } })`. If null → throw `GraphQLError('Not a member of this team', { extensions: { code: 'FORBIDDEN' } })`. Don't distinguish from non-existent team — avoids existence enumeration.
+   - **Teammate userIds**: `journeysPrisma.userTeam.findMany({ where: { teamId, userId: { not: caller } }, select: { userId: true } })`.
+   - **Asset query**: `where: { userId: { in: [caller, ...teammateIds] }, ...(isAi != null ? { isAi } : {}) }`.
+   - Same `orderBy [createdAt desc, id desc]` and offset/limit pagination as v1.
+
+#### Frontend changes
+
+- `MyCloudflareImagesGrid` and `MyMuxVideosGrid` get a `teamId?: string | null` prop.
+- Mount each grid twice in its respective tab/screen:
+  ```tsx
+  <MyCloudflareImagesGrid title="Your uploads" isAi={false} />
+  <MyCloudflareImagesGrid title="Team uploads" isAi={false} teamId={activeTeamId} />
+  ```
+  Same pattern for Mux: a "Your uploads" + a "Team uploads" grid stacked under `AddByFile`.
+- **Apollo cache** — extend the keyArgs so the two grids stay in separate cache entries:
+  ```ts
+  getMyCloudflareImages: offsetLimitPagination(['isAi', 'teamId']),
+  getMyMuxVideos: offsetLimitPagination(['teamId']),
+  ```
+- **Active team source**: `useTeam()` from `TeamProvider` — already a tree ancestor of the editor. Threaded as a prop into the relevant tab/screen components.
+- **Refetch on upload**: existing `refetchQueries: ['GetMyCloudflareImages']` / `'GetMyMuxVideos'` works as-is. Apollo refetches every active query with that operation name regardless of variables, so both personal and team grids update.
+
+#### Performance considerations
+
+- Two extra round-trips to `prisma-journeys` per gallery request (precheck + member list). Both are indexed lookups on `(teamId, userId)` — sub-5ms each, intra-region.
+- Asset query becomes `WHERE userId IN (N userIds)`. Existing `userId` index handles efficiently up to large teams.
+- For very large teams (hundreds of members) consider switching to an `EXISTS` subquery joining `UserTeam` directly. Not v1.1 work; benchmark first.
+
+#### Authorization edge cases
+
+| Scenario | Behavior |
+|---|---|
+| Caller passes `teamId` they're not a member of | `FORBIDDEN` |
+| Caller passes a non-existent `teamId` | `FORBIDDEN` (same response — don't leak existence) |
+| User added to team mid-session | Next request reflects new membership (always fresh via direct Prisma) |
+| User removed from team mid-session | Next request rejects with `FORBIDDEN`; frontend should detect and refetch active-team list |
+| Teammate uploads while caller paginates | Insertion drift between pages possible; mitigated by refetch-on-upload; acceptable for v1.1 |
+
+#### Tests (v1.1 specific)
+
+- Resolver: `teamId` omitted → current behavior preserved.
+- Resolver: `teamId` provided + caller is member → returns own ∪ teammates' rows, ordered correctly.
+- Resolver: `teamId` provided + caller not member → `FORBIDDEN`.
+- Resolver: `teamId` for non-existent team → `FORBIDDEN` (same shape as not-member).
+- Resolver: deleted teammate (`UserTeam` row gone) → no rows returned for them; existing journey embeds keep working (out-of-scope for unit test, integration smoke).
+- Frontend: both grids render independently with separate cache entries; switching `teamId` triggers the team grid to refetch.
+- Frontend: refetch-after-upload updates both grids simultaneously.
+
+#### Phasing
+
+- **1.1.1 — Backend**: optional `teamId` arg + direct Prisma membership lookup on both `getMyCloudflareImages` and `getMyMuxVideos`. Tests above. Ship behind no flag (additive arg = backward compatible).
+- **1.1.2 — Frontend**: thread `useTeam().activeTeam.id` to the grids, mount second "Team uploads" grid in each affected tab/screen, update Apollo cache keys.
+- **1.1.3 (optional, deferred)**: uploader attribution chip on each tile (federation to `api-users.User`). Skip until product asks.
+
+#### Risk surface
+
+- Tight: additive schema change, no migration, no breaking change, no federation consumer impact.
+- Cross-domain Prisma adds a build-time coupling between `api-media` and `prisma-journeys` — already established precedent (user-delete), so additive rather than new policy.
+- The `userId IN (...)` query path can degrade with very large teams; instrument before optimizing.
+
+#### Material in original plan that does NOT apply to v1.1
+
+The original (pre-pivot) plan and the deepening notes (lines 62–101) reference: `imageBlocksConnection`, `ImageBlockLibraryScope` enum, `ImageBlockLibraryEdge`, `ImageBlockLibraryConnection`, `JourneyProfile.lastActiveTeamId` server derivation, CASL guard / publisher-role tests, `thumbnailSrc`, `relayStylePagination`, partial composite Block index. **None of these apply to v1.1.** v1.1 is an additive arg on existing resolvers — not a new connection, not a new type, not a new auth code path beyond the membership precheck above. Treat the original Backend / Architecture / Acceptance Criteria sections as historical context for the rejected approach.
 
 ---
 
