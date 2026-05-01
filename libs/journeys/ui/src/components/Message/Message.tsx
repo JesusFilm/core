@@ -44,7 +44,7 @@ export function Message({
       sx={{
         display: 'flex',
         flexDirection: isUser ? 'row-reverse' : 'row',
-        px: 2.5,
+        px: 3,
         py: 0.5
       }}
     >
