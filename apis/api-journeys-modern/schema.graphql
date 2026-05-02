@@ -1584,6 +1584,11 @@ type Mutation {
     """
     timezone: String
   ): JourneyVisitorGoogleSheetExportResult!
+  templateGalleryPageCreate(input: TemplateGalleryPageCreateInput!): TemplateGalleryPage!
+  templateGalleryPageUpdate(id: ID!, input: TemplateGalleryPageUpdateInput!): TemplateGalleryPage!
+  templateGalleryPagePublish(id: ID!): TemplateGalleryPage!
+  templateGalleryPageUnpublish(id: ID!): TemplateGalleryPage!
+  templateGalleryPageDelete(id: ID!): TemplateGalleryPage!
   userDeleteJourneysCheck(userId: String!): UserDeleteJourneysCheckResult!
   userDeleteJourneysConfirm(userId: String!): UserDeleteJourneysConfirmResult!
 }
@@ -1967,6 +1972,8 @@ type Query {
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!]
+  templateGalleryPageBySlug(slug: String!): TemplateGalleryPage
+  templateGalleryPages(teamId: ID!): [TemplateGalleryPage!]!
   getUserRole: UserRole
 }
 
@@ -2311,6 +2318,47 @@ type TemplateFamilyStatsEventResponse
 {
   event: String!
   visitors: Int!
+}
+
+type TemplateGalleryPage {
+  id: ID!
+  title: String!
+  description: String!
+  slug: String!
+  status: TemplateGalleryPageStatus!
+  creatorName: String!
+  creatorImageBlock: Block
+  mediaUrl: String
+  publishedAt: DateTimeISO
+  createdAt: DateTimeISO!
+  updatedAt: DateTimeISO!
+  team: Team!
+  templates: [Journey!]!
+}
+
+input TemplateGalleryPageCreateInput {
+  teamId: ID!
+  title: String!
+  description: String
+  creatorName: String!
+  creatorImageBlockId: ID
+  mediaUrl: String
+  journeyIds: [ID!]
+}
+
+enum TemplateGalleryPageStatus {
+  draft
+  published
+}
+
+input TemplateGalleryPageUpdateInput {
+  title: String
+  description: String
+  slug: String
+  creatorName: String
+  creatorImageBlockId: ID
+  mediaUrl: String
+  journeyIds: [ID!]
 }
 
 type TextResponseBlock implements Block
