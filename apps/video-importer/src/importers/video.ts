@@ -3,14 +3,20 @@ import { v4 as uuidv4 } from 'uuid'
 import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_MUX_VIDEO_AND_QUEUE_UPLOAD } from '../gql/mutations'
+import { VIDEO_FILENAME_REGEX } from '../importerFilenamePatterns'
 import { createR2Asset, uploadToR2 } from '../services/r2'
-import { ProcessingSummary } from '../types'
+import {
+  type ProcessingSummary,
+  recordProcessingFailure,
+  recordProcessingSuccess
+} from '../types'
+import { toErrorMessage } from '../utils/errorMessage'
 import { getVideoMetadata } from '../utils/fileMetadataHelpers'
 import { markFileAsCompleted } from '../utils/fileUtils'
 import { validateVideoAndEdition } from '../utils/videoEditionValidator'
+import { parseVideoFilename } from '../utils/videoFilename'
 
-export const VIDEO_FILENAME_REGEX =
-  /^([^.]+?)---([^.]+?)---([^-]+)---([^-]+)(?:---([^-]+))*\.mp4$/
+export { VIDEO_FILENAME_REGEX }
 
 export async function processVideoFile(
   file: string,
@@ -18,19 +24,33 @@ export async function processVideoFile(
   contentLength: number,
   summary: ProcessingSummary
 ): Promise<void> {
-  const match = file.match(VIDEO_FILENAME_REGEX)
-  if (!match) return
+  if (!VIDEO_FILENAME_REGEX.test(file)) {
+    return
+  }
 
-  const [, videoId, editionName, rawLanguageId, version] = match
-  const languageId = rawLanguageId.trim()
-  const edition = editionName.toLowerCase()
+  const parsed = parseVideoFilename(file)
+  if (parsed == null) {
+    console.error(
+      `Validation failed for ${file}: unsupported filename shape. Expected <videoId>---<edition>---<lang>---<version>.mp4 or <videoId>---<edition>---<audioLang>---<audioVersion>---<burnedLang>---<burnedVersion>.mp4`
+    )
+    recordProcessingFailure(
+      summary,
+      file,
+      'Unsupported filename shape (expected 4 or 6 `---` segments before .mp4)'
+    )
+    return
+  }
+
+  const { videoId, edition, version, audioLanguageId, audioVersion, burnedIn } =
+    parsed
+  const languageId = parsed.languageId.trim()
   const parsedVersion = Number.parseInt(version, 10)
 
   if (languageId.length === 0) {
     console.error(
       `Validation failed for ${file}: missing languageId in filename`
     )
-    summary.failed++
+    recordProcessingFailure(summary, file, 'Missing languageId in filename')
     return
   }
 
@@ -38,19 +58,29 @@ export async function processVideoFile(
     console.error(
       `Invalid version "${version}" for ${file}. Video=${videoId}, Edition=${edition}, Lang=${languageId}. Skipping.`
     )
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `Invalid version "${version}" for video=${videoId}, edition=${edition}, languageId=${languageId}`
+    )
     return
   }
 
-  console.log(
-    `Processing: Video=${videoId}, Edition=${edition}, Lang=${languageId}, Version=${parsedVersion}`
-  )
+  if (burnedIn) {
+    console.log(
+      `Processing: Video=${videoId}, Edition=${edition}, AudioLang=${audioLanguageId} (v${audioVersion}), BurnedInLang=${languageId} (v${parsedVersion}) — using burned-in pair as variant language/version`
+    )
+  } else {
+    console.log(
+      `Processing: Video=${videoId}, Edition=${edition}, Lang=${languageId}, Version=${parsedVersion}`
+    )
+  }
 
   try {
     await validateVideoAndEdition(videoId, edition, languageId)
   } catch (error) {
     console.error(`Validation failed for ${file}: ${(error as Error).message}`)
-    summary.failed++
+    recordProcessingFailure(summary, file, toErrorMessage(error))
     return
   }
 
@@ -69,7 +99,11 @@ export async function processVideoFile(
     }
   } catch (error) {
     console.error(`Failed to extract metadata from ${file}:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `Metadata / ffprobe: ${toErrorMessage(error)}`
+    )
     return
   }
 
@@ -87,7 +121,11 @@ export async function processVideoFile(
     })
   } catch (error) {
     console.error(`Failed to create R2 asset:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `R2 create asset: ${toErrorMessage(error)}`
+    )
     return
   }
 
@@ -101,7 +139,11 @@ export async function processVideoFile(
     })
   } catch (error) {
     console.error(`Failed to upload to R2:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `R2 upload: ${toErrorMessage(error)}`
+    )
     return
   }
 
@@ -121,16 +163,24 @@ export async function processVideoFile(
     })
   } catch (error) {
     console.error(`Failed to create Mux video and queue upload:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `GraphQL / Mux enqueue: ${toErrorMessage(error)}`
+    )
     return
   }
 
   try {
     await markFileAsCompleted(filePath)
-    summary.successful++
+    recordProcessingSuccess(summary, file)
     console.log(`Successfully processed ${file}`)
   } catch (error) {
     console.error(`Failed to mark file as completed:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `Rename to .completed: ${toErrorMessage(error)}`
+    )
   }
 }

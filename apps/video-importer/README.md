@@ -32,6 +32,21 @@ Before you can use the Video Importer binary, make sure you have the following:
 
 - The tool needs to connect to the internet to upload files and update backend records. Ensure your network/firewall allows outgoing connections to the endpoints specified in your `.env` file.
 
+### 5. Slack notifications (optional)
+
+After a real run (not `--dry-run`), the importer can post a summary to Slack using a bot token and the Web API (`chat.postMessage`).
+
+1. Create a Slack app for your workspace, enable **Bots**, and install it to the workspace.
+2. Under **OAuth & Permissions**, copy the **Bot User OAuth Token** (`xoxb-…`).
+3. Invite the bot to the target channel (`/invite @YourBot`), then copy the channel ID (right-click the channel → **View channel details** → scroll to the bottom for the ID, or open the channel in a browser and read it from the URL).
+4. Add to your `.env` (same folder as the binary):
+   - `SLACK_BOT_TOKEN` — bot token (`xoxb-…`)
+   - `SLACK_CHANNEL_ID` — channel ID (starts with `C` for public channels)
+
+Both must be set for notifications to send. Omit them if you do not want Slack. Use `--no-slack` on the command line to skip posting even when these variables are set.
+
+The bot needs the `chat:write` scope (and access to the chosen channel).
+
 ---
 
 ## Supported File Types & Formatting
@@ -39,14 +54,26 @@ Before you can use the Video Importer binary, make sure you have the following:
 ### Video Files
 
 - **Format:** `.mp4` only
-- **Naming Convention:**
+- **Naming Convention (classic, 4 segments):**
 
-  ```
-  <videoId>---<edition>---<languageId>[---extra].mp4
+  ```text
+  <videoId>---<edition>---<languageId>---<version>.mp4
   ```
 
-  - Example: `1_jf-0-0---ot---529.mp4`
-  - Example: `1_jf-0-0---jl---496---VersionNumber.mp4`
+  - Example: `1_jf-0-0---jl---496---1.mp4` (video `1_jf-0-0`, edition `jl`, language `496`, version `1`)
+
+- **Naming Convention (burned-in aware, 6 segments):**
+
+  ```text
+  <videoId>---<edition>---<audioLanguageId>---<audioVersion>---<burnedLanguageId>---<burnedVersion>.mp4
+  ```
+
+  - When `<burnedLanguageId>` and `<burnedVersion>` are both **non-zero**, the file is treated as a burned-in variant. The video variant's `languageId` and `version` become the **burned-in pair** — that's the language a viewer actually sees on screen — and the audio pair is only logged for diagnostics.
+  - When `<burnedLanguageId>` and `<burnedVersion>` are both `0` (or blank), there is no burned-in subtitle. The audio pair is used as the variant's `languageId` and `version` (same result as the classic 4-segment shape).
+
+  Examples:
+  - Non-burned-in: `1_jf6138-0-0---OT---6440---28288---0---0.mp4` → variant `languageId=6440`, `version=28288`
+  - Burned-in: `1_jf6138-0-0---OT---529---1234---6440---28288.mp4` → variant `languageId=6440`, `version=28288` (audio was `529 / 1234`)
 
 ### Subtitle Files
 
@@ -175,7 +202,7 @@ If you want to manually handle failed files:
 
 **Example:**
 
-- Filename: `1_jf6113---ot---23924.mp4`
+- Filename: `1_jf6113---ot---23924---1.mp4`
 - Video ID: `1_jf6113` ← This video must exist in the database first
 
 ### Authentication/Permission Errors
@@ -211,8 +238,11 @@ If you want to manually handle failed files:
 **Solution:**
 
 1. Double-check file naming follows the exact pattern:
-   - Videos: `<videoId>---<edition>---<languageId>.mp4`
-   - Subtitles: `<videoId>---<edition>---<languageId>.(srt|vtt)`
+   - Videos (classic, 4 segments): `<videoId>---<edition>---<languageId>---<version>.mp4`
+   - Videos (burned-in aware, 6 segments): `<videoId>---<edition>---<audioLanguageId>---<audioVersion>---<burnedLanguageId>---<burnedVersion>.mp4`
+     - When `<burnedLanguageId>` and `<burnedVersion>` are both non-zero, the variant's `languageId` / `version` is the burned-in pair (audio pair is logged for diagnostics only).
+     - When both burned-in segments are `0` (or blank), the audio pair becomes the variant's `languageId` / `version` — equivalent to the 4-segment shape.
+   - Subtitles: `<videoId>---<edition>---<languageId>[---extra].(srt|vtt)`
    - Audio: `<languageId>.aac`
 2. Ensure file extensions are lowercase
 3. Verify no extra spaces or special characters

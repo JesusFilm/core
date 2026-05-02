@@ -2,12 +2,19 @@ import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_VIDEO_SUBTITLE, UPDATE_VIDEO_SUBTITLE } from '../gql/mutations'
 import { GET_VIDEO_SUBTITLES_BY_EDITION } from '../gql/queries'
-import type { ProcessingSummary, R2Asset, VideoSubtitleInput } from '../types'
+import { SUBTITLE_FILENAME_REGEX } from '../importerFilenamePatterns'
+import {
+  type ProcessingSummary,
+  type R2Asset,
+  type VideoSubtitleInput,
+  recordProcessingFailure,
+  recordProcessingSuccess
+} from '../types'
+import { toErrorMessage } from '../utils/errorMessage'
 import { markFileAsCompleted } from '../utils/fileUtils'
 import { validateVideoAndEdition } from '../utils/videoEditionValidator'
 
-export const SUBTITLE_FILENAME_REGEX =
-  /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.(srt|vtt)$/
+export { SUBTITLE_FILENAME_REGEX }
 
 export async function processSubtitleFile(
   file: string,
@@ -38,7 +45,7 @@ export async function processSubtitleFile(
     console.error(
       `Validation failed for ${file}: missing languageId in filename`
     )
-    summary.failed++
+    recordProcessingFailure(summary, file, 'Missing languageId in filename')
     return
   }
 
@@ -46,7 +53,7 @@ export async function processSubtitleFile(
     await validateVideoAndEdition(videoId, edition, languageId)
   } catch (error) {
     console.error(`Validation failed for ${file}: ${(error as Error).message}`)
-    summary.failed++
+    recordProcessingFailure(summary, file, toErrorMessage(error))
     return
   }
 
@@ -65,7 +72,11 @@ export async function processSubtitleFile(
     uploadToR2 = r2.uploadToR2
   } catch (error) {
     console.error(`Failed to load R2 module for subtitle ${file}:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `Load R2 module: ${toErrorMessage(error)}`
+    )
     return
   }
 
@@ -80,7 +91,11 @@ export async function processSubtitleFile(
     })
   } catch (error) {
     console.error(`Failed to create R2 asset for subtitle:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `R2 create asset: ${toErrorMessage(error)}`
+    )
     return
   }
 
@@ -94,7 +109,11 @@ export async function processSubtitleFile(
     })
   } catch (error) {
     console.error(`Failed to upload subtitle to R2:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `R2 upload: ${toErrorMessage(error)}`
+    )
     return
   }
 
@@ -107,11 +126,15 @@ export async function processSubtitleFile(
       r2Asset
     })
     await markFileAsCompleted(filePath)
-    summary.successful++
+    recordProcessingSuccess(summary, file)
     console.log(`Successfully processed subtitle ${file}`)
   } catch (error) {
     console.error(`Failed to import/update subtitle:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `GraphQL subtitle import: ${toErrorMessage(error)}`
+    )
   }
 }
 
