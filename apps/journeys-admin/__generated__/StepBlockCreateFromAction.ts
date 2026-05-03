@@ -83,12 +83,12 @@ export interface StepBlockCreateFromAction_cardBlockCreate {
 }
 
 export interface StepBlockCreateFromAction_blockUpdateAction_parentBlock {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
   id: string;
 }
 
 export interface StepBlockCreateFromAction_blockUpdateAction {
-  __typename: "EmailAction" | "LinkAction" | "NavigateToBlockAction" | "PhoneAction" | "ChatAction";
+  __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction" | "PhoneAction" | "ChatAction";
   parentBlockId: string;
   parentBlock: StepBlockCreateFromAction_blockUpdateAction_parentBlock;
   gtmEventName: string | null;

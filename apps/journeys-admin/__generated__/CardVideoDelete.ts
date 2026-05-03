@@ -9,8 +9,8 @@ import { VideoBlockSource, VideoBlockObjectFit, ContactActionType, BlockEventLab
 // GraphQL mutation operation: CardVideoDelete
 // ====================================================
 
-export interface CardVideoDelete_video_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+export interface CardVideoDelete_video_ButtonBlock {
+  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoTriggerBlock";
 }
 
 export interface CardVideoDelete_video_VideoBlock_subtitleLanguage {
@@ -201,7 +201,7 @@ export interface CardVideoDelete_video_VideoBlock {
   notes: string | null;
 }
 
-export type CardVideoDelete_video = CardVideoDelete_video_ImageBlock | CardVideoDelete_video_VideoBlock;
+export type CardVideoDelete_video = CardVideoDelete_video_ButtonBlock | CardVideoDelete_video_VideoBlock;
 
 export interface CardVideoDelete {
   video: CardVideoDelete_video[];

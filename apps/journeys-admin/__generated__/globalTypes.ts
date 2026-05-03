@@ -285,6 +285,11 @@ export enum Service {
   apiVideos = "apiVideos",
 }
 
+export enum TemplateGalleryPageStatus {
+  draft = "draft",
+  published = "published",
+}
+
 export enum TextResponseType {
   email = "email",
   freeForm = "freeForm",
@@ -941,6 +946,26 @@ export interface TeamCreateInput {
 export interface TeamUpdateInput {
   title: string;
   publicTitle?: string | null;
+}
+
+export interface TemplateGalleryPageCreateInput {
+  teamId: string;
+  title: string;
+  description?: string | null;
+  creatorName: string;
+  creatorImageBlockId?: string | null;
+  mediaUrl?: string | null;
+  journeyIds?: string[] | null;
+}
+
+export interface TemplateGalleryPageUpdateInput {
+  title?: string | null;
+  description?: string | null;
+  slug?: string | null;
+  creatorName?: string | null;
+  creatorImageBlockId?: string | null;
+  mediaUrl?: string | null;
+  journeyIds?: string[] | null;
 }
 
 export interface TextResponseBlockCreateInput {

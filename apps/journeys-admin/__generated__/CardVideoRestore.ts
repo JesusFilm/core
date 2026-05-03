@@ -9,8 +9,8 @@ import { VideoBlockSource, VideoBlockObjectFit, ContactActionType, BlockEventLab
 // GraphQL mutation operation: CardVideoRestore
 // ====================================================
 
-export interface CardVideoRestore_video_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+export interface CardVideoRestore_video_ButtonBlock {
+  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoTriggerBlock";
 }
 
 export interface CardVideoRestore_video_VideoBlock_subtitleLanguage {
@@ -201,7 +201,7 @@ export interface CardVideoRestore_video_VideoBlock {
   notes: string | null;
 }
 
-export type CardVideoRestore_video = CardVideoRestore_video_ImageBlock | CardVideoRestore_video_VideoBlock;
+export type CardVideoRestore_video = CardVideoRestore_video_ButtonBlock | CardVideoRestore_video_VideoBlock;
 
 export interface CardVideoRestore {
   /**
