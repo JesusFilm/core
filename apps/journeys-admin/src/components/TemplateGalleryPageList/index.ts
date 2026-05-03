@@ -1,0 +1,1 @@
+export { TemplateGalleryPageList } from './TemplateGalleryPageList'

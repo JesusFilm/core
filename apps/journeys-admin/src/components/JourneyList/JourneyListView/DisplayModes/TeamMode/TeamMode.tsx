@@ -73,6 +73,13 @@ export const TeamMode = ({
           contentTypeOptions[1].tabIndex
         )}
       />
+      <Tab
+        label={contentTypeOptions[2].displayValue}
+        {...tabA11yProps(
+          'collections-content-panel',
+          contentTypeOptions[2].tabIndex
+        )}
+      />
       <StatusFilterControl
         selectedStatus={selectedStatus}
         handleStatusChange={handleStatusChange}
@@ -107,6 +114,18 @@ export const TeamMode = ({
       }
     >
       {renderList('templates', selectedStatus)}
+    </TabPanel>
+    {/* Collections tab panel */}
+    <TabPanel
+      name="collections-content-panel"
+      value={activeContentTypeTab}
+      index={contentTypeOptions[2].tabIndex}
+      unmountUntilVisible={
+        router?.query?.type !== undefined &&
+        router?.query?.type !== 'collections'
+      }
+    >
+      {renderList('collections', selectedStatus)}
     </TabPanel>
   </>
 )

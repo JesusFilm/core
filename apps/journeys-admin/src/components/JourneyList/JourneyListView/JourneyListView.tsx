@@ -18,7 +18,7 @@ import { SortOrder } from '../JourneySort'
 import { SharedWithMeMode } from './DisplayModes/SharedWithMeMode/SharedWithMeMode'
 import { ContentTypeOption, TeamMode } from './DisplayModes/TeamMode/TeamMode'
 
-export type ContentType = 'journeys' | 'templates'
+export type ContentType = 'journeys' | 'templates' | 'collections'
 export type JourneyStatus = 'active' | 'archived' | 'trashed'
 
 export interface JourneyListViewProps {
@@ -57,7 +57,7 @@ export function JourneyListView({
   const { activeTeam } = useTeam()
   const isSharedWithMeMode = activeTeam === null
 
-  // Content type options (Journeys, Templates)
+  // Content type options (Journeys, Templates, Collections)
   // Use shorter labels on mobile to prevent overflow
   const contentTypeOptions: ContentTypeOption[] = [
     {
@@ -69,6 +69,11 @@ export function JourneyListView({
       queryParam: 'templates',
       displayValue: breakpoints.sm ? t('Team Templates') : t('Templates'),
       tabIndex: 1
+    },
+    {
+      queryParam: 'collections',
+      displayValue: t('Collections'),
+      tabIndex: 2
     }
   ]
 
