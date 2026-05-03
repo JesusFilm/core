@@ -28,14 +28,8 @@ describe('templateGalleryPageAssignJourney', () => {
   })
 
   const TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY = graphql(`
-    mutation TemplateGalleryPageAssignJourney(
-      $journeyId: ID!
-      $pageId: ID
-    ) {
-      templateGalleryPageAssignJourney(
-        journeyId: $journeyId
-        pageId: $pageId
-      ) {
+    mutation TemplateGalleryPageAssignJourney($journeyId: ID!, $pageId: ID) {
+      templateGalleryPageAssignJourney(journeyId: $journeyId, pageId: $pageId) {
         id
         title
       }

@@ -99,10 +99,9 @@ builder.mutationField('templateGalleryPageAssignJourney', (t) =>
           })
         }
         if (journey.teamId !== targetPage.teamId) {
-          throw new GraphQLError(
-            'journey does not belong to the target team',
-            { extensions: { code: 'FORBIDDEN', field: 'journeyId' } }
-          )
+          throw new GraphQLError('journey does not belong to the target team', {
+            extensions: { code: 'FORBIDDEN', field: 'journeyId' }
+          })
         }
 
         // Single-membership: drop the existing row before inserting the new
