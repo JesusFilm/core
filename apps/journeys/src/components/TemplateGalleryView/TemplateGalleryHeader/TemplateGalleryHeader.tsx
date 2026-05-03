@@ -1,0 +1,43 @@
+import Avatar from '@mui/material/Avatar'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
+import { GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPage'
+
+interface TemplateGalleryHeaderProps {
+  gallery: Pick<
+    TemplateGalleryPage,
+    'title' | 'description' | 'creatorName' | 'creatorImageBlock'
+  >
+}
+
+export function TemplateGalleryHeader({
+  gallery
+}: TemplateGalleryHeaderProps): ReactElement {
+  const creatorImage =
+    gallery.creatorImageBlock?.__typename === 'ImageBlock'
+      ? gallery.creatorImageBlock
+      : null
+
+  return (
+    <Stack spacing={3} data-testid="TemplateGalleryHeader">
+      <Typography variant="h2" component="h1">
+        {gallery.title}
+      </Typography>
+      {gallery.description !== '' && (
+        <Typography variant="body1" color="text.secondary">
+          {gallery.description}
+        </Typography>
+      )}
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Avatar
+          src={creatorImage?.src ?? undefined}
+          alt={creatorImage?.alt ?? gallery.creatorName}
+          sx={{ width: 48, height: 48 }}
+        />
+        <Typography variant="subtitle2">{gallery.creatorName}</Typography>
+      </Stack>
+    </Stack>
+  )
+}
