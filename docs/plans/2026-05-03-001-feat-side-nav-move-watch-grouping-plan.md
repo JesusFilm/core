@@ -127,12 +127,12 @@ Rejected: a single-child accordion adds an expand affordance with no information
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Mitigation |
-|---|---|---|
-| Pattern A vs B mismatch with stakeholder intent | Low/Medium | Plan defaults to A (the natural reading); flagged for confirmation in PR description with the Linear screenshots referenced. One-line revert if changed. |
-| Storybook visual regression (snapshot drift) | Low | No snapshot tests in this folder; manual Storybook check noted in acceptance criteria. |
-| E2E spec hard-codes "expand Resources to find Watch" path | Low | Quick grep of `apps/resources-e2e` during work to confirm; update if found. |
-| Branch-name regex (`username/ticket-id-…`) — worktree-created branch was `worktree-jianweichong+wat-203-…` | Resolved | Renamed at plan time to `jianweichong/wat-203-side-navigation-move-watch`. |
+| Risk                                                                                                       | Likelihood | Mitigation                                                                                                                                               |
+| ---------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pattern A vs B mismatch with stakeholder intent                                                            | Low/Medium | Plan defaults to A (the natural reading); flagged for confirmation in PR description with the Linear screenshots referenced. One-line revert if changed. |
+| Storybook visual regression (snapshot drift)                                                               | Low        | No snapshot tests in this folder; manual Storybook check noted in acceptance criteria.                                                                   |
+| E2E spec hard-codes "expand Resources to find Watch" path                                                  | Low        | Quick grep of `apps/resources-e2e` during work to confirm; update if found.                                                                              |
+| Branch-name regex (`username/ticket-id-…`) — worktree-created branch was `worktree-jianweichong+wat-203-…` | Resolved   | Renamed at plan time to `jianweichong/wat-203-side-navigation-move-watch`.                                                                               |
 
 ## Out of Scope
 
