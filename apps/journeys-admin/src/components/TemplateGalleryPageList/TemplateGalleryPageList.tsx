@@ -34,11 +34,11 @@ import {
 } from '../../../__generated__/GetTemplateGalleryPages'
 import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
+import { useTemplateGalleryPageAssignJourneyMutation } from '../../libs/useTemplateGalleryPageAssignJourneyMutation'
 import { useTemplateGalleryPageDeleteMutation } from '../../libs/useTemplateGalleryPageDeleteMutation'
 import { useTemplateGalleryPagePublishMutation } from '../../libs/useTemplateGalleryPagePublishMutation'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
 import { useTemplateGalleryPageUnpublishMutation } from '../../libs/useTemplateGalleryPageUnpublishMutation'
-import { useTemplateGalleryPageUpdateMutation } from '../../libs/useTemplateGalleryPageUpdateMutation'
 
 import { CollectionCard } from './CollectionCard'
 import { CollectionDialog } from './CollectionDialog'
@@ -90,7 +90,8 @@ export function TemplateGalleryPageList(): ReactElement {
     typeof useAdminJourneysQuery
   > & { data?: GetAdminJourneys }
 
-  const [templateGalleryPageUpdate] = useTemplateGalleryPageUpdateMutation()
+  const [templateGalleryPageAssignJourney] =
+    useTemplateGalleryPageAssignJourneyMutation()
   const [templateGalleryPagePublish] =
     useTemplateGalleryPagePublishMutation()
   const [templateGalleryPageUnpublish] =
@@ -273,38 +274,13 @@ export function TemplateGalleryPageList(): ReactElement {
 
     setDragInFlight(true)
     try {
-      // TODO(NES-1539): swap to single atomic
-      // `templateGalleryPageAssignJourney(journeyId, pageId)` once the backend
-      // mutation lands on `siyangcao/nes-1547-backend-template-gallery-page-api`.
-      // Stopgap: two sequential `templateGalleryPageUpdate(journeyIds)` calls.
-      if (sourceCollection != null) {
-        await templateGalleryPageUpdate({
-          variables: {
-            id: sourceCollection.id,
-            input: {
-              journeyIds: sourceCollection.templates
-                .filter((tpl) => tpl.id !== templateId)
-                .map((tpl) => tpl.id)
-            }
-          }
-        })
-      }
-      if (targetCollectionId != null) {
-        const targetCollection = collectionsById.get(targetCollectionId)
-        if (targetCollection != null) {
-          await templateGalleryPageUpdate({
-            variables: {
-              id: targetCollectionId,
-              input: {
-                journeyIds: [
-                  ...targetCollection.templates.map((tpl) => tpl.id),
-                  templateId
-                ]
-              }
-            }
-          })
-        }
-      }
+      // Atomic single-mutation drag-and-drop. The server enforces the
+      // single-membership invariant: assigning a journey already in another
+      // collection drops the existing join row in the same transaction;
+      // `pageId: null` unassigns (returns the journey to the flat list).
+      await templateGalleryPageAssignJourney({
+        variables: { journeyId: templateId, pageId: targetCollectionId }
+      })
     } catch (error) {
       enqueueSnackbar(
         error instanceof ApolloError || error instanceof Error
