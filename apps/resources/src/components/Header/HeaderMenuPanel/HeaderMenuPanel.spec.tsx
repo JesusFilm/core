@@ -61,4 +61,21 @@ describe('HeaderMenuPanel', () => {
     expect(screen.getByRole('link', { name: 'Metaverse' })).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: 'Watch' })).toHaveLength(1)
   })
+
+  it('should place Watch between Resources and Careers in the side nav', () => {
+    render(<HeaderMenuPanel onClose={mockOnClose} />)
+
+    const resourcesAccordion = screen.getByRole('button', { name: 'Resources' })
+    const watchLink = screen.getByRole('link', { name: 'Watch' })
+    const careersLink = screen.getByRole('link', { name: 'Careers' })
+
+    expect(
+      resourcesAccordion.compareDocumentPosition(watchLink) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      watchLink.compareDocumentPosition(careersLink) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
 })
