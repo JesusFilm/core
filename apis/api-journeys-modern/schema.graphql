@@ -1559,6 +1559,7 @@ type Mutation {
   templateGalleryPageUpdate(id: ID!, input: TemplateGalleryPageUpdateInput!): TemplateGalleryPage!
   templateGalleryPagePublish(id: ID!): TemplateGalleryPage!
   templateGalleryPageUnpublish(id: ID!): TemplateGalleryPage!
+  templateGalleryPageAssignJourney(journeyId: ID!, pageId: ID): TemplateGalleryPage
   templateGalleryPageDelete(id: ID!): TemplateGalleryPage!
   userDeleteJourneysCheck(userId: String!): UserDeleteJourneysCheckResult!
   userDeleteJourneysConfirm(userId: String!): UserDeleteJourneysConfirmResult!
