@@ -63,7 +63,7 @@ Rejected: a single-child accordion adds an expand affordance with no information
 
 ## Technical Considerations
 
-- **Surface area**: one source file (`headerLinks.ts`) plus one spec file (`HeaderMenuPanel.spec.tsx`). No new components, no routing changes, no new icons.
+- **Surface area**: one source file (`headerLinks.ts`). No new components, no routing changes, no new icons, **no new unit tests** (see "Why no new unit tests" below).
 - **Rendering**: `HeaderMenuPanel` (`apps/resources/src/components/Header/HeaderMenuPanel/HeaderMenuPanel.tsx:108-121`) already handles the mixed array of leaf and group entries via `HeaderLinkAccordion`'s dual-mode behavior. The new Watch leaf will render as `<MuiLink href="/watch">Watch</MuiLink>` matching About/Blog/Careers.
 - **i18n**: `"Watch"` key already present in `libs/locales/en/apps-resources.json:21` (added in WAT-202). Labels are passed through `t(link.label, { lng: 'en' })` so per-locale files do not need updates.
 - **Accordion expand state**: `HeaderMenuPanel` tracks one `expanded` group at a time (`HeaderMenuPanel.tsx:20-25`). A leaf link does not participate in this state — it just navigates. No state-management changes.
@@ -93,10 +93,14 @@ Rejected: a single-child accordion adds an expand affordance with no information
 
 ### Quality Gates
 
-- [ ] New unit test in `HeaderMenuPanel.spec.tsx` asserts Watch is a top-level link and is absent from the Resources expanded list.
 - [ ] Existing specs pass: `Header.spec.tsx`, `HeaderMenuPanel.spec.tsx`, `HeaderLinkAccordion.spec.tsx`, `HeaderTabButtons.spec.tsx`.
 - [ ] Storybook visually verified: `HeaderMenuPanel.stories.tsx`, `Header.stories.tsx` show the new placement.
 - [ ] Lint and type-check clean: `npx prettier --write` on touched files, `npx nx lint resources`, `npx nx typecheck resources`.
+- [ ] QA verifies placement, navigation, and regression scenarios on the Vercel preview (see QA Outline below).
+
+### Why no new unit tests
+
+The change is a single edit to a static config array. The render path (`HeaderMenuPanel` → `HeaderLinkAccordion`) is unchanged, and the leaf-link mode already exercised by every other top-level entry (About, Blog, Careers, Visit us, Press, Contact Us). Asserting "Watch is at index N of `headerLinks`" is tautological — it reads the same data the component reads, and would fail only when the config is intentionally edited. The existing spec convention in this file is to test component behavior (smoke render, accordion expand/collapse) rather than enumerate static config contents; adding presence/ordering tests for Watch would diverge from that pattern. Realistic regressions (rendering broken, accordion behavior broken) are already covered by the existing two tests in `HeaderMenuPanel.spec.tsx`. Visual verification + QA on the Vercel preview is the right surface for placement validation.
 
 ## Implementation Plan
 
@@ -106,9 +110,7 @@ Rejected: a single-child accordion adds an expand affordance with no information
    - Remove line 50 `{ label: 'Watch', url: '/watch' },` from the Resources `subLinks` array.
    - Insert `{ label: 'Watch', url: '/watch' },` as a new top-level array entry between the `Resources` group object (ends ~line 60) and the next `Careers` entry.
 
-2. **`apps/resources/src/components/Header/HeaderMenuPanel/HeaderMenuPanel.spec.tsx`** (extend, don't rewrite)
-   - Add a test: drawer-rendered → query for "Watch" link → assert it is a direct child of the menu list (not inside the collapsed/expanded Resources accordion).
-   - Optional second assertion: when Resources is expanded, the expanded region does NOT contain a "Watch" link.
+That is the entire code change. No spec file edit — see "Why no new unit tests" above.
 
 ### Files to NOT change
 

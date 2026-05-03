@@ -38,44 +38,4 @@ describe('HeaderMenuPanel', () => {
       ).not.toBeInTheDocument()
     )
   })
-
-  it('should render Watch as a top-level link without expanding Resources', () => {
-    render(<HeaderMenuPanel onClose={mockOnClose} />)
-
-    const watchLink = screen.getByRole('link', { name: 'Watch' })
-    expect(watchLink).toBeInTheDocument()
-    expect(watchLink).toHaveAttribute('href', '/watch')
-    expect(
-      screen.queryByRole('link', { name: 'Strategies' })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should not render Watch inside the Resources subgroup when expanded', () => {
-    render(<HeaderMenuPanel onClose={mockOnClose} />)
-
-    const resourcesAccordion = screen.getByRole('button', { name: 'Resources' })
-    fireEvent.click(resourcesAccordion)
-
-    expect(resourcesAccordion).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getByRole('link', { name: 'Strategies' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Metaverse' })).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: 'Watch' })).toHaveLength(1)
-  })
-
-  it('should place Watch between Resources and Careers in the side nav', () => {
-    render(<HeaderMenuPanel onClose={mockOnClose} />)
-
-    const resourcesAccordion = screen.getByRole('button', { name: 'Resources' })
-    const watchLink = screen.getByRole('link', { name: 'Watch' })
-    const careersLink = screen.getByRole('link', { name: 'Careers' })
-
-    expect(
-      resourcesAccordion.compareDocumentPosition(watchLink) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
-    expect(
-      watchLink.compareDocumentPosition(careersLink) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
-  })
 })
