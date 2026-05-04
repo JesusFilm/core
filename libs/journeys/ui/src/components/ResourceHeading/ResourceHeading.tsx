@@ -1,6 +1,6 @@
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { Trans, useTranslation } from 'next-i18next'
+import { Trans, useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 interface ResourceHeadingProps {

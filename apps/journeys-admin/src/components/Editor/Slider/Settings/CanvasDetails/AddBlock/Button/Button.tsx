@@ -9,7 +9,7 @@ import Tooltip, {
   tooltipClasses
 } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import type { ReactElement } from 'react'
 
 import Plus2sIcon from '@core/shared/ui/icons/Plus2'

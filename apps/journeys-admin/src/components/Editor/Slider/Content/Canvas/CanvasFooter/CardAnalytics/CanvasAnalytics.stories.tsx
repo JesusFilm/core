@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentPropsWithRef } from 'react'
 
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'

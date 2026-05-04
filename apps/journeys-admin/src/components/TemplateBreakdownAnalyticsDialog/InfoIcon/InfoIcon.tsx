@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'

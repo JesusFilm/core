@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { apiUsersConfig } from '../../lib/apiUsersConfig/apiUsersConfig'
 import { EmailVerifyNextSteps } from '../templates/EmailVerifyNextSteps'
