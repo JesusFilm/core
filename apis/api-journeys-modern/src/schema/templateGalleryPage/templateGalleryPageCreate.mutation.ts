@@ -7,7 +7,6 @@ import { filterToTeamTemplates } from './filterToTeamTemplates'
 import { generateUniqueSlug } from './generateUniqueSlug'
 import { TemplateGalleryPageCreateInput } from './inputs'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
-import { validateCreatorImageBlock } from './validateCreatorImageBlock'
 
 type CreateInput = typeof TemplateGalleryPageCreateInput.$inferInput
 
@@ -31,11 +30,13 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
           title,
           description,
           creatorName,
-          creatorImageBlockId,
+          creatorImageSrc,
+          creatorImageAlt,
           mediaUrl,
           journeyIds
         } = args.input
         assertHttpsUrl(mediaUrl, 'mediaUrl')
+        assertHttpsUrl(creatorImageSrc, 'creatorImageSrc')
 
         let attempt = 0
         while (true) {
@@ -47,9 +48,6 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
                 teamId,
                 journeyIds ?? []
               )
-              if (creatorImageBlockId != null) {
-                await validateCreatorImageBlock(tx, teamId, creatorImageBlockId)
-              }
               return await tx.templateGalleryPage.create({
                 ...query,
                 data: {
@@ -59,10 +57,8 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
                   slug,
                   status: 'draft',
                   creatorName,
-                  creatorImageBlock:
-                    creatorImageBlockId != null
-                      ? { connect: { id: creatorImageBlockId } }
-                      : undefined,
+                  creatorImageSrc: creatorImageSrc ?? undefined,
+                  creatorImageAlt: creatorImageAlt ?? undefined,
                   mediaUrl: mediaUrl ?? undefined,
                   templates: {
                     createMany: {

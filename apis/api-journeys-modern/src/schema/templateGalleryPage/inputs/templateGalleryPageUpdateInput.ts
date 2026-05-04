@@ -10,7 +10,8 @@ export const TemplateGalleryPageUpdateInput = builder.inputType(
       description: t.string({ required: false }),
       slug: t.string({ required: false }),
       creatorName: t.string({ required: false }),
-      creatorImageBlockId: t.id({ required: false }),
+      creatorImageSrc: t.string({ required: false }),
+      creatorImageAlt: t.string({ required: false }),
       mediaUrl: t.string({ required: false }),
       journeyIds: t.idList({ required: false })
     })

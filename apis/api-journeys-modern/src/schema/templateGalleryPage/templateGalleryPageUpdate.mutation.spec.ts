@@ -258,13 +258,10 @@ describe('templateGalleryPageUpdate', () => {
     })
   })
 
-  it('connects a new creatorImageBlock when validated', async () => {
+  it('writes creatorImageSrc and creatorImageAlt as plain scalars', async () => {
     prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
       id: 'p1',
       teamId: 'team-1'
-    } as any)
-    prismaMock.block.findUnique.mockResolvedValue({
-      journey: { teamId: 'team-1' }
     } as any)
     prismaMock.templateGalleryPage.update.mockResolvedValue({
       id: 'p1',
@@ -276,7 +273,10 @@ describe('templateGalleryPageUpdate', () => {
       document: TEMPLATE_GALLERY_PAGE_UPDATE,
       variables: {
         id: 'p1',
-        input: { creatorImageBlockId: 'block-1' }
+        input: {
+          creatorImageSrc: 'https://images.example.com/alice.jpg',
+          creatorImageAlt: 'Alice headshot'
+        }
       }
     })
 
@@ -284,13 +284,39 @@ describe('templateGalleryPageUpdate', () => {
       expect.objectContaining({
         where: { id: 'p1' },
         data: expect.objectContaining({
-          creatorImageBlock: { connect: { id: 'block-1' } }
+          creatorImageSrc: 'https://images.example.com/alice.jpg',
+          creatorImageAlt: 'Alice headshot'
         })
       })
     )
   })
 
-  it('disconnects creatorImageBlock when input is explicitly null', async () => {
+  it('rejects creatorImageSrc with non-https scheme', async () => {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'p1',
+      teamId: 'team-1'
+    } as any)
+
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_UPDATE,
+      variables: {
+        id: 'p1',
+        input: { creatorImageSrc: 'http://example.com/alice.jpg' }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: expect.stringContaining('https')
+        })
+      ]
+    })
+    expect(prismaMock.templateGalleryPage.update).not.toHaveBeenCalled()
+  })
+
+  it('clears creatorImageSrc and creatorImageAlt when input is explicitly null', async () => {
     prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
       id: 'p1',
       teamId: 'team-1'
@@ -305,21 +331,21 @@ describe('templateGalleryPageUpdate', () => {
       document: TEMPLATE_GALLERY_PAGE_UPDATE,
       variables: {
         id: 'p1',
-        input: { creatorImageBlockId: null }
+        input: { creatorImageSrc: null, creatorImageAlt: null }
       }
     })
 
     expect(prismaMock.templateGalleryPage.update).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          creatorImageBlock: { disconnect: true }
+          creatorImageSrc: null,
+          creatorImageAlt: null
         })
       })
     )
-    expect(prismaMock.block.findUnique).not.toHaveBeenCalled()
   })
 
-  it('leaves creatorImageBlock alone when input is undefined', async () => {
+  it('leaves creatorImageSrc and creatorImageAlt alone when input is undefined', async () => {
     prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
       id: 'p1',
       teamId: 'team-1'
@@ -339,7 +365,8 @@ describe('templateGalleryPageUpdate', () => {
     })
 
     const updateCall = prismaMock.templateGalleryPage.update.mock.calls[0][0]
-    expect(updateCall.data).not.toHaveProperty('creatorImageBlock')
+    expect(updateCall.data).not.toHaveProperty('creatorImageSrc')
+    expect(updateCall.data).not.toHaveProperty('creatorImageAlt')
   })
 
   it('clears mediaUrl when input is explicitly null', async () => {
