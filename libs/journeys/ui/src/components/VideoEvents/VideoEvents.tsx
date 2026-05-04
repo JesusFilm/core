@@ -20,6 +20,7 @@ import { useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import {
   JourneyPlausibleEvents,
+  fireCaptureEvent,
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
@@ -466,26 +467,13 @@ export function VideoEvents({
               })
             }
           })
-          if (eventLabel != null) {
-            const eventLabelKey = keyify({
-              stepId: input.stepId ?? '',
-              event: eventLabel,
-              blockId: input.blockId,
-              journeyId: journey?.id
-            })
-            plausible(eventLabel, {
-              u: `${window.location.origin}/${journey.id}/${input.blockId}`,
-              props: {
-                ...input,
-                key: eventLabelKey,
-                simpleKey: eventLabelKey,
-                templateKey: templateKeyify({
-                  event: eventLabel,
-                  journeyId: journey?.id
-                })
-              }
-            })
-          }
+          fireCaptureEvent(plausible, eventLabel, {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+            input,
+            stepId: input.stepId ?? '',
+            blockId: input.blockId,
+            journeyId: journey?.id
+          })
         }
         sendGTMEvent({
           event: 'video_start',
@@ -510,7 +498,8 @@ export function VideoEvents({
     stepId,
     source,
     journey,
-    plausible
+    plausible,
+    eventLabel
   ])
 
   // PROGRESS 25% event
@@ -758,26 +747,13 @@ export function VideoEvents({
               })
             }
           })
-          if (endEventLabel != null) {
-            const endEventLabelKey = keyify({
-              stepId: input.stepId ?? '',
-              event: endEventLabel,
-              blockId: input.blockId,
-              journeyId: journey?.id
-            })
-            plausible(endEventLabel, {
-              u: `${window.location.origin}/${journey.id}/${input.blockId}`,
-              props: {
-                ...input,
-                key: endEventLabelKey,
-                simpleKey: endEventLabelKey,
-                templateKey: templateKeyify({
-                  event: endEventLabel,
-                  journeyId: journey?.id
-                })
-              }
-            })
-          }
+          fireCaptureEvent(plausible, endEventLabel, {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+            input,
+            stepId: input.stepId ?? '',
+            blockId: input.blockId,
+            journeyId: journey?.id
+          })
         }
         sendGTMEvent({
           event: 'video_complete',
@@ -803,7 +779,8 @@ export function VideoEvents({
     source,
     journey,
     plausible,
-    action
+    action,
+    endEventLabel
   ])
 
   return <></>

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useMutation } from '@apollo/client'
 import { sendGTMEvent } from '@next/third-parties/google'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, useCallback } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'

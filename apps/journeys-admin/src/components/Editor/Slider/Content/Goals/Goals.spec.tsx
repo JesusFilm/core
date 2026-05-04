@@ -177,7 +177,8 @@ describe('Goals', () => {
     socialNodeX: null,
     socialNodeY: null,
     journeyTheme: null,
-    customizable: null
+    customizable: null,
+    showAssistant: null
   }
 
   it('should render placeholder', () => {

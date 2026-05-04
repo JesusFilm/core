@@ -132,6 +132,9 @@ builder.queryFields((t) => ({
             data: {
               firstName: ctx.currentUser.firstName.trim(),
               email: ctx.currentUser.email.trim().toLowerCase(),
+              ...(ctx.currentUser.imageUrl != null && {
+                imageUrl: ctx.currentUser.imageUrl
+              }),
               ...(ctx.currentUser.lastName != null && {
                 lastName: ctx.currentUser.lastName.trim() || null
               })

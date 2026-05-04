@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { TranslationDialogWrapper } from './TranslationDialogWrapper'
 
-jest.mock('next-i18next', () => ({
+jest.mock('next-i18next/pages', () => ({
   __esModule: true,
   useTranslation: () => {
     return {

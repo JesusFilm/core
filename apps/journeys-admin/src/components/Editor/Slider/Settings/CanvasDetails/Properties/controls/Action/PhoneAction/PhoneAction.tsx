@@ -6,7 +6,7 @@ import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import {
   ReactElement,
   useCallback,

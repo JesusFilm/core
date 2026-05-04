@@ -8,7 +8,7 @@ import { Noto_Serif } from 'next/font/google'
 import localFont from 'next/font/local'
 import Head from 'next/head'
 import Script from 'next/script'
-import { appWithTranslation } from 'next-i18next'
+import { appWithTranslation } from 'next-i18next/pages'
 import { DefaultSeo } from 'next-seo'
 import { type ReactElement, useEffect } from 'react'
 

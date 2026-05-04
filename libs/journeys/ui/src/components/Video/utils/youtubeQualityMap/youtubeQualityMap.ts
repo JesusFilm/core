@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 
 /**
  * Returns a mapping of YouTube quality codes to human-readable quality labels

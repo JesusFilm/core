@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem'
 import { sendGTMEvent } from '@next/third-parties/google'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
@@ -248,7 +248,7 @@ export function CreateJourneyButton({
     }
   }
 
-  const handleSignIn = (login: boolean): void => {
+  const handleSignIn = (): void => {
     // Use env var if outside journeys-admin project
     const domain =
       process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
@@ -258,8 +258,7 @@ export function CreateJourneyButton({
       {
         pathname: `${domain}/users/sign-in`,
         query: {
-          redirect: url.includes('createNew') ? url : `${url}?createNew=true`,
-          login: login ?? false
+          redirect: url.includes('createNew') ? url : `${url}?createNew=true`
         }
       },
       undefined,

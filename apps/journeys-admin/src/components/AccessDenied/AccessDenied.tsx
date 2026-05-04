@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'

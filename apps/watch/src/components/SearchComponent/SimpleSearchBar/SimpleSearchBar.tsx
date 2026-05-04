@@ -1,5 +1,5 @@
 import { Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { type FocusEvent, type ReactElement, useState } from 'react'
 
 import Search1Icon from '@core/shared/ui/icons/Search1'

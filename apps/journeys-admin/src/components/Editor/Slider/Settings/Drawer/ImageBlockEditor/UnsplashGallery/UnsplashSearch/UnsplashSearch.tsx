@@ -1,7 +1,7 @@
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import Search1Icon from '@core/shared/ui/icons/Search1'
