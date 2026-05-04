@@ -21,7 +21,9 @@ interface ChatHeaderProps {
   thinking?: boolean
 }
 
-export function ChatHeader({ thinking = false }: ChatHeaderProps): ReactElement {
+export function ChatHeader({
+  thinking = false
+}: ChatHeaderProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
   return (
