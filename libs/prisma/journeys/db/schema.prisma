@@ -620,7 +620,6 @@ model Block {
   pollOptionImageBlockParent Block?               @relation("PollOptionImageBlock")
   primaryImageBlockParent    Journey?             @relation("PrimaryImageBlock")
   creatorImageBlockParent    Journey?             @relation("CreatorImageBlock")
-  templateGalleryPagesAsCreatorImage TemplateGalleryPage[] @relation("TemplateGalleryPageCreatorImageBlock")
   nextBlock                  Block?               @relation("NextBlock", fields: [nextBlockId], references: [id])
   nextBlockParents           Block[]              @relation("NextBlock")
   parentBlock                Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
@@ -729,21 +728,21 @@ enum TemplateGalleryPageStatus {
 }
 
 model TemplateGalleryPage {
-  id                  String                        @id @default(uuid())
-  teamId              String
-  title               String
-  description         String                        @default("")
-  slug                String                        @unique
-  status              TemplateGalleryPageStatus     @default(draft)
-  creatorName         String
-  creatorImageBlockId String?
-  mediaUrl            String?
-  publishedAt         DateTime?
-  createdAt           DateTime                      @default(now())
-  updatedAt           DateTime                      @updatedAt
-  team                Team                          @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  creatorImageBlock   Block?                        @relation("TemplateGalleryPageCreatorImageBlock", fields: [creatorImageBlockId], references: [id], onDelete: SetNull)
-  templates           TemplateGalleryPageTemplate[]
+  id               String                        @id @default(uuid())
+  teamId           String
+  title            String
+  description      String                        @default("")
+  slug             String                        @unique
+  status           TemplateGalleryPageStatus     @default(draft)
+  creatorName      String
+  creatorImageSrc  String?
+  creatorImageAlt  String?
+  mediaUrl         String?
+  publishedAt      DateTime?
+  createdAt        DateTime                      @default(now())
+  updatedAt        DateTime                      @updatedAt
+  team             Team                          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  templates        TemplateGalleryPageTemplate[]
 
   @@index([teamId, createdAt(sort: Desc)])
 }

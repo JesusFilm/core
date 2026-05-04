@@ -39,6 +39,8 @@ describe('templateGalleryPageCreate', () => {
         status
         description
         creatorName
+        creatorImageSrc
+        creatorImageAlt
         mediaUrl
       }
     }
@@ -73,6 +75,8 @@ describe('templateGalleryPageCreate', () => {
       status: 'draft',
       description: '',
       creatorName: 'Alice',
+      creatorImageSrc: null,
+      creatorImageAlt: null,
       mediaUrl: null
     } as any)
 
@@ -97,6 +101,8 @@ describe('templateGalleryPageCreate', () => {
           status: 'draft',
           description: '',
           creatorName: 'Alice',
+          creatorImageSrc: null,
+          creatorImageAlt: null,
           mediaUrl: null
         }
       }
@@ -118,6 +124,83 @@ describe('templateGalleryPageCreate', () => {
         })
       })
     )
+  })
+
+  it('persists creatorImageSrc and creatorImageAlt as plain scalars', async () => {
+    prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockResolvedValue([] as any)
+    prismaMock.templateGalleryPage.create.mockResolvedValue({
+      id: 'p1',
+      title: 'My Welcome',
+      slug: 'my-welcome',
+      status: 'draft',
+      description: '',
+      creatorName: 'Alice',
+      creatorImageSrc: 'https://images.example.com/alice.jpg',
+      creatorImageAlt: 'Alice headshot',
+      mediaUrl: null
+    } as any)
+
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_CREATE,
+      variables: {
+        input: {
+          teamId: 'team-1',
+          title: 'My Welcome',
+          creatorName: 'Alice',
+          creatorImageSrc: 'https://images.example.com/alice.jpg',
+          creatorImageAlt: 'Alice headshot'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: {
+        templateGalleryPageCreate: {
+          id: 'p1',
+          title: 'My Welcome',
+          slug: 'my-welcome',
+          status: 'draft',
+          description: '',
+          creatorName: 'Alice',
+          creatorImageSrc: 'https://images.example.com/alice.jpg',
+          creatorImageAlt: 'Alice headshot',
+          mediaUrl: null
+        }
+      }
+    })
+    expect(prismaMock.templateGalleryPage.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          creatorImageSrc: 'https://images.example.com/alice.jpg',
+          creatorImageAlt: 'Alice headshot'
+        })
+      })
+    )
+  })
+
+  it('rejects creatorImageSrc with non-https scheme', async () => {
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_CREATE,
+      variables: {
+        input: {
+          teamId: 'team-1',
+          title: 'X',
+          creatorName: 'Alice',
+          creatorImageSrc: 'http://example.com/alice.jpg'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: expect.stringContaining('https')
+        })
+      ]
+    })
+    expect(prismaMock.templateGalleryPage.create).not.toHaveBeenCalled()
   })
 
   it('rejects mediaUrl with non-https scheme', async () => {
@@ -169,37 +252,6 @@ describe('templateGalleryPageCreate', () => {
     expect(prismaMock.templateGalleryPage.create).not.toHaveBeenCalled()
   })
 
-  it('validates creatorImageBlock ownership when provided', async () => {
-    prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
-    prismaMock.block.findUnique.mockResolvedValue({
-      journey: { teamId: 'team-OTHER' }
-    } as any)
-
-    const result = await authClient({
-      document: TEMPLATE_GALLERY_PAGE_CREATE,
-      variables: {
-        input: {
-          teamId: 'team-1',
-          title: 'X',
-          creatorName: 'Alice',
-          creatorImageBlockId: 'block-1'
-        }
-      }
-    })
-
-    expect(result).toEqual({
-      data: null,
-      errors: [
-        expect.objectContaining({
-          message: expect.stringContaining(
-            'creator image block does not belong'
-          )
-        })
-      ]
-    })
-    expect(prismaMock.templateGalleryPage.create).not.toHaveBeenCalled()
-  })
-
   it('retries once on P2002 (slug uniqueness race) and succeeds on second attempt', async () => {
     prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
     prismaMock.journey.findMany.mockResolvedValue([] as any)
@@ -216,6 +268,8 @@ describe('templateGalleryPageCreate', () => {
         status: 'draft',
         description: '',
         creatorName: 'Alice',
+        creatorImageSrc: null,
+        creatorImageAlt: null,
         mediaUrl: null
       } as any)
 
@@ -239,6 +293,8 @@ describe('templateGalleryPageCreate', () => {
           status: 'draft',
           description: '',
           creatorName: 'Alice',
+          creatorImageSrc: null,
+          creatorImageAlt: null,
           mediaUrl: null
         }
       }

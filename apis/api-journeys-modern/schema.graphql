@@ -2328,7 +2328,8 @@ type TemplateGalleryPage {
   slug: String!
   status: TemplateGalleryPageStatus!
   creatorName: String!
-  creatorImageBlock: Block
+  creatorImageSrc: String
+  creatorImageAlt: String
   mediaUrl: String
   publishedAt: DateTimeISO
   createdAt: DateTimeISO!
@@ -2342,7 +2343,8 @@ input TemplateGalleryPageCreateInput {
   title: String!
   description: String
   creatorName: String!
-  creatorImageBlockId: ID
+  creatorImageSrc: String
+  creatorImageAlt: String
   mediaUrl: String
   journeyIds: [ID!]
 }
@@ -2357,7 +2359,8 @@ input TemplateGalleryPageUpdateInput {
   description: String
   slug: String
   creatorName: String
-  creatorImageBlockId: ID
+  creatorImageSrc: String
+  creatorImageAlt: String
   mediaUrl: String
   journeyIds: [ID!]
 }
