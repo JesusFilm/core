@@ -24,8 +24,8 @@ import { PromptInput } from '../PromptInput'
 import { Response } from '../Response'
 
 import { ChatHeader } from './ChatHeader'
-import { DragHandle } from './DragHandle'
 import { HEADER_WASH } from './chatStyles'
+import { DragHandle } from './DragHandle'
 
 interface AiChatProps {
   /** When provided, this message is sent automatically on first render */
