@@ -12,8 +12,6 @@ import {
   useState
 } from 'react'
 
-import { ASSISTANT_FG, DIVIDER, SURFACE } from '../AiChat/tokens'
-
 interface ConversationProps {
   children: ReactNode
   /**
@@ -184,11 +182,12 @@ export function Conversation({
             transform: 'translateX(-50%)',
             width: 32,
             height: 32,
-            bgcolor: SURFACE,
-            color: ASSISTANT_FG,
-            border: `1px solid ${DIVIDER}`,
+            bgcolor: 'common.white',
+            color: 'grey.900',
+            border: '1px solid',
+            borderColor: 'grey.200',
             boxShadow: '0 4px 12px rgba(38,38,46,0.12)',
-            '&:hover': { bgcolor: SURFACE }
+            '&:hover': { bgcolor: 'common.white' }
           }}
         >
           <KeyboardArrowDownRoundedIcon fontSize="small" />

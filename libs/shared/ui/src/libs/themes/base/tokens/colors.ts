@@ -1,5 +1,12 @@
 import { SimplePaletteColorOptions, ThemeOptions } from '@mui/material/styles'
 
+/**
+ * The Jesus Film Project brand red. Used as the journeysAdmin primary,
+ * the editor's selected-block accent, and chat surface accents in
+ * journeyUi. Single source of truth — do not inline `#C52D3A` elsewhere.
+ */
+export const brandRed = '#C52D3A'
+
 const errorLight = '#FF6B58'
 const errorDark = '#B62D1C'
 

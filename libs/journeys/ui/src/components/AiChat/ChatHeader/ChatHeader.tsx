@@ -3,14 +3,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import {
-  ASSISTANT_FG,
-  DIVIDER,
-  PRIMARY_ON,
-  SPARKLE_AVATAR_SHADOW,
-  SPARKLE_GRADIENT,
-  TEXT_SECONDARY
-} from '../tokens'
+import { SPARKLE_AVATAR_SHADOW, SPARKLE_GRADIENT } from '../chatStyles'
 
 interface ChatHeaderProps {
   /**
@@ -36,7 +29,8 @@ export function ChatHeader({
         pt: 1,
         pb: 1.5,
         px: 1.75,
-        borderBottom: `1px solid ${DIVIDER}`,
+        borderBottom: '1px solid',
+        borderBottomColor: 'grey.200',
         flexShrink: 0
       }}
     >
@@ -46,7 +40,7 @@ export function ChatHeader({
           height: 32,
           borderRadius: '50%',
           background: SPARKLE_GRADIENT,
-          color: PRIMARY_ON,
+          color: 'common.white',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -61,7 +55,7 @@ export function ChatHeader({
           sx={{
             width: 18,
             height: 'auto',
-            color: PRIMARY_ON,
+            color: 'common.white',
             overflow: 'visible',
             // Two-beat "thinking" rhythm — the top and bottom halves of the
             // mark scale and tilt out of phase, like two halves in dialogue.
@@ -122,7 +116,7 @@ export function ChatHeader({
         <Typography
           variant="subtitle1"
           sx={{
-            color: ASSISTANT_FG,
+            color: 'grey.900',
             fontSize: 16,
             fontWeight: 600,
             lineHeight: '22px',
@@ -135,7 +129,7 @@ export function ChatHeader({
           variant="caption"
           sx={{
             display: 'block',
-            color: TEXT_SECONDARY,
+            color: 'grey.700',
             fontSize: 12,
             lineHeight: '20px',
             letterSpacing: 0

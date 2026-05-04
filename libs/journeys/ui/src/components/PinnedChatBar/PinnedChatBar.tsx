@@ -8,14 +8,12 @@ import { ReactElement, useCallback, useState } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import type { AiChatSheetState } from '../AiChat/AiChat'
 import {
-  DIVIDER,
   HEADER_WASH,
   INPUT_FILL,
   SHEET_TOP_SHADOW,
   SPARKLE_AVATAR_SHADOW,
-  SPARKLE_GRADIENT,
-  SURFACE
-} from '../AiChat/tokens'
+  SPARKLE_GRADIENT
+} from '../AiChat/chatStyles'
 
 /**
  * Lightweight visual placeholder rendered while the dynamically-imported
@@ -48,7 +46,7 @@ function ChatLoadingSkeleton(): ReactElement {
               width: 48,
               height: 4,
               borderRadius: 9999,
-              bgcolor: DIVIDER
+              bgcolor: 'grey.200'
             }}
           />
         </Box>
@@ -60,7 +58,8 @@ function ChatLoadingSkeleton(): ReactElement {
             pt: 1,
             pb: 1.5,
             px: 1.75,
-            borderBottom: `1px solid ${DIVIDER}`,
+            borderBottom: '1px solid',
+            borderBottomColor: 'grey.200',
             flexShrink: 0
           }}
         >
@@ -80,7 +79,7 @@ function ChatLoadingSkeleton(): ReactElement {
                 width: 110,
                 height: 12,
                 borderRadius: 4,
-                bgcolor: DIVIDER,
+                bgcolor: 'grey.200',
                 mb: 0.75
               }}
             />
@@ -89,7 +88,7 @@ function ChatLoadingSkeleton(): ReactElement {
                 width: 150,
                 height: 10,
                 borderRadius: 4,
-                bgcolor: DIVIDER,
+                bgcolor: 'grey.200',
                 opacity: 0.7
               }}
             />
@@ -119,7 +118,7 @@ function ChatLoadingSkeleton(): ReactElement {
             width: 40,
             height: 40,
             borderRadius: '50%',
-            bgcolor: DIVIDER,
+            bgcolor: 'grey.200',
             flexShrink: 0
           }}
         />
@@ -190,7 +189,7 @@ export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        bgcolor: SURFACE,
+        bgcolor: 'common.white',
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16,
         boxShadow: SHEET_TOP_SHADOW,

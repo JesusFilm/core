@@ -13,14 +13,6 @@ import {
   useRef
 } from 'react'
 
-import {
-  ASSISTANT_FG,
-  DIVIDER,
-  PRIMARY,
-  PRIMARY_ON,
-  TEXT_SECONDARY
-} from '../AiChat/tokens'
-
 interface PromptInputProps {
   input: string
   onInputChange: (value: string) => void
@@ -151,15 +143,15 @@ export function PromptInput({
           fontSize: 16,
           lineHeight: 1.375,
           fontFamily: 'inherit',
-          color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
+          color: isFloating ? 'common.white' : 'grey.900',
           boxSizing: 'border-box',
           overflowY: 'auto',
           '&::placeholder': {
-            color: isFloating ? 'rgba(255, 255, 255, 0.6)' : TEXT_SECONDARY,
+            color: isFloating ? 'rgba(255, 255, 255, 0.6)' : 'grey.700',
             opacity: 1
           },
           '&:focus': { outline: 'none' },
-          '&:disabled': { color: TEXT_SECONDARY }
+          '&:disabled': { color: 'grey.700' }
         }}
       />
       {isLoading ? (
@@ -172,9 +164,9 @@ export function PromptInput({
             height: 32,
             flexShrink: 0,
             p: 0,
-            bgcolor: PRIMARY,
-            color: PRIMARY_ON,
-            '&:hover': { bgcolor: PRIMARY }
+            bgcolor: 'grey.700',
+            color: 'common.white',
+            '&:hover': { bgcolor: 'grey.700' }
           }}
         >
           <StopRoundedIcon fontSize="small" />
@@ -190,25 +182,25 @@ export function PromptInput({
             flexShrink: 0,
             p: 0,
             bgcolor: canSubmit
-              ? PRIMARY
+              ? 'grey.700'
               : isFloating
                 ? 'rgba(255, 255, 255, 0.18)'
-                : DIVIDER,
+                : 'grey.200',
             color: canSubmit
-              ? PRIMARY_ON
+              ? 'common.white'
               : isFloating
                 ? 'rgba(255, 255, 255, 0.6)'
-                : TEXT_SECONDARY,
+                : 'grey.700',
             '&:hover': {
               bgcolor: canSubmit
-                ? PRIMARY
+                ? 'grey.700'
                 : isFloating
                   ? 'rgba(255, 255, 255, 0.18)'
-                  : DIVIDER
+                  : 'grey.200'
             },
             '&.Mui-disabled': {
-              bgcolor: isFloating ? 'rgba(255, 255, 255, 0.18)' : DIVIDER,
-              color: isFloating ? 'rgba(255, 255, 255, 0.6)' : TEXT_SECONDARY
+              bgcolor: isFloating ? 'rgba(255, 255, 255, 0.18)' : 'grey.200',
+              color: isFloating ? 'rgba(255, 255, 255, 0.6)' : 'grey.700'
             }
           }}
         >

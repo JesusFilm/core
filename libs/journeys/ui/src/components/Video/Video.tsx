@@ -14,6 +14,7 @@ import {
 import { use100vh } from 'react-div-100vh'
 
 import { NextImage } from '@core/shared/ui/NextImage'
+import { brandRed } from '@core/shared/ui/themes/base/tokens/colors'
 
 import {
   VideoBlockObjectFit,
@@ -319,7 +320,9 @@ export function Video({
               fontSize: 100,
               zIndex: 1,
               outline:
-                selectedBlock?.id === blockId ? '2px solid #C52D3A' : 'none',
+                selectedBlock?.id === blockId
+                  ? `2px solid ${brandRed}`
+                  : 'none',
               outlineOffset: '-3px',
               borderRadius: 'var(--card-border-radius, 24px)'
             }}

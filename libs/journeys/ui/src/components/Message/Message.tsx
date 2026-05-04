@@ -2,13 +2,6 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
 
-import {
-  ASSISTANT_BG,
-  ASSISTANT_FG,
-  PRIMARY,
-  PRIMARY_ON
-} from '../AiChat/tokens'
-
 type MessageRole = 'user' | 'assistant'
 type MessageSurface = 'light' | 'dark'
 
@@ -37,7 +30,7 @@ export function Message({
   const isUser = role === 'user'
   const isPlainAssistant = plain && !isUser
   const plainAssistantColor =
-    surface === 'dark' ? 'rgba(255, 255, 255, 0.92)' : ASSISTANT_FG
+    surface === 'dark' ? 'rgba(255, 255, 255, 0.92)' : 'grey.900'
 
   return (
     <Box
@@ -51,15 +44,15 @@ export function Message({
       <Box
         sx={{
           bgcolor: isUser
-            ? PRIMARY
+            ? 'grey.700'
             : isPlainAssistant
               ? 'transparent'
-              : ASSISTANT_BG,
+              : 'grey.200',
           color: isUser
-            ? PRIMARY_ON
+            ? 'common.white'
             : isPlainAssistant
               ? plainAssistantColor
-              : ASSISTANT_FG,
+              : 'grey.900',
           borderRadius: isUser
             ? '16px'
             : isPlainAssistant

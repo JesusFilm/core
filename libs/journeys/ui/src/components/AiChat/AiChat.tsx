@@ -25,7 +25,7 @@ import { Response } from '../Response'
 
 import { ChatHeader } from './ChatHeader'
 import { DragHandle } from './DragHandle'
-import { HEADER_WASH } from './tokens'
+import { HEADER_WASH } from './chatStyles'
 
 interface AiChatProps {
   /** When provided, this message is sent automatically on first render */

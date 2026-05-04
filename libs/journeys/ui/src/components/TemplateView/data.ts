@@ -1,5 +1,7 @@
 import { Edge, MarkerType, Node } from '@xyflow/react'
 
+import { brandRed } from '@core/shared/ui/themes/base/tokens/colors'
+
 import {
   ButtonColor,
   ButtonSize,
@@ -1032,7 +1034,7 @@ export const edges: Edge[] = [
       type: MarkerType.ArrowClosed,
       height: 10,
       width: 10,
-      color: '#C52D3A'
+      color: brandRed
     },
     style: { opacity: 0 }
   },
