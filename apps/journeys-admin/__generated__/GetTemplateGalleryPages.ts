@@ -9,20 +9,6 @@ import { TemplateGalleryPageStatus } from "./globalTypes";
 // GraphQL query operation: GetTemplateGalleryPages
 // ====================================================
 
-export interface GetTemplateGalleryPages_templateGalleryPages_creatorImageBlock_ButtonBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
-  id: string;
-}
-
-export interface GetTemplateGalleryPages_templateGalleryPages_creatorImageBlock_ImageBlock {
-  __typename: "ImageBlock";
-  id: string;
-  src: string | null;
-  alt: string;
-}
-
-export type GetTemplateGalleryPages_templateGalleryPages_creatorImageBlock = GetTemplateGalleryPages_templateGalleryPages_creatorImageBlock_ButtonBlock | GetTemplateGalleryPages_templateGalleryPages_creatorImageBlock_ImageBlock;
-
 export interface GetTemplateGalleryPages_templateGalleryPages_templates_primaryImageBlock {
   __typename: "ImageBlock";
   id: string;
@@ -48,7 +34,8 @@ export interface GetTemplateGalleryPages_templateGalleryPages {
   slug: string;
   status: TemplateGalleryPageStatus;
   creatorName: string;
-  creatorImageBlock: GetTemplateGalleryPages_templateGalleryPages_creatorImageBlock | null;
+  creatorImageSrc: string | null;
+  creatorImageAlt: string | null;
   mediaUrl: string | null;
   publishedAt: any | null;
   createdAt: any;

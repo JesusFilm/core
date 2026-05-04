@@ -9,8 +9,8 @@ import { BlockUpdateActionInput } from "./globalTypes";
 // GraphQL mutation operation: StepBlockDeleteFromAction
 // ====================================================
 
-export interface StepBlockDeleteFromAction_blockDelete_ButtonBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
+export interface StepBlockDeleteFromAction_blockDelete_ImageBlock {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
@@ -26,15 +26,15 @@ export interface StepBlockDeleteFromAction_blockDelete_StepBlock {
   nextBlockId: string | null;
 }
 
-export type StepBlockDeleteFromAction_blockDelete = StepBlockDeleteFromAction_blockDelete_ButtonBlock | StepBlockDeleteFromAction_blockDelete_StepBlock;
+export type StepBlockDeleteFromAction_blockDelete = StepBlockDeleteFromAction_blockDelete_ImageBlock | StepBlockDeleteFromAction_blockDelete_StepBlock;
 
 export interface StepBlockDeleteFromAction_blockUpdateAction_parentBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
 export interface StepBlockDeleteFromAction_blockUpdateAction {
-  __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction" | "PhoneAction" | "ChatAction";
+  __typename: "EmailAction" | "LinkAction" | "NavigateToBlockAction" | "PhoneAction" | "ChatAction";
   parentBlockId: string;
   parentBlock: StepBlockDeleteFromAction_blockUpdateAction_parentBlock;
   gtmEventName: string | null;

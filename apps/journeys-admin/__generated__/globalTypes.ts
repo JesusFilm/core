@@ -953,7 +953,8 @@ export interface TemplateGalleryPageCreateInput {
   title: string;
   description?: string | null;
   creatorName: string;
-  creatorImageBlockId?: string | null;
+  creatorImageSrc?: string | null;
+  creatorImageAlt?: string | null;
   mediaUrl?: string | null;
   journeyIds?: string[] | null;
 }
@@ -963,7 +964,8 @@ export interface TemplateGalleryPageUpdateInput {
   description?: string | null;
   slug?: string | null;
   creatorName?: string | null;
-  creatorImageBlockId?: string | null;
+  creatorImageSrc?: string | null;
+  creatorImageAlt?: string | null;
   mediaUrl?: string | null;
   journeyIds?: string[] | null;
 }

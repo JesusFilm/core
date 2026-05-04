@@ -35,8 +35,8 @@ export interface GetJourneyVisitors_visitors_edges_node_visitor {
   referrer: string | null;
 }
 
-export interface GetJourneyVisitors_visitors_edges_node_events_ButtonClickEvent {
-  __typename: "ButtonClickEvent" | "ChatOpenEvent" | "MultiselectSubmissionEvent" | "JourneyViewEvent" | "RadioQuestionSubmissionEvent" | "SignUpSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "VideoStartEvent" | "VideoPlayEvent" | "VideoPauseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoCollapseEvent" | "VideoProgressEvent" | "JourneyEvent";
+export interface GetJourneyVisitors_visitors_edges_node_events_JourneyEvent {
+  __typename: "JourneyEvent" | "JourneyViewEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "VideoStartEvent" | "VideoPlayEvent" | "VideoPauseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoCollapseEvent" | "VideoProgressEvent" | "ButtonClickEvent" | "ChatOpenEvent" | "RadioQuestionSubmissionEvent" | "MultiselectSubmissionEvent" | "SignUpSubmissionEvent";
   id: string;
   createdAt: any;
   label: string | null;
@@ -64,7 +64,7 @@ export interface GetJourneyVisitors_visitors_edges_node_events_TextResponseSubmi
   blockId: string | null;
 }
 
-export type GetJourneyVisitors_visitors_edges_node_events = GetJourneyVisitors_visitors_edges_node_events_ButtonClickEvent | GetJourneyVisitors_visitors_edges_node_events_TextResponseSubmissionEvent;
+export type GetJourneyVisitors_visitors_edges_node_events = GetJourneyVisitors_visitors_edges_node_events_JourneyEvent | GetJourneyVisitors_visitors_edges_node_events_TextResponseSubmissionEvent;
 
 export interface GetJourneyVisitors_visitors_edges_node {
   __typename: "JourneyVisitor";

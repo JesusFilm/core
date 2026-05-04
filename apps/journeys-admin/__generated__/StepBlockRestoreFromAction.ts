@@ -631,12 +631,12 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock {
 export type StepBlockRestoreFromAction_blockRestore = StepBlockRestoreFromAction_blockRestore_GridContainerBlock | StepBlockRestoreFromAction_blockRestore_ButtonBlock | StepBlockRestoreFromAction_blockRestore_CardBlock | StepBlockRestoreFromAction_blockRestore_IconBlock | StepBlockRestoreFromAction_blockRestore_ImageBlock | StepBlockRestoreFromAction_blockRestore_MultiselectOptionBlock | StepBlockRestoreFromAction_blockRestore_MultiselectBlock | StepBlockRestoreFromAction_blockRestore_RadioOptionBlock | StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock | StepBlockRestoreFromAction_blockRestore_SignUpBlock | StepBlockRestoreFromAction_blockRestore_SpacerBlock | StepBlockRestoreFromAction_blockRestore_StepBlock | StepBlockRestoreFromAction_blockRestore_TextResponseBlock | StepBlockRestoreFromAction_blockRestore_TypographyBlock | StepBlockRestoreFromAction_blockRestore_VideoBlock | StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock;
 
 export interface StepBlockRestoreFromAction_blockUpdateAction_parentBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
 export interface StepBlockRestoreFromAction_blockUpdateAction {
-  __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction" | "PhoneAction" | "ChatAction";
+  __typename: "EmailAction" | "LinkAction" | "NavigateToBlockAction" | "PhoneAction" | "ChatAction";
   parentBlockId: string;
   parentBlock: StepBlockRestoreFromAction_blockUpdateAction_parentBlock;
   gtmEventName: string | null;

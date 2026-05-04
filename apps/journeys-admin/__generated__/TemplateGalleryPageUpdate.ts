@@ -9,20 +9,6 @@ import { TemplateGalleryPageUpdateInput, TemplateGalleryPageStatus } from "./glo
 // GraphQL mutation operation: TemplateGalleryPageUpdate
 // ====================================================
 
-export interface TemplateGalleryPageUpdate_templateGalleryPageUpdate_creatorImageBlock_ButtonBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
-  id: string;
-}
-
-export interface TemplateGalleryPageUpdate_templateGalleryPageUpdate_creatorImageBlock_ImageBlock {
-  __typename: "ImageBlock";
-  id: string;
-  src: string | null;
-  alt: string;
-}
-
-export type TemplateGalleryPageUpdate_templateGalleryPageUpdate_creatorImageBlock = TemplateGalleryPageUpdate_templateGalleryPageUpdate_creatorImageBlock_ButtonBlock | TemplateGalleryPageUpdate_templateGalleryPageUpdate_creatorImageBlock_ImageBlock;
-
 export interface TemplateGalleryPageUpdate_templateGalleryPageUpdate_templates_primaryImageBlock {
   __typename: "ImageBlock";
   id: string;
@@ -48,7 +34,8 @@ export interface TemplateGalleryPageUpdate_templateGalleryPageUpdate {
   slug: string;
   status: TemplateGalleryPageStatus;
   creatorName: string;
-  creatorImageBlock: TemplateGalleryPageUpdate_templateGalleryPageUpdate_creatorImageBlock | null;
+  creatorImageSrc: string | null;
+  creatorImageAlt: string | null;
   mediaUrl: string | null;
   publishedAt: any | null;
   createdAt: any;

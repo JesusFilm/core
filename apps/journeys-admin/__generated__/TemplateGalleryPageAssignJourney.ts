@@ -9,20 +9,6 @@ import { TemplateGalleryPageStatus } from "./globalTypes";
 // GraphQL mutation operation: TemplateGalleryPageAssignJourney
 // ====================================================
 
-export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_creatorImageBlock_ButtonBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
-  id: string;
-}
-
-export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_creatorImageBlock_ImageBlock {
-  __typename: "ImageBlock";
-  id: string;
-  src: string | null;
-  alt: string;
-}
-
-export type TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_creatorImageBlock = TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_creatorImageBlock_ButtonBlock | TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_creatorImageBlock_ImageBlock;
-
 export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_templates_primaryImageBlock {
   __typename: "ImageBlock";
   id: string;
@@ -48,7 +34,8 @@ export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourn
   slug: string;
   status: TemplateGalleryPageStatus;
   creatorName: string;
-  creatorImageBlock: TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_creatorImageBlock | null;
+  creatorImageSrc: string | null;
+  creatorImageAlt: string | null;
   mediaUrl: string | null;
   publishedAt: any | null;
   createdAt: any;
