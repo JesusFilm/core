@@ -3,7 +3,7 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/system/Stack'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 

@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'

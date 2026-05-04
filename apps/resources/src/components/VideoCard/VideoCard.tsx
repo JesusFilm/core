@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import last from 'lodash/last'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import type { MouseEvent, ReactElement } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'

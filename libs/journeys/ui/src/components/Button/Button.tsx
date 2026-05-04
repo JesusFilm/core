@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useFormikContext } from 'formik'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { usePlausible } from 'next-plausible'
 import { MouseEvent, ReactElement, useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -27,6 +27,7 @@ import { useJourney } from '../../libs/JourneyProvider'
 import {
   JourneyPlausibleEvents,
   actionToTarget,
+  fireCaptureEvent,
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
@@ -211,31 +212,15 @@ export function Button({
             })
           }
         })
-        if (eventLabel != null) {
-          plausible(eventLabel, {
-            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
-            props: {
-              ...input,
-              key: keyify({
-                stepId: input.stepId ?? '',
-                event: eventLabel,
-                blockId: input.blockId,
-                target: action,
-                journeyId: journey.id
-              }),
-              simpleKey: keyify({
-                stepId: input.stepId ?? '',
-                event: eventLabel,
-                blockId: input.blockId,
-                journeyId: journey.id
-              }),
-              templateKey: templateKeyify({
-                event: eventLabel,
-                journeyId: journey?.id
-              })
-            }
-          })
-        }
+        fireCaptureEvent(plausible, eventLabel, {
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+          input,
+          stepId: input.stepId ?? '',
+          blockId: input.blockId,
+          target: action,
+          templateTarget: actionToTarget(action),
+          journeyId: journey?.id
+        })
       }
       addEventToDataLayer(id)
     }
@@ -280,31 +265,15 @@ export function Button({
             })
           }
         })
-        if (eventLabel != null) {
-          plausible(eventLabel, {
-            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
-            props: {
-              ...input,
-              key: keyify({
-                stepId: input.stepId ?? '',
-                event: eventLabel,
-                blockId: input.blockId,
-                target: action,
-                journeyId: journey.id
-              }),
-              simpleKey: keyify({
-                stepId: input.stepId ?? '',
-                event: eventLabel,
-                blockId: input.blockId,
-                journeyId: journey.id
-              }),
-              templateKey: templateKeyify({
-                event: eventLabel,
-                journeyId: journey?.id
-              })
-            }
-          })
-        }
+        fireCaptureEvent(plausible, eventLabel, {
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+          input,
+          stepId: input.stepId ?? '',
+          blockId: input.blockId,
+          target: action,
+          templateTarget: 'chat',
+          journeyId: journey?.id
+        })
       }
       addEventToDataLayer(id)
     }

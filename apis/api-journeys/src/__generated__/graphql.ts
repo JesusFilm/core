@@ -645,19 +645,9 @@ export type CustomDomain = {
 
 export type CustomDomainCheck = {
   __typename?: 'CustomDomainCheck';
-  /**
-   * Is the domain correctly configured in the DNS?
-   * If false, A Record and CNAME Record should be added by the user.
-   */
   configured: Scalars['Boolean']['output'];
-  /** Verification records to be added to the DNS to confirm ownership. */
   verification?: Maybe<Array<CustomDomainVerification>>;
-  /** Reasoning as to why verification is required. */
   verificationResponse?: Maybe<CustomDomainVerificationResponse>;
-  /**
-   * Does the domain belong to the team?
-   * If false, verification and verificationResponse will be populated.
-   */
   verified: Scalars['Boolean']['output'];
 };
 
@@ -1849,10 +1839,8 @@ export type Mutation = {
   bibleCitationCreate?: Maybe<BibleCitation>;
   bibleCitationDelete?: Maybe<Scalars['Boolean']['output']>;
   bibleCitationUpdate?: Maybe<BibleCitation>;
-  /** blockDelete returns the updated sibling blocks on successful delete */
   blockDelete: Array<Block>;
   blockDeleteAction: Block;
-  /** blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate */
   blockDuplicate: Array<Block>;
   blockOrderUpdate: Array<Block>;
   /** blockRestore is used for redo/undo */
