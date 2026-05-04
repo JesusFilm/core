@@ -40,7 +40,7 @@ Three coordinated changes:
 `CopyToTeamDialog` is reused by three production callers:
 
 - `CreateJourneyButton` ("Use This Template" button or menu-item, dialog title `Add Journey to Team`) — Lucinda's specific complaint; pre-filling the active team is exactly what she asked for when the source is a team template.
-- `CopyToTeamMenuItem` ("Copy to ..." menu, dialog title `Copy to Another Team`) — semantically a *cross-team* copy. The empty default forces the user to pick deliberately, which is the right UX for "moving content elsewhere". Pre-filling the active team here would mask the intent.
+- `CopyToTeamMenuItem` ("Copy to ..." menu, dialog title `Copy to Another Team`) — semantically a _cross-team_ copy. The empty default forces the user to pick deliberately, which is the right UX for "moving content elsewhere". Pre-filling the active team here would mask the intent.
 - `DuplicateJourneyMenuItem` ("Duplicate" menu) — only opens the dialog when `activeTeam === null` (Shared with me view). Pre-filling active team is a no-op in that branch.
 
 Pre-filling unconditionally would change the "Copy to ..." menu's UX without that being requested. The `defaultToActiveTeam` prop lets `CreateJourneyButton` opt in, leaves the other two flows untouched, and adds two lines of caller logic.
@@ -144,14 +144,14 @@ The `JourneyDuplicate` mutation (`libs/journeys/ui/src/libs/useJourneyDuplicateM
 
 ## Test Plan (manual)
 
-| #   | Setup                                                                                                                                                                       | Expect                                                                                                                                       |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Log in as a user with ≥2 teams. Switch active team to Team A. From the home `?type=templates` view (Team Templates tab), click ⋮ on a team template → click **Use This Template**. | Team dropdown pre-selects **Team A** in the *Add Journey to Team* dialog.                                                                    |
-| 2   | From Scenario 1's state, navigate to a global JFP template (e.g. `/templates`) and click ⋮ → **Use This Template**.                                                          | Team dropdown is empty (unchanged behaviour for global templates).                                                                            |
-| 3   | Open any journey's ⋮ menu and click **Copy to ...**.                                                                                                                          | Team dropdown is empty (unchanged behaviour for cross-team copy).                                                                             |
-| 4   | While active team is Team A, open any journey's ⋮ menu and click **Duplicate**.                                                                                              | Journey is duplicated directly onto Team A; no dialog appears (unchanged behaviour).                                                          |
-| 5   | Switch active team to **Shared with me**, then on a journey shared with you click ⋮ → **Duplicate**.                                                                          | The *Copy to Another Team* dialog opens with an empty selector (unchanged behaviour).                                                          |
-| 6   | Log in as a user with exactly one team. Repeat #1.                                                                                                                           | Team dropdown is pre-selected with that single team (unchanged behaviour).                                                                     |
+| #   | Setup                                                                                                                                                                              | Expect                                                                                |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 1   | Log in as a user with ≥2 teams. Switch active team to Team A. From the home `?type=templates` view (Team Templates tab), click ⋮ on a team template → click **Use This Template**. | Team dropdown pre-selects **Team A** in the _Add Journey to Team_ dialog.             |
+| 2   | From Scenario 1's state, navigate to a global JFP template (e.g. `/templates`) and click ⋮ → **Use This Template**.                                                                | Team dropdown is empty (unchanged behaviour for global templates).                    |
+| 3   | Open any journey's ⋮ menu and click **Copy to ...**.                                                                                                                               | Team dropdown is empty (unchanged behaviour for cross-team copy).                     |
+| 4   | While active team is Team A, open any journey's ⋮ menu and click **Duplicate**.                                                                                                    | Journey is duplicated directly onto Team A; no dialog appears (unchanged behaviour).  |
+| 5   | Switch active team to **Shared with me**, then on a journey shared with you click ⋮ → **Duplicate**.                                                                               | The _Copy to Another Team_ dialog opens with an empty selector (unchanged behaviour). |
+| 6   | Log in as a user with exactly one team. Repeat #1.                                                                                                                                 | Team dropdown is pre-selected with that single team (unchanged behaviour).            |
 
 ## Sources & References
 

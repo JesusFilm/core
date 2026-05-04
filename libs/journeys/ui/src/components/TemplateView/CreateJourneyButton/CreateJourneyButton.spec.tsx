@@ -1078,9 +1078,7 @@ describe('CreateJourneyButton', () => {
         team: { id: 'team-a' }
       } as unknown as JourneyForTemplate)
 
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Use This Template' })
-      )
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
       await waitFor(() =>
         expect(
           screen.getByRole('combobox', { name: 'Select Team' })
@@ -1094,11 +1092,11 @@ describe('CreateJourneyButton', () => {
         team: { id: 'jfp-team' }
       } as unknown as JourneyForTemplate)
 
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Use This Template' })
-      )
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
       await waitFor(() =>
-        expect(screen.getByRole('combobox', { name: 'Select Team' })).toBeInTheDocument()
+        expect(
+          screen.getByRole('combobox', { name: 'Select Team' })
+        ).toBeInTheDocument()
       )
       const teamSelect = screen.getByRole('combobox', { name: 'Select Team' })
       expect(teamSelect).not.toHaveTextContent('Team A')
@@ -1111,11 +1109,11 @@ describe('CreateJourneyButton', () => {
         team: null
       } as unknown as JourneyForTemplate)
 
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Use This Template' })
-      )
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
       await waitFor(() =>
-        expect(screen.getByRole('combobox', { name: 'Select Team' })).toBeInTheDocument()
+        expect(
+          screen.getByRole('combobox', { name: 'Select Team' })
+        ).toBeInTheDocument()
       )
       const teamSelect = screen.getByRole('combobox', { name: 'Select Team' })
       expect(teamSelect).not.toHaveTextContent('Team A')
