@@ -13,7 +13,6 @@ builder.mutationField('customDomainCheck', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: CustomDomainCheck,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
