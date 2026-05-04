@@ -10,7 +10,6 @@ import { filterToTeamTemplates } from './filterToTeamTemplates'
 import { validateUserSuppliedSlug } from './generateUniqueSlug'
 import { TemplateGalleryPageUpdateInput } from './inputs'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
-import { validateCreatorImageBlock } from './validateCreatorImageBlock'
 
 builder.mutationField('templateGalleryPageUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -41,6 +40,7 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
       }
 
       assertHttpsUrl(input.mediaUrl, 'mediaUrl')
+      assertHttpsUrl(input.creatorImageSrc, 'creatorImageSrc')
 
       const slug =
         input.slug != null
@@ -48,19 +48,6 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
           : undefined
 
       return await prisma.$transaction(async (tx) => {
-        // Block ownership validation runs INSIDE the transaction (parity with
-        // the Create path). If we validated against the live prisma client
-        // outside the tx, a publisher could pass an owned Block id and then
-        // transfer the parent journey to another team in the window before
-        // the update lands — leaving a foreign-team Block id on a future-public page.
-        if (input.creatorImageBlockId != null) {
-          await validateCreatorImageBlock(
-            tx,
-            page.teamId,
-            input.creatorImageBlockId
-          )
-        }
-
         if (input.journeyIds !== undefined && input.journeyIds !== null) {
           await tx.templateGalleryPageTemplate.deleteMany({
             where: { templateGalleryPageId: id }
@@ -93,12 +80,13 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
         if (input.mediaUrl !== undefined) {
           data.mediaUrl = input.mediaUrl
         }
-        // creatorImageBlockId: undefined leaves alone, null clears it.
-        if (input.creatorImageBlockId !== undefined) {
-          data.creatorImageBlock =
-            input.creatorImageBlockId === null
-              ? { disconnect: true }
-              : { connect: { id: input.creatorImageBlockId } }
+        // creatorImageSrc: undefined leaves alone, null clears it.
+        if (input.creatorImageSrc !== undefined) {
+          data.creatorImageSrc = input.creatorImageSrc
+        }
+        // creatorImageAlt: undefined leaves alone, null clears it.
+        if (input.creatorImageAlt !== undefined) {
+          data.creatorImageAlt = input.creatorImageAlt
         }
 
         return await tx.templateGalleryPage.update({

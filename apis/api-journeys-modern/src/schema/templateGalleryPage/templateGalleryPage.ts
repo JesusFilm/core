@@ -20,7 +20,8 @@ export const TemplateGalleryPageRef = builder.prismaObject(
         nullable: false
       }),
       creatorName: t.exposeString('creatorName', { nullable: false }),
-      creatorImageBlock: t.relation('creatorImageBlock', { nullable: true }),
+      creatorImageSrc: t.exposeString('creatorImageSrc', { nullable: true }),
+      creatorImageAlt: t.exposeString('creatorImageAlt', { nullable: true }),
       mediaUrl: t.exposeString('mediaUrl', { nullable: true }),
       publishedAt: t.expose('publishedAt', {
         type: 'DateTimeISO',
