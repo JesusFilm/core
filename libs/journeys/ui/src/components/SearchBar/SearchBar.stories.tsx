@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import type { ComponentProps } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 

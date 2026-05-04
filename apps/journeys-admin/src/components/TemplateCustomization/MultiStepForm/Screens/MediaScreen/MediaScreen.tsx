@@ -1,6 +1,6 @@
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
