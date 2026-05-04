@@ -1603,6 +1603,7 @@ type Mutation {
   templateGalleryPagePublish(id: ID!): TemplateGalleryPage!
   templateGalleryPageUnpublish(id: ID!): TemplateGalleryPage!
   templateGalleryPageAssignJourney(journeyId: ID!, pageId: ID): TemplateGalleryPage
+  templateGalleryPageReorderTemplate(pageId: ID!, journeyId: ID!, order: Int!): TemplateGalleryPage!
   templateGalleryPageDelete(id: ID!): TemplateGalleryPage!
   userDeleteJourneysCheck(userId: String!): UserDeleteJourneysCheckResult!
   userDeleteJourneysConfirm(userId: String!): UserDeleteJourneysConfirmResult!

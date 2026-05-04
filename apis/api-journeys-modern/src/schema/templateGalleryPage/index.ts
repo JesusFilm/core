@@ -8,6 +8,7 @@ import './templateGalleryPageUpdate.mutation'
 import './templateGalleryPagePublish.mutation'
 import './templateGalleryPageUnpublish.mutation'
 import './templateGalleryPageAssignJourney.mutation'
+import './templateGalleryPageReorderTemplate.mutation'
 import './templateGalleryPageDelete.mutation'
 
 export { TemplateGalleryPageRef } from './templateGalleryPage'
