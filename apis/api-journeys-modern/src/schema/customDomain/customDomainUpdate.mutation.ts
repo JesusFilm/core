@@ -13,7 +13,6 @@ builder.mutationField('customDomainUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     type: CustomDomainRef,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       id: t.arg({ type: 'ID', required: true }),
       input: t.arg({ type: CustomDomainUpdateInput, required: true })
