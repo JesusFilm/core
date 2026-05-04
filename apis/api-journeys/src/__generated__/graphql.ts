@@ -1128,7 +1128,7 @@ export type Journey = {
   seoDescription?: Maybe<Scalars['String']['output']>;
   /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
-  /** @deprecated Use CardBlock.showAssistant. Removed once NES-1585 backfill completes. */
+  /** @deprecated Use CardBlock.showAssistant. Removal tracked in NES-1624. */
   showAssistant?: Maybe<Scalars['Boolean']['output']>;
   showChatButtons?: Maybe<Scalars['Boolean']['output']>;
   showDislikeButton?: Maybe<Scalars['Boolean']['output']>;

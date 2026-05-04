@@ -831,7 +831,7 @@ type Journey
   showLogo: Boolean
   showMenu: Boolean
   showDisplayTitle: Boolean
-  showAssistant: Boolean @deprecated(reason: "Use CardBlock.showAssistant. Removed once NES-1585 backfill completes.")
+  showAssistant: Boolean @deprecated(reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624.")
   customizable: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int

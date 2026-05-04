@@ -81,7 +81,7 @@ type Journey @key(fields: "id") @shareable {
   fromTemplateId: String
   showAssistant: Boolean
     @deprecated(
-      reason: "Use CardBlock.showAssistant. Removed once NES-1585 backfill completes."
+      reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624."
     )
 }
 
