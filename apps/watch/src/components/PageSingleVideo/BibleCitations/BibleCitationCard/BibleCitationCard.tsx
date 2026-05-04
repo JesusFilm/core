@@ -1,6 +1,6 @@
 import axios from 'axios'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { VideoContentFields_bibleCitations as BibleCitation } from '../../../../../__generated__/VideoContentFields'

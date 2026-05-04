@@ -1,4 +1,4 @@
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ComponentProps, ReactElement } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
