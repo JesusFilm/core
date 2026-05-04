@@ -1,7 +1,7 @@
 import last from 'lodash/last'
 import { Download as DownloadIcon, Globe2, Play, X } from 'lucide-react'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import useDownloader from 'react-use-downloader'
 
