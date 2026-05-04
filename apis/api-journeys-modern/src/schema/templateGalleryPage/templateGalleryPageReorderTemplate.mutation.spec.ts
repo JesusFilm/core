@@ -94,17 +94,23 @@ describe('templateGalleryPageReorderTemplate', () => {
         }
       })
       // Stage to -1, then place at 0.
-      expect(prismaMock.templateGalleryPageTemplate.update).toHaveBeenNthCalledWith(
-        1,
-        { where: { id: 'tpt-5' }, data: { order: -1 } }
-      )
-      expect(prismaMock.templateGalleryPageTemplate.update).toHaveBeenNthCalledWith(
-        2,
-        { where: { id: 'tpt-5' }, data: { order: 0 } }
-      )
+      expect(
+        prismaMock.templateGalleryPageTemplate.update
+      ).toHaveBeenNthCalledWith(1, {
+        where: { id: 'tpt-5' },
+        data: { order: -1 }
+      })
+      expect(
+        prismaMock.templateGalleryPageTemplate.update
+      ).toHaveBeenNthCalledWith(2, {
+        where: { id: 'tpt-5' },
+        data: { order: 0 }
+      })
       // Single shift statement for the [newOrder, oldOrder) window.
       expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
-      const sql = (prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]).join(' ')
+      const sql = (
+        prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]
+      ).join(' ')
       expect(sql).toContain('+ 1')
     })
 
@@ -120,16 +126,22 @@ describe('templateGalleryPageReorderTemplate', () => {
         variables: { pageId: 'page-1', journeyId: 'j1', order: 4 }
       })
 
-      expect(prismaMock.templateGalleryPageTemplate.update).toHaveBeenNthCalledWith(
-        1,
-        { where: { id: 'tpt-1' }, data: { order: -1 } }
-      )
-      expect(prismaMock.templateGalleryPageTemplate.update).toHaveBeenNthCalledWith(
-        2,
-        { where: { id: 'tpt-1' }, data: { order: 4 } }
-      )
+      expect(
+        prismaMock.templateGalleryPageTemplate.update
+      ).toHaveBeenNthCalledWith(1, {
+        where: { id: 'tpt-1' },
+        data: { order: -1 }
+      })
+      expect(
+        prismaMock.templateGalleryPageTemplate.update
+      ).toHaveBeenNthCalledWith(2, {
+        where: { id: 'tpt-1' },
+        data: { order: 4 }
+      })
       expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
-      const sql = (prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]).join(' ')
+      const sql = (
+        prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]
+      ).join(' ')
       expect(sql).toContain('- 1')
     })
 
@@ -145,11 +157,15 @@ describe('templateGalleryPageReorderTemplate', () => {
         variables: { pageId: 'page-1', journeyId: 'j2', order: 3 }
       })
 
-      expect(prismaMock.templateGalleryPageTemplate.update).toHaveBeenNthCalledWith(
-        2,
-        { where: { id: 'tpt-2' }, data: { order: 3 } }
-      )
-      const sql = (prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]).join(' ')
+      expect(
+        prismaMock.templateGalleryPageTemplate.update
+      ).toHaveBeenNthCalledWith(2, {
+        where: { id: 'tpt-2' },
+        data: { order: 3 }
+      })
+      const sql = (
+        prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]
+      ).join(' ')
       expect(sql).toContain('- 1')
     })
 
@@ -165,11 +181,15 @@ describe('templateGalleryPageReorderTemplate', () => {
         variables: { pageId: 'page-1', journeyId: 'j4', order: 1 }
       })
 
-      expect(prismaMock.templateGalleryPageTemplate.update).toHaveBeenNthCalledWith(
-        2,
-        { where: { id: 'tpt-4' }, data: { order: 1 } }
-      )
-      const sql = (prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]).join(' ')
+      expect(
+        prismaMock.templateGalleryPageTemplate.update
+      ).toHaveBeenNthCalledWith(2, {
+        where: { id: 'tpt-4' },
+        data: { order: 1 }
+      })
+      const sql = (
+        prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]
+      ).join(' ')
       expect(sql).toContain('+ 1')
     })
 
@@ -190,7 +210,9 @@ describe('templateGalleryPageReorderTemplate', () => {
           templateGalleryPageReorderTemplate: { id: 'page-1', title: 'Page 1' }
         }
       })
-      expect(prismaMock.templateGalleryPageTemplate.update).not.toHaveBeenCalled()
+      expect(
+        prismaMock.templateGalleryPageTemplate.update
+      ).not.toHaveBeenCalled()
       expect(prismaMock.$executeRaw).not.toHaveBeenCalled()
     })
   })
@@ -210,11 +232,11 @@ describe('templateGalleryPageReorderTemplate', () => {
 
       expect(result).toEqual({
         data: null,
-        errors: [
-          expect.objectContaining({ message: 'order is out of range' })
-        ]
+        errors: [expect.objectContaining({ message: 'order is out of range' })]
       })
-      expect(prismaMock.templateGalleryPageTemplate.update).not.toHaveBeenCalled()
+      expect(
+        prismaMock.templateGalleryPageTemplate.update
+      ).not.toHaveBeenCalled()
     })
 
     it('throws BAD_USER_INPUT when order >= total (would create a gap)', async () => {
@@ -231,11 +253,11 @@ describe('templateGalleryPageReorderTemplate', () => {
 
       expect(result).toEqual({
         data: null,
-        errors: [
-          expect.objectContaining({ message: 'order is out of range' })
-        ]
+        errors: [expect.objectContaining({ message: 'order is out of range' })]
       })
-      expect(prismaMock.templateGalleryPageTemplate.update).not.toHaveBeenCalled()
+      expect(
+        prismaMock.templateGalleryPageTemplate.update
+      ).not.toHaveBeenCalled()
     })
 
     it('throws BAD_USER_INPUT when journeyId is not a member of the page', async () => {
@@ -254,7 +276,9 @@ describe('templateGalleryPageReorderTemplate', () => {
           })
         ]
       })
-      expect(prismaMock.templateGalleryPageTemplate.count).not.toHaveBeenCalled()
+      expect(
+        prismaMock.templateGalleryPageTemplate.count
+      ).not.toHaveBeenCalled()
     })
 
     it('throws NOT_FOUND when pageId does not exist', async () => {
@@ -268,10 +292,14 @@ describe('templateGalleryPageReorderTemplate', () => {
       expect(result).toEqual({
         data: null,
         errors: [
-          expect.objectContaining({ message: 'template gallery page not found' })
+          expect.objectContaining({
+            message: 'template gallery page not found'
+          })
         ]
       })
-      expect(prismaMock.templateGalleryPageTemplate.findUnique).not.toHaveBeenCalled()
+      expect(
+        prismaMock.templateGalleryPageTemplate.findUnique
+      ).not.toHaveBeenCalled()
     })
 
     it('throws CONFLICT when the page is published', async () => {
@@ -293,7 +321,9 @@ describe('templateGalleryPageReorderTemplate', () => {
           })
         ]
       })
-      expect(prismaMock.templateGalleryPageTemplate.findUnique).not.toHaveBeenCalled()
+      expect(
+        prismaMock.templateGalleryPageTemplate.findUnique
+      ).not.toHaveBeenCalled()
     })
   })
 
@@ -318,7 +348,9 @@ describe('templateGalleryPageReorderTemplate', () => {
           })
         ]
       })
-      expect(prismaMock.templateGalleryPageTemplate.findUnique).not.toHaveBeenCalled()
+      expect(
+        prismaMock.templateGalleryPageTemplate.findUnique
+      ).not.toHaveBeenCalled()
     })
 
     it('throws Not authorized when caller is not authenticated', async () => {

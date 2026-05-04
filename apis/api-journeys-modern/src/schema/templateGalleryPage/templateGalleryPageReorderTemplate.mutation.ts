@@ -57,9 +57,12 @@ builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
           select: { id: true, order: true }
         })
         if (moving == null) {
-          throw new GraphQLError('journey is not in this template gallery page', {
-            extensions: { code: 'BAD_USER_INPUT', field: 'journeyId' }
-          })
+          throw new GraphQLError(
+            'journey is not in this template gallery page',
+            {
+              extensions: { code: 'BAD_USER_INPUT', field: 'journeyId' }
+            }
+          )
         }
 
         const total = await tx.templateGalleryPageTemplate.count({
