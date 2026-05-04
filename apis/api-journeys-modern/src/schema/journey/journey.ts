@@ -167,7 +167,9 @@ export const JourneyRef = builder.prismaObject('Journey', {
       nullable: true
     }),
     showAssistant: t.exposeBoolean('showAssistant', {
-      nullable: true
+      nullable: true,
+      deprecationReason:
+        'Use CardBlock.showAssistant. Removed once NES-1585 backfill completes.'
     }),
     customizable: t.exposeBoolean('customizable', {
       nullable: true

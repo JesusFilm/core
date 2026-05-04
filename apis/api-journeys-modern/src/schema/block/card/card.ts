@@ -54,6 +54,17 @@ themeMode from journey`,
       description: `themeName can override journey themeName. If nothing is set then use
 themeName from journey`,
       resolve: (block) => block.themeName as PrismaThemeName | null
+    }),
+    showAssistant: t.boolean({
+      nullable: true,
+      description: 'When true, this card displays the AI chat button.',
+      resolve: (block) => block.showAssistant
+    }),
+    expandChatByDefault: t.boolean({
+      nullable: true,
+      description:
+        'When true, the chat drawer auto-opens on first visit to this card.',
+      resolve: (block) => block.expandChatByDefault
     })
   })
 })

@@ -80,6 +80,9 @@ type Journey @key(fields: "id") @shareable {
   socialNodeY: Int
   fromTemplateId: String
   showAssistant: Boolean
+    @deprecated(
+      reason: "Use CardBlock.showAssistant. Removed once NES-1585 backfill completes."
+    )
 }
 
 enum IdType {

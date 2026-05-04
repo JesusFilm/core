@@ -204,7 +204,7 @@ type Journey
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
-  showAssistant: Boolean
+  showAssistant: Boolean @deprecated(reason: "Use CardBlock.showAssistant. Removed once NES-1585 backfill completes.")
   journeyCustomizationDescription: String
   journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
@@ -418,6 +418,12 @@ type CardBlock implements Block
   themeName from journey
   """
   themeName: ThemeName @shareable
+
+  """When true, this card displays the AI chat button."""
+  showAssistant: Boolean @shareable
+
+  """When true, the chat drawer auto-opens on first visit to this card."""
+  expandChatByDefault: Boolean @shareable
 }
 
 enum GridDirection {

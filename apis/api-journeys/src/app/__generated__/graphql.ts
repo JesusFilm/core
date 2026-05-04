@@ -953,6 +953,8 @@ export class CardBlock implements Block {
     fullscreen: boolean;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
+    showAssistant?: Nullable<boolean>;
+    expandChatByDefault?: Nullable<boolean>;
 }
 
 export class GridContainerBlock implements Block {
