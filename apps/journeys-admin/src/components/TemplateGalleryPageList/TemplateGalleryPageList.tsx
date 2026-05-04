@@ -16,9 +16,10 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useMemo, useState } from 'react'
 
@@ -26,33 +27,22 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import {
   GetAdminJourneys,
-  GetAdminJourneysVariables
+  GetAdminJourneysVariables,
+  GetAdminJourneys_journeys as Journey
 } from '../../../__generated__/GetAdminJourneys'
-import {
-  GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage,
-  GetTemplateGalleryPages_templateGalleryPages_templates as TemplateGalleryPageTemplate
-} from '../../../__generated__/GetTemplateGalleryPages'
-import { JourneyStatus } from '../../../__generated__/globalTypes'
+import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../__generated__/GetTemplateGalleryPages'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { useTemplateGalleryPageAssignJourneyMutation } from '../../libs/useTemplateGalleryPageAssignJourneyMutation'
 import { useTemplateGalleryPageDeleteMutation } from '../../libs/useTemplateGalleryPageDeleteMutation'
 import { useTemplateGalleryPagePublishMutation } from '../../libs/useTemplateGalleryPagePublishMutation'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
 import { useTemplateGalleryPageUnpublishMutation } from '../../libs/useTemplateGalleryPageUnpublishMutation'
+import { JourneyCard } from '../JourneyList/JourneyCard'
 
 import { CollectionCard } from './CollectionCard'
 import { CollectionDialog } from './CollectionDialog'
-import { TemplateCard, TemplateCardTemplate } from './TemplateCard'
 
-type DraggableJourney = {
-  id: string
-  title: string
-  primaryImageBlock: { src: string | null; alt: string } | null
-}
-
-type DropZoneId =
-  | { kind: 'unsectioned' }
-  | { kind: 'collection'; id: string }
+type DropZoneId = { kind: 'unsectioned' } | { kind: 'collection'; id: string }
 
 const UNSECTIONED_ID = 'unsectioned'
 const COLLECTION_PREFIX = 'collection:'
@@ -82,18 +72,20 @@ export function TemplateGalleryPageList(): ReactElement {
     teamId != null ? { teamId } : undefined,
     { skip: teamId == null }
   )
+  // Show all team templates regardless of status. The published-only filter
+  // applies to global templates (jfp-team) rendered on the public template
+  // library; team templates can be grouped into a Collection while still in
+  // draft status.
   const journeysQuery = useAdminJourneysQuery({
     template: true,
-    teamId,
-    status: [JourneyStatus.published]
+    teamId
   } satisfies GetAdminJourneysVariables) as ReturnType<
     typeof useAdminJourneysQuery
   > & { data?: GetAdminJourneys }
 
   const [templateGalleryPageAssignJourney] =
     useTemplateGalleryPageAssignJourneyMutation()
-  const [templateGalleryPagePublish] =
-    useTemplateGalleryPagePublishMutation()
+  const [templateGalleryPagePublish] = useTemplateGalleryPagePublishMutation()
   const [templateGalleryPageUnpublish] =
     useTemplateGalleryPageUnpublishMutation()
   const [templateGalleryPageDelete] = useTemplateGalleryPageDeleteMutation()
@@ -108,20 +100,16 @@ export function TemplateGalleryPageList(): ReactElement {
     () => collectionsQuery.data?.templateGalleryPages ?? [],
     [collectionsQuery.data]
   )
-  const allTemplates = useMemo<readonly DraggableJourney[]>(() => {
-    const journeys = journeysQuery.data?.journeys ?? []
-    return journeys.map((journey) => ({
-      id: journey.id,
-      title: journey.title,
-      primaryImageBlock:
-        journey.primaryImageBlock == null
-          ? null
-          : {
-              src: journey.primaryImageBlock.src,
-              alt: journey.primaryImageBlock.alt
-            }
-    }))
-  }, [journeysQuery.data])
+  const allTemplates = useMemo<readonly Journey[]>(
+    () => journeysQuery.data?.journeys ?? [],
+    [journeysQuery.data]
+  )
+
+  const journeyById = useMemo(() => {
+    const map = new Map<string, Journey>()
+    for (const journey of allTemplates) map.set(journey.id, journey)
+    return map
+  }, [allTemplates])
 
   const collectedIds = useMemo(() => {
     const set = new Set<string>()
@@ -147,13 +135,13 @@ export function TemplateGalleryPageList(): ReactElement {
     return map
   }, [collections])
 
-  const unsectioned = useMemo<readonly DraggableJourney[]>(
-    () => allTemplates.filter((template) => !collectedIds.has(template.id)),
+  const unsectioned = useMemo<readonly Journey[]>(
+    () => allTemplates.filter((journey) => !collectedIds.has(journey.id)),
     [allTemplates, collectedIds]
   )
 
   const editTarget =
-    editTargetId != null ? collectionsById.get(editTargetId) ?? null : null
+    editTargetId != null ? (collectionsById.get(editTargetId) ?? null) : null
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
@@ -175,9 +163,7 @@ export function TemplateGalleryPageList(): ReactElement {
     setEditTargetId(collection.id)
   }
 
-  async function handlePublish(
-    collection: TemplateGalleryPage
-  ): Promise<void> {
+  async function handlePublish(collection: TemplateGalleryPage): Promise<void> {
     setBusyId(collection.id)
     try {
       await templateGalleryPagePublish({ variables: { id: collection.id } })
@@ -221,13 +207,11 @@ export function TemplateGalleryPageList(): ReactElement {
     }
   }
 
-  async function handleUngroup(
-    collection: TemplateGalleryPage
-  ): Promise<void> {
+  async function handleUngroup(collection: TemplateGalleryPage): Promise<void> {
     setBusyId(collection.id)
     try {
       await templateGalleryPageDelete({ variables: { id: collection.id } })
-      enqueueSnackbar(t('Collection ungrouped'), {
+      enqueueSnackbar(t('Collection removed'), {
         variant: 'success',
         preventDuplicate: true
       })
@@ -235,7 +219,7 @@ export function TemplateGalleryPageList(): ReactElement {
       enqueueSnackbar(
         error instanceof Error
           ? error.message
-          : t("Couldn't ungroup collection"),
+          : t("Couldn't remove collection"),
         { variant: 'error', preventDuplicate: true }
       )
     } finally {
@@ -258,8 +242,7 @@ export function TemplateGalleryPageList(): ReactElement {
     if (target == null) return
 
     const sourceCollection = templateIdToCollection.get(templateId) ?? null
-    const targetCollectionId =
-      target.kind === 'collection' ? target.id : null
+    const targetCollectionId = target.kind === 'collection' ? target.id : null
 
     // No-op transitions.
     if (sourceCollection?.id === targetCollectionId) return
@@ -317,10 +300,8 @@ export function TemplateGalleryPageList(): ReactElement {
     )
   }
 
-  const activeDragTemplate =
-    activeDragId != null
-      ? allTemplates.find((tpl) => tpl.id === activeDragId) ?? null
-      : null
+  const activeDragJourney =
+    activeDragId != null ? (journeyById.get(activeDragId) ?? null) : null
 
   return (
     <Box sx={{ p: 4 }} data-testid="TemplateGalleryPageList">
@@ -364,9 +345,7 @@ export function TemplateGalleryPageList(): ReactElement {
               <DroppableCollectionWrapper
                 key={collection.id}
                 id={collection.id}
-                disabled={
-                  collection.status === 'published' || dragInFlight
-                }
+                disabled={collection.status === 'published' || dragInFlight}
               >
                 <CollectionCard
                   collection={collection}
@@ -376,8 +355,10 @@ export function TemplateGalleryPageList(): ReactElement {
                   onUngroup={handleUngroup}
                   busy={busyId === collection.id || dragInFlight}
                 >
-                  <DraggableTemplatesGrid
-                    templates={collection.templates}
+                  <DraggableJourneysGrid
+                    journeys={collection.templates
+                      .map((tpl) => journeyById.get(tpl.id))
+                      .filter((j): j is Journey => j != null)}
                     publishedLock={collection.status === 'published'}
                   />
                 </CollectionCard>
@@ -395,35 +376,32 @@ export function TemplateGalleryPageList(): ReactElement {
               <Box sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}>
                 <Typography variant="caption">
                   {allTemplates.length === 0
-                    ? t('No published templates yet.')
+                    ? t('No team templates yet.')
                     : t('All templates are in collections.')}
                 </Typography>
               </Box>
             ) : (
-              <Box
-                sx={{
-                  p: 1,
-                  display: 'grid',
-                  gridTemplateColumns: {
-                    xs: 'repeat(2, 1fr)',
-                    sm: 'repeat(3, 1fr)',
-                    md: 'repeat(4, 1fr)',
-                    lg: 'repeat(5, 1fr)'
-                  },
-                  gap: 1
-                }}
-              >
-                {unsectioned.map((template) => (
-                  <DraggableTemplate key={template.id} template={template} />
-                ))}
+              <Box sx={{ p: 1 }}>
+                <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
+                  {unsectioned.map((journey) => (
+                    <Grid
+                      key={journey.id}
+                      size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
+                    >
+                      <DraggableJourney journey={journey} />
+                    </Grid>
+                  ))}
+                </Grid>
               </Box>
             )}
           </UnsectionedDroppable>
         </Box>
 
         <DragOverlay dropAnimation={null}>
-          {activeDragTemplate != null ? (
-            <TemplateCard template={activeDragTemplate} isDragOverlay />
+          {activeDragJourney != null ? (
+            <Box sx={{ width: 280, cursor: 'grabbing', opacity: 0.95 }}>
+              <JourneyCard journey={activeDragJourney} />
+            </Box>
           ) : null}
         </DragOverlay>
       </DndContext>
@@ -432,6 +410,7 @@ export function TemplateGalleryPageList(): ReactElement {
         open={createDialogOpen}
         mode="create"
         teamId={teamId}
+        availableJourneys={allTemplates}
         onClose={handleCloseCreate}
       />
       {editTarget != null && (
@@ -440,6 +419,7 @@ export function TemplateGalleryPageList(): ReactElement {
           mode="edit"
           teamId={teamId}
           collection={editTarget}
+          availableJourneys={allTemplates}
           onClose={handleCloseEdit}
         />
       )}
@@ -476,51 +456,25 @@ function DroppableCollectionWrapper({
   )
 }
 
-interface DraggableTemplatesGridProps {
-  templates: readonly TemplateGalleryPageTemplate[]
+interface DraggableJourneysGridProps {
+  journeys: readonly Journey[]
   publishedLock: boolean
 }
 
-function DraggableTemplatesGrid({
-  templates,
+function DraggableJourneysGrid({
+  journeys,
   publishedLock
-}: DraggableTemplatesGridProps): ReactElement | null {
-  if (templates.length === 0) return null
+}: DraggableJourneysGridProps): ReactElement | null {
+  if (journeys.length === 0) return null
   return (
-    <Box
-      sx={{
-        mt: -1,
-        p: 1,
-        display: 'grid',
-        gridTemplateColumns: {
-          xs: 'repeat(2, 1fr)',
-          sm: 'repeat(3, 1fr)',
-          md: 'repeat(4, 1fr)',
-          lg: 'repeat(5, 1fr)'
-        },
-        gap: 1
-      }}
-    >
-      {templates.map((template) => {
-        const adapted: TemplateCardTemplate = {
-          id: template.id,
-          title: template.title,
-          primaryImageBlock:
-            template.primaryImageBlock == null
-              ? null
-              : {
-                  src: template.primaryImageBlock.src,
-                  alt: template.primaryImageBlock.alt
-                }
-        }
-        return (
-          <DraggableTemplate
-            key={template.id}
-            template={adapted}
-            disabled={publishedLock}
-          />
-        )
-      })}
+    <Box sx={{ mt: -1, p: 1 }}>
+      <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
+        {journeys.map((journey) => (
+          <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}>
+            <DraggableJourney journey={journey} disabled={publishedLock} />
+          </Grid>
+        ))}
+      </Grid>
     </Box>
   )
 }
@@ -554,17 +508,17 @@ function UnsectionedDroppable({
   )
 }
 
-interface DraggableTemplateProps {
-  template: TemplateCardTemplate
+interface DraggableJourneyProps {
+  journey: Journey
   disabled?: boolean
 }
 
-function DraggableTemplate({
-  template,
+function DraggableJourney({
+  journey,
   disabled
-}: DraggableTemplateProps): ReactElement {
+}: DraggableJourneyProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({ id: template.id, disabled })
+    useDraggable({ id: journey.id, disabled })
   const style =
     transform != null
       ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
@@ -575,9 +529,13 @@ function DraggableTemplate({
       style={style}
       {...listeners}
       {...attributes}
-      sx={{ opacity: isDragging ? 0.4 : 1, touchAction: 'manipulation' }}
+      sx={{
+        opacity: isDragging ? 0.4 : 1,
+        touchAction: 'manipulation',
+        cursor: disabled === true ? 'default' : 'grab'
+      }}
     >
-      <TemplateCard template={template} />
+      <JourneyCard journey={journey} />
     </Box>
   )
 }

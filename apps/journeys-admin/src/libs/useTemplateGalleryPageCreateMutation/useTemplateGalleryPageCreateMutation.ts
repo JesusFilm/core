@@ -21,13 +21,8 @@ export const TEMPLATE_GALLERY_PAGE_CREATE = gql`
       slug
       status
       creatorName
-      creatorImageBlock {
-        id
-        ... on ImageBlock {
-          src
-          alt
-        }
-      }
+      creatorImageSrc
+      creatorImageAlt
       mediaUrl
       publishedAt
       createdAt

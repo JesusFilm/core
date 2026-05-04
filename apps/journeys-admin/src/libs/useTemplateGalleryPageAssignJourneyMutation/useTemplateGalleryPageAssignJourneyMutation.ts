@@ -32,13 +32,8 @@ export const TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY = gql`
       slug
       status
       creatorName
-      creatorImageBlock {
-        id
-        ... on ImageBlock {
-          src
-          alt
-        }
-      }
+      creatorImageSrc
+      creatorImageAlt
       mediaUrl
       publishedAt
       createdAt

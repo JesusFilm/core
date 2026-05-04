@@ -5,6 +5,8 @@ import { SnackbarProvider } from 'notistack'
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { getLastActiveTeamIdAndTeamsMock } from '@core/journeys/ui/TeamProvider/TeamProvider.mock'
 
+import { ThemeProvider } from '../ThemeProvider'
+
 import { GetAdminJourneys } from '../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages } from '../../../__generated__/GetTemplateGalleryPages'
 import {
@@ -39,7 +41,8 @@ const collectionsMock: MockedResponse<GetTemplateGalleryPages> = {
           slug: 'featured-templates',
           status: TemplateGalleryPageStatus.draft,
           creatorName: 'Jesus Film',
-          creatorImageBlock: null,
+          creatorImageSrc: null,
+          creatorImageAlt: null,
           mediaUrl: null,
           publishedAt: null,
           createdAt: '2026-05-01T00:00:00.000Z',
@@ -56,8 +59,7 @@ const journeysMock: MockedResponse<GetAdminJourneys> = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       template: true,
-      teamId: TEAM_ID,
-      status: [JourneyStatus.published]
+      teamId: TEAM_ID
     }
   },
   result: {
@@ -124,11 +126,13 @@ describe('TemplateGalleryPageList', () => {
           journeysMock
         ]}
       >
-        <SnackbarProvider>
-          <TeamProvider>
-            <TemplateGalleryPageList />
-          </TeamProvider>
-        </SnackbarProvider>
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TemplateGalleryPageList />
+            </TeamProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
       </MockedProvider>
     )
 

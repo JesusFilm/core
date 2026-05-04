@@ -14,13 +14,8 @@ export const GET_TEMPLATE_GALLERY_PAGES = gql`
       slug
       status
       creatorName
-      creatorImageBlock {
-        id
-        ... on ImageBlock {
-          src
-          alt
-        }
-      }
+      creatorImageSrc
+      creatorImageAlt
       mediaUrl
       publishedAt
       createdAt

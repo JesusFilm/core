@@ -1,15 +1,18 @@
 import { ApolloError } from '@apollo/client'
+import Autocomplete from '@mui/material/Autocomplete'
+import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikHelpers } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { object, string } from 'yup'
+import { array, object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 import {
   TemplateGalleryPageCreateInput,
@@ -23,6 +26,7 @@ export interface CollectionDialogProps {
   mode: 'create' | 'edit'
   teamId: string
   collection?: TemplateGalleryPage
+  availableJourneys: readonly Journey[]
   onClose: () => void
 }
 
@@ -32,6 +36,15 @@ interface FormValues {
   creatorName: string
   mediaUrl: string
   slug: string
+  journeyIds: string[]
+}
+
+function sameIds(a: readonly string[], b: readonly string[]): boolean {
+  if (a.length !== b.length) return false
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i] !== b[i]) return false
+  }
+  return true
 }
 
 export function CollectionDialog({
@@ -39,6 +52,7 @@ export function CollectionDialog({
   mode,
   teamId,
   collection,
+  availableJourneys,
   onClose
 }: CollectionDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -52,7 +66,8 @@ export function CollectionDialog({
     description: collection?.description ?? '',
     creatorName: collection?.creatorName ?? '',
     mediaUrl: collection?.mediaUrl ?? '',
-    slug: collection?.slug ?? ''
+    slug: collection?.slug ?? '',
+    journeyIds: collection?.templates.map((tpl) => tpl.id) ?? []
   }
 
   const schema = object({
@@ -78,7 +93,8 @@ export function CollectionDialog({
       .matches(
         /^[a-z0-9]+(-[a-z0-9]+)*$/,
         t('Use lowercase letters, numbers, and hyphens only')
-      )
+      ),
+    journeyIds: array().of(string().required())
   })
 
   async function handleSubmit(
@@ -92,7 +108,8 @@ export function CollectionDialog({
           title: values.title,
           creatorName: values.creatorName,
           description: values.description === '' ? null : values.description,
-          mediaUrl: values.mediaUrl === '' ? null : values.mediaUrl
+          mediaUrl: values.mediaUrl === '' ? null : values.mediaUrl,
+          journeyIds: values.journeyIds
         }
         await templateGalleryPageCreate({ variables: { input } })
         enqueueSnackbar(t('Collection created'), {
@@ -112,6 +129,10 @@ export function CollectionDialog({
           input.mediaUrl = values.mediaUrl === '' ? null : values.mediaUrl
         }
         if (values.slug !== collection.slug) input.slug = values.slug
+        const initialIds = collection.templates.map((tpl) => tpl.id)
+        if (!sameIds(initialIds, values.journeyIds)) {
+          input.journeyIds = values.journeyIds
+        }
         await templateGalleryPageUpdate({
           variables: { id: collection.id, input }
         })
@@ -131,7 +152,7 @@ export function CollectionDialog({
           fieldError != null &&
           (fieldError === 'slug' ||
             fieldError === 'mediaUrl' ||
-            fieldError === 'creatorImageBlockId' ||
+            fieldError === 'creatorImageSrc' ||
             fieldError === 'title')
         ) {
           helpers.setFieldError(fieldError, error.message)
@@ -154,7 +175,16 @@ export function CollectionDialog({
       onSubmit={handleSubmit}
       enableReinitialize
     >
-      {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
+      {({
+        values,
+        errors,
+        touched,
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        setFieldValue,
+        setFieldTouched
+      }) => (
         <Dialog
           open={open}
           onClose={onClose}
@@ -257,6 +287,51 @@ export function CollectionDialog({
                   }
                 />
               )}
+              <Autocomplete
+                multiple
+                disableCloseOnSelect
+                options={availableJourneys.slice()}
+                getOptionLabel={(option) => option.title}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                value={availableJourneys.filter((j) =>
+                  values.journeyIds.includes(j.id)
+                )}
+                onChange={(_event, selected) => {
+                  void setFieldValue(
+                    'journeyIds',
+                    selected.map((j) => j.id)
+                  )
+                  void setFieldTouched('journeyIds', true, false)
+                }}
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => {
+                    const { key, ...tagProps } = getTagProps({ index })
+                    return (
+                      <Chip
+                        key={key}
+                        label={option.title}
+                        size="small"
+                        {...tagProps}
+                      />
+                    )
+                  })
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t('Templates')}
+                    placeholder={
+                      values.journeyIds.length === 0
+                        ? t('Select templates to include')
+                        : undefined
+                    }
+                    variant="filled"
+                    helperText={t(
+                      'Templates included in this collection. Drag-and-drop in the gallery view also updates this list.'
+                    )}
+                  />
+                )}
+              />
               <Typography variant="caption" color="text.secondary">
                 {t(
                   'Creator image picker — coming soon. The creator image is optional.'

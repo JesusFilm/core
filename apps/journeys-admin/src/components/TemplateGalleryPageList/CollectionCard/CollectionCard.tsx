@@ -9,7 +9,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
 
 import MoreIcon from '@core/shared/ui/icons/More'
@@ -163,7 +163,9 @@ export function CollectionCard({
           {isPublished && (
             <MenuItem onClick={handleUnpublish}>{t('Unpublish')}</MenuItem>
           )}
-          <MenuItem onClick={handleOpenUngroup}>{t('Ungroup')}</MenuItem>
+          <MenuItem onClick={handleOpenUngroup}>
+            {t('Remove Collection')}
+          </MenuItem>
         </Menu>
       </Stack>
 

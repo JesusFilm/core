@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -26,10 +26,13 @@ export function CollectionUngroupDialog({
     <Dialog
       open={open}
       onClose={onClose}
-      dialogTitle={{ title: t('Ungroup this collection?'), closeButton: true }}
+      dialogTitle={{
+        title: t('Remove this collection?'),
+        closeButton: true
+      }}
       dialogAction={{
         onSubmit: onConfirm,
-        submitLabel: t('Ungroup'),
+        submitLabel: t('Remove'),
         closeLabel: t('Cancel')
       }}
       testId="CollectionUngroupDialog"
@@ -37,7 +40,7 @@ export function CollectionUngroupDialog({
       <Stack spacing={2}>
         <Typography>
           {t(
-            'Ungrouping dissolves this collection. Templates inside return to the flat list.'
+            'Removing this collection returns its templates to the flat list.'
           )}
         </Typography>
         {wasPublished && (
