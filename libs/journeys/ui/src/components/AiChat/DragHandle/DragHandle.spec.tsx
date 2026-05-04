@@ -1,0 +1,97 @@
+import { fireEvent, render } from '@testing-library/react'
+
+import { DragHandle } from './DragHandle'
+
+// `next-i18next/pages` is a Next.js subpath that doesn't resolve in jest;
+// register the mock as virtual so jest doesn't try to find it on disk.
+jest.mock(
+  'next-i18next/pages',
+  () => ({ useTranslation: () => ({ t: (key: string) => key }) }),
+  { virtual: true }
+)
+
+function renderHandle(props: {
+  collapsed?: boolean
+  onCollapse?: jest.Mock
+  onExpand?: jest.Mock
+}) {
+  const onCollapse = props.onCollapse ?? jest.fn()
+  const onExpand = props.onExpand ?? jest.fn()
+  const utils = render(
+    <DragHandle
+      collapsed={props.collapsed ?? false}
+      onCollapse={onCollapse}
+      onExpand={onExpand}
+    />
+  )
+  return { ...utils, onCollapse, onExpand }
+}
+
+describe('DragHandle', () => {
+  it('exposes the right aria-label for each state', () => {
+    const { getByTestId, rerender } = renderHandle({ collapsed: false })
+    expect(getByTestId('ChatDragHandle')).toHaveAttribute(
+      'aria-label',
+      'Collapse chat'
+    )
+    rerender(
+      <DragHandle
+        collapsed
+        onCollapse={() => undefined}
+        onExpand={() => undefined}
+      />
+    )
+    expect(getByTestId('ChatDragHandle')).toHaveAttribute(
+      'aria-label',
+      'Expand chat'
+    )
+  })
+
+  it('calls onCollapse when dragged down past the threshold', () => {
+    const { getByTestId, onCollapse, onExpand } = renderHandle({})
+    const handle = getByTestId('ChatDragHandle')
+    fireEvent.mouseDown(handle, { clientY: 100 })
+    fireEvent.mouseMove(window, { clientY: 200 })
+    fireEvent.mouseUp(window)
+    expect(onCollapse).toHaveBeenCalledTimes(1)
+    expect(onExpand).not.toHaveBeenCalled()
+  })
+
+  it('calls onExpand when dragged up past the threshold', () => {
+    const { getByTestId, onCollapse, onExpand } = renderHandle({
+      collapsed: true
+    })
+    const handle = getByTestId('ChatDragHandle')
+    fireEvent.mouseDown(handle, { clientY: 200 })
+    fireEvent.mouseMove(window, { clientY: 100 })
+    fireEvent.mouseUp(window)
+    expect(onExpand).toHaveBeenCalledTimes(1)
+    expect(onCollapse).not.toHaveBeenCalled()
+  })
+
+  it('does nothing for sub-threshold movement (tap)', () => {
+    const { getByTestId, onCollapse, onExpand } = renderHandle({})
+    const handle = getByTestId('ChatDragHandle')
+    fireEvent.mouseDown(handle, { clientY: 100 })
+    fireEvent.mouseMove(window, { clientY: 110 })
+    fireEvent.mouseUp(window)
+    expect(onCollapse).not.toHaveBeenCalled()
+    expect(onExpand).not.toHaveBeenCalled()
+  })
+
+  it('toggles via Enter key', () => {
+    const { getByTestId, onCollapse, onExpand } = renderHandle({})
+    fireEvent.keyDown(getByTestId('ChatDragHandle'), { key: 'Enter' })
+    expect(onCollapse).toHaveBeenCalledTimes(1)
+    expect(onExpand).not.toHaveBeenCalled()
+  })
+
+  it('toggles via Space key when collapsed', () => {
+    const { getByTestId, onCollapse, onExpand } = renderHandle({
+      collapsed: true
+    })
+    fireEvent.keyDown(getByTestId('ChatDragHandle'), { key: ' ' })
+    expect(onExpand).toHaveBeenCalledTimes(1)
+    expect(onCollapse).not.toHaveBeenCalled()
+  })
+})

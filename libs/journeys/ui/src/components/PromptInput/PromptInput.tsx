@@ -9,6 +9,7 @@ import {
   KeyboardEvent,
   ReactElement,
   useCallback,
+  useEffect,
   useRef
 } from 'react'
 
@@ -35,6 +36,11 @@ interface PromptInputProps {
   variant?: 'inline' | 'floating'
 }
 
+// 6 lines × ~24px = 144px. Past this the textarea stops growing
+// and scrolls internally so the floating capsule can't push the
+// conversation off-screen.
+const MAX_TEXTAREA_HEIGHT_PX = 144
+
 export function PromptInput({
   input,
   onInputChange,
@@ -44,11 +50,13 @@ export function PromptInput({
   variant = 'inline'
 }: PromptInputProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const inputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
+    (e: KeyboardEvent<HTMLTextAreaElement>) => {
+      // Enter submits; Shift+Enter inserts a newline so users can
+      // compose multi-line questions.
+      if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
         if (input.trim().length > 0 && !isLoading) {
           onSubmit(e as unknown as FormEvent)
@@ -69,11 +77,21 @@ export function PromptInput({
   )
 
   const handleInputChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
+    (e: ChangeEvent<HTMLTextAreaElement>) => {
       onInputChange(e.target.value)
     },
     [onInputChange]
   )
+
+  // Auto-grow the textarea up to ~6 lines, then scroll. Reset to
+  // 'auto' first so the next measurement reflects the shrunken
+  // content (otherwise the height only ever climbs).
+  useEffect(() => {
+    const el = textareaRef.current
+    if (el == null) return
+    el.style.height = 'auto'
+    el.style.height = `${Math.min(el.scrollHeight, MAX_TEXTAREA_HEIGHT_PX)}px`
+  }, [input])
 
   const canSubmit = input.trim().length > 0
   const isFloating = variant === 'floating'
@@ -108,9 +126,9 @@ export function PromptInput({
       }}
     >
       <Box
-        component="input"
-        ref={inputRef}
-        type="text"
+        component="textarea"
+        ref={textareaRef}
+        rows={1}
         value={input}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
@@ -120,18 +138,22 @@ export function PromptInput({
         sx={{
           flex: 1,
           minWidth: 0,
-          height: '40px',
+          minHeight: '40px',
+          maxHeight: `${MAX_TEXTAREA_HEIGHT_PX}px`,
           border: 'none',
           outline: 'none',
           background: 'transparent',
           px: '14px',
+          py: '9px',
+          resize: 'none',
           // font-size >= 16px keeps iOS Safari from auto-zooming on focus
           // (regression guard from the M1 fix).
           fontSize: 16,
-          lineHeight: 'normal',
+          lineHeight: 1.375,
           fontFamily: 'inherit',
           color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
           boxSizing: 'border-box',
+          overflowY: 'auto',
           '&::placeholder': {
             color: isFloating ? 'rgba(255, 255, 255, 0.6)' : TEXT_SECONDARY,
             opacity: 1

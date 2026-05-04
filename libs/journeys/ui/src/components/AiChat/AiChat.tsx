@@ -125,20 +125,25 @@ function AssistantBubble({
   surface = 'light'
 }: AssistantBubbleProps): ReactElement {
   const { display, isComplete } = useTypewriter(text, animate, isStreaming)
+  // Panel (light) renders bubbles; overlay (dark) renders plain prose.
+  const isPlain = surface === 'dark'
   return (
     <>
-      <Message role="assistant" plain surface={surface}>
+      <Message role="assistant" plain={isPlain} surface={surface}>
         <Response content={display} />
       </Message>
-      {isComplete && text.length > 0 && <Actions content={text} plain />}
+      {isComplete && text.length > 0 && (
+        <Actions content={text} plain={isPlain} />
+      )}
     </>
   )
 }
 
 function TypingIndicator(): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   return (
     <Box
-      aria-label="Assistant is typing"
+      aria-label={t('Assistant is typing')}
       sx={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -200,11 +205,18 @@ export function AiChat({
 
   const [sessionId] = useState<string | undefined>(() => {
     if (typeof window === 'undefined') return undefined
-    const existing = window.sessionStorage.getItem('aiChat.sessionId')
-    if (existing != null && existing.length > 0) return existing
-    const fresh = uuidv4()
-    window.sessionStorage.setItem('aiChat.sessionId', fresh)
-    return fresh
+    // sessionStorage can throw in Safari private mode, sandboxed
+    // iframes, and quota-exceeded states. Fall back to a fresh UUID
+    // so the chat surface still mounts.
+    try {
+      const existing = window.sessionStorage.getItem('aiChat.sessionId')
+      if (existing != null && existing.length > 0) return existing
+      const fresh = uuidv4()
+      window.sessionStorage.setItem('aiChat.sessionId', fresh)
+      return fresh
+    } catch {
+      return uuidv4()
+    }
   })
   const sessionIdRef = useRef(sessionId)
   sessionIdRef.current = sessionId
@@ -309,7 +321,7 @@ export function AiChat({
               onExpand={handleExpand}
             />
           )}
-          {showHeader && <ChatHeader />}
+          {showHeader && <ChatHeader thinking={isLoading} />}
         </Box>
       )}
 
@@ -326,6 +338,9 @@ export function AiChat({
       >
         <Conversation
           scrollKey={messages.length}
+          // 72px = floating capsule height (44px) + bottom offset (8px) +
+          // safe-area headroom + 16px breathing room — keeps the last
+          // message clear of the absolute-positioned PromptInput below.
           bottomClearance={isPanel ? 72 : 0}
         >
           {messages.map((message, index) => {
@@ -351,7 +366,7 @@ export function AiChat({
               messages[messages.length - 1]?.role === 'user') && (
               <Message
                 role="assistant"
-                plain
+                plain={isOverlay}
                 surface={isOverlay ? 'dark' : 'light'}
               >
                 <TypingIndicator />
@@ -361,7 +376,7 @@ export function AiChat({
             <Box>
               <Message
                 role="assistant"
-                plain
+                plain={isOverlay}
                 surface={isOverlay ? 'dark' : 'light'}
               >
                 <Box component="span" sx={{ opacity: 0.7 }}>

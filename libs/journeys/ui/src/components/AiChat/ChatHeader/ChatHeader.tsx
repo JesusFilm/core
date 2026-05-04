@@ -1,6 +1,4 @@
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
@@ -15,11 +13,15 @@ import {
 } from '../tokens'
 
 interface ChatHeaderProps {
-  /** When provided renders a close button on the right (used by takeover surfaces). */
-  onClose?: () => void
+  /**
+   * When true, the sparkle avatar runs the two-beat "thinking" animation.
+   * Drive from the chat's loading/streaming state so the mark is alive
+   * while the assistant is working and at rest otherwise.
+   */
+  thinking?: boolean
 }
 
-export function ChatHeader({ onClose }: ChatHeaderProps): ReactElement {
+export function ChatHeader({ thinking = false }: ChatHeaderProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
   return (
@@ -61,17 +63,21 @@ export function ChatHeader({ onClose }: ChatHeaderProps): ReactElement {
             overflow: 'visible',
             // Two-beat "thinking" rhythm — the top and bottom halves of the
             // mark scale and tilt out of phase, like two halves in dialogue.
-            // transform-box/origin keeps each path scaling around its own
-            // centre inside the SVG coordinate space.
+            // Animation only runs while `thinking` is true so we don't burn
+            // mobile battery repainting at rest.
             '& .jfp-mark-shape': {
               transformBox: 'fill-box',
               transformOrigin: 'center'
             },
             '& .jfp-mark-top': {
-              animation: 'jfpMarkTop 1.6s ease-in-out infinite'
+              animation: thinking
+                ? 'jfpMarkTop 1.6s ease-in-out infinite'
+                : 'none'
             },
             '& .jfp-mark-bottom': {
-              animation: 'jfpMarkBottom 1.6s ease-in-out infinite'
+              animation: thinking
+                ? 'jfpMarkBottom 1.6s ease-in-out infinite'
+                : 'none'
             },
             '@keyframes jfpMarkTop': {
               '0%, 100%': {
@@ -136,21 +142,6 @@ export function ChatHeader({ onClose }: ChatHeaderProps): ReactElement {
           {t('Replies may not be perfect')}
         </Typography>
       </Box>
-      {onClose != null && (
-        <IconButton
-          onClick={onClose}
-          aria-label={t('Close chat')}
-          tabIndex={0}
-          sx={{
-            width: 28,
-            height: 28,
-            color: TEXT_SECONDARY,
-            '&:hover': { bgcolor: 'transparent', color: ASSISTANT_FG }
-          }}
-        >
-          <CloseRoundedIcon sx={{ fontSize: 16 }} />
-        </IconButton>
-      )}
     </Box>
   )
 }
