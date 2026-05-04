@@ -76,12 +76,17 @@ export function TemplateGalleryPageList(): ReactElement {
   // applies to global templates (jfp-team) rendered on the public template
   // library; team templates can be grouped into a Collection while still in
   // draft status.
-  const journeysQuery = useAdminJourneysQuery({
-    template: true,
-    teamId
-  } satisfies GetAdminJourneysVariables) as ReturnType<
-    typeof useAdminJourneysQuery
-  > & { data?: GetAdminJourneys }
+  // `cache-and-network` so newly-created templates show up without a manual
+  // page refresh — the "Make Template" mutation only writes a partial
+  // (id-only) ref into the adminJourneys cache, so a pure cache hit on
+  // re-mount would otherwise omit the new template's display fields.
+  const journeysQuery = useAdminJourneysQuery(
+    {
+      template: true,
+      teamId
+    } satisfies GetAdminJourneysVariables,
+    { fetchPolicy: 'cache-and-network' }
+  ) as ReturnType<typeof useAdminJourneysQuery> & { data?: GetAdminJourneys }
 
   const [templateGalleryPageAssignJourney] =
     useTemplateGalleryPageAssignJourneyMutation()
