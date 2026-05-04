@@ -1,7 +1,7 @@
 import Link from '@docusaurus/Link'
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext'
 import Layout from '@theme/Layout'
-import clsx from 'clsx'
+import { clsx } from 'clsx'
 import { ReactElement } from 'react'
 // eslint-disable-next-line no-restricted-imports
 import { useTranslation } from 'react-i18next'
