@@ -38,6 +38,7 @@ import {
 } from '../../../../__generated__/UpdatePlausibleJourneyFlowViewed'
 import logo from '../../../../public/taskbar-icon.svg'
 import { User } from '../../../libs/auth'
+import { getIsLocalTemplate } from '../../../libs/getIsLocalTemplate'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { NotificationPopover } from '../../NotificationPopover'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
@@ -54,6 +55,14 @@ const JourneyDetailsDialog = dynamic(
     await import(
       /* webpackChunkName: "Editor/Toolbar/JourneyDetails/JourneyDetailsDialog" */ './JourneyDetails/JourneyDetailsDialog/JourneyDetailsDialog'
     ).then((mod) => mod.JourneyDetailsDialog),
+  { ssr: false }
+)
+
+const LocalTemplateDetailsDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/Toolbar/JourneyDetails/LocalTemplateDetailsDialog" */ './JourneyDetails/LocalTemplateDetailsDialog'
+    ).then((mod) => mod.LocalTemplateDetailsDialog),
   { ssr: false }
 )
 
@@ -154,8 +163,10 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     })
   }
 
+  const isLocalTemplate = getIsLocalTemplate(journey)
+
   function handleDialogOpen(): void {
-    setRoute('journeyDetails')
+    setRoute(isLocalTemplate ? 'templateDetails' : 'journeyDetails')
     setDialogOpen(true)
   }
 
@@ -163,13 +174,10 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     setDialogOpen(false)
   }
 
-  // Determine the home href based on journey properties
-  // Local templates: template === true AND team.id !== "jfp-team" → templates tab
-  // Regular journeys: template === false → journeys tab
-  const homeHref =
-    journey?.template === true && journey?.team?.id !== 'jfp-team'
-      ? '/?type=templates'
-      : '/?type=journeys'
+  // Local templates → templates tab; everything else (regular journeys AND
+  // global templates) → journeys tab. Predicate preserved from PR #8510
+  // (commit 60c1aa36a) — global templates intentionally fall through.
+  const homeHref = isLocalTemplate ? '/?type=templates' : '/?type=journeys'
 
   return (
     <Stack
@@ -313,12 +321,18 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                 </Button>
               </Tooltip>
             </Box>
-            {dialogOpen != null && (
-              <JourneyDetailsDialog
-                open={dialogOpen}
-                onClose={handleDialogClose}
-              />
-            )}
+            {dialogOpen != null &&
+              (isLocalTemplate ? (
+                <LocalTemplateDetailsDialog
+                  open={dialogOpen}
+                  onClose={handleDialogClose}
+                />
+              ) : (
+                <JourneyDetailsDialog
+                  open={dialogOpen}
+                  onClose={handleDialogClose}
+                />
+              ))}
           </Stack>
         ) : (
           <Stack flexGrow={1}>
