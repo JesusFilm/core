@@ -11,7 +11,7 @@ import Tooltip from '@mui/material/Tooltip'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, Suspense, useState } from 'react'
 
 import Bag5Icon from '@core/shared/ui/icons/Bag5'

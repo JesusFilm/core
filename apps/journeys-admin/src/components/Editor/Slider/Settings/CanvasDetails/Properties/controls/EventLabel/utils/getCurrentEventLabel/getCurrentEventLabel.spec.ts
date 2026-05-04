@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 

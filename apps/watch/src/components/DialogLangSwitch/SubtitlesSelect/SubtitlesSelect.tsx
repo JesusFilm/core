@@ -1,5 +1,5 @@
 import { Captions } from 'lucide-react'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useId, useMemo } from 'react'
 
 import { Switch } from '@core/shared/ui-modern/components'
