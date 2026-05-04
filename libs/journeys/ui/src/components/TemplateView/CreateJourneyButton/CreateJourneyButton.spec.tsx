@@ -1068,10 +1068,6 @@ describe('CreateJourneyButton', () => {
       )
     }
 
-    beforeEach(() => {
-      window.sessionStorage.clear()
-    })
-
     it('pre-fills the team dropdown with the active team when the source is a team template', async () => {
       renderWithJourney({
         ...journey,

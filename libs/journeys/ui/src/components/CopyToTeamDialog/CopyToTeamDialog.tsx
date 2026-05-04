@@ -41,12 +41,7 @@ interface CopyToTeamDialogProps {
   isTranslating?: boolean
   journeyIsTemplate?: boolean
   journeyFromTemplateId?: string | null
-  /**
-   * When true, the team dropdown defaults to the user's active team
-   * (`useTeam().activeTeam`) on open. Falls back to the existing
-   * single-team / empty default when the active team can't be resolved.
-   * Off by default so flows like "Copy to ..." still force an explicit pick.
-   */
+  // When true, the team dropdown defaults to the user's active team.
   defaultToActiveTeam?: boolean
 }
 

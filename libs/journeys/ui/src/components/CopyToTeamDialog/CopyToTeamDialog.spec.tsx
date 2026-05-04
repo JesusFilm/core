@@ -828,6 +828,10 @@ describe('CopyToTeamDialog', () => {
   })
 
   describe('defaultToActiveTeam prop', () => {
+    // Distinct team IDs ('team-a'/'team-b') vs the rest of this file ('teamId').
+    // Without this, an earlier test's setActiveTeam('teamId') leaks into
+    // TeamProvider via sessionStorage and the null-active-team case below
+    // resolves to a real team instead of null.
     beforeEach(() => {
       window.sessionStorage.clear()
     })
