@@ -12,6 +12,12 @@ import {
   useState
 } from 'react'
 
+import {
+  SCROLL_PILL_SHADOW,
+  SCROLLBAR_THUMB,
+  SCROLLBAR_THUMB_HOVER
+} from '../AiChat/chatStyles'
+
 interface ConversationProps {
   children: ReactNode
   /**
@@ -136,7 +142,7 @@ export function Conversation({
           display: 'flex',
           flexDirection: 'column',
           scrollbarWidth: 'thin',
-          scrollbarColor: 'rgba(128, 128, 128, 0.5) transparent',
+          scrollbarColor: `${SCROLLBAR_THUMB} transparent`,
           '&::-webkit-scrollbar': {
             width: 8
           },
@@ -144,13 +150,13 @@ export function Conversation({
             backgroundColor: 'transparent'
           },
           '&::-webkit-scrollbar-thumb': {
-            backgroundColor: 'rgba(128, 128, 128, 0.5)',
+            backgroundColor: SCROLLBAR_THUMB,
             borderRadius: 9999,
             border: '2px solid transparent',
             backgroundClip: 'padding-box'
           },
           '&::-webkit-scrollbar-thumb:hover': {
-            backgroundColor: 'rgba(128, 128, 128, 0.7)'
+            backgroundColor: SCROLLBAR_THUMB_HOVER
           }
         }}
       >
@@ -186,7 +192,7 @@ export function Conversation({
             color: 'grey.900',
             border: '1px solid',
             borderColor: 'grey.200',
-            boxShadow: '0 4px 12px rgba(38,38,46,0.12)',
+            boxShadow: SCROLL_PILL_SHADOW,
             '&:hover': { bgcolor: 'common.white' }
           }}
         >

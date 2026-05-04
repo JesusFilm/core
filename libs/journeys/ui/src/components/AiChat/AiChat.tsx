@@ -24,7 +24,7 @@ import { PromptInput } from '../PromptInput'
 import { Response } from '../Response'
 
 import { ChatHeader } from './ChatHeader'
-import { HEADER_WASH } from './chatStyles'
+import { HEADER_WASH, OVERLAY_FG_RETRY, SHEET_BOTTOM_FADE } from './chatStyles'
 import { DragHandle } from './DragHandle'
 
 interface AiChatProps {
@@ -390,9 +390,7 @@ export function AiChat({
                   aria-label={t('Retry')}
                   sx={{
                     fontSize: 12,
-                    color: isOverlay
-                      ? 'rgba(255, 255, 255, 0.7)'
-                      : 'text.secondary',
+                    color: isOverlay ? OVERLAY_FG_RETRY : 'text.secondary',
                     minWidth: 0
                   }}
                 >
@@ -415,8 +413,7 @@ export function AiChat({
             height: 140,
             pointerEvents: 'none',
             zIndex: 1,
-            background:
-              'linear-gradient(to bottom, rgba(38, 38, 46, 0) 0%, rgba(38, 38, 46, 0.04) 50%, rgba(38, 38, 46, 0.08) 100%)',
+            background: SHEET_BOTTOM_FADE,
             opacity: sheetState === 'collapsed' ? 0 : 1,
             transition: 'opacity 200ms ease-out'
           }}

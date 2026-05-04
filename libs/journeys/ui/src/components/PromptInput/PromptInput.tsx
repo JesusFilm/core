@@ -13,6 +13,17 @@ import {
   useRef
 } from 'react'
 
+import {
+  OVERLAY_FG_MUTED,
+  OVERLAY_FILL_LOW,
+  OVERLAY_INPUT_BG,
+  OVERLAY_INPUT_BORDER,
+  OVERLAY_INPUT_SHADOW,
+  PANEL_INPUT_BG,
+  PANEL_INPUT_BORDER,
+  PANEL_INPUT_SHADOW
+} from '../AiChat/chatStyles'
+
 interface PromptInputProps {
   input: string
   onInputChange: (value: string) => void
@@ -103,18 +114,13 @@ export function PromptInput({
         pl: 0.75,
         pr: 1.5,
         py: 0.75,
-        bgcolor: isFloating
-          ? 'rgba(38, 38, 46, 0.78)'
-          : 'rgba(255, 255, 255, 0.96)',
+        bgcolor: isFloating ? OVERLAY_INPUT_BG : PANEL_INPUT_BG,
         backdropFilter: 'blur(20px) saturate(180%)',
         WebkitBackdropFilter: 'blur(20px) saturate(180%)',
         borderRadius: 9999,
-        border: isFloating
-          ? '1px solid rgba(255, 255, 255, 0.12)'
-          : '1px solid rgba(38, 38, 46, 0.12)',
-        boxShadow: isFloating
-          ? '0 10px 30px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1)'
-          : '0 6px 18px rgba(38, 38, 46, 0.16), 0 1px 3px rgba(38, 38, 46, 0.10)'
+        border: '1px solid',
+        borderColor: isFloating ? OVERLAY_INPUT_BORDER : PANEL_INPUT_BORDER,
+        boxShadow: isFloating ? OVERLAY_INPUT_SHADOW : PANEL_INPUT_SHADOW
       }}
     >
       <Box
@@ -147,7 +153,7 @@ export function PromptInput({
           boxSizing: 'border-box',
           overflowY: 'auto',
           '&::placeholder': {
-            color: isFloating ? 'rgba(255, 255, 255, 0.6)' : 'grey.700',
+            color: isFloating ? OVERLAY_FG_MUTED : 'grey.700',
             opacity: 1
           },
           '&:focus': { outline: 'none' },
@@ -184,23 +190,23 @@ export function PromptInput({
             bgcolor: canSubmit
               ? 'grey.700'
               : isFloating
-                ? 'rgba(255, 255, 255, 0.18)'
+                ? OVERLAY_FILL_LOW
                 : 'grey.200',
             color: canSubmit
               ? 'common.white'
               : isFloating
-                ? 'rgba(255, 255, 255, 0.6)'
+                ? OVERLAY_FG_MUTED
                 : 'grey.700',
             '&:hover': {
               bgcolor: canSubmit
                 ? 'grey.700'
                 : isFloating
-                  ? 'rgba(255, 255, 255, 0.18)'
+                  ? OVERLAY_FILL_LOW
                   : 'grey.200'
             },
             '&.Mui-disabled': {
-              bgcolor: isFloating ? 'rgba(255, 255, 255, 0.18)' : 'grey.200',
-              color: isFloating ? 'rgba(255, 255, 255, 0.6)' : 'grey.700'
+              bgcolor: isFloating ? OVERLAY_FILL_LOW : 'grey.200',
+              color: isFloating ? OVERLAY_FG_MUTED : 'grey.700'
             }
           }}
         >
