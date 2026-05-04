@@ -1,16 +1,16 @@
 ---
-title: 'feat: Default Copy To Team Dialog to the active team'
+title: 'feat: Default Copy To Team Dialog to the active team for team-template Use This Template flow'
 type: feat
 status: active
 date: 2026-04-24
 linear: NES-1601
 ---
 
-# feat: Default Copy To Team Dialog to the active team
+# feat: Default Copy To Team Dialog to the active team (team-template Use This Template flow only)
 
 ## Overview
 
-When a user clicks **Use this Template** on a **TEAM Template** (or duplicates a journey) a shared `CopyToTeamDialog` opens. The team dropdown starts empty when the user has >1 team, forcing them to pick a team even though they are almost always copying into the team they are currently on. Default that dropdown to the user's **active team** (`useTeam().activeTeam`) so the common case becomes a single-click confirmation.
+When a user clicks **Use This Template** on a **TEAM Template** (the "Add Journey to Team" dialog opened by `CreateJourneyButton`), pre-fill the team selector with the user's **active team** so the common case becomes a single-click confirmation. Other flows that share `CopyToTeamDialog` ("Copy to ...", "Duplicate") keep their existing empty default.
 
 The change is **client-only**. No `api-journeys` changes. The existing `JourneyDuplicate` mutation already accepts `teamId` from the client.
 
@@ -27,22 +27,27 @@ The `TeamProvider` (`libs/journeys/ui/src/components/TeamProvider/TeamProvider.t
 
 ## Proposed Solution
 
-In `libs/journeys/ui/src/components/CopyToTeamDialog/CopyToTeamDialog.tsx`:
+Three coordinated changes:
 
-1. Destructure `activeTeam` alongside the existing `query`/`setActiveTeam` pull from `useTeam()` (line 92).
-2. Change the Formik `initialValues.teamSelect` (line 173) from `teams.length === 1 ? teams[0].id : ''` to `activeTeam?.id ?? (teams.length === 1 ? teams[0].id : '')`.
-3. `enableReinitialize` is already enabled (line 177), so Formik re-initializes when `activeTeam` resolves from the async `GetLastActiveTeamIdAndTeams` query. No extra `useEffect`/`reset()` plumbing is needed.
+1. **`libs/journeys/ui/src/components/CopyToTeamDialog/CopyToTeamDialog.tsx`** — add an opt-in `defaultToActiveTeam?: boolean` prop. When `true`, `initialValues.teamSelect` resolves to `activeTeam?.id` (from `useTeam()`) before falling back to today's `teams.length === 1 ? teams[0].id : ''`. When `false` (the default), behaviour is unchanged. `enableReinitialize` is already on, so Formik re-initializes cleanly when `activeTeam` resolves from the async `GetLastActiveTeamIdAndTeams` query.
 
-### Why scope the change to "all uses of the dialog" rather than "team templates only"
+2. **`libs/journeys/ui/src/components/TemplateView/CreateJourneyButton/CreateJourneyButton.tsx`** — extend the local `JourneyForTemplate` interface to carry `team?: { id: string } | null`, then pass `defaultToActiveTeam={journeyDataToUse?.team != null && journeyDataToUse.team.id !== 'jfp-team'}` to the dialog. This mirrors the `isLocalTemplate` definition in `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/DefaultMenu/DefaultMenu.tsx:196-197` so the discriminator is consistent across the app.
 
-The dialog is reused by:
+3. **`apps/journeys-admin/src/components/Team/CopyToTeamMenuItem/CopyToTeamMenuItem.tsx`** and **`apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/DuplicateJourneyMenuItem/DuplicateJourneyMenuItem.tsx`** — **no change**. Their flows keep the empty default.
 
-- `apps/journeys-admin/src/components/Team/CopyToTeamMenuItem/CopyToTeamMenuItem.tsx` — copy template to team (works for both team templates and global templates)
-- `apps/journeys-admin/src/components/**/DuplicateJourneyMenuItem` — duplicate journey
+### Why narrow the scope to the team-template "Use This Template" flow only
 
-In every invocation the user is asking _"which team do I want this in?"_ and the correct presumptive answer is _"the team I am currently working in"_. Conditionally defaulting only for team templates would (a) require a new prop to carry "this is a team template" down to the dialog (the dialog currently has no signal for this — `journeyIsTemplate` is true for both team and global templates), and (b) leave global-template and duplicate flows with an unnecessarily empty dropdown. A single unconditional default is both simpler and better UX.
+`CopyToTeamDialog` is reused by three production callers:
 
-If the reviewer disagrees and wants the narrow scope only, the alternative in **Alternative Approaches Considered** describes the extra prop plumbing required.
+- `CreateJourneyButton` ("Use This Template" button or menu-item, dialog title `Add Journey to Team`) — Lucinda's specific complaint; pre-filling the active team is exactly what she asked for when the source is a team template.
+- `CopyToTeamMenuItem` ("Copy to ..." menu, dialog title `Copy to Another Team`) — semantically a *cross-team* copy. The empty default forces the user to pick deliberately, which is the right UX for "moving content elsewhere". Pre-filling the active team here would mask the intent.
+- `DuplicateJourneyMenuItem` ("Duplicate" menu) — only opens the dialog when `activeTeam === null` (Shared with me view). Pre-filling active team is a no-op in that branch.
+
+Pre-filling unconditionally would change the "Copy to ..." menu's UX without that being requested. The `defaultToActiveTeam` prop lets `CreateJourneyButton` opt in, leaves the other two flows untouched, and adds two lines of caller logic.
+
+### Why discriminate on `team.id !== 'jfp-team'`
+
+Both team templates and global JFP templates render through the same `CreateJourneyButton`. Lucinda's request specifically calls out team templates (`"since it is a team template, most likely you will be using it on the same team"`), and didn't ask for behaviour change on global templates. The `team.id !== 'jfp-team'` check matches `DefaultMenu.isLocalTemplate` so the condition is consistent with how the rest of the app distinguishes the two.
 
 ### Why no backend changes
 
@@ -65,15 +70,19 @@ The `JourneyDuplicate` mutation (`libs/journeys/ui/src/libs/useJourneyDuplicateM
 
 ## Acceptance Criteria
 
-- [ ] `libs/journeys/ui/src/components/CopyToTeamDialog/CopyToTeamDialog.tsx` reads `activeTeam` from `useTeam()`.
-- [ ] `initialValues.teamSelect` defaults to `activeTeam?.id` when truthy, else falls back to the existing `teams.length === 1 ? teams[0].id : ''`.
-- [ ] When a multi-team user opens the dialog and has an `activeTeam`, the **Select Team** combobox already shows that team's title.
-- [ ] When a multi-team user opens the dialog and `activeTeam` is `null` (shared view), the combobox is empty — same as today.
-- [ ] Single-team users see no behavior change.
+- [ ] `CopyToTeamDialog` accepts a `defaultToActiveTeam?: boolean` prop; when `true` the team selector defaults to `useTeam().activeTeam?.id` before falling back to today's behaviour; when omitted/`false` behaviour is unchanged.
+- [ ] `CreateJourneyButton` passes `defaultToActiveTeam` based on `journeyDataToUse?.team != null && journeyDataToUse.team.id !== 'jfp-team'`.
+- [ ] Multi-team user clicking **Use This Template** on a team template → the **Select Team** combobox is pre-filled with the active team.
+- [ ] Multi-team user clicking **Use This Template** on a global JFP template → the combobox stays empty (no behaviour change for global templates).
+- [ ] Multi-team user clicking the **Copy to ...** menu item on any journey/template → the combobox stays empty (no behaviour change).
+- [ ] Multi-team user clicking **Duplicate** on a journey while on a team → no dialog opens (behaviour unchanged).
+- [ ] Multi-team user clicking **Duplicate** on a journey while in the Shared view → dialog opens with empty selector (behaviour unchanged).
+- [ ] Single-team users see no behaviour change in any flow.
 - [ ] No changes to `api-journeys` or any other backend.
-- [ ] `CopyToTeamDialog.spec.tsx` updated to cover: (1) multi-team user with `activeTeam` → combobox pre-filled, (2) multi-team user with `activeTeam` null → empty, (3) existing "only 1 team" behavior preserved.
-- [ ] Existing `CopyToTeamDialog.spec.tsx` and `CopyToTeamMenuItem.spec.tsx` suites still pass (may need small mock adjustments for `lastActiveTeamId`).
-- [ ] Lint passes (`nx lint journeys-ui`) and typecheck passes (`nx typecheck journeys-ui`).
+- [ ] `CopyToTeamDialog.spec.tsx` covers: (1) flag on + active team resolved → pre-fill, (2) flag on + active team null → empty, (3) flag off + active team resolved → empty (existing behaviour).
+- [ ] `CreateJourneyButton.spec.tsx` covers: (1) team template (`team.id !== 'jfp-team'`) → combobox pre-filled, (2) global JFP template (`team.id === 'jfp-team'`) → empty, (3) `team: null` → empty.
+- [ ] Existing `CopyToTeamDialog.spec.tsx`, `CopyToTeamMenuItem.spec.tsx`, `DuplicateJourneyMenuItem.spec.tsx`, and `TemplateView` suites still pass.
+- [ ] Lint passes (`nx lint journeys-ui`) and typecheck passes (`nx type-check journeys-ui`).
 
 ## Success Metrics
 
@@ -88,59 +97,73 @@ The `JourneyDuplicate` mutation (`libs/journeys/ui/src/libs/useJourneyDuplicateM
 
 ## Alternative Approaches Considered
 
-1. **Narrow to team templates only.** Would require passing a new `sourceJourneyTeamId` prop (or similar) from `CopyToTeamMenuItem` down to the dialog so it could toggle default behavior. Rejected: the broader default is strictly better UX in all call sites, and adding a prop purely to gate behavior adds dead weight.
+1. **Default unconditionally inside `CopyToTeamDialog`.** Earlier draft of this plan; rejected after a closer reading of Lucinda's ask and the "Copy to ..." menu's semantics. That approach silently changed the cross-team copy flow without that being requested.
 2. **Default to `journey.team.id` (team that _owns_ the template) rather than `activeTeam.id`.** Rejected: Lucinda's ask is explicitly _"the team you are on"_, which is `activeTeam`. For team templates these usually coincide, but `activeTeam` is the true signal for "where the user is working right now."
 3. **Move the default logic into `CopyToTeamMenuItem` / `DuplicateJourneyMenuItem` instead of the dialog.** Rejected: the dialog is the lowest common point for both call sites, and the logic is a one-liner — centralising in the dialog avoids duplication.
 4. **Backend change: have `JourneyDuplicate` infer `teamId` from the authenticated user's last active team if omitted.** Rejected: scope creep, requires a migration of the mutation input type, and the client already knows the answer.
 
 ## Implementation Plan
 
-Single pass, single commit:
+1. **Add prop to `CopyToTeamDialog`** (`libs/journeys/ui/src/components/CopyToTeamDialog/CopyToTeamDialog.tsx`):
+   - Add `defaultToActiveTeam?: boolean` to `CopyToTeamDialogProps` (defaults to `false`).
+   - Destructure `activeTeam` from `useTeam()`.
+   - Change `initialValues.teamSelect` to `(defaultToActiveTeam ? activeTeam?.id : undefined) ?? (teams.length === 1 ? teams[0].id : '')`.
 
-1. **Edit dialog** (`libs/journeys/ui/src/components/CopyToTeamDialog/CopyToTeamDialog.tsx`):
-   - Line 92: destructure `activeTeam` alongside `query`, `setActiveTeam`.
-   - Line 173: replace `teamSelect: teams.length === 1 ? teams[0].id : ''` with `teamSelect: activeTeam?.id ?? (teams.length === 1 ? teams[0].id : '')`.
+2. **Wire `CreateJourneyButton`** (`libs/journeys/ui/src/components/TemplateView/CreateJourneyButton/CreateJourneyButton.tsx`):
+   - Extend `JourneyForTemplate` to include `team?: { id: string } | null`.
+   - Pass `defaultToActiveTeam={journeyDataToUse?.team != null && journeyDataToUse.team.id !== 'jfp-team'}` to `CopyToTeamDialog`.
 
-2. **Update tests** (`libs/journeys/ui/src/components/CopyToTeamDialog/CopyToTeamDialog.spec.tsx`):
-   - Add a test: "defaults to active team when user has multiple teams and a last active team" — mock `GetLastActiveTeamIdAndTeams` with two teams and `lastActiveTeamId: 'teamId2'`, assert the combobox shows `'Team Name Two'`.
-   - Add a test: "defaults to empty when user has multiple teams and activeTeam is null" — mock with two teams and `lastActiveTeamId: null`, assert the combobox value is empty. (May need to mock session storage to avoid stale data leaking between tests.)
-   - Existing single-team test remains unchanged.
+3. **Update `CopyToTeamDialog.spec.tsx`**:
+   - Three tests in a `defaultToActiveTeam prop` block: flag-on + active team resolved, flag-on + null active team, flag-off + active team resolved.
+   - `beforeEach` clears `window.sessionStorage` to keep `TeamProvider` resolution clean across tests.
 
-3. **Run tests for the library:**
+4. **Update `CreateJourneyButton.spec.tsx`**:
+   - Three tests in a `defaultToActiveTeam wiring` block, each rendering `CreateJourneyButton` inside `<TeamProvider>` with a multi-team `GetLastActiveTeamIdAndTeams` mock and a different journey shape: `team.id !== 'jfp-team'` (pre-fill expected), `team.id === 'jfp-team'` (no pre-fill), `team: null` (no pre-fill). Each test inlines its own mocks because the outer `jest.clearAllMocks()` `beforeEach` resets `jest.fn()` implementations.
+
+5. **No changes** to `CopyToTeamMenuItem` or `DuplicateJourneyMenuItem`.
+
+6. **Run tests:**
 
    ```bash
    npx jest --config libs/journeys/ui/jest.config.ts --no-coverage \
      'libs/journeys/ui/src/components/CopyToTeamDialog'
-   ```
-
-4. **Run caller tests to confirm no regression:**
-
-   ```bash
+   npx jest --config libs/journeys/ui/jest.config.ts --no-coverage \
+     'libs/journeys/ui/src/components/TemplateView/CreateJourneyButton'
    npx jest --config apps/journeys-admin/jest.config.ts --no-coverage \
      'apps/journeys-admin/src/components/Team/CopyToTeamMenuItem'
+   npx jest --config apps/journeys-admin/jest.config.ts --no-coverage \
+     'apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/DuplicateJourneyMenuItem'
    ```
 
-5. **Lint & typecheck** the affected library: `npx nx lint journeys-ui && npx nx typecheck journeys-ui`.
+7. **Lint & typecheck** the affected library:
+
+   ```bash
+   npx nx lint journeys-ui
+   npx nx type-check journeys-ui
+   ```
 
 ## Test Plan (manual)
 
-| #   | Setup                                                                                                                                                              | Expect                                                                             |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| 1   | Log in as a user with ≥2 teams. Switch active team to Team A. Navigate to _Templates_ → open any team template → click **Use this Template** → (customize → Copy). | Team dropdown pre-selects **Team A**.                                              |
-| 2   | Same as #1 but switch active team to the "Shared with me" view (`activeTeam === null`).                                                                            | Team dropdown is empty, user must pick.                                            |
-| 3   | Same as #1 but use a _global_ (JFP) template.                                                                                                                      | Team dropdown pre-selects **Team A** (same improved behavior, acknowledged scope). |
-| 4   | Log in as a user with exactly one team. Repeat #1.                                                                                                                 | Team dropdown pre-selects the single team (unchanged behavior).                    |
-| 5   | Open any journey's **Duplicate** menu item while on Team A.                                                                                                        | Team dropdown pre-selects **Team A** (improved behavior in duplicate flow).        |
+| #   | Setup                                                                                                                                                                       | Expect                                                                                                                                       |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Log in as a user with ≥2 teams. Switch active team to Team A. From the home `?type=templates` view (Team Templates tab), click ⋮ on a team template → click **Use This Template**. | Team dropdown pre-selects **Team A** in the *Add Journey to Team* dialog.                                                                    |
+| 2   | From Scenario 1's state, navigate to a global JFP template (e.g. `/templates`) and click ⋮ → **Use This Template**.                                                          | Team dropdown is empty (unchanged behaviour for global templates).                                                                            |
+| 3   | Open any journey's ⋮ menu and click **Copy to ...**.                                                                                                                          | Team dropdown is empty (unchanged behaviour for cross-team copy).                                                                             |
+| 4   | While active team is Team A, open any journey's ⋮ menu and click **Duplicate**.                                                                                              | Journey is duplicated directly onto Team A; no dialog appears (unchanged behaviour).                                                          |
+| 5   | Switch active team to **Shared with me**, then on a journey shared with you click ⋮ → **Duplicate**.                                                                          | The *Copy to Another Team* dialog opens with an empty selector (unchanged behaviour).                                                          |
+| 6   | Log in as a user with exactly one team. Repeat #1.                                                                                                                           | Team dropdown is pre-selected with that single team (unchanged behaviour).                                                                     |
 
 ## Sources & References
 
 ### Internal references
 
-- `libs/journeys/ui/src/components/CopyToTeamDialog/CopyToTeamDialog.tsx:92,173,177` — dialog default value and `enableReinitialize`.
+- `libs/journeys/ui/src/components/CopyToTeamDialog/CopyToTeamDialog.tsx` — dialog now accepts `defaultToActiveTeam` and uses `useTeam().activeTeam` only when the flag is on.
+- `libs/journeys/ui/src/components/TemplateView/CreateJourneyButton/CreateJourneyButton.tsx` — sets `defaultToActiveTeam` based on the source template's team.
 - `libs/journeys/ui/src/components/TeamProvider/TeamProvider.tsx:36,221-224` — `useTeam()` hook and `activeTeam` derivation.
 - `libs/journeys/ui/src/libs/useJourneyDuplicateMutation/useJourneyDuplicateMutation.ts:13-29` — mutation signature confirming client controls `teamId`.
-- `apps/journeys-admin/src/components/Team/CopyToTeamMenuItem/CopyToTeamMenuItem.tsx` — template copy caller.
-- `libs/journeys/ui/src/components/CopyToTeamDialog/CopyToTeamDialog.spec.tsx` — existing unit tests.
+- `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/DefaultMenu/DefaultMenu.tsx:196-197` — `isLocalTemplate` definition we mirror in `CreateJourneyButton`.
+- `apps/journeys-admin/src/components/Team/CopyToTeamMenuItem/CopyToTeamMenuItem.tsx` — "Copy to ..." caller; intentionally untouched.
+- `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/DuplicateJourneyMenuItem/DuplicateJourneyMenuItem.tsx` — "Duplicate" caller; intentionally untouched.
 
 ### External references
 

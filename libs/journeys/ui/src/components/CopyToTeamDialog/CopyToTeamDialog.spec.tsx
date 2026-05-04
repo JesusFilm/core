@@ -827,14 +827,18 @@ describe('CopyToTeamDialog', () => {
     })
   })
 
-  describe('default team selection from active team', () => {
+  describe('defaultToActiveTeam prop', () => {
     beforeEach(() => {
       window.sessionStorage.clear()
     })
 
-    function renderWithLastActiveTeam(
+    function renderWithDefaultToActiveTeam({
+      defaultToActiveTeam,
+      lastActiveTeamId
+    }: {
+      defaultToActiveTeam?: boolean
       lastActiveTeamId: string | null
-    ): ReturnType<typeof render> & { queryResult: jest.Mock } {
+    }): ReturnType<typeof render> & { queryResult: jest.Mock } {
       const queryResult = jest.fn(() => ({
         data: {
           teams: [
@@ -869,6 +873,7 @@ describe('CopyToTeamDialog', () => {
                   title="Copy To Journey"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
+                  defaultToActiveTeam={defaultToActiveTeam}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -878,8 +883,11 @@ describe('CopyToTeamDialog', () => {
       return { ...utils, queryResult }
     }
 
-    it('should default the team dropdown to the active team when the user has multiple teams', async () => {
-      const { getByRole, queryResult } = renderWithLastActiveTeam('team-b')
+    it('defaults the team dropdown to the active team when the flag is on and the user has multiple teams', async () => {
+      const { getByRole, queryResult } = renderWithDefaultToActiveTeam({
+        defaultToActiveTeam: true,
+        lastActiveTeamId: 'team-b'
+      })
       await waitFor(() => expect(queryResult).toHaveBeenCalled())
       await waitFor(() =>
         expect(
@@ -888,8 +896,21 @@ describe('CopyToTeamDialog', () => {
       )
     })
 
-    it('should leave the team dropdown empty when the user has multiple teams and no active team', async () => {
-      const { getByRole, queryResult } = renderWithLastActiveTeam(null)
+    it('leaves the team dropdown empty when the flag is on but the user has no active team', async () => {
+      const { getByRole, queryResult } = renderWithDefaultToActiveTeam({
+        defaultToActiveTeam: true,
+        lastActiveTeamId: null
+      })
+      await waitFor(() => expect(queryResult).toHaveBeenCalled())
+      const teamSelect = getByRole('combobox', { name: 'Select Team' })
+      expect(teamSelect).not.toHaveTextContent('Team A')
+      expect(teamSelect).not.toHaveTextContent('Team B')
+    })
+
+    it('leaves the team dropdown empty when the flag is off, even if an active team is resolved', async () => {
+      const { getByRole, queryResult } = renderWithDefaultToActiveTeam({
+        lastActiveTeamId: 'team-b'
+      })
       await waitFor(() => expect(queryResult).toHaveBeenCalled())
       const teamSelect = getByRole('combobox', { name: 'Select Team' })
       expect(teamSelect).not.toHaveTextContent('Team A')

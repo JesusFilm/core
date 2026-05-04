@@ -41,6 +41,13 @@ interface CopyToTeamDialogProps {
   isTranslating?: boolean
   journeyIsTemplate?: boolean
   journeyFromTemplateId?: string | null
+  /**
+   * When true, the team dropdown defaults to the user's active team
+   * (`useTeam().activeTeam`) on open. Falls back to the existing
+   * single-team / empty default when the active team can't be resolved.
+   * Off by default so flows like "Copy to ..." still force an explicit pick.
+   */
+  defaultToActiveTeam?: boolean
 }
 
 interface JourneyLanguage {
@@ -86,7 +93,8 @@ export function CopyToTeamDialog({
   translationProgress,
   isTranslating = false,
   journeyIsTemplate,
-  journeyFromTemplateId
+  journeyFromTemplateId,
+  defaultToActiveTeam = false
 }: CopyToTeamDialogProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { query, setActiveTeam, activeTeam } = useTeam()
@@ -170,7 +178,9 @@ export function CopyToTeamDialog({
   return (
     <Formik<FormValues>
       initialValues={{
-        teamSelect: activeTeam?.id ?? (teams.length === 1 ? teams[0].id : ''),
+        teamSelect:
+          (defaultToActiveTeam ? activeTeam?.id : undefined) ??
+          (teams.length === 1 ? teams[0].id : ''),
         languageSelect: undefined,
         showTranslation: false
       }}
