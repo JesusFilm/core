@@ -186,6 +186,7 @@ nx run-many -t codegen
 ```
 
 **Commit all three regenerated supergraph files** alongside the SDL/Pothos sources:
+
 - `apis/api-journeys/schema.graphql`
 - `apis/api-journeys-modern/schema.graphql`
 - `apis/api-gateway/schema.graphql`
@@ -347,12 +348,12 @@ Reordering risks: migrate-after-API → Prisma errors on missing columns; gatewa
 
 ### Monitoring (first hour, then +4h, +24h)
 
-| Signal | Source | Alert if |
-|---|---|---|
-| `cardBlockUpdate` mutation 5xx rate | api-journeys-modern logs / Datadog | > 0.5 % over 5 min |
-| Gateway composition errors | api-gateway startup logs | any occurrence |
-| Prisma error rate `column does not exist` | api-journeys + api-journeys-modern logs | any occurrence (deploy-order violation) |
-| Chat-button render count on the 7 legacy journeys | GTM `chat_button_visible` | drops > 5 % vs 24h prior baseline (this ticket should be invisible to users — any drop indicates a regression) |
+| Signal                                            | Source                                  | Alert if                                                                                                       |
+| ------------------------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `cardBlockUpdate` mutation 5xx rate               | api-journeys-modern logs / Datadog      | > 0.5 % over 5 min                                                                                             |
+| Gateway composition errors                        | api-gateway startup logs                | any occurrence                                                                                                 |
+| Prisma error rate `column does not exist`         | api-journeys + api-journeys-modern logs | any occurrence (deploy-order violation)                                                                        |
+| Chat-button render count on the 7 legacy journeys | GTM `chat_button_visible`               | drops > 5 % vs 24h prior baseline (this ticket should be invisible to users — any drop indicates a regression) |
 
 ## Sources & References
 
