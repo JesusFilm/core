@@ -9,12 +9,6 @@ const { i18n } = require('./next-i18next.config')
 const nextConfig = {
   nx: {},
   i18n,
-  serverExternalPackages: [
-    '@emotion/react',
-    '@emotion/styled',
-    '@emotion/cache',
-    '@emotion/server'
-  ],
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
