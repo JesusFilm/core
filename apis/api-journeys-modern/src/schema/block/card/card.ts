@@ -55,16 +55,14 @@ themeMode from journey`,
 themeName from journey`,
       resolve: (block) => block.themeName as PrismaThemeName | null
     }),
-    showAssistant: t.boolean({
+    showAssistant: t.exposeBoolean('showAssistant', {
       nullable: true,
-      description: 'When true, this card displays the AI chat button.',
-      resolve: (block) => block.showAssistant
+      description: 'When true, this card displays the AI chat button.'
     }),
-    expandChatByDefault: t.boolean({
+    expandChatByDefault: t.exposeBoolean('expandChatByDefault', {
       nullable: true,
       description:
-        'When true, the chat drawer auto-opens on first visit to this card.',
-      resolve: (block) => block.expandChatByDefault
+        'When true, the chat drawer auto-opens on first visit to this card.'
     })
   })
 })
