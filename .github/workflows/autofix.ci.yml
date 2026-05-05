@@ -13,14 +13,14 @@ jobs:
     # Two load-bearing contracts from .claude/skills/sync-ce/SKILL.md:
     #   1. PR branch name contains `-chore-ce-sync-` — used on `pull_request` events
     #      where `github.head_ref` carries the original branch.
-    #   2. PR commit message contains `sync compound-engineering` — used on
-    #      `merge_group` events where `github.head_ref` is empty and
+    #   2. PR commit message contains `sync compound-engineering skills and agents` —
+    #      used on `merge_group` events where `github.head_ref` is empty and
     #      `merge_group.head_ref` resolves to the readonly queue ref, not the
     #      original branch. The squashed merge commit on the queue keeps the
     #      PR title prefix, so we match against the head commit's message.
     if: >-
       ${{ !contains(github.head_ref, '-chore-ce-sync-') &&
-          !contains(github.event.merge_group.head_commit.message, 'sync compound-engineering') }}
+          !contains(github.event.merge_group.head_commit.message, 'sync compound-engineering skills and agents') }}
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
