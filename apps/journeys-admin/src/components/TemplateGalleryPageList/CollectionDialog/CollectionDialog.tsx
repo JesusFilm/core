@@ -1,11 +1,20 @@
 import { ApolloError } from '@apollo/client'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import RemoveIcon from '@mui/icons-material/Remove'
 import Autocomplete from '@mui/material/Autocomplete'
+import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import ButtonBase from '@mui/material/ButtonBase'
 import Chip from '@mui/material/Chip'
+import Collapse from '@mui/material/Collapse'
+import Drawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik, FormikHelpers } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
@@ -13,6 +22,8 @@ import { ReactElement, useState } from 'react'
 import { array, object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../__generated__/BlockFields'
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
@@ -46,6 +57,15 @@ interface FormValues {
   slug: string
   journeyIds: string[]
 }
+
+// Matches the Figma "Editor / Subtitle/2" type token on section headers.
+const SECTION_HEADER = {
+  fontFamily: 'Montserrat, sans-serif',
+  fontWeight: 600,
+  fontSize: 16,
+  lineHeight: '24px',
+  color: '#444451'
+} as const
 
 function sameIds(a: readonly string[], b: readonly string[]): boolean {
   if (a.length !== b.length) return false
@@ -87,12 +107,20 @@ export function CollectionDialog({
   }
 
   const [imagePickerOpen, setImagePickerOpen] = useState(false)
+  // Collapsed by default in both create and edit, matching Figma's
+  // "+" affordance.
+  const [moreDetailsOpen, setMoreDetailsOpen] = useState(false)
+  // Mirror the editor's image picker: side drawer on md+, bottom sheet
+  // on smaller. Matches breakpoint and feel of `Editor/.../Drawer`.
+  const pickerMdUp = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.up('md')
+  )
 
   const schema = object({
     title: string()
       .required(t('Title is required'))
       .max(100, t('Max 100 characters')),
-    description: string().max(500, t('Max 500 characters')),
+    description: string(),
     creatorName: string()
       .required(t('Creator name is required'))
       .max(100, t('Max 100 characters')),
@@ -214,16 +242,20 @@ export function CollectionDialog({
         handleSubmit,
         setFieldValue,
         setFieldTouched
-      }) => (
+      }) => {
+        // Selected journeys, ordered by the user's pick order, used for the
+        // carousel preview on the left pane.
+        const selectedJourneysOrdered = values.journeyIds
+          .map((id) => availableJourneys.find((j) => j.id === id))
+          .filter((j): j is Journey => j != null)
+        return (
         <>
         <Dialog
           open={open}
           onClose={onClose}
+          maxWidth="md"
           dialogTitle={{
-            title:
-              mode === 'create'
-                ? t('Create Collection')
-                : t('Edit Collection'),
+            title: t('Template Gallery Page'),
             closeButton: true
           }}
           dialogAction={{
@@ -232,260 +264,581 @@ export function CollectionDialog({
             submitLabel: mode === 'create' ? t('Create') : t('Save')
           }}
           testId="CollectionDialog"
+          sx={{
+            '& .MuiDialogContent-root': {
+              p: 0,
+              display: 'flex',
+              flexDirection: 'column'
+            },
+            '& .MuiDialogActions-root': { px: 3, py: 2 }
+          }}
         >
-          <Form>
-            <Stack spacing={3}>
-              <TextField
-                id="title"
-                name="title"
-                label={t('Title')}
-                fullWidth
-                variant="filled"
-                value={values.title}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={touched.title === true && Boolean(errors.title)}
-                helperText={touched.title === true && errors.title}
-                inputProps={{ maxLength: 100 }}
-              />
-              <TextField
-                id="description"
-                name="description"
-                label={t('Description')}
-                fullWidth
-                multiline
-                rows={3}
-                variant="filled"
-                value={values.description}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={
-                  touched.description === true && Boolean(errors.description)
-                }
-                helperText={
-                  touched.description === true && errors.description
-                }
-              />
-              <TextField
-                id="creatorName"
-                name="creatorName"
-                label={t('Creator name')}
-                fullWidth
-                variant="filled"
-                value={values.creatorName}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={
-                  touched.creatorName === true && Boolean(errors.creatorName)
-                }
-                helperText={
-                  touched.creatorName === true && errors.creatorName
-                }
-                inputProps={{ maxLength: 100 }}
-              />
-              <TextField
-                id="mediaUrl"
-                name="mediaUrl"
-                label={t('Media URL')}
-                placeholder="https://"
-                fullWidth
-                variant="filled"
-                value={values.mediaUrl}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={touched.mediaUrl === true && Boolean(errors.mediaUrl)}
-                helperText={
-                  (touched.mediaUrl === true && errors.mediaUrl) ||
-                  t('Must be an https URL')
-                }
-              />
-              {mode === 'edit' && (
-                <TextField
-                  id="slug"
-                  name="slug"
-                  label={t('Slug')}
-                  fullWidth
-                  variant="filled"
-                  value={values.slug}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={touched.slug === true && Boolean(errors.slug)}
-                  helperText={
-                    (touched.slug === true && errors.slug) ||
-                    t(
-                      'Changing the slug breaks existing public links to this collection.'
-                    )
-                  }
-                />
-              )}
-              <Autocomplete
-                multiple
-                disableCloseOnSelect
-                disabled={isPublished}
-                options={availableJourneys.slice()}
-                getOptionLabel={(option) => option.title}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                value={availableJourneys.filter((j) =>
-                  values.journeyIds.includes(j.id)
-                )}
-                onChange={(_event, selected) => {
-                  void setFieldValue(
-                    'journeyIds',
-                    selected.map((j) => j.id)
-                  )
-                  void setFieldTouched('journeyIds', true, false)
+          <Form
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: 0
+            }}
+          >
+            <Stack
+              direction={{ xs: 'column', md: 'row' }}
+              alignItems="stretch"
+              sx={{ height: { md: 537 }, minHeight: 0 }}
+            >
+              {/* Preview pane (left) */}
+              <Box
+                sx={{
+                  bgcolor: '#efefef',
+                  // 32px x-padding on each side + 287px card + 32px = 351,
+                  // round to 352 for an even pane width.
+                  flex: { md: '0 0 352px' },
+                  px: 4,
+                  py: 2,
+                  display: { xs: 'none', md: 'flex' },
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  // Pane never scrolls; the card itself (below) hosts the
+                  // single Y scrollbar when description + carousel exceed
+                  // the mobile frame.
+                  overflow: 'hidden',
+                  minHeight: 0
                 }}
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => {
-                    const { key, ...tagProps } = getTagProps({ index })
-                    return (
-                      <Chip
-                        key={key}
-                        label={option.title}
-                        size="small"
-                        {...tagProps}
-                      />
-                    )
-                  })
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={t('Templates')}
-                    placeholder={
-                      values.journeyIds.length === 0
-                        ? t('Select templates to include')
-                        : undefined
-                    }
-                    variant="filled"
-                    helperText={
-                      isPublished
-                        ? t('Unpublish to change templates in this collection.')
-                        : t(
-                            'Templates included in this collection. Drag-and-drop in the gallery view also updates this list.'
-                          )
-                    }
-                  />
-                )}
-              />
-              <Stack spacing={1}>
-                <Typography variant="subtitle2">
-                  {t('Creator image')}
-                </Typography>
-                <Stack direction="row" spacing={2} alignItems="center">
-                  {values.creatorImageSrc !== '' ? (
-                    <Box
-                      component="img"
-                      src={values.creatorImageSrc}
-                      alt={values.creatorImageAlt}
+              >
+                <Box
+                  sx={{
+                    bgcolor: 'white',
+                    borderRadius: 1,
+                    boxShadow:
+                      '0 6px 10px rgba(0,0,0,0.14), 0 1px 18px rgba(0,0,0,0.12), 0 3px 5px rgba(0,0,0,0.2)',
+                    // Width fixed (mobile-ish frame); height fills the pane
+                    // minus its py:2 padding so the card never overflows
+                    // its parent and the only scrollbar is inside the card.
+                    width: 287,
+                    height: '100%',
+                    flexShrink: 0,
+                    p: 2.5,
+                    // Card hosts the single Y scrollbar. Horizontal stays
+                    // clipped — the template carousel child manages its
+                    // own X scroll.
+                    overflowX: 'hidden',
+                    overflowY: 'auto'
+                  }}
+                >
+                  <Stack spacing={1.5}>
+                    <Typography
                       sx={{
-                        width: 64,
-                        height: 64,
-                        borderRadius: 1,
-                        objectFit: 'cover',
-                        flexShrink: 0
+                        fontFamily: 'Montserrat, sans-serif',
+                        fontWeight: 600,
+                        fontSize: 20,
+                        lineHeight: 1.2,
+                        color: '#444451'
                       }}
-                    />
-                  ) : (
-                    <Box
-                      sx={{
-                        width: 64,
-                        height: 64,
-                        borderRadius: 1,
-                        backgroundColor: 'action.hover',
-                        flexShrink: 0
-                      }}
-                    />
-                  )}
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    sx={{ flexGrow: 1, justifyContent: 'flex-end' }}
-                  >
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => setImagePickerOpen(true)}
                     >
-                      {values.creatorImageSrc !== ''
-                        ? t('Replace')
-                        : t('Add image')}
-                    </Button>
-                    {values.creatorImageSrc !== '' && (
-                      <Button
-                        variant="text"
-                        size="small"
-                        color="error"
-                        onClick={() => {
-                          void setFieldValue('creatorImageSrc', '')
-                          void setFieldValue('creatorImageAlt', '')
+                      {values.title !== ''
+                        ? values.title
+                        : t('Untitled collection')}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontFamily: 'Open Sans, sans-serif',
+                        fontSize: 14,
+                        lineHeight: 1.43,
+                        color: '#444451',
+                        whiteSpace: 'pre-wrap'
+                      }}
+                    >
+                      {values.description !== ''
+                        ? values.description
+                        : t(
+                            'A short description of your collection will appear here.'
+                          )}
+                    </Typography>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Avatar
+                        src={
+                          values.creatorImageSrc !== ''
+                            ? values.creatorImageSrc
+                            : undefined
+                        }
+                        alt={values.creatorImageAlt}
+                        sx={{ width: 32, height: 32 }}
+                      />
+                      <Typography
+                        sx={{
+                          fontFamily: 'Open Sans, sans-serif',
+                          fontSize: 14,
+                          color: '#6d6d7d'
                         }}
                       >
-                        {t('Remove')}
-                      </Button>
-                    )}
+                        {values.creatorName !== ''
+                          ? values.creatorName
+                          : t('Creator name')}
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                  <Box
+                    sx={{
+                      mt: 2.5,
+                      // Horizontal scroll for the carousel of selected
+                      // templates — mirrors the public gallery page layout.
+                      overflowX: 'auto',
+                      overflowY: 'hidden',
+                      mx: -2.5, // bleed past the card padding so cards can
+                      px: 2.5,  // start flush with the card text above
+                      pb: 1
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{ width: 'fit-content' }}
+                    >
+                      {selectedJourneysOrdered.length === 0
+                        ? [0, 1].map((idx) => (
+                            <Box
+                              key={`placeholder-${idx}`}
+                              sx={{
+                                width: 160,
+                                height: 240,
+                                borderRadius: 1.5,
+                                bgcolor: 'action.hover',
+                                flexShrink: 0,
+                                opacity: 0.6
+                              }}
+                            />
+                          ))
+                        : selectedJourneysOrdered.map((journey) => (
+                            <Box
+                              key={journey.id}
+                              sx={{
+                                width: 160,
+                                height: 240,
+                                borderRadius: 1.5,
+                                flexShrink: 0,
+                                overflow: 'hidden',
+                                position: 'relative',
+                                bgcolor: 'action.hover',
+                                ...(journey.primaryImageBlock?.src != null && {
+                                  backgroundImage: `url(${journey.primaryImageBlock.src})`,
+                                  backgroundSize: 'cover',
+                                  backgroundPosition: 'center'
+                                })
+                              }}
+                            >
+                              <Box
+                                sx={{
+                                  position: 'absolute',
+                                  inset: 0,
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  justifyContent: 'flex-end',
+                                  p: 1,
+                                  background:
+                                    'linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.16) 50%, rgba(0,0,0,0) 90%)'
+                                }}
+                              >
+                                <Typography
+                                  sx={{
+                                    fontFamily: 'Montserrat, sans-serif',
+                                    fontWeight: 600,
+                                    fontSize: 13,
+                                    lineHeight: 1.25,
+                                    color: 'white',
+                                    overflow: 'hidden',
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical'
+                                  }}
+                                >
+                                  {journey.title}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          ))}
+                    </Stack>
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Settings pane (right) */}
+              <Box
+                sx={{
+                  flex: 1,
+                  minWidth: 0,
+                  minHeight: 0,
+                  px: { xs: 2, md: 3 },
+                  py: 2.5,
+                  // Right pane scrolls vertically; horizontal stays clipped
+                  // because form fields wrap.
+                  overflowY: 'auto',
+                  overflowX: 'hidden'
+                }}
+              >
+                <Stack spacing={3}>
+                  {/* Page Title (always visible) */}
+                  <Stack spacing={1}>
+                    <Typography sx={SECTION_HEADER}>
+                      {t('Page Title')}
+                      <Box
+                        component="span"
+                        sx={{ color: 'error.main', ml: 0.25 }}
+                      >
+                        *
+                      </Box>
+                    </Typography>
+                    <TextField
+                      id="title"
+                      name="title"
+                      placeholder={t('Type here')}
+                      fullWidth
+                      variant="filled"
+                      hiddenLabel
+                      value={values.title}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={touched.title === true && Boolean(errors.title)}
+                      helperText={touched.title === true && errors.title}
+                      inputProps={{ maxLength: 100 }}
+                    />
+                  </Stack>
+
+                  {/* Templates picker (always visible) */}
+                  <Stack spacing={1}>
+                    <Typography sx={SECTION_HEADER}>
+                      {t('Templates on the page:')}
+                    </Typography>
+                    <Autocomplete
+                      multiple
+                      disableCloseOnSelect
+                      disabled={isPublished}
+                      options={availableJourneys.slice()}
+                      getOptionLabel={(option) => option.title}
+                      isOptionEqualToValue={(option, value) =>
+                        option.id === value.id
+                      }
+                      value={availableJourneys.filter((j) =>
+                        values.journeyIds.includes(j.id)
+                      )}
+                      onChange={(_event, selected) => {
+                        void setFieldValue(
+                          'journeyIds',
+                          selected.map((j) => j.id)
+                        )
+                        void setFieldTouched('journeyIds', true, false)
+                      }}
+                      renderTags={(value, getTagProps) =>
+                        value.map((option, index) => {
+                          const { key, ...tagProps } = getTagProps({ index })
+                          return (
+                            <Chip
+                              key={key}
+                              label={option.title}
+                              size="small"
+                              {...tagProps}
+                            />
+                          )
+                        })
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          placeholder={
+                            values.journeyIds.length === 0
+                              ? t('Select templates to include')
+                              : undefined
+                          }
+                          variant="outlined"
+                          hiddenLabel
+                          helperText={
+                            isPublished
+                              ? t(
+                                  'Unpublish to change templates in this collection.'
+                                )
+                              : undefined
+                          }
+                        />
+                      )}
+                    />
+                  </Stack>
+
+                  {/* More details accordion */}
+                  <Stack>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      onClick={() => setMoreDetailsOpen((v) => !v)}
+                      sx={{ cursor: 'pointer', py: 0.5 }}
+                      role="button"
+                      aria-expanded={moreDetailsOpen}
+                    >
+                      <Typography sx={SECTION_HEADER}>
+                        {t('More details')}
+                      </Typography>
+                      <IconButton
+                        size="small"
+                        aria-label={
+                          moreDetailsOpen
+                            ? t('Collapse more details')
+                            : t('Expand more details')
+                        }
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setMoreDetailsOpen((v) => !v)
+                        }}
+                      >
+                        {moreDetailsOpen ? <RemoveIcon /> : <Plus2Icon />}
+                      </IconButton>
+                    </Stack>
+
+                    <Collapse in={moreDetailsOpen} mountOnEnter>
+                      <Stack spacing={3} sx={{ pt: 2 }}>
+                        {/* Page Description / Instructions */}
+                        <Stack spacing={1}>
+                          <Typography sx={SECTION_HEADER}>
+                            {t('Page Description / Instructions')}
+                          </Typography>
+                          <TextField
+                            id="description"
+                            name="description"
+                            fullWidth
+                            multiline
+                            rows={4}
+                            variant="filled"
+                            hiddenLabel
+                            value={values.description}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={
+                              touched.description === true &&
+                              Boolean(errors.description)
+                            }
+                            helperText={
+                              touched.description === true && errors.description
+                            }
+                          />
+                        </Stack>
+
+                        {/* Creator Details */}
+                        <Stack spacing={1}>
+                          <Typography sx={SECTION_HEADER}>
+                            {t('Creator Details')}
+                          </Typography>
+                          <Stack
+                            direction="row"
+                            spacing={1.5}
+                            alignItems="stretch"
+                          >
+                            <ButtonBase
+                              onClick={() => setImagePickerOpen(true)}
+                              sx={{
+                                bgcolor: '#efefef',
+                                borderRadius: 2,
+                                p: 1,
+                                height: 77,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                flexShrink: 0
+                              }}
+                              aria-label={t('Choose creator image')}
+                            >
+                              {values.creatorImageSrc !== '' ? (
+                                <Box
+                                  component="img"
+                                  src={values.creatorImageSrc}
+                                  alt={values.creatorImageAlt}
+                                  sx={{
+                                    width: 56,
+                                    height: 56,
+                                    borderRadius: 1,
+                                    objectFit: 'cover'
+                                  }}
+                                />
+                              ) : (
+                                <Box
+                                  sx={{
+                                    width: 56,
+                                    height: 56,
+                                    borderRadius: 1,
+                                    bgcolor: 'rgba(0,0,0,0.08)'
+                                  }}
+                                />
+                              )}
+                              <Edit2Icon
+                                sx={{ fontSize: 24, color: 'primary.main' }}
+                              />
+                            </ButtonBase>
+                            <TextField
+                              id="creatorName"
+                              name="creatorName"
+                              placeholder={t('Creator name')}
+                              fullWidth
+                              variant="filled"
+                              hiddenLabel
+                              value={values.creatorName}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              error={
+                                touched.creatorName === true &&
+                                Boolean(errors.creatorName)
+                              }
+                              helperText={
+                                touched.creatorName === true &&
+                                errors.creatorName
+                              }
+                              inputProps={{ maxLength: 100 }}
+                            />
+                          </Stack>
+                          {values.creatorImageSrc !== '' && (
+                            <Box sx={{ pt: 0.5, alignSelf: 'flex-end' }}>
+                              <Button
+                                variant="text"
+                                size="small"
+                                color="error"
+                                onClick={() => {
+                                  void setFieldValue('creatorImageSrc', '')
+                                  void setFieldValue('creatorImageAlt', '')
+                                }}
+                              >
+                                {t('Remove image')}
+                              </Button>
+                            </Box>
+                          )}
+                        </Stack>
+
+                        {/* Add PDF/Video URL */}
+                        <Stack spacing={1}>
+                          <Typography sx={SECTION_HEADER}>
+                            {t('Add PDF/Video with instructions')}
+                          </Typography>
+                          <TextField
+                            id="mediaUrl"
+                            name="mediaUrl"
+                            placeholder={t('Paste URL')}
+                            fullWidth
+                            variant="filled"
+                            hiddenLabel
+                            value={values.mediaUrl}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={
+                              touched.mediaUrl === true &&
+                              Boolean(errors.mediaUrl)
+                            }
+                            helperText={
+                              (touched.mediaUrl === true && errors.mediaUrl) ||
+                              t('Google Slides, Canva, YouTube, Loom, etc')
+                            }
+                          />
+                        </Stack>
+
+                        {/* Slug (edit mode only) */}
+                        {mode === 'edit' && (
+                          <TextField
+                            id="slug"
+                            name="slug"
+                            label={t('Slug')}
+                            fullWidth
+                            variant="filled"
+                            value={values.slug}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={touched.slug === true && Boolean(errors.slug)}
+                            helperText={
+                              (touched.slug === true && errors.slug) ||
+                              t(
+                                'Changing the slug breaks existing public links to this collection.'
+                              )
+                            }
+                          />
+                        )}
+                      </Stack>
+                    </Collapse>
                   </Stack>
                 </Stack>
-                {values.creatorImageSrc !== '' && (
-                  <TextField
-                    id="creatorImageAlt"
-                    name="creatorImageAlt"
-                    label={t('Image description (alt text)')}
-                    fullWidth
-                    variant="filled"
-                    size="small"
-                    value={values.creatorImageAlt}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={t(
-                      'Used by screen readers and shown if the image fails to load.'
-                    )}
-                    inputProps={{ maxLength: 200 }}
-                  />
-                )}
-              </Stack>
+              </Box>
             </Stack>
           </Form>
         </Dialog>
-        <Dialog
+        <Drawer
+          anchor={pickerMdUp ? 'right' : 'bottom'}
           open={imagePickerOpen}
           onClose={() => setImagePickerOpen(false)}
-          dialogTitle={{
-            title: t('Choose creator image'),
-            closeButton: true
+          data-testid="CollectionCreatorImagePicker"
+          // Render above the parent CollectionDialog (modal z-index 1300).
+          sx={{ zIndex: (theme) => theme.zIndex.modal + 1 }}
+          PaperProps={{
+            sx: {
+              // Match the editor's settings drawer dimensions and chrome.
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 3,
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0,
+              width: { xs: 'auto', md: 328 },
+              left: { xs: 0, md: 'auto' },
+              top: { xs: 0, md: 32 },
+              right: { xs: 0, md: 32 },
+              bottom: 0,
+              height: 'calc(100% - 20px)',
+              display: 'flex',
+              flexDirection: 'column'
+            }
           }}
-          testId="CollectionCreatorImagePicker"
-          divider
-          fullscreen
         >
-            <Box sx={{ minHeight: 480 }}>
-              <ImageBlockEditor
-                selectedBlock={
-                  values.creatorImageSrc !== ''
-                    ? buildSyntheticImageBlock(
-                        values.creatorImageSrc,
-                        values.creatorImageAlt
-                      )
-                    : null
-                }
-                onChange={async (input: ImageBlockUpdateInput) => {
-                  if (input.src != null && input.src !== '') {
-                    void setFieldValue('creatorImageSrc', input.src)
-                    void setFieldValue('creatorImageAlt', input.alt ?? '')
-                    setImagePickerOpen(false)
-                  }
-                }}
-                onDelete={async () => {
-                  void setFieldValue('creatorImageSrc', '')
-                  void setFieldValue('creatorImageAlt', '')
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{
+              px: 2,
+              py: 1.5,
+              borderBottom: 1,
+              borderColor: 'divider',
+              flexShrink: 0
+            }}
+          >
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+              {t('Choose creator image')}
+            </Typography>
+            <IconButton
+              size="small"
+              onClick={() => setImagePickerOpen(false)}
+              aria-label={t('Close')}
+            >
+              <CloseRoundedIcon />
+            </IconButton>
+          </Stack>
+          <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+            <ImageBlockEditor
+              selectedBlock={
+                values.creatorImageSrc !== ''
+                  ? buildSyntheticImageBlock(
+                      values.creatorImageSrc,
+                      values.creatorImageAlt
+                    )
+                  : null
+              }
+              onChange={async (input: ImageBlockUpdateInput) => {
+                if (input.src != null && input.src !== '') {
+                  void setFieldValue('creatorImageSrc', input.src)
+                  void setFieldValue('creatorImageAlt', input.alt ?? '')
                   setImagePickerOpen(false)
-                }}
+                }
+              }}
+              onDelete={async () => {
+                void setFieldValue('creatorImageSrc', '')
+                void setFieldValue('creatorImageAlt', '')
+                setImagePickerOpen(false)
+              }}
               showAdd
             />
           </Box>
-        </Dialog>
+        </Drawer>
         </>
-      )}
+        )
+      }}
     </Formik>
   )
 }
