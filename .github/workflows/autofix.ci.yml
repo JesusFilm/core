@@ -10,14 +10,11 @@ on:
 jobs:
   lint-work:
     # Skip /sync-ce PRs so autofix doesn't reformat CE-managed files.
-    # Two load-bearing contracts from .claude/skills/sync-ce/SKILL.md:
-    #   1. PR branch name contains `-chore-ce-sync-` — used on `pull_request` events
-    #      where `github.head_ref` carries the original branch.
-    #   2. PR commit message contains `sync compound-engineering skills and agents` —
-    #      used on `merge_group` events where `github.head_ref` is empty and
-    #      `merge_group.head_ref` resolves to the readonly queue ref, not the
-    #      original branch. The squashed merge commit on the queue keeps the
-    #      PR title prefix, so we match against the head commit's message.
+    # Two load-bearing contracts from .claude/skills/sync-ce/SKILL.md, one per
+    # event we care about:
+    #   1. Pull request (`pull_request`): branch name contains `-chore-ce-sync-`.
+    #   2. Merge queue (`merge_group`): commit message contains
+    #      `sync compound-engineering skills and agents` (head_ref is empty here).
     if: >-
       ${{ !contains(github.head_ref, '-chore-ce-sync-') &&
           !contains(github.event.merge_group.head_commit.message, 'sync compound-engineering skills and agents') }}
