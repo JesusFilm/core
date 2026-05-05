@@ -19,6 +19,69 @@ interface VercelCreateDomainError {
   }
 }
 
+interface VercelConfigDomainResponse {
+  configuredBy: string | null
+  nameservers: string[]
+  serviceType: string
+  cnames: string[]
+  aValues: string[]
+  conflicts: string[]
+  acceptedChallenges: string[]
+  misconfigured: boolean
+}
+
+interface VercelDomainResponse {
+  name: string
+  apexName: string
+  projectId: string
+  redirect: null
+  redirectStatusCode: null
+  gitBranch: null
+  updatedAt: number
+  createdAt: number
+  verified: boolean
+  verification?: Array<{
+    type: string
+    domain: string
+    value: string
+    reason: string
+  }>
+}
+
+interface VercelVerifyDomainResponse {
+  name: string
+  apexName: string
+  projectId: string
+  redirect: null
+  redirectStatusCode: null
+  gitBranch: null
+  updatedAt: number
+  createdAt: number
+  verified: boolean
+}
+
+interface VercelVerifyDomainError {
+  error: {
+    code: string
+    message: string
+  }
+}
+
+export interface CustomDomainCheckResult {
+  configured: boolean
+  verified: boolean
+  verification?: Array<{
+    type: string
+    domain: string
+    value: string
+    reason: string
+  }> | null
+  verificationResponse?: {
+    code: string
+    message: string
+  } | null
+}
+
 export function isDomainValid(domain: string): boolean {
   return DOMAIN_REGEX.test(domain)
 }
@@ -173,5 +236,80 @@ export async function updateTeamShortLinks(
         input: { id: qrCode.shortLinkId, to }
       }
     })
+  }
+}
+
+export async function checkVercelDomain(
+  name: string
+): Promise<CustomDomainCheckResult> {
+  if (process.env.VERCEL_JOURNEYS_PROJECT_ID == null)
+    return { configured: true, verified: true }
+
+  const [configResponse, domainResponse] = await Promise.all([
+    fetch(
+      `https://api.vercel.com/v6/domains/${name}/config?teamId=${process.env.VERCEL_TEAM_ID}`,
+      {
+        headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` },
+        method: 'GET'
+      }
+    ),
+    fetch(
+      `https://api.vercel.com/v9/projects/${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains/${name}?teamId=${process.env.VERCEL_TEAM_ID}`,
+      {
+        headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` },
+        method: 'GET'
+      }
+    )
+  ])
+
+  if (domainResponse.status !== 200)
+    throw new GraphQLError('vercel domain response not handled', {
+      extensions: { code: 'INTERNAL_SERVER_ERROR' }
+    })
+
+  if (configResponse.status !== 200)
+    throw new GraphQLError('vercel config response not handled', {
+      extensions: { code: 'INTERNAL_SERVER_ERROR' }
+    })
+
+  const configData: VercelConfigDomainResponse = await configResponse.json()
+  const domainData: VercelDomainResponse = await domainResponse.json()
+
+  let verifyData: VercelVerifyDomainResponse | VercelVerifyDomainError | null =
+    null
+
+  if (!domainData.verified) {
+    const verifyResponse = await fetch(
+      `https://api.vercel.com/v9/projects/${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains/${name}/verify?teamId=${process.env.VERCEL_TEAM_ID}`,
+      {
+        headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` },
+        method: 'POST'
+      }
+    )
+
+    verifyData = await verifyResponse.json()
+
+    if (
+      verifyResponse.status !== 200 &&
+      (verifyData == null ||
+        ('error' in verifyData &&
+          !['existing_project_domain', 'missing_txt_record'].includes(
+            verifyData.error.code
+          )))
+    )
+      throw new GraphQLError('vercel verification response not handled', {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
+  }
+
+  if (verifyData != null && 'verified' in verifyData && verifyData.verified)
+    return { configured: !configData.misconfigured, verified: true }
+
+  return {
+    configured: !configData.misconfigured,
+    verified: domainData.verified,
+    verification: domainData.verification ?? null,
+    verificationResponse:
+      verifyData != null && 'error' in verifyData ? verifyData.error : null
   }
 }
