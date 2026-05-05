@@ -8,11 +8,13 @@ import { ReactElement, useCallback, useState } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import type { AiChatSheetState } from '../AiChat/AiChat'
 import {
+  DIVIDER,
   HEADER_WASH,
   INPUT_FILL,
   SHEET_TOP_SHADOW,
   SPARKLE_AVATAR_SHADOW,
-  SPARKLE_GRADIENT
+  SPARKLE_GRADIENT,
+  SURFACE
 } from '../AiChat/chatStyles'
 
 /**
@@ -46,7 +48,7 @@ function ChatLoadingSkeleton(): ReactElement {
               width: 48,
               height: 4,
               borderRadius: 9999,
-              bgcolor: 'grey.200'
+              bgcolor: DIVIDER
             }}
           />
         </Box>
@@ -59,7 +61,7 @@ function ChatLoadingSkeleton(): ReactElement {
             pb: 1.5,
             px: 1.75,
             borderBottom: '1px solid',
-            borderBottomColor: 'grey.200',
+            borderBottomColor: DIVIDER,
             flexShrink: 0
           }}
         >
@@ -79,7 +81,7 @@ function ChatLoadingSkeleton(): ReactElement {
                 width: 110,
                 height: 12,
                 borderRadius: 4,
-                bgcolor: 'grey.200',
+                bgcolor: DIVIDER,
                 mb: 0.75
               }}
             />
@@ -88,7 +90,7 @@ function ChatLoadingSkeleton(): ReactElement {
                 width: 150,
                 height: 10,
                 borderRadius: 4,
-                bgcolor: 'grey.200',
+                bgcolor: DIVIDER,
                 opacity: 0.7
               }}
             />
@@ -118,7 +120,7 @@ function ChatLoadingSkeleton(): ReactElement {
             width: 40,
             height: 40,
             borderRadius: '50%',
-            bgcolor: 'grey.200',
+            bgcolor: DIVIDER,
             flexShrink: 0
           }}
         />
@@ -189,7 +191,7 @@ export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        bgcolor: 'common.white',
+        bgcolor: SURFACE,
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16,
         boxShadow: SHEET_TOP_SHADOW,

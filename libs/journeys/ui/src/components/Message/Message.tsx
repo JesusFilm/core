@@ -2,7 +2,13 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
 
-import { PLAIN_ASSISTANT_FG_ON_DARK } from '../AiChat/chatStyles'
+import {
+  ASSISTANT_BG,
+  ASSISTANT_FG,
+  PLAIN_ASSISTANT_FG_ON_DARK,
+  PRIMARY,
+  PRIMARY_ON
+} from '../AiChat/chatStyles'
 
 type MessageRole = 'user' | 'assistant'
 type MessageSurface = 'light' | 'dark'
@@ -32,7 +38,7 @@ export function Message({
   const isUser = role === 'user'
   const isPlainAssistant = plain && !isUser
   const plainAssistantColor =
-    surface === 'dark' ? PLAIN_ASSISTANT_FG_ON_DARK : 'grey.900'
+    surface === 'dark' ? PLAIN_ASSISTANT_FG_ON_DARK : ASSISTANT_FG
 
   return (
     <Box
@@ -46,15 +52,15 @@ export function Message({
       <Box
         sx={{
           bgcolor: isUser
-            ? 'grey.700'
+            ? PRIMARY
             : isPlainAssistant
               ? 'transparent'
-              : 'grey.200',
+              : ASSISTANT_BG,
           color: isUser
-            ? 'common.white'
+            ? PRIMARY_ON
             : isPlainAssistant
               ? plainAssistantColor
-              : 'grey.900',
+              : ASSISTANT_FG,
           borderRadius: isUser
             ? '16px'
             : isPlainAssistant

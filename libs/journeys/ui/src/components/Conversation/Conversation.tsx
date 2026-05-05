@@ -13,9 +13,12 @@ import {
 } from 'react'
 
 import {
+  ASSISTANT_FG,
+  DIVIDER,
   SCROLL_PILL_SHADOW,
   SCROLLBAR_THUMB,
-  SCROLLBAR_THUMB_HOVER
+  SCROLLBAR_THUMB_HOVER,
+  SURFACE
 } from '../AiChat/chatStyles'
 
 interface ConversationProps {
@@ -188,12 +191,12 @@ export function Conversation({
             transform: 'translateX(-50%)',
             width: 32,
             height: 32,
-            bgcolor: 'common.white',
-            color: 'grey.900',
+            bgcolor: SURFACE,
+            color: ASSISTANT_FG,
             border: '1px solid',
-            borderColor: 'grey.200',
+            borderColor: DIVIDER,
             boxShadow: SCROLL_PILL_SHADOW,
-            '&:hover': { bgcolor: 'common.white' }
+            '&:hover': { bgcolor: SURFACE }
           }}
         >
           <KeyboardArrowDownRoundedIcon fontSize="small" />

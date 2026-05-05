@@ -24,7 +24,12 @@ import { PromptInput } from '../PromptInput'
 import { Response } from '../Response'
 
 import { ChatHeader } from './ChatHeader'
-import { HEADER_WASH, OVERLAY_FG_RETRY, SHEET_BOTTOM_FADE } from './chatStyles'
+import {
+  HEADER_WASH,
+  MUTED_FG,
+  OVERLAY_FG_RETRY,
+  SHEET_BOTTOM_FADE
+} from './chatStyles'
 import { DragHandle } from './DragHandle'
 
 interface AiChatProps {
@@ -163,7 +168,7 @@ function TypingIndicator(): ReactElement {
             width: 6,
             height: 6,
             borderRadius: '50%',
-            bgcolor: 'text.secondary',
+            bgcolor: MUTED_FG,
             animation: 'aiChatTypingBounce 1.2s ease-in-out infinite',
             animationDelay: `${i * 0.16}s`
           }}
@@ -390,7 +395,7 @@ export function AiChat({
                   aria-label={t('Retry')}
                   sx={{
                     fontSize: 12,
-                    color: isOverlay ? OVERLAY_FG_RETRY : 'text.secondary',
+                    color: isOverlay ? OVERLAY_FG_RETRY : MUTED_FG,
                     minWidth: 0
                   }}
                 >

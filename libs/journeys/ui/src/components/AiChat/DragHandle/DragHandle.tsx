@@ -11,6 +11,8 @@ import {
   useState
 } from 'react'
 
+import { DIVIDER, TEXT_SECONDARY } from '../chatStyles'
+
 interface DragHandleProps {
   collapsed: boolean
   /** Drag down past the threshold collapses the sheet to a thin handle. */
@@ -133,7 +135,7 @@ export function DragHandle({
         userSelect: 'none',
         outline: 'none',
         '&:focus-visible .ChatDragHandleThumb': {
-          bgcolor: 'grey.700'
+          bgcolor: TEXT_SECONDARY
         }
       }}
     >
@@ -143,7 +145,7 @@ export function DragHandle({
           width: 48,
           height: 4,
           borderRadius: 9999,
-          bgcolor: dragging ? 'grey.700' : 'grey.200',
+          bgcolor: dragging ? TEXT_SECONDARY : DIVIDER,
           transition: 'background-color 120ms ease'
         }}
       />

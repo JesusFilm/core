@@ -1,12 +1,42 @@
 import { brandRed } from '@core/shared/ui/themes/base/tokens/colors'
 
 /**
- * Chat-only visual constants — gradients, shadows, and translucent
- * colour values that don't have a home in the shared journeyUi theme.
- * Solid greys, white, and the brand red itself live in the MUI theme;
- * consumers read those via theme paths (`'grey.700'`, `'common.white'`,
- * etc.) rather than re-exported aliases.
+ * Single source of truth for chat-surface styling. Consumers
+ * (`Message`, `ChatHeader`, `DragHandle`, `PromptInput`,
+ * `Conversation`, `PinnedChatBar`, `AiChat`) import from here
+ * instead of inlining colour/shadow values in `sx` blocks — so a
+ * design tweak only touches one file.
+ *
+ * Solid colours are MUI theme paths (`'grey.700'`, `'common.white'`)
+ * — they resolve through `theme.palette` at render time, so no
+ * hex value is duplicated against the shared palette. Translucent
+ * overlays, gradients, and shadows are concrete strings since they
+ * have no home in the MUI theme.
  */
+
+// --- Theme-path aliases (resolved by MUI's sx string-form) ---
+
+/** User bubble bg + active send-button fill (= theme.palette.grey[700]). */
+export const PRIMARY = 'grey.700'
+/** Text / icon colour on the primary fill (= theme.palette.common.white). */
+export const PRIMARY_ON = 'common.white'
+/** Assistant bubble bg (= theme.palette.grey[200]). */
+export const ASSISTANT_BG = 'grey.200'
+/** Assistant text colour (= theme.palette.grey[900]). */
+export const ASSISTANT_FG = 'grey.900'
+/** Sheet / pill surface (= theme.palette.common.white). */
+export const SURFACE = 'common.white'
+/** Secondary text + drag-thumb active state (= theme.palette.grey[700]). */
+export const TEXT_SECONDARY = 'grey.700'
+/** Border / drag-thumb idle / skeleton fill (= theme.palette.grey[200]). */
+export const DIVIDER = 'grey.200'
+/**
+ * MUI's built-in muted foreground (= theme.palette.text.secondary).
+ * Used for the typing-dot indicator and the panel retry button.
+ * Distinct from `TEXT_SECONDARY`, which is the chat design system's
+ * specific grey.700 caption colour.
+ */
+export const MUTED_FG = 'text.secondary'
 
 // --- Brand ---
 

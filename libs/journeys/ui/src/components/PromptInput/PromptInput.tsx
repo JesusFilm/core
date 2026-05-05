@@ -14,6 +14,8 @@ import {
 } from 'react'
 
 import {
+  ASSISTANT_FG,
+  DIVIDER,
   OVERLAY_FG_MUTED,
   OVERLAY_FILL_LOW,
   OVERLAY_INPUT_BG,
@@ -21,7 +23,10 @@ import {
   OVERLAY_INPUT_SHADOW,
   PANEL_INPUT_BG,
   PANEL_INPUT_BORDER,
-  PANEL_INPUT_SHADOW
+  PANEL_INPUT_SHADOW,
+  PRIMARY,
+  PRIMARY_ON,
+  TEXT_SECONDARY
 } from '../AiChat/chatStyles'
 
 interface PromptInputProps {
@@ -149,15 +154,15 @@ export function PromptInput({
           fontSize: 16,
           lineHeight: 1.375,
           fontFamily: 'inherit',
-          color: isFloating ? 'common.white' : 'grey.900',
+          color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
           boxSizing: 'border-box',
           overflowY: 'auto',
           '&::placeholder': {
-            color: isFloating ? OVERLAY_FG_MUTED : 'grey.700',
+            color: isFloating ? OVERLAY_FG_MUTED : TEXT_SECONDARY,
             opacity: 1
           },
           '&:focus': { outline: 'none' },
-          '&:disabled': { color: 'grey.700' }
+          '&:disabled': { color: TEXT_SECONDARY }
         }}
       />
       {isLoading ? (
@@ -170,9 +175,9 @@ export function PromptInput({
             height: 32,
             flexShrink: 0,
             p: 0,
-            bgcolor: 'grey.700',
-            color: 'common.white',
-            '&:hover': { bgcolor: 'grey.700' }
+            bgcolor: PRIMARY,
+            color: PRIMARY_ON,
+            '&:hover': { bgcolor: PRIMARY }
           }}
         >
           <StopRoundedIcon fontSize="small" />
@@ -188,25 +193,25 @@ export function PromptInput({
             flexShrink: 0,
             p: 0,
             bgcolor: canSubmit
-              ? 'grey.700'
+              ? PRIMARY
               : isFloating
                 ? OVERLAY_FILL_LOW
-                : 'grey.200',
+                : DIVIDER,
             color: canSubmit
-              ? 'common.white'
+              ? PRIMARY_ON
               : isFloating
                 ? OVERLAY_FG_MUTED
-                : 'grey.700',
+                : TEXT_SECONDARY,
             '&:hover': {
               bgcolor: canSubmit
-                ? 'grey.700'
+                ? PRIMARY
                 : isFloating
                   ? OVERLAY_FILL_LOW
-                  : 'grey.200'
+                  : DIVIDER
             },
             '&.Mui-disabled': {
-              bgcolor: isFloating ? OVERLAY_FILL_LOW : 'grey.200',
-              color: isFloating ? OVERLAY_FG_MUTED : 'grey.700'
+              bgcolor: isFloating ? OVERLAY_FILL_LOW : DIVIDER,
+              color: isFloating ? OVERLAY_FG_MUTED : TEXT_SECONDARY
             }
           }}
         >
