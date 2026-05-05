@@ -1,11 +1,11 @@
-import { DeepMockProxy, mockDeep, mockReset } from 'jest-mock-extended'
+import { beforeEach, vi } from 'vitest'
+import { DeepMockProxy, mockDeep, mockReset } from 'vitest-mock-extended'
 
 import { crowdinClient } from '../src/lib/crowdin/crowdinClient'
 
 process.env.CROWDIN_PROJECT_ID = '1'
 process.env.CROWDIN_API_KEY = 'test-key'
 
-// Mock data objects
 export const mockSourceString = {
   id: 1,
   projectId: 1,
@@ -14,7 +14,7 @@ export const mockSourceString = {
   directoryId: 1,
   identifier: 'test_string',
   text: 'Hello',
-  type: 0, // Type enum value - 0 = 'text'
+  type: 0,
   context: '1\nThis is a test',
   maxLength: 100,
   isHidden: false,
@@ -45,7 +45,7 @@ export const mockTranslation = {
   updatedAt: '2024-01-01T00:00:00Z'
 }
 
-jest.mock('../src/lib/crowdin/crowdinClient', () => ({
+vi.mock('../src/lib/crowdin/crowdinClient', () => ({
   __esModule: true,
   crowdinClient: mockDeep<typeof crowdinClient>(),
   crowdinProjectId: 1

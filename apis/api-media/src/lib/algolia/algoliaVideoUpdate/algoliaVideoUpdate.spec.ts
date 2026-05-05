@@ -1,13 +1,15 @@
+import { vi } from 'vitest'
 import { Logger } from 'pino'
 
 import { prismaMock } from '../../../../test/prismaMock'
+import { getLanguages } from '../languages'
 
 import { updateVideoInAlgolia } from './algoliaVideoUpdate'
 
-const saveObjectsSpy = jest.fn()
+const saveObjectsSpy = vi.fn()
 
 // Mock the algolia client helper
-jest.mock('../algoliaClient', () => ({
+vi.mock('../algoliaClient', () => ({
   getAlgoliaClient: () => ({
     saveObjects: saveObjectsSpy
   }),
@@ -20,8 +22,8 @@ jest.mock('../algoliaClient', () => ({
 }))
 
 // Mock the languages helper
-jest.mock('../languages', () => ({
-  getLanguages: jest.fn()
+vi.mock('../languages', () => ({
+  getLanguages: vi.fn()
 }))
 
 describe('algoliaVideoUpdate', () => {
@@ -39,26 +41,25 @@ describe('algoliaVideoUpdate', () => {
   }
 
   const mockLogger: Logger = {
-    info: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn()
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn()
   } as any
 
-  // Get the mocked functions
-  const { getLanguages } = require('../languages')
+  const getLanguagesMock = vi.mocked(getLanguages)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env.CLOUDFLARE_IMAGE_ACCOUNT = 'test-account'
 
     // Reset the spy mock return values
     saveObjectsSpy.mockResolvedValue([{ taskID: 'test-task-123' }])
 
-    getLanguages.mockResolvedValue(mockLanguages)
+    getLanguagesMock.mockResolvedValue(mockLanguages)
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should warn when video is not found', async () => {

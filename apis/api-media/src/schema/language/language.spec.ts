@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -29,22 +30,22 @@ describe('Language', () => {
 
     beforeEach(() => {
       // Reset all mocks before each test
-      jest.clearAllMocks()
+      vi.clearAllMocks()
     })
 
     it('should return labeled video counts for languages', async () => {
       // Mock the three groupBy calls for each label type
-      jest.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
         { languageId: '529', _count: { _all: 5 } },
         { languageId: '1106', _count: { _all: 3 } }
       ] as any) // series counts
 
-      jest.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
         { languageId: '529', _count: { _all: 8 } },
         { languageId: '1106', _count: { _all: 2 } }
       ] as any) // featureFilm counts
 
-      jest.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
         { languageId: '529', _count: { _all: 12 } },
         { languageId: '1106', _count: { _all: 7 } }
       ] as any) // shortFilm counts
@@ -55,12 +56,12 @@ describe('Language', () => {
 
       // Verify that all three groupBy calls were made in parallel
       expect(
-        jest.mocked(prismaMock.videoVariant.groupBy)
+        vi.mocked(prismaMock.videoVariant.groupBy)
       ).toHaveBeenCalledTimes(3)
 
       // Verify series count query
       expect(
-        jest.mocked(prismaMock.videoVariant.groupBy)
+        vi.mocked(prismaMock.videoVariant.groupBy)
       ).toHaveBeenNthCalledWith(1, {
         by: ['languageId'],
         where: {
@@ -72,7 +73,7 @@ describe('Language', () => {
 
       // Verify featureFilm count query
       expect(
-        jest.mocked(prismaMock.videoVariant.groupBy)
+        vi.mocked(prismaMock.videoVariant.groupBy)
       ).toHaveBeenNthCalledWith(2, {
         by: ['languageId'],
         where: {
@@ -84,7 +85,7 @@ describe('Language', () => {
 
       // Verify shortFilm count query
       expect(
-        jest.mocked(prismaMock.videoVariant.groupBy)
+        vi.mocked(prismaMock.videoVariant.groupBy)
       ).toHaveBeenNthCalledWith(3, {
         by: ['languageId'],
         where: {
@@ -117,14 +118,11 @@ describe('Language', () => {
 
     it('should return zero counts when no videos exist for a language', async () => {
       // Mock empty results for all queries
-      jest
-        .mocked(prismaMock.videoVariant.groupBy)
+      vi.mocked(prismaMock.videoVariant.groupBy)
         .mockResolvedValueOnce([] as any) // series counts
-      jest
-        .mocked(prismaMock.videoVariant.groupBy)
+      vi.mocked(prismaMock.videoVariant.groupBy)
         .mockResolvedValueOnce([] as any) // featureFilm counts
-      jest
-        .mocked(prismaMock.videoVariant.groupBy)
+      vi.mocked(prismaMock.videoVariant.groupBy)
         .mockResolvedValueOnce([] as any) // shortFilm counts
 
       const data = await client({
@@ -153,17 +151,17 @@ describe('Language', () => {
 
     it('should handle partial results when some languages have no videos of certain types', async () => {
       // Mock partial results - language 529 has series and films, 1106 only has shortFilms
-      jest.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
         { languageId: '529', _count: { _all: 3 } }
         // 1106 has no series videos
       ] as any)
 
-      jest.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
         { languageId: '529', _count: { _all: 5 } }
         // 1106 has no feature films
       ] as any)
 
-      jest.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
         { languageId: '1106', _count: { _all: 4 } }
         // 529 has no short films
       ] as any)
@@ -208,18 +206,15 @@ describe('Language', () => {
         }
       `)
 
-      jest
-        .mocked(prismaMock.videoVariant.groupBy)
+      vi.mocked(prismaMock.videoVariant.groupBy)
         .mockResolvedValueOnce([
           { languageId: '529', _count: { _all: 2 } }
         ] as any)
-      jest
-        .mocked(prismaMock.videoVariant.groupBy)
+      vi.mocked(prismaMock.videoVariant.groupBy)
         .mockResolvedValueOnce([
           { languageId: '529', _count: { _all: 4 } }
         ] as any)
-      jest
-        .mocked(prismaMock.videoVariant.groupBy)
+      vi.mocked(prismaMock.videoVariant.groupBy)
         .mockResolvedValueOnce([
           { languageId: '529', _count: { _all: 6 } }
         ] as any)
@@ -230,7 +225,7 @@ describe('Language', () => {
 
       // Verify queries were made with single language ID
       expect(
-        jest.mocked(prismaMock.videoVariant.groupBy)
+        vi.mocked(prismaMock.videoVariant.groupBy)
       ).toHaveBeenNthCalledWith(1, {
         by: ['languageId'],
         where: {

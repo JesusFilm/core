@@ -1,9 +1,9 @@
-import { type MockedFunction } from 'vitest'
 import { MockedProvider } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
 import { showNavigationVar } from '@core/journeys/ui/block/block'

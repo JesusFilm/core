@@ -1,3 +1,4 @@
+import { vi, type Mock, type MockedFunction } from 'vitest'
 import { Prisma } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
@@ -10,24 +11,24 @@ import {
   removeVercelDomain
 } from './shortLinkDomain.service'
 
-jest.mock('node:dns/promises', () => ({
-  resolve4: jest.fn().mockResolvedValue([]),
-  resolveCname: jest.fn().mockResolvedValue([])
+vi.mock('node:dns/promises', () => ({
+  resolve4: vi.fn().mockResolvedValue([]),
+  resolveCname: vi.fn().mockResolvedValue([])
 }))
 
-jest.mock('./shortLinkDomain.service', () => ({
-  checkVercelDomain: jest.fn(),
-  addVercelDomain: jest.fn(),
-  removeVercelDomain: jest.fn()
+vi.mock('./shortLinkDomain.service', () => ({
+  checkVercelDomain: vi.fn(),
+  addVercelDomain: vi.fn(),
+  removeVercelDomain: vi.fn()
 }))
 
-const mockCheckVercelDomain = checkVercelDomain as jest.MockedFunction<
+const mockCheckVercelDomain = checkVercelDomain as MockedFunction<
   typeof checkVercelDomain
 >
-const mockAddVercelDomain = addVercelDomain as jest.MockedFunction<
+const mockAddVercelDomain = addVercelDomain as MockedFunction<
   typeof addVercelDomain
 >
-const mockRemoveVercelDomain = removeVercelDomain as jest.MockedFunction<
+const mockRemoveVercelDomain = removeVercelDomain as MockedFunction<
   typeof removeVercelDomain
 >
 
@@ -57,7 +58,7 @@ describe('shortLinkDomain', () => {
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   describe('queries', () => {

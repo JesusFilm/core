@@ -9,4 +9,6 @@ if (typeof globalThis.TransformStream === 'undefined') {
 
 configure({ asyncUtilTimeout: 2500 })
 
-vi.mock('next/router', () => import('next-router-mock'))
+vi.mock('next/router', () =>
+  import(/* webpackChunkName: "next-router-mock" */ 'next-router-mock')
+)

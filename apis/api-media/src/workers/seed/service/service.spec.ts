@@ -1,18 +1,19 @@
+import { vi } from 'vitest'
 import { service } from './service'
 import { seedTags } from './tag'
 import { seedTaxonomies } from './taxonomy'
 import { seedVideoLanguages } from './videoLanguage'
 
-jest.mock('./tag', () => ({
-  seedTags: jest.fn()
+vi.mock('./tag', () => ({
+  seedTags: vi.fn()
 }))
 
-jest.mock('./taxonomy', () => ({
-  seedTaxonomies: jest.fn()
+vi.mock('./taxonomy', () => ({
+  seedTaxonomies: vi.fn()
 }))
 
-jest.mock('./videoLanguage', () => ({
-  seedVideoLanguages: jest.fn()
+vi.mock('./videoLanguage', () => ({
+  seedVideoLanguages: vi.fn()
 }))
 
 describe('seed/service', () => {

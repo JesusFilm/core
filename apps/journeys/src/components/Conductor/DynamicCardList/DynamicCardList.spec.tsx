@@ -1,6 +1,6 @@
-import { type MockedFunction } from 'vitest'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { type MockedFunction } from 'vitest'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'

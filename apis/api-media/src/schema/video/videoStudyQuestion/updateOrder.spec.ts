@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { Prisma } from '@core/prisma/media/client'
 
 import {
@@ -11,12 +12,12 @@ describe('updateOrder', () => {
     it('should update order', async () => {
       const transaction = {
         videoStudyQuestion: {
-          findMany: jest.fn().mockResolvedValue([
+          findMany: vi.fn().mockResolvedValue([
             { id: 'id1', order: 1 },
             { id: 'id2', order: 2 },
             { id: 'id3', order: 3 }
           ]),
-          update: jest.fn()
+          update: vi.fn()
         }
       }
       await updateOrderCreate({
@@ -58,12 +59,12 @@ describe('updateOrder', () => {
     it('should update order', async () => {
       const transaction = {
         videoStudyQuestion: {
-          findMany: jest.fn().mockResolvedValue([
+          findMany: vi.fn().mockResolvedValue([
             { id: 'id1', order: 1 },
             { id: 'id2', order: 2 },
             { id: 'id3', order: 4 }
           ]),
-          update: jest.fn()
+          update: vi.fn()
         }
       }
       await updateOrderDelete({
@@ -90,12 +91,12 @@ describe('updateOrder', () => {
     it('should update order', async () => {
       const transaction = {
         videoStudyQuestion: {
-          findMany: jest.fn().mockResolvedValue([
+          findMany: vi.fn().mockResolvedValue([
             { id: 'id1', order: 1 },
             { id: 'id2', order: 2 },
             { id: 'id3', order: 4 }
           ]),
-          update: jest.fn()
+          update: vi.fn()
         }
       }
       await updateOrderUpdate({
@@ -140,12 +141,12 @@ describe('updateOrder', () => {
     it('should update order inverse', async () => {
       const transaction = {
         videoStudyQuestion: {
-          findMany: jest.fn().mockResolvedValue([
+          findMany: vi.fn().mockResolvedValue([
             { id: 'id1', order: 1 },
             { id: 'id2', order: 2 },
             { id: 'id3', order: 3 }
           ]),
-          update: jest.fn()
+          update: vi.fn()
         }
       }
       await updateOrderUpdate({

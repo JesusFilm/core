@@ -1,6 +1,5 @@
-import { type Mock } from 'vitest'
-
 import { render } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { Video } from '@core/journeys/ui/Video'
