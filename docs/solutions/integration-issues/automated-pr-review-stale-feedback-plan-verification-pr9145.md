@@ -61,7 +61,7 @@ The workflow was:
 Useful GraphQL shape for fetching review-thread context:
 
 ```graphql
-query($owner: String!, $repo: String!, $pr: Int!) {
+query ($owner: String!, $repo: String!, $pr: Int!) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $pr) {
       reviewThreads(first: 100) {
