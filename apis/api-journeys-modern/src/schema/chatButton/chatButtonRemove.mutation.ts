@@ -11,7 +11,6 @@ builder.mutationField('chatButtonRemove', (t) =>
     .prismaField({
       type: ChatButtonRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         id: t.arg({ type: 'ID', required: true })
       },
