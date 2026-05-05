@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { Trans, useTranslation } from 'next-i18next'
+import { Trans, useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'

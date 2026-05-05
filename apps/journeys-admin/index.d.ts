@@ -5,7 +5,16 @@ declare module '*.svg' {
   export const ReactComponent: any
   export default content
 }
-export type DateTime = string
+
+declare module '*.png' {
+  const content: import('next/image').StaticImageData
+  export default content
+}
+
+declare module '*.jpg' {
+  const content: import('next/image').StaticImageData
+  export default content
+}
 
 declare global {
   type DateTime = string

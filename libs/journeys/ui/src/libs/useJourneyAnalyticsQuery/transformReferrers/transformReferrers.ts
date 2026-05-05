@@ -1,4 +1,4 @@
-import type { Edge, Node } from 'reactflow'
+import type { Edge, Node } from '@xyflow/react'
 
 import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '../__generated__/GetJourneyAnalytics'
 
@@ -56,7 +56,7 @@ export function transformReferrers(referrers?: JourneyReferrer[]): {
       nodes.push({
         id: referrer.property,
         type: 'Referrer',
-        data: referrer,
+        data: { ...referrer } as Record<string, unknown>,
         position: { x: -600, y: THREE_NODE_Y_POSITIONS[idx] },
         draggable: false
       })
@@ -66,7 +66,7 @@ export function transformReferrers(referrers?: JourneyReferrer[]): {
         source: referrer.property,
         target: 'SocialPreview',
         type: 'Referrer',
-        updatable: false
+        reconnectable: false
       })
     })
   } else {
@@ -79,7 +79,7 @@ export function transformReferrers(referrers?: JourneyReferrer[]): {
       nodes.push({
         id: referrer.property,
         type: 'Referrer',
-        data: referrer,
+        data: { ...referrer } as Record<string, unknown>,
         position: { x: -600, y: yPos },
         draggable: false
       })
@@ -89,7 +89,7 @@ export function transformReferrers(referrers?: JourneyReferrer[]): {
         source: referrer.property,
         target: 'SocialPreview',
         type: 'Referrer',
-        updatable: false
+        reconnectable: false
       })
     })
   }

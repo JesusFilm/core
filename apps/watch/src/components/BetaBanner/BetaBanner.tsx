@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { type ReactElement } from 'react'
 
 const EXPERIMENTAL_COOKIE_NAME = 'EXPERIMENTAL'
