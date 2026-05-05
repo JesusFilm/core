@@ -172,6 +172,17 @@ export function TemplateGalleryPageList(): ReactElement {
   const editTarget =
     editTargetId != null ? (collectionsById.get(editTargetId) ?? null) : null
 
+  // Pool the dialog's template picker draws from. Only ungrouped templates
+  // are addable, plus (in edit mode) the templates already in the collection
+  // being edited so the user can deselect them. Hides templates owned by
+  // other collections to prevent accidental dual-membership.
+  const editAvailableJourneys = useMemo<readonly Journey[]>(() => {
+    if (editTarget == null) return unsectioned
+    const seen = new Set(unsectioned.map((j) => j.id))
+    const own = editTarget.templates.filter((tpl) => !seen.has(tpl.id))
+    return [...unsectioned, ...own]
+  }, [unsectioned, editTarget])
+
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, {
@@ -498,7 +509,7 @@ export function TemplateGalleryPageList(): ReactElement {
         open={createDialogOpen}
         mode="create"
         teamId={teamId}
-        availableJourneys={allTemplates}
+        availableJourneys={unsectioned}
         onClose={handleCloseCreate}
       />
       {editTarget != null && (
@@ -507,7 +518,7 @@ export function TemplateGalleryPageList(): ReactElement {
           mode="edit"
           teamId={teamId}
           collection={editTarget}
-          availableJourneys={allTemplates}
+          availableJourneys={editAvailableJourneys}
           onClose={handleCloseEdit}
         />
       )}
