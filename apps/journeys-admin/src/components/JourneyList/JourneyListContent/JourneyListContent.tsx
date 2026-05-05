@@ -28,12 +28,12 @@ import { AddJourneyButton } from '../ActiveJourneyList/AddJourneyButton'
 import { JourneyCard } from '../JourneyCard'
 import { JourneyCardVariant } from '../JourneyCard/journeyCardVariant'
 import type { JourneyListEvent } from '../JourneyList'
+import { type JourneyListRowItem, JourneyListRows } from '../JourneyListRow'
 import type {
   ContentType,
   JourneyListDisplay,
   JourneyStatusFilter
 } from '../JourneyListView'
-import { JourneyListRows, type JourneyListRowItem } from '../JourneyListRow'
 import { SortOrder } from '../JourneySort'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../LoadingJourneyList'

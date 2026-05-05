@@ -1,8 +1,8 @@
+import ViewList from '@mui/icons-material/ViewList'
+import ViewModule from '@mui/icons-material/ViewModule'
 import Box from '@mui/material/Box'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import ViewList from '@mui/icons-material/ViewList'
-import ViewModule from '@mui/icons-material/ViewModule'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
