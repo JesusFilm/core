@@ -47,7 +47,7 @@ Render mode for the new entry: **leaf link** (pattern A below) — selected beca
   ]
 },
 { label: 'Watch', url: '/watch' }, // ← new top-level leaf, inserted after Resources
-{ label: 'Careers', url: 'https://recruitcrm.io/jobs/jesusfilm' },
+{ label: 'Careers', url: '/serve/' },
 // …rest unchanged
 ```
 
@@ -151,7 +151,7 @@ That is the entire code change. No spec file edit — see "Why no new unit tests
 - `apps/resources/src/components/Header/HeaderMenuPanel/headerLinks.ts:6-92` — nav config (target file)
 - `apps/resources/src/components/Header/HeaderMenuPanel/HeaderMenuPanel.tsx:16-126` — renders the array
 - `apps/resources/src/components/Header/HeaderMenuPanel/HeaderLinkAccordion/HeaderLinkAccordion.tsx:24-148` — dual-mode renderer
-- `apps/resources/src/components/Header/HeaderMenuPanel/HeaderMenuPanel.spec.tsx:1-42` — extend with WAT-203 assertion
+- `apps/resources/src/components/Header/HeaderMenuPanel/HeaderMenuPanel.spec.tsx:1-42` — existing spec; intentionally not extended (see "Why no new unit tests")
 - `libs/locales/en/apps-resources.json:21` — `"Watch"` key (already present)
 - WAT-202 squash commit: `506173e8e` (precedent for the same file)
 
