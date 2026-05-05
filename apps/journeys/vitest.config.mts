@@ -26,9 +26,6 @@ export default defineConfig({
     reporters: ['default'],
     setupFiles: ['./setupTests.ts'],
     alias: {
-      'swiper/react': resolve(__dirname, '../__mocks__/swiper/react.tsx'),
-      'swiper/modules': resolve(__dirname, '../__mocks__/swiper/modules.tsx'),
-      'swiper/css': resolve(__dirname, '../__mocks__/swiper/css.ts'),
       'styled-jsx/style': resolve(
         __dirname,
         '../__mocks__/styled-jsx/style.ts'

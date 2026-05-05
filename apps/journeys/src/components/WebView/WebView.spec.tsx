@@ -1,5 +1,6 @@
 import { type Mock, type MockedFunction } from 'vitest'
 
+import { FetchResult } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { render, screen, waitFor } from '@testing-library/react'
@@ -121,11 +122,13 @@ describe('WebView', () => {
         }
       }
     },
-    result: vi.fn(() => ({
-      data: {
-        visitorUpdateForCurrentUser: { id: 'uuid', __typename: 'Visitor' }
-      }
-    }))
+    result: vi.fn(
+      (_variables): FetchResult<VisitorUpdateForCurrentUser> => ({
+        data: {
+          visitorUpdateForCurrentUser: { id: 'uuid', __typename: 'Visitor' }
+        }
+      })
+    )
   }
 
   const journeyViewEventMock: MockedResponse<
@@ -143,14 +146,16 @@ describe('WebView', () => {
         }
       }
     },
-    result: vi.fn(() => ({
-      data: {
-        journeyViewEventCreate: {
-          id: 'uuid',
-          __typename: 'JourneyViewEvent'
+    result: vi.fn(
+      (_variables): FetchResult<JourneyViewEventCreate> => ({
+        data: {
+          journeyViewEventCreate: {
+            id: 'uuid',
+            __typename: 'JourneyViewEvent'
+          }
         }
-      }
-    }))
+      })
+    )
   }
 
   const journey = {

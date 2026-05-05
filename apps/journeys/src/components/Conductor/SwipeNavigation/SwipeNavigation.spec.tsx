@@ -1,5 +1,6 @@
 import { type MockedFunction } from 'vitest'
 
+import { FetchResult } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { sendGTMEvent } from '@next/third-parties/google'
@@ -99,14 +100,16 @@ describe('SwipeNavigation', () => {
         }
       }
     },
-    result: vi.fn(() => ({
-      data: {
-        stepNextEventCreate: {
-          id: 'uuid',
-          __typename: 'StepNextEvent'
+    result: vi.fn(
+      (_variables): FetchResult<StepNextEventCreate> => ({
+        data: {
+          stepNextEventCreate: {
+            id: 'uuid',
+            __typename: 'StepNextEvent'
+          }
         }
-      }
-    }))
+      })
+    )
   }
 
   const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreate> = {
@@ -122,14 +125,16 @@ describe('SwipeNavigation', () => {
         }
       }
     },
-    result: vi.fn(() => ({
-      data: {
-        stepPreviousEventCreate: {
-          id: 'uuid',
-          __typename: 'StepPreviousEvent'
+    result: vi.fn(
+      (_variables): FetchResult<StepPreviousEventCreate> => ({
+        data: {
+          stepPreviousEventCreate: {
+            id: 'uuid',
+            __typename: 'StepPreviousEvent'
+          }
         }
-      }
-    }))
+      })
+    )
   }
 
   const journey = {
