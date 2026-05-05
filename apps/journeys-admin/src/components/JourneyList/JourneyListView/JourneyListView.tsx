@@ -20,6 +20,7 @@ import { ContentTypeOption, TeamMode } from './DisplayModes/TeamMode/TeamMode'
 
 export type ContentType = 'journeys' | 'templates'
 export type JourneyStatus = 'active' | 'archived' | 'trashed'
+export type JourneyListDisplay = 'grid' | 'list'
 
 export interface JourneyListViewProps {
   // Render function that receives contentType and status to render the appropriate list
@@ -76,6 +77,7 @@ export function JourneyListView({
   const contentTypeFromQuery =
     (router?.query?.type as ContentType) ?? 'journeys'
   const statusFromQuery = (router?.query?.status as JourneyStatus) ?? 'active'
+  const displayFromQuery = router?.query?.view === 'list' ? 'list' : 'grid'
 
   // State management
   const contentTypeTabIndex =
@@ -86,6 +88,7 @@ export function JourneyListView({
     useState(contentTypeTabIndex)
   const [selectedStatus, setSelectedStatus] =
     useState<JourneyStatus>(statusFromQuery)
+  const [display, setDisplay] = useState<JourneyListDisplay>(displayFromQuery)
 
   // Force type=journeys in Shared With Me mode
   useEffect(() => {
@@ -176,6 +179,21 @@ export function JourneyListView({
     )
   }
 
+  const handleDisplayChange = (newDisplay: JourneyListDisplay): void => {
+    setDisplay(newDisplay)
+
+    void router.push(
+      {
+        query: {
+          ...router.query,
+          view: newDisplay
+        }
+      },
+      undefined,
+      { shallow: true }
+    )
+  }
+
   if (isSharedWithMeMode) {
     return (
       <SharedWithMeMode
@@ -183,6 +201,8 @@ export function JourneyListView({
         handleStatusChange={handleStatusChange}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
+        display={display}
+        setDisplay={handleDisplayChange}
         setActiveEvent={setActiveEvent}
         renderList={renderList}
       />
@@ -198,6 +218,8 @@ export function JourneyListView({
       handleStatusChange={handleStatusChange}
       sortOrder={sortOrder}
       setSortOrder={setSortOrder}
+      display={display}
+      setDisplay={handleDisplayChange}
       setActiveEvent={setActiveEvent}
       router={router}
       renderList={renderList}

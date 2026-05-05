@@ -7,7 +7,12 @@ import { ReactElement, SyntheticEvent } from 'react'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import type { ContentType } from '../../JourneyListView'
-import { MenuControl, SortControl, StatusFilterControl } from '../Controls'
+import {
+  DisplayControl,
+  MenuControl,
+  SortControl,
+  StatusFilterControl
+} from '../Controls'
 import type { SharedModeProps } from '../shared'
 
 export interface ContentTypeOption {
@@ -34,6 +39,8 @@ export const TeamMode = ({
   handleStatusChange,
   sortOrder,
   setSortOrder,
+  display,
+  setDisplay,
   setActiveEvent,
   router,
   renderList
@@ -78,6 +85,7 @@ export const TeamMode = ({
         handleStatusChange={handleStatusChange}
       />
       <SortControl sortOrder={sortOrder} setSortOrder={setSortOrder} />
+      <DisplayControl display={display} setDisplay={setDisplay} />
       <MenuControl
         setActiveEvent={setActiveEvent}
         menuMarginRight={{

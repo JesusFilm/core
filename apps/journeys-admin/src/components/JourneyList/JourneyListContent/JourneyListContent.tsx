@@ -13,7 +13,10 @@ import { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import {
+  JourneyStatus,
+  UserJourneyRole
+} from '../../../../__generated__/globalTypes'
 import { User } from '../../../libs/auth/authContext'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import {
@@ -23,8 +26,14 @@ import {
 import { ActivePriorityList } from '../ActiveJourneyList/ActivePriorityList'
 import { AddJourneyButton } from '../ActiveJourneyList/AddJourneyButton'
 import { JourneyCard } from '../JourneyCard'
+import { JourneyCardVariant } from '../JourneyCard/journeyCardVariant'
 import type { JourneyListEvent } from '../JourneyList'
-import type { ContentType, JourneyStatusFilter } from '../JourneyListView'
+import type {
+  ContentType,
+  JourneyListDisplay,
+  JourneyStatusFilter
+} from '../JourneyListView'
+import { JourneyListRows, type JourneyListRowItem } from '../JourneyListRow'
 import { SortOrder } from '../JourneySort'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../LoadingJourneyList'
@@ -105,6 +114,7 @@ export interface JourneyListContentProps {
   user?: User | null
   sortOrder?: SortOrder
   event?: JourneyListEvent
+  display?: JourneyListDisplay
 }
 
 export function JourneyListContent({
@@ -112,7 +122,8 @@ export function JourneyListContent({
   status,
   user,
   sortOrder,
-  event
+  event,
+  display = 'grid'
 }: JourneyListContentProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -417,6 +428,45 @@ export function JourneyListContent({
   const usePriorityList =
     status === 'active' && contentType === 'journeys' && user != null
 
+  const listRows = useMemo(() => {
+    if (sortedJourneys == null) return undefined
+
+    if (!usePriorityList) {
+      return sortedJourneys.map((journey) => ({ journey }))
+    }
+
+    const newJourneys: JourneyListRowItem[] = []
+    const actionRequiredJourneys: JourneyListRowItem[] = []
+    const activeJourneys: JourneyListRowItem[] = []
+
+    sortedJourneys.forEach((journey) => {
+      const currentUserJourney = journey.userJourneys?.find(
+        (userJourney) => userJourney.user?.id === user?.id
+      )
+
+      if (
+        currentUserJourney?.role === UserJourneyRole.owner &&
+        journey.userJourneys?.find(
+          (userJourney) => userJourney.role === UserJourneyRole.inviteRequested
+        ) != null
+      ) {
+        actionRequiredJourneys.push({
+          journey,
+          variant: JourneyCardVariant.actionRequired
+        })
+      } else if (
+        currentUserJourney != null &&
+        currentUserJourney.openedAt == null
+      ) {
+        newJourneys.push({ journey, variant: JourneyCardVariant.new })
+      } else {
+        activeJourneys.push({ journey })
+      }
+    })
+
+    return [...actionRequiredJourneys, ...newJourneys, ...activeJourneys]
+  }, [sortedJourneys, usePriorityList, user?.id])
+
   // Get dialog labels based on contentType and status
   const getDialogLabels = (): {
     primary: { title: string; submitLabel: string; message: string }
@@ -570,7 +620,9 @@ export function JourneyListContent({
             }
           }}
         >
-          {usePriorityList ? (
+          {display === 'list' && listRows != null ? (
+            <JourneyListRows rows={listRows} refetch={refetch} />
+          ) : usePriorityList ? (
             <>
               <ActivePriorityList
                 journeys={data?.journeys ?? []}
