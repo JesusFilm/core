@@ -3,7 +3,7 @@ import { createRef } from 'react'
 
 import { SearchOverlay } from './SearchOverlay'
 
-jest.mock('next-i18next', () => ({
+jest.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string) => key
   })

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { Position, ReactFlowProvider } from 'reactflow'
+import { Position, ReactFlowProvider } from '@xyflow/react'
 
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 

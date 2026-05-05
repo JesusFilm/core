@@ -3,7 +3,7 @@ import StopRoundedIcon from '@mui/icons-material/StopRounded'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import TextField from '@mui/material/TextField'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import {
   FormEvent,
   KeyboardEvent,

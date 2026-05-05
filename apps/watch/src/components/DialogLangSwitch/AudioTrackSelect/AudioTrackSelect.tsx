@@ -1,5 +1,5 @@
 import { Languages } from 'lucide-react'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useId, useMemo } from 'react'
 
 import { type Language, useLanguages } from '../../../libs/useLanguages'

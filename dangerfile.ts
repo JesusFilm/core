@@ -47,8 +47,16 @@ export default async () => {
     markdown(`> (pr title - ${danger.github.pr.title}): \n${errors}`)
   }
 
+  // Crowdin translation PRs are auto-merged by the crowdin-auto-merge workflow,
+  // which approves via the CI Bot App. GitHub Apps cannot be assignees, so skip
+  // the assignee check for these PRs. Identified by repo + branch + title triple.
+  const isCrowdinTranslationPR =
+    danger.github.pr.head.repo.full_name === 'JesusFilm/core' &&
+    danger.github.pr.head.ref === '00-00-CI-chore-i10n-updates' &&
+    danger.github.pr.title === 'chore: new crowdin translations'
+
   // check PR has assignee
-  if (danger.github.pr.assignee === null) {
+  if (!isCrowdinTranslationPR && danger.github.pr.assignee === null) {
     fail('Please assign someone to merge this PR.')
   }
 
