@@ -57,7 +57,9 @@ export function JourneyListView({
   const { activeTeam } = useTeam()
   const isSharedWithMeMode = activeTeam === null
 
-  // Content type options (Journeys, Templates, Collections)
+  // Content type options (Journeys, Templates).
+  // The Collections panel lives under Team Templates and is gated by the
+  // `teamTemplateCollection` flag in JourneyList.tsx.
   // Use shorter labels on mobile to prevent overflow
   const contentTypeOptions: ContentTypeOption[] = [
     {
@@ -69,11 +71,6 @@ export function JourneyListView({
       queryParam: 'templates',
       displayValue: breakpoints.sm ? t('Team Templates') : t('Templates'),
       tabIndex: 1
-    },
-    {
-      queryParam: 'collections',
-      displayValue: t('Collections'),
-      tabIndex: 2
     }
   ]
 

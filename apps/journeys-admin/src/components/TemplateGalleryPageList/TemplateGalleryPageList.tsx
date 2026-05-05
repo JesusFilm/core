@@ -95,20 +95,21 @@ export function TemplateGalleryPageList(): ReactElement {
     { fetchPolicy: 'cache-and-network' }
   ) as ReturnType<typeof useAdminJourneysQuery> & { data?: GetAdminJourneys }
 
-  // Refetch when the user navigates BACK to the Collections tab.
+  // Refetch when the user navigates BACK to the Team Templates tab (which
+  // renders this component when the `teamTemplateCollection` flag is on).
   // The shared TabPanel keeps this component mounted across tab switches once
   // visible (only flips its `unmount` state false-once), so cache-and-network
   // alone won't refire the network on re-visit. Watch the `type` query
-  // param and refetch both lists whenever it becomes `collections`.
-  const isCollectionsTabActive = router.query.type === 'collections'
+  // param and refetch both lists whenever it becomes `templates`.
+  const isTemplatesTabActive = router.query.type === 'templates'
   useEffect(() => {
-    if (!isCollectionsTabActive || teamId == null) return
+    if (!isTemplatesTabActive || teamId == null) return
     void journeysQuery.refetch()
     void collectionsQuery.refetch()
     // refetch fns identity changes every render; depending on the active-tab
     // signal + teamId is the right semantics.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCollectionsTabActive, teamId])
+  }, [isTemplatesTabActive, teamId])
 
   const [templateGalleryPageAssignJourney] =
     useTemplateGalleryPageAssignJourneyMutation()
@@ -179,9 +180,15 @@ export function TemplateGalleryPageList(): ReactElement {
   const editAvailableJourneys = useMemo<readonly Journey[]>(() => {
     if (editTarget == null) return unsectioned
     const seen = new Set(unsectioned.map((j) => j.id))
-    const own = editTarget.templates.filter((tpl) => !seen.has(tpl.id))
+    // Resolve each template through journeyById so the picker always sees
+    // the full Journey shape (the gallery fragment only carries id/title
+    // and would not satisfy Journey on its own).
+    const own = editTarget.templates
+      .filter((tpl) => !seen.has(tpl.id))
+      .map((tpl) => journeyById.get(tpl.id))
+      .filter((j): j is Journey => j != null)
     return [...unsectioned, ...own]
-  }, [unsectioned, editTarget])
+  }, [unsectioned, editTarget, journeyById])
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
