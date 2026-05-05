@@ -40,6 +40,7 @@ interface ConversationProps {
 }
 
 const NEAR_BOTTOM_THRESHOLD_PX = 24
+const BOTTOM_FADE_HEIGHT_PX = 56
 
 export function Conversation({
   children,
@@ -52,6 +53,12 @@ export function Conversation({
   const wasNearBottomRef = useRef(true)
   const isFirstRenderRef = useRef(true)
   const [isAtBottom, setIsAtBottom] = useState(true)
+  const fadeBeforeInput = bottomClearance > 0
+  const bottomMask = fadeBeforeInput
+    ? `linear-gradient(to bottom, black 0, black calc(100% - ${
+        bottomClearance + BOTTOM_FADE_HEIGHT_PX
+      }px), transparent calc(100% - ${bottomClearance}px), transparent 100%)`
+    : undefined
 
   const evaluateAtBottom = useCallback(() => {
     const el = scrollRef.current
@@ -142,6 +149,12 @@ export function Conversation({
           overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
+          ...(bottomMask != null
+            ? {
+                maskImage: bottomMask,
+                WebkitMaskImage: bottomMask
+              }
+            : {}),
           scrollbarWidth: 'thin',
           scrollbarColor: `${SCROLLBAR_THUMB} transparent`,
           '&::-webkit-scrollbar': {
@@ -168,7 +181,9 @@ export function Conversation({
             flexDirection: 'column',
             gap: 1,
             pt: 1,
-            pb: `${8 + bottomClearance}px`
+            pb: `${
+              8 + bottomClearance + (fadeBeforeInput ? BOTTOM_FADE_HEIGHT_PX : 0)
+            }px`
           }}
         >
           {children}
