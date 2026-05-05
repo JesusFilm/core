@@ -1,7 +1,12 @@
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
-import { MenuControl, SortControl, StatusFilterControl } from '../Controls'
+import {
+  DisplayControl,
+  MenuControl,
+  SortControl,
+  StatusFilterControl
+} from '../Controls'
 import type { SharedModeProps } from '../shared'
 
 export interface SharedWithMeModeProps extends SharedModeProps {}
@@ -11,6 +16,8 @@ export const SharedWithMeMode = ({
   handleStatusChange,
   sortOrder,
   setSortOrder,
+  display,
+  setDisplay,
   setActiveEvent,
   renderList
 }: SharedWithMeModeProps): ReactElement => (
@@ -30,6 +37,7 @@ export const SharedWithMeMode = ({
         handleStatusChange={handleStatusChange}
       />
       <SortControl sortOrder={sortOrder} setSortOrder={setSortOrder} />
+      <DisplayControl display={display} setDisplay={setDisplay} />
       <MenuControl setActiveEvent={setActiveEvent} />
     </Box>
     {/* Journeys content - rendered directly without TabPanel */}

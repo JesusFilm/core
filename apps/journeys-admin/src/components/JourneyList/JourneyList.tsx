@@ -106,6 +106,7 @@ export function JourneyList({
         user={contentType === 'journeys' ? user : undefined}
         sortOrder={sortOrder}
         event={eventForThisContentType}
+        display={router?.query?.view === 'list' ? 'list' : 'grid'}
       />
     )
   }
