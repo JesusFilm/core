@@ -173,7 +173,7 @@ describe('CopyToTeamDialog', () => {
       await waitFor(() => expect(handleSubmitActionMock).toHaveBeenCalled())
     })
 
-    it('should not update team state when shouldUpdateTeamState is false', async () => {
+    it('should update team state when a single team is available', async () => {
       const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> =
         {
           request: {
@@ -250,8 +250,9 @@ describe('CopyToTeamDialog', () => {
       fireEvent.click(muiSelectOptions)
       await waitFor(() => fireEvent.click(getByText('Copy')))
 
-      // Team state should not be updated when shouldUpdateTeamState is false
-      expect(updateLastActiveTeamIdMock.result).not.toHaveBeenCalled()
+      await waitFor(() =>
+        expect(updateLastActiveTeamIdMock.result).toHaveBeenCalled()
+      )
       await waitFor(() => expect(handleSubmitActionMock).toHaveBeenCalled())
     })
 
