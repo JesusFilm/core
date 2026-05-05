@@ -215,6 +215,9 @@ export function CollectionDialog({
             fieldError === 'creatorImageSrc' ||
             fieldError === 'title')
         ) {
+          // Mark the field as touched so the error renders even if the
+          // user submitted without focusing it first.
+          await helpers.setFieldTouched(fieldError, true, false)
           helpers.setFieldError(fieldError, error.message)
           return
         }
@@ -818,13 +821,26 @@ export function CollectionDialog({
                             fullWidth
                             variant="filled"
                             value={values.slug}
-                            onChange={handleChange}
+                            // Slugify on every keystroke so the input
+                            // mirrors what the backend will accept: trim,
+                            // lowercase, swap whitespace + invalid chars
+                            // for dashes, collapse runs, and clip leading
+                            // dashes. Trailing dashes stay during typing
+                            // so the user can still type "foo-bar".
+                            onChange={async (event) => {
+                              const slugified = event.target.value
+                                .toLowerCase()
+                                .replace(/[^a-z0-9-]+/g, '-')
+                                .replace(/-+/g, '-')
+                                .replace(/^-+/, '')
+                              await setFieldValue('slug', slugified)
+                            }}
                             onBlur={handleBlur}
                             error={touched.slug === true && Boolean(errors.slug)}
                             helperText={
                               (touched.slug === true && errors.slug) ||
                               t(
-                                'Changing the slug breaks existing public links to this collection.'
+                                'Used in the public URL. Must be unique across your collections — changing it breaks existing links.'
                               )
                             }
                           />
