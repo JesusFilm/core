@@ -15,9 +15,9 @@ import {
 import {
   ASSISTANT_FG,
   DIVIDER,
-  SCROLL_PILL_SHADOW,
   SCROLLBAR_THUMB,
   SCROLLBAR_THUMB_HOVER,
+  SCROLL_PILL_SHADOW,
   SURFACE
 } from '../AiChat/chatStyles'
 
