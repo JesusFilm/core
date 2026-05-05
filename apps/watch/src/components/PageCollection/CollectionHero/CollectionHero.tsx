@@ -1,6 +1,6 @@
 import last from 'lodash/last'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'

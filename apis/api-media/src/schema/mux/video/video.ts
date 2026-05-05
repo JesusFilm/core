@@ -273,11 +273,19 @@ builder.mutationFields((t) => ({
         downloadable ?? true
       )
 
+      const r2Asset = await prisma.cloudflareR2.findFirst({
+        where: { publicUrl: r2PublicUrl },
+        select: { id: true }
+      })
+
       const muxVideo = await prisma.muxVideo.create({
         ...query,
         data: {
           assetId: muxAsset.id,
           userId: user.id,
+          name: originalFilename,
+          uploadUrl: r2PublicUrl,
+          uploadId: r2Asset?.id,
           downloadable: downloadable ?? true
         }
       })

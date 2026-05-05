@@ -2,7 +2,7 @@ import AddOutlined from '@mui/icons-material/AddOutlined'
 import KeyboardArrowDownOutlined from '@mui/icons-material/KeyboardArrowDownOutlined'
 import LanguageOutlined from '@mui/icons-material/LanguageOutlined'
 import dynamic from 'next/dynamic'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
 import { useLanguages } from '../../../libs/useLanguages'

@@ -255,8 +255,7 @@ describe('UseThisTemplateButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   `/templates/${journeyId}?createNew=true`
-                ),
-                login: true
+                )
               }
             },
             undefined,
@@ -289,8 +288,7 @@ describe('UseThisTemplateButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   `/templates/${journeyId}?createNew=true`
-                ),
-                login: false
+                )
               }
             },
             undefined,
@@ -342,8 +340,7 @@ describe('UseThisTemplateButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   `/templates/${journeyId}?createNew=true`
-                ),
-                login: true
+                )
               }
             },
             undefined,
@@ -376,8 +373,7 @@ describe('UseThisTemplateButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   `/templates/${journeyId}?createNew=true`
-                ),
-                login: false
+                )
               }
             },
             undefined,
@@ -429,8 +425,7 @@ describe('UseThisTemplateButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   `/templates/${journeyId}?createNew=true`
-                ),
-                login: true
+                )
               }
             },
             undefined,
@@ -463,8 +458,7 @@ describe('UseThisTemplateButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   `/templates/${journeyId}?createNew=true`
-                ),
-                login: false
+                )
               }
             },
             undefined,

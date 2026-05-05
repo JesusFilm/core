@@ -84,7 +84,8 @@ const mockJourney: Journey = {
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
   fromTemplateId: null,
-  customizable: null
+  customizable: null,
+  showAssistant: null
 }
 
 async function dropTestVideo(): Promise<void> {
