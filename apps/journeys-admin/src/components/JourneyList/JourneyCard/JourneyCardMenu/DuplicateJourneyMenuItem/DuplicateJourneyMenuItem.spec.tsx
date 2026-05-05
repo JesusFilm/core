@@ -1082,6 +1082,85 @@ describe('DuplicateJourneys', () => {
       // The duplicate snackbar must NOT show when the translation flow errors.
       expect(screen.queryByText('Journey Copied')).not.toBeInTheDocument()
       expect(screen.queryByText('Journey Duplicated')).not.toBeInTheDocument()
+      // The duplicated journey must persist; the menu wrapper must NOT close
+      // and template stats must NOT be refetched on subscription error.
+      expect(handleCloseMenu).not.toHaveBeenCalled()
+      expect(refetchTemplateStats).not.toHaveBeenCalled()
+    })
+
+    it('shows the duplicate-failure snackbar and does not start translation when journeyDuplicate errors', async () => {
+      const journeyDuplicateErrorMock = {
+        request: {
+          query: JOURNEY_DUPLICATE,
+          variables: {
+            id: 'journey-id',
+            teamId: 'destinationTeamId'
+          }
+        },
+        error: new Error('Duplicate failed')
+      }
+
+      const translateSubscriptionMock = {
+        request: {
+          query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
+          variables: {
+            journeyId: 'duplicatedJourneyId',
+            name: 'Default Journey Heading',
+            journeyLanguageName: '',
+            textLanguageId: '496',
+            textLanguageName: 'Français',
+            userLanguageId: '529',
+            userLanguageName: ''
+          }
+        },
+        result: jest.fn(() => ({
+          data: {
+            journeyAiTranslateCreateSubscription: {
+              progress: 100,
+              message: 'Translation completed',
+              journey: null,
+              __typename: 'JourneyAiTranslateProgress'
+            }
+          }
+        }))
+      }
+
+      render(
+        <MockedProvider
+          mocks={[
+            languagesWithFrenchMock,
+            teamsMock,
+            updateLastActiveTeamIdMock,
+            journeyDuplicateErrorMock,
+            translateSubscriptionMock
+          ]}
+        >
+          <SnackbarProvider>
+            <TeamProvider>
+              <DuplicateJourneyMenuItem
+                id="journey-id"
+                handleCloseMenu={handleCloseMenu}
+                journey={defaultJourney}
+              />
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => expect(teamsMock.result).toHaveBeenCalled())
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Duplicate' }))
+      expect(
+        await screen.findByText('Copy to Another Team')
+      ).toBeInTheDocument()
+      await selectDestinationTeam()
+      await toggleTranslationAndPickFrench()
+      fireEvent.click(screen.getByRole('button', { name: 'Create' }))
+
+      expect(
+        await screen.findByText('Failed to duplicate journey')
+      ).toBeInTheDocument()
+      expect(translateSubscriptionMock.result).not.toHaveBeenCalled()
+      expect(handleCloseMenu).not.toHaveBeenCalled()
     })
 
     it('refetches template stats after a translated copy completes', async () => {

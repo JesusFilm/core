@@ -65,10 +65,13 @@ export function DuplicateJourneyMenuItem({
     variables: translationVariables,
     skip: translationVariables == null,
     onError(error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      enqueueSnackbar(
+        error.message !== '' ? error.message : t('Failed to translate journey'),
+        {
+          variant: 'error',
+          preventDuplicate: true
+        }
+      )
       setLoading(false)
       setTranslationVariables(undefined)
     },
