@@ -10,6 +10,10 @@ revised: 2026-05-01
 
 # Editor Asset Library
 
+> **How to read this plan.** This document is layered chronologically: each section reflects what was known and decided at its date. Earlier sections describe approaches that prototyping later invalidated and are kept for the decision trail, not as implementation guidance. The current source of truth for v1 (shipped) and v1.1 (next) is the **2026-05-01** section. The **2026-04-28 pivot** section above it is also current. Everything from "Enhancement Summary" downward is **historical** — it describes the pre-pivot Relay/Connection-based design that was prototyped, evaluated, and rejected.
+>
+> Prototype work (PR #9102, NES-1614) is the input that drove the supersession. As we move from prototype → production, treat each prototype finding as a candidate plan revision: capture what shipped, what's deferred, what's been ruled out, and feed those into the Linear milestones that track the path to release.
+
 ## 2026-04-28 Approach pivot — supersedes prior sections
 
 A prototype pass surfaced a fundamental issue with the original `Block`-table-as-source-of-truth premise: **`Block.src` is overwritten in place** by `imageBlockUpdate` when a user picks a new image on the same card. The first cover creates a `Block` row; every subsequent pick on that card mutates that same row's `src`. Confirmed in `apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card/BackgroundMedia/Image/BackgroundMediaImage.tsx:221-263`.
@@ -83,6 +87,28 @@ The "fourth Library tab" with `imageBlocksConnection` from the original plan **i
 
 The `Connection`-style refactor of `getMyCloudflareImages` and `getMyMuxVideos` was prototyped and **reverted** before merge — overengineered for the actual UX requirement. Both resolvers ship as backward-compatible flat arrays with offset/limit pagination. Documented for posterity so the next person doesn't re-introduce it.
 
+### Production rollout — `mediaLibrary` LaunchDarkly flag
+
+v1 is currently merged but not yet generally available. Before going live we gate the new UI behind the existing **`mediaLibrary`** LaunchDarkly flag so it can be tested in production with a controlled cohort before being turned on for everyone.
+
+- **Flag name:** `mediaLibrary` (already provisioned in LaunchDarkly; serves `true` when on).
+- **Access pattern:** `const { mediaLibrary } = useFlags()` from `@core/shared/ui/FlagsProvider` — the same pattern used by `editorAnalytics` in `apps/journeys-admin/src/components/Editor/Toolbar/Toolbar.tsx:92` and similar editor flags.
+- **Surfaces to gate:**
+  - `MyCloudflareImagesGrid` mount in the Custom tab (`CustomImage.tsx`) — render only when `mediaLibrary` is true.
+  - `MyCloudflareImagesGrid` mount in the AI tab (`AIGallery.tsx`) — same.
+  - `MyMuxVideosGrid` mount in `VideoFromMux.tsx` — same.
+- **What is NOT gated:**
+  - The `isAi` column on `CloudflareImage` and the `isAi` value written by upload/URL/AI mutations. These are additive, schema-only, and harmless when the UI is off — leaving them on means cohorts who flip the flag on later already have populated history.
+  - The deterministic `orderBy` on `getMyMuxVideos`. Pure correctness improvement, no behavior change for existing list consumers.
+  - Resolver argument changes (`isAi`, future `teamId`). Optional args; off-by-default.
+- **Default behavior with flag off:** the editor pickers behave exactly as they did pre-PR-#9102 — no "Your uploads" / "Your generations" grids, no behavior change in upload, AI, or Mux flows.
+- **Rollout steps:**
+  1. Wrap the three grid mount points in `mediaLibrary && (...)`.
+  2. Verify with the flag off: existing pickers unchanged.
+  3. Verify with the flag on for a test user: grids appear, picking applies via `onChange`, refetch-on-upload works.
+  4. Roll out to internal users → wider beta → 100%.
+- **Tests:** add a flag-off render test for each gated component to lock in the "feature absent" branch and prevent accidental ungated regression.
+
 ### v1.1 — team-shared visibility (replaces the ACTIVE_TEAM material in original Backend / Architecture / Implementation Phases sections)
 
 Goal: the same per-tab grids surface assets uploaded by *teammates* in the user's active team, alongside their own.
@@ -96,6 +122,7 @@ Goal: the same per-tab grids surface assets uploaded by *teammates* in the user'
 - **No schema changes** to `MuxVideo` / `CloudflareImage`. No `teamId` column, no migration, no backfill — team affiliation is computed dynamically from current `UserTeam` rows.
 - **Account deletion is already handled correctly** — verified against `api-users/userDeleteConfirm` + `api-journeys-modern/userDeleteJourneysConfirm`. Neither flow touches `MuxVideo` or `CloudflareImage`. A deleted user's `UserTeam` rows are hard-deleted; their assets automatically vanish from team galleries (the `userId IN (...)` set no longer includes them) while existing journey blocks keep playing — Mux/Cloudflare playback URLs are public, so playback survives. The lingering `userId` reference is a UUID tombstone with no PII attached.
 - **Out of scope** for v1.1: deletion/management of teammates' assets, multi-team merged views, signed/private playback IDs, uploader attribution UI (deferred to v1.2 if product asks), backfilling team scope onto historical assets, storage quotas per team.
+- **Quick-start (Template Customization) flow is out of scope.** Based on Lyuba's feedback, surfacing per-tab history inside the quick-start flow doesn't quite make sense for that flow's intent — first-run template setup is a different mental model from editor re-use. Re-pick from history applies only inside the editor's image and video pickers. We can revisit adding it to the quick-start later if it turns out to help.
 
 #### Resolver changes (additive, non-breaking)
 
@@ -158,7 +185,7 @@ Both resolvers' implementation:
 #### Phasing
 
 - **1.1.1 — Backend**: optional `teamId` arg + direct Prisma membership lookup on both `getMyCloudflareImages` and `getMyMuxVideos`. Tests above. Ship behind no flag (additive arg = backward compatible).
-- **1.1.2 — Frontend**: thread `useTeam().activeTeam.id` to the grids, mount second "Team uploads" grid in each affected tab/screen, update Apollo cache keys.
+- **1.1.2 — Frontend**: thread `useTeam().activeTeam.id` to the grids, mount second "Team uploads" grid in each affected tab/screen, update Apollo cache keys. Both grids stay inside the existing `mediaLibrary` flag gate — v1.1 does not introduce a separate flag.
 - **1.1.3 (optional, deferred)**: uploader attribution chip on each tile (federation to `api-users.User`). Skip until product asks.
 
 #### Risk surface
@@ -174,6 +201,15 @@ The original (pre-pivot) plan and the deepening notes (lines 62–101) reference
 ---
 
 ## Enhancement Summary
+
+> ⚠️ **Historical — superseded by the 2026-04-28 pivot and 2026-05-01 v1/v1.1 sections above.**
+>
+> Everything from this point onward describes the original Relay-Connection / `imageBlocksConnection` / `ACTIVE_TEAM` server-derivation design. **That approach was prototyped and rejected.** Notably:
+> - The Relay Connection migration of `getMyCloudflareImages` / `getMyMuxVideos` was reverted before merge — v1 ships offset/limit on the existing list-returning resolvers.
+> - The `Block`-table-as-source-of-truth premise was invalidated (`Block.src` is overwritten in place).
+> - The standalone Library tab and `imageBlocksConnection` resolver were dropped in favor of per-tab history grids.
+>
+> Read this section for context on *why* those decisions were made, not as a spec to implement. New work should be scoped against the v1.1 section.
 
 **Deepened:** 2026-04-28 with 3 best-practices researchers (Pothos cursor + Apollo cache + MUI tabs) and 5 reviewers (performance, security, simplicity, architecture, TypeScript).
 
