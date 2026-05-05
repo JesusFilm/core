@@ -233,8 +233,6 @@ export function CopyToTeamMenuItem({
             translationData?.journeyAiTranslateCreateSubscription.message ?? ''
         }}
         isTranslating={translationVariables != null}
-        journeyIsTemplate={journeyData?.template ?? false}
-        journeyFromTemplateId={journeyData?.fromTemplateId}
       />
     </>
   )

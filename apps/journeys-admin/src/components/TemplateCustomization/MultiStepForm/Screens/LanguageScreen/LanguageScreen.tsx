@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Form, Formik } from 'formik'
-import uniqBy from 'lodash/uniqBy'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
@@ -34,8 +33,6 @@ import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import { LOCALE_LANGUAGES } from '../../../../../../middleware'
 import { useAuth } from '../../../../../libs/auth'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
-import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
-import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
 import { usePageWrapperStyles } from '../../../../PageWrapper/utils/usePageWrapperStyles'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
@@ -84,72 +81,7 @@ export function LanguageScreen({
   const steps = transformer(journey?.blocks ?? []) as Array<
     TreeBlock<StepBlock>
   >
-  // If the user is not authenticated, useAuth returns { user: null }
-  const isParentTemplate = journey?.fromTemplateId == null
   const isNextDisabled = (!isSignedIn && !isGuestFlowEnabled) || loading
-
-  const {
-    languages: childJourneyLanguages,
-    languagesJourneyMap: childJourneyLanguagesJourneyMap
-  } = useGetChildTemplateJourneyLanguages({
-    variables: {
-      where: {
-        fromTemplateId: isParentTemplate
-          ? journey?.id
-          : journey?.fromTemplateId,
-        template: true
-      }
-    },
-    skip: journey?.id == null
-  })
-
-  const {
-    languages: parentJourneyLanguages,
-    languagesJourneyMap: parentJourneyLanguagesJourneyMap
-  } = useGetParentTemplateJourneyLanguages({
-    variables: {
-      // type cast as query will be skipped if variable is null
-      where: { ids: [journey?.fromTemplateId as string], template: true }
-    },
-    skip: isParentTemplate
-  })
-
-  const currentJourneyLanguage = isParentTemplate
-    ? {
-        id: journey?.language?.id ?? '',
-        name: journey?.language?.name ?? [],
-        slug: null
-      }
-    : null
-  const languages = uniqBy(
-    [
-      ...parentJourneyLanguages,
-      ...(currentJourneyLanguage != null
-        ? [...childJourneyLanguages, currentJourneyLanguage]
-        : childJourneyLanguages)
-    ],
-    (lang) => lang.id
-  )
-
-  const currentLanguageId = journey?.language?.id
-  const currentJourneyId = journey?.id
-  const filteredChildJourneyLanguagesJourneyMap = (() => {
-    const mapArray = Object.entries(
-      childJourneyLanguagesJourneyMap ?? {}
-    ).filter(
-      ([langId, journeyId]) =>
-        langId !== currentLanguageId || journeyId === currentJourneyId
-    )
-    const map = Object.fromEntries(mapArray)
-    if (journey?.language?.id != null && journey?.id != null) {
-      map[journey.language.id] = journey.id
-    }
-    return map
-  })()
-  const languagesJourneyMap = {
-    ...parentJourneyLanguagesJourneyMap,
-    ...filteredChildJourneyLanguagesJourneyMap
-  }
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',
@@ -362,11 +294,7 @@ export function LanguageScreen({
       }
 
       const selectedLanguageId = values.languageSelect?.id ?? ''
-      const needsTranslation =
-        languagesJourneyMap?.[selectedLanguageId] == null &&
-        selectedLanguageId !== journey?.language?.id
-
-      const journeyId = languagesJourneyMap?.[selectedLanguageId] ?? journey?.id
+      const needsTranslation = selectedLanguageId !== journey.language.id
 
       if (shouldSkipDuplicate(journey, values) && !needsTranslation) {
         handleNext()
@@ -376,7 +304,7 @@ export function LanguageScreen({
       const type = isSignedIn ? 'signedIn' : 'guest'
       const duplicatedJourneyId = await handleJourneyDuplication(
         type,
-        journeyId,
+        journey.id,
         isSignedIn ? values.teamSelect : undefined
       )
 

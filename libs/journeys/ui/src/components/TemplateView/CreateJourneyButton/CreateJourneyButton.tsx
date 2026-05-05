@@ -357,8 +357,6 @@ export function CreateJourneyButton({
               : undefined
           }
           isTranslating={translationVariables != null}
-          journeyIsTemplate={journeyDataToUse?.template ?? false}
-          journeyFromTemplateId={journeyDataToUse?.fromTemplateId}
         />
       )}
     </>
