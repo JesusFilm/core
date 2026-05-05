@@ -27,8 +27,8 @@ After this ticket merges and deploys, **production behaviour is unchanged**: `Jo
 ### Material changes from the v1 draft (backend-relevant)
 
 1. **Drop `@default(false)` on the new Prisma columns — keep them as bare `Boolean?`.** With a `false` default, every newly created `CardBlock` ships as `false` (not `null`), and the per-card / per-journey transition fallback in the frontend plan collapses (a brand-new card in a legacy journey would lose chat). Bare nullable also matches the codebase precedent (`fullscreen`, `themeMode`, `customizable`, etc.).
-2. **Mark `Journey.showAssistant` `@deprecated` in this PR** (with `reason: "Use CardBlock.showAssistant"`). This unblocks GraphOS Studio usage tracking so we can know when it's safe to remove. Field stays in the schema for the frontend's transition fallback.
-3. **Match the existing CardBlock field exposure style** in Pothos: `t.boolean({ nullable: true, resolve: (block) => block.showAssistant })` rather than `t.exposeBoolean(...)`. Consistent with how `themeMode` / `themeName` / `fullscreen` are exposed in `card.ts`.
+2. **Mark `Journey.showAssistant` `@deprecated` in this PR** (with `reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624."`). This unblocks GraphOS Studio usage tracking so we can know when it's safe to remove. Field stays in the schema for the frontend's transition fallback.
+3. **Use the current CardBlock field exposure style** in Pothos: `t.exposeBoolean(...)` for the new nullable booleans. No transformation is needed, unlike `themeMode` / `themeName` enum casts or the non-null `fullscreen` fallback.
 4. **Drop the new fields from `CardBlockCreateInput`.** YAGNI — no caller sets them today. Add when NES-1557 (editor UI) needs them.
 5. **Promote the World-Cup SQL `UPDATE` into a hardened runbook** (transactional, `lock_timeout`, `RETURNING`, audit-table snapshot, mandatory `journeyId` + `typename = 'CardBlock'` predicates). Note: the runbook only takes effect once the frontend ticket has deployed.
 6. **Add a federation composition smoke step** after `nx generate-graphql api-gateway`: grep `apis/api-gateway/schema.graphql` for the new fields on `CardBlock` to confirm `@shareable` composed across both subgraphs. Required-commit list now includes all three regenerated `schema.graphql` files.
@@ -50,7 +50,7 @@ This ticket lands the data model and API surface that the frontend ticket will c
 ## Proposed Solution
 
 1. Add two **bare nullable** Boolean columns to `Block` (`showAssistant Boolean?`, `expandChatByDefault Boolean?`) — no `@default(false)`. They are only meaningful for `Block` rows with `typename = 'CardBlock'`; on every other typename they are dead columns. This mirrors the existing CardBlock-only column convention (`fullscreen`, `themeMode`, `themeName`, `customizable`).
-2. Expose both fields on `CardBlock` in **both** GraphQL surfaces (`api-journeys` SDL-first and `api-journeys-modern` Pothos), `@shareable` so the gateway composes them as a value-type field with parallel ownership. Use the resolver style already used for sibling CardBlock-only fields (explicit `resolve` returning `block.showAssistant`), not `t.exposeBoolean`.
+2. Expose both fields on `CardBlock` in **both** GraphQL surfaces (`api-journeys` SDL-first and `api-journeys-modern` Pothos), `@shareable` so the gateway composes them as a value-type field with parallel ownership. Use `t.exposeBoolean(...)` for the nullable boolean fields in Pothos.
 3. Extend `CardBlockUpdateInput` to accept both fields. **Do not** add them to `CardBlockCreateInput` — no caller sets them today, and NES-1557 (editor) will add them when it ships.
 4. Mark `Journey.showAssistant` `@deprecated` on both subgraphs. Field stays in the schema and the journey fragment.
 
@@ -99,18 +99,16 @@ If the migrate command hits the "non-interactive environment" error, use the man
 
 ### Pothos (`api-journeys-modern`)
 
-`apis/api-journeys-modern/src/schema/block/card/card.ts` — add to `fields` (mirror `themeMode` / `themeName` style):
+`apis/api-journeys-modern/src/schema/block/card/card.ts` — add to `fields` using the plain nullable boolean exposure style:
 
 ```ts
-showAssistant: t.boolean({
+showAssistant: t.exposeBoolean('showAssistant', {
   nullable: true,
-  description: 'When true, this card displays the AI chat button.',
-  resolve: (block) => block.showAssistant
+  description: 'When true, this card displays the AI chat button.'
 }),
-expandChatByDefault: t.boolean({
+expandChatByDefault: t.exposeBoolean('expandChatByDefault', {
   nullable: true,
-  description: 'When true, the chat drawer auto-opens on first visit to this card.',
-  resolve: (block) => block.expandChatByDefault
+  description: 'When true, the chat drawer auto-opens on first visit to this card.'
 })
 ```
 
@@ -130,7 +128,7 @@ expandChatByDefault: t.boolean({ required: false })
 ```ts
 showAssistant: t.exposeBoolean('showAssistant', {
   nullable: true,
-  deprecationReason: 'Use CardBlock.showAssistant. Removed once NES-1585 backfill completes.'
+  deprecationReason: 'Use CardBlock.showAssistant. Removal tracked in NES-1624.'
 })
 ```
 
@@ -153,7 +151,7 @@ expandChatByDefault: Boolean @shareable
 
 ```graphql
 showAssistant: Boolean
-  @deprecated(reason: "Use CardBlock.showAssistant. Removed once NES-1585 backfill completes.")
+  @deprecated(reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624.")
 ```
 
 `apis/api-journeys/src/app/modules/block/card/card.resolver.ts` — no change needed (CardBlock fields auto-resolve from the Prisma row in this resolver; only `fullscreen` has a custom resolver because its SDL is non-null and needs `?? false`). Skip the resolver-spec edit — passthrough is automatic.
@@ -360,7 +358,7 @@ Reordering risks: migrate-after-API → Prisma errors on missing columns; gatewa
 ### Internal references
 
 - Prisma model: `libs/prisma/journeys/db/schema.prisma:457` (`Journey.showAssistant`); `libs/prisma/journeys/db/schema.prisma:537` (`Block` model — append-point for new columns; precedent for bare `Boolean?` at lines 557, 578, 586, 587, 590, 600, 611, 634)
-- Modern Pothos CardBlock: `apis/api-journeys-modern/src/schema/block/card/card.ts:13` (precedent for `t.boolean({ resolve, nullable })` style at `fullscreen`, `themeMode`, `themeName`)
+- Modern Pothos CardBlock: `apis/api-journeys-modern/src/schema/block/card/card.ts:13` (plain nullable booleans use `t.exposeBoolean`; fields that transform values still use explicit resolvers)
 - Modern CardBlockUpdate input: `apis/api-journeys-modern/src/schema/block/card/inputs/cardBlockUpdateInput.ts:5`
 - Modern Journey type (for `@deprecated`): `apis/api-journeys-modern/src/schema/journey/journey.ts:169`
 - Block-update auth gate: `apis/api-journeys-modern/src/schema/block/service.ts:32` (`authorizeBlockUpdate` → `journeyAcl(Update)`)
