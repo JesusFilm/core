@@ -1372,6 +1372,11 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videoOrigins: [VideoOrigin!]! @join__field(graph: API_MEDIA) 
   videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
+  availableLanguagesIssues(limit: Int, offset: Int) : [AvailableLanguagesIssue!]! @join__field(graph: API_MEDIA) 
+  algoliaVideoDrift(limit: Int, offset: Int) : [AlgoliaVideoDrift!]! @join__field(graph: API_MEDIA) 
+  algoliaVariantDrift(limit: Int, offset: Int) : [AlgoliaVariantDrift!]! @join__field(graph: API_MEDIA) 
+  uploadStateIssues(limit: Int, offset: Int) : [UploadStateIssue!]! @join__field(graph: API_MEDIA) 
+  videoIssueSummary: VideoIssueSummary! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
@@ -2651,10 +2656,38 @@ type LanguageName @join__type(graph: API_LANGUAGES)  {
   language: Language!
 }
 
+type AlgoliaVariantDrift @join__type(graph: API_MEDIA)  {
+  variantId: ID
+  videoId: ID
+  kind: AlgoliaDriftKind
+}
+
+type AlgoliaVideoDrift @join__type(graph: API_MEDIA)  {
+  videoId: ID
+  videoTitle: String
+  kind: AlgoliaDriftKind
+  mismatches: [AlgoliaVideoDriftMismatch!]
+}
+
+type AlgoliaVideoDriftMismatch @join__type(graph: API_MEDIA)  {
+  field: String
+  expected: String
+  actual: String
+}
+
 type ArclightApiKey @join__type(graph: API_MEDIA, key: "key")  {
   key: String!
   desc: String
   defaultPlatform: DefaultPlatform!
+}
+
+type AvailableLanguagesIssue @join__type(graph: API_MEDIA)  {
+  videoId: ID
+  videoTitle: String
+  expected: [String!]
+  actual: [String!]
+  missing: [String!]
+  extra: [String!]
 }
 
 type BibleBook @join__type(graph: API_MEDIA)  {
@@ -3130,6 +3163,16 @@ type UnsplashUserLinks @join__type(graph: API_MEDIA)  {
   self: String!
 }
 
+type UploadStateIssue @join__type(graph: API_MEDIA)  {
+  r2AssetId: ID
+  fileName: String
+  videoId: ID
+  stage: UploadStage
+  r2CreatedAt: DateTime
+  muxVideoId: ID
+  muxReadyToStream: Boolean
+}
+
 type UserMediaProfile @join__type(graph: API_MEDIA)  {
   """
   The database UUID
@@ -3174,6 +3217,13 @@ type VideoImageAlt @join__type(graph: API_MEDIA)  {
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+type VideoIssueSummary @join__type(graph: API_MEDIA)  {
+  availableLanguagesCount: Int
+  algoliaVideoDriftCount: Int
+  algoliaVariantDriftCount: Int
+  uploadStateCount: Int
 }
 
 type VideoOrigin @join__type(graph: API_MEDIA)  {
@@ -3833,6 +3883,12 @@ enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
   bcp47 @join__enumValue(graph: API_LANGUAGES) 
 }
 
+enum AlgoliaDriftKind @join__type(graph: API_MEDIA)  {
+  missing_in_algolia @join__enumValue(graph: API_MEDIA) 
+  missing_in_db @join__enumValue(graph: API_MEDIA) 
+  mismatch @join__enumValue(graph: API_MEDIA) 
+}
+
 enum DefaultPlatform @join__type(graph: API_MEDIA)  {
   ios @join__enumValue(graph: API_MEDIA) 
   android @join__enumValue(graph: API_MEDIA) 
@@ -3918,6 +3974,12 @@ enum UnsplashColor @join__type(graph: API_MEDIA)  {
   green @join__enumValue(graph: API_MEDIA) 
   teal @join__enumValue(graph: API_MEDIA) 
   blue @join__enumValue(graph: API_MEDIA) 
+}
+
+enum UploadStage @join__type(graph: API_MEDIA)  {
+  no_mux @join__enumValue(graph: API_MEDIA) 
+  mux_not_ready @join__enumValue(graph: API_MEDIA) 
+  no_variant @join__enumValue(graph: API_MEDIA) 
 }
 
 enum VideoLabel @join__type(graph: API_MEDIA)  {

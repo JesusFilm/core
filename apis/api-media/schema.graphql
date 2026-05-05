@@ -1,6 +1,31 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
+enum AlgoliaDriftKind {
+  missing_in_algolia
+  missing_in_db
+  mismatch
+}
+
+type AlgoliaVariantDrift {
+  variantId: ID
+  videoId: ID
+  kind: AlgoliaDriftKind
+}
+
+type AlgoliaVideoDrift {
+  videoId: ID
+  videoTitle: String
+  kind: AlgoliaDriftKind
+  mismatches: [AlgoliaVideoDriftMismatch!]
+}
+
+type AlgoliaVideoDriftMismatch {
+  field: String
+  expected: String
+  actual: String
+}
+
 type ArclightApiKey
   @key(fields: "key")
 {
@@ -15,6 +40,15 @@ type AuthenticatedUser
 {
   id: ID! @external
   mediaUserRoles: [MediaRole!]!
+}
+
+type AvailableLanguagesIssue {
+  videoId: ID
+  videoTitle: String
+  expected: [String!]
+  actual: [String!]
+  missing: [String!]
+  extra: [String!]
 }
 
 interface BaseError {
@@ -776,6 +810,11 @@ type Query {
   videoOrigins: [VideoOrigin!]!
   videoEditions: [VideoEdition!]!
   videoEdition(id: ID!): VideoEdition
+  availableLanguagesIssues(limit: Int, offset: Int): [AvailableLanguagesIssue!]!
+  algoliaVideoDrift(limit: Int, offset: Int): [AlgoliaVideoDrift!]!
+  algoliaVariantDrift(limit: Int, offset: Int): [AlgoliaVariantDrift!]!
+  uploadStateIssues(limit: Int, offset: Int): [UploadStateIssue!]!
+  videoIssueSummary: VideoIssueSummary!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
   youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
@@ -1073,6 +1112,22 @@ type UnsplashUserLinks {
   self: String!
 }
 
+enum UploadStage {
+  no_mux
+  mux_not_ready
+  no_variant
+}
+
+type UploadStateIssue {
+  r2AssetId: ID
+  fileName: String
+  videoId: ID
+  stage: UploadStage
+  r2CreatedAt: DateTime
+  muxVideoId: ID
+  muxReadyToStream: Boolean
+}
+
 type UserMediaProfile {
   """The database UUID"""
   id: ID!
@@ -1189,6 +1244,13 @@ type VideoImageAlt {
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+type VideoIssueSummary {
+  availableLanguagesCount: Int
+  algoliaVideoDriftCount: Int
+  algoliaVariantDriftCount: Int
+  uploadStateCount: Int
 }
 
 enum VideoLabel {

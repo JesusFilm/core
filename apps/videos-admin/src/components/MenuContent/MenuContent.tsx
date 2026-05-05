@@ -1,4 +1,6 @@
+import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded'
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
+import ReportProblemRoundedIcon from '@mui/icons-material/ReportProblemRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 import VideoLibraryRoundedIcon from '@mui/icons-material/VideoLibraryRounded'
 import List from '@mui/material/List'
@@ -31,6 +33,18 @@ export function MenuContent(): ReactElement {
       text: 'Video Library',
       icon: <VideoLibraryRoundedIcon />,
       href: '/videos',
+      startsWith: true
+    },
+    {
+      text: 'Trouble Videos',
+      icon: <ReportProblemRoundedIcon />,
+      href: '/trouble-videos',
+      startsWith: true
+    },
+    {
+      text: 'Videos Upload State',
+      icon: <CloudUploadRoundedIcon />,
+      href: '/upload-state',
       startsWith: true
     }
   ]

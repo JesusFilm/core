@@ -85,6 +85,12 @@ async function main(): Promise<void> {
           './processImageBlurhash'
         )
       )
+      run(
+        await import(
+          /* webpackChunkName: "video-issues-summary" */
+          './videoIssuesSummary'
+        )
+      )
     })
   }
 

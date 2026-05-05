@@ -11,6 +11,12 @@ import { updateVideoVariantInAlgolia } from '../../../lib/algolia/algoliaVideoVa
 import { logger } from '../../../logger'
 import { builder } from '../../builder'
 
+import {
+  PRIMARY_VARIANT_LANGUAGE_ID,
+  buildExpectedAlgoliaVideo,
+  diffAlgoliaVideo
+} from './compareVideoToAlgolia'
+
 const getErrorString = (err: unknown): string => {
   if (err instanceof Error) {
     return err.message
@@ -105,7 +111,7 @@ builder.queryFields((t) => ({
               lengthInMilliseconds: true,
               downloadable: true
             },
-            where: { languageId: '529' },
+            where: { languageId: PRIMARY_VARIANT_LANGUAGE_ID },
             take: 1
           }
         }
@@ -115,23 +121,7 @@ builder.queryFields((t) => ({
         throw new GraphQLError(`Video with id ${videoId} not found`)
       }
 
-      const primaryVariant = video.variants[0]
-      const isVideoContent = primaryVariant?.hls != null
-      const isDownloadable =
-        video.label === 'collection' || video.label === 'series'
-          ? false
-          : (primaryVariant?.downloadable ?? false)
-      const expected = {
-        objectID: video.id,
-        mediaComponentId: video.id,
-        subType: video.label,
-        componentType: isVideoContent ? 'content' : 'container',
-        contentType: isVideoContent ? 'video' : 'none',
-        lengthInMilliseconds: primaryVariant?.lengthInMilliseconds ?? 0,
-        isDownloadable,
-        restrictViewArclight: video.restrictViewPlatforms.includes('arclight'),
-        keywords: video.keywords.map((k) => k.value).sort()
-      }
+      const expected = buildExpectedAlgoliaVideo(video)
 
       try {
         const record = await client.getObject({
@@ -139,38 +129,7 @@ builder.queryFields((t) => ({
           objectID: videoId
         })
 
-        const actual = {
-          objectID: record.objectID,
-          mediaComponentId: record.mediaComponentId,
-          subType: record.subType,
-          componentType: record.componentType,
-          contentType: record.contentType,
-          lengthInMilliseconds: record.lengthInMilliseconds,
-          isDownloadable: record.isDownloadable,
-          restrictViewArclight: record.restrictViewArclight,
-          keywords: Array.isArray(record.keywords)
-            ? [...(record.keywords as string[])].sort()
-            : []
-        }
-
-        const mismatches = Object.entries(expected)
-          .map(([key, value]) => {
-            const actualValue = (actual as Record<string, unknown>)[key]
-            const matches =
-              JSON.stringify(actualValue) === JSON.stringify(value)
-            return matches
-              ? null
-              : {
-                  field: key,
-                  expected: JSON.stringify(value),
-                  actual: JSON.stringify(actualValue)
-                }
-          })
-          .filter(Boolean) as Array<{
-          field: string
-          expected: string
-          actual: string
-        }>
+        const mismatches = diffAlgoliaVideo(expected, record)
 
         return {
           ok: mismatches.length === 0,
