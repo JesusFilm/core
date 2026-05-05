@@ -367,7 +367,7 @@ describe('LanguageScreen', () => {
     expect(handleNext).toHaveBeenCalled()
   })
 
-  it('duplicates the parent journey and triggers AI translation when a different language is selected', async () => {
+  it('duplicates the journey and triggers AI translation when a different language is selected', async () => {
     const mockJourneyDuplicateMockResult = jest
       .fn()
       .mockReturnValue({ ...mockJourneyDuplicate.result })

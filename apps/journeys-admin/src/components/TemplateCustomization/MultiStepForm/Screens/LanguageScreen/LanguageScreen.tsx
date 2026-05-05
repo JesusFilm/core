@@ -294,7 +294,7 @@ export function LanguageScreen({
       }
 
       const selectedLanguageId = values.languageSelect?.id ?? ''
-      const needsTranslation = selectedLanguageId !== journey.language.id
+      const needsTranslation = selectedLanguageId !== journey.language?.id
 
       if (shouldSkipDuplicate(journey, values) && !needsTranslation) {
         handleNext()
