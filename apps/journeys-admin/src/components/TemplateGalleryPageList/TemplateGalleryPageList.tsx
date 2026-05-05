@@ -7,11 +7,15 @@ import {
   MouseSensor,
   TouchSensor,
   closestCenter,
-  useDraggable,
   useDroppable,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
+import {
+  SortableContext,
+  rectSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -37,6 +41,7 @@ import { useTemplateGalleryPageAssignJourneyMutation } from '../../libs/useTempl
 import { useTemplateGalleryPageDeleteMutation } from '../../libs/useTemplateGalleryPageDeleteMutation'
 import { useTemplateGalleryPagePublishMutation } from '../../libs/useTemplateGalleryPagePublishMutation'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
+import { useTemplateGalleryPageReorderTemplateMutation } from '../../libs/useTemplateGalleryPageReorderTemplateMutation'
 import { useTemplateGalleryPageUnpublishMutation } from '../../libs/useTemplateGalleryPageUnpublishMutation'
 import { JourneyCard } from '../JourneyList/JourneyCard'
 
@@ -107,6 +112,8 @@ export function TemplateGalleryPageList(): ReactElement {
 
   const [templateGalleryPageAssignJourney] =
     useTemplateGalleryPageAssignJourneyMutation()
+  const [templateGalleryPageReorderTemplate] =
+    useTemplateGalleryPageReorderTemplateMutation()
   const [templateGalleryPagePublish] = useTemplateGalleryPagePublishMutation()
   const [templateGalleryPageUnpublish] =
     useTemplateGalleryPageUnpublishMutation()
@@ -253,6 +260,18 @@ export function TemplateGalleryPageList(): ReactElement {
     setActiveDragId(String(event.active.id))
   }
 
+  // Unified drop handler. Five branches resolved from (source, target):
+  // - unsectioned -> unsectioned        : no-op
+  // - unsectioned -> collection B       : assignJourney(journey, B)   [append]
+  // - collection A -> unsectioned       : assignJourney(journey, null)
+  // - collection A -> collection A,
+  //   different position                : reorderTemplate(A, journey, newOrder)
+  // - collection A -> collection B,
+  //   A != B                            : assignJourney(journey, B)   [append]
+  //
+  // Cross-collection drops always append to the end of the target for V1.
+  // Reorders are blocked on published collections (consistent with the
+  // membership guard).
   async function handleDragEnd(event: DragEndEvent): Promise<void> {
     setActiveDragId(null)
     if (dragInFlight) return
@@ -260,17 +279,38 @@ export function TemplateGalleryPageList(): ReactElement {
     if (over == null) return
 
     const templateId = String(active.id)
-    const target = parseDropZoneId(over.id)
-    if (target == null) return
-
     const sourceCollection = templateIdToCollection.get(templateId) ?? null
-    const targetCollectionId = target.kind === 'collection' ? target.id : null
 
-    // No-op transitions.
-    if (sourceCollection?.id === targetCollectionId) return
+    // dnd-kit/sortable hands us the OVER element id. It's either:
+    //  - a sortable item id (= a journey id) when dropping onto another
+    //    template card,
+    //  - or a droppable zone id (encoded via encodeDropZoneId) when dropping
+    //    onto an empty zone.
+    const overId = String(over.id)
+    let targetCollectionId: string | null
+    let targetIndex: number | null
+    const overZone = parseDropZoneId(overId)
+    if (overZone != null) {
+      targetCollectionId = overZone.kind === 'collection' ? overZone.id : null
+      targetIndex = null // dropped on the zone itself, not a specific item
+    } else {
+      // overId is another journey id. Look up its parent collection (or
+      // unsectioned) and its index inside that list.
+      const overCollection = templateIdToCollection.get(overId) ?? null
+      targetCollectionId = overCollection?.id ?? null
+      if (overCollection != null) {
+        targetIndex = overCollection.templates.findIndex(
+          (tpl) => tpl.id === overId
+        )
+      } else {
+        targetIndex = null // unsectioned: order is implicit, no reorder there
+      }
+    }
+
+    // unsectioned -> unsectioned: no-op
     if (sourceCollection == null && targetCollectionId == null) return
 
-    // Block drag involving a published collection (UI guard).
+    // Published guard on either side blocks every kind of move.
     if (sourceCollection?.status === 'published') return
     if (targetCollectionId != null) {
       const targetCollection = collectionsById.get(targetCollectionId)
@@ -279,13 +319,34 @@ export function TemplateGalleryPageList(): ReactElement {
 
     setDragInFlight(true)
     try {
-      // Atomic single-mutation drag-and-drop. The server enforces the
-      // single-membership invariant: assigning a journey already in another
-      // collection drops the existing join row in the same transaction;
-      // `pageId: null` unassigns (returns the journey to the flat list).
-      await templateGalleryPageAssignJourney({
-        variables: { journeyId: templateId, pageId: targetCollectionId }
-      })
+      const sameCollection =
+        sourceCollection != null &&
+        targetCollectionId != null &&
+        sourceCollection.id === targetCollectionId
+
+      if (sameCollection) {
+        // Intra-collection reorder. If we don't know the target index
+        // (dropped on the zone background), no-op rather than guess.
+        if (targetIndex == null) return
+        const sourceIndex = sourceCollection.templates.findIndex(
+          (tpl) => tpl.id === templateId
+        )
+        if (sourceIndex < 0 || sourceIndex === targetIndex) return
+        await templateGalleryPageReorderTemplate({
+          variables: {
+            pageId: sourceCollection.id,
+            journeyId: templateId,
+            order: targetIndex
+          }
+        })
+      } else {
+        // Membership change: cross-collection move, add from unsectioned, or
+        // remove back to unsectioned. The server enforces the
+        // single-membership invariant; passing pageId: null unassigns.
+        await templateGalleryPageAssignJourney({
+          variables: { journeyId: templateId, pageId: targetCollectionId }
+        })
+      }
     } catch (error) {
       enqueueSnackbar(
         error instanceof ApolloError || error instanceof Error
@@ -403,18 +464,23 @@ export function TemplateGalleryPageList(): ReactElement {
                 </Typography>
               </Box>
             ) : (
-              <Box sx={{ p: 1 }}>
-                <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
-                  {unsectioned.map((journey) => (
-                    <Grid
-                      key={journey.id}
-                      size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
-                    >
-                      <DraggableJourney journey={journey} />
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
+              <SortableContext
+                items={unsectioned.map((j) => j.id)}
+                strategy={rectSortingStrategy}
+              >
+                <Box sx={{ p: 1 }}>
+                  <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
+                    {unsectioned.map((journey) => (
+                      <Grid
+                        key={journey.id}
+                        size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
+                      >
+                        <DraggableJourney journey={journey} />
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
+              </SortableContext>
             )}
           </UnsectionedDroppable>
         </Box>
@@ -488,16 +554,25 @@ function DraggableJourneysGrid({
   publishedLock
 }: DraggableJourneysGridProps): ReactElement | null {
   if (journeys.length === 0) return null
+  // SortableContext gives intra-collection ordering: each item is both a
+  // draggable AND a drop target with a known index, so dnd-kit hands us
+  // the over-item id in handleDragEnd.
+  const ids = journeys.map((j) => j.id)
   return (
-    <Box sx={{ mt: -1, p: 1 }}>
-      <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
-        {journeys.map((journey) => (
-          <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}>
-            <DraggableJourney journey={journey} disabled={publishedLock} />
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+    <SortableContext items={ids} strategy={rectSortingStrategy}>
+      <Box sx={{ mt: -1, p: 1 }}>
+        <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
+          {journeys.map((journey) => (
+            <Grid
+              key={journey.id}
+              size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
+            >
+              <DraggableJourney journey={journey} disabled={publishedLock} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    </SortableContext>
   )
 }
 
@@ -539,8 +614,11 @@ function DraggableJourney({
   journey,
   disabled
 }: DraggableJourneyProps): ReactElement {
+  // useSortable plays the role useDraggable did before AND registers this
+  // node as a drop target with its index inside the SortableContext, so
+  // dnd-kit can hand us the over-item id in handleDragEnd.
   const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({ id: journey.id, disabled })
+    useSortable({ id: journey.id, disabled })
   const style =
     transform != null
       ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
