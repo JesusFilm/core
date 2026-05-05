@@ -654,5 +654,4 @@ describe('CopyToTeamDialog', () => {
       expect(handleCloseMenuMock).toHaveBeenCalled()
     })
   })
-
 })

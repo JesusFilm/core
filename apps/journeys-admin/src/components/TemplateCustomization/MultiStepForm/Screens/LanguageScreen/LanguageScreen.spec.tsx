@@ -249,11 +249,7 @@ describe('LanguageScreen', () => {
 
   it('skips duplicate and navigates to next screen when journey is not a template and language and team match', async () => {
     render(
-      <MockedProvider
-        mocks={[
-          mockGetLastActiveTeamIdAndTeams,
-        ]}
-      >
+      <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider
@@ -531,11 +527,7 @@ describe('LanguageScreen', () => {
     mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
 
     render(
-      <MockedProvider
-        mocks={[
-          mockGetLastActiveTeamIdAndTeams,
-        ]}
-      >
+      <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -825,11 +817,7 @@ describe('LanguageScreen', () => {
     }
 
     render(
-      <MockedProvider
-        mocks={[
-          mockGetLastActiveTeamIdAndTeams,
-        ]}
-      >
+      <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
         <SnackbarProvider>
           <JourneyProvider
             value={{ journey: journeyWithImage, variant: 'admin' }}
@@ -849,11 +837,7 @@ describe('LanguageScreen', () => {
 
   it('enables Next button for signed-in users when guest flow flag is off', async () => {
     render(
-      <MockedProvider
-        mocks={[
-          mockGetLastActiveTeamIdAndTeams,
-        ]}
-      >
+      <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -886,11 +870,7 @@ describe('LanguageScreen', () => {
     }
 
     render(
-      <MockedProvider
-        mocks={[
-          mockGetLastActiveTeamIdAndTeamsEmptyTeams,
-        ]}
-      >
+      <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeamsEmptyTeams]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -931,11 +911,7 @@ describe('LanguageScreen', () => {
     }
 
     render(
-      <MockedProvider
-        mocks={[
-          mockStaleTeamData,
-        ]}
-      >
+      <MockedProvider mocks={[mockStaleTeamData]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -1062,11 +1038,7 @@ describe('LanguageScreen', () => {
     }
 
     render(
-      <MockedProvider
-        mocks={[
-          mockTeamsQueryError,
-        ]}
-      >
+      <MockedProvider mocks={[mockTeamsQueryError]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -1094,11 +1066,7 @@ describe('LanguageScreen', () => {
     }
 
     render(
-      <MockedProvider
-        mocks={[
-          mockTeamsQueryError,
-        ]}
-      >
+      <MockedProvider mocks={[mockTeamsQueryError]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -1515,11 +1483,7 @@ describe('LanguageScreen', () => {
 
   it('renders all required components correctly for desktop', async () => {
     render(
-      <MockedProvider
-        mocks={[
-          mockGetLastActiveTeamIdAndTeams,
-        ]}
-      >
+      <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
