@@ -16,6 +16,7 @@ import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 import {
   TemplateGalleryPageCreateInput,
+  TemplateGalleryPageStatus,
   TemplateGalleryPageUpdateInput
 } from '../../../../__generated__/globalTypes'
 import { useTemplateGalleryPageCreateMutation } from '../../../libs/useTemplateGalleryPageCreateMutation'
@@ -60,6 +61,12 @@ export function CollectionDialog({
 
   const [templateGalleryPageCreate] = useTemplateGalleryPageCreateMutation()
   const [templateGalleryPageUpdate] = useTemplateGalleryPageUpdateMutation()
+
+  // Published collections allow metadata edits but lock the membership list —
+  // matches the DnD published-guard. Unpublish first to add or remove
+  // templates.
+  const isPublished =
+    collection?.status === TemplateGalleryPageStatus.published
 
   const initialValues: FormValues = {
     title: collection?.title ?? '',
@@ -290,6 +297,7 @@ export function CollectionDialog({
               <Autocomplete
                 multiple
                 disableCloseOnSelect
+                disabled={isPublished}
                 options={availableJourneys.slice()}
                 getOptionLabel={(option) => option.title}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -326,9 +334,13 @@ export function CollectionDialog({
                         : undefined
                     }
                     variant="filled"
-                    helperText={t(
-                      'Templates included in this collection. Drag-and-drop in the gallery view also updates this list.'
-                    )}
+                    helperText={
+                      isPublished
+                        ? t('Unpublish to change templates in this collection.')
+                        : t(
+                            'Templates included in this collection. Drag-and-drop in the gallery view also updates this list.'
+                          )
+                    }
                   />
                 )}
               />

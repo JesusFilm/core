@@ -127,18 +127,7 @@ export function CollectionCard({
           open={anchorEl != null}
           onClose={handleMenuClose}
         >
-          <Tooltip
-            title={isPublished ? t('Unpublish to edit') : ''}
-            placement="left"
-            disableHoverListener={!isPublished}
-            disableFocusListener={!isPublished}
-          >
-            <span>
-              <MenuItem onClick={handleEdit} disabled={isPublished}>
-                {t('Edit')}
-              </MenuItem>
-            </span>
-          </Tooltip>
+          <MenuItem onClick={handleEdit}>{t('Edit')}</MenuItem>
           {!isPublished && (
             <Tooltip
               title={
