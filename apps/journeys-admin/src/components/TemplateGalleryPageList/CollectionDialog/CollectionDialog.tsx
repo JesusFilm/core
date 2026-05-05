@@ -1,5 +1,7 @@
 import { ApolloError } from '@apollo/client'
 import Autocomplete from '@mui/material/Autocomplete'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -7,18 +9,21 @@ import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikHelpers } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { array, object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../__generated__/BlockFields'
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 import {
+  ImageBlockUpdateInput,
   TemplateGalleryPageCreateInput,
   TemplateGalleryPageStatus,
   TemplateGalleryPageUpdateInput
 } from '../../../../__generated__/globalTypes'
+import { ImageBlockEditor } from '../../Editor/Slider/Settings/Drawer/ImageBlockEditor'
 import { useTemplateGalleryPageCreateMutation } from '../../../libs/useTemplateGalleryPageCreateMutation'
 import { useTemplateGalleryPageUpdateMutation } from '../../../libs/useTemplateGalleryPageUpdateMutation'
 
@@ -35,6 +40,8 @@ interface FormValues {
   title: string
   description: string
   creatorName: string
+  creatorImageSrc: string
+  creatorImageAlt: string
   mediaUrl: string
   slug: string
   journeyIds: string[]
@@ -72,10 +79,14 @@ export function CollectionDialog({
     title: collection?.title ?? '',
     description: collection?.description ?? '',
     creatorName: collection?.creatorName ?? '',
+    creatorImageSrc: collection?.creatorImageSrc ?? '',
+    creatorImageAlt: collection?.creatorImageAlt ?? '',
     mediaUrl: collection?.mediaUrl ?? '',
     slug: collection?.slug ?? '',
     journeyIds: collection?.templates.map((tpl) => tpl.id) ?? []
   }
+
+  const [imagePickerOpen, setImagePickerOpen] = useState(false)
 
   const schema = object({
     title: string()
@@ -114,6 +125,10 @@ export function CollectionDialog({
           teamId,
           title: values.title,
           creatorName: values.creatorName,
+          creatorImageSrc:
+            values.creatorImageSrc === '' ? null : values.creatorImageSrc,
+          creatorImageAlt:
+            values.creatorImageAlt === '' ? null : values.creatorImageAlt,
           description: values.description === '' ? null : values.description,
           mediaUrl: values.mediaUrl === '' ? null : values.mediaUrl,
           journeyIds: values.journeyIds
@@ -131,6 +146,14 @@ export function CollectionDialog({
         }
         if (values.creatorName !== collection.creatorName) {
           input.creatorName = values.creatorName
+        }
+        if (values.creatorImageSrc !== (collection.creatorImageSrc ?? '')) {
+          input.creatorImageSrc =
+            values.creatorImageSrc === '' ? null : values.creatorImageSrc
+        }
+        if (values.creatorImageAlt !== (collection.creatorImageAlt ?? '')) {
+          input.creatorImageAlt =
+            values.creatorImageAlt === '' ? null : values.creatorImageAlt
         }
         if (values.mediaUrl !== (collection.mediaUrl ?? '')) {
           input.mediaUrl = values.mediaUrl === '' ? null : values.mediaUrl
@@ -192,6 +215,7 @@ export function CollectionDialog({
         setFieldValue,
         setFieldTouched
       }) => (
+        <>
         <Dialog
           open={open}
           onClose={onClose}
@@ -344,15 +368,145 @@ export function CollectionDialog({
                   />
                 )}
               />
-              <Typography variant="caption" color="text.secondary">
-                {t(
-                  'Creator image picker — coming soon. The creator image is optional.'
+              <Stack spacing={1}>
+                <Typography variant="subtitle2">
+                  {t('Creator image')}
+                </Typography>
+                <Stack direction="row" spacing={2} alignItems="center">
+                  {values.creatorImageSrc !== '' ? (
+                    <Box
+                      component="img"
+                      src={values.creatorImageSrc}
+                      alt={values.creatorImageAlt}
+                      sx={{
+                        width: 64,
+                        height: 64,
+                        borderRadius: 1,
+                        objectFit: 'cover',
+                        flexShrink: 0
+                      }}
+                    />
+                  ) : (
+                    <Box
+                      sx={{
+                        width: 64,
+                        height: 64,
+                        borderRadius: 1,
+                        backgroundColor: 'action.hover',
+                        flexShrink: 0
+                      }}
+                    />
+                  )}
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ flexGrow: 1, justifyContent: 'flex-end' }}
+                  >
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => setImagePickerOpen(true)}
+                    >
+                      {values.creatorImageSrc !== ''
+                        ? t('Replace')
+                        : t('Add image')}
+                    </Button>
+                    {values.creatorImageSrc !== '' && (
+                      <Button
+                        variant="text"
+                        size="small"
+                        color="error"
+                        onClick={() => {
+                          void setFieldValue('creatorImageSrc', '')
+                          void setFieldValue('creatorImageAlt', '')
+                        }}
+                      >
+                        {t('Remove')}
+                      </Button>
+                    )}
+                  </Stack>
+                </Stack>
+                {values.creatorImageSrc !== '' && (
+                  <TextField
+                    id="creatorImageAlt"
+                    name="creatorImageAlt"
+                    label={t('Image description (alt text)')}
+                    fullWidth
+                    variant="filled"
+                    size="small"
+                    value={values.creatorImageAlt}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={t(
+                      'Used by screen readers and shown if the image fails to load.'
+                    )}
+                    inputProps={{ maxLength: 200 }}
+                  />
                 )}
-              </Typography>
+              </Stack>
             </Stack>
           </Form>
         </Dialog>
+        <Dialog
+          open={imagePickerOpen}
+          onClose={() => setImagePickerOpen(false)}
+          dialogTitle={{
+            title: t('Choose creator image'),
+            closeButton: true
+          }}
+          testId="CollectionCreatorImagePicker"
+          divider
+          fullscreen
+        >
+            <Box sx={{ minHeight: 480 }}>
+              <ImageBlockEditor
+                selectedBlock={
+                  values.creatorImageSrc !== ''
+                    ? buildSyntheticImageBlock(
+                        values.creatorImageSrc,
+                        values.creatorImageAlt
+                      )
+                    : null
+                }
+                onChange={async (input: ImageBlockUpdateInput) => {
+                  if (input.src != null && input.src !== '') {
+                    void setFieldValue('creatorImageSrc', input.src)
+                    void setFieldValue('creatorImageAlt', input.alt ?? '')
+                    setImagePickerOpen(false)
+                  }
+                }}
+                onDelete={async () => {
+                  void setFieldValue('creatorImageSrc', '')
+                  void setFieldValue('creatorImageAlt', '')
+                  setImagePickerOpen(false)
+                }}
+              showAdd
+            />
+          </Box>
+        </Dialog>
+        </>
       )}
     </Formik>
   )
+}
+
+// Synthetic ImageBlock so we can hand the existing ImageBlockEditor a value
+// for its `selectedBlock` prop. The picker only reads `src` / `alt`; the
+// other fields are required by the type but unused here.
+function buildSyntheticImageBlock(src: string, alt: string): ImageBlock {
+  return {
+    __typename: 'ImageBlock',
+    id: 'collection-creator-image',
+    parentBlockId: null,
+    parentOrder: null,
+    src,
+    alt,
+    width: 0,
+    height: 0,
+    blurhash: '',
+    scale: null,
+    focalTop: null,
+    focalLeft: null,
+    customizable: null
+  }
 }
