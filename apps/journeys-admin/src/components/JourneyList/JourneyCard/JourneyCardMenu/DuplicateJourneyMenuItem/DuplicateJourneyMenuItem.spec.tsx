@@ -1,5 +1,11 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
@@ -8,6 +14,8 @@ import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
+import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateSubscription/supportedLanguages'
+import { JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION } from '@core/journeys/ui/useJourneyAiTranslateSubscription/useJourneyAiTranslateSubscription'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
@@ -810,5 +818,358 @@ describe('DuplicateJourneys', () => {
     })
     expect(handleCloseMenu).toHaveBeenCalled()
     expect(getByText('Journey Duplicated')).toBeInTheDocument()
+  })
+
+  describe('AI translation on copy to team', () => {
+    const teamsMock = {
+      request: {
+        query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+      },
+      result: jest.fn(() => ({
+        data: {
+          teams: [
+            {
+              id: 'destinationTeamId',
+              title: 'Destination Team',
+              __typename: 'Team'
+            }
+          ],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            lastActiveTeamId: null
+          }
+        }
+      }))
+    }
+
+    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'destinationTeamId'
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyProfileUpdate: {
+            __typename: 'JourneyProfile',
+            id: 'destinationTeamId'
+          }
+        }
+      }))
+    }
+
+    const languagesWithFrenchMock = {
+      request: {
+        query: GET_LANGUAGES,
+        variables: {
+          languageId: '529',
+          where: {
+            ids: [...SUPPORTED_LANGUAGE_IDS]
+          }
+        }
+      },
+      result: {
+        data: {
+          languages: [
+            {
+              __typename: 'Language',
+              id: '529',
+              slug: 'english',
+              name: [
+                {
+                  value: 'English',
+                  primary: true,
+                  __typename: 'LanguageName'
+                }
+              ]
+            },
+            {
+              id: '496',
+              __typename: 'Language',
+              slug: 'french',
+              name: [
+                {
+                  value: 'French',
+                  primary: false,
+                  __typename: 'LanguageName'
+                },
+                {
+                  value: 'Français',
+                  primary: true,
+                  __typename: 'LanguageName'
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+
+    const journeyDuplicateForTranslationMock = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journey-id',
+          teamId: 'destinationTeamId'
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyDuplicate: {
+            id: 'duplicatedJourneyId'
+          }
+        }
+      }))
+    }
+
+    async function selectDestinationTeam(): Promise<void> {
+      const muiSelect = screen.getByTestId('team-duplicate-select')
+      const muiSelectDropDownButton =
+        await within(muiSelect).getByRole('combobox')
+      await fireEvent.mouseDown(muiSelectDropDownButton)
+      const teamOption = await screen.getByRole('option', {
+        name: 'Destination Team'
+      })
+      fireEvent.click(teamOption)
+    }
+
+    async function toggleTranslationAndPickFrench(): Promise<void> {
+      fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
+      const languageInput =
+        await screen.findByPlaceholderText('Search Language')
+      fireEvent.focus(languageInput)
+      fireEvent.keyDown(languageInput, { key: 'ArrowDown' })
+      fireEvent.click(
+        await screen.findByRole('option', { name: 'French Français' })
+      )
+    }
+
+    function renderForTranslation(
+      additionalMocks: MockedResponse[] = []
+    ): void {
+      render(
+        <MockedProvider
+          mocks={[
+            languagesWithFrenchMock,
+            teamsMock,
+            updateLastActiveTeamIdMock,
+            journeyDuplicateForTranslationMock,
+            ...additionalMocks
+          ]}
+        >
+          <SnackbarProvider>
+            <TeamProvider>
+              <DuplicateJourneyMenuItem
+                id="journey-id"
+                handleCloseMenu={handleCloseMenu}
+                journey={defaultJourney}
+              />
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+    }
+
+    it('starts AI translation subscription after duplicate when toggle is on', async () => {
+      const translateSubscriptionMock = {
+        request: {
+          query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
+          variables: {
+            journeyId: 'duplicatedJourneyId',
+            name: 'Default Journey Heading',
+            journeyLanguageName: '',
+            textLanguageId: '496',
+            textLanguageName: 'Français',
+            userLanguageId: '529',
+            userLanguageName: ''
+          }
+        },
+        result: jest.fn(() => ({
+          data: {
+            journeyAiTranslateCreateSubscription: {
+              progress: 100,
+              message: 'Translation completed',
+              journey: {
+                __typename: 'Journey',
+                id: 'duplicatedJourneyId',
+                title: 'Voyage Traduit',
+                description: null,
+                languageId: '496',
+                createdAt: '2026-04-25T12:34:56Z',
+                updatedAt: '2026-04-25T12:34:56Z',
+                journeyCustomizationDescription: null,
+                journeyCustomizationFields: [],
+                blocks: [],
+                language: {
+                  __typename: 'Language',
+                  id: '496',
+                  name: [
+                    {
+                      __typename: 'LanguageName',
+                      value: 'Français',
+                      primary: true
+                    }
+                  ]
+                }
+              },
+              __typename: 'JourneyAiTranslateProgress'
+            }
+          }
+        }))
+      }
+
+      renderForTranslation([translateSubscriptionMock])
+
+      await waitFor(() => expect(teamsMock.result).toHaveBeenCalled())
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Duplicate' }))
+      expect(
+        await screen.findByText('Copy to Another Team')
+      ).toBeInTheDocument()
+      await selectDestinationTeam()
+      await toggleTranslationAndPickFrench()
+      fireEvent.click(screen.getByRole('button', { name: 'Create' }))
+
+      await waitFor(() =>
+        expect(journeyDuplicateForTranslationMock.result).toHaveBeenCalled()
+      )
+      await waitFor(() =>
+        expect(translateSubscriptionMock.result).toHaveBeenCalled()
+      )
+      expect(handleCloseMenu).toHaveBeenCalled()
+      // updateLastActiveTeamId sets the active team during dialog submit, so by
+      // the time the subscription completes the active-team-aware snackbar reads
+      // "Journey Duplicated" rather than "Journey Copied".
+      expect(await screen.findByText('Journey Duplicated')).toBeInTheDocument()
+    })
+
+    it('surfaces a snackbar when the translation subscription errors and keeps the duplicate', async () => {
+      const translateSubscriptionErrorMock = {
+        request: {
+          query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
+          variables: {
+            journeyId: 'duplicatedJourneyId',
+            name: 'Default Journey Heading',
+            journeyLanguageName: '',
+            textLanguageId: '496',
+            textLanguageName: 'Français',
+            userLanguageId: '529',
+            userLanguageName: ''
+          }
+        },
+        error: new Error('Translation service unavailable')
+      }
+
+      renderForTranslation([translateSubscriptionErrorMock])
+
+      await waitFor(() => expect(teamsMock.result).toHaveBeenCalled())
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Duplicate' }))
+      expect(
+        await screen.findByText('Copy to Another Team')
+      ).toBeInTheDocument()
+      await selectDestinationTeam()
+      await toggleTranslationAndPickFrench()
+      fireEvent.click(screen.getByRole('button', { name: 'Create' }))
+
+      await waitFor(() =>
+        expect(journeyDuplicateForTranslationMock.result).toHaveBeenCalled()
+      )
+      expect(
+        await screen.findByText('Translation service unavailable')
+      ).toBeInTheDocument()
+      // The duplicate snackbar must NOT show when the translation flow errors.
+      expect(screen.queryByText('Journey Copied')).not.toBeInTheDocument()
+      expect(screen.queryByText('Journey Duplicated')).not.toBeInTheDocument()
+    })
+
+    it('refetches template stats after a translated copy completes', async () => {
+      const translateSubscriptionMock = {
+        request: {
+          query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
+          variables: {
+            journeyId: 'duplicatedJourneyId',
+            name: 'Default Journey Heading',
+            journeyLanguageName: '',
+            textLanguageId: '496',
+            textLanguageName: 'Français',
+            userLanguageId: '529',
+            userLanguageName: ''
+          }
+        },
+        result: jest.fn(() => ({
+          data: {
+            journeyAiTranslateCreateSubscription: {
+              progress: 100,
+              message: 'Translation completed',
+              journey: {
+                __typename: 'Journey',
+                id: 'duplicatedJourneyId',
+                title: 'Voyage Traduit',
+                description: null,
+                languageId: '496',
+                createdAt: '2026-04-25T12:34:56Z',
+                updatedAt: '2026-04-25T12:34:56Z',
+                journeyCustomizationDescription: null,
+                journeyCustomizationFields: [],
+                blocks: [],
+                language: {
+                  __typename: 'Language',
+                  id: '496',
+                  name: [
+                    {
+                      __typename: 'LanguageName',
+                      value: 'Français',
+                      primary: true
+                    }
+                  ]
+                }
+              },
+              __typename: 'JourneyAiTranslateProgress'
+            }
+          }
+        }))
+      }
+
+      render(
+        <MockedProvider
+          mocks={[
+            languagesWithFrenchMock,
+            teamsMock,
+            updateLastActiveTeamIdMock,
+            journeyDuplicateForTranslationMock,
+            translateSubscriptionMock
+          ]}
+        >
+          <SnackbarProvider>
+            <TeamProvider>
+              <DuplicateJourneyMenuItem
+                id="journey-id"
+                handleCloseMenu={handleCloseMenu}
+                journey={defaultJourney}
+                fromTemplateId="templateId123"
+              />
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => expect(teamsMock.result).toHaveBeenCalled())
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Duplicate' }))
+      expect(
+        await screen.findByText('Copy to Another Team')
+      ).toBeInTheDocument()
+      await selectDestinationTeam()
+      await toggleTranslationAndPickFrench()
+      fireEvent.click(screen.getByRole('button', { name: 'Create' }))
+
+      await waitFor(() =>
+        expect(translateSubscriptionMock.result).toHaveBeenCalled()
+      )
+      await waitFor(() =>
+        expect(refetchTemplateStats).toHaveBeenCalledWith(['templateId123'])
+      )
+    })
   })
 })
