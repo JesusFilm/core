@@ -18,18 +18,18 @@ revised: 2026-05-01
 
 A prototype pass surfaced a fundamental issue with the original `Block`-table-as-source-of-truth premise: **`Block.src` is overwritten in place** by `imageBlockUpdate` when a user picks a new image on the same card. The first cover creates a `Block` row; every subsequent pick on that card mutates that same row's `src`. Confirmed in `apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card/BackgroundMedia/Image/BackgroundMediaImage.tsx:221-263`.
 
-Consequence: a Library backed by `Block` rows can only show *currently-attached* images. The exact scenario the feature is meant to solve — "I uploaded this last week, replaced it, now I want it back" — is unreachable, because the prior `src` is gone.
+Consequence: a Library backed by `Block` rows can only show _currently-attached_ images. The exact scenario the feature is meant to solve — "I uploaded this last week, replaced it, now I want it back" — is unreachable, because the prior `src` is gone.
 
 ### New approach: per-tab history backed by existing `CloudflareImage` table
 
 Each existing tab in `ImageBlockEditor` gains its own history surface, fed by its own persistence layer:
 
-| Tab | History surface | Backing data | Survives Block.src overwrite? |
-|-----|-----------------|--------------|------------------------------|
-| **Custom** | "Your uploads" grid above the file/URL inputs | `CloudflareImage` (media DB), `userId`-scoped, populated by `createCloudflareUploadByFile` and `createCloudflareUploadByUrl` | ✅ Independent table |
-| **AI** | "Your generations" grid above the prompt input | Same `CloudflareImage` (populated by `createImageBySegmindPrompt` / `createCloudflareImageFromPrompt`) | ✅ Independent table |
-| **Unsplash** | Deferred. No local persistence today; `triggerUnsplashDownload` only calls Unsplash's tracking API. Picking from Unsplash's existing search/browse remains the path. | — | — |
-| **Standalone Library tab** | **Dropped.** Per-tab history covers ~90% of the user's mental model ("I uploaded that" → check Custom; "I generated that" → check AI). Cross-source unification adds little once each tab shows its own history. | — | — |
+| Tab                        | History surface                                                                                                                                                                                                  | Backing data                                                                                                                 | Survives Block.src overwrite? |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| **Custom**                 | "Your uploads" grid above the file/URL inputs                                                                                                                                                                    | `CloudflareImage` (media DB), `userId`-scoped, populated by `createCloudflareUploadByFile` and `createCloudflareUploadByUrl` | ✅ Independent table          |
+| **AI**                     | "Your generations" grid above the prompt input                                                                                                                                                                   | Same `CloudflareImage` (populated by `createImageBySegmindPrompt` / `createCloudflareImageFromPrompt`)                       | ✅ Independent table          |
+| **Unsplash**               | Deferred. No local persistence today; `triggerUnsplashDownload` only calls Unsplash's tracking API. Picking from Unsplash's existing search/browse remains the path.                                             | —                                                                                                                            | —                             |
+| **Standalone Library tab** | **Dropped.** Per-tab history covers ~90% of the user's mental model ("I uploaded that" → check Custom; "I generated that" → check AI). Cross-source unification adds little once each tab shows its own history. | —                                                                                                                            | —                             |
 
 ### What's already in place to leverage
 
@@ -39,6 +39,7 @@ Each existing tab in `ImageBlockEditor` gains its own history surface, fed by it
 ### Open question rolled into this pivot
 
 `CloudflareImage` has no `source` enum (`file | url | ai`) or `prompt` column. Two paths:
+
 - **Cheap:** show all `CloudflareImage` rows in both Custom and AI tabs, accept the overlap.
 - **Right:** add `source` enum and (for AI) `prompt` column to `CloudflareImage`. Mutations populate them. Each tab filters accordingly.
 
@@ -47,7 +48,7 @@ For prototype: take the cheap path. Promote to "right" once the UX is validated.
 ### Why this is better product
 
 - **No new architecture required.** No `MediaAsset` table, no Block-mutation rewiring, no orphan-Block strategy.
-- **Matches the user's mental model.** People remember *how* they got an image (uploaded vs generated vs picked), and they're already on that tab when they want to find it again.
+- **Matches the user's mental model.** People remember _how_ they got an image (uploaded vs generated vs picked), and they're already on that tab when they want to find it again.
 - **Skips the Unsplash gap.** Unsplash already provides search/browse; "previously picked Unsplash images" is the weakest of the three use cases and can ship later via a small `UnsplashSelection` table if metrics justify it.
 - **Removes the deletion-orphan worry entirely** — `CloudflareImage` rows are independent of `Block`, so deletes don't cascade strangely.
 
@@ -56,6 +57,7 @@ For prototype: take the cheap path. Promote to "right" once the UX is validated.
 The original plan (Frontend, Backend, Technical Approach, Acceptance Criteria, etc.) was built around the rejected `Block`-table approach. **Treat them as historical context for the decision trail, not the v1 spec.** New acceptance criteria, file layout, and phasing for the per-tab approach are TODO and will be drafted before implementation resumes.
 
 The revised v1 work is roughly:
+
 1. Add a "Your uploads" grid component to the Custom tab, backed by `getMyCloudflareImages`.
 2. Add a "Your generations" grid component to the AI tab, backed by the same query (or a filtered variant once `source` is added to `CloudflareImage`).
 3. Defer Unsplash history.
@@ -70,6 +72,7 @@ The revised v1 work is roughly:
 Implementation against the 2026-04-28 pivot landed in PR #9102. Production state:
 
 **Image picker (`ImageBlockEditor`):**
+
 - "Your uploads" grid in Custom tab.
 - "Your generations" grid in AI tab.
 - Backed by existing `getMyCloudflareImages(offset, limit, isAi): [CloudflareImage!]!` — additive `isAi` arg only, no schema-breaking change.
@@ -77,6 +80,7 @@ Implementation against the 2026-04-28 pivot landed in PR #9102. Production state
 - Frontend: offset/limit pagination with `length >= PAGE_SIZE` heuristic for "Load More". `offsetLimitPagination(['isAi'])` cache config.
 
 **Video picker (`VideoFromMux`):**
+
 - "Your uploads" grid below the Mux upload form.
 - Backed by existing `getMyMuxVideos(offset, limit): [MuxVideo!]!` — no schema change. Resolver only added a deterministic `orderBy [createdAt desc, id desc]` (correctness for offset pagination, not a UI preference).
 - Click-a-tile opens existing `VideoDetails` + `MuxDetails` with a Select button. Gallery flow reuses the same preview infrastructure as the active-block flow; `playbackId` is threaded through to avoid a redundant fetch. `MuxDetails.dispose()` fix shipped alongside.
@@ -111,7 +115,7 @@ v1 is currently merged but not yet generally available. Before going live we gat
 
 ### v1.1 — team-shared visibility (replaces the ACTIVE_TEAM material in original Backend / Architecture / Implementation Phases sections)
 
-Goal: the same per-tab grids surface assets uploaded by *teammates* in the user's active team, alongside their own.
+Goal: the same per-tab grids surface assets uploaded by _teammates_ in the user's active team, alongside their own.
 
 #### Locked decisions
 
@@ -158,6 +162,7 @@ Each mutation that creates a `CloudflareImage` or `MuxVideo` row gains a require
 3. Persist the new row with `userId = caller` and `teamId = journey.teamId`.
 
 Mutations affected (approximate — finalize during BE-2 scoping):
+
 - `createCloudflareUploadByFile`
 - `createCloudflareUploadByUrl`
 - `createImageBySegmindPrompt` / `createCloudflareImageFromPrompt`
@@ -198,14 +203,14 @@ Both resolvers' implementation:
 
 #### Behavioral table
 
-| Scenario | "Your uploads" (caller) | "Team uploads" (Team X) |
-|---|---|---|
-| Caller uploads inside a Team X journey | Visible (`userId = caller`) | Visible (`teamId = X`) |
-| Caller leaves Team X | Still visible (`userId = caller`) | **Still visible to remaining Team X members** |
-| Caller later joins Team Y, uploads inside a Team Y journey | Visible | Appears only in Team Y's grid (`teamId = Y`); does not retroactively appear in Team X |
-| Pre-migration row (NULL `teamId`) | Visible to original uploader only | Not visible in any team grid |
-| Caller passes `teamId` they're not a member of | — | `FORBIDDEN` |
-| Caller passes a non-existent `teamId` | — | `FORBIDDEN` (same shape — no existence leak) |
+| Scenario                                                   | "Your uploads" (caller)           | "Team uploads" (Team X)                                                               |
+| ---------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------- |
+| Caller uploads inside a Team X journey                     | Visible (`userId = caller`)       | Visible (`teamId = X`)                                                                |
+| Caller leaves Team X                                       | Still visible (`userId = caller`) | **Still visible to remaining Team X members**                                         |
+| Caller later joins Team Y, uploads inside a Team Y journey | Visible                           | Appears only in Team Y's grid (`teamId = Y`); does not retroactively appear in Team X |
+| Pre-migration row (NULL `teamId`)                          | Visible to original uploader only | Not visible in any team grid                                                          |
+| Caller passes `teamId` they're not a member of             | —                                 | `FORBIDDEN`                                                                           |
+| Caller passes a non-existent `teamId`                      | —                                 | `FORBIDDEN` (same shape — no existence leak)                                          |
 
 #### Performance considerations
 
@@ -216,14 +221,14 @@ Both resolvers' implementation:
 
 #### Authorization edge cases
 
-| Scenario | Behavior |
-|---|---|
-| Caller passes `teamId` they're not a member of | `FORBIDDEN` |
-| Caller passes a non-existent `teamId` | `FORBIDDEN` (same response) |
-| User removed from team mid-session and tries to load "Team uploads" | `FORBIDDEN`; frontend detects and refreshes active-team list |
-| User removed from team after uploading | Their asset stays in the team's "Team uploads" grid (the design goal) |
-| Teammate uploads while caller paginates | Asset appears at top of next refetch (`createdAt DESC`); insertion drift across already-fetched pages is possible but mitigated by refetch-on-upload |
-| Caller tries to upload into a journey they don't have edit access to | Existing journey-edit auth fails before the row is written; no new auth surface |
+| Scenario                                                             | Behavior                                                                                                                                             |
+| -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Caller passes `teamId` they're not a member of                       | `FORBIDDEN`                                                                                                                                          |
+| Caller passes a non-existent `teamId`                                | `FORBIDDEN` (same response)                                                                                                                          |
+| User removed from team mid-session and tries to load "Team uploads"  | `FORBIDDEN`; frontend detects and refreshes active-team list                                                                                         |
+| User removed from team after uploading                               | Their asset stays in the team's "Team uploads" grid (the design goal)                                                                                |
+| Teammate uploads while caller paginates                              | Asset appears at top of next refetch (`createdAt DESC`); insertion drift across already-fetched pages is possible but mitigated by refetch-on-upload |
+| Caller tries to upload into a journey they don't have edit access to | Existing journey-edit auth fails before the row is written; no new auth surface                                                                      |
 
 #### Tests (v1.1 specific)
 
@@ -263,11 +268,12 @@ The original (pre-pivot) plan and the deepening notes (lines 62–101) reference
 > ⚠️ **Historical — superseded by the 2026-04-28 pivot and 2026-05-01 v1/v1.1 sections above.**
 >
 > Everything from this point onward describes the original Relay-Connection / `imageBlocksConnection` / `ACTIVE_TEAM` server-derivation design. **That approach was prototyped and rejected.** Notably:
+>
 > - The Relay Connection migration of `getMyCloudflareImages` / `getMyMuxVideos` was reverted before merge — v1 ships offset/limit on the existing list-returning resolvers.
 > - The `Block`-table-as-source-of-truth premise was invalidated (`Block.src` is overwritten in place).
 > - The standalone Library tab and `imageBlocksConnection` resolver were dropped in favor of per-tab history grids.
 >
-> Read this section for context on *why* those decisions were made, not as a spec to implement. New work should be scoped against the v1.1 section.
+> Read this section for context on _why_ those decisions were made, not as a spec to implement. New work should be scoped against the v1.1 section.
 
 **Deepened:** 2026-04-28 with 3 best-practices researchers (Pothos cursor + Apollo cache + MUI tabs) and 5 reviewers (performance, security, simplicity, architecture, TypeScript).
 
@@ -278,7 +284,7 @@ The original (pre-pivot) plan and the deepening notes (lines 62–101) reference
 3. **Drop client-supplied `activeTeamId`.** Derive from `JourneyProfile.lastActiveTeamId` server-side and add an explicit `userTeam` membership precheck. Closes the cross-team enumeration vector and removes a forgeable client input.
 4. **Drop server-side `DISTINCT ON` + raw SQL for v1.** Use vanilla Prisma `findMany` ordered by `updatedAt DESC` with a generous take, dedupe by `src` in resolver memory, and rely on the client `Map` as the cross-page safety net. Realistic library sizes are sub-few-thousand. Re-evaluate raw SQL only if EXPLAIN ANALYZE shows the simpler path is too slow.
 5. **Add `thumbnailSrc` field (critical performance).** Resolver computes a thumbnail URL per source: Cloudflare `cdn-cgi/image/width=240,quality=80` for cf-hosted, Unsplash `&w=240&fit=crop`, AI/external passthrough. A 24-tile grid otherwise loads tens of MB of full-size hero images.
-6. **Apollo cache strategy: `cache-first` (default) + mutation eviction.** Original plan double-paid by combining `cache-and-network` *and* eviction. With single-source-of-truth mutations, eviction alone is correct.
+6. **Apollo cache strategy: `cache-first` (default) + mutation eviction.** Original plan double-paid by combining `cache-and-network` _and_ eviction. With single-source-of-truth mutations, eviction alone is correct.
 7. **MUI tabs: switch to `variant="scrollable"` with `iconPosition="top"`** unconditionally (the drawer is always narrow; viewport-conditional toggling adds flicker).
 8. **Auth: pick one filter, not two.** "Defense-in-depth" via CASL AND scope filter is double-bookkeeping for cases where both are supposed to compute the same set. Use the explicit scope filter as the authoritative gate, plus an explicit membership check for `ACTIVE_TEAM`. CASL still applies elsewhere (the resolver guard) but is not duplicated in the where-input. EXCEPTION: the `publisher` role can read `template: true` journeys across teams via CASL — for that role explicitly, AND-ing the scope filter is load-bearing. Document and test this.
 9. **Cursor and raw-row decoding need runtime validation** (zod) if any raw SQL is reintroduced. Versioned cursor (`v: 1, ...`) for forward compatibility.
@@ -289,6 +295,7 @@ The original (pre-pivot) plan and the deepening notes (lines 62–101) reference
 **v1 ships PERSONAL only. ACTIVE_TEAM follows in v1.1.** This was the user's call after weighing the simplicity review's push to ship team-only against the brainstorm's stated dual-scope plan.
 
 Concrete implications for v1:
+
 - No `ACTIVE_TEAM` scope, no server-side `lastActiveTeamId` derivation, no `userTeam` membership precheck.
 - No feature-flag infrastructure required (Q7 dissolves).
 - Schema can drop the `ImageBlockLibraryScope` enum and the `scope` argument entirely; the resolver is unconditionally personal-scoped.
@@ -312,6 +319,7 @@ The technical sections below were drafted with both scopes in scope. Where they 
 Add a **Library** tab to the Editor's image picker (`ImageBlockEditor`) that surfaces images the creator (or their active team) has previously used in any `ImageBlock`. Picking an image applies it to the current block via the existing `onChange` flow — no upload, no AI prompt, no Cloudflare round-trip. The library is a derived view over `Block` rows of `typename = 'ImageBlock'`; **no new media/asset domain model is introduced**.
 
 Two scope variants are planned in parallel and gated by a feature flag so the same client code can ship either:
+
 - **Approach A — Personal:** library shows ImageBlocks from journeys the user owns or edits.
 - **Approach B — Personal + Active Team (recommended target):** library shows ImageBlocks from any journey in the user's currently-active team.
 
@@ -326,17 +334,20 @@ The constraint that shapes this plan: **deletion is forbidden in v1** — removi
 ## Proposed Solution
 
 ### Frontend
+
 A new `<Tab>` + `<TabPanel>` inserted into `ImageBlockEditor.tsx` between the existing tabs, mirroring the `UnsplashGallery` structural pattern. New component lives at `apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/ImageBlockEditor/ImageLibraryGallery/` (the name `ImageLibrary` is taken by an unrelated wrapper component — see the Naming section in System-Wide Impact).
 
 The tab calls a new GraphQL query to list deduplicated `ImageBlock` summaries, ordered by `updatedAt DESC`, paginated as a Relay-style cursor connection. Selecting a tile calls the editor's existing `handleSrcChange` → `onChange(input)` prop with `{ src, alt, width, height, blurhash, scale, focalLeft, focalTop }` — the same path Unsplash and AI use today. **No new client mutations.**
 
 ### Backend
+
 A new resolver `imageBlocksConnection(first, after, scope)` in **`apis/api-journeys`** (legacy NestJS + SDL — `visitorsConnection` lives here, all `ImageBlock` mutations live here, `AppCaslGuard` and `@CaslAccessible` decorators only exist here). Server-side filters:
+
 - `typename = 'ImageBlock' AND src IS NOT NULL AND deletedAt IS NULL`
 - Journey scope (single explicit filter, not AND-ed with CASL):
   - `PERSONAL`: `journey.userJourneys.some({ userId: me, role: { in: [owner, editor] } })`
   - `ACTIVE_TEAM`: `journey.teamId = derivedActiveTeamId` AND **explicit precheck** that `userTeam.findFirst({ teamId: derivedActiveTeamId, userId: me })` is non-null. `derivedActiveTeamId` is read from `JourneyProfile.lastActiveTeamId` server-side; no client-supplied `activeTeamId` argument exists. The membership precheck short-circuits to an empty connection when the user is not a current member of their stored active team (e.g., they were just removed).
-- The resolver is still gated by `@UseGuards(AppCaslGuard)` — CASL ensures only authenticated users hit the resolver and provides a sanity check, but the where-input is *not* `AND`-ed with `accessibleBy('Journey')`. Reasoning: for non-publisher users the explicit scope filter is a strict subset of what CASL allows; AND-ing changes nothing. For the `publisher` role specifically, CASL grants `Read` on every published-template journey across all teams (`journey.acl.ts:83-86, :144`) — so adding a scope filter here is necessary for `ACTIVE_TEAM` correctness. Encoded as: scope filter authoritative; CASL guard for auth gate only.
+- The resolver is still gated by `@UseGuards(AppCaslGuard)` — CASL ensures only authenticated users hit the resolver and provides a sanity check, but the where-input is _not_ `AND`-ed with `accessibleBy('Journey')`. Reasoning: for non-publisher users the explicit scope filter is a strict subset of what CASL allows; AND-ing changes nothing. For the `publisher` role specifically, CASL grants `Read` on every published-template journey across all teams (`journey.acl.ts:83-86, :144`) — so adding a scope filter here is necessary for `ACTIVE_TEAM` correctness. Encoded as: scope filter authoritative; CASL guard for auth gate only.
 - **Include** journeys with `archivedAt`, `deletedAt`, `trashedAt` set — past work is exactly when reuse matters most (R7).
 
 **De-duplication strategy (v1, simplified):** Use Prisma `findMany` ordered by `updatedAt DESC` with `take: first * 3` (over-fetch to absorb dedup loss), dedupe in resolver memory keyed by `src` preserving the first occurrence (newest), slice to `first + 1` for `hasNextPage`, encode the cursor as `(updatedAt, id)`. The over-fetch factor of 3 is heuristic — tunable. For v1 library sizes (low thousands per team), this is well under p95 budget. The client `Map` keyed on `src` is kept as a cross-page safety net. **Raw SQL `DISTINCT ON` is deferred** to a v1.x optimization if EXPLAIN ANALYZE on a seeded 50k-block dataset misses the latency target.
@@ -346,25 +357,31 @@ A new resolver `imageBlocksConnection(first, after, scope)` in **`apis/api-journ
 ### Architecture
 
 #### Where the resolver lives
+
 **Decision: legacy `apis/api-journeys` (NestJS + SDL).** Reasoning surfaced during deepening:
+
 - `visitorsConnection` (the Relay connection template the plan mirrors) lives in legacy.
 - All `ImageBlock` mutations (`imageBlockCreate`, `imageBlockUpdate`) live in legacy at `apis/api-journeys/src/app/modules/block/image/image.resolver.ts`.
-- `apis/api-journeys-modern` (Pothos) only defines the `ImageBlock` *type*; it has no `prismaConnection`/`prismaConnectionHelpers` usage anywhere, no `AppCaslGuard`, no `@CaslAccessible` decorator. Hand-rolled `journeyAcl(Action.X, journey, user)` is the modern auth idiom.
+- `apis/api-journeys-modern` (Pothos) only defines the `ImageBlock` _type_; it has no `prismaConnection`/`prismaConnectionHelpers` usage anywhere, no `AppCaslGuard`, no `@CaslAccessible` decorator. Hand-rolled `journeyAcl(Action.X, journey, user)` is the modern auth idiom.
 - Building the connection in modern would require porting/inventing all of those pieces. Not v1.
 
 #### Schema (using existing types)
 
 ```graphql
-"""Scope for the image library query."""
+"""
+Scope for the image library query.
+"""
 enum ImageBlockLibraryScope {
-  PERSONAL          # journeys the user owns or edits
-  ACTIVE_TEAM       # journeys in the user's currently-active team (server-derived)
+  PERSONAL # journeys the user owns or edits
+  ACTIVE_TEAM # journeys in the user's currently-active team (server-derived)
 }
 
 type ImageBlockLibraryEdge {
   cursor: String!
   node: ImageBlock!
-  """Provider-specific thumbnail variant of node.src."""
+  """
+  Provider-specific thumbnail variant of node.src.
+  """
   thumbnailSrc: String!
 }
 
@@ -374,15 +391,12 @@ type ImageBlockLibraryConnection {
 }
 
 extend type Query {
-  imageBlocksConnection(
-    first: Int = 24
-    after: String
-    scope: ImageBlockLibraryScope!
-  ): ImageBlockLibraryConnection!
+  imageBlocksConnection(first: Int = 24, after: String, scope: ImageBlockLibraryScope!): ImageBlockLibraryConnection!
 }
 ```
 
 Notes on the schema shape (changes from v1 of the plan):
+
 - **No `ImageBlockLibraryEntry`**. Edges expose existing `ImageBlock` directly. Reuses the existing `ImageBlockFields` codegen fragment, eliminates a parallel TS type, prevents Apollo cache normalization collisions on shared `ImageBlock` ids.
 - **No `activeTeamId` argument**. Server derives from `JourneyProfile.lastActiveTeamId`. Removes a forgeable client input.
 - **`thumbnailSrc` on the edge** (not on `ImageBlock`) so it's contextual to the library use case and doesn't pollute the canonical type.
@@ -393,34 +407,38 @@ Pattern reference: `apis/api-journeys/src/app/modules/visitor/visitor.graphql:15
 
 ```ts
 // PSEUDO — actual resolver lives in NestJS + Prisma
-const overFetch = first * 3 + 1;
+const overFetch = first * 3 + 1
 const rows = await prisma.block.findMany({
   where: {
     typename: 'ImageBlock',
     src: { not: null },
     deletedAt: null,
-    journey: scopeFilter,        // see Authorization below
+    journey: scopeFilter // see Authorization below
   },
   orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
   take: overFetch,
   // cursor-based pagination on (updatedAt, id) — both indexed
-  ...(after ? { cursor: { id: decodeCursor(after).id }, skip: 1 } : {}),
-});
+  ...(after ? { cursor: { id: decodeCursor(after).id }, skip: 1 } : {})
+})
 
 // In-memory dedup by src, preserve first (newest by orderBy)
-const seen = new Set<string>();
-const deduped: typeof rows = [];
+const seen = new Set<string>()
+const deduped: typeof rows = []
 for (const r of rows) {
-  if (r.src && !seen.has(r.src)) { seen.add(r.src); deduped.push(r); }
-  if (deduped.length === first + 1) break;
+  if (r.src && !seen.has(r.src)) {
+    seen.add(r.src)
+    deduped.push(r)
+  }
+  if (deduped.length === first + 1) break
 }
-const hasNextPage = deduped.length > first;
-const slice = deduped.slice(0, first);
+const hasNextPage = deduped.length > first
+const slice = deduped.slice(0, first)
 ```
 
 Cursor encoding: base64url JSON `{ v: 1, id, updatedAt }`. Decoded with a zod schema (`z.object({ v: z.literal(1), id: z.string(), updatedAt: z.string().datetime() })`) — malformed cursors throw `GraphQLError('Invalid cursor')` rather than crashing the resolver. The `v` byte enables non-breaking schema evolution.
 
 **Why this simplified path is correct for v1:**
+
 - For team libraries up to ~few thousand ImageBlocks, the over-fetch + in-memory dedup completes in single-digit ms after the indexed query.
 - Trades a marginal worst-case (over-fetch wastes a row read per duplicate) for orders-of-magnitude less complexity vs. raw SQL `DISTINCT ON` + seek cursor on a compound key.
 - Cross-page duplicates are still possible if a duplicate `src` straddles a page boundary; the client `Map` (R15) absorbs them. Severity is cosmetic.
@@ -443,37 +461,32 @@ Also confirm a `Journey(teamId)` index exists; if not, add one in the same migra
 
 ```ts
 @Resolver()
-@UseGuards(AppCaslGuard)               // auth gate; not used for where-filtering
+@UseGuards(AppCaslGuard) // auth gate; not used for where-filtering
 class ImageBlockLibraryResolver {
   @Query(() => ImageBlockLibraryConnection)
-  async imageBlocksConnection(
-    @CurrentUserId() userId: string,
-    @Args('scope') scope: ImageBlockLibraryScope,
-    @Args('first', { defaultValue: 24 }) first: number,
-    @Args('after', { nullable: true }) after?: string,
-  ) {
-    let scopeFilter: Prisma.JourneyWhereInput;
+  async imageBlocksConnection(@CurrentUserId() userId: string, @Args('scope') scope: ImageBlockLibraryScope, @Args('first', { defaultValue: 24 }) first: number, @Args('after', { nullable: true }) after?: string) {
+    let scopeFilter: Prisma.JourneyWhereInput
 
     if (scope === 'PERSONAL') {
       scopeFilter = {
-        userJourneys: { some: { userId, role: { in: ['owner', 'editor'] } } },
-      };
+        userJourneys: { some: { userId, role: { in: ['owner', 'editor'] } } }
+      }
     } else {
       // ACTIVE_TEAM — derive teamId server-side, then verify membership
       const profile = await this.prisma.journeyProfile.findUnique({
         where: { userId },
-        select: { lastActiveTeamId: true },
-      });
-      const teamId = profile?.lastActiveTeamId;
-      if (!teamId) return emptyConnection();    // R10: fall back to empty (or PERSONAL — see Q3)
+        select: { lastActiveTeamId: true }
+      })
+      const teamId = profile?.lastActiveTeamId
+      if (!teamId) return emptyConnection() // R10: fall back to empty (or PERSONAL — see Q3)
 
       const isMember = await this.prisma.userTeam.findFirst({
         where: { teamId, userId },
-        select: { id: true },
-      });
-      if (!isMember) return emptyConnection();  // R13 enforcement at resolver entry
+        select: { id: true }
+      })
+      if (!isMember) return emptyConnection() // R13 enforcement at resolver entry
 
-      scopeFilter = { teamId };
+      scopeFilter = { teamId }
     }
 
     // ... findMany with where: { ..., journey: scopeFilter }
@@ -482,6 +495,7 @@ class ImageBlockLibraryResolver {
 ```
 
 Decisions encoded:
+
 - **Scope filter is authoritative** for where-filtering. CASL guard handles auth-gate only.
 - **`activeTeamId` is server-derived** (`JourneyProfile.lastActiveTeamId`). No client argument.
 - **Membership precheck** short-circuits to empty connection — matches R13 ("user removed from team T returns 0 images") at the resolver entry, also closes the timing-side-channel.
@@ -529,10 +543,10 @@ Mutation eviction (single source of truth for refresh):
 ```ts
 const [createImageBlock] = useJourneyImageBlockCreateMutation({
   update(cache) {
-    cache.evict({ fieldName: 'imageBlocksConnection' });
-    cache.gc();
-  },
-});
+    cache.evict({ fieldName: 'imageBlocksConnection' })
+    cache.gc()
+  }
+})
 // Same wrapper added to useJourneyImageBlockUpdateMutation.
 ```
 
@@ -540,12 +554,13 @@ On `activeTeam.id` change in the same session, also evict — Apollo will re-fet
 
 ```ts
 useEffect(() => {
-  client.cache.evict({ fieldName: 'imageBlocksConnection' });
-  client.cache.gc();
-}, [activeTeam?.id]);
+  client.cache.evict({ fieldName: 'imageBlocksConnection' })
+  client.cache.gc()
+}, [activeTeam?.id])
 ```
 
 Why this differs from v1 of the plan:
+
 - **`cache-first`, not `cache-and-network`.** With single-source-of-truth mutation eviction, every drawer open is either a cache hit (fresh) or a fresh fetch (just evicted). `cache-and-network` would double-pay every open.
 - **`relayStylePagination(['scope'])` as the field policy** — handles edge merging, cursor stability, dedup-by-cursor automatically. Source: https://www.apollographql.com/docs/react/pagination/cursor-based#relay-style-cursor-pagination
 - **`ImageBlock.keyFields: false`** prevents the library's `ImageBlock` nodes from sharing cache identity with the editor's canonical `ImageBlock` queries (where they would otherwise overwrite richer field selections).
@@ -633,6 +648,7 @@ apps/journeys-admin/src/libs/useImageLibraryQuery/
 #### Phase 4 — Rollout
 
 **Prerequisite:** confirm feature-flag infrastructure exists in this monorepo. Architecture review found no GrowthBook/Unleash/`isFeatureEnabled` pattern; if absent, dual-scope rollout is not viable as planned. Two paths:
+
 - **Path A (flag infra exists or is added):** as below.
 - **Path B (no flag infra; pragmatic):** ship `ACTIVE_TEAM`-only — that's the actual product value driver per the brainstorm. Drop the `scope` arg or hard-default it. Saves all flag work. Origin doc's "personal vs personal+team" comparison resolves in favor of team for the same reason.
 
@@ -663,6 +679,7 @@ These come from the origin doc and are preserved here for context.
 ### Interaction Graph
 
 When a creator clicks a Library tile:
+
 1. `ImageLibraryList` `onClick(item)` fires.
 2. → `ImageLibraryGallery` calls `props.onChange({ src, alt, width, height, blurhash, scale, focalLeft, focalTop })`.
 3. → `ImageBlockEditor.handleSrcChange` short-circuits if `src === selectedBlock.src` (no-op), otherwise validates `src`, defaults `alt` from filename, calls parent `onChange`.
@@ -718,9 +735,9 @@ When a creator clicks a Library tile:
 ### New Acceptance Criteria from Flow Analysis & Deepening
 
 - [ ] **R9** Empty states render distinct copy for: no-images-anywhere/team-with-no-images (collapsed per simplicity review — same UX in v1 since team scope means an empty team library reads the same as "no images") and fetch-error. Two variants total, not three.
-- [ ] **R10** When `JourneyProfile.lastActiveTeamId` is null in `ACTIVE_TEAM` scope, resolver returns an empty connection. Client may *optionally* render a hint "Set an active team to see shared images" — leave to design.
+- [ ] **R10** When `JourneyProfile.lastActiveTeamId` is null in `ACTIVE_TEAM` scope, resolver returns an empty connection. Client may _optionally_ render a hint "Set an active team to see shared images" — leave to design.
 - [ ] **R11** When `activeTeam.id` changes client-side, the connection field is evicted and re-fetched from cursor null; accumulated client `Map` is reset.
-- [ ] ~~**R12**~~ *(removed: existing selection-highlight via `selectedBlock?.src === edge.node.src` covers this; `handleSrcChange` already short-circuits on identical src; no Current badge needed)*
+- [ ] ~~**R12**~~ _(removed: existing selection-highlight via `selectedBlock?.src === edge.node.src` covers this; `handleSrcChange` already short-circuits on identical src; no Current badge needed)_
 - [ ] **R13** Cross-team auth test passes: user removed from team T → resolver returns empty connection for `scope=ACTIVE_TEAM` (membership precheck).
 - [ ] **R14** Concurrent "Load More" clicks are guarded — only one in-flight fetch at a time (via `NetworkStatus.fetchMore`).
 - [ ] **R15** Client-side dedup `Map` absorbs cross-page race duplicates and is capped at 500 entries; "Load More" disables on cap.
@@ -751,9 +768,11 @@ When a creator clicks a Library tile:
 ## Success Metrics
 
 **Primary metric (lock in before launch — SpecFlow #33):**
+
 - Ratio of Library-tab applies to Custom-tab uploads per session. Target: ≥30% within four weeks of GA. If ≥50%, declare clear success.
 
 **Secondary metrics:**
+
 - Library tab open-rate (% of editor sessions that activate the Library tab). Target: ≥40% within four weeks.
 - Re-upload rate: count of new `ImageBlock` rows where `src` already exists in the user's (or team's) prior ImageBlocks. Should drop measurably post-launch.
 - AI re-prompt rate: heuristic match on similar prompts producing similar images. Stretch metric — instrument only if cheap.
