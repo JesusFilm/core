@@ -19,9 +19,10 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
@@ -66,6 +67,7 @@ export function TemplateGalleryPageList(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { enqueueSnackbar } = useSnackbar()
+  const router = useRouter()
   const teamId = activeTeam?.id
 
   const collectionsQuery = useTemplateGalleryPagesQuery(
@@ -87,6 +89,21 @@ export function TemplateGalleryPageList(): ReactElement {
     } satisfies GetAdminJourneysVariables,
     { fetchPolicy: 'cache-and-network' }
   ) as ReturnType<typeof useAdminJourneysQuery> & { data?: GetAdminJourneys }
+
+  // Refetch when the user navigates BACK to the Collections tab.
+  // The shared TabPanel keeps this component mounted across tab switches once
+  // visible (only flips its `unmount` state false-once), so cache-and-network
+  // alone won't refire the network on re-visit. Watch the `type` query
+  // param and refetch both lists whenever it becomes `collections`.
+  const isCollectionsTabActive = router.query.type === 'collections'
+  useEffect(() => {
+    if (!isCollectionsTabActive || teamId == null) return
+    void journeysQuery.refetch()
+    void collectionsQuery.refetch()
+    // refetch fns identity changes every render; depending on the active-tab
+    // signal + teamId is the right semantics.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCollectionsTabActive, teamId])
 
   const [templateGalleryPageAssignJourney] =
     useTemplateGalleryPageAssignJourneyMutation()
