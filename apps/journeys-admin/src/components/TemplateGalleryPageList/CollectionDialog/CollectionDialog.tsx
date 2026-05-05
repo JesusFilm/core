@@ -21,8 +21,10 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { array, object, string } from 'yup'
 
+import { StrategySection } from '@core/journeys/ui/StrategySection'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import Play3Icon from '@core/shared/ui/icons/Play3'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../__generated__/BlockFields'
@@ -385,7 +387,10 @@ export function CollectionDialog({
                       overflowY: 'hidden',
                       mx: -2.5, // bleed past the card padding so cards can
                       px: 2.5,  // start flush with the card text above
-                      pb: 1
+                      pb: 2.5   // breathing room below cards so the
+                                // horizontal scrollbar doesn't sit on the
+                                // Use/Play buttons
+
                     }}
                   >
                     <Stack
@@ -399,7 +404,7 @@ export function CollectionDialog({
                               key={`placeholder-${idx}`}
                               sx={{
                                 width: 160,
-                                height: 240,
+                                height: 280,
                                 borderRadius: 1.5,
                                 bgcolor: 'action.hover',
                                 flexShrink: 0,
@@ -408,54 +413,125 @@ export function CollectionDialog({
                             />
                           ))
                         : selectedJourneysOrdered.map((journey) => (
-                            <Box
+                            <Stack
                               key={journey.id}
-                              sx={{
-                                width: 160,
-                                height: 240,
-                                borderRadius: 1.5,
-                                flexShrink: 0,
-                                overflow: 'hidden',
-                                position: 'relative',
-                                bgcolor: 'action.hover',
-                                ...(journey.primaryImageBlock?.src != null && {
-                                  backgroundImage: `url(${journey.primaryImageBlock.src})`,
-                                  backgroundSize: 'cover',
-                                  backgroundPosition: 'center'
-                                })
-                              }}
+                              spacing={0.75}
+                              sx={{ width: 160, flexShrink: 0 }}
                             >
                               <Box
                                 sx={{
-                                  position: 'absolute',
-                                  inset: 0,
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  justifyContent: 'flex-end',
-                                  p: 1,
-                                  background:
-                                    'linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.16) 50%, rgba(0,0,0,0) 90%)'
+                                  width: '100%',
+                                  height: 240,
+                                  borderRadius: 1.5,
+                                  overflow: 'hidden',
+                                  position: 'relative',
+                                  bgcolor: 'action.hover',
+                                  ...(journey.primaryImageBlock?.src != null && {
+                                    backgroundImage: `url(${journey.primaryImageBlock.src})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center'
+                                  })
                                 }}
                               >
-                                <Typography
+                                <Box
                                   sx={{
-                                    fontFamily: 'Montserrat, sans-serif',
-                                    fontWeight: 600,
-                                    fontSize: 13,
-                                    lineHeight: 1.25,
-                                    color: 'white',
-                                    overflow: 'hidden',
-                                    display: '-webkit-box',
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: 'vertical'
+                                    position: 'absolute',
+                                    inset: 0,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'flex-end',
+                                    p: 1,
+                                    background:
+                                      'linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.16) 50%, rgba(0,0,0,0) 90%)'
                                   }}
                                 >
-                                  {journey.title}
-                                </Typography>
+                                  <Typography
+                                    sx={{
+                                      fontFamily: 'Montserrat, sans-serif',
+                                      fontWeight: 600,
+                                      fontSize: 13,
+                                      lineHeight: 1.25,
+                                      color: 'white',
+                                      overflow: 'hidden',
+                                      display: '-webkit-box',
+                                      WebkitLineClamp: 2,
+                                      WebkitBoxOrient: 'vertical'
+                                    }}
+                                  >
+                                    {journey.title}
+                                  </Typography>
+                                </Box>
                               </Box>
-                            </Box>
+                              {/* Use + Play buttons mirror the public gallery
+                                  card. They're decorative here — clicks no-op,
+                                  but hover styles stay so the preview
+                                  represents the live experience. */}
+                              <Stack direction="row" spacing={0.75}>
+                                <Button
+                                  variant="outlined"
+                                  onClick={() => undefined}
+                                  sx={{
+                                    flex: '0 0 auto',
+                                    width: 96,
+                                    height: 32,
+                                    borderRadius: 1,
+                                    px: 0,
+                                    fontFamily: 'Montserrat, sans-serif',
+                                    fontWeight: 700,
+                                    fontSize: 12,
+                                    textTransform: 'none',
+                                    color: '#444451',
+                                    borderColor: '#444451',
+                                    opacity: 0.6,
+                                    '&:hover': {
+                                      borderColor: '#444451',
+                                      opacity: 1
+                                    }
+                                  }}
+                                >
+                                  {t('Use')}
+                                </Button>
+                                <IconButton
+                                  aria-label={t('Play')}
+                                  onClick={() => undefined}
+                                  sx={{
+                                    flex: 1,
+                                    height: 32,
+                                    borderRadius: 1,
+                                    bgcolor: '#26262E',
+                                    color: 'common.white',
+                                    opacity: 0.6,
+                                    '&:hover': {
+                                      bgcolor: '#26262E',
+                                      opacity: 1
+                                    }
+                                  }}
+                                >
+                                  <Play3Icon sx={{ fontSize: 18 }} />
+                                </IconButton>
+                              </Stack>
+                            </Stack>
                           ))}
                     </Stack>
+                  </Box>
+                  {/* Embedded PDF/video — same component the editor's
+                      About tab uses for strategy embeds. Renders an
+                      iframe for Canva/Google Slides URLs and a
+                      "Case Study Preview" placeholder otherwise. */}
+                  <Box
+                    sx={{
+                      mt: 2.5,
+                      // Strip StrategySection's xs/sm bottom padding so
+                      // it sits flush within the preview card layout.
+                      '& > .MuiStack-root': { pb: 0 }
+                    }}
+                  >
+                    <StrategySection
+                      strategySlug={
+                        values.mediaUrl !== '' ? values.mediaUrl : null
+                      }
+                      variant="placeholder"
+                    />
                   </Box>
                 </Box>
               </Box>
