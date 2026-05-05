@@ -17,11 +17,6 @@ declare module '*.jpg' {
   export default content
 }
 
-declare module '*.svg' {
-  const content: import('next/image').StaticImageData
-  export default content
-}
-
 declare global {
   type DateTime = string
 }
