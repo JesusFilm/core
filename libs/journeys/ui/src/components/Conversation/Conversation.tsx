@@ -182,7 +182,9 @@ export function Conversation({
             gap: 1,
             pt: 1,
             pb: `${
-              8 + bottomClearance + (fadeBeforeInput ? BOTTOM_FADE_HEIGHT_PX : 0)
+              8 +
+              bottomClearance +
+              (fadeBeforeInput ? BOTTOM_FADE_HEIGHT_PX : 0)
             }px`
           }}
         >
