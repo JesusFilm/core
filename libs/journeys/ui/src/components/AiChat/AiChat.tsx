@@ -1,8 +1,10 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
 import { DefaultChatTransport, UIMessage } from 'ai'
 import { useTranslation } from 'next-i18next/pages'
 import {
@@ -27,6 +29,8 @@ import { ChatHeader } from './ChatHeader'
 import {
   HEADER_WASH,
   MUTED_FG,
+  OVERLAY_CLOSE_BG,
+  OVERLAY_CLOSE_BG_HOVER,
   OVERLAY_FG_RETRY,
   SHEET_BOTTOM_FADE
 } from './chatStyles'
@@ -59,6 +63,12 @@ interface AiChatProps {
    * The pinned sheet uses this to choose the right height + animation.
    */
   onSheetStateChange?: (state: 'idle' | 'active' | 'collapsed') => void
+  /**
+   * Optional close action for parent-owned overlay chrome. Rendered as a
+   * sibling of the floating input so it stays discoverable without covering
+   * typed text.
+   */
+  onClose?: () => void
 }
 
 export type AiChatSheetState = 'idle' | 'active' | 'collapsed'
@@ -184,7 +194,8 @@ export function AiChat({
   initialMessage,
   collapsible = true,
   variant = 'panel',
-  onSheetStateChange
+  onSheetStateChange,
+  onClose
 }: AiChatProps): ReactElement {
   const isOverlay = variant === 'overlay'
   const isPanel = !isOverlay
@@ -303,6 +314,7 @@ export function AiChat({
 
   const showDragHandle = isPanel && collapsible
   const showHeader = isPanel
+  const showOverlayClose = isOverlay && onClose != null
   // We keep header/conversation/input mounted in every state and rely on
   // the parent sheet's height transition + overflow:hidden to clip them
   // as the sheet collapses. Hiding via display:none would short-circuit
@@ -348,7 +360,7 @@ export function AiChat({
           // 72px = floating capsule height (44px) + bottom offset (8px) +
           // safe-area headroom + 16px breathing room — keeps the last
           // message clear of the absolute-positioned PromptInput below.
-          bottomClearance={isPanel ? 72 : 0}
+          bottomClearance={72}
         >
           {messages.map((message, index) => {
             const text = getTextFromMessage(message)
@@ -434,6 +446,9 @@ export function AiChat({
           right: 8,
           bottom: 'calc(env(safe-area-inset-bottom) + 8px)',
           zIndex: 2,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
           mx: 'auto',
           maxWidth: { xs: 'none', sm: '48rem' },
           // Slide the floating input out the bottom when the sheet is
@@ -447,14 +462,37 @@ export function AiChat({
             'transform 280ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease-out'
         }}
       >
-        <PromptInput
-          input={input}
-          onInputChange={setInput}
-          onSubmit={handleSubmit}
-          isLoading={isLoading}
-          onStop={stop}
-          variant={isOverlay ? 'floating' : 'inline'}
-        />
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <PromptInput
+            input={input}
+            onInputChange={setInput}
+            onSubmit={handleSubmit}
+            isLoading={isLoading}
+            onStop={stop}
+            variant={isOverlay ? 'floating' : 'inline'}
+          />
+        </Box>
+        {showOverlayClose && (
+          <IconButton
+            onClick={onClose}
+            aria-label={t('Close chat')}
+            disableRipple
+            sx={{
+              width: 32,
+              height: 32,
+              flexShrink: 0,
+              p: 0,
+              color: 'common.white',
+              bgcolor: OVERLAY_CLOSE_BG,
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: 'none',
+              backgroundClip: 'padding-box',
+              '&:hover': { bgcolor: OVERLAY_CLOSE_BG_HOVER }
+            }}
+          >
+            <CloseRoundedIcon fontSize="small" />
+          </IconButton>
+        )}
       </Box>
     </Box>
   )

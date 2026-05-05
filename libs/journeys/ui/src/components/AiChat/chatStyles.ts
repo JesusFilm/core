@@ -80,6 +80,10 @@ export const OVERLAY_INPUT_SHADOW =
 export const OVERLAY_FG_MUTED = 'rgba(255, 255, 255, 0.6)'
 /** Subtle white wash on the dark overlay (disabled button bg). */
 export const OVERLAY_FILL_LOW = 'rgba(255, 255, 255, 0.18)'
+/** Muted brand-red close control on the dark overlay. */
+export const OVERLAY_CLOSE_BG = 'rgba(197, 45, 58, 0.72)'
+/** Hover state for the muted brand-red close control. */
+export const OVERLAY_CLOSE_BG_HOVER = 'rgba(197, 45, 58, 0.86)'
 
 // --- Misc chat surfaces ---
 
