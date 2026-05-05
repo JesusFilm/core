@@ -130,15 +130,17 @@ function AssistantBubble({
   surface = 'light'
 }: AssistantBubbleProps): ReactElement {
   const { display, isComplete } = useTypewriter(text, animate, isStreaming)
-  // Panel (light) renders bubbles; overlay (dark) renders plain prose.
-  const isPlain = surface === 'dark'
+  // Assistant always renders as plain prose (no bubble); only the
+  // text colour shifts between light and dark surfaces. Actions still
+  // tints itself to the surface via `plain`.
+  const isDark = surface === 'dark'
   return (
     <>
-      <Message role="assistant" plain={isPlain} surface={surface}>
+      <Message role="assistant" plain surface={surface}>
         <Response content={display} />
       </Message>
       {isComplete && text.length > 0 && (
-        <Actions content={text} plain={isPlain} />
+        <Actions content={text} plain={isDark} />
       )}
     </>
   )
@@ -371,7 +373,7 @@ export function AiChat({
               messages[messages.length - 1]?.role === 'user') && (
               <Message
                 role="assistant"
-                plain={isOverlay}
+                plain
                 surface={isOverlay ? 'dark' : 'light'}
               >
                 <TypingIndicator />
@@ -381,7 +383,7 @@ export function AiChat({
             <Box>
               <Message
                 role="assistant"
-                plain={isOverlay}
+                plain
                 surface={isOverlay ? 'dark' : 'light'}
               >
                 <Box component="span" sx={{ opacity: 0.7 }}>

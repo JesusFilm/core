@@ -26,10 +26,9 @@ interface ConversationProps {
   /**
    * Increments when a new message is appended. The conversation
    * scrolls to the bottom on change (only when the user was already
-   * near the bottom). Streaming text growth keeps the user pinned
-   * to the bottom while they were already there, mimicking
-   * `useStickToBottom`. If the reader has scrolled up, growth is
-   * left alone and the "scroll to latest" pill becomes the way back.
+   * near the bottom). Streaming text growth deliberately does NOT
+   * trigger a scroll — readers control their own pace, and the
+   * "scroll to latest" pill is the way back when they fall behind.
    */
   scrollKey?: number
   /**
@@ -108,31 +107,30 @@ export function Conversation({
     }
   }, [scrollKey, scrollToBottom])
 
-  // Track size changes on both the scrollable container AND the
-  // content. Content resizes happen when streaming text grows or
-  // images load — if the reader was at the bottom we keep them
-  // pinned there (mirrors `useStickToBottom`). Container resizes
-  // happen when the parent sheet collapses/expands (clientHeight
-  // changes — without this the pill would keep rendering against a
-  // 0-height scrollable area).
+  // Re-evaluate at-bottom (and toggle the pill) whenever either side of
+  // the "is there anything to scroll to" comparison changes:
+  //  - container resize (parent sheet collapse/expand) changes
+  //    `clientHeight` without firing a scroll event — without this the
+  //    pill would linger after a collapse.
+  //  - content resize (streaming text, image load, message append)
+  //    changes `scrollHeight` without firing a scroll event — without
+  //    this the pill would never auto-appear once new content grows
+  //    past the viewport.
+  // We deliberately do NOT auto-scroll on content growth — readers
+  // consume responses at their own pace, and the pill is the way back.
   useEffect(() => {
     const scrollEl = scrollRef.current
     const contentEl = contentRef.current
     if (scrollEl == null || contentEl == null) return undefined
-    const contentObserver = new ResizeObserver(() => {
-      if (wasNearBottomRef.current) {
-        scrollToBottom(false)
-      }
-      evaluateAtBottom()
-    })
     const scrollObserver = new ResizeObserver(() => evaluateAtBottom())
-    contentObserver.observe(contentEl)
+    const contentObserver = new ResizeObserver(() => evaluateAtBottom())
     scrollObserver.observe(scrollEl)
+    contentObserver.observe(contentEl)
     return () => {
-      contentObserver.disconnect()
       scrollObserver.disconnect()
+      contentObserver.disconnect()
     }
-  }, [evaluateAtBottom, scrollToBottom])
+  }, [evaluateAtBottom])
 
   return (
     <Box sx={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex' }}>
