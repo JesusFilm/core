@@ -1,6 +1,7 @@
 ---
 title: GitHub Actions wrapper-job pattern for skippable required checks
 date: 2026-05-01
+last_updated: 2026-05-05
 category: architecture-patterns
 module: github-actions
 problem_type: architecture_pattern
@@ -12,6 +13,7 @@ applies_when:
   - 'Adding a job-level `if:` guard to a job that is a required status check in branch protection'
   - 'A required GitHub Actions check is concluding `skipped` and blocking PR merge despite approvals and other green checks'
   - "You have a structural reason a required check cannot run on a class of PR (the check would actively conflict with those PRs), and `paths-ignore:` and ruleset edits don't fit your case"
+  - 'The workflow runs on both `pull_request` and `merge_group` triggers — both events must satisfy the skip condition or the merge queue will eject the PR'
 tags:
   - github-actions
   - branch-protection
@@ -19,6 +21,8 @@ tags:
   - conditional-jobs
   - wrapper-job
   - skipped-checks
+  - merge-queue
+  - merge-group
   - ci
   - autofix
 related:
@@ -100,6 +104,7 @@ jobs:
 - **`permissions: {}` on the wrapper.** It makes zero API calls (it only reads `needs.<job>.result` from workflow context). Empty permissions satisfies principle of least privilege and CodeQL's `actions/missing-workflow-permissions` rule.
 - **Fail closed.** The `else exit 1` branch handles `failure`, `cancelled`, and any unexpected future value. A cancelled run must never certify a PR.
 - **`runs-on: ubuntu-latest`.** Cheapest GitHub-hosted runner for a ~5-second job. No self-hosted runner, no secrets.
+- **Workflow runs on `merge_group`? You need a second clause in the `if:`.** `github.head_ref` is empty on merge_group events, so a single-clause guard like `!contains(github.head_ref, '...')` evaluates `true` and the job runs against the queued candidate. The merge queue will eject the PR even though `pull_request` was green. See [Event-aware skip conditions](#event-aware-skip-conditions-pull_request-vs-merge_group) below for the working pattern.
 
 ## Why This Matters
 
@@ -145,6 +150,63 @@ If you're considering adding a second instance of this pattern, answer all of th
 
 Document your answers in the PR that adds the new skip — future maintainers will need them when the same question comes up again.
 
+## Event-aware skip conditions: `pull_request` vs `merge_group`
+
+The wrapper job fixes "skipped required check blocks merge". It does **not** fix the more subtle bug where the `if:` guard expression itself fires correctly on one event but no-ops on another. If your workflow runs on both `pull_request` and `merge_group` (which is the standard shape for any required check that's also gated by the merge queue), the guard must evaluate correctly under both contexts. They expose different fields.
+
+### What's populated on each event
+
+| Field                                          | `pull_request`                             | `merge_group`                                                                                               |
+| ---------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `github.head_ref`                              | the PR branch name (e.g. `feat/new-thing`) | **empty**                                                                                                   |
+| `github.event.pull_request.*`                  | the full PR object                         | **null**                                                                                                    |
+| `github.event.merge_group.head_ref`            | empty                                      | `refs/heads/gh-readonly-queue/main/pr-<number>-<sha>` — **the readonly queue ref, not the original branch** |
+| `github.event.merge_group.head_commit.message` | empty                                      | the squash-merged commit message — by GitHub convention starts with the PR title                            |
+
+The trap is row 3. `merge_group.head_ref` looks symmetrical to `head_ref` and reads naturally as "the head ref of the merge group" — but the head ref of the merge group is GitHub's internal queue branch, not the PR's branch. A guard expression that pattern-matches the original branch name against `merge_group.head_ref` will never fire.
+
+### The working pattern: match by branch name on `pull_request`, by commit message on `merge_group`
+
+```yaml
+if: >-
+  ${{ !contains(github.head_ref, '-chore-ce-sync-')
+      && !contains(github.event.merge_group.head_commit.message, 'sync compound-engineering skills and agents') }}
+```
+
+How it evaluates:
+
+| Event                    | head_ref                     | merge_group.head_commit.message                                        | guard result              | job runs? |
+| ------------------------ | ---------------------------- | ---------------------------------------------------------------------- | ------------------------- | --------- |
+| `pull_request` (regular) | `feat/foo`                   | empty                                                                  | `true && true` = `true`   | ✅        |
+| `pull_request` (sync-ce) | `00-00-JC-chore-ce-sync-...` | empty                                                                  | `false && true` = `false` | ⏭️        |
+| `merge_group` (regular)  | empty                        | `feat: add new thing (#9999)`                                          | `true && true` = `true`   | ✅        |
+| `merge_group` (sync-ce)  | empty                        | `chore: sync compound-engineering skills and agents to v3.5.0 (#9150)` | `true && false` = `false` | ⏭️        |
+| `push` to `main`         | empty                        | empty                                                                  | `true && true` = `true`   | ✅        |
+
+### The lockstep convention
+
+Because the `pull_request` guard matches the **branch name** and the `merge_group` guard matches the **commit message**, the automation that creates these PRs has to guarantee both substrings are present and stable. For `/sync-ce` PRs in `core` today, this is enforced by `.claude/skills/sync-ce/SKILL.md`:
+
+- **Branch name** must contain `-chore-ce-sync-` (e.g. `00-00-JC-chore-ce-sync-v3-5-0`).
+- **PR title** must start with `chore: sync compound-engineering skills and agents` so the squash-merged commit on the queue carries the substring the merge_group guard matches against.
+
+Both are load-bearing. Changing one without the other re-opens the trap. Document the contract in the SKILL/script that creates the PRs and in the workflow comment that consumes it.
+
+### Why not just match `head_commit.message` on both events?
+
+Tempting, but the squash-merged commit only exists on `merge_group`. On `pull_request`, `github.event.head_commit` is the PR's most recent commit, which authors are free to title however they like — relying on it would couple every PR's individual commit messages to the skip condition. Branch names are the right contract on `pull_request` (they're under the automation's control and structurally stable across rebases); commit messages are the right contract on `merge_group` (they're under the automation's control via PR title, and the readonly-queue ref makes them the only stable signal that survives the squash).
+
+### Empirical evidence from JesusFilm/core
+
+PR [#9103](https://github.com/JesusFilm/core/pull/9103) introduced the wrapper-job pattern with a single-clause guard `if: !contains(github.head_ref, '-chore-ce-sync-')`. That worked for `pull_request` runs but PR [#9150](https://github.com/JesusFilm/core/pull/9150) — the next `/sync-ce` PR — was repeatedly ejected from the merge queue. The merge_group run of `lint-work` ran prettier across 165 CE-managed files; the `autofix-ci/action` step then errored with `TypeError: Cannot read properties of undefined (reading 'replace')` (no PR to push fixes to in merge_group context); `lint-work` concluded `failure`; the wrapper failed-closed; the queue ejected #9150.
+
+PR [#9153](https://github.com/JesusFilm/core/pull/9153) attempted to fix it by adding `&& !contains(github.event.merge_group.head_ref, '-chore-ce-sync-')`. **That didn't work** — `merge_group.head_ref` is the readonly queue ref, not the PR branch — and #9150 was ejected again. PR [#9154](https://github.com/JesusFilm/core/pull/9154) replaced it with the `merge_group.head_commit.message` match shown above and #9150 cleared the queue on the next attempt.
+
+References:
+
+- [GitHub webhook events — `merge_group` payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads#merge_group) — defines `merge_group.head_ref` (the queue ref) and `merge_group.head_commit` (the squash-merged commit object including `message`)
+- [GitHub Actions docs — `github` context](https://docs.github.com/en/actions/learn-github-actions/contexts#github-context) — `github.head_ref` populated on `pull_request` / `pull_request_target` only
+
 ## Examples
 
 ### Triggering condition shape
@@ -152,17 +214,24 @@ Document your answers in the PR that adds the new skip — future maintainers wi
 The job-level `if:` on `<name>-work` is where you encode "which PRs skip the check." The only shape currently in use in `core`:
 
 ```yaml
-# Skip for automated sync PRs by branch name prefix
-if: ${{ !contains(github.head_ref, '-chore-ce-sync-') }}
+# Skip for automated sync PRs. Two clauses: the branch-name match handles
+# `pull_request` events; the commit-message match handles `merge_group` events
+# (where head_ref is empty). See "Event-aware skip conditions" above.
+if: >-
+  ${{ !contains(github.head_ref, '-chore-ce-sync-')
+      && !contains(github.event.merge_group.head_commit.message, 'sync compound-engineering skills and agents') }}
 ```
 
-Other shapes the `if:` _could_ take if a future use case justified it — **listed for syntax reference only, NOT as endorsed defaults:**
+Other shapes the `if:` _could_ take if a future use case justified it — **listed for syntax reference only, NOT as endorsed defaults**, and each would need the same dual-event treatment if the workflow runs on `merge_group`:
 
 ```yaml
 # Bot-authored PRs (hypothetical — not in use)
+# Note: github.event.pull_request is null on merge_group; you'd also need a
+# corresponding match on merge_group.head_commit.message or commit author.
 if: ${{ github.event.pull_request.user.login != 'dependabot[bot]' }}
 
 # Label-gated (hypothetical — especially risky, since manual escape hatches need strong justification)
+# Note: pull_request.labels is null on merge_group; same caveat as above.
 if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-lint') }}
 ```
 
@@ -215,17 +284,20 @@ The original implementation used a bash `case` statement. PR review pushback was
 
 The fix came at the end of a chain of related PRs in JesusFilm/core. Capturing it here for future archaeologists:
 
-| PR                                                   | Role              | Description                                                                                                                             |
-| ---------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| [#9056](https://github.com/JesusFilm/core/pull/9056) | setup             | `chore: add compound-engineering skills for Dispatch compatibility` — original CE plugin vendoring                                      |
-| [#9091](https://github.com/JesusFilm/core/pull/9091) | failed attempt    | First CE sync attempt, surfaced the lint-on-CE-files problem                                                                            |
-| [#9095](https://github.com/JesusFilm/core/pull/9095) | regression source | `ci: skip autofix.ci on /sync-ce-generated PRs` — added the job-level `if:`. **This introduced the SKIPPED-required-check regression.** |
-| [#9096](https://github.com/JesusFilm/core/pull/9096) | blocked PR        | Re-run sync PR that got BLOCKED by the regression                                                                                       |
-| [#9097](https://github.com/JesusFilm/core/pull/9097) | docs              | `docs: link sync-ce skill and autofix.ci skip guard` — docs follow-up                                                                   |
-| [#9103](https://github.com/JesusFilm/core/pull/9103) | fix               | **The fix:** wrapper-job pattern (this doc)                                                                                             |
+| PR                                                   | Role                 | Description                                                                                                                                                                                                                                      |
+| ---------------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [#9056](https://github.com/JesusFilm/core/pull/9056) | setup                | `chore: add compound-engineering skills for Dispatch compatibility` — original CE plugin vendoring                                                                                                                                               |
+| [#9091](https://github.com/JesusFilm/core/pull/9091) | failed attempt       | First CE sync attempt, surfaced the lint-on-CE-files problem                                                                                                                                                                                     |
+| [#9095](https://github.com/JesusFilm/core/pull/9095) | regression source    | `ci: skip autofix.ci on /sync-ce-generated PRs` — added the job-level `if:`. **This introduced the SKIPPED-required-check regression.**                                                                                                          |
+| [#9096](https://github.com/JesusFilm/core/pull/9096) | blocked PR           | Re-run sync PR that got BLOCKED by the regression                                                                                                                                                                                                |
+| [#9097](https://github.com/JesusFilm/core/pull/9097) | docs                 | `docs: link sync-ce skill and autofix.ci skip guard` — docs follow-up                                                                                                                                                                            |
+| [#9103](https://github.com/JesusFilm/core/pull/9103) | fix (round 1)        | **The wrapper-job fix:** rename `lint` → `lint-work`, add `lint` wrapper resolving `skipped` → `success`. Single-clause guard on `head_ref`.                                                                                                     |
+| [#9150](https://github.com/JesusFilm/core/pull/9150) | blocked PR (round 2) | Sync-ce v3.5.0 PR — got ejected from the merge queue twice before #9154 landed                                                                                                                                                                   |
+| [#9153](https://github.com/JesusFilm/core/pull/9153) | failed remediation   | `fix(ci): skip autofix.ci on /sync-ce PRs in merge_group events` — added `merge_group.head_ref` to the guard. **Did not work**: `merge_group.head_ref` resolves to `refs/heads/gh-readonly-queue/main/pr-XXX-<sha>`, not the original PR branch. |
+| [#9154](https://github.com/JesusFilm/core/pull/9154) | fix (round 2)        | **The merge-group fix:** match `merge_group.head_commit.message` against the PR title prefix `sync compound-engineering skills and agents`, document the commit-message contract in the sync-ce SKILL alongside the branch-name contract.        |
 
 ## Related
 
 - [`docs/solutions/integration-issues/plugin-skill-discovery-in-dispatch-sessions.md`](../integration-issues/plugin-skill-discovery-in-dispatch-sessions.md) — sibling in the `/sync-ce` story (different failure mode, same umbrella)
-- `.claude/skills/sync-ce/SKILL.md` — defines the `-chore-ce-sync-` branch-name pattern that the `if:` guard checks against; keep them in lockstep
+- `.claude/skills/sync-ce/SKILL.md` — defines both load-bearing contracts the `if:` guard checks against: the `-chore-ce-sync-` branch-name pattern (for `pull_request`) and the `sync compound-engineering skills and agents` PR-title prefix (for `merge_group`). Keep all three in lockstep
 - `.github/workflows/autofix.ci.yml` — the workflow this pattern was first applied to
