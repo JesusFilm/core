@@ -1,5 +1,5 @@
 ---
-title: "fix: Card color filter missing on desktop in contained mode with no blocks"
+title: 'fix: Card color filter missing on desktop in contained mode with no blocks'
 type: fix
 status: completed
 date: 2026-04-07
@@ -26,11 +26,13 @@ Update the no-blocks branch in `ContainedCover.tsx` to apply the `backgroundColo
 In `ContainedCover.tsx`, there are two rendering branches inside `CardOverlayContentContainer`:
 
 **With blocks (lines 237-311)** -- works correctly:
+
 - Renders `overlay-gradient` element with `backgroundColor: ${baseBackgroundColor}FF` (solid color)
 - Uses `mask: overlayGradient('right')` to create a directional fade from transparent (image side) to solid (content side)
 - RTL works because `stylis-plugin-rtl` auto-flips `to right` -> `to left` and `pl` -> `pr`
 
 **Without blocks (lines 312-328)** -- broken:
+
 - Renders `StyledGradientBackground` with `background: { xs: linear-gradient(...), sm: 'unset' }`
 - On mobile (`xs`): works -- renders a 300px gradient from transparent to backgroundColor at the bottom
 - On desktop (`sm`): broken -- `'unset'` means no overlay at all
@@ -99,16 +101,11 @@ The no-blocks branch (lines 312-328) has zero references to `rtl`. The `backgrou
 ```tsx
 it('should render gradient background when no children', () => {
   const { getByTestId } = render(
-    <ContainedCover
-      backgroundColor="#FF000080"
-      backgroundBlur={blurUrl}
-      imageBlock={imageBlock}
-    >
+    <ContainedCover backgroundColor="#FF000080" backgroundBlur={blurUrl} imageBlock={imageBlock}>
       {[]}
     </ContainedCover>
   )
-  expect(getByTestId('CardOverlayContentContainer')
-    .querySelector('.overlay-gradient')).toBeInTheDocument()
+  expect(getByTestId('CardOverlayContentContainer').querySelector('.overlay-gradient')).toBeInTheDocument()
 })
 ```
 
