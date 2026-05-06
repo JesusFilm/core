@@ -20,7 +20,7 @@ builder.prismaObject('CloudflareImage', {
     id: t.exposeID('id', { nullable: false }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     videoId: t.exposeID('videoId', { nullable: true }),
-    uploadUrl: t.withAuth({ isAuthenticated: true }).exposeString('uploadUrl'),
+    uploadUrl: t.exposeString('uploadUrl'),
     userId: t
       .withAuth({ isAuthenticated: true })
       .exposeID('userId', { nullable: false }),
