@@ -2,12 +2,9 @@ import { fireEvent, render } from '@testing-library/react'
 
 import { DragHandle } from './DragHandle'
 
-// `next-i18next/pages` is a Next.js subpath that doesn't resolve in jest;
-// register the mock as virtual so jest doesn't try to find it on disk.
 jest.mock(
   'next-i18next/pages',
-  () => ({ useTranslation: () => ({ t: (key: string) => key }) }),
-  { virtual: true }
+  () => ({ useTranslation: () => ({ t: (key: string) => key }) })
 )
 
 function renderHandle(props: {
