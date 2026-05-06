@@ -23,7 +23,6 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
@@ -68,11 +67,23 @@ function parseDropZoneId(raw: string | number): DropZoneId | null {
   return null
 }
 
-export function TemplateGalleryPageList(): ReactElement {
+export interface TemplateGalleryPageListProps {
+  /**
+   * True when this panel is the active tab. Used to refetch on tab
+   * re-visit — the shared TabPanel keeps this component mounted once
+   * visible, so cache-and-network alone won't refire the network on
+   * subsequent visits. The parent passes the boolean so this component
+   * doesn't have to read router state.
+   */
+  visible?: boolean
+}
+
+export function TemplateGalleryPageList({
+  visible = true
+}: TemplateGalleryPageListProps = {}): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { enqueueSnackbar } = useSnackbar()
-  const router = useRouter()
   const teamId = activeTeam?.id
 
   const collectionsQuery = useTemplateGalleryPagesQuery(
@@ -95,21 +106,18 @@ export function TemplateGalleryPageList(): ReactElement {
     { fetchPolicy: 'cache-and-network' }
   )
 
-  // Refetch when the user navigates BACK to the Team Templates tab (which
-  // renders this component when the `teamTemplateCollection` flag is on).
-  // The shared TabPanel keeps this component mounted across tab switches once
-  // visible (only flips its `unmount` state false-once), so cache-and-network
-  // alone won't refire the network on re-visit. Watch the `type` query
-  // param and refetch both lists whenever it becomes `templates`.
-  const isTemplatesTabActive = router.query.type === 'templates'
+  // Refetch when this panel becomes visible. The shared TabPanel keeps the
+  // component mounted across tab switches once visible, so cache-and-network
+  // alone won't refire the network on re-visit. The `visible` prop is owned
+  // by the parent so this component doesn't have to read router state.
   useEffect(() => {
-    if (!isTemplatesTabActive || teamId == null) return
+    if (!visible || teamId == null) return
     void journeysQuery.refetch()
     void collectionsQuery.refetch()
-    // refetch fns identity changes every render; depending on the active-tab
+    // refetch fns identity changes every render; depending on the visibility
     // signal + teamId is the right semantics.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTemplatesTabActive, teamId])
+  }, [visible, teamId])
 
   const [templateGalleryPageAssignJourney] =
     useTemplateGalleryPageAssignJourneyMutation()
@@ -275,6 +283,16 @@ export function TemplateGalleryPageList(): ReactElement {
   }
 
   function handleDragStart(event: DragStartEvent): void {
+    // Don't even paint a drag overlay if a previous mutation is still in
+    // flight — handleDragEnd would silently swallow the drop, leaving the
+    // user with the impression their move just vanished.
+    if (dragInFlight) {
+      enqueueSnackbar(t('Finishing previous move…'), {
+        variant: 'info',
+        preventDuplicate: true
+      })
+      return
+    }
     setActiveDragId(String(event.active.id))
   }
 
@@ -292,7 +310,12 @@ export function TemplateGalleryPageList(): ReactElement {
   // membership guard).
   async function handleDragEnd(event: DragEndEvent): Promise<void> {
     setActiveDragId(null)
-    if (dragInFlight) return
+    if (dragInFlight) {
+      // Defensive — handleDragStart already early-returns if a previous
+      // mutation is still in flight, so this branch should be unreachable.
+      // Keep the guard so reordering work doesn't accidentally interleave.
+      return
+    }
     const { active, over } = event
     if (over == null) return
 
@@ -465,6 +488,7 @@ export function TemplateGalleryPageList(): ReactElement {
                       .map((tpl) => journeyById.get(tpl.id))
                       .filter((j): j is Journey => j != null)}
                     publishedLock={collection.status === TemplateGalleryPageStatus.published}
+                    dragInFlight={dragInFlight}
                   />
                 </CollectionCard>
               </DroppableCollectionWrapper>
@@ -497,7 +521,10 @@ export function TemplateGalleryPageList(): ReactElement {
                         key={journey.id}
                         size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
                       >
-                        <DraggableJourney journey={journey} />
+                        <DraggableJourney
+                          journey={journey}
+                          disabled={dragInFlight}
+                        />
                       </Grid>
                     ))}
                   </Grid>
@@ -572,11 +599,13 @@ function DroppableCollectionWrapper({
 interface DraggableJourneysGridProps {
   journeys: readonly Journey[]
   publishedLock: boolean
+  dragInFlight: boolean
 }
 
 function DraggableJourneysGrid({
   journeys,
-  publishedLock
+  publishedLock,
+  dragInFlight
 }: DraggableJourneysGridProps): ReactElement | null {
   if (journeys.length === 0) return null
   // SortableContext gives intra-collection ordering: each item is both a
@@ -592,7 +621,10 @@ function DraggableJourneysGrid({
               key={journey.id}
               size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
             >
-              <DraggableJourney journey={journey} disabled={publishedLock} />
+              <DraggableJourney
+                journey={journey}
+                disabled={publishedLock || dragInFlight}
+              />
             </Grid>
           ))}
         </Grid>

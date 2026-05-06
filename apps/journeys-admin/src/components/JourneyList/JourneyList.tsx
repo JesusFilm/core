@@ -102,13 +102,10 @@ export function JourneyList({
     contentType: ContentType,
     status: JourneyStatusFilter
   ): ReactElement => {
-    if (contentType === 'templates' && teamTemplateCollection === true) {
-      return <TemplateGalleryPageList />
-    }
     // Only pass event to the currently active content type to prevent duplicate actions
     const eventForThisContentType =
       contentType === currentContentType ? event : undefined
-    return (
+    const list = (
       <JourneyListContent
         contentType={contentType}
         status={status}
@@ -117,6 +114,27 @@ export function JourneyList({
         event={eventForThisContentType}
       />
     )
+    // Collections panel is additive: it sits ABOVE the legacy team templates
+    // list when the flag is on, so archive / trash / sort affordances on
+    // individual templates remain reachable. Only show the gallery on the
+    // Active status filter — Collections themselves don't have an archived
+    // counterpart, and showing the gallery alongside an "Archived templates"
+    // list would be confusing.
+    if (
+      contentType === 'templates' &&
+      teamTemplateCollection === true &&
+      status === 'active'
+    ) {
+      return (
+        <>
+          <TemplateGalleryPageList
+            visible={contentType === currentContentType}
+          />
+          {list}
+        </>
+      )
+    }
+    return list
   }
 
   return (
