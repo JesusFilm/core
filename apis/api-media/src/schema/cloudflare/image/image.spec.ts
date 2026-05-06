@@ -49,6 +49,7 @@ jest.mock('./service', () => ({
 }))
 
 describe('cloudflareImage', () => {
+  const client = getClient()
   const authClient = getClient({
     headers: {
       authorization: 'token'
@@ -61,6 +62,105 @@ describe('cloudflareImage', () => {
   })
 
   describe('queries', () => {
+    describe('videoImages', () => {
+      const VIDEO_IMAGES_QUERY = graphql(`
+        query VideoImages {
+          videoImages {
+            id
+            videoId
+            aspectRatio
+            url
+            blurhash
+          }
+        }
+      `)
+
+      it('should return video images', async () => {
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([
+          {
+            id: 'imageId',
+            uploaded: true,
+            userId: 'userId',
+            uploadUrl: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            aspectRatio: null,
+            videoId: 'videoId',
+            blurhash: null,
+            blurhashAttemptedAt: null
+          }
+        ])
+        const result = await client({ document: VIDEO_IMAGES_QUERY })
+        expect(
+          prismaMock.cloudflareImage.findMany
+        ).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: {
+              videoId: { not: null },
+              uploaded: true,
+              updatedAt: undefined,
+              aspectRatio: undefined
+            },
+            skip: 0,
+            take: 100,
+            orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }]
+          })
+        )
+        expect(result).toHaveProperty('data.videoImages', [
+          {
+            id: 'imageId',
+            videoId: 'videoId',
+            aspectRatio: null,
+            url: expect.any(String),
+            blurhash: null
+          }
+        ])
+      })
+
+      it('should filter by videoId', async () => {
+        const FILTERED_QUERY = graphql(`
+          query VideoImagesFiltered {
+            videoImages(where: { videoId: "specificVideoId" }) {
+              id
+            }
+          }
+        `)
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([])
+        await client({ document: FILTERED_QUERY })
+        expect(
+          prismaMock.cloudflareImage.findMany
+        ).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: expect.objectContaining({
+              videoId: 'specificVideoId'
+            })
+          })
+        )
+      })
+    })
+
+    describe('videoImagesCount', () => {
+      const VIDEO_IMAGES_COUNT_QUERY = graphql(`
+        query VideoImagesCount {
+          videoImagesCount
+        }
+      `)
+
+      it('should return video images count', async () => {
+        prismaMock.cloudflareImage.count.mockResolvedValue(5)
+        const result = await client({ document: VIDEO_IMAGES_COUNT_QUERY })
+        expect(prismaMock.cloudflareImage.count).toHaveBeenCalledWith({
+          where: {
+            videoId: { not: null },
+            uploaded: true,
+            updatedAt: undefined,
+            aspectRatio: undefined
+          }
+        })
+        expect(result).toHaveProperty('data.videoImagesCount', 5)
+      })
+    })
+
     describe('getMyCloudflareImages', () => {
       const GET_MY_CLOUDFLARE_IMAGES_QUERY = graphql(`
         query getMyCloudflareImages($offset: Int, $limit: Int) {

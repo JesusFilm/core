@@ -20,8 +20,10 @@ builder.prismaObject('CloudflareImage', {
     id: t.exposeID('id', { nullable: false }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     videoId: t.exposeID('videoId', { nullable: true }),
-    uploadUrl: t.exposeString('uploadUrl'),
-    userId: t.exposeID('userId', { nullable: false }),
+    uploadUrl: t.withAuth({ isAuthenticated: true }).exposeString('uploadUrl'),
+    userId: t
+      .withAuth({ isAuthenticated: true })
+      .exposeID('userId', { nullable: false }),
     createdAt: t.expose('createdAt', {
       type: 'Date',
       nullable: false
@@ -110,11 +112,10 @@ builder.queryFields((t) => ({
       return await prisma.cloudflareImage.findMany({
         ...query,
         where: {
-          videoId: { not: null },
+          videoId: where?.videoId != null ? where.videoId : { not: null },
           uploaded: true,
           updatedAt: toPrismaDateTimeFilter(where?.updatedAt),
-          aspectRatio: where?.aspectRatio ?? undefined,
-          ...(where?.videoId != null ? { videoId: where.videoId } : {})
+          aspectRatio: where?.aspectRatio ?? undefined
         },
         skip: offset ?? 0,
         take: limit ?? 100,
@@ -130,11 +131,10 @@ builder.queryFields((t) => ({
     resolve: async (_root, { where }) => {
       return await prisma.cloudflareImage.count({
         where: {
-          videoId: { not: null },
+          videoId: where?.videoId != null ? where.videoId : { not: null },
           uploaded: true,
           updatedAt: toPrismaDateTimeFilter(where?.updatedAt),
-          aspectRatio: where?.aspectRatio ?? undefined,
-          ...(where?.videoId != null ? { videoId: where.videoId } : {})
+          aspectRatio: where?.aspectRatio ?? undefined
         }
       })
     }

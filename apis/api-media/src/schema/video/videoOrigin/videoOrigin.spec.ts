@@ -67,6 +67,25 @@ describe('videoOrigin', () => {
         ])
       })
     })
+
+    describe('videoOriginsCount', () => {
+      const VIDEO_ORIGINS_COUNT_QUERY = graphql(`
+        query VideoOriginsCount {
+          videoOriginsCount
+        }
+      `)
+
+      it('should return video origins count', async () => {
+        prismaMock.videoOrigin.count.mockResolvedValue(2)
+        const result = await client({ document: VIDEO_ORIGINS_COUNT_QUERY })
+        expect(prismaMock.videoOrigin.count).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { updatedAt: undefined }
+          })
+        )
+        expect(result).toHaveProperty('data.videoOriginsCount', 2)
+      })
+    })
   })
 
   describe('mutations', () => {

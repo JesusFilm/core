@@ -56,6 +56,25 @@ describe('videoEdition', () => {
       })
     })
 
+    describe('videoEditionsCount', () => {
+      const VIDEO_EDITIONS_COUNT_QUERY = graphql(`
+        query VideoEditionsCount {
+          videoEditionsCount
+        }
+      `)
+
+      it('should return video editions count', async () => {
+        prismaMock.videoEdition.count.mockResolvedValue(4)
+        const result = await client({ document: VIDEO_EDITIONS_COUNT_QUERY })
+        expect(prismaMock.videoEdition.count).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { updatedAt: undefined }
+          })
+        )
+        expect(result).toHaveProperty('data.videoEditionsCount', 4)
+      })
+    })
+
     describe('videoEdition', () => {
       const VIDEO_EDITION_QUERY = graphql(`
         query VideoEdition($id: ID!) {
