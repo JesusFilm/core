@@ -26,10 +26,7 @@ export default defineConfig({
     reporters: ['default'],
     setupFiles: ['./setupTests.ts'],
     alias: {
-      'styled-jsx/style': resolve(
-        __dirname,
-        '../__mocks__/styled-jsx/style.ts'
-      )
+      'styled-jsx/style': resolve(__dirname, '../__mocks__/styled-jsx/style.ts')
     },
     coverage: {
       enabled: true,

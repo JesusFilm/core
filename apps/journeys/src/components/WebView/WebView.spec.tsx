@@ -1,4 +1,3 @@
-
 import { FetchResult } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
@@ -241,9 +240,7 @@ describe('WebView', () => {
 
     expect(screen.getByTestId('JourneysStepHeader')).toBeInTheDocument()
     expect(screen.getByTestId('JourneysStepFooter')).toBeInTheDocument()
-    await waitFor(() =>
-      expect(screen.getByText('Step 1')).toBeInTheDocument()
-    )
+    await waitFor(() => expect(screen.getByText('Step 1')).toBeInTheDocument())
   })
 
   it('should not render step footer if there is a video block', () => {

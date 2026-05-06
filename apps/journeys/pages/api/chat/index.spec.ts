@@ -43,9 +43,7 @@ const mockGetLangfuse = getLangfuse as unknown as MockedFunction<
   typeof getLangfuse
 >
 const mockGetActivePromptLabel =
-  getActivePromptLabel as unknown as MockedFunction<
-    typeof getActivePromptLabel
-  >
+  getActivePromptLabel as unknown as MockedFunction<typeof getActivePromptLabel>
 const mockStreamText = streamText as unknown as Mock
 const mockCreateOpenAICompatible =
   createOpenAICompatible as unknown as MockedFunction<
@@ -418,7 +416,9 @@ describe('/api/chat handler', () => {
         })
       })
       mockGetLangfuse.mockReturnValue(fake as never)
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+      const warnSpy = vi
+        .spyOn(console, 'warn')
+        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -435,7 +435,9 @@ describe('/api/chat handler', () => {
         promptResult: { type: 'chat', compile: vi.fn() }
       })
       mockGetLangfuse.mockReturnValue(fake as never)
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+      const warnSpy = vi
+        .spyOn(console, 'warn')
+        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -554,7 +556,9 @@ describe('/api/chat handler', () => {
         promptError: new Error('boom')
       })
       mockGetLangfuse.mockReturnValue(fake as never)
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+      const warnSpy = vi
+        .spyOn(console, 'warn')
+        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -565,7 +569,9 @@ describe('/api/chat handler', () => {
 
     it('does not create a trace, generation, or flush when langfuse is null', async () => {
       mockGetLangfuse.mockReturnValue(null)
-      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const errorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -648,7 +654,9 @@ describe('/api/chat handler', () => {
     it('ends with ERROR and flushes when onError fires (mid-stream failure)', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
-      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const errorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -666,7 +674,9 @@ describe('/api/chat handler', () => {
     it('ends the generation exactly once when onError fires before onFinish', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
-      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const errorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -688,7 +698,9 @@ describe('/api/chat handler', () => {
     it('ends the generation exactly once when onFinish fires before onError', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
-      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const errorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -712,7 +724,9 @@ describe('/api/chat handler', () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
       installStreamTextSyncThrow(new Error('sync boom'))
-      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const errorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
 
       const { res, status, json } = makeRes(false)
       await handler(postReq(), res)
@@ -733,7 +747,9 @@ describe('/api/chat handler', () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
       installStreamTextSyncThrow(new Error('post-headers boom'))
-      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const errorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
 
       const { res, status, json, end } = makeRes(true)
       await handler(postReq(), res)

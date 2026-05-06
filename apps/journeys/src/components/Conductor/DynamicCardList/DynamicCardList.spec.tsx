@@ -12,7 +12,9 @@ import { DynamicCardList } from './DynamicCardList'
 
 vi.mock('@core/journeys/ui/block', async () => ({
   __esModule: true,
-  ...await vi.importActual<typeof import('@core/journeys/ui/block')>('@core/journeys/ui/block'),
+  ...(await vi.importActual<typeof import('@core/journeys/ui/block')>(
+    '@core/journeys/ui/block'
+  )),
   useBlocks: vi.fn()
 }))
 
