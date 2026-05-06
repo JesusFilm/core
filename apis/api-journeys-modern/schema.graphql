@@ -1974,6 +1974,7 @@ type Query {
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!]
+  templateGalleryPage(id: ID!): TemplateGalleryPage!
   templateGalleryPageBySlug(slug: String!): TemplateGalleryPage
   templateGalleryPages(teamId: ID!): [TemplateGalleryPage!]!
   getUserRole: UserRole
