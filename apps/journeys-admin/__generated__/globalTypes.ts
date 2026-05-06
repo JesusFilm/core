@@ -465,6 +465,8 @@ export interface CardBlockUpdateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+  showAssistant?: boolean | null;
+  expandChatByDefault?: boolean | null;
 }
 
 export interface ChatActionInput {

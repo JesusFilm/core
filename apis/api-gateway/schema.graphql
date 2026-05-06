@@ -118,16 +118,13 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockRestore is used for redo/undo
   """
   blockRestore(id: ID!) : [Block!]! @join__field(graph: API_JOURNEYS) 
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  chatButtonRemove(id: ID!) : ChatButton! @join__field(graph: API_JOURNEYS) 
   """
   Creates a JourneyViewEvent, returns null if attempting to create another
   JourneyViewEvent with the same userId, journeyId, and within the same 24hr
   period of the previous JourneyViewEvent
   """
-  journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent @join__field(graph: API_JOURNEYS) 
-  stepViewEventCreate(input: StepViewEventCreateInput!) : StepViewEvent! @join__field(graph: API_JOURNEYS) 
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  stepViewEventCreate(input: StepViewEventCreateInput!) : StepViewEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   stepNextEventCreate(input: StepNextEventCreateInput!) : StepNextEvent! @join__field(graph: API_JOURNEYS) 
   stepPreviousEventCreate(input: StepPreviousEventCreateInput!) : StepPreviousEvent! @join__field(graph: API_JOURNEYS) 
   videoStartEventCreate(input: VideoStartEventCreateInput!) : VideoStartEvent! @join__field(graph: API_JOURNEYS) 
@@ -370,6 +367,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID) : NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN) 
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID) : PhoneAction! @join__field(graph: API_JOURNEYS_MODERN) 
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID) : ChatAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN) 
+  chatButtonRemove(id: ID!) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN) 
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomainCheck(id: ID!) : CustomDomainCheck! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomainDelete(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -689,7 +689,9 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
-  showAssistant: Boolean
+  showAssistant: Boolean @deprecated(
+    reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624."
+  )
   journeyCustomizationDescription: String
   journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
@@ -764,6 +766,14 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(gr
   themeName from journey
   """
   themeName: ThemeName
+  """
+  When true, this card displays the AI chat button.
+  """
+  showAssistant: Boolean
+  """
+  When true, the chat drawer auto-opens on first visit to this card.
+  """
+  expandChatByDefault: Boolean
 }
 
 type GridContainerBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -4000,17 +4010,6 @@ input TypographyBlockSettingsInput @join__type(graph: API_JOURNEYS)  @join__type
   color: String
 }
 
-input ChatButtonCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  link: String
-  platform: MessagePlatform
-}
-
-input ChatButtonUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  link: String
-  platform: MessagePlatform
-  customizable: Boolean
-}
-
 input JourneyViewEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -4630,6 +4629,8 @@ input CardBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  showAssistant: Boolean
+  expandChatByDefault: Boolean
 }
 
 input ChatActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4638,6 +4639,17 @@ input ChatActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   target: String
   customizable: Boolean
   parentStepId: String
+}
+
+input ChatButtonCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  link: String
+  platform: MessagePlatform
+}
+
+input ChatButtonUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  link: String
+  platform: MessagePlatform
+  customizable: Boolean
 }
 
 input ChatOpenEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {

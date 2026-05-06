@@ -25,13 +25,25 @@ async function renumberPage(
 
 builder.mutationField('templateGalleryPageAssignJourney', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
+    description:
+      "Assign a journey to a TemplateGalleryPage, or unassign it. A journey may belong to at most one page at a time (single-membership invariant).\n\n- `pageId` set: move the journey into that page. The new row appends at the end of the target's display order; if the journey was already in another page (cross-page move) it is removed from the source page first. Both pages are renumbered to contiguous orders 0..N-1 after the change. Allowed on both `draft` and `published` pages.\n- `pageId` null/omitted: unassign — remove the journey from whatever page it is currently in. Returns null (idempotent no-op) if the journey is not in any page.\n- Same-page-already: idempotent return; no row changes.\n\nAuth: caller must be a member of the target page's team (and, on a cross-page move, also of the source page's team).\n\nErrors:\n- NOT_FOUND: target `pageId` does not resolve.\n- NOT_FOUND (field: `journeyId`): journey does not exist or is soft-deleted.\n- BAD_USER_INPUT (field: `journeyId`): journey is not flagged as a template.\n- FORBIDDEN: caller is not in the target page's team.\n- FORBIDDEN (field: `journeyId`): journey belongs to a different team than the target page.",
     type: TemplateGalleryPageRef,
     nullable: true,
     args: {
-      journeyId: t.arg({ type: 'ID', required: true }),
+      journeyId: t.arg({
+        type: 'ID',
+        required: true,
+        description:
+          "The journey to assign or unassign. Must be a non-deleted, template-flagged journey owned by the target page's team (when assigning)."
+      }),
       // pageId omitted/null → unassign the journey from whatever collection
       // it is currently in (returning the journey to the flat template list).
-      pageId: t.arg({ type: 'ID', required: false })
+      pageId: t.arg({
+        type: 'ID',
+        required: false,
+        description:
+          'Target page id. Omit or pass `null` to unassign the journey from whatever page currently owns it (returning it to the flat template list). When set, the journey is moved into this page (and removed from any current source page in the same transaction).'
+      })
     },
     resolve: async (query, _parent, args, context) => {
       const journeyId = String(args.journeyId)

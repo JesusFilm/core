@@ -10,16 +10,31 @@ import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
+    description:
+      "Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range.\n\nIdempotent: when the journey is already at the requested display index, the call is a no-op.\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: `pageId` does not resolve.\n- FORBIDDEN: caller is not in the page's team.\n- CONFLICT (field: `status`): the page is currently `published` — reorder is blocked on published pages; unpublish first to reorder.\n- BAD_USER_INPUT (field: `journeyId`): journey is not currently a member of the page.\n- BAD_USER_INPUT (field: `order`): order is out of range; must satisfy `0 <= order < count(templates in page)`.",
     type: TemplateGalleryPageRef,
     nullable: false,
     args: {
-      pageId: t.arg({ type: 'ID', required: true }),
-      journeyId: t.arg({ type: 'ID', required: true }),
+      pageId: t.arg({
+        type: 'ID',
+        required: true,
+        description: 'Target template gallery page id.'
+      }),
+      journeyId: t.arg({
+        type: 'ID',
+        required: true,
+        description:
+          'The journey whose position is being changed. Must already be a member of the page; use `templateGalleryPageAssignJourney` to add a journey first.'
+      }),
       // `order` is interpreted as a DISPLAY INDEX (0..total-1), not as an
       // absolute `order` column value. Existing orders may be gappy after
       // earlier assign/unassign churn; treating the input as a display
       // index keeps the protocol correct regardless.
-      order: t.arg.int({ required: true })
+      order: t.arg.int({
+        required: true,
+        description:
+          "0-based display index in the page's CURRENT template list, NOT the stored `order` column value. Range: `0 <= order < count(templates in page)`. The underlying `order` column may be gappy from prior assign/unassign churn; the resolver translates the display index into the correct splice position and renumbers the page contiguously."
+      })
     },
     resolve: async (query, _parent, args, context) => {
       const pageId = String(args.pageId)

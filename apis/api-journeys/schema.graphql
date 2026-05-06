@@ -204,7 +204,7 @@ type Journey
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
-  showAssistant: Boolean
+  showAssistant: Boolean @deprecated(reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624.")
   journeyCustomizationDescription: String
   journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
@@ -219,9 +219,6 @@ input BlockDuplicateIdMap {
 type Mutation {
   """blockRestore is used for redo/undo"""
   blockRestore(id: ID!): [Block!]!
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
-  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
-  chatButtonRemove(id: ID!): ChatButton!
 
   """
   Creates a JourneyViewEvent, returns null if attempting to create another
@@ -414,6 +411,12 @@ type CardBlock implements Block
   themeName from journey
   """
   themeName: ThemeName @shareable
+
+  """When true, this card displays the AI chat button."""
+  showAssistant: Boolean @shareable
+
+  """When true, the chat drawer auto-opens on first visit to this card."""
+  expandChatByDefault: Boolean @shareable
 }
 
 enum GridDirection {
@@ -891,17 +894,6 @@ type ChatButton
   @shareable
 {
   id: ID!
-  link: String
-  platform: MessagePlatform
-  customizable: Boolean
-}
-
-input ChatButtonCreateInput {
-  link: String
-  platform: MessagePlatform
-}
-
-input ChatButtonUpdateInput {
   link: String
   platform: MessagePlatform
   customizable: Boolean
