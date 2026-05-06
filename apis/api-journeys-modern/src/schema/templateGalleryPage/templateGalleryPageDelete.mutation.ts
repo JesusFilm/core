@@ -9,10 +9,16 @@ import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
+    description:
+      "Hard-delete a TemplateGalleryPage. Cascades through `TemplateGalleryPageTemplate` join rows automatically; the underlying `Journey` rows are NOT deleted. Returns the deleted page (last canonical view).\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the page's team.",
     type: TemplateGalleryPageRef,
     nullable: false,
     args: {
-      id: t.arg({ type: 'ID', required: true })
+      id: t.arg({
+        type: 'ID',
+        required: true,
+        description: 'Stable page identifier.'
+      })
     },
     resolve: async (query, _parent, args, context) => {
       const id = String(args.id)

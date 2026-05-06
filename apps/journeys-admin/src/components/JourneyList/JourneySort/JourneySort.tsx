@@ -1,5 +1,5 @@
 import Sort from '@mui/icons-material/Sort'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { RadioSelect, RadioSelectOption } from '../RadioSelect'

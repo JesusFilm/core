@@ -1,7 +1,7 @@
 import InboxRoundedIcon from '@mui/icons-material/InboxRounded'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 export function TemplateGalleryEmptyState(): ReactElement {

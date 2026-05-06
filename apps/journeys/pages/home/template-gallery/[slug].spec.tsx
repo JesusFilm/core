@@ -13,7 +13,7 @@ jest.mock('../../../src/libs/apolloClient', () => ({
   createApolloClient: () => ({ query: mockQuery })
 }))
 
-jest.mock('next-i18next/serverSideTranslations', () => ({
+jest.mock('next-i18next/pages/serverSideTranslations', () => ({
   serverSideTranslations: jest.fn().mockResolvedValue({ _nextI18Next: {} })
 }))
 

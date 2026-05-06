@@ -1,6 +1,6 @@
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import { tabA11yProps } from '@core/shared/ui/TabPanel'

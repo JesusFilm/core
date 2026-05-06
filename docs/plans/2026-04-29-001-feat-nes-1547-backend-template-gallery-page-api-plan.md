@@ -533,7 +533,7 @@ export async function filterToTeamTemplates(tx: Prisma.TransactionClient, teamId
   if (journeyIds.length === 0) return { validIds: [], droppedCount: 0 }
   const dedup = [...new Set(journeyIds)]
   const found = await tx.journey.findMany({
-    where: { id: { in: dedup }, teamId, template: true },
+    where: { id: { in: dedup }, teamId, template: true, deletedAt: null },
     select: { id: true }
   })
   const validSet = new Set(found.map((j) => j.id))
