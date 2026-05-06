@@ -113,12 +113,25 @@ export function DuplicateJourneyMenuItem({
 
       const duplicatedJourneyId = duplicateData?.journeyDuplicate?.id
 
-      if (
-        showTranslation === true &&
-        language?.id != null &&
-        duplicatedJourneyId != null &&
-        journeyData?.language != null
-      ) {
+      if (showTranslation === true) {
+        if (
+          language?.id == null ||
+          duplicatedJourneyId == null ||
+          journeyData?.language == null
+        ) {
+          // Translation was explicitly requested but a prerequisite is missing
+          // (Yup normally blocks this — defensive against partial GraphQL
+          // responses or callers without a journey context). Surface an
+          // explicit error rather than falling through to the duplicate-only
+          // success snackbar.
+          enqueueSnackbar(t('Failed to translate journey'), {
+            variant: 'error',
+            preventDuplicate: true
+          })
+          setLoading(false)
+          return
+        }
+
         const sourceLanguageName =
           journeyData.language.name.find(({ primary }) => !primary)?.value ?? ''
 
