@@ -203,17 +203,17 @@ Both resolvers' implementation:
 
 #### Behavioral table
 
-| Scenario | What the merged "Uploads" grid shows (active team = X) |
-| --- | --- |
-| Caller's own asset uploaded inside a Team X journey | Visible (matches both `userId` and `teamId = X`) |
-| Caller's own asset uploaded inside a Team Y journey (Y is a different team they're in) | Visible via `userId = caller` |
-| Teammate's asset uploaded inside a Team X journey | Visible via `teamId = X` |
-| Caller leaves Team X | Their own assets still visible via `userId`; teammates' Team X assets disappear (active team is no longer X) |
-| Asset uploaded by someone who later left Team X | Still visible to remaining Team X members via `teamId = X` (the design goal) |
-| Pre-migration row (NULL `teamId`) | Visible only via `userId = caller` (i.e., to the original uploader) |
-| Caller has no active team selected | Personal-only fallback — only `userId = caller` rows |
-| Caller passes `teamId` they're not a member of | `FORBIDDEN` |
-| Caller passes a non-existent `teamId` | `FORBIDDEN` (same shape — no existence leak) |
+| Scenario                                                                               | What the merged "Uploads" grid shows (active team = X)                                                       |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Caller's own asset uploaded inside a Team X journey                                    | Visible (matches both `userId` and `teamId = X`)                                                             |
+| Caller's own asset uploaded inside a Team Y journey (Y is a different team they're in) | Visible via `userId = caller`                                                                                |
+| Teammate's asset uploaded inside a Team X journey                                      | Visible via `teamId = X`                                                                                     |
+| Caller leaves Team X                                                                   | Their own assets still visible via `userId`; teammates' Team X assets disappear (active team is no longer X) |
+| Asset uploaded by someone who later left Team X                                        | Still visible to remaining Team X members via `teamId = X` (the design goal)                                 |
+| Pre-migration row (NULL `teamId`)                                                      | Visible only via `userId = caller` (i.e., to the original uploader)                                          |
+| Caller has no active team selected                                                     | Personal-only fallback — only `userId = caller` rows                                                         |
+| Caller passes `teamId` they're not a member of                                         | `FORBIDDEN`                                                                                                  |
+| Caller passes a non-existent `teamId`                                                  | `FORBIDDEN` (same shape — no existence leak)                                                                 |
 
 #### Performance considerations
 
@@ -224,15 +224,15 @@ Both resolvers' implementation:
 
 #### Authorization edge cases
 
-| Scenario | Behavior |
-| --- | --- |
-| Caller passes `teamId` they're not a member of | `FORBIDDEN` |
-| Caller passes a non-existent `teamId` | `FORBIDDEN` (same response) |
-| Caller has no active team | Frontend omits `teamId` arg; resolver returns personal-only |
-| User removed from team mid-session and tries to load with `teamId` | `FORBIDDEN`; frontend detects and refreshes active-team list (next request omits `teamId` once `activeTeam` clears) |
-| User removed from team after uploading | Their asset stays accessible to that team via `teamId` (the design goal) |
-| Teammate uploads while caller paginates | Asset appears at top of next refetch (`createdAt DESC`); insertion drift across already-fetched pages is possible but mitigated by refetch-on-upload |
-| Caller tries to upload into a journey they don't have edit access to | Existing journey-edit auth fails before the row is written; no new auth surface |
+| Scenario                                                             | Behavior                                                                                                                                             |
+| -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Caller passes `teamId` they're not a member of                       | `FORBIDDEN`                                                                                                                                          |
+| Caller passes a non-existent `teamId`                                | `FORBIDDEN` (same response)                                                                                                                          |
+| Caller has no active team                                            | Frontend omits `teamId` arg; resolver returns personal-only                                                                                          |
+| User removed from team mid-session and tries to load with `teamId`   | `FORBIDDEN`; frontend detects and refreshes active-team list (next request omits `teamId` once `activeTeam` clears)                                  |
+| User removed from team after uploading                               | Their asset stays accessible to that team via `teamId` (the design goal)                                                                             |
+| Teammate uploads while caller paginates                              | Asset appears at top of next refetch (`createdAt DESC`); insertion drift across already-fetched pages is possible but mitigated by refetch-on-upload |
+| Caller tries to upload into a journey they don't have edit access to | Existing journey-edit auth fails before the row is written; no new auth surface                                                                      |
 
 #### Tests (v1.1 specific)
 
