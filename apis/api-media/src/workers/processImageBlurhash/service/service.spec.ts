@@ -1,4 +1,3 @@
-import { vi, type Mock, type MockedFunction } from 'vitest'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
@@ -9,12 +8,12 @@ import { generateBlurhash } from '../utils/generateBlurhash'
 
 import { service } from './service'
 
-const mockGenerateBlurhash = generateBlurhash as MockedFunction<
+const mockGenerateBlurhash = generateBlurhash as jest.MockedFunction<
   typeof generateBlurhash
 >
 
-vi.mock('../utils/generateBlurhash', () => ({
-  generateBlurhash: vi.fn()
+jest.mock('../utils/generateBlurhash', () => ({
+  generateBlurhash: jest.fn()
 }))
 
 describe('processImageBlurhash service', () => {
@@ -22,15 +21,15 @@ describe('processImageBlurhash service', () => {
   let mockJob: Job
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
     mockLogger = {
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-      child: vi.fn().mockReturnValue({
-        info: vi.fn(),
-        warn: vi.fn(),
-        error: vi.fn()
+      info: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+      child: jest.fn().mockReturnValue({
+        info: jest.fn(),
+        warn: jest.fn(),
+        error: jest.fn()
       })
     }
 

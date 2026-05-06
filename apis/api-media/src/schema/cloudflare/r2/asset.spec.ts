@@ -1,11 +1,10 @@
-import { vi } from 'vitest'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 
-vi.mock('@aws-sdk/s3-request-presigner', () => ({
-  getSignedUrl: vi.fn().mockResolvedValue('presignedUrl')
+jest.mock('@aws-sdk/s3-request-presigner', () => ({
+  getSignedUrl: jest.fn().mockResolvedValue('presignedUrl')
 }))
 
 describe('cloudflare/r2/asset', () => {

@@ -1,4 +1,3 @@
-import { vi } from 'vitest'
 import {
   crowdinClientMock,
   mockSourceString,
@@ -17,7 +16,7 @@ const mockFile = {
 
 describe('Crowdin Importer', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   describe('fetchSourceStrings', () => {
@@ -106,7 +105,7 @@ describe('Crowdin Importer', () => {
         }
       )
 
-      const importOne = vi.fn()
+      const importOne = jest.fn()
       await processFile(mockFile, importOne)
 
       expect(
@@ -120,7 +119,7 @@ describe('Crowdin Importer', () => {
         data: [],
         pagination: { offset: 0, limit: 500 }
       })
-      const importOne = vi.fn()
+      const importOne = jest.fn()
 
       await processFile(mockFile, importOne)
       expect(importOne).not.toHaveBeenCalled()
@@ -137,7 +136,7 @@ describe('Crowdin Importer', () => {
       crowdinClientMock.stringTranslationsApi.listLanguageTranslations.mockRejectedValue(
         new Error('Translation API Error')
       )
-      const importOne = vi.fn()
+      const importOne = jest.fn()
 
       await processFile(mockFile, importOne)
       expect(importOne).not.toHaveBeenCalled()

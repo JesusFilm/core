@@ -1,15 +1,14 @@
-import { vi, type Mock } from 'vitest'
 import { getVideo } from '../video/service'
 
 import { getMuxTrackByBcp47 } from './service'
 
-vi.mock('../video/service', () => ({
-  getVideo: vi.fn()
+jest.mock('../video/service', () => ({
+  getVideo: jest.fn()
 }))
 
 describe('MuxSubtitleService', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   describe('getMuxTrackByBcp47', () => {
@@ -22,7 +21,7 @@ describe('MuxSubtitleService', () => {
         status: 'ready'
       }
 
-      ;(getVideo as Mock).mockResolvedValueOnce({
+      ;(getVideo as jest.Mock).mockResolvedValueOnce({
         id: 'asset-id',
         tracks: [mockTrack]
       })
@@ -42,7 +41,7 @@ describe('MuxSubtitleService', () => {
         status: 'ready'
       }
 
-      ;(getVideo as Mock).mockResolvedValueOnce({
+      ;(getVideo as jest.Mock).mockResolvedValueOnce({
         id: 'asset-id',
         tracks: [mockTrack]
       })
@@ -54,7 +53,7 @@ describe('MuxSubtitleService', () => {
     })
 
     it('should return undefined when track is not found', async () => {
-      ;(getVideo as Mock).mockResolvedValueOnce({
+      ;(getVideo as jest.Mock).mockResolvedValueOnce({
         id: 'asset-id',
         tracks: [
           {
@@ -74,7 +73,7 @@ describe('MuxSubtitleService', () => {
     })
 
     it('should return undefined when tracks array is empty', async () => {
-      ;(getVideo as Mock).mockResolvedValueOnce({
+      ;(getVideo as jest.Mock).mockResolvedValueOnce({
         id: 'asset-id',
         tracks: []
       })
@@ -86,7 +85,7 @@ describe('MuxSubtitleService', () => {
     })
 
     it('should return undefined when tracks is null', async () => {
-      ;(getVideo as Mock).mockResolvedValueOnce({
+      ;(getVideo as jest.Mock).mockResolvedValueOnce({
         id: 'asset-id',
         tracks: null
       })
@@ -98,7 +97,7 @@ describe('MuxSubtitleService', () => {
     })
 
     it('should return undefined when tracks is undefined', async () => {
-      ;(getVideo as Mock).mockResolvedValueOnce({
+      ;(getVideo as jest.Mock).mockResolvedValueOnce({
         id: 'asset-id'
       })
 
@@ -109,7 +108,7 @@ describe('MuxSubtitleService', () => {
     })
 
     it('should only match tracks with type text', async () => {
-      ;(getVideo as Mock).mockResolvedValueOnce({
+      ;(getVideo as jest.Mock).mockResolvedValueOnce({
         id: 'asset-id',
         tracks: [
           {
@@ -129,7 +128,7 @@ describe('MuxSubtitleService', () => {
     })
 
     it('should only match tracks with text_source generated_vod', async () => {
-      ;(getVideo as Mock).mockResolvedValueOnce({
+      ;(getVideo as jest.Mock).mockResolvedValueOnce({
         id: 'asset-id',
         tracks: [
           {
@@ -157,7 +156,7 @@ describe('MuxSubtitleService', () => {
         status: 'ready'
       }
 
-      ;(getVideo as Mock).mockResolvedValueOnce({
+      ;(getVideo as jest.Mock).mockResolvedValueOnce({
         id: 'asset-id',
         tracks: [
           {
@@ -216,7 +215,7 @@ describe('MuxSubtitleService', () => {
         }
       ]
 
-      ;(getVideo as Mock).mockResolvedValue({
+      ;(getVideo as jest.Mock).mockResolvedValue({
         id: 'asset-id',
         tracks: mockTracks
       })
@@ -240,7 +239,7 @@ describe('MuxSubtitleService', () => {
         status: 'preparing'
       }
 
-      ;(getVideo as Mock).mockResolvedValueOnce({
+      ;(getVideo as jest.Mock).mockResolvedValueOnce({
         id: 'asset-id',
         tracks: [mockTrack]
       })

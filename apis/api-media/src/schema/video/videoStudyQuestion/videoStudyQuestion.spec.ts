@@ -1,4 +1,3 @@
-import { vi, type Mock } from 'vitest'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
@@ -10,10 +9,10 @@ import {
   updateOrderUpdate
 } from './updateOrder'
 
-vi.mock('./updateOrder', () => ({
-  updateOrderCreate: vi.fn(),
-  updateOrderDelete: vi.fn(),
-  updateOrderUpdate: vi.fn()
+jest.mock('./updateOrder', () => ({
+  updateOrderCreate: jest.fn(),
+  updateOrderDelete: jest.fn(),
+  updateOrderUpdate: jest.fn()
 }))
 
 describe('videoStudyQuestion', () => {
@@ -44,7 +43,7 @@ describe('videoStudyQuestion', () => {
         prismaMock.$transaction.mockImplementation(
           async (callback: any) => await callback(prismaMock)
         )
-        ;(updateOrderCreate as Mock).mockResolvedValue(undefined)
+        ;(updateOrderCreate as jest.Mock).mockResolvedValue(undefined)
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',

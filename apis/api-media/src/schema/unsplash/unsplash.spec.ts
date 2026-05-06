@@ -1,4 +1,3 @@
-import { vi, type Mock, type MockedFunction } from 'vitest'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -15,22 +14,22 @@ import {
 } from './service'
 
 const mockListUnsplashCollectionPhotos =
-  listUnsplashCollectionPhotos as MockedFunction<
+  listUnsplashCollectionPhotos as jest.MockedFunction<
     typeof listUnsplashCollectionPhotos
   >
 
-const mockSearchUnsplashPhotos = searchUnsplashPhotos as MockedFunction<
+const mockSearchUnsplashPhotos = searchUnsplashPhotos as jest.MockedFunction<
   typeof searchUnsplashPhotos
 >
 
 const mockTriggerUnsplashDownload =
-  triggerUnsplashDownload as MockedFunction<typeof triggerUnsplashDownload>
+  triggerUnsplashDownload as jest.MockedFunction<typeof triggerUnsplashDownload>
 
-vi.mock('./service', () => ({
+jest.mock('./service', () => ({
   __esModule: true,
-  listUnsplashCollectionPhotos: vi.fn(),
-  searchUnsplashPhotos: vi.fn(),
-  triggerUnsplashDownload: vi.fn()
+  listUnsplashCollectionPhotos: jest.fn(),
+  searchUnsplashPhotos: jest.fn(),
+  triggerUnsplashDownload: jest.fn()
 }))
 
 describe('unsplash', () => {

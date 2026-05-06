@@ -1,4 +1,3 @@
-import { vi, type Mock, type Mocked } from 'vitest'
 import type { Logger } from 'pino'
 
 import { prismaMock } from '../../../../../test/prismaMock'
@@ -8,8 +7,8 @@ import { getFullVideoId } from '../videoTitles/videoTitles'
 
 import { importVideoDescriptions } from './videoDescriptions'
 
-vi.mock('../../importer')
-vi.mock('../videoTitles/videoTitles')
+jest.mock('../../importer')
+jest.mock('../videoTitles/videoTitles')
 
 const testTranslation: ProcessedTranslation = {
   identifier: 'VIDEO123',
@@ -20,19 +19,21 @@ const testTranslation: ProcessedTranslation = {
 
 describe('importVideoDescriptions', () => {
   const mockLogger = {
-    info: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn(),
-    child: vi.fn().mockReturnThis()
-  } as unknown as Partial<Logger> as Mocked<Logger>
+    info: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn(),
+    child: jest.fn().mockReturnThis()
+  } as unknown as Partial<Logger> as jest.Mocked<Logger>
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.mocked(getFullVideoId).mockReturnValue('FULL_VIDEO123')
+    jest.clearAllMocks()
+    jest.mocked(getFullVideoId).mockReturnValue('FULL_VIDEO123')
   })
 
   it('should import video descriptions successfully', async () => {
-    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+    jest
+      .spyOn({ processFile }, 'processFile')
+      .mockImplementation(async (_, callback) => {
         await callback(testTranslation)
       })
 
@@ -61,9 +62,11 @@ describe('importVideoDescriptions', () => {
   })
 
   it('should handle invalid video IDs', async () => {
-    vi.mocked(getFullVideoId).mockReturnValue(undefined)
+    jest.mocked(getFullVideoId).mockReturnValue(undefined)
 
-    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+    jest
+      .spyOn({ processFile }, 'processFile')
+      .mockImplementation(async (_, callback) => {
         await callback(testTranslation)
       })
 
@@ -73,7 +76,9 @@ describe('importVideoDescriptions', () => {
   })
 
   it('should handle database errors', async () => {
-    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+    jest
+      .spyOn({ processFile }, 'processFile')
+      .mockImplementation(async (_, callback) => {
         await callback(testTranslation)
       })
 

@@ -1,7 +1,6 @@
-import { vi } from 'vitest'
 import Cloudflare from 'cloudflare'
 import { APIPromise } from 'cloudflare/core'
-import { mockDeep } from 'vitest-mock-extended'
+import { mockDeep } from 'jest-mock-extended'
 import clone from 'lodash/clone'
 import { Response } from 'node-fetch'
 
@@ -15,9 +14,9 @@ import {
 
 const mockCloudflare = mockDeep<Cloudflare>()
 
-vi.mock('cloudflare', () => ({
+jest.mock('cloudflare', () => ({
   __esModule: true,
-  default: vi.fn(() => mockCloudflare)
+  default: jest.fn(() => mockCloudflare)
 }))
 
 describe('ImageService', () => {
@@ -31,7 +30,7 @@ describe('ImageService', () => {
 
   afterEach(() => {
     process.env = originalEnv
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   describe('createImageByDirectUpload', () => {
@@ -95,7 +94,7 @@ describe('ImageService', () => {
     it('returns response', async () => {
       const response = new Response()
       mockCloudflare.post.mockReturnValue({
-        asResponse: vi.fn().mockResolvedValueOnce(response)
+        asResponse: jest.fn().mockResolvedValueOnce(response)
       } as unknown as APIPromise<unknown>)
       expect(await createImageFromText('prompt')).toEqual(response)
       expect(mockCloudflare.post).toHaveBeenCalledWith(

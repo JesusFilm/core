@@ -1,4 +1,3 @@
-import { vi } from 'vitest'
 import {
   importBibleBooks,
   importStudyQuestions,
@@ -8,11 +7,11 @@ import {
 
 import { service } from './service'
 
-vi.mock('../importers', () => ({
-  importBibleBooks: vi.fn(),
-  importStudyQuestions: vi.fn(),
-  importVideoDescriptions: vi.fn(),
-  importVideoTitles: vi.fn()
+jest.mock('../importers', () => ({
+  importBibleBooks: jest.fn(),
+  importStudyQuestions: jest.fn(),
+  importVideoDescriptions: jest.fn(),
+  importVideoTitles: jest.fn()
 }))
 
 describe('crowdin/service', () => {

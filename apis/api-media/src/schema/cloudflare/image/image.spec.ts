@@ -1,4 +1,3 @@
-import { vi, type Mock, type Mocked, type MockedFunction } from 'vitest'
 import { Response } from 'node-fetch'
 
 import { CloudflareImage, ImageAspectRatio } from '@core/prisma/media/client'
@@ -16,37 +15,37 @@ import {
   deleteImage
 } from './service'
 
-vi.mock('../../../workers/processImageBlurhash/queue', () => ({
+jest.mock('../../../workers/processImageBlurhash/queue', () => ({
   queue: {
-    add: vi.fn().mockResolvedValue({ id: 'job-id' })
+    add: jest.fn().mockResolvedValue({ id: 'job-id' })
   }
 }))
 
-const mockedQueue = queue as Mocked<typeof queue>
+const mockedQueue = queue as jest.Mocked<typeof queue>
 
 const mockCreateImageByDirectUpload =
-  createImageByDirectUpload as MockedFunction<
+  createImageByDirectUpload as jest.MockedFunction<
     typeof createImageByDirectUpload
   >
-const mockCreateImageFromText = createImageFromText as MockedFunction<
+const mockCreateImageFromText = createImageFromText as jest.MockedFunction<
   typeof createImageFromText
 >
 const mockCreateImageFromResponse =
-  createImageFromResponse as MockedFunction<typeof createImageFromResponse>
+  createImageFromResponse as jest.MockedFunction<typeof createImageFromResponse>
 
-const mockCreateImageFromUrl = createImageFromUrl as MockedFunction<
+const mockCreateImageFromUrl = createImageFromUrl as jest.MockedFunction<
   typeof createImageFromUrl
 >
 
-const mockDeleteImage = deleteImage as MockedFunction<typeof deleteImage>
+const mockDeleteImage = deleteImage as jest.MockedFunction<typeof deleteImage>
 
-vi.mock('./service', () => ({
+jest.mock('./service', () => ({
   __esModule: true,
-  createImageByDirectUpload: vi.fn(),
-  createImageFromResponse: vi.fn(),
-  createImageFromText: vi.fn(),
-  createImageFromUrl: vi.fn(),
-  deleteImage: vi.fn()
+  createImageByDirectUpload: jest.fn(),
+  createImageFromResponse: jest.fn(),
+  createImageFromText: jest.fn(),
+  createImageFromUrl: jest.fn(),
+  deleteImage: jest.fn()
 }))
 
 describe('cloudflareImage', () => {

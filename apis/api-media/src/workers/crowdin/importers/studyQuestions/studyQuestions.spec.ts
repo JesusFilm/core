@@ -1,4 +1,3 @@
-import { vi, type Mock, type Mocked } from 'vitest'
 import type { Logger } from 'pino'
 
 import { VideoStudyQuestion } from '@core/prisma/media/client'
@@ -9,7 +8,7 @@ import { ProcessedTranslation } from '../../types'
 
 import { importStudyQuestions } from './studyQuestions'
 
-vi.mock('../../importer')
+jest.mock('../../importer')
 
 const testTranslation: ProcessedTranslation = {
   identifier: 'QUESTION123',
@@ -32,20 +31,22 @@ const testQuestion: VideoStudyQuestion = {
 
 describe('importStudyQuestions', () => {
   const mockLogger = {
-    info: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn(),
-    warn: vi.fn(),
-    child: vi.fn().mockReturnThis()
-  } as unknown as Partial<Logger> as Mocked<Logger>
+    info: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn(),
+    warn: jest.fn(),
+    child: jest.fn().mockReturnThis()
+  } as unknown as Partial<Logger> as jest.Mocked<Logger>
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   it('should import study questions successfully', async () => {
     prismaMock.videoStudyQuestion.findMany.mockResolvedValueOnce([testQuestion])
-    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+    jest
+      .spyOn({ processFile }, 'processFile')
+      .mockImplementation(async (_, callback) => {
         await callback(testTranslation)
       })
 
@@ -94,7 +95,9 @@ describe('importStudyQuestions', () => {
     const invalidTranslation = { ...testTranslation, context: '' }
     prismaMock.videoStudyQuestion.findMany.mockResolvedValueOnce([testQuestion])
 
-    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+    jest
+      .spyOn({ processFile }, 'processFile')
+      .mockImplementation(async (_, callback) => {
         await callback(invalidTranslation)
       })
 
@@ -116,7 +119,9 @@ describe('importStudyQuestions', () => {
       context: 'MISSING_QUESTION\nSome additional context'
     }
 
-    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+    jest
+      .spyOn({ processFile }, 'processFile')
+      .mockImplementation(async (_, callback) => {
         await callback(translationWithMissingQuestion)
       })
 
@@ -133,7 +138,9 @@ describe('importStudyQuestions', () => {
 
   it('should handle database errors', async () => {
     prismaMock.videoStudyQuestion.findMany.mockResolvedValueOnce([testQuestion])
-    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+    jest
+      .spyOn({ processFile }, 'processFile')
+      .mockImplementation(async (_, callback) => {
         await callback(testTranslation)
       })
 

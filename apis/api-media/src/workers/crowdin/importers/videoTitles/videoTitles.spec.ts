@@ -1,4 +1,3 @@
-import { vi, type Mock, type Mocked } from 'vitest'
 import type { Logger } from 'pino'
 
 import { Video } from '@core/prisma/media/client'
@@ -13,7 +12,7 @@ import {
   resetVideoCache
 } from './videoTitles'
 
-vi.mock('../../importer')
+jest.mock('../../importer')
 
 const testVideo: Video = {
   id: 'VIDEO123',
@@ -42,20 +41,22 @@ const testTranslation: ProcessedTranslation = {
 
 describe('importVideoTitles', () => {
   const mockLogger = {
-    info: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn(),
-    child: vi.fn().mockReturnThis()
-  } as unknown as Partial<Logger> as Mocked<Logger>
+    info: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn(),
+    child: jest.fn().mockReturnThis()
+  } as unknown as Partial<Logger> as jest.Mocked<Logger>
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
     resetVideoCache()
   })
 
   it('should import video titles successfully', async () => {
     prismaMock.video.findMany.mockResolvedValueOnce([testVideo])
-    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+    jest
+      .spyOn({ processFile }, 'processFile')
+      .mockImplementation(async (_, callback) => {
         await callback(testTranslation)
       })
 
@@ -99,7 +100,9 @@ describe('importVideoTitles', () => {
     const differentVideo = { ...testVideo, id: 'DIFFERENT_VIDEO' }
     prismaMock.video.findMany.mockResolvedValueOnce([differentVideo])
 
-    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+    jest
+      .spyOn({ processFile }, 'processFile')
+      .mockImplementation(async (_, callback) => {
         await callback(testTranslation)
       })
 

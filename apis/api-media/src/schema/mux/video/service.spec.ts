@@ -1,6 +1,5 @@
-import { vi, type Mock, type MockedClass, type MockInstance } from 'vitest'
 import Mux from '@mux/mux-node'
-import { mockDeep } from 'vitest-mock-extended'
+import { mockDeep } from 'jest-mock-extended'
 import clone from 'lodash/clone'
 
 import {
@@ -18,14 +17,14 @@ import {
 
 const mockMux = mockDeep<Mux>()
 
-vi.mock('@mux/mux-node', () => ({
+jest.mock('@mux/mux-node', () => ({
   __esModule: true,
-  default: vi.fn(() => mockMux)
+  default: jest.fn(() => mockMux)
 }))
 
 describe('MuxVideoService', () => {
   const originalEnv = clone(process.env)
-  const MockedMux = Mux as MockedClass<typeof Mux>
+  const MockedMux = Mux as jest.MockedClass<typeof Mux>
 
   beforeEach(() => {
     process.env = originalEnv
@@ -34,7 +33,7 @@ describe('MuxVideoService', () => {
     process.env.MUX_UGC_ACCESS_TOKEN_ID = 'mux_ugc_access_token'
     process.env.MUX_UGC_SECRET_KEY = 'mux_ugc_secret_key'
     process.env.CORS_ORIGIN = 'https://example.com'
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   afterEach(() => {
@@ -43,7 +42,7 @@ describe('MuxVideoService', () => {
 
   describe('createVideoByDirectUpload', () => {
     it('should create direct upload for publisher (non-user generated)', async () => {
-      ;(mockMux.video.uploads.create as Mock).mockResolvedValueOnce({
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
         id: 'upload-id',
         url: 'https://upload.mux.com/video'
       } as any)
@@ -71,7 +70,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should create direct upload for user generated content', async () => {
-      ;(mockMux.video.uploads.create as Mock).mockResolvedValueOnce({
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
         id: 'ugc-upload-id',
         url: 'https://upload.mux.com/ugc-video'
       } as any)
@@ -89,7 +88,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should create downloadable video when downloadable=true', async () => {
-      ;(mockMux.video.uploads.create as Mock).mockResolvedValueOnce({
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
         id: 'upload-id',
         url: 'https://upload.mux.com/video'
       } as any)
@@ -152,7 +151,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should throw error when Mux response is missing id', async () => {
-      ;(mockMux.video.uploads.create as Mock).mockResolvedValueOnce({
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
         url: 'https://upload.mux.com/video'
       } as any)
 
@@ -162,7 +161,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should throw error when Mux response is missing url', async () => {
-      ;(mockMux.video.uploads.create as Mock).mockResolvedValueOnce({
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
         id: 'upload-id'
       } as any)
 
@@ -172,7 +171,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should create direct upload with generated subtitles when userGenerated is true', async () => {
-      ;(mockMux.video.uploads.create as Mock).mockResolvedValueOnce({
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
         id: 'ugc-upload-id',
         url: 'https://upload.mux.com/ugc-video'
       } as any)
@@ -208,7 +207,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should not generate subtitles when generateSubtitlesInput is provided but userGenerated is false', async () => {
-      ;(mockMux.video.uploads.create as Mock).mockResolvedValueOnce({
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
         id: 'upload-id',
         url: 'https://upload.mux.com/video'
       } as any)
@@ -240,7 +239,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should accept null language code without error', async () => {
-      ;(mockMux.video.uploads.create as Mock).mockResolvedValueOnce({
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
         id: 'upload-id',
         url: 'https://upload.mux.com/video'
       } as any)
@@ -263,7 +262,7 @@ describe('MuxVideoService', () => {
   describe('createVideoFromUrl', () => {
     it('should create video asset from URL for publisher', async () => {
       const mockAsset = { id: 'asset-id', status: 'ready' } as any
-      ;(mockMux.video.assets.create as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.create as jest.Mock).mockResolvedValueOnce(
         mockAsset
       )
 
@@ -288,7 +287,7 @@ describe('MuxVideoService', () => {
 
     it('should create video asset from URL for UGC', async () => {
       const mockAsset = { id: 'ugc-asset-id', status: 'ready' } as any
-      ;(mockMux.video.assets.create as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.create as jest.Mock).mockResolvedValueOnce(
         mockAsset
       )
 
@@ -324,7 +323,7 @@ describe('MuxVideoService', () => {
   describe('getVideo', () => {
     it('should retrieve video asset for publisher', async () => {
       const mockAsset = { id: 'asset-id', status: 'ready' } as any
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
         mockAsset
       )
 
@@ -340,7 +339,7 @@ describe('MuxVideoService', () => {
 
     it('should retrieve video asset for UGC', async () => {
       const mockAsset = { id: 'ugc-asset-id', status: 'ready' } as any
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
         mockAsset
       )
 
@@ -357,7 +356,7 @@ describe('MuxVideoService', () => {
   describe('getUpload', () => {
     it('should retrieve upload for publisher', async () => {
       const mockUpload = { id: 'upload-id', asset_id: 'asset-id' } as any
-      ;(mockMux.video.uploads.retrieve as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.uploads.retrieve as jest.Mock).mockResolvedValueOnce(
         mockUpload
       )
 
@@ -372,7 +371,7 @@ describe('MuxVideoService', () => {
         id: 'ugc-upload-id',
         asset_id: 'ugc-asset-id'
       } as any
-      ;(mockMux.video.uploads.retrieve as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.uploads.retrieve as jest.Mock).mockResolvedValueOnce(
         mockUpload
       )
 
@@ -384,7 +383,7 @@ describe('MuxVideoService', () => {
 
   describe('deleteVideo', () => {
     it('should delete video asset for publisher', async () => {
-      ;(mockMux.video.assets.delete as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.delete as jest.Mock).mockResolvedValueOnce(
         undefined as any
       )
 
@@ -394,7 +393,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should delete video asset for UGC', async () => {
-      ;(mockMux.video.assets.delete as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.delete as jest.Mock).mockResolvedValueOnce(
         undefined as any
       )
 
@@ -417,10 +416,10 @@ describe('MuxVideoService', () => {
         }
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
         mockAsset
       )
-      ;(mockMux.post as Mock).mockResolvedValueOnce({} as any)
+      ;(mockMux.post as jest.Mock).mockResolvedValueOnce({} as any)
 
       await enableDownload('asset-id', false, '1080p')
 
@@ -441,7 +440,7 @@ describe('MuxVideoService', () => {
         }
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
         mockAsset
       )
 
@@ -457,10 +456,10 @@ describe('MuxVideoService', () => {
         static_renditions: null
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
         mockAsset
       )
-      ;(mockMux.post as Mock).mockResolvedValueOnce({} as any)
+      ;(mockMux.post as jest.Mock).mockResolvedValueOnce({} as any)
 
       await enableDownload('asset-id', false, '1080p')
 
@@ -480,10 +479,10 @@ describe('MuxVideoService', () => {
         }
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
         mockAsset
       )
-      ;(mockMux.post as Mock).mockResolvedValueOnce({} as any)
+      ;(mockMux.post as jest.Mock).mockResolvedValueOnce({} as any)
 
       await enableDownload('asset-id', false, '1080p')
 
@@ -517,7 +516,7 @@ describe('MuxVideoService', () => {
         static_renditions: mockStaticRenditions
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
         mockAsset
       )
 
@@ -545,7 +544,7 @@ describe('MuxVideoService', () => {
         static_renditions: mockStaticRenditions
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
         mockAsset
       )
 
@@ -564,7 +563,7 @@ describe('MuxVideoService', () => {
         static_renditions: null
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
         mockAsset
       )
 
@@ -578,7 +577,7 @@ describe('MuxVideoService', () => {
         id: 'asset-id'
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
         mockAsset
       )
 
@@ -647,10 +646,10 @@ describe('MuxVideoService', () => {
   describe('getMaxResolutionValue', () => {
     // Mock console.warn to test warning messages
     const originalWarn = console.warn
-    let mockWarn: MockInstance
+    let mockWarn: jest.SpyInstance
 
     beforeEach(() => {
-      mockWarn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+      mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => undefined)
     })
 
     afterEach(() => {

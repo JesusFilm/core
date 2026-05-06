@@ -1,4 +1,3 @@
-import { vi, type Mock } from 'vitest'
 import { AssetOptions } from '@mux/mux-node/resources/video/assets'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
@@ -14,14 +13,14 @@ import { getVideo } from '../../../schema/mux/video/service'
 import { service } from './service'
 
 // Mock the getVideo function
-vi.mock('../../../schema/mux/video/service', () => ({
-  getVideo: vi.fn()
+jest.mock('../../../schema/mux/video/service', () => ({
+  getVideo: jest.fn()
 }))
 
 const mockLogger = {
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn()
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn()
 } as unknown as Logger
 
 const mockJob = {
@@ -142,16 +141,16 @@ const mockVideoVariants = [
 
 describe('processVideoDownloads service', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
     // Mock setTimeout to avoid delays in tests
-    vi.spyOn(global, 'setTimeout').mockImplementation((callback: any) => {
+    jest.spyOn(global, 'setTimeout').mockImplementation((callback: any) => {
       callback()
       return {} as NodeJS.Timeout
     })
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
+    jest.restoreAllMocks()
   })
 
   describe('service', () => {
@@ -163,7 +162,7 @@ describe('processVideoDownloads service', () => {
       prismaMock.videoVariantDownload.create.mockResolvedValue({} as any)
 
       // Mock Mux API call
-      ;(getVideo as Mock).mockResolvedValue(mockMuxVideoAsset)
+      ;(getVideo as jest.Mock).mockResolvedValue(mockMuxVideoAsset)
 
       await service(mockJob, mockLogger)
 
@@ -212,7 +211,7 @@ describe('processVideoDownloads service', () => {
 
       // Mock getVideo to return asset without static renditions for 180 attempts
       let callCount = 0
-      ;(getVideo as Mock).mockImplementation(() => {
+      ;(getVideo as jest.Mock).mockImplementation(() => {
         callCount++
         return Promise.resolve({
           ...mockMuxVideoAsset,
@@ -275,7 +274,7 @@ describe('processVideoDownloads service', () => {
         }
       }
 
-      ;(getVideo as Mock).mockResolvedValue(assetWithErroredRenditions)
+      ;(getVideo as jest.Mock).mockResolvedValue(assetWithErroredRenditions)
 
       await service(mockJob, mockLogger)
 
@@ -312,7 +311,7 @@ describe('processVideoDownloads service', () => {
         }
       }
 
-      ;(getVideo as Mock).mockResolvedValue(assetWithSkippedRenditions)
+      ;(getVideo as jest.Mock).mockResolvedValue(assetWithSkippedRenditions)
 
       await service(mockJob, mockLogger)
 
@@ -324,7 +323,7 @@ describe('processVideoDownloads service', () => {
       prismaMock.muxVideo.findUnique.mockResolvedValue(mockMuxVideo)
 
       // First call returns processing, second call returns ready
-      ;(getVideo as Mock)
+      ;(getVideo as jest.Mock)
         .mockResolvedValueOnce({
           ...mockMuxVideoAsset,
           static_renditions: {
@@ -373,7 +372,7 @@ describe('processVideoDownloads service', () => {
         }
       }
 
-      ;(getVideo as Mock).mockResolvedValue(assetWithMixedStatuses)
+      ;(getVideo as jest.Mock).mockResolvedValue(assetWithMixedStatuses)
       prismaMock.videoVariantDownload.create.mockResolvedValue({} as any)
 
       await service(mockJob, mockLogger)
@@ -386,7 +385,7 @@ describe('processVideoDownloads service', () => {
       prismaMock.muxVideo.findUnique.mockResolvedValue(mockMuxVideo)
       prismaMock.muxVideo.update.mockResolvedValue(mockMuxVideo)
       prismaMock.videoVariant.findMany.mockResolvedValue([mockVideoVariants[0]])
-      ;(getVideo as Mock).mockResolvedValue(mockMuxVideoAsset)
+      ;(getVideo as jest.Mock).mockResolvedValue(mockMuxVideoAsset)
 
       // Mock P2002 constraint violation for duplicate
       prismaMock.videoVariantDownload.create
@@ -417,7 +416,7 @@ describe('processVideoDownloads service', () => {
       prismaMock.muxVideo.findUnique.mockResolvedValue(mockMuxVideo)
       prismaMock.muxVideo.update.mockResolvedValue(mockMuxVideo)
       prismaMock.videoVariant.findMany.mockResolvedValue([mockVideoVariants[0]])
-      ;(getVideo as Mock).mockResolvedValue(mockMuxVideoAsset)
+      ;(getVideo as jest.Mock).mockResolvedValue(mockMuxVideoAsset)
 
       // Mock other database error
       prismaMock.videoVariantDownload.create.mockRejectedValue({
@@ -440,7 +439,7 @@ describe('processVideoDownloads service', () => {
       prismaMock.muxVideo.findUnique.mockResolvedValue(mockMuxVideo)
       prismaMock.muxVideo.update.mockResolvedValue(mockMuxVideo)
       prismaMock.videoVariant.findMany.mockResolvedValue([])
-      ;(getVideo as Mock).mockResolvedValue(mockMuxVideoAsset)
+      ;(getVideo as jest.Mock).mockResolvedValue(mockMuxVideoAsset)
 
       await service(mockJob, mockLogger)
 
@@ -451,7 +450,7 @@ describe('processVideoDownloads service', () => {
       prismaMock.muxVideo.findUnique.mockResolvedValue(mockMuxVideo)
       prismaMock.muxVideo.update.mockResolvedValue(mockMuxVideo)
       prismaMock.videoVariant.findMany.mockResolvedValue([mockVideoVariants[0]])
-      ;(getVideo as Mock).mockResolvedValue(mockMuxVideoAsset)
+      ;(getVideo as jest.Mock).mockResolvedValue(mockMuxVideoAsset)
       prismaMock.videoVariantDownload.create.mockResolvedValue({} as any)
 
       await service(mockJob, mockLogger)
@@ -532,7 +531,7 @@ describe('processVideoDownloads service', () => {
       prismaMock.muxVideo.findUnique.mockResolvedValue(mockMuxVideo)
       prismaMock.muxVideo.update.mockResolvedValue(mockMuxVideo)
       prismaMock.videoVariant.findMany.mockResolvedValue([mockVideoVariants[0]])
-      ;(getVideo as Mock).mockResolvedValue(assetWithAllResolutions)
+      ;(getVideo as jest.Mock).mockResolvedValue(assetWithAllResolutions)
       prismaMock.videoVariantDownload.create.mockResolvedValue({} as any)
 
       await service(mockJob, mockLogger)

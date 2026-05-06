@@ -1,4 +1,3 @@
-import { vi, type Mock, type MockedFunction } from 'vitest'
 import fetch from 'node-fetch'
 
 import { prisma } from '@core/prisma/media/client'
@@ -8,29 +7,29 @@ import { cache } from '../yoga'
 import { videoCacheReset, videoVariantCacheReset } from './videoCacheReset'
 
 // Mock dependencies
-vi.mock('node-fetch')
-vi.mock('../yoga', () => ({
+jest.mock('node-fetch')
+jest.mock('../yoga', () => ({
   cache: {
-    invalidate: vi.fn()
+    invalidate: jest.fn()
   }
 }))
-vi.mock('@core/prisma/media/client', () => ({
+jest.mock('@core/prisma/media/client', () => ({
   prisma: {
     video: {
-      findUnique: vi.fn()
+      findUnique: jest.fn()
     },
     videoVariant: {
-      findUnique: vi.fn()
+      findUnique: jest.fn()
     }
   }
 }))
 
 describe('videoCacheReset', () => {
-  const mockFetch = fetch as MockedFunction<typeof fetch>
+  const mockFetch = fetch as jest.MockedFunction<typeof fetch>
   const originalEnv = process.env
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
     process.env = { ...originalEnv }
     process.env.WATCH_URL = 'https://watch.example.com'
     process.env.WATCH_REVALIDATE_SECRET = 'test-secret'
@@ -46,7 +45,7 @@ describe('videoCacheReset', () => {
 
     // Since we're only using select: { slug: true } in the function,
     // we can use a type assertion to simplify
-    vi.mocked(prisma.video.findUnique).mockResolvedValueOnce({ slug } as any)
+    jest.mocked(prisma.video.findUnique).mockResolvedValueOnce({ slug } as any)
 
     await videoCacheReset(videoId)
 
@@ -74,7 +73,7 @@ describe('videoCacheReset', () => {
   it('should not call fetch or invalidate cache if video not found', async () => {
     const videoId = 'non-existent-video-id'
 
-    vi.mocked(prisma.video.findUnique).mockResolvedValueOnce(null)
+    jest.mocked(prisma.video.findUnique).mockResolvedValueOnce(null)
 
     await videoCacheReset(videoId)
 
@@ -94,7 +93,7 @@ describe('videoCacheReset', () => {
     process.env.WATCH_URL = undefined
     process.env.WATCH_REVALIDATE_SECRET = undefined
 
-    vi.mocked(prisma.video.findUnique).mockResolvedValueOnce({ slug } as any)
+    jest.mocked(prisma.video.findUnique).mockResolvedValueOnce({ slug } as any)
 
     await videoCacheReset(videoId)
 
@@ -113,7 +112,7 @@ describe('videoCacheReset', () => {
     const videoId = 'test-video-id'
     const slug = 'test-video-slug'
 
-    vi.mocked(prisma.video.findUnique).mockResolvedValueOnce({ slug } as any)
+    jest.mocked(prisma.video.findUnique).mockResolvedValueOnce({ slug } as any)
 
     mockFetch.mockRejectedValueOnce(new Error('Network error'))
 
@@ -129,9 +128,10 @@ describe('videoCacheReset', () => {
     const videoId = 'test-video-id'
     const slug = 'test-video-slug'
 
-    vi.mocked(prisma.video.findUnique).mockResolvedValueOnce({ slug } as any)
+    jest.mocked(prisma.video.findUnique).mockResolvedValueOnce({ slug } as any)
 
-    vi.mocked(cache.invalidate)
+    jest
+      .mocked(cache.invalidate)
       .mockRejectedValueOnce(new Error('Cache error'))
 
     await expect(videoCacheReset(videoId)).resolves.not.toThrow()
@@ -142,11 +142,11 @@ describe('videoCacheReset', () => {
 })
 
 describe('videoVariantCacheReset', () => {
-  const mockFetch = fetch as MockedFunction<typeof fetch>
+  const mockFetch = fetch as jest.MockedFunction<typeof fetch>
   const originalEnv = process.env
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
     process.env = { ...originalEnv }
     process.env.WATCH_URL = 'https://watch.example.com'
     process.env.WATCH_REVALIDATE_SECRET = 'test-secret'
@@ -162,7 +162,8 @@ describe('videoVariantCacheReset', () => {
 
     // Since we're only using select: { slug: true } in the function,
     // we can use a type assertion to simplify
-    vi.mocked(prisma.videoVariant.findUnique)
+    jest
+      .mocked(prisma.videoVariant.findUnique)
       .mockResolvedValueOnce({ slug } as any)
 
     await videoVariantCacheReset(variantId)
@@ -191,7 +192,7 @@ describe('videoVariantCacheReset', () => {
   it('should not call fetch or invalidate cache if variant not found', async () => {
     const variantId = 'non-existent-variant-id'
 
-    vi.mocked(prisma.videoVariant.findUnique).mockResolvedValueOnce(null)
+    jest.mocked(prisma.videoVariant.findUnique).mockResolvedValueOnce(null)
 
     await videoVariantCacheReset(variantId)
 
@@ -211,7 +212,8 @@ describe('videoVariantCacheReset', () => {
     process.env.WATCH_URL = undefined
     process.env.WATCH_REVALIDATE_SECRET = undefined
 
-    vi.mocked(prisma.videoVariant.findUnique)
+    jest
+      .mocked(prisma.videoVariant.findUnique)
       .mockResolvedValueOnce({ slug } as any)
 
     await videoVariantCacheReset(variantId)
@@ -231,7 +233,8 @@ describe('videoVariantCacheReset', () => {
     const variantId = 'test-variant-id'
     const slug = 'test-variant-slug'
 
-    vi.mocked(prisma.videoVariant.findUnique)
+    jest
+      .mocked(prisma.videoVariant.findUnique)
       .mockResolvedValueOnce({ slug } as any)
 
     mockFetch.mockRejectedValueOnce(new Error('Network error'))
@@ -248,10 +251,12 @@ describe('videoVariantCacheReset', () => {
     const variantId = 'test-variant-id'
     const slug = 'test-variant-slug'
 
-    vi.mocked(prisma.videoVariant.findUnique)
+    jest
+      .mocked(prisma.videoVariant.findUnique)
       .mockResolvedValueOnce({ slug } as any)
 
-    vi.mocked(cache.invalidate)
+    jest
+      .mocked(cache.invalidate)
       .mockRejectedValueOnce(new Error('Cache error'))
 
     await expect(videoVariantCacheReset(variantId)).resolves.not.toThrow()

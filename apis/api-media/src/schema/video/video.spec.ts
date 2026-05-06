@@ -1,4 +1,3 @@
-import { vi, type Mock, type MockedFunction } from 'vitest'
 import { GraphQLError } from 'graphql'
 
 import {
@@ -27,8 +26,8 @@ import { prismaMock } from '../../../test/prismaMock'
 import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
 import { getLanguageIdFromInfo } from './video'
 
-vi.mock('./lib/updateAvailableLanguages', () => ({
-  updateVideoAvailableLanguages: vi.fn()
+jest.mock('./lib/updateAvailableLanguages', () => ({
+  updateVideoAvailableLanguages: jest.fn()
 }))
 
 describe('video', () => {
@@ -3321,7 +3320,7 @@ describe('video', () => {
       `)
 
       const mockUpdateVideoAvailableLanguages =
-        updateVideoAvailableLanguages as MockedFunction<
+        updateVideoAvailableLanguages as jest.MockedFunction<
           typeof updateVideoAvailableLanguages
         >
 

@@ -1,29 +1,27 @@
-import { vi } from 'vitest'
 import { HttpResponse, http } from 'msw'
 import { setupServer } from 'msw/node'
-import sharp from 'sharp'
 
 import { generateBlurhash } from './generateBlurhash'
 
-const mockSharp = vi.mocked(sharp)
+const mockSharp = require('sharp')
 
-vi.mock('sharp', () => ({
-  default: vi.fn(() => ({
+jest.mock('sharp', () =>
+  jest.fn(() => ({
     raw: () => ({
       ensureAlpha: () => ({
         toBuffer: () => new Uint8ClampedArray([])
       })
     }),
-    metadata: vi.fn(() => ({
+    metadata: jest.fn(() => ({
       width: 640,
       height: 425
     }))
   }))
-}))
+)
 
-vi.mock('blurhash', () => {
+jest.mock('blurhash', () => {
   return {
-    encode: vi.fn(() => 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ')
+    encode: jest.fn(() => 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ')
   }
 })
 
@@ -35,7 +33,7 @@ describe('generateBlurhash', () => {
   })
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
     server.resetHandlers()
 
     mockSharp.mockImplementation(() => ({
@@ -44,7 +42,7 @@ describe('generateBlurhash', () => {
           toBuffer: () => new Uint8ClampedArray([])
         })
       }),
-      metadata: vi.fn(() => ({
+      metadata: jest.fn(() => ({
         width: 640,
         height: 425
       }))
@@ -112,7 +110,7 @@ describe('generateBlurhash', () => {
           toBuffer: () => new Uint8ClampedArray([])
         })
       }),
-      metadata: vi.fn(() => ({
+      metadata: jest.fn(() => ({
         width: 0,
         height: 425
       }))
@@ -134,7 +132,7 @@ describe('generateBlurhash', () => {
           toBuffer: () => new Uint8ClampedArray([])
         })
       }),
-      metadata: vi.fn(() => ({
+      metadata: jest.fn(() => ({
         width: 640,
         height: 0
       }))
@@ -170,7 +168,7 @@ describe('generateBlurhash', () => {
           throw new Error('buffer error')
         }
       }),
-      metadata: vi.fn(() => ({
+      metadata: jest.fn(() => ({
         width: 640,
         height: 425
       }))

@@ -1,4 +1,3 @@
-import { vi, type Mock, type MockedFunction } from 'vitest'
 import { nanoid } from 'nanoid'
 
 import { Prisma, ShortLink, ShortLinkDomain } from '@core/prisma/media/client'
@@ -7,10 +6,10 @@ import { graphql } from '@core/shared/gql'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 
-vi.mock('nanoid')
-vi.mock('uuid')
+jest.mock('nanoid')
+jest.mock('uuid')
 
-const nanoidMock = nanoid as MockedFunction<typeof nanoid>
+const nanoidMock = nanoid as jest.MockedFunction<typeof nanoid>
 
 describe('shortLink', () => {
   const client = getClient()

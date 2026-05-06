@@ -1,4 +1,3 @@
-import { vi, type Mock, type MockedFunction } from 'vitest'
 import { GraphQLError } from 'graphql'
 import clone from 'lodash/clone'
 import fetch from 'node-fetch'
@@ -12,9 +11,9 @@ import {
 // Mock environment variables
 
 // Mock fetch
-vi.mock('node-fetch', () => ({ default: vi.fn() }))
-const { Response } = await vi.importActual<typeof import('node-fetch')>('node-fetch')
-const mockFetch = fetch as MockedFunction<typeof fetch>
+jest.mock('node-fetch', () => jest.fn())
+const { Response } = jest.requireActual('node-fetch')
+const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 describe('shortLinkDomain.service', () => {
   const originalEnv = clone(process.env)
@@ -30,7 +29,7 @@ describe('shortLinkDomain.service', () => {
 
   afterEach(() => {
     process.env = originalEnv
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   describe('addVercelDomain', () => {

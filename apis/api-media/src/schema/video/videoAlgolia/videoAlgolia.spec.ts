@@ -1,15 +1,12 @@
-import { vi } from 'vitest'
 import { graphql } from '@core/shared/gql'
 
-import { updateVideoInAlgolia } from '../../../lib/algolia/algoliaVideoUpdate'
-import { updateVideoVariantInAlgolia } from '../../../lib/algolia/algoliaVideoVariantUpdate'
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 
-const getObjectSpy = vi.fn()
+const getObjectSpy = jest.fn()
 
 // Mock the algolia client helper
-vi.mock('../../../lib/algolia/algoliaClient', () => ({
+jest.mock('../../../lib/algolia/algoliaClient', () => ({
   getAlgoliaClient: () => ({
     getObject: getObjectSpy
   }),
@@ -22,16 +19,21 @@ vi.mock('../../../lib/algolia/algoliaClient', () => ({
 }))
 
 // Mock the algolia update functions
-vi.mock('../../../lib/algolia/algoliaVideoUpdate', () => ({
-  updateVideoInAlgolia: vi.fn()
+jest.mock('../../../lib/algolia/algoliaVideoUpdate', () => ({
+  updateVideoInAlgolia: jest.fn()
 }))
 
-vi.mock('../../../lib/algolia/algoliaVideoVariantUpdate', () => ({
-  updateVideoVariantInAlgolia: vi.fn()
+jest.mock('../../../lib/algolia/algoliaVideoVariantUpdate', () => ({
+  updateVideoVariantInAlgolia: jest.fn()
 }))
 
-const updateVideoInAlgoliaMock = vi.mocked(updateVideoInAlgolia)
-const updateVideoVariantInAlgoliaMock = vi.mocked(updateVideoVariantInAlgolia)
+// Get the mocked functions
+const {
+  updateVideoInAlgolia
+} = require('../../../lib/algolia/algoliaVideoUpdate')
+const {
+  updateVideoVariantInAlgolia
+} = require('../../../lib/algolia/algoliaVideoVariantUpdate')
 
 describe('videoAlgolia', () => {
   const client = getClient()
@@ -46,15 +48,15 @@ describe('videoAlgolia', () => {
   })
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
 
     getObjectSpy.mockReset()
-    updateVideoInAlgoliaMock.mockResolvedValue(undefined)
-    updateVideoVariantInAlgoliaMock.mockResolvedValue(undefined)
+    updateVideoInAlgolia.mockResolvedValue(undefined)
+    updateVideoVariantInAlgolia.mockResolvedValue(undefined)
   })
 
   afterEach(() => {
-    vi.resetAllMocks()
+    jest.resetAllMocks()
   })
 
   describe('queries', () => {
@@ -480,7 +482,7 @@ describe('videoAlgolia', () => {
           variables: { videoId: 'videoId' }
         })
 
-        expect(updateVideoInAlgoliaMock).toHaveBeenCalledWith('videoId')
+        expect(updateVideoInAlgolia).toHaveBeenCalledWith('videoId')
         expect(result).toHaveProperty('data.updateVideoAlgoliaIndex', true)
       })
 
@@ -504,7 +506,7 @@ describe('videoAlgolia', () => {
         expect((result as any).errors[0].message).toBe(
           'Video with id nonExistentId not found'
         )
-        expect(updateVideoInAlgoliaMock).not.toHaveBeenCalled()
+        expect(updateVideoInAlgolia).not.toHaveBeenCalled()
       })
 
       it('should reject if not publisher', async () => {
@@ -514,7 +516,7 @@ describe('videoAlgolia', () => {
         })
 
         expect(result).toHaveProperty('data', null)
-        expect(updateVideoInAlgoliaMock).not.toHaveBeenCalled()
+        expect(updateVideoInAlgolia).not.toHaveBeenCalled()
       })
     })
 
@@ -545,10 +547,10 @@ describe('videoAlgolia', () => {
           variables: { videoId: 'videoId' }
         })
 
-        expect(updateVideoVariantInAlgoliaMock).toHaveBeenCalledTimes(3)
-        expect(updateVideoVariantInAlgoliaMock).toHaveBeenCalledWith('variant1')
-        expect(updateVideoVariantInAlgoliaMock).toHaveBeenCalledWith('variant2')
-        expect(updateVideoVariantInAlgoliaMock).toHaveBeenCalledWith('variant3')
+        expect(updateVideoVariantInAlgolia).toHaveBeenCalledTimes(3)
+        expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('variant1')
+        expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('variant2')
+        expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('variant3')
         expect(result).toHaveProperty(
           'data.updateVideoVariantAlgoliaIndex',
           true
@@ -575,7 +577,7 @@ describe('videoAlgolia', () => {
         expect((result as any).errors[0].message).toBe(
           'No variants found for video videoId'
         )
-        expect(updateVideoVariantInAlgoliaMock).not.toHaveBeenCalled()
+        expect(updateVideoVariantInAlgolia).not.toHaveBeenCalled()
       })
 
       it('should reject if not publisher', async () => {
@@ -585,7 +587,7 @@ describe('videoAlgolia', () => {
         })
 
         expect(result).toHaveProperty('data', null)
-        expect(updateVideoVariantInAlgoliaMock).not.toHaveBeenCalled()
+        expect(updateVideoVariantInAlgolia).not.toHaveBeenCalled()
       })
     })
   })

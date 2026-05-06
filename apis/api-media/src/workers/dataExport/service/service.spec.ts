@@ -1,80 +1,75 @@
-import { vi, type Mock } from 'vitest'
 import { spawn } from 'child_process'
 import { promises as fs } from 'fs'
 
 import {
   CopyObjectCommand,
   HeadObjectCommand,
-  PutObjectCommand,
-  S3Client
+  PutObjectCommand
 } from '@aws-sdk/client-s3'
 import { Logger } from 'pino'
 
 import { service } from './service'
 
-vi.mock('child_process', () => ({
-  spawn: vi.fn().mockImplementation(() => {
+jest.mock('child_process', () => ({
+  spawn: jest.fn().mockImplementation(() => {
     const mockEventEmitter = {
-      on: vi.fn().mockReturnThis(),
-      stderr: { on: vi.fn() },
-      stdout: { pipe: vi.fn(), on: vi.fn() }
+      on: jest.fn().mockReturnThis(),
+      stderr: { on: jest.fn() },
+      stdout: { pipe: jest.fn(), on: jest.fn() }
     }
     return mockEventEmitter
   })
 }))
 
-vi.mock('@aws-sdk/client-s3', () => {
+jest.mock('@aws-sdk/client-s3', () => {
   return {
-    CopyObjectCommand: vi.fn().mockImplementation((args) => args),
-    HeadObjectCommand: vi.fn().mockImplementation((args) => args),
-    PutObjectCommand: vi.fn().mockImplementation((args) => args),
-    S3Client: vi.fn().mockImplementation(() => ({
-      send: vi.fn().mockResolvedValue({})
+    CopyObjectCommand: jest.fn().mockImplementation((args) => args),
+    HeadObjectCommand: jest.fn().mockImplementation((args) => args),
+    PutObjectCommand: jest.fn().mockImplementation((args) => args),
+    S3Client: jest.fn().mockImplementation(() => ({
+      send: jest.fn().mockResolvedValue({})
     }))
   }
 })
 
-vi.mock('stream/promises', () => ({
-  pipeline: vi.fn().mockResolvedValue(undefined)
+jest.mock('stream/promises', () => ({
+  pipeline: jest.fn().mockResolvedValue(undefined)
 }))
 
-vi.mock('fs', () => {
-  const fsMock = {
-    promises: {
-      mkdir: vi.fn().mockResolvedValue(undefined),
-      readFile: vi.fn().mockResolvedValue(Buffer.from('test')),
-      unlink: vi.fn().mockResolvedValue(undefined),
-      stat: vi.fn().mockResolvedValue({ size: 100 })
-    },
-    createReadStream: vi.fn().mockReturnValue({ pipe: vi.fn() }),
-    createWriteStream: vi.fn().mockReturnValue({ pipe: vi.fn() }),
-    stat: vi
-      .fn()
-      .mockImplementation((path, callback) => callback(null, { size: 100 })),
-    unlink: vi.fn().mockImplementation((path, callback) => callback(null))
-  }
-  return { ...fsMock, default: fsMock }
-})
+jest.mock('fs', () => ({
+  promises: {
+    mkdir: jest.fn().mockResolvedValue(undefined),
+    readFile: jest.fn().mockResolvedValue(Buffer.from('test')),
+    unlink: jest.fn().mockResolvedValue(undefined),
+    stat: jest.fn().mockResolvedValue({ size: 100 })
+  },
+  createReadStream: jest.fn().mockReturnValue({ pipe: jest.fn() }),
+  createWriteStream: jest.fn().mockReturnValue({ pipe: jest.fn() }),
+  stat: jest
+    .fn()
+    .mockImplementation((path, callback) => callback(null, { size: 100 })),
+  unlink: jest.fn().mockImplementation((path, callback) => callback(null))
+}))
 
-vi.mock('zlib', () => ({
-  createGzip: vi.fn().mockReturnValue({ pipe: vi.fn() })
+jest.mock('zlib', () => ({
+  createGzip: jest.fn().mockReturnValue({ pipe: jest.fn() })
 }))
 
 describe('dataExport service', () => {
   let logger: Partial<Logger>
-  let mockSpawn: Mock
+  let mockSpawn: jest.Mock
   let mockEventEmitter: any
-  let mockS3Send: Mock
+  let mockS3Send: jest.Mock
 
   beforeEach(() => {
     logger = {
-      info: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn(),
-      child: vi.fn().mockReturnValue({
-        info: vi.fn(),
-        error: vi.fn(),
-        warn: vi.fn()
+      info: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      child: jest.fn().mockReturnValue({
+        info: jest.fn(),
+        error: jest.fn(),
+        warn: jest.fn()
       })
     }
 
@@ -86,32 +81,34 @@ describe('dataExport service', () => {
     process.env.PG_DATABASE_URL_MEDIA =
       'postgres://user:pass@localhost:5432/media'
 
-    mockSpawn = spawn as Mock
+    mockSpawn = spawn as jest.Mock
     mockEventEmitter = mockSpawn.mock.results[0]?.value || {
-      on: vi.fn().mockReturnThis(),
-      stderr: { on: vi.fn() },
-      stdout: { pipe: vi.fn(), on: vi.fn() }
+      on: jest.fn().mockReturnThis(),
+      stderr: { on: jest.fn() },
+      stdout: { pipe: jest.fn(), on: jest.fn() }
     }
 
     // Access the mocked S3 client's send method
-    mockS3Send = vi.fn().mockResolvedValue({})
-    vi.mocked(S3Client).mockImplementation(() => ({
+    mockS3Send = jest.fn().mockResolvedValue({})
+    jest.requireMock('@aws-sdk/client-s3').S3Client.mockImplementation(() => ({
       send: mockS3Send
-    }) as any)
+    }))
 
     // Reset mocks
     mockSpawn.mockClear()
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
-  it('should successfully export database and upload to R2 (runs automatically daily at midnight)', { timeout: 10000 }, async () => {
+  it('should successfully export database and upload to R2 (runs automatically daily at midnight)', async () => {
+    // Set a longer timeout for this test
+    jest.setTimeout(10000)
 
     // Setup spawn mock to simulate successful process
     mockSpawn.mockImplementation(() => {
       const emitter = {
-        on: vi.fn(),
-        stderr: { on: vi.fn() },
-        stdout: { pipe: vi.fn(), on: vi.fn() }
+        on: jest.fn(),
+        stderr: { on: jest.fn() },
+        stdout: { pipe: jest.fn(), on: jest.fn() }
       }
 
       // Mock the close event with success code
@@ -199,8 +196,8 @@ describe('dataExport service', () => {
     // Setup spawn mock to simulate process failure
     mockSpawn.mockImplementation(() => {
       const emitter = {
-        on: vi.fn(),
-        stderr: { on: vi.fn() }
+        on: jest.fn(),
+        stderr: { on: jest.fn() }
       }
 
       // Mock the close event with error code
@@ -223,9 +220,9 @@ describe('dataExport service', () => {
     // Mock successful process execution
     mockSpawn.mockImplementation(() => {
       const emitter = {
-        on: vi.fn(),
-        stderr: { on: vi.fn() },
-        stdout: { pipe: vi.fn(), on: vi.fn() }
+        on: jest.fn(),
+        stderr: { on: jest.fn() },
+        stdout: { pipe: jest.fn(), on: jest.fn() }
       }
 
       // Mock the close event with success code
@@ -283,7 +280,7 @@ describe('dataExport service', () => {
 
   it('should handle case when file does not exist in R2', async () => {
     // Clear mock calls from previous tests
-    vi.clearAllMocks()
+    jest.clearAllMocks()
 
     // Mock HeadObjectCommand to fail (file doesn't exist)
     mockS3Send.mockImplementation((command) => {

@@ -1,4 +1,3 @@
-import { vi, type Mock, type Mocked } from 'vitest'
 import type { Logger } from 'pino'
 
 import { BibleBookName } from '@core/prisma/media/client'
@@ -9,7 +8,7 @@ import { ProcessedTranslation } from '../../types'
 
 import { importBibleBooks } from './bibleBooks'
 
-vi.mock('../../importer')
+jest.mock('../../importer')
 
 const testTranslation: ProcessedTranslation = {
   identifier: 'GEN',
@@ -30,17 +29,19 @@ const expectedBibleBookName: Omit<
 
 describe('importBibleBooks', () => {
   const mockLogger = {
-    info: vi.fn(),
-    error: vi.fn(),
-    child: vi.fn().mockReturnThis()
-  } as unknown as Partial<Logger> as Mocked<Logger>
+    info: jest.fn(),
+    error: jest.fn(),
+    child: jest.fn().mockReturnThis()
+  } as unknown as Partial<Logger> as jest.Mocked<Logger>
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   it('should import bible books successfully', async () => {
-    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+    jest
+      .spyOn({ processFile }, 'processFile')
+      .mockImplementation(async (_, callback) => {
         await callback(testTranslation)
       })
 
@@ -66,7 +67,9 @@ describe('importBibleBooks', () => {
       identifier: null
     } as unknown as ProcessedTranslation
 
-    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+    jest
+      .spyOn({ processFile }, 'processFile')
+      .mockImplementation(async (_, callback) => {
         await callback(invalidTranslation)
       })
 
@@ -79,7 +82,9 @@ describe('importBibleBooks', () => {
   })
 
   it('should handle database errors', async () => {
-    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+    jest
+      .spyOn({ processFile }, 'processFile')
+      .mockImplementation(async (_, callback) => {
         await callback(testTranslation)
       })
 
