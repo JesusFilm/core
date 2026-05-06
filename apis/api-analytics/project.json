@@ -49,7 +49,7 @@
       }
     },
     "test": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/apis/api-analytics"],
       "options": {
         "configFile": "apis/api-analytics/vitest.config.mts"
