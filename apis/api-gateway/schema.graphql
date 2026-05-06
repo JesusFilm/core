@@ -682,9 +682,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
-  showAssistant: Boolean @deprecated(
-    reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624."
-  )
+  showAssistant: Boolean @deprecated(reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624.") 
   journeyCustomizationDescription: String
   journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
