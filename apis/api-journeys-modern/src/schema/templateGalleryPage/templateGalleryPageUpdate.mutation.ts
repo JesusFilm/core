@@ -13,10 +13,16 @@ import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
+    description:
+      "Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced — existing assignments are deleted and recreated in the given order. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the page's team.\n- BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks.\n- BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.",
     type: TemplateGalleryPageRef,
     nullable: false,
     args: {
-      id: t.arg({ type: 'ID', required: true }),
+      id: t.arg({
+        type: 'ID',
+        required: true,
+        description: 'Stable page identifier.'
+      }),
       input: t.arg({ type: TemplateGalleryPageUpdateInput, required: true })
     },
     resolve: async (query, _parent, args, context) => {
