@@ -10,7 +10,7 @@ import { TemplateGalleryPageRef } from './templateGalleryPage'
 builder.mutationField('templateGalleryPageUnpublish', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      'Transition a `published` page back to `draft`. `publishedAt` is intentionally NOT cleared — the historical first-publish timestamp is preserved across unpublish/republish cycles. Idempotent: calling on an already-draft page is a no-op.\n\nAuth: caller must be a member of the page\'s team.\n\nErrors:\n- NOT_FOUND: id does not resolve, or the page was deleted between the auth-fetch and the canonical re-read.\n- FORBIDDEN: caller is not in the page\'s team.',
+      "Transition a `published` page back to `draft`. `publishedAt` is intentionally NOT cleared — the historical first-publish timestamp is preserved across unpublish/republish cycles. Idempotent: calling on an already-draft page is a no-op.\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: id does not resolve, or the page was deleted between the auth-fetch and the canonical re-read.\n- FORBIDDEN: caller is not in the page's team.",
     type: TemplateGalleryPageRef,
     nullable: false,
     args: {

@@ -33,8 +33,7 @@ export const TemplateGalleryPageUpdateInput = builder.inputType(
       }),
       creatorImageAlt: t.string({
         required: false,
-        description:
-          'Optional creator avatar alt text. Pass `null` to clear.'
+        description: 'Optional creator avatar alt text. Pass `null` to clear.'
       }),
       mediaUrl: t.string({
         required: false,

@@ -72,14 +72,13 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
           // a journey already on this page is allowed (the row will be
           // re-created as part of the deleteMany+createMany pass).
           if (input.journeyIds.length > 0) {
-            const conflicting =
-              await tx.templateGalleryPageTemplate.findFirst({
-                where: {
-                  journeyId: { in: input.journeyIds },
-                  NOT: { templateGalleryPageId: id }
-                },
-                select: { journeyId: true, templateGalleryPageId: true }
-              })
+            const conflicting = await tx.templateGalleryPageTemplate.findFirst({
+              where: {
+                journeyId: { in: input.journeyIds },
+                NOT: { templateGalleryPageId: id }
+              },
+              select: { journeyId: true, templateGalleryPageId: true }
+            })
             if (conflicting != null) {
               throw new GraphQLError(
                 'journey already belongs to another collection',
