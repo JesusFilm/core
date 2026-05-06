@@ -295,6 +295,7 @@
     "@nx/react": "22.7.1",
     "@nx/storybook": "22.7.1",
     "@nx/vite": "22.7.1",
+    "@nx/vitest": "22.7.1",
     "@nx/web": "22.7.1",
     "@nx/webpack": "22.7.1",
     "@nx/workspace": "22.7.1",
