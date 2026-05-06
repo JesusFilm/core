@@ -19,8 +19,6 @@ import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/builder'
 
-export { cache }
-
 export const yoga = createYoga<
   Record<string, unknown>,
   Context & ReturnType<typeof initContextCache>
