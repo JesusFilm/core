@@ -115,6 +115,10 @@ export function CollectionDialog({
   // Collapsed by default in both create and edit, matching Figma's
   // "+" affordance.
   const [moreDetailsOpen, setMoreDetailsOpen] = useState(false)
+  // Open when the user attempts to close the dialog with a dirty form,
+  // closed (and the dialog stays open) on Cancel, closed + onClose() on
+  // Discard.
+  const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false)
 
   const schema = object({
     title: string()
@@ -251,6 +255,7 @@ export function CollectionDialog({
         values,
         errors,
         touched,
+        dirty,
         handleChange,
         handleBlur,
         handleSubmit,
@@ -262,8 +267,14 @@ export function CollectionDialog({
         // Block close paths while a submit is in flight so the user can't
         // dismiss the dialog mid-mutation (which would orphan the post-await
         // side effects). Submit succeeds → onClose() runs explicitly.
+        // Also intercepts close paths when the form is dirty: opens the
+        // "discard changes?" confirmation instead of closing immediately.
         const guardedClose = (): void => {
           if (isSubmitting) return
+          if (dirty) {
+            setDiscardConfirmOpen(true)
+            return
+          }
           onClose()
         }
         // Selected journeys, ordered by the user's pick order, used for the
@@ -650,6 +661,24 @@ export function CollectionDialog({
             setImagePickerOpen(false)
           }}
         />
+        <Dialog
+          open={discardConfirmOpen}
+          onClose={() => setDiscardConfirmOpen(false)}
+          dialogTitle={{ title: t('You have unsaved changes — discard?') }}
+          dialogAction={{
+            onSubmit: () => {
+              setDiscardConfirmOpen(false)
+              onClose()
+            },
+            submitLabel: t('Discard'),
+            closeLabel: t('Cancel')
+          }}
+          testId="CollectionDiscardConfirmDialog"
+        >
+          <Typography>
+            {t('Your edits to this collection will be lost.')}
+          </Typography>
+        </Dialog>
         </>
         )
       }}

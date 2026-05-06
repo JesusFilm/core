@@ -3,6 +3,7 @@ import { useSnackbar } from 'notistack'
 import { useState } from 'react'
 
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
+import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
 import { useTemplateGalleryPageDeleteMutation } from '../../../libs/useTemplateGalleryPageDeleteMutation'
 import { useTemplateGalleryPagePublishMutation } from '../../../libs/useTemplateGalleryPagePublishMutation'
 import { useTemplateGalleryPageUnpublishMutation } from '../../../libs/useTemplateGalleryPageUnpublishMutation'
@@ -10,7 +11,15 @@ import { useTemplateGalleryPageUnpublishMutation } from '../../../libs/useTempla
 interface CollectionMutations {
   /** Id of the collection currently mid-mutation, or null when idle. */
   busyId: string | null
-  publish: (collection: TemplateGalleryPage) => Promise<void>
+  /**
+   * Publishes the collection. Resolves to the just-published collection
+   * on success, or null if the mutation failed (the snackbar already
+   * told the user). The parent uses the resolved value to open the
+   * success dialog with the now-live public URL.
+   */
+  publish: (
+    collection: TemplateGalleryPage
+  ) => Promise<TemplateGalleryPage | null>
   unpublish: (collection: TemplateGalleryPage) => Promise<void>
   ungroup: (collection: TemplateGalleryPage) => Promise<void>
 }
@@ -37,16 +46,23 @@ export function useCollectionMutations(): CollectionMutations {
     })
   }
 
-  async function publish(collection: TemplateGalleryPage): Promise<void> {
+  async function publish(
+    collection: TemplateGalleryPage
+  ): Promise<TemplateGalleryPage | null> {
     setBusyId(collection.id)
     try {
       await templateGalleryPagePublish({ variables: { id: collection.id } })
-      enqueueSnackbar(t('Collection published'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
+      // Return a published projection of the input collection so the
+      // caller can open the success dialog with the live public URL
+      // without having to refetch the gallery list.
+      return {
+        ...collection,
+        status: TemplateGalleryPageStatus.published,
+        publishedAt: new Date().toISOString()
+      }
     } catch (error) {
       showError(error, t("Couldn't publish collection"))
+      return null
     } finally {
       setBusyId(null)
     }

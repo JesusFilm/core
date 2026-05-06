@@ -35,6 +35,7 @@ import { JourneyCard } from '../JourneyList/JourneyCard'
 
 import { CollectionCard } from './CollectionCard'
 import { CollectionDialog } from './CollectionDialog'
+import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
 import {
   DraggableJourneysGrid,
   DroppableCollectionWrapper,
@@ -42,6 +43,16 @@ import {
   parseDropZoneId
 } from './Droppables'
 import { useCollectionMutations } from './useCollectionMutations'
+
+// Build the shareable public URL for a published collection. Mirrors the
+// pattern in JourneyQuickSettings: respect NEXT_PUBLIC_JOURNEYS_URL,
+// fall back to your.nextstep.is. The path is `/template-gallery/<slug>`
+// per the NES-1539 spec.
+function buildCollectionPublicUrl(slug: string): string {
+  const base =
+    process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
+  return `${base}/template-gallery/${slug}`
+}
 
 
 export interface TemplateGalleryPageListProps {
@@ -93,7 +104,7 @@ export function TemplateGalleryPageList({
     useTemplateGalleryPageReorderTemplateMutation()
   const {
     busyId,
-    publish: handlePublish,
+    publish: rawPublish,
     unpublish: handleUnpublish,
     ungroup: handleUngroup
   } = useCollectionMutations()
@@ -102,6 +113,21 @@ export function TemplateGalleryPageList({
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
   const [dragInFlight, setDragInFlight] = useState(false)
+  // Holds the just-published collection so the success dialog has a stable
+  // reference to it (the gallery list cache may change underneath while the
+  // user is still looking at the dialog).
+  const [publishSuccessCollection, setPublishSuccessCollection] =
+    useState<TemplateGalleryPage | null>(null)
+
+  async function handlePublish(
+    collection: TemplateGalleryPage
+  ): Promise<void> {
+    const published = await rawPublish(collection)
+    if (published != null) setPublishSuccessCollection(published)
+  }
+  function handleClosePublishSuccess(): void {
+    setPublishSuccessCollection(null)
+  }
 
   const collections = useMemo<readonly TemplateGalleryPage[]>(
     () => collectionsQuery.data?.templateGalleryPages ?? [],
@@ -437,6 +463,15 @@ export function TemplateGalleryPageList({
           onClose={handleCloseEdit}
         />
       )}
+      <CollectionPublishSuccessDialog
+        open={publishSuccessCollection != null}
+        publicUrl={
+          publishSuccessCollection != null
+            ? buildCollectionPublicUrl(publishSuccessCollection.slug)
+            : null
+        }
+        onClose={handleClosePublishSuccess}
+      />
     </Box>
   )
 }
