@@ -15,7 +15,7 @@ applies_when:
   - 'The join table carries `@@unique([parentId, order])` (Prisma migrate emits a non-deferrable Postgres unique index by default)'
   - 'Concurrent writes are realistic — multiple admins, browser tabs, React Strict Mode double-mounts, or any path that submits the mutation twice in close succession'
   - 'A frontend reorder UI sends a 0-based display index that must hold even when stored `order` values have grown gappy from earlier assign/unassign churn'
-  - "List-replacement mutations (`Update.journeyIds = [...]` style) must uphold a single-membership invariant — a child row may belong to exactly one parent at a time"
+  - 'List-replacement mutations (`Update.journeyIds = [...]` style) must uphold a single-membership invariant — a child row may belong to exactly one parent at a time'
 tags:
   - pothos
   - prisma
@@ -50,10 +50,7 @@ Every mutation that modifies the join table — reorder, assign, unassign, list-
 // apis/api-journeys-modern/src/schema/templateGalleryPage/applyContiguousOrder.ts
 import { Prisma } from '@core/prisma/journeys/client'
 
-export async function lockPage(
-  tx: Prisma.TransactionClient,
-  pageId: string
-): Promise<void> {
+export async function lockPage(tx: Prisma.TransactionClient, pageId: string): Promise<void> {
   await tx.$queryRaw`
     SELECT 1 FROM "TemplateGalleryPage"
     WHERE id = ${pageId}
@@ -69,11 +66,7 @@ Call this first inside every `prisma.$transaction` that touches the join table. 
 When a mutation touches two parent rows (e.g. moving a journey from page A to page B), lock both — but in a deterministic order keyed off the parent id. Without this rule, two transactions doing A → B and B → A in parallel deadlock by holding-and-waiting in opposite orders.
 
 ```ts
-const pagesToLock = (
-  sourcePageId != null && sourcePageId !== pageId
-    ? [pageId, sourcePageId]
-    : [pageId]
-).sort()
+const pagesToLock = (sourcePageId != null && sourcePageId !== pageId ? [pageId, sourcePageId] : [pageId]).sort()
 for (const id of pagesToLock) {
   await lockPage(tx, id)
 }
@@ -106,11 +99,7 @@ The SDL description must call out that `order` is a display index — `Int!` alo
 `@@unique([parentId, order])` is non-deferrable when Prisma generates the index (plain `CREATE UNIQUE INDEX`, no `DEFERRABLE INITIALLY DEFERRED`). Postgres checks the constraint per-row, so a single `SET order = order + 1` over a window collides at the boundary. The fix: stage every row to a unique negative offset in one statement, then write each row's final 0..N-1 position.
 
 ```ts
-export async function applyContiguousOrder(
-  tx: Prisma.TransactionClient,
-  pageId: string,
-  rowsInOrder: ReadonlyArray<{ id: string }>
-): Promise<void> {
+export async function applyContiguousOrder(tx: Prisma.TransactionClient, pageId: string, rowsInOrder: ReadonlyArray<{ id: string }>): Promise<void> {
   await tx.$executeRaw`
     UPDATE "TemplateGalleryPageTemplate"
     SET "order" = -("order") - 1000000
