@@ -1,4 +1,3 @@
-import { ApolloError } from '@apollo/client'
 import {
   DndContext,
   DragEndEvent,
@@ -305,9 +304,7 @@ export function TemplateGalleryPageList({
       }
     } catch (error) {
       enqueueSnackbar(
-        error instanceof ApolloError || error instanceof Error
-          ? error.message
-          : t("Couldn't move template"),
+        error instanceof Error ? error.message : t("Couldn't move template"),
         { variant: 'error', preventDuplicate: true }
       )
     } finally {

@@ -69,14 +69,6 @@ const SECTION_HEADER = {
   color: '#444451'
 } as const
 
-function sameIds(a: readonly string[], b: readonly string[]): boolean {
-  if (a.length !== b.length) return false
-  for (let i = 0; i < a.length; i += 1) {
-    if (a[i] !== b[i]) return false
-  }
-  return true
-}
-
 export function CollectionDialog({
   open,
   mode,
@@ -205,8 +197,9 @@ export function CollectionDialog({
           input.mediaUrl = values.mediaUrl === '' ? null : values.mediaUrl
         }
         if (values.slug !== collection.slug) input.slug = values.slug
-        const initialIds = collection.templates.map((tpl) => tpl.id)
-        if (!sameIds(initialIds, values.journeyIds)) {
+        const initialIds = collection.templates.map((tpl) => tpl.id).join(',')
+        const nextIds = values.journeyIds.join(',')
+        if (initialIds !== nextIds) {
           input.journeyIds = values.journeyIds
         }
         await templateGalleryPageUpdate({
@@ -285,7 +278,8 @@ export function CollectionDialog({
           onClose={guardedClose}
           maxWidth="md"
           dialogTitle={{
-            title: t('Template Gallery Page'),
+            title:
+              mode === 'create' ? t('New Collection') : t('Edit Collection'),
             closeButton: true
           }}
           dialogAction={{
@@ -422,33 +416,32 @@ export function CollectionDialog({
 
                   {/* More details accordion */}
                   <Stack>
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      justifyContent="space-between"
+                    <ButtonBase
                       onClick={() => setMoreDetailsOpen((v) => !v)}
-                      sx={{ cursor: 'pointer', py: 0.5 }}
-                      role="button"
                       aria-expanded={moreDetailsOpen}
+                      aria-label={
+                        moreDetailsOpen
+                          ? t('Collapse more details')
+                          : t('Expand more details')
+                      }
+                      sx={{
+                        py: 0.5,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: '100%'
+                      }}
                     >
                       <Typography sx={SECTION_HEADER}>
                         {t('More details')}
                       </Typography>
-                      <IconButton
-                        size="small"
-                        aria-label={
-                          moreDetailsOpen
-                            ? t('Collapse more details')
-                            : t('Expand more details')
-                        }
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setMoreDetailsOpen((v) => !v)
-                        }}
-                      >
-                        {moreDetailsOpen ? <RemoveIcon /> : <Plus2Icon />}
-                      </IconButton>
-                    </Stack>
+                      {moreDetailsOpen ? (
+                        <RemoveIcon fontSize="small" />
+                      ) : (
+                        <Plus2Icon fontSize="small" />
+                      )}
+                    </ButtonBase>
 
                     <Collapse in={moreDetailsOpen} mountOnEnter>
                       <Stack spacing={3} sx={{ pt: 2 }}>
