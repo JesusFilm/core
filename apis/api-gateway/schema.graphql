@@ -1697,6 +1697,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
+  templateGalleryPage(id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
   templateGalleryPageBySlug(slug: String!) : TemplateGalleryPage @join__field(graph: API_JOURNEYS_MODERN) 
   templateGalleryPages(teamId: ID!) : [TemplateGalleryPage!]! @join__field(graph: API_JOURNEYS_MODERN) 
   getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN) 
