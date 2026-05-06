@@ -25,7 +25,6 @@ export const SUPPORTED_LANGUAGE_IDS = [
   '1370', // Nepali
   // supported by AI model:
   '4791', // Amharic
-  '176243', // Bangla
   '139081', // Bengali
   '1964', // Bulgarian
   '21754', // Chinese (Simplified)
@@ -36,7 +35,6 @@ export const SUPPORTED_LANGUAGE_IDS = [
   '1269', // Dutch
   '4601', // Estonian
   '4820', // Finnish
-  '5048', // Fulfulde, Pulaar (Fula)
   '483', // Greek
   '1341', // Hausa
   '6930', // Hebrew
@@ -48,7 +46,6 @@ export const SUPPORTED_LANGUAGE_IDS = [
   '18259', // Mongolian, Halh
   '1254', // Myanmar (Burmese)
   '10393', // Norwegian
-  '21064', // Portuguese, Portugal
   '5546', // Romanian
   '13172', // Sinhala
   '5545', // Slovak

@@ -1,35 +1,55 @@
 ---
-title: 'feat(journeys): add 14 new translation target languages (NES-1602)'
+title: 'feat(journeys): add new translation target languages (NES-1602)'
 type: feat
 status: active
 date: 2026-04-24
 linear: NES-1602
 ---
 
-# Add 14 new translation target languages (NES-1602)
+# Add new translation target languages (NES-1602)
 
 ## Overview
 
-Add 14 languages to the journey builder's translation target allowlist so Core Teams can translate journeys into them. Languages were requested by Lucinda Mason for the World Cup journeys. Lucinda confirmed these are **translation target languages** (journey content), not admin UI locales.
+Add languages to the journey builder's translation target allowlist so Core Teams can translate journeys into them. Languages were requested by Lucinda Mason for the World Cup journeys. Lucinda confirmed these are **translation target languages** (journey content), not admin UI locales.
 
-Target languages:
+Lucinda's full list contained 14 languages. After validating each against Gemini's supported-languages list and empirical live testing of variant rows, the final scope is **11 shipping + 3 deferred**.
 
-| #   | Name                  | Notes                                                                    |
-| --- | --------------------- | ------------------------------------------------------------------------ |
-| 1   | Amharic               | —                                                                        |
-| 2   | Bangla                | Distinct from Indian Bengali (which is already supported as id `139081`) |
-| 3   | Fula                  | —                                                                        |
-| 4   | Hausa                 | —                                                                        |
-| 5   | Kazakh                | —                                                                        |
-| 6   | Mongolian             | —                                                                        |
-| 7   | Portuguese (Portugal) | Distinct from Brazilian Portuguese (already supported as id `584`)       |
-| 8   | Sinhala               | —                                                                        |
-| 9   | Tagalog               | —                                                                        |
-| 10  | Tajik                 | —                                                                        |
-| 11  | Tamil                 | —                                                                        |
-| 12  | Urdu (Pakistan)       | —                                                                        |
-| 13  | Uzbek                 | —                                                                        |
-| 14  | Yoruba                | —                                                                        |
+## Final Scope
+
+### Shipping (11)
+
+| #   | Language        | DB ID    | Notes                                                                        |
+| --- | --------------- | -------- | ---------------------------------------------------------------------------- |
+| 1   | Amharic         | `4791`   | —                                                                            |
+| 2   | Hausa           | `1341`   | —                                                                            |
+| 3   | Kazakh          | `371`    | —                                                                            |
+| 4   | Mongolian       | `18259`  | Halh (Khalkha) variant — official Mongolian                                  |
+| 5   | Sinhala         | `13172`  | —                                                                            |
+| 6   | Tagalog         | `12551`  | —                                                                            |
+| 7   | Tajik           | `24309`  | —                                                                            |
+| 8   | Tamil           | `5871`   | —                                                                            |
+| 9   | Urdu (Pakistan) | `407`    | Default Urdu = Pakistani Urdu (Indian variant `22563` is a separate row)     |
+| 10  | Uzbek           | `3888`   | Northern Uzbek (Uzbekistan official)                                         |
+| 11  | Yoruba          | `1308`   | —                                                                            |
+
+### Deferred (3)
+
+| #   | Language              | DB ID    | Reason                                                                                                                                                                     |
+| --- | --------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 12  | Bangla                | `176243` | Unclear whether Gemini distinguishes Bangla from Indian Bengali. Google's docs list a single `bn` entry with no Bangladeshi/Indian variant split. Empirical output comparison still pending. |
+| 13  | Portuguese (Portugal) | `21064`  | **Empirically confirmed broken.** Live testing showed both `21064` (Portugal) and `584` (Brazil) produce identical `targetLanguageName: 'Português'` Gemini prompts because the frontend's `nativeName ?? localName` resolution collapses both rows' identical primary names. Output is Brazilian regardless of which is picked. |
+| 14  | Fula                  | `5048`   | Not on Gemini's supported-languages list at all. No `ff` / `fuc` / `fuf` / etc. entry. Translation would fail or hallucinate.                                              |
+
+### Decision rationale
+
+The principle: **only ship languages where Gemini both supports the language AND can honor the variant Lucinda requested**. Adding rows that surface to users as a UI option but don't deliver the promised variant is a worse UX than not offering them at all.
+
+**Empirical evidence (Portuguese):** captured live via temporary debug logs added to `LanguageScreen.tsx`, `TranslateJourneyDialog.tsx`, `journeyAiTranslate.ts`, and `translateCustomizationFields.ts`. Both Portugal and Brazil runs produced byte-identical `targetLanguageName: 'Português'` prompts to Gemini. Logs were removed before the final commit.
+
+**Tracker references (followups):**
+
+- `[NES-XXXX]` — Disambiguate dialect variants in AI translation prompts. Investigates whether to swap to `localName`, concatenate, use `bcp47`, or add explicit prompt context. Includes Bangla and Portuguese (Portugal) as the test cases.
+- `[NES-YYYY]` — Empty `sourceLanguageName` in AI translation prompts for English-source journeys. The frontend's `find(({primary}) => !primary)?.value ?? ''` returns empty string for languages with only a primary entry (e.g. English `529`). Affects all 4 translation surfaces.
 
 ## Problem Statement
 
@@ -99,15 +119,17 @@ Append each new entry under the `// supported by AI model:` section, each on its
 
 ## Acceptance Criteria
 
-- [ ] Worktree created at `.claude/worktrees/nes-1602-languages` with branch `jianweichong/nes-1602-add-support-for-14-new-languages-in-journey-builder`
-- [ ] Each of the 14 requested languages maps to a verified `id` from the languages DB (not guessed)
-- [ ] For variant-sensitive languages (Bangla, Portuguese, Urdu), the chosen ID is confirmed to be the Bangladeshi / Portugal / Pakistani variant respectively, distinct from any already-supported sibling
-- [ ] Comments next to each new entry include both the native name and the English name, matching surrounding style
-- [ ] `SUPPORTED_LANGUAGE_IDS` array length goes from 50 → 64
-- [ ] `nx run journeys-ui:test` passes (no spec changes expected, but run to confirm)
-- [ ] `nx run journeys-admin:test` passes for `LanguageScreen`, `TranslateJourneyDialog`, `CopyToTeamMenuItem`, `CreateJourneyButton` suites
-- [ ] `nx lint @core/journeys-ui` passes
-- [ ] PR created, assigned to me, reviewer requested per LFG workflow
+- [x] Worktree created at `.claude/worktrees/nes-1602-languages` with branch `jianweichong/nes-1602-add-support-for-14-new-languages-in-journey-builder`
+- [x] Each requested language mapped to a verified `id` from the languages DB (not guessed) — all 14 IDs resolved against the live api-gateway
+- [x] For variant-sensitive languages (Bangla, Portuguese, Urdu), variant correctness empirically validated — Portuguese & Bangla confirmed dialect ambiguity at the prompt layer, Urdu's Pakistani-as-default confirmed acceptable
+- [x] Comments next to each new entry include the English name, matching surrounding style
+- [x] `nx run journeys-ui:test` passes (no spec changes expected)
+- [x] Consumer Jest suites pass (`LanguageScreen`, `TranslateJourneyDialog`, `CopyToTeamMenuItem`, `CreateJourneyButton`, `useJourneyAiTranslateSubscription`) — 75/75 tests
+- [x] ESLint + Prettier clean on the changed file
+- [x] PR created, assigned to me, reviewer requested (Mike Allison)
+- [ ] Lucinda informed of final scope (11 shipping, 3 deferred) and rationale
+- [ ] Followup ticket filed for prompt-disambiguation investigation (Bangla + Portuguese path)
+- [ ] Followup ticket filed for empty `sourceLanguageName` bug
 - [ ] QA requirements posted on NES-1602 per `.claude/rules/writing-qa-requirements.dev.md`
 
 ## Risks & Mitigations
