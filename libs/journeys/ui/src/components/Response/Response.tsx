@@ -8,6 +8,12 @@ interface ResponseProps {
   content: string
 }
 
+const MARKDOWN_LINK_UNDERLINE = 'color-mix(in srgb, currentColor 35%, transparent)'
+const MARKDOWN_SUBTLE_BACKGROUND =
+  'color-mix(in srgb, currentColor 6%, transparent)'
+const MARKDOWN_BLOCKQUOTE_BORDER =
+  'color-mix(in srgb, currentColor 15%, transparent)'
+
 export function Response({ content }: ResponseProps): ReactElement {
   return (
     <Box
@@ -19,6 +25,8 @@ export function Response({ content }: ResponseProps): ReactElement {
         // weight low — these snippets sit inline next to plain prose,
         // so default browser styles (chunky <hr>, large heading
         // sizes, blue links) read as out-of-place.
+        // Use currentColor so accents stay legible on light panels and
+        // the dark desktop overlay.
         '& p': {
           margin: 0,
           marginBottom: '8px',
@@ -49,7 +57,7 @@ export function Response({ content }: ResponseProps): ReactElement {
         '& a': {
           color: 'inherit',
           textDecoration: 'underline',
-          textDecorationColor: 'rgba(38,38,46,0.35)',
+          textDecorationColor: MARKDOWN_LINK_UNDERLINE,
           textUnderlineOffset: '2px'
         },
         '& code': {
@@ -58,7 +66,7 @@ export function Response({ content }: ResponseProps): ReactElement {
           fontSize: '0.92em',
           padding: '1px 5px',
           borderRadius: 4,
-          background: 'rgba(38,38,46,0.06)'
+          background: MARKDOWN_SUBTLE_BACKGROUND
         },
         '& pre': {
           fontFamily:
@@ -66,7 +74,7 @@ export function Response({ content }: ResponseProps): ReactElement {
           fontSize: '0.92em',
           padding: '10px 12px',
           borderRadius: 8,
-          background: 'rgba(38,38,46,0.06)',
+          background: MARKDOWN_SUBTLE_BACKGROUND,
           overflowX: 'auto',
           margin: '8px 0',
           '& code': {
@@ -77,7 +85,7 @@ export function Response({ content }: ResponseProps): ReactElement {
         '& blockquote': {
           margin: '8px 0',
           paddingLeft: '12px',
-          borderLeft: '3px solid rgba(38,38,46,0.15)',
+          borderLeft: `3px solid ${MARKDOWN_BLOCKQUOTE_BORDER}`,
           color: 'inherit',
           opacity: 0.85
         }
