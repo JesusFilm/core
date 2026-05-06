@@ -110,6 +110,8 @@ interface UnsectionedDroppableProps {
   children: ReactElement | ReactElement[]
 }
 
+// Drop target for the unsectioned pool — drops here unassign the template
+// from its current collection (pageId: null in the assign mutation).
 export function UnsectionedDroppable({
   disabled,
   children
