@@ -234,6 +234,119 @@ describe('templateGalleryPageUpdate', () => {
     ).not.toHaveBeenCalled()
   })
 
+  it('acquires the page lock before any write to the templates join table', async () => {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'p1',
+      teamId: 'team-1'
+    } as any)
+    prismaMock.templateGalleryPageTemplate.findFirst.mockResolvedValue(null)
+    prismaMock.journey.findMany.mockResolvedValue([{ id: 'j1' }] as any)
+    prismaMock.templateGalleryPage.update.mockResolvedValue({
+      id: 'p1',
+      title: 'T',
+      slug: 's'
+    } as any)
+
+    await authClient({
+      document: TEMPLATE_GALLERY_PAGE_UPDATE,
+      variables: { id: 'p1', input: { journeyIds: ['j1'] } }
+    })
+
+    // Page lock fires via $queryRaw with `FOR UPDATE`.
+    expect(prismaMock.$queryRaw).toHaveBeenCalled()
+    const lockSql = (
+      prismaMock.$queryRaw.mock.calls[0][0] as readonly string[]
+    ).join(' ')
+    expect(lockSql).toContain('FOR UPDATE')
+    // And it ran BEFORE the deleteMany — without this guarantee a concurrent
+    // assign can trip the (templateGalleryPageId, order) UNIQUE during the
+    // delete+create window.
+    const lockOrder = prismaMock.$queryRaw.mock.invocationCallOrder[0]
+    const deleteOrder =
+      prismaMock.templateGalleryPageTemplate.deleteMany.mock
+        .invocationCallOrder[0]
+    expect(lockOrder).toBeLessThan(deleteOrder)
+  })
+
+  it('throws CONFLICT when journeyIds includes a journey that belongs to another collection', async () => {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'page-A',
+      teamId: 'team-1'
+    } as any)
+    // Journey is currently a member of page-B.
+    prismaMock.templateGalleryPageTemplate.findFirst.mockResolvedValue({
+      journeyId: 'j-shared',
+      templateGalleryPageId: 'page-B'
+    } as any)
+
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_UPDATE,
+      variables: { id: 'page-A', input: { journeyIds: ['j-shared'] } }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'journey already belongs to another collection',
+          extensions: expect.objectContaining({
+            code: 'CONFLICT',
+            field: 'journeyIds',
+            journeyId: 'j-shared'
+          })
+        })
+      ]
+    })
+    // Conflict check runs BEFORE deleteMany — the rollback must leave both
+    // pages untouched even though the transaction was opened.
+    expect(
+      prismaMock.templateGalleryPageTemplate.deleteMany
+    ).not.toHaveBeenCalled()
+    expect(
+      prismaMock.templateGalleryPageTemplate.createMany
+    ).not.toHaveBeenCalled()
+  })
+
+  it('allows re-assigning a journey that is already on this page (NOT clause excludes self)', async () => {
+    // Setup: page-A is the only page J belongs to. The conflict findFirst
+    // excludes templateGalleryPageId === id (page-A), so it returns null
+    // and we proceed with the deleteMany + createMany.
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'page-A',
+      teamId: 'team-1'
+    } as any)
+    prismaMock.templateGalleryPageTemplate.findFirst.mockResolvedValue(null)
+    prismaMock.journey.findMany.mockResolvedValue([{ id: 'j1' }] as any)
+    prismaMock.templateGalleryPage.update.mockResolvedValue({
+      id: 'page-A',
+      title: 'T',
+      slug: 's'
+    } as any)
+
+    await authClient({
+      document: TEMPLATE_GALLERY_PAGE_UPDATE,
+      variables: { id: 'page-A', input: { journeyIds: ['j1'] } }
+    })
+
+    // The conflict check ran with the right NOT-self filter so that a
+    // journey already on this page does not falsely trigger CONFLICT.
+    expect(
+      prismaMock.templateGalleryPageTemplate.findFirst
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          journeyId: { in: ['j1'] },
+          NOT: { templateGalleryPageId: 'page-A' }
+        })
+      })
+    )
+    // And the delete+create still happened.
+    expect(
+      prismaMock.templateGalleryPageTemplate.deleteMany
+    ).toHaveBeenCalledWith({ where: { templateGalleryPageId: 'page-A' } })
+    expect(prismaMock.templateGalleryPageTemplate.createMany).toHaveBeenCalled()
+  })
+
   it('rejects user-supplied slug when malformed', async () => {
     prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
       id: 'p1',
