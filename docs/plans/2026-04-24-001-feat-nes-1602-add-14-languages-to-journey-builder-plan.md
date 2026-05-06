@@ -18,27 +18,27 @@ Lucinda's full list contained 14 languages. After validating each against Gemini
 
 ### Shipping (11)
 
-| #   | Language        | DB ID    | Notes                                                                        |
-| --- | --------------- | -------- | ---------------------------------------------------------------------------- |
-| 1   | Amharic         | `4791`   | —                                                                            |
-| 2   | Hausa           | `1341`   | —                                                                            |
-| 3   | Kazakh          | `371`    | —                                                                            |
-| 4   | Mongolian       | `18259`  | Halh (Khalkha) variant — official Mongolian                                  |
-| 5   | Sinhala         | `13172`  | —                                                                            |
-| 6   | Tagalog         | `12551`  | —                                                                            |
-| 7   | Tajik           | `24309`  | —                                                                            |
-| 8   | Tamil           | `5871`   | —                                                                            |
-| 9   | Urdu (Pakistan) | `407`    | Default Urdu = Pakistani Urdu (Indian variant `22563` is a separate row)     |
-| 10  | Uzbek           | `3888`   | Northern Uzbek (Uzbekistan official)                                         |
-| 11  | Yoruba          | `1308`   | —                                                                            |
+| #   | Language        | DB ID   | Notes                                                                    |
+| --- | --------------- | ------- | ------------------------------------------------------------------------ |
+| 1   | Amharic         | `4791`  | —                                                                        |
+| 2   | Hausa           | `1341`  | —                                                                        |
+| 3   | Kazakh          | `371`   | —                                                                        |
+| 4   | Mongolian       | `18259` | Halh (Khalkha) variant — official Mongolian                              |
+| 5   | Sinhala         | `13172` | —                                                                        |
+| 6   | Tagalog         | `12551` | —                                                                        |
+| 7   | Tajik           | `24309` | —                                                                        |
+| 8   | Tamil           | `5871`  | —                                                                        |
+| 9   | Urdu (Pakistan) | `407`   | Default Urdu = Pakistani Urdu (Indian variant `22563` is a separate row) |
+| 10  | Uzbek           | `3888`  | Northern Uzbek (Uzbekistan official)                                     |
+| 11  | Yoruba          | `1308`  | —                                                                        |
 
 ### Deferred (3)
 
-| #   | Language              | DB ID    | Reason                                                                                                                                                                     |
-| --- | --------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 12  | Bangla                | `176243` | Unclear whether Gemini distinguishes Bangla from Indian Bengali. Google's docs list a single `bn` entry with no Bangladeshi/Indian variant split. Empirical output comparison still pending. |
+| #   | Language              | DB ID    | Reason                                                                                                                                                                                                                                                                                                                           |
+| --- | --------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 12  | Bangla                | `176243` | Unclear whether Gemini distinguishes Bangla from Indian Bengali. Google's docs list a single `bn` entry with no Bangladeshi/Indian variant split. Empirical output comparison still pending.                                                                                                                                     |
 | 13  | Portuguese (Portugal) | `21064`  | **Empirically confirmed broken.** Live testing showed both `21064` (Portugal) and `584` (Brazil) produce identical `targetLanguageName: 'Português'` Gemini prompts because the frontend's `nativeName ?? localName` resolution collapses both rows' identical primary names. Output is Brazilian regardless of which is picked. |
-| 14  | Fula                  | `5048`   | Not on Gemini's supported-languages list at all. No `ff` / `fuc` / `fuf` / etc. entry. Translation would fail or hallucinate.                                              |
+| 14  | Fula                  | `5048`   | Not on Gemini's supported-languages list at all. No `ff` / `fuc` / `fuf` / etc. entry. Translation would fail or hallucinate.                                                                                                                                                                                                    |
 
 ### Decision rationale
 
