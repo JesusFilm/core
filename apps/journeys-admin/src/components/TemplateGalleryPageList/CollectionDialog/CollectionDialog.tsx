@@ -33,6 +33,7 @@ import { useTemplateGalleryPageUpdateMutation } from '../../../libs/useTemplateG
 
 import { CollectionPreviewPane } from './CollectionPreviewPane'
 import { CreatorImagePickerDrawer } from './CreatorImagePickerDrawer'
+import { DiscardConfirmDialog } from './DiscardConfirmDialog'
 
 export interface CollectionDialogProps {
   open: boolean
@@ -75,7 +76,7 @@ export function CollectionDialog({
   teamId,
   collection,
   availableJourneys,
-  parentBusy,
+  parentBusy = false,
   onClose
 }: CollectionDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -151,7 +152,7 @@ export function CollectionDialog({
     values: FormValues,
     helpers: FormikHelpers<FormValues>
   ): Promise<void> {
-    if (parentBusy === true) {
+    if (parentBusy) {
       // A DnD mutation is still in flight on the parent. Bail rather than
       // interleave a dialog mutation against the same team's cache.
       enqueueSnackbar(t('Finishing previous action…'), {
@@ -236,12 +237,12 @@ export function CollectionDialog({
           return
         }
       }
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
+      enqueueSnackbar(
+        error instanceof Error
+          ? error.message
+          : t("Couldn't save collection"),
+        { variant: 'error', preventDuplicate: true }
+      )
     }
   }
 
@@ -661,24 +662,14 @@ export function CollectionDialog({
             setImagePickerOpen(false)
           }}
         />
-        <Dialog
+        <DiscardConfirmDialog
           open={discardConfirmOpen}
-          onClose={() => setDiscardConfirmOpen(false)}
-          dialogTitle={{ title: t('You have unsaved changes — discard?') }}
-          dialogAction={{
-            onSubmit: () => {
-              setDiscardConfirmOpen(false)
-              onClose()
-            },
-            submitLabel: t('Discard'),
-            closeLabel: t('Cancel')
+          onCancel={() => setDiscardConfirmOpen(false)}
+          onConfirm={() => {
+            setDiscardConfirmOpen(false)
+            onClose()
           }}
-          testId="CollectionDiscardConfirmDialog"
-        >
-          <Typography>
-            {t('Your edits to this collection will be lost.')}
-          </Typography>
-        </Dialog>
+        />
         </>
         )
       }}

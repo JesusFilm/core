@@ -46,6 +46,7 @@ export function CollectionPublishSuccessDialog({
   function handleView(): void {
     if (publicUrl == null) return
     window.open(publicUrl, '_blank', 'noopener,noreferrer')
+    onClose()
   }
 
   return (
