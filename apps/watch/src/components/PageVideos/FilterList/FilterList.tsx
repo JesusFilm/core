@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import debounce from 'lodash/debounce'
 import noop from 'lodash/noop'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { type ReactElement, useMemo, useState } from 'react'
 import { useMenu, useSearchBox } from 'react-instantsearch'
 

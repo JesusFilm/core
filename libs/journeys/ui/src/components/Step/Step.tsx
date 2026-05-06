@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { sendGTMEvent } from '@next/third-parties/google'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { usePlausible } from 'next-plausible'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'

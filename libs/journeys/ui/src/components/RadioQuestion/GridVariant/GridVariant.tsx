@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import { SimplePaletteColorOptions, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'

@@ -99,6 +99,7 @@ describe('stepViewEventCreate', () => {
         data: expect.objectContaining({
           id: 'eventId',
           typename: 'StepViewEvent',
+          blockId: 'blockId',
           value: 'Step Title',
           visitor: { connect: { id: 'visitorId' } },
           journey: { connect: { id: 'journeyId' } },

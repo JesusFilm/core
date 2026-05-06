@@ -21,7 +21,7 @@ builder.mutationField('journeyViewEventCreate', (t) =>
       const userId = context.user?.id
 
       const journey = await prisma.journey.findUnique({
-        where: { id: input.journeyId }
+        where: { id: input.journeyId, deletedAt: null }
       })
 
       if (journey == null) {

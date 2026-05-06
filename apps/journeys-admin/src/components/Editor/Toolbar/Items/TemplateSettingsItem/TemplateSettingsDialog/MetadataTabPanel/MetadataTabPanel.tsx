@@ -4,7 +4,7 @@ import FormGroup from '@mui/material/FormGroup'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { format, parseISO } from 'date-fns'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -23,10 +23,12 @@ interface MetadataTabPanelProps {
 export function MetadataTabPanel({
   showFeaturedSettings = false
 }: MetadataTabPanelProps): ReactElement {
-  const { values, handleChange, setFieldValue } = useTemplateSettingsForm()
+  const { values, errors, touched, handleChange, setFieldValue } =
+    useTemplateSettingsForm()
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
+  const titleError = touched?.title === true && errors?.title != null
 
   async function handleOnChange(value: LanguageOption): Promise<void> {
     const { id } = value
@@ -47,10 +49,15 @@ export function MetadataTabPanel({
         id="title"
         name="title"
         fullWidth
-        value={values.title}
+        value={values.title ?? ''}
         variant="filled"
         onChange={handleChange}
-        helperText={t('Recommended length: six words or shorter')}
+        error={titleError}
+        helperText={
+          titleError
+            ? (errors.title as string)
+            : t('Recommended length: six words or shorter')
+        }
       />
       <TextField
         label={t('Description')}
