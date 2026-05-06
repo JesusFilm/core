@@ -1,3 +1,5 @@
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
+import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next/pages'
 import {
@@ -33,6 +35,15 @@ export function DragHandle({
   const startYRef = useRef<number | null>(null)
   const movedRef = useRef(0)
   const draggingRef = useRef(false)
+  const suppressClickRef = useRef(false)
+
+  const toggleCollapsed = useCallback(() => {
+    if (collapsed) {
+      onExpand()
+    } else {
+      onCollapse()
+    }
+  }, [collapsed, onCollapse, onExpand])
 
   useEffect(() => {
     if (!dragging) return undefined
@@ -55,12 +66,12 @@ export function DragHandle({
       startYRef.current = null
       movedRef.current = 0
       if (moved > DRAG_THRESHOLD_PX) {
+        suppressClickRef.current = true
         onCollapse()
       } else if (moved < -DRAG_THRESHOLD_PX) {
+        suppressClickRef.current = true
         onExpand()
       }
-      // Smaller deltas (including taps) intentionally do nothing — the
-      // handle is drag-only so a click can't trigger an artifact.
     }
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('mouseup', handleUp)
@@ -98,21 +109,28 @@ export function DragHandle({
     [handleStart]
   )
 
+  const handleClick = useCallback(() => {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false
+      return
+    }
+    toggleCollapsed()
+  }, [toggleCollapsed])
+
   // Keyboard accessibility: Enter/Space toggles between expanded and
   // collapsed so non-pointer users still have a way to control the sheet.
-  // (Mouse/touch is drag-only by product decision.)
   const handleKeyDown = useCallback(
     (e: ReactKeyboardEvent<HTMLDivElement>) => {
       if (e.key !== 'Enter' && e.key !== ' ') return
       e.preventDefault()
-      if (collapsed) {
-        onExpand()
-      } else {
-        onCollapse()
-      }
+      toggleCollapsed()
     },
-    [collapsed, onCollapse, onExpand]
+    [toggleCollapsed]
   )
+
+  const ChevronIcon = collapsed
+    ? KeyboardArrowUpRoundedIcon
+    : KeyboardArrowDownRoundedIcon
 
   return (
     <Box
@@ -123,30 +141,36 @@ export function DragHandle({
       aria-expanded={!collapsed}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
+      onClick={handleClick}
       onKeyDown={handleKeyDown}
       sx={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        py: '14px',
+        height: 32,
         cursor: dragging ? 'grabbing' : 'grab',
         flexShrink: 0,
         touchAction: 'none',
         userSelect: 'none',
         outline: 'none',
-        '&:focus-visible .ChatDragHandleThumb': {
-          bgcolor: TEXT_SECONDARY
+        '&:focus-visible .ChatDragHandlePill': {
+          bgcolor: DIVIDER,
+          color: TEXT_SECONDARY
         }
       }}
     >
       <Box
-        className="ChatDragHandleThumb"
+        component={ChevronIcon}
+        className="ChatDragHandlePill"
+        aria-hidden
         sx={{
-          width: 48,
-          height: 4,
+          width: 28,
+          height: 18,
+          px: 0.5,
           borderRadius: 9999,
-          bgcolor: dragging ? TEXT_SECONDARY : DIVIDER,
-          transition: 'background-color 120ms ease'
+          color: dragging ? TEXT_SECONDARY : TEXT_SECONDARY,
+          bgcolor: dragging ? DIVIDER : 'transparent',
+          transition: 'background-color 120ms ease, color 120ms ease'
         }}
       />
     </Box>
