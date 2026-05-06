@@ -9,8 +9,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
-import CopyToIcon from '@core/shared/ui/icons/CopyTo'
-import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
+import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
 
 export interface CollectionPublishSuccessDialogProps {
   open: boolean
@@ -90,20 +89,7 @@ export function CollectionPublishSuccessDialog({
                       disabled={publicUrl == null}
                       edge="end"
                     >
-                      <CopyToIcon />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-                <Tooltip title={t('Open in new tab')}>
-                  <span>
-                    <IconButton
-                      aria-label={t('Open in new tab')}
-                      onClick={handleView}
-                      disabled={publicUrl == null}
-                      edge="end"
-                      sx={{ ml: 0.5 }}
-                    >
-                      <LinkExternalIcon />
+                      <LinkAngledIcon />
                     </IconButton>
                   </span>
                 </Tooltip>
