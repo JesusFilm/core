@@ -43,7 +43,7 @@ describe('videoEdition', () => {
           expect.objectContaining({
             orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }],
             skip: 0,
-            take: 100,
+            take: undefined,
             where: { updatedAt: undefined }
           })
         )

@@ -50,7 +50,7 @@ describe('videoOrigin', () => {
           expect.objectContaining({
             orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }],
             skip: 0,
-            take: 100
+            take: undefined
           })
         )
         expect(result).toHaveProperty('data.videoOrigins', [

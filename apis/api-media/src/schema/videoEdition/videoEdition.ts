@@ -29,7 +29,7 @@ builder.queryFields((t) => ({
         ...query,
         where: { updatedAt: toPrismaDateTimeFilter(where?.updatedAt) },
         skip: offset ?? 0,
-        take: limit ?? 100,
+        take: limit ?? undefined,
         orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }]
       })
     }
