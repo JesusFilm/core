@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikHelpers } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import { array, object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -85,6 +85,16 @@ export function CollectionDialog({
   const [templateGalleryPageCreate] = useTemplateGalleryPageCreateMutation()
   const [templateGalleryPageUpdate] = useTemplateGalleryPageUpdateMutation()
 
+  // O(1) lookup to avoid the per-keystroke O(N×M) cascade in the Formik
+  // render-prop body: each render previously did
+  // `journeyIds.map(id => availableJourneys.find(...))` plus an
+  // `availableJourneys.filter(...)` for the Autocomplete value. With the
+  // map in hand the per-render cost is O(N) where N is selected count.
+  const journeysById = useMemo(
+    () => new Map(availableJourneys.map((j) => [j.id, j])),
+    [availableJourneys]
+  )
+
   // Published collections allow metadata edits but lock the membership list —
   // matches the DnD published-guard. Unpublish first to add or remove
   // templates.
@@ -102,16 +112,6 @@ export function CollectionDialog({
     journeyIds: collection?.templates.map((tpl) => tpl.id) ?? []
   }
 
-  // Tracks whether the dialog is still mounted, so post-await side effects
-  // (setFieldError / snackbar) don't fire on a torn-down Formik tree when
-  // the user dismisses while a mutation is in flight.
-  const mountedRef = useRef(true)
-  useEffect(
-    () => () => {
-      mountedRef.current = false
-    },
-    []
-  )
   const [imagePickerOpen, setImagePickerOpen] = useState(false)
   // Collapsed by default in both create and edit, matching Figma's
   // "+" affordance.
@@ -126,9 +126,7 @@ export function CollectionDialog({
       .required(t('Title is required'))
       .max(100, t('Max 100 characters')),
     description: string(),
-    creatorName: string()
-      .required(t('Creator name is required'))
-      .max(100, t('Max 100 characters')),
+    creatorName: string().max(100, t('Max 100 characters')),
     mediaUrl: string()
       .max(2048, t('URL too long'))
       .test('https-only', t('Must be an https URL'), (value) => {
@@ -176,7 +174,6 @@ export function CollectionDialog({
           journeyIds: values.journeyIds
         }
         await templateGalleryPageCreate({ variables: { input } })
-        if (!mountedRef.current) return
         enqueueSnackbar(t('Collection created'), {
           variant: 'success',
           preventDuplicate: true
@@ -210,7 +207,6 @@ export function CollectionDialog({
         await templateGalleryPageUpdate({
           variables: { id: collection.id, input }
         })
-        if (!mountedRef.current) return
         enqueueSnackbar(t('Collection updated'), {
           variant: 'success',
           preventDuplicate: true
@@ -218,7 +214,6 @@ export function CollectionDialog({
       }
       onClose()
     } catch (error) {
-      if (!mountedRef.current) return
       if (error instanceof ApolloError) {
         // Map field-scoped errors back to Formik fields when possible.
         const rawField = error.graphQLErrors?.[0]?.extensions?.field
@@ -281,7 +276,7 @@ export function CollectionDialog({
         // Selected journeys, ordered by the user's pick order, used for the
         // carousel preview on the left pane.
         const selectedJourneysOrdered = values.journeyIds
-          .map((id) => availableJourneys.find((j) => j.id === id))
+          .map((id) => journeysById.get(id))
           .filter((j): j is Journey => j != null)
         return (
         <>
@@ -389,9 +384,7 @@ export function CollectionDialog({
                       isOptionEqualToValue={(option, value) =>
                         option.id === value.id
                       }
-                      value={availableJourneys.filter((j) =>
-                        values.journeyIds.includes(j.id)
-                      )}
+                      value={selectedJourneysOrdered}
                       onChange={(_event, selected) => {
                         void setFieldValue(
                           'journeyIds',
@@ -666,7 +659,6 @@ export function CollectionDialog({
               (v) => ({ ...v, creatorImageSrc: src, creatorImageAlt: alt }),
               true
             )
-            if (!mountedRef.current) return
             setImagePickerOpen(false)
           }}
         />

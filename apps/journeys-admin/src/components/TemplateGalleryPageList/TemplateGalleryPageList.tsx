@@ -18,7 +18,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
@@ -91,11 +91,22 @@ export function TemplateGalleryPageList({
   )
 
   // TabPanel keeps this component mounted once revealed, so cache-and-network
-  // alone won't refire the network on re-visit; refetch when `visible` flips.
+  // alone won't refire the network on re-visit; refetch when `visible` flips
+  // back on. Skip the initial mount — cache-and-network on `journeysQuery`
+  // is already fetching, and `collectionsQuery` runs on first mount too.
+  // Without this guard, every team-switch and tab-activation issued a
+  // duplicate initial fetch.
+  const initialMountRef = useRef(true)
   useEffect(() => {
     if (!visible || teamId == null) return
+    if (initialMountRef.current) {
+      initialMountRef.current = false
+      return
+    }
     void journeysQuery.refetch()
     void collectionsQuery.refetch()
+    // refetch fns are stable proxies — depending on the visibility signal
+    // and teamId is the right semantic, not the refetch identity.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, teamId])
 
@@ -154,6 +165,24 @@ export function TemplateGalleryPageList({
     }
     return map
   }, [collections])
+
+  // Each collection's templates resolved to full Journey objects, in
+  // display order. Memoized so the per-collection map+filter doesn't
+  // run inline in the render — it would otherwise recompute on every
+  // re-render (drag start/end, mutation completion, etc.) and hand a
+  // fresh array reference to every card, defeating React.memo.
+  const journeysByCollection = useMemo(() => {
+    const map = new Map<string, readonly Journey[]>()
+    for (const collection of collections) {
+      map.set(
+        collection.id,
+        collection.templates
+          .map((tpl) => journeyById.get(tpl.id))
+          .filter((j): j is Journey => j != null)
+      )
+    }
+    return map
+  }, [collections, journeyById])
 
   const collectionsById = useMemo(() => {
     const map = new Map<string, TemplateGalleryPage>()
@@ -488,9 +517,7 @@ export function TemplateGalleryPageList({
                   busy={busyId === collection.id || dragInFlight}
                 >
                   <DraggableJourneysGrid
-                    journeys={collection.templates
-                      .map((tpl) => journeyById.get(tpl.id))
-                      .filter((j): j is Journey => j != null)}
+                    journeys={journeysByCollection.get(collection.id) ?? []}
                     publishedLock={collection.status === TemplateGalleryPageStatus.published}
                     dragInFlight={dragInFlight}
                   />

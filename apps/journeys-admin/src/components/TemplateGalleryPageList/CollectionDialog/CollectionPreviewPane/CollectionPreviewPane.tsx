@@ -9,7 +9,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, memo } from 'react'
 
 import { StrategySection } from '@core/journeys/ui/StrategySection'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
@@ -42,8 +42,12 @@ interface CollectionPreviewPaneProps {
  * Mobile-shaped preview card mirroring the public gallery page layout.
  * Read-only — no form interactions. Lives on the left of CollectionDialog
  * so the publisher sees how their values will render to viewers.
+ *
+ * Wrapped in React.memo so unrelated re-renders of CollectionDialog
+ * (e.g. typing in any non-preview field) don't rebuild the carousel.
+ * Receives stable references for all props from the parent.
  */
-export function CollectionPreviewPane({
+function CollectionPreviewPaneImpl({
   values,
   selectedJourneysOrdered,
   publicUrl
@@ -359,3 +363,5 @@ export function CollectionPreviewPane({
     </Box>
   )
 }
+
+export const CollectionPreviewPane = memo(CollectionPreviewPaneImpl)

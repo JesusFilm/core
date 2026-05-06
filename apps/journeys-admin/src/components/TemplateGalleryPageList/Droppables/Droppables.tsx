@@ -6,7 +6,7 @@ import {
 } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import { ReactElement } from 'react'
+import { ReactElement, memo } from 'react'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
@@ -42,7 +42,7 @@ interface DroppableCollectionWrapperProps {
   children: ReactElement | ReactElement[]
 }
 
-export function DroppableCollectionWrapper({
+function DroppableCollectionWrapperImpl({
   id,
   disabled,
   children
@@ -65,13 +65,15 @@ export function DroppableCollectionWrapper({
   )
 }
 
+export const DroppableCollectionWrapper = memo(DroppableCollectionWrapperImpl)
+
 interface DraggableJourneysGridProps {
   journeys: readonly Journey[]
   publishedLock: boolean
   dragInFlight: boolean
 }
 
-export function DraggableJourneysGrid({
+function DraggableJourneysGridImpl({
   journeys,
   publishedLock,
   dragInFlight
@@ -101,6 +103,8 @@ export function DraggableJourneysGrid({
     </SortableContext>
   )
 }
+
+export const DraggableJourneysGrid = memo(DraggableJourneysGridImpl)
 
 interface UnsectionedDroppableProps {
   disabled: boolean

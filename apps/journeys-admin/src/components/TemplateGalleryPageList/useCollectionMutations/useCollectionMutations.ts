@@ -1,9 +1,8 @@
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
-import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
 import { useTemplateGalleryPageDeleteMutation } from '../../../libs/useTemplateGalleryPageDeleteMutation'
 import { useTemplateGalleryPagePublishMutation } from '../../../libs/useTemplateGalleryPagePublishMutation'
 import { useTemplateGalleryPageUnpublishMutation } from '../../../libs/useTemplateGalleryPageUnpublishMutation'
@@ -33,6 +32,16 @@ export function useCollectionMutations(): CollectionMutations {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const [busyId, setBusyId] = useState<string | null>(null)
+  // Each mutation's `setBusyId(null)` lands after an await — if the
+  // consumer unmounts mid-flight we'd be writing to dead state and React
+  // would warn. Gate the post-await setState on this ref.
+  const mountedRef = useRef(true)
+  useEffect(
+    () => () => {
+      mountedRef.current = false
+    },
+    []
+  )
 
   const [templateGalleryPagePublish] = useTemplateGalleryPagePublishMutation()
   const [templateGalleryPageUnpublish] =
@@ -51,20 +60,27 @@ export function useCollectionMutations(): CollectionMutations {
   ): Promise<TemplateGalleryPage | null> {
     setBusyId(collection.id)
     try {
-      await templateGalleryPagePublish({ variables: { id: collection.id } })
-      // Return a published projection of the input collection so the
-      // caller can open the success dialog with the live public URL
-      // without having to refetch the gallery list.
+      const { data } = await templateGalleryPagePublish({
+        variables: { id: collection.id }
+      })
+      const result = data?.templateGalleryPagePublish
+      if (result == null) return null
+      // Merge server-set fields (status, publishedAt, updatedAt, slug)
+      // into the input collection so the caller can open the success
+      // dialog with the live public URL — and so any later read sees
+      // the same authoritative timestamps as the gallery list refetch.
       return {
         ...collection,
-        status: TemplateGalleryPageStatus.published,
-        publishedAt: new Date().toISOString()
+        status: result.status,
+        publishedAt: result.publishedAt,
+        updatedAt: result.updatedAt,
+        slug: result.slug
       }
     } catch (error) {
       showError(error, t("Couldn't publish collection"))
       return null
     } finally {
-      setBusyId(null)
+      if (mountedRef.current) setBusyId(null)
     }
   }
 
@@ -79,7 +95,7 @@ export function useCollectionMutations(): CollectionMutations {
     } catch (error) {
       showError(error, t("Couldn't unpublish collection"))
     } finally {
-      setBusyId(null)
+      if (mountedRef.current) setBusyId(null)
     }
   }
 
@@ -94,7 +110,7 @@ export function useCollectionMutations(): CollectionMutations {
     } catch (error) {
       showError(error, t("Couldn't remove collection"))
     } finally {
-      setBusyId(null)
+      if (mountedRef.current) setBusyId(null)
     }
   }
 

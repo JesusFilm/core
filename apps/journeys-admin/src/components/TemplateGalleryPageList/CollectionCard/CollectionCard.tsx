@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
+import { MouseEvent, ReactElement, ReactNode, memo, useState } from 'react'
 
 import MoreIcon from '@core/shared/ui/icons/More'
 
@@ -29,7 +29,7 @@ export interface CollectionCardProps {
   children?: ReactNode
 }
 
-export function CollectionCard({
+function CollectionCardImpl({
   collection,
   onEdit,
   onPublish,
@@ -201,4 +201,6 @@ export function CollectionCard({
     </Card>
   )
 }
+
+export const CollectionCard = memo(CollectionCardImpl)
 
