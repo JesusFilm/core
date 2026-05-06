@@ -232,6 +232,12 @@ type CardBlock implements Block
   themeName from journey
   """
   themeName: ThemeName
+
+  """When true, this card displays the AI chat button."""
+  showAssistant: Boolean
+
+  """When true, the chat drawer auto-opens on first visit to this card."""
+  expandChatByDefault: Boolean
 }
 
 input CardBlockCreateInput {
@@ -255,6 +261,8 @@ input CardBlockUpdateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  showAssistant: Boolean
+  expandChatByDefault: Boolean
 }
 
 type ChatAction implements Action
@@ -346,6 +354,15 @@ type CustomDomain
   journeyCollection: JourneyCollection
 }
 
+type CustomDomainCheck
+  @shareable
+{
+  configured: Boolean!
+  verified: Boolean!
+  verification: [CustomDomainVerification!]
+  verificationResponse: CustomDomainVerificationResponse
+}
+
 input CustomDomainCreateInput {
   id: ID
   teamId: String!
@@ -357,6 +374,22 @@ input CustomDomainCreateInput {
 input CustomDomainUpdateInput {
   journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
+}
+
+type CustomDomainVerification
+  @shareable
+{
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse
+  @shareable
+{
+  code: String!
+  message: String!
 }
 
 """
@@ -798,7 +831,7 @@ type Journey
   showLogo: Boolean
   showMenu: Boolean
   showDisplayTitle: Boolean
-  showAssistant: Boolean
+  showAssistant: Boolean @deprecated(reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624.")
   customizable: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int
@@ -1518,12 +1551,16 @@ type Mutation {
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction!
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction!
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction!
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @override(from: "api-journeys")
-  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @override(from: "api-journeys")
-  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain! @override(from: "api-journeys")
-  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain! @override(from: "api-journeys")
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
+  chatButtonRemove(id: ID!): ChatButton!
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
+  customDomainCheck(id: ID!): CustomDomainCheck!
+  customDomainDelete(id: ID!): CustomDomain!
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent @override(from: "api-journeys")
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
@@ -1872,8 +1909,8 @@ input QrCodesFilter {
 type Query {
   block(id: ID!): Block! @override(from: "api-journeys")
   blocks(where: BlocksFilter): [Block!]! @override(from: "api-journeys")
-  customDomains(teamId: ID!): [CustomDomain!]! @override(from: "api-journeys")
-  customDomain(id: ID!): CustomDomain! @override(from: "api-journeys")
+  customDomains(teamId: ID!): [CustomDomain!]!
+  customDomain(id: ID!): CustomDomain!
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
