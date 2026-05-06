@@ -235,6 +235,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 />
               ) : (
                 <StepFooter
+                  selectedStep={activeBlock}
                   sx={{
                     ...mobileNotchStyling,
                     display: {
@@ -247,6 +248,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               {/* On sm+, show StepFooter (with AiChatButton → ChatOverlay) when pinned chat is active on mobile */}
               {showPinnedChat && (
                 <StepFooter
+                  selectedStep={activeBlock}
                   sx={{
                     ...mobileNotchStyling,
                     display: {

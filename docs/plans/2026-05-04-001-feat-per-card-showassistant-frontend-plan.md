@@ -1,19 +1,138 @@
 ---
 title: 'Frontend: Per-card showAssistant + expandChatByDefault (NES-1622)'
 type: feat
-status: active
+status: active-partial
 date: 2026-05-04
 linear: https://linear.app/jesus-film-project/issue/NES-1622/frontend-per-card-showassistant-expandchatbydefault
 scope: frontend-only
 depends_on:
   - NES-1556 (backend) — must be deployed before this ticket merges so the new GraphQL fields exist on the supergraph and codegen produces the types this PR consumes.
+  - NES-1617 / PR #9122 — adds the mobile sheet state machinery (`AiChat.onSheetStateChange`, `variant: 'panel' | 'overlay'`, `DragHandle`, `ChatHeader`, idle/collapsed/active sheet heights). Mobile `expandChatByDefault` semantics described below cannot be implemented until that PR lands — see "Implementation status" below.
 related:
   - NES-1554 — Slice 1 prototype base (apologist chat)
   - NES-1557 — Editor UI for per-card controls (deferred)
   - NES-1585 — Production showAssistant migration script (7 journeys)
   - NES-1603 — Footer spacing reconciliation (hasAiChatButton vs flag) — resolved here
+  - NES-1617 — Claude Design mobile UX (PR #9122) — provides the sheet-state primitives needed for the mobile auto-expand semantics in this plan
 backend_plan: docs/plans/2026-05-03-001-feat-per-card-showassistant-and-expand-chat-plan.md
 ---
+
+## Implementation status (2026-05-06)
+
+> This section was added after the initial implementation (commit `5f5844fccf`) was found to be partial during local QA. The plan body below remains the source of truth for **intent**; this section captures the **delta** between intent and what shipped.
+
+### Shipped correctly in commit `5f5844fccf`
+
+- `CardFields` fragment selects `showAssistant` and `expandChatByDefault` (`libs/journeys/ui/src/components/Card/cardFields.ts`).
+- `Journey.showAssistant` retained in the journey fragment as the transitional fallback (`libs/journeys/ui/src/libs/JourneyProvider/journeyFields.tsx`).
+- `hasAiChatButton({ journey, variant, card })` now reads `(card?.showAssistant ?? journey?.showAssistant) === true`.
+- `getCardChild(step)` helper extracted to `libs/journeys/ui/src/libs/block/`.
+- `ChatOverlayProvider` exists with `open` / `setOpen` / `shouldAutoOpen(cardId)` / `markAutoOpened(cardId)` and the sessionStorage dedup described in this plan.
+- `AiChatButton` is controlled — consumes `useChatOverlay()` instead of owning local state.
+- `Card → {Website,Contained,Expanded}Cover → OverlayContent` threads the `card` prop end-to-end.
+- `StepFooter` derives `card = getCardChild(selectedStep)` and forwards to `hasAiChatButton`.
+- All ~100 fixture files updated to declare the new nullable booleans (TS satisfaction, no runtime behaviour change).
+- Codegen output regenerated cleanly across consumers; gateway supergraph exposes both fields with `@deprecated` on `Journey.showAssistant` (verified: `apis/api-gateway/schema.graphql` lines 685, 763, 767).
+
+### Gaps found during 2026-05-06 QA
+
+These are **all** specified in the plan body below but did not land in the implementation. Each is reachable today only by direct DB `UPDATE` (Prisma Studio / SQL) since NES-1557 (editor UI) is deferred — meaning the gaps are silently latent until a creator (or QA) sets a per-card value and the chat fails to behave as documented.
+
+| # | Gap | Symptom | Plan reference |
+|---|-----|---------|----------------|
+| 1 | `Conductor.tsx` was **not modified at all** in commit `5f5844fccf`. `showPinnedChat` still reads `journey?.showAssistant === true` instead of `hasAiChatButton({ journey, variant, card: getCardChild(activeBlock) })`. | Per-card `showAssistant` does not gate the mobile `PinnedChatBar`. | "### `apps/journeys/src/components/Conductor/Conductor.tsx`" — first edit, lines 100–108 of the plan body. |
+| 2 | `Conductor.tsx` does not pass `selectedStep={activeBlock}` to `<StepFooter />`. `StepFooter` falls back to `useEditor().state.selectedStep`, which is `undefined` in `apps/journeys` (no `EditorProvider` in that tree) → `card` is `null` for every render → `hasAiChatButton` only ever sees the (deprecated) journey value. | Per-card `showAssistant` does not gate the desktop `AiChatButton` either. The per-card path is reachable in tests (which pass `selectedStep` directly) but unreachable at runtime. | Implicit in "### Other call sites" (StepFooter receives `card` derived from `selectedStep`) — the chokepoint that supplies `selectedStep` was not called out as an explicit Conductor edit. **Plan body now updated to make this explicit.** |
+| 3 | `ChatOverlayProvider` is **never wrapped** around the `apps/journeys` page tree. `useChatOverlay()` returns its `FALLBACK_CONTEXT` (`open: false`, `setOpen: () => {}`, `shouldAutoOpen: () => false`) for every consumer. | Clicking the desktop `AiChatButton` does nothing — `setOpen(true)` is the no-op fallback, `open` stays `false`, and `ChatOverlay` returns `null`. The lifted-state architecture is in place but disconnected. | "### Lifted overlay state" — "Wrap `apps/journeys`' page tree in the provider (sibling of `JourneyProvider`)." Not done. The natural site is `apps/journeys/src/components/JourneyPageWrapper/JourneyPageWrapper.tsx`. |
+| 4 | The auto-open `useEffect` for `expandChatByDefault` was **not added** to `Conductor.tsx`. Nothing in non-generated source reads `expandChatByDefault` to drive open state — `rg "expandChatByDefault"` returns only fixture declarations and the `getCardChild.spec.ts` literal. | `expandChatByDefault: true` on a card has zero effect — the desktop overlay never auto-opens. | "### `apps/journeys/src/components/Conductor/Conductor.tsx`" — second edit, lines 110–124 of the plan body. |
+| 5 | `PinnedChatBar` does not consume `useChatOverlay()` and does not accept any prop driven by `expandChatByDefault`. It always renders `<AiChat />` with the internal `collapsed` state initialised to `false` — i.e. always expanded. | Mobile `expandChatByDefault` semantics (collapsed unless `true`) cannot be expressed. **However**: the underlying sheet-state primitives this requires (`AiChat.onSheetStateChange`, idle/collapsed/active heights, `DragHandle`) are added by **NES-1617 / PR #9122**, which is not yet merged. This gap is therefore blocked on that PR landing first. | "### Other call sites" — "the secondary `StepFooter` rendered alongside `PinnedChatBar` does not own its own state". Plan did not specify the `expandChatByDefault → initialCollapsed` mapping for `PinnedChatBar` because at draft time the sheet state machine in #9122 was not yet on `main`. **Plan body now amended below.** |
+
+### Why the gaps slipped review
+
+Captured here as a post-mortem so the same shape of gap is harder to ship next time.
+
+1. **Plan presented Conductor edits as prose snippets, not diff hunks.** Adversarial reviewers can challenge a diff that exists; they cannot challenge a missing-edit when the plan reads "do this in `Conductor.tsx`" and the PR diff simply has no `Conductor.tsx` entry. Future fix: convert the "files-touched checklist" in this plan into an explicit pre-merge gate the reviewer ticks against the actual `git diff --name-only` output.
+2. **Unit specs constructed `selectedStep` directly** (`renderStepFooter({ selectedStep: buildStep({ showAssistant: true }) })`), so the per-card path was test-green even though the runtime wiring that supplies `selectedStep` from `Conductor → StepFooter` was missing. Future fix: at least one **integration spec** that boots `Conductor` with a `CardBlock` fixture having `showAssistant: true` and asserts `AiChatButton` renders. See "### Tests — additions" below.
+3. **No spec exercised `useChatOverlay()` end-to-end with the actual provider in the tree** — `AiChatButton.spec.tsx` wraps it in its own `ChatOverlayProvider`, masking the fact that the provider is never wrapped in `apps/journeys`. Future fix: assert `ChatOverlayProvider` presence in `JourneyPageWrapper.spec.tsx` (or equivalent root render).
+4. **CodeRabbit / persona reviewers focused on the diff that exists**, not the plan-vs-diff delta. The plan→diff conformance check is a separate review pass and was not run.
+
+## Follow-up work to close the gaps
+
+This work must land **before** NES-1622 can be marked complete and **before** any production direct-`UPDATE` of per-card values is run. Items 1–4 are unblocked today on the current branch; item 5 is blocked on PR #9122.
+
+### 1. Wrap `ChatOverlayProvider` in the journeys page tree (unblocked)
+
+Edit `apps/journeys/src/components/JourneyPageWrapper/JourneyPageWrapper.tsx` to render `<ChatOverlayProvider journeyId={journey.id}>` as a sibling of `JourneyProvider` (per the original plan). Without this, every other item in this list is a no-op at runtime.
+
+```tsx
+<JourneyProvider value={{ journey, variant: variant ?? 'default' }}>
+  <ChatOverlayProvider journeyId={journey.id}>
+    <ThemeProvider {...}>
+      {children}
+    </ThemeProvider>
+  </ChatOverlayProvider>
+</JourneyProvider>
+```
+
+Mirror the same wrap in `apps/journeys/src/components/EmbeddedPreview/` and `apps/journeys/src/components/WebView/` if they bypass `JourneyPageWrapper`. Confirm before editing.
+
+### 2. Wire `Conductor.tsx` end-to-end (unblocked, partially applied 2026-05-06)
+
+Three edits, all in `apps/journeys/src/components/Conductor/Conductor.tsx`:
+
+1. **Pass `selectedStep={activeBlock}`** to both `<StepFooter />` instances. **Already applied 2026-05-06** as the smallest viable patch to unblock per-card `showAssistant` for desktop. Keep this in the follow-up PR — it should not be reverted.
+2. **Replace `journey?.showAssistant === true`** in the `showPinnedChat` derivation with `hasAiChatButton({ journey, variant, card: getCardChild(activeBlock) })` so the mobile pinned chat respects per-card opt-in/out.
+3. **Add the auto-open `useEffect`** for `expandChatByDefault` exactly as written in the plan body below (lines 110–124). This requires `useChatOverlay()` to be wired (item 1 above) — without the provider, `setOpen(true)` is a no-op.
+
+Imports to add:
+```ts
+import { getCardChild } from '@core/journeys/ui/block'
+import { useChatOverlay } from '@core/journeys/ui/ChatOverlayProvider'
+```
+
+### 3. Mobile `PinnedChatBar` semantics for `expandChatByDefault` (blocked on PR #9122)
+
+After PR #9122 (NES-1617) merges, `AiChat` exposes `onSheetStateChange` and an internal sheet state of `'idle' | 'collapsed' | 'active'`. The mapping required by NES-1622:
+
+| `card.expandChatByDefault` | Initial mobile sheet state |
+|---|---|
+| `true` | `'active'` (expanded, hugging top) |
+| `false` / `null` | `'idle'` (default, collapsed-but-input-visible per #9122 spec) |
+
+Implementation shape (to be confirmed against the final API of #9122 once merged):
+
+- Add an `initialSheetState?: 'idle' | 'collapsed' | 'active'` prop to `AiChat` (or accept `defaultExpanded` / `defaultCollapsed` — pick the name that mirrors #9122's existing vocabulary).
+- Add a matching prop to `PinnedChatBar` and forward.
+- In `Conductor.tsx`, derive `initialSheetState = card?.expandChatByDefault === true ? 'active' : 'idle'` and pass to `<PinnedChatBar />`.
+- The auto-open `useEffect` in item 2 should **only** drive desktop overlay open state. Mobile is driven by initial sheet state, not by `setOpen` (the overlay is desktop-only). Add an inline comment in the effect making this explicit.
+
+### 4. Integration spec to fence the regression class (unblocked)
+
+Add `apps/journeys/src/components/Conductor/Conductor.perCardChat.spec.tsx` (or extend `Conductor.apologistChat.spec.tsx`) covering:
+
+- `card.showAssistant: true`, `journey.showAssistant: null` → `AiChatButton` renders.
+- `card.showAssistant: false`, `journey.showAssistant: true` → `AiChatButton` does not render (per-card opt-out wins).
+- `card.expandChatByDefault: true` on initial mount → `ChatOverlay` is rendered with `open=true` (or, post-#9122, the mobile pinned bar mounts in `'active'` sheet state).
+- `card.expandChatByDefault: true` on a prefetched neighbour while viewer is on a different card → no auto-open.
+- Reload-equivalent scenario → auto-open fires again per the sessionStorage semantics.
+
+The spec **must boot the real `Conductor`** with a `JourneyProvider` + `ChatOverlayProvider` wrapper, exercising the same wiring path as the runtime. Stubbing `selectedStep` directly on `StepFooter` (as the existing unit specs do) reproduces the false-green that masked this regression.
+
+### 5. Update `JourneyPageWrapper.spec.tsx` (unblocked)
+
+Add an assertion that `<ChatOverlayProvider>` is present in the rendered tree. Cheap and prevents the provider from being deleted accidentally in a future refactor.
+
+## Pre-merge checklist update
+
+Add the following to "## Acceptance criteria" in the plan body before this ticket can be re-claimed as done:
+
+- [ ] `apps/journeys/src/components/JourneyPageWrapper/JourneyPageWrapper.tsx` renders `<ChatOverlayProvider journeyId={journey.id}>` as a sibling of `JourneyProvider`. Verified by `JourneyPageWrapper.spec.tsx`.
+- [ ] `apps/journeys/src/components/Conductor/Conductor.tsx` modified in this PR (must appear in `git diff --name-only`). Specifically: (a) `selectedStep={activeBlock}` on both `<StepFooter />` calls, (b) `showPinnedChat` derived via `hasAiChatButton({ journey, variant, card: getCardChild(activeBlock) })`, (c) auto-open `useEffect` for `expandChatByDefault` present.
+- [ ] An integration spec (`Conductor.perCardChat.spec.tsx` or equivalent) boots `Conductor` with a real `CardBlock` fixture (not a hand-built `selectedStep` injected directly into `StepFooter`) and asserts the per-card visibility / auto-open behaviour.
+- [ ] If PR #9122 has merged at the time of this PR: `PinnedChatBar` accepts an initial sheet state derived from `card.expandChatByDefault` and the integration spec covers the mobile mapping. If PR #9122 has not merged: this checklist item is deferred to a follow-up ticket explicitly tracking the dependency, and the deferral is called out in the PR description.
+
+---
+
+> The plan body below is the original 2026-05-04 draft. Items above supersede or extend it where they conflict.
 
 ## Scope
 
