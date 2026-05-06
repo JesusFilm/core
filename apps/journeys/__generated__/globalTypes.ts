@@ -297,6 +297,12 @@ export interface DateTimeFilter {
   lte?: any | null;
 }
 
+export interface JourneyCustomizationDescriptionTranslateInput {
+  journeyId: string;
+  sourceLanguageName: string;
+  targetLanguageName: string;
+}
+
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
   journeyFlowBackButtonClicked?: boolean | null;

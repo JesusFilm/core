@@ -16,7 +16,7 @@ export interface TextResponseRouteUpdate_textResponseBlockUpdate {
 }
 
 export interface TextResponseRouteUpdate {
-  textResponseBlockUpdate: TextResponseRouteUpdate_textResponseBlockUpdate | null;
+  textResponseBlockUpdate: TextResponseRouteUpdate_textResponseBlockUpdate;
 }
 
 export interface TextResponseRouteUpdateVariables {

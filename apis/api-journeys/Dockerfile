@@ -1,4 +1,4 @@
-FROM node:22-alpine3.20
+FROM node:24-alpine3.23
 
 EXPOSE 4001
 
@@ -18,7 +18,7 @@ COPY ./libs/prisma/journeys/prisma.config.ts ./prisma/prisma.config.ts
 
 COPY ./apis/api-journeys/docker-entrypoint.sh ./docker-entrypoint.sh
 
-RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
+RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 RUN pnpm install --prod --silent
 
 ENTRYPOINT ["./docker-entrypoint.sh"]

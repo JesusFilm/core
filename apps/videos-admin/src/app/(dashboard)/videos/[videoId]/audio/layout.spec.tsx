@@ -2,6 +2,7 @@ import {
   NetworkStatus,
   OperationVariables,
   QueryResult,
+  useMutation,
   useQuery
 } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
@@ -11,12 +12,13 @@ import { ReactElement } from 'react'
 
 import ClientLayout from './layout'
 
-// Mock useQuery hook
+// Mock useQuery and useMutation hooks
 jest.mock('@apollo/client', () => {
   const original = jest.requireActual('@apollo/client')
   return {
     ...original,
-    useQuery: jest.fn()
+    useQuery: jest.fn(),
+    useMutation: jest.fn()
   }
 })
 
@@ -27,6 +29,8 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 const mockPush = jest.fn()
 const mockRefetch = jest.fn()
+const mockUpdateVariant = jest.fn()
+const mockEnqueueSnackbar = jest.fn()
 
 // Mock next/navigation with a function to change pathname
 let mockPathname = '/videos/video123/audio'
@@ -38,6 +42,14 @@ jest.mock('next/navigation', () => ({
     push: mockPush
   }),
   usePathname: () => mockUsePathname()
+}))
+
+// Mock notistack
+jest.mock('notistack', () => ({
+  useSnackbar: () => ({
+    enqueueSnackbar: mockEnqueueSnackbar
+  }),
+  SnackbarProvider: ({ children }: { children: React.ReactNode }) => children
 }))
 
 // Helper function to render component with different pathnames
@@ -87,8 +99,12 @@ describe('ClientLayout', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+
     // Default mock implementation for useQuery
     const mockedUseQuery = useQuery as jest.MockedFunction<typeof useQuery>
+    const mockedUseMutation = useMutation as jest.MockedFunction<
+      typeof useMutation
+    >
 
     // Create a complete mock for the QueryResult
     const mockQueryResult: QueryResult<any, OperationVariables> = {
@@ -119,6 +135,19 @@ describe('ClientLayout', () => {
 
     mockedUseQuery.mockReturnValue(mockQueryResult)
 
+    // Mock useMutation for video variant updates
+    mockedUseMutation.mockReturnValue([
+      mockUpdateVariant,
+      {
+        loading: false,
+        error: undefined,
+        data: undefined,
+        called: false,
+        client: {} as any,
+        reset: jest.fn()
+      }
+    ])
+
     // Mock document.getElementById to return a fake element with getBoundingClientRect
     document.getElementById = jest.fn().mockImplementation(() => ({
       getBoundingClientRect: () => ({
@@ -138,6 +167,42 @@ describe('ClientLayout', () => {
     )
 
     expect(screen.getAllByRole('listitem')).toHaveLength(3)
+  })
+
+  it('should render Audio Languages header', () => {
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Audio Languages')).toBeInTheDocument()
+  })
+
+  it('should render Publish All button', () => {
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Publish All')).toBeInTheDocument()
+  })
+
+  it('should render Add Audio Language button', () => {
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Add Audio Language')).toBeInTheDocument()
   })
 
   it('should open variant modal when variant is clicked', async () => {
@@ -201,6 +266,92 @@ describe('ClientLayout', () => {
     expect(mockPush).toHaveBeenCalledWith('/videos/video123/audio/add', {
       scroll: false
     })
+  })
+
+  it('should navigate to publish all dialog route when Publish All button is clicked', async () => {
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByText('Publish All'))
+
+    expect(mockPush).toHaveBeenCalledWith('/videos/video123/audio/publishAll', {
+      scroll: false
+    })
+  })
+
+  it('should show info message when no draft variants exist (and not navigate)', async () => {
+    // Mock data with all published variants
+    const mockedUseQuery = useQuery as jest.MockedFunction<typeof useQuery>
+    const allPublishedVariants = [
+      {
+        id: 'variant1',
+        published: true,
+        language: {
+          id: 'lang1',
+          slug: 'english',
+          name: [{ value: 'English' }]
+        }
+      },
+      {
+        id: 'variant2',
+        published: true,
+        language: {
+          id: 'lang2',
+          slug: 'spanish',
+          name: [{ value: 'Spanish' }]
+        }
+      }
+    ]
+
+    mockedUseQuery.mockReturnValue({
+      data: {
+        adminVideo: {
+          id: 'video123',
+          slug: 'test-video',
+          published: true,
+          variants: allPublishedVariants
+        }
+      },
+      loading: false,
+      error: undefined,
+      fetchMore: jest.fn(),
+      refetch: mockRefetch,
+      networkStatus: NetworkStatus.ready,
+      client: {} as any,
+      called: true,
+      startPolling: jest.fn(),
+      stopPolling: jest.fn(),
+      subscribeToMore: jest.fn(),
+      updateQuery: jest.fn(),
+      observable: {} as any,
+      variables: { id: 'video123' },
+      reobserve: jest.fn(),
+      previousData: undefined
+    })
+
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByText('Publish All'))
+
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+      'No draft audio languages to publish',
+      { variant: 'info' }
+    )
+    expect(mockPush).not.toHaveBeenCalledWith(
+      '/videos/video123/audio/publishAll',
+      expect.anything()
+    )
   })
 
   it('should render children', async () => {

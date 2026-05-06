@@ -1,5 +1,6 @@
 import './adminJourney.query'
 import './adminJourneys.query'
 import './journey'
+import './journeyTransferFromAnonymous.mutation'
 import './inputs'
 import './enums'

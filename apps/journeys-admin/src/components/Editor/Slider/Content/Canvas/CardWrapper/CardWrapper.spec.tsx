@@ -374,6 +374,7 @@ describe('CardWrapper', () => {
       fireEvent.click(getByRole('button', { name: 'Select Card Template' }))
       expect(getByText('selectedBlock: stepId')).toBeInTheDocument()
       expect(getByText('selectedAttributeId:')).toBeInTheDocument()
+      expect(getByText('showCardTemplates: true')).toBeInTheDocument()
     })
 
     it('does not show Select Card Template button when children', () => {

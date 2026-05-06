@@ -333,6 +333,8 @@ model UserTeamInvite {
   @@index([email, acceptedAt, removedAt])
   @@index(email)
   @@index(teamId)
+  @@index(senderId)
+  @@index(receipientId)
 }
 
 enum UserTeamRole {
@@ -508,6 +510,7 @@ model UserInvite {
 
   @@unique([journeyId, email])
   @@index([email, acceptedAt, removedAt])
+  @@index(senderId)
 }
 
 enum VideoBlockObjectFit {
@@ -630,6 +633,10 @@ model Block {
   exportOrder                Int? // column order for CSV exports and Google Sheets syncs
   customizable               Boolean?
   notes                      String? // VideoBlock: publisher notes for template adapters (e.g. trailer, intro)
+  // CardBlock-only (NES-1556). Bare nullable: `null` defers to Journey.showAssistant
+  // during the NES-1585 transition; explicit `false` is creator opt-out.
+  showAssistant              Boolean?
+  expandChatByDefault        Boolean?
 
   @@unique([slug, journeyId])
   @@index(journeyId)
@@ -657,6 +664,7 @@ model Action {
   chatUrl       String?
 
   @@index(parentBlockId)
+  @@index(journeyId)
 }
 
 model JourneysEmailPreference {
@@ -741,6 +749,7 @@ model JourneyEventsExportLog {
 
   @@index(journeyId)
   @@index(createdAt)
+  @@index(userId)
 }
 
 model JourneyTheme {

@@ -186,6 +186,7 @@ async function preprocessSqlFile(
     let processedBytes = 0
     let linesProcessed = 0
     let publicationStatementsRemoved = 0
+    let unsupportedParametersRemoved = 0
     let psqlMetaCommandsRemoved = 0
 
     // Create read and write streams
@@ -203,7 +204,7 @@ async function preprocessSqlFile(
       const percent =
         totalSize > 0 ? Math.round((processedBytes / totalSize) * 100) : 0
       console.log(
-        `Processing: ${percent}% (${linesProcessed.toLocaleString()} lines, ${publicationStatementsRemoved} publication statements removed)`
+        `Processing: ${percent}% (${linesProcessed.toLocaleString()} lines, ${publicationStatementsRemoved} publication statements removed, ${unsupportedParametersRemoved} unsupported parameters removed)`
       )
     }, 3000)
 
@@ -216,6 +217,12 @@ async function preprocessSqlFile(
       if (/CREATE PUBLICATION .* FOR .*;/.test(line)) {
         publicationStatementsRemoved++
         // Skip this line (don't write it to output)
+        continue
+      }
+
+      // Remove SET statements for parameters not supported by older PostgreSQL versions (e.g. transaction_timeout from PG 17)
+      if (/^\s*SET\s+transaction_timeout\b/i.test(line)) {
+        unsupportedParametersRemoved++
         continue
       }
 
@@ -252,7 +259,7 @@ async function preprocessSqlFile(
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(1)
     console.log(
-      `SQL file preprocessing completed: ${fileName} -> ${(outputStats.size / 1024 / 1024).toFixed(2)} MB (${linesProcessed.toLocaleString()} lines processed, ${publicationStatementsRemoved} publication statements removed, ${psqlMetaCommandsRemoved} psql meta-commands removed, took ${duration}s)`
+      `SQL file preprocessing completed: ${fileName} -> ${(outputStats.size / 1024 / 1024).toFixed(2)} MB (${linesProcessed.toLocaleString()} lines processed, ${publicationStatementsRemoved} publication statements removed, ${unsupportedParametersRemoved} unsupported parameters removed, ${psqlMetaCommandsRemoved} psql meta-commands removed, took ${duration}s)`
     )
   } catch (error) {
     console.error('Error preprocessing SQL file:', error)

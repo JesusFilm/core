@@ -335,7 +335,9 @@ describe('TranslateJourneyDialog', () => {
           name: 'Journey Heading',
           journeyLanguageName: '',
           textLanguageId: '496',
-          textLanguageName: 'Français'
+          textLanguageName: 'Français',
+          userLanguageId: '529',
+          userLanguageName: ''
         }
       },
       result: jest.fn(() => ({
@@ -350,6 +352,8 @@ describe('TranslateJourneyDialog', () => {
               languageId: '496',
               createdAt: '2023-04-25T12:34:56Z',
               updatedAt: '2023-04-25T12:34:56Z',
+              journeyCustomizationDescription: null,
+              journeyCustomizationFields: [],
               blocks: [],
               __typename: 'Journey',
               language: {
@@ -364,7 +368,7 @@ describe('TranslateJourneyDialog', () => {
                 ]
               }
             },
-            __typename: 'JourneyAiTranslateCreateSubscriptionPayload'
+            __typename: 'JourneyAiTranslateProgress'
           }
         }
       }))

@@ -1,7 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
@@ -18,6 +18,7 @@ import i18nConfig from '../../next-i18next.config'
 import { JourneyPageWrapper } from '../../src/components/JourneyPageWrapper'
 import { JourneyRenderer } from '../../src/components/JourneyRenderer'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { getFlags } from '../../src/libs/getFlags'
 import { isJourneyNotFoundError } from '../../src/libs/isJourneyNotFoundError'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 
@@ -134,6 +135,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
     const { rtl, locale } = getJourneyRTL(data.journey)
     return {
       props: {
+        flags: await getFlags(),
         ...(await serverSideTranslations(
           locale ?? 'en',
           ['apps-journeys', 'libs-journeys-ui'],

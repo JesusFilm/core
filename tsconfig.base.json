@@ -27,6 +27,7 @@
       "@core/prisma/media/*": ["libs/prisma/media/src/*"],
       "@core/prisma/users/*": ["libs/prisma/users/src/*"],
       "@core/shared/ai/*": ["libs/shared/ai/src/*"],
+      "@core/shared/user-delete": ["libs/shared/user-delete/src"],
       "@core/shared/gql": ["libs/shared/gql/src"],
       "@core/shared/ui-dynamic/*": [
         "libs/shared/ui-dynamic/src/components/*",

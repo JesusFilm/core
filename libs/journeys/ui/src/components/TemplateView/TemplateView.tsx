@@ -4,7 +4,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
@@ -155,7 +155,7 @@ export function TemplateView({
               }}
             />
           )}
-          <TemplateFooter signedIn={authUser?.id != null} />
+          <TemplateFooter signedIn={authUser?.email != null} />
         </Stack>
       </Container>
     </Paper>

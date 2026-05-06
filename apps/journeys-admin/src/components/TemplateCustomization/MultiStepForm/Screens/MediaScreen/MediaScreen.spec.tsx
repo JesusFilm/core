@@ -115,7 +115,7 @@ jest.mock('./Sections/VideosSection/VideoPreviewPlayer', () => ({
 }))
 
 describe('MediaScreen', () => {
-  const handleNext = jest.fn()
+  const handleNext = jest.fn().mockResolvedValue(undefined)
 
   beforeEach(() => {
     jest.clearAllMocks()

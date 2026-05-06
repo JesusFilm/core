@@ -68,6 +68,8 @@ terraform.tfstate.backup
 
 # next.js
 .next
+next-env.d.ts
+!libs/**/next-env.d.ts
 
 # playwright
 **/test-results/
@@ -87,10 +89,11 @@ terraform.tfstate.backup
 
 .cursor/rules/*.dev.mdc
 
-# personal claude rules
+# personal claude rules/commands
+.claude/commands/*.dev.md
 .claude/rules/preferences.md
 .claude/rules/workflows.md
-.claude/rules/*.dev.md
+.claude/rules/**/*.dev.md
 .claude/worktrees
 
 # ignore exports
@@ -99,3 +102,7 @@ terraform.tfstate.backup
 
 # node sea
 sea-prep.blob
+
+# storybook
+storybook-static/
+debug-storybook.log

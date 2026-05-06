@@ -1,7 +1,7 @@
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useCallback, useMemo, useState } from 'react'
 
@@ -68,6 +68,8 @@ export function TranslateJourneyDialog({
         journeyLanguageName: string
         textLanguageId: string
         textLanguageName: string
+        userLanguageId?: string
+        userLanguageName?: string
       }
     | undefined
   >(undefined)
@@ -153,16 +155,19 @@ export function TranslateJourneyDialog({
       })
 
       if (duplicateData?.journeyDuplicate?.id) {
+        const currentLanguageName =
+          journeyData.language.name.find(({ primary }) => !primary)?.value ?? ''
+
         // Start the translation subscription
         setTranslationVariables({
           journeyId: duplicateData.journeyDuplicate.id,
           name: `${journeyData.title}`,
-          journeyLanguageName:
-            journeyData.language.name.find(({ primary }) => !primary)?.value ??
-            '',
+          journeyLanguageName: currentLanguageName,
           textLanguageId: selectedLanguage.id,
           textLanguageName:
-            selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
+            selectedLanguage.nativeName ?? selectedLanguage.localName ?? '',
+          userLanguageId: journeyData.language.id,
+          userLanguageName: currentLanguageName
         })
 
         // The subscription will handle the completion and success message

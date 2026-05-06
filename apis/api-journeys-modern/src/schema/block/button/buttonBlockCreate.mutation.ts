@@ -17,9 +17,6 @@ builder.mutationField('buttonBlockCreate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: ButtonBlock,
     nullable: false,
-    override: {
-      from: 'api-journeys'
-    },
     args: {
       input: t.arg({ type: ButtonBlockCreateInput, required: true })
     },

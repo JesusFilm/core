@@ -87,9 +87,20 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
+function setUrlParam(key: string, value: string): void {
+  const url = new URL(window.location.href)
+  url.searchParams.set(key, value)
+  window.history.replaceState({}, '', url.toString())
+}
+
+function clearUrlParams(): void {
+  window.history.replaceState({}, '', window.location.pathname)
+}
+
 describe('TeamProvider', () => {
   beforeEach(() => {
     sessionStorage.clear()
+    clearUrlParams()
   })
 
   it('show show list of teams', async () => {
@@ -259,6 +270,164 @@ describe('TeamProvider', () => {
     expect(sessionStorage.getItem('journeys-admin:activeTeamId')).toBe(
       '__shared__'
     )
+  })
+
+  it('should set active team from URL activeTeam parameter', async () => {
+    setUrlParam('activeTeam', 'teamId2')
+
+    const updateLastActiveTeamIdMock: MockedResponse = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: { lastActiveTeamId: 'teamId2' }
+        }
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: { id: 'journeyProfileId' }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider mocks={[getTeamsMock, updateLastActiveTeamIdMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my second team')).toBeInTheDocument()
+    )
+  })
+
+  it('should prioritize URL param over session storage', async () => {
+    sessionStorage.setItem('journeys-admin:activeTeamId', 'teamId1')
+    setUrlParam('activeTeam', 'teamId2')
+
+    const updateLastActiveTeamIdMock: MockedResponse = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: { lastActiveTeamId: 'teamId2' }
+        }
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: { id: 'journeyProfileId' }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider mocks={[getTeamsMock, updateLastActiveTeamIdMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my second team')).toBeInTheDocument()
+    )
+  })
+
+  it('should fall through to session storage when URL team is not in teams list', async () => {
+    setUrlParam('activeTeam', 'nonExistentTeamId')
+    sessionStorage.setItem('journeys-admin:activeTeamId', 'teamId2')
+
+    const updateLastActiveTeamIdMock: MockedResponse = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: { lastActiveTeamId: 'teamId2' }
+        }
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: { id: 'journeyProfileId' }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider mocks={[getTeamsMock, updateLastActiveTeamIdMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my second team')).toBeInTheDocument()
+    )
+  })
+
+  it('should clean activeTeam param from URL after consumption', async () => {
+    setUrlParam('activeTeam', 'teamId1')
+    setUrlParam('type', 'templates')
+    const replaceStateSpy = jest.spyOn(window.history, 'replaceState')
+
+    const updateLastActiveTeamIdMock: MockedResponse = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: { lastActiveTeamId: 'teamId1' }
+        }
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: { id: 'journeyProfileId' }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider mocks={[getTeamsMock, updateLastActiveTeamIdMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
+    )
+
+    expect(replaceStateSpy).toHaveBeenCalled()
+    const lastCallUrl = replaceStateSpy.mock.calls[
+      replaceStateSpy.mock.calls.length - 1
+    ][2] as string
+    expect(lastCallUrl).not.toContain('activeTeam')
+    expect(lastCallUrl).toContain('type=templates')
+
+    replaceStateSpy.mockRestore()
+  })
+
+  it('should clean activeTeam param from URL even when team is not found', async () => {
+    setUrlParam('activeTeam', 'nonExistentTeamId')
+    const replaceStateSpy = jest.spyOn(window.history, 'replaceState')
+
+    render(
+      <MockedProvider mocks={[getTeamsMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
+    )
+
+    expect(replaceStateSpy).toHaveBeenCalled()
+    const lastCallUrl = replaceStateSpy.mock.calls[
+      replaceStateSpy.mock.calls.length - 1
+    ][2] as string
+    expect(lastCallUrl).not.toContain('activeTeam')
+
+    replaceStateSpy.mockRestore()
   })
 
   it('should fall back to database value when session team is not in teams list', async () => {

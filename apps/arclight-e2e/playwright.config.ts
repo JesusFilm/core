@@ -30,6 +30,10 @@ export default defineConfig({
       process.env.DEPLOYMENT_URL ??
       'http://localhost:4100',
 
+    extraHTTPHeaders: {
+      'x-cache-bypass': 'true'
+    },
+
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     screenshot: 'only-on-failure'

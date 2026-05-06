@@ -26,10 +26,20 @@ export function ChatOption({
   disableSelection,
   enableIconSelect = false
 }: ChatOptionProps): ReactElement {
+  const [trackedId, setTrackedId] = useState(chatButton?.id)
   const [currentLink, setCurrentLink] = useState(chatButton?.link ?? '')
   const [currentPlatform, setCurrentPlatform] = useState(
     platform ?? chatButton?.platform ?? MessagePlatform.custom
   )
+
+  // Sync local state when a different button shifts into this slot.
+  // When chatButton is undefined (deselected), the guard preserves
+  // local state so Summary can reuse it to re-create the button.
+  if (chatButton != null && chatButton.id !== trackedId) {
+    setTrackedId(chatButton.id)
+    setCurrentLink(chatButton.link ?? '')
+    setCurrentPlatform(chatButton.platform ?? MessagePlatform.custom)
+  }
 
   return (
     <>

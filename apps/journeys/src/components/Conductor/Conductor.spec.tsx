@@ -160,7 +160,8 @@ describe('Conductor', () => {
     fromTemplateId: null,
     socialNodeX: null,
     socialNodeY: null,
-    customizable: null
+    customizable: null,
+    showAssistant: null
   }
 
   it('should create a journeyViewEvent', async () => {

@@ -5,17 +5,23 @@ import Typography from '@mui/material/Typography'
 import { useParams } from 'next/navigation'
 import { ReactElement } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
+import { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { AiChatButton } from '../AiChatButton'
 import {
   getFooterMobileHeight,
   getTitle,
+  hasAiChatButton,
   hasChatWidget,
   hasCombinedFooter,
   hasHostAvatar,
   hasHostDetails
 } from '../Card/utils/getFooterElements'
+import { StepFields } from '../Step/__generated__/StepFields'
 import { InformationButton } from '../StepHeader/InformationButton'
 
 import { ChatButtons } from './ChatButtons'
@@ -26,21 +32,29 @@ import { HostTitleLocation } from './HostTitleLocation'
 interface StepFooterProps {
   onFooterClick?: () => void
   sx?: SxProps
+  selectedStep?: TreeBlock<StepFields> | null
 }
 
 export function StepFooter({
   onFooterClick,
-  sx
+  sx,
+  selectedStep: selectedStepProp
 }: StepFooterProps): ReactElement {
   const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const {
-    state: { selectedStep }
+    state: { selectedStep: editorSelectedStep }
   } = useEditor()
 
+  const selectedStep =
+    selectedStepProp !== undefined ? selectedStepProp : editorSelectedStep
+
+  const flags = useFlags()
   const hostAvatar = hasHostAvatar({ journey, variant })
   const hostDetails = hasHostDetails({ journey })
   const chat = hasChatWidget({ journey, variant })
+  const aiChat =
+    hasAiChatButton({ journey, variant }) && flags.apologistChat === true
   const title = getTitle({ journey })
 
   const footerMobileHeight = getFooterMobileHeight({ journey, variant })
@@ -164,6 +178,11 @@ export function StepFooter({
           {chat && (
             <Box>
               <ChatButtons />
+            </Box>
+          )}
+          {aiChat && (
+            <Box>
+              <AiChatButton />
             </Box>
           )}
         </Stack>

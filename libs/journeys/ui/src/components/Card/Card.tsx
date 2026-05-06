@@ -3,7 +3,7 @@ import Paper from '@mui/material/Paper'
 import { styled, useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { usePlausible } from 'next-plausible'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo } from 'react'
@@ -105,7 +105,7 @@ export function Card({
       MULTISELECT_SUBMISSION_EVENT_CREATE
     )
 
-  const { t } = useTranslation('journeys-ui')
+  const { t } = useTranslation('libs-journeys-ui')
   const theme = useTheme()
   const { blockHistory, treeBlocks } = useBlocks()
   const { variant, journey } = useJourney()

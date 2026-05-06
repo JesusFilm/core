@@ -15,4 +15,11 @@ describe('BaseReferrer', () => {
 
     expect(screen.getByTestId('ChevronDownIcon')).toBeInTheDocument()
   })
+
+  it('should render with QR Code icon', () => {
+    render(<BaseReferrer property="QR Code" visitors={10} />)
+
+    expect(screen.getByText('10')).toBeInTheDocument()
+    expect(screen.getByTestId('QrCode2Icon')).toBeInTheDocument()
+  })
 })

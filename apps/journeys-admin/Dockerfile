@@ -12,7 +12,7 @@ WORKDIR /app
 COPY ./dist/apps/journeys-admin .
 
 
-RUN mkdir -p $PNPM_HOME && corepack enable && corepack prepare pnpm@10.15.1 --activate
+RUN mkdir -p $PNPM_HOME && corepack enable && corepack prepare pnpm@10.33.2 --activate
 RUN pnpm add -g next
 RUN pnpm install --prod --silent
 RUN pnpm add sharp pino dd-trace next-logger clsx --silent

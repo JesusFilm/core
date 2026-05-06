@@ -682,5 +682,117 @@ describe('VideoBlockEditor', () => {
         expect(onChange).toHaveBeenCalledWith({ notes: 'trailer' })
       )
     })
+
+    it('enforces a 100-character maximum on the notes input', () => {
+      const videoWithCustomizable = {
+        ...videoInternal,
+        customizable: true,
+        notes: null
+      } as TreeBlock<VideoBlock>
+
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoWithCustomizable}
+                        onChange={jest.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      const input = screen.getByLabelText('Template Adapter Notes')
+      expect(input).toHaveAttribute('maxLength', '100')
+    })
+
+    it('shows helper text when notes reach 100-character limit', () => {
+      const longNote = 'a'.repeat(100)
+      const videoWithCustomizable = {
+        ...videoInternal,
+        customizable: true,
+        notes: longNote
+      } as TreeBlock<VideoBlock>
+
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoWithCustomizable}
+                        onChange={jest.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(screen.getByText('Maximum 100 characters')).toBeInTheDocument()
+    })
+
+    it('does not show helper text when notes are under 100 characters', () => {
+      const videoWithCustomizable = {
+        ...videoInternal,
+        customizable: true,
+        notes: 'short note'
+      } as TreeBlock<VideoBlock>
+
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoWithCustomizable}
+                        onChange={jest.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(
+        screen.queryByText('Maximum 100 characters')
+      ).not.toBeInTheDocument()
+    })
   })
 })

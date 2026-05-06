@@ -166,4 +166,44 @@ describe('PaginationBullets', () => {
     expect(screen.getAllByTestId('bullet-active')).toHaveLength(1)
     expect(screen.getAllByTestId('bullet-adjacent')).toHaveLength(2)
   })
+
+  describe('preview mode (steps + selectedStep props)', () => {
+    it('should show correct active bullet based on selectedStep', () => {
+      treeBlocksVar([])
+      blockHistoryVar([])
+      const steps = [step1, step2, step3, step4, step5]
+      render(
+        <JourneyProvider value={{ variant: 'default' }}>
+          <PaginationBullets steps={steps} selectedStep={step3} />
+        </JourneyProvider>
+      )
+      expect(screen.getAllByTestId('bullet-active')).toHaveLength(1)
+    })
+
+    it('should render one bullet per step', () => {
+      treeBlocksVar([])
+      blockHistoryVar([])
+      const steps = [step1, step2, step3]
+      render(
+        <JourneyProvider value={{ variant: 'default' }}>
+          <PaginationBullets steps={steps} selectedStep={step1} />
+        </JourneyProvider>
+      )
+      const allBullets = screen.getAllByTestId(/^bullet-/)
+      expect(allBullets).toHaveLength(3)
+    })
+
+    it('should show active bullet at index 0 when selectedStep is first', () => {
+      treeBlocksVar([])
+      blockHistoryVar([])
+      const steps = [step1, step2, step3]
+      render(
+        <JourneyProvider value={{ variant: 'default' }}>
+          <PaginationBullets steps={steps} selectedStep={step1} />
+        </JourneyProvider>
+      )
+      expect(screen.getAllByTestId('bullet-active')).toHaveLength(1)
+      expect(screen.getAllByTestId('bullet-adjacent')).toHaveLength(1)
+    })
+  })
 })

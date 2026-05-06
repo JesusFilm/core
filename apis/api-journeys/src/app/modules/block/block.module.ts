@@ -8,15 +8,7 @@ import { JourneyCustomizableService } from '../journey/journeyCustomizable.servi
 import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
 import { CardBlockResolver } from './card/card.resolver'
-import { IconBlockResolver } from './icon/icon.resolver'
-import { ImageBlockResolver } from './image/image.resolver'
-import { RadioOptionBlockResolver } from './radioOption/radioOption.resolver'
-import { RadioQuestionBlockResolver } from './radioQuestion/radioQuestion.resolver'
-import { SignUpBlockResolver } from './signUp/signUp.resolver'
-import { SpacerBlockResolver } from './spacer/spacer.resolver'
 import { StepBlockResolver } from './step/step.resolver'
-import { TextResponseBlockResolver } from './textResponse/textResponse.resolver'
-import { TypographyBlockResolver } from './typography/typography.resolver'
 import { VideoBlockResolver } from './video/video.resolver'
 import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
 
@@ -26,17 +18,9 @@ import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
     BlockService,
     BlockResolver,
     CardBlockResolver,
-    IconBlockResolver,
-    ImageBlockResolver,
     JourneyCustomizableService,
     prismaServiceProvider,
-    RadioOptionBlockResolver,
-    RadioQuestionBlockResolver,
-    SignUpBlockResolver,
-    SpacerBlockResolver,
     StepBlockResolver,
-    TextResponseBlockResolver,
-    TypographyBlockResolver,
     VideoBlockResolver,
     VideoTriggerResolver
   ],

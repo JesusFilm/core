@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth'
 import { Form, Formik, FormikHelpers } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
@@ -93,10 +93,9 @@ export function PasswordResetPage({
                   {t('Cancel')}
                 </Button>
                 <Button
-                  variant="contained"
-                  size="large"
+                  variant="blockContained"
                   fullWidth
-                  color="secondary"
+                  color="solid"
                   type="submit"
                   disabled={!isValid || isSubmitting}
                 >

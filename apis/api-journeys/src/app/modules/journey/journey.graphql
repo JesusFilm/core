@@ -80,6 +80,9 @@ type Journey @key(fields: "id") @shareable {
   socialNodeY: Int
   fromTemplateId: String
   showAssistant: Boolean
+    @deprecated(
+      reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624."
+    )
 }
 
 enum IdType {
@@ -164,9 +167,13 @@ type PowerBiEmbed @shareable {
 
 extend type Query {
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
   journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
+  """
+  Returns distinct language IDs from published global templates.
+  Used to dynamically populate the language filter on the templates page.
+  """
+  journeyTemplateLanguageIds: [String!]!
 }
 
 input JourneyCreateInput {

@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { fetchSignInMethodsForEmail, getAuth } from 'firebase/auth'
 import { Form, Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
@@ -121,10 +121,9 @@ export function HomePage({
                 />
               </div>
               <Button
-                variant="contained"
-                size="large"
+                variant="blockContained"
                 fullWidth
-                color="secondary"
+                color="solid"
                 startIcon={<MailOutlineIcon />}
                 type="submit"
                 disabled={!isValid || isSubmitting}

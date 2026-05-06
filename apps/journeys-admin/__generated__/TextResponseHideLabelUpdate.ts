@@ -14,7 +14,7 @@ export interface TextResponseHideLabelUpdate_textResponseBlockUpdate {
 }
 
 export interface TextResponseHideLabelUpdate {
-  textResponseBlockUpdate: TextResponseHideLabelUpdate_textResponseBlockUpdate | null;
+  textResponseBlockUpdate: TextResponseHideLabelUpdate_textResponseBlockUpdate;
 }
 
 export interface TextResponseHideLabelUpdateVariables {

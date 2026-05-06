@@ -14,7 +14,7 @@ export interface TextResponseHintUpdate_textResponseBlockUpdate {
 }
 
 export interface TextResponseHintUpdate {
-  textResponseBlockUpdate: TextResponseHintUpdate_textResponseBlockUpdate | null;
+  textResponseBlockUpdate: TextResponseHintUpdate_textResponseBlockUpdate;
 }
 
 export interface TextResponseHintUpdateVariables {

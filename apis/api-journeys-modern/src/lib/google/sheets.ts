@@ -267,6 +267,12 @@ export async function readValues({
   return values
 }
 
+// Escape a sheet title for use in A1 notation ranges.
+// Per Google Sheets: wrap in single quotes, doubling any internal single quotes.
+export function escapeSheetName(name: string): string {
+  return `'${name.replace(/'/g, "''")}'`
+}
+
 // Convert a 0-based column index to A1 column letters
 export function columnIndexToA1(colIndexZeroBased: number): string {
   let n = colIndexZeroBased + 1

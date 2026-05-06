@@ -3,7 +3,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import type FormDataType from 'form-data'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import fetch from 'node-fetch'
 import { ReactElement, useEffect, useState } from 'react'
 import { ErrorCode, FileRejection, useDropzone } from 'react-dropzone'
@@ -211,25 +211,17 @@ export function ImageUpload({
         </Typography>
       </Stack>
       <Button
+        variant="blockOutlined"
+        color="solid"
         size="small"
-        color="secondary"
-        variant="outlined"
         disabled={loading === true}
         onClick={open}
         sx={{
           mt: 4,
-          height: 32,
-          width: '100%',
-          borderRadius: 2
+          width: '100%'
         }}
       >
-        <Typography
-          variant="subtitle2"
-          fontSize={14}
-          sx={{ color: 'secondary.main' }}
-        >
-          {t('Upload file')}
-        </Typography>
+        {t('Upload file')}
       </Button>
     </Stack>
   )

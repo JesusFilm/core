@@ -4,7 +4,8 @@ import { HTTPException } from 'hono/http-exception'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
-import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
+import { generateCacheKey } from '../../../../lib/cache'
+import { getWithStaleCacheForRequest } from '../../../../lib/cacheBypass'
 import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
 
 import { mediaComponentLinksWithId } from './[mediaComponentId]'
@@ -101,7 +102,7 @@ mediaComponentLinks.openapi(route, async (c) => {
     ...metadataLanguageTags.slice(0, 20)
   ])
 
-  const response = await getWithStaleCache(cacheKey, async () => {
+  const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
     try {
       const { data } = await getApolloClient().query<
         ResultOf<typeof GET_VIDEOS_CHILDREN>

@@ -1,7 +1,7 @@
 import CheckIcon from '@mui/icons-material/Check'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 interface SubtitleMenuProps {

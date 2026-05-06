@@ -1,4 +1,4 @@
-import { ReactFlowStore } from 'reactflow'
+import { ReactFlowStore } from '@xyflow/react'
 
 import { ARROW_OFFSET, ORIGINAL_TOOLTIP_MARGIN } from '../constants'
 

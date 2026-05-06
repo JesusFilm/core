@@ -393,7 +393,8 @@ describe('EditorContext', () => {
           selectedBlock: step2,
           selectedBlockId: 'step1.id',
           selectedStepId: 'step1.id',
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          showCardTemplates: true
         })
       })
 
@@ -414,7 +415,8 @@ describe('EditorContext', () => {
           selectedStepId: 'step1.id',
           selectedStep: undefined,
           selectedBlock: undefined,
-          selectedBlockId: 'step1.id'
+          selectedBlockId: 'step1.id',
+          showCardTemplates: true
         })
       })
 
@@ -431,7 +433,8 @@ describe('EditorContext', () => {
           })
         ).toEqual({
           ...state,
-          selectedStep: undefined
+          selectedStep: undefined,
+          showCardTemplates: true
         })
       })
     })
@@ -485,6 +488,7 @@ describe('EditorContext', () => {
           selectedStepId: 'step0.id',
           selectedBlock: step,
           selectedBlockId: 'step0.id',
+          showCardTemplates: true,
           active: undefined
         })
       })
@@ -754,6 +758,7 @@ describe('EditorContext', () => {
             parentOrder: 0,
             slug: null
           },
+          showCardTemplates: true,
           steps: [step]
         })
       })
@@ -889,6 +894,167 @@ describe('EditorContext', () => {
         ).toEqual({ ...state, hoveredStep: step })
       })
     })
+
+    describe('SetShowCardTemplatesAction', () => {
+      it('should set showCardTemplates to false', () => {
+        const state: EditorState = {
+          steps: [],
+          showCardTemplates: true,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetShowCardTemplatesAction',
+            showCardTemplates: false
+          })
+        ).toEqual({
+          ...state,
+          showCardTemplates: false
+        })
+      })
+
+      it('should set showCardTemplates to true', () => {
+        const state: EditorState = {
+          steps: [],
+          showCardTemplates: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetShowCardTemplatesAction',
+            showCardTemplates: true
+          })
+        ).toEqual({
+          ...state,
+          showCardTemplates: true
+        })
+      })
+    })
+
+    describe('showCardTemplates reset on step change', () => {
+      const step: TreeBlock = {
+        id: 'step0.id',
+        __typename: 'StepBlock',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        slug: null,
+        children: []
+      }
+
+      it('should reset showCardTemplates to true on SetSelectedStepAction', () => {
+        const state: EditorState = {
+          steps: [step],
+          showCardTemplates: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        const result = reducer(state, {
+          type: 'SetSelectedStepAction',
+          selectedStep: step
+        })
+        expect(result.showCardTemplates).toBe(true)
+      })
+
+      it('should reset showCardTemplates to true on SetSelectedStepByIdAction', () => {
+        const state: EditorState = {
+          steps: [step],
+          showCardTemplates: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        const result = reducer(state, {
+          type: 'SetSelectedStepByIdAction',
+          selectedStepId: 'step0.id'
+        })
+        expect(result.showCardTemplates).toBe(true)
+      })
+
+      it('should preserve showCardTemplates when re-selecting the same step via SetSelectedStepAction', () => {
+        const state: EditorState = {
+          steps: [step],
+          showCardTemplates: false,
+          selectedStepId: 'step0.id',
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        const result = reducer(state, {
+          type: 'SetSelectedStepAction',
+          selectedStep: step
+        })
+        expect(result.showCardTemplates).toBe(false)
+      })
+
+      it('should preserve showCardTemplates when re-selecting the same step via SetSelectedStepByIdAction', () => {
+        const state: EditorState = {
+          steps: [step],
+          showCardTemplates: false,
+          selectedStepId: 'step0.id',
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        const result = reducer(state, {
+          type: 'SetSelectedStepByIdAction',
+          selectedStepId: 'step0.id'
+        })
+        expect(result.showCardTemplates).toBe(false)
+      })
+
+      it('should preserve showCardTemplates when re-selecting the same step via SetEditorFocusAction', () => {
+        const state: EditorState = {
+          steps: [step],
+          showCardTemplates: false,
+          selectedStepId: 'step0.id',
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        const result = reducer(state, {
+          type: 'SetEditorFocusAction',
+          selectedStep: step
+        })
+        expect(result.showCardTemplates).toBe(false)
+      })
+
+      it('should not reset showCardTemplates on SetSelectedBlockAction', () => {
+        const state: EditorState = {
+          steps: [step],
+          showCardTemplates: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        const result = reducer(state, {
+          type: 'SetSelectedBlockAction',
+          selectedBlock: step
+        })
+        expect(result.showCardTemplates).toBe(false)
+      })
+
+      it('should reset showCardTemplates via SetEditorFocusAction with selectedStep', () => {
+        const state: EditorState = {
+          steps: [step],
+          showCardTemplates: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        const result = reducer(state, {
+          type: 'SetEditorFocusAction',
+          selectedStep: step
+        })
+        expect(result.showCardTemplates).toBe(true)
+      })
+    })
   })
 
   describe('EditorProvider', () => {
@@ -919,6 +1085,7 @@ describe('EditorContext', () => {
 
       expect(result.current.state).toEqual({
         steps: [block],
+        showCardTemplates: true,
         selectedStep: block,
         selectedBlock: block,
         selectedStepId: 'step0.id',
@@ -949,6 +1116,7 @@ describe('EditorContext', () => {
 
       expect(result.current.state).toEqual({
         steps: [block],
+        showCardTemplates: true,
         selectedStep: block,
         selectedBlock: block,
         selectedStepId: 'step0.id',

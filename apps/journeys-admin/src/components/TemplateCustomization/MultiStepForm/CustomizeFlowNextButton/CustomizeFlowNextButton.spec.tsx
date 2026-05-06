@@ -54,10 +54,6 @@ describe('CustomizeFlowNextButton', () => {
 
     const button = screen.getByTestId('CustomizeFlowNextButton')
     expect(button).toBeInTheDocument()
-
-    const typography = button.querySelector('.MuiTypography-root')
-    expect(typography).toBeInTheDocument()
-    expect(typography).toHaveTextContent('')
   })
 
   it('should call onClick handler when clicked', () => {

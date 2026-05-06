@@ -19,7 +19,7 @@ export interface TextResponseTypeUpdate_textResponseBlockUpdate {
 }
 
 export interface TextResponseTypeUpdate {
-  textResponseBlockUpdate: TextResponseTypeUpdate_textResponseBlockUpdate | null;
+  textResponseBlockUpdate: TextResponseTypeUpdate_textResponseBlockUpdate;
 }
 
 export interface TextResponseTypeUpdateVariables {

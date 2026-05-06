@@ -1,0 +1,117 @@
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import Box from '@mui/material/Box'
+import MuiDrawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next/pages'
+import { ReactElement, ReactNode, createContext, useContext } from 'react'
+
+interface DrawerContextValue {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+const DrawerContext = createContext<DrawerContextValue | null>(null)
+
+interface DrawerProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  children: ReactNode
+}
+
+interface DrawerContentProps {
+  children: ReactNode
+  title: string
+}
+
+export function Drawer({
+  open,
+  onOpenChange,
+  children
+}: DrawerProps): ReactElement {
+  return (
+    <DrawerContext.Provider value={{ open, onOpenChange }}>
+      {children}
+    </DrawerContext.Provider>
+  )
+}
+
+export function DrawerContent({
+  children,
+  title
+}: DrawerContentProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
+  const ctx = useContext(DrawerContext)
+  if (ctx == null) {
+    throw new Error('DrawerContent must be rendered inside <Drawer>')
+  }
+  const { open, onOpenChange } = ctx
+
+  return (
+    <MuiDrawer
+      anchor="bottom"
+      open={open}
+      onClose={() => onOpenChange(false)}
+      PaperProps={{
+        sx: {
+          maxHeight: '85vh',
+          borderTopLeftRadius: { xs: 16, sm: 0 },
+          borderTopRightRadius: { xs: 16, sm: 0 },
+          width: { xs: '100%', sm: 'min(48rem, 100%)' },
+          left: { xs: 0, sm: 'max(0px, calc(50% - 24rem))' },
+          right: { xs: 0, sm: 'auto' },
+          display: 'flex',
+          flexDirection: 'column',
+          bgcolor: 'common.white',
+          backgroundImage: 'none',
+          color: '#1a1a1a'
+        }
+      }}
+      aria-label={title}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          pt: 1.5,
+          pb: 1,
+          position: 'relative'
+        }}
+      >
+        <Box
+          sx={{
+            display: { xs: 'block', sm: 'none' },
+            width: 48,
+            height: 4,
+            borderRadius: 9999,
+            bgcolor: '#e0e0e0'
+          }}
+        />
+        <IconButton
+          onClick={() => onOpenChange(false)}
+          aria-label={t('Close chat')}
+          size="small"
+          sx={{ position: 'absolute', top: 4, right: 8, color: '#666' }}
+        >
+          <CloseRoundedIcon fontSize="small" />
+        </IconButton>
+      </Box>
+      <Typography
+        variant="subtitle1"
+        sx={{ fontWeight: 600, px: 2, pb: 1, color: '#1a1a1a' }}
+      >
+        {title}
+      </Typography>
+      <Box
+        sx={{
+          flex: 1,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        {children}
+      </Box>
+    </MuiDrawer>
+  )
+}

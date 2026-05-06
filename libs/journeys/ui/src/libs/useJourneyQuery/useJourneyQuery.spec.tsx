@@ -85,7 +85,8 @@ describe('useJourneyQuery', () => {
       fromTemplateId: null,
       socialNodeX: null,
       socialNodeY: null,
-      customizable: null
+      customizable: null,
+      showAssistant: null
     }
 
     const result = jest.fn(() => ({ data: { journey } }))

@@ -39,6 +39,7 @@ export const builder = new SchemaBuilder<{
     isIntegrationOwner: Extract<Context, { type: 'authenticated' }>
     isTeamManager: Extract<Context, { type: 'authenticated' }>
     isPublisher: Extract<Context, { type: 'authenticated' }>
+    isSuperAdmin: Extract<Context, { type: 'authenticated' }>
     isValidInterop: Extract<Context, { type: 'interop' }>
   }
   PrismaTypes: PrismaTypes

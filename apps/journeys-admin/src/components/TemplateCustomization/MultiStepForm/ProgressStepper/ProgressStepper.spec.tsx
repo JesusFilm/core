@@ -18,15 +18,15 @@ describe('ProgressStepper', () => {
     expect(progressStepper).toBeInTheDocument()
 
     const steps = screen.getAllByTestId(/progress-stepper-step-/)
-    expect(steps).toHaveLength(totalSteps - 1)
+    expect(steps).toHaveLength(totalSteps)
 
     const checkIcons = screen.getAllByTestId('CheckIcon')
     expect(checkIcons).toHaveLength(activeStepNumber)
   })
 
   it('should render checkmark for all steps when on the last step', () => {
-    const activeStepNumber = 2
-    const totalSteps = 2
+    const activeStepNumber = 1
+    const totalSteps = 1
 
     render(
       <ProgressStepper
@@ -36,12 +36,12 @@ describe('ProgressStepper', () => {
     )
 
     const checkIcons = screen.getAllByTestId('CheckIcon')
-    expect(checkIcons).toHaveLength(totalSteps - 1)
+    expect(checkIcons).toHaveLength(totalSteps)
   })
 
   it('should not render any checkmarks when on the first step', () => {
     const activeStepNumber = 0
-    const totalSteps = 3
+    const totalSteps = 2
 
     render(
       <ProgressStepper

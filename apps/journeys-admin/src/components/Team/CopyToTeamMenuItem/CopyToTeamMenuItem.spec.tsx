@@ -107,7 +107,9 @@ describe('CopyToTeamMenuItem', () => {
         name: 'Journey',
         journeyLanguageName: '',
         textLanguageId: '528',
-        textLanguageName: 'Español'
+        textLanguageName: 'Español',
+        userLanguageId: '529',
+        userLanguageName: ''
       }
     },
     result: jest.fn(() => ({
@@ -122,10 +124,23 @@ describe('CopyToTeamMenuItem', () => {
             languageId: '528',
             createdAt: '2023-04-25T12:34:56Z',
             updatedAt: '2023-04-25T12:34:56Z',
+            journeyCustomizationDescription: null,
+            journeyCustomizationFields: [],
             blocks: [],
-            __typename: 'Journey'
+            __typename: 'Journey',
+            language: {
+              __typename: 'Language',
+              id: '528',
+              name: [
+                {
+                  __typename: 'LanguageName',
+                  value: 'Español',
+                  primary: true
+                }
+              ]
+            }
           },
-          __typename: 'JourneyAiTranslateCreateSubscriptionPayload'
+          __typename: 'JourneyAiTranslateProgress'
         }
       }
     }))
@@ -490,7 +505,9 @@ describe('CopyToTeamMenuItem', () => {
           name: 'Journey',
           journeyLanguageName: '',
           textLanguageId: '528',
-          textLanguageName: 'Español'
+          textLanguageName: 'Español',
+          userLanguageId: '529',
+          userLanguageName: ''
         }
       },
       error: new Error('Translation failed')

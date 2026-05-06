@@ -3,7 +3,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { Trans, useTranslation } from 'next-i18next'
+import { Trans, useTranslation } from 'next-i18next/pages'
 import type { MouseEvent, ReactElement } from 'react'
 
 import type { WrapperProps } from '@core/journeys/ui/BlockRenderer'
@@ -22,6 +22,10 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
 
   const openCardTemplates = (e: MouseEvent): void => {
     e.stopPropagation()
+    dispatch({
+      type: 'SetShowCardTemplatesAction',
+      showCardTemplates: true
+    })
     dispatch({
       type: 'SetSelectedBlockAction',
       selectedBlock: selectedStep

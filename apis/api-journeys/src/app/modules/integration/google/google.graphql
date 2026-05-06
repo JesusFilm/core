@@ -3,5 +3,6 @@ type IntegrationGoogle implements Integration @shareable {
   team: Team!
   type: IntegrationType!
   user: User
+  userId: ID
   accountEmail: String
 }

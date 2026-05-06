@@ -19,6 +19,7 @@ export function TestEditorState(): ReactElement {
       <div>activeCanvasDetailsDrawer: {state.activeCanvasDetailsDrawer}</div>
       <div>activeSlide: {state.activeSlide}</div>
       <div>selectedGoalUrl: {state.selectedGoalUrl}</div>
+      <div>showCardTemplates: {String(state.showCardTemplates)}</div>
       <div>hoveredStep: {state.hoveredStep?.id}</div>
     </>
   )

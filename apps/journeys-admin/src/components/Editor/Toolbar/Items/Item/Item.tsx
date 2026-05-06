@@ -4,8 +4,13 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
-import { ComponentProps, MouseEvent, ReactElement, ReactNode } from 'react'
+import {
+  ComponentProps,
+  ElementType,
+  MouseEvent,
+  ReactElement,
+  ReactNode
+} from 'react'
 
 interface ItemProps {
   variant: 'icon-button' | 'button' | 'menu-item'
@@ -79,12 +84,18 @@ export function Item({
               </Button>
             ) : (
               <IconButton
-                component={href != null ? 'a' : 'button'}
-                target={href != null ? '_blank' : undefined}
-                href={href}
+                {...(href != null
+                  ? {
+                      component: 'a' as ElementType,
+                      href,
+                      target: '_blank',
+                      rel: 'noopener noreferrer'
+                    }
+                  : {})}
                 onClick={onClick}
                 aria-label={label}
-                {...ButtonProps}
+                disabled={ButtonProps?.disabled}
+                sx={ButtonProps?.sx}
               >
                 {icon}
               </IconButton>
@@ -103,11 +114,10 @@ export function Item({
           target={href != null ? '_blank' : undefined}
           href={href}
           onClick={onClick}
+          sx={{ typography: 'subtitle2' }}
           {...ButtonProps}
         >
-          <Typography variant="subtitle2" sx={{ py: 1 }}>
-            {label}
-          </Typography>
+          {label}
         </Button>
       )
     case 'menu-item':

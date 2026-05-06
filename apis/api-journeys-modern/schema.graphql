@@ -232,6 +232,12 @@ type CardBlock implements Block
   themeName from journey
   """
   themeName: ThemeName
+
+  """When true, this card displays the AI chat button."""
+  showAssistant: Boolean
+
+  """When true, the chat drawer auto-opens on first visit to this card."""
+  expandChatByDefault: Boolean
 }
 
 input CardBlockCreateInput {
@@ -255,6 +261,8 @@ input CardBlockUpdateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  showAssistant: Boolean
+  expandChatByDefault: Boolean
 }
 
 type ChatAction implements Action
@@ -346,6 +354,15 @@ type CustomDomain
   journeyCollection: JourneyCollection
 }
 
+type CustomDomainCheck
+  @shareable
+{
+  configured: Boolean!
+  verified: Boolean!
+  verification: [CustomDomainVerification!]
+  verificationResponse: CustomDomainVerificationResponse
+}
+
 input CustomDomainCreateInput {
   id: ID
   teamId: String!
@@ -357,6 +374,22 @@ input CustomDomainCreateInput {
 input CustomDomainUpdateInput {
   journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
+}
+
+type CustomDomainVerification
+  @shareable
+{
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse
+  @shareable
+{
+  code: String!
+  message: String!
 }
 
 """
@@ -702,6 +735,7 @@ type IntegrationGoogle implements Integration
   type: IntegrationType!
   team: Team!
   accountEmail: String
+  userId: ID
   user: User
 }
 
@@ -797,7 +831,7 @@ type Journey
   showLogo: Boolean
   showMenu: Boolean
   showDisplayTitle: Boolean
-  showAssistant: Boolean
+  showAssistant: Boolean @deprecated(reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624.")
   customizable: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int
@@ -814,6 +848,8 @@ type Journey
   """used in a plausible share link to embed report"""
   plausibleToken: String
   fromTemplateId: String
+  journeyCustomizationDescription: String
+  journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
 
   """
@@ -824,11 +860,34 @@ type Journey
 }
 
 input JourneyAiTranslateInput {
+  """The ID of the journey to translate"""
   journeyId: ID!
+
+  """The journey name to translate"""
   name: String!
+
+  """The source language name of the journey content"""
   journeyLanguageName: String!
+
+  """
+  The target language ID for journey content (blocks, title, description)
+  """
   textLanguageId: ID!
+
+  """
+  The target language name for journey content (blocks, title, description)
+  """
   textLanguageName: String!
+
+  """
+  Language ID for customization text translation. Falls back to textLanguageId if not provided.
+  """
+  userLanguageId: ID
+
+  """
+  Language name for customization text translation. Falls back to textLanguageName if not provided.
+  """
+  userLanguageName: String
 }
 
 type JourneyAiTranslateProgress {
@@ -879,6 +938,27 @@ input JourneyCreateInput {
   Slug should be unique amongst all journeys (server will throw BAD_USER_INPUT error if not). If not required will use title formatted with kebab-case. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness
   """
   slug: String
+}
+
+input JourneyCustomizationDescriptionTranslateInput {
+  """The ID of the journey whose customization description to translate"""
+  journeyId: ID!
+
+  """The current language of the customization description"""
+  sourceLanguageName: String!
+
+  """The language to translate the customization description into"""
+  targetLanguageName: String!
+}
+
+type JourneyCustomizationField
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  key: String!
+  value: String
+  defaultValue: String
 }
 
 type JourneyEvent implements Event & Node
@@ -1337,23 +1417,64 @@ input MultiselectSubmissionEventCreateInput {
 }
 
 type Mutation {
-  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @override(from: "api-journeys")
+  blockDelete(
+    id: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+
+    """drop this parameter after merging teams"""
+    parentBlockId: ID
+  ): [Block!]! @override(from: "api-journeys")
+  blockDuplicate(
+    id: ID!
+    parentOrder: Int
+    idMap: [BlockDuplicateIdMap!]
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+    x: Int
+    y: Int
+  ): [Block!]! @override(from: "api-journeys")
+  blockOrderUpdate(
+    id: ID!
+    parentOrder: Int!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): [Block!]! @override(from: "api-journeys")
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!
     input: ButtonBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): ButtonBlock @override(from: "api-journeys")
-  cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @override(from: "api-journeys")
+  ): ButtonBlock
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(
     id: ID!
     input: CardBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): CardBlock! @override(from: "api-journeys")
-  iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @override(from: "api-journeys")
+  ): CardBlock!
+  iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
+  iconBlockUpdate(
+    id: ID!
+    input: IconBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): IconBlock!
+  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
+  imageBlockUpdate(
+    id: ID!
+    input: ImageBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ImageBlock!
   multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
   multiselectBlockUpdate(
     id: ID!
@@ -1370,6 +1491,51 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): MultiselectOptionBlock!
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
+  radioOptionBlockUpdate(
+    id: ID!
+    input: RadioOptionBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): RadioOptionBlock!
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean): RadioQuestionBlock!
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
+  signUpBlockUpdate(
+    id: ID!
+    input: SignUpBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): SignUpBlock!
+  spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock!
+  stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]! @override(from: "api-journeys")
+  stepBlockUpdate(
+    id: ID!
+    input: StepBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): StepBlock!
+  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
+  textResponseBlockUpdate(
+    id: ID!
+    input: TextResponseBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TextResponseBlock!
+  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
+  typographyBlockUpdate(
+    id: ID!
+    input: TypographyBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(
     id: ID!
@@ -1385,8 +1551,17 @@ type Mutation {
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction!
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction!
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction!
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
+  chatButtonRemove(id: ID!): ChatButton!
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
+  customDomainCheck(id: ID!): CustomDomainCheck!
+  customDomainDelete(id: ID!): CustomDomain!
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent @override(from: "api-journeys")
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @override(from: "api-journeys")
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
@@ -1402,10 +1577,12 @@ type Mutation {
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
   integrationDelete(id: ID!): Integration!
+  journeyTransferFromAnonymous(journeyId: ID!, teamId: ID): Journey!
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
+  journeyCustomizationDescriptionTranslate(input: JourneyCustomizationDescriptionTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
-  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @override(from: "api-journeys")
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
     filter: JourneyEventsFilter
@@ -1418,6 +1595,8 @@ type Mutation {
     """
     timezone: String
   ): JourneyVisitorGoogleSheetExportResult!
+  userDeleteJourneysCheck(userId: String!): UserDeleteJourneysCheckResult!
+  userDeleteJourneysConfirm(userId: String!): UserDeleteJourneysConfirmResult!
 }
 
 input MutationJourneyLanguageAiDetectInput {
@@ -1729,13 +1908,17 @@ input QrCodesFilter {
 }
 
 type Query {
+  block(id: ID!): Block! @override(from: "api-journeys")
+  blocks(where: BlocksFilter): [Block!]! @override(from: "api-journeys")
+  customDomains(teamId: ID!): [CustomDomain!]!
+  customDomain(id: ID!): CustomDomain!
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(integrationId: ID!): String!
-  adminJourney(id: ID!, idType: IdType = slug): Journey! @override(from: "api-journeys")
-  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]! @override(from: "api-journeys")
+  adminJourney(id: ID!, idType: IdType = slug): Journey!
+  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]!
   getJourneyProfile: JourneyProfile
 
   """
@@ -1795,7 +1978,7 @@ type Query {
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!]
-  getUserRole: UserRole @override(from: "api-journeys")
+  getUserRole: UserRole
 }
 
 type RadioOptionBlock implements Block
@@ -2286,6 +2469,12 @@ enum TypographyVariant {
   overline
 }
 
+enum USER_DELETE_LOG_LEVEL {
+  INFO
+  WARN
+  ERROR
+}
+
 type User
   @key(fields: "id")
   @interfaceObject
@@ -2299,6 +2488,31 @@ type UserAgent
   browser: Browser!
   device: Device!
   os: OperatingSystem!
+}
+
+type UserDeleteJourneysCheckResult {
+  journeysToDelete: Int!
+  journeysToTransfer: Int!
+  journeysToRemove: Int!
+  teamsToDelete: Int!
+  teamsToTransfer: Int!
+  teamsToRemove: Int!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysConfirmResult {
+  success: Boolean!
+  deletedJourneyIds: [String!]!
+  deletedTeamIds: [String!]!
+  deletedUserJourneyIds: [String!]!
+  deletedUserTeamIds: [String!]!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysLogEntry {
+  message: String!
+  level: USER_DELETE_LOG_LEVEL!
+  timestamp: String!
 }
 
 type UserInvite

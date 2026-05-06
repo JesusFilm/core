@@ -5,6 +5,7 @@ import { user } from './user.mock'
 import { verifyUser } from './verifyUser'
 
 jest.mock('@core/yoga/firebaseClient', () => ({
+  ...jest.requireActual('@core/yoga/firebaseClient'),
   auth: {
     getUser: jest.fn().mockReturnValue({
       id: '1',
@@ -44,6 +45,178 @@ describe('findOrFetchUser', () => {
 
     const data = await findOrFetchUser({}, 'userId', undefined)
     expect(data).toEqual(updatedUser)
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
+      where: { userId: 'userId' },
+      data: { emailVerified: true }
+    })
+  })
+
+  it('should update profile fields when emailVerified transitions to true', async () => {
+    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
+    auth.getUser.mockReturnValueOnce({
+      emailVerified: true,
+      displayName: 'John Doe',
+      email: 'john@example.com',
+      photoURL: 'https://photo.example.com/john.jpg'
+    })
+
+    prismaMock.user.findUnique.mockResolvedValueOnce(user)
+    const updatedUser = {
+      ...user,
+      emailVerified: true,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john@example.com',
+      imageUrl: 'https://photo.example.com/john.jpg'
+    }
+    prismaMock.user.update.mockResolvedValueOnce(updatedUser)
+
+    const data = await findOrFetchUser({}, 'userId', undefined)
+    expect(data).toEqual(updatedUser)
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
+      where: { userId: 'userId' },
+      data: {
+        emailVerified: true,
+        email: 'john@example.com',
+        firstName: 'John',
+        lastName: 'Doe',
+        imageUrl: 'https://photo.example.com/john.jpg'
+      }
+    })
+  })
+
+  it('should fall back to providerData when top-level displayName/photoURL are null', async () => {
+    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
+    auth.getUser.mockReturnValueOnce({
+      emailVerified: true,
+      displayName: null,
+      email: 'jane@example.com',
+      photoURL: null,
+      providerData: [
+        {
+          providerId: 'google.com',
+          displayName: 'Jane Smith',
+          photoURL: 'https://lh3.googleusercontent.com/a/photo'
+        }
+      ]
+    })
+
+    prismaMock.user.findUnique.mockResolvedValueOnce(user)
+    const updatedUser = {
+      ...user,
+      emailVerified: true,
+      firstName: 'Jane',
+      lastName: 'Smith',
+      email: 'jane@example.com',
+      imageUrl: 'https://lh3.googleusercontent.com/a/photo'
+    }
+    prismaMock.user.update.mockResolvedValueOnce(updatedUser)
+
+    const data = await findOrFetchUser({}, 'userId', undefined)
+    expect(data).toEqual(updatedUser)
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
+      where: { userId: 'userId' },
+      data: {
+        emailVerified: true,
+        email: 'jane@example.com',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        imageUrl: 'https://lh3.googleusercontent.com/a/photo'
+      }
+    })
+  })
+
+  it('should accept non-whitelisted providers via providerData', async () => {
+    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
+    auth.getUser.mockReturnValueOnce({
+      emailVerified: true,
+      displayName: null,
+      email: 'user@icloud.com',
+      photoURL: null,
+      providerData: [
+        {
+          providerId: 'apple.com',
+          displayName: 'Tim Apple',
+          photoURL: 'https://appleid.cdn-apple.com/a/photo'
+        }
+      ]
+    })
+
+    prismaMock.user.findUnique.mockResolvedValueOnce(user)
+    prismaMock.user.update.mockResolvedValueOnce({
+      ...user,
+      emailVerified: true,
+      firstName: 'Tim',
+      lastName: 'Apple',
+      email: 'user@icloud.com',
+      imageUrl: 'https://appleid.cdn-apple.com/a/photo'
+    })
+
+    await findOrFetchUser({}, 'userId', undefined)
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
+      where: { userId: 'userId' },
+      data: expect.objectContaining({
+        firstName: 'Tim',
+        lastName: 'Apple',
+        imageUrl: 'https://appleid.cdn-apple.com/a/photo'
+      })
+    })
+  })
+
+  it('should reject non-https photoURL during conversion', async () => {
+    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
+    auth.getUser.mockReturnValueOnce({
+      emailVerified: true,
+      displayName: 'Evil User',
+      email: 'evil@example.com',
+      photoURL: 'javascript:alert(1)'
+    })
+
+    prismaMock.user.findUnique.mockResolvedValueOnce(user)
+    prismaMock.user.update.mockResolvedValueOnce(user)
+
+    await findOrFetchUser({}, 'userId', undefined)
+    const updateCall = prismaMock.user.update.mock.calls[0][0]
+    expect(updateCall.data).not.toHaveProperty('imageUrl')
+  })
+
+  it('should strip control characters from displayName during conversion', async () => {
+    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
+    auth.getUser.mockReturnValueOnce({
+      emailVerified: true,
+      displayName: 'John‮Doe',
+      email: 'john@example.com',
+      photoURL: null
+    })
+
+    prismaMock.user.findUnique.mockResolvedValueOnce(user)
+    prismaMock.user.update.mockResolvedValueOnce(user)
+
+    await findOrFetchUser({}, 'userId', undefined)
+    const updateCall = prismaMock.user.update.mock.calls[0][0]
+    // "John" and "Doe" concatenated after RLO strip become "JohnDoe" single token
+    expect(updateCall.data).toMatchObject({
+      firstName: 'JohnDoe',
+      lastName: ''
+    })
+  })
+
+  it('should preserve existing firstName/lastName when provider yields no displayName', async () => {
+    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
+    auth.getUser.mockReturnValueOnce({
+      emailVerified: true,
+      displayName: null,
+      email: null,
+      photoURL: null
+    })
+
+    prismaMock.user.findUnique.mockResolvedValueOnce(user)
+    prismaMock.user.update.mockResolvedValueOnce({
+      ...user,
+      emailVerified: true
+    })
+
+    await findOrFetchUser({}, 'userId', undefined)
     expect(prismaMock.user.update).toHaveBeenCalledWith({
       where: { userId: 'userId' },
       data: { emailVerified: true }

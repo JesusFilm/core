@@ -315,6 +315,8 @@ export type CardBlock = Block & {
    */
   coverBlockId?: Maybe<Scalars['ID']['output']>;
   eventLabel?: Maybe<BlockEventLabel>;
+  /** When true, the chat drawer auto-opens on first visit to this card. */
+  expandChatByDefault?: Maybe<Scalars['Boolean']['output']>;
   /**
    * fullscreen should control how the coverBlock is displayed. When fullscreen
    * is set to true the coverBlock Image should be displayed as a blur in the
@@ -325,6 +327,8 @@ export type CardBlock = Block & {
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  /** When true, this card displays the AI chat button. */
+  showAssistant?: Maybe<Scalars['Boolean']['output']>;
   /**
    * themeMode can override journey themeMode. If nothing is set then use
    * themeMode from journey
@@ -354,8 +358,10 @@ export type CardBlockUpdateInput = {
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   coverBlockId?: InputMaybe<Scalars['ID']['input']>;
   eventLabel?: InputMaybe<BlockEventLabel>;
+  expandChatByDefault?: InputMaybe<Scalars['Boolean']['input']>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  showAssistant?: InputMaybe<Scalars['Boolean']['input']>;
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
 };
@@ -645,19 +651,9 @@ export type CustomDomain = {
 
 export type CustomDomainCheck = {
   __typename?: 'CustomDomainCheck';
-  /**
-   * Is the domain correctly configured in the DNS?
-   * If false, A Record and CNAME Record should be added by the user.
-   */
   configured: Scalars['Boolean']['output'];
-  /** Verification records to be added to the DNS to confirm ownership. */
   verification?: Maybe<Array<CustomDomainVerification>>;
-  /** Reasoning as to why verification is required. */
   verificationResponse?: Maybe<CustomDomainVerificationResponse>;
-  /**
-   * Does the domain belong to the team?
-   * If false, verification and verificationResponse will be populated.
-   */
   verified: Scalars['Boolean']['output'];
 };
 
@@ -1015,6 +1011,7 @@ export type ImageBlockUpdateInput = {
   focalLeft?: InputMaybe<Scalars['Int']['input']>;
   focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
+  isCover?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   scale?: InputMaybe<Scalars['Int']['input']>;
   src?: InputMaybe<Scalars['String']['input']>;
@@ -1039,6 +1036,7 @@ export type IntegrationGoogle = Integration & {
   team: Team;
   type: IntegrationType;
   user?: Maybe<User>;
+  userId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type IntegrationGoogleCreateInput = {
@@ -1120,6 +1118,7 @@ export type Journey = {
   seoDescription?: Maybe<Scalars['String']['output']>;
   /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
+  /** @deprecated Use CardBlock.showAssistant. Removal tracked in NES-1624. */
   showAssistant?: Maybe<Scalars['Boolean']['output']>;
   showChatButtons?: Maybe<Scalars['Boolean']['output']>;
   showDislikeButton?: Maybe<Scalars['Boolean']['output']>;
@@ -1151,11 +1150,20 @@ export type Journey = {
 };
 
 export type JourneyAiTranslateInput = {
+  /** The ID of the journey to translate */
   journeyId: Scalars['ID']['input'];
+  /** The source language name of the journey content */
   journeyLanguageName: Scalars['String']['input'];
+  /** The journey name to translate */
   name: Scalars['String']['input'];
+  /** The target language ID for journey content (blocks, title, description) */
   textLanguageId: Scalars['ID']['input'];
+  /** The target language name for journey content (blocks, title, description) */
   textLanguageName: Scalars['String']['input'];
+  /** Language ID for customization text translation. Falls back to textLanguageId if not provided. */
+  userLanguageId?: InputMaybe<Scalars['ID']['input']>;
+  /** Language name for customization text translation. Falls back to textLanguageName if not provided. */
+  userLanguageName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyAiTranslateProgress = {
@@ -1208,6 +1216,15 @@ export type JourneyCreateInput = {
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
   title: Scalars['String']['input'];
+};
+
+export type JourneyCustomizationDescriptionTranslateInput = {
+  /** The ID of the journey whose customization description to translate */
+  journeyId: Scalars['ID']['input'];
+  /** The current language of the customization description */
+  sourceLanguageName: Scalars['String']['input'];
+  /** The language to translate the customization description into */
+  targetLanguageName: Scalars['String']['input'];
 };
 
 export type JourneyCustomizationField = {
@@ -1829,10 +1846,8 @@ export type Mutation = {
   bibleCitationCreate?: Maybe<BibleCitation>;
   bibleCitationDelete?: Maybe<Scalars['Boolean']['output']>;
   bibleCitationUpdate?: Maybe<BibleCitation>;
-  /** blockDelete returns the updated sibling blocks on successful delete */
   blockDelete: Array<Block>;
   blockDeleteAction: Block;
-  /** blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate */
   blockDuplicate: Array<Block>;
   blockOrderUpdate: Array<Block>;
   /** blockRestore is used for redo/undo */
@@ -1900,6 +1915,7 @@ export type Mutation = {
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
   journeyCreate: Journey;
+  journeyCustomizationDescriptionTranslate: Journey;
   journeyCustomizationFieldPublisherUpdate: Array<JourneyCustomizationField>;
   journeyCustomizationFieldUserUpdate: Array<JourneyCustomizationField>;
   journeyDuplicate: Journey;
@@ -1917,6 +1933,7 @@ export type Mutation = {
   journeyThemeCreate: JourneyTheme;
   journeyThemeDelete: JourneyTheme;
   journeyThemeUpdate: JourneyTheme;
+  journeyTransferFromAnonymous: Journey;
   journeyUpdate: Journey;
   /**
    * Creates a JourneyViewEvent, returns null if attempting to create another
@@ -1966,7 +1983,7 @@ export type Mutation = {
   /** update an existing short link */
   shortLinkUpdate: MutationShortLinkUpdateResult;
   signUpBlockCreate: SignUpBlock;
-  signUpBlockUpdate?: Maybe<SignUpBlock>;
+  signUpBlockUpdate: SignUpBlock;
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
   siteCreate: MutationSiteCreateResult;
   spacerBlockCreate: SpacerBlock;
@@ -1980,7 +1997,7 @@ export type Mutation = {
   teamCreate: Team;
   teamUpdate: Team;
   textResponseBlockCreate: TextResponseBlock;
-  textResponseBlockUpdate?: Maybe<TextResponseBlock>;
+  textResponseBlockUpdate: TextResponseBlock;
   textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
   triggerUnsplashDownload: Scalars['Boolean']['output'];
   typographyBlockCreate: TypographyBlock;
@@ -1988,6 +2005,9 @@ export type Mutation = {
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
   updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
   updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
+  userDeleteCheck: UserDeleteCheckResult;
+  userDeleteJourneysCheck: UserDeleteJourneysCheckResult;
+  userDeleteJourneysConfirm: UserDeleteJourneysConfirmResult;
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -2029,7 +2049,6 @@ export type Mutation = {
   videoPlayEventCreate: VideoPlayEvent;
   videoProgressEventCreate: VideoProgressEvent;
   videoPublishChildren: VideoPublishChildrenResult;
-  videoPublishChildrenAndLanguages: VideoPublishChildrenAndLanguagesResult;
   videoSnippetCreate: VideoSnippet;
   videoSnippetDelete: VideoSnippet;
   videoSnippetUpdate: VideoSnippet;
@@ -2467,6 +2486,11 @@ export type MutationJourneyCreateArgs = {
 };
 
 
+export type MutationJourneyCustomizationDescriptionTranslateArgs = {
+  input: JourneyCustomizationDescriptionTranslateInput;
+};
+
+
 export type MutationJourneyCustomizationFieldPublisherUpdateArgs = {
   journeyId: Scalars['ID']['input'];
   string: Scalars['String']['input'];
@@ -2538,6 +2562,12 @@ export type MutationJourneyThemeDeleteArgs = {
 export type MutationJourneyThemeUpdateArgs = {
   id: Scalars['ID']['input'];
   input: JourneyThemeUpdateInput;
+};
+
+
+export type MutationJourneyTransferFromAnonymousArgs = {
+  journeyId: Scalars['ID']['input'];
+  teamId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -2851,6 +2881,22 @@ export type MutationUpdateVideoVariantAlgoliaIndexArgs = {
 };
 
 
+export type MutationUserDeleteCheckArgs = {
+  id: Scalars['String']['input'];
+  idType: UserDeleteIdType;
+};
+
+
+export type MutationUserDeleteJourneysCheckArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
+export type MutationUserDeleteJourneysConfirmArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
 export type MutationUserImpersonateArgs = {
   email: Scalars['String']['input'];
 };
@@ -3045,12 +3091,9 @@ export type MutationVideoProgressEventCreateArgs = {
 
 
 export type MutationVideoPublishChildrenArgs = {
+  dryRun: Scalars['Boolean']['input'];
   id: Scalars['ID']['input'];
-};
-
-
-export type MutationVideoPublishChildrenAndLanguagesArgs = {
-  id: Scalars['ID']['input'];
+  mode: VideoPublishMode;
 };
 
 
@@ -3773,6 +3816,11 @@ export type Query = {
   journeyEventsConnection: JourneyEventsConnection;
   journeyEventsCount: Scalars['Int']['output'];
   journeySimpleGet?: Maybe<Scalars['Json']['output']>;
+  /**
+   * Returns distinct language IDs from published global templates.
+   * Used to dynamically populate the language filter on the templates page.
+   */
+  journeyTemplateLanguageIds: Array<Scalars['String']['output']>;
   journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
@@ -4705,15 +4753,9 @@ export type StepBlockCreateInput = {
   journeyId: Scalars['ID']['input'];
   locked?: InputMaybe<Scalars['Boolean']['input']>;
   nextBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * x is used to position the block horizontally in the journey flow diagram on
-   * the editor.
-   */
+  /** x is used to position the block horizontally in the journey flow diagram on the editor. */
   x?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * y is used to position the block vertically in the journey flow diagram on
-   * the editor.
-   */
+  /** y is used to position the block vertically in the journey flow diagram on the editor. */
   y?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -4726,23 +4768,11 @@ export type StepBlockPositionUpdateInput = {
 export type StepBlockUpdateInput = {
   locked?: InputMaybe<Scalars['Boolean']['input']>;
   nextBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * Slug should be unique amongst all blocks
-   * (server will throw BAD_USER_INPUT error if not)
-   * If not required will use the current block id
-   * If the generated slug is not unique the uuid will be placed
-   * at the end of the slug guaranteeing uniqueness
-   */
+  /** Slug should be unique amongst all blocks (server will throw BAD_USER_INPUT error if not). If not required will use the current block id. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness */
   slug?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * x is used to position the block horizontally in the journey flow diagram on
-   * the editor.
-   */
+  /** x is used to position the block horizontally in the journey flow diagram on the editor. */
   x?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * y is used to position the block vertically in the journey flow diagram on
-   * the editor.
-   */
+  /** y is used to position the block vertically in the journey flow diagram on the editor. */
   y?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -4823,11 +4853,22 @@ export type StepViewEventCreateInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   journeyAiTranslateCreateSubscription: JourneyAiTranslateProgress;
+  userDeleteConfirm: UserDeleteConfirmProgress;
 };
 
 
 export type SubscriptionJourneyAiTranslateCreateSubscriptionArgs = {
   input: JourneyAiTranslateInput;
+};
+
+
+export type SubscriptionUserDeleteConfirmArgs = {
+  deletedJourneyIds: Array<Scalars['String']['input']>;
+  deletedTeamIds: Array<Scalars['String']['input']>;
+  deletedUserJourneyIds: Array<Scalars['String']['input']>;
+  deletedUserTeamIds: Array<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  idType: UserDeleteIdType;
 };
 
 export type Tag = {
@@ -5073,6 +5114,12 @@ export enum TypographyVariant {
   Subtitle2 = 'subtitle2'
 }
 
+export enum User_Delete_Log_Level {
+  Error = 'ERROR',
+  Info = 'INFO',
+  Warn = 'WARN'
+}
+
 export enum UnsplashColor {
   Black = 'black',
   BlackAndWhite = 'black_and_white',
@@ -5194,6 +5241,62 @@ export type UserAgent = {
   browser: Browser;
   device: Device;
   os: OperatingSystem;
+};
+
+export type UserDeleteCheckResult = {
+  __typename?: 'UserDeleteCheckResult';
+  logs: Array<UserDeleteLogEntry>;
+  userEmail?: Maybe<Scalars['String']['output']>;
+  userFirstName: Scalars['String']['output'];
+  userId: Scalars['String']['output'];
+};
+
+export type UserDeleteConfirmProgress = {
+  __typename?: 'UserDeleteConfirmProgress';
+  done: Scalars['Boolean']['output'];
+  log: UserDeleteLogEntry;
+  success?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export enum UserDeleteIdType {
+  DatabaseId = 'databaseId',
+  Email = 'email',
+  Jwt = 'jwt'
+}
+
+export type UserDeleteJourneysCheckResult = {
+  __typename?: 'UserDeleteJourneysCheckResult';
+  journeysToDelete: Scalars['Int']['output'];
+  journeysToRemove: Scalars['Int']['output'];
+  journeysToTransfer: Scalars['Int']['output'];
+  logs: Array<UserDeleteJourneysLogEntry>;
+  teamsToDelete: Scalars['Int']['output'];
+  teamsToRemove: Scalars['Int']['output'];
+  teamsToTransfer: Scalars['Int']['output'];
+};
+
+export type UserDeleteJourneysConfirmResult = {
+  __typename?: 'UserDeleteJourneysConfirmResult';
+  deletedJourneyIds: Array<Scalars['String']['output']>;
+  deletedTeamIds: Array<Scalars['String']['output']>;
+  deletedUserJourneyIds: Array<Scalars['String']['output']>;
+  deletedUserTeamIds: Array<Scalars['String']['output']>;
+  logs: Array<UserDeleteJourneysLogEntry>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type UserDeleteJourneysLogEntry = {
+  __typename?: 'UserDeleteJourneysLogEntry';
+  level: User_Delete_Log_Level;
+  message: Scalars['String']['output'];
+  timestamp: Scalars['String']['output'];
+};
+
+export type UserDeleteLogEntry = {
+  __typename?: 'UserDeleteLogEntry';
+  level: User_Delete_Log_Level;
+  message: Scalars['String']['output'];
+  timestamp: Scalars['String']['output'];
 };
 
 export type UserInvite = {
@@ -5830,21 +5933,29 @@ export type VideoProgressEventCreateInput = {
   value?: InputMaybe<VideoBlockSource>;
 };
 
-export type VideoPublishChildrenAndLanguagesResult = {
-  __typename?: 'VideoPublishChildrenAndLanguagesResult';
-  parentId?: Maybe<Scalars['ID']['output']>;
-  publishedChildIds?: Maybe<Array<Scalars['ID']['output']>>;
-  publishedChildrenCount?: Maybe<Scalars['Int']['output']>;
-  publishedVariantIds?: Maybe<Array<Scalars['ID']['output']>>;
-  publishedVariantsCount?: Maybe<Scalars['Int']['output']>;
-};
-
 export type VideoPublishChildrenResult = {
   __typename?: 'VideoPublishChildrenResult';
+  dryRun?: Maybe<Scalars['Boolean']['output']>;
   parentId?: Maybe<Scalars['ID']['output']>;
-  publishedChildIds?: Maybe<Array<Scalars['ID']['output']>>;
-  publishedChildrenCount?: Maybe<Scalars['Int']['output']>;
+  publishedVariantIds?: Maybe<Array<Scalars['ID']['output']>>;
+  publishedVariantsCount?: Maybe<Scalars['Int']['output']>;
+  publishedVideoCount?: Maybe<Scalars['Int']['output']>;
+  publishedVideoIds?: Maybe<Array<Scalars['ID']['output']>>;
+  videosFailedValidation: Array<VideoPublishChildrenUnpublishedVideo>;
 };
+
+export type VideoPublishChildrenUnpublishedVideo = {
+  __typename?: 'VideoPublishChildrenUnpublishedVideo';
+  message?: Maybe<Scalars['String']['output']>;
+  missingFields?: Maybe<Array<Scalars['String']['output']>>;
+  videoId?: Maybe<Scalars['ID']['output']>;
+};
+
+export enum VideoPublishMode {
+  ChildrenVideosAndVariants = 'childrenVideosAndVariants',
+  ChildrenVideosOnly = 'childrenVideosOnly',
+  VariantsOnly = 'variantsOnly'
+}
 
 export enum VideoRedirectType {
   Dh = 'dh',

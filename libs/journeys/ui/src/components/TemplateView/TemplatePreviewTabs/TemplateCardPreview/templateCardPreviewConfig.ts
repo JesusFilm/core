@@ -2,7 +2,7 @@ import type { SxProps, Theme } from '@mui/material/styles'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import type { SwiperModule, SwiperOptions } from 'swiper/types'
 
-export type TemplateCardPreviewVariant = 'standard' | 'compact'
+export type TemplateCardPreviewVariant = 'standard' | 'compact' | 'guestPreview'
 
 interface FramePortalConfig {
   width: { xs: number; sm: number }
@@ -21,12 +21,13 @@ export interface VariantConfig {
   cardHeight: { xs: number; sm: number }
   swiperHeight: { xs: number; sm: number }
   showMoreCardsSlide: boolean
+  showStepHeaderFooter: boolean
   framePortal: FramePortalConfig
   swiperProps?: Partial<SwiperOptions>
   breakpoints: { xs: BreakpointSwiperOptions; sm: BreakpointSwiperOptions }
+  maxSlides?: number
   cardSx: SxProps<Theme>
   slideSx: SxProps<Theme>
-  selectedSlideSx: SxProps<Theme>
   swiperSx: SxProps<Theme>
   modules?: SwiperModule[]
   opacity?: number
@@ -45,6 +46,8 @@ const STANDARD_VARIANT_CONFIG: VariantConfig = {
   cardHeight: { xs: STANDARD_CARD_HEIGHT_XS, sm: STANDARD_CARD_HEIGHT_SM },
   swiperHeight: { xs: STANDARD_CARD_HEIGHT_XS, sm: STANDARD_CARD_HEIGHT_SM },
   showMoreCardsSlide: true,
+  showStepHeaderFooter: false,
+  maxSlides: 7,
   framePortal: {
     width: { xs: 485, sm: 445 },
     height: { xs: 738, sm: 673 },
@@ -65,7 +68,6 @@ const STANDARD_VARIANT_CONFIG: VariantConfig = {
     mr: { xs: 3, sm: 7 },
     width: 'unset !important'
   },
-  selectedSlideSx: {},
   swiperSx: {
     overflow: 'visible',
     zIndex: 2
@@ -90,6 +92,7 @@ const COMPACT_VARIANT_CONFIG: VariantConfig = {
     sm: COMPACT_CARD_HEIGHT * SELECTED_SCALE
   },
   showMoreCardsSlide: false,
+  showStepHeaderFooter: false,
   framePortal: {
     width: { xs: 300, sm: 300 },
     height: { xs: 523, sm: 523 },
@@ -123,11 +126,6 @@ const COMPACT_VARIANT_CONFIG: VariantConfig = {
     justifyContent: 'center',
     borderRadius: '12px'
   },
-  selectedSlideSx: {
-    width: COMPACT_CARD_WIDTH * SELECTED_SCALE,
-    height: COMPACT_CARD_HEIGHT * SELECTED_SCALE,
-    zIndex: 1
-  },
   selectedBoxShadow: `0px 1px 8px 0px rgba(0, 0, 0, 0.2),
     0px 3px 3px 0px rgba(0, 0, 0, 0.12),
     0px 3px 4px 0px rgba(0, 0, 0, 0.14)`,
@@ -143,10 +141,52 @@ const COMPACT_VARIANT_CONFIG: VariantConfig = {
   opacity: 0.75
 }
 
+const GUEST_PREVIEW_VARIANT_CONFIG: VariantConfig = {
+  cardWidth: { xs: 300, sm: 360 },
+  cardHeight: { xs: 520, sm: 640 },
+  swiperHeight: { xs: 520, sm: 640 },
+  showMoreCardsSlide: false,
+  showStepHeaderFooter: true,
+  framePortal: {
+    width: { xs: 300, sm: 360 },
+    height: { xs: 520, sm: 640 },
+    scale: { xs: 1, sm: 1 },
+    borderRadius: 4
+  },
+  breakpoints: {
+    xs: { spaceBetween: 16 },
+    sm: { spaceBetween: 16 }
+  },
+  cardSx: {
+    position: 'relative',
+    backgroundColor: 'transparent',
+    borderRadius: 4
+  },
+  slideSx: {
+    zIndex: 2,
+    width: 'auto',
+    flexShrink: 0
+  },
+  swiperSx: {
+    overflow: 'visible',
+    zIndex: 2
+  },
+  swiperProps: {
+    watchOverflow: true,
+    slidesPerView: 'auto',
+    spaceBetween: 16,
+    centeredSlides: true,
+    observer: true,
+    observeParents: true
+  },
+  modules: [A11y]
+}
+
 export const VARIANT_CONFIGS: Record<
   TemplateCardPreviewVariant,
   VariantConfig
 > = {
   standard: STANDARD_VARIANT_CONFIG,
-  compact: COMPACT_VARIANT_CONFIG
+  compact: COMPACT_VARIANT_CONFIG,
+  guestPreview: GUEST_PREVIEW_VARIANT_CONFIG
 }

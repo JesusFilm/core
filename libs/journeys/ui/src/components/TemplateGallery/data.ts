@@ -18,6 +18,8 @@ import { GetLanguages } from '../../libs/useLanguagesQuery/__generated__/GetLang
 import { GET_TAGS } from '../../libs/useTagsQuery'
 import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
 
+import { GET_JOURNEY_TEMPLATE_LANGUAGE_IDS } from './HeaderAndLanguageFilter'
+
 const defaultTemplate: Journey = {
   __typename: 'Journey',
   trashedAt: null,
@@ -270,40 +272,24 @@ export const getJourneysWithoutLanguageIdsMock: MockedResponse<
   }
 }
 
+export const getJourneyTemplateLanguageIdsMock: MockedResponse = {
+  request: {
+    query: GET_JOURNEY_TEMPLATE_LANGUAGE_IDS
+  },
+  result: {
+    data: {
+      journeyTemplateLanguageIds: ['529', '496', '1106']
+    }
+  }
+}
+
 export const getLanguagesMock: MockedResponse<GetLanguages> = {
   request: {
     query: GET_LANGUAGES,
     variables: {
       languageId: '529',
       where: {
-        ids: [
-          '529',
-          '4415',
-          '1106',
-          '4451',
-          '496',
-          '20526',
-          '584',
-          '21028',
-          '20615',
-          '3934',
-          '22658',
-          '7083',
-          '16639',
-          '3887',
-          '13169',
-          '6464',
-          '12876',
-          '53441',
-          '1942',
-          '5541',
-          '6788',
-          '3804',
-          '1927',
-          '1370',
-          '139081',
-          '1254'
-        ]
+        ids: ['529', '496', '1106']
       }
     }
   },

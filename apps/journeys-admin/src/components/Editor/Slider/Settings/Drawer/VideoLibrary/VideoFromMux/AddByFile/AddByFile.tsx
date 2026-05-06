@@ -3,7 +3,7 @@ import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 import { ErrorCode, FileRejection, useDropzone } from 'react-dropzone'
 
@@ -231,27 +231,19 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         </Box>
       ) : (
         <Button
+          variant="blockOutlined"
+          color="solid"
           size="small"
-          color="secondary"
-          variant="outlined"
           onClick={open}
           disabled={videoBlockId == null || uploadTask != null}
           sx={{
             mt: 4,
-            height: 32,
-            width: '100%',
-            borderRadius: 2
+            width: '100%'
           }}
         >
-          <Typography
-            variant="subtitle2"
-            fontSize={14}
-            sx={{ color: 'secondary.main' }}
-          >
-            {videoBlockId == null
-              ? t('Select a video block first')
-              : t('Upload file')}
-          </Typography>
+          {videoBlockId == null
+            ? t('Select a video block first')
+            : t('Upload file')}
         </Button>
       )}
     </Stack>

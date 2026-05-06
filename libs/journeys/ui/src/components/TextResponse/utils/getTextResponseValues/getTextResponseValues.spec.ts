@@ -57,42 +57,40 @@ describe('getTextResponseValues', () => {
     expect(result).toEqual(input)
   })
 
-  it('resolves values for default variant', () => {
+  it('prefers defaultValue for default variant (end-user rendering)', () => {
     const input: TextResponseStrings = {
       label: '{{ name }}',
       placeholder: '{{ title }}',
       hint: '{{ unknown }}'
     }
     const result = getTextResponseValues(input, fields, 'default')
-    expect(result.label).toBe('Alice')
+    expect(result.label).toBe('Anonymous')
     expect(result.placeholder).toBe('Child of God')
     expect(result.hint).toBe('{{ unknown }}')
   })
 
-  it('resolves values for embed variant', () => {
+  it('prefers defaultValue for embed variant (end-user rendering)', () => {
     const input: TextResponseStrings = {
       label: '  {{ name }}  ',
-      // incorrect syntax should return unresolved:
       placeholder: '{{ title: CTO }}',
-      // incorrect syntax should return unresolved:
       hint: '{{ some: value }}'
     }
     const result = getTextResponseValues(input, fields, 'embed')
-    expect(result.label).toBe('  Alice  ')
-    expect(result.placeholder).toBe('{{ title: CTO }}')
-    expect(result.hint).toBe('{{ some: value }}')
+    expect(result.label).toBe('  Anonymous  ')
+    expect(result.placeholder).toBe('Child of God')
+    expect(result.hint).toBe('Some Default')
   })
 
-  it('replaces custom fields within mixed strings and leaves non-custom-field text intact', () => {
+  it('replaces custom fields within mixed strings using defaultValue for default variant', () => {
     const input: TextResponseStrings = {
       label: 'Hello {{ name }}!',
       placeholder: 'name',
       hint: '{{name}} extra'
     }
     const result = getTextResponseValues(input, fields, 'default')
-    expect(result.label).toBe('Hello Alice!')
+    expect(result.label).toBe('Hello Anonymous!')
     expect(result.placeholder).toBe('name')
-    expect(result.hint).toBe('Alice extra')
+    expect(result.hint).toBe('Anonymous extra')
   })
 
   it('handles null placeholder and hint', () => {

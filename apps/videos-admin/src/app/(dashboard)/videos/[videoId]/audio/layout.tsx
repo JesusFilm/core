@@ -1,17 +1,21 @@
 'use client'
 
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import PublishIcon from '@mui/icons-material/Publish'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useParams, usePathname, useRouter } from 'next/navigation'
+import { useSnackbar } from 'notistack'
 import { useCallback, useEffect, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
@@ -41,6 +45,14 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   }
 `)
 
+const UPDATE_VIDEO_VARIANT = graphql(`
+  mutation UpdateVideoVariant($input: VideoVariantUpdateInput!) {
+    videoVariantUpdate(input: $input) {
+      id
+      published
+    }
+  }
+`)
 export default function ClientLayout({
   children
 }: {
@@ -48,12 +60,16 @@ export default function ClientLayout({
 }) {
   const router = useRouter()
   const pathname = usePathname()
+  const { enqueueSnackbar } = useSnackbar()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
   const { videoId } = useParams<{ videoId: string }>()
 
   const { data, loading, refetch } = useQuery(GET_ADMIN_VIDEO_VARIANTS, {
     variables: { id: videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
+
+  const [updateVariant, { loading: isPublishing }] =
+    useMutation(UPDATE_VIDEO_VARIANT)
 
   useEffect(() => {
     if (reloadOnPathChange) void refetch()
@@ -105,6 +121,18 @@ export default function ClientLayout({
     },
     [router, videoId]
   )
+
+  const handlePublishAllClick = useCallback(() => {
+    if (!data?.adminVideo.variants) return
+    const draftVariants = data.adminVideo.variants.filter((v) => !v.published)
+    if (draftVariants.length === 0) {
+      enqueueSnackbar('No draft audio languages to publish', {
+        variant: 'info'
+      })
+      return
+    }
+    router.push(`/videos/${videoId}/audio/publishAll`, { scroll: false })
+  }, [data?.adminVideo.variants, enqueueSnackbar, router, videoId])
 
   const renderContent = () => {
     if (loading) {
@@ -248,20 +276,51 @@ export default function ClientLayout({
 
   return (
     <>
-      <Section
-        boxProps={{
-          sx: { p: 2, height: 'calc(100vh - 400px)' }
-        }}
-        title="Audio Languages"
-        variant="outlined"
-        action={{
-          label: 'Add Audio Language',
-          startIcon: <AddIcon />,
-          onClick: handleAddAudioLanguage
+      <Stack
+        sx={{
+          border: '1px solid',
+          borderColor: 'divider',
+          overflow: 'hidden',
+          borderRadius: 1,
+          width: '100%',
+          p: 2,
+          height: 'calc(100vh - 400px)'
         }}
       >
-        {renderContent()}
-      </Section>
+        {/* Custom header with both buttons */}
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 2 }}
+        >
+          <Typography variant="h6" component="h2">
+            Audio Languages
+          </Typography>
+          <Stack direction="row" spacing={1}>
+            <Button
+              variant="outlined"
+              startIcon={<PublishIcon />}
+              onClick={handlePublishAllClick}
+              disabled={loading}
+              size="small"
+            >
+              Publish All
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleAddAudioLanguage}
+              size="small"
+            >
+              Add Audio Language
+            </Button>
+          </Stack>
+        </Stack>
+
+        {/* Content */}
+        <Box sx={{ flex: 1, overflow: 'auto' }}>{renderContent()}</Box>
+      </Stack>
       {children}
     </>
   )

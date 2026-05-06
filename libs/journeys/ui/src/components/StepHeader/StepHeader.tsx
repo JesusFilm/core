@@ -3,8 +3,10 @@ import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
+import { TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { StepFields } from '../Step/__generated__/StepFields'
 
 import { InformationButton } from './InformationButton'
 import { Logo } from './Logo'
@@ -14,11 +16,15 @@ import { StepHeaderMenu } from './StepHeaderMenu'
 interface StepHeaderProps {
   onHeaderClick?: () => void
   sx?: SxProps
+  steps?: Array<TreeBlock<StepFields>> | null
+  selectedStep?: TreeBlock<StepFields> | null
 }
 
 export function StepHeader({
   onHeaderClick,
-  sx
+  sx,
+  steps,
+  selectedStep
 }: StepHeaderProps): ReactElement {
   const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
@@ -83,7 +89,8 @@ export function StepHeader({
                   color: { xs: 'primary.main', lg: 'white' },
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
-                  textOverflow: 'ellipsis'
+                  textOverflow: 'ellipsis',
+                  maxWidth: '100%'
                 }}
               >
                 {journey?.displayTitle ?? journey?.seoTitle}
@@ -94,7 +101,7 @@ export function StepHeader({
         </Stack>
       ) : (
         <>
-          <PaginationBullets />
+          <PaginationBullets steps={steps} selectedStep={selectedStep} />
           <InformationButton
             sx={{ px: { xs: variant === 'default' ? 6 : 3, lg: 0 } }}
           />

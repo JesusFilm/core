@@ -366,60 +366,6 @@ describe('JourneyResolver', () => {
     })
   })
 
-  describe('adminJourney', () => {
-    it('returns journey by slug', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        journeyWithUserTeam
-      )
-      expect(
-        await resolver.adminJourney(ability, 'journey-slug', IdType.slug)
-      ).toEqual(journeyWithUserTeam)
-      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
-        where: {
-          slug: 'journey-slug'
-        },
-        include: {
-          userJourneys: true,
-          team: {
-            include: { userTeams: true }
-          }
-        }
-      })
-    })
-
-    it('returns journey by id', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        journeyWithUserTeam
-      )
-      expect(
-        await resolver.adminJourney(ability, 'journeyId', IdType.databaseId)
-      ).toEqual(journeyWithUserTeam)
-      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
-        where: { id: 'journeyId' },
-        include: {
-          userJourneys: true,
-          team: {
-            include: { userTeams: true }
-          }
-        }
-      })
-    })
-
-    it('throws error if not found', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(null)
-      await expect(
-        resolver.adminJourney(ability, 'journeyId', IdType.databaseId)
-      ).rejects.toThrow('journey not found')
-    })
-
-    it('throws error if not authorized', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
-      await expect(
-        resolver.adminJourney(ability, 'journeyId', IdType.databaseId)
-      ).rejects.toThrow('user is not allowed to view journey')
-    })
-  })
-
   describe('journeys', () => {
     it('returns published journeys', async () => {
       prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
@@ -676,6 +622,40 @@ describe('JourneyResolver', () => {
           ]
         }
       })
+    })
+  })
+
+  describe('journeyTemplateLanguageIds', () => {
+    it('returns distinct language IDs from published templates', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([
+        { languageId: '529' },
+        { languageId: '496' }
+      ] as any)
+      expect(await resolver.journeyTemplateLanguageIds()).toEqual([
+        '529',
+        '496'
+      ])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          template: true,
+          status: 'published',
+          teamId: 'jfp-team'
+        },
+        distinct: ['languageId'],
+        select: { languageId: true }
+      })
+    })
+
+    it('returns only one entry per language', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([
+        { languageId: '529' }
+      ] as any)
+      expect(await resolver.journeyTemplateLanguageIds()).toEqual(['529'])
+    })
+
+    it('returns empty array when no published templates exist', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([])
+      expect(await resolver.journeyTemplateLanguageIds()).toEqual([])
     })
   })
 

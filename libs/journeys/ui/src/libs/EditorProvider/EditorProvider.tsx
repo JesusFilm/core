@@ -96,6 +96,11 @@ export interface EditorState {
    * not work.
    */
   selectedStepId?: string
+  /**
+   * showCardTemplates indicates whether the Card Templates panel should be
+   * shown for empty cards. Resets to true on step navigation changes.
+   */
+  showCardTemplates?: boolean
   steps?: Array<TreeBlock<StepBlock>>
 }
 interface SetActiveContentAction {
@@ -154,6 +159,10 @@ interface SetHoveredStepAction {
   type: 'SetHoveredStepAction'
   hoveredStep?: TreeBlock<StepBlock>
 }
+interface SetShowCardTemplatesAction {
+  type: 'SetShowCardTemplatesAction'
+  showCardTemplates: boolean
+}
 
 /**
  * SetEditorFocusAction is a special action that allows setting multiple state
@@ -187,8 +196,8 @@ export type EditorAction =
   | SetShowAnalyticsAction
   | SetAnalyticsAction
   | SetHoveredStepAction
+  | SetShowCardTemplatesAction
   | SetEditorFocusAction
-  | SetSelectedStepByIdAction
 
 export const reducer = (
   state: EditorState,
@@ -245,7 +254,8 @@ export const reducer = (
         ...state,
         selectedGoalUrl: action.selectedGoalUrl
       }
-    case 'SetSelectedStepAction':
+    case 'SetSelectedStepAction': {
+      const isSameStep = action.selectedStep?.id === state.selectedStepId
       return {
         ...state,
         selectedStepId: action.selectedStep?.id,
@@ -253,8 +263,10 @@ export const reducer = (
         selectedBlockId: action.selectedStep?.id,
         selectedBlock: action.selectedStep,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-        activeContent: ActiveContent.Canvas
+        activeContent: ActiveContent.Canvas,
+        showCardTemplates: isSameStep ? state.showCardTemplates : true
       }
+    }
     case 'SetSelectedStepByIdAction': {
       const selectedStep =
         action.selectedStepId != null
@@ -269,7 +281,12 @@ export const reducer = (
         selectedBlockId: action.selectedStepId,
         selectedBlock: selectedStep,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-        activeContent: ActiveContent.Canvas
+        activeContent: ActiveContent.Canvas,
+        showCardTemplates:
+          action.selectedStepId != null &&
+          action.selectedStepId === state.selectedStepId
+            ? state.showCardTemplates
+            : true
       }
     }
     case 'SetStepsAction': {
@@ -307,6 +324,8 @@ export const reducer = (
         ...state,
         hoveredStep: action.hoveredStep
       }
+    case 'SetShowCardTemplatesAction':
+      return { ...state, showCardTemplates: action.showCardTemplates }
     case 'SetEditorFocusAction': {
       let stateCopy = { ...state }
       const {
@@ -376,6 +395,7 @@ export const EditorContext = createContext<{
 }>({
   state: {
     steps: [],
+    showCardTemplates: true,
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas
@@ -399,6 +419,7 @@ export function EditorProvider({
 }: EditorProviderProps): ReactElement {
   const [state, dispatch] = useReducer(reducer, {
     steps: [],
+    showCardTemplates: true,
     selectedStep: initialState?.steps?.[0],
     selectedBlock: initialState?.steps?.[0],
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
