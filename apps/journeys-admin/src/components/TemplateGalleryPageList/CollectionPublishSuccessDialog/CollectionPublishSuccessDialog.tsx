@@ -11,6 +11,8 @@ import { ReactElement } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
 
+import { copyToClipboard } from '../../../libs/copyToClipboard'
+
 export interface CollectionPublishSuccessDialogProps {
   open: boolean
   /** The shareable public URL for the just-published page. */
@@ -28,18 +30,11 @@ export function CollectionPublishSuccessDialog({
 
   async function handleCopy(): Promise<void> {
     if (publicUrl == null) return
-    try {
-      await navigator.clipboard.writeText(publicUrl)
-      enqueueSnackbar(t('Link copied to clipboard'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
-    } catch {
-      enqueueSnackbar(t("Couldn't copy link"), {
-        variant: 'error',
-        preventDuplicate: true
-      })
-    }
+    const ok = await copyToClipboard(publicUrl)
+    enqueueSnackbar(
+      ok ? t('Link copied to clipboard') : t("Couldn't copy link"),
+      { variant: ok ? 'success' : 'error', preventDuplicate: true }
+    )
   }
 
   function handleView(): void {

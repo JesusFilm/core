@@ -16,6 +16,7 @@ import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
+import { copyToClipboard } from '../../../../libs/copyToClipboard'
 
 export interface CollectionPreviewValues {
   title: string
@@ -52,18 +53,11 @@ export function CollectionPreviewPane({
 
   async function handleCopy(): Promise<void> {
     if (publicUrl == null) return
-    try {
-      await navigator.clipboard.writeText(publicUrl)
-      enqueueSnackbar(t('Link copied to clipboard'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
-    } catch {
-      enqueueSnackbar(t("Couldn't copy link"), {
-        variant: 'error',
-        preventDuplicate: true
-      })
-    }
+    const ok = await copyToClipboard(publicUrl)
+    enqueueSnackbar(
+      ok ? t('Link copied to clipboard') : t("Couldn't copy link"),
+      { variant: ok ? 'success' : 'error', preventDuplicate: true }
+    )
   }
   function handleView(): void {
     if (publicUrl == null) return
