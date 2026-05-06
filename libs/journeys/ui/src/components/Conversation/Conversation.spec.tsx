@@ -62,15 +62,20 @@ describe('Conversation', () => {
       ResizeObserverMock as unknown as typeof ResizeObserver
     // jsdom does not implement Element.prototype.scrollTo, so we install
     // a fresh jest.fn() each test instead of spying on a missing prop.
-    originalScrollTo = (Element.prototype as { scrollTo?: typeof Element.prototype.scrollTo }).scrollTo
+    originalScrollTo = (
+      Element.prototype as { scrollTo?: typeof Element.prototype.scrollTo }
+    ).scrollTo
     scrollToSpy = jest.fn()
-    Element.prototype.scrollTo = scrollToSpy as unknown as typeof Element.prototype.scrollTo
+    Element.prototype.scrollTo =
+      scrollToSpy as unknown as typeof Element.prototype.scrollTo
   })
 
   afterEach(() => {
     jest.restoreAllMocks()
     if (originalScrollTo == null) {
-      delete (Element.prototype as { scrollTo?: typeof Element.prototype.scrollTo }).scrollTo
+      delete (
+        Element.prototype as { scrollTo?: typeof Element.prototype.scrollTo }
+      ).scrollTo
     } else {
       Element.prototype.scrollTo = originalScrollTo
     }
