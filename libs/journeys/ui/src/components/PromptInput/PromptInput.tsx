@@ -2,15 +2,14 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import StopRoundedIcon from '@mui/icons-material/StopRounded'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import InputBase from '@mui/material/InputBase'
 import { useTranslation } from 'next-i18next/pages'
 import {
   ChangeEvent,
   FormEvent,
   KeyboardEvent,
   ReactElement,
-  useCallback,
-  useEffect,
-  useRef
+  useCallback
 } from 'react'
 
 import {
@@ -44,10 +43,9 @@ interface PromptInputProps {
   variant?: 'inline' | 'floating'
 }
 
-// 6 lines × ~24px = 144px. Past this the textarea stops growing
-// and scrolls internally so the floating capsule can't push the
-// conversation off-screen.
-const MAX_TEXTAREA_HEIGHT_PX = 144
+// Cap auto-grow at 6 rows so the floating capsule can't push the
+// conversation off-screen — past this the textarea scrolls internally.
+const MAX_INPUT_ROWS = 6
 
 export function PromptInput({
   input,
@@ -58,10 +56,9 @@ export function PromptInput({
   variant = 'inline'
 }: PromptInputProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    (e: KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => {
       // Enter submits; Shift+Enter inserts a newline so users can
       // compose multi-line questions.
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -85,21 +82,11 @@ export function PromptInput({
   )
 
   const handleInputChange = useCallback(
-    (e: ChangeEvent<HTMLTextAreaElement>) => {
+    (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
       onInputChange(e.target.value)
     },
     [onInputChange]
   )
-
-  // Auto-grow the textarea up to ~6 lines, then scroll. Reset to
-  // 'auto' first so the next measurement reflects the shrunken
-  // content (otherwise the height only ever climbs).
-  useEffect(() => {
-    const el = textareaRef.current
-    if (el == null) return
-    el.style.height = 'auto'
-    el.style.height = `${Math.min(el.scrollHeight, MAX_TEXTAREA_HEIGHT_PX)}px`
-  }, [input])
 
   const canSubmit = input.trim().length > 0
   const isFloating = variant === 'floating'
@@ -128,41 +115,41 @@ export function PromptInput({
         boxShadow: isFloating ? OVERLAY_INPUT_SHADOW : PANEL_INPUT_SHADOW
       }}
     >
-      <Box
-        component="textarea"
-        ref={textareaRef}
-        rows={1}
+      <InputBase
+        multiline
+        maxRows={MAX_INPUT_ROWS}
         value={input}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         placeholder={t('Ask anything…')}
         disabled={isLoading}
-        aria-label={t('Chat message input')}
+        inputProps={{ 'aria-label': t('Chat message input') }}
         sx={{
           flex: 1,
           minWidth: 0,
-          minHeight: '40px',
-          maxHeight: `${MAX_TEXTAREA_HEIGHT_PX}px`,
-          border: 'none',
-          outline: 'none',
-          background: 'transparent',
           px: '14px',
           py: '9px',
-          resize: 'none',
+          color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
           // font-size >= 16px keeps iOS Safari from auto-zooming on focus
           // (regression guard from the M1 fix).
           fontSize: 16,
           lineHeight: 1.375,
           fontFamily: 'inherit',
-          color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
-          boxSizing: 'border-box',
-          overflowY: 'auto',
-          '&::placeholder': {
-            color: isFloating ? OVERLAY_FG_MUTED : TEXT_SECONDARY,
-            opacity: 1
+          '& .MuiInputBase-input': {
+            p: 0,
+            fontSize: 16,
+            lineHeight: 1.375,
+            fontFamily: 'inherit',
+            color: 'inherit',
+            '&::placeholder': {
+              color: isFloating ? OVERLAY_FG_MUTED : TEXT_SECONDARY,
+              opacity: 1
+            }
           },
-          '&:focus': { outline: 'none' },
-          '&:disabled': { color: TEXT_SECONDARY }
+          '&.Mui-disabled, & .MuiInputBase-input.Mui-disabled': {
+            color: TEXT_SECONDARY,
+            WebkitTextFillColor: TEXT_SECONDARY
+          }
         }}
       />
       {isLoading ? (
