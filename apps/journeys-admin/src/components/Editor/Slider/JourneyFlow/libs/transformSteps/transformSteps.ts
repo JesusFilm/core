@@ -201,6 +201,16 @@ export function transformSteps(
 
   steps.forEach((step) => {
     connectStepToNextBlock(step, steps)
+
+    // Parent node must be in the array before child nodes (parentId)
+    // for @xyflow/react to correctly resolve relative positions on first render
+    nodes.push({
+      id: step.id,
+      type: 'StepBlock',
+      data: {},
+      position: positions[step.id]
+    })
+
     const actionBlocks = filterActionBlocks(step)
 
     actionBlocks.reduce((actionCount, block, blockIndex) => {
@@ -217,13 +227,6 @@ export function transformSteps(
       processActionBlock(block, step, priorAction, actionIndex, blockIndex)
       return createsNode ? actionCount + 1 : actionCount
     }, 0)
-
-    nodes.push({
-      id: step.id,
-      type: 'StepBlock',
-      data: {},
-      position: positions[step.id]
-    })
   })
 
   if (steps[0] != null) {
