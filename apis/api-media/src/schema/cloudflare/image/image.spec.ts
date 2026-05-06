@@ -63,11 +63,7 @@ describe('cloudflareImage', () => {
   describe('queries', () => {
     describe('getMyCloudflareImages', () => {
       const GET_MY_CLOUDFLARE_IMAGES_QUERY = graphql(`
-        query getMyCloudflareImages(
-          $offset: Int
-          $limit: Int
-          $isAi: Boolean
-        ) {
+        query getMyCloudflareImages($offset: Int, $limit: Int, $isAi: Boolean) {
           getMyCloudflareImages(offset: $offset, limit: $limit, isAi: $isAi) {
             id
             uploadUrl
