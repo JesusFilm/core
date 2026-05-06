@@ -17,6 +17,44 @@ export function buildJourneySiteId(journeyId: string): string {
   return `api-journeys-journey-${journeyId}`
 }
 
+export function mergeBreakdownsByProperty(
+  results: PlausibleStatsResponse[]
+): PlausibleStatsResponse[] {
+  const merged = new Map<string, PlausibleStatsResponse>()
+  for (const result of results) {
+    const key = result.property
+    const existing = merged.get(key)
+    if (existing == null) {
+      merged.set(key, { ...result })
+      continue
+    }
+    const existingRecord = existing as unknown as Record<string, unknown>
+    for (const [field, value] of Object.entries(result)) {
+      if (field === 'property') continue
+      if (typeof value !== 'number') continue
+      const existingValue = existingRecord[field]
+      const baseline = typeof existingValue === 'number' ? existingValue : 0
+      existingRecord[field] = baseline + value
+    }
+  }
+  return Array.from(merged.values()).sort(
+    (a, b) => (b.visitors ?? 0) - (a.visitors ?? 0)
+  )
+}
+
+export async function getTeamStatsBreakdown(
+  journeyIds: string[],
+  params: PlausibleBreakdownParams
+): Promise<PlausibleStatsResponse[]> {
+  if (journeyIds.length === 0) return []
+
+  const perJourneyResults = await Promise.all(
+    journeyIds.map((journeyId) => getJourneyStatsBreakdown(journeyId, params))
+  )
+
+  return mergeBreakdownsByProperty(perJourneyResults.flat())
+}
+
 export function getPlausibleConfig(): {
   baseUrl: string
   headers: Record<string, string>

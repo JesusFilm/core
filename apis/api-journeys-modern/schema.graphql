@@ -1963,6 +1963,19 @@ type Query {
   If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
   """
   journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug): [PlausibleStatsResponse!]!
+
+  """
+  Aggregated Plausible breakdown stats across every journey in a
+  team. Per-journey results are fetched in parallel from the Plausible
+  `breakdown` endpoint and then merged by the `property` field, summing
+  numeric metrics (e.g. visitors, pageviews, events). Results are ordered by
+  visitors descending. The set of metrics returned is inferred from the
+  requested GraphQL selection set, mirroring `journeysPlausibleStatsBreakdown`.
+  
+  This endpoint is unauthenticated, but only a fixed allowlist of team IDs is
+  permitted. Requests for any other team return a `FORBIDDEN` error.
+  """
+  teamPlausibleStatsBreakdown(teamId: ID!, where: PlausibleStatsBreakdownFilter!): [PlausibleStatsResponse!]!
   templateFamilyStatsAggregate(id: ID!, idType: IdType = slug, where: PlausibleStatsAggregateFilter!): TemplateFamilyStatsAggregateResponse
   templateFamilyStatsBreakdown(
     id: ID!

@@ -3882,6 +3882,16 @@ export type Query = {
   tags: Array<Tag>;
   taxonomies: Array<Taxonomy>;
   team: Team;
+  /**
+   * Aggregated Plausible breakdown stats across every journey in a
+   * team that the current user has access to. Per-journey results are fetched in
+   * parallel from the Plausible `breakdown` endpoint and then merged by the
+   * `property` field, summing numeric metrics (e.g. visitors, pageviews, events).
+   * Results are ordered by visitors descending. The set of metrics returned is
+   * inferred from the requested GraphQL selection set, mirroring
+   * `journeysPlausibleStatsBreakdown`.
+   */
+  teamPlausibleStatsBreakdown: Array<PlausibleStatsResponse>;
   teams: Array<Team>;
   templateFamilyStatsAggregate?: Maybe<TemplateFamilyStatsAggregateResponse>;
   templateFamilyStatsBreakdown?: Maybe<Array<TemplateFamilyStatsBreakdownResponse>>;
@@ -4282,6 +4292,12 @@ export type QueryTaxonomiesArgs = {
 
 export type QueryTeamArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryTeamPlausibleStatsBreakdownArgs = {
+  teamId: Scalars['ID']['input'];
+  where: PlausibleStatsBreakdownFilter;
 };
 
 
