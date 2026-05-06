@@ -1,21 +1,16 @@
-import { ApolloError } from '@apollo/client'
 import RemoveIcon from '@mui/icons-material/Remove'
-import Autocomplete from '@mui/material/Autocomplete'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import ButtonBase from '@mui/material/ButtonBase'
-import Chip from '@mui/material/Chip'
 import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { Form, Formik, FormikHelpers } from 'formik'
+import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useMemo, useState } from 'react'
-import { array, object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -23,17 +18,12 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
-import {
-  TemplateGalleryPageCreateInput,
-  TemplateGalleryPageStatus,
-  TemplateGalleryPageUpdateInput
-} from '../../../../__generated__/globalTypes'
-import { useTemplateGalleryPageCreateMutation } from '../../../libs/useTemplateGalleryPageCreateMutation'
-import { useTemplateGalleryPageUpdateMutation } from '../../../libs/useTemplateGalleryPageUpdateMutation'
 
 import { CollectionPreviewPane } from './CollectionPreviewPane'
 import { CreatorImagePickerDrawer } from './CreatorImagePickerDrawer'
 import { DiscardConfirmDialog } from './DiscardConfirmDialog'
+import { JourneyPickerField } from './JourneyPickerField'
+import { useCollectionForm } from './useCollectionForm'
 
 export interface CollectionDialogProps {
   open: boolean
@@ -48,17 +38,6 @@ export interface CollectionDialogProps {
    */
   parentBusy?: boolean
   onClose: () => void
-}
-
-interface FormValues {
-  title: string
-  description: string
-  creatorName: string
-  creatorImageSrc: string
-  creatorImageAlt: string
-  mediaUrl: string
-  slug: string
-  journeyIds: string[]
 }
 
 // Matches the Figma "Editor / Subtitle/2" type token on section headers.
@@ -80,37 +59,16 @@ export function CollectionDialog({
   onClose
 }: CollectionDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { enqueueSnackbar } = useSnackbar()
 
-  const [templateGalleryPageCreate] = useTemplateGalleryPageCreateMutation()
-  const [templateGalleryPageUpdate] = useTemplateGalleryPageUpdateMutation()
+  const { initialValues, schema, isPublished, handleSubmit } =
+    useCollectionForm({ mode, teamId, collection, parentBusy, onClose })
 
-  // O(1) lookup to avoid the per-keystroke O(N×M) cascade in the Formik
-  // render-prop body: each render previously did
-  // `journeyIds.map(id => availableJourneys.find(...))` plus an
-  // `availableJourneys.filter(...)` for the Autocomplete value. With the
-  // map in hand the per-render cost is O(N) where N is selected count.
+  // O(1) lookup so the preview pane can resolve the user-pick-ordered
+  // journey list per Formik render without an O(M) scan.
   const journeysById = useMemo(
     () => new Map(availableJourneys.map((j) => [j.id, j])),
     [availableJourneys]
   )
-
-  // Published collections allow metadata edits but lock the membership list —
-  // matches the DnD published-guard. Unpublish first to add or remove
-  // templates.
-  const isPublished =
-    collection?.status === TemplateGalleryPageStatus.published
-
-  const initialValues: FormValues = {
-    title: collection?.title ?? '',
-    description: collection?.description ?? '',
-    creatorName: collection?.creatorName ?? '',
-    creatorImageSrc: collection?.creatorImageSrc ?? '',
-    creatorImageAlt: collection?.creatorImageAlt ?? '',
-    mediaUrl: collection?.mediaUrl ?? '',
-    slug: collection?.slug ?? '',
-    journeyIds: collection?.templates.map((tpl) => tpl.id) ?? []
-  }
 
   const [imagePickerOpen, setImagePickerOpen] = useState(false)
   // Collapsed by default in both create and edit, matching Figma's
@@ -120,126 +78,6 @@ export function CollectionDialog({
   // closed (and the dialog stays open) on Cancel, closed + onClose() on
   // Discard.
   const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false)
-
-  const schema = object({
-    title: string()
-      .required(t('Title is required'))
-      .max(100, t('Max 100 characters')),
-    description: string(),
-    creatorName: string().max(100, t('Max 100 characters')),
-    mediaUrl: string()
-      .max(2048, t('URL too long'))
-      .test('https-only', t('Must be an https URL'), (value) => {
-        if (value == null || value === '') return true
-        try {
-          return new URL(value).protocol === 'https:'
-        } catch {
-          return false
-        }
-      }),
-    slug: string()
-      .max(200, t('Max 200 characters'))
-      .matches(
-        /^[a-z0-9]+(-[a-z0-9]+)*$/,
-        t('Use lowercase letters, numbers, and hyphens only')
-      ),
-    journeyIds: array().of(string().required())
-  })
-
-  async function handleSubmit(
-    values: FormValues,
-    helpers: FormikHelpers<FormValues>
-  ): Promise<void> {
-    if (parentBusy) {
-      // A DnD mutation is still in flight on the parent. Bail rather than
-      // interleave a dialog mutation against the same team's cache.
-      enqueueSnackbar(t('Finishing previous action…'), {
-        variant: 'info',
-        preventDuplicate: true
-      })
-      return
-    }
-    try {
-      if (mode === 'create') {
-        const input: TemplateGalleryPageCreateInput = {
-          teamId,
-          title: values.title,
-          creatorName: values.creatorName,
-          creatorImageSrc:
-            values.creatorImageSrc === '' ? null : values.creatorImageSrc,
-          creatorImageAlt:
-            values.creatorImageAlt === '' ? null : values.creatorImageAlt,
-          description: values.description === '' ? null : values.description,
-          mediaUrl: values.mediaUrl === '' ? null : values.mediaUrl,
-          journeyIds: values.journeyIds
-        }
-        await templateGalleryPageCreate({ variables: { input } })
-        enqueueSnackbar(t('Collection created'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-      } else if (collection != null) {
-        const input: TemplateGalleryPageUpdateInput = {}
-        if (values.title !== collection.title) input.title = values.title
-        if (values.description !== (collection.description ?? '')) {
-          input.description = values.description === '' ? null : values.description
-        }
-        if (values.creatorName !== collection.creatorName) {
-          input.creatorName = values.creatorName
-        }
-        if (values.creatorImageSrc !== (collection.creatorImageSrc ?? '')) {
-          input.creatorImageSrc =
-            values.creatorImageSrc === '' ? null : values.creatorImageSrc
-        }
-        if (values.creatorImageAlt !== (collection.creatorImageAlt ?? '')) {
-          input.creatorImageAlt =
-            values.creatorImageAlt === '' ? null : values.creatorImageAlt
-        }
-        if (values.mediaUrl !== (collection.mediaUrl ?? '')) {
-          input.mediaUrl = values.mediaUrl === '' ? null : values.mediaUrl
-        }
-        if (values.slug !== collection.slug) input.slug = values.slug
-        const initialIds = collection.templates.map((tpl) => tpl.id).join(',')
-        const nextIds = values.journeyIds.join(',')
-        if (initialIds !== nextIds) {
-          input.journeyIds = values.journeyIds
-        }
-        await templateGalleryPageUpdate({
-          variables: { id: collection.id, input }
-        })
-        enqueueSnackbar(t('Collection updated'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-      }
-      onClose()
-    } catch (error) {
-      if (error instanceof ApolloError) {
-        // Map field-scoped errors back to Formik fields when possible.
-        const rawField = error.graphQLErrors?.[0]?.extensions?.field
-        const fieldError = typeof rawField === 'string' ? rawField : undefined
-        if (
-          fieldError != null &&
-          (fieldError === 'slug' ||
-            fieldError === 'mediaUrl' ||
-            fieldError === 'creatorImageSrc' ||
-            fieldError === 'title')
-        ) {
-          // Mark the field as touched so the error renders even if the
-          // user submitted without focusing it first.
-          await helpers.setFieldTouched(fieldError, true, false)
-          helpers.setFieldError(fieldError, error.message)
-          return
-        }
-      }
-      enqueueSnackbar(
-        error instanceof Error
-          ? error.message
-          : t("Couldn't save collection"),
-        { variant: 'error', preventDuplicate: true }
-      )
-    }
-  }
 
   return (
     <Formik
@@ -371,61 +209,17 @@ export function CollectionDialog({
                   </Stack>
 
                   {/* Templates picker (always visible) */}
-                  <Stack spacing={1}>
-                    <Typography sx={SECTION_HEADER}>
-                      {t('Templates on the page:')}
-                    </Typography>
-                    <Autocomplete
-                      multiple
-                      disableCloseOnSelect
-                      disabled={isPublished}
-                      options={availableJourneys as Journey[]}
-                      getOptionLabel={(option) => option.title}
-                      isOptionEqualToValue={(option, value) =>
-                        option.id === value.id
-                      }
-                      value={selectedJourneysOrdered}
-                      onChange={(_event, selected) => {
-                        void setFieldValue(
-                          'journeyIds',
-                          selected.map((j) => j.id)
-                        )
-                        void setFieldTouched('journeyIds', true, false)
-                      }}
-                      renderTags={(value, getTagProps) =>
-                        value.map((option, index) => {
-                          const { key, ...tagProps } = getTagProps({ index })
-                          return (
-                            <Chip
-                              key={key}
-                              label={option.title}
-                              size="small"
-                              {...tagProps}
-                            />
-                          )
-                        })
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          placeholder={
-                            values.journeyIds.length === 0
-                              ? t('Select templates to include')
-                              : undefined
-                          }
-                          variant="outlined"
-                          hiddenLabel
-                          helperText={
-                            isPublished
-                              ? t(
-                                  'Unpublish to change templates in this collection.'
-                                )
-                              : undefined
-                          }
-                        />
-                      )}
-                    />
-                  </Stack>
+                  <JourneyPickerField
+                    availableJourneys={availableJourneys}
+                    journeyIds={values.journeyIds}
+                    disabled={isPublished}
+                    onChange={(next) => {
+                      void setFieldValue('journeyIds', next)
+                    }}
+                    onTouch={() => {
+                      void setFieldTouched('journeyIds', true, false)
+                    }}
+                  />
 
                   {/* More details accordion */}
                   <Stack>
