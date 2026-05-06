@@ -13,10 +13,16 @@ import { TemplateGalleryPageRef } from './templateGalleryPage'
 // as 404).
 builder.queryField('templateGalleryPageBySlug', (t) =>
   t.prismaField({
+    description:
+      'Public, unauthenticated read by slug. Returns the TemplateGalleryPage with the given slug, but ONLY if the page is currently `published`. Returns null for: unknown slug, draft slug, malformed slug (does not match `^[a-z0-9]+(-[a-z0-9]+)*$`), or slug exceeding 200 characters. Authenticated readers fetching their own team\'s drafts should use `templateGalleryPage(id)` or `templateGalleryPages(teamId)` instead.',
     type: TemplateGalleryPageRef,
     nullable: true,
     args: {
-      slug: t.arg.string({ required: true })
+      slug: t.arg.string({
+        required: true,
+        description:
+          'Case-sensitive public slug. Must match `^[a-z0-9]+(-[a-z0-9]+)*$` (lowercase letters, digits, and hyphen-separated segments only) and be at most 200 characters. Slugs that fail this shape return null without hitting the database.'
+      })
     },
     resolve: async (query, _parent, args) => {
       const { slug } = args
