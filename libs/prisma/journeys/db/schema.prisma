@@ -633,6 +633,10 @@ model Block {
   exportOrder                Int? // column order for CSV exports and Google Sheets syncs
   customizable               Boolean?
   notes                      String? // VideoBlock: publisher notes for template adapters (e.g. trailer, intro)
+  // CardBlock-only (NES-1556). Bare nullable: `null` defers to Journey.showAssistant
+  // during the NES-1585 transition; explicit `false` is creator opt-out.
+  showAssistant              Boolean?
+  expandChatByDefault        Boolean?
 
   @@unique([slug, journeyId])
   @@index(journeyId)

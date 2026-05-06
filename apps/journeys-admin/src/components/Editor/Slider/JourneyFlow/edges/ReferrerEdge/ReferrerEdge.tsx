@@ -1,5 +1,5 @@
+import { getBezierPath } from '@xyflow/react'
 import { ReactElement } from 'react'
-import { getBezierPath } from 'reactflow'
 
 import { BaseEdge } from '../BaseEdge'
 
