@@ -4,8 +4,8 @@ import { builder, toPrismaDateTimeFilter } from '../../builder'
 import { Language } from '../../language'
 
 import { VideoSubtitleCreateInput } from './inputs/videoSubtitleCreate'
-import { VideoSubtitleUpdateInput } from './inputs/videoSubtitleUpdate'
 import { VideoSubtitlesFilter } from './inputs/videoSubtitlesFilter'
+import { VideoSubtitleUpdateInput } from './inputs/videoSubtitleUpdate'
 
 export const VideoSubtitle = builder.prismaObject('VideoSubtitle', {
   fields: (t) => ({

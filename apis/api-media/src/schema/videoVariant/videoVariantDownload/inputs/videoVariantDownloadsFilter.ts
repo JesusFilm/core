@@ -1,5 +1,4 @@
 import { DateTimeFilter, builder } from '../../../builder'
-
 import { VideoVariantDownloadQuality } from '../enums/videoVariantDownloadQuality'
 
 export const VideoVariantDownloadsFilter = builder.inputType(

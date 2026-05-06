@@ -4,8 +4,8 @@ import { builder, toPrismaDateTimeFilter } from '../../builder'
 
 import { VideoVariantDownloadQuality } from './enums/videoVariantDownloadQuality'
 import { VideoVariantDownloadCreateInput } from './inputs/videoVariantDownloadCreate'
-import { VideoVariantDownloadUpdateInput } from './inputs/videoVariantDownloadUpdate'
 import { VideoVariantDownloadsFilter } from './inputs/videoVariantDownloadsFilter'
+import { VideoVariantDownloadUpdateInput } from './inputs/videoVariantDownloadUpdate'
 
 export const VideoVariantDownload = builder.prismaObject(
   'VideoVariantDownload',

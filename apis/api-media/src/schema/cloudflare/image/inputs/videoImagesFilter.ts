@@ -1,5 +1,4 @@
 import { DateTimeFilter, builder } from '../../../builder'
-
 import { ImageAspectRatio } from '../enums/imageAspectRatio'
 
 export const VideoImagesFilter = builder.inputType('VideoImagesFilter', {

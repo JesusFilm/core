@@ -1,5 +1,5 @@
 ---
-title: "feat: Add paginated updatedAt-filtered sync queries to api-media"
+title: 'feat: Add paginated updatedAt-filtered sync queries to api-media'
 type: feat
 status: active
 date: 2026-05-06
@@ -31,6 +31,7 @@ Apply the `adminVideos` pattern — filter input type → filter function → `p
 ### W1 — VideoEdition: add pagination + `updatedAt` filter
 
 **Files to change:**
+
 - `apis/api-media/src/schema/videoEdition/videoEdition.ts` — add optional `where`, `offset`, `limit` args to `videoEditions`; add `orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }]`; add `videoEditionsCount` companion
 - `apis/api-media/src/schema/videoEdition/inputs/` — create `videoEditionsFilter.ts` + add to `index.ts`
 - `libs/prisma/media/db/schema.prisma` — add `@@index([updatedAt, id])` to `VideoEdition` model
@@ -39,6 +40,7 @@ Apply the `adminVideos` pattern — filter input type → filter function → `p
 **Pattern reference:** `apis/api-media/src/schema/video/video.ts` lines 505–640 (`adminVideos` / `adminVideosCount`)
 
 **Notes:**
+
 - `updatedAt` is already exposed on the `VideoEdition` GraphQL type — no type change needed
 - Zero-arg call (`videoEditions { id }`) must return the same result as today
 
@@ -47,6 +49,7 @@ Apply the `adminVideos` pattern — filter input type → filter function → `p
 ### W2 — VideoSubtitle: new root query + expose `updatedAt` + expose `videoId`
 
 **Files to change:**
+
 - `apis/api-media/src/schema/video/videoSubtitle/videoSubtitle.ts` — expose `updatedAt` on the type; expose `videoId` on the type (non-breaking additive); add `builder.queryFields` with `videoSubtitles` + `videoSubtitlesCount`
 - `apis/api-media/src/schema/video/videoSubtitle/inputs/` — create `videoSubtitlesFilter.ts` + add to `index.ts`
 - `libs/prisma/media/db/schema.prisma` — add `@@index([updatedAt, id])` to `VideoSubtitle` model
@@ -55,6 +58,7 @@ Apply the `adminVideos` pattern — filter input type → filter function → `p
 **Suggested filter fields:** `updatedAt`, `videoId`, `languageId`, `edition`, `primary`
 
 **Notes:**
+
 - `videoId` is in the DB but not currently exposed in GraphQL. Exposing it here is essential — without it the pipeline cannot join subtitles back to their parent video without N+1 fetches.
 
 ---
@@ -62,6 +66,7 @@ Apply the `adminVideos` pattern — filter input type → filter function → `p
 ### W3 — VideoOrigin: add pagination + `updatedAt` filter + make public + expose `updatedAt`
 
 **Files to change:**
+
 - `apis/api-media/src/schema/video/videoOrigin/videoOrigin.ts` — remove `isPublisher` auth guard from `videoOrigins`; expose `updatedAt` on the `VideoOrigin` type; add optional `where`, `offset`, `limit` args; update `orderBy` to `[{ updatedAt: 'asc' }, { id: 'asc' }]` (was `{ name: 'asc' }`); add `videoOriginsCount` companion
 - `apis/api-media/src/schema/video/videoOrigin/inputs/` — create `videoOriginsFilter.ts` + add to `index.ts` (if inputs dir doesn't exist, create it)
 - `libs/prisma/media/db/schema.prisma` — add `@@index([updatedAt, id])` to `VideoOrigin` model
@@ -69,6 +74,7 @@ Apply the `adminVideos` pattern — filter input type → filter function → `p
 - **Test update required:** `apis/api-media/src/schema/video/videoOrigin/videoOrigin.spec.ts` — the `'should reject if not publisher'` test must be converted to assert the query now succeeds without auth
 
 **Notes:**
+
 - The `orderBy` change from `{ name: 'asc' }` to `[{ updatedAt: 'asc' }, { id: 'asc' }]` is a behavioural change for existing callers. VideoOrigin is a small reference table (~static data), so impact is minimal, but the test must be updated.
 - `updatedAt` exists in the DB but is not currently exposed on the GraphQL type.
 
@@ -77,6 +83,7 @@ Apply the `adminVideos` pattern — filter input type → filter function → `p
 ### W4 — VideoVariantDownload: new root query + expose `updatedAt` + expose `videoVariantId`
 
 **Files to change:**
+
 - `apis/api-media/src/schema/videoVariant/videoVariantDownload/videoVariantDownload.ts` — expose `updatedAt` on the type; expose `videoVariantId` on the type (non-breaking additive); add `builder.queryFields` with `videoVariantDownloads` + `videoVariantDownloadsCount`
 - `apis/api-media/src/schema/videoVariant/videoVariantDownload/inputs/` — create `videoVariantDownloadsFilter.ts` + add to `index.ts`
 - `libs/prisma/media/db/schema.prisma` — add `@@index([updatedAt, id])` to `VideoVariantDownload` model
@@ -85,6 +92,7 @@ Apply the `adminVideos` pattern — filter input type → filter function → `p
 **Suggested filter fields:** `updatedAt`, `videoVariantId`, `quality`
 
 **Notes:**
+
 - `updatedAt` **already exists** in the DB (`updatedAt DateTime @default(now()) @updatedAt` at schema line 215) — no column migration needed, only the index and GraphQL exposure.
 - `videoVariantId` must be exposed so the pipeline can join downloads to their parent variant/video.
 
@@ -93,12 +101,14 @@ Apply the `adminVideos` pattern — filter input type → filter function → `p
 ### W5 — VideoImages: new `videoImages` root query + expose `updatedAt` + expose `videoId`
 
 **Files to change:**
+
 - `apis/api-media/src/schema/cloudflare/image/image.ts` — expose `updatedAt` on `CloudflareImage` type; expose `videoId` on type; add `videoImages` + `videoImagesCount` query fields (public, no auth)
 - `apis/api-media/src/schema/cloudflare/image/inputs/` — create `videoImagesFilter.ts` + add to `index.ts`
 - `libs/prisma/media/db/schema.prisma` — add `@@index([updatedAt, id])` to `CloudflareImage` model
 - Migration: shared above
 
 **Prisma `where` clause for `videoImages`:**
+
 ```typescript
 where: {
   videoId: { not: null },
@@ -110,6 +120,7 @@ where: {
 **Suggested filter fields:** `updatedAt`, `videoId`, `aspectRatio`
 
 **Notes:**
+
 - The query must scope to `videoId IS NOT NULL` (video-associated images only, not user uploads).
 - The query must also filter `uploaded: true` — records with `uploaded: false` have no usable image data behind the URL and would corrupt the pipeline's downstream data.
 - `videoId` must be exposed so the pipeline knows which video each image belongs to.
@@ -121,11 +132,13 @@ where: {
 ### W6 — Keywords: add pagination (updatedAt filter already exists)
 
 **Files to change:**
+
 - `apis/api-media/src/schema/keyword/keyword.ts` — add optional `offset` and `limit` args to the existing `keywords` query; add `orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }]`; add `keywordsCount` companion query
 - `libs/prisma/media/db/schema.prisma` — add `@@index([updatedAt, id])` to `Keyword` model if not already present
 - Migration: shared above
 
 **Notes:**
+
 - `updatedAt` filtering and exposure are already in place — this work item is pagination-only.
 - `keywordsCount` is noted as absent in SpecFlow analysis despite the `keywords` query having a filter.
 
@@ -143,6 +156,7 @@ A single migration should add indexes to all six models:
 Models requiring the index: `VideoEdition`, `VideoSubtitle`, `VideoOrigin`, `VideoVariantDownload`, `CloudflareImage`, `Keyword`.
 
 Run after schema edit:
+
 ```bash
 nx prisma-migrate prisma-media
 ```
@@ -189,6 +203,7 @@ All new and upgraded list queries must follow this shape:
 ```
 
 **Key conventions (from institutional learnings):**
+
 - **Never name the first `prismaField` arg `_query`** — this silently breaks nested field resolution. Always name it `query` and always spread it: `{ ...query, where, skip, take, orderBy }`.
 - **Never pass Pothos `$inferInput` directly to Prisma** — use `toPrismaDateTimeFilter()` to strip `null → undefined` for date fields.
 - **Default limit is 100** — consistent with `adminVideos`. `videoVariants` uses no default cap, but for a sync pipeline 100 is safer.
@@ -200,6 +215,7 @@ All new and upgraded list queries must follow this shape:
 ## Schema Regeneration
 
 After all code changes, run:
+
 ```bash
 nx generate-graphql api-media
 nx generate-graphql api-gateway
