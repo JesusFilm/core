@@ -7,20 +7,13 @@ import {
   MouseSensor,
   TouchSensor,
   closestCenter,
-  useDroppable,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
-import {
-  SortableContext,
-  rectSortingStrategy,
-  useSortable
-} from '@dnd-kit/sortable'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
-import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
@@ -37,35 +30,20 @@ import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } f
 import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { useTemplateGalleryPageAssignJourneyMutation } from '../../libs/useTemplateGalleryPageAssignJourneyMutation'
-import { useTemplateGalleryPageDeleteMutation } from '../../libs/useTemplateGalleryPageDeleteMutation'
-import { useTemplateGalleryPagePublishMutation } from '../../libs/useTemplateGalleryPagePublishMutation'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
 import { useTemplateGalleryPageReorderTemplateMutation } from '../../libs/useTemplateGalleryPageReorderTemplateMutation'
-import { useTemplateGalleryPageUnpublishMutation } from '../../libs/useTemplateGalleryPageUnpublishMutation'
 import { JourneyCard } from '../JourneyList/JourneyCard'
 
 import { CollectionCard } from './CollectionCard'
 import { CollectionDialog } from './CollectionDialog'
+import {
+  DraggableJourneysGrid,
+  DroppableCollectionWrapper,
+  UnsectionedDroppable,
+  parseDropZoneId
+} from './Droppables'
+import { useCollectionMutations } from './useCollectionMutations'
 
-type DropZoneId = { kind: 'unsectioned' } | { kind: 'collection'; id: string }
-
-const UNSECTIONED_ID = 'unsectioned'
-const COLLECTION_PREFIX = 'collection:'
-
-function encodeDropZoneId(zone: DropZoneId): string {
-  return zone.kind === 'unsectioned'
-    ? UNSECTIONED_ID
-    : `${COLLECTION_PREFIX}${zone.id}`
-}
-
-function parseDropZoneId(raw: string | number): DropZoneId | null {
-  const value = String(raw)
-  if (value === UNSECTIONED_ID) return { kind: 'unsectioned' }
-  if (value.startsWith(COLLECTION_PREFIX)) {
-    return { kind: 'collection', id: value.slice(COLLECTION_PREFIX.length) }
-  }
-  return null
-}
 
 export interface TemplateGalleryPageListProps {
   /**
@@ -123,14 +101,15 @@ export function TemplateGalleryPageList({
     useTemplateGalleryPageAssignJourneyMutation()
   const [templateGalleryPageReorderTemplate] =
     useTemplateGalleryPageReorderTemplateMutation()
-  const [templateGalleryPagePublish] = useTemplateGalleryPagePublishMutation()
-  const [templateGalleryPageUnpublish] =
-    useTemplateGalleryPageUnpublishMutation()
-  const [templateGalleryPageDelete] = useTemplateGalleryPageDeleteMutation()
+  const {
+    busyId,
+    publish: handlePublish,
+    unpublish: handleUnpublish,
+    ungroup: handleUngroup
+  } = useCollectionMutations()
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
-  const [busyId, setBusyId] = useState<string | null>(null)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
   const [dragInFlight, setDragInFlight] = useState(false)
 
@@ -216,70 +195,6 @@ export function TemplateGalleryPageList({
   }
   function handleEdit(collection: TemplateGalleryPage): void {
     setEditTargetId(collection.id)
-  }
-
-  async function handlePublish(collection: TemplateGalleryPage): Promise<void> {
-    setBusyId(collection.id)
-    try {
-      await templateGalleryPagePublish({ variables: { id: collection.id } })
-      enqueueSnackbar(t('Collection published'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
-    } catch (error) {
-      enqueueSnackbar(
-        error instanceof Error
-          ? error.message
-          : t("Couldn't publish collection"),
-        { variant: 'error', preventDuplicate: true }
-      )
-    } finally {
-      setBusyId(null)
-    }
-  }
-
-  async function handleUnpublish(
-    collection: TemplateGalleryPage
-  ): Promise<void> {
-    setBusyId(collection.id)
-    try {
-      await templateGalleryPageUnpublish({
-        variables: { id: collection.id }
-      })
-      enqueueSnackbar(t('Collection unpublished'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
-    } catch (error) {
-      enqueueSnackbar(
-        error instanceof Error
-          ? error.message
-          : t("Couldn't unpublish collection"),
-        { variant: 'error', preventDuplicate: true }
-      )
-    } finally {
-      setBusyId(null)
-    }
-  }
-
-  async function handleUngroup(collection: TemplateGalleryPage): Promise<void> {
-    setBusyId(collection.id)
-    try {
-      await templateGalleryPageDelete({ variables: { id: collection.id } })
-      enqueueSnackbar(t('Collection removed'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
-    } catch (error) {
-      enqueueSnackbar(
-        error instanceof Error
-          ? error.message
-          : t("Couldn't remove collection"),
-        { variant: 'error', preventDuplicate: true }
-      )
-    } finally {
-      setBusyId(null)
-    }
   }
 
   function handleDragStart(event: DragStartEvent): void {
@@ -510,26 +425,11 @@ export function TemplateGalleryPageList({
                 </Typography>
               </Box>
             ) : (
-              <SortableContext
-                items={unsectioned.map((j) => j.id)}
-                strategy={rectSortingStrategy}
-              >
-                <Box sx={{ p: 1 }}>
-                  <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
-                    {unsectioned.map((journey) => (
-                      <Grid
-                        key={journey.id}
-                        size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
-                      >
-                        <DraggableJourney
-                          journey={journey}
-                          disabled={dragInFlight}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                </Box>
-              </SortableContext>
+              <DraggableJourneysGrid
+                journeys={unsectioned}
+                publishedLock={false}
+                dragInFlight={dragInFlight}
+              />
             )}
           </UnsectionedDroppable>
         </Box>
@@ -549,6 +449,7 @@ export function TemplateGalleryPageList({
           mode="create"
           teamId={teamId}
           availableJourneys={unsectioned}
+          parentBusy={dragInFlight}
           onClose={handleCloseCreate}
         />
       )}
@@ -560,6 +461,7 @@ export function TemplateGalleryPageList({
           teamId={teamId}
           collection={editTarget}
           availableJourneys={editAvailableJourneys}
+          parentBusy={dragInFlight}
           onClose={handleCloseEdit}
         />
       )}
@@ -567,133 +469,3 @@ export function TemplateGalleryPageList({
   )
 }
 
-interface DroppableCollectionWrapperProps {
-  id: string
-  disabled: boolean
-  children: ReactElement | ReactElement[]
-}
-
-function DroppableCollectionWrapper({
-  id,
-  disabled,
-  children
-}: DroppableCollectionWrapperProps): ReactElement {
-  const { setNodeRef, isOver } = useDroppable({
-    id: encodeDropZoneId({ kind: 'collection', id }),
-    disabled
-  })
-  return (
-    <Box
-      ref={setNodeRef}
-      sx={{
-        outline: isOver ? '2px solid' : 'none',
-        outlineColor: 'primary.main',
-        borderRadius: 1
-      }}
-    >
-      {children}
-    </Box>
-  )
-}
-
-interface DraggableJourneysGridProps {
-  journeys: readonly Journey[]
-  publishedLock: boolean
-  dragInFlight: boolean
-}
-
-function DraggableJourneysGrid({
-  journeys,
-  publishedLock,
-  dragInFlight
-}: DraggableJourneysGridProps): ReactElement | null {
-  if (journeys.length === 0) return null
-  // SortableContext gives intra-collection ordering: each item is both a
-  // draggable AND a drop target with a known index, so dnd-kit hands us
-  // the over-item id in handleDragEnd.
-  const ids = journeys.map((j) => j.id)
-  return (
-    <SortableContext items={ids} strategy={rectSortingStrategy}>
-      <Box sx={{ mt: -1, p: 1 }}>
-        <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
-          {journeys.map((journey) => (
-            <Grid
-              key={journey.id}
-              size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
-            >
-              <DraggableJourney
-                journey={journey}
-                disabled={publishedLock || dragInFlight}
-              />
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
-    </SortableContext>
-  )
-}
-
-interface UnsectionedDroppableProps {
-  disabled: boolean
-  children: ReactElement | ReactElement[]
-}
-
-function UnsectionedDroppable({
-  disabled,
-  children
-}: UnsectionedDroppableProps): ReactElement {
-  const { setNodeRef, isOver } = useDroppable({
-    id: encodeDropZoneId({ kind: 'unsectioned' }),
-    disabled
-  })
-  return (
-    <Box
-      ref={setNodeRef}
-      sx={{
-        minHeight: 100,
-        backgroundColor: (theme) => theme.palette.background.default,
-        borderRadius: 1,
-        outline: isOver ? '2px solid' : 'none',
-        outlineColor: 'primary.main'
-      }}
-    >
-      {children}
-    </Box>
-  )
-}
-
-interface DraggableJourneyProps {
-  journey: Journey
-  disabled?: boolean
-}
-
-function DraggableJourney({
-  journey,
-  disabled
-}: DraggableJourneyProps): ReactElement {
-  // useSortable plays the role useDraggable did before AND registers this
-  // node as a drop target with its index inside the SortableContext, so
-  // dnd-kit can hand us the over-item id in handleDragEnd.
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useSortable({ id: journey.id, disabled })
-  const style =
-    transform != null
-      ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
-      : undefined
-  return (
-    <Box
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      sx={{
-        opacity: isDragging ? 0.4 : 1,
-        touchAction: 'manipulation',
-        cursor:
-          disabled === true ? 'default' : isDragging ? 'grabbing' : 'grab'
-      }}
-    >
-      <JourneyCard journey={journey} />
-    </Box>
-  )
-}

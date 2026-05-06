@@ -46,6 +46,12 @@ export interface CollectionDialogProps {
   teamId: string
   collection?: TemplateGalleryPage
   availableJourneys: readonly Journey[]
+  /**
+   * True when a sibling DnD mutation is in flight. Submit is blocked
+   * while this is true to keep dialog and DnD mutations from
+   * interleaving on the same Apollo cache.
+   */
+  parentBusy?: boolean
   onClose: () => void
 }
 
@@ -83,6 +89,7 @@ export function CollectionDialog({
   teamId,
   collection,
   availableJourneys,
+  parentBusy,
   onClose
 }: CollectionDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -164,6 +171,15 @@ export function CollectionDialog({
     values: FormValues,
     helpers: FormikHelpers<FormValues>
   ): Promise<void> {
+    if (parentBusy === true) {
+      // A DnD mutation is still in flight on the parent. Bail rather than
+      // interleave a dialog mutation against the same team's cache.
+      enqueueSnackbar(t('Finishing previous action…'), {
+        variant: 'info',
+        preventDuplicate: true
+      })
+      return
+    }
     try {
       if (mode === 'create') {
         const input: TemplateGalleryPageCreateInput = {
