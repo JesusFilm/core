@@ -1,7 +1,5 @@
 import { PaletteColorOptions, ThemeOptions } from '@mui/material/styles'
 
-import { brandRed } from '../../base/tokens/colors'
-
 declare module '@mui/material/styles' {
   interface Palette {
     solid: Palette['primary']
@@ -35,7 +33,7 @@ export const adminColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
     background: { default: '#EFEFEF', paper: '#FFFFFF' },
     primary: {
       light: '#E43343',
-      main: brandRed,
+      main: '#C52D3A',
       dark: '#9E2630',
       contrastText: palette[0]
     },

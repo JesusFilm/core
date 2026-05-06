@@ -10,8 +10,6 @@ import { usePlausible } from 'next-plausible'
 import { MouseEvent, ReactElement, useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { brandRed } from '@core/shared/ui/themes/base/tokens/colors'
-
 import {
   ButtonAction,
   ButtonAlignment,
@@ -369,7 +367,7 @@ export function Button({
         onClick={handleClick}
         sx={{
           outline: '2px solid',
-          outlineColor: editableLabel != null ? brandRed : 'transparent',
+          outlineColor: editableLabel != null ? '#C52D3A' : 'transparent',
           outlineOffset: '5px',
           zIndex: editableLabel != null ? 1 : 0,
           width: alignment === ButtonAlignment.justify ? '100%' : 'fit-content',
