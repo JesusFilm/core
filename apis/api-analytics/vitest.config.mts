@@ -16,6 +16,7 @@ export default defineConfig({
     reporters: ['default'],
     setupFiles: ['./test/prismaMock.ts'],
     coverage: {
+      enabled: true,
       provider: 'v8',
       reporter: ['cobertura'],
       reportsDirectory: '../../coverage/apis/api-analytics'
