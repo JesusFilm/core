@@ -55,9 +55,11 @@ function getScrollContainer(container: HTMLElement): HTMLElement {
 describe('Conversation', () => {
   let scrollToSpy: jest.Mock
   let originalScrollTo: typeof Element.prototype.scrollTo | undefined
+  let originalResizeObserver: typeof window.ResizeObserver | undefined
 
   beforeEach(() => {
     observers.length = 0
+    originalResizeObserver = window.ResizeObserver
     window.ResizeObserver =
       ResizeObserverMock as unknown as typeof ResizeObserver
     // jsdom does not implement Element.prototype.scrollTo, so we install
@@ -72,6 +74,12 @@ describe('Conversation', () => {
 
   afterEach(() => {
     jest.restoreAllMocks()
+    if (originalResizeObserver == null) {
+      delete (window as Window & { ResizeObserver?: typeof ResizeObserver })
+        .ResizeObserver
+    } else {
+      window.ResizeObserver = originalResizeObserver
+    }
     if (originalScrollTo == null) {
       delete (
         Element.prototype as { scrollTo?: typeof Element.prototype.scrollTo }
