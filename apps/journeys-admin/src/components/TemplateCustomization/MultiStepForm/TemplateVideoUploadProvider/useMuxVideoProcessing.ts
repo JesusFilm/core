@@ -1,5 +1,5 @@
 import { useLazyQuery, useMutation } from '@apollo/client'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { RefObject, useCallback, useRef } from 'react'
 

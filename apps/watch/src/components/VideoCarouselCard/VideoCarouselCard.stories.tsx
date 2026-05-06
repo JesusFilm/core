@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'

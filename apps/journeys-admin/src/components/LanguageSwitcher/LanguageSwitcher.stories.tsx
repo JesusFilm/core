@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { fn } from 'storybook/test'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'

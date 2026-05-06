@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import Stack from '@mui/system/Stack'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'

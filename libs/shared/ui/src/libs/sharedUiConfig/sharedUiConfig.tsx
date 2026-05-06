@@ -1,7 +1,4 @@
-import type {
-  DecoratorFunction as Decorator,
-  StoryContext
-} from 'storybook/internal/csf'
+import { Decorator, StoryContext } from '@storybook/nextjs'
 
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { parameters as rootParameters } from '../../../../../../.storybook/preview'

@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 import { screen, userEvent } from 'storybook/test'

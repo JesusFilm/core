@@ -2,25 +2,6 @@ import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import { useTheme } from '@mui/material/styles'
-import {
-  Background,
-  type Edge,
-  type Node,
-  type OnConnect,
-  type OnConnectEnd,
-  type OnConnectStart,
-  type OnConnectStartParams,
-  type OnNodeDrag,
-  type OnReconnect,
-  Panel,
-  ReactFlow,
-  type ReactFlowInstance,
-  type ReactFlowProps,
-  SelectionDragHandler,
-  reconnectEdge,
-  useEdgesState,
-  useNodesState
-} from '@xyflow/react'
 import { useRouter } from 'next/compat/router'
 import {
   type MouseEvent,
@@ -31,6 +12,25 @@ import {
   useRef,
   useState
 } from 'react'
+import {
+  Background,
+  type Edge,
+  type Node,
+  type NodeDragHandler,
+  type OnConnect,
+  type OnConnectEnd,
+  type OnConnectStart,
+  type OnConnectStartParams,
+  type OnEdgeUpdateFunc,
+  Panel,
+  ReactFlow,
+  type ReactFlowInstance,
+  type ReactFlowProps,
+  SelectionDragHandler,
+  updateEdge as reactFlowUpdateEdge,
+  useEdgesState,
+  useNodesState
+} from 'reactflow'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -74,7 +74,7 @@ import {
 } from './nodes/SocialPreviewNode/libs/positions'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
-import '@xyflow/react/dist/style.css'
+import 'reactflow/dist/style.css'
 import { useStepAndBlockSelection } from './utils/useStepAndBlockSelection'
 
 // some styles can only be updated through css after render
@@ -113,11 +113,11 @@ export function JourneyFlow(): ReactElement {
     useState<ReactFlowInstance | null>(null)
   const connectingParams = useRef<OnConnectStartParams | null>(null)
   const edgeUpdateSuccessful = useRef<boolean | null>(null)
-  const [nodes, setNodes, onMainNodesChange] = useNodesState<Node>([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
+  const [nodes, setNodes, onMainNodesChange] = useNodesState([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [referrerNodes, setReferrerNodes, onReferrerNodesChange] =
-    useNodesState<Node>([])
-  const [referrerEdges, setReferrerEdges] = useEdgesState<Edge>([])
+    useNodesState([])
+  const [referrerEdges, setReferrerEdges] = useEdgesState([])
 
   const referrerNodeIds = useMemo(
     () => new Set(referrerNodes.map((n) => n.id)),
@@ -434,24 +434,10 @@ export function JourneyFlow(): ReactElement {
     return endDragTimeStamp - dragTimeStampRef.current < 150
   }
 
-  const isMenuElement = (target: Element): boolean =>
-    target.closest('#StepBlockNodeMenuIcon, #edit-step') != null
-
-  const handleNodeClick = useCallback(
-    (event: MouseEvent, node: Node) => {
-      if (node.type !== 'StepBlock') return
-
-      const target = event.target as HTMLElement
-      if (isMenuElement(target)) return
-
-      handleStepSelection(node.id)
-    },
-    [handleStepSelection]
-  )
-
-  const onNodeDragStop: OnNodeDrag = (event, node): void => {
+  const onNodeDragStop: NodeDragHandler = (event, node): void => {
     if (node.type !== 'StepBlock' && node.type !== 'SocialPreview') return
 
+    // x and y position of node before onNodeDragStop was called
     let prevX
     let prevY
 
@@ -464,7 +450,20 @@ export function JourneyFlow(): ReactElement {
       prevX = step.x
       prevY = step.y
 
-      if (isClickOrTouch(event.timeStamp)) return
+      // if click or tap, go through step selection logic
+      // else go through standard positioning logic below
+      if (isClickOrTouch(event.timeStamp)) {
+        const target = event.target as HTMLElement
+        // if the clicked/tapped element is the StepBlockNodeMenu, don't call handleStepSelection hook https://github.com/JesusFilm/core/pull/4736
+        const menuButtonClicked =
+          (target.parentNode as HTMLElement).id === 'StepBlockNodeMenuIcon' ||
+          target.id === 'StepBlockNodeMenuIcon' ||
+          target.id === 'edit-step'
+        if (menuButtonClicked) return
+
+        handleStepSelection(step.id)
+        return
+      }
     } else if (node.type === 'SocialPreview') {
       prevX = journey?.socialNodeX
       prevY = journey?.socialNodeY
@@ -527,24 +526,24 @@ export function JourneyFlow(): ReactElement {
     })
   }
 
-  const onReconnectStart = useCallback<
-    NonNullable<ReactFlowProps['onReconnectStart']>
+  const onEdgeUpdateStart = useCallback<
+    NonNullable<ReactFlowProps['onEdgeUpdateStart']>
   >(() => {
     edgeUpdateSuccessful.current = false
   }, [])
 
-  const onReconnect = useCallback<OnReconnect>(
+  const onEdgeUpdate = useCallback<OnEdgeUpdateFunc>(
     (oldEdge, newConnection) => {
       const { source, sourceHandle, target } = newConnection
-      setEdges((prev) => reconnectEdge(oldEdge, newConnection, prev))
+      setEdges((prev) => reactFlowUpdateEdge(oldEdge, newConnection, prev))
       edgeUpdateSuccessful.current = true
       void updateEdge({ source, sourceHandle, target, oldEdge })
     },
     [setEdges, updateEdge]
   )
 
-  const onReconnectEnd = useCallback<
-    NonNullable<ReactFlowProps['onReconnectEnd']>
+  const onEdgeUpdateEnd = useCallback<
+    NonNullable<ReactFlowProps['onEdgeUpdateEnd']>
   >(
     (_, edge) => {
       const { source, sourceHandle } = edge
@@ -580,10 +579,11 @@ export function JourneyFlow(): ReactElement {
 
   const hideReferrers =
     <T extends Node | Edge>(hidden: boolean) =>
-    (nodeOrEdge: T): T => ({
-      ...nodeOrEdge,
-      hidden
-    })
+    (nodeOrEdge: T) => {
+      nodeOrEdge.hidden = hidden
+
+      return nodeOrEdge
+    }
 
   useEffect(() => {
     if (analytics?.referrers != null) {
@@ -619,16 +619,15 @@ export function JourneyFlow(): ReactElement {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
-        onNodeClick={handleNodeClick}
         onNodeDragStart={(event) => {
           dragTimeStampRef.current = event.timeStamp
         }}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
         onSelectionDragStop={onSelectionDragStop}
-        onReconnect={showAnalytics === true ? undefined : onReconnect}
-        onReconnectStart={onReconnectStart}
-        onReconnectEnd={onReconnectEnd}
+        onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
+        onEdgeUpdateStart={onEdgeUpdateStart}
+        onEdgeUpdateEnd={onEdgeUpdateEnd}
         onSelectionChange={onSelectionChange}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}

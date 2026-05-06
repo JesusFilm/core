@@ -74,32 +74,6 @@ describe('templateGalleryPageBySlug', () => {
     })
   })
 
-  it('returns null for a draft slug — the where filter excludes non-published rows', async () => {
-    // The DB row exists with the requested slug but its status is `draft`.
-    // The resolver's `where: { slug, status: 'published' }` filter excludes
-    // it, so prisma returns null and the resolver hands the visitor a 404.
-    // This test pins the documented contract that drafts are NEVER reachable
-    // via the public bySlug entry point — anonymous traffic can only see
-    // published rows.
-    prismaMock.templateGalleryPage.findFirst.mockResolvedValue(null)
-
-    const result = await publicClient({
-      document: TEMPLATE_GALLERY_PAGE_BY_SLUG,
-      variables: { slug: 'draft-slug' }
-    })
-
-    expect(result).toEqual({
-      data: { templateGalleryPageBySlug: null }
-    })
-    // Pin the gatekeeper SQL filter: changing this where clause would change
-    // the public contract.
-    expect(prismaMock.templateGalleryPage.findFirst).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { slug: 'draft-slug', status: 'published' }
-      })
-    )
-  })
-
   it('returns null without hitting the DB when slug is malformed', async () => {
     const result = await publicClient({
       document: TEMPLATE_GALLERY_PAGE_BY_SLUG,

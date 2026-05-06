@@ -11,8 +11,6 @@ export const CardBlockUpdateInput = builder.inputType('CardBlockUpdateInput', {
     backdropBlur: t.int({ required: false }),
     fullscreen: t.boolean({ required: false }),
     themeMode: t.field({ type: ThemeMode, required: false }),
-    themeName: t.field({ type: ThemeName, required: false }),
-    showAssistant: t.boolean({ required: false }),
-    expandChatByDefault: t.boolean({ required: false })
+    themeName: t.field({ type: ThemeName, required: false })
   })
 })

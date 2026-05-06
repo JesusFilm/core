@@ -26,7 +26,7 @@ export interface VideoListItemProps {
   imageHigh?: string
   duration?: number
   source: VideoBlockSource
-  onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
+  onSelect: (block: VideoBlockUpdateInput) => void
 }
 
 export function VideoListItem({

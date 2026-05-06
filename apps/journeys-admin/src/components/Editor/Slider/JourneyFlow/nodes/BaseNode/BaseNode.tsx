@@ -1,14 +1,7 @@
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
-import {
-  Handle,
-  OnConnect,
-  Position,
-  useConnection,
-  useOnSelectionChange
-} from '@xyflow/react'
 import isFunction from 'lodash/isFunction'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import {
   ComponentProps,
   ReactElement,
@@ -16,6 +9,13 @@ import {
   useEffect,
   useState
 } from 'react'
+import {
+  Handle,
+  OnConnect,
+  Position,
+  useOnSelectionChange,
+  useStore
+} from 'reactflow'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
@@ -40,6 +40,10 @@ export enum HandleVariant {
 }
 
 const StyledHandle = styled(Handle)(() => ({}))
+const connectionHandleIdSelector = (state): string | null =>
+  state.connectionHandleId
+const connectionNodeIdSelector = (state): string | null =>
+  state.connectionNodeId
 
 interface BaseNodeProps {
   id?: string
@@ -74,10 +78,11 @@ export function BaseNode({
     state: { showAnalytics }
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
-  const connection = useConnection()
-  const connectionHandleId = connection.fromHandle?.id ?? null
-  const connectionNodeId = connection.fromHandle?.nodeId ?? null
-  const isConnecting = connection.inProgress && id !== connectionNodeId
+  const connectionHandleId = useStore(connectionHandleIdSelector)
+  const connectionNodeId = useStore(connectionNodeIdSelector)
+  const isConnecting =
+    (connectionHandleId != null || connectionNodeId != null) &&
+    id !== connectionNodeId
   const [targetSelected, setTargetSelected] = useState(false)
   const [sourceSelected, setSourceSelected] = useState(false)
 

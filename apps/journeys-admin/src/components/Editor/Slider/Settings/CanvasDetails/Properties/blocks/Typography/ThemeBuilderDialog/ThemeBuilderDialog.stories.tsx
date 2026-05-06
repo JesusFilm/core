@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/nextjs-vite'
+import { Meta } from '@storybook/nextjs'
 import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'

@@ -3,12 +3,9 @@ import {
   ThemeProvider as MuiThemeProvider,
   useColorScheme
 } from '@mui/material/styles'
+import { Decorator, StoryContext } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
-import type {
-  DecoratorFunction as Decorator,
-  StoryContext
-} from 'storybook/internal/csf'
 
 import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
 

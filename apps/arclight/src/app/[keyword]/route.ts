@@ -8,7 +8,7 @@ import { getApolloClient } from '../../lib/apolloClient'
 import { getBrightcoveUrl } from '../../lib/brightcove'
 import { getClientIp, setCorsHeaders } from '../../lib/redirectUtils'
 
-const GET_SHORT_LINK_QUERY = graphql(`
+export const GET_SHORT_LINK_QUERY = graphql(`
   query GetShortLinkQuery($hostname: String!, $pathname: String!) {
     shortLink: shortLinkByPath(hostname: $hostname, pathname: $pathname) {
       __typename

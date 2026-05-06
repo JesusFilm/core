@@ -10,7 +10,7 @@ import { VideoContentHero } from './VideoContentHero'
 
 jest.mock('fscreen')
 
-jest.mock('next-i18next/pages', () => ({
+jest.mock('next-i18next', () => ({
   useTranslation: jest.fn().mockReturnValue({
     t: (key: string) => key
   })

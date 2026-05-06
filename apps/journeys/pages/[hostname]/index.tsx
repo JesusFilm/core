@@ -1,5 +1,5 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
-import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'

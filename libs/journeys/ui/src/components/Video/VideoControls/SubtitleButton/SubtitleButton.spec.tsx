@@ -5,7 +5,7 @@ import VideoJsPlayer from '../../utils/videoJsTypes'
 
 import { SubtitleButton } from './SubtitleButton'
 
-jest.mock('next-i18next/pages', () => ({
+jest.mock('next-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key
   })

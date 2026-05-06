@@ -9,9 +9,7 @@
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "incremental": true,
-    "tsBuildInfoFile": "../../../.cache/journeys-ui/tsc/.tsbuildinfo",
-    "module": "esnext",
-    "moduleResolution": "bundler"
+    "tsBuildInfoFile": "../../../.cache/journeys-ui/tsc/.tsbuildinfo"
   },
   "files": [],
   "include": [],

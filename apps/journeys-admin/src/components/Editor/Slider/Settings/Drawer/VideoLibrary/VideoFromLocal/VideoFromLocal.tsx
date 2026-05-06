@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
@@ -11,7 +11,7 @@ import { VideoList } from '../VideoList'
 import { VideoSearch } from '../VideoSearch'
 
 interface VideoFromLocalProps {
-  onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
+  onSelect: (block: VideoBlockUpdateInput) => void
 }
 
 export function VideoFromLocal({

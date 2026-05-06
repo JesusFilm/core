@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'

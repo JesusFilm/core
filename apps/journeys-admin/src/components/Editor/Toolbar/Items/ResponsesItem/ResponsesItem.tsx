@@ -1,7 +1,7 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useEffect } from 'react'
 
 import Inbox2Icon from '@core/shared/ui/icons/Inbox2'

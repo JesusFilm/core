@@ -9,7 +9,7 @@ import {
 
 import { ImageSectionItem } from './ImageSectionItem'
 
-jest.mock('next-i18next/pages', () => ({
+jest.mock('next-i18next', () => ({
   __esModule: true,
   useTranslation: () => {
     return {

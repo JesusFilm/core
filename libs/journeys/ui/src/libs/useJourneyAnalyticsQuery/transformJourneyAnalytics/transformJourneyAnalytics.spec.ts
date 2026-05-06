@@ -196,21 +196,21 @@ describe('transformJourneyAnalytics', () => {
             source: 'QR Code',
             target: 'SocialPreview',
             type: 'Referrer',
-            reconnectable: false
+            updatable: false
           },
           {
             id: 'Direct / None->SocialPreview',
             source: 'Direct / None',
             target: 'SocialPreview',
             type: 'Referrer',
-            reconnectable: false
+            updatable: false
           },
           {
             id: 'other sources->SocialPreview',
             source: 'other sources',
             target: 'SocialPreview',
             type: 'Referrer',
-            reconnectable: false
+            updatable: false
           }
         ],
         nodes: [

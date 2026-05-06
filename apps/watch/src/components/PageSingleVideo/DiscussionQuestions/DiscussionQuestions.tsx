@@ -1,4 +1,4 @@
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'

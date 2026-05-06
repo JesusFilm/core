@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { Journey } from '../../workers/email/service/prisma.types'
 import { JourneyAccessRequestEmail } from '../templates/JourneyAccessRequest'

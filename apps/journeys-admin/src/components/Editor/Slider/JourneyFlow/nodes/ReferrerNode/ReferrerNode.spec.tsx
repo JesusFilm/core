@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { type NodeProps, ReactFlowProvider } from '@xyflow/react'
+import { type NodeProps, ReactFlowProvider } from 'reactflow'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 

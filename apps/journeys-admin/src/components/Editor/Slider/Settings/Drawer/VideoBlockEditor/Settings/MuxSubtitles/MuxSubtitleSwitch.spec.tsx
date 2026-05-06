@@ -14,7 +14,7 @@ import {
   MuxSubtitleSwitch
 } from './MuxSubtitleSwitch'
 
-jest.mock('next-i18next/pages', () => ({
+jest.mock('next-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key
   })

@@ -1,7 +1,7 @@
 import { MutationResult } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
-import { Edge, OnSelectionChangeParams, useKeyPress } from '@xyflow/react'
+import { Edge, OnSelectionChangeParams, useKeyPress } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -20,8 +20,8 @@ import { useDeleteEdge } from '../useDeleteEdge'
 
 import { useDeleteOnKeyPress } from './useDeleteOnKeyPress'
 
-jest.mock('@xyflow/react', () => {
-  const originalModule = jest.requireActual('@xyflow/react')
+jest.mock('reactflow', () => {
+  const originalModule = jest.requireActual('reactflow')
   return {
     __esModule: true,
     ...originalModule,

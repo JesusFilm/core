@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'

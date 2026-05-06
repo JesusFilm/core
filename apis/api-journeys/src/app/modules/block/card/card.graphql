@@ -34,12 +34,4 @@ type CardBlock implements Block @shareable {
   themeName from journey
   """
   themeName: ThemeName @shareable
-  """
-  When true, this card displays the AI chat button.
-  """
-  showAssistant: Boolean @shareable
-  """
-  When true, the chat drawer auto-opens on first visit to this card.
-  """
-  expandChatByDefault: Boolean @shareable
 }

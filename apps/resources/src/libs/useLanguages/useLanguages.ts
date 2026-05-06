@@ -1,4 +1,4 @@
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 

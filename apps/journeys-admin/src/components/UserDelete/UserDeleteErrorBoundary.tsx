@@ -2,7 +2,7 @@ import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { Component, ErrorInfo, ReactElement, ReactNode } from 'react'
 
 interface UserDeleteErrorBoundaryProps {

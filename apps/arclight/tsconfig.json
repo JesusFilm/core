@@ -20,15 +20,16 @@
     ]
   },
   "include": [
-    "**/*.js",
-    "**/*.jsx",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    "next-env.d.ts",
-    "next.config.js",
+    "**/*.js",
+    "**/*.jsx",
+    "../../apps/arclight/.next/types/**/*.ts",
+    "../../dist/apps/arclight/.next/types/**/*.ts",
     "postcss.config.mjs",
-    "../../dist/apps/arclight/.next/types/**/*.ts"
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "next.config.js"
   ],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

@@ -8,12 +8,14 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { FormEvent, ReactElement, useMemo, useState } from 'react'
 
-import { extractLanguageNames } from '../../libs/extractLanguageNames'
-import type { Translation } from '../../libs/extractLanguageNames'
-
 export interface Language {
   id: string
   name: Translation[]
+}
+
+interface Translation {
+  value: string
+  primary: boolean
 }
 
 export interface LanguageOption {
@@ -43,8 +45,14 @@ export function MultipleLanguageAutocomplete({
   const options = useMemo(() => {
     return (
       languages?.map(({ id, name }) => {
-        const { localName, nativeName } = extractLanguageNames(name)
-        return { id, localName, nativeName }
+        const localLanguageName = name.find(({ primary }) => !primary)?.value
+        const nativeLanguageName = name.find(({ primary }) => primary)?.value
+
+        return {
+          id,
+          localName: localLanguageName,
+          nativeName: nativeLanguageName
+        }
       }) ?? []
     )
   }, [languages])

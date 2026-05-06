@@ -12,7 +12,6 @@ import {
   GetAdminJourneys_journeys as Journey
 } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { getIsLocalTemplate } from '../../../../libs/getIsLocalTemplate'
 
 const AccessDialog = dynamic(
   async () =>
@@ -56,15 +55,6 @@ const JourneyDetailsDialog = dynamic(
       /* webpackChunkName: "JourneyDetailsDialog" */
       '../../../Editor/Toolbar/JourneyDetails/JourneyDetailsDialog'
     ).then((mod) => mod.JourneyDetailsDialog),
-  { ssr: false }
-)
-
-const LocalTemplateDetailsDialog = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "LocalTemplateDetailsDialog" */
-      '../../../Editor/Toolbar/JourneyDetails/LocalTemplateDetailsDialog'
-    ).then((mod) => mod.LocalTemplateDetailsDialog),
   { ssr: false }
 )
 
@@ -314,27 +304,16 @@ export function JourneyCardMenu({
           refetch={refetch}
         />
       )}
-      {openDetailsDialog != null &&
-        journey != null &&
-        (getIsLocalTemplate(journey) ? (
-          <LocalTemplateDetailsDialog
-            open={openDetailsDialog}
-            onClose={() => {
-              setOpenDetailsDialog(false)
-              setHasOpenDialog?.(false)
-            }}
-            journey={journey}
-          />
-        ) : (
-          <JourneyDetailsDialog
-            open={openDetailsDialog}
-            onClose={() => {
-              setOpenDetailsDialog(false)
-              setHasOpenDialog?.(false)
-            }}
-            journey={journey}
-          />
-        ))}
+      {openDetailsDialog != null && (
+        <JourneyDetailsDialog
+          open={openDetailsDialog}
+          onClose={() => {
+            setOpenDetailsDialog(false)
+            setHasOpenDialog?.(false)
+          }}
+          journey={journey}
+        />
+      )}
       {openTranslateDialog != null && (
         <TranslateJourneyDialog
           open={openTranslateDialog}

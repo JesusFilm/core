@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
-import type { NodeProps } from '@xyflow/react'
 import { ReactElement } from 'react'
+import type { NodeProps } from 'reactflow'
 
 import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
 
@@ -9,12 +9,13 @@ import { BaseNode, HandleVariant } from '../BaseNode'
 import { BaseReferrer } from './BaseReferrer'
 import { OtherReferrer } from './OtherReferrer'
 
-type ReferrerData =
-  | JourneyReferrer
-  | { property: 'other sources'; referrers: JourneyReferrer[] }
+interface ReferrerNodeProps extends NodeProps {
+  data:
+    | JourneyReferrer
+    | { property: 'other sources'; referrers: JourneyReferrer[] }
+}
 
-export function ReferrerNode({ data: rawData }: NodeProps): ReactElement {
-  const data = rawData as unknown as ReferrerData
+export function ReferrerNode({ data }: ReferrerNodeProps): ReactElement {
   return (
     <BaseNode
       id="referrer"

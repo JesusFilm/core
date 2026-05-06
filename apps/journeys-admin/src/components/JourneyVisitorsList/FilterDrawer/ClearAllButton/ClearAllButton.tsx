@@ -1,5 +1,5 @@
 import Button from '@mui/material/Button'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 interface ClearAllProps {

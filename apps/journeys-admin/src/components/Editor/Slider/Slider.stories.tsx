@@ -1,4 +1,4 @@
-import { StoryObj } from '@storybook/nextjs-vite'
+import { StoryObj } from '@storybook/nextjs'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {

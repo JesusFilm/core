@@ -3,7 +3,7 @@
 // eslint-disable-next-line import/no-namespace
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { XIcon } from 'lucide-react'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 
 import { cn } from '../../libs/cn'
 

@@ -17,7 +17,7 @@ import { STEP_BLOCK_SLUG_UPDATE } from './CardSlugEdit'
 
 import { CardSlugEdit } from '.'
 
-jest.mock('next-i18next/pages', () => ({
+jest.mock('next-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 

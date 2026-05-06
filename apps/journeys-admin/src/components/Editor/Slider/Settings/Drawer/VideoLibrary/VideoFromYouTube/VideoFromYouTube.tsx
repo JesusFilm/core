@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import reduce from 'lodash/reduce'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
 import useSWRInfinite from 'swr/infinite'
@@ -16,7 +16,7 @@ import { VideoListProps } from '../VideoList/VideoList'
 import { VideoSearch } from '../VideoSearch'
 
 interface VideoFromYouTubeProps {
-  onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
+  onSelect: (block: VideoBlockUpdateInput) => void
 }
 
 export interface YoutubeVideo {

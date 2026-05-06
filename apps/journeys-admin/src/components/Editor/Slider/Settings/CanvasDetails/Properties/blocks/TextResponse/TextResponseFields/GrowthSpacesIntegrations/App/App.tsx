@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'

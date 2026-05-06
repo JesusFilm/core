@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client'
 import { Formik, FormikHelpers, FormikProvider } from 'formik'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo, useState } from 'react'
 import { object, string } from 'yup'
 

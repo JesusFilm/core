@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { sendGTMEvent } from '@next/third-parties/google'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, ReactNode, useCallback } from 'react'
 import { SwipeEventData, useSwipeable } from 'react-swipeable'

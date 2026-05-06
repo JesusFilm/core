@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ReactElement, useState } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'

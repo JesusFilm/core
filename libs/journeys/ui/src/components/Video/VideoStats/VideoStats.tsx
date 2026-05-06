@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { useCallback, useEffect, useState } from 'react'
 
 import VideoJsPlayer from '../utils/videoJsTypes'

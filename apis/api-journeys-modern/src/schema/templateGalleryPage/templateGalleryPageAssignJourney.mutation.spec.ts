@@ -28,8 +28,14 @@ describe('templateGalleryPageAssignJourney', () => {
   })
 
   const TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY = graphql(`
-    mutation TemplateGalleryPageAssignJourney($journeyId: ID!, $pageId: ID) {
-      templateGalleryPageAssignJourney(journeyId: $journeyId, pageId: $pageId) {
+    mutation TemplateGalleryPageAssignJourney(
+      $journeyId: ID!
+      $pageId: ID
+    ) {
+      templateGalleryPageAssignJourney(
+        journeyId: $journeyId
+        pageId: $pageId
+      ) {
         id
         title
       }
@@ -71,11 +77,6 @@ describe('templateGalleryPageAssignJourney', () => {
     prismaMock.templateGalleryPageTemplate.aggregate.mockResolvedValue({
       _max: { order: null }
     } as any)
-    // Renumber pass after the create reads the page's rows in display
-    // order — at this point only the newly inserted row exists.
-    prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
-      { id: 'tpt-new' }
-    ] as any)
     prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue({
       id: 'page-A',
       title: 'Page A'
@@ -116,14 +117,6 @@ describe('templateGalleryPageAssignJourney', () => {
     prismaMock.templateGalleryPageTemplate.aggregate.mockResolvedValue({
       _max: { order: 4 }
     } as any)
-    prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
-      { id: 'tpt-1' },
-      { id: 'tpt-2' },
-      { id: 'tpt-3' },
-      { id: 'tpt-4' },
-      { id: 'tpt-5' },
-      { id: 'tpt-new' }
-    ] as any)
     prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue({
       id: 'page-A',
       title: 'Page A'
@@ -158,16 +151,6 @@ describe('templateGalleryPageAssignJourney', () => {
     prismaMock.templateGalleryPageTemplate.aggregate.mockResolvedValue({
       _max: { order: 2 }
     } as any)
-    // Two findMany calls during a cross-page move: first for the source
-    // renumber after delete, then for the target renumber after create.
-    prismaMock.templateGalleryPageTemplate.findMany
-      .mockResolvedValueOnce([{ id: 'tpt-source-remaining' }] as any)
-      .mockResolvedValueOnce([
-        { id: 'tpt-existing-target' },
-        { id: 'tpt-existing-target-2' },
-        { id: 'tpt-existing-target-3' },
-        { id: 'tpt-new' }
-      ] as any)
     prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue({
       id: 'page-B',
       title: 'Page B'
@@ -232,10 +215,6 @@ describe('templateGalleryPageAssignJourney', () => {
       id: 'tpt-existing',
       templateGalleryPageId: 'page-A'
     } as any)
-    prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
-      { id: 'tpt-keep-1' },
-      { id: 'tpt-keep-2' }
-    ] as any)
     prismaMock.templateGalleryPage.findUniqueOrThrow
       // First call: the source-page existence/team check
       .mockResolvedValueOnce({ id: 'page-A', teamId: 'team-1' } as any)
@@ -256,48 +235,6 @@ describe('templateGalleryPageAssignJourney', () => {
       where: { id: 'tpt-existing' }
     })
     expect(prismaMock.templateGalleryPageTemplate.create).not.toHaveBeenCalled()
-  })
-
-  it('renumbers a gappy [0, 2, 4, 5] source page to [0, 1, 2] after unassigning a row', async () => {
-    // Reproduces Siyang's live-DB scenario: page had orders {0, 2, 4, 5}
-    // after earlier assign/unassign churn. Unassigning the row at order
-    // 2 must leave the remaining rows at contiguous orders 0..2 (NOT
-    // 0/4/5), otherwise the next reorder's display-index protocol breaks.
-    prismaMock.templateGalleryPageTemplate.findFirst.mockResolvedValue({
-      id: 'tpt-order-2',
-      templateGalleryPageId: 'page-A'
-    } as any)
-    prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
-      { id: 'tpt-order-0' },
-      { id: 'tpt-order-4' },
-      { id: 'tpt-order-5' }
-    ] as any)
-    prismaMock.templateGalleryPage.findUniqueOrThrow
-      .mockResolvedValueOnce({ id: 'page-A', teamId: 'team-1' } as any)
-      .mockResolvedValueOnce({ id: 'page-A', title: 'Page A' } as any)
-
-    await authClient({
-      document: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
-      variables: { journeyId: 'journey-1', pageId: null }
-    })
-
-    // Stage-to-negatives pass runs once for the page, then update is
-    // called once per remaining row with monotonically increasing 0..N-1.
-    expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
-    const stageSql = (
-      prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]
-    ).join(' ')
-    expect(stageSql).toContain('-("order") - 1000000')
-
-    const updates =
-      prismaMock.templateGalleryPageTemplate.update.mock.calls.map(
-        (c) => c[0] as { where: { id: string }; data: { order: number } }
-      )
-    expect(updates).toEqual([
-      { where: { id: 'tpt-order-0' }, data: { order: 0 } },
-      { where: { id: 'tpt-order-4' }, data: { order: 1 } },
-      { where: { id: 'tpt-order-5' }, data: { order: 2 } }
-    ])
   })
 
   it('returns null when unassigning a journey that is not in any collection (idempotent no-op)', async () => {

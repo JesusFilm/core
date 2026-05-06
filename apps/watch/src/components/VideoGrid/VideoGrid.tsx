@@ -1,5 +1,5 @@
 import { FishOff, Plus } from 'lucide-react'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import type { MouseEvent, ReactElement } from 'react'
 
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'

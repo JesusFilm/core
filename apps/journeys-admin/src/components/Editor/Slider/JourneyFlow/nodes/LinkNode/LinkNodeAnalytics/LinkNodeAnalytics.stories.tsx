@@ -1,4 +1,4 @@
-import type { StoryObj } from '@storybook/nextjs-vite'
+import type { StoryObj } from '@storybook/nextjs'
 import type { ComponentPropsWithoutRef } from 'react'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'

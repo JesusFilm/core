@@ -28,7 +28,7 @@ jest.mock('../../../../../../../libs/validateMuxLanguage', () => ({
   validateMuxLanguage: jest.fn()
 }))
 
-jest.mock('next-i18next/pages', () => ({
+jest.mock('next-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key
   })

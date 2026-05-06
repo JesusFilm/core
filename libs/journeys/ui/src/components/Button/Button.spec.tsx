@@ -79,7 +79,7 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
   typeof usePlausible
 >
 
-jest.mock('next-i18next/pages', () => ({
+jest.mock('next-i18next', () => ({
   __esModule: true,
   useTranslation: () => {
     return {

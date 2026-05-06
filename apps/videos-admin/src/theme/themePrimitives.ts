@@ -6,7 +6,7 @@ declare module '@mui/material/Paper' {
     highlighted: true
   }
 }
-declare module '@mui/material/styles' {
+declare module '@mui/material/styles/createPalette' {
   interface ColorRange {
     50: string
     100: string

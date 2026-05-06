@@ -4,7 +4,7 @@ import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -14,7 +14,6 @@ import MoreIcon from '@core/shared/ui/icons/More'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { User } from '../../../../libs/auth'
-import { getIsLocalTemplate } from '../../../../libs/getIsLocalTemplate'
 import { HelpScoutBeacon } from '../../../HelpScoutBeacon'
 import { AccessItem } from '../Items/AccessItem'
 import { AnalyticsItem } from '../Items/AnalyticsItem'
@@ -51,7 +50,7 @@ export function Menu({ user }: MenuProps): ReactElement {
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const isTemplate = journey?.template === true
-  const isLocalTemplate = getIsLocalTemplate(journey)
+  const isLocalTemplate = isTemplate && journey?.team?.id !== 'jfp-team'
 
   function handleShowMenu(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
@@ -92,7 +91,7 @@ export function Menu({ user }: MenuProps): ReactElement {
         {!mdUp && <JourneyDetails />}
         <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
         {!mdUp && <Divider data-testid="details-menu-divider" />}
-        {isTemplate && !isLocalTemplate && (
+        {isTemplate && (
           <TemplateSettingsItem variant="menu-item" onClose={handleCloseMenu} />
         )}
         {!isLocalTemplate && (

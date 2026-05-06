@@ -6,7 +6,7 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../..
 
 import { CardsSection } from './CardsSection'
 
-jest.mock('next-i18next/pages', () => ({
+jest.mock('next-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 

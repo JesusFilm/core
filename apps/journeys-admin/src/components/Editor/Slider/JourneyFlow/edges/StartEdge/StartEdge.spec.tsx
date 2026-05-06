@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react'
-import { Position, ReactFlowProvider } from '@xyflow/react'
 import { ReactElement } from 'react'
+import { Position, ReactFlowProvider } from 'reactflow'
 
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 
 import { StartEdge } from '.'
 
-jest.mock('@xyflow/react', () => {
-  const originalModule = jest.requireActual('@xyflow/react')
+jest.mock('reactflow', () => {
+  const originalModule = jest.requireActual('reactflow')
   return {
     __esModule: true,
     ...originalModule,

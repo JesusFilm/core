@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next/pages'
+import { TFunction } from 'next-i18next'
 
 import VideoJsPlayer from '../../../utils/videoJsTypes'
 import { getYoutubeQualityMap } from '../../../utils/youtubeQualityMap'

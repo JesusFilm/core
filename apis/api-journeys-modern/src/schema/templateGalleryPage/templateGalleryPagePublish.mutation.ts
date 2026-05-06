@@ -9,16 +9,10 @@ import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPagePublish', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
-    description:
-      "Transition a `draft` page to `published`, stamping `publishedAt` on the first publish only. Idempotent: calling on an already-published page is a no-op (no state change, no re-stamp of `publishedAt`).\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: id does not resolve, or the page was deleted between the auth-fetch and the canonical re-read.\n- FORBIDDEN: caller is not in the page's team.",
     type: TemplateGalleryPageRef,
     nullable: false,
     args: {
-      id: t.arg({
-        type: 'ID',
-        required: true,
-        description: 'Stable page identifier.'
-      })
+      id: t.arg({ type: 'ID', required: true })
     },
     resolve: async (query, _parent, args, context) => {
       const id = String(args.id)

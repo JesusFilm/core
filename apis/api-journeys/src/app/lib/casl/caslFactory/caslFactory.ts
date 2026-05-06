@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common'
 import { Role } from '@core/prisma/journeys/client'
 
 import { blockAcl } from '../../../modules/block/block.acl'
+import { customDomainAcl } from '../../../modules/customDomain/customDomain.acl'
 import { eventAcl } from '../../../modules/event/event.acl'
 import { hostAcl } from '../../../modules/host/host.acl'
 import { integrationAcl } from '../../../modules/integration/integration.acl'
@@ -55,6 +56,7 @@ export class AppCaslFactory extends CaslFactory<Role> {
     )
     const acls = [
       blockAcl,
+      customDomainAcl,
       eventAcl,
       hostAcl,
       integrationAcl,

@@ -7,7 +7,7 @@ import {
 
 import { VideoTitle } from './VideoTitle'
 
-jest.mock('next-i18next/pages', () => ({
+jest.mock('next-i18next', () => ({
   useTranslation: () => ({
     t: (str: string) => str
   })

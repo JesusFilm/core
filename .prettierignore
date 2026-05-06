@@ -15,13 +15,6 @@ schema.graphql
 playwright-report/
 .github/chatmodes/
 .cursor/
-
-# Agent-tooling content vendored from upstream (synced via /sync-ce). We don't
-# author these files and any reformatting here gets overwritten on the next
-# sync — same treatment as .cursor/ above.
-.claude/skills/
-.claude/agents/
-
 !apis/api-languages/src/__generated__/languageSlugs.ts
 pnpm-lock.yaml
 

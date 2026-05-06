@@ -82,20 +82,6 @@ describe('getCardBlocksContent', () => {
     expect(result[0]).toContain('- Card ID: card1')
   })
 
-  it('does not leak per-card showAssistant / expandChatByDefault into translation context', async () => {
-    const cardWithChatFlags = {
-      ...cardBlock,
-      showAssistant: true,
-      expandChatByDefault: true
-    } as Block
-    const result = await getCardBlocksContent({
-      blocks: [cardWithChatFlags, coverBlock as Block, child1 as Block],
-      cardBlocks: [cardWithChatFlags]
-    })
-    expect(result[0]).not.toContain('showAssistant')
-    expect(result[0]).not.toContain('expandChatByDefault')
-  })
-
   it('returns content for multiple cards', async () => {
     const card2 = { id: 'card2', typename: 'CardBlock' } as Block
     const blocks2 = [

@@ -1,7 +1,7 @@
 import Stack from '@mui/material/Stack'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 

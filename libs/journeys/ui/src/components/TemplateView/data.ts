@@ -1,4 +1,4 @@
-import { Edge, MarkerType, Node } from '@xyflow/react'
+import { Edge, MarkerType, Node } from 'reactflow'
 
 import {
   ButtonColor,

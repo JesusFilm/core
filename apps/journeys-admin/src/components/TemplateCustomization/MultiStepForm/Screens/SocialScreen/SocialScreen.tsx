@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'

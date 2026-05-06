@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'

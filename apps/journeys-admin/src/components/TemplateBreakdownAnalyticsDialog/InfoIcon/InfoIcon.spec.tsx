@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import { InfoIcon } from './InfoIcon'
 
-jest.mock('next-i18next/pages', () => ({
+jest.mock('next-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: { language: 'en' }

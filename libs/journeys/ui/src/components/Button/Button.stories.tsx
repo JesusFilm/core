@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import {

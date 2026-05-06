@@ -1,5 +1,5 @@
 import { intlFormat, parseISO } from 'date-fns'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
 
 import ArrowRightContained1Icon from '@core/shared/ui/icons/ArrowRightContained1'

@@ -1,1 +1,0 @@
-export { getIsLocalTemplate } from './getIsLocalTemplate'

@@ -11,7 +11,9 @@ if (isBrowser) {
   localePath = require('path').resolve('./public/locales')
 }
 
-/** @type {import('next-i18next/pages').UserConfig} */
+/**
+ * @type {import('next-i18next').UserConfig}
+ **/
 const i18nConfig = {
   i18n: {
     defaultLocale: 'en',

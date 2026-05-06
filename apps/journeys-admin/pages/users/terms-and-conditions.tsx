@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next'
-import { useTranslation } from 'next-i18next/pages'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 

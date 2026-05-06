@@ -4,7 +4,7 @@ import { changeJSDOMURL } from '../../../../../libs/utils/changeJSDOMURL'
 
 import { BibleQuotesCarouselHeader } from './BibleQuotesCarouselHeader'
 
-jest.mock('next-i18next/pages', () => ({
+jest.mock('next-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key
   })

@@ -1,7 +1,6 @@
-import { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { Decorator, Meta, StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps } from 'react'
-import type { DecoratorFunction as Decorator } from 'storybook/internal/csf'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 

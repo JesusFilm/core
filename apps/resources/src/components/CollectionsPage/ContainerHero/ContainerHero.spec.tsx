@@ -27,7 +27,7 @@ const mockVideoData = {
   slug: 'easter-collection'
 }
 
-jest.mock('next-i18next/pages', () => ({
+jest.mock('next-i18next', () => ({
   useTranslation: jest.fn().mockReturnValue({
     t: jest.fn()
   })

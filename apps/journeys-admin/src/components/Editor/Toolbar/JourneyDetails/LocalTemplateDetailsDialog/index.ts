@@ -1,1 +1,0 @@
-export { LocalTemplateDetailsDialog } from './LocalTemplateDetailsDialog'

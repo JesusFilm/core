@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
-import { ReactFlowProvider } from '@xyflow/react'
+import { ReactFlowProvider } from 'reactflow'
 
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 

@@ -29,8 +29,6 @@ describe('cardBlockUpdate', () => {
         parentOrder
         backgroundColor
         fullscreen
-        showAssistant
-        expandChatByDefault
       }
     }
   `)
@@ -161,9 +159,7 @@ describe('cardBlockUpdate', () => {
           coverBlockId: 'coverId',
           fullscreen: true,
           themeMode: 'dark',
-          themeName: 'base',
-          showAssistant: true,
-          expandChatByDefault: true
+          themeName: 'base'
         })
       },
       action: { upsert: jest.fn(), delete: jest.fn() },
@@ -182,9 +178,7 @@ describe('cardBlockUpdate', () => {
       backdropBlur: 10,
       fullscreen: true,
       themeMode: 'dark' as const,
-      themeName: 'base' as const,
-      showAssistant: true,
-      expandChatByDefault: true
+      themeName: 'base' as const
     }
 
     const result = await authClient({
@@ -200,9 +194,7 @@ describe('cardBlockUpdate', () => {
           coverBlockId: 'coverId',
           fullscreen: true,
           themeMode: 'dark',
-          themeName: 'base',
-          showAssistant: true,
-          expandChatByDefault: true
+          themeName: 'base'
         })
       })
     )
@@ -213,62 +205,7 @@ describe('cardBlockUpdate', () => {
           id,
           journeyId: 'journeyId',
           backgroundColor: '#00FF00',
-          fullscreen: true,
-          showAssistant: true,
-          expandChatByDefault: true
-        })
-      }
-    })
-  })
-
-  it('persists expandChatByDefault even when showAssistant is false (frontend owns the no-op semantics)', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
-      id,
-      journeyId: 'journeyId',
-      journey: { id: 'journeyId' }
-    })
-    mockAbility.mockReturnValue(true)
-
-    const tx = {
-      block: {
-        update: jest.fn().mockResolvedValue({
-          id,
-          typename: 'CardBlock',
-          journeyId: 'journeyId',
-          parentBlockId: 'parentId',
-          parentOrder: 0,
-          backgroundColor: '#FF0000',
-          fullscreen: false,
-          showAssistant: false,
-          expandChatByDefault: true
-        })
-      },
-      action: { upsert: jest.fn(), delete: jest.fn() },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
-    }
-    prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
-
-    const result = await authClient({
-      document: CARD_BLOCK_UPDATE,
-      variables: {
-        id,
-        input: { showAssistant: false, expandChatByDefault: true }
-      }
-    })
-
-    expect(tx.block.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({
-          showAssistant: false,
-          expandChatByDefault: true
-        })
-      })
-    )
-    expect(result).toEqual({
-      data: {
-        cardBlockUpdate: expect.objectContaining({
-          showAssistant: false,
-          expandChatByDefault: true
+          fullscreen: true
         })
       }
     })
