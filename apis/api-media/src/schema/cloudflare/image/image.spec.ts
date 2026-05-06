@@ -91,9 +91,7 @@ describe('cloudflareImage', () => {
           }
         ])
         const result = await client({ document: VIDEO_IMAGES_QUERY })
-        expect(
-          prismaMock.cloudflareImage.findMany
-        ).toHaveBeenCalledWith(
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith(
           expect.objectContaining({
             where: {
               videoId: { not: null },
@@ -127,9 +125,7 @@ describe('cloudflareImage', () => {
         `)
         prismaMock.cloudflareImage.findMany.mockResolvedValue([])
         await client({ document: FILTERED_QUERY })
-        expect(
-          prismaMock.cloudflareImage.findMany
-        ).toHaveBeenCalledWith(
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith(
           expect.objectContaining({
             where: expect.objectContaining({
               videoId: 'specificVideoId'

@@ -50,9 +50,7 @@ describe('videoVariantDownload', () => {
           }
         ])
         const result = await client({ document: VIDEO_VARIANT_DOWNLOADS_QUERY })
-        expect(
-          prismaMock.videoVariantDownload.findMany
-        ).toHaveBeenCalledWith(
+        expect(prismaMock.videoVariantDownload.findMany).toHaveBeenCalledWith(
           expect.objectContaining({
             where: {
               updatedAt: undefined,
@@ -80,16 +78,16 @@ describe('videoVariantDownload', () => {
       it('should filter by videoVariantId', async () => {
         const FILTERED_QUERY = graphql(`
           query VideoVariantDownloadsFiltered {
-            videoVariantDownloads(where: { videoVariantId: "specificVariantId" }) {
+            videoVariantDownloads(
+              where: { videoVariantId: "specificVariantId" }
+            ) {
               id
             }
           }
         `)
         prismaMock.videoVariantDownload.findMany.mockResolvedValue([])
         await client({ document: FILTERED_QUERY })
-        expect(
-          prismaMock.videoVariantDownload.findMany
-        ).toHaveBeenCalledWith(
+        expect(prismaMock.videoVariantDownload.findMany).toHaveBeenCalledWith(
           expect.objectContaining({
             where: expect.objectContaining({
               videoVariantId: 'specificVariantId'
