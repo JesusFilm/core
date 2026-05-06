@@ -67,14 +67,9 @@ export function TemplateGalleryPageList({
     teamId != null ? { teamId } : undefined,
     { skip: teamId == null }
   )
-  // Show all team templates regardless of status. The published-only filter
-  // applies to global templates (jfp-team) rendered on the public template
-  // library; team templates can be grouped into a Collection while still in
-  // draft status.
-  // `cache-and-network` so newly-created templates show up without a manual
-  // page refresh — the "Make Template" mutation only writes a partial
-  // (id-only) ref into the adminJourneys cache, so a pure cache hit on
-  // re-mount would otherwise omit the new template's display fields.
+  // cache-and-network: the "Make Template" mutation only writes an id-only
+  // ref into adminJourneys, so a pure cache hit on re-mount would omit the
+  // new template's display fields.
   const journeysQuery = useAdminJourneysQuery(
     {
       template: true,
@@ -83,16 +78,12 @@ export function TemplateGalleryPageList({
     { fetchPolicy: 'cache-and-network' }
   )
 
-  // Refetch when this panel becomes visible. The shared TabPanel keeps the
-  // component mounted across tab switches once visible, so cache-and-network
-  // alone won't refire the network on re-visit. The `visible` prop is owned
-  // by the parent so this component doesn't have to read router state.
+  // TabPanel keeps this component mounted once revealed, so cache-and-network
+  // alone won't refire the network on re-visit; refetch when `visible` flips.
   useEffect(() => {
     if (!visible || teamId == null) return
     void journeysQuery.refetch()
     void collectionsQuery.refetch()
-    // refetch fns identity changes every render; depending on the visibility
-    // signal + teamId is the right semantics.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, teamId])
 
@@ -127,14 +118,6 @@ export function TemplateGalleryPageList({
     return map
   }, [allTemplates])
 
-  const collectedIds = useMemo(() => {
-    const set = new Set<string>()
-    for (const collection of collections) {
-      for (const template of collection.templates) set.add(template.id)
-    }
-    return set
-  }, [collections])
-
   const templateIdToCollection = useMemo(() => {
     const map = new Map<string, TemplateGalleryPage>()
     for (const collection of collections) {
@@ -152,8 +135,11 @@ export function TemplateGalleryPageList({
   }, [collections])
 
   const unsectioned = useMemo<readonly Journey[]>(
-    () => allTemplates.filter((journey) => !collectedIds.has(journey.id)),
-    [allTemplates, collectedIds]
+    () =>
+      allTemplates.filter(
+        (journey) => !templateIdToCollection.has(journey.id)
+      ),
+    [allTemplates, templateIdToCollection]
   )
 
   const editTarget =
@@ -210,37 +196,22 @@ export function TemplateGalleryPageList({
     setActiveDragId(String(event.active.id))
   }
 
-  // Unified drop handler. Five branches resolved from (source, target):
-  // - unsectioned -> unsectioned        : no-op
-  // - unsectioned -> collection B       : assignJourney(journey, B)   [append]
-  // - collection A -> unsectioned       : assignJourney(journey, null)
-  // - collection A -> collection A,
-  //   different position                : reorderTemplate(A, journey, newOrder)
-  // - collection A -> collection B,
-  //   A != B                            : assignJourney(journey, B)   [append]
-  //
-  // Cross-collection drops always append to the end of the target for V1.
-  // Reorders are blocked on published collections (consistent with the
-  // membership guard).
+  // Unified drop handler — dispatches to assignJourney (membership change)
+  // or reorderTemplate (intra-collection move) based on (source, target).
+  // Cross-collection drops append to the end. Published collections reject.
   async function handleDragEnd(event: DragEndEvent): Promise<void> {
     setActiveDragId(null)
-    if (dragInFlight) {
-      // Defensive — handleDragStart already early-returns if a previous
-      // mutation is still in flight, so this branch should be unreachable.
-      // Keep the guard so reordering work doesn't accidentally interleave.
-      return
-    }
+    // Defensive — handleDragStart already short-circuits while a mutation
+    // is in flight, but keep the guard so reorders can't interleave.
+    if (dragInFlight) return
     const { active, over } = event
     if (over == null) return
 
     const templateId = String(active.id)
     const sourceCollection = templateIdToCollection.get(templateId) ?? null
 
-    // dnd-kit/sortable hands us the OVER element id. It's either:
-    //  - a sortable item id (= a journey id) when dropping onto another
-    //    template card,
-    //  - or a droppable zone id (encoded via encodeDropZoneId) when dropping
-    //    onto an empty zone.
+    // overId is either a sortable item id (a journey id) or an encoded
+    // drop-zone id from `encodeDropZoneId`.
     const overId = String(over.id)
     let targetCollectionId: string | null
     let targetIndex: number | null
@@ -431,7 +402,11 @@ export function TemplateGalleryPageList({
           </UnsectionedDroppable>
         </Box>
 
-        <DragOverlay dropAnimation={null}>
+        {/* Default dropAnimation snaps the card back to its origin when a
+            drop is rejected (published, no-op, etc.) and runs the standard
+            "settle" animation when accepted — gives the user visual
+            feedback either way. */}
+        <DragOverlay>
           {activeDragJourney != null ? (
             <Box sx={{ width: 280, cursor: 'grabbing', opacity: 0.95 }}>
               <JourneyCard journey={activeDragJourney} />
