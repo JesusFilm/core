@@ -2,10 +2,9 @@ import { render } from '@testing-library/react'
 
 import { ChatHeader } from './ChatHeader'
 
-jest.mock(
-  'next-i18next/pages',
-  () => ({ useTranslation: () => ({ t: (key: string) => key }) })
-)
+jest.mock('next-i18next/pages', () => ({
+  useTranslation: () => ({ t: (key: string) => key })
+}))
 
 describe('ChatHeader', () => {
   it('renders the title and caption', () => {

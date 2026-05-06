@@ -2,10 +2,9 @@ import { fireEvent, render } from '@testing-library/react'
 
 import { DragHandle } from './DragHandle'
 
-jest.mock(
-  'next-i18next/pages',
-  () => ({ useTranslation: () => ({ t: (key: string) => key }) })
-)
+jest.mock('next-i18next/pages', () => ({
+  useTranslation: () => ({ t: (key: string) => key })
+}))
 
 function renderHandle(props: {
   collapsed?: boolean
