@@ -50,4 +50,28 @@ describe('JourneyDetails', () => {
     expect(screen.queryByTestId('DescriptionDot')).not.toBeInTheDocument()
     expect(screen.queryByText('Some description')).not.toBeInTheDocument()
   })
+
+  it('should not render TEMPLATE badge for non-template journey', () => {
+    render(
+      <JourneyProvider value={{ journey: mockJourney }}>
+        <JourneyDetails />
+      </JourneyProvider>
+    )
+    expect(screen.queryByTestId('TemplateBadge')).not.toBeInTheDocument()
+  })
+
+  it('should render TEMPLATE badge when journey.template is true', () => {
+    const templateJourney: JourneyFields = {
+      ...mockJourney,
+      template: true
+    } as unknown as JourneyFields
+
+    render(
+      <JourneyProvider value={{ journey: templateJourney }}>
+        <JourneyDetails />
+      </JourneyProvider>
+    )
+    expect(screen.getByTestId('TemplateBadge')).toBeInTheDocument()
+    expect(screen.getByText('TEMPLATE')).toBeInTheDocument()
+  })
 })

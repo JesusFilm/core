@@ -7,7 +7,6 @@ import { filterToTeamTemplates } from './filterToTeamTemplates'
 import { generateUniqueSlug } from './generateUniqueSlug'
 import { TemplateGalleryPageCreateInput } from './inputs'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
-import { validateCreatorImageBlock } from './validateCreatorImageBlock'
 
 type CreateInput = typeof TemplateGalleryPageCreateInput.$inferInput
 
@@ -20,6 +19,8 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
       }
     }))
     .prismaField({
+      description:
+        'Create a new TemplateGalleryPage in `draft` status. The server generates a unique slug from `input.title`. Initial `journeyIds` are attached as templates in the order given (cross-team and non-template ids are silently filtered out).\n\nAuth: caller must be authenticated and a member of `input.teamId`.\n\nErrors:\n- BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.\n- BAD_USER_INPUT (field: `slug`): the title normalizes to empty or to a reserved word.',
       type: TemplateGalleryPageRef,
       nullable: false,
       args: {
@@ -31,11 +32,13 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
           title,
           description,
           creatorName,
-          creatorImageBlockId,
+          creatorImageSrc,
+          creatorImageAlt,
           mediaUrl,
           journeyIds
         } = args.input
         assertHttpsUrl(mediaUrl, 'mediaUrl')
+        assertHttpsUrl(creatorImageSrc, 'creatorImageSrc')
 
         let attempt = 0
         while (true) {
@@ -47,9 +50,6 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
                 teamId,
                 journeyIds ?? []
               )
-              if (creatorImageBlockId != null) {
-                await validateCreatorImageBlock(tx, teamId, creatorImageBlockId)
-              }
               return await tx.templateGalleryPage.create({
                 ...query,
                 data: {
@@ -59,10 +59,8 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
                   slug,
                   status: 'draft',
                   creatorName,
-                  creatorImageBlock:
-                    creatorImageBlockId != null
-                      ? { connect: { id: creatorImageBlockId } }
-                      : undefined,
+                  creatorImageSrc: creatorImageSrc ?? undefined,
+                  creatorImageAlt: creatorImageAlt ?? undefined,
                   mediaUrl: mediaUrl ?? undefined,
                   templates: {
                     createMany: {

@@ -10,21 +10,57 @@ import { TemplateGalleryPageStatus } from './enums'
 export const TemplateGalleryPageRef = builder.prismaObject(
   'TemplateGalleryPage',
   {
+    description:
+      'A team-curated, slug-addressable public landing page that bundles a hand-picked, hand-ordered list of template journeys. The slug is mutable post-publish — changing it breaks any external links to the old URL. `publishedAt` is monotonic: stamped only on the first publish, never re-stamped on subsequent unpublish/republish, and never cleared. `creatorImageSrc` and `creatorImageAlt` are plain string columns (not a Block FK) — the avatar URL survives independently of any owning Block.',
     fields: (t) => ({
-      id: t.exposeID('id', { nullable: false }),
-      title: t.exposeString('title', { nullable: false }),
-      description: t.exposeString('description', { nullable: false }),
-      slug: t.exposeString('slug', { nullable: false }),
+      id: t.exposeID('id', {
+        nullable: false,
+        description: 'Stable UUID identifier.'
+      }),
+      title: t.exposeString('title', {
+        nullable: false,
+        description: 'Display title shown in admin UI and on the public page.'
+      }),
+      description: t.exposeString('description', {
+        nullable: false,
+        description:
+          'Long-form description shown on the public page. Defaults to empty string.'
+      }),
+      slug: t.exposeString('slug', {
+        nullable: false,
+        description:
+          'URL-safe identifier. The public page is reached at `/collections/<slug>`. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, and must not be in the reserved list. Mutable after publish — changing it breaks any external links to the old URL.'
+      }),
       status: t.expose('status', {
         type: TemplateGalleryPageStatus,
-        nullable: false
+        nullable: false,
+        description:
+          '`draft` hides the page from the public renderer; `published` exposes it via `templateGalleryPageBySlug`.'
       }),
-      creatorName: t.exposeString('creatorName', { nullable: false }),
-      creatorImageBlock: t.relation('creatorImageBlock', { nullable: true }),
-      mediaUrl: t.exposeString('mediaUrl', { nullable: true }),
+      creatorName: t.exposeString('creatorName', {
+        nullable: false,
+        description:
+          'Display name of the team or person credited as the page creator.'
+      }),
+      creatorImageSrc: t.exposeString('creatorImageSrc', {
+        nullable: true,
+        description:
+          'Optional https URL of the creator avatar image. Plain string (not a Block FK) — survives independently of any owning Block. https-only on write.'
+      }),
+      creatorImageAlt: t.exposeString('creatorImageAlt', {
+        nullable: true,
+        description: 'Optional alt text for the creator avatar.'
+      }),
+      mediaUrl: t.exposeString('mediaUrl', {
+        nullable: true,
+        description:
+          'Optional https URL of a hero/cover media asset shown on the public page. https-only on write.'
+      }),
       publishedAt: t.expose('publishedAt', {
         type: 'DateTimeISO',
-        nullable: true
+        nullable: true,
+        description:
+          'Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.'
       }),
       createdAt: t.expose('createdAt', {
         type: 'DateTimeISO',
@@ -34,7 +70,11 @@ export const TemplateGalleryPageRef = builder.prismaObject(
         type: 'DateTimeISO',
         nullable: false
       }),
-      team: t.relation('team', { nullable: false }),
+      team: t.relation('team', {
+        nullable: false,
+        description:
+          'Owning team. The page is hard-deleted when the team is deleted.'
+      }),
       // Templates are ordered by `order` ascending. Read-time filter
       // (security H2): even if a journey was transferred to another team or
       // its `template` flag was flipped to false after being added to the
@@ -53,6 +93,8 @@ export const TemplateGalleryPageRef = builder.prismaObject(
       templates: t.field({
         type: [JourneyRef],
         nullable: false,
+        description:
+          'Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list.',
         select: {
           teamId: true,
           templates: {
