@@ -1,5 +1,4 @@
 import RemoveIcon from '@mui/icons-material/Remove'
-import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import ButtonBase from '@mui/material/ButtonBase'
@@ -166,7 +165,6 @@ export function CollectionDialog({
                     : null
                 }
               />
-              {/* Settings pane (right) */}
               <Box
                 sx={{
                   flex: 1,
@@ -181,7 +179,6 @@ export function CollectionDialog({
                 }}
               >
                 <Stack spacing={3}>
-                  {/* Page Title (always visible) */}
                   <Stack spacing={1}>
                     <Typography sx={SECTION_HEADER}>
                       {t('Page Title')}
@@ -208,7 +205,6 @@ export function CollectionDialog({
                     />
                   </Stack>
 
-                  {/* Templates picker (always visible) */}
                   <JourneyPickerField
                     availableJourneys={availableJourneys}
                     journeyIds={values.journeyIds}
@@ -221,7 +217,6 @@ export function CollectionDialog({
                     }}
                   />
 
-                  {/* More details accordion */}
                   <Stack>
                     <ButtonBase
                       onClick={() => setMoreDetailsOpen((v) => !v)}
@@ -252,7 +247,6 @@ export function CollectionDialog({
 
                     <Collapse in={moreDetailsOpen} mountOnEnter>
                       <Stack spacing={3} sx={{ pt: 2 }}>
-                        {/* Page Description / Instructions */}
                         <Stack spacing={1}>
                           <Typography sx={SECTION_HEADER}>
                             {t('Page Description / Instructions')}
@@ -278,7 +272,6 @@ export function CollectionDialog({
                           />
                         </Stack>
 
-                        {/* Creator Details */}
                         <Stack spacing={1}>
                           <Typography sx={SECTION_HEADER}>
                             {t('Creator Details')}
@@ -366,7 +359,6 @@ export function CollectionDialog({
                           )}
                         </Stack>
 
-                        {/* Add PDF/Video URL */}
                         <Stack spacing={1}>
                           <Typography sx={SECTION_HEADER}>
                             {t('Add PDF/Video with instructions')}
@@ -392,7 +384,6 @@ export function CollectionDialog({
                           />
                         </Stack>
 
-                        {/* Slug (edit mode only) */}
                         {mode === 'edit' && (
                           <TextField
                             id="slug"

@@ -27,11 +27,10 @@ export function encodeDropZoneId(zone: DropZoneId): string {
     : `${COLLECTION_PREFIX}${zone.id}`
 }
 
-export function parseDropZoneId(raw: string | number): DropZoneId | null {
-  const value = String(raw)
-  if (value === UNSECTIONED_ID) return { kind: 'unsectioned' }
-  if (value.startsWith(COLLECTION_PREFIX)) {
-    return { kind: 'collection', id: value.slice(COLLECTION_PREFIX.length) }
+export function parseDropZoneId(raw: string): DropZoneId | null {
+  if (raw === UNSECTIONED_ID) return { kind: 'unsectioned' }
+  if (raw.startsWith(COLLECTION_PREFIX)) {
+    return { kind: 'collection', id: raw.slice(COLLECTION_PREFIX.length) }
   }
   return null
 }

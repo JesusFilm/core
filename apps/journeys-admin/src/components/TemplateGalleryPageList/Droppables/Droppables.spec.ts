@@ -32,8 +32,4 @@ describe('encodeDropZoneId / parseDropZoneId', () => {
     // signal "this is a sortable item, not a zone wrapper" to the caller.
     expect(parseDropZoneId('j-uuid-123')).toBe(null)
   })
-
-  it('coerces numeric raw ids to a string before parsing', () => {
-    expect(parseDropZoneId(42)).toBe(null)
-  })
 })
