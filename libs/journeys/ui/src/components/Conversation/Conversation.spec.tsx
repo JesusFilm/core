@@ -91,11 +91,12 @@ describe('Conversation', () => {
 
   it('does not render the scroll-to-bottom pill while the reader is at the bottom', () => {
     mockScrollMetrics({ scrollHeight: 400, scrollTop: 0, clientHeight: 400 })
-    const { queryByTestId } = render(
+    const { queryByTestId, container } = render(
       <Conversation scrollKey={1}>
         <div>message</div>
       </Conversation>
     )
+    fireEvent.scroll(getScrollContainer(container))
     expect(queryByTestId('ScrollToBottomPill')).not.toBeInTheDocument()
   })
 
