@@ -324,6 +324,14 @@ export function CollectionDialog({
               <CollectionPreviewPane
                 values={values}
                 selectedJourneysOrdered={selectedJourneysOrdered}
+                publicUrl={
+                  values.slug !== ''
+                    ? `${
+                        process.env.NEXT_PUBLIC_JOURNEYS_URL ||
+                        'https://your.nextstep.is'
+                      }/template-gallery/${encodeURIComponent(values.slug)}`
+                    : null
+                }
               />
               {/* Settings pane (right) */}
               <Box

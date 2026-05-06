@@ -2,12 +2,17 @@ import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import { StrategySection } from '@core/journeys/ui/StrategySection'
+import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
@@ -24,6 +29,12 @@ export interface CollectionPreviewValues {
 interface CollectionPreviewPaneProps {
   values: CollectionPreviewValues
   selectedJourneysOrdered: readonly Journey[]
+  /**
+   * Full public URL for the collection. Rendered in a read-only field
+   * above the preview card so the publisher can copy / open it. Null
+   * when the collection has no slug yet (i.e. unsaved create dialog).
+   */
+  publicUrl: string | null
 }
 
 /**
@@ -33,9 +44,31 @@ interface CollectionPreviewPaneProps {
  */
 export function CollectionPreviewPane({
   values,
-  selectedJourneysOrdered
+  selectedJourneysOrdered,
+  publicUrl
 }: CollectionPreviewPaneProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
+
+  async function handleCopy(): Promise<void> {
+    if (publicUrl == null) return
+    try {
+      await navigator.clipboard.writeText(publicUrl)
+      enqueueSnackbar(t('Link copied to clipboard'), {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    } catch {
+      enqueueSnackbar(t("Couldn't copy link"), {
+        variant: 'error',
+        preventDuplicate: true
+      })
+    }
+  }
+  function handleView(): void {
+    if (publicUrl == null) return
+    window.open(publicUrl, '_blank', 'noopener,noreferrer')
+  }
   return (
     <Box
       sx={{
@@ -55,6 +88,62 @@ export function CollectionPreviewPane({
         minHeight: 0
       }}
     >
+      <Stack
+        direction="row"
+        spacing={1}
+        alignItems="center"
+        sx={{ width: 287, mb: 1.5, flexShrink: 0 }}
+      >
+        <TextField
+          value={publicUrl ?? ''}
+          fullWidth
+          size="small"
+          variant="outlined"
+          hiddenLabel
+          inputProps={{
+            readOnly: true,
+            'aria-label': t('Public URL')
+          }}
+          sx={{ bgcolor: 'white' }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Tooltip title={t('Copy link')}>
+                  <span>
+                    <IconButton
+                      aria-label={t('Copy link')}
+                      onClick={handleCopy}
+                      disabled={publicUrl == null}
+                      edge="end"
+                      size="small"
+                    >
+                      <LinkAngledIcon fontSize="small" />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </InputAdornment>
+            )
+          }}
+        />
+        <Tooltip title={t('Open in new tab')}>
+          <span>
+            <IconButton
+              aria-label={t('Open in new tab')}
+              onClick={handleView}
+              disabled={publicUrl == null}
+              sx={{
+                bgcolor: '#26262E',
+                color: 'common.white',
+                borderRadius: 1,
+                '&:hover': { bgcolor: '#26262E', opacity: 0.85 },
+                '&.Mui-disabled': { bgcolor: 'action.disabledBackground' }
+              }}
+            >
+              <Play3Icon fontSize="small" />
+            </IconButton>
+          </span>
+        </Tooltip>
+      </Stack>
       <Box
         sx={{
           bgcolor: 'white',
