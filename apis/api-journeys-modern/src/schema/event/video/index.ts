@@ -1,4 +1,5 @@
 import './videoStartEvent'
+import './videoStartEventCreate.mutation'
 import './videoPlayEvent'
 import './videoPauseEvent'
 import './videoCompleteEvent'
