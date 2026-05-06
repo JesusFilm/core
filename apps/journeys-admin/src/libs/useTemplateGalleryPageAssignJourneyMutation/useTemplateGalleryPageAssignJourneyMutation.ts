@@ -65,11 +65,13 @@ export function useTemplateGalleryPageAssignJourneyMutation(
     TemplateGalleryPageAssignJourneyVariables
   >(TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY, {
     // The mutation returns at most ONE affected page; for inter-collection
-    // moves the source page's `templates` field becomes stale in the cache.
-    // Refetching the team-scoped list is the cheapest correct fix while the
-    // page list is small (V1 — pagination is a V3 follow-up per the plan).
+    // moves, the call site adds an `update` callback that trims the moving
+    // journey out of the SOURCE page's cached `templates` list, so both
+    // ends of the move stay in sync without refetching. We still refetch
+    // in the background so anything outside the templates field
+    // eventually reconciles, but we don't await it — the user already
+    // saw the optimistic update.
     refetchQueries: ['GetTemplateGalleryPages'],
-    awaitRefetchQueries: true,
     ...options
   })
 }

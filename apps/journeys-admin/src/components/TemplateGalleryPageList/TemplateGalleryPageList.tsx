@@ -1,3 +1,4 @@
+import { Reference } from '@apollo/client'
 import {
   DndContext,
   DragEndEvent,
@@ -284,19 +285,113 @@ export function TemplateGalleryPageList({
           (tpl) => tpl.id === templateId
         )
         if (sourceIndex < 0 || sourceIndex === targetIndex) return
+        // Optimistic response so the cache reflects the new order on
+        // the SAME tick the drop happens — eliminates the brief flash
+        // where the card snaps back to its source position before the
+        // server response lands.
+        const reorderedTemplates = [...sourceCollection.templates]
+        const [moving] = reorderedTemplates.splice(sourceIndex, 1)
+        reorderedTemplates.splice(targetIndex, 0, moving)
         await templateGalleryPageReorderTemplate({
           variables: {
             pageId: sourceCollection.id,
             journeyId: templateId,
             order: targetIndex
+          },
+          optimisticResponse: {
+            templateGalleryPageReorderTemplate: {
+              ...sourceCollection,
+              templates: reorderedTemplates
+            }
           }
         })
       } else {
         // Membership change: cross-collection move, add from unsectioned, or
         // remove back to unsectioned. The server enforces the
         // single-membership invariant; passing pageId: null unassigns.
+        const movingFromSource = sourceCollection?.templates.find(
+          (tpl) => tpl.id === templateId
+        )
+        const movingFromUnsectioned = journeyById.get(templateId)
+        const movingTemplate =
+          movingFromSource ??
+          (movingFromUnsectioned != null
+            ? {
+                __typename: 'Journey' as const,
+                id: movingFromUnsectioned.id,
+                title: movingFromUnsectioned.title,
+                primaryImageBlock:
+                  movingFromUnsectioned.primaryImageBlock != null
+                    ? {
+                        __typename: 'ImageBlock' as const,
+                        id: movingFromUnsectioned.primaryImageBlock.id,
+                        src: movingFromUnsectioned.primaryImageBlock.src,
+                        alt: movingFromUnsectioned.primaryImageBlock.alt
+                      }
+                    : null
+              }
+            : null)
+        const targetCollection =
+          targetCollectionId != null
+            ? collectionsById.get(targetCollectionId)
+            : null
         await templateGalleryPageAssignJourney({
-          variables: { journeyId: templateId, pageId: targetCollectionId }
+          variables: { journeyId: templateId, pageId: targetCollectionId },
+          // Optimistic + cache.modify so both the target page (gain) and
+          // the source page (loss) update in the same tick as the drop.
+          // The server response replaces the optimistic write for the
+          // returned page; the source-page modify is a sibling write the
+          // response doesn't cover (the mutation only returns one page).
+          optimisticResponse:
+            targetCollection != null && movingTemplate != null
+              ? {
+                  templateGalleryPageAssignJourney: {
+                    ...targetCollection,
+                    templates: [...targetCollection.templates, movingTemplate]
+                  }
+                }
+              : sourceCollection != null
+                ? {
+                    templateGalleryPageAssignJourney: {
+                      ...sourceCollection,
+                      templates: sourceCollection.templates.filter(
+                        (tpl) => tpl.id !== templateId
+                      )
+                    }
+                  }
+                : undefined,
+          update: (cache) => {
+            // Trim the moving template out of the SOURCE page's cached
+            // templates list. Cross-collection moves return only the
+            // target; without this the source page keeps the moving
+            // ref stale until the refetch settles.
+            if (
+              sourceCollection == null ||
+              sourceCollection.id === targetCollectionId
+            ) {
+              return
+            }
+            const sourceCacheId = cache.identify({
+              __typename: 'TemplateGalleryPage',
+              id: sourceCollection.id
+            })
+            const movedRef = cache.identify({
+              __typename: 'Journey',
+              id: templateId
+            })
+            if (sourceCacheId == null || movedRef == null) return
+            cache.modify({
+              id: sourceCacheId,
+              fields: {
+                templates(existing) {
+                  if (!Array.isArray(existing)) return existing
+                  return (existing as Reference[]).filter(
+                    (ref) => ref.__ref !== movedRef
+                  )
+                }
+              }
+            })
+          }
         })
       }
     } catch (error) {
