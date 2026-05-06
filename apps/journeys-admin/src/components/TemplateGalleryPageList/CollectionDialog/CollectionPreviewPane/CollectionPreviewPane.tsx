@@ -145,8 +145,12 @@ export function CollectionPreviewPane({
           boxShadow:
             '0 6px 10px rgba(0,0,0,0.14), 0 1px 18px rgba(0,0,0,0.12), 0 3px 5px rgba(0,0,0,0.2)',
           width: 287,
-          height: '100%',
-          flexShrink: 0,
+          // Take all the height the URL row above leaves. Using
+          // height: '100%' here would compute against the gray pane
+          // and ignore the URL row, pushing the bottom of the card
+          // (the StrategySection) out of the visible area.
+          flex: 1,
+          minHeight: 0,
           p: 2.5,
           // Card hosts the single Y scrollbar. Horizontal stays
           // clipped — the template carousel child manages its
