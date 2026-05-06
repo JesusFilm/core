@@ -516,15 +516,18 @@ export function TemplateGalleryPageList(): ReactElement {
         </DragOverlay>
       </DndContext>
 
-      <CollectionDialog
-        open={createDialogOpen}
-        mode="create"
-        teamId={teamId}
-        availableJourneys={unsectioned}
-        onClose={handleCloseCreate}
-      />
+      {createDialogOpen && (
+        <CollectionDialog
+          open
+          mode="create"
+          teamId={teamId}
+          availableJourneys={unsectioned}
+          onClose={handleCloseCreate}
+        />
+      )}
       {editTarget != null && (
         <CollectionDialog
+          key={editTarget.id}
           open
           mode="edit"
           teamId={teamId}

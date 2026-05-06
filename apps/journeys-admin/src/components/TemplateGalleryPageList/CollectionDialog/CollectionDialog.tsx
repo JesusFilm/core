@@ -18,7 +18,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik, FormikHelpers } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { array, object, string } from 'yup'
 
 import { StrategySection } from '@core/journeys/ui/StrategySection'
@@ -108,6 +108,21 @@ export function CollectionDialog({
     journeyIds: collection?.templates.map((tpl) => tpl.id) ?? []
   }
 
+  // Tracks whether the dialog is still mounted, so post-await side effects
+  // (setFieldError / snackbar) don't fire on a torn-down Formik tree when
+  // the user dismisses while a mutation is in flight.
+  const mountedRef = useRef(true)
+  useEffect(
+    () => () => {
+      mountedRef.current = false
+    },
+    []
+  )
+  // Coalesces rapid image-picker `onChange` callbacks (validation in the
+  // ImageBlockEditor is async, so a double-click can fire two writes that
+  // race; this ref lets the second one no-op).
+  const imageWriteInFlightRef = useRef(false)
+
   const [imagePickerOpen, setImagePickerOpen] = useState(false)
   // Collapsed by default in both create and edit, matching Figma's
   // "+" affordance.
@@ -164,6 +179,7 @@ export function CollectionDialog({
           journeyIds: values.journeyIds
         }
         await templateGalleryPageCreate({ variables: { input } })
+        if (!mountedRef.current) return
         enqueueSnackbar(t('Collection created'), {
           variant: 'success',
           preventDuplicate: true
@@ -196,6 +212,7 @@ export function CollectionDialog({
         await templateGalleryPageUpdate({
           variables: { id: collection.id, input }
         })
+        if (!mountedRef.current) return
         enqueueSnackbar(t('Collection updated'), {
           variant: 'success',
           preventDuplicate: true
@@ -203,6 +220,7 @@ export function CollectionDialog({
       }
       onClose()
     } catch (error) {
+      if (!mountedRef.current) return
       if (error instanceof ApolloError) {
         // Map field-scoped errors back to Formik fields when possible.
         const rawField = error.graphQLErrors?.[0]?.extensions?.field
@@ -235,7 +253,6 @@ export function CollectionDialog({
       initialValues={initialValues}
       validationSchema={schema}
       onSubmit={handleSubmit}
-      enableReinitialize
     >
       {({
         values,
@@ -245,8 +262,17 @@ export function CollectionDialog({
         handleBlur,
         handleSubmit,
         setFieldValue,
-        setFieldTouched
+        setFieldTouched,
+        setValues,
+        isSubmitting
       }) => {
+        // Block close paths while a submit is in flight so the user can't
+        // dismiss the dialog mid-mutation (which would orphan the post-await
+        // side effects). Submit succeeds → onClose() runs explicitly.
+        const guardedClose = (): void => {
+          if (isSubmitting) return
+          onClose()
+        }
         // Selected journeys, ordered by the user's pick order, used for the
         // carousel preview on the left pane.
         const selectedJourneysOrdered = values.journeyIds
@@ -256,7 +282,7 @@ export function CollectionDialog({
         <>
         <Dialog
           open={open}
-          onClose={onClose}
+          onClose={guardedClose}
           maxWidth="md"
           dialogTitle={{
             title: t('Template Gallery Page'),
@@ -821,11 +847,11 @@ export function CollectionDialog({
                             variant="filled"
                             value={values.slug}
                             // Slugify on every keystroke so the input
-                            // mirrors what the backend will accept: trim,
-                            // lowercase, swap whitespace + invalid chars
-                            // for dashes, collapse runs, and clip leading
-                            // dashes. Trailing dashes stay during typing
-                            // so the user can still type "foo-bar".
+                            // mirrors what the backend will accept: lowercase,
+                            // swap whitespace + invalid chars for dashes,
+                            // collapse runs, and clip leading dashes.
+                            // Trailing dashes stay so the user can still
+                            // type "foo-bar"; we strip them on blur.
                             onChange={async (event) => {
                               const slugified = event.target.value
                                 .toLowerCase()
@@ -834,7 +860,17 @@ export function CollectionDialog({
                                 .replace(/^-+/, '')
                               await setFieldValue('slug', slugified)
                             }}
-                            onBlur={handleBlur}
+                            onBlur={async (event) => {
+                              // Strip trailing dashes on blur so the value
+                              // satisfies SLUG_PATTERN once the user moves
+                              // on; mid-typing dashes stay so "foo-" doesn't
+                              // immediately surface a validation error.
+                              const trimmed = values.slug.replace(/-+$/, '')
+                              if (trimmed !== values.slug) {
+                                await setFieldValue('slug', trimmed)
+                              }
+                              handleBlur(event)
+                            }}
                             error={touched.slug === true && Boolean(errors.slug)}
                             helperText={
                               (touched.slug === true && errors.slug) ||
@@ -912,16 +948,41 @@ export function CollectionDialog({
                   : null
               }
               onChange={async (input: ImageBlockUpdateInput) => {
-                if (input.src != null && input.src !== '') {
-                  void setFieldValue('creatorImageSrc', input.src)
-                  void setFieldValue('creatorImageAlt', input.alt ?? '')
+                if (imageWriteInFlightRef.current) return
+                if (input.src == null || input.src === '') return
+                imageWriteInFlightRef.current = true
+                try {
+                  await setValues(
+                    (v) => ({
+                      ...v,
+                      creatorImageSrc: input.src ?? '',
+                      creatorImageAlt: input.alt ?? ''
+                    }),
+                    true
+                  )
+                  if (!mountedRef.current) return
                   setImagePickerOpen(false)
+                } finally {
+                  imageWriteInFlightRef.current = false
                 }
               }}
               onDelete={async () => {
-                void setFieldValue('creatorImageSrc', '')
-                void setFieldValue('creatorImageAlt', '')
-                setImagePickerOpen(false)
+                if (imageWriteInFlightRef.current) return
+                imageWriteInFlightRef.current = true
+                try {
+                  await setValues(
+                    (v) => ({
+                      ...v,
+                      creatorImageSrc: '',
+                      creatorImageAlt: ''
+                    }),
+                    true
+                  )
+                  if (!mountedRef.current) return
+                  setImagePickerOpen(false)
+                } finally {
+                  imageWriteInFlightRef.current = false
+                }
               }}
               showAdd
             />

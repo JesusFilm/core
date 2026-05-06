@@ -9,6 +9,11 @@ import {
   TemplateGalleryPageCreate,
   TemplateGalleryPageCreateVariables
 } from '../../../__generated__/TemplateGalleryPageCreate'
+import {
+  GetTemplateGalleryPages,
+  GetTemplateGalleryPagesVariables
+} from '../../../__generated__/GetTemplateGalleryPages'
+import { GET_TEMPLATE_GALLERY_PAGES } from '../useTemplateGalleryPagesQuery'
 
 export const TEMPLATE_GALLERY_PAGE_CREATE = gql`
   mutation TemplateGalleryPageCreate(
@@ -59,30 +64,34 @@ export function useTemplateGalleryPageCreateMutation(
     update(cache, { data }) {
       if (data?.templateGalleryPageCreate == null) return
       const teamId = data.templateGalleryPageCreate.team?.id
-      cache.modify({
-        fields: {
-          templateGalleryPages(existingRefs = [], { storeFieldName }) {
-            // Only modify the team-scoped variant matching this create.
-            // storeFieldName encodes the args: e.g. 'templateGalleryPages({"teamId":"abc"})'
-            if (
-              teamId != null &&
-              !storeFieldName.includes(`"teamId":"${teamId}"`)
-            ) {
-              return existingRefs
-            }
-            const newRef = cache.writeFragment({
-              data: data.templateGalleryPageCreate,
-              fragment: gql`
-                fragment NewTemplateGalleryPage on TemplateGalleryPage {
-                  id
-                }
-              `
-            })
-            if (newRef == null) return existingRefs
-            return [newRef, ...existingRefs]
+      if (teamId == null) return
+      // Prepend to the team-scoped query result. Targeting the exact
+      // (query, variables) pair avoids the previous storeFieldName
+      // substring-matching, which depended on Apollo argument
+      // serialization order. If the team's list isn't cached, this
+      // is a no-op — Apollo will fetch fresh on next read.
+      cache.updateQuery<
+        GetTemplateGalleryPages,
+        GetTemplateGalleryPagesVariables
+      >(
+        { query: GET_TEMPLATE_GALLERY_PAGES, variables: { teamId } },
+        (existing) => {
+          if (existing == null) return existing
+          if (
+            existing.templateGalleryPages.some(
+              (page) => page.id === data.templateGalleryPageCreate.id
+            )
+          ) {
+            return existing
+          }
+          return {
+            templateGalleryPages: [
+              data.templateGalleryPageCreate,
+              ...existing.templateGalleryPages
+            ]
           }
         }
-      })
+      )
     },
     ...options
   })
