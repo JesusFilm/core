@@ -27,13 +27,6 @@ describe('videoOrigin', () => {
       `)
 
       it('should fetch video origins', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
-          id: 'userId',
-          userId: 'userId',
-          roles: ['publisher'],
-          createdAt: new Date(),
-          updatedAt: new Date()
-        })
         prismaMock.videoOrigin.findMany.mockResolvedValue([
           {
             id: 'origin1',
@@ -50,12 +43,16 @@ describe('videoOrigin', () => {
             updatedAt: new Date()
           }
         ])
-        const result = await authClient({
+        const result = await client({
           document: VIDEO_ORIGINS_QUERY
         })
-        expect(prismaMock.videoOrigin.findMany).toHaveBeenCalledWith({
-          orderBy: { name: 'asc' }
-        })
+        expect(prismaMock.videoOrigin.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }],
+            skip: 0,
+            take: 100
+          })
+        )
         expect(result).toHaveProperty('data.videoOrigins', [
           {
             id: 'origin1',
@@ -68,13 +65,6 @@ describe('videoOrigin', () => {
             description: 'Second origin'
           }
         ])
-      })
-
-      it('should reject if not publisher', async () => {
-        const result = await client({
-          document: VIDEO_ORIGINS_QUERY
-        })
-        expect(result).toHaveProperty('data', null)
       })
     })
   })

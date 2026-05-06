@@ -39,7 +39,14 @@ describe('videoEdition', () => {
         const data = await client({
           document: VIDEO_EDITIONS_QUERY
         })
-        expect(prismaMock.videoEdition.findMany).toHaveBeenCalledWith({})
+        expect(prismaMock.videoEdition.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }],
+            skip: 0,
+            take: 100,
+            where: { updatedAt: undefined }
+          })
+        )
         expect(data).toHaveProperty('data.videoEditions', [
           {
             id: 'id',

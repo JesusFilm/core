@@ -27,15 +27,31 @@ builder.queryFields((t) => ({
     type: ['Keyword'],
     nullable: false,
     args: {
-      where: t.arg({ type: KeywordsFilter, required: false })
+      where: t.arg({ type: KeywordsFilter, required: false }),
+      offset: t.arg.int({ required: false }),
+      limit: t.arg.int({ required: false })
     },
-    resolve: async (query, _parent, { where }) => {
+    resolve: async (query, _parent, { where, offset, limit }) => {
       const filter: Prisma.KeywordWhereInput = {}
       filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
       return await prisma.keyword.findMany({
         ...query,
-        where: filter
+        where: filter,
+        skip: offset ?? 0,
+        take: limit ?? 100,
+        orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }]
       })
+    }
+  }),
+  keywordsCount: t.int({
+    nullable: false,
+    args: {
+      where: t.arg({ type: KeywordsFilter, required: false })
+    },
+    resolve: async (_parent, { where }) => {
+      const filter: Prisma.KeywordWhereInput = {}
+      filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
+      return await prisma.keyword.count({ where: filter })
     }
   })
 }))

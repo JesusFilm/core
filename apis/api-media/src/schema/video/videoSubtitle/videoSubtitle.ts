@@ -1,14 +1,17 @@
 import { prisma } from '@core/prisma/media/client'
 
-import { builder } from '../../builder'
+import { builder, toPrismaDateTimeFilter } from '../../builder'
 import { Language } from '../../language'
 
 import { VideoSubtitleCreateInput } from './inputs/videoSubtitleCreate'
 import { VideoSubtitleUpdateInput } from './inputs/videoSubtitleUpdate'
+import { VideoSubtitlesFilter } from './inputs/videoSubtitlesFilter'
 
 export const VideoSubtitle = builder.prismaObject('VideoSubtitle', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
+    videoId: t.exposeID('videoId', { nullable: false }),
     languageId: t.exposeID('languageId', { nullable: false }),
     primary: t.exposeBoolean('primary', { nullable: false }),
     edition: t.exposeString('edition', { nullable: false }),
@@ -40,6 +43,50 @@ export const VideoSubtitle = builder.prismaObject('VideoSubtitle', {
     videoEdition: t.relation('videoEdition', { nullable: false })
   })
 })
+
+builder.queryFields((t) => ({
+  videoSubtitles: t.prismaField({
+    type: ['VideoSubtitle'],
+    nullable: false,
+    args: {
+      where: t.arg({ type: VideoSubtitlesFilter, required: false }),
+      offset: t.arg.int({ required: false }),
+      limit: t.arg.int({ required: false })
+    },
+    resolve: async (query, _parent, { where, offset, limit }) => {
+      return await prisma.videoSubtitle.findMany({
+        ...query,
+        where: {
+          updatedAt: toPrismaDateTimeFilter(where?.updatedAt),
+          videoId: where?.videoId ?? undefined,
+          languageId: where?.languageId ?? undefined,
+          edition: where?.edition ?? undefined,
+          primary: where?.primary ?? undefined
+        },
+        skip: offset ?? 0,
+        take: limit ?? 100,
+        orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }]
+      })
+    }
+  }),
+  videoSubtitlesCount: t.int({
+    nullable: false,
+    args: {
+      where: t.arg({ type: VideoSubtitlesFilter, required: false })
+    },
+    resolve: async (_parent, { where }) => {
+      return await prisma.videoSubtitle.count({
+        where: {
+          updatedAt: toPrismaDateTimeFilter(where?.updatedAt),
+          videoId: where?.videoId ?? undefined,
+          languageId: where?.languageId ?? undefined,
+          edition: where?.edition ?? undefined,
+          primary: where?.primary ?? undefined
+        }
+      })
+    }
+  })
+}))
 
 builder.mutationFields((t) => ({
   videoSubtitleCreate: t.withAuth({ isPublisher: true }).prismaField({

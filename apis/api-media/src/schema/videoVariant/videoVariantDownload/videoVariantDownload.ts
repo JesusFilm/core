@@ -1,16 +1,19 @@
 import { prisma } from '@core/prisma/media/client'
 
-import { builder } from '../../builder'
+import { builder, toPrismaDateTimeFilter } from '../../builder'
 
 import { VideoVariantDownloadQuality } from './enums/videoVariantDownloadQuality'
 import { VideoVariantDownloadCreateInput } from './inputs/videoVariantDownloadCreate'
 import { VideoVariantDownloadUpdateInput } from './inputs/videoVariantDownloadUpdate'
+import { VideoVariantDownloadsFilter } from './inputs/videoVariantDownloadsFilter'
 
 export const VideoVariantDownload = builder.prismaObject(
   'VideoVariantDownload',
   {
     fields: (t) => ({
       id: t.exposeID('id', { nullable: false }),
+      updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
+      videoVariantId: t.exposeID('videoVariantId', { nullable: true }),
       asset: t.withAuth({ isPublisher: true }).relation('asset', {
         nullable: true,
         description: 'master video file'
@@ -35,6 +38,46 @@ export const VideoVariantDownload = builder.prismaObject(
     })
   }
 )
+
+builder.queryFields((t) => ({
+  videoVariantDownloads: t.prismaField({
+    type: ['VideoVariantDownload'],
+    nullable: false,
+    args: {
+      where: t.arg({ type: VideoVariantDownloadsFilter, required: false }),
+      offset: t.arg.int({ required: false }),
+      limit: t.arg.int({ required: false })
+    },
+    resolve: async (query, _parent, { where, offset, limit }) => {
+      return await prisma.videoVariantDownload.findMany({
+        ...query,
+        where: {
+          updatedAt: toPrismaDateTimeFilter(where?.updatedAt),
+          videoVariantId: where?.videoVariantId ?? undefined,
+          quality: where?.quality ?? undefined
+        },
+        skip: offset ?? 0,
+        take: limit ?? 100,
+        orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }]
+      })
+    }
+  }),
+  videoVariantDownloadsCount: t.int({
+    nullable: false,
+    args: {
+      where: t.arg({ type: VideoVariantDownloadsFilter, required: false })
+    },
+    resolve: async (_parent, { where }) => {
+      return await prisma.videoVariantDownload.count({
+        where: {
+          updatedAt: toPrismaDateTimeFilter(where?.updatedAt),
+          videoVariantId: where?.videoVariantId ?? undefined,
+          quality: where?.quality ?? undefined
+        }
+      })
+    }
+  })
+}))
 
 builder.mutationFields((t) => ({
   videoVariantDownloadCreate: t.withAuth({ isPublisher: true }).prismaField({
