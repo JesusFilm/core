@@ -8,8 +8,6 @@ import { Dialog } from '@core/shared/ui/Dialog'
 export interface CollectionUngroupDialogProps {
   open: boolean
   wasPublished: boolean
-  slug: string
-  publicUrl: string | null
   onClose: () => void
   onConfirm: () => void
 }
@@ -17,7 +15,6 @@ export interface CollectionUngroupDialogProps {
 export function CollectionUngroupDialog({
   open,
   wasPublished,
-  publicUrl,
   onClose,
   onConfirm
 }: CollectionUngroupDialogProps): ReactElement {
@@ -45,11 +42,7 @@ export function CollectionUngroupDialog({
         </Typography>
         {wasPublished && (
           <Typography color="text.secondary">
-            {publicUrl != null
-              ? t('The public URL {{ publicUrl }} will return 404.', {
-                  publicUrl
-                })
-              : t('Any public URL for this collection will return 404.')}
+            {t('Any public URL for this collection will return 404.')}
           </Typography>
         )}
       </Stack>

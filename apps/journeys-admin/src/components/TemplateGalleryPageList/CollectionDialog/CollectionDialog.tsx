@@ -205,9 +205,8 @@ export function CollectionDialog({
     } catch (error) {
       if (error instanceof ApolloError) {
         // Map field-scoped errors back to Formik fields when possible.
-        const fieldError = error.graphQLErrors?.[0]?.extensions?.field as
-          | string
-          | undefined
+        const rawField = error.graphQLErrors?.[0]?.extensions?.field
+        const fieldError = typeof rawField === 'string' ? rawField : undefined
         if (
           fieldError != null &&
           (fieldError === 'slug' ||
@@ -590,7 +589,7 @@ export function CollectionDialog({
                       multiple
                       disableCloseOnSelect
                       disabled={isPublished}
-                      options={availableJourneys.slice()}
+                      options={availableJourneys as Journey[]}
                       getOptionLabel={(option) => option.title}
                       isOptionEqualToValue={(option, value) =>
                         option.id === value.id

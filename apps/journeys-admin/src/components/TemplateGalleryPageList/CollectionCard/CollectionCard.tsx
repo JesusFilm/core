@@ -3,7 +3,6 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
-import Link from '@mui/material/Link'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
@@ -21,7 +20,6 @@ import { CollectionUngroupDialog } from './CollectionUngroupDialog'
 
 export interface CollectionCardProps {
   collection: TemplateGalleryPage
-  publicUrlBase?: string
   onEdit?: (collection: TemplateGalleryPage) => void
   onPublish?: (collection: TemplateGalleryPage) => void
   onUnpublish?: (collection: TemplateGalleryPage) => void
@@ -33,7 +31,6 @@ export interface CollectionCardProps {
 
 export function CollectionCard({
   collection,
-  publicUrlBase,
   onEdit,
   onPublish,
   onUnpublish,
@@ -46,10 +43,6 @@ export function CollectionCard({
   const [ungroupOpen, setUngroupOpen] = useState(false)
 
   const isPublished = collection.status === TemplateGalleryPageStatus.published
-  const publicUrl =
-    isPublished && publicUrlBase != null
-      ? `${publicUrlBase}/collections/${collection.slug}`
-      : null
 
   function handleMenuOpen(event: MouseEvent<HTMLButtonElement>): void {
     setAnchorEl(event.currentTarget)
@@ -117,7 +110,6 @@ export function CollectionCard({
           aria-expanded={anchorEl != null ? 'true' : undefined}
           onClick={handleMenuOpen}
           disabled={busy === true}
-          data-no-dnd
         >
           <MoreIcon />
         </IconButton>
@@ -158,7 +150,7 @@ export function CollectionCard({
         </Menu>
       </Stack>
 
-      {collection.description !== '' && (
+      {collection.description != null && collection.description !== '' && (
         <Typography
           variant="body2"
           color="text.secondary"
@@ -172,22 +164,6 @@ export function CollectionCard({
         >
           {collection.description}
         </Typography>
-      )}
-
-      {publicUrl != null && (
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-          <Typography variant="caption" color="text.secondary">
-            {t('Public URL')}:
-          </Typography>
-          <Link
-            href={publicUrl}
-            target="_blank"
-            rel="noreferrer noopener"
-            variant="caption"
-          >
-            {publicUrl}
-          </Link>
-        </Stack>
       )}
 
       <CardContent
@@ -219,8 +195,6 @@ export function CollectionCard({
       <CollectionUngroupDialog
         open={ungroupOpen}
         wasPublished={collection.publishedAt != null}
-        slug={collection.slug}
-        publicUrl={publicUrl}
         onClose={handleCloseUngroup}
         onConfirm={handleConfirmUngroup}
       />

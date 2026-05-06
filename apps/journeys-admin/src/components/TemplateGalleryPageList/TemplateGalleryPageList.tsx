@@ -31,11 +31,11 @@ import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import {
-  GetAdminJourneys,
   GetAdminJourneysVariables,
   GetAdminJourneys_journeys as Journey
 } from '../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../__generated__/GetTemplateGalleryPages'
+import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { useTemplateGalleryPageAssignJourneyMutation } from '../../libs/useTemplateGalleryPageAssignJourneyMutation'
 import { useTemplateGalleryPageDeleteMutation } from '../../libs/useTemplateGalleryPageDeleteMutation'
@@ -93,7 +93,7 @@ export function TemplateGalleryPageList(): ReactElement {
       teamId
     } satisfies GetAdminJourneysVariables,
     { fetchPolicy: 'cache-and-network' }
-  ) as ReturnType<typeof useAdminJourneysQuery> & { data?: GetAdminJourneys }
+  )
 
   // Refetch when the user navigates BACK to the Team Templates tab (which
   // renders this component when the `teamTemplateCollection` flag is on).
@@ -329,10 +329,10 @@ export function TemplateGalleryPageList(): ReactElement {
     if (sourceCollection == null && targetCollectionId == null) return
 
     // Published guard on either side blocks every kind of move.
-    if (sourceCollection?.status === 'published') return
+    if (sourceCollection?.status === TemplateGalleryPageStatus.published) return
     if (targetCollectionId != null) {
       const targetCollection = collectionsById.get(targetCollectionId)
-      if (targetCollection?.status === 'published') return
+      if (targetCollection?.status === TemplateGalleryPageStatus.published) return
     }
 
     setDragInFlight(true)
@@ -446,7 +446,11 @@ export function TemplateGalleryPageList(): ReactElement {
               <DroppableCollectionWrapper
                 key={collection.id}
                 id={collection.id}
-                disabled={collection.status === 'published' || dragInFlight}
+                disabled={
+                  collection.status === TemplateGalleryPageStatus.published ||
+                  dragInFlight ||
+                  busyId === collection.id
+                }
               >
                 <CollectionCard
                   collection={collection}
@@ -460,7 +464,7 @@ export function TemplateGalleryPageList(): ReactElement {
                     journeys={collection.templates
                       .map((tpl) => journeyById.get(tpl.id))
                       .filter((j): j is Journey => j != null)}
-                    publishedLock={collection.status === 'published'}
+                    publishedLock={collection.status === TemplateGalleryPageStatus.published}
                   />
                 </CollectionCard>
               </DroppableCollectionWrapper>
@@ -650,7 +654,8 @@ function DraggableJourney({
       sx={{
         opacity: isDragging ? 0.4 : 1,
         touchAction: 'manipulation',
-        cursor: disabled === true ? 'default' : 'grab'
+        cursor:
+          disabled === true ? 'default' : isDragging ? 'grabbing' : 'grab'
       }}
     >
       <JourneyCard journey={journey} />

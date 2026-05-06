@@ -18,7 +18,7 @@ import { SortOrder } from '../JourneySort'
 import { SharedWithMeMode } from './DisplayModes/SharedWithMeMode/SharedWithMeMode'
 import { ContentTypeOption, TeamMode } from './DisplayModes/TeamMode/TeamMode'
 
-export type ContentType = 'journeys' | 'templates' | 'collections'
+export type ContentType = 'journeys' | 'templates'
 export type JourneyStatus = 'active' | 'archived' | 'trashed'
 
 export interface JourneyListViewProps {
