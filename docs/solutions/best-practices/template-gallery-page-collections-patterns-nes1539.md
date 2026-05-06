@@ -8,13 +8,17 @@ tags:
   - apollo-client
   - cache-modify
   - cache-update-query
+  - optimistic-response
   - formik
   - dnd-kit
+  - clipboard
   - mutation-routing
   - tab-panel
   - flag-rollout
   - mounted-ref
   - dialog
+  - postgres
+  - row-locking
   - nx-monorepo
 related_prs:
   - 'https://github.com/JesusFilm/core/pull/9143'
@@ -222,57 +226,211 @@ the feature `index.ts` so future devs can grep either direction:
 The feature flag also got renamed from `templateGalleryPage` → `teamTemplateCollection`
 mid-work; flag names follow UX vocabulary.
 
-### 10. Additive flag rollout: new panel sits ABOVE the legacy list
+### 10. Flag rollout: ship the simplest version, iterate later
 
-When a flag swaps a panel for an alternative implementation, scope the
-swap narrowly so it's reversible. Rolling out Collections by *replacing*
-the team-templates list would have removed archive/trash/sort affordances
-the moment the flag flipped. Instead, when the flag is on AND
-`status === 'active'`, render Collections above the legacy list. The
-legacy list keeps every existing affordance; archived/trashed status
-filters skip the gallery entirely.
+The first attempt at the rollout was *additive* — render the gallery
+above the legacy team-templates list when the flag is on, so users
+keep archive/trash/sort. In practice it duplicated every template
+twice (once in the gallery's "All Templates" pool, once in the legacy
+list below) and read as a bug. The shipped behavior is the simpler
+*total replacement*: when the flag is on, Templates renders only the
+gallery panel.
+
+The lesson is less "additive vs replacing" and more "new UI surfaces
+need to be tested in real flows before you commit to a rollout
+strategy." A flag-gated swap is reversible if you keep the old branch
+in tree (we did — `JourneyListContent` is one if/return away).
+
+### 11. Optimistic DnD with `cache.modify` for cross-entity sibling fields
+
+Without an `optimisticResponse`, Apollo waits for the network round-trip
+before re-rendering. dnd-kit's drop animation fires immediately on
+release and snaps the active card back to its source position — which
+visually *flashes the old order* before the cache update lands.
+
+For intra-collection reorder, an `optimisticResponse` is enough — the
+mutation returns the full TemplateGalleryPage, the splice is computable
+client-side, Apollo writes it on the same tick the drop happens.
+
+For cross-collection moves (`templateGalleryPageAssignJourney`), the
+mutation only returns the *target* page. The source page's `templates`
+field is a sibling on a different normalized entity that the response
+can't update. The fix: pair the optimistic response with a
+`cache.modify` in the mutation's `update` callback that trims the
+moving journey ref from the source page's templates list.
 
 ```ts
-if (
-  contentType === 'templates' &&
-  teamTemplateCollection === true &&
-  status === 'active'
-) {
-  return (
-    <>
-      <TemplateGalleryPageList visible={contentType === currentContentType} />
-      <JourneyListContent ... />
-    </>
-  )
+await templateGalleryPageAssignJourney({
+  variables: { journeyId, pageId: targetCollectionId },
+  optimisticResponse: { /* target with the journey appended */ },
+  update: (cache) => {
+    if (sourceCollection == null || sourceCollection.id === targetCollectionId) return
+    const sourceCacheId = cache.identify({
+      __typename: 'TemplateGalleryPage',
+      id: sourceCollection.id
+    })
+    const movedRef = cache.identify({ __typename: 'Journey', id: templateId })
+    if (sourceCacheId == null || movedRef == null) return
+    cache.modify({
+      id: sourceCacheId,
+      fields: {
+        templates(existing) {
+          if (!Array.isArray(existing)) return existing
+          return (existing as Reference[]).filter((ref) => ref.__ref !== movedRef)
+        }
+      }
+    })
+  }
+})
+```
+
+Drop the hook's `awaitRefetchQueries: true` so the optimistic update
+isn't held up by the post-mutation refetch — the user sees the new
+state immediately, refetch reconciles in the background.
+
+### 12. Clipboard copy inside modals: copy-event interception, not textarea + execCommand
+
+`navigator.clipboard.writeText` rejects in some contexts (insecure
+origin, focus trap stealing focus, missing permission). The textbook
+fallback is a temp `<textarea>` + `document.execCommand('copy')`, but
+that **lies** inside MUI Dialog: the focus trap yanks focus away from
+the temporary textarea before the selection sticks, `execCommand`
+returns `true` (it ran), and the clipboard ends up empty.
+
+The reliable fallback is a `copy` event listener that intercepts the
+system copy event and writes via `clipboardData.setData` directly. No
+selection, no textarea, nothing for the focus trap to steal.
+
+```ts
+export async function copyToClipboard(text: string): Promise<boolean> {
+  if (navigator.clipboard?.writeText != null) {
+    try {
+      await navigator.clipboard.writeText(text)
+      return true
+    } catch {
+      // fall through
+    }
+  }
+  let copied = false
+  const handler = (e: ClipboardEvent): void => {
+    if (e.clipboardData == null) return
+    e.clipboardData.setData('text/plain', text)
+    e.preventDefault()
+    copied = true
+  }
+  document.addEventListener('copy', handler)
+  try {
+    document.execCommand('copy')
+    return copied
+  } finally {
+    document.removeEventListener('copy', handler)
+  }
 }
+```
+
+The shared helper lives at
+`apps/journeys-admin/src/libs/copyToClipboard/`.
+
+### 13. Display-index ordering protocol: page lock + renumber pass (backend pairs with frontend)
+
+The backend reorder mutation initially treated its `order` arg as an
+absolute `order` column value and shifted the affected window with
+`SET "order" = "order" ± 1`. Two failures emerged in practice:
+
+1. **Concurrent reorders both staged a row to `order = -1`** to avoid
+   the window-shift collision. The second transaction tripped the
+   `(templateGalleryPageId, order)` UNIQUE constraint.
+2. **Assign/unassign produced gappy orders** (`{0, 2, 4, 5}` after
+   churn) because the unassign path didn't renumber. The frontend
+   sent a *display index* (computed from the array index of the
+   over-row), the resolver compared it to absolute `order` values,
+   and drags through gaps silently no-op'd.
+
+The shipped fix in `apis/api-journeys-modern/src/schema/templateGalleryPage/applyContiguousOrder.ts`:
+
+- **`lockPage(tx, pageId)`**: `SELECT 1 FROM "TemplateGalleryPage"
+  WHERE id = ${pageId} FOR UPDATE`. Caller MUST be inside a
+  transaction. Serializes concurrent reorder/assign mutations on the
+  same page.
+- **`applyContiguousOrder(tx, pageId, rowsInOrder)`**: stages every
+  row in the page to a unique negative sentinel
+  (`-("order") - 1000000`), then walks the input array writing each
+  row's final `order = i` in `0..N-1`. Two-pass write so the per-row
+  UNIQUE check on the unique index never sees a transient duplicate.
+- **Reorder protocol**: read rows in display order, splice in memory
+  by the display-index input, call `applyContiguousOrder`. The input
+  is now *unambiguously* a display index — the resolver never
+  compares it to a stored `order`.
+- **Assign/unassign**: lock both source and target pages in
+  lexicographic id order (deadlock-safe), then renumber both pages
+  after the membership change so orders stay contiguous.
+
+Frontend pairs this with optimistic responses (#11) so the visible
+order updates on the same tick as the drop, not after the network
+round-trip.
+
+One-off cleanup is required for any page that already has gappy data
+from before the fix:
+
+```sql
+BEGIN;
+UPDATE "TemplateGalleryPageTemplate"
+SET "order" = -("order") - 1000000
+WHERE "templateGalleryPageId" = '<page-id>';
+
+UPDATE "TemplateGalleryPageTemplate" AS t
+SET "order" = sub.new_order
+FROM (
+  SELECT id, ROW_NUMBER() OVER (ORDER BY "order" ASC) - 1 AS new_order
+  FROM "TemplateGalleryPageTemplate"
+  WHERE "templateGalleryPageId" = '<page-id>'
+    AND "order" < 0
+) AS sub
+WHERE t.id = sub.id;
+COMMIT;
 ```
 
 ## Prevention
 
 - Default to `cache.updateQuery` for list mutations. Reserve `cache.modify`
-  for surgical field patches.
+  for surgical field patches AND for sibling-entity updates the mutation
+  response can't reach (e.g. the source page after a cross-collection move).
 - `enableReinitialize` is almost never the right answer. Use `key={id}`
   remount instead.
 - Every async dialog handler that touches Formik post-await needs a
   `mountedRef` guard.
 - DnD coordination state needs to gate both the start and the children;
   a single `dragInFlight` boolean isn't enough by itself.
-- When wiring a flag, ask "what does the user lose when this flips on?"
-  Additive > replacing.
+- DnD that fires a mutation needs an `optimisticResponse` to avoid the
+  flash where the card snaps back to its source position before the
+  cache update lands.
+- Backend ordering operations on a row with a `(parentId, order)` UNIQUE
+  index need a parent-level `FOR UPDATE` lock. Single-transaction
+  staging to a fixed sentinel (`order = -1`) collides under concurrency.
+- Frontend that sends a "display index" must pair with a backend that
+  renumbers contiguously on every membership change — otherwise gaps
+  in the column accumulate and break the protocol.
+- Don't trust `navigator.clipboard.writeText` inside a modal. Always
+  ship the copy-event fallback for the focus-trap edge case.
 - Keep components under ~600 lines. Extract sibling components and hooks
   before they pass that bar.
 
 ## Cross-references
 
 - `docs/solutions/best-practices/local-template-dialog-consolidation-patterns-nes1543.md`
-  — Patterns 2 (cache.modify) and 3 (enableReinitialize trap) are extended
-  by this PR. The cache.modify guidance should now include the list-shaped
-  use case → updateQuery refinement above.
+  — Patterns 2 (cache.modify) and 3 (enableReinitialize trap) are
+  extended by this PR. Pattern 2 in particular is now richer: the
+  list-shaped case wants `cache.updateQuery`, but the
+  cross-entity-sibling case (move from page A to page B) genuinely
+  needs `cache.modify` in the mutation's `update` callback.
 - `docs/solutions/integration-issues/pothos-public-unauthenticated-query-pattern-api-journeys-modern.md`
   — Backend NES-1547 used this pattern for `templateGalleryPageBySlug`.
-- Backend follow-up prompt for agent-native parity gaps:
-  `docs/prompts/nes-1539-backend-agent-native-additions.md` (adds
-  `Query.templateGalleryPage(id)` and resolved `publicUrl` field).
+- `apps/journeys-admin/src/libs/copyToClipboard/` — shared
+  `copyToClipboard` helper used by the publish-success dialog and the
+  preview-pane URL field.
+- `apis/api-journeys-modern/src/schema/templateGalleryPage/applyContiguousOrder.ts`
+  — `lockPage` + `applyContiguousOrder` helpers shared between the
+  reorder and assign resolvers.
 
 ## Related work split out
 
