@@ -5,6 +5,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import { isInTeam } from '../authScopes'
 import { builder } from '../builder'
 
+import { applyContiguousOrder, lockPage } from './applyContiguousOrder'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
@@ -14,14 +15,20 @@ builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
     args: {
       pageId: t.arg({ type: 'ID', required: true }),
       journeyId: t.arg({ type: 'ID', required: true }),
+      // `order` is interpreted as a DISPLAY INDEX (0..total-1), not as an
+      // absolute `order` column value. Existing orders may be gappy after
+      // earlier assign/unassign churn; treating the input as a display
+      // index keeps the protocol correct regardless.
       order: t.arg.int({ required: true })
     },
     resolve: async (query, _parent, args, context) => {
       const pageId = String(args.pageId)
       const journeyId = String(args.journeyId)
-      const newOrder = args.order
+      const newIndex = args.order
 
       return await prisma.$transaction(async (tx) => {
+        await lockPage(tx, pageId)
+
         const page = await tx.templateGalleryPage.findUnique({
           where: { id: pageId },
           select: { id: true, teamId: true, status: true }
@@ -37,9 +44,6 @@ builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
             { extensions: { code: 'FORBIDDEN' } }
           )
         }
-        // Reorder is a structural edit; published collections are read-only on
-        // the public renderer and the frontend gates the UI, but enforce here
-        // so a direct mutation call cannot bypass the gate.
         if (page.status === 'published') {
           throw new GraphQLError(
             'cannot reorder templates on a published page',
@@ -47,16 +51,14 @@ builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
           )
         }
 
-        const moving = await tx.templateGalleryPageTemplate.findUnique({
-          where: {
-            templateGalleryPageId_journeyId: {
-              templateGalleryPageId: pageId,
-              journeyId
-            }
-          },
-          select: { id: true, order: true }
+        const rows = await tx.templateGalleryPageTemplate.findMany({
+          where: { templateGalleryPageId: pageId },
+          orderBy: { order: 'asc' },
+          select: { id: true, journeyId: true }
         })
-        if (moving == null) {
+
+        const sourceIndex = rows.findIndex((r) => r.journeyId === journeyId)
+        if (sourceIndex < 0) {
           throw new GraphQLError(
             'journey is not in this template gallery page',
             {
@@ -64,58 +66,23 @@ builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
             }
           )
         }
-
-        const total = await tx.templateGalleryPageTemplate.count({
-          where: { templateGalleryPageId: pageId }
-        })
-        if (newOrder < 0 || newOrder >= total) {
+        if (newIndex < 0 || newIndex >= rows.length) {
           throw new GraphQLError('order is out of range', {
             extensions: { code: 'BAD_USER_INPUT', field: 'order' }
           })
         }
-
-        if (moving.order === newOrder) {
+        if (sourceIndex === newIndex) {
           return await tx.templateGalleryPage.findUniqueOrThrow({
             ...query,
             where: { id: pageId }
           })
         }
 
-        // Stage the moving row to a temporary, page-unique negative value so
-        // the window-shift below cannot collide with it. The
-        // (templateGalleryPageId, order) unique index is NOT deferrable
-        // (plain `@@unique`), so a direct `SET order = order ± 1` over the
-        // affected window would violate the constraint mid-statement at the
-        // boundary. -1 is safe: orders are always non-negative integers.
-        await tx.templateGalleryPageTemplate.update({
-          where: { id: moving.id },
-          data: { order: -1 }
-        })
+        const reordered = [...rows]
+        const [moving] = reordered.splice(sourceIndex, 1)
+        reordered.splice(newIndex, 0, moving)
 
-        if (moving.order < newOrder) {
-          // Move down: rows in (oldOrder, newOrder] shift left by 1.
-          await tx.$executeRaw`
-            UPDATE "TemplateGalleryPageTemplate"
-            SET "order" = "order" - 1
-            WHERE "templateGalleryPageId" = ${pageId}
-              AND "order" > ${moving.order}
-              AND "order" <= ${newOrder}
-          `
-        } else {
-          // Move up: rows in [newOrder, oldOrder) shift right by 1.
-          await tx.$executeRaw`
-            UPDATE "TemplateGalleryPageTemplate"
-            SET "order" = "order" + 1
-            WHERE "templateGalleryPageId" = ${pageId}
-              AND "order" >= ${newOrder}
-              AND "order" < ${moving.order}
-          `
-        }
-
-        await tx.templateGalleryPageTemplate.update({
-          where: { id: moving.id },
-          data: { order: newOrder }
-        })
+        await applyContiguousOrder(tx, pageId, reordered)
 
         return await tx.templateGalleryPage.findUniqueOrThrow({
           ...query,
