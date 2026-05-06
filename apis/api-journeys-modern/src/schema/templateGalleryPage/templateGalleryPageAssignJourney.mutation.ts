@@ -34,7 +34,7 @@ builder.mutationField('templateGalleryPageAssignJourney', (t) =>
         type: 'ID',
         required: true,
         description:
-          'The journey to assign or unassign. Must be a non-deleted, template-flagged journey owned by the target page\'s team (when assigning).'
+          "The journey to assign or unassign. Must be a non-deleted, template-flagged journey owned by the target page's team (when assigning)."
       }),
       // pageId omitted/null → unassign the journey from whatever collection
       // it is currently in (returning the journey to the flat template list).

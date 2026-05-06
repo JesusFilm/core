@@ -289,10 +289,10 @@ describe('templateGalleryPageAssignJourney', () => {
     ).join(' ')
     expect(stageSql).toContain('-("order") - 1000000')
 
-    const updates = prismaMock.templateGalleryPageTemplate.update.mock.calls.map(
-      (c) =>
-        c[0] as { where: { id: string }; data: { order: number } }
-    )
+    const updates =
+      prismaMock.templateGalleryPageTemplate.update.mock.calls.map(
+        (c) => c[0] as { where: { id: string }; data: { order: number } }
+      )
     expect(updates).toEqual([
       { where: { id: 'tpt-order-0' }, data: { order: 0 } },
       { where: { id: 'tpt-order-4' }, data: { order: 1 } },
