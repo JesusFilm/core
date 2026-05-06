@@ -1,11 +1,27 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '@core/prisma/journeys/client'
+import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { isInTeam } from '../authScopes'
 import { builder } from '../builder'
 
+import { applyContiguousOrder, lockPage } from './applyContiguousOrder'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
+
+// Re-reads `pageId`'s template rows in display order and writes them
+// back at contiguous orders 0..N-1. Caller must hold a lockPage on the
+// page first.
+async function renumberPage(
+  tx: Prisma.TransactionClient,
+  pageId: string
+): Promise<void> {
+  const rows = await tx.templateGalleryPageTemplate.findMany({
+    where: { templateGalleryPageId: pageId },
+    orderBy: { order: 'asc' },
+    select: { id: true }
+  })
+  await applyContiguousOrder(tx, pageId, rows)
+}
 
 builder.mutationField('templateGalleryPageAssignJourney', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -37,6 +53,7 @@ builder.mutationField('templateGalleryPageAssignJourney', (t) =>
             // Idempotent no-op — journey was not in any collection.
             return null
           }
+          await lockPage(tx, existing.templateGalleryPageId)
           const sourcePage = await tx.templateGalleryPage.findUniqueOrThrow({
             where: { id: existing.templateGalleryPageId },
             select: { id: true, teamId: true }
@@ -50,6 +67,12 @@ builder.mutationField('templateGalleryPageAssignJourney', (t) =>
           await tx.templateGalleryPageTemplate.delete({
             where: { id: existing.id }
           })
+          // Renumber the source page so the orders that surface to the next
+          // reorder are contiguous. Without this pass, repeated
+          // assign/unassign churn leaves gaps (e.g. {0, 2, 4, 5}) and the
+          // display-index protocol of templateGalleryPageReorderTemplate
+          // can't reason about them.
+          await renumberPage(tx, existing.templateGalleryPageId)
           return await tx.templateGalleryPage.findUniqueOrThrow({
             ...query,
             where: { id: existing.templateGalleryPageId }
@@ -57,6 +80,20 @@ builder.mutationField('templateGalleryPageAssignJourney', (t) =>
         }
 
         // ASSIGN
+        // Lock all pages this transaction will touch in sorted order so
+        // that two cross-page swaps (A → B and B → A racing) cannot
+        // deadlock by locking in opposite orders.
+        const sourcePageId =
+          existing != null && existing.templateGalleryPageId !== pageId
+            ? existing.templateGalleryPageId
+            : null
+        const pagesToLock = (
+          sourcePageId != null ? [pageId, sourcePageId] : [pageId]
+        ).sort()
+        for (const id of pagesToLock) {
+          await lockPage(tx, id)
+        }
+
         const targetPage = await tx.templateGalleryPage.findUnique({
           where: { id: pageId },
           select: { id: true, teamId: true }
@@ -104,17 +141,20 @@ builder.mutationField('templateGalleryPageAssignJourney', (t) =>
           })
         }
 
-        // Single-membership: drop the existing row before inserting the new
-        // one. Both writes happen inside the same tx so a failure cleans up.
+        // Cross-page move: drop from source and renumber it before
+        // touching the target. Both writes are inside the same tx so a
+        // failure rolls everything back.
         if (existing != null) {
           await tx.templateGalleryPageTemplate.delete({
             where: { id: existing.id }
           })
+          await renumberPage(tx, existing.templateGalleryPageId)
         }
 
-        // Append at the end of the target page's existing ordering. Orders
-        // need not be contiguous — only unique within the page (unique index
-        // `(templateGalleryPageId, order)`).
+        // Append at the end of the target. The order chosen here is a
+        // temporary placeholder — the renumber pass below collapses any
+        // gaps left from earlier assign/unassign churn into a contiguous
+        // 0..N-1 block, and the new row naturally lands at index N-1.
         const maxOrder = await tx.templateGalleryPageTemplate.aggregate({
           where: { templateGalleryPageId: pageId },
           _max: { order: true }
@@ -124,6 +164,7 @@ builder.mutationField('templateGalleryPageAssignJourney', (t) =>
         await tx.templateGalleryPageTemplate.create({
           data: { templateGalleryPageId: pageId, journeyId, order: nextOrder }
         })
+        await renumberPage(tx, pageId)
 
         return await tx.templateGalleryPage.findUniqueOrThrow({
           ...query,
