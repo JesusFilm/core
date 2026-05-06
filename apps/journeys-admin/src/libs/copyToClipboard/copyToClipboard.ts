@@ -2,10 +2,14 @@
  * Copy a string to the clipboard with a legacy fallback.
  *
  * Prefers `navigator.clipboard.writeText`. When that's unavailable
- * (insecure context, no permission, missing focus, etc.) falls back to
- * a temporary textarea + `document.execCommand('copy')`. The legacy
- * path is deprecated but still works across every relevant browser
- * and doesn't require a secure context.
+ * or rejects (insecure context, no permission, MUI Dialog focus trap
+ * stealing focus, etc.) falls back to a `copy` event interception:
+ * register a one-shot copy listener that writes our text via
+ * `clipboardData.setData`, then trigger the copy via `execCommand`.
+ *
+ * The copy-event path avoids the textarea + selection dance, which is
+ * unreliable inside modals because the focus trap yanks focus back
+ * before the selection sticks.
  */
 export async function copyToClipboard(text: string): Promise<boolean> {
   if (
@@ -20,21 +24,20 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     }
   }
   if (typeof document === 'undefined') return false
-  const textarea = document.createElement('textarea')
-  textarea.value = text
-  // Avoid scrolling to bottom on iOS Safari.
-  textarea.style.position = 'fixed'
-  textarea.style.left = '-9999px'
-  textarea.style.top = '0'
-  textarea.setAttribute('readonly', '')
-  document.body.appendChild(textarea)
-  textarea.select()
-  textarea.setSelectionRange(0, text.length)
+  let copied = false
+  const handler = (event: ClipboardEvent): void => {
+    if (event.clipboardData == null) return
+    event.clipboardData.setData('text/plain', text)
+    event.preventDefault()
+    copied = true
+  }
+  document.addEventListener('copy', handler)
   try {
-    return document.execCommand('copy')
+    document.execCommand('copy')
+    return copied
   } catch {
     return false
   } finally {
-    document.body.removeChild(textarea)
+    document.removeEventListener('copy', handler)
   }
 }
