@@ -8,7 +8,8 @@ interface ResponseProps {
   content: string
 }
 
-const MARKDOWN_LINK_UNDERLINE = 'color-mix(in srgb, currentColor 35%, transparent)'
+const MARKDOWN_LINK_UNDERLINE =
+  'color-mix(in srgb, currentColor 35%, transparent)'
 const MARKDOWN_SUBTLE_BACKGROUND =
   'color-mix(in srgb, currentColor 6%, transparent)'
 const MARKDOWN_BLOCKQUOTE_BORDER =
