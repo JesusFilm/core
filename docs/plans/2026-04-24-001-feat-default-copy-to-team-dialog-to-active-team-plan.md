@@ -65,7 +65,7 @@ The `JourneyDuplicate` mutation (`libs/journeys/ui/src/libs/useJourneyDuplicateM
 - **Interaction graph:** User clicks _Use this Template_ (or _Duplicate_ in a journey menu) → dialog opens → Formik initializes with new default → user clicks Submit → `submitAction` → `JourneyDuplicate` mutation → `updateLastActiveTeamId` mutation → `GetAdminJourneys` refetch. The chain is unchanged; only the initial field value changes.
 - **Error propagation:** No new error paths. Form validation on `teamSelect` (`required`, line 156) still fires if somehow the default resolves to `''`.
 - **State lifecycle risks:** None. `resetForm()` is still called on submit (line 140) and on close (line 210), so subsequent opens pick up the latest `activeTeam` cleanly.
-- **API surface parity:** No mutation signature changes. Both callers (`CopyToTeamMenuItem`, `DuplicateJourneyMenuItem`) inherit the new default without code changes.
+- **API surface parity:** No mutation signature changes. `CreateJourneyButton` opts into the new default via `defaultToActiveTeam`; `CopyToTeamMenuItem` and `DuplicateJourneyMenuItem` remain on existing empty-default behavior.
 - **Integration test scenarios:** See **Acceptance Criteria** below; the new "multi-team user opens dialog" scenario is the one unit tests must cover.
 
 ## Acceptance Criteria
