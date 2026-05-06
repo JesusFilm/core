@@ -107,7 +107,9 @@ describe('BackgroundColor', () => {
     fullscreen: false,
     backdropBlur: null,
     eventLabel: null,
-    children: []
+    children: [],
+    showAssistant: null,
+    expandChatByDefault: null
   }
 
   const fullscreenCard: TreeBlock<CardBlock> = {
@@ -285,7 +287,7 @@ describe('BackgroundColor', () => {
               __typename: 'CardBlock',
               id: 'card1.id',
               backgroundColor: '#FEFEFE4D'
-            }
+        }
           }
         }
       }
@@ -530,7 +532,7 @@ describe('BackgroundColor', () => {
               __typename: 'CardBlock',
               id: 'card1.id',
               backdropBlur: 25
-            }
+        }
           }
         }))
       }

@@ -1,5 +1,7 @@
+import type { TreeBlock } from '../../../../libs/block'
 import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { JourneyProviderContext } from '../../../../libs/JourneyProvider/JourneyProvider'
+import { CardFields } from '../../__generated__/CardFields'
 
 export const FULL_HEIGHT = '90px'
 export const HALF_HEIGHT = '60px'
@@ -9,6 +11,12 @@ export const WEBSITE_HEIGHT = '0px'
 interface JourneyInfoProps {
   journey?: JourneyFields
   variant?: JourneyProviderContext['variant'] | undefined
+  /**
+   * Active card. When omitted, `hasAiChatButton` falls back to
+   * `journey.showAssistant`. Pass through from any consumer that knows the
+   * current card so per-card opt-in/out wins over the journey value.
+   */
+  card?: TreeBlock<CardFields> | null
 }
 
 export function hasReactions({ journey }: JourneyInfoProps): boolean {
@@ -46,10 +54,15 @@ export function hasChatWidget({
 
 export function hasAiChatButton({
   journey,
-  variant = 'default'
+  variant = 'default',
+  card
 }: JourneyInfoProps): boolean {
   if (variant === 'admin' || variant === 'embed') return false
-  return journey?.showAssistant === true
+  // Per-card overrides per-journey; nullish fallback to the (deprecated)
+  // journey value during the NES-1585 transition. Removal is tracked in
+  // NES-1624 ("Fallback removal") once verification SQL confirms zero
+  // remaining nulls on Block.showAssistant.
+  return (card?.showAssistant ?? journey?.showAssistant) === true
 }
 
 export function getTitle({ journey }: JourneyInfoProps): string | null {
@@ -76,7 +89,8 @@ export function hasCombinedFooter({
 
 export function getFooterMobileSpacing({
   journey,
-  variant = 'default'
+  variant = 'default',
+  card
 }: JourneyInfoProps): string {
   if (journey?.website === true) {
     return variant === 'admin' ? HALF_HEIGHT : WEBSITE_HEIGHT
@@ -90,7 +104,7 @@ export function getFooterMobileSpacing({
     const hasBottomRow =
       hasHost ||
       hasChatWidget({ journey, variant }) ||
-      hasAiChatButton({ journey, variant }) ||
+      hasAiChatButton({ journey, variant, card }) ||
       title != null ||
       reactions
 
@@ -106,7 +120,8 @@ export function getFooterMobileSpacing({
 
 export function getFooterMobileHeight({
   journey,
-  variant = 'default'
+  variant = 'default',
+  card
 }: JourneyInfoProps): string {
   if (journey?.website === true) {
     return HALF_HEIGHT
@@ -116,7 +131,7 @@ export function getFooterMobileHeight({
       hasHostAvatar({ journey, variant }) ||
       hasHostDetails({ journey }) ||
       hasChatWidget({ journey, variant }) ||
-      hasAiChatButton({ journey, variant }) ||
+      hasAiChatButton({ journey, variant, card }) ||
       getTitle({ journey }) != null
 
     if (hasBottomRow) {

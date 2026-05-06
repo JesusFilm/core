@@ -4,20 +4,31 @@ import { ReactElement, ReactNode } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
+import type { TreeBlock } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
-import { getFooterMobileSpacing } from '../utils/getFooterElements'
+import { CardFields } from '../__generated__/CardFields'
+import {
+  getFooterMobileSpacing,
+  hasAiChatButton
+} from '../utils/getFooterElements'
 import { showHeader } from '../utils/getHeaderElements'
 
 interface OverlayContentProps {
   children: ReactNode
   sx: SxProps
   hasFullscreenVideo?: boolean
+  /**
+   * Active card for this overlay's footer-spacing calculation. When omitted,
+   * the per-card opt-in/out falls back to `journey.showAssistant`.
+   */
+  card?: TreeBlock<CardFields> | null
 }
 
 export function OverlayContent({
   children,
   sx,
-  hasFullscreenVideo = false
+  hasFullscreenVideo = false,
+  card
 }: OverlayContentProps): ReactElement {
   const { journey, variant } = useJourney()
   const enableVerticalScroll: SxProps = {
@@ -71,12 +82,12 @@ export function OverlayContent({
           pr: { xs: 4, sm: 10 }
         }
 
-  const footerMobileSpacing = getFooterMobileSpacing({ journey, variant })
+  const footerMobileSpacing = getFooterMobileSpacing({ journey, variant, card })
 
   const flags = useFlags()
   const pinnedChatActive =
     flags.apologistChat === true &&
-    journey?.showAssistant === true &&
+    hasAiChatButton({ journey, variant, card }) &&
     variant !== 'admin' &&
     variant !== 'embed'
 

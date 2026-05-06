@@ -18,6 +18,7 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
+import { CardFields } from '../__generated__/CardFields'
 import { OverlayContent } from '../OverlayContent'
 import {
   addAlphaToHex,
@@ -34,6 +35,7 @@ interface ContainedCoverProps {
   videoBlock?: TreeBlock<VideoFields>
   imageBlock?: TreeBlock<ImageFields>
   hasFullscreenVideo?: boolean
+  card?: TreeBlock<CardFields> | null
 }
 
 const StyledGradientBackground = styled(Stack)(() => ({
@@ -75,7 +77,8 @@ export function ContainedCover({
   backgroundBlur,
   videoBlock,
   imageBlock,
-  hasFullscreenVideo = false
+  hasFullscreenVideo = false,
+  card
 }: ContainedCoverProps): ReactElement {
   const [loading, setLoading] = useState(true)
   const [contentHeight, setContentHeight] = useState(0)
@@ -300,6 +303,7 @@ export function ContainedCover({
             />
             <OverlayContent
               hasFullscreenVideo={hasFullscreenVideo}
+              card={card}
               sx={{
                 // This should match width of journey card content in admin
                 width: { sm: `${CONTENT_WIDTH}px` },

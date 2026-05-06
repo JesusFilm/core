@@ -284,7 +284,9 @@ describe('WebView', () => {
                 notes: null,
                 children: []
               }
-            ]
+            ],
+            showAssistant: null,
+            expandChatByDefault: null
           }
         ]
       }

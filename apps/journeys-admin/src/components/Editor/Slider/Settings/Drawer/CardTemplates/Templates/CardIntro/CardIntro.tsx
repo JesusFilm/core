@@ -454,7 +454,9 @@ export function CardIntro(): ReactElement {
               cache.modify({
                 id: cache.identify({
                   __typename: 'CardBlock',
-                  id: cardId
+                  id: cardId,
+                  showAssistant: null,
+                  expandChatByDefault: null
                 }),
                 fields: {
                   coverBlockId: () => data.video.id
@@ -564,7 +566,9 @@ export function CardIntro(): ReactElement {
             cache.modify({
               id: cache.identify({
                 __typename: 'CardBlock',
-                id: cardId
+                id: cardId,
+                showAssistant: null,
+                expandChatByDefault: null
               }),
               fields: {
                 coverBlockId: () => videoBlock.id

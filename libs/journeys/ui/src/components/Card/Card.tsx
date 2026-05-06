@@ -91,8 +91,18 @@ export function Card({
   backdropBlur,
   coverBlockId,
   fullscreen,
-  wrappers
+  wrappers,
+  ...rest
 }: CardProps): ReactElement {
+  const cardForFooter = {
+    id,
+    children,
+    backgroundColor,
+    backdropBlur,
+    coverBlockId,
+    fullscreen,
+    ...rest
+  } as TreeBlock<CardFields>
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { enqueueSnackbar } = useSnackbar()
 
@@ -356,6 +366,7 @@ export function Card({
                 videoBlock={videoBlock}
                 imageBlock={imageBlock}
                 hasFullscreenVideo={hasFullscreenVideo}
+                card={cardForFooter}
               >
                 {renderedChildren}
               </WebsiteCover>
@@ -366,6 +377,7 @@ export function Card({
                 videoBlock={videoBlock}
                 imageBlock={imageBlock}
                 hasFullscreenVideo={hasFullscreenVideo}
+                card={cardForFooter}
               >
                 {renderedChildren}
               </ContainedCover>
@@ -376,6 +388,7 @@ export function Card({
                 backdropBlur={backdropBlur ?? 20}
                 imageBlock={imageBlock}
                 hasFullscreenVideo={hasFullscreenVideo}
+                card={cardForFooter}
               >
                 {renderedChildren}
               </ExpandedCover>

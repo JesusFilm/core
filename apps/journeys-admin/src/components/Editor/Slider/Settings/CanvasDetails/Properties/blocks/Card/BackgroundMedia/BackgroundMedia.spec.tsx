@@ -86,7 +86,9 @@ const card: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: []
+  children: [],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 const video: TreeBlock<VideoBlock> = {
   id: 'video1.id',
@@ -181,7 +183,7 @@ const coverVideoBlockDeleteMock: MockedResponse<
         id: card.id,
         coverBlockId: null,
         __typename: 'CardBlock'
-      }
+        }
     }
   }
 }
@@ -204,7 +206,7 @@ const coverVideoBlockRestoreMock: MockedResponse<
         id: card.id,
         coverBlockId: video.id,
         __typename: 'CardBlock'
-      }
+        }
     }
   }
 }
@@ -233,7 +235,7 @@ const coverImageBlockDeleteMock: MockedResponse<
         id: card.id,
         coverBlockId: null,
         __typename: 'CardBlock'
-      }
+        }
     }
   }
 }
@@ -256,7 +258,7 @@ const coverImageBlockRestoreMock: MockedResponse<
         id: card.id,
         coverBlockId: image.id,
         __typename: 'CardBlock'
-      }
+        }
     }
   }
 }
