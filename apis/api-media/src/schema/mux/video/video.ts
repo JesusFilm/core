@@ -71,6 +71,7 @@ builder.queryFields((t) => ({
       return await prisma.muxVideo.findMany({
         ...query,
         where: { userId: user.id },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         take: limit ?? undefined,
         skip: offset ?? undefined
       })

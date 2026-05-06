@@ -63,8 +63,12 @@ describe('cloudflareImage', () => {
   describe('queries', () => {
     describe('getMyCloudflareImages', () => {
       const GET_MY_CLOUDFLARE_IMAGES_QUERY = graphql(`
-        query getMyCloudflareImages($offset: Int, $limit: Int) {
-          getMyCloudflareImages(offset: $offset, limit: $limit) {
+        query getMyCloudflareImages(
+          $offset: Int
+          $limit: Int
+          $isAi: Boolean
+        ) {
+          getMyCloudflareImages(offset: $offset, limit: $limit, isAi: $isAi) {
             id
             uploadUrl
             userId
@@ -76,6 +80,7 @@ describe('cloudflareImage', () => {
             thumbnail
             videoStill
             blurhash
+            isAi
           }
         }
       `)
@@ -92,7 +97,8 @@ describe('cloudflareImage', () => {
             aspectRatio: ImageAspectRatio.hd,
             videoId: null,
             blurhash: 'testBlurhash',
-            blurhashAttemptedAt: null
+            blurhashAttemptedAt: null,
+            isAi: null
           }
         ])
         const result = await authClient({
@@ -118,13 +124,15 @@ describe('cloudflareImage', () => {
                 videoStill: `https://imagedelivery.net/${
                   process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
                 }/testId/f=jpg,w=1920,h=1080,q=95`,
-                blurhash: 'testBlurhash'
+                blurhash: 'testBlurhash',
+                isAi: null
               }
             ]
           }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId' }
+          where: { userId: 'testUserId' },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
       })
 
@@ -140,7 +148,8 @@ describe('cloudflareImage', () => {
             aspectRatio: ImageAspectRatio.banner,
             videoId: null,
             blurhash: null,
-            blurhashAttemptedAt: null
+            blurhashAttemptedAt: null,
+            isAi: false
           }
         ])
         const result = await authClient({
@@ -172,15 +181,41 @@ describe('cloudflareImage', () => {
                 }/testId/f=webp,w=640,h=300,q=50`,
                 thumbnail: null,
                 videoStill: null,
-                blurhash: null
+                blurhash: null,
+                isAi: false
               }
             ]
           }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
           where: { userId: 'testUserId' },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
           take: 10,
           skip: 0
+        })
+      })
+
+      it('should filter by isAi: true', async () => {
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([])
+        await authClient({
+          document: GET_MY_CLOUDFLARE_IMAGES_QUERY,
+          variables: { isAi: true }
+        })
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
+          where: { userId: 'testUserId', isAi: true },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
+        })
+      })
+
+      it('should filter by isAi: false', async () => {
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([])
+        await authClient({
+          document: GET_MY_CLOUDFLARE_IMAGES_QUERY,
+          variables: { isAi: false }
+        })
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
+          where: { userId: 'testUserId', isAi: false },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
       })
     })
@@ -208,7 +243,8 @@ describe('cloudflareImage', () => {
           aspectRatio: null,
           videoId: null,
           blurhash: 'testBlurhash',
-          blurhashAttemptedAt: null
+          blurhashAttemptedAt: null,
+          isAi: null
         })
         const result = await authClient({
           document: GET_MY_CLOUDFLARE_IMAGE_QUERY
@@ -260,7 +296,8 @@ describe('cloudflareImage', () => {
           aspectRatio: ImageAspectRatio.hd,
           videoId: 'videoId',
           blurhash: null,
-          blurhashAttemptedAt: null
+          blurhashAttemptedAt: null,
+          isAi: null
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_FILE_MUTATION,
@@ -287,7 +324,8 @@ describe('cloudflareImage', () => {
             userId: 'testUserId',
             uploadUrl: 'testUrl',
             aspectRatio: ImageAspectRatio.hd,
-            videoId: 'videoId'
+            videoId: 'videoId',
+            isAi: false
           }
         })
         expect(mockCreateImageByDirectUpload).toHaveBeenCalledWith()
@@ -322,7 +360,8 @@ describe('cloudflareImage', () => {
           aspectRatio: ImageAspectRatio.banner,
           videoId: 'videoId',
           blurhash: null,
-          blurhashAttemptedAt: null
+          blurhashAttemptedAt: null,
+          isAi: null
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_URL_MUTATION,
@@ -351,7 +390,8 @@ describe('cloudflareImage', () => {
             uploaded: true,
             userId: 'testUserId',
             aspectRatio: ImageAspectRatio.banner,
-            videoId: 'videoId'
+            videoId: 'videoId',
+            isAi: false
           }
         })
         expect(mockCreateImageFromUrl).toHaveBeenCalledWith('testUrl')
@@ -392,7 +432,8 @@ describe('cloudflareImage', () => {
           aspectRatio: ImageAspectRatio.hd,
           videoId: 'videoId',
           blurhash: null,
-          blurhashAttemptedAt: null
+          blurhashAttemptedAt: null,
+          isAi: null
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_IMAGE_FROM_PROMPT_MUTATION,
@@ -421,7 +462,8 @@ describe('cloudflareImage', () => {
             uploaded: true,
             userId: 'testUserId',
             aspectRatio: ImageAspectRatio.hd,
-            videoId: 'videoId'
+            videoId: 'videoId',
+            isAi: true
           }
         })
         expect(mockedQueue.add).toHaveBeenCalledWith(

@@ -34,6 +34,7 @@ model CloudflareImage {
   video               Video?            @relation(fields: [videoId], references: [id], onDelete: Cascade)
   blurhash            String?
   blurhashAttemptedAt DateTime?
+  isAi                Boolean?
 
   @@index([userId])
   @@index([blurhashAttemptedAt])

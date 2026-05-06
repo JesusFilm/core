@@ -140,6 +140,14 @@ describe('mux/video', () => {
             videoVariants: []
           }
         ])
+        expect(prismaMock.muxVideo.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { userId: 'testUserId' },
+            orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+            take: 10,
+            skip: 0
+          })
+        )
       })
 
       it('should return null when not authorized', async () => {
