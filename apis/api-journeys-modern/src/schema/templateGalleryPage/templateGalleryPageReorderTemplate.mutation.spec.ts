@@ -50,6 +50,22 @@ describe('templateGalleryPageReorderTemplate', () => {
     status: 'draft'
   }
 
+  // Returns the array of `data.order` values passed to update calls in
+  // the order they were invoked. With the new resolver, this is exactly
+  // the contiguous 0..N-1 placement pass.
+  function finalOrdersAssignedTo(rowIds: string[]): Array<number | undefined> {
+    const orderById = new Map<string, number>()
+    for (const call of prismaMock.templateGalleryPageTemplate.update.mock
+      .calls) {
+      const args = call[0] as {
+        where: { id: string }
+        data: { order: number }
+      }
+      orderById.set(args.where.id, args.data.order)
+    }
+    return rowIds.map((id) => orderById.get(id))
+  }
+
   beforeEach(() => {
     jest.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
@@ -76,133 +92,149 @@ describe('templateGalleryPageReorderTemplate', () => {
   })
 
   describe('happy paths', () => {
-    it('moves a template from end to start (4 → 0) in a 5-template page', async () => {
-      prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue({
-        id: 'tpt-5',
-        order: 4
-      } as any)
-      prismaMock.templateGalleryPageTemplate.count.mockResolvedValue(5)
+    it('locks the page row before reading templates', async () => {
+      prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
+        { id: 'tpt-A', journeyId: 'jA' },
+        { id: 'tpt-B', journeyId: 'jB' }
+      ] as any)
+
+      await authClient({
+        document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
+        variables: { pageId: 'page-1', journeyId: 'jA', order: 1 }
+      })
+
+      // SELECT ... FOR UPDATE goes through $queryRaw and runs before the
+      // existence/auth read so concurrent reorders serialize on the page.
+      expect(prismaMock.$queryRaw).toHaveBeenCalled()
+      const lockSql = (
+        prismaMock.$queryRaw.mock.calls[0][0] as readonly string[]
+      ).join(' ')
+      expect(lockSql).toContain('FOR UPDATE')
+    })
+
+    it('reads templates in display order (orderBy order asc)', async () => {
+      prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
+        { id: 'tpt-A', journeyId: 'jA' },
+        { id: 'tpt-B', journeyId: 'jB' }
+      ] as any)
+
+      await authClient({
+        document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
+        variables: { pageId: 'page-1', journeyId: 'jA', order: 1 }
+      })
+
+      expect(
+        prismaMock.templateGalleryPageTemplate.findMany
+      ).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { templateGalleryPageId: 'page-1' },
+          orderBy: { order: 'asc' }
+        })
+      )
+    })
+
+    // Live-DB scenario: contiguous orders [0,1,2,3,4], move row at 1 to
+    // newIndex 3. Expected display order after: [A,C,D,B,E] → orders
+    // [A=0, C=1, D=2, B=3, E=4].
+    it('contiguous, move down (1 → 3) renumbers to 0..N-1', async () => {
+      prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
+        { id: 'tpt-A', journeyId: 'jA' },
+        { id: 'tpt-B', journeyId: 'jB' },
+        { id: 'tpt-C', journeyId: 'jC' },
+        { id: 'tpt-D', journeyId: 'jD' },
+        { id: 'tpt-E', journeyId: 'jE' }
+      ] as any)
+
+      await authClient({
+        document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
+        variables: { pageId: 'page-1', journeyId: 'jB', order: 3 }
+      })
+
+      expect(
+        finalOrdersAssignedTo(['tpt-A', 'tpt-C', 'tpt-D', 'tpt-B', 'tpt-E'])
+      ).toEqual([0, 1, 2, 3, 4])
+      // One stage-to-negatives statement covers all rows in one shot.
+      expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
+      const stageSql = (
+        prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]
+      ).join(' ')
+      expect(stageSql).toContain('-("order") - 1000000')
+    })
+
+    // Live-DB scenario: contiguous orders [0,1,2,3,4], move row at 3 to
+    // newIndex 1. Expected display order after: [A,D,B,C,E].
+    it('contiguous, move up (3 → 1) renumbers to 0..N-1', async () => {
+      prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
+        { id: 'tpt-A', journeyId: 'jA' },
+        { id: 'tpt-B', journeyId: 'jB' },
+        { id: 'tpt-C', journeyId: 'jC' },
+        { id: 'tpt-D', journeyId: 'jD' },
+        { id: 'tpt-E', journeyId: 'jE' }
+      ] as any)
+
+      await authClient({
+        document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
+        variables: { pageId: 'page-1', journeyId: 'jD', order: 1 }
+      })
+
+      expect(
+        finalOrdersAssignedTo(['tpt-A', 'tpt-D', 'tpt-B', 'tpt-C', 'tpt-E'])
+      ).toEqual([0, 1, 2, 3, 4])
+    })
+
+    // Live-DB scenario: gappy orders [0,2,4,5] (4 rows in display order
+    // A, B, C, D). Move B (display index 1) to display index 3. Expected
+    // display order after: [A, C, D, B] → renumbered to [0, 1, 2, 3].
+    // The argument arrives as the display index (3), NOT the absolute
+    // order column value (5) — that's the protocol fix.
+    it('gappy [0,2,4,5], gap-straddled move (display index 1 → 3) renumbers contiguously', async () => {
+      prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
+        { id: 'tpt-A', journeyId: 'jA' }, // order 0
+        { id: 'tpt-B', journeyId: 'jB' }, // order 2
+        { id: 'tpt-C', journeyId: 'jC' }, // order 4
+        { id: 'tpt-D', journeyId: 'jD' } // order 5
+      ] as any)
+
+      await authClient({
+        document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
+        variables: { pageId: 'page-1', journeyId: 'jB', order: 3 }
+      })
+
+      expect(
+        finalOrdersAssignedTo(['tpt-A', 'tpt-C', 'tpt-D', 'tpt-B'])
+      ).toEqual([0, 1, 2, 3])
+    })
+
+    // Live-DB scenario: gappy [0,2,4,5], move D (display index 3) all
+    // the way to display index 0. Expected: [D, A, B, C] → [0,1,2,3].
+    it('gappy [0,2,4,5], all-the-way move (display index 3 → 0) renumbers contiguously', async () => {
+      prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
+        { id: 'tpt-A', journeyId: 'jA' },
+        { id: 'tpt-B', journeyId: 'jB' },
+        { id: 'tpt-C', journeyId: 'jC' },
+        { id: 'tpt-D', journeyId: 'jD' }
+      ] as any)
+
+      await authClient({
+        document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
+        variables: { pageId: 'page-1', journeyId: 'jD', order: 0 }
+      })
+
+      expect(
+        finalOrdersAssignedTo(['tpt-D', 'tpt-A', 'tpt-B', 'tpt-C'])
+      ).toEqual([0, 1, 2, 3])
+    })
+
+    it('is a no-op when sourceIndex === newIndex (no writes beyond the canonical re-read)', async () => {
+      prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
+        { id: 'tpt-A', journeyId: 'jA' },
+        { id: 'tpt-B', journeyId: 'jB' },
+        { id: 'tpt-C', journeyId: 'jC' }
+      ] as any)
 
       const result = await authClient({
         document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
-        variables: { pageId: 'page-1', journeyId: 'j5', order: 0 }
-      })
-
-      expect(result).toEqual({
-        data: {
-          templateGalleryPageReorderTemplate: { id: 'page-1', title: 'Page 1' }
-        }
-      })
-      // Stage to -1, then place at 0.
-      expect(
-        prismaMock.templateGalleryPageTemplate.update
-      ).toHaveBeenNthCalledWith(1, {
-        where: { id: 'tpt-5' },
-        data: { order: -1 }
-      })
-      expect(
-        prismaMock.templateGalleryPageTemplate.update
-      ).toHaveBeenNthCalledWith(2, {
-        where: { id: 'tpt-5' },
-        data: { order: 0 }
-      })
-      // Single shift statement for the [newOrder, oldOrder) window.
-      expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
-      const sql = (
-        prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]
-      ).join(' ')
-      expect(sql).toContain('+ 1')
-    })
-
-    it('moves a template from start to end (0 → 4)', async () => {
-      prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue({
-        id: 'tpt-1',
-        order: 0
-      } as any)
-      prismaMock.templateGalleryPageTemplate.count.mockResolvedValue(5)
-
-      await authClient({
-        document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
-        variables: { pageId: 'page-1', journeyId: 'j1', order: 4 }
-      })
-
-      expect(
-        prismaMock.templateGalleryPageTemplate.update
-      ).toHaveBeenNthCalledWith(1, {
-        where: { id: 'tpt-1' },
-        data: { order: -1 }
-      })
-      expect(
-        prismaMock.templateGalleryPageTemplate.update
-      ).toHaveBeenNthCalledWith(2, {
-        where: { id: 'tpt-1' },
-        data: { order: 4 }
-      })
-      expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
-      const sql = (
-        prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]
-      ).join(' ')
-      expect(sql).toContain('- 1')
-    })
-
-    it('moves a template from middle to middle going down (1 → 3)', async () => {
-      prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue({
-        id: 'tpt-2',
-        order: 1
-      } as any)
-      prismaMock.templateGalleryPageTemplate.count.mockResolvedValue(5)
-
-      await authClient({
-        document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
-        variables: { pageId: 'page-1', journeyId: 'j2', order: 3 }
-      })
-
-      expect(
-        prismaMock.templateGalleryPageTemplate.update
-      ).toHaveBeenNthCalledWith(2, {
-        where: { id: 'tpt-2' },
-        data: { order: 3 }
-      })
-      const sql = (
-        prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]
-      ).join(' ')
-      expect(sql).toContain('- 1')
-    })
-
-    it('moves a template from middle to middle going up (3 → 1)', async () => {
-      prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue({
-        id: 'tpt-4',
-        order: 3
-      } as any)
-      prismaMock.templateGalleryPageTemplate.count.mockResolvedValue(5)
-
-      await authClient({
-        document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
-        variables: { pageId: 'page-1', journeyId: 'j4', order: 1 }
-      })
-
-      expect(
-        prismaMock.templateGalleryPageTemplate.update
-      ).toHaveBeenNthCalledWith(2, {
-        where: { id: 'tpt-4' },
-        data: { order: 1 }
-      })
-      const sql = (
-        prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]
-      ).join(' ')
-      expect(sql).toContain('+ 1')
-    })
-
-    it('is a no-op when oldOrder === newOrder (no writes beyond the canonical re-read)', async () => {
-      prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue({
-        id: 'tpt-2',
-        order: 2
-      } as any)
-      prismaMock.templateGalleryPageTemplate.count.mockResolvedValue(5)
-
-      const result = await authClient({
-        document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
-        variables: { pageId: 'page-1', journeyId: 'j2', order: 2 }
+        variables: { pageId: 'page-1', journeyId: 'jB', order: 1 }
       })
 
       expect(result).toEqual({
@@ -219,15 +251,14 @@ describe('templateGalleryPageReorderTemplate', () => {
 
   describe('validation', () => {
     it('throws BAD_USER_INPUT when order is negative', async () => {
-      prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue({
-        id: 'tpt-1',
-        order: 0
-      } as any)
-      prismaMock.templateGalleryPageTemplate.count.mockResolvedValue(5)
+      prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
+        { id: 'tpt-A', journeyId: 'jA' },
+        { id: 'tpt-B', journeyId: 'jB' }
+      ] as any)
 
       const result = await authClient({
         document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
-        variables: { pageId: 'page-1', journeyId: 'j1', order: -1 }
+        variables: { pageId: 'page-1', journeyId: 'jA', order: -1 }
       })
 
       expect(result).toEqual({
@@ -240,15 +271,14 @@ describe('templateGalleryPageReorderTemplate', () => {
     })
 
     it('throws BAD_USER_INPUT when order >= total (would create a gap)', async () => {
-      prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue({
-        id: 'tpt-1',
-        order: 0
-      } as any)
-      prismaMock.templateGalleryPageTemplate.count.mockResolvedValue(5)
+      prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
+        { id: 'tpt-A', journeyId: 'jA' },
+        { id: 'tpt-B', journeyId: 'jB' }
+      ] as any)
 
       const result = await authClient({
         document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
-        variables: { pageId: 'page-1', journeyId: 'j1', order: 5 }
+        variables: { pageId: 'page-1', journeyId: 'jA', order: 2 }
       })
 
       expect(result).toEqual({
@@ -261,7 +291,9 @@ describe('templateGalleryPageReorderTemplate', () => {
     })
 
     it('throws BAD_USER_INPUT when journeyId is not a member of the page', async () => {
-      prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue(null)
+      prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
+        { id: 'tpt-A', journeyId: 'jA' }
+      ] as any)
 
       const result = await authClient({
         document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
@@ -277,7 +309,7 @@ describe('templateGalleryPageReorderTemplate', () => {
         ]
       })
       expect(
-        prismaMock.templateGalleryPageTemplate.count
+        prismaMock.templateGalleryPageTemplate.update
       ).not.toHaveBeenCalled()
     })
 
@@ -298,7 +330,7 @@ describe('templateGalleryPageReorderTemplate', () => {
         ]
       })
       expect(
-        prismaMock.templateGalleryPageTemplate.findUnique
+        prismaMock.templateGalleryPageTemplate.findMany
       ).not.toHaveBeenCalled()
     })
 
@@ -322,7 +354,7 @@ describe('templateGalleryPageReorderTemplate', () => {
         ]
       })
       expect(
-        prismaMock.templateGalleryPageTemplate.findUnique
+        prismaMock.templateGalleryPageTemplate.findMany
       ).not.toHaveBeenCalled()
     })
   })
@@ -349,7 +381,7 @@ describe('templateGalleryPageReorderTemplate', () => {
         ]
       })
       expect(
-        prismaMock.templateGalleryPageTemplate.findUnique
+        prismaMock.templateGalleryPageTemplate.findMany
       ).not.toHaveBeenCalled()
     })
 
