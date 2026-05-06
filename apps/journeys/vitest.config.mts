@@ -32,6 +32,7 @@ export default defineConfig({
       )
     },
     coverage: {
+      enabled: true,
       provider: 'v8',
       reporter: ['cobertura'],
       reportsDirectory: '../../coverage/apps/journeys'
