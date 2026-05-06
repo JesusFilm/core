@@ -115,22 +115,21 @@ v1 is currently merged but not yet generally available. Before going live we gat
 
 ### v1.1 — team-shared visibility (replaces the ACTIVE_TEAM material in original Backend / Architecture / Implementation Phases sections)
 
-Goal: the same per-tab grids surface assets uploaded by _teammates_ in the user's active team, alongside their own.
+Goal: the existing per-tab "Uploads" grid surfaces assets uploaded by _teammates_ in the user's active team alongside the caller's own uploads, in a single chronological feed.
 
 #### Locked decisions
 
-- **Asset has both an uploader (`userId`) and a home team (`teamId`).** `userId` is the canonical owner — it's how "Your uploads" stays personal. `teamId` is the home-team affiliation, persisted at upload time and immutable thereafter; it's how the asset stays visible to a team after the uploader leaves.
+- **Asset has both an uploader (`userId`) and a home team (`teamId`).** `userId` is the canonical owner — used to surface the asset back to the uploader regardless of team membership. `teamId` is the home-team affiliation, persisted at upload time and immutable thereafter; it's how the asset stays accessible to a team after the uploader leaves.
 - **`teamId` is derived from the journey context at upload time**, not from the user's `useTeam().activeTeam` UI state. All editor upload surfaces (image block picker, video block picker, poster picker, journey logo, social share image) happen inside a journey, and a `Journey` always has a `teamId`. Server-side, the resolver looks up the journey by ID to read its `teamId`; the frontend just needs to pass the `journeyId` it's already editing.
-- **Visibility split:**
-  - "Your uploads" grid: `where: { userId: caller }` — unchanged from v1.
-  - "Team uploads" grid: `where: { teamId: activeTeamId }` plus an explicit caller-is-member precheck.
-- **Active team passed per-request** from the editor for the "Team uploads" grid only. The frontend already knows it via `useTeam()`.
-- **Membership precheck**: `api-media` directly imports `prisma-journeys` for the `userTeam.findUnique` check. Same precedent already established by `api-journeys-modern`'s user-delete flow (which imports both `prisma-users` and `prisma-journeys`). Latency ~2–5ms, always fresh, no token-staleness window. **Read path no longer needs the teammate-list fetch** — it filters on the asset's own `teamId`.
-- **Schema changes:** new nullable `teamId String?` column on `CloudflareImage` and `MuxVideo`. New rows always populated (every editor upload has a journey context); existing 38k+ rows stay NULL. Indexed on `(teamId, createdAt DESC, id DESC)` to match the visibility query.
-- **No backfill.** Existing NULL-`teamId` rows are invisible to all team grids and remain visible only to their original uploader in "Your uploads". Clean slate for team-shared visibility from migration forward.
-- **Account deletion stays correct.** Neither `userDeleteConfirm` nor `userDeleteJourneysConfirm` touches `MuxVideo` / `CloudflareImage`. After deletion: `userId` becomes a UUID tombstone with no PII; the asset's `teamId` is unaffected, so it stays in the team's "Team uploads" grid (which is exactly what we want — the team keeps the asset).
+- **Single merged grid per tab — titled "Uploads".** v1's "Your uploads" grid is upgraded in place to also include the active team's assets. No second grid is added. Predicate: `userId = caller OR teamId = activeTeamId`. The user sees a single chronological feed of everything they can re-pick from the active team — their own uploads (in any team) plus teammates' uploads in the active team.
+- **No active team selected → personal-only fallback.** When `useTeam().activeTeam` is `null` the grid degrades cleanly to the v1 personal-only behavior (`userId = caller`), so the merged grid never shows nothing.
+- **Active team passed per-request** from the editor when present. The frontend already knows it via `useTeam()`.
+- **Membership precheck on the team-scoped path.** `api-media` directly imports `prisma-journeys` for the `userTeam.findUnique` check before honoring the `teamId` arg. Same precedent already established by `api-journeys-modern`'s user-delete flow. Latency ~2–5ms, always fresh, no token-staleness window. **Read path does not fetch the teammate list** — it filters on the asset's own `teamId` instead.
+- **Schema changes:** new nullable `teamId String?` column on `CloudflareImage` and `MuxVideo`. New rows always populated (every editor upload has a journey context); existing 38k+ rows stay NULL. Two composite indexes per table — `(userId, createdAt DESC, id DESC)` and `(teamId, createdAt DESC, id DESC)` — so Postgres can bitmap-OR efficiently across the merged predicate.
+- **No backfill.** Existing NULL-`teamId` rows are invisible to the team side of the merged predicate and remain visible only to their original uploader (via `userId`). Clean slate for team-shared visibility from migration forward.
+- **Account deletion stays correct.** Neither `userDeleteConfirm` nor `userDeleteJourneysConfirm` touches `MuxVideo` / `CloudflareImage`. After deletion: `userId` becomes a UUID tombstone with no PII; the asset's `teamId` is unaffected, so it stays accessible via the team predicate (which is exactly what we want — the team keeps the asset).
 - **Team deletion**: out of scope for v1.1. If a team is deleted, its assets persist with a stale `teamId` reference. We don't currently have a journey-team-delete flow that cascades, and the surface area to add it is larger than v1.1 should take on. Document and revisit if/when team deletion ships.
-- **Out of scope** for v1.1: deletion/management of teammates' assets, multi-team merged views, signed/private playback IDs, uploader attribution UI (deferred if product asks), retroactive `teamId` assignment for pre-migration rows, transferring an asset between teams, storage quotas per team.
+- **Out of scope** for v1.1: deletion/management of teammates' assets, multi-team merged views (scope is limited to the single active team at a time), signed/private playback IDs, uploader attribution UI (deferred if product asks), retroactive `teamId` assignment for pre-migration rows, transferring an asset between teams, storage quotas per team.
 - **Quick-start (Template Customization) flow is out of scope.** Based on Lyuba's feedback, surfacing per-tab history inside the quick-start flow doesn't quite make sense for that flow's intent — first-run template setup is a different mental model from editor re-use. Re-pick from history applies only inside the editor's image and video pickers. We can revisit adding it to the quick-start later if it turns out to help.
 
 #### Schema change
@@ -141,17 +140,19 @@ Prisma model update (`prisma-media`):
 model CloudflareImage {
   // ... existing fields
   teamId String?
+  @@index([userId, createdAt(sort: Desc), id(sort: Desc)])
   @@index([teamId, createdAt(sort: Desc), id(sort: Desc)])
 }
 
 model MuxVideo {
   // ... existing fields
   teamId String?
+  @@index([userId, createdAt(sort: Desc), id(sort: Desc)])
   @@index([teamId, createdAt(sort: Desc), id(sort: Desc)])
 }
 ```
 
-Migration: `ADD COLUMN teamId TEXT NULL` plus the index. No backfill; safe and fast on a populated table because nullable columns don't require a table rewrite in Postgres.
+Migration: `ADD COLUMN teamId TEXT NULL` plus the two indexes per table. No backfill; safe and fast on a populated table because nullable columns don't require a table rewrite in Postgres. Both indexes are needed so the planner can bitmap-OR efficiently across the merged `userId OR teamId` predicate.
 
 #### Upload mutation changes
 
@@ -177,85 +178,90 @@ getMyCloudflareImages(offset: Int, limit: Int, isAi: Boolean, teamId: ID): [Clou
 
 Both resolvers' implementation:
 
-1. **`teamId` omitted** → existing behavior (`where: { userId: caller }`). Backward compatible — drives the "Your uploads" grid.
-2. **`teamId` provided** → "Team uploads" path:
+1. **`teamId` omitted** → existing v1 behavior: `where: { userId: caller, ...(isAi != null ? { isAi } : {}) }`. Backward compatible. Used by the personal-only fallback when the user has no active team selected.
+2. **`teamId` provided** → merged-grid path:
    - **Membership precheck**: `journeysPrisma.userTeam.findUnique({ where: { teamId_userId: { teamId, userId: caller } } })`. If null → throw `GraphQLError('Not a member of this team', { extensions: { code: 'FORBIDDEN' } })`. Don't distinguish from non-existent team — avoids existence enumeration.
-   - **Asset query**: `where: { teamId, ...(isAi != null ? { isAi } : {}) }`. No teammate-list fetch needed.
+   - **Asset query**: `where: { OR: [{ userId: caller }, { teamId }], ...(isAi != null ? { isAi } : {}) }`. A row matching both sides of the OR appears once (single row, two filter keys).
    - Same `orderBy [createdAt desc, id desc]` and offset/limit pagination as v1.
 
 #### Frontend changes
 
-- `MyCloudflareImagesGrid` and `MyMuxVideosGrid` get a `teamId?: string | null` prop.
-- Mount each grid twice in its respective tab/screen:
+- `MyCloudflareImagesGrid` and `MyMuxVideosGrid` get a `teamId?: string | null` prop. When provided, the underlying query passes it; when absent, the query falls back to personal-only.
+- Mount **once** per tab/screen — there is no second grid:
   ```tsx
-  <MyCloudflareImagesGrid title="Your uploads" isAi={false} />
-  <MyCloudflareImagesGrid title="Team uploads" isAi={false} teamId={activeTeamId} />
+  <MyCloudflareImagesGrid title="Uploads" isAi={false} teamId={activeTeam?.id ?? null} />
   ```
-  Same pattern for Mux: a "Your uploads" + a "Team uploads" grid stacked under `AddByFile`.
-- **Apollo cache** — extend keyArgs so the two grids stay in separate cache entries:
+  Same pattern for Mux: one grid titled `"Uploads"` under `AddByFile`, taking the active team id.
+- **Apollo cache** keyed on the merged shape:
   ```ts
   getMyCloudflareImages: offsetLimitPagination(['isAi', 'teamId']),
   getMyMuxVideos: offsetLimitPagination(['teamId']),
   ```
-- **Active team source**: `useTeam()` from `TeamProvider` — already a tree ancestor of the editor. Threaded as a prop into the relevant tab/screen components.
+- **Active team source**: `useTeam()` from `TeamProvider` — already a tree ancestor of the editor. Threaded as a prop. Switching the active team triggers a refetch under the new cache key.
 - **Upload mutation call sites**: thread the current `journeyId` (already known from the editor route/state) into each upload mutation invocation.
-- **Refetch on upload**: existing `refetchQueries: ['GetMyCloudflareImages']` / `'GetMyMuxVideos'` works as-is. Apollo refetches every active query with that operation name regardless of variables, so both personal and team grids update.
+- **Refetch on upload**: existing `refetchQueries: ['GetMyCloudflareImages']` / `'GetMyMuxVideos'` works as-is. Apollo refetches every active query with that operation name regardless of variables.
 
 #### Behavioral table
 
-| Scenario                                                   | "Your uploads" (caller)           | "Team uploads" (Team X)                                                               |
-| ---------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------- |
-| Caller uploads inside a Team X journey                     | Visible (`userId = caller`)       | Visible (`teamId = X`)                                                                |
-| Caller leaves Team X                                       | Still visible (`userId = caller`) | **Still visible to remaining Team X members**                                         |
-| Caller later joins Team Y, uploads inside a Team Y journey | Visible                           | Appears only in Team Y's grid (`teamId = Y`); does not retroactively appear in Team X |
-| Pre-migration row (NULL `teamId`)                          | Visible to original uploader only | Not visible in any team grid                                                          |
-| Caller passes `teamId` they're not a member of             | —                                 | `FORBIDDEN`                                                                           |
-| Caller passes a non-existent `teamId`                      | —                                 | `FORBIDDEN` (same shape — no existence leak)                                          |
+| Scenario | What the merged "Uploads" grid shows (active team = X) |
+| --- | --- |
+| Caller's own asset uploaded inside a Team X journey | Visible (matches both `userId` and `teamId = X`) |
+| Caller's own asset uploaded inside a Team Y journey (Y is a different team they're in) | Visible via `userId = caller` |
+| Teammate's asset uploaded inside a Team X journey | Visible via `teamId = X` |
+| Caller leaves Team X | Their own assets still visible via `userId`; teammates' Team X assets disappear (active team is no longer X) |
+| Asset uploaded by someone who later left Team X | Still visible to remaining Team X members via `teamId = X` (the design goal) |
+| Pre-migration row (NULL `teamId`) | Visible only via `userId = caller` (i.e., to the original uploader) |
+| Caller has no active team selected | Personal-only fallback — only `userId = caller` rows |
+| Caller passes `teamId` they're not a member of | `FORBIDDEN` |
+| Caller passes a non-existent `teamId` | `FORBIDDEN` (same shape — no existence leak) |
 
 #### Performance considerations
 
-- "Team uploads" path: one Prisma read against `prisma-journeys` for the membership precheck (~2–5ms, indexed). Single asset query against the new `(teamId, createdAt, id)` index — bounded by `LIMIT`, scales independently of team size.
-- "Your uploads" path: unchanged from v1 (`userId` filter).
+- Merged-grid path: one Prisma read against `prisma-journeys` for the membership precheck (~2–5ms, indexed). Single asset query with `userId OR teamId` predicate. Postgres uses bitmap OR across the two new composite indexes — both index branches feed into a heap fetch, then sorted by the leading sort columns of each index (matching `createdAt DESC, id DESC`). Bounded by `LIMIT`, scales independently of team size.
+- Personal-only path: unchanged from v1 (`userId` filter, hits the `(userId, createdAt, id)` index directly).
 - Upload path: one extra Prisma read against `prisma-journeys` to look up `journey.teamId`. Same lookup the existing journey-edit auth path already does, so likely cached at the request level — negligible.
-- Net effect vs the "compute teammates dynamically" alternative: simpler read path, removes a `findMany` from every "Team uploads" load, and removes the `userId IN (N userIds)` query whose performance degraded with team size.
+- Net effect vs the "compute teammates dynamically" alternative: simpler read path, removes a `findMany` from every team-scoped load, and removes the `userId IN (N userIds)` query whose performance degraded with team size.
 
 #### Authorization edge cases
 
-| Scenario                                                             | Behavior                                                                                                                                             |
-| -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Caller passes `teamId` they're not a member of                       | `FORBIDDEN`                                                                                                                                          |
-| Caller passes a non-existent `teamId`                                | `FORBIDDEN` (same response)                                                                                                                          |
-| User removed from team mid-session and tries to load "Team uploads"  | `FORBIDDEN`; frontend detects and refreshes active-team list                                                                                         |
-| User removed from team after uploading                               | Their asset stays in the team's "Team uploads" grid (the design goal)                                                                                |
-| Teammate uploads while caller paginates                              | Asset appears at top of next refetch (`createdAt DESC`); insertion drift across already-fetched pages is possible but mitigated by refetch-on-upload |
-| Caller tries to upload into a journey they don't have edit access to | Existing journey-edit auth fails before the row is written; no new auth surface                                                                      |
+| Scenario | Behavior |
+| --- | --- |
+| Caller passes `teamId` they're not a member of | `FORBIDDEN` |
+| Caller passes a non-existent `teamId` | `FORBIDDEN` (same response) |
+| Caller has no active team | Frontend omits `teamId` arg; resolver returns personal-only |
+| User removed from team mid-session and tries to load with `teamId` | `FORBIDDEN`; frontend detects and refreshes active-team list (next request omits `teamId` once `activeTeam` clears) |
+| User removed from team after uploading | Their asset stays accessible to that team via `teamId` (the design goal) |
+| Teammate uploads while caller paginates | Asset appears at top of next refetch (`createdAt DESC`); insertion drift across already-fetched pages is possible but mitigated by refetch-on-upload |
+| Caller tries to upload into a journey they don't have edit access to | Existing journey-edit auth fails before the row is written; no new auth surface |
 
 #### Tests (v1.1 specific)
 
-- Migration: nullable column added; existing rows unchanged; index created.
+- Migration: nullable `teamId` column added; existing rows unchanged; both composite indexes created.
 - Upload mutations: each one writes `teamId = journey.teamId` for new rows.
 - Upload mutations: caller without journey-edit access cannot create rows (existing auth path).
-- Resolver: `teamId` omitted → returns own uploads (v1 behavior preserved).
-- Resolver: `teamId` provided + caller is member → returns rows where `teamId = arg`, ordered correctly. Includes the caller's own rows tagged with that team.
+- Resolver: `teamId` omitted → returns own uploads only (v1 behavior preserved; drives the no-active-team fallback).
+- Resolver: `teamId` provided + caller is member → returns the union of `userId = caller` and `teamId = arg`, ordered by `createdAt DESC, id DESC`. A row matching both sides appears exactly once.
 - Resolver: `teamId` provided + caller not member → `FORBIDDEN`.
 - Resolver: `teamId` for non-existent team → `FORBIDDEN` (same shape).
-- Resolver: rows with NULL `teamId` never appear in any "Team uploads" response.
-- Resolver: a row whose `userId` later loses team membership still appears in that team's grid (the core design goal).
-- Frontend: both grids render independently with separate cache entries; switching `teamId` triggers the team grid to refetch.
-- Frontend: refetch-after-upload updates both grids simultaneously.
+- Resolver: NULL-`teamId` rows are excluded from the team side of the OR (only the original uploader sees them via the `userId` side).
+- Resolver: a row whose uploader later loses team membership still appears in the team's merged grid (the core design goal).
+- Frontend: switching active team triggers a refetch under the new cache key.
+- Frontend: clearing active team (no team selected) triggers a refetch into the personal-only mode.
+- Frontend: refetch-after-upload updates the merged grid.
 
 #### Phasing
 
-- **1.1.1 — Backend**: schema migration (nullable `teamId` + index on both tables), upload mutations write `teamId = journey.teamId`, optional `teamId` arg + membership precheck on both `getMyCloudflareImages` and `getMyMuxVideos`. Tests above. Ships unflagged — additive arg, additive column, backward-compatible.
-- **1.1.2 — Frontend**: thread `journeyId` into upload mutation calls, thread `useTeam().activeTeam.id` to the grids, mount second "Team uploads" grid in each affected tab/screen, update Apollo cache keys. Both grids stay inside the existing `mediaLibrary` flag gate — v1.1 does not introduce a separate flag.
+- **1.1.1 — Backend**: schema migration (nullable `teamId` + two composite indexes per table), upload mutations write `teamId = journey.teamId`, optional `teamId` arg + membership precheck on both `getMyCloudflareImages` and `getMyMuxVideos`, resolver uses the merged `userId OR teamId` predicate when `teamId` is provided. Tests above. Ships unflagged — additive arg, additive column, backward-compatible.
+- **1.1.2 — Frontend**: thread `journeyId` into upload mutation calls, thread `useTeam().activeTeam?.id ?? null` into the existing single grid mount in each tab/screen, update the grid title to "Uploads", update Apollo cache keys. The grid stays inside the existing `mediaLibrary` flag gate — v1.1 does not introduce a separate flag.
 - **1.1.3 (optional, deferred)**: uploader attribution chip on each tile (federation to `api-users.User`). Skip until product asks.
 
 #### Risk surface
 
-- Schema change is a single nullable column + one index per table — no rewrite, fast on populated tables.
+- Schema change is a single nullable column + two indexes per table — no rewrite, fast on populated tables.
 - Cross-domain Prisma read at upload time (`journey.teamId` lookup) adds a build-time coupling between `api-media` and `prisma-journeys` — already established precedent (user-delete), so additive rather than new policy.
 - Upload mutation signatures change (`journeyId` becomes required). Backward-compat shim if any callers exist outside the editor; verify before merging the BE PR.
-- Existing 38k rows being invisible to team grids is intentional (we can't reconstruct their team affiliation) but worth product confirmation.
+- Existing 38k rows being invisible to the team side of the predicate is intentional (we can't reconstruct their team affiliation) but worth product confirmation.
+- Bitmap-OR query plan should be verified with EXPLAIN ANALYZE on a representative dataset before BE-2 ships, in case the planner picks a less efficient strategy at small or large team sizes.
 
 #### Material in original plan that does NOT apply to v1.1
 
