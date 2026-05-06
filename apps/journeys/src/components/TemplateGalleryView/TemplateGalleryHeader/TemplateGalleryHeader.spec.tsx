@@ -18,7 +18,10 @@ describe('TemplateGalleryHeader', () => {
   it('still renders the creator name when image is null', () => {
     render(
       <TemplateGalleryHeader
-        gallery={makeGallery({ creatorImageBlock: null })}
+        gallery={makeGallery({
+          creatorImageSrc: null,
+          creatorImageAlt: null
+        })}
       />
     )
     expect(screen.getByText('Jane Doe')).toBeInTheDocument()

@@ -15,16 +15,8 @@ export const GET_TEMPLATE_GALLERY_PAGE = gql`
       creatorName
       mediaUrl
       publishedAt
-      creatorImageBlock {
-        ... on ImageBlock {
-          id
-          src
-          alt
-          width
-          height
-          blurhash
-        }
-      }
+      creatorImageSrc
+      creatorImageAlt
       templates {
         id
         title

@@ -66,7 +66,8 @@ describe('template-gallery [slug] getStaticProps', () => {
       creatorName: 'Jane Doe',
       mediaUrl: null,
       publishedAt: null,
-      creatorImageBlock: null,
+      creatorImageSrc: null,
+      creatorImageAlt: null,
       templates: []
     }
     mockQuery.mockResolvedValueOnce({

@@ -48,15 +48,8 @@ export function makeGallery(
     creatorName: 'Jane Doe',
     mediaUrl: null,
     publishedAt: '2026-04-01T00:00:00.000Z',
-    creatorImageBlock: {
-      __typename: 'ImageBlock',
-      id: 'creator-img-1',
-      src: 'https://example.com/avatar.jpg',
-      alt: 'Jane Doe avatar',
-      width: 96,
-      height: 96,
-      blurhash: 'LKO2?U%2Tw=w]~RBVZRi};RPxuwH'
-    },
+    creatorImageSrc: 'https://example.com/avatar.jpg',
+    creatorImageAlt: 'Jane Doe avatar',
     templates: [mockTemplate],
     ...overrides
   }

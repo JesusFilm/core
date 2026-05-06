@@ -8,18 +8,13 @@ import { GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage
 interface TemplateGalleryHeaderProps {
   gallery: Pick<
     TemplateGalleryPage,
-    'title' | 'description' | 'creatorName' | 'creatorImageBlock'
+    'title' | 'description' | 'creatorName' | 'creatorImageSrc' | 'creatorImageAlt'
   >
 }
 
 export function TemplateGalleryHeader({
   gallery
 }: TemplateGalleryHeaderProps): ReactElement {
-  const creatorImage =
-    gallery.creatorImageBlock?.__typename === 'ImageBlock'
-      ? gallery.creatorImageBlock
-      : null
-
   return (
     <Stack spacing={3} data-testid="TemplateGalleryHeader">
       <Typography variant="h2" component="h1">
@@ -32,8 +27,8 @@ export function TemplateGalleryHeader({
       )}
       <Stack direction="row" spacing={2} alignItems="center">
         <Avatar
-          src={creatorImage?.src ?? undefined}
-          alt={creatorImage?.alt ?? gallery.creatorName}
+          src={gallery.creatorImageSrc ?? undefined}
+          alt={gallery.creatorImageAlt ?? gallery.creatorName}
           sx={{ width: 48, height: 48 }}
         />
         <Typography variant="subtitle2">{gallery.creatorName}</Typography>

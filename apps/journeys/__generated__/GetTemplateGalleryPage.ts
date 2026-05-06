@@ -7,26 +7,6 @@
 // GraphQL query operation: GetTemplateGalleryPage
 // ====================================================
 
-export interface GetTemplateGalleryPage_templateGalleryPageBySlug_creatorImageBlock_ButtonBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
-}
-
-export interface GetTemplateGalleryPage_templateGalleryPageBySlug_creatorImageBlock_ImageBlock {
-  __typename: "ImageBlock";
-  id: string;
-  src: string | null;
-  alt: string;
-  width: number;
-  height: number;
-  /**
-   * blurhash is a compact representation of a placeholder for an image.
-   * Find a frontend implementation at https: // github.com/woltapp/blurhash
-   */
-  blurhash: string;
-}
-
-export type GetTemplateGalleryPage_templateGalleryPageBySlug_creatorImageBlock = GetTemplateGalleryPage_templateGalleryPageBySlug_creatorImageBlock_ButtonBlock | GetTemplateGalleryPage_templateGalleryPageBySlug_creatorImageBlock_ImageBlock;
-
 export interface GetTemplateGalleryPage_templateGalleryPageBySlug_templates_language_name {
   __typename: "LanguageName";
   value: string;
@@ -83,7 +63,8 @@ export interface GetTemplateGalleryPage_templateGalleryPageBySlug {
   creatorName: string;
   mediaUrl: string | null;
   publishedAt: any | null;
-  creatorImageBlock: GetTemplateGalleryPage_templateGalleryPageBySlug_creatorImageBlock | null;
+  creatorImageSrc: string | null;
+  creatorImageAlt: string | null;
   templates: GetTemplateGalleryPage_templateGalleryPageBySlug_templates[];
 }
 

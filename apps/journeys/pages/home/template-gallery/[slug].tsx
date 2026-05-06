@@ -34,19 +34,12 @@ function buildTemplateHref(template: GalleryTemplate): string {
 
 function ogImageFor(
   gallery: TemplateGalleryPage
-): { url: string; width: number; height: number; alt: string }[] {
-  const creator = gallery.creatorImageBlock
-  if (
-    creator?.__typename === 'ImageBlock' &&
-    creator.src != null &&
-    creator.src !== ''
-  ) {
+): { url: string; width?: number; height?: number; alt: string }[] {
+  if (gallery.creatorImageSrc != null && gallery.creatorImageSrc !== '') {
     return [
       {
-        url: creator.src,
-        width: creator.width,
-        height: creator.height,
-        alt: creator.alt
+        url: gallery.creatorImageSrc,
+        alt: gallery.creatorImageAlt ?? gallery.creatorName
       }
     ]
   }
@@ -105,9 +98,6 @@ function TemplateGalleryPageRoute({
 export const getStaticProps: GetStaticProps<
   TemplateGalleryPageRouteProps
 > = async (context) => {
-  // FEATURE FLAG: insert `templateGalleryPage` flag check here once the flag
-  // is added to the journeys flag set. When OFF, return { notFound: true }.
-
   const slug = context.params?.slug?.toString() ?? ''
   const translations = await serverSideTranslations(
     context.locale ?? 'en',
