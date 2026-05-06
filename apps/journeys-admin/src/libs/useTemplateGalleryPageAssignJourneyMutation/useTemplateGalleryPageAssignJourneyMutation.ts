@@ -17,6 +17,16 @@ import {
 //
 // Return is nullable because unassigning a journey that wasn't in any
 // collection is an idempotent no-op that returns null.
+//
+// No `refetchQueries` here. The selection set below is byte-identical to
+// `GetTemplateGalleryPages`, so Apollo's normalized cache merge covers
+// every field the UI reads off the target page. The call site in
+// `TemplateGalleryPageList.tsx` adds a `cache.modify` that trims the
+// moving journey out of the SOURCE page's `templates` list — the only
+// source-page-derived UI state. A background refetch on top of those
+// would race with the next optimistic write and produce a one-frame
+// "ghost card" flash on rapid back-to-back drops (NES-1539 review todo
+// 021).
 export const TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY = gql`
   mutation TemplateGalleryPageAssignJourney(
     $journeyId: ID!
@@ -63,15 +73,5 @@ export function useTemplateGalleryPageAssignJourneyMutation(
   return useMutation<
     TemplateGalleryPageAssignJourney,
     TemplateGalleryPageAssignJourneyVariables
-  >(TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY, {
-    // The mutation returns at most ONE affected page; for inter-collection
-    // moves, the call site adds an `update` callback that trims the moving
-    // journey out of the SOURCE page's cached `templates` list, so both
-    // ends of the move stay in sync without refetching. We still refetch
-    // in the background so anything outside the templates field
-    // eventually reconciles, but we don't await it — the user already
-    // saw the optimistic update.
-    refetchQueries: ['GetTemplateGalleryPages'],
-    ...options
-  })
+  >(TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY, options)
 }
