@@ -82,7 +82,7 @@ Implementation against the 2026-04-28 pivot landed in PR #9102. Production state
 **Video picker (`VideoFromMux`):**
 
 - "Your uploads" grid below the Mux upload form.
-- Backed by existing `getMyMuxVideos(offset, limit): [MuxVideo!]!` — no schema change. Resolver only added a deterministic `orderBy [createdAt desc, id desc]` (correctness for offset pagination, not a UI preference).
+- Backed by existing `getMyMuxVideos(offset, limit): [MuxVideo!]!` — no schema change. Resolver only added a deterministic `orderBy { createdAt: 'desc' }` (correctness for offset pagination, not a UI preference).
 - Click-a-tile opens existing `VideoDetails` + `MuxDetails` with a Select button. Gallery flow reuses the same preview infrastructure as the active-block flow; `playbackId` is threaded through to avoid a redundant fetch. `MuxDetails.dispose()` fix shipped alongside.
 - `MuxVideoUploadProvider` refetches `GetMyMuxVideos` after polling completes so freshly-ready uploads surface in the gallery.
 - `VideoLibrary.onSelect` now closes the outer drawer when `shouldCloseDrawer` is true so picking the same video as the active block still navigates back to Properties.
@@ -125,7 +125,7 @@ Goal: the existing per-tab "Uploads" grid surfaces assets uploaded by _teammates
 - **No active team selected → personal-only fallback.** When `useTeam().activeTeam` is `null` the grid degrades cleanly to the v1 personal-only behavior (`userId = caller`), so the merged grid never shows nothing.
 - **Active team passed per-request** from the editor when present. The frontend already knows it via `useTeam()`.
 - **Membership precheck on the team-scoped path.** `api-media` directly imports `prisma-journeys` for the `userTeam.findUnique` check before honoring the `teamId` arg. Same precedent already established by `api-journeys-modern`'s user-delete flow. Latency ~2–5ms, always fresh, no token-staleness window. **Read path does not fetch the teammate list** — it filters on the asset's own `teamId` instead.
-- **Schema changes:** new nullable `teamId String?` column on `CloudflareImage` and `MuxVideo`. New rows always populated (every editor upload has a journey context); existing 38k+ rows stay NULL. Two composite indexes per table — `(userId, createdAt DESC, id DESC)` and `(teamId, createdAt DESC, id DESC)` — so Postgres can bitmap-OR efficiently across the merged predicate.
+- **Schema changes:** new nullable `teamId String?` column on `CloudflareImage` and `MuxVideo`. New rows always populated (every editor upload has a journey context); existing 38k+ rows stay NULL. Two composite indexes per table — `(userId, createdAt DESC)` and `(teamId, createdAt DESC)` — so Postgres can bitmap-OR efficiently across the merged predicate.
 - **No backfill.** Existing NULL-`teamId` rows are invisible to the team side of the merged predicate and remain visible only to their original uploader (via `userId`). Clean slate for team-shared visibility from migration forward.
 - **Account deletion stays correct.** Neither `userDeleteConfirm` nor `userDeleteJourneysConfirm` touches `MuxVideo` / `CloudflareImage`. After deletion: `userId` becomes a UUID tombstone with no PII; the asset's `teamId` is unaffected, so it stays accessible via the team predicate (which is exactly what we want — the team keeps the asset).
 - **Team deletion**: out of scope for v1.1. If a team is deleted, its assets persist with a stale `teamId` reference. We don't currently have a journey-team-delete flow that cascades, and the surface area to add it is larger than v1.1 should take on. Document and revisit if/when team deletion ships.
@@ -182,7 +182,7 @@ Both resolvers' implementation:
 2. **`teamId` provided** → merged-grid path:
    - **Membership precheck**: `journeysPrisma.userTeam.findUnique({ where: { teamId_userId: { teamId, userId: caller } } })`. If null → throw `GraphQLError('Not a member of this team', { extensions: { code: 'FORBIDDEN' } })`. Don't distinguish from non-existent team — avoids existence enumeration.
    - **Asset query**: `where: { OR: [{ userId: caller }, { teamId }], ...(isAi != null ? { isAi } : {}) }`. A row matching both sides of the OR appears once (single row, two filter keys).
-   - Same `orderBy [createdAt desc, id desc]` and offset/limit pagination as v1.
+   - Same `orderBy { createdAt: 'desc' }` and offset/limit pagination as v1.
 
 #### Frontend changes
 
@@ -217,8 +217,8 @@ Both resolvers' implementation:
 
 #### Performance considerations
 
-- Merged-grid path: one Prisma read against `prisma-journeys` for the membership precheck (~2–5ms, indexed). Single asset query with `userId OR teamId` predicate. Postgres uses bitmap OR across the two new composite indexes — both index branches feed into a heap fetch, then sorted by the leading sort columns of each index (matching `createdAt DESC, id DESC`). Bounded by `LIMIT`, scales independently of team size.
-- Personal-only path: unchanged from v1 (`userId` filter, hits the `(userId, createdAt, id)` index directly).
+- Merged-grid path: one Prisma read against `prisma-journeys` for the membership precheck (~2–5ms, indexed). Single asset query with `userId OR teamId` predicate. Postgres uses bitmap OR across the two new composite indexes — both index branches feed into a heap fetch, then sorted by the leading sort columns of each index (matching `createdAt DESC`). Bounded by `LIMIT`, scales independently of team size.
+- Personal-only path: unchanged from v1 (`userId` filter, hits the `(userId, createdAt)` index directly).
 - Upload path: one extra Prisma read against `prisma-journeys` to look up `journey.teamId`. Same lookup the existing journey-edit auth path already does, so likely cached at the request level — negligible.
 - Net effect vs the "compute teammates dynamically" alternative: simpler read path, removes a `findMany` from every team-scoped load, and removes the `userId IN (N userIds)` query whose performance degraded with team size.
 
@@ -240,7 +240,7 @@ Both resolvers' implementation:
 - Upload mutations: each one writes `teamId = journey.teamId` for new rows.
 - Upload mutations: caller without journey-edit access cannot create rows (existing auth path).
 - Resolver: `teamId` omitted → returns own uploads only (v1 behavior preserved; drives the no-active-team fallback).
-- Resolver: `teamId` provided + caller is member → returns the union of `userId = caller` and `teamId = arg`, ordered by `createdAt DESC, id DESC`. A row matching both sides appears exactly once.
+- Resolver: `teamId` provided + caller is member → returns the union of `userId = caller` and `teamId = arg`, ordered by `createdAt DESC`. A row matching both sides appears exactly once.
 - Resolver: `teamId` provided + caller not member → `FORBIDDEN`.
 - Resolver: `teamId` for non-existent team → `FORBIDDEN` (same shape).
 - Resolver: NULL-`teamId` rows are excluded from the team side of the OR (only the original uploader sees them via the `userId` side).
