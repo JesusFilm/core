@@ -343,7 +343,7 @@ const coverVideoBlockCreateMock: MockedResponse<
         id: card.id,
         coverBlockId: video.id,
         __typename: 'CardBlock'
-        }
+      }
     }
   }
 }
@@ -372,7 +372,7 @@ const coverBlockDeleteMock: MockedResponse<
         id: card.id,
         coverBlockId: null,
         __typename: 'CardBlock'
-        }
+      }
     }
   }
 }
@@ -395,7 +395,7 @@ const coverBlockRestoreMock: MockedResponse<
         id: card.id,
         coverBlockId: video.id,
         __typename: 'CardBlock'
-        }
+      }
     }
   }
 }
