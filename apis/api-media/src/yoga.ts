@@ -5,10 +5,7 @@ import {
   useForwardedJWT,
   useHmacSignatureValidation
 } from '@graphql-hive/gateway'
-import {
-  createInMemoryCache,
-  useResponseCache
-} from '@graphql-yoga/plugin-response-cache'
+import { useResponseCache } from '@graphql-yoga/plugin-response-cache'
 import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
@@ -17,11 +14,10 @@ import { prisma } from '@core/prisma/media/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getInteropContext } from '@core/yoga/interop'
 
+import { cache } from './cache'
 import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/builder'
-
-export const cache = createInMemoryCache()
 
 export const yoga = createYoga<
   Record<string, unknown>,
