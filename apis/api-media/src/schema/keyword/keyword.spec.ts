@@ -98,6 +98,25 @@ describe('Keyword', () => {
     })
   })
 
+  describe('keywordsCount', () => {
+    const KEYWORDS_COUNT_QUERY = graphql(`
+      query KeywordsCount {
+        keywordsCount
+      }
+    `)
+
+    it('should return keywords count', async () => {
+      prismaMock.keyword.count.mockResolvedValue(10)
+      const result = await client({ document: KEYWORDS_COUNT_QUERY })
+      expect(prismaMock.keyword.count).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { updatedAt: undefined }
+        })
+      )
+      expect(result).toHaveProperty('data.keywordsCount', 10)
+    })
+  })
+
   describe('createKeyword', () => {
     const CREATE_KEYWORD_MUTATION = graphql(`
       mutation CreateKeyword($value: String!, $languageId: String!) {
