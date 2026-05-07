@@ -21,18 +21,20 @@ export function TemplateGalleryView({
   gallery,
   buildTemplateHref
 }: TemplateGalleryViewProps): ReactElement {
+  const hasTemplates = gallery.templates.length > 0
+  const hasMedia = gallery.mediaUrl != null && gallery.mediaUrl !== ''
+
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 } }}>
       <Stack spacing={{ xs: 4, md: 6 }}>
         <TemplateGalleryHeader gallery={gallery} />
-        {gallery.templates.length > 0 ? (
+        {hasTemplates && (
           <TemplateGalleryGrid
             templates={gallery.templates}
             buildHref={buildTemplateHref}
           />
-        ) : (
-          <TemplateGalleryEmptyState />
         )}
+        {!hasTemplates && !hasMedia && <TemplateGalleryEmptyState />}
         <TemplateGalleryMedia mediaUrl={gallery.mediaUrl} />
       </Stack>
     </Container>

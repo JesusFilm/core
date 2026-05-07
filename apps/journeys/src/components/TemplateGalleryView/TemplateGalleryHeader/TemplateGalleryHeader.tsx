@@ -35,7 +35,12 @@ export function TemplateGalleryHeader({
           {hasCreatorImage && (
             <Avatar
               src={gallery.creatorImageSrc ?? undefined}
-              alt={gallery.creatorImageAlt ?? gallery.creatorName}
+              alt={
+                gallery.creatorImageAlt != null &&
+                gallery.creatorImageAlt !== ''
+                  ? gallery.creatorImageAlt
+                  : gallery.creatorName
+              }
               sx={{ width: 48, height: 48 }}
             />
           )}

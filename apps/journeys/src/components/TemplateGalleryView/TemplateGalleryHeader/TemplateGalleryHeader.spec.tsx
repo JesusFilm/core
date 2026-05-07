@@ -36,4 +36,29 @@ describe('TemplateGalleryHeader', () => {
       screen.queryByText('A curated set of Easter outreach templates.')
     ).not.toBeInTheDocument()
   })
+
+  it('renders the avatar without a name when only the image is set', () => {
+    render(
+      <TemplateGalleryHeader
+        gallery={makeGallery({ creatorName: '' })}
+      />
+    )
+    expect(screen.getByAltText('Jane Doe avatar')).toBeInTheDocument()
+    expect(screen.queryByText('Jane Doe')).not.toBeInTheDocument()
+  })
+
+  it('omits the entire creator block when name and image are both empty', () => {
+    render(
+      <TemplateGalleryHeader
+        gallery={makeGallery({
+          creatorName: '',
+          creatorImageSrc: null,
+          creatorImageAlt: null
+        })}
+      />
+    )
+    expect(screen.queryByText('Jane Doe')).not.toBeInTheDocument()
+    expect(screen.queryByAltText('Jane Doe avatar')).not.toBeInTheDocument()
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+  })
 })
