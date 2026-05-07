@@ -457,6 +457,7 @@ export type CloudflareImage = {
   blurhash?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
+  isAi?: Maybe<Scalars['Boolean']['output']>;
   mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
   mobileCinematicLow?: Maybe<Scalars['String']['output']>;
   mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
@@ -4020,6 +4021,7 @@ export type QueryGetMyCloudflareImageArgs = {
 
 
 export type QueryGetMyCloudflareImagesArgs = {
+  isAi?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
