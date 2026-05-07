@@ -1,0 +1,1 @@
+export { UseTemplateDeepLink } from './UseTemplateDeepLink'

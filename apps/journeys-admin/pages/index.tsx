@@ -13,6 +13,7 @@ import { PageWrapper } from '../src/components/PageWrapper'
 import { SidePanelTitle } from '../src/components/SidePanelTitle/SidePanelTitle'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
+import { UseTemplateDeepLink } from '../src/components/UseTemplateDeepLink'
 import { useAuth } from '../src/libs/auth'
 import {
   getAuthTokens,
@@ -37,6 +38,9 @@ export default function IndexPage(): ReactElement {
     (router?.query?.type as 'journeys' | 'templates' | 'collections') ??
     'journeys'
   const showSidePanel = currentContentType === 'journeys'
+  const useTemplateDeepLinkActive = router.query.useTemplate != null
+  const showOnboardingPopover =
+    router.query.onboarding === 'true' && !useTemplateDeepLinkActive
 
   const userInfo = {
     name: user?.displayName ?? '',
@@ -55,7 +59,7 @@ export default function IndexPage(): ReactElement {
             alignItems="center"
             width="100%"
           >
-            <TeamSelect onboarding={router.query.onboarding === 'true'} />
+            <TeamSelect onboarding={showOnboardingPopover} />
             <Stack direction="row" alignItems="center">
               <TeamMenu />
             </Stack>
@@ -70,6 +74,7 @@ export default function IndexPage(): ReactElement {
       >
         <JourneyList user={user} />
       </PageWrapper>
+      <UseTemplateDeepLink />
     </>
   )
 }
