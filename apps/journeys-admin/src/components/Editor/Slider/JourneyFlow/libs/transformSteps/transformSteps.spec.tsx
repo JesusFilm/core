@@ -175,7 +175,9 @@ describe('transformSteps', () => {
                 settings: null,
                 eventLabel: null
               }
-            ]
+            ],
+            showAssistant: null,
+            expandChatByDefault: null
           }
         ]
       },
@@ -278,7 +280,9 @@ describe('transformSteps', () => {
                 settings: null,
                 eventLabel: null
               }
-            ]
+            ],
+            showAssistant: null,
+            expandChatByDefault: null
           }
         ]
       }
@@ -383,7 +387,9 @@ describe('transformSteps', () => {
                 settings: null,
                 eventLabel: null
               }
-            ]
+            ],
+            showAssistant: null,
+            expandChatByDefault: null
           }
         ]
       }
@@ -497,7 +503,9 @@ describe('transformSteps', () => {
                 settings: null,
                 eventLabel: null
               }
-            ]
+            ],
+            showAssistant: null,
+            expandChatByDefault: null
           }
         ]
       }
@@ -644,7 +652,9 @@ describe('transformSteps', () => {
                 settings: null,
                 eventLabel: null
               }
-            ]
+            ],
+            showAssistant: null,
+            expandChatByDefault: null
           }
         ]
       }
@@ -795,7 +805,9 @@ describe('transformSteps', () => {
                 settings: null,
                 eventLabel: null
               }
-            ]
+            ],
+            showAssistant: null,
+            expandChatByDefault: null
           }
         ]
       }
@@ -941,7 +953,9 @@ describe('transformSteps', () => {
                 settings: null,
                 eventLabel: null
               }
-            ]
+            ],
+            showAssistant: null,
+            expandChatByDefault: null
           }
         ]
       }
@@ -1094,7 +1108,9 @@ describe('transformSteps', () => {
                 settings: null,
                 eventLabel: null
               }
-            ]
+            ],
+            showAssistant: null,
+            expandChatByDefault: null
           }
         ]
       }

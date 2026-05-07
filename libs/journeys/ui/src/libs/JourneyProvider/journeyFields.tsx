@@ -121,6 +121,8 @@ export const JOURNEY_FIELDS = gql`
     }
     fromTemplateId
     customizable
+    # Transitional: kept as the read-time fallback while CardBlock.showAssistant
+    # rolls out. Remove together with the fallback in the NES-1624 follow-up.
     showAssistant
   }
 `

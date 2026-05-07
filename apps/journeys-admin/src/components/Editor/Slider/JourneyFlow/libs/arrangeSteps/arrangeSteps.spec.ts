@@ -48,7 +48,9 @@ const card: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: [button]
+  children: [button],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 const steps: Array<TreeBlock<StepBlock>> = [

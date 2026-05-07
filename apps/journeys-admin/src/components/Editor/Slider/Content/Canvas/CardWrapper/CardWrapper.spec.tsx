@@ -87,7 +87,9 @@ describe('CardWrapper', () => {
             }
           ]
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <CardWrapper block={block}>
@@ -155,7 +157,9 @@ describe('CardWrapper', () => {
         parentOrder: 0,
         themeMode: null,
         themeName: null,
-        wrappers: {}
+        wrappers: {},
+        showAssistant: null,
+        expandChatByDefault: null
       },
       undefined
     )
@@ -221,7 +225,9 @@ describe('CardWrapper', () => {
             }
           ]
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <CardWrapper block={block}>
@@ -289,7 +295,9 @@ describe('CardWrapper', () => {
         parentOrder: 0,
         themeMode: null,
         themeName: null,
-        wrappers: {}
+        wrappers: {},
+        showAssistant: null,
+        expandChatByDefault: null
       },
       undefined
     )
@@ -308,7 +316,9 @@ describe('CardWrapper', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const step: TreeBlock = {
       id: 'stepId',
@@ -351,7 +361,9 @@ describe('CardWrapper', () => {
         fullscreen: false,
         backdropBlur: null,
         eventLabel: null,
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       }
       const step: TreeBlock = {
         id: 'stepId',
@@ -407,7 +419,9 @@ describe('CardWrapper', () => {
             focalTop: 50,
             customizable: null
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
       const step: TreeBlock = {
         id: 'stepId',
