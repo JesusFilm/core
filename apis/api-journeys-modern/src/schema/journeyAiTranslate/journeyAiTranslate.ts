@@ -59,6 +59,20 @@ builder.objectType(JourneyAiTranslateProgressRef, {
   })
 })
 
+/**
+ * Strips field-label prefixes and formatting artifacts that some models
+ * echo back into structured-output string fields.
+ */
+function cleanFieldOutput(text: string): string {
+  let cleaned = text.trim()
+  cleaned = cleaned.replace(
+    /^(?:Journey\s+Title|Journey\s+Description|SEO\s+Title|SEO\s+Description)\s*[:：]\s*/i,
+    ''
+  )
+  cleaned = cleaned.replace(/^["'"'«»]+|["'"'«»]+$/g, '')
+  return cleaned.trim()
+}
+
 // Define Zod schemas for AI responses
 const JourneyAnalysisSchema = z.object({
   analysis: z
@@ -66,19 +80,25 @@ const JourneyAnalysisSchema = z.object({
     .describe(
       'Analysis of journey themes, target audience, cultural considerations, and identified Bible translation for the target language'
     ),
-  title: z.string().describe('Translated journey title'),
+  title: z
+    .string()
+    .describe(
+      'Only the translated journey title text. Do not include any prefix like "Journey Title:" — just the translated text itself.'
+    ),
   description: z
     .string()
     .describe(
-      'Translated journey description, or empty string if none was provided'
+      'Only the translated journey description text, or empty string if none was provided. Do not include any prefix.'
     ),
   seoTitle: z
     .string()
-    .describe('Translated SEO title, or empty string if none was provided'),
+    .describe(
+      'Only the translated SEO title text, or empty string if none was provided. Do not include any prefix.'
+    ),
   seoDescription: z
     .string()
     .describe(
-      'Translated SEO description, or empty string if none was provided'
+      'Only the translated SEO description text, or empty string if none was provided. Do not include any prefix.'
     )
 })
 
@@ -179,14 +199,15 @@ function buildAnalysisPrompt({
 Analyze the content first: identify themes, target audience, and cultural adaptation needs.
 If the content references the Bible, identify the most appropriate Bible translation in the target language.
 Fields marked as "(not provided)" must return empty strings.
+IMPORTANT: Return only the translated text for each field. Do not include field labels like "Journey Title:" in your output values.
 
-${hardenPrompt(`Journey Title: ${journeyTitle}
-${hasDescription ? `Journey Description: ${trimmedDescription}` : '(No description provided)'}
-${seoTitle ? `SEO Title: ${seoTitle}` : '(No SEO title provided)'}
-${seoDescription ? `SEO Description: ${seoDescription}` : '(No SEO description provided)'}
+Journey Title: ${hardenPrompt(journeyTitle)}
+${hasDescription ? `Journey Description: ${hardenPrompt(trimmedDescription)}` : '(No description provided)'}
+${seoTitle ? `SEO Title: ${hardenPrompt(seoTitle)}` : '(No SEO title provided)'}
+${seoDescription ? `SEO Description: ${hardenPrompt(seoDescription)}` : '(No SEO description provided)'}
 
 Journey Content:
-${cardBlocksContent.join('\n')}`)}`
+${hardenPrompt(cardBlocksContent.join('\n'))}`
 }
 
 async function translateCardBlocks({
@@ -417,7 +438,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           cardBlocksContent
         })
 
-        const { output: analysisResult } = await session.execute((model) =>
+        const { output: rawAnalysisResult } = await session.execute((model) =>
           generateText({
             model,
             maxRetries: 0,
@@ -433,6 +454,14 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
             })
           })
         )
+
+        const analysisResult = {
+          ...rawAnalysisResult,
+          title: cleanFieldOutput(rawAnalysisResult.title),
+          description: cleanFieldOutput(rawAnalysisResult.description),
+          seoTitle: cleanFieldOutput(rawAnalysisResult.seoTitle),
+          seoDescription: cleanFieldOutput(rawAnalysisResult.seoDescription)
+        }
 
         if (!analysisResult.title) {
           throw new GraphQLError('Failed to translate journey title')
@@ -704,7 +733,7 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
           cardBlocksContent
         })
 
-        const { output: analysisAndTranslation } = await session.execute(
+        const { output: rawAnalysisAndTranslation } = await session.execute(
           (model) =>
             generateText({
               model,
@@ -721,6 +750,16 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
               })
             })
         )
+
+        const analysisAndTranslation = {
+          ...rawAnalysisAndTranslation,
+          title: cleanFieldOutput(rawAnalysisAndTranslation.title),
+          description: cleanFieldOutput(rawAnalysisAndTranslation.description),
+          seoTitle: cleanFieldOutput(rawAnalysisAndTranslation.seoTitle),
+          seoDescription: cleanFieldOutput(
+            rawAnalysisAndTranslation.seoDescription
+          )
+        }
 
         if (!analysisAndTranslation.title)
           throw new Error('Failed to translate journey title')
