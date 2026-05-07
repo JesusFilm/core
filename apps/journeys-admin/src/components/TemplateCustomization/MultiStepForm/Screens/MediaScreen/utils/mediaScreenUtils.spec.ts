@@ -12,7 +12,15 @@ describe('mediaScreenUtils', () => {
       const step = {
         id: 'step1',
         __typename: 'StepBlock',
-        children: [{ id: 'card1', __typename: 'CardBlock', children: [], showAssistant: null, expandChatByDefault: null }]
+        children: [
+          {
+            id: 'card1',
+            __typename: 'CardBlock',
+            children: [],
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
       } as unknown as TreeBlock<StepBlock>
       expect(getCardBlockIdFromStep(step)).toBe('card1')
     })
@@ -41,7 +49,15 @@ describe('mediaScreenUtils', () => {
         {
           id: 'step1',
           __typename: 'StepBlock',
-          children: [{ id: 'media1', __typename: 'CardBlock', children: [], showAssistant: null, expandChatByDefault: null }]
+          children: [
+            {
+              id: 'media1',
+              __typename: 'CardBlock',
+              children: [],
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
         } as unknown as TreeBlock<StepBlock>
       ]
       expect(getCustomizableMediaSteps(steps, [])).toEqual([])
@@ -53,13 +69,27 @@ describe('mediaScreenUtils', () => {
           id: 'step1',
           __typename: 'StepBlock',
           children: [
-            { id: 'target-media', __typename: 'CardBlock', children: [], showAssistant: null, expandChatByDefault: null }
+            {
+              id: 'target-media',
+              __typename: 'CardBlock',
+              children: [],
+              showAssistant: null,
+              expandChatByDefault: null
+            }
           ]
         } as unknown as TreeBlock<StepBlock>,
         {
           id: 'step2',
           __typename: 'StepBlock',
-          children: [{ id: 'other', __typename: 'CardBlock', children: [], showAssistant: null, expandChatByDefault: null }]
+          children: [
+            {
+              id: 'other',
+              __typename: 'CardBlock',
+              children: [],
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
         } as unknown as TreeBlock<StepBlock>
       ]
       const result = getCustomizableMediaSteps(steps, ['target-media'])
@@ -76,7 +106,13 @@ describe('mediaScreenUtils', () => {
               id: 'card1',
               __typename: 'CardBlock',
               children: [
-                { id: 'nested-media', __typename: 'CardBlock', children: [], showAssistant: null, expandChatByDefault: null }
+                {
+                  id: 'nested-media',
+                  __typename: 'CardBlock',
+                  children: [],
+                  showAssistant: null,
+                  expandChatByDefault: null
+                }
               ]
             }
           ]
@@ -84,7 +120,15 @@ describe('mediaScreenUtils', () => {
         {
           id: 'step2',
           __typename: 'StepBlock',
-          children: [{ id: 'card2', __typename: 'CardBlock', children: [], showAssistant: null, expandChatByDefault: null }]
+          children: [
+            {
+              id: 'card2',
+              __typename: 'CardBlock',
+              children: [],
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
         } as unknown as TreeBlock<StepBlock>
       ]
       const result = getCustomizableMediaSteps(steps, ['nested-media'])
@@ -101,7 +145,13 @@ describe('mediaScreenUtils', () => {
               id: 'card1',
               __typename: 'CardBlock',
               children: [
-                { id: 'nested-media', __typename: 'CardBlock', children: [], showAssistant: null, expandChatByDefault: null }
+                {
+                  id: 'nested-media',
+                  __typename: 'CardBlock',
+                  children: [],
+                  showAssistant: null,
+                  expandChatByDefault: null
+                }
               ]
             }
           ]
@@ -109,7 +159,15 @@ describe('mediaScreenUtils', () => {
         {
           id: 'step2',
           __typename: 'StepBlock',
-          children: [{ id: 'card2', __typename: 'CardBlock', children: [], showAssistant: null, expandChatByDefault: null }]
+          children: [
+            {
+              id: 'card2',
+              __typename: 'CardBlock',
+              children: [],
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
         } as unknown as TreeBlock<StepBlock>
       ]
       const result = getCustomizableMediaSteps(steps, ['nested-media', 'card2'])
@@ -121,12 +179,28 @@ describe('mediaScreenUtils', () => {
         {
           id: 'step1',
           __typename: 'StepBlock',
-          children: [{ id: 'block-a', __typename: 'CardBlock', children: [], showAssistant: null, expandChatByDefault: null }]
+          children: [
+            {
+              id: 'block-a',
+              __typename: 'CardBlock',
+              children: [],
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
         } as unknown as TreeBlock<StepBlock>,
         {
           id: 'step2',
           __typename: 'StepBlock',
-          children: [{ id: 'block-b', __typename: 'CardBlock', children: [], showAssistant: null, expandChatByDefault: null }]
+          children: [
+            {
+              id: 'block-b',
+              __typename: 'CardBlock',
+              children: [],
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
         } as unknown as TreeBlock<StepBlock>
       ]
       expect(getCustomizableMediaSteps(steps, ['media-x'])).toEqual([])
@@ -137,17 +211,41 @@ describe('mediaScreenUtils', () => {
         {
           id: 'stepA',
           __typename: 'StepBlock',
-          children: [{ id: 'media-a', __typename: 'CardBlock', children: [], showAssistant: null, expandChatByDefault: null }]
+          children: [
+            {
+              id: 'media-a',
+              __typename: 'CardBlock',
+              children: [],
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
         } as unknown as TreeBlock<StepBlock>,
         {
           id: 'stepB',
           __typename: 'StepBlock',
-          children: [{ id: 'media-b', __typename: 'CardBlock', children: [], showAssistant: null, expandChatByDefault: null }]
+          children: [
+            {
+              id: 'media-b',
+              __typename: 'CardBlock',
+              children: [],
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
         } as unknown as TreeBlock<StepBlock>,
         {
           id: 'stepC',
           __typename: 'StepBlock',
-          children: [{ id: 'other', __typename: 'CardBlock', children: [], showAssistant: null, expandChatByDefault: null }]
+          children: [
+            {
+              id: 'other',
+              __typename: 'CardBlock',
+              children: [],
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
         } as unknown as TreeBlock<StepBlock>
       ]
       const result = getCustomizableMediaSteps(steps, ['media-a', 'media-b'])

@@ -77,7 +77,13 @@ describe('getCustomizableImageBlocks', () => {
     }
     const journey = {
       blocks: [
-        { id: cardBlockId, __typename: 'CardBlock', parentBlockId: null, showAssistant: null, expandChatByDefault: null },
+        {
+          id: cardBlockId,
+          __typename: 'CardBlock',
+          parentBlockId: null,
+          showAssistant: null,
+          expandChatByDefault: null
+        },
         {
           id: radioQuestionBlockId,
           __typename: 'RadioQuestionBlock',
@@ -107,8 +113,20 @@ describe('getCustomizableImageBlocks', () => {
     }
     const journey = {
       blocks: [
-        { id: cardBlockId, __typename: 'CardBlock', parentBlockId: null, showAssistant: null, expandChatByDefault: null },
-        { id: otherCardId, __typename: 'CardBlock', parentBlockId: null, showAssistant: null, expandChatByDefault: null },
+        {
+          id: cardBlockId,
+          __typename: 'CardBlock',
+          parentBlockId: null,
+          showAssistant: null,
+          expandChatByDefault: null
+        },
+        {
+          id: otherCardId,
+          __typename: 'CardBlock',
+          parentBlockId: null,
+          showAssistant: null,
+          expandChatByDefault: null
+        },
         imageUnderOtherCard
       ]
     } as unknown as Journey

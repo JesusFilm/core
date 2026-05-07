@@ -36,7 +36,12 @@ describe('blockCreateUpdate', () => {
         id: 'journeyId',
         __typename: 'Journey'
       },
-      'CardBlock:cardId': { __typename: 'CardBlock', id: 'cardId', showAssistant: null, expandChatByDefault: null },
+      'CardBlock:cardId': {
+        __typename: 'CardBlock',
+        id: 'cardId',
+        showAssistant: null,
+        expandChatByDefault: null
+      },
       'VideoBlock:videoId': { __typename: 'VideoBlock', id: 'videoId' }
     })
     expect(cache.extract()['ImageBlock:imageId']).toBeUndefined()
