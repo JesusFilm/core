@@ -1,4 +1,3 @@
-import { vi, type Mock } from 'vitest'
 
 import { spawn } from 'child_process'
 import { promises as fs } from 'fs'
@@ -10,6 +9,7 @@ import {
   S3Client
 } from '@aws-sdk/client-s3'
 import { Logger } from 'pino'
+import { type Mock, vi } from 'vitest'
 
 import { service } from './service'
 

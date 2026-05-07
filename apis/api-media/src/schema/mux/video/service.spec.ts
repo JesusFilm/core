@@ -1,8 +1,7 @@
-import { vi, type MockedClass, type Mock, type MockInstance } from 'vitest'
-
 import Mux from '@mux/mux-node'
-import { mockDeep } from 'vitest-mock-extended'
 import clone from 'lodash/clone'
+import { type Mock, type MockInstance, type MockedClass, vi } from 'vitest'
+import { mockDeep } from 'vitest-mock-extended'
 
 import {
   createVideoByDirectUpload,

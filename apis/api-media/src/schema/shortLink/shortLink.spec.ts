@@ -1,6 +1,5 @@
-import { vi, type MockedFunction } from 'vitest'
-
 import { nanoid } from 'nanoid'
+import { type MockedFunction, vi } from 'vitest'
 
 import { Prisma, ShortLink, ShortLinkDomain } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'

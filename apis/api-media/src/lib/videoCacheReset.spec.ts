@@ -1,6 +1,5 @@
-import { vi, type MockedFunction } from 'vitest'
-
 import fetch from 'node-fetch'
+import { type MockedFunction, vi } from 'vitest'
 
 import { prisma } from '@core/prisma/media/client'
 

@@ -1,6 +1,5 @@
-import { vi, type MockedFunction } from 'vitest'
-
 import { GraphQLError } from 'graphql'
+import { type MockedFunction, vi } from 'vitest'
 
 import {
   BibleCitation,

@@ -1,4 +1,4 @@
-import { vi, type MockedFunction } from 'vitest'
+import { type MockedFunction, vi } from 'vitest'
 
 import { graphql } from '@core/shared/gql'
 

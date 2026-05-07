@@ -1,8 +1,7 @@
-import { vi, type Mock } from 'vitest'
-
 import { AssetOptions } from '@mux/mux-node/resources/video/assets'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
+import { type Mock, vi } from 'vitest'
 
 import {
   MuxVideo,

@@ -1,4 +1,4 @@
-import { vi, type Mock } from 'vitest'
+import { type Mock, vi } from 'vitest'
 
 import { MuxSubtitleTrackStatus } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'

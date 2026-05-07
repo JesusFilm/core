@@ -1,8 +1,8 @@
-import { vi, type MockedFunction } from 'vitest'
 
 import { GraphQLError } from 'graphql'
 import clone from 'lodash/clone'
 import fetch, { Response } from 'node-fetch'
+import { type MockedFunction, vi } from 'vitest'
 
 import {
   addVercelDomain,

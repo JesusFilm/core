@@ -1,7 +1,6 @@
-import { vi, type Mock } from 'vitest'
-
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
+import { type Mock, vi } from 'vitest'
 
 import { prismaMock } from '../../../../test/prismaMock'
 import { getVideo } from '../../../schema/mux/video/service'

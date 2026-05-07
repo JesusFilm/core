@@ -1,6 +1,5 @@
-import { vi, type Mocked } from 'vitest'
-
 import type { Logger } from 'pino'
+import { type Mocked, vi } from 'vitest'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processFile } from '../../importer'

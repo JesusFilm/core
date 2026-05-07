@@ -1,4 +1,4 @@
-import { vi, type MockedFunction } from 'vitest'
+import { type MockedFunction, vi } from 'vitest'
 
 import { Prisma } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'

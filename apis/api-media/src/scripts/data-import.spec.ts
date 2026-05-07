@@ -1,9 +1,10 @@
-import { vi, type Mock } from 'vitest'
 
 import { spawn } from 'child_process'
 import fs, { promises as fsPromises } from 'fs'
 import { createInterface } from 'readline'
 import { createGunzip } from 'zlib'
+
+import { type Mock, vi } from 'vitest'
 
 import main, { preprocessSqlFile } from './data-import'
 

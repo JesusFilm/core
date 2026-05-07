@@ -1,6 +1,5 @@
-import { vi } from 'vitest'
-
 import { Logger } from 'pino'
+import { vi } from 'vitest'
 
 import { prismaMock } from '../../../../test/prismaMock'
 import { getAlgoliaClient } from '../algoliaClient'

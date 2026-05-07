@@ -1,7 +1,6 @@
-import { vi } from 'vitest'
-
-import { mockDeep } from 'vitest-mock-extended'
 import { createApi } from 'unsplash-js'
+import { vi } from 'vitest'
+import { mockDeep } from 'vitest-mock-extended'
 
 import { UnsplashColorEnum } from './enums/UnsplashColor'
 import { UnsplashContentFilterEnum } from './enums/UnsplashContentFilter'

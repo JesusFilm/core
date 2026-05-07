@@ -1,6 +1,5 @@
-import { vi, type Mocked, type MockedFunction } from 'vitest'
-
 import axios, { isAxiosError } from 'axios'
+import { type Mocked, type MockedFunction, vi } from 'vitest'
 
 import { graphql } from '@core/shared/gql'
 import { createApolloClient } from '@core/yoga/apolloClient'

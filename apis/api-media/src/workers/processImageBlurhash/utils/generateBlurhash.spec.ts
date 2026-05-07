@@ -1,9 +1,8 @@
-import { vi, type Mock } from 'vitest'
 
 import { HttpResponse, http } from 'msw'
 import { setupServer } from 'msw/node'
-
 import sharp from 'sharp'
+import { type Mock, vi } from 'vitest'
 
 import { generateBlurhash } from './generateBlurhash'
 

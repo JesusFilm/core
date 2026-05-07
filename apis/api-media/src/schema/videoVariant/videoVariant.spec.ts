@@ -2353,10 +2353,8 @@ describe('videoVariant', () => {
     describe('parent variant management', () => {
       it('should have helper functions for managing parent video variants', async () => {
         // Test that the helper functions exist and are exported
-        const {
-          handleParentVariantCreation,
-          handleParentVariantCleanup
-        } = await import('./videoVariant')
+        const { handleParentVariantCreation, handleParentVariantCleanup } =
+          await import(/* webpackChunkName: "videoVariant" */ './videoVariant')
 
         expect(typeof handleParentVariantCreation).toBe('function')
         expect(typeof handleParentVariantCleanup).toBe('function')

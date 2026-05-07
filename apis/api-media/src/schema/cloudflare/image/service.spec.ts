@@ -1,10 +1,10 @@
-import { vi } from 'vitest'
 
 import Cloudflare from 'cloudflare'
 import { APIPromise } from 'cloudflare/core'
-import { mockDeep } from 'vitest-mock-extended'
 import clone from 'lodash/clone'
 import { Response } from 'node-fetch'
+import { vi } from 'vitest'
+import { mockDeep } from 'vitest-mock-extended'
 
 import {
   createImageByDirectUpload,
