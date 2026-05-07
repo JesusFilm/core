@@ -312,7 +312,9 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
         mocks={[
           listUnsplashCollectionPhotosMock,
           triggerUnsplashDownloadMock,
-          posterImageBlockCreateMock
+          posterImageBlockCreateMock,
+          posterImageBlockDeleteMock,
+          posterImageBlockRestoreMock
         ]}
       >
         <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -324,6 +326,8 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
                 onClose={onClose}
                 open
               />
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
             </CommandProvider>
           </SnackbarProvider>
         </JourneyProvider>
@@ -342,6 +346,23 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
       { __ref: `VideoBlock:${video.id}` },
       { __ref: `ImageBlock:${image.id}` }
     ])
+    expect(cache.extract()[`VideoBlock:${video.id}`]?.posterBlockId).toEqual(
+      image.id
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `VideoBlock:${video.id}` }
+      ])
+    )
+    expect(cache.extract()[`VideoBlock:${video.id}`]?.posterBlockId).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `VideoBlock:${video.id}` },
+        { __ref: `ImageBlock:${image.id}` }
+      ])
+    )
     expect(cache.extract()[`VideoBlock:${video.id}`]?.posterBlockId).toEqual(
       image.id
     )

@@ -273,13 +273,17 @@ describe('BackgroundMediaImage', () => {
         mocks={[
           listUnsplashCollectionPhotosMock,
           triggerUnsplashDownloadMock,
-          coverImageBlockCreateMock
+          coverImageBlockCreateMock,
+          coverBlockDeleteMock,
+          coverBlockRestoreMock
         ]}
       >
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <SnackbarProvider>
             <CommandProvider>
               <BackgroundMediaImage cardBlock={card} />
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
             </CommandProvider>
           </SnackbarProvider>
         </JourneyProvider>
@@ -299,6 +303,23 @@ describe('BackgroundMediaImage', () => {
       { __ref: `CardBlock:${card.id}` },
       { __ref: `ImageBlock:${image.id}` }
     ])
+    expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toEqual(
+      image.id
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` }
+      ])
+    )
+    expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` },
+        { __ref: `ImageBlock:${image.id}` }
+      ])
+    )
     expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toEqual(
       image.id
     )

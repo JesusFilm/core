@@ -17,6 +17,7 @@ import {
   LogoBlockCreate,
   LogoBlockCreateVariables
 } from '../../../../../../../../__generated__/LogoBlockCreate'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 import {
   listUnsplashCollectionPhotosMock,
@@ -165,6 +166,12 @@ describe('Logo', () => {
       }
     })
     const createLogoMock = getLogoImageBlockCreateMock()
+    const undoMock = getImageBlockUpdateMock(imageBlock.id, {
+      src: null
+    })
+    const redoMock = getImageBlockUpdateMock(imageBlock.id, {
+      src: unsplashImageInput.src
+    })
 
     render(
       <MockedProvider
@@ -172,11 +179,15 @@ describe('Logo', () => {
         mocks={[
           listUnsplashCollectionPhotosMock,
           triggerUnsplashDownloadMock,
-          createLogoMock
+          createLogoMock,
+          undoMock,
+          redoMock
         ]}
       >
         <JourneyProvider value={{ journey: defaultJourney }}>
           <CommandProvider>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
             <Logo />
           </CommandProvider>
         </JourneyProvider>
@@ -196,6 +207,10 @@ describe('Logo', () => {
     expect(cache.extract()[`Journey:${defaultJourney.id}`]?.blocks).toEqual([
       { __ref: `ImageBlock:${imageBlock.id}` }
     ])
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(undoMock.result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(redoMock.result).toHaveBeenCalled())
   })
 
   it('should update logo image from gallery selection', async () => {

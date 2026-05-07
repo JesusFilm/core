@@ -276,13 +276,17 @@ describe('RadioOptionImage', () => {
         mocks={[
           listUnsplashCollectionPhotosMock,
           triggerUnsplashDownloadMock,
-          radioOptionImageCreateMock
+          radioOptionImageCreateMock,
+          radioOptionImageDeleteMock,
+          radioOptionImageRestoreMock
         ]}
       >
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <SnackbarProvider>
             <CommandProvider>
               <RadioOptionImage radioOptionBlock={radioOption} />
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
             </CommandProvider>
           </SnackbarProvider>
         </JourneyProvider>
@@ -302,6 +306,27 @@ describe('RadioOptionImage', () => {
       { __ref: `RadioOptionBlock:${radioOption.id}` },
       { __ref: `ImageBlock:${image.id}` }
     ])
+    expect(
+      cache.extract()[`RadioOptionBlock:${radioOption.id}`]
+        ?.pollOptionImageBlockId
+    ).toEqual(image.id)
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `RadioOptionBlock:${radioOption.id}` }
+      ])
+    )
+    expect(
+      cache.extract()[`RadioOptionBlock:${radioOption.id}`]
+        ?.pollOptionImageBlockId
+    ).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `RadioOptionBlock:${radioOption.id}` },
+        { __ref: `ImageBlock:${image.id}` }
+      ])
+    )
     expect(
       cache.extract()[`RadioOptionBlock:${radioOption.id}`]
         ?.pollOptionImageBlockId
