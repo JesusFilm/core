@@ -397,7 +397,12 @@ describe('transformSteps', () => {
     expect(nodes).toEqual([
       socialNode,
       hiddenNode,
-
+      {
+        data: {},
+        id: 'step1.id',
+        position: { x: 0, y: 0 },
+        type: 'StepBlock'
+      },
       {
         data: {},
         draggable: false,
@@ -413,12 +418,6 @@ describe('transformSteps', () => {
         parentId: 'step1.id',
         position: { x: 300, y: 175 },
         type: 'Link'
-      },
-      {
-        data: {},
-        id: 'step1.id',
-        position: { x: 0, y: 0 },
-        type: 'StepBlock'
       }
     ])
 
@@ -514,17 +513,17 @@ describe('transformSteps', () => {
       hiddenNode,
       {
         data: {},
+        id: 'step1.id',
+        position: { x: 0, y: 0 },
+        type: 'StepBlock'
+      },
+      {
+        data: {},
         draggable: false,
         id: 'PhoneNode-button1.id',
         parentId: 'step1.id',
         position: { x: 300, y: 103 },
         type: 'Phone'
-      },
-      {
-        data: {},
-        id: 'step1.id',
-        position: { x: 0, y: 0 },
-        type: 'StepBlock'
       }
     ])
 
@@ -661,6 +660,12 @@ describe('transformSteps', () => {
       hiddenNode,
       {
         data: {},
+        id: 'step1.id',
+        position: { x: 0, y: 0 },
+        type: 'StepBlock'
+      },
+      {
+        data: {},
         draggable: false,
         id: 'LinkNode-button1.id',
         parentId: 'step1.id',
@@ -682,12 +687,6 @@ describe('transformSteps', () => {
         parentId: 'step1.id',
         position: { x: 300, y: 247 },
         type: 'Phone'
-      },
-      {
-        data: {},
-        id: 'step1.id',
-        position: { x: 0, y: 0 },
-        type: 'StepBlock'
       }
     ])
 
@@ -812,17 +811,17 @@ describe('transformSteps', () => {
       hiddenNode,
       {
         data: {},
+        id: 'step1.id',
+        position: { x: 0, y: 0 },
+        type: 'StepBlock'
+      },
+      {
+        data: {},
         draggable: false,
         id: 'ChatNode-button1.id',
         parentId: 'step1.id',
         position: { x: 300, y: 103 },
         type: 'Chat'
-      },
-      {
-        data: {},
-        id: 'step1.id',
-        position: { x: 0, y: 0 },
-        type: 'StepBlock'
       }
     ])
 
@@ -958,6 +957,12 @@ describe('transformSteps', () => {
       hiddenNode,
       {
         data: {},
+        id: 'step1.id',
+        position: { x: 0, y: 0 },
+        type: 'StepBlock'
+      },
+      {
+        data: {},
         draggable: false,
         id: 'LinkNode-button1.id',
         parentId: 'step1.id',
@@ -979,12 +984,6 @@ describe('transformSteps', () => {
         parentId: 'step1.id',
         position: { x: 300, y: 247 },
         type: 'Link'
-      },
-      {
-        data: {},
-        id: 'step1.id',
-        position: { x: 0, y: 0 },
-        type: 'StepBlock'
       }
     ])
 
