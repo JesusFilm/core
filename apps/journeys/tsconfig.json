@@ -4,7 +4,7 @@
     "jsx": "preserve",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "types": ["node", "jest"],
+    "types": ["node", "vitest/globals"],
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
@@ -23,5 +23,5 @@
     "next-env.d.ts",
     "postcss.config.mjs"
   ],
-  "exclude": ["node_modules", "jest.config.ts"]
+  "exclude": ["node_modules", "vitest.config.mts"]
 }
