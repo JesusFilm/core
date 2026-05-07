@@ -2,17 +2,15 @@ import { NetworkStatus, gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import ButtonBase from '@mui/material/ButtonBase'
-import LinearProgress from '@mui/material/LinearProgress'
+import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { keyframes } from '@mui/system'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import {
   GetMyCloudflareImages,
-  GetMyCloudflareImagesVariables,
-  GetMyCloudflareImages_getMyCloudflareImages as CloudflareImageNode
+  GetMyCloudflareImagesVariables
 } from '../../../../../../../../__generated__/GetMyCloudflareImages'
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 
@@ -41,11 +39,7 @@ interface RenderedImage {
 }
 
 const PAGE_SIZE = 9
-
-const shimmer = keyframes`
-  0% { background-position: 100% 0; }
-  100% { background-position: -100% 0; }
-`
+const PEEK_LIMIT = PAGE_SIZE + 1
 
 export function MyCloudflareImagesGrid({
   title,
@@ -55,40 +49,40 @@ export function MyCloudflareImagesGrid({
   uploading
 }: MyCloudflareImagesGridProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
-  const [hasMore, setHasMore] = useState(true)
+  const [displayCount, setDisplayCount] = useState<number | null>(null)
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<
     GetMyCloudflareImages,
     GetMyCloudflareImagesVariables
   >(GET_MY_CLOUDFLARE_IMAGES, {
-    variables: { offset: 0, limit: PAGE_SIZE, isAi },
+    variables: { offset: 0, limit: PEEK_LIMIT, isAi },
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
-    notifyOnNetworkStatusChange: true,
-    onCompleted: (result) => {
-      setHasMore((result.getMyCloudflareImages ?? []).length >= PAGE_SIZE)
-    }
+    notifyOnNetworkStatusChange: true
   })
 
   const isFetchingMore = networkStatus === NetworkStatus.fetchMore
 
-  const images: RenderedImage[] = (data?.getMyCloudflareImages ?? [])
-    .filter(
-      (node): node is CloudflareImageNode =>
-        node != null && node.url != null
-    )
-    .map((node) => ({
-      id: node.id,
-      src: `${node.url as string}/public`,
-      blurhash: node.blurhash
-    }))
-
-  if (
-    !loading &&
-    error == null &&
-    images.length === 0 &&
-    uploading !== true
+  const allImages: RenderedImage[] = (
+    data?.getMyCloudflareImages ?? []
+  ).flatMap((image) =>
+    image?.url == null
+      ? []
+      : [
+          {
+            id: image.id,
+            src: `${image.url}/public`,
+            blurhash: image.blurhash
+          }
+        ]
   )
+
+  const effectiveDisplayCount =
+    displayCount ?? Math.min(allImages.length, PAGE_SIZE)
+  const images = allImages.slice(0, effectiveDisplayCount)
+  const hasMore = allImages.length > effectiveDisplayCount
+
+  if (!loading && error == null && images.length === 0 && uploading !== true)
     return null
 
   const handleClick = (img: RenderedImage): void => {
@@ -104,9 +98,10 @@ export function MyCloudflareImagesGrid({
 
   const handleLoadMore = async (): Promise<void> => {
     const result = await fetchMore({
-      variables: { offset: images.length, limit: PAGE_SIZE, isAi }
+      variables: { offset: effectiveDisplayCount, limit: PEEK_LIMIT, isAi }
     })
-    setHasMore((result.data?.getMyCloudflareImages ?? []).length >= PAGE_SIZE)
+    const newItems = (result.data?.getMyCloudflareImages ?? []).length
+    setDisplayCount(effectiveDisplayCount + Math.min(newItems, PAGE_SIZE))
   }
 
   return (
@@ -133,7 +128,8 @@ export function MyCloudflareImagesGrid({
       )}
       <Box
         sx={{
-          maxHeight: { xs: 220, sm: 300 },
+          maxHeight: { xs: 220, sm: 320 },
+          overflowX: 'hidden',
           overflowY: 'auto',
           scrollbarWidth: 'thin',
           scrollbarColor: 'rgba(0,0,0,0.28) transparent',
@@ -159,47 +155,15 @@ export function MyCloudflareImagesGrid({
             <Box
               data-testid="my-cloudflare-image-uploading"
               sx={{
-                position: 'relative',
                 aspectRatio: '1 / 1',
                 borderRadius: '8px',
-                overflow: 'hidden',
-                background:
-                  'linear-gradient(90deg, #ECECF0 0%, #F6F6F9 50%, #ECECF0 100%)',
-                backgroundSize: '200% 100%',
-                animation: `${shimmer} 1.4s ease-in-out infinite`
+                background: '#EFEFEF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
-              <Typography
-                sx={{
-                  position: 'absolute',
-                  bottom: 28,
-                  left: 0,
-                  right: 0,
-                  textAlign: 'center',
-                  fontSize: '10.5px',
-                  fontWeight: 600,
-                  color: '#6D6D7D',
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  zIndex: 3
-                }}
-              >
-                {t('Processing')}
-              </Typography>
-              <LinearProgress
-                sx={{
-                  position: 'absolute',
-                  left: '10%',
-                  right: '10%',
-                  bottom: 14,
-                  height: 4,
-                  borderRadius: 2,
-                  backgroundColor: 'rgba(24,24,32,0.10)',
-                  '& .MuiLinearProgress-bar': {
-                    backgroundColor: '#444451'
-                  }
-                }}
-              />
+              <CircularProgress size={24} />
             </Box>
           )}
           {images.map((img) => (
@@ -214,16 +178,10 @@ export function MyCloudflareImagesGrid({
                 overflow: 'hidden',
                 background: '#EFEFEF',
                 cursor: 'pointer',
-                transition: (theme) => theme.transitions.create('box-shadow'),
-                boxShadow:
-                  selectedSrc === img.src
-                    ? '0 0 0 2px #C52D3A'
-                    : 'none',
                 display: 'block',
                 width: '100%'
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={img.src}
                 alt=""
@@ -241,6 +199,17 @@ export function MyCloudflareImagesGrid({
                   event.currentTarget.style.opacity = '1'
                 }}
               />
+              {selectedSrc === img.src && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    inset: 0,
+                    borderRadius: '8px',
+                    border: '2px solid #C52D3A',
+                    pointerEvents: 'none'
+                  }}
+                />
+              )}
             </ButtonBase>
           ))}
         </Box>
