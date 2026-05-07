@@ -1,12 +1,25 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../__generated__/JourneyFields'
+import { JOURNEY_VIEW_EVENT_CREATE } from '../Conductor/Conductor'
 
 import { JourneyRenderer } from '.'
+
+const noopJourneyViewMock: MockedResponse = {
+  request: { query: JOURNEY_VIEW_EVENT_CREATE },
+  variableMatcher: () => true,
+  maxUsageCount: Infinity,
+  delay: 99999999,
+  result: {
+    data: {
+      journeyViewEventCreate: { id: 'noop', __typename: 'JourneyViewEvent' }
+    }
+  }
+}
 
 describe('JourneyRenderer', () => {
   const defaultJourney = {
@@ -26,7 +39,7 @@ describe('JourneyRenderer', () => {
       website: false
     }
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[noopJourneyViewMock]}>
         <SnackbarProvider>
           <JourneyProvider value={{ journey }}>
             <JourneyRenderer />
@@ -45,7 +58,7 @@ describe('JourneyRenderer', () => {
     }
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[noopJourneyViewMock]}>
         <SnackbarProvider>
           <JourneyProvider value={{ journey }}>
             <JourneyRenderer />
