@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 
@@ -22,13 +22,17 @@ describe('CustomImage', () => {
     customizable: null
   }
 
-  it('should render custom url image upload', () => {
-    const { getByRole, getByText } = render(
+  it('should render image upload without custom url upload', () => {
+    render(
       <MockedProvider>
         <CustomImage onChange={jest.fn()} selectedBlock={imageBlock} />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    expect(getByText('Paste URL of image...')).toBeInTheDocument()
+
+    expect(screen.getByTestId('ImageUpload')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Add image by URL' })
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Paste URL of image...')).not.toBeInTheDocument()
   })
 })

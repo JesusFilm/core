@@ -13,7 +13,6 @@ import {
 } from '../../../../../../../../../../__generated__/ImageBlockUpdate'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
-import { createCloudflareUploadByUrlMock } from '../../../../../Drawer/ImageBlockEditor/CustomImage/CustomUrl/data'
 import { listUnsplashCollectionPhotosMock } from '../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
 
 import { IMAGE_BLOCK_UPDATE } from './ImageOptions'
@@ -26,19 +25,8 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('ImageOptions', () => {
-  let originalEnv
-
   beforeEach(() => {
     ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
-    originalEnv = process.env
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
-    }
-  })
-
-  afterEach(() => {
-    process.env = originalEnv
   })
 
   const selectedBlock: TreeBlock<ImageBlock> = {
@@ -89,90 +77,6 @@ describe('ImageOptions', () => {
       data: response
     }
   }
-
-  it('updates image block', async () => {
-    const updateResult = jest.fn(() => ({
-      data: response
-    }))
-    const undoResult = jest.fn(() => ({
-      data: response
-    }))
-    const redoResult = jest.fn(() => ({
-      data: response
-    }))
-    render(
-      <MockedProvider
-        mocks={[
-          listUnsplashCollectionPhotosMock,
-          // Unsplash may be queried multiple times when opening the dialog
-          listUnsplashCollectionPhotosMock,
-          createCloudflareUploadByUrlMock,
-          {
-            ...imageBlockUpdateMock,
-            result: updateResult
-          },
-          {
-            ...imageBlockUpdateMock,
-            request: {
-              ...imageBlockUpdateMock.request,
-              variables: {
-                ...imageBlockUpdateMock.request.variables,
-                input: {
-                  ...imageBlockUpdateMock.request.variables?.input,
-                  src: 'https://example.com/old.jpg',
-                  alt: 'prior-alt'
-                }
-              }
-            },
-            result: undoResult
-          },
-          {
-            ...imageBlockUpdateMock,
-            result: redoResult
-          }
-        ]}
-      >
-        <CommandProvider>
-          <EditorProvider
-            initialState={{
-              selectedBlock: {
-                ...selectedBlock,
-                src: 'https://example.com/old.jpg',
-                alt: 'prior-alt'
-              }
-            }}
-          >
-            <ImageOptions />
-            <CommandUndoItem variant="button" />
-            <CommandRedoItem variant="button" />
-          </EditorProvider>
-        </CommandProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: 'prior-alt Selected Image 1920 x 1080 pixels'
-      })
-    )
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-    )
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
-    )
-    const textBox = screen.getByRole('textbox')
-    fireEvent.change(textBox, {
-      target: {
-        value: 'https://example.com/image.jpg'
-      }
-    })
-    fireEvent.blur(textBox)
-    await waitFor(() => expect(updateResult).toHaveBeenCalled())
-    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(undoResult).toHaveBeenCalled())
-    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() => expect(redoResult).toHaveBeenCalled())
-  })
 
   it('fake delete image block', async () => {
     const deleteResult = jest.fn(() => ({
