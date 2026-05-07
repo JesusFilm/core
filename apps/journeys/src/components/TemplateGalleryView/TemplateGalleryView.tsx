@@ -25,10 +25,6 @@ export function TemplateGalleryView({
     <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 } }}>
       <Stack spacing={{ xs: 4, md: 6 }}>
         <TemplateGalleryHeader gallery={gallery} />
-        <TemplateGalleryMedia
-          mediaUrl={gallery.mediaUrl}
-          title={gallery.title}
-        />
         {gallery.templates.length > 0 ? (
           <TemplateGalleryGrid
             templates={gallery.templates}
@@ -37,6 +33,7 @@ export function TemplateGalleryView({
         ) : (
           <TemplateGalleryEmptyState />
         )}
+        <TemplateGalleryMedia mediaUrl={gallery.mediaUrl} />
       </Stack>
     </Container>
   )

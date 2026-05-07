@@ -3,48 +3,20 @@ import { render, screen } from '@testing-library/react'
 import { TemplateGalleryMedia } from './TemplateGalleryMedia'
 
 describe('TemplateGalleryMedia', () => {
-  it('renders an iframe for a YouTube URL', () => {
+  it('renders the strategy section when mediaUrl is set', () => {
     render(
-      <TemplateGalleryMedia
-        mediaUrl="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-        title="Easter Gallery"
-      />
+      <TemplateGalleryMedia mediaUrl="https://www.canva.com/design/abc/view" />
     )
-    const iframe = screen.getByTitle('Easter Gallery')
-    expect(iframe).toHaveAttribute(
-      'src',
-      'https://www.youtube.com/embed/dQw4w9WgXcQ'
-    )
-    expect(iframe).toHaveAttribute('loading', 'lazy')
-  })
-
-  it('renders an iframe for a Loom URL', () => {
-    render(
-      <TemplateGalleryMedia
-        mediaUrl="https://www.loom.com/share/abcd1234"
-        title="Easter Gallery"
-      />
-    )
-    expect(screen.getByTitle('Easter Gallery')).toHaveAttribute(
-      'src',
-      'https://www.loom.com/embed/abcd1234'
-    )
+    expect(screen.getByTestId('TemplateGalleryMedia')).toBeInTheDocument()
   })
 
   it('renders nothing when mediaUrl is null', () => {
-    const { container } = render(
-      <TemplateGalleryMedia mediaUrl={null} title="x" />
-    )
+    const { container } = render(<TemplateGalleryMedia mediaUrl={null} />)
     expect(container).toBeEmptyDOMElement()
   })
 
-  it('renders nothing when mediaUrl is unsupported', () => {
-    const { container } = render(
-      <TemplateGalleryMedia
-        mediaUrl="https://vimeo.com/12345"
-        title="x"
-      />
-    )
+  it('renders nothing when mediaUrl is empty', () => {
+    const { container } = render(<TemplateGalleryMedia mediaUrl="" />)
     expect(container).toBeEmptyDOMElement()
   })
 })
