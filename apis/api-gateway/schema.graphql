@@ -127,7 +127,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   stepViewEventCreate(input: StepViewEventCreateInput!) : StepViewEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   stepNextEventCreate(input: StepNextEventCreateInput!) : StepNextEvent! @join__field(graph: API_JOURNEYS) 
   stepPreviousEventCreate(input: StepPreviousEventCreateInput!) : StepPreviousEvent! @join__field(graph: API_JOURNEYS) 
-  videoStartEventCreate(input: VideoStartEventCreateInput!) : VideoStartEvent! @join__field(graph: API_JOURNEYS) 
+  videoStartEventCreate(input: VideoStartEventCreateInput!) : VideoStartEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   videoPlayEventCreate(input: VideoPlayEventCreateInput!) : VideoPlayEvent! @join__field(graph: API_JOURNEYS) 
   videoPauseEventCreate(input: VideoPauseEventCreateInput!) : VideoPauseEvent! @join__field(graph: API_JOURNEYS) 
   videoCompleteEventCreate(input: VideoCompleteEventCreateInput!) : VideoCompleteEvent! @join__field(graph: API_JOURNEYS) 
@@ -1706,6 +1706,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   countries(term: String, ids: [ID!], where: CountriesFilter) : [Country!]! @join__field(graph: API_LANGUAGES) 
   getMyCloudflareImages(offset: Int, limit: Int, isAi: Boolean) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
+  videoImages(where: VideoImagesFilter, offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
+  videoImagesCount(where: VideoImagesFilter) : Int! @join__field(graph: API_MEDIA) 
   listUnsplashCollectionPhotos(
     collectionId: String!
     page: Int
@@ -1725,7 +1727,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   bibleBooks(where: BibleBooksFilter) : [BibleBook!]! @join__field(graph: API_MEDIA) 
   bibleCitations(videoId: ID) : [BibleCitation!]! @join__field(graph: API_MEDIA) 
   bibleCitation(id: ID!) : BibleCitation! @join__field(graph: API_MEDIA) 
-  keywords(where: KeywordsFilter) : [Keyword!]! @join__field(graph: API_MEDIA) 
+  keywords(where: KeywordsFilter, offset: Int, limit: Int) : [Keyword!]! @join__field(graph: API_MEDIA) 
+  keywordsCount(where: KeywordsFilter) : Int! @join__field(graph: API_MEDIA) 
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
   getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
@@ -1780,6 +1783,10 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     last: Int
   ): QueryShortLinksConnection! @join__field(graph: API_MEDIA) 
   userMediaProfile: UserMediaProfile @join__field(graph: API_MEDIA) 
+  videoSubtitles(where: VideoSubtitlesFilter, offset: Int, limit: Int) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
+  videoSubtitlesCount(where: VideoSubtitlesFilter) : Int! @join__field(graph: API_MEDIA) 
+  videoVariantDownloads(where: VideoVariantDownloadsFilter, offset: Int, limit: Int) : [VideoVariantDownload!]! @join__field(graph: API_MEDIA) 
+  videoVariantDownloadsCount(where: VideoVariantDownloadsFilter) : Int! @join__field(graph: API_MEDIA) 
   videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoVariants(input: VideoVariantFilter, offset: Int, limit: Int) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   videoVariantsCount(input: VideoVariantFilter) : Int! @join__field(graph: API_MEDIA) 
@@ -1791,8 +1798,10 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
   checkVideoInAlgolia(videoId: ID!) : CheckVideoInAlgoliaResult! @join__field(graph: API_MEDIA) 
   checkVideoVariantsInAlgolia(videoId: ID!) : CheckVideoVariantsInAlgoliaResult! @join__field(graph: API_MEDIA) 
-  videoOrigins: [VideoOrigin!]! @join__field(graph: API_MEDIA) 
-  videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
+  videoOrigins(where: VideoOriginsFilter, offset: Int, limit: Int) : [VideoOrigin!]! @join__field(graph: API_MEDIA) 
+  videoOriginsCount(where: VideoOriginsFilter) : Int! @join__field(graph: API_MEDIA) 
+  videoEditions(where: VideoEditionsFilter, offset: Int, limit: Int) : [VideoEdition!]! @join__field(graph: API_MEDIA) 
+  videoEditionsCount(where: VideoEditionsFilter) : Int! @join__field(graph: API_MEDIA) 
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
@@ -2701,6 +2710,8 @@ type CheckVideoVariantsInAlgoliaResult @join__type(graph: API_MEDIA)  {
 
 type CloudflareImage @join__type(graph: API_MEDIA)  {
   id: ID!
+  updatedAt: DateTime!
+  videoId: ID
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -3173,6 +3184,7 @@ type VideoImageAlt @join__type(graph: API_MEDIA)  {
 
 type VideoOrigin @join__type(graph: API_MEDIA)  {
   id: ID!
+  updatedAt: DateTime!
   name: String!
   description: String
 }
@@ -3211,6 +3223,8 @@ type VideoStudyQuestion @join__type(graph: API_MEDIA)  {
 
 type VideoSubtitle @join__type(graph: API_MEDIA)  {
   id: ID!
+  updatedAt: DateTime!
+  videoId: ID!
   languageId: ID!
   primary: Boolean!
   edition: String!
@@ -3280,6 +3294,8 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
 
 type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   id: ID!
+  updatedAt: DateTime!
+  videoVariantId: ID
   """
   master video file
   """
@@ -5473,6 +5489,20 @@ input VideoEditionUpdateInput @join__type(graph: API_MEDIA)  {
   name: String
 }
 
+input VideoEditionsFilter @join__type(graph: API_MEDIA)  {
+  updatedAt: DateTimeFilter
+}
+
+input VideoImagesFilter @join__type(graph: API_MEDIA)  {
+  updatedAt: DateTimeFilter
+  videoId: ID
+  aspectRatio: ImageAspectRatio
+}
+
+input VideoOriginsFilter @join__type(graph: API_MEDIA)  {
+  updatedAt: DateTimeFilter
+}
+
 input VideoStudyQuestionCreateInput @join__type(graph: API_MEDIA)  {
   id: ID
   videoId: String!
@@ -5522,6 +5552,14 @@ input VideoSubtitleUpdateInput @join__type(graph: API_MEDIA)  {
   srtVersion: Int
   primary: Boolean
   languageId: String
+}
+
+input VideoSubtitlesFilter @join__type(graph: API_MEDIA)  {
+  updatedAt: DateTimeFilter
+  videoId: ID
+  languageId: ID
+  edition: String
+  primary: Boolean
 }
 
 input VideoTranslationCreateInput @join__type(graph: API_MEDIA)  {
@@ -5595,6 +5633,12 @@ input VideoVariantDownloadUpdateInput @join__type(graph: API_MEDIA)  {
   bitrate: Int
   url: String
   version: Int
+}
+
+input VideoVariantDownloadsFilter @join__type(graph: API_MEDIA)  {
+  updatedAt: DateTimeFilter
+  videoVariantId: ID
+  quality: VideoVariantDownloadQuality
 }
 
 input VideoVariantFilter @join__type(graph: API_MEDIA)  {
