@@ -33,6 +33,8 @@ vi.mock('@core/journeys/ui/PinnedChatBar', () => ({
   PinnedChatBar: () => <div data-testid="PinnedChatBar" />
 }))
 
+const originalFetch = global.fetch
+
 global.fetch = vi.fn(
   async () =>
     await Promise.resolve({
@@ -128,6 +130,10 @@ const lastStepOnly: TreeBlock[] = [
 ]
 
 describe('Conductor apologistChat flag gating', () => {
+  afterAll(() => {
+    global.fetch = originalFetch
+  })
+
   const journeyWithAssistant: Journey = {
     ...baseJourney,
     showAssistant: true
