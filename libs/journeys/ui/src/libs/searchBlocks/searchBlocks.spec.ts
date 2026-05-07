@@ -64,7 +64,9 @@ describe('searchBlocks', () => {
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
 
@@ -143,7 +145,9 @@ describe('searchBlocks', () => {
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
 

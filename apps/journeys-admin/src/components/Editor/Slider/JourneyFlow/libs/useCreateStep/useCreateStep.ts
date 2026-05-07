@@ -57,7 +57,9 @@ export function useCreateStep(): (input: CreateStepInput) => void {
       coverBlockId: null,
       backgroundColor: null,
       parentOrder: 0,
-      eventLabel: null
+      eventLabel: null,
+      showAssistant: null,
+      expandChatByDefault: null
     }
     add({
       parameters: {

@@ -85,7 +85,9 @@ export const card1: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: [step1]
+  children: [step1],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 export const card2: TreeBlock<CardBlock> = {
@@ -100,7 +102,9 @@ export const card2: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: [step2]
+  children: [step2],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 export const card3: TreeBlock<CardBlock> = {
@@ -115,7 +119,9 @@ export const card3: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: [step3]
+  children: [step3],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 export const block: TreeBlock<CardBlock> = {
@@ -146,7 +152,9 @@ export const block: TreeBlock<CardBlock> = {
         color: null
       }
     }
-  ]
+  ],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 export const action: LinkAction = {

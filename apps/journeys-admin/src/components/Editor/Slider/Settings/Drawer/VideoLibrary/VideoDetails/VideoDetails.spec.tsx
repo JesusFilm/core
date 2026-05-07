@@ -294,7 +294,9 @@ describe('VideoDetails', () => {
                     fullscreen: false,
                     backdropBlur: null,
                     eventLabel: null,
-                    children: [videoBlock]
+                    children: [videoBlock],
+                    showAssistant: null,
+                    expandChatByDefault: null
                   }
                 ]
               }
