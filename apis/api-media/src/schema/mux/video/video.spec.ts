@@ -143,7 +143,7 @@ describe('mux/video', () => {
         expect(prismaMock.muxVideo.findMany).toHaveBeenCalledWith(
           expect.objectContaining({
             where: { userId: 'testUserId' },
-            orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+            orderBy: { createdAt: 'desc' },
             take: 10,
             skip: 0
           })

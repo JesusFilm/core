@@ -83,7 +83,7 @@ builder.queryFields((t) => ({
           userId: user.id,
           ...(isAi != null ? { isAi } : {})
         },
-        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        orderBy: { createdAt: 'desc' },
         take: limit ?? undefined,
         skip: offset ?? undefined
       })

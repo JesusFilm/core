@@ -128,7 +128,7 @@ describe('cloudflareImage', () => {
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
           where: { userId: 'testUserId' },
-          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
+          orderBy: { createdAt: 'desc' }
         })
       })
 
@@ -185,7 +185,7 @@ describe('cloudflareImage', () => {
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
           where: { userId: 'testUserId' },
-          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+          orderBy: { createdAt: 'desc' },
           take: 10,
           skip: 0
         })
@@ -199,7 +199,7 @@ describe('cloudflareImage', () => {
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
           where: { userId: 'testUserId', isAi: true },
-          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
+          orderBy: { createdAt: 'desc' }
         })
       })
 
@@ -211,7 +211,19 @@ describe('cloudflareImage', () => {
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
           where: { userId: 'testUserId', isAi: false },
-          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
+          orderBy: { createdAt: 'desc' }
+        })
+      })
+
+      it('should not filter by isAi when isAi arg is null', async () => {
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([])
+        await authClient({
+          document: GET_MY_CLOUDFLARE_IMAGES_QUERY,
+          variables: { isAi: null }
+        })
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
+          where: { userId: 'testUserId' },
+          orderBy: { createdAt: 'desc' }
         })
       })
     })
