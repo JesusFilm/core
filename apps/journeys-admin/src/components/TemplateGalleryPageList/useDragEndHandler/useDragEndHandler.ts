@@ -171,7 +171,7 @@ export function useDragEndHandler(
           targetCollectionId != null
             ? collectionsById.get(targetCollectionId)
             : null
-        await templateGalleryPageAssignJourney({
+        const assignResult = await templateGalleryPageAssignJourney({
           variables: { journeyId: templateId, pageId: targetCollectionId },
           // Optimistic + cache.modify so both the target page (gain) and
           // the source page (loss) update in the same tick as the drop.
@@ -229,6 +229,27 @@ export function useDragEndHandler(
             })
           }
         })
+        // Detect silent server rejection. The mutation can succeed at
+        // the GraphQL layer (no errors) but return a page that still
+        // doesn't include the journey we asked it to add — typically
+        // when the journey's team ≠ the page's team or the journey
+        // isn't a template. Apollo merges the response over the
+        // optimistic write, so the UI silently bounces the card back
+        // to the unsectioned section. Surface a snackbar so the user
+        // knows the move didn't take.
+        if (targetCollectionId != null) {
+          const returnedPage =
+            assignResult.data?.templateGalleryPageAssignJourney
+          const accepted =
+            returnedPage?.templates.some((tpl) => tpl.id === templateId) ??
+            false
+          if (!accepted) {
+            enqueueSnackbar(
+              t("Couldn't move template — the server rejected the move."),
+              { variant: 'error', preventDuplicate: true }
+            )
+          }
+        }
       }
     } catch (error) {
       enqueueSnackbar(
