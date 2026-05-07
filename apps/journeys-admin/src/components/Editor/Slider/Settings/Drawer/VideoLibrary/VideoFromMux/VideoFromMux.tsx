@@ -1,15 +1,19 @@
 import Stack from '@mui/material/Box'
 import { ReactElement } from 'react'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
 import { validateMuxLanguage } from '../../../../../../../libs/validateMuxLanguage'
+import { useMuxVideoUpload } from '../../../../../../MuxVideoUploadProvider'
 
 import { AddByFile } from './AddByFile'
+import { MyMuxVideosGrid } from './MyMuxVideosGrid'
 
 interface VideoFromMuxProps {
   onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
@@ -17,7 +21,25 @@ interface VideoFromMuxProps {
 
 export function VideoFromMux({ onSelect }: VideoFromMuxProps): ReactElement {
   const { journey } = useJourney()
+  const {
+    state: { selectedBlock }
+  } = useEditor()
+  const { getUploadStatus } = useMuxVideoUpload()
+  const { mediaLibrary } = useFlags()
   const isValidLanguage = validateMuxLanguage(journey?.language?.bcp47)
+
+  const uploadTask =
+    selectedBlock?.id != null ? getUploadStatus(selectedBlock.id) : null
+  const uploading =
+    uploadTask?.status === 'uploading' ||
+    uploadTask?.status === 'processing' ||
+    uploadTask?.status === 'waiting'
+
+  const selectedVideoId =
+    selectedBlock?.__typename === 'VideoBlock' &&
+    selectedBlock.source === VideoBlockSource.mux
+      ? selectedBlock.videoId
+      : null
 
   const handleChange = (id: string, shouldCloseDrawer?: boolean): void => {
     const block: VideoBlockUpdateInput = {
@@ -37,6 +59,13 @@ export function VideoFromMux({ onSelect }: VideoFromMuxProps): ReactElement {
   return (
     <Stack sx={{ bgcolor: 'background.paper' }} data-testid="VideoFromMux">
       <AddByFile onChange={handleChange} />
+      {mediaLibrary === true && (
+        <MyMuxVideosGrid
+          selectedVideoId={selectedVideoId}
+          onSelect={onSelect}
+          uploading={uploading}
+        />
+      )}
     </Stack>
   )
 }

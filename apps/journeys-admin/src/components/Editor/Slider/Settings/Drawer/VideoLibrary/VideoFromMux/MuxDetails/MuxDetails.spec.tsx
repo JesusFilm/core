@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import {
   VideoBlockObjectFit,
@@ -8,6 +8,8 @@ import {
 import { MuxDetails } from './MuxDetails'
 
 const mockDocument = globalThis.document
+
+const mockDispose = jest.fn()
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -42,7 +44,8 @@ jest.mock('video.js', () => {
         on: jest.fn(),
         off: jest.fn(),
         poster: jest.fn(),
-        src: jest.fn()
+        src: jest.fn(),
+        dispose: mockDispose
       }
     }
   )
@@ -91,9 +94,13 @@ const mockVideoBlock = {
 }
 
 describe('MuxDetails', () => {
+  beforeEach(() => {
+    mockDispose.mockClear()
+  })
+
   it('should render details of a video', async () => {
     const { getByRole } = render(
-      <MuxDetails activeVideoBlock={mockVideoBlock} open onSelect={jest.fn()} />
+      <MuxDetails id="videoId" activeVideoBlock={mockVideoBlock} open onSelect={jest.fn()} />
     )
     const videoPlayer = getByRole('region', {
       name: 'Video Player'
@@ -117,6 +124,7 @@ describe('MuxDetails', () => {
 
     const { getByRole } = render(
       <MuxDetails
+        id="videoId"
         activeVideoBlock={videoBlockWithSubtitles}
         open
         onSelect={jest.fn()}
@@ -139,6 +147,7 @@ describe('MuxDetails', () => {
 
     const { getByRole } = render(
       <MuxDetails
+        id="videoId"
         activeVideoBlock={videoBlockWithoutSubtitles}
         open
         onSelect={jest.fn()}
@@ -156,6 +165,7 @@ describe('MuxDetails', () => {
   it('should not render when open is false', () => {
     const { queryByTestId } = render(
       <MuxDetails
+        id="videoId"
         activeVideoBlock={mockVideoBlock}
         open={false}
         onSelect={jest.fn()}
@@ -167,7 +177,7 @@ describe('MuxDetails', () => {
 
   it('should update subtitle tracks on showGeneratedSubtitles change', async () => {
     const { rerender, getByRole } = render(
-      <MuxDetails activeVideoBlock={mockVideoBlock} open onSelect={jest.fn()} />
+      <MuxDetails id="videoId" activeVideoBlock={mockVideoBlock} open onSelect={jest.fn()} />
     )
 
     await waitFor(() => {
@@ -185,7 +195,7 @@ describe('MuxDetails', () => {
     }
 
     rerender(
-      <MuxDetails activeVideoBlock={updatedBlock} open onSelect={jest.fn()} />
+      <MuxDetails id="videoId" activeVideoBlock={updatedBlock} open onSelect={jest.fn()} />
     )
 
     await waitFor(() => {
@@ -199,7 +209,7 @@ describe('MuxDetails', () => {
 
   it('should render video element with correct attributes', () => {
     const { container } = render(
-      <MuxDetails activeVideoBlock={mockVideoBlock} open onSelect={jest.fn()} />
+      <MuxDetails id="videoId" activeVideoBlock={mockVideoBlock} open onSelect={jest.fn()} />
     )
 
     const videoElement = container.querySelector('video')
@@ -207,5 +217,51 @@ describe('MuxDetails', () => {
     expect(videoElement).toHaveClass('video-js')
     expect(videoElement).toHaveClass('vjs-big-play-centered')
     expect(videoElement).toHaveAttribute('playsInline')
+  })
+
+  it('should dispose the videojs player on unmount', () => {
+    const { unmount } = render(
+      <MuxDetails
+        id="videoId"
+        activeVideoBlock={mockVideoBlock}
+        open
+        onSelect={jest.fn()}
+      />
+    )
+    expect(mockDispose).not.toHaveBeenCalled()
+    unmount()
+    expect(mockDispose).toHaveBeenCalledTimes(1)
+  })
+
+  it('should render a Select button when no activeVideoBlock and call onSelect with playbackId fallback', () => {
+    const onSelect = jest.fn()
+    const { getByRole } = render(
+      <MuxDetails
+        id="newVideoId"
+        open
+        onSelect={onSelect}
+        playbackId="fallbackPlaybackId"
+      />
+    )
+    const selectButton = getByRole('button', { name: 'Select' })
+    expect(selectButton).toBeInTheDocument()
+    fireEvent.click(selectButton)
+    expect(onSelect).toHaveBeenCalledWith({
+      videoId: 'newVideoId',
+      source: VideoBlockSource.mux,
+      startAt: 0
+    })
+  })
+
+  it('should not render a Select button when activeVideoBlock is provided', () => {
+    const { queryByRole } = render(
+      <MuxDetails
+        id="videoId"
+        activeVideoBlock={mockVideoBlock}
+        open
+        onSelect={jest.fn()}
+      />
+    )
+    expect(queryByRole('button', { name: 'Select' })).not.toBeInTheDocument()
   })
 })

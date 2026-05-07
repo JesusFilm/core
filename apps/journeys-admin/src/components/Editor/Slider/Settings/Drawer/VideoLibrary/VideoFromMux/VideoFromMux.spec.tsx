@@ -22,6 +22,27 @@ jest.mock('../../../../../../../libs/validateMuxLanguage', () => ({
   validateMuxLanguage: jest.fn()
 }))
 
+const mockUseFlags = jest.fn()
+
+jest.mock('@core/shared/ui/FlagsProvider', () => ({
+  ...jest.requireActual('@core/shared/ui/FlagsProvider'),
+  useFlags: () => mockUseFlags()
+}))
+
+jest.mock('../../../../../../MuxVideoUploadProvider', () => ({
+  __esModule: true,
+  useMuxVideoUpload: () => ({
+    getUploadStatus: () => null,
+    addUploadTask: jest.fn(),
+    cancelUploadForBlock: jest.fn()
+  })
+}))
+
+jest.mock('./MyMuxVideosGrid', () => ({
+  __esModule: true,
+  MyMuxVideosGrid: () => <div data-testid="mock-my-mux-videos-grid" />
+}))
+
 jest.mock('./AddByFile', () => {
   const Button = require('@mui/material/Button').default
 
@@ -155,6 +176,43 @@ describe('VideoFromMux', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockValidateMuxLanguage.mockReturnValue(true)
+    mockUseFlags.mockReturnValue({ mediaLibrary: false })
+  })
+
+  it('should not render MyMuxVideosGrid when mediaLibrary flag is off', () => {
+    mockUseFlags.mockReturnValue({ mediaLibrary: false })
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider
+            initialState={{ selectedBlock: selectedVideoBlock }}
+          >
+            <VideoFromMux onSelect={jest.fn()} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(
+      screen.queryByTestId('mock-my-mux-videos-grid')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should render MyMuxVideosGrid when mediaLibrary flag is on', () => {
+    mockUseFlags.mockReturnValue({ mediaLibrary: true })
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider
+            initialState={{ selectedBlock: selectedVideoBlock }}
+          >
+            <VideoFromMux onSelect={jest.fn()} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(
+      screen.getByTestId('mock-my-mux-videos-grid')
+    ).toBeInTheDocument()
   })
 
   it('renders AddByFile trigger', () => {

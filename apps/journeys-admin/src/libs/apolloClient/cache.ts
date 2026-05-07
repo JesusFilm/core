@@ -42,6 +42,7 @@ export const cache = (): InMemoryCache =>
       Query: {
         fields: {
           videos: offsetLimitPagination(['where']),
+          getMyMuxVideos: offsetLimitPagination(),
           searchUnsplashPhotos: {
             keyArgs: ['query'],
             merge(existing, incoming) {
