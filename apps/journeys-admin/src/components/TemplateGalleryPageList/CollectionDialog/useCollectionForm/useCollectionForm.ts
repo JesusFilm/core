@@ -3,7 +3,7 @@ import { FormikHelpers } from 'formik'
 import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { ObjectSchema, array, object, string } from 'yup'
 
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../../__generated__/GetTemplateGalleryPages'
@@ -146,10 +146,18 @@ export function useCollectionForm({
   const isPublished =
     collection?.status === TemplateGalleryPageStatus.published
 
+  // Synchronous double-submit guard. Formik's `isSubmitting` flips
+  // through React state, so a sub-frame second click can squeeze through
+  // before the LoadingButton renders disabled. A ref flips inside the
+  // same JS tick that fires the mutation, so the second invocation
+  // returns immediately.
+  const submittingRef = useRef(false)
+
   async function handleSubmit(
     values: CollectionFormValues,
     helpers: FormikHelpers<CollectionFormValues>
   ): Promise<void> {
+    if (submittingRef.current) return
     if (parentBusy) {
       // A DnD mutation is still in flight on the parent. Bail rather than
       // interleave a dialog mutation against the same team's cache.
@@ -159,6 +167,7 @@ export function useCollectionForm({
       })
       return
     }
+    submittingRef.current = true
     try {
       if (mode === 'create') {
         const input: TemplateGalleryPageCreateInput = {
@@ -235,6 +244,8 @@ export function useCollectionForm({
           : t("Couldn't save collection"),
         { variant: 'error', preventDuplicate: true }
       )
+    } finally {
+      submittingRef.current = false
     }
   }
 

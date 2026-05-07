@@ -121,6 +121,11 @@ export function CollectionDialog({
           open={open}
           onClose={guardedClose}
           maxWidth="md"
+          // Disable the submit + close buttons while the mutation is in
+          // flight. Formik's submitForm has no internal double-click guard
+          // — without this, a fast second click before React re-renders
+          // would fire a second create/update mutation.
+          loading={isSubmitting}
           dialogTitle={{
             title:
               mode === 'create' ? t('New Collection') : t('Edit Collection'),
