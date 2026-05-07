@@ -1,5 +1,5 @@
 ---
-title: "feat: Simplify Image Properties Custom upload UI"
+title: 'feat: Simplify Image Properties Custom upload UI'
 type: feat
 status: active
 date: 2026-05-08
@@ -77,6 +77,7 @@ Plan two small Media Library Picker UI tickets for the Image Properties Custom t
 **Dependencies:** None
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/ImageBlockEditor/CustomImage/CustomImage.tsx`
 - Modify: `apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/ImageBlockEditor/CustomImage/CustomImage.spec.tsx`
 - Potentially delete if unused: `apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/ImageBlockEditor/CustomImage/CustomUrl/CustomUrl.tsx`
@@ -85,22 +86,26 @@ Plan two small Media Library Picker UI tickets for the Image Properties Custom t
 - Potentially delete if unused: `apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/ImageBlockEditor/CustomImage/CustomUrl/index.ts`
 
 **Approach:**
+
 - Remove the `CustomUrl` render path and the visual divider that only separated URL upload from file upload.
 - Search for other `CustomUrl` imports before deleting files; delete the component/spec/index only if this Custom tab is the sole consumer.
 - Update `CustomImage` test coverage from "opens URL accordion" to "renders upload UI and does not render URL upload affordance."
 - Avoid locale cleanup in this ticket unless the repo's translation extraction workflow naturally removes unused strings; translation catalog churn is not needed for behavior.
 
 **Patterns to follow:**
+
 - Existing component composition in `CustomImage.tsx`.
 - Existing Testing Library style in `CustomImage.spec.tsx`.
 
 **Test scenarios:**
+
 - Happy path: rendering `CustomImage` shows the file upload UI.
 - Happy path: rendering `CustomImage` does not show a button named "Add image by URL."
 - Edge case: URL input placeholder text "Paste URL of image..." is absent after render.
 - Integration: `ImageUpload` still receives `onChange`, `selectedBlock`, `setUploading`, `loading`, and `error` props from `CustomImage`.
 
 **Verification:**
+
 - The Custom tab no longer exposes URL upload UI.
 - Existing file-upload behavior remains reachable through `ImageUpload`.
 - No unused `CustomUrl` import remains.
@@ -114,11 +119,13 @@ Plan two small Media Library Picker UI tickets for the Image Properties Custom t
 **Dependencies:** U1 can be independent, but implementing after U1 gives a cleaner Custom tab layout to verify.
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/ImageBlockEditor/CustomImage/ImageUpload/ImageUpload.tsx`
 - Modify: `apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/ImageBlockEditor/CustomImage/ImageUpload/ImageUpload.spec.tsx`
 - Review: `apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/ImageBlockEditor/CustomImage/ImageUpload/ImageUpload.stories.tsx`
 
 **Approach:**
+
 - Move the existing `Upload file` button into the `data-testid="drop zone"` container below the icon/status copy.
 - Keep the button wired to `open` from `useDropzone` and disabled while `loading === true`.
 - Preserve the hidden file input, accepted MIME types, max-size handling, error messaging, success state, and `onDrop` upload flow.
@@ -126,11 +133,13 @@ Plan two small Media Library Picker UI tickets for the Image Properties Custom t
 - Keep helper/error text below the dropzone unless visual design review shows it belongs inside; the requested change is specifically to include the button inside the drop area.
 
 **Patterns to follow:**
+
 - Existing `ImageUpload.tsx` use of `useDropzone`, `open`, `getRootProps`, and `getInputProps`.
 - Existing state assertions in `ImageUpload.spec.tsx`.
 - Drawer UI density and MUI styling already used in this component.
 
 **Test scenarios:**
+
 - Happy path: the dropzone contains a button named "Upload file."
 - Happy path: dropping a valid PNG on the dropzone still uploads through `createCloudflareUploadByFile`, posts to Cloudflare, and calls `onChange` with the uploaded `src`, `scale`, `focalLeft`, and `focalTop`.
 - Happy path: clicking the nested "Upload file" button calls the dropzone `open` path without requiring the entire dropzone to be clickable.
@@ -141,6 +150,7 @@ Plan two small Media Library Picker UI tickets for the Image Properties Custom t
 - Integration: retrying with a valid file after a rejection clears the previous error and shows success.
 
 **Verification:**
+
 - Drag-and-drop and button-triggered file selection both remain available from one visual dropzone surface.
 - Upload loading, success, and failure states remain visually distinct.
 - The component story still renders useful default/loading/error states for visual review.
@@ -185,12 +195,12 @@ Redesign the Image Properties Custom tab upload dropzone so users can drag an im
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| Removing `CustomUrl` conflicts with Media Library Picker "no URL regression" wording | Treat URL removal as this ticket's explicit product change; keep other Media Library Picker flows untouched. |
-| Nested button click interferes with dropzone drag handling | Keep `useDropzone` as the owner of root/input props and use the existing `open` callback for the nested button. |
-| UI becomes cramped in the drawer after moving the button | Verify Storybook/default rendering and add responsive spacing constraints in `ImageUpload`. |
-| Over-deleting URL upload code breaks an unseen import | Search imports before deleting `CustomUrl` files; otherwise leave unused cleanup to a follow-up. |
+| Risk                                                                                 | Mitigation                                                                                                      |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| Removing `CustomUrl` conflicts with Media Library Picker "no URL regression" wording | Treat URL removal as this ticket's explicit product change; keep other Media Library Picker flows untouched.    |
+| Nested button click interferes with dropzone drag handling                           | Keep `useDropzone` as the owner of root/input props and use the existing `open` callback for the nested button. |
+| UI becomes cramped in the drawer after moving the button                             | Verify Storybook/default rendering and add responsive spacing constraints in `ImageUpload`.                     |
+| Over-deleting URL upload code breaks an unseen import                                | Search imports before deleting `CustomUrl` files; otherwise leave unused cleanup to a follow-up.                |
 
 ## Documentation / Operational Notes
 

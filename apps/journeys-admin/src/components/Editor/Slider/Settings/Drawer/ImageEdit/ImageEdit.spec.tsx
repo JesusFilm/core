@@ -255,5 +255,4 @@ describe('ImageEdit', () => {
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
   })
-
 })
