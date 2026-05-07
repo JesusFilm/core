@@ -54,7 +54,9 @@ describe('PaginationBullets', () => {
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   }

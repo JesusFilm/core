@@ -182,7 +182,9 @@ describe('Editor', () => {
           themeName: ThemeName.base,
           fullscreen: false,
           backdropBlur: null,
-          eventLabel: null
+          eventLabel: null,
+          showAssistant: null,
+          expandChatByDefault: null
         },
         {
           __typename: 'TypographyBlock',
