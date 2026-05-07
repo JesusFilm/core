@@ -36,7 +36,7 @@ model CloudflareImage {
   blurhashAttemptedAt DateTime?
   isAi                Boolean?
 
-  @@index([userId])
+  @@index([userId, isAi, createdAt(sort: Desc)])
   @@index([blurhashAttemptedAt])
 }
 
@@ -57,6 +57,7 @@ model MuxVideo {
   subtitles     MuxSubtitleTrack[]
 
   @@index(userId(type: Hash))
+  @@index([userId, createdAt(sort: Desc)])
   @@index(assetId(type: Hash))
 }
 
