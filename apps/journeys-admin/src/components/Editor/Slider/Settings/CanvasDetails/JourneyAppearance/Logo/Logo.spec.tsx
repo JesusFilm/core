@@ -198,6 +198,45 @@ describe('Logo', () => {
     ])
   })
 
+  it('should update logo image from gallery selection', async () => {
+    const journey = {
+      ...defaultJourney,
+      logoImageBlock: imageBlock
+    }
+    const updateMock = getImageBlockUpdateMock(
+      imageBlock.id,
+      unsplashImageInput,
+      true
+    )
+
+    render(
+      <MockedProvider
+        mocks={[
+          listUnsplashCollectionPhotosMock,
+          triggerUnsplashDownloadMock,
+          updateMock
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <CommandProvider>
+            <Logo />
+          </CommandProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    await waitFor(() => fireEvent.click(screen.getByTestId('card click area')))
+    await waitFor(() =>
+      expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+    )
+    fireEvent.click(
+      screen.getByTestId('image-dLAN46E5wVw').querySelector('button') as Element
+    )
+
+    await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
+  })
+
   it('should delete logo image block', async () => {
     const journey = {
       ...defaultJourney,

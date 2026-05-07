@@ -25,6 +25,10 @@ import {
   CoverImageBlockCreate,
   CoverImageBlockCreateVariables
 } from '../../../../../../../../../../../__generated__/CoverImageBlockCreate'
+import {
+  CoverImageBlockUpdate,
+  CoverImageBlockUpdateVariables
+} from '../../../../../../../../../../../__generated__/CoverImageBlockUpdate'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -40,7 +44,10 @@ import {
   triggerUnsplashDownloadMock
 } from '../../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
 
-import { COVER_IMAGE_BLOCK_CREATE } from './BackgroundMediaImage'
+import {
+  COVER_IMAGE_BLOCK_CREATE,
+  COVER_IMAGE_BLOCK_UPDATE
+} from './BackgroundMediaImage'
 
 import { BackgroundMediaImage } from '.'
 
@@ -302,6 +309,64 @@ describe('BackgroundMediaImage', () => {
         }
       ]
     }
+
+    it('updates image cover block from gallery selection', async () => {
+      const updateResult = jest.fn(() => ({
+        data: {
+          imageBlockUpdate: {
+            ...image,
+            ...unsplashImageInput
+          }
+        }
+      }))
+      const coverImageBlockUpdateMock: MockedResponse<
+        CoverImageBlockUpdate,
+        CoverImageBlockUpdateVariables
+      > = {
+        request: {
+          query: COVER_IMAGE_BLOCK_UPDATE,
+          variables: {
+            id: image.id,
+            input: unsplashImageInput
+          }
+        },
+        result: updateResult
+      }
+
+      render(
+        <MockedProvider
+          mocks={[
+            listUnsplashCollectionPhotosMock,
+            triggerUnsplashDownloadMock,
+            coverImageBlockUpdateMock
+          ]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <SnackbarProvider>
+              <CommandProvider>
+                <BackgroundMediaImage cardBlock={existingCoverBlock} />
+              </CommandProvider>
+            </SnackbarProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'prior-alt Selected Image 1920 x 1080 pixels'
+        })
+      )
+      await waitFor(() =>
+        expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'white dome building during daytime'
+        })
+      )
+
+      await waitFor(() => expect(updateResult).toHaveBeenCalled())
+    })
 
     it('deletes an image block', async () => {
       const cache = new InMemoryCache()

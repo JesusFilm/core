@@ -31,6 +31,10 @@ import {
   RadioOptionImageRestore,
   RadioOptionImageRestoreVariables
 } from '../../../../../../../../../../__generated__/RadioOptionImageRestore'
+import {
+  RadioOptionImageUpdate,
+  RadioOptionImageUpdateVariables
+} from '../../../../../../../../../../__generated__/RadioOptionImageUpdate'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import {
@@ -41,7 +45,8 @@ import {
 import {
   RADIO_OPTION_IMAGE_CREATE,
   RADIO_OPTION_IMAGE_DELETE,
-  RADIO_OPTION_IMAGE_RESTORE
+  RADIO_OPTION_IMAGE_RESTORE,
+  RADIO_OPTION_IMAGE_UPDATE
 } from './RadioOptionImage'
 
 import { RadioOptionImage } from '.'
@@ -297,6 +302,64 @@ describe('RadioOptionImage', () => {
         }
       ]
     }
+
+    it('updates image for radio option from gallery selection', async () => {
+      const updateResult = jest.fn(() => ({
+        data: {
+          imageBlockUpdate: {
+            ...image,
+            ...unsplashImageInput
+          }
+        }
+      }))
+      const radioOptionImageUpdateMock: MockedResponse<
+        RadioOptionImageUpdate,
+        RadioOptionImageUpdateVariables
+      > = {
+        request: {
+          query: RADIO_OPTION_IMAGE_UPDATE,
+          variables: {
+            id: image.id,
+            input: unsplashImageInput
+          }
+        },
+        result: updateResult
+      }
+
+      render(
+        <MockedProvider
+          mocks={[
+            listUnsplashCollectionPhotosMock,
+            triggerUnsplashDownloadMock,
+            radioOptionImageUpdateMock
+          ]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <SnackbarProvider>
+              <CommandProvider>
+                <RadioOptionImage radioOptionBlock={existingImageRadioOption} />
+              </CommandProvider>
+            </SnackbarProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'prior-alt Selected Image 1920 x 1080 pixels'
+        })
+      )
+      await waitFor(() =>
+        expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'white dome building during daytime'
+        })
+      )
+
+      await waitFor(() => expect(updateResult).toHaveBeenCalled())
+    })
 
     it('deletes an image block', async () => {
       const cache = new InMemoryCache()

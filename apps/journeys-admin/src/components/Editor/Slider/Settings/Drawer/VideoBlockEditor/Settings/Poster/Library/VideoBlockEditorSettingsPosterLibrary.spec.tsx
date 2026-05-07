@@ -32,6 +32,10 @@ import {
   PosterImageBlockRestore,
   PosterImageBlockRestoreVariables
 } from '../../../../../../../../../../__generated__/PosterImageBlockRestore'
+import {
+  PosterImageBlockUpdate,
+  PosterImageBlockUpdateVariables
+} from '../../../../../../../../../../__generated__/PosterImageBlockUpdate'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import {
@@ -42,7 +46,8 @@ import {
 import {
   POSTER_IMAGE_BLOCK_CREATE,
   POSTER_IMAGE_BLOCK_DELETE,
-  POSTER_IMAGE_BLOCK_RESTORE
+  POSTER_IMAGE_BLOCK_RESTORE,
+  POSTER_IMAGE_BLOCK_UPDATE
 } from './VideoBlockEditorSettingsPosterLibrary'
 
 import { VideoBlockEditorSettingsPosterLibrary } from '.'
@@ -190,6 +195,7 @@ const unsplashImageInput = {
   blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
   height: 720,
   width: 1080,
+  scale: 100,
   focalLeft: 50,
   focalTop: 50,
   customizable: null
@@ -325,6 +331,64 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
   })
 
   describe('Existing image poster', () => {
+    it('updates image poster block from gallery selection', async () => {
+      const updateResult = jest.fn(() => ({
+        data: {
+          imageBlockUpdate: {
+            ...image,
+            ...unsplashImageInput
+          }
+        }
+      }))
+      const posterImageBlockUpdateMock: MockedResponse<
+        PosterImageBlockUpdate,
+        PosterImageBlockUpdateVariables
+      > = {
+        request: {
+          query: POSTER_IMAGE_BLOCK_UPDATE,
+          variables: {
+            id: image.id,
+            input: unsplashImageInput
+          }
+        },
+        result: updateResult
+      }
+
+      render(
+        <MockedProvider
+          mocks={[
+            listUnsplashCollectionPhotosMock,
+            triggerUnsplashDownloadMock,
+            posterImageBlockUpdateMock
+          ]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <SnackbarProvider>
+              <CommandProvider>
+                <VideoBlockEditorSettingsPosterLibrary
+                  selectedBlock={image}
+                  parentBlockId={video.id}
+                  onClose={onClose}
+                  open
+                />
+              </CommandProvider>
+            </SnackbarProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'white dome building during daytime'
+        })
+      )
+
+      await waitFor(() => expect(updateResult).toHaveBeenCalled())
+    })
+
     it('deletes an image block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
