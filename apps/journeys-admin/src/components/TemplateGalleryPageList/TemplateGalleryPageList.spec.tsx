@@ -59,7 +59,8 @@ const journeysMock: MockedResponse<GetAdminJourneys> = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       template: true,
-      teamId: TEAM_ID
+      teamId: TEAM_ID,
+      status: [JourneyStatus.draft, JourneyStatus.published]
     }
   },
   result: {

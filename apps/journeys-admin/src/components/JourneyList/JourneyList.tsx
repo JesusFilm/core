@@ -106,6 +106,7 @@ export function JourneyList({
       return (
         <TemplateGalleryPageList
           visible={contentType === currentContentType}
+          status={status}
         />
       )
     }

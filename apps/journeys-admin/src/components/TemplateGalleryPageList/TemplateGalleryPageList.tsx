@@ -25,10 +25,26 @@ import {
   GetAdminJourneys_journeys as Journey
 } from '../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../__generated__/GetTemplateGalleryPages'
-import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
+import {
+  JourneyStatus,
+  TemplateGalleryPageStatus
+} from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
 import { JourneyCard } from '../JourneyList/JourneyCard'
+import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
+
+// Map the page-level status filter (active / archived / trashed) to the
+// underlying JourneyStatus enum values that useAdminJourneysQuery expects.
+// Mirrors ActiveJourneyList / ArchivedJourneyList / TrashedJourneyList.
+const STATUS_FILTER_TO_JOURNEY_STATUSES: Record<
+  JourneyStatusFilter,
+  JourneyStatus[]
+> = {
+  active: [JourneyStatus.draft, JourneyStatus.published],
+  archived: [JourneyStatus.archived],
+  trashed: [JourneyStatus.trashed]
+}
 
 import { CollectionCard } from './CollectionCard'
 import { CollectionDialog } from './CollectionDialog'
@@ -61,19 +77,33 @@ export interface TemplateGalleryPageListProps {
    * doesn't have to read router state.
    */
   visible?: boolean
+  /**
+   * Page-level status filter (active / archived / trashed). Defaults to
+   * 'active'. The unsectioned templates list only surfaces journeys
+   * matching this filter, mirroring ActiveJourneyList / ArchivedJourneyList /
+   * TrashedJourneyList. Collections are an active-state concept and are
+   * hidden when status !== 'active'.
+   */
+  status?: JourneyStatusFilter
 }
 
 export function TemplateGalleryPageList({
-  visible = true
+  visible = true,
+  status = 'active'
 }: TemplateGalleryPageListProps = {}): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { enqueueSnackbar } = useSnackbar()
   const teamId = activeTeam?.id
 
+  // Collections + DnD are only meaningful in the active view. In archived
+  // or trashed views the user is curating those buckets, not assigning to
+  // public gallery pages.
+  const showCollections = status === 'active'
+
   const collectionsQuery = useTemplateGalleryPagesQuery(
     teamId != null ? { teamId } : undefined,
-    { skip: teamId == null }
+    { skip: teamId == null || !showCollections }
   )
   // cache-and-network: the "Make Template" mutation only writes an id-only
   // ref into adminJourneys, so a pure cache hit on re-mount would omit the
@@ -81,7 +111,8 @@ export function TemplateGalleryPageList({
   const journeysQuery = useAdminJourneysQuery(
     {
       template: true,
-      teamId
+      teamId,
+      status: STATUS_FILTER_TO_JOURNEY_STATUSES[status]
     } satisfies GetAdminJourneysVariables,
     { fetchPolicy: 'cache-and-network' }
   )
@@ -282,27 +313,29 @@ export function TemplateGalleryPageList({
 
   return (
     <Box sx={{ p: 4 }} data-testid="TemplateGalleryPageList">
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ mb: 3 }}
-      >
-        <Stack>
-          <Typography variant="h4">{t('Collections')}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {t('Group your team templates into a public gallery page.')}
-          </Typography>
-        </Stack>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleOpenCreate}
-          data-testid="CreateCollectionButton"
+      {showCollections && (
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 3 }}
         >
-          {t('Create Collection')}
-        </Button>
-      </Stack>
+          <Stack>
+            <Typography variant="h4">{t('Collections')}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {t('Group your team templates into a public gallery page.')}
+            </Typography>
+          </Stack>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleOpenCreate}
+            data-testid="CreateCollectionButton"
+          >
+            {t('Create Collection')}
+          </Button>
+        </Stack>
+      )}
 
       <DndContext
         collisionDetection={closestCenter}
@@ -310,42 +343,45 @@ export function TemplateGalleryPageList({
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        {collections.length === 0 ? (
-          <Alert severity="info" sx={{ mb: 3 }}>
-            {t(
-              "You don't have any collections yet. Create your first collection to start grouping templates."
-            )}
-          </Alert>
-        ) : (
-          <Stack spacing={2} sx={{ mb: 4 }}>
-            {collections.map((collection) => (
-              <DroppableCollectionWrapper
-                key={collection.id}
-                id={collection.id}
-                disabled={
-                  collection.status === TemplateGalleryPageStatus.published ||
-                  dragInFlight ||
-                  busyId === collection.id
-                }
-              >
-                <CollectionCard
-                  collection={collection}
-                  onEdit={handleEdit}
-                  onPublish={handlePublish}
-                  onUnpublish={handleUnpublish}
-                  onUngroup={handleUngroup}
-                  busy={busyId === collection.id || dragInFlight}
+        {showCollections &&
+          (collections.length === 0 ? (
+            <Alert severity="info" sx={{ mb: 3 }}>
+              {t(
+                "You don't have any collections yet. Create your first collection to start grouping templates."
+              )}
+            </Alert>
+          ) : (
+            <Stack spacing={2} sx={{ mb: 4 }}>
+              {collections.map((collection) => (
+                <DroppableCollectionWrapper
+                  key={collection.id}
+                  id={collection.id}
+                  disabled={
+                    collection.status === TemplateGalleryPageStatus.published ||
+                    dragInFlight ||
+                    busyId === collection.id
+                  }
                 >
-                  <DraggableJourneysGrid
-                    journeys={journeysByCollection.get(collection.id) ?? []}
-                    publishedLock={collection.status === TemplateGalleryPageStatus.published}
-                    dragInFlight={dragInFlight}
-                  />
-                </CollectionCard>
-              </DroppableCollectionWrapper>
-            ))}
-          </Stack>
-        )}
+                  <CollectionCard
+                    collection={collection}
+                    onEdit={handleEdit}
+                    onPublish={handlePublish}
+                    onUnpublish={handleUnpublish}
+                    onUngroup={handleUngroup}
+                    busy={busyId === collection.id || dragInFlight}
+                  >
+                    <DraggableJourneysGrid
+                      journeys={journeysByCollection.get(collection.id) ?? []}
+                      publishedLock={
+                        collection.status === TemplateGalleryPageStatus.published
+                      }
+                      dragInFlight={dragInFlight}
+                    />
+                  </CollectionCard>
+                </DroppableCollectionWrapper>
+              ))}
+            </Stack>
+          ))}
 
         <Box>
           <Typography variant="h6" sx={{ mb: 2 }}>
