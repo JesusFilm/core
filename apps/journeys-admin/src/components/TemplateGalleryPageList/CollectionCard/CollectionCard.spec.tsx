@@ -196,6 +196,93 @@ describe('CollectionCard', () => {
     ).toBeDisabled()
   })
 
+  it('renders a Preview menu item that opens the proxy URL in a new tab when published', async () => {
+    const originalOpen = window.open
+    window.open = jest.fn() as unknown as typeof window.open
+    try {
+      render(
+        <CollectionCard
+          collection={makeCollection({
+            slug: 'my-collection',
+            status: TemplateGalleryPageStatus.published,
+            publishedAt: '2026-05-06T00:00:00Z',
+            templates: [journeyRef('j1')]
+          })}
+        />
+      )
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Collection actions' })
+      )
+      const item = screen.getByRole('menuitem', { name: 'Preview' })
+      expect(item).not.toHaveAttribute('aria-disabled', 'true')
+      await userEvent.click(item)
+      expect(window.open).toHaveBeenCalledWith(
+        '/api/preview-template-gallery?slug=my-collection',
+        '_blank',
+        'noopener,noreferrer'
+      )
+    } finally {
+      window.open = originalOpen
+    }
+  })
+
+  it('disables Preview when the collection is unpublished', async () => {
+    render(
+      <CollectionCard
+        collection={makeCollection({ templates: [journeyRef('j1')] })}
+      />
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Collection actions' })
+    )
+    expect(screen.getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
+  })
+
+  it('disables Publish + Preview with the custom-domain reason when canPublish is false', async () => {
+    const reason = 'gate copy'
+    render(
+      <CollectionCard
+        collection={makeCollection({
+          slug: 'my-collection',
+          status: TemplateGalleryPageStatus.published,
+          publishedAt: '2026-05-06T00:00:00Z',
+          templates: [journeyRef('j1')]
+        })}
+        canPublish={false}
+        publishBlockedReason={reason}
+      />
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Collection actions' })
+    )
+    // Published collections show Unpublish + Preview (no Publish item).
+    expect(screen.getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
+  })
+
+  it('disables Publish (and shows the gate reason) when canPublish is false on a draft', async () => {
+    const reason = 'gate copy'
+    render(
+      <CollectionCard
+        collection={makeCollection({ templates: [journeyRef('j1')] })}
+        canPublish={false}
+        publishBlockedReason={reason}
+      />
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Collection actions' })
+    )
+    expect(screen.getByRole('menuitem', { name: 'Publish' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
+  })
+
   it('renders empty-state caption when there are no templates and children otherwise', () => {
     const { rerender } = render(
       <CollectionCard collection={makeCollection()}>

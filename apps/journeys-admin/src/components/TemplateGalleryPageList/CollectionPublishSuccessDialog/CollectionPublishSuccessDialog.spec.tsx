@@ -86,9 +86,24 @@ describe('CollectionPublishSuccessDialog', () => {
     })
   })
 
-  it('opens the public URL in a new tab and closes the dialog when "View the page" is clicked', async () => {
-    const { onClose } = renderDialog()
-    await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
+  it('opens the proxy URL (with slug) in a new tab and closes the dialog when "View the page" is clicked', async () => {
+    const { onClose } = renderDialog({ slug: 'my-collection' })
+    await userEvent.click(
+      screen.getByRole('button', { name: 'View the page' })
+    )
+    expect(window.open).toHaveBeenCalledWith(
+      '/api/preview-template-gallery?slug=my-collection',
+      '_blank',
+      'noopener,noreferrer'
+    )
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
+  it('falls back to the raw public URL when slug is not provided', async () => {
+    const { onClose } = renderDialog({ slug: null })
+    await userEvent.click(
+      screen.getByRole('button', { name: 'View the page' })
+    )
     expect(window.open).toHaveBeenCalledWith(
       'https://example.com/p/my-collection',
       '_blank',
@@ -100,6 +115,20 @@ describe('CollectionPublishSuccessDialog', () => {
   it('does not open a new tab if publicUrl is null', async () => {
     const { onClose } = renderDialog({ publicUrl: null })
     await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
+    expect(window.open).not.toHaveBeenCalled()
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('does not open a new tab and surfaces the gate copy when canPublish is false', async () => {
+    const { onClose } = renderDialog({
+      slug: 'my-collection',
+      canPublish: false,
+      publishBlockedReason: 'gate copy'
+    })
+    expect(screen.getByText('gate copy')).toBeInTheDocument()
+    await userEvent.click(
+      screen.getByRole('button', { name: 'View the page' })
+    )
     expect(window.open).not.toHaveBeenCalled()
     expect(onClose).not.toHaveBeenCalled()
   })
