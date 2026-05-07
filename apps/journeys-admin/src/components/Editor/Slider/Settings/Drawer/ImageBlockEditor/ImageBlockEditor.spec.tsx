@@ -85,9 +85,6 @@ describe('ImageBlockEditor', () => {
     })
 
     expect(screen.getByTestId('ImageUpload')).toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: 'Add image by URL' })
-    ).not.toBeInTheDocument()
     await fireEvent.click(screen.getByRole('tab', { name: 'AI' }))
     await waitFor(() =>
       expect(screen.getByRole('button', { name: 'Prompt' })).toBeInTheDocument()

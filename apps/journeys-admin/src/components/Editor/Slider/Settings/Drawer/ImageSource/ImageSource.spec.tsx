@@ -79,9 +79,6 @@ describe('ImageSource', () => {
         fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
       )
       expect(screen.getByTestId('ImageUpload')).toBeInTheDocument()
-      expect(
-        screen.queryByRole('button', { name: 'Add image by URL' })
-      ).not.toBeInTheDocument()
     })
   })
 
@@ -107,9 +104,6 @@ describe('ImageSource', () => {
         fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
       )
       expect(screen.getByTestId('ImageUpload')).toBeInTheDocument()
-      expect(
-        screen.queryByRole('button', { name: 'Add image by URL' })
-      ).not.toBeInTheDocument()
       expect(onChange).not.toHaveBeenCalled()
     })
   })

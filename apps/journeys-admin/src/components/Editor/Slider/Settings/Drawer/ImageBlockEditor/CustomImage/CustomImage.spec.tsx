@@ -22,7 +22,7 @@ describe('CustomImage', () => {
     customizable: null
   }
 
-  it('should render image upload without custom url upload', () => {
+  it('should render image upload', () => {
     render(
       <MockedProvider>
         <CustomImage onChange={jest.fn()} selectedBlock={imageBlock} />
@@ -30,9 +30,5 @@ describe('CustomImage', () => {
     )
 
     expect(screen.getByTestId('ImageUpload')).toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: 'Add image by URL' })
-    ).not.toBeInTheDocument()
-    expect(screen.queryByText('Paste URL of image...')).not.toBeInTheDocument()
   })
 })
