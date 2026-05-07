@@ -87,7 +87,8 @@ describe('cloudflareImage', () => {
             aspectRatio: null,
             videoId: 'videoId',
             blurhash: null,
-            blurhashAttemptedAt: null
+            blurhashAttemptedAt: null,
+            isAi: null
           }
         ])
         const result = await client({ document: VIDEO_IMAGES_QUERY })
