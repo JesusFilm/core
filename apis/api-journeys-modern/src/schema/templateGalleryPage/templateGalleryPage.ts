@@ -29,7 +29,7 @@ export const TemplateGalleryPageRef = builder.prismaObject(
       slug: t.exposeString('slug', {
         nullable: false,
         description:
-          'URL-safe identifier. The public page is reached at `/collections/<slug>`. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, and must not be in the reserved list. Mutable after publish — changing it breaks any external links to the old URL.'
+          'URL-safe identifier. The public page is reached at `/template-gallery/<slug>`. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, and must not be in the reserved list. Mutable after publish — changing it breaks any external links to the old URL.'
       }),
       status: t.expose('status', {
         type: TemplateGalleryPageStatus,
