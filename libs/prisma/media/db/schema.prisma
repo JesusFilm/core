@@ -37,6 +37,7 @@ model CloudflareImage {
 
   @@index([userId])
   @@index([blurhashAttemptedAt])
+  @@index([updatedAt, id])
 }
 
 model MuxVideo {
@@ -216,6 +217,7 @@ model VideoVariantDownload {
 
   @@unique([quality, videoVariantId])
   @@index(videoVariantId(type: Hash))
+  @@index([updatedAt, id])
 }
 
 model VideoVariant {
@@ -265,6 +267,7 @@ model VideoEdition {
   updatedAt      DateTime        @default(now()) @updatedAt
 
   @@unique([name, videoId])
+  @@index([updatedAt, id])
 }
 
 model VideoSubtitle {
@@ -291,6 +294,7 @@ model VideoSubtitle {
   @@index(edition(type: Hash))
   @@index(primary(type: Hash))
   @@index(videoId(type: Hash))
+  @@index([updatedAt, id])
 }
 
 model VideoSnippet {
@@ -428,7 +432,7 @@ model Keyword {
 
   @@unique([value, languageId])
   @@index([value(type: Hash)])
-  @@index([updatedAt])
+  @@index([updatedAt, id])
 }
 
 enum Service {
@@ -588,6 +592,8 @@ model VideoOrigin {
   videos      Video[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
+
+  @@index([updatedAt, id])
 }
 
 enum DefaultPlatform {
