@@ -1,6 +1,6 @@
 import { GetStaticPropsContext } from 'next'
 
-import { GET_TEMPLATE_GALLERY_PAGE } from '../../../src/libs/useTemplateGalleryPageQuery'
+import { GET_TEMPLATE_GALLERY_PAGE } from '../../../src/libs/getTemplateGalleryPage'
 
 import { getStaticProps } from './[slug]'
 

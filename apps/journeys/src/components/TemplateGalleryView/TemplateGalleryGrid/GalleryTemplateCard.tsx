@@ -10,17 +10,17 @@ import { abbreviateLanguageName } from '@core/journeys/ui/abbreviateLanguageName
 
 import { GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate } from '../../../../__generated__/GetTemplateGalleryPage'
 
-interface TemplateGalleryPageCardProps {
+interface GalleryTemplateCardProps {
   template: GalleryTemplate
   href: string
   priority?: boolean
 }
 
-export function TemplateGalleryPageCard({
+export function GalleryTemplateCard({
   template,
   href,
   priority = false
-}: TemplateGalleryPageCardProps): ReactElement {
+}: GalleryTemplateCardProps): ReactElement {
   const localLanguage = template.language.name.find(
     ({ primary }) => !primary
   )?.value
@@ -35,7 +35,7 @@ export function TemplateGalleryPageCard({
 
   return (
     <Card
-      data-testid="TemplateGalleryPageCard"
+      data-testid="GalleryTemplateCard"
       sx={{
         height: '100%',
         backgroundColor: 'transparent',

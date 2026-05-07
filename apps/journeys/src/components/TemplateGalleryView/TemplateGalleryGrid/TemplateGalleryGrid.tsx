@@ -3,7 +3,7 @@ import { ReactElement } from 'react'
 
 import { GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate } from '../../../../__generated__/GetTemplateGalleryPage'
 
-import { TemplateGalleryPageCard } from './TemplateGalleryPageCard'
+import { GalleryTemplateCard } from './GalleryTemplateCard'
 
 interface TemplateGalleryGridProps {
   templates: readonly GalleryTemplate[]
@@ -23,7 +23,7 @@ export function TemplateGalleryGrid({
     >
       {templates.map((template, index) => (
         <Grid key={template.id} size={1}>
-          <TemplateGalleryPageCard
+          <GalleryTemplateCard
             template={template}
             href={buildHref(template)}
             priority={index < 4}

@@ -14,7 +14,7 @@ import { TemplateGalleryView } from '../../../src/components/TemplateGalleryView
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getFlags } from '../../../src/libs/getFlags'
 import { isValidGallerySlug } from '../../../src/libs/isValidGallerySlug'
-import { GET_TEMPLATE_GALLERY_PAGE } from '../../../src/libs/useTemplateGalleryPageQuery'
+import { GET_TEMPLATE_GALLERY_PAGE } from '../../../src/libs/getTemplateGalleryPage'
 
 const ROOT_DOMAIN =
   process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? 'your.nextstep.is'
@@ -36,12 +36,11 @@ function ogImageFor(
   gallery: TemplateGalleryPage
 ): { url: string; width?: number; height?: number; alt: string }[] {
   if (gallery.creatorImageSrc != null && gallery.creatorImageSrc !== '') {
-    return [
-      {
-        url: gallery.creatorImageSrc,
-        alt: gallery.creatorImageAlt ?? gallery.creatorName
-      }
-    ]
+    const alt =
+      gallery.creatorImageAlt != null && gallery.creatorImageAlt !== ''
+        ? gallery.creatorImageAlt
+        : gallery.creatorName
+    return [{ url: gallery.creatorImageSrc, alt }]
   }
 
   const firstWithImage = gallery.templates.find(
