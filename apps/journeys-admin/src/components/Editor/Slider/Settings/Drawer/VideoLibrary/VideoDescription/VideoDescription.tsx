@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { Dispatch, ReactElement, SetStateAction, useState } from 'react'
 
 interface ShowMoreButtonProps {

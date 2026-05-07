@@ -1,3 +1,4 @@
+// eslint-disable-next-line @nx/enforce-module-boundaries
 const i18nextConfigBase = require('../../i18next.config.base')
 
 module.exports = {

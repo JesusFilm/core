@@ -1,5 +1,5 @@
 import Tune from '@mui/icons-material/Tune'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'

@@ -1,6 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
