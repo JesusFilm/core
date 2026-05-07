@@ -46,8 +46,8 @@ describe('importStudyQuestions', () => {
   it('should import study questions successfully', async () => {
     prismaMock.videoStudyQuestion.findMany.mockResolvedValueOnce([testQuestion])
     vi.mocked(processFile).mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+      await callback(testTranslation)
+    })
 
     await importStudyQuestions(mockLogger)
 
@@ -95,8 +95,8 @@ describe('importStudyQuestions', () => {
     prismaMock.videoStudyQuestion.findMany.mockResolvedValueOnce([testQuestion])
 
     vi.mocked(processFile).mockImplementation(async (_, callback) => {
-        await callback(invalidTranslation)
-      })
+      await callback(invalidTranslation)
+    })
 
     await importStudyQuestions(mockLogger)
 
@@ -117,8 +117,8 @@ describe('importStudyQuestions', () => {
     }
 
     vi.mocked(processFile).mockImplementation(async (_, callback) => {
-        await callback(translationWithMissingQuestion)
-      })
+      await callback(translationWithMissingQuestion)
+    })
 
     await importStudyQuestions(mockLogger)
 
@@ -134,8 +134,8 @@ describe('importStudyQuestions', () => {
   it('should handle database errors', async () => {
     prismaMock.videoStudyQuestion.findMany.mockResolvedValueOnce([testQuestion])
     vi.mocked(processFile).mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+      await callback(testTranslation)
+    })
 
     prismaMock.videoStudyQuestion.upsert.mockRejectedValueOnce(
       new Error('Database error')

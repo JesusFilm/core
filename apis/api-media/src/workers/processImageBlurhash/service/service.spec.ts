@@ -1,4 +1,3 @@
-
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 import { type MockedFunction, vi } from 'vitest'

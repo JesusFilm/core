@@ -1,4 +1,3 @@
-
 import { spawn } from 'child_process'
 import fs, { promises as fsPromises } from 'fs'
 import { createInterface } from 'readline'
@@ -135,9 +134,7 @@ global.fetch = vi.fn().mockResolvedValue({
   body: {
     pipeThrough: vi.fn().mockReturnValue({
       getReader: vi.fn().mockReturnValue({
-        read: vi
-          .fn()
-          .mockResolvedValue({ done: true, value: new Uint8Array() })
+        read: vi.fn().mockResolvedValue({ done: true, value: new Uint8Array() })
       })
     })
   },
@@ -153,9 +150,9 @@ vi.mock('path', () => ({
 vi.spyOn(console, 'log').mockImplementation(() => undefined)
 vi.spyOn(console, 'error').mockImplementation(() => undefined)
 vi.spyOn(console, 'warn').mockImplementation(() => undefined)
-vi
-  .spyOn(process, 'exit')
-  .mockImplementation(((code?: number | string | null) => undefined) as any)
+vi.spyOn(process, 'exit').mockImplementation(
+  ((code?: number | string | null) => undefined) as any
+)
 
 describe('data-import script', () => {
   const originalEnv = process.env

@@ -1,4 +1,3 @@
-
 import Cloudflare from 'cloudflare'
 import { APIPromise } from 'cloudflare/core'
 import clone from 'lodash/clone'

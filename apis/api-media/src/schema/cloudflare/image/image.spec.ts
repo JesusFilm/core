@@ -25,14 +25,13 @@ vi.mock('../../../workers/processImageBlurhash/queue', () => ({
 const mockedQueue = queue as Mocked<typeof queue>
 
 const mockCreateImageByDirectUpload =
-  createImageByDirectUpload as MockedFunction<
-    typeof createImageByDirectUpload
-  >
+  createImageByDirectUpload as MockedFunction<typeof createImageByDirectUpload>
 const mockCreateImageFromText = createImageFromText as MockedFunction<
   typeof createImageFromText
 >
-const mockCreateImageFromResponse =
-  createImageFromResponse as MockedFunction<typeof createImageFromResponse>
+const mockCreateImageFromResponse = createImageFromResponse as MockedFunction<
+  typeof createImageFromResponse
+>
 
 const mockCreateImageFromUrl = createImageFromUrl as MockedFunction<
   typeof createImageFromUrl

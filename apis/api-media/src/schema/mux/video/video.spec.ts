@@ -569,7 +569,8 @@ describe('mux/video', () => {
       })
 
       it('should create video with generated subtitles when generateSubtitlesInput is provided', async () => {
-        const { createVideoByDirectUpload } = await vi.importMock<any>('./service')
+        const { createVideoByDirectUpload } =
+          await vi.importMock<any>('./service')
 
         ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
@@ -624,7 +625,8 @@ describe('mux/video', () => {
           roles: ['publisher']
         })
 
-        const { createVideoByDirectUpload } = await vi.importMock<any>('./service')
+        const { createVideoByDirectUpload } =
+          await vi.importMock<any>('./service')
         ;(createVideoByDirectUpload as Mock).mockRejectedValue(
           new Error('Invalid language code: invalid')
         )
@@ -826,22 +828,20 @@ describe('mux/video', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
-            id: 'videoId',
-            playbackId: 'playbackId',
-            uploadId: 'uploadId',
-            assetId: 'assetId',
-            duration: 10,
-            name: 'videoName',
-            uploadUrl: null,
-            userId: 'testUserId',
-            createdAt: new Date(),
-            readyToStream: true,
-            downloadable: false,
-            updatedAt: new Date()
-          }
-        )
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: null,
+          userId: 'testUserId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: false,
+          updatedAt: new Date()
+        })
         ;(prismaMock.muxVideo.update as Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: 'playbackId',
@@ -886,22 +886,20 @@ describe('mux/video', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
-            id: 'videoId',
-            playbackId: 'playbackId',
-            uploadId: 'uploadId',
-            assetId: 'assetId',
-            duration: 10,
-            name: 'videoName',
-            uploadUrl: null,
-            userId: 'testUserId',
-            createdAt: new Date(),
-            readyToStream: true,
-            downloadable: false,
-            updatedAt: new Date()
-          }
-        )
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: null,
+          userId: 'testUserId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: false,
+          updatedAt: new Date()
+        })
         ;(prismaMock.muxVideo.update as Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: 'playbackId',
@@ -947,22 +945,20 @@ describe('mux/video', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
-            id: 'videoId',
-            playbackId: 'playbackId',
-            uploadId: 'uploadId',
-            assetId: 'assetId',
-            duration: 10,
-            name: 'videoName',
-            uploadUrl: null,
-            userId: 'testUserId',
-            createdAt: new Date(),
-            readyToStream: true,
-            downloadable: false,
-            updatedAt: new Date()
-          }
-        )
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: null,
+          userId: 'testUserId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: false,
+          updatedAt: new Date()
+        })
 
         const result = (await publisherClient({
           document: ENABLE_MUX_DOWNLOAD,

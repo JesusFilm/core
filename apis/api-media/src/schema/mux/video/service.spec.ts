@@ -263,9 +263,7 @@ describe('MuxVideoService', () => {
   describe('createVideoFromUrl', () => {
     it('should create video asset from URL for publisher', async () => {
       const mockAsset = { id: 'asset-id', status: 'ready' } as any
-      ;(mockMux.video.assets.create as Mock).mockResolvedValueOnce(
-        mockAsset
-      )
+      ;(mockMux.video.assets.create as Mock).mockResolvedValueOnce(mockAsset)
 
       const result = await createVideoFromUrl(
         'https://example.com/video.mp4',
@@ -288,9 +286,7 @@ describe('MuxVideoService', () => {
 
     it('should create video asset from URL for UGC', async () => {
       const mockAsset = { id: 'ugc-asset-id', status: 'ready' } as any
-      ;(mockMux.video.assets.create as Mock).mockResolvedValueOnce(
-        mockAsset
-      )
+      ;(mockMux.video.assets.create as Mock).mockResolvedValueOnce(mockAsset)
 
       await createVideoFromUrl(
         'https://example.com/video.mp4',
@@ -324,9 +320,7 @@ describe('MuxVideoService', () => {
   describe('getVideo', () => {
     it('should retrieve video asset for publisher', async () => {
       const mockAsset = { id: 'asset-id', status: 'ready' } as any
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
-        mockAsset
-      )
+      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(mockAsset)
 
       const result = await getVideo('asset-id', false)
 
@@ -340,9 +334,7 @@ describe('MuxVideoService', () => {
 
     it('should retrieve video asset for UGC', async () => {
       const mockAsset = { id: 'ugc-asset-id', status: 'ready' } as any
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
-        mockAsset
-      )
+      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(mockAsset)
 
       const result = await getVideo('ugc-asset-id', true)
 
@@ -417,9 +409,7 @@ describe('MuxVideoService', () => {
         }
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
-        mockAsset
-      )
+      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(mockAsset)
       ;(mockMux.post as Mock).mockResolvedValueOnce({} as any)
 
       await enableDownload('asset-id', false, '1080p')
@@ -441,9 +431,7 @@ describe('MuxVideoService', () => {
         }
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
-        mockAsset
-      )
+      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(mockAsset)
 
       await enableDownload('asset-id', false, '1080p')
 
@@ -457,9 +445,7 @@ describe('MuxVideoService', () => {
         static_renditions: null
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
-        mockAsset
-      )
+      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(mockAsset)
       ;(mockMux.post as Mock).mockResolvedValueOnce({} as any)
 
       await enableDownload('asset-id', false, '1080p')
@@ -480,9 +466,7 @@ describe('MuxVideoService', () => {
         }
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
-        mockAsset
-      )
+      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(mockAsset)
       ;(mockMux.post as Mock).mockResolvedValueOnce({} as any)
 
       await enableDownload('asset-id', false, '1080p')
@@ -517,9 +501,7 @@ describe('MuxVideoService', () => {
         static_renditions: mockStaticRenditions
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
-        mockAsset
-      )
+      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(mockAsset)
 
       const result = await getStaticRenditions('asset-id', false)
 
@@ -545,9 +527,7 @@ describe('MuxVideoService', () => {
         static_renditions: mockStaticRenditions
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
-        mockAsset
-      )
+      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(mockAsset)
 
       const result = await getStaticRenditions('ugc-asset-id', true)
 
@@ -564,9 +544,7 @@ describe('MuxVideoService', () => {
         static_renditions: null
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
-        mockAsset
-      )
+      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(mockAsset)
 
       const result = await getStaticRenditions('asset-id', false)
 
@@ -578,9 +556,7 @@ describe('MuxVideoService', () => {
         id: 'asset-id'
       } as any
 
-      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(
-        mockAsset
-      )
+      ;(mockMux.video.assets.retrieve as Mock).mockResolvedValueOnce(mockAsset)
 
       const result = await getStaticRenditions('asset-id', false)
 

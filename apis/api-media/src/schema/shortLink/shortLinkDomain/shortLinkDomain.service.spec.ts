@@ -1,4 +1,3 @@
-
 import { GraphQLError } from 'graphql'
 import clone from 'lodash/clone'
 import fetch, { Response } from 'node-fetch'

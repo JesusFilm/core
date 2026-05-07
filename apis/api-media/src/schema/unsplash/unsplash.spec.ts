@@ -24,8 +24,9 @@ const mockSearchUnsplashPhotos = searchUnsplashPhotos as MockedFunction<
   typeof searchUnsplashPhotos
 >
 
-const mockTriggerUnsplashDownload =
-  triggerUnsplashDownload as MockedFunction<typeof triggerUnsplashDownload>
+const mockTriggerUnsplashDownload = triggerUnsplashDownload as MockedFunction<
+  typeof triggerUnsplashDownload
+>
 
 vi.mock('./service', () => ({
   __esModule: true,

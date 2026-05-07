@@ -1,5 +1,5 @@
 ---
-title: "chore: Migrate api-media tests from Jest to Vitest"
+title: 'chore: Migrate api-media tests from Jest to Vitest'
 type: chore
 status: active
 date: 2026-05-07
@@ -53,6 +53,7 @@ The branch `26-00-MA-chore-vitest-media` was created to migrate `api-media` to V
 ### Spec Files To Migrate
 
 `apis/api-media/src/**/*.spec.ts` — 63 files, ~526 `jest.*` references. Patterns observed:
+
 - `jest.fn`, `jest.mock`, `jest.spyOn`, `jest.mocked`, `jest.clearAllMocks`, `jest.resetAllMocks`, `jest.restoreAllMocks`, `jest.setTimeout` — direct one-to-one replacement with the `vi` namespace.
 - `jest.Mock`, `jest.Mocked`, `jest.MockedClass`, `jest.MockedFunction`, `jest.SpyInstance` — replace with the corresponding `vitest`-namespaced or named imports (`Mock`, `Mocked`, `MockedClass`, `MockedFunction`, `MockInstance`).
 - `jest.requireActual`, `jest.requireMock` — non-trivial. The Vitest equivalents `vi.importActual` and `vi.importMock` are async. Within a `vi.mock(path, async () => { ... })` factory this works directly. Outside a factory (e.g. the `node-fetch` `Response` import in `apis/api-media/src/schema/shortLink/shortLinkDomain/shortLinkDomain.service.spec.ts`), convert to a top-level `const { Response } = await vi.importActual<typeof import('node-fetch')>('node-fetch')` — note this may need to move into a `beforeAll` if a top-level `await` isn't supported by the spec file's module mode.
@@ -86,9 +87,9 @@ None required — the recipe is fully captured in the in-tree reference commit.
 
 ### Resolved During Planning
 
-- *Should we delete root Jest dependencies?* — No. Other workspaces still use Jest; out of scope.
-- *Do we need a CHANGELOG or release note?* — No. Pure tooling migration with no user-visible behavior change.
-- *Is there a partial migration in flight?* — No. Confirmed no `vitest` imports under `apis/api-media/**` yet.
+- _Should we delete root Jest dependencies?_ — No. Other workspaces still use Jest; out of scope.
+- _Do we need a CHANGELOG or release note?_ — No. Pure tooling migration with no user-visible behavior change.
+- _Is there a partial migration in flight?_ — No. Confirmed no `vitest` imports under `apis/api-media/**` yet.
 
 ### Deferred to Implementation
 
@@ -108,6 +109,7 @@ None required — the recipe is fully captured in the in-tree reference commit.
 **Dependencies:** None.
 
 **Files:**
+
 - Create: `apis/api-media/vitest.config.mts`
 - Modify: `apis/api-media/project.json`
 - Modify: `apis/api-media/tsconfig.spec.json`
@@ -115,6 +117,7 @@ None required — the recipe is fully captured in the in-tree reference commit.
 - Delete: `apis/api-media/jest.config.ts`
 
 **Approach:**
+
 - Copy `apis/api-analytics/vitest.config.mts` verbatim, then change `setupFiles` to `['./test/prismaMock.ts', './test/bullmqMock.ts', './test/crowdinMock.ts']` and `reportsDirectory` to `'../../coverage/apis/api-media'`. Keep `globals: true`, `environment: 'node'`, `reporters: ['default']`, and the `vite-tsconfig-paths` plugin shape unchanged.
 - In `project.json`, change the `test` target's `executor` from `@nx/jest:jest` to `@nx/vitest:test` and replace `options.jestConfig` with `options.configFile: 'apis/api-media/vitest.config.mts'`. Leave `outputs` as `["{workspaceRoot}/coverage/apis/api-media"]`.
 - In `tsconfig.spec.json`, replace `types: ['jest', '@jest/globals', 'node', ...]` with `types: ['vitest/globals', 'node', ...]` and update `include` to `['**/*.spec.ts', '**/*.d.ts', 'vitest.config.mts', 'test/**/*.ts']` (drop `__mocks__` and `jest.config.ts`).
@@ -122,14 +125,17 @@ None required — the recipe is fully captured in the in-tree reference commit.
 - Delete `apis/api-media/jest.config.ts`.
 
 **Patterns to follow:**
+
 - `apis/api-analytics/vitest.config.mts`
 - `apis/api-analytics/project.json` (the migrated `test` target)
 - `apis/api-analytics/tsconfig.spec.json` and `apis/api-analytics/tsconfig.app.json`
 
 **Test scenarios:**
+
 - Test expectation: none — pure config change. Verification at the end of U4 covers correctness.
 
 **Verification:**
+
 - `apis/api-media/jest.config.ts` no longer exists.
 - `apis/api-media/vitest.config.mts` exists and parses (`pnpm exec tsc -p apis/api-media/tsconfig.spec.json --noEmit` succeeds, deferred until U2/U3 are done so unmigrated files don't blow up the type-check).
 
@@ -144,22 +150,27 @@ None required — the recipe is fully captured in the in-tree reference commit.
 **Dependencies:** U1.
 
 **Files:**
+
 - Modify: `apis/api-media/test/prismaMock.ts`
 - Modify: `apis/api-media/test/bullmqMock.ts`
 - Modify: `apis/api-media/test/crowdinMock.ts`
 
 **Approach:**
+
 - `prismaMock.ts`: replace `jest-mock-extended` import with `vitest-mock-extended`; add `import { beforeEach, vi } from 'vitest'`; convert the `jest.mock(...)` factory to `vi.mock('@core/prisma/media/client', async () => ({ __esModule: true, ...(await vi.importActual('@core/prisma/media/client')), prisma: mockDeep<PrismaClient>() }))`. The structure should match `apis/api-analytics/test/prismaMock.ts` exactly, with the package path swapped from `@core/prisma/analytics/client` to `@core/prisma/media/client`.
 - `bullmqMock.ts`: replace `jest.mock('bullmq', () => { ... jest.fn() ... })` with `vi.mock('bullmq', () => { ... vi.fn() ... })`. Add `import { vi } from 'vitest'` at the top. No `requireActual` is needed here — the factory replaces the whole module.
 - `crowdinMock.ts`: add `import { beforeEach, vi } from 'vitest'`; replace `jest-mock-extended` with `vitest-mock-extended`; replace the `jest.mock` factory with `vi.mock(...)` (synchronous form is fine since the factory does not call `requireActual`); replace `mockReset(crowdinClientMock)` import path. Keep the `process.env.CROWDIN_*` assignments and exported mock data unchanged.
 
 **Patterns to follow:**
+
 - `apis/api-analytics/test/prismaMock.ts` for the async `vi.importActual` factory shape.
 
 **Test scenarios:**
+
 - Test expectation: none — these files are setup helpers. Their correctness is verified via the spec suite green-state in U4.
 
 **Verification:**
+
 - `pnpm exec tsc -p apis/api-media/tsconfig.spec.json --noEmit` produces only spec-file errors (the three test files themselves type-check).
 - `grep -rE "jest|jest-mock-extended" apis/api-media/test/` returns no hits.
 
@@ -174,9 +185,11 @@ None required — the recipe is fully captured in the in-tree reference commit.
 **Dependencies:** U1, U2.
 
 **Files:**
+
 - Modify: every file matched by `apis/api-media/src/**/*.spec.ts` (63 files).
 
 **Approach:**
+
 - For each file, in this order:
   1. Add `import { vi, ... } from 'vitest'` (only the names actually used — `vi` always, plus `type Mock`, `type MockedFunction`, `type Mocked`, `type MockedClass`, `type MockInstance` as needed). Place it as the first import.
   2. Replace tokens using `replace_all` per file, scoped to identifiers (avoid replacing inside string literals or test names):
@@ -200,14 +213,17 @@ None required — the recipe is fully captured in the in-tree reference commit.
 - After per-file edits, run `npx vitest run --config apis/api-media/vitest.config.mts <single-spec-path>` to confirm each file at least loads without resolution errors before moving on, and `grep -rE "\\bjest\\b" apis/api-media/src --include="*.spec.ts"` to confirm zero residual hits.
 
 **Patterns to follow:**
+
 - `apis/api-analytics/src/scripts/sites-add-goals.spec.ts` (a representative migrated spec showing the import style and `as Mock` cast).
 - `apis/api-analytics/src/schema/site/siteCreate.mutation.spec.ts` for `vi.mock` with a factory.
 
 **Test scenarios:**
+
 - Test expectation: none — this unit moves existing tests to a new runner without behavior changes. The full-suite green-state in U4 is the verification.
 - During the migration, run each migrated spec file individually (`npx vitest run --config apis/api-media/vitest.config.mts <path>`) to catch import or factory-shape regressions early. Spec authors do not write new tests here.
 
 **Verification:**
+
 - `grep -rE "\\bjest\\b" apis/api-media/src --include="*.spec.ts"` returns zero matches.
 - `grep -rE "jest-mock-extended|@jest/globals" apis/api-media/src --include="*.spec.ts"` returns zero matches.
 
@@ -222,9 +238,11 @@ None required — the recipe is fully captured in the in-tree reference commit.
 **Dependencies:** U1, U2, U3.
 
 **Files:**
+
 - Modify: any spec or setup file that surfaces a runtime regression once the suite runs end-to-end.
 
 **Approach:**
+
 - Run `nx test api-media --skip-nx-cache` (or `npx vitest run --config apis/api-media/vitest.config.mts` if Nx caching gets in the way during iteration).
 - Triage failures into three buckets and fix in order:
   1. **Module-resolution failures** — usually a `vi.importActual` factory that should have stayed synchronous, or vice versa, or a missing `vitest-mock-extended` import.
@@ -234,9 +252,11 @@ None required — the recipe is fully captured in the in-tree reference commit.
 - Confirm `pnpm exec eslint apis/api-media --max-warnings 0` (or the project's lint script) does not regress.
 
 **Patterns to follow:**
+
 - The api-analytics migration deliberately changed only what was required to make the suite green; mirror that restraint here. Avoid restructuring tests that already pass.
 
 **Test scenarios:**
+
 - The pre-existing api-media test suite, unchanged in coverage, must pass under Vitest:
   - All 63 spec files load without module-resolution errors.
   - All previously-passing assertions remain green.
@@ -245,6 +265,7 @@ None required — the recipe is fully captured in the in-tree reference commit.
   - `shortLinkDomain.service` spec's replacement for `node-fetch`'s `Response` resolves.
 
 **Verification:**
+
 - `nx test api-media --skip-nx-cache` exits zero with the same number of passing tests as before the migration.
 - Coverage report writes to `coverage/apis/api-media/`.
 - No `jest`/`jest-mock-extended`/`@jest/globals`/`ts-jest` strings remain inside `apis/api-media/**`.
@@ -264,13 +285,13 @@ None required — the recipe is fully captured in the in-tree reference commit.
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| `jest.requireActual` → `await vi.importActual` change introduces async ordering bugs in mock factories. | Mirror the api-analytics async-factory pattern; verify per-file with `npx vitest run` before moving on. |
-| Spec files that rely on Jest's auto-mocking or implicit module resolution behave differently under Vitest. | Triage in U4 individually. Vitest's hoisting model is documented; use `vi.hoisted` only where a specific failure forces it. |
-| The `@nx/vitest:test` executor surfaces a different `outputs` or coverage-path expectation than `@nx/jest:jest`. | Mirror api-analytics's `project.json` exactly; CI cache hashing keys off the `test` target spec, so any mismatch fails fast in U4. |
-| Hidden duplicate test setup (e.g., a global `jest.setup` referenced via `jest.preset.js`). | Search `apis/api-media` for any `setupFilesAfterEach`/`globalSetup` in the deleted Jest config; the current `jest.config.ts` shows only the three setup files already enumerated, so this is unlikely. |
-| `crowdinMock.ts` exports mock data referenced by specs; converting `jest.mock` to `vi.mock` could change the export-evaluation order. | Keep the same factory shape (synchronous, no `requireActual`) and re-run the crowdin-importer specs first as a smoke test. |
+| Risk                                                                                                                                  | Mitigation                                                                                                                                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `jest.requireActual` → `await vi.importActual` change introduces async ordering bugs in mock factories.                               | Mirror the api-analytics async-factory pattern; verify per-file with `npx vitest run` before moving on.                                                                                                |
+| Spec files that rely on Jest's auto-mocking or implicit module resolution behave differently under Vitest.                            | Triage in U4 individually. Vitest's hoisting model is documented; use `vi.hoisted` only where a specific failure forces it.                                                                            |
+| The `@nx/vitest:test` executor surfaces a different `outputs` or coverage-path expectation than `@nx/jest:jest`.                      | Mirror api-analytics's `project.json` exactly; CI cache hashing keys off the `test` target spec, so any mismatch fails fast in U4.                                                                     |
+| Hidden duplicate test setup (e.g., a global `jest.setup` referenced via `jest.preset.js`).                                            | Search `apis/api-media` for any `setupFilesAfterEach`/`globalSetup` in the deleted Jest config; the current `jest.config.ts` shows only the three setup files already enumerated, so this is unlikely. |
+| `crowdinMock.ts` exports mock data referenced by specs; converting `jest.mock` to `vi.mock` could change the export-evaluation order. | Keep the same factory shape (synchronous, no `requireActual`) and re-run the crowdin-importer specs first as a smoke test.                                                                             |
 
 ---
 

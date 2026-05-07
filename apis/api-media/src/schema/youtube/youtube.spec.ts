@@ -148,9 +148,7 @@ describe('youtube', () => {
 
       mockedAxios.get.mockResolvedValueOnce(mockYouTubeResponse)
 
-      const mockApolloQuery = vi
-        .fn()
-        .mockResolvedValueOnce(mockGatewayResponse)
+      const mockApolloQuery = vi.fn().mockResolvedValueOnce(mockGatewayResponse)
       mockedCreateApolloClient.mockReturnValue({
         query: mockApolloQuery
       } as any)
@@ -263,9 +261,7 @@ describe('youtube', () => {
 
       mockedAxios.get.mockResolvedValueOnce(mockYouTubeResponse)
 
-      const mockApolloQuery = vi
-        .fn()
-        .mockResolvedValueOnce(mockGatewayResponse)
+      const mockApolloQuery = vi.fn().mockResolvedValueOnce(mockGatewayResponse)
       mockedCreateApolloClient.mockReturnValue({
         query: mockApolloQuery
       } as any)

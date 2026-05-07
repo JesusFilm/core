@@ -79,20 +79,18 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          {
-            id: 'subtitleTrackId',
-            trackId: 'trackId',
-            source: 'generated',
-            status: MuxSubtitleTrackStatus.ready,
-            bcp47: 'en',
-            muxVideoId: 'muxVideoId',
-            muxVideo: {
-              id: 'muxVideoId',
-              userId: 'userId'
-            }
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue({
+          id: 'subtitleTrackId',
+          trackId: 'trackId',
+          source: 'generated',
+          status: MuxSubtitleTrackStatus.ready,
+          bcp47: 'en',
+          muxVideoId: 'muxVideoId',
+          muxVideo: {
+            id: 'muxVideoId',
+            userId: 'userId'
           }
-        )
+        })
 
         const data = await authClient({
           document: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
@@ -138,16 +136,12 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          null
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
-            id: 'muxVideoId',
-            assetId: 'assetId',
-            userId: 'userId'
-          }
-        )
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(null)
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: 'assetId',
+          userId: 'userId'
+        })
         ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'muxTrackId',
           type: 'text',
@@ -215,16 +209,12 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          null
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
-            id: 'muxVideoId',
-            assetId: 'assetId',
-            userId: 'userId'
-          }
-        )
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(null)
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: 'assetId',
+          userId: 'userId'
+        })
         ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'muxTrackId',
           type: 'text',
@@ -274,16 +264,12 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          null
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
-            id: 'muxVideoId',
-            assetId: 'assetId',
-            userId: 'userId'
-          }
-        )
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(null)
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: 'assetId',
+          userId: 'userId'
+        })
         ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'muxTrackId',
           type: 'text',
@@ -333,27 +319,23 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          {
-            id: 'subtitleTrackId',
-            trackId: 'trackId',
-            source: 'generated',
-            status: MuxSubtitleTrackStatus.processing,
-            bcp47: 'en',
-            muxVideoId: 'muxVideoId',
-            muxVideo: {
-              id: 'muxVideoId',
-              userId: 'userId'
-            }
-          }
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue({
+          id: 'subtitleTrackId',
+          trackId: 'trackId',
+          source: 'generated',
+          status: MuxSubtitleTrackStatus.processing,
+          bcp47: 'en',
+          muxVideoId: 'muxVideoId',
+          muxVideo: {
             id: 'muxVideoId',
-            assetId: 'assetId',
             userId: 'userId'
           }
-        )
+        })
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: 'assetId',
+          userId: 'userId'
+        })
         ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'trackId',
           type: 'text',
@@ -402,27 +384,23 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          {
-            id: 'subtitleTrackId',
-            trackId: 'trackId',
-            source: 'generated',
-            status: MuxSubtitleTrackStatus.processing,
-            bcp47: 'en',
-            muxVideoId: 'muxVideoId',
-            muxVideo: {
-              id: 'muxVideoId',
-              userId: 'userId'
-            }
-          }
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue({
+          id: 'subtitleTrackId',
+          trackId: 'trackId',
+          source: 'generated',
+          status: MuxSubtitleTrackStatus.processing,
+          bcp47: 'en',
+          muxVideoId: 'muxVideoId',
+          muxVideo: {
             id: 'muxVideoId',
-            assetId: 'assetId',
             userId: 'userId'
           }
-        )
+        })
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: 'assetId',
+          userId: 'userId'
+        })
         ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'trackId',
           type: 'text',
@@ -469,16 +447,12 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: []
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          null
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
-            id: 'muxVideoId',
-            assetId: 'assetId',
-            userId: 'userId'
-          }
-        )
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(null)
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: 'assetId',
+          userId: 'userId'
+        })
         ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'muxTrackId',
           type: 'text',
@@ -512,16 +486,12 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          null
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
-            id: 'muxVideoId',
-            assetId: 'assetId',
-            userId: 'userId'
-          }
-        )
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(null)
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: 'assetId',
+          userId: 'userId'
+        })
         ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'muxTrackId',
           type: 'text',
@@ -556,16 +526,12 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          null
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
-            id: 'muxVideoId',
-            assetId: 'assetId',
-            userId: 'userId'
-          }
-        )
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(null)
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: 'assetId',
+          userId: 'userId'
+        })
         ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'muxTrackId',
           type: 'text',
@@ -599,16 +565,12 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          null
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
-            id: 'muxVideoId',
-            assetId: null,
-            userId: 'userId'
-          }
-        )
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(null)
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: null,
+          userId: 'userId'
+        })
 
         const data = (await authClient({
           document: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
@@ -633,16 +595,12 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          null
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
-            id: 'muxVideoId',
-            assetId: 'assetId',
-            userId: 'userId'
-          }
-        )
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(null)
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: 'assetId',
+          userId: 'userId'
+        })
         ;(getMuxTrackByBcp47 as Mock).mockResolvedValue(null)
 
         const data = (await authClient({
@@ -668,16 +626,12 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          null
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
-            id: 'muxVideoId',
-            assetId: 'assetId',
-            userId: 'userId'
-          }
-        )
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(null)
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: 'assetId',
+          userId: 'userId'
+        })
         ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: null,
           type: 'text',
@@ -709,27 +663,23 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          {
-            id: 'subtitleTrackId',
-            trackId: 'trackId',
-            source: 'generated',
-            status: MuxSubtitleTrackStatus.processing,
-            bcp47: 'en',
-            muxVideoId: 'muxVideoId',
-            muxVideo: {
-              id: 'muxVideoId',
-              userId: 'userId'
-            }
-          }
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue({
+          id: 'subtitleTrackId',
+          trackId: 'trackId',
+          source: 'generated',
+          status: MuxSubtitleTrackStatus.processing,
+          bcp47: 'en',
+          muxVideoId: 'muxVideoId',
+          muxVideo: {
             id: 'muxVideoId',
-            assetId: 'assetId',
             userId: 'userId'
           }
-        )
+        })
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: 'assetId',
+          userId: 'userId'
+        })
         ;(getMuxTrackByBcp47 as Mock).mockResolvedValue(null)
 
         const data = (await authClient({
@@ -755,27 +705,23 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          {
-            id: 'subtitleTrackId',
-            trackId: 'trackId',
-            source: 'generated',
-            status: MuxSubtitleTrackStatus.processing,
-            bcp47: 'en',
-            muxVideoId: 'muxVideoId',
-            muxVideo: {
-              id: 'muxVideoId',
-              userId: 'userId'
-            }
-          }
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue({
+          id: 'subtitleTrackId',
+          trackId: 'trackId',
+          source: 'generated',
+          status: MuxSubtitleTrackStatus.processing,
+          bcp47: 'en',
+          muxVideoId: 'muxVideoId',
+          muxVideo: {
             id: 'muxVideoId',
-            assetId: 'assetId',
             userId: 'userId'
           }
-        )
+        })
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: 'assetId',
+          userId: 'userId'
+        })
         ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: null,
           type: 'text',
@@ -807,27 +753,23 @@ describe('mux/subtitle', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
-          {
-            id: 'subtitleTrackId',
-            trackId: 'trackId',
-            source: 'generated',
-            status: MuxSubtitleTrackStatus.processing,
-            bcp47: 'en',
-            muxVideoId: 'muxVideoId',
-            muxVideo: {
-              id: 'muxVideoId',
-              userId: 'userId'
-            }
-          }
-        )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
-          {
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue({
+          id: 'subtitleTrackId',
+          trackId: 'trackId',
+          source: 'generated',
+          status: MuxSubtitleTrackStatus.processing,
+          bcp47: 'en',
+          muxVideoId: 'muxVideoId',
+          muxVideo: {
             id: 'muxVideoId',
-            assetId: null,
             userId: 'userId'
           }
-        )
+        })
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'muxVideoId',
+          assetId: null,
+          userId: 'userId'
+        })
 
         const data = (await authClient({
           document: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,

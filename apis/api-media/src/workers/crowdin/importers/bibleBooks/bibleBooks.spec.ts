@@ -41,8 +41,8 @@ describe('importBibleBooks', () => {
 
   it('should import bible books successfully', async () => {
     vi.mocked(processFile).mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+      await callback(testTranslation)
+    })
 
     await importBibleBooks(mockLogger)
 
@@ -67,8 +67,8 @@ describe('importBibleBooks', () => {
     } as unknown as ProcessedTranslation
 
     vi.mocked(processFile).mockImplementation(async (_, callback) => {
-        await callback(invalidTranslation)
-      })
+      await callback(invalidTranslation)
+    })
 
     await importBibleBooks(mockLogger)
 
@@ -80,8 +80,8 @@ describe('importBibleBooks', () => {
 
   it('should handle database errors', async () => {
     vi.mocked(processFile).mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+      await callback(testTranslation)
+    })
 
     prismaMock.bibleBookName.upsert.mockRejectedValueOnce(
       new Error('Database error')

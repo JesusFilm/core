@@ -56,8 +56,8 @@ describe('importVideoTitles', () => {
   it('should import video titles successfully', async () => {
     prismaMock.video.findMany.mockResolvedValueOnce([testVideo])
     vi.mocked(processFile).mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+      await callback(testTranslation)
+    })
 
     await importVideoTitles(mockLogger)
 
@@ -100,8 +100,8 @@ describe('importVideoTitles', () => {
     prismaMock.video.findMany.mockResolvedValueOnce([differentVideo])
 
     vi.mocked(processFile).mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+      await callback(testTranslation)
+    })
 
     await importVideoTitles(mockLogger)
 

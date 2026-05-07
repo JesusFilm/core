@@ -33,8 +33,8 @@ describe('importVideoDescriptions', () => {
 
   it('should import video descriptions successfully', async () => {
     vi.mocked(processFile).mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+      await callback(testTranslation)
+    })
 
     await importVideoDescriptions(mockLogger)
 
@@ -64,8 +64,8 @@ describe('importVideoDescriptions', () => {
     vi.mocked(getFullVideoId).mockReturnValue(undefined)
 
     vi.mocked(processFile).mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+      await callback(testTranslation)
+    })
 
     await importVideoDescriptions(mockLogger)
 
@@ -74,8 +74,8 @@ describe('importVideoDescriptions', () => {
 
   it('should handle database errors', async () => {
     vi.mocked(processFile).mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+      await callback(testTranslation)
+    })
 
     prismaMock.videoDescription.upsert.mockRejectedValueOnce(
       new Error('Database error')

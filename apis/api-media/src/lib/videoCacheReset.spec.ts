@@ -131,9 +131,7 @@ describe('videoCacheReset', () => {
 
     vi.mocked(prisma.video.findUnique).mockResolvedValueOnce({ slug } as any)
 
-    vi
-      .mocked(cache.invalidate)
-      .mockRejectedValueOnce(new Error('Cache error'))
+    vi.mocked(cache.invalidate).mockRejectedValueOnce(new Error('Cache error'))
 
     await expect(videoCacheReset(videoId)).resolves.not.toThrow()
 
@@ -163,9 +161,9 @@ describe('videoVariantCacheReset', () => {
 
     // Since we're only using select: { slug: true } in the function,
     // we can use a type assertion to simplify
-    vi
-      .mocked(prisma.videoVariant.findUnique)
-      .mockResolvedValueOnce({ slug } as any)
+    vi.mocked(prisma.videoVariant.findUnique).mockResolvedValueOnce({
+      slug
+    } as any)
 
     await videoVariantCacheReset(variantId)
 
@@ -213,9 +211,9 @@ describe('videoVariantCacheReset', () => {
     process.env.WATCH_URL = undefined
     process.env.WATCH_REVALIDATE_SECRET = undefined
 
-    vi
-      .mocked(prisma.videoVariant.findUnique)
-      .mockResolvedValueOnce({ slug } as any)
+    vi.mocked(prisma.videoVariant.findUnique).mockResolvedValueOnce({
+      slug
+    } as any)
 
     await videoVariantCacheReset(variantId)
 
@@ -234,9 +232,9 @@ describe('videoVariantCacheReset', () => {
     const variantId = 'test-variant-id'
     const slug = 'test-variant-slug'
 
-    vi
-      .mocked(prisma.videoVariant.findUnique)
-      .mockResolvedValueOnce({ slug } as any)
+    vi.mocked(prisma.videoVariant.findUnique).mockResolvedValueOnce({
+      slug
+    } as any)
 
     mockFetch.mockRejectedValueOnce(new Error('Network error'))
 
@@ -252,13 +250,11 @@ describe('videoVariantCacheReset', () => {
     const variantId = 'test-variant-id'
     const slug = 'test-variant-slug'
 
-    vi
-      .mocked(prisma.videoVariant.findUnique)
-      .mockResolvedValueOnce({ slug } as any)
+    vi.mocked(prisma.videoVariant.findUnique).mockResolvedValueOnce({
+      slug
+    } as any)
 
-    vi
-      .mocked(cache.invalidate)
-      .mockRejectedValueOnce(new Error('Cache error'))
+    vi.mocked(cache.invalidate).mockRejectedValueOnce(new Error('Cache error'))
 
     await expect(videoVariantCacheReset(variantId)).resolves.not.toThrow()
 

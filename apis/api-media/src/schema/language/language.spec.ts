@@ -56,9 +56,9 @@ describe('Language', () => {
       })
 
       // Verify that all three groupBy calls were made in parallel
-      expect(
-        vi.mocked(prismaMock.videoVariant.groupBy)
-      ).toHaveBeenCalledTimes(3)
+      expect(vi.mocked(prismaMock.videoVariant.groupBy)).toHaveBeenCalledTimes(
+        3
+      )
 
       // Verify series count query
       expect(
@@ -119,15 +119,15 @@ describe('Language', () => {
 
     it('should return zero counts when no videos exist for a language', async () => {
       // Mock empty results for all queries
-      vi
-        .mocked(prismaMock.videoVariant.groupBy)
-        .mockResolvedValueOnce([] as any) // series counts
-      vi
-        .mocked(prismaMock.videoVariant.groupBy)
-        .mockResolvedValueOnce([] as any) // featureFilm counts
-      vi
-        .mocked(prismaMock.videoVariant.groupBy)
-        .mockResolvedValueOnce([] as any) // shortFilm counts
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce(
+        [] as any
+      ) // series counts
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce(
+        [] as any
+      ) // featureFilm counts
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce(
+        [] as any
+      ) // shortFilm counts
 
       const data = await client({
         document: LABELED_VIDEO_COUNTS_QUERY
@@ -210,21 +210,15 @@ describe('Language', () => {
         }
       `)
 
-      vi
-        .mocked(prismaMock.videoVariant.groupBy)
-        .mockResolvedValueOnce([
-          { languageId: '529', _count: { _all: 2 } }
-        ] as any)
-      vi
-        .mocked(prismaMock.videoVariant.groupBy)
-        .mockResolvedValueOnce([
-          { languageId: '529', _count: { _all: 4 } }
-        ] as any)
-      vi
-        .mocked(prismaMock.videoVariant.groupBy)
-        .mockResolvedValueOnce([
-          { languageId: '529', _count: { _all: 6 } }
-        ] as any)
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
+        { languageId: '529', _count: { _all: 2 } }
+      ] as any)
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
+        { languageId: '529', _count: { _all: 4 } }
+      ] as any)
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([
+        { languageId: '529', _count: { _all: 6 } }
+      ] as any)
 
       const data = await client({
         document: SINGLE_LANGUAGE_QUERY
