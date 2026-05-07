@@ -20,14 +20,28 @@ You are a professional translation engine.
 const BatchTranslationSchema = z.object({
   translations: z
     .array(z.string())
-    .describe('Translated texts in the same order as the input values')
+    .describe(
+      'Translated texts in the same order as the input values. Each element must be the plain translated text only — no surrounding quotes, no list prefixes, no markdown formatting.'
+    )
 })
+
+/**
+ * Strips formatting artifacts that some models add to structured-output
+ * string fields: surrounding quotes, list-item prefixes, leading/trailing
+ * whitespace.
+ */
+function cleanTranslation(text: string): string {
+  let cleaned = text.trim()
+  cleaned = cleaned.replace(/^["'"'«»]+|["'"'«»]+$/g, '')
+  cleaned = cleaned.replace(/^(?:\d+[.)]\s*|-\s+|\*\s+)/, '')
+  return cleaned.trim()
+}
 
 const CustomizationDescriptionTranslationSchema = z.object({
   translatedDescription: z
     .string()
     .describe(
-      'Translated customization description with all {{ ... }} blocks preserved verbatim'
+      'Translated customization description with all {{ ... }} blocks preserved verbatim. Plain text only — no surrounding quotes or markdown formatting.'
     )
 })
 
@@ -54,6 +68,7 @@ async function translateBatch({
 
   const prompt = `${journeyAnalysis ? `Context:\n${hardenPrompt(journeyAnalysis)}\n\n` : ''}Translate each value from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
 Return translations in the same order as input.
+Each translation must be the plain translated text only — do NOT wrap in quotes, do NOT prefix with numbers or bullet points.
 
 ${numberedValues}`
 
@@ -73,7 +88,12 @@ ${numberedValues}`
     env.TRANSLATION_AI_MODELS
   )
 
-  return values.map((original, i) => output.translations[i] ?? original)
+  return values.map((original, i) => {
+    const raw = output.translations[i]
+    if (raw == null) return original
+    const cleaned = cleanTranslation(raw)
+    return cleaned.length > 0 ? cleaned : original
+  })
 }
 
 /**
@@ -272,13 +292,15 @@ ${hardenPrompt(description)}`
     env.TRANSLATION_AI_MODELS
   )
 
+  const translatedDescription = cleanTranslation(output.translatedDescription)
+
   if (fieldMatches.length > 0) {
     const translatedTokens: string[] = []
     const verifyPattern =
       /\{\{\s*([^:}]+)(?:\s*:\s*(?:(['"])([^'"]*)\2|([^}]*?)))?\s*\}\}/g
     let verifyMatch
     while (
-      (verifyMatch = verifyPattern.exec(output.translatedDescription)) !== null
+      (verifyMatch = verifyPattern.exec(translatedDescription)) !== null
     ) {
       translatedTokens.push(verifyMatch[0])
     }
@@ -296,5 +318,5 @@ ${hardenPrompt(description)}`
     }
   }
 
-  return output.translatedDescription
+  return translatedDescription
 }
