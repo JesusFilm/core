@@ -202,6 +202,12 @@ Use `.prismaField()` when the return type is a Prisma model ref and you want aut
 
 ---
 
+#### Authentication
+
+**Do NOT add manual `userId == null` / `user not authenticated` guards in the resolve function.** The `.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })` scope auth plugin already enforces authentication before the resolver runs. Adding a redundant check is dead code and misleading. Simply access `context.user?.id` directly — if the resolver is reached, the user is already authenticated.
+
+---
+
 #### Query template
 
 ```typescript
