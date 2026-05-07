@@ -227,6 +227,15 @@ describe('RadioOptionImage', () => {
 
   it('creates a new image for radio option from gallery selection', async () => {
     mockUuidv4.mockReturnValueOnce(image.id)
+    const cache = new InMemoryCache()
+    cache.restore({
+      [`Journey:${journey.id}`]: {
+        blocks: [{ __ref: `RadioOptionBlock:${radioOption.id}` }],
+        id: journey.id,
+        __typename: 'Journey'
+      },
+      [`RadioOptionBlock:${radioOption.id}`]: { ...radioOption }
+    })
     const response: RadioOptionImageCreate = {
       imageBlockCreate: {
         ...image,
@@ -263,6 +272,7 @@ describe('RadioOptionImage', () => {
 
     render(
       <MockedProvider
+        cache={cache}
         mocks={[
           listUnsplashCollectionPhotosMock,
           triggerUnsplashDownloadMock,
@@ -288,6 +298,14 @@ describe('RadioOptionImage', () => {
     )
 
     await waitFor(() => expect(createResult).toHaveBeenCalled())
+    expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+      { __ref: `RadioOptionBlock:${radioOption.id}` },
+      { __ref: `ImageBlock:${image.id}` }
+    ])
+    expect(
+      cache.extract()[`RadioOptionBlock:${radioOption.id}`]
+        ?.pollOptionImageBlockId
+    ).toEqual(image.id)
   })
 
   describe('Existing image for radio option', () => {

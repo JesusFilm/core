@@ -295,6 +295,13 @@ describe('BackgroundMediaImage', () => {
     )
 
     await waitFor(() => expect(createResult).toHaveBeenCalled())
+    expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+      { __ref: `CardBlock:${card.id}` },
+      { __ref: `ImageBlock:${image.id}` }
+    ])
+    expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toEqual(
+      image.id
+    )
   })
 
   describe('Existing image cover', () => {

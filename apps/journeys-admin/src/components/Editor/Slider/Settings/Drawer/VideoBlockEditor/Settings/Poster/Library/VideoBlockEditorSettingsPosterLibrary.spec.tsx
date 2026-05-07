@@ -262,6 +262,15 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
 
   it('creates a new image poster block from gallery selection', async () => {
     mockUuidv4.mockReturnValueOnce(image.id)
+    const cache = new InMemoryCache()
+    cache.restore({
+      [`Journey:${journey.id}`]: {
+        blocks: [{ __ref: `VideoBlock:${video.id}` }],
+        id: journey.id,
+        __typename: 'Journey'
+      },
+      [`VideoBlock:${video.id}`]: { ...video }
+    })
     const response: PosterImageBlockCreate = {
       imageBlockCreate: {
         ...image,
@@ -299,6 +308,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
 
     render(
       <MockedProvider
+        cache={cache}
         mocks={[
           listUnsplashCollectionPhotosMock,
           triggerUnsplashDownloadMock,
@@ -328,6 +338,13 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
     )
 
     await waitFor(() => expect(createResult).toHaveBeenCalled())
+    expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+      { __ref: `VideoBlock:${video.id}` },
+      { __ref: `ImageBlock:${image.id}` }
+    ])
+    expect(cache.extract()[`VideoBlock:${video.id}`]?.posterBlockId).toEqual(
+      image.id
+    )
   })
 
   describe('Existing image poster', () => {
