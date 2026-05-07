@@ -53,7 +53,9 @@ export const mockMenuCard = {
   coverBlockId: null,
   backgroundColor: null,
   parentOrder: 0,
-  eventLabel: null
+  eventLabel: null,
+  showAssistant: null,
+  expandChatByDefault: null
 } satisfies Card
 
 export const mockMenuHeading = {

@@ -37,7 +37,9 @@ const createCard = (
   backdropBlur: null,
   eventLabel: null,
   children: [],
-  ...overrides
+  ...overrides,
+  showAssistant: null,
+  expandChatByDefault: null
 })
 
 // Helper function to create journey with required structure

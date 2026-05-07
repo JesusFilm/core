@@ -158,7 +158,9 @@ export function useCreateStepFromSocialPreview(): (
       coverBlockId: null,
       backgroundColor: null,
       parentOrder: 0,
-      eventLabel: null
+      eventLabel: null,
+      showAssistant: null,
+      expandChatByDefault: null
     }
 
     const oldFirstStep = steps?.find((step) => step.parentOrder === 0)

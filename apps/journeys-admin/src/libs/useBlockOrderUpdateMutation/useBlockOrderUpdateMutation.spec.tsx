@@ -40,7 +40,9 @@ describe('getNewParentOrder', () => {
     __typename: 'CardBlock',
     parentBlockId: 'step1.id',
     parentOrder: 0,
-    children: [typographyBlock, imageBlock, backgroundBlock]
+    children: [typographyBlock, imageBlock, backgroundBlock],
+    showAssistant: null,
+    expandChatByDefault: null
   } as unknown as TreeBlock<CardBlock>
   const stepBlock = {
     id: 'step0.id',
