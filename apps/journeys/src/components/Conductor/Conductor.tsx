@@ -8,7 +8,9 @@ import { HotkeysProvider } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { blockHistoryVar, useBlocks } from '@core/journeys/ui/block'
+import { blockHistoryVar, getCardChild, useBlocks } from '@core/journeys/ui/block'
+import { hasAiChatButton } from '@core/journeys/ui/Card/utils/getFooterElements'
+import { useChatOverlay } from '@core/journeys/ui/ChatOverlayProvider'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { PinnedChatBar } from '@core/journeys/ui/PinnedChatBar'
@@ -73,11 +75,57 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
 
+  const activeCard = getCardChild(activeBlock)
+
   const showPinnedChat =
     apologistChatEnabled &&
-    journey?.showAssistant === true &&
+    hasAiChatButton({ journey, variant, card: activeCard }) &&
     variant !== 'admin' &&
     variant !== 'embed'
+
+  // Mobile: per-card `expandChatByDefault === true` lands the bar in
+  // `'idle'` (header + input visible, ready). Otherwise the bar starts
+  // `'collapsed'` (drag handle only) so creators who haven't opted in
+  // do not get the chat surface eating screen real estate. Sticky after
+  // mount — drag interactions own the state from there.
+  const initialChatExpanded = activeCard?.expandChatByDefault === true
+
+  const { setOpen, shouldAutoOpen, markAutoOpened } = useChatOverlay()
+
+  // Desktop overlay auto-open on `expandChatByDefault`. Lives at the
+  // navigation chokepoint so prefetched neighbours mounted off-screen by
+  // DynamicCardList do not trigger it. Mobile has no equivalent — the
+  // pinned bar starts in 'idle' (input visible, ready) which already
+  // satisfies the "expanded" semantics; 'active' is reserved for sheets
+  // that contain a real conversation.
+  //
+  // Deps include `apologistChatEnabled` so a late-arriving LD flag still
+  // triggers the auto-open after activeBlock has settled (the original
+  // `[activeBlock?.id]` dep set silently lost this race when LD finished
+  // loading after the first card was active). `setOpen` /
+  // `shouldAutoOpen` / `markAutoOpened` are stable callbacks from the
+  // provider — depending on them is cheap and keeps the lint happy
+  // without re-firing on every overlay open/close. Re-firing on the
+  // remaining deps is safe: `shouldAutoOpen` dedups on
+  // (journeyId, cardId) via sessionStorage, so a manual dismiss is not
+  // overridden by a later re-evaluation in the same tab.
+  useEffect(() => {
+    if (!apologistChatEnabled) return
+    const card = getCardChild(activeBlock)
+    if (card == null || card.expandChatByDefault !== true) return
+    if (!hasAiChatButton({ journey, variant, card })) return
+    if (!shouldAutoOpen(card.id)) return
+    markAutoOpened(card.id)
+    setOpen(true)
+  }, [
+    activeBlock?.id,
+    apologistChatEnabled,
+    journey,
+    variant,
+    setOpen,
+    shouldAutoOpen,
+    markAutoOpened
+  ])
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -225,6 +273,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               />
               {showPinnedChat ? (
                 <PinnedChatBar
+                  initialExpanded={initialChatExpanded}
                   sx={{
                     ...mobileNotchStyling,
                     display: {
