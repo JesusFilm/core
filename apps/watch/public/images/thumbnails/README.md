@@ -103,7 +103,6 @@ The system automatically checks all supported extensions for each naming pattern
 
 ### 3. Naming Consistency
 
-- Follow the established slug patterns from the CMS
 - Use consistent casing (typically lowercase with hyphens)
 - Test your naming against actual video contexts
 
@@ -189,7 +188,6 @@ To test thumbnail overrides:
 
 - Automated thumbnail generation for missing variants
 - Responsive image support with srcset
-- Integration with CMS for automatic thumbnail management
 - Analytics tracking for thumbnail effectiveness
 
 ---
