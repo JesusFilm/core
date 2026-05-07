@@ -8,7 +8,11 @@ import { HotkeysProvider } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { blockHistoryVar, getCardChild, useBlocks } from '@core/journeys/ui/block'
+import {
+  blockHistoryVar,
+  getCardChild,
+  useBlocks
+} from '@core/journeys/ui/block'
 import { hasAiChatButton } from '@core/journeys/ui/Card/utils/getFooterElements'
 import { useChatOverlay } from '@core/journeys/ui/ChatOverlayProvider'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'

@@ -6,7 +6,9 @@ import { ChatOverlayProvider, useChatOverlay } from './ChatOverlayProvider'
 function wrapper(journeyId: string | undefined) {
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
-      <ChatOverlayProvider journeyId={journeyId}>{children}</ChatOverlayProvider>
+      <ChatOverlayProvider journeyId={journeyId}>
+        {children}
+      </ChatOverlayProvider>
     )
   }
 }
