@@ -15,6 +15,11 @@ interface TemplateGalleryHeaderProps {
 export function TemplateGalleryHeader({
   gallery
 }: TemplateGalleryHeaderProps): ReactElement {
+  const hasCreatorImage =
+    gallery.creatorImageSrc != null && gallery.creatorImageSrc !== ''
+  const hasCreatorName = gallery.creatorName !== ''
+  const showCreator = hasCreatorImage || hasCreatorName
+
   return (
     <Stack spacing={3} data-testid="TemplateGalleryHeader">
       <Typography variant="h2" component="h1">
@@ -25,14 +30,20 @@ export function TemplateGalleryHeader({
           {gallery.description}
         </Typography>
       )}
-      <Stack direction="row" spacing={2} alignItems="center">
-        <Avatar
-          src={gallery.creatorImageSrc ?? undefined}
-          alt={gallery.creatorImageAlt ?? gallery.creatorName}
-          sx={{ width: 48, height: 48 }}
-        />
-        <Typography variant="subtitle2">{gallery.creatorName}</Typography>
-      </Stack>
+      {showCreator && (
+        <Stack direction="row" spacing={2} alignItems="center">
+          {hasCreatorImage && (
+            <Avatar
+              src={gallery.creatorImageSrc ?? undefined}
+              alt={gallery.creatorImageAlt ?? gallery.creatorName}
+              sx={{ width: 48, height: 48 }}
+            />
+          )}
+          {hasCreatorName && (
+            <Typography variant="subtitle2">{gallery.creatorName}</Typography>
+          )}
+        </Stack>
+      )}
     </Stack>
   )
 }
