@@ -2,13 +2,13 @@ import fetch from 'node-fetch'
 
 import { prisma } from '@core/prisma/media/client'
 
-import { cache } from '../yoga'
+import { cache } from '../cache'
 
 import { videoCacheReset, videoVariantCacheReset } from './videoCacheReset'
 
 // Mock dependencies
 jest.mock('node-fetch')
-jest.mock('../yoga', () => ({
+jest.mock('../cache', () => ({
   cache: {
     invalidate: jest.fn()
   }
