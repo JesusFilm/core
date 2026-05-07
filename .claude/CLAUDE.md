@@ -32,6 +32,10 @@ The project is an **Nx monorepo**.
 - Use early returns whenever possible to reduce nesting and improve readability.
 - Use descriptive variable and function/const names.
 
+## Documented Solutions
+
+`docs/solutions/` — documented solutions to past problems (bugs, best practices, workflow patterns), organized by category (`runtime-errors/`, `architecture-patterns/`, etc.) with YAML frontmatter (`module`, `tags`, `problem_type`). Relevant when implementing or debugging in documented areas.
+
 ## Branch Naming
 
 When creating a branch without a Linear issue, it must match this pattern:
