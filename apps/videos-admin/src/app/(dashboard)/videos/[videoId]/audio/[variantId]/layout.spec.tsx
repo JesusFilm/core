@@ -2,11 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { resolvedParams } from '../../../../../../test/utils/resolvedParams'
+
 // Import the component under test
 import VariantDialog from './layout'
-
-const resolvedParams = <T,>(value: T): Promise<T> =>
-  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
 
 // Mock VariantVideo component
 jest.mock('../_VariantVideo', () => ({

@@ -1,10 +1,9 @@
 import { render } from '@testing-library/react'
 
+import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
+
 // Import the component under test
 import DownloadPage from './page'
-
-const resolvedParams = <T,>(value: T): Promise<T> =>
-  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
 
 // Mock the router
 jest.mock('next/navigation', () => ({

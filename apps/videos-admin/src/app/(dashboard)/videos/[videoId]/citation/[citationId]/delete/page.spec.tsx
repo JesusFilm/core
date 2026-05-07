@@ -1,9 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import CitationDeletePage from './page'
+import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
 
-const resolvedParams = <T,>(value: T): Promise<T> =>
-  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+import CitationDeletePage from './page'
 
 const mockCitationId = 'citation-123'
 const mockVideoId = 'video-123'

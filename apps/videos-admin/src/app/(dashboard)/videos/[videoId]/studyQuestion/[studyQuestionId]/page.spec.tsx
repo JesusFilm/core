@@ -2,10 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
-import StudyQuestionDialog from './page'
+import { resolvedParams } from '../../../../../../test/utils/resolvedParams'
 
-const resolvedParams = <T,>(value: T): Promise<T> =>
-  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+import StudyQuestionDialog from './page'
 
 // Mock the StudyQuestionForm component
 jest.mock('../_StudyQuestionForm/StudyQuestionForm', () => ({

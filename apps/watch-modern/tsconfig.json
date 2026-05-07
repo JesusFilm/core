@@ -58,7 +58,6 @@
     "**/*.js",
     "**/*.jsx",
     "**/*.mjs",
-    "next-env.d.ts",
     ".next/types/**/*.ts",
     "../../dist/apps/watch-modern/.next/types/**/*.ts"
   ],

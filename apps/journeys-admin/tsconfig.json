@@ -27,7 +27,6 @@
     "**/*.ts",
     "**/*.tsx",
     "eslint.config.mjs",
-    "next-env.d.ts",
     "../../dist/apps/journeys-admin/.next/types/**/*.ts"
   ],
   "exclude": ["node_modules", "jest.config.ts"]

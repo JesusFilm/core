@@ -2,10 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
-import SubtitlePage from './page'
+import { resolvedParams } from '../../../../../../../../test/utils/resolvedParams'
 
-const resolvedParams = <T,>(value: T): Promise<T> =>
-  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+import SubtitlePage from './page'
 
 // Mock the components used in the page
 jest.mock('../_SubtitleFileUpload', () => ({

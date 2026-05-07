@@ -2,10 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
-import StudyQuestionDeletePage from './page'
+import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
 
-const resolvedParams = <T,>(value: T): Promise<T> =>
-  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+import StudyQuestionDeletePage from './page'
 
 // Mock the Apollo Client hooks
 jest.mock('@apollo/client', () => {

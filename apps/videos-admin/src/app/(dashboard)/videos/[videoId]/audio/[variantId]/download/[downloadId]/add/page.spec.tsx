@@ -1,11 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
+import { resolvedParams } from '../../../../../../../../../test/utils/resolvedParams'
+
 // Import the component under test
 import AddVideoVariantDownloadDialog from './page'
-
-const resolvedParams = <T,>(value: T): Promise<T> =>
-  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
 
 // Mock form requestSubmit method which is not implemented in JSDOM
 HTMLFormElement.prototype.requestSubmit = jest.fn(function () {

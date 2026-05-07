@@ -104,7 +104,7 @@ describe('proxy', () => {
     })
   })
 
-  describe('middleware configuration', () => {
+  describe('proxy configuration', () => {
     it('should handle watch root path with cookie', async () => {
       const req = createMockRequest('/watch', {
         cookies: [{ name: 'NEXT_LOCALE', value: 'fingerprint---fr' }]
