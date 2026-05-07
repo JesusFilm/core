@@ -1,11 +1,11 @@
 import { MockedResponse } from '@apollo/client/testing'
 
-import {
-  TemplateGalleryPageAssignJourney,
-  TemplateGalleryPageAssignJourneyVariables,
-  TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney as Assigned
-} from '../../../__generated__/TemplateGalleryPageAssignJourney'
 import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
+import {
+  TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney as Assigned,
+  TemplateGalleryPageAssignJourney,
+  TemplateGalleryPageAssignJourneyVariables
+} from '../../../__generated__/TemplateGalleryPageAssignJourney'
 
 import { TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY } from './useTemplateGalleryPageAssignJourneyMutation'
 

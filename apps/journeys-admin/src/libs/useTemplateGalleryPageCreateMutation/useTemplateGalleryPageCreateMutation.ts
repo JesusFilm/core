@@ -6,13 +6,13 @@ import {
 } from '@apollo/client'
 
 import {
-  TemplateGalleryPageCreate,
-  TemplateGalleryPageCreateVariables
-} from '../../../__generated__/TemplateGalleryPageCreate'
-import {
   GetTemplateGalleryPages,
   GetTemplateGalleryPagesVariables
 } from '../../../__generated__/GetTemplateGalleryPages'
+import {
+  TemplateGalleryPageCreate,
+  TemplateGalleryPageCreateVariables
+} from '../../../__generated__/TemplateGalleryPageCreate'
 import { GET_TEMPLATE_GALLERY_PAGES } from '../useTemplateGalleryPagesQuery'
 
 export const TEMPLATE_GALLERY_PAGE_CREATE = gql`

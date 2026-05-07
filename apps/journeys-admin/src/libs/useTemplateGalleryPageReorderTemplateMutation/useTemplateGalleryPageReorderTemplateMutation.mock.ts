@@ -1,11 +1,11 @@
 import { MockedResponse } from '@apollo/client/testing'
 
-import {
-  TemplateGalleryPageReorderTemplate,
-  TemplateGalleryPageReorderTemplateVariables,
-  TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTemplate as Reordered
-} from '../../../__generated__/TemplateGalleryPageReorderTemplate'
 import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
+import {
+  TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTemplate as Reordered,
+  TemplateGalleryPageReorderTemplate,
+  TemplateGalleryPageReorderTemplateVariables
+} from '../../../__generated__/TemplateGalleryPageReorderTemplate'
 
 import { TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE } from './useTemplateGalleryPageReorderTemplateMutation'
 

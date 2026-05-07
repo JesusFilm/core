@@ -1,7 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { GraphQLError } from 'graphql'
 import { act, renderHook, waitFor } from '@testing-library/react'
+import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 import { ReactNode } from 'react'
 
@@ -62,11 +62,11 @@ function makeCollection(
   }
 }
 
-beforeEach(() => {
-  mockEnqueueSnackbar.mockClear()
-})
-
 describe('useCollectionMutations', () => {
+  beforeEach(() => {
+    mockEnqueueSnackbar.mockClear()
+  })
+
   describe('publish', () => {
     it('returns the collection with server-set fields merged in (status, publishedAt, updatedAt, slug)', async () => {
       const collection = makeCollection({ id: 'page-7', slug: 'old-slug' })

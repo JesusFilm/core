@@ -1,10 +1,10 @@
 import { MockedResponse } from '@apollo/client/testing'
 
+import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
 import {
   TemplateGalleryPageUnpublish,
   TemplateGalleryPageUnpublishVariables
 } from '../../../__generated__/TemplateGalleryPageUnpublish'
-import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
 
 import { TEMPLATE_GALLERY_PAGE_UNPUBLISH } from './useTemplateGalleryPageUnpublishMutation'
 

@@ -1,11 +1,11 @@
 import { MockedResponse } from '@apollo/client/testing'
 
-import {
-  TemplateGalleryPageCreate,
-  TemplateGalleryPageCreateVariables,
-  TemplateGalleryPageCreate_templateGalleryPageCreate as Created
-} from '../../../__generated__/TemplateGalleryPageCreate'
 import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
+import {
+  TemplateGalleryPageCreate_templateGalleryPageCreate as Created,
+  TemplateGalleryPageCreate,
+  TemplateGalleryPageCreateVariables
+} from '../../../__generated__/TemplateGalleryPageCreate'
 
 import { TEMPLATE_GALLERY_PAGE_CREATE } from './useTemplateGalleryPageCreateMutation'
 

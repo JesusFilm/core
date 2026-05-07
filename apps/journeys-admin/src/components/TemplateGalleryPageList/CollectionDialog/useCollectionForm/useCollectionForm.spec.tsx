@@ -1,16 +1,16 @@
-import { ApolloError, InMemoryCache } from '@apollo/client'
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { GraphQLError } from 'graphql'
 import { act, renderHook } from '@testing-library/react'
 import { FormikHelpers } from 'formik'
+import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 import { ReactNode } from 'react'
 
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../../__generated__/GetTemplateGalleryPages'
 import { TemplateGalleryPageStatus } from '../../../../../__generated__/globalTypes'
 import { getTemplateGalleryPageCreateMock } from '../../../../libs/useTemplateGalleryPageCreateMutation/useTemplateGalleryPageCreateMutation.mock'
-import { getTemplateGalleryPageUpdateMock } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation.mock'
 import { TEMPLATE_GALLERY_PAGE_UPDATE } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation'
+import { getTemplateGalleryPageUpdateMock } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation.mock'
 
 import {
   CollectionFormValues,
@@ -96,11 +96,11 @@ function makeCollection(
   }
 }
 
-beforeEach(() => {
-  mockEnqueueSnackbar.mockClear()
-})
-
 describe('useCollectionForm', () => {
+  beforeEach(() => {
+    mockEnqueueSnackbar.mockClear()
+  })
+
   describe('initialValues', () => {
     it('returns empty defaults when no collection is provided (create mode)', () => {
       const { result } = renderHook(

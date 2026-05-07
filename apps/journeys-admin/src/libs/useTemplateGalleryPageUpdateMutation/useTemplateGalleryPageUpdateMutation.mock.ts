@@ -1,11 +1,11 @@
 import { MockedResponse } from '@apollo/client/testing'
 
+import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
 import {
   TemplateGalleryPageUpdate,
   TemplateGalleryPageUpdateVariables,
   TemplateGalleryPageUpdate_templateGalleryPageUpdate as Updated
 } from '../../../__generated__/TemplateGalleryPageUpdate'
-import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
 
 import { TEMPLATE_GALLERY_PAGE_UPDATE } from './useTemplateGalleryPageUpdateMutation'
 

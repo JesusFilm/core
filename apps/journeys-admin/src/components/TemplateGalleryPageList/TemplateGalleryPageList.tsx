@@ -34,6 +34,17 @@ import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPages
 import { JourneyCard } from '../JourneyList/JourneyCard'
 import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
 
+import { CollectionCard } from './CollectionCard'
+import { CollectionDialog } from './CollectionDialog'
+import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
+import {
+  DraggableJourneysGrid,
+  DroppableCollectionWrapper,
+  UnsectionedDroppable
+} from './Droppables'
+import { useCollectionMutations } from './useCollectionMutations'
+import { useDragEndHandler } from './useDragEndHandler'
+
 // Map the page-level status filter (active / archived / trashed) to the
 // underlying JourneyStatus enum values that useAdminJourneysQuery expects.
 // Mirrors ActiveJourneyList / ArchivedJourneyList / TrashedJourneyList.
@@ -46,17 +57,6 @@ const STATUS_FILTER_TO_JOURNEY_STATUSES: Record<
   trashed: [JourneyStatus.trashed]
 }
 
-import { CollectionCard } from './CollectionCard'
-import { CollectionDialog } from './CollectionDialog'
-import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
-import {
-  DraggableJourneysGrid,
-  DroppableCollectionWrapper,
-  UnsectionedDroppable
-} from './Droppables'
-import { useCollectionMutations } from './useCollectionMutations'
-import { useDragEndHandler } from './useDragEndHandler'
-
 // Build the shareable public URL for a published collection. Mirrors the
 // pattern in JourneyQuickSettings: respect NEXT_PUBLIC_JOURNEYS_URL,
 // fall back to your.nextstep.is. The path is `/template-gallery/<slug>`
@@ -66,7 +66,6 @@ function buildCollectionPublicUrl(slug: string): string {
     process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
   return `${base}/template-gallery/${slug}`
 }
-
 
 export interface TemplateGalleryPageListProps {
   /**

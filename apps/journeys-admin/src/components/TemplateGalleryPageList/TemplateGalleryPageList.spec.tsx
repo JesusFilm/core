@@ -5,8 +5,6 @@ import { SnackbarProvider } from 'notistack'
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { getLastActiveTeamIdAndTeamsMock } from '@core/journeys/ui/TeamProvider/TeamProvider.mock'
 
-import { ThemeProvider } from '../ThemeProvider'
-
 import { GetAdminJourneys } from '../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages } from '../../../__generated__/GetTemplateGalleryPages'
 import {
@@ -18,6 +16,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { GET_TEMPLATE_GALLERY_PAGES } from '../../libs/useTemplateGalleryPagesQuery'
+import { ThemeProvider } from '../ThemeProvider'
 
 import { TemplateGalleryPageList } from './TemplateGalleryPageList'
 
