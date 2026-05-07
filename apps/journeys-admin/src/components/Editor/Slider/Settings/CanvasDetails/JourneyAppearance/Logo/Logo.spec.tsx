@@ -261,11 +261,7 @@ describe('Logo', () => {
 
     render(
       <MockedProvider
-        mocks={[
-          listUnsplashCollectionPhotosMock,
-          deleteMock,
-          undoMock
-        ]}
+        mocks={[listUnsplashCollectionPhotosMock, deleteMock, undoMock]}
       >
         <JourneyProvider value={{ journey }}>
           <CommandProvider>

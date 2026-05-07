@@ -124,68 +124,75 @@ describe('ImageEdit', () => {
   it.each([
     ['primary', 'primaryImageBlockId'],
     ['creator', 'creatorImageBlockId']
-  ] as const)('creates the %s image from gallery selection', async (target, field) => {
-    const imageBlockCreateMock = getJourneyImageBlockCreateMock()
-    const journeyUpdateResult = jest.fn(() => ({
-      data: {
-        journeyUpdate: {
-          __typename: 'Journey',
-          id: 'journey.id',
-          [field]: {
-            id: image.id
+  ] as const)(
+    'creates the %s image from gallery selection',
+    async (target, field) => {
+      const imageBlockCreateMock = getJourneyImageBlockCreateMock()
+      const journeyUpdateResult = jest.fn(() => ({
+        data: {
+          journeyUpdate: {
+            __typename: 'Journey',
+            id: 'journey.id',
+            [field]: {
+              id: image.id
+            }
           }
         }
-      }
-    }))
+      }))
 
-    render(
-      <MockedProvider
-        mocks={[
-          listUnsplashCollectionPhotosMock,
-          triggerUnsplashDownloadMock,
-          imageBlockCreateMock,
-          {
-            request: {
-              query: JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE,
-              variables: {
-                id: 'journey.id',
-                input: {
-                  [field]: image.id
+      render(
+        <MockedProvider
+          mocks={[
+            listUnsplashCollectionPhotosMock,
+            triggerUnsplashDownloadMock,
+            imageBlockCreateMock,
+            {
+              request: {
+                query: JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE,
+                variables: {
+                  id: 'journey.id',
+                  input: {
+                    [field]: image.id
+                  }
                 }
-              }
-            },
-            result: journeyUpdateResult
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journey.id',
-                hostname: null,
-                slug: 'journey-id'
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <ImageEdit target={target} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
+              },
+              result: journeyUpdateResult
+            }
+          ]}
+        >
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journey.id',
+                  hostname: null,
+                  slug: 'journey-id'
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <ImageEdit target={target} />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
 
-    fireEvent.click(screen.getByRole('button'))
-    await waitFor(() =>
-      expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
-    )
-    fireEvent.click(
-      screen.getByRole('button', { name: 'white dome building during daytime' })
-    )
+      fireEvent.click(screen.getByRole('button'))
+      await waitFor(() =>
+        expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'white dome building during daytime'
+        })
+      )
 
-    await waitFor(() => expect(imageBlockCreateMock.result).toHaveBeenCalled())
-    await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
-  })
+      await waitFor(() =>
+        expect(imageBlockCreateMock.result).toHaveBeenCalled()
+      )
+      await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
+    }
+  )
 
   it('delete the primaryImage', async () => {
     const cache = new InMemoryCache()
@@ -366,5 +373,4 @@ describe('ImageEdit', () => {
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
   })
-
 })
