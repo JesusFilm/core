@@ -113,6 +113,7 @@ describe('DomainNameForm', () => {
     __typename: 'CustomDomain',
     name: 'example.com',
     apexName: 'example.com',
+    routeAllTeamJourneys: false,
     journeyCollection: null
   }
 
