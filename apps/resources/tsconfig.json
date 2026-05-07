@@ -16,12 +16,6 @@
     "module": "esnext",
     "moduleResolution": "bundler"
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "**/*.jsx",
-    "**/*.mjs"
-  ],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.mjs"],
   "exclude": ["node_modules", "jest.config.ts"]
 }
