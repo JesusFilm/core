@@ -31,6 +31,7 @@ import {
   TemplateGalleryPageStatus
 } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
+import { useCanPublishCollection } from '../../libs/useCanPublishCollection'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
 import { JourneyCard } from '../JourneyList/JourneyCard'
 import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
@@ -101,6 +102,12 @@ export function TemplateGalleryPageList({
   // or trashed views the user is curating those buckets, not assigning to
   // public gallery pages.
   const showCollections = status === 'active'
+
+  // Custom-domain teams can't publish gallery pages — gate Publish + Preview
+  // on every Collection surface (NES-1644).
+  const { canPublish, reason: publishBlockedReason } = useCanPublishCollection({
+    teamId
+  })
 
   const collectionsQuery = useTemplateGalleryPagesQuery(
     teamId != null ? { teamId } : undefined,
@@ -394,6 +401,12 @@ export function TemplateGalleryPageList({
                     onUnpublish={handleUnpublish}
                     onUngroup={handleUngroup}
                     busy={busyId === collection.id || dragInFlight}
+                    canPublish={canPublish}
+                    publishBlockedReason={
+                      publishBlockedReason != null
+                        ? t(publishBlockedReason)
+                        : null
+                    }
                   >
                     <DraggableJourneysGrid
                       journeys={journeysByCollection.get(collection.id) ?? []}
@@ -452,6 +465,10 @@ export function TemplateGalleryPageList({
           teamId={teamId}
           availableJourneys={unsectioned}
           parentBusy={dragInFlight}
+          canPublish={canPublish}
+          publishBlockedReason={
+            publishBlockedReason != null ? t(publishBlockedReason) : null
+          }
           onClose={handleCloseCreate}
         />
       )}
@@ -464,6 +481,10 @@ export function TemplateGalleryPageList({
           collection={editTarget}
           availableJourneys={editAvailableJourneys}
           parentBusy={dragInFlight}
+          canPublish={canPublish}
+          publishBlockedReason={
+            publishBlockedReason != null ? t(publishBlockedReason) : null
+          }
           onClose={handleCloseEdit}
         />
       )}
@@ -473,6 +494,11 @@ export function TemplateGalleryPageList({
           publishSuccessCollection != null
             ? buildCollectionPublicUrl(publishSuccessCollection.slug)
             : null
+        }
+        slug={publishSuccessCollection?.slug ?? null}
+        canPublish={canPublish}
+        publishBlockedReason={
+          publishBlockedReason != null ? t(publishBlockedReason) : null
         }
         onClose={handleClosePublishSuccess}
       />

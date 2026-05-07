@@ -18,12 +18,30 @@ export interface CollectionPublishSuccessDialogProps {
   open: boolean
   /** The shareable public URL for the just-published page. */
   publicUrl: string | null
+  /**
+   * The slug of the just-published collection. When set, "View the page"
+   * routes through `/api/preview-template-gallery?slug=<slug>` so the
+   * journeys app revalidates its ISR cache before redirecting — the user
+   * sees the freshly-published content instead of stale cache.
+   * Null when not yet known (e.g. closed dialog).
+   */
+  slug?: string | null
+  /**
+   * Belt-and-suspenders gate: the success dialog should never open when
+   * the team can't publish, but if it does, "View the page" stays
+   * disabled with the provided reason.
+   */
+  canPublish?: boolean
+  publishBlockedReason?: string | null
   onClose: () => void
 }
 
 export function CollectionPublishSuccessDialog({
   open,
   publicUrl,
+  slug,
+  canPublish = true,
+  publishBlockedReason = null,
   onClose
 }: CollectionPublishSuccessDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -39,8 +57,16 @@ export function CollectionPublishSuccessDialog({
   }
 
   function handleView(): void {
-    if (publicUrl == null) return
-    window.open(publicUrl, '_blank', 'noopener,noreferrer')
+    if (publicUrl == null || !canPublish) return
+    // Prefer the admin proxy when we know the slug — it revalidates the
+    // journeys ISR cache before redirecting, so the user lands on a fresh
+    // page instead of a stale one. Fall back to the raw public URL for
+    // safety (e.g. mid-migration callers that don't pass slug yet).
+    const target =
+      slug != null && slug !== ''
+        ? `/api/preview-template-gallery?slug=${encodeURIComponent(slug)}`
+        : publicUrl
+    window.open(target, '_blank', 'noopener,noreferrer')
     onClose()
   }
 
@@ -97,6 +123,11 @@ export function CollectionPublishSuccessDialog({
             )
           }}
         />
+        {!canPublish && publishBlockedReason != null && (
+          <Typography variant="caption" color="text.secondary">
+            {publishBlockedReason}
+          </Typography>
+        )}
       </Stack>
     </Dialog>
   )

@@ -35,6 +35,14 @@ export interface CollectionDialogProps {
    * interleaving on the same Apollo cache.
    */
   parentBusy?: boolean
+  /**
+   * False when the active team has a `routeAllTeamJourneys` custom
+   * domain. Disables the "Open in new tab" preview button on the
+   * preview pane (NES-1644). Defaults to true.
+   */
+  canPublish?: boolean
+  /** Tooltip copy for the disabled preview button. */
+  publishBlockedReason?: string | null
   onClose: () => void
 }
 
@@ -54,6 +62,8 @@ export function CollectionDialog({
   collection,
   availableJourneys,
   parentBusy = false,
+  canPublish = true,
+  publishBlockedReason = null,
   onClose
 }: CollectionDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -170,6 +180,9 @@ export function CollectionDialog({
                           }/template-gallery/${encodeURIComponent(values.slug)}`
                         : null
                     }
+                    slug={values.slug !== '' ? values.slug : null}
+                    canPublish={canPublish}
+                    publishBlockedReason={publishBlockedReason}
                   />
                   <Box
                     sx={{

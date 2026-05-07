@@ -35,6 +35,24 @@ interface CollectionPreviewPaneProps {
    * when the collection has no slug yet (i.e. unsaved create dialog).
    */
   publicUrl: string | null
+  /**
+   * The slug of the collection. When provided, the "Open in new tab"
+   * button routes through `/api/preview-template-gallery?slug=<slug>`
+   * — that proxy revalidates the journeys ISR cache before redirecting,
+   * so previewers see the just-saved content. Null on unsaved create
+   * dialog (we still render the public URL for display, but Open is
+   * disabled).
+   */
+  slug: string | null
+  /**
+   * False when the active team has a `routeAllTeamJourneys` custom
+   * domain — gallery pages can't be hosted on custom domains, so the
+   * Open-in-new-tab affordance is disabled with a tooltip.
+   * Defaults to true.
+   */
+  canPublish?: boolean
+  /** Tooltip copy for the disabled state when canPublish is false. */
+  publishBlockedReason?: string | null
 }
 
 /**
@@ -49,10 +67,20 @@ interface CollectionPreviewPaneProps {
 function CollectionPreviewPaneImpl({
   values,
   selectedJourneysOrdered,
-  publicUrl
+  publicUrl,
+  slug,
+  canPublish = true,
+  publishBlockedReason = null
 }: CollectionPreviewPaneProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+
+  // Open is disabled when (a) we have no public URL yet, or (b) the
+  // team's custom-domain gate blocks gallery publishing entirely.
+  const viewDisabled = publicUrl == null || !canPublish
+  const viewTooltip = !canPublish
+    ? (publishBlockedReason ?? '')
+    : t('Open in new tab')
 
   async function handleCopy(): Promise<void> {
     if (publicUrl == null) return
@@ -63,8 +91,16 @@ function CollectionPreviewPaneImpl({
     )
   }
   function handleView(): void {
-    if (publicUrl == null) return
-    window.open(publicUrl, '_blank', 'noopener,noreferrer')
+    if (viewDisabled) return
+    // Proxy through `/api/preview-template-gallery` so the journeys
+    // ISR cache is revalidated before redirect (NES-1644). Falls back
+    // to the raw public URL if slug is missing (defensive).
+    const target =
+      slug != null && slug !== ''
+        ? `/api/preview-template-gallery?slug=${encodeURIComponent(slug)}`
+        : publicUrl
+    if (target == null) return
+    window.open(target, '_blank', 'noopener,noreferrer')
   }
   return (
     <Box
@@ -122,12 +158,12 @@ function CollectionPreviewPaneImpl({
             )
           }}
         />
-        <Tooltip title={t('Open in new tab')}>
+        <Tooltip title={viewTooltip}>
           <span>
             <IconButton
               aria-label={t('Open in new tab')}
               onClick={handleView}
-              disabled={publicUrl == null}
+              disabled={viewDisabled}
               sx={{
                 bgcolor: '#26262E',
                 color: 'common.white',

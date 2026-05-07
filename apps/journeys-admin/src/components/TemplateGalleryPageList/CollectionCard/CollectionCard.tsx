@@ -25,6 +25,21 @@ export interface CollectionCardProps {
   onUnpublish?: (collection: TemplateGalleryPage) => void
   onUngroup?: (collection: TemplateGalleryPage) => void
   busy?: boolean
+  /**
+   * False when the active team has a `routeAllTeamJourneys` custom
+   * domain — gallery pages can't be hosted on custom domains, so
+   * Publish + Preview are disabled with a tooltip.
+   * Defaults to true to keep behaviour unchanged for non-custom-domain
+   * teams.
+   */
+  canPublish?: boolean
+  /**
+   * Tooltip copy shown on the disabled Publish / Preview menu items
+   * when `canPublish` is false. Null falls back to the default
+   * disabled-because-empty copy on Publish (Preview only renders this
+   * tooltip when canPublish is false).
+   */
+  publishBlockedReason?: string | null
   /** Rendered inside the card's templates area; the parent owns drag wiring. */
   children?: ReactNode
 }
@@ -36,6 +51,8 @@ function CollectionCardImpl({
   onUnpublish,
   onUngroup,
   busy,
+  canPublish = true,
+  publishBlockedReason = null,
   children
 }: CollectionCardProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -43,6 +60,26 @@ function CollectionCardImpl({
   const [ungroupOpen, setUngroupOpen] = useState(false)
 
   const isPublished = collection.status === TemplateGalleryPageStatus.published
+  const isEmpty = collection.templates.length === 0
+
+  // Preview (a) only makes sense once the page is publicly reachable, and
+  // (b) is also gated by custom-domain teams — same constraint as Publish.
+  const previewDisabled = !isPublished || !canPublish
+  const previewHref = `/api/preview-template-gallery?slug=${encodeURIComponent(collection.slug)}`
+  const previewTooltip = !canPublish
+    ? (publishBlockedReason ?? '')
+    : !isPublished
+      ? t('Publish the collection to preview it.')
+      : ''
+
+  // Publish disabled when: (1) collection is empty, or (2) custom domain
+  // gate. Custom-domain copy wins when both apply (the harder constraint).
+  const publishDisabled = isEmpty || !canPublish
+  const publishTooltip = !canPublish
+    ? (publishBlockedReason ?? '')
+    : isEmpty
+      ? t('Add at least one template before publishing')
+      : ''
 
   function handleMenuOpen(event: MouseEvent<HTMLButtonElement>): void {
     setAnchorEl(event.currentTarget)
@@ -61,6 +98,11 @@ function CollectionCardImpl({
   function handleUnpublish(): void {
     handleMenuClose()
     onUnpublish?.(collection)
+  }
+  function handlePreview(): void {
+    handleMenuClose()
+    if (previewDisabled) return
+    window.open(previewHref, '_blank', 'noopener,noreferrer')
   }
   function handleOpenUngroup(): void {
     handleMenuClose()
@@ -98,7 +140,7 @@ function CollectionCardImpl({
             color={isPublished ? 'success' : 'default'}
             label={isPublished ? t('Published') : t('Draft')}
           />
-          {collection.templates.length === 0 && (
+          {isEmpty && (
             <Chip size="small" variant="outlined" label={t('Empty')} />
           )}
         </Stack>
@@ -121,22 +163,27 @@ function CollectionCardImpl({
           onClose={handleMenuClose}
         >
           <MenuItem onClick={handleEdit}>{t('Edit')}</MenuItem>
+          <Tooltip
+            title={previewTooltip}
+            placement="left"
+            disableHoverListener={!previewDisabled}
+            disableFocusListener={!previewDisabled}
+          >
+            <span>
+              <MenuItem onClick={handlePreview} disabled={previewDisabled}>
+                {t('Preview')}
+              </MenuItem>
+            </span>
+          </Tooltip>
           {!isPublished && (
             <Tooltip
-              title={
-                collection.templates.length === 0
-                  ? t('Add at least one template before publishing')
-                  : ''
-              }
+              title={publishTooltip}
               placement="left"
-              disableHoverListener={collection.templates.length > 0}
-              disableFocusListener={collection.templates.length > 0}
+              disableHoverListener={!publishDisabled}
+              disableFocusListener={!publishDisabled}
             >
               <span>
-                <MenuItem
-                  onClick={handlePublish}
-                  disabled={collection.templates.length === 0}
-                >
+                <MenuItem onClick={handlePublish} disabled={publishDisabled}>
                   {t('Publish')}
                 </MenuItem>
               </span>
@@ -176,7 +223,7 @@ function CollectionCardImpl({
           borderRadius: 1
         }}
       >
-        {collection.templates.length === 0 ? (
+        {isEmpty ? (
           <Box
             sx={{
               p: 2,

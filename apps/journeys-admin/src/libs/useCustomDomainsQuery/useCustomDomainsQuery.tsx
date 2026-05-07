@@ -11,6 +11,7 @@ export const GET_CUSTOM_DOMAINS = gql`
       id
       apexName
       name
+      routeAllTeamJourneys
       journeyCollection {
         id
         journeys {
