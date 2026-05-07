@@ -238,6 +238,22 @@ describe('useCollectionForm', () => {
         result.current.schema.validate(defaultValues({ slug: 'good-slug-1' }))
       ).resolves.toBeTruthy()
     })
+
+    it('accepts an empty slug — create mode does not render the slug field and the server generates one', async () => {
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'create',
+            teamId: 'team-1',
+            onClose: jest.fn()
+          }),
+        { wrapper: wrapperWithMocks([]) }
+      )
+
+      await expect(
+        result.current.schema.validate(defaultValues({ slug: '' }))
+      ).resolves.toBeTruthy()
+    })
   })
 
   describe('handleSubmit — create branch', () => {

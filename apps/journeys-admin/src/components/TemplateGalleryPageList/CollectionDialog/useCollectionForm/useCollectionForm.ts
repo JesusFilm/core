@@ -91,10 +91,12 @@ function buildSchema(
       }),
     slug: string()
       .max(200, t('Max 200 characters'))
-      .matches(
-        /^[a-z0-9]+(-[a-z0-9]+)*$/,
-        t('Use lowercase letters, numbers, and hyphens only')
-      )
+      .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, {
+        message: t('Use lowercase letters, numbers, and hyphens only'),
+        // The slug field only renders in edit mode. Create mode submits
+        // with slug = '' and the server generates one from the title.
+        excludeEmptyString: true
+      })
       .default(''),
     journeyIds: array()
       .of(string().required())
