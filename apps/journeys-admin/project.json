@@ -62,6 +62,15 @@
         }
       }
     },
+    "upload-sourcemaps": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm dlx @datadog/datadog-ci@5.8.0 sourcemaps upload dist/apps/journeys-admin/.next/static --service=journeys-admin --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+        ],
+        "parallel": false
+      }
+    },
     "vercel-alias": {
       "executor": "nx:run-commands",
       "options": {
