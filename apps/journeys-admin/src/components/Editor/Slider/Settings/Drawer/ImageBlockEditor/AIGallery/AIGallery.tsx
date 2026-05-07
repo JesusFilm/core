@@ -4,12 +4,15 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 import { CreateAiImage } from '../../../../../../../../__generated__/CreateAiImage'
 import {
   ImageBlockUpdateInput,
   SegmindModel
 } from '../../../../../../../../__generated__/globalTypes'
+import { MyCloudflareImagesGrid } from '../MyCloudflareImagesGrid'
 
 import { AIPrompt } from './AIPrompt'
 
@@ -36,7 +39,10 @@ export function AIGallery({
 }: AIGalleryProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
+  const { mediaLibrary } = useFlags()
+  const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE, {
+    refetchQueries: ['GetMyCloudflareImages']
+  })
 
   const handleSubmit = async ({ prompt }): Promise<void> => {
     setUploading?.(true)
@@ -84,6 +90,15 @@ export function AIGallery({
         loading={loading}
         selectedBlock={selectedBlock}
       />
+      {mediaLibrary === true && (
+        <MyCloudflareImagesGrid
+          title={t('Your generations')}
+          selectedSrc={selectedBlock?.src}
+          onSelect={onChange}
+          isAi={true}
+          uploading={loading}
+        />
+      )}
     </Box>
   )
 }

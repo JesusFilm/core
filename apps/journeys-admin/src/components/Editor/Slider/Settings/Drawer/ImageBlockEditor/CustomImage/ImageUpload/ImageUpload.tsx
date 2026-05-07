@@ -1,3 +1,4 @@
+import { useApolloClient } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -33,6 +34,7 @@ export function ImageUpload({
 }: ImageUploadProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
+  const apolloClient = useApolloClient()
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
   const [errorCode, setErrorCode] = useState<ErrorCode>()
 
@@ -81,6 +83,9 @@ export function ImageUpload({
         const src = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
         }/${response.result.id as string}/public`
+        await apolloClient.refetchQueries({
+          include: ['GetMyCloudflareImages']
+        })
         onChange({ src, scale: 100, focalLeft: 50, focalTop: 50 })
         setTimeout(() => setSuccess(undefined), 4000)
         setUploading?.(undefined)

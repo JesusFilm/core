@@ -2,11 +2,14 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import {
   CreateAiImage,
   CreateAiImageVariables
 } from '../../../../../../../../__generated__/CreateAiImage'
 import { SegmindModel } from '../../../../../../../../__generated__/globalTypes'
+import { GET_MY_CLOUDFLARE_IMAGES } from '../MyCloudflareImagesGrid'
 
 import { CREATE_AI_IMAGE } from './AIGallery'
 
@@ -98,6 +101,89 @@ describe('AIGallery', () => {
         screen.getByText('Something went wrong, please try again!')
       ).toBeInTheDocument()
     })
+  })
+
+  it('should not render the generations grid when mediaLibrary flag is off', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ mediaLibrary: false }}>
+            <AIGallery onChange={jest.fn()} />
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.queryByText('Your generations')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('MyCloudflareImagesGrid')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should render the generations grid when mediaLibrary flag is on', async () => {
+    const myAiImagesMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 9, isAi: true }
+      },
+      result: {
+        data: {
+          getMyCloudflareImages: [
+            {
+              __typename: 'CloudflareImage',
+              id: 'g1',
+              url: 'https://imagedelivery.net/key/g1',
+              blurhash: null
+            }
+          ]
+        }
+      }
+    }
+    render(
+      <MockedProvider mocks={[myAiImagesMock]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ mediaLibrary: true }}>
+            <AIGallery onChange={jest.fn()} />
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(screen.getByText('Your generations')).toBeInTheDocument()
+    })
+  })
+
+  it('should refetch GetMyCloudflareImages after a successful AI generation', async () => {
+    let refetchCount = 0
+    const myAiImagesMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 9, isAi: true }
+      },
+      newData: () => {
+        refetchCount += 1
+        return {
+          data: {
+            getMyCloudflareImages: []
+          }
+        }
+      }
+    }
+    render(
+      <MockedProvider mocks={[getAIImage, myAiImagesMock, myAiImagesMock]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ mediaLibrary: true }}>
+            <AIGallery onChange={jest.fn()} />
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(refetchCount).toBeGreaterThanOrEqual(1))
+    const initialCount = refetchCount
+    fireEvent.change(screen.getByRole('textbox', { name: 'Prompt' }), {
+      target: { value: 'an image of the New Jerusalem' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Prompt' }))
+    await waitFor(() => expect(refetchCount).toBeGreaterThan(initialCount))
   })
 
   it('should show error snackbar on request failure', async () => {
