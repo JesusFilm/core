@@ -1,6 +1,6 @@
 import { lighten, rgbToHex } from '@mui/system/colorManipulator'
+import { Edge, MarkerType, Node } from '@xyflow/react'
 import findIndex from 'lodash/findIndex'
-import { Edge, MarkerType, Node } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
@@ -193,7 +193,7 @@ export function transformSteps(
         type: config.nodeType,
         data: {},
         position,
-        parentNode: step.id,
+        parentId: step.id,
         draggable: false
       })
     }
@@ -201,6 +201,16 @@ export function transformSteps(
 
   steps.forEach((step) => {
     connectStepToNextBlock(step, steps)
+
+    // Parent node must be in the array before child nodes (parentId)
+    // for @xyflow/react to correctly resolve relative positions on first render
+    nodes.push({
+      id: step.id,
+      type: 'StepBlock',
+      data: {},
+      position: positions[step.id]
+    })
+
     const actionBlocks = filterActionBlocks(step)
 
     actionBlocks.reduce((actionCount, block, blockIndex) => {
@@ -217,13 +227,6 @@ export function transformSteps(
       processActionBlock(block, step, priorAction, actionIndex, blockIndex)
       return createsNode ? actionCount + 1 : actionCount
     }, 0)
-
-    nodes.push({
-      id: step.id,
-      type: 'StepBlock',
-      data: {},
-      position: positions[step.id]
-    })
   })
 
   if (steps[0] != null) {

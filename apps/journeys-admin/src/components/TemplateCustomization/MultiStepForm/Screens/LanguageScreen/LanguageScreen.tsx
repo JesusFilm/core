@@ -10,7 +10,7 @@ import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import uniqBy from 'lodash/uniqBy'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
@@ -382,7 +382,7 @@ export function LanguageScreen({
 
       if (duplicatedJourneyId == null) return
 
-      if (needsTranslation && isSignedIn) {
+      if (needsTranslation && (isSignedIn || isGuestFlowEnabled)) {
         const sourceLanguageName =
           journey.language.name.find((name) => !name.primary)?.value ?? ''
         const targetLanguageName =

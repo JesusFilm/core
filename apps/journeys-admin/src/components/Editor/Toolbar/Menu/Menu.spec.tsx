@@ -396,8 +396,13 @@ describe('Toolbar Menu', () => {
       )
       fireEvent.click(screen.getByRole('button'))
       expect(
-        screen.getByRole('menuitem', { name: 'Template Settings' })
+        screen.getByRole('menuitem', { name: 'Edit Details' })
       ).toBeInTheDocument()
+      // Template Settings is hidden for local templates — Edit Details now
+      // opens the consolidated LocalTemplateDetailsDialog (NES-1543).
+      expect(
+        screen.queryByRole('menuitem', { name: 'Template Settings' })
+      ).not.toBeInTheDocument()
       expect(
         screen.queryByRole('menuitem', { name: 'Manage Access' })
       ).not.toBeInTheDocument()

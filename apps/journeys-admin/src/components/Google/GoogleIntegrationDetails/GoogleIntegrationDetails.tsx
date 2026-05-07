@@ -15,7 +15,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { format } from 'date-fns'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
