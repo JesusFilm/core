@@ -285,6 +285,9 @@ export enum Service {
   apiVideos = "apiVideos",
 }
 
+/**
+ * Lifecycle state of a TemplateGalleryPage. Anonymous traffic via `templateGalleryPageBySlug` only sees `published` rows; drafts are hidden.
+ */
 export enum TemplateGalleryPageStatus {
   draft = "draft",
   published = "published",
@@ -950,6 +953,9 @@ export interface TeamUpdateInput {
   publicTitle?: string | null;
 }
 
+/**
+ * Input for creating a new TemplateGalleryPage in `draft` status. The slug is server-generated from `title`.
+ */
 export interface TemplateGalleryPageCreateInput {
   teamId: string;
   title: string;
@@ -961,6 +967,9 @@ export interface TemplateGalleryPageCreateInput {
   journeyIds?: string[] | null;
 }
 
+/**
+ * Input for editing a TemplateGalleryPage. Field omitted = leave the existing value alone. Field set to `null` = clear (only meaningful for nullable fields).
+ */
 export interface TemplateGalleryPageUpdateInput {
   title?: string | null;
   description?: string | null;
