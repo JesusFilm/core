@@ -3,7 +3,11 @@ import nextConfig from '../../libs/shared/eslint/next.mjs'
 export default [
   ...nextConfig,
   {
-    ignores: ['apps/journeys/jest.config.ts', 'apps/journeys/next.config.js']
+    ignores: [
+      'apps/journeys/jest.config.ts',
+      'apps/journeys/next.config.js',
+      'apps/journeys/vitest.config.mts'
+    ]
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
