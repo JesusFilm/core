@@ -3,9 +3,10 @@ import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
 import { Block, prisma } from '@core/prisma/journeys/client'
-import { createGeminiFallbackSession } from '@core/shared/ai/geminiModel'
+import { createOpenrouterFallbackSession } from '@core/shared/ai/openrouterModel'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
+import { env } from '../../env'
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { builder } from '../builder'
 import { JourneyRef } from '../journey/journey'
@@ -210,7 +211,7 @@ async function translateCardBlocks({
     blockId: string,
     updates: Partial<Record<TranslatableBlockField, string>>
   ) => void
-  session: ReturnType<typeof createGeminiFallbackSession>
+  session: ReturnType<typeof createOpenrouterFallbackSession>
 }): Promise<void> {
   const blocksToTranslate = getTranslatableBlocksForCard(allBlocks, cardBlock)
   if (blocksToTranslate.length === 0) return
@@ -401,7 +402,9 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           journey: null
         }
 
-        const session = createGeminiFallbackSession()
+        const session = createOpenrouterFallbackSession(
+          env.TRANSLATION_AI_MODELS
+        )
 
         // Step 1: Analyze and translate journey title, description, and SEO fields
         const analysisPrompt = buildAnalysisPrompt({
@@ -685,7 +688,9 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
         cardBlocks
       })
 
-      const session = createGeminiFallbackSession()
+      const session = createOpenrouterFallbackSession(
+        env.TRANSLATION_AI_MODELS
+      )
 
       try {
         // 4. Use Gemini to analyze the journey content and get intent, and translate title/description

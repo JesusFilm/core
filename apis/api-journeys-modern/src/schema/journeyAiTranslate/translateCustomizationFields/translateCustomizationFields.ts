@@ -2,8 +2,10 @@ import { Output, generateText } from 'ai'
 import { z } from 'zod'
 
 import { JourneyCustomizationField } from '@core/prisma/journeys/client'
-import { withGeminiFallback } from '@core/shared/ai/geminiModel'
+import { withOpenrouterFallback } from '@core/shared/ai/openrouterModel'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
+
+import { env } from '../../../env'
 
 const CUSTOMIZATION_SYSTEM_PROMPT = `${preSystemPrompt}
 
@@ -55,18 +57,20 @@ Return translations in the same order as input.
 
 ${numberedValues}`
 
-  const { output } = await withGeminiFallback((model) =>
-    generateText({
-      model,
-      messages: [
-        { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
-        {
-          role: 'user',
-          content: [{ type: 'text', text: prompt }]
-        }
-      ],
-      output: Output.object({ schema: BatchTranslationSchema })
-    })
+  const { output } = await withOpenrouterFallback(
+    (model) =>
+      generateText({
+        model,
+        messages: [
+          { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content: [{ type: 'text', text: prompt }]
+          }
+        ],
+        output: Output.object({ schema: BatchTranslationSchema })
+      }),
+    env.TRANSLATION_AI_MODELS
   )
 
   return values.map((original, i) => output.translations[i] ?? original)
@@ -250,20 +254,22 @@ ${fieldContext}
 Description:
 ${hardenPrompt(description)}`
 
-  const { output } = await withGeminiFallback((model) =>
-    generateText({
-      model,
-      messages: [
-        { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
-        {
-          role: 'user',
-          content: [{ type: 'text', text: prompt }]
-        }
-      ],
-      output: Output.object({
-        schema: CustomizationDescriptionTranslationSchema
-      })
-    })
+  const { output } = await withOpenrouterFallback(
+    (model) =>
+      generateText({
+        model,
+        messages: [
+          { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content: [{ type: 'text', text: prompt }]
+          }
+        ],
+        output: Output.object({
+          schema: CustomizationDescriptionTranslationSchema
+        })
+      }),
+    env.TRANSLATION_AI_MODELS
   )
 
   if (fieldMatches.length > 0) {

@@ -33,6 +33,28 @@ export const env = createEnv({
     MUX_UGC_SECRET_KEY: z.string().trim().min(1),
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
     REDIS_URL: z.string().trim().min(1).default('redis'),
-    SERVICE_VERSION: z.string().trim().default('')
+    SERVICE_VERSION: z.string().trim().default(''),
+    IMAGE_DESCRIPTION_AI_MODELS: z
+      .string()
+      .trim()
+      .default('google/gemma-4-26b-a4b-it,google/gemini-2.5-flash')
+      .transform((val) =>
+        val
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      )
+      .pipe(z.array(z.string().min(1)).min(1)),
+    TRANSLATION_AI_MODELS: z
+      .string()
+      .trim()
+      .default('google/gemma-4-26b-a4b-it,google/gemini-2.5-flash')
+      .transform((val) =>
+        val
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      )
+      .pipe(z.array(z.string().min(1)).min(1))
   }
 })
