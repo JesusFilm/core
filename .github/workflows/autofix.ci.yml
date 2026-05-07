@@ -21,7 +21,7 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
-        node-version: [22]
+        node-version: [24]
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       NODE_OPTIONS: '--max-old-space-size=8192'
@@ -93,7 +93,7 @@ jobs:
 
   # Required-check wrapper. Resolves `lint (22)` to SUCCESS when lint-work
   # succeeded OR was skipped (e.g. /sync-ce PRs), and FAILURE otherwise.
-  # Matrix `node-version: [22]` mirrors the original `lint` job so the
+  # Matrix `node-version: [24]` mirrors the original `lint` job so the
   # check name reported to the ruleset stays `lint (22)`.
   lint:
     needs: lint-work
@@ -102,7 +102,7 @@ jobs:
     permissions: {}
     strategy:
       matrix:
-        node-version: [22]
+        node-version: [24]
     steps:
       - name: Resolve lint-work result
         run: |

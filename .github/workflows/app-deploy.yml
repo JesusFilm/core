@@ -14,7 +14,7 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
-        node-version: [22]
+        node-version: [24]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -55,7 +55,7 @@ jobs:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
         github-event-name: ['${{ github.event_name }}']
-        node-version: [22]
+        node-version: [24]
         exclude:
           # handled by production job below
           - app: journeys
@@ -245,7 +245,7 @@ jobs:
       fail-fast: false
       matrix:
         app: ${{ fromJson(needs.build-e2e-matrix.outputs.apps) }}
-        node-version: [22]
+        node-version: [24]
         include: ${{ fromJson(needs.build-e2e-matrix.outputs.include) }}
     steps:
       - uses: actions/checkout@v4
@@ -307,7 +307,7 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
-        node-version: [22]
+        node-version: [24]
         exclude:
           # handled by ecs-frontend-deploy-prod
           - app: journeys-admin
