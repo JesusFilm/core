@@ -1,3 +1,5 @@
+import { vi, type Mock } from 'vitest'
+
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
@@ -8,20 +10,20 @@ import { queue as processVideoDownloadsQueue } from '../../processVideoDownloads
 
 import { ProcessVideoUploadJobData, service } from './service'
 
-jest.mock('../../../schema/mux/video/service', () => ({
-  getVideo: jest.fn()
+vi.mock('../../../schema/mux/video/service', () => ({
+  getVideo: vi.fn()
 }))
 
-jest.mock('../../processVideoDownloads/queue', () => ({
+vi.mock('../../processVideoDownloads/queue', () => ({
   queue: {
-    add: jest.fn()
+    add: vi.fn()
   }
 }))
 
 const mockLogger = {
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn()
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn()
 } as unknown as Logger
 
 const mockJob = {
@@ -43,7 +45,7 @@ const mockJob = {
 
 describe('processVideoUploads service', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('creates or updates variant when mux video is ready', async () => {
@@ -51,7 +53,7 @@ describe('processVideoUploads service', () => {
       id: 'mux-video-id',
       assetId: 'asset-id'
     } as any)
-    ;(getVideo as jest.Mock).mockResolvedValue({
+    ;(getVideo as Mock).mockResolvedValue({
       status: 'ready',
       duration: 120,
       playback_ids: [{ id: 'playback-id', policy: 'public' }]
@@ -108,7 +110,7 @@ describe('processVideoUploads service', () => {
       id: 'mux-video-id',
       assetId: 'asset-id'
     } as any)
-    ;(getVideo as jest.Mock).mockResolvedValue({
+    ;(getVideo as Mock).mockResolvedValue({
       status: 'errored',
       playback_ids: []
     })

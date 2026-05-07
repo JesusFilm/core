@@ -1,3 +1,5 @@
+import { vi, type Mock } from 'vitest'
+
 import { MuxSubtitleTrackStatus } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
@@ -6,12 +8,12 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { getMuxTrackByBcp47 } from './service'
 
-jest.mock('./service', () => ({
-  getMuxTrackByBcp47: jest.fn()
+vi.mock('./service', () => ({
+  getMuxTrackByBcp47: vi.fn()
 }))
 
-jest.mock('../video/service', () => ({
-  getVideo: jest.fn()
+vi.mock('../video/service', () => ({
+  getVideo: vi.fn()
 }))
 
 describe('mux/subtitle', () => {
@@ -38,7 +40,7 @@ describe('mux/subtitle', () => {
   })
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('queries', () => {
@@ -72,12 +74,12 @@ describe('mux/subtitle', () => {
       `)
 
       it('should return existing subtitle track when found', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           {
             id: 'subtitleTrackId',
             trackId: 'trackId',
@@ -131,29 +133,29 @@ describe('mux/subtitle', () => {
       })
 
       it('should create new subtitle track when not found in database', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           null
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: 'assetId',
             userId: 'userId'
           }
         )
-        ;(getMuxTrackByBcp47 as jest.Mock).mockResolvedValue({
+        ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'muxTrackId',
           type: 'text',
           language_code: 'en',
           text_source: 'generated_vod',
           status: 'ready'
         })
-        ;(prismaMock.muxSubtitleTrack.create as jest.Mock).mockResolvedValue({
+        ;(prismaMock.muxSubtitleTrack.create as Mock).mockResolvedValue({
           id: 'subtitleTrackId',
           trackId: 'muxTrackId',
           source: 'generated',
@@ -208,29 +210,29 @@ describe('mux/subtitle', () => {
       })
 
       it('should create subtitle track with processing status', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           null
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: 'assetId',
             userId: 'userId'
           }
         )
-        ;(getMuxTrackByBcp47 as jest.Mock).mockResolvedValue({
+        ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'muxTrackId',
           type: 'text',
           language_code: 'en',
           text_source: 'generated_vod',
           status: 'preparing'
         })
-        ;(prismaMock.muxSubtitleTrack.create as jest.Mock).mockResolvedValue({
+        ;(prismaMock.muxSubtitleTrack.create as Mock).mockResolvedValue({
           id: 'subtitleTrackId',
           trackId: 'muxTrackId',
           source: 'generated',
@@ -267,29 +269,29 @@ describe('mux/subtitle', () => {
       })
 
       it('should create subtitle track with errored status', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           null
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: 'assetId',
             userId: 'userId'
           }
         )
-        ;(getMuxTrackByBcp47 as jest.Mock).mockResolvedValue({
+        ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'muxTrackId',
           type: 'text',
           language_code: 'en',
           text_source: 'generated_vod',
           status: 'errored'
         })
-        ;(prismaMock.muxSubtitleTrack.create as jest.Mock).mockResolvedValue({
+        ;(prismaMock.muxSubtitleTrack.create as Mock).mockResolvedValue({
           id: 'subtitleTrackId',
           trackId: 'muxTrackId',
           source: 'generated',
@@ -326,12 +328,12 @@ describe('mux/subtitle', () => {
       })
 
       it('should update subtitle track status when processing', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           {
             id: 'subtitleTrackId',
             trackId: 'trackId',
@@ -345,21 +347,21 @@ describe('mux/subtitle', () => {
             }
           }
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: 'assetId',
             userId: 'userId'
           }
         )
-        ;(getMuxTrackByBcp47 as jest.Mock).mockResolvedValue({
+        ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'trackId',
           type: 'text',
           language_code: 'en',
           text_source: 'generated_vod',
           status: 'ready'
         })
-        ;(prismaMock.muxSubtitleTrack.update as jest.Mock).mockResolvedValue({
+        ;(prismaMock.muxSubtitleTrack.update as Mock).mockResolvedValue({
           id: 'subtitleTrackId',
           trackId: 'trackId',
           source: 'generated',
@@ -395,12 +397,12 @@ describe('mux/subtitle', () => {
       })
 
       it('should update subtitle track from processing to errored', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           {
             id: 'subtitleTrackId',
             trackId: 'trackId',
@@ -414,21 +416,21 @@ describe('mux/subtitle', () => {
             }
           }
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: 'assetId',
             userId: 'userId'
           }
         )
-        ;(getMuxTrackByBcp47 as jest.Mock).mockResolvedValue({
+        ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'trackId',
           type: 'text',
           language_code: 'en',
           text_source: 'generated_vod',
           status: 'errored'
         })
-        ;(prismaMock.muxSubtitleTrack.update as jest.Mock).mockResolvedValue({
+        ;(prismaMock.muxSubtitleTrack.update as Mock).mockResolvedValue({
           id: 'subtitleTrackId',
           trackId: 'trackId',
           source: 'generated',
@@ -462,29 +464,29 @@ describe('mux/subtitle', () => {
       })
 
       it('should use isUserGenerated=true for non-publisher users', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: []
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           null
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: 'assetId',
             userId: 'userId'
           }
         )
-        ;(getMuxTrackByBcp47 as jest.Mock).mockResolvedValue({
+        ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'muxTrackId',
           type: 'text',
           language_code: 'en',
           text_source: 'generated_vod',
           status: 'ready'
         })
-        ;(prismaMock.muxSubtitleTrack.create as jest.Mock).mockResolvedValue({
+        ;(prismaMock.muxSubtitleTrack.create as Mock).mockResolvedValue({
           id: 'subtitleTrackId',
           trackId: 'muxTrackId',
           source: 'generated',
@@ -505,29 +507,29 @@ describe('mux/subtitle', () => {
       })
 
       it('should use userGenerated argument for publisher users', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           null
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: 'assetId',
             userId: 'userId'
           }
         )
-        ;(getMuxTrackByBcp47 as jest.Mock).mockResolvedValue({
+        ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'muxTrackId',
           type: 'text',
           language_code: 'en',
           text_source: 'generated_vod',
           status: 'ready'
         })
-        ;(prismaMock.muxSubtitleTrack.create as jest.Mock).mockResolvedValue({
+        ;(prismaMock.muxSubtitleTrack.create as Mock).mockResolvedValue({
           id: 'subtitleTrackId',
           trackId: 'muxTrackId',
           source: 'generated',
@@ -549,29 +551,29 @@ describe('mux/subtitle', () => {
       })
 
       it('should default to userGenerated=true for publisher when not provided', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           null
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: 'assetId',
             userId: 'userId'
           }
         )
-        ;(getMuxTrackByBcp47 as jest.Mock).mockResolvedValue({
+        ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: 'muxTrackId',
           type: 'text',
           language_code: 'en',
           text_source: 'generated_vod',
           status: 'ready'
         })
-        ;(prismaMock.muxSubtitleTrack.create as jest.Mock).mockResolvedValue({
+        ;(prismaMock.muxSubtitleTrack.create as Mock).mockResolvedValue({
           id: 'subtitleTrackId',
           trackId: 'muxTrackId',
           source: 'generated',
@@ -592,15 +594,15 @@ describe('mux/subtitle', () => {
       })
 
       it('should throw error when mux asset ID is null', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           null
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: null,
@@ -626,22 +628,22 @@ describe('mux/subtitle', () => {
       })
 
       it('should throw error when mux track is not found', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           null
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: 'assetId',
             userId: 'userId'
           }
         )
-        ;(getMuxTrackByBcp47 as jest.Mock).mockResolvedValue(null)
+        ;(getMuxTrackByBcp47 as Mock).mockResolvedValue(null)
 
         const data = (await authClient({
           document: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
@@ -661,22 +663,22 @@ describe('mux/subtitle', () => {
       })
 
       it('should throw error when mux track id is null', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           null
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: 'assetId',
             userId: 'userId'
           }
         )
-        ;(getMuxTrackByBcp47 as jest.Mock).mockResolvedValue({
+        ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: null,
           type: 'text',
           language_code: 'en',
@@ -702,12 +704,12 @@ describe('mux/subtitle', () => {
       })
 
       it('should throw error when processing track is not found in mux asset', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           {
             id: 'subtitleTrackId',
             trackId: 'trackId',
@@ -721,14 +723,14 @@ describe('mux/subtitle', () => {
             }
           }
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: 'assetId',
             userId: 'userId'
           }
         )
-        ;(getMuxTrackByBcp47 as jest.Mock).mockResolvedValue(null)
+        ;(getMuxTrackByBcp47 as Mock).mockResolvedValue(null)
 
         const data = (await authClient({
           document: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
@@ -748,12 +750,12 @@ describe('mux/subtitle', () => {
       })
 
       it('should throw error when processing track id is null', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           {
             id: 'subtitleTrackId',
             trackId: 'trackId',
@@ -767,14 +769,14 @@ describe('mux/subtitle', () => {
             }
           }
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: 'assetId',
             userId: 'userId'
           }
         )
-        ;(getMuxTrackByBcp47 as jest.Mock).mockResolvedValue({
+        ;(getMuxTrackByBcp47 as Mock).mockResolvedValue({
           id: null,
           type: 'text',
           language_code: 'en',
@@ -800,12 +802,12 @@ describe('mux/subtitle', () => {
       })
 
       it('should throw error when asset ID is null during processing update', async () => {
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxSubtitleTrack.findFirst as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxSubtitleTrack.findFirst as Mock).mockResolvedValue(
           {
             id: 'subtitleTrackId',
             trackId: 'trackId',
@@ -819,7 +821,7 @@ describe('mux/subtitle', () => {
             }
           }
         )
-        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue(
           {
             id: 'muxVideoId',
             assetId: null,

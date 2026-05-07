@@ -1,3 +1,5 @@
+import { vi, type Mock } from 'vitest'
+
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -9,13 +11,13 @@ import {
 
 import { SegmindModelEnum } from './enums/segmindModel'
 
-const mockCreateImageFromText = createImageFromText as jest.Mock
-const mockCreateImageFromResponse = createImageFromResponse as jest.Mock
+const mockCreateImageFromText = createImageFromText as Mock
+const mockCreateImageFromResponse = createImageFromResponse as Mock
 
-jest.mock('../cloudflare/image/service', () => ({
+vi.mock('../cloudflare/image/service', () => ({
   __esModule: true,
-  createImageFromResponse: jest.fn(),
-  createImageFromText: jest.fn()
+  createImageFromResponse: vi.fn(),
+  createImageFromText: vi.fn()
 }))
 
 describe('segmind', () => {
