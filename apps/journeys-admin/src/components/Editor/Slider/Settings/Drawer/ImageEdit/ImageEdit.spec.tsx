@@ -202,66 +202,71 @@ describe('ImageEdit', () => {
   it.each([
     ['primary', 'primaryImageBlock'],
     ['creator', 'creatorImageBlock']
-  ] as const)('updates the %s image from gallery selection', async (target, field) => {
-    const updateResult = jest.fn(() => ({
-      data: {
-        imageBlockUpdate: {
-          ...image,
-          ...unsplashImageInput
+  ] as const)(
+    'updates the %s image from gallery selection',
+    async (target, field) => {
+      const updateResult = jest.fn(() => ({
+        data: {
+          imageBlockUpdate: {
+            ...image,
+            ...unsplashImageInput
+          }
         }
+      }))
+      const imageBlockUpdateMock: MockedResponse<
+        JourneyImageBlockUpdate,
+        JourneyImageBlockUpdateVariables
+      > = {
+        request: {
+          query: JOURNEY_IMAGE_BLOCK_UPDATE,
+          variables: {
+            id: image.id,
+            journeyId: 'journey.id',
+            input: unsplashImageInput
+          }
+        },
+        result: updateResult
       }
-    }))
-    const imageBlockUpdateMock: MockedResponse<
-      JourneyImageBlockUpdate,
-      JourneyImageBlockUpdateVariables
-    > = {
-      request: {
-        query: JOURNEY_IMAGE_BLOCK_UPDATE,
-        variables: {
-          id: image.id,
-          journeyId: 'journey.id',
-          input: unsplashImageInput
-        }
-      },
-      result: updateResult
+
+      render(
+        <MockedProvider
+          mocks={[
+            listUnsplashCollectionPhotosMock,
+            triggerUnsplashDownloadMock,
+            imageBlockUpdateMock
+          ]}
+        >
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journey.id',
+                  hostname: null,
+                  slug: 'journey-id',
+                  [field]: image
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <ImageEdit target={target} />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(screen.getByRole('button'))
+      await waitFor(() =>
+        expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'white dome building during daytime'
+        })
+      )
+
+      await waitFor(() => expect(updateResult).toHaveBeenCalled())
     }
-
-    render(
-      <MockedProvider
-        mocks={[
-          listUnsplashCollectionPhotosMock,
-          triggerUnsplashDownloadMock,
-          imageBlockUpdateMock
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journey.id',
-                hostname: null,
-                slug: 'journey-id',
-                [field]: image
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <ImageEdit target={target} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(screen.getByRole('button'))
-    await waitFor(() =>
-      expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
-    )
-    fireEvent.click(
-      screen.getByRole('button', { name: 'white dome building during daytime' })
-    )
-
-    await waitFor(() => expect(updateResult).toHaveBeenCalled())
-  })
+  )
 
   it('delete the primaryImage', async () => {
     const cache = new InMemoryCache()
