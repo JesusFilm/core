@@ -717,9 +717,7 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
         cardBlocks
       })
 
-      const session = createOpenrouterFallbackSession(
-        env.TRANSLATION_AI_MODELS
-      )
+      const session = createOpenrouterFallbackSession(env.TRANSLATION_AI_MODELS)
 
       try {
         // 4. Use Gemini to analyze the journey content and get intent, and translate title/description

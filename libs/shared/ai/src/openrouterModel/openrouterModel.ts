@@ -101,11 +101,7 @@ export function createOpenrouterFallbackSession(
         }
       }
 
-      return retryWithBackoff(
-        models[models.length - 1],
-        operation,
-        maxRetries
-      )
+      return retryWithBackoff(models[models.length - 1], operation, maxRetries)
     }
   }
 }

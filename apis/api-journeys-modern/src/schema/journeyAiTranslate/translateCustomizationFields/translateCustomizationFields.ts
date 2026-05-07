@@ -299,9 +299,7 @@ ${hardenPrompt(description)}`
     const verifyPattern =
       /\{\{\s*([^:}]+)(?:\s*:\s*(?:(['"])([^'"]*)\2|([^}]*?)))?\s*\}\}/g
     let verifyMatch
-    while (
-      (verifyMatch = verifyPattern.exec(translatedDescription)) !== null
-    ) {
+    while ((verifyMatch = verifyPattern.exec(translatedDescription)) !== null) {
       translatedTokens.push(verifyMatch[0])
     }
 
