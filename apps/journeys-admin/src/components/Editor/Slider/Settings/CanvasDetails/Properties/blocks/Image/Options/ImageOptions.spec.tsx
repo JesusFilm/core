@@ -13,7 +13,10 @@ import {
 } from '../../../../../../../../../../__generated__/ImageBlockUpdate'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
-import { listUnsplashCollectionPhotosMock } from '../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
+import {
+  listUnsplashCollectionPhotosMock,
+  triggerUnsplashDownloadMock
+} from '../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
 
 import { IMAGE_BLOCK_UPDATE } from './ImageOptions'
 
@@ -52,6 +55,18 @@ describe('ImageOptions', () => {
     }
   }
 
+  const unsplashImageInput = {
+    src: 'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNzIxODUyNzc0fA&ixlib=rb-4.0.3&q=80&w=1080',
+    alt: 'white dome building during daytime',
+    blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
+    height: 720,
+    width: 1080,
+    scale: 100,
+    focalLeft: 50,
+    focalTop: 50,
+    customizable: null
+  }
+
   const scaleUpdateResponse: ImageBlockUpdate = {
     imageBlockUpdate: {
       ...selectedBlock,
@@ -77,6 +92,56 @@ describe('ImageOptions', () => {
       data: response
     }
   }
+
+  it('updates image block from gallery selection', async () => {
+    const updateResult = jest.fn(() => ({
+      data: {
+        imageBlockUpdate: {
+          ...selectedBlock,
+          ...unsplashImageInput
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          listUnsplashCollectionPhotosMock,
+          triggerUnsplashDownloadMock,
+          {
+            request: {
+              query: IMAGE_BLOCK_UPDATE,
+              variables: {
+                id: selectedBlock.id,
+                input: unsplashImageInput
+              }
+            },
+            result: updateResult
+          }
+        ]}
+      >
+        <CommandProvider>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <ImageOptions />
+          </EditorProvider>
+        </CommandProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'public Selected Image 1920 x 1080 pixels'
+      })
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'white dome building during daytime' })
+    )
+
+    await waitFor(() => expect(updateResult).toHaveBeenCalled())
+  })
 
   it('fake delete image block', async () => {
     const deleteResult = jest.fn(() => ({

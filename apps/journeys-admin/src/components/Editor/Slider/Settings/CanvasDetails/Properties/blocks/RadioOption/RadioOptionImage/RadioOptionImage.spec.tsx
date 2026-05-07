@@ -3,6 +3,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
@@ -19,6 +20,10 @@ import {
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
 import {
+  RadioOptionImageCreate,
+  RadioOptionImageCreateVariables
+} from '../../../../../../../../../../__generated__/RadioOptionImageCreate'
+import {
   RadioOptionImageDelete,
   RadioOptionImageDeleteVariables
 } from '../../../../../../../../../../__generated__/RadioOptionImageDelete'
@@ -28,9 +33,13 @@ import {
 } from '../../../../../../../../../../__generated__/RadioOptionImageRestore'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
-import { listUnsplashCollectionPhotosMock } from '../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
+import {
+  listUnsplashCollectionPhotosMock,
+  triggerUnsplashDownloadMock
+} from '../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
 
 import {
+  RADIO_OPTION_IMAGE_CREATE,
   RADIO_OPTION_IMAGE_DELETE,
   RADIO_OPTION_IMAGE_RESTORE
 } from './RadioOptionImage'
@@ -41,6 +50,13 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -135,6 +151,18 @@ const image: TreeBlock<ImageBlock> = {
   customizable: null
 }
 
+const unsplashImageInput = {
+  src: 'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNzIxODUyNzc0fA&ixlib=rb-4.0.3&q=80&w=1080',
+  alt: 'white dome building during daytime',
+  blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
+  height: 720,
+  width: 1080,
+  scale: 100,
+  focalLeft: 50,
+  focalTop: 50,
+  customizable: null
+}
+
 describe('RadioOptionImage', () => {
   beforeEach(() => {
     ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
@@ -191,6 +219,71 @@ describe('RadioOptionImage', () => {
       }
     }
   }
+
+  it('creates a new image for radio option from gallery selection', async () => {
+    mockUuidv4.mockReturnValueOnce(image.id)
+    const response: RadioOptionImageCreate = {
+      imageBlockCreate: {
+        ...image,
+        ...unsplashImageInput
+      },
+      radioOptionBlockUpdate: {
+        id: radioOption.id,
+        pollOptionImageBlockId: image.id,
+        __typename: 'RadioOptionBlock'
+      }
+    }
+    const createResult = jest.fn(() => ({
+      data: response
+    }))
+    const radioOptionImageCreateMock: MockedResponse<
+      RadioOptionImageCreate,
+      RadioOptionImageCreateVariables
+    > = {
+      request: {
+        query: RADIO_OPTION_IMAGE_CREATE,
+        variables: {
+          id: image.id,
+          radioOptionBlockId: radioOption.id,
+          input: {
+            journeyId: journey.id,
+            id: image.id,
+            ...unsplashImageInput,
+            parentBlockId: radioOption.id
+          }
+        }
+      },
+      result: createResult
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          listUnsplashCollectionPhotosMock,
+          triggerUnsplashDownloadMock,
+          radioOptionImageCreateMock
+        ]}
+      >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <SnackbarProvider>
+            <CommandProvider>
+              <RadioOptionImage radioOptionBlock={radioOption} />
+            </CommandProvider>
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
+    await waitFor(() =>
+      expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'white dome building during daytime' })
+    )
+
+    await waitFor(() => expect(createResult).toHaveBeenCalled())
+  })
 
   describe('Existing image for radio option', () => {
     const existingImageRadioOption: TreeBlock<RadioOptionBlock> = {

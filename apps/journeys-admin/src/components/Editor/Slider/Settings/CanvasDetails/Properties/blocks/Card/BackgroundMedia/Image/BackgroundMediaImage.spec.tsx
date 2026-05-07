@@ -3,6 +3,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
@@ -20,6 +21,10 @@ import {
   CoverBlockRestore,
   CoverBlockRestoreVariables
 } from '../../../../../../../../../../../__generated__/CoverBlockRestore'
+import {
+  CoverImageBlockCreate,
+  CoverImageBlockCreateVariables
+} from '../../../../../../../../../../../__generated__/CoverImageBlockCreate'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -30,6 +35,12 @@ import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverB
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
+import {
+  listUnsplashCollectionPhotosMock,
+  triggerUnsplashDownloadMock
+} from '../../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
+
+import { COVER_IMAGE_BLOCK_CREATE } from './BackgroundMediaImage'
 
 import { BackgroundMediaImage } from '.'
 
@@ -37,6 +48,13 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -127,6 +145,18 @@ const image: TreeBlock<ImageBlock> = {
   customizable: null
 }
 
+const unsplashImageInput = {
+  src: 'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNzIxODUyNzc0fA&ixlib=rb-4.0.3&q=80&w=1080',
+  alt: 'white dome building during daytime',
+  blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
+  height: 720,
+  width: 1080,
+  scale: 100,
+  focalLeft: 50,
+  focalTop: 50,
+  customizable: null
+}
+
 describe('BackgroundMediaImage', () => {
   beforeEach(() => {
     ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
@@ -183,6 +213,82 @@ describe('BackgroundMediaImage', () => {
       }
     }
   }
+
+  it('creates a new image cover block from gallery selection', async () => {
+    mockUuidv4.mockReturnValueOnce(image.id)
+    const cache = new InMemoryCache()
+    cache.restore({
+      [`Journey:${journey.id}`]: {
+        blocks: [{ __ref: `CardBlock:${card.id}` }],
+        id: journey.id,
+        __typename: 'Journey'
+      },
+      [`CardBlock:${card.id}`]: { ...card }
+    })
+    const response: CoverImageBlockCreate = {
+      imageBlockCreate: {
+        ...image,
+        ...unsplashImageInput
+      },
+      cardBlockUpdate: {
+        id: card.id,
+        coverBlockId: image.id,
+        __typename: 'CardBlock'
+      }
+    }
+    const createResult = jest.fn(() => ({
+      data: response
+    }))
+    const coverImageBlockCreateMock: MockedResponse<
+      CoverImageBlockCreate,
+      CoverImageBlockCreateVariables
+    > = {
+      request: {
+        query: COVER_IMAGE_BLOCK_CREATE,
+        variables: {
+          id: image.id,
+          cardBlockId: card.id,
+          input: {
+            journeyId: journey.id,
+            isCover: true,
+            id: image.id,
+            ...unsplashImageInput,
+            parentBlockId: card.id
+          }
+        }
+      },
+      result: createResult
+    }
+
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          listUnsplashCollectionPhotosMock,
+          triggerUnsplashDownloadMock,
+          coverImageBlockCreateMock
+        ]}
+      >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <SnackbarProvider>
+            <CommandProvider>
+              <BackgroundMediaImage cardBlock={card} />
+            </CommandProvider>
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
+    await waitFor(() =>
+      expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'white dome building during daytime' })
+    )
+
+    await waitFor(() => expect(createResult).toHaveBeenCalled())
+  })
 
   describe('Existing image cover', () => {
     const existingCoverBlock: TreeBlock<CardBlock> = {
