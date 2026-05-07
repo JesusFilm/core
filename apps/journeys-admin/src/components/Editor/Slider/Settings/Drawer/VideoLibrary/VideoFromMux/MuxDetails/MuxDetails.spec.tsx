@@ -100,7 +100,12 @@ describe('MuxDetails', () => {
 
   it('should render details of a video', async () => {
     const { getByRole } = render(
-      <MuxDetails id="videoId" activeVideoBlock={mockVideoBlock} open onSelect={jest.fn()} />
+      <MuxDetails
+        id="videoId"
+        activeVideoBlock={mockVideoBlock}
+        open
+        onSelect={jest.fn()}
+      />
     )
     const videoPlayer = getByRole('region', {
       name: 'Video Player'
@@ -177,7 +182,12 @@ describe('MuxDetails', () => {
 
   it('should update subtitle tracks on showGeneratedSubtitles change', async () => {
     const { rerender, getByRole } = render(
-      <MuxDetails id="videoId" activeVideoBlock={mockVideoBlock} open onSelect={jest.fn()} />
+      <MuxDetails
+        id="videoId"
+        activeVideoBlock={mockVideoBlock}
+        open
+        onSelect={jest.fn()}
+      />
     )
 
     await waitFor(() => {
@@ -195,7 +205,12 @@ describe('MuxDetails', () => {
     }
 
     rerender(
-      <MuxDetails id="videoId" activeVideoBlock={updatedBlock} open onSelect={jest.fn()} />
+      <MuxDetails
+        id="videoId"
+        activeVideoBlock={updatedBlock}
+        open
+        onSelect={jest.fn()}
+      />
     )
 
     await waitFor(() => {
@@ -209,7 +224,12 @@ describe('MuxDetails', () => {
 
   it('should render video element with correct attributes', () => {
     const { container } = render(
-      <MuxDetails id="videoId" activeVideoBlock={mockVideoBlock} open onSelect={jest.fn()} />
+      <MuxDetails
+        id="videoId"
+        activeVideoBlock={mockVideoBlock}
+        open
+        onSelect={jest.fn()}
+      />
     )
 
     const videoElement = container.querySelector('video')

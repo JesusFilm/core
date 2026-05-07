@@ -184,9 +184,7 @@ describe('VideoFromMux', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
-          <EditorProvider
-            initialState={{ selectedBlock: selectedVideoBlock }}
-          >
+          <EditorProvider initialState={{ selectedBlock: selectedVideoBlock }}>
             <VideoFromMux onSelect={jest.fn()} />
           </EditorProvider>
         </JourneyProvider>
@@ -202,17 +200,13 @@ describe('VideoFromMux', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
-          <EditorProvider
-            initialState={{ selectedBlock: selectedVideoBlock }}
-          >
+          <EditorProvider initialState={{ selectedBlock: selectedVideoBlock }}>
             <VideoFromMux onSelect={jest.fn()} />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(
-      screen.getByTestId('mock-my-mux-videos-grid')
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('mock-my-mux-videos-grid')).toBeInTheDocument()
   })
 
   it('renders AddByFile trigger', () => {

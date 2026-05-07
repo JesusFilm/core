@@ -1,9 +1,4 @@
-import {
-  gql,
-  useApolloClient,
-  useLazyQuery,
-  useMutation
-} from '@apollo/client'
+import { gql, useApolloClient, useLazyQuery, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import {

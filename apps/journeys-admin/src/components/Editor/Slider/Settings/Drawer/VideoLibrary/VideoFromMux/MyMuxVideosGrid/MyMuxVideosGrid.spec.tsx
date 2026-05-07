@@ -18,7 +18,11 @@ jest.mock('../../VideoDetails', () => ({
     playbackId?: string | null
     onSelect: (block: { videoId: string }) => void
   }) => (
-    <div data-testid="mock-video-details" data-id={id} data-playback-id={playbackId ?? ''}>
+    <div
+      data-testid="mock-video-details"
+      data-id={id}
+      data-playback-id={playbackId ?? ''}
+    >
       <button
         data-testid="mock-video-details-select"
         onClick={() => onSelect({ videoId: id })}
@@ -44,7 +48,9 @@ const readyVideo = (id: string): GetMyMuxVideos['getMyMuxVideos'][number] => ({
   readyToStream: true
 })
 
-const notReadyVideo = (id: string): GetMyMuxVideos['getMyMuxVideos'][number] => ({
+const notReadyVideo = (
+  id: string
+): GetMyMuxVideos['getMyMuxVideos'][number] => ({
   __typename: 'MuxVideo',
   id,
   playbackId: null,
@@ -55,7 +61,9 @@ describe('MyMuxVideosGrid', () => {
   it('should render only ready-to-stream videos with playbackId', async () => {
     render(
       <MockedProvider
-        mocks={[buildMock([readyVideo('a'), notReadyVideo('b'), readyVideo('c')])]}
+        mocks={[
+          buildMock([readyVideo('a'), notReadyVideo('b'), readyVideo('c')])
+        ]}
       >
         <MyMuxVideosGrid onSelect={jest.fn()} />
       </MockedProvider>
@@ -90,7 +98,9 @@ describe('MyMuxVideosGrid', () => {
       expect(screen.queryByTestId('MyMuxVideosGrid')).not.toBeInTheDocument()
     })
     // sanity: container is empty (only React internals)
-    expect(container.querySelector('[data-testid="MyMuxVideosGrid"]')).toBeNull()
+    expect(
+      container.querySelector('[data-testid="MyMuxVideosGrid"]')
+    ).toBeNull()
   })
 
   it('should open the preview when a tile is clicked and apply the selection on confirm', async () => {

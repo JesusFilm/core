@@ -76,12 +76,7 @@ export function MyMuxVideosGrid({
       thumbnail: `https://image.mux.com/${node.playbackId as string}/thumbnail.png?time=1`
     }))
 
-  if (
-    !loading &&
-    error == null &&
-    videos.length === 0 &&
-    uploading !== true
-  ) {
+  if (!loading && error == null && videos.length === 0 && uploading !== true) {
     return null
   }
 
