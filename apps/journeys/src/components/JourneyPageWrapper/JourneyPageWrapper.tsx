@@ -58,7 +58,7 @@ export function JourneyPageWrapper({
       domain={`${journeyDomain}${teamDomain}${templateDomain}`}
     >
       <JourneyProvider value={{ journey, variant: variant ?? 'default' }}>
-        <ChatOverlayProvider journeyId={journey.id}>
+        <ChatOverlayProvider journeyId={journeyId}>
           <ThemeProvider
             {...journeyTheme}
             rtl={rtl}

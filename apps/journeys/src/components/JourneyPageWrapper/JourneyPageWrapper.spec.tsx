@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { ReactElement } from 'react'
 
 import { useChatOverlay } from '@core/journeys/ui/ChatOverlayProvider'
 
@@ -8,7 +9,7 @@ import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 
 import { JourneyPageWrapper } from './JourneyPageWrapper'
 
-function ChatOverlayProbe(): JSX.Element {
+function ChatOverlayProbe(): ReactElement {
   const { open, setOpen } = useChatOverlay()
   return (
     <div data-testid="ChatOverlayProbe" data-open={String(open)}>

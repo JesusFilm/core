@@ -98,10 +98,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   // Desktop overlay auto-open on `expandChatByDefault`. Lives at the
   // navigation chokepoint so prefetched neighbours mounted off-screen by
-  // DynamicCardList do not trigger it. Mobile has no equivalent — the
-  // pinned bar starts in 'idle' (input visible, ready) which already
-  // satisfies the "expanded" semantics; 'active' is reserved for sheets
-  // that contain a real conversation.
+  // DynamicCardList do not trigger it. Mobile is handled separately via
+  // `initialChatExpanded` → `<PinnedChatBar initialExpanded=…>` (declared
+  // above); `setOpen` here only drives the desktop overlay. After mount
+  // the pinned bar's local state machine owns mobile sheet state.
   //
   // Deps include `apologistChatEnabled` so a late-arriving LD flag still
   // triggers the auto-open after activeBlock has settled (the original
