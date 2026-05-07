@@ -303,7 +303,8 @@ describe('video', () => {
           updatedAt: new Date(),
           videoId: null,
           blurhash: null,
-          blurhashAttemptedAt: null
+          blurhashAttemptedAt: null,
+          isAi: null
         }
       ],
       cloudflareAssets: [
