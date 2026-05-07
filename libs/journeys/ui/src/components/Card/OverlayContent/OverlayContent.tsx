@@ -91,9 +91,13 @@ export function OverlayContent({
     variant !== 'admin' &&
     variant !== 'embed'
 
+  // Idle PinnedChatBar is 168px tall (handle + ChatHeader + input). Add a
+  // small buffer so the last interactive card element clears the sheet's
+  // drag handle, which otherwise intercepts pointer events on buttons that
+  // visually overlap the bar.
   const footerSpacing: SxProps = {
     mb: {
-      xs: pinnedChatActive ? '120px' : footerMobileSpacing,
+      xs: pinnedChatActive ? '176px' : footerMobileSpacing,
       sm: 10
     }
   }

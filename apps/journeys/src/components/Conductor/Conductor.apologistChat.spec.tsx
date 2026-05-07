@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -18,26 +19,28 @@ import {
 
 import { Conductor } from '.'
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('@core/journeys/ui/PinnedChatBar', () => ({
+vi.mock('@core/journeys/ui/PinnedChatBar', () => ({
   __esModule: true,
   PinnedChatBar: () => <div data-testid="PinnedChatBar" />
 }))
 
-global.fetch = jest.fn(
+const originalFetch = global.fetch
+
+global.fetch = vi.fn(
   async () =>
     await Promise.resolve({
       json: async () => await Promise.resolve({})
     })
-) as jest.Mock
+) as Mock
 
 const language: Language = {
   __typename: 'Language',
@@ -129,6 +132,10 @@ const lastStepOnly: TreeBlock[] = [
 ]
 
 describe('Conductor apologistChat flag gating', () => {
+  afterAll(() => {
+    global.fetch = originalFetch
+  })
+
   const journeyWithAssistant: Journey = {
     ...baseJourney,
     showAssistant: true
