@@ -60,7 +60,7 @@ test.describe('media components', () => {
       expect(response.ok()).toBeTruthy()
       const data = await response.json()
       expect(data._embedded.mediaComponents[0].metadataLanguageTag).toBe('ur')
-      expect(data._embedded.mediaComponents.length).toBe(1) // It should filter out the component with no localized content
+      expect(data._embedded.mediaComponents).toHaveLength(1) // It should filter out the component with no localized content
       expect(data._embedded.mediaComponents[0].mediaComponentId).toBe(
         '1_jf-0-0'
       )

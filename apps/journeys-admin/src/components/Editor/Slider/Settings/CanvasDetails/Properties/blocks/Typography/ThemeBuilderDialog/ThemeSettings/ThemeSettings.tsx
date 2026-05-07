@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import Header1Icon from '@core/shared/ui/icons/Header1'

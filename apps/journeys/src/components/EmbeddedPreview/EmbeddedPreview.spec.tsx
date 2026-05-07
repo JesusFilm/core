@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { blockHistoryVar } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -22,14 +23,14 @@ import {
 
 import { EmbeddedPreview } from './EmbeddedPreview'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
 const journey: Journey = {
@@ -101,12 +102,13 @@ const journey: Journey = {
   fromTemplateId: null,
   socialNodeX: null,
   socialNodeY: null,
-  customizable: null
+  customizable: null,
+  showAssistant: null
 }
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as unknown as MockedFunction<typeof uuidv4>
 
-global.fetch = jest.fn(
+global.fetch = vi.fn(
   async () =>
     await Promise.resolve({
       json: async () =>
@@ -116,7 +118,7 @@ global.fetch = jest.fn(
           country: 'New Zealand'
         })
     })
-) as jest.Mock
+) as Mock
 
 const mocks: MockedResponse[] = [
   {
@@ -185,11 +187,11 @@ describe('EmbeddedPreview', () => {
   mockUuidv4.mockReturnValue('uuid')
 
   beforeEach(() => {
-    document.exitFullscreen = jest.fn()
-    document.documentElement.requestFullscreen = jest.fn()
+    document.exitFullscreen = vi.fn()
+    document.documentElement.requestFullscreen = vi.fn()
   })
 
-  afterEach(() => jest.clearAllMocks())
+  afterEach(() => vi.clearAllMocks())
 
   it('renders first block', async () => {
     render(

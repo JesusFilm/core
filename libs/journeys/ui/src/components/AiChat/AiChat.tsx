@@ -1,0 +1,499 @@
+'use client'
+
+import { useChat } from '@ai-sdk/react'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
+import { DefaultChatTransport, UIMessage } from 'ai'
+import { useTranslation } from 'next-i18next/pages'
+import {
+  FormEvent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
+import { v4 as uuidv4 } from 'uuid'
+
+import { useJourney } from '../../libs/JourneyProvider'
+import { Actions } from '../Actions'
+import { Conversation } from '../Conversation'
+import { Message } from '../Message'
+import { PromptInput } from '../PromptInput'
+import { Response } from '../Response'
+
+import { ChatHeader } from './ChatHeader'
+import {
+  HEADER_WASH,
+  MUTED_FG,
+  OVERLAY_CLOSE_BG,
+  OVERLAY_CLOSE_BG_HOVER,
+  OVERLAY_FG_RETRY,
+  SHEET_BOTTOM_FADE
+} from './chatStyles'
+import { DragHandle } from './DragHandle'
+
+interface AiChatProps {
+  /** When provided, this message is sent automatically on first render */
+  initialMessage?: string
+  /**
+   * When true (default) the chat shows inline collapse controls — a drag
+   * handle on mobile. Callers that wrap AiChat in their own dismissible
+   * container (e.g. a Drawer with its own close button) should pass false.
+   */
+  collapsible?: boolean
+  /**
+   * `panel` (default) renders the bubble layout for the pinned mobile bar
+   * (header + drag handle + bubbles + capsule input). `overlay` renders
+   * plain assistant prose and a floating capsule input for the desktop
+   * ambient overlay.
+   */
+  variant?: 'panel' | 'overlay'
+  /**
+   * Notifies the parent when the sheet's logical state changes:
+   *  - 'idle' — no messages yet, sheet expanded; show header + input.
+   *  - 'active' — messages present, sheet expanded; full conversation.
+   *  - 'collapsed' — user has dragged the sheet down; only the drag
+   *    handle is shown over the journey card. Reachable from either
+   *    idle or active.
+   *
+   * The pinned sheet uses this to choose the right height + animation.
+   */
+  onSheetStateChange?: (state: 'idle' | 'active' | 'collapsed') => void
+  /**
+   * Optional close action for parent-owned overlay chrome. Rendered as a
+   * sibling of the floating input so it stays discoverable without covering
+   * typed text.
+   */
+  onClose?: () => void
+}
+
+export type AiChatSheetState = 'idle' | 'active' | 'collapsed'
+
+function getTextFromMessage(message: UIMessage): string {
+  return message.parts
+    .filter(
+      (part): part is { type: 'text'; text: string } => part.type === 'text'
+    )
+    .map((part) => part.text)
+    .join('')
+}
+
+const TYPEWRITER_CHARS_PER_SEC = 280
+
+interface TypewriterResult {
+  display: string
+  isComplete: boolean
+}
+
+function useTypewriter(
+  target: string,
+  enabled: boolean,
+  isStreaming: boolean
+): TypewriterResult {
+  const [revealed, setRevealed] = useState(() => (enabled ? 0 : target.length))
+  const targetRef = useRef(target)
+  targetRef.current = target
+
+  useEffect(() => {
+    if (!enabled) return
+    let raf = 0
+    let last = performance.now()
+    const tick = (now: number): void => {
+      const deltaSec = (now - last) / 1000
+      last = now
+      setRevealed((prev) => {
+        const targetLength = targetRef.current.length
+        if (prev >= targetLength) return prev
+        const step = Math.max(
+          1,
+          Math.floor(TYPEWRITER_CHARS_PER_SEC * deltaSec)
+        )
+        return Math.min(targetLength, prev + step)
+      })
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [enabled])
+
+  if (!enabled) return { display: target, isComplete: true }
+  const display = target.slice(0, Math.min(revealed, target.length))
+  const isComplete = !isStreaming && revealed >= target.length
+  return { display, isComplete }
+}
+
+interface AssistantBubbleProps {
+  text: string
+  animate: boolean
+  isStreaming: boolean
+  surface?: 'light' | 'dark'
+}
+
+function AssistantBubble({
+  text,
+  animate,
+  isStreaming,
+  surface = 'light'
+}: AssistantBubbleProps): ReactElement {
+  const { display, isComplete } = useTypewriter(text, animate, isStreaming)
+  // Assistant always renders as plain prose (no bubble); only the
+  // text colour shifts between light and dark surfaces. Actions still
+  // tints itself to the surface via `plain`.
+  const isDark = surface === 'dark'
+  return (
+    <>
+      <Message role="assistant" plain surface={surface}>
+        <Response content={display} />
+      </Message>
+      {isComplete && text.length > 0 && (
+        <Actions content={text} plain={isDark} />
+      )}
+    </>
+  )
+}
+
+function TypingIndicator(): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
+  return (
+    <Box
+      aria-label={t('Assistant is typing')}
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 0.5,
+        py: 0.5,
+        '@keyframes aiChatTypingBounce': {
+          '0%, 60%, 100%': { transform: 'translateY(0)', opacity: 0.35 },
+          '30%': { transform: 'translateY(-4px)', opacity: 1 }
+        }
+      }}
+    >
+      {[0, 1, 2].map((i) => (
+        <Box
+          key={i}
+          component="span"
+          sx={{
+            width: 6,
+            height: 6,
+            borderRadius: '50%',
+            bgcolor: MUTED_FG,
+            animation: 'aiChatTypingBounce 1.2s ease-in-out infinite',
+            animationDelay: `${i * 0.16}s`
+          }}
+        />
+      ))}
+    </Box>
+  )
+}
+
+export function AiChat({
+  initialMessage,
+  collapsible = true,
+  variant = 'panel',
+  onSheetStateChange,
+  onClose
+}: AiChatProps): ReactElement {
+  const isOverlay = variant === 'overlay'
+  const isPanel = !isOverlay
+  const { t } = useTranslation('libs-journeys-ui')
+  const { journey } = useJourney()
+  const [input, setInput] = useState('')
+  const [collapsed, setCollapsed] = useState(false)
+  const initialMessageSent = useRef(false)
+
+  const handleCollapse = useCallback(() => {
+    setCollapsed(true)
+  }, [])
+
+  const handleExpand = useCallback(() => {
+    setCollapsed(false)
+  }, [])
+
+  const languageBcp47 = journey?.language?.bcp47 ?? undefined
+  const languageRef = useRef(languageBcp47)
+  languageRef.current = languageBcp47
+
+  const journeyId = journey?.id
+  const journeyIdRef = useRef(journeyId)
+  journeyIdRef.current = journeyId
+
+  const [sessionId] = useState<string | undefined>(() => {
+    if (typeof window === 'undefined') return undefined
+    // sessionStorage can throw in Safari private mode, sandboxed
+    // iframes, and quota-exceeded states. Fall back to a fresh UUID
+    // so the chat surface still mounts.
+    try {
+      const existing = window.sessionStorage.getItem('aiChat.sessionId')
+      if (existing != null && existing.length > 0) return existing
+      const fresh = uuidv4()
+      window.sessionStorage.setItem('aiChat.sessionId', fresh)
+      return fresh
+    } catch {
+      return uuidv4()
+    }
+  })
+  const sessionIdRef = useRef(sessionId)
+  sessionIdRef.current = sessionId
+
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: '/api/chat',
+        body: () => ({
+          language: languageRef.current,
+          sessionId: sessionIdRef.current,
+          journeyId: journeyIdRef.current
+        })
+      }),
+    []
+  )
+
+  const { messages, sendMessage, regenerate, stop, status, error } = useChat({
+    transport,
+    onError: (err) => {
+      console.error('[AiChat] useChat onError', {
+        name: err?.name,
+        message: err?.message,
+        cause: (err as { cause?: unknown })?.cause
+      })
+    }
+  })
+
+  const isLoading = status === 'submitted' || status === 'streaming'
+
+  const handleRetry = useCallback(() => {
+    setCollapsed(false)
+    void regenerate()
+  }, [regenerate])
+
+  useEffect(() => {
+    if (
+      initialMessage != null &&
+      initialMessage.trim().length > 0 &&
+      !initialMessageSent.current
+    ) {
+      initialMessageSent.current = true
+      setCollapsed(false)
+      void sendMessage({ text: initialMessage })
+    }
+  }, [initialMessage, sendMessage])
+
+  const handleSubmit = useCallback(
+    (e: FormEvent) => {
+      e.preventDefault()
+      if (input.trim().length === 0 || isLoading) return
+      setCollapsed(false)
+      void sendMessage({ text: input })
+      setInput('')
+    },
+    [input, isLoading, sendMessage]
+  )
+
+  const lastAssistantIndex = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === 'assistant') return i
+    }
+    return -1
+  }, [messages])
+
+  const hasMessages = messages.length > 0
+  // Collapse wins over message presence so the user can dismiss the
+  // sheet from idle (empty chat) as well as from active.
+  const sheetState: AiChatSheetState = collapsed
+    ? 'collapsed'
+    : hasMessages
+      ? 'active'
+      : 'idle'
+  useEffect(() => {
+    onSheetStateChange?.(sheetState)
+  }, [sheetState, onSheetStateChange])
+
+  const showDragHandle = isPanel && collapsible
+  const showHeader = isPanel
+  const showOverlayClose = isOverlay && onClose != null
+  // We keep header/conversation/input mounted in every state and rely on
+  // the parent sheet's height transition + overflow:hidden to clip them
+  // as the sheet collapses. Hiding via display:none would short-circuit
+  // the animation — the content would vanish instantly while only the
+  // empty box height transitioned, which reads as "no animation at all".
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        minHeight: 0,
+        position: 'relative'
+      }}
+    >
+      {(showDragHandle || showHeader) && (
+        <Box sx={{ background: HEADER_WASH, flexShrink: 0 }}>
+          {showDragHandle && (
+            <DragHandle
+              collapsed={collapsed}
+              onCollapse={handleCollapse}
+              onExpand={handleExpand}
+            />
+          )}
+          {showHeader && <ChatHeader thinking={isLoading} />}
+        </Box>
+      )}
+
+      <Box
+        sx={{
+          display: 'flex',
+          flex: 1,
+          flexDirection: 'column',
+          minHeight: 0,
+          width: '100%',
+          maxWidth: { xs: 'none', sm: '48rem' },
+          mx: 'auto'
+        }}
+      >
+        <Conversation
+          scrollKey={messages.length}
+          // 72px = floating capsule height (44px) + bottom offset (8px) +
+          // safe-area headroom + 16px breathing room — keeps the last
+          // message clear of the absolute-positioned PromptInput below.
+          bottomClearance={72}
+        >
+          {messages.map((message, index) => {
+            const text = getTextFromMessage(message)
+            const isLast = index === lastAssistantIndex
+            return (
+              <Box key={message.id}>
+                {message.role === 'assistant' ? (
+                  <AssistantBubble
+                    text={text}
+                    animate={isLast}
+                    isStreaming={isLast && isLoading}
+                    surface={isOverlay ? 'dark' : 'light'}
+                  />
+                ) : (
+                  <Message role="user">{text}</Message>
+                )}
+              </Box>
+            )
+          })}
+          {isLoading &&
+            (messages.length === 0 ||
+              messages[messages.length - 1]?.role === 'user') && (
+              <Message
+                role="assistant"
+                plain
+                surface={isOverlay ? 'dark' : 'light'}
+              >
+                <TypingIndicator />
+              </Message>
+            )}
+          {error != null && !isLoading && (
+            <Box>
+              <Message
+                role="assistant"
+                plain
+                surface={isOverlay ? 'dark' : 'light'}
+              >
+                <Box component="span" sx={{ opacity: 0.7 }}>
+                  {t('Something went wrong. Please try again.')}
+                </Box>
+              </Message>
+              <Box sx={{ display: 'flex', px: 2, py: 0.25 }}>
+                <Button
+                  size="small"
+                  onClick={handleRetry}
+                  aria-label={t('Retry')}
+                  sx={{
+                    fontSize: 12,
+                    color: isOverlay ? OVERLAY_FG_RETRY : MUTED_FG,
+                    minWidth: 0
+                  }}
+                >
+                  {t('Retry')}
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </Conversation>
+      </Box>
+
+      {isPanel && (
+        <Box
+          aria-hidden
+          sx={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 140,
+            pointerEvents: 'none',
+            zIndex: 1,
+            background: SHEET_BOTTOM_FADE,
+            opacity: sheetState === 'collapsed' ? 0 : 1,
+            transition: 'opacity 200ms ease-out'
+          }}
+        />
+      )}
+
+      <Box
+        sx={{
+          position: 'absolute',
+          left: 8,
+          right: 8,
+          bottom: 'calc(env(safe-area-inset-bottom) + 8px)',
+          zIndex: 2,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          mx: 'auto',
+          maxWidth: { xs: 'none', sm: '48rem' },
+          // Slide the floating input out the bottom when the sheet is
+          // collapsed. Synced to the same 280ms cubic-bezier as the
+          // PinnedChatBar height transition so they animate together.
+          transform:
+            sheetState === 'collapsed' ? 'translateY(140%)' : 'translateY(0)',
+          opacity: sheetState === 'collapsed' ? 0 : 1,
+          pointerEvents: sheetState === 'collapsed' ? 'none' : 'auto',
+          transition:
+            'transform 280ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease-out'
+        }}
+      >
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <PromptInput
+            input={input}
+            onInputChange={setInput}
+            onSubmit={handleSubmit}
+            isLoading={isLoading}
+            onStop={stop}
+            variant={isOverlay ? 'floating' : 'inline'}
+          />
+        </Box>
+        {showOverlayClose && (
+          <IconButton
+            onClick={onClose}
+            aria-label={t('Close chat')}
+            disableRipple
+            sx={{
+              width: 32,
+              height: 32,
+              flexShrink: 0,
+              p: 0,
+              color: 'common.white',
+              bgcolor: OVERLAY_CLOSE_BG,
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: 'none',
+              backgroundClip: 'padding-box',
+              '&:hover': { bgcolor: OVERLAY_CLOSE_BG_HOVER }
+            }}
+          >
+            <CloseRoundedIcon fontSize="small" />
+          </IconButton>
+        )}
+      </Box>
+    </Box>
+  )
+}

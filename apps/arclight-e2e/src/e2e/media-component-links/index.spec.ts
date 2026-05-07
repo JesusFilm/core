@@ -68,7 +68,7 @@ test.describe('media component links', () => {
     expect(
       Array.isArray(darkroom.linkedMediaComponentIds.containedBy)
     ).toBeTruthy()
-    expect(darkroom.linkedMediaComponentIds.contains.length).toBe(17)
+    expect(darkroom.linkedMediaComponentIds.contains).toHaveLength(17)
     expect(darkroom.linkedMediaComponentIds.containedBy.length).toBeGreaterThan(
       0
     )
@@ -85,7 +85,7 @@ test.describe('media component links', () => {
     expect(
       Array.isArray(darkroomDoubt.linkedMediaComponentIds.containedBy)
     ).toBeTruthy()
-    expect(darkroomDoubt.linkedMediaComponentIds.containedBy.length).toBe(1)
+    expect(darkroomDoubt.linkedMediaComponentIds.containedBy).toHaveLength(1)
     expect(darkroomDoubt.linkedMediaComponentIds.contains).toBeUndefined()
     expect(darkroomDoubt.linkedMediaComponentIds.containedBy).toContain(
       '10_DarkroomFaith'

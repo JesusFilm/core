@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import noop from 'lodash/noop'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'

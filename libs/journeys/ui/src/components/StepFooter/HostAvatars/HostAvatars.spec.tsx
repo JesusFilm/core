@@ -72,7 +72,8 @@ describe('HostAvatars', () => {
     fromTemplateId: null,
     socialNodeX: null,
     socialNodeY: null,
-    customizable: null
+    customizable: null,
+    showAssistant: null
   }
 
   it('renders both avatars if both images are set', () => {

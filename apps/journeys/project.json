@@ -118,10 +118,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/apps/journeys"],
       "options": {
-        "jestConfig": "apps/journeys/jest.config.ts"
+        "configFile": "apps/journeys/vitest.config.mts"
       }
     },
     "lint": {
@@ -182,7 +182,7 @@
       "options": {
         "commands": [
           {
-            "command": "pnpm exec i18next --config apps/journeys/i18next-parser.config.js"
+            "command": "pnpm exec i18next-cli extract --config apps/journeys/i18next.config.js"
           }
         ]
       }

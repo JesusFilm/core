@@ -227,8 +227,8 @@ describe('VideoEvents', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoStart', expect.any(Object))
-    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom1, {
-      u: expect.stringContaining(`/journey.id/video0.id`),
+    expect(mockPlausible).toHaveBeenCalledWith('custom1Capture', {
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -238,18 +238,18 @@ describe('VideoEvents', () => {
         value: props.source,
         key: keyify({
           stepId: activeBlock.id,
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           blockId: props.blockId,
           journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: activeBlock.id,
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           blockId: props.blockId,
           journeyId: 'journey.id'
         }),
         templateKey: templateKeyify({
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           journeyId: 'journey.id'
         })
       }
@@ -1401,8 +1401,8 @@ describe('VideoEvents', () => {
       'videoComplete',
       expect.any(Object)
     )
-    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom2, {
-      u: expect.stringContaining(`/journey.id/video0.id`),
+    expect(mockPlausible).toHaveBeenCalledWith('custom2Capture', {
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -1412,18 +1412,18 @@ describe('VideoEvents', () => {
         value: props.source,
         key: keyify({
           stepId: activeBlock.id,
-          event: BlockEventLabel.custom2,
+          event: 'custom2Capture',
           blockId: props.blockId,
           journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: activeBlock.id,
-          event: BlockEventLabel.custom2,
+          event: 'custom2Capture',
           blockId: props.blockId,
           journeyId: 'journey.id'
         }),
         templateKey: templateKeyify({
-          event: BlockEventLabel.custom2,
+          event: 'custom2Capture',
           journeyId: 'journey.id'
         })
       }

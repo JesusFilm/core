@@ -1,6 +1,5 @@
 export {
   hasTouchScreen,
-  isInstagramAndroidWebView,
   isIPhone,
   isMobile,
   isIOS,

@@ -39,13 +39,39 @@ describe('videoEdition', () => {
         const data = await client({
           document: VIDEO_EDITIONS_QUERY
         })
-        expect(prismaMock.videoEdition.findMany).toHaveBeenCalledWith({})
+        expect(prismaMock.videoEdition.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }],
+            skip: 0,
+            take: undefined,
+            where: { updatedAt: undefined }
+          })
+        )
         expect(data).toHaveProperty('data.videoEditions', [
           {
             id: 'id',
             name: 'name'
           }
         ])
+      })
+    })
+
+    describe('videoEditionsCount', () => {
+      const VIDEO_EDITIONS_COUNT_QUERY = graphql(`
+        query VideoEditionsCount {
+          videoEditionsCount
+        }
+      `)
+
+      it('should return video editions count', async () => {
+        prismaMock.videoEdition.count.mockResolvedValue(4)
+        const result = await client({ document: VIDEO_EDITIONS_COUNT_QUERY })
+        expect(prismaMock.videoEdition.count).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { updatedAt: undefined }
+          })
+        )
+        expect(result).toHaveProperty('data.videoEditionsCount', 4)
       })
     })
 

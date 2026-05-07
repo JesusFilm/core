@@ -1,9 +1,15 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest'
+import { ReadableStream, TransformStream, WritableStream } from 'stream/web'
+
 import { configure } from '@testing-library/react'
+
+if (typeof globalThis.TransformStream === 'undefined') {
+  Object.assign(globalThis, { ReadableStream, TransformStream, WritableStream })
+}
 
 configure({ asyncUtilTimeout: 2500 })
 
-jest.mock('next/router', () => require('next-router-mock'))
-
-if (process.env.CI === 'true')
-  jest.retryTimes(3, { logErrorsBeforeRetry: true })
+vi.mock(
+  'next/router',
+  () => import(/* webpackChunkName: "next-router-mock" */ 'next-router-mock')
+)

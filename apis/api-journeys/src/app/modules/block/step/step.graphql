@@ -33,18 +33,6 @@ type StepBlock implements Block @shareable {
   slug: String @shareable
 }
 
-input StepBlockPositionUpdateInput {
-  id: ID!
-  x: Int
-  y: Int
-}
-
-extend type Mutation {
-  stepBlockPositionUpdate(
-    input: [StepBlockPositionUpdateInput!]!
-  ): [StepBlock!]!
-}
-
 extend type Journey {
   menuStepBlock: StepBlock
 }

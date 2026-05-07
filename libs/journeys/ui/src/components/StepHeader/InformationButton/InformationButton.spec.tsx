@@ -90,7 +90,8 @@ describe('InformationButton', () => {
     fromTemplateId: null,
     socialNodeX: null,
     socialNodeY: null,
-    customizable: null
+    customizable: null,
+    showAssistant: null
   }
 
   it('should have report contact button', () => {

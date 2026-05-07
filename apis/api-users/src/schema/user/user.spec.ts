@@ -173,6 +173,52 @@ describe('api-users', () => {
       )
     })
 
+    it('should include imageUrl in update when guest converts via Google', async () => {
+      getUserFromPayloadMock.mockReturnValueOnce({
+        id: 'testUserId',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane@gmail.com',
+        emailVerified: true,
+        imageUrl: 'https://lh3.googleusercontent.com/photo.jpg'
+      })
+      const findOrFetchUserMock = findOrFetchUser as jest.MockedFunction<
+        typeof findOrFetchUser
+      >
+      findOrFetchUserMock.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Unknown User',
+        lastName: null,
+        email: null,
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: true
+      })
+      prismaMock.user.update.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane@gmail.com',
+        imageUrl: 'https://lh3.googleusercontent.com/photo.jpg',
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: true
+      })
+
+      await authClient({ document: ME_QUERY })
+
+      expect(prismaMock.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            imageUrl: 'https://lh3.googleusercontent.com/photo.jpg'
+          })
+        })
+      )
+    })
+
     it('should not send verification email when guest converts via verified provider', async () => {
       const findOrFetchUserMock = findOrFetchUser as jest.MockedFunction<
         typeof findOrFetchUser

@@ -5,13 +5,17 @@ import Typography from '@mui/material/Typography'
 import { useParams } from 'next/navigation'
 import { ReactElement } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
 import { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { AiChatButton } from '../AiChatButton'
 import {
   getFooterMobileHeight,
   getTitle,
+  hasAiChatButton,
   hasChatWidget,
   hasCombinedFooter,
   hasHostAvatar,
@@ -45,9 +49,12 @@ export function StepFooter({
   const selectedStep =
     selectedStepProp !== undefined ? selectedStepProp : editorSelectedStep
 
+  const flags = useFlags()
   const hostAvatar = hasHostAvatar({ journey, variant })
   const hostDetails = hasHostDetails({ journey })
   const chat = hasChatWidget({ journey, variant })
+  const aiChat =
+    hasAiChatButton({ journey, variant }) && flags.apologistChat === true
   const title = getTitle({ journey })
 
   const footerMobileHeight = getFooterMobileHeight({ journey, variant })
@@ -171,6 +178,11 @@ export function StepFooter({
           {chat && (
             <Box>
               <ChatButtons />
+            </Box>
+          )}
+          {aiChat && (
+            <Box>
+              <AiChatButton />
             </Box>
           )}
         </Stack>

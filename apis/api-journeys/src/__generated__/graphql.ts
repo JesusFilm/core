@@ -315,6 +315,8 @@ export type CardBlock = Block & {
    */
   coverBlockId?: Maybe<Scalars['ID']['output']>;
   eventLabel?: Maybe<BlockEventLabel>;
+  /** When true, the chat drawer auto-opens on first visit to this card. */
+  expandChatByDefault?: Maybe<Scalars['Boolean']['output']>;
   /**
    * fullscreen should control how the coverBlock is displayed. When fullscreen
    * is set to true the coverBlock Image should be displayed as a blur in the
@@ -325,6 +327,8 @@ export type CardBlock = Block & {
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  /** When true, this card displays the AI chat button. */
+  showAssistant?: Maybe<Scalars['Boolean']['output']>;
   /**
    * themeMode can override journey themeMode. If nothing is set then use
    * themeMode from journey
@@ -354,8 +358,10 @@ export type CardBlockUpdateInput = {
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   coverBlockId?: InputMaybe<Scalars['ID']['input']>;
   eventLabel?: InputMaybe<BlockEventLabel>;
+  expandChatByDefault?: InputMaybe<Scalars['Boolean']['input']>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  showAssistant?: InputMaybe<Scalars['Boolean']['input']>;
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
 };
@@ -451,6 +457,7 @@ export type CloudflareImage = {
   blurhash?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
+  isAi?: Maybe<Scalars['Boolean']['output']>;
   mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
   mobileCinematicLow?: Maybe<Scalars['String']['output']>;
   mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
@@ -645,19 +652,9 @@ export type CustomDomain = {
 
 export type CustomDomainCheck = {
   __typename?: 'CustomDomainCheck';
-  /**
-   * Is the domain correctly configured in the DNS?
-   * If false, A Record and CNAME Record should be added by the user.
-   */
   configured: Scalars['Boolean']['output'];
-  /** Verification records to be added to the DNS to confirm ownership. */
   verification?: Maybe<Array<CustomDomainVerification>>;
-  /** Reasoning as to why verification is required. */
   verificationResponse?: Maybe<CustomDomainVerificationResponse>;
-  /**
-   * Does the domain belong to the team?
-   * If false, verification and verificationResponse will be populated.
-   */
   verified: Scalars['Boolean']['output'];
 };
 
@@ -1122,6 +1119,7 @@ export type Journey = {
   seoDescription?: Maybe<Scalars['String']['output']>;
   /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
+  /** @deprecated Use CardBlock.showAssistant. Removal tracked in NES-1624. */
   showAssistant?: Maybe<Scalars['Boolean']['output']>;
   showChatButtons?: Maybe<Scalars['Boolean']['output']>;
   showDislikeButton?: Maybe<Scalars['Boolean']['output']>;
@@ -1849,10 +1847,8 @@ export type Mutation = {
   bibleCitationCreate?: Maybe<BibleCitation>;
   bibleCitationDelete?: Maybe<Scalars['Boolean']['output']>;
   bibleCitationUpdate?: Maybe<BibleCitation>;
-  /** blockDelete returns the updated sibling blocks on successful delete */
   blockDelete: Array<Block>;
   blockDeleteAction: Block;
-  /** blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate */
   blockDuplicate: Array<Block>;
   blockOrderUpdate: Array<Block>;
   /** blockRestore is used for redo/undo */
@@ -4025,6 +4021,7 @@ export type QueryGetMyCloudflareImageArgs = {
 
 
 export type QueryGetMyCloudflareImagesArgs = {
+  isAi?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };

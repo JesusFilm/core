@@ -32,21 +32,9 @@ export interface TextResponseWithButtonDelete_textResponse {
 }
 
 export interface TextResponseWithButtonDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   endIcon: TextResponseWithButtonDelete_endIcon[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   startIcon: TextResponseWithButtonDelete_startIcon[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   button: TextResponseWithButtonDelete_button[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   textResponse: TextResponseWithButtonDelete_textResponse[];
 }
 

@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { SignInServiceButton } from '../SignInServiceButton'

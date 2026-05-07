@@ -73,21 +73,9 @@ export interface CardQuoteDelete_image {
 
 export interface CardQuoteDelete {
   cardBlockUpdate: CardQuoteDelete_cardBlockUpdate;
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   body: CardQuoteDelete_body[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   title: CardQuoteDelete_title[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   subtitle: CardQuoteDelete_subtitle[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   image: CardQuoteDelete_image[];
 }
 

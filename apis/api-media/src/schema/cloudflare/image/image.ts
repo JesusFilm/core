@@ -2,10 +2,10 @@ import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { jobName as processImageBlurhashJobName } from '../../../workers/processImageBlurhash/config'
 import { queue as processImageBlurhashQueue } from '../../../workers/processImageBlurhash/queue'
-import { builder } from '../../builder'
+import { builder, toPrismaDateTimeFilter } from '../../builder'
 
 import { ImageAspectRatio } from './enums'
-import { ImageInput } from './inputs'
+import { ImageInput, VideoImagesFilter } from './inputs'
 import {
   createImageByDirectUpload,
   createImageFromResponse,
@@ -18,8 +18,12 @@ import { baseUrl } from './utils/baseUrl'
 builder.prismaObject('CloudflareImage', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
+    videoId: t.exposeID('videoId', { nullable: true }),
     uploadUrl: t.exposeString('uploadUrl'),
-    userId: t.exposeID('userId', { nullable: false }),
+    userId: t
+      .withAuth({ isAuthenticated: true })
+      .exposeID('userId', { nullable: false }),
     createdAt: t.expose('createdAt', {
       type: 'Date',
       nullable: false
@@ -62,7 +66,8 @@ builder.prismaObject('CloudflareImage', {
       resolve: ({ id, aspectRatio }) =>
         aspectRatio === 'hd' ? `${baseUrl(id)}/f=jpg,w=1920,h=1080,q=95` : null
     }),
-    blurhash: t.exposeString('blurhash', { nullable: true })
+    blurhash: t.exposeString('blurhash', { nullable: true }),
+    isAi: t.exposeBoolean('isAi', { nullable: true })
   })
 })
 
@@ -72,12 +77,17 @@ builder.queryFields((t) => ({
     nullable: false,
     args: {
       offset: t.arg.int({ required: false }),
-      limit: t.arg.int({ required: false })
+      limit: t.arg.int({ required: false }),
+      isAi: t.arg.boolean({ required: false })
     },
-    resolve: async (query, _root, { offset, limit }, { user }) => {
+    resolve: async (query, _root, { offset, limit, isAi }, { user }) => {
       return await prisma.cloudflareImage.findMany({
         ...query,
-        where: { userId: user.id },
+        where: {
+          userId: user.id,
+          ...(isAi != null ? { isAi } : {})
+        },
+        orderBy: { createdAt: 'desc' },
         take: limit ?? undefined,
         skip: offset ?? undefined
       })
@@ -93,6 +103,45 @@ builder.queryFields((t) => ({
       return await prisma.cloudflareImage.findFirstOrThrow({
         ...query,
         where: { id, userId: user.id }
+      })
+    }
+  }),
+  videoImages: t.prismaField({
+    type: ['CloudflareImage'],
+    nullable: false,
+    args: {
+      where: t.arg({ type: VideoImagesFilter, required: false }),
+      offset: t.arg.int({ required: false }),
+      limit: t.arg.int({ required: false })
+    },
+    resolve: async (query, _root, { where, offset, limit }) => {
+      return await prisma.cloudflareImage.findMany({
+        ...query,
+        where: {
+          videoId: where?.videoId != null ? where.videoId : { not: null },
+          uploaded: true,
+          updatedAt: toPrismaDateTimeFilter(where?.updatedAt),
+          aspectRatio: where?.aspectRatio ?? undefined
+        },
+        skip: offset ?? 0,
+        take: limit ?? 100,
+        orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }]
+      })
+    }
+  }),
+  videoImagesCount: t.int({
+    nullable: false,
+    args: {
+      where: t.arg({ type: VideoImagesFilter, required: false })
+    },
+    resolve: async (_root, { where }) => {
+      return await prisma.cloudflareImage.count({
+        where: {
+          videoId: where?.videoId != null ? where.videoId : { not: null },
+          uploaded: true,
+          updatedAt: toPrismaDateTimeFilter(where?.updatedAt),
+          aspectRatio: where?.aspectRatio ?? undefined
+        }
       })
     }
   })
@@ -117,7 +166,8 @@ builder.mutationFields((t) => ({
             uploadUrl: uploadURL,
             userId: user.id,
             aspectRatio: input?.aspectRatio ?? undefined,
-            videoId: input?.videoId ?? undefined
+            videoId: input?.videoId ?? undefined,
+            isAi: false
           }
         })
       }
@@ -140,7 +190,8 @@ builder.mutationFields((t) => ({
             userId: user?.id ?? 'system-ai',
             uploaded: true,
             aspectRatio: input?.aspectRatio ?? undefined,
-            videoId: input?.videoId ?? undefined
+            videoId: input?.videoId ?? undefined,
+            isAi: false
           }
         })
 
@@ -172,7 +223,8 @@ builder.mutationFields((t) => ({
             userId: user.id,
             uploaded: true,
             aspectRatio: input?.aspectRatio ?? undefined,
-            videoId: input?.videoId ?? undefined
+            videoId: input?.videoId ?? undefined,
+            isAi: true
           }
         })
 

@@ -306,11 +306,6 @@ export enum VisitorStatus {
     redQuestionMark = "redQuestionMark"
 }
 
-export class BlocksFilter {
-    journeyIds?: Nullable<string[]>;
-    typenames?: Nullable<string[]>;
-}
-
 export class BlockDuplicateIdMap {
     oldId: string;
     newId: string;
@@ -321,38 +316,8 @@ export class ButtonBlockSettingsInput {
     color?: Nullable<string>;
 }
 
-export class StepBlockPositionUpdateInput {
-    id: string;
-    x?: Nullable<number>;
-    y?: Nullable<number>;
-}
-
 export class TypographyBlockSettingsInput {
     color?: Nullable<string>;
-}
-
-export class ChatButtonCreateInput {
-    link?: Nullable<string>;
-    platform?: Nullable<MessagePlatform>;
-}
-
-export class ChatButtonUpdateInput {
-    link?: Nullable<string>;
-    platform?: Nullable<MessagePlatform>;
-    customizable?: Nullable<boolean>;
-}
-
-export class CustomDomainCreateInput {
-    id?: Nullable<string>;
-    teamId: string;
-    name: string;
-    journeyCollectionId?: Nullable<string>;
-    routeAllTeamJourneys?: Nullable<boolean>;
-}
-
-export class CustomDomainUpdateInput {
-    journeyCollectionId?: Nullable<string>;
-    routeAllTeamJourneys?: Nullable<boolean>;
 }
 
 export class JourneyViewEventCreateInput {
@@ -791,92 +756,10 @@ export class Journey {
     userJourneys?: Nullable<UserJourney[]>;
 }
 
-export abstract class IQuery {
-    __typename?: 'IQuery';
-
-    abstract blocks(where?: Nullable<BlocksFilter>): Block[] | Promise<Block[]>;
-
-    abstract block(id: string): Block | Promise<Block>;
-
-    abstract customDomain(id: string): CustomDomain | Promise<CustomDomain>;
-
-    abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
-
-    abstract hosts(teamId: string): Host[] | Promise<Host[]>;
-
-    abstract integrations(teamId: string): Integration[] | Promise<Integration[]>;
-
-    abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
-
-    abstract journeys(where?: Nullable<JourneysFilter>, options?: Nullable<JourneysQueryOptions>): Journey[] | Promise<Journey[]>;
-
-    abstract journey(id: string, idType?: Nullable<IdType>, options?: Nullable<JourneysQueryOptions>): Journey | Promise<Journey>;
-
-    abstract journeyTemplateLanguageIds(): string[] | Promise<string[]>;
-
-    abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
-
-    abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
-
-    abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
-
-    abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
-
-    abstract journeyTheme(journeyId: string): Nullable<JourneyTheme> | Promise<Nullable<JourneyTheme>>;
-
-    abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
-
-    abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
-
-    abstract journeysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
-
-    abstract qrCode(id: string): QrCode | Promise<QrCode>;
-
-    abstract qrCodes(where: QrCodesFilter): QrCode[] | Promise<QrCode[]>;
-
-    abstract teams(): Team[] | Promise<Team[]>;
-
-    abstract team(id: string): Team | Promise<Team>;
-
-    abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
-
-    abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
-
-    abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
-
-    abstract userTeamInvites(teamId: string): UserTeamInvite[] | Promise<UserTeamInvite[]>;
-
-    abstract visitorsConnection(teamId?: Nullable<string>, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
-
-    abstract visitor(id: string): Visitor | Promise<Visitor>;
-}
-
 export abstract class IMutation {
     __typename?: 'IMutation';
 
-    abstract blockDelete(id: string, journeyId?: Nullable<string>, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
-
-    abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, idMap?: Nullable<BlockDuplicateIdMap[]>, journeyId?: Nullable<string>, x?: Nullable<number>, y?: Nullable<number>): Block[] | Promise<Block[]>;
-
-    abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
-
     abstract blockRestore(id: string): Block[] | Promise<Block[]>;
-
-    abstract stepBlockPositionUpdate(input: StepBlockPositionUpdateInput[]): StepBlock[] | Promise<StepBlock[]>;
-
-    abstract chatButtonCreate(journeyId: string, input?: Nullable<ChatButtonCreateInput>): ChatButton | Promise<ChatButton>;
-
-    abstract chatButtonUpdate(id: string, journeyId: string, input: ChatButtonUpdateInput): ChatButton | Promise<ChatButton>;
-
-    abstract chatButtonRemove(id: string): ChatButton | Promise<ChatButton>;
-
-    abstract customDomainCreate(input: CustomDomainCreateInput): CustomDomain | Promise<CustomDomain>;
-
-    abstract customDomainUpdate(id: string, input: CustomDomainUpdateInput): CustomDomain | Promise<CustomDomain>;
-
-    abstract customDomainDelete(id: string): CustomDomain | Promise<CustomDomain>;
-
-    abstract customDomainCheck(id: string): CustomDomainCheck | Promise<CustomDomainCheck>;
 
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): Nullable<JourneyViewEvent> | Promise<Nullable<JourneyViewEvent>>;
 
@@ -1032,6 +915,8 @@ export class CardBlock implements Block {
     fullscreen: boolean;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
+    showAssistant?: Nullable<boolean>;
+    expandChatByDefault?: Nullable<boolean>;
 }
 
 export class GridContainerBlock implements Block {
@@ -1251,28 +1136,6 @@ export class CustomDomain {
     routeAllTeamJourneys: boolean;
 }
 
-export class CustomDomainCheck {
-    __typename?: 'CustomDomainCheck';
-    configured: boolean;
-    verified: boolean;
-    verification?: Nullable<CustomDomainVerification[]>;
-    verificationResponse?: Nullable<CustomDomainVerificationResponse>;
-}
-
-export class CustomDomainVerification {
-    __typename?: 'CustomDomainVerification';
-    type: string;
-    domain: string;
-    value: string;
-    reason: string;
-}
-
-export class CustomDomainVerificationResponse {
-    __typename?: 'CustomDomainVerificationResponse';
-    code: string;
-    message: string;
-}
-
 export class ButtonClickEvent implements Event {
     __typename?: 'ButtonClickEvent';
     id: string;
@@ -1455,6 +1318,58 @@ export class Host {
     location?: Nullable<string>;
     src1?: Nullable<string>;
     src2?: Nullable<string>;
+}
+
+export abstract class IQuery {
+    __typename?: 'IQuery';
+
+    abstract hosts(teamId: string): Host[] | Promise<Host[]>;
+
+    abstract integrations(teamId: string): Integration[] | Promise<Integration[]>;
+
+    abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
+
+    abstract journeys(where?: Nullable<JourneysFilter>, options?: Nullable<JourneysQueryOptions>): Journey[] | Promise<Journey[]>;
+
+    abstract journey(id: string, idType?: Nullable<IdType>, options?: Nullable<JourneysQueryOptions>): Journey | Promise<Journey>;
+
+    abstract journeyTemplateLanguageIds(): string[] | Promise<string[]>;
+
+    abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
+
+    abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
+
+    abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
+
+    abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
+
+    abstract journeyTheme(journeyId: string): Nullable<JourneyTheme> | Promise<Nullable<JourneyTheme>>;
+
+    abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
+
+    abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
+
+    abstract journeysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
+
+    abstract qrCode(id: string): QrCode | Promise<QrCode>;
+
+    abstract qrCodes(where: QrCodesFilter): QrCode[] | Promise<QrCode[]>;
+
+    abstract teams(): Team[] | Promise<Team[]>;
+
+    abstract team(id: string): Team | Promise<Team>;
+
+    abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
+
+    abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
+
+    abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
+
+    abstract userTeamInvites(teamId: string): UserTeamInvite[] | Promise<UserTeamInvite[]>;
+
+    abstract visitorsConnection(teamId?: Nullable<string>, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
+
+    abstract visitor(id: string): Visitor | Promise<Visitor>;
 }
 
 export class IntegrationGoogle implements Integration {

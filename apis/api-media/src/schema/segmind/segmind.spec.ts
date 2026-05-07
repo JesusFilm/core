@@ -58,7 +58,8 @@ describe('segmind', () => {
         aspectRatio: null,
         videoId: null,
         blurhash: null,
-        blurhashAttemptedAt: null
+        blurhashAttemptedAt: null,
+        isAi: true
       })
       const result = await authClient({
         document: CREATE_IMAGE_BY_SEGMIND_PROMPT_MUTATION,
@@ -80,7 +81,8 @@ describe('segmind', () => {
         data: {
           id: 'id',
           uploaded: true,
-          userId: 'testUserId'
+          userId: 'testUserId',
+          isAi: true
         }
       })
     })

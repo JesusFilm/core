@@ -81,9 +81,6 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoB
 export type StepBlockDeleteFromActionWithoutAction_blockDeleteAction = StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ImageBlock | StepBlockDeleteFromActionWithoutAction_blockDeleteAction_RadioOptionBlock | StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ButtonBlock | StepBlockDeleteFromActionWithoutAction_blockDeleteAction_SignUpBlock | StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoBlock;
 
 export interface StepBlockDeleteFromActionWithoutAction {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   blockDelete: StepBlockDeleteFromActionWithoutAction_blockDelete[];
   blockDeleteAction: StepBlockDeleteFromActionWithoutAction_blockDeleteAction;
 }

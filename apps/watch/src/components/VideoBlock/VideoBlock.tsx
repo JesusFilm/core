@@ -1,4 +1,4 @@
-import clsx from 'clsx'
+import { clsx } from 'clsx'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { usePlayer } from '../../libs/playerContext/PlayerContext'
