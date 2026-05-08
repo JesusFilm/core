@@ -4,8 +4,7 @@ import { type Mocked } from 'vitest'
 import { sendEmail } from './email'
 
 vi.mock('nodemailer', async () => {
-  const originalModule =
-    await vi.importActual<typeof nodemailer>('nodemailer')
+  const originalModule = await vi.importActual<typeof nodemailer>('nodemailer')
   return {
     ...originalModule,
     default: vi.fn()
