@@ -97,7 +97,9 @@ describe('CardLayout', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <MockedProvider>
@@ -127,7 +129,9 @@ describe('CardLayout', () => {
       fullscreen: true,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <MockedProvider>
@@ -157,7 +161,9 @@ describe('CardLayout', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const step: TreeBlock<StepBlock> = {
       id: 'step1.id',
@@ -210,7 +216,9 @@ describe('CardLayout', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <MockedProvider
@@ -270,7 +278,9 @@ describe('CardLayout', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <MockedProvider
@@ -318,7 +328,9 @@ describe('CardLayout', () => {
       id: 'card1.id',
       __typename: 'CardBlock',
       fullscreen: false,
-      children: [videoBlock]
+      children: [videoBlock],
+      showAssistant: null,
+      expandChatByDefault: null
     } as unknown as TreeBlock<CardBlock>
 
     const result = jest.fn(() => ({

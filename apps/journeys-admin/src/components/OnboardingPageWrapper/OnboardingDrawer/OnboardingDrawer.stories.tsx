@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'

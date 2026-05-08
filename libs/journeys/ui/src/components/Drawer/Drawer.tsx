@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import MuiDrawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
 interface DrawerContextValue {

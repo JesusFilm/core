@@ -1,6 +1,7 @@
 import { GraphQLError } from 'graphql'
 import clone from 'lodash/clone'
-import fetch from 'node-fetch'
+import fetch, { Response } from 'node-fetch'
+import { type MockedFunction, vi } from 'vitest'
 
 import {
   addVercelDomain,
@@ -11,9 +12,11 @@ import {
 // Mock environment variables
 
 // Mock fetch
-jest.mock('node-fetch', () => jest.fn())
-const { Response } = jest.requireActual('node-fetch')
-const mockFetch = fetch as jest.MockedFunction<typeof fetch>
+vi.mock('node-fetch', async () => ({
+  ...(await vi.importActual<typeof import('node-fetch')>('node-fetch')),
+  default: vi.fn()
+}))
+const mockFetch = fetch as MockedFunction<typeof fetch>
 
 describe('shortLinkDomain.service', () => {
   const originalEnv = clone(process.env)
@@ -29,7 +32,7 @@ describe('shortLinkDomain.service', () => {
 
   afterEach(() => {
     process.env = originalEnv
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('addVercelDomain', () => {
@@ -91,21 +94,21 @@ describe('shortLinkDomain.service', () => {
 
   describe('removeVercelDomain', () => {
     it('should remove a domain successfully', async () => {
-      mockFetch.mockResolvedValue(new Response(null, { status: 200 }))
+      mockFetch.mockResolvedValue(new Response('', { status: 200 }))
 
       const result = await removeVercelDomain('test.com')
       expect(result).toBe(true)
     })
 
     it('should handle GraphQLError with status 404', async () => {
-      mockFetch.mockResolvedValue(new Response(null, { status: 404 }))
+      mockFetch.mockResolvedValue(new Response('', { status: 404 }))
 
       const result = await removeVercelDomain('test.com')
       expect(result).toBe(true)
     })
 
     it('should throw GraphQLError for other status codes', async () => {
-      mockFetch.mockResolvedValue(new Response(null, { status: 500 }))
+      mockFetch.mockResolvedValue(new Response('', { status: 500 }))
 
       await expect(removeVercelDomain('test.com')).rejects.toThrow(GraphQLError)
     })
@@ -151,7 +154,7 @@ describe('shortLinkDomain.service', () => {
     })
 
     it('should throw GraphQLError if config response is not ok', async () => {
-      mockFetch.mockResolvedValueOnce(new Response(null, { status: 500 }))
+      mockFetch.mockResolvedValueOnce(new Response('', { status: 500 }))
 
       await expect(checkVercelDomain('test.com')).rejects.toThrow(GraphQLError)
     })
@@ -160,7 +163,7 @@ describe('shortLinkDomain.service', () => {
       const mockConfigData = { misconfigured: false }
       mockFetch
         .mockResolvedValueOnce(new Response(JSON.stringify(mockConfigData)))
-        .mockResolvedValueOnce(new Response(null, { status: 500 }))
+        .mockResolvedValueOnce(new Response('', { status: 500 }))
 
       await expect(checkVercelDomain('test.com')).rejects.toThrow(GraphQLError)
     })

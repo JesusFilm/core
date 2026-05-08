@@ -1,4 +1,4 @@
-import { Edge, MarkerType, Node } from 'reactflow'
+import { Edge, MarkerType, Node } from '@xyflow/react'
 
 import {
   ButtonColor,
@@ -152,7 +152,9 @@ export const publishedJourney: Journey = {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
-      eventLabel: null
+      eventLabel: null,
+      showAssistant: null,
+      expandChatByDefault: null
     },
     {
       id: 'image0.id',
@@ -271,7 +273,9 @@ export const blocks: Block[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     id: 'typographyBlockId1',
@@ -417,7 +421,9 @@ export const blocks: Block[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     id: 'typographyBlockId3',
@@ -513,7 +519,9 @@ export const blocks: Block[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     id: 'typographyBlockId5',
@@ -630,7 +638,9 @@ export const blocks: Block[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     id: 'typographyBlockId7',
@@ -806,7 +816,9 @@ export const blocks: Block[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     __typename: 'ImageBlock',
@@ -861,7 +873,9 @@ export const blocks: Block[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     id: 'image6.id',

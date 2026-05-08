@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -27,7 +27,9 @@ describe('getFilteredEventLabels', () => {
   it('should return filtered event labels for CardBlock', () => {
     const cardBlock = {
       __typename: 'CardBlock',
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     } as unknown as TreeBlock<CardBlock>
 
     const result = getFilteredEventLabels(t, cardBlock)

@@ -232,6 +232,12 @@ type CardBlock implements Block
   themeName from journey
   """
   themeName: ThemeName
+
+  """When true, this card displays the AI chat button."""
+  showAssistant: Boolean
+
+  """When true, the chat drawer auto-opens on first visit to this card."""
+  expandChatByDefault: Boolean
 }
 
 input CardBlockCreateInput {
@@ -255,6 +261,8 @@ input CardBlockUpdateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  showAssistant: Boolean
+  expandChatByDefault: Boolean
 }
 
 type ChatAction implements Action
@@ -823,7 +831,7 @@ type Journey
   showLogo: Boolean
   showMenu: Boolean
   showDisplayTitle: Boolean
-  showAssistant: Boolean
+  showAssistant: Boolean @deprecated(reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624.")
   customizable: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int

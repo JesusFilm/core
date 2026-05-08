@@ -2,15 +2,31 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import StopRoundedIcon from '@mui/icons-material/StopRounded'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import TextField from '@mui/material/TextField'
-import { useTranslation } from 'next-i18next'
+import InputBase from '@mui/material/InputBase'
+import { useTranslation } from 'next-i18next/pages'
 import {
+  ChangeEvent,
   FormEvent,
   KeyboardEvent,
   ReactElement,
-  useCallback,
-  useRef
+  useCallback
 } from 'react'
+
+import {
+  ASSISTANT_FG,
+  DIVIDER,
+  OVERLAY_FG_MUTED,
+  OVERLAY_FILL_LOW,
+  OVERLAY_INPUT_BG,
+  OVERLAY_INPUT_BORDER,
+  OVERLAY_INPUT_SHADOW,
+  PANEL_INPUT_BG,
+  PANEL_INPUT_BORDER,
+  PANEL_INPUT_SHADOW,
+  PRIMARY,
+  PRIMARY_ON,
+  TEXT_SECONDARY
+} from '../AiChat/chatStyles'
 
 interface PromptInputProps {
   input: string
@@ -19,12 +35,17 @@ interface PromptInputProps {
   isLoading: boolean
   onStop?: () => void
   /**
-   * `inline` (default) renders the input as a flat bar with a top border,
-   * suited to a panel context. `floating` renders it as a rounded capsule
-   * with a shadow, for overlay contexts with no surrounding chrome.
+   * `inline` (default) — floating rounded capsule for the pinned bar
+   * (semi-transparent white surface, drop shadow, backdrop blur).
+   * `floating` — same form-factor on a dark blurred backdrop for the
+   * desktop ambient overlay.
    */
   variant?: 'inline' | 'floating'
 }
+
+// Cap auto-grow at 6 rows so the floating capsule can't push the
+// conversation off-screen — past this the textarea scrolls internally.
+const MAX_INPUT_ROWS = 6
 
 export function PromptInput({
   input,
@@ -35,10 +56,11 @@ export function PromptInput({
   variant = 'inline'
 }: PromptInputProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    (e: KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+      // Enter submits; Shift+Enter inserts a newline so users can
+      // compose multi-line questions.
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
         if (input.trim().length > 0 && !isLoading) {
@@ -59,9 +81,20 @@ export function PromptInput({
     [input, isLoading, onSubmit]
   )
 
+  const handleInputChange = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+      onInputChange(e.target.value)
+    },
+    [onInputChange]
+  )
+
   const canSubmit = input.trim().length > 0
   const isFloating = variant === 'floating'
 
+  // Both variants render a floating pill. `inline` sits over a light
+  // surface (pinned bar) and `floating` sits over a dark journey/overlay
+  // backdrop. The form itself IS the visible capsule — no separate
+  // inputFill layer underneath.
   return (
     <Box
       component="form"
@@ -70,51 +103,52 @@ export function PromptInput({
         display: 'flex',
         alignItems: 'center',
         gap: 1,
-        p: isFloating ? 1 : 1.5,
-        bgcolor: 'common.white',
-        borderTop: isFloating ? 'none' : '1px solid #e0e0e0',
-        borderRadius: isFloating ? 9999 : 0,
-        boxShadow: isFloating
-          ? '0 10px 30px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1)'
-          : 'none'
+        pl: 0.75,
+        pr: 1.5,
+        py: 0.75,
+        bgcolor: isFloating ? OVERLAY_INPUT_BG : PANEL_INPUT_BG,
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        borderRadius: 9999,
+        border: '1px solid',
+        borderColor: isFloating ? OVERLAY_INPUT_BORDER : PANEL_INPUT_BORDER,
+        boxShadow: isFloating ? OVERLAY_INPUT_SHADOW : PANEL_INPUT_SHADOW
       }}
     >
-      <TextField
-        inputRef={textareaRef}
-        value={input}
-        onChange={(e) => onInputChange(e.target.value)}
-        placeholder={t('Ask me anything')}
-        disabled={isLoading}
+      <InputBase
         multiline
-        maxRows={6}
-        size="small"
-        fullWidth
-        inputProps={{
-          'aria-label': t('Chat message input'),
-          onKeyDown: handleKeyDown
-        }}
+        maxRows={MAX_INPUT_ROWS}
+        value={input}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        placeholder={t('Ask anything…')}
+        disabled={isLoading}
+        inputProps={{ 'aria-label': t('Chat message input') }}
         sx={{
-          '& .MuiOutlinedInput-root': {
-            borderRadius: isFloating ? 9999 : 3,
-            bgcolor: isFloating ? 'transparent' : 'grey.50'
-          },
-          '& .MuiOutlinedInput-notchedOutline': {
-            border: 'none'
-          },
-          '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-            border: 'none'
-          },
-          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline':
-            {
-              border: 'none'
-            },
+          flex: 1,
+          minWidth: 0,
+          px: '14px',
+          py: '9px',
+          color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
+          // font-size >= 16px keeps iOS Safari from auto-zooming on focus
+          // (regression guard from the M1 fix).
+          fontSize: 16,
+          lineHeight: 1.375,
+          fontFamily: 'inherit',
           '& .MuiInputBase-input': {
+            p: 0,
             fontSize: 16,
-            color: '#1a1a1a'
+            lineHeight: 1.375,
+            fontFamily: 'inherit',
+            color: 'inherit',
+            '&::placeholder': {
+              color: isFloating ? OVERLAY_FG_MUTED : TEXT_SECONDARY,
+              opacity: 1
+            }
           },
-          '& .MuiInputBase-input::placeholder': {
-            color: '#9e9e9e',
-            opacity: 1
+          '&.Mui-disabled, & .MuiInputBase-input.Mui-disabled': {
+            color: TEXT_SECONDARY,
+            WebkitTextFillColor: TEXT_SECONDARY
           }
         }}
       />
@@ -124,13 +158,13 @@ export function PromptInput({
           onClick={onStop}
           aria-label={t('Stop generating')}
           sx={{
-            width: 36,
-            height: 36,
+            width: 32,
+            height: 32,
             flexShrink: 0,
             p: 0,
-            bgcolor: '#e0e0e0',
-            color: '#666',
-            '&:hover': { bgcolor: '#d0d0d0' }
+            bgcolor: PRIMARY,
+            color: PRIMARY_ON,
+            '&:hover': { bgcolor: PRIMARY }
           }}
         >
           <StopRoundedIcon fontSize="small" />
@@ -141,18 +175,30 @@ export function PromptInput({
           disabled={!canSubmit}
           aria-label={t('Send message')}
           sx={{
-            width: 36,
-            height: 36,
+            width: 32,
+            height: 32,
             flexShrink: 0,
             p: 0,
-            bgcolor: canSubmit ? '#6D28D9' : '#e0e0e0',
-            color: canSubmit ? '#ffffff' : '#999',
+            bgcolor: canSubmit
+              ? PRIMARY
+              : isFloating
+                ? OVERLAY_FILL_LOW
+                : DIVIDER,
+            color: canSubmit
+              ? PRIMARY_ON
+              : isFloating
+                ? OVERLAY_FG_MUTED
+                : TEXT_SECONDARY,
             '&:hover': {
-              bgcolor: canSubmit ? '#5B21B6' : '#d0d0d0'
+              bgcolor: canSubmit
+                ? PRIMARY
+                : isFloating
+                  ? OVERLAY_FILL_LOW
+                  : DIVIDER
             },
             '&.Mui-disabled': {
-              bgcolor: '#e0e0e0',
-              color: '#999'
+              bgcolor: isFloating ? OVERLAY_FILL_LOW : DIVIDER,
+              color: isFloating ? OVERLAY_FG_MUTED : TEXT_SECONDARY
             }
           }}
         >

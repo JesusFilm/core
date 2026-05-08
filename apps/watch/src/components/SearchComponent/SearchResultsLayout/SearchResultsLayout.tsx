@@ -1,4 +1,4 @@
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo } from 'react'
 
 import { AlgoliaVideoGrid } from '../../VideoGrid/AlgoliaVideoGrid'

@@ -6,8 +6,8 @@ on:
         description: 'Skip the merge-queue enqueue step (default: true for safety)'
         type: boolean
         default: true
-  # schedule:
-  #   - cron: '0 1 * * 5'  # Friday 01:00 UTC = Friday 1pm NZST / 2pm NZDT
+  schedule:
+    - cron: '17 1 * * 5' # Friday 01:17 UTC = Friday 1:17pm NZST / 2:17pm NZDT — off-peak minute to avoid GitHub Actions schedule drops at the top of the hour
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
@@ -181,19 +181,6 @@ jobs:
 
           echo "All $FILE_COUNT changed files are under libs/locales/. Safe to proceed."
           echo "| Files changed | $FILE_COUNT (all under \`libs/locales/\`) |" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Assign PR to CI Bot
-        if: steps.find-pr.outputs.found == 'true'
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          PR_NUMBER: ${{ steps.find-pr.outputs.number }}
-          BOT_LOGIN: ${{ steps.bot-login.outputs.login }}
-        run: |
-          set -euo pipefail
-          echo "Assigning PR #$PR_NUMBER to $BOT_LOGIN"
-          gh pr edit "$PR_NUMBER" --add-assignee "$BOT_LOGIN"
-          echo "Assigned successfully."
-          echo "| Assignee | \`$BOT_LOGIN\` |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Approve PR
         if: steps.find-pr.outputs.found == 'true'

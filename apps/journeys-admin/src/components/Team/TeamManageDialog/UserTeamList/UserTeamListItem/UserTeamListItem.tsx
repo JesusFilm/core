@@ -7,7 +7,7 @@ import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, useMemo, useState } from 'react'
 
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'

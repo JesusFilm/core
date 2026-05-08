@@ -76,7 +76,9 @@ describe('CardWrapper', () => {
             }
           ]
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <CardWrapper block={block}>
@@ -144,7 +146,9 @@ describe('CardWrapper', () => {
         themeMode: null,
         themeName: null,
         eventLabel: null,
-        wrappers: {}
+        wrappers: {},
+        showAssistant: null,
+        expandChatByDefault: null
       },
       undefined
     )
@@ -213,7 +217,9 @@ describe('CardWrapper', () => {
             }
           ]
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <CardWrapper block={block}>
@@ -281,7 +287,9 @@ describe('CardWrapper', () => {
         themeMode: null,
         themeName: null,
         eventLabel: null,
-        wrappers: {}
+        wrappers: {},
+        showAssistant: null,
+        expandChatByDefault: null
       },
       undefined
     )

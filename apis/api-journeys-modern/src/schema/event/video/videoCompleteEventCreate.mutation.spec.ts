@@ -98,10 +98,7 @@ describe('videoCompleteEventCreate', () => {
       })
     )
 
-    expect(resetEventsEmailDelay).toHaveBeenCalledWith(
-      'journeyId',
-      'visitorId'
-    )
+    expect(resetEventsEmailDelay).toHaveBeenCalledWith('journeyId', 'visitorId')
   })
 
   it('returns error when block does not exist', async () => {
