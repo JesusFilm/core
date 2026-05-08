@@ -9,11 +9,11 @@ import {
   withGeminiFallback
 } from './geminiModel'
 
-jest.mock('@ai-sdk/google', () => ({
-  google: jest.fn((modelId: string) => ({ modelId }))
+vi.mock('@ai-sdk/google', () => ({
+  google: vi.fn((modelId: string) => ({ modelId }))
 }))
 
-const mockedGoogle = jest.mocked(google)
+const mockedGoogle = vi.mocked(google)
 
 describe('geminiModel', () => {
   const originalEnv = process.env
@@ -139,15 +139,15 @@ describe('geminiModel', () => {
 
   describe('withGeminiFallback', () => {
     beforeEach(() => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
     })
 
     afterEach(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('should return result on success with primary model', async () => {
-      const operation = jest.fn().mockResolvedValue('ok')
+      const operation = vi.fn().mockResolvedValue('ok')
       const result = await withGeminiFallback(operation)
       expect(result).toBe('ok')
       expect(operation).toHaveBeenCalledTimes(1)
@@ -161,7 +161,7 @@ describe('geminiModel', () => {
       const rateLimitError = Object.assign(new Error('rate limited'), {
         statusCode: 429
       })
-      const operation = jest
+      const operation = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError)
         .mockRejectedValueOnce(rateLimitError)
@@ -169,9 +169,9 @@ describe('geminiModel', () => {
 
       const promise = withGeminiFallback(operation)
       // Attempt 1 delay: 1000ms (2^0 * BACKOFF_BASE_MS)
-      await jest.advanceTimersByTimeAsync(1000)
+      await vi.advanceTimersByTimeAsync(1000)
       // Attempt 2 delay: 2000ms (2^1 * BACKOFF_BASE_MS)
-      await jest.advanceTimersByTimeAsync(2000)
+      await vi.advanceTimersByTimeAsync(2000)
       const result = await promise
 
       expect(result).toBe('retry-ok')
@@ -188,7 +188,7 @@ describe('geminiModel', () => {
       const rateLimitError = Object.assign(new Error('rate limited'), {
         statusCode: 429
       })
-      const operation = jest
+      const operation = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError)
         .mockRejectedValueOnce(rateLimitError)
@@ -196,7 +196,7 @@ describe('geminiModel', () => {
 
       const promise = withGeminiFallback(operation)
       // Only one retry delay: 1000ms (2^0 * BACKOFF_BASE_MS)
-      await jest.advanceTimersByTimeAsync(1000)
+      await vi.advanceTimersByTimeAsync(1000)
       const result = await promise
 
       expect(result).toBe('fallback-ok')
@@ -217,7 +217,7 @@ describe('geminiModel', () => {
       const rateLimitError = Object.assign(new Error('rate limited'), {
         statusCode: 429
       })
-      const operation = jest
+      const operation = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError)
         .mockResolvedValueOnce('fallback-ok')
@@ -239,14 +239,14 @@ describe('geminiModel', () => {
       const retryError = Object.assign(new Error('retry exhausted'), {
         lastError: { statusCode: 429 }
       })
-      const operation = jest
+      const operation = vi
         .fn()
         .mockRejectedValueOnce(retryError)
         .mockRejectedValueOnce(retryError)
         .mockResolvedValueOnce('recovered')
 
       const promise = withGeminiFallback(operation)
-      await jest.advanceTimersByTimeAsync(1000)
+      await vi.advanceTimersByTimeAsync(1000)
       const result = await promise
 
       expect(result).toBe('recovered')
@@ -255,7 +255,7 @@ describe('geminiModel', () => {
 
     it('should throw immediately on non-429 error', async () => {
       const error = new Error('bad request')
-      const operation = jest.fn().mockRejectedValue(error)
+      const operation = vi.fn().mockRejectedValue(error)
 
       await expect(withGeminiFallback(operation)).rejects.toThrow('bad request')
       expect(operation).toHaveBeenCalledTimes(1)
@@ -266,7 +266,7 @@ describe('geminiModel', () => {
       const rateLimitError = Object.assign(new Error('rate limited'), {
         statusCode: 429
       })
-      const operation = jest.fn().mockRejectedValue(rateLimitError)
+      const operation = vi.fn().mockRejectedValue(rateLimitError)
 
       await expect(withGeminiFallback(operation)).rejects.toThrow(
         'rate limited'
@@ -277,16 +277,16 @@ describe('geminiModel', () => {
 
   describe('createGeminiFallbackSession', () => {
     beforeEach(() => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
     })
 
     afterEach(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('should use primary model when no 429 occurs', async () => {
       const session = createGeminiFallbackSession()
-      const operation = jest.fn().mockResolvedValue('ok')
+      const operation = vi.fn().mockResolvedValue('ok')
       const result = await session.execute(operation)
 
       expect(result).toBe('ok')
@@ -299,8 +299,8 @@ describe('geminiModel', () => {
     it('should keep using primary across multiple successful calls', async () => {
       const session = createGeminiFallbackSession()
 
-      const op1 = jest.fn().mockResolvedValue('first')
-      const op2 = jest.fn().mockResolvedValue('second')
+      const op1 = vi.fn().mockResolvedValue('first')
+      const op2 = vi.fn().mockResolvedValue('second')
 
       expect(await session.execute(op1)).toBe('first')
       expect(await session.execute(op2)).toBe('second')
@@ -318,7 +318,7 @@ describe('geminiModel', () => {
       const rateLimitError = Object.assign(new Error('rate limited'), {
         statusCode: 429
       })
-      const operation = jest
+      const operation = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError)
         .mockRejectedValueOnce(rateLimitError)
@@ -326,8 +326,8 @@ describe('geminiModel', () => {
 
       const session = createGeminiFallbackSession()
       const promise = session.execute(operation)
-      await jest.advanceTimersByTimeAsync(1000)
-      await jest.advanceTimersByTimeAsync(2000)
+      await vi.advanceTimersByTimeAsync(1000)
+      await vi.advanceTimersByTimeAsync(2000)
       const result = await promise
 
       expect(result).toBe('ok')
@@ -344,7 +344,7 @@ describe('geminiModel', () => {
       const rateLimitError = Object.assign(new Error('rate limited'), {
         statusCode: 429
       })
-      const operation = jest
+      const operation = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError)
         .mockRejectedValueOnce(rateLimitError)
@@ -352,7 +352,7 @@ describe('geminiModel', () => {
 
       const session = createGeminiFallbackSession()
       const promise = session.execute(operation)
-      await jest.advanceTimersByTimeAsync(1000)
+      await vi.advanceTimersByTimeAsync(1000)
       const result = await promise
 
       expect(result).toBe('fallback-ok')
@@ -376,7 +376,7 @@ describe('geminiModel', () => {
       const session = createGeminiFallbackSession()
 
       // First call: primary 429 → useFallback flips → fallback succeeds
-      const op1 = jest
+      const op1 = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError)
         .mockResolvedValueOnce('first-fallback')
@@ -391,7 +391,7 @@ describe('geminiModel', () => {
       )
 
       // Second call: goes straight to fallback, primary never called
-      const op2 = jest.fn().mockResolvedValue('second-fallback')
+      const op2 = vi.fn().mockResolvedValue('second-fallback')
       const result2 = await session.execute(op2)
 
       expect(result2).toBe('second-fallback')
@@ -401,7 +401,7 @@ describe('geminiModel', () => {
       )
 
       // Third call: still fallback
-      const op3 = jest.fn().mockResolvedValue('third-fallback')
+      const op3 = vi.fn().mockResolvedValue('third-fallback')
       await session.execute(op3)
       expect(op3.mock.calls[0][0]).toEqual(
         expect.objectContaining({ modelId: 'gemini-2.0-flash' })
@@ -416,24 +416,24 @@ describe('geminiModel', () => {
       const session = createGeminiFallbackSession()
 
       // First call: exhaust primary (2 attempts) → useFallback flips → fallback succeeds
-      const op1 = jest
+      const op1 = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError)
         .mockRejectedValueOnce(rateLimitError)
         .mockResolvedValueOnce('fallback-first')
 
       const p1 = session.execute(op1)
-      await jest.advanceTimersByTimeAsync(1000)
+      await vi.advanceTimersByTimeAsync(1000)
       await p1
 
       // Second call: fallback with its own backoff (429 then success)
-      const op2 = jest
+      const op2 = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError)
         .mockResolvedValueOnce('fallback-retry-ok')
 
       const p2 = session.execute(op2)
-      await jest.advanceTimersByTimeAsync(1000)
+      await vi.advanceTimersByTimeAsync(1000)
       const result2 = await p2
 
       expect(result2).toBe('fallback-retry-ok')
@@ -449,7 +449,7 @@ describe('geminiModel', () => {
     it('should throw immediately on non-429 error', async () => {
       const session = createGeminiFallbackSession()
       const error = new Error('bad request')
-      const operation = jest.fn().mockRejectedValue(error)
+      const operation = vi.fn().mockRejectedValue(error)
 
       await expect(session.execute(operation)).rejects.toThrow('bad request')
       expect(operation).toHaveBeenCalledTimes(1)
@@ -461,7 +461,7 @@ describe('geminiModel', () => {
         statusCode: 429
       })
       const session = createGeminiFallbackSession()
-      const operation = jest.fn().mockRejectedValue(rateLimitError)
+      const operation = vi.fn().mockRejectedValue(rateLimitError)
 
       await expect(session.execute(operation)).rejects.toThrow('rate limited')
       expect(operation).toHaveBeenCalledTimes(2)
@@ -475,20 +475,20 @@ describe('geminiModel', () => {
       const session = createGeminiFallbackSession()
 
       // First call: exhaust primary (2 attempts) → useFallback flips → fallback succeeds
-      const op1 = jest
+      const op1 = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError) // primary 0
         .mockRejectedValueOnce(rateLimitError) // primary 1
         .mockResolvedValueOnce('ok') // fallback 0
 
       const p1 = session.execute(op1)
-      await jest.advanceTimersByTimeAsync(1000)
+      await vi.advanceTimersByTimeAsync(1000)
       await p1
 
       // Second call: useFallback=true, fallback 429s on both attempts → throws.
       // Attach the rejection handler BEFORE advancing timers to avoid an unhandled
       // rejection between timer advancement and the assertion.
-      const op2 = jest
+      const op2 = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError) // fallback 0
         .mockRejectedValueOnce(rateLimitError) // fallback 1
@@ -496,7 +496,7 @@ describe('geminiModel', () => {
       const rejectExpectation = expect(session.execute(op2)).rejects.toThrow(
         'rate limited'
       )
-      await jest.advanceTimersByTimeAsync(1000) // fallback retry delay
+      await vi.advanceTimersByTimeAsync(1000) // fallback retry delay
       await rejectExpectation
 
       expect(op2).toHaveBeenCalledTimes(2)
@@ -515,7 +515,7 @@ describe('geminiModel', () => {
       const session = createGeminiFallbackSession()
 
       // First call: exhaust primary (0 retries) → fallback succeeds → useFallback=true
-      const op1 = jest
+      const op1 = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError)
         .mockResolvedValueOnce('ok')
@@ -523,7 +523,7 @@ describe('geminiModel', () => {
 
       // Second call: useFallback=true, fallback throws a non-429 error immediately
       const nonRateLimitError = new Error('bad request')
-      const op2 = jest.fn().mockRejectedValue(nonRateLimitError)
+      const op2 = vi.fn().mockRejectedValue(nonRateLimitError)
 
       await expect(session.execute(op2)).rejects.toThrow('bad request')
       expect(op2).toHaveBeenCalledTimes(1)
@@ -541,7 +541,7 @@ describe('geminiModel', () => {
 
       // opA exhausts primary on both retries then succeeds on fallback.
       // A registers its 1s retry timer first, so its timer fires first.
-      const opA = jest
+      const opA = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError) // primary 0
         .mockRejectedValueOnce(rateLimitError) // primary 1 (A exhausts, sets useFallback=true)
@@ -549,7 +549,7 @@ describe('geminiModel', () => {
 
       // opB fails on primary 0 and then should bail — it must NOT make a primary 1 attempt
       // because A will have set useFallback=true by the time B wakes from its 1s sleep.
-      const opB = jest
+      const opB = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError) // primary 0
         .mockResolvedValueOnce('B-fallback') // fallback 0 (after bail-out)
@@ -562,7 +562,7 @@ describe('geminiModel', () => {
       // primary, sets useFallback=true, calls fallback and resolves — all before B's
       // timer fires. B then wakes, sees shouldAbort()=true, bails without a second
       // primary attempt, and goes straight to fallback.
-      await jest.advanceTimersByTimeAsync(1000)
+      await vi.advanceTimersByTimeAsync(1000)
 
       const [resultA, resultB] = await Promise.all([promiseA, promiseB])
 

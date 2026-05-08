@@ -1,8 +1,8 @@
 import { hardenPrompt } from './hardeningPrompt'
 import { preSystemPrompt } from './preSystemPrompt'
 
-jest.mock('./hardeningPrompt', () => ({
-  hardenPrompt: jest.fn((text) => `«${text}»`),
+vi.mock('./hardeningPrompt', () => ({
+  hardenPrompt: vi.fn((text) => `«${text}»`),
   hardeningPrompt: 'MOCK_HARDENING_PROMPT'
 }))
 
