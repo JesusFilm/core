@@ -1,5 +1,3 @@
-import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
-import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next/pages'
 import {
@@ -15,62 +13,80 @@ import {
 
 import { DIVIDER, TEXT_SECONDARY } from '../chatStyles'
 
-interface DragHandleProps {
-  collapsed: boolean
-  /** Drag down past the threshold collapses the sheet to a thin handle. */
-  onCollapse: () => void
-  /** Drag up past the threshold expands the sheet back to active height. */
-  onExpand: () => void
+const DRAG_THRESHOLD_PX = 32
+const TAP_MAX_MOVE_PX = 4
+
+export interface DragSheetHandlers {
+  onDragStart?: () => void
+  onDrag?: (deltaY: number) => void
+  onDragEnd?: (deltaY: number) => void
+  /** Fires when the gesture didn't move past the tap threshold. */
+  onTap?: () => void
 }
 
-const DRAG_THRESHOLD_PX = 32
+interface DragSheetBindings {
+  onMouseDown: (event: ReactMouseEvent<HTMLElement>) => void
+  onTouchStart: (event: ReactTouchEvent<HTMLElement>) => void
+}
 
-export function DragHandle({
-  collapsed,
-  onCollapse,
-  onExpand
-}: DragHandleProps): ReactElement {
-  const { t } = useTranslation('libs-journeys-ui')
+/**
+ * Shared mouse/touch drag binding for the chat sheet. Tracks the
+ * **max absolute displacement** during the gesture (not just the final
+ * delta) so a drag-then-return gesture is still recognised as a drag —
+ * preventing the drag-then-tap edge case where releasing near the start
+ * point fires a synthetic click and toggles the sheet.
+ *
+ * Touchmove is registered as non-passive so we can call preventDefault to
+ * stop the underlying surface (conversation, page) from scrolling while
+ * the user is dragging.
+ */
+export function useDragSheet(handlers: DragSheetHandlers = {}): {
+  dragging: boolean
+  bind: DragSheetBindings
+} {
+  const handlersRef = useRef(handlers)
+  handlersRef.current = handlers
+
   const [dragging, setDragging] = useState(false)
   const startYRef = useRef<number | null>(null)
   const movedRef = useRef(0)
+  const maxAbsMovedRef = useRef(0)
   const draggingRef = useRef(false)
-  const suppressClickRef = useRef(false)
-
-  const toggleCollapsed = useCallback(() => {
-    if (collapsed) {
-      onExpand()
-    } else {
-      onCollapse()
-    }
-  }, [collapsed, onCollapse, onExpand])
 
   useEffect(() => {
     if (!dragging) return undefined
+    const handleMove = (clientY: number, isTouch: boolean): boolean => {
+      if (startYRef.current == null) return false
+      const delta = clientY - startYRef.current
+      movedRef.current = delta
+      if (Math.abs(delta) > maxAbsMovedRef.current) {
+        maxAbsMovedRef.current = Math.abs(delta)
+      }
+      handlersRef.current.onDrag?.(delta)
+      // Suppress page/conversation scroll under the gesture once the user
+      // has moved past the tap threshold.
+      return isTouch && maxAbsMovedRef.current > TAP_MAX_MOVE_PX
+    }
     const handleMouseMove = (e: MouseEvent): void => {
-      if (startYRef.current == null) return
-      movedRef.current = e.clientY - startYRef.current
+      handleMove(e.clientY, false)
     }
     const handleTouchMove = (e: TouchEvent): void => {
-      if (startYRef.current == null || e.touches.length === 0) return
-      movedRef.current = e.touches[0].clientY - startYRef.current
-      // Stop the page (or the conversation underneath) from scrolling
-      // while the user is dragging the handle.
-      e.preventDefault()
+      if (e.touches.length === 0) return
+      const shouldPrevent = handleMove(e.touches[0].clientY, true)
+      if (shouldPrevent) e.preventDefault()
     }
     const handleUp = (): void => {
       if (!draggingRef.current) return
       const moved = movedRef.current
+      const maxAbsMoved = maxAbsMovedRef.current
       draggingRef.current = false
       setDragging(false)
       startYRef.current = null
       movedRef.current = 0
-      if (moved > DRAG_THRESHOLD_PX) {
-        suppressClickRef.current = true
-        onCollapse()
-      } else if (moved < -DRAG_THRESHOLD_PX) {
-        suppressClickRef.current = true
-        onExpand()
+      maxAbsMovedRef.current = 0
+      handlersRef.current.onDragEnd?.(moved)
+      if (maxAbsMoved <= TAP_MAX_MOVE_PX) {
+        handlersRef.current.onTap?.()
       }
     }
     window.addEventListener('mousemove', handleMouseMove)
@@ -85,37 +101,100 @@ export function DragHandle({
       window.removeEventListener('touchend', handleUp)
       window.removeEventListener('touchcancel', handleUp)
     }
-  }, [dragging, onCollapse, onExpand])
+  }, [dragging])
 
   const handleStart = useCallback((clientY: number) => {
     startYRef.current = clientY
     movedRef.current = 0
+    maxAbsMovedRef.current = 0
     draggingRef.current = true
     setDragging(true)
+    handlersRef.current.onDragStart?.()
   }, [])
 
-  const handleMouseDown = useCallback(
-    (e: ReactMouseEvent<HTMLDivElement>) => {
+  const bind: DragSheetBindings = {
+    onMouseDown: (e) => {
       e.preventDefault()
       handleStart(e.clientY)
     },
-    [handleStart]
-  )
-
-  const handleTouchStart = useCallback(
-    (e: ReactTouchEvent<HTMLDivElement>) => {
+    onTouchStart: (e) => {
       handleStart(e.touches[0].clientY)
+    }
+  }
+
+  return { dragging, bind }
+}
+
+interface DragHandleProps extends DragSheetHandlers {
+  collapsed: boolean
+  /** Tap-toggle: drag down past threshold collapses to a thin handle. */
+  onCollapse: () => void
+  /** Tap-toggle: drag up past threshold expands the sheet. */
+  onExpand: () => void
+}
+
+/**
+ * Mobile drag handle for the pinned chat sheet.
+ *
+ * - When the parent does NOT pass live drag handlers
+ *   (`onDragStart`/`onDrag`/`onDragEnd`), the handle uses its built-in
+ *   threshold logic: dragging more than `DRAG_THRESHOLD_PX` collapses or
+ *   expands.
+ * - When the parent DOES pass live drag handlers, the handle defers
+ *   resize/snap to the parent and just forwards drag events. Tap toggles
+ *   between collapsed / expanded as a fallback affordance.
+ */
+export function DragHandle({
+  collapsed,
+  onCollapse,
+  onExpand,
+  onDragStart,
+  onDrag,
+  onDragEnd
+}: DragHandleProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
+
+  const isControlledByParent =
+    onDragStart != null || onDrag != null || onDragEnd != null
+
+  const toggleCollapsed = useCallback(() => {
+    if (collapsed) {
+      onExpand()
+    } else {
+      onCollapse()
+    }
+  }, [collapsed, onCollapse, onExpand])
+
+  // When the parent owns snap, tapping the collapsed handle is
+  // intentionally a no-op — expanding requires an actual upward drag so
+  // a stray pointer tap on the thin strip can't accidentally pop the
+  // sheet open. Keyboard Enter/Space still toggles for accessibility.
+  const handlePointerTap = useCallback(() => {
+    if (isControlledByParent && collapsed) return
+    toggleCollapsed()
+  }, [isControlledByParent, collapsed, toggleCollapsed])
+
+  // Defer max-displacement tracking + threshold-fallback to the shared hook
+  // so the synthetic-click-after-drag-then-return path is fixed everywhere.
+  const handleDragEnd = useCallback(
+    (deltaY: number) => {
+      onDragEnd?.(deltaY)
+      if (isControlledByParent) return
+      if (deltaY > DRAG_THRESHOLD_PX) {
+        onCollapse()
+      } else if (deltaY < -DRAG_THRESHOLD_PX) {
+        onExpand()
+      }
     },
-    [handleStart]
+    [onDragEnd, isControlledByParent, onCollapse, onExpand]
   )
 
-  const handleClick = useCallback(() => {
-    if (suppressClickRef.current) {
-      suppressClickRef.current = false
-      return
-    }
-    toggleCollapsed()
-  }, [toggleCollapsed])
+  const { dragging, bind } = useDragSheet({
+    onDragStart,
+    onDrag,
+    onDragEnd: handleDragEnd,
+    onTap: handlePointerTap
+  })
 
   // Keyboard accessibility: Enter/Space toggles between expanded and
   // collapsed so non-pointer users still have a way to control the sheet.
@@ -128,10 +207,6 @@ export function DragHandle({
     [toggleCollapsed]
   )
 
-  const ChevronIcon = collapsed
-    ? KeyboardArrowUpRoundedIcon
-    : KeyboardArrowDownRoundedIcon
-
   return (
     <Box
       data-testid="ChatDragHandle"
@@ -139,9 +214,8 @@ export function DragHandle({
       tabIndex={0}
       aria-label={collapsed ? t('Expand chat') : t('Collapse chat')}
       aria-expanded={!collapsed}
-      onMouseDown={handleMouseDown}
-      onTouchStart={handleTouchStart}
-      onClick={handleClick}
+      onMouseDown={bind.onMouseDown}
+      onTouchStart={bind.onTouchStart}
       onKeyDown={handleKeyDown}
       sx={{
         display: 'flex',
@@ -154,23 +228,19 @@ export function DragHandle({
         userSelect: 'none',
         outline: 'none',
         '&:focus-visible .ChatDragHandlePill': {
-          bgcolor: DIVIDER,
-          color: TEXT_SECONDARY
+          bgcolor: TEXT_SECONDARY
         }
       }}
     >
       <Box
-        component={ChevronIcon}
         className="ChatDragHandlePill"
         aria-hidden
         sx={{
-          width: 28,
-          height: 18,
-          px: 0.5,
+          width: 48,
+          height: 4,
           borderRadius: 9999,
-          color: dragging ? TEXT_SECONDARY : TEXT_SECONDARY,
-          bgcolor: dragging ? DIVIDER : 'transparent',
-          transition: 'background-color 120ms ease, color 120ms ease'
+          bgcolor: dragging ? TEXT_SECONDARY : DIVIDER,
+          transition: 'background-color 120ms ease'
         }}
       />
     </Box>

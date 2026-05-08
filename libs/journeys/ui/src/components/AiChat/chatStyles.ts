@@ -40,6 +40,12 @@ export const MUTED_FG = 'text.secondary'
 
 // --- Brand ---
 
+/** Brand red (= journeysAdmin primary.main) — active send button fill. */
+export const BRAND_RED = brandRed
+
+/** Hover state for the brand-red send button. */
+export const BRAND_RED_HOVER = '#A8202C'
+
 /** Second stop of the sparkle-avatar gradient. Darker than journeysAdmin's primary.dark, tuned to the gradient. */
 export const BRAND_RED_DARK = '#A8202C'
 

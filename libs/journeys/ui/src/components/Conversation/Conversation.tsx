@@ -37,6 +37,14 @@ interface ConversationProps {
    * last message isn't permanently obscured.
    */
   bottomClearance?: number
+  /**
+   * When true, suppresses the scroll-to-latest pill. Used by the pinned
+   * chat sheet so the pill doesn't briefly flash in while the sheet is
+   * animating shrunk — the conversation height transitions through
+   * "shorter than content" mid-tween, which would otherwise read as
+   * "scrolled away from the bottom".
+   */
+  suppressScrollPill?: boolean
 }
 
 const NEAR_BOTTOM_THRESHOLD_PX = 24
@@ -45,7 +53,8 @@ const BOTTOM_FADE_HEIGHT_PX = 56
 export function Conversation({
   children,
   scrollKey,
-  bottomClearance = 0
+  bottomClearance = 0,
+  suppressScrollPill = false
 }: ConversationProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -191,7 +200,7 @@ export function Conversation({
           {children}
         </Box>
       </Box>
-      {!isAtBottom && (
+      {!isAtBottom && !suppressScrollPill && (
         <IconButton
           onClick={handleScrollToBottomClick}
           aria-label={t('Scroll to latest message')}

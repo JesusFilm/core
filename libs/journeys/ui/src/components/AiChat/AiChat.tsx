@@ -34,7 +34,7 @@ import {
   OVERLAY_FG_RETRY,
   SHEET_BOTTOM_FADE
 } from './chatStyles'
-import { DragHandle } from './DragHandle'
+import { DragHandle, useDragSheet } from './DragHandle'
 
 interface AiChatProps {
   /** When provided, this message is sent automatically on first render */
@@ -69,6 +69,23 @@ interface AiChatProps {
    * typed text.
    */
   onClose?: () => void
+  /**
+   * Controlled `collapsed` state. When provided alongside
+   * `onCollapsedChange`, the parent owns collapse/expand and AiChat just
+   * reflects it (chevron, aria, input slide-out). Leave undefined for the
+   * default uncontrolled behaviour.
+   */
+  collapsed?: boolean
+  onCollapsedChange?: (next: boolean) => void
+  /**
+   * When provided, the parent owns the sheet's resize/snap logic — the
+   * drag handle and chat header forward live drag events so the parent
+   * can update its own height. Tap-to-toggle on the handle still flips
+   * `collapsed` via `onCollapse`/`onExpand` for keyboard parity.
+   */
+  onDragStart?: () => void
+  onDrag?: (deltaY: number) => void
+  onDragEnd?: (deltaY: number) => void
 }
 
 export type AiChatSheetState = 'idle' | 'active' | 'collapsed'
@@ -195,23 +212,42 @@ export function AiChat({
   collapsible = true,
   variant = 'panel',
   onSheetStateChange,
-  onClose
+  onClose,
+  collapsed: collapsedProp,
+  onCollapsedChange,
+  onDragStart,
+  onDrag,
+  onDragEnd
 }: AiChatProps): ReactElement {
   const isOverlay = variant === 'overlay'
   const isPanel = !isOverlay
   const { t } = useTranslation('libs-journeys-ui')
   const { journey } = useJourney()
   const [input, setInput] = useState('')
-  const [collapsed, setCollapsed] = useState(false)
+  const [internalCollapsed, setInternalCollapsed] = useState(false)
+  const isControlled = collapsedProp !== undefined
+  const collapsed = isControlled ? collapsedProp : internalCollapsed
   const initialMessageSent = useRef(false)
+
+  const setCollapsed = useCallback(
+    (next: boolean) => {
+      if (isControlled) {
+        onCollapsedChange?.(next)
+      } else {
+        setInternalCollapsed(next)
+        onCollapsedChange?.(next)
+      }
+    },
+    [isControlled, onCollapsedChange]
+  )
 
   const handleCollapse = useCallback(() => {
     setCollapsed(true)
-  }, [])
+  }, [setCollapsed])
 
   const handleExpand = useCallback(() => {
     setCollapsed(false)
-  }, [])
+  }, [setCollapsed])
 
   const languageBcp47 = journey?.language?.bcp47 ?? undefined
   const languageRef = useRef(languageBcp47)
@@ -268,7 +304,7 @@ export function AiChat({
   const handleRetry = useCallback(() => {
     setCollapsed(false)
     void regenerate()
-  }, [regenerate])
+  }, [regenerate, setCollapsed])
 
   useEffect(() => {
     if (
@@ -280,7 +316,7 @@ export function AiChat({
       setCollapsed(false)
       void sendMessage({ text: initialMessage })
     }
-  }, [initialMessage, sendMessage])
+  }, [initialMessage, sendMessage, setCollapsed])
 
   const handleSubmit = useCallback(
     (e: FormEvent) => {
@@ -290,7 +326,7 @@ export function AiChat({
       void sendMessage({ text: input })
       setInput('')
     },
-    [input, isLoading, sendMessage]
+    [input, isLoading, sendMessage, setCollapsed]
   )
 
   const lastAssistantIndex = useMemo(() => {
@@ -315,6 +351,13 @@ export function AiChat({
   const showDragHandle = isPanel && collapsible
   const showHeader = isPanel
   const showOverlayClose = isOverlay && onClose != null
+  const dragControlled =
+    onDragStart != null || onDrag != null || onDragEnd != null
+  const { dragging: headerDragging, bind: headerDragBind } = useDragSheet({
+    onDragStart,
+    onDrag,
+    onDragEnd
+  })
   // We keep header/conversation/input mounted in every state and rely on
   // the parent sheet's height transition + overflow:hidden to clip them
   // as the sheet collapses. Hiding via display:none would short-circuit
@@ -338,9 +381,26 @@ export function AiChat({
               collapsed={collapsed}
               onCollapse={handleCollapse}
               onExpand={handleExpand}
+              onDragStart={onDragStart}
+              onDrag={onDrag}
+              onDragEnd={onDragEnd}
             />
           )}
-          {showHeader && <ChatHeader thinking={isLoading} />}
+          {showHeader &&
+            (dragControlled ? (
+              <Box
+                {...headerDragBind}
+                sx={{
+                  cursor: headerDragging ? 'grabbing' : 'grab',
+                  touchAction: 'none',
+                  userSelect: 'none'
+                }}
+              >
+                <ChatHeader thinking={isLoading} />
+              </Box>
+            ) : (
+              <ChatHeader thinking={isLoading} />
+            ))}
         </Box>
       )}
 
@@ -361,6 +421,10 @@ export function AiChat({
           // safe-area headroom + 16px breathing room — keeps the last
           // message clear of the absolute-positioned PromptInput below.
           bottomClearance={72}
+          // While the sheet is collapsed (or animating toward it) the
+          // shrinking scroll area transiently reads as "scrolled away
+          // from the bottom" and the pill flashes in. Hide it.
+          suppressScrollPill={collapsed}
         >
           {messages.map((message, index) => {
             const text = getTextFromMessage(message)

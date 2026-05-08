@@ -1,1 +1,2 @@
-export { DragHandle } from './DragHandle'
+export { DragHandle, useDragSheet } from './DragHandle'
+export type { DragSheetHandlers } from './DragHandle'

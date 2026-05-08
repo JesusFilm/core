@@ -14,6 +14,8 @@ import {
 
 import {
   ASSISTANT_FG,
+  BRAND_RED,
+  BRAND_RED_HOVER,
   DIVIDER,
   OVERLAY_FG_MUTED,
   OVERLAY_FILL_LOW,
@@ -23,7 +25,6 @@ import {
   PANEL_INPUT_BG,
   PANEL_INPUT_BORDER,
   PANEL_INPUT_SHADOW,
-  PRIMARY,
   PRIMARY_ON,
   TEXT_SECONDARY
 } from '../AiChat/chatStyles'
@@ -162,9 +163,9 @@ export function PromptInput({
             height: 32,
             flexShrink: 0,
             p: 0,
-            bgcolor: PRIMARY,
+            bgcolor: BRAND_RED,
             color: PRIMARY_ON,
-            '&:hover': { bgcolor: PRIMARY }
+            '&:hover': { bgcolor: BRAND_RED_HOVER }
           }}
         >
           <StopRoundedIcon fontSize="small" />
@@ -180,7 +181,7 @@ export function PromptInput({
             flexShrink: 0,
             p: 0,
             bgcolor: canSubmit
-              ? PRIMARY
+              ? BRAND_RED
               : isFloating
                 ? OVERLAY_FILL_LOW
                 : DIVIDER,
@@ -191,7 +192,7 @@ export function PromptInput({
                 : TEXT_SECONDARY,
             '&:hover': {
               bgcolor: canSubmit
-                ? PRIMARY
+                ? BRAND_RED_HOVER
                 : isFloating
                   ? OVERLAY_FILL_LOW
                   : DIVIDER
