@@ -3,13 +3,7 @@
 import Box from '@mui/material/Box'
 import { SxProps } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
 import type { AiChatSheetState } from '../AiChat/AiChat'
@@ -261,10 +255,7 @@ export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
       if (parentH <= 0) return
       // Dragging DOWN (+deltaY) shrinks the sheet; UP grows it.
       const next = startPct - deltaY / parentH
-      const clamped = Math.max(
-        minSnapFor(parentH),
-        Math.min(SNAP_FULL, next)
-      )
+      const clamped = Math.max(minSnapFor(parentH), Math.min(SNAP_FULL, next))
       setHeightPct(clamped)
     },
     [minSnapFor]
