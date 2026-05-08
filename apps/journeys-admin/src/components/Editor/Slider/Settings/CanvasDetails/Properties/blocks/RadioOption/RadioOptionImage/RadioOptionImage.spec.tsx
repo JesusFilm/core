@@ -39,7 +39,8 @@ import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoI
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import {
   listUnsplashCollectionPhotosMock,
-  triggerUnsplashDownloadMock
+  triggerUnsplashDownloadMock,
+  unsplashImageInput
 } from '../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
 
 import {
@@ -151,18 +152,6 @@ const image: TreeBlock<ImageBlock> = {
   blurhash: '',
   children: [],
   scale: null,
-  focalLeft: 50,
-  focalTop: 50,
-  customizable: null
-}
-
-const unsplashImageInput = {
-  src: 'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNzIxODUyNzc0fA&ixlib=rb-4.0.3&q=80&w=1080',
-  alt: 'white dome building during daytime',
-  blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
-  height: 720,
-  width: 1080,
-  scale: 100,
   focalLeft: 50,
   focalTop: 50,
   customizable: null
@@ -347,11 +336,32 @@ describe('RadioOptionImage', () => {
     }
 
     it('updates image for radio option from gallery selection', async () => {
+      const priorImage = existingImageRadioOption
+        .children[0] as TreeBlock<ImageBlock>
+      const undoInput = {
+        src: priorImage.src,
+        alt: priorImage.alt,
+        blurhash: priorImage.blurhash,
+        height: priorImage.height,
+        width: priorImage.width,
+        scale: priorImage.scale,
+        focalLeft: priorImage.focalLeft,
+        focalTop: priorImage.focalTop,
+        customizable: priorImage.customizable
+      }
       const updateResult = jest.fn(() => ({
         data: {
           imageBlockUpdate: {
             ...image,
             ...unsplashImageInput
+          }
+        }
+      }))
+      const undoResult = jest.fn(() => ({
+        data: {
+          imageBlockUpdate: {
+            ...image,
+            ...undoInput
           }
         }
       }))
@@ -368,12 +378,27 @@ describe('RadioOptionImage', () => {
         },
         result: updateResult
       }
+      const radioOptionImageUpdateUndoMock: MockedResponse<
+        RadioOptionImageUpdate,
+        RadioOptionImageUpdateVariables
+      > = {
+        request: {
+          query: RADIO_OPTION_IMAGE_UPDATE,
+          variables: {
+            id: image.id,
+            input: undoInput
+          }
+        },
+        result: undoResult
+      }
 
       render(
         <MockedProvider
           mocks={[
             listUnsplashCollectionPhotosMock,
             triggerUnsplashDownloadMock,
+            radioOptionImageUpdateMock,
+            radioOptionImageUpdateUndoMock,
             radioOptionImageUpdateMock
           ]}
         >
@@ -381,6 +406,8 @@ describe('RadioOptionImage', () => {
             <SnackbarProvider>
               <CommandProvider>
                 <RadioOptionImage radioOptionBlock={existingImageRadioOption} />
+                <CommandUndoItem variant="button" />
+                <CommandRedoItem variant="button" />
               </CommandProvider>
             </SnackbarProvider>
           </JourneyProvider>
@@ -402,6 +429,10 @@ describe('RadioOptionImage', () => {
       )
 
       await waitFor(() => expect(updateResult).toHaveBeenCalled())
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() => expect(undoResult).toHaveBeenCalled())
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+      await waitFor(() => expect(updateResult).toHaveBeenCalledTimes(2))
     })
 
     it('deletes an image block', async () => {

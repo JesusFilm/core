@@ -15,7 +15,8 @@ import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoI
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import {
   listUnsplashCollectionPhotosMock,
-  triggerUnsplashDownloadMock
+  triggerUnsplashDownloadMock,
+  unsplashImageInput
 } from '../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
 
 import { IMAGE_BLOCK_UPDATE } from './ImageOptions'
@@ -55,18 +56,6 @@ describe('ImageOptions', () => {
     }
   }
 
-  const unsplashImageInput = {
-    src: 'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNzIxODUyNzc0fA&ixlib=rb-4.0.3&q=80&w=1080',
-    alt: 'white dome building during daytime',
-    blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
-    height: 720,
-    width: 1080,
-    scale: 100,
-    focalLeft: 50,
-    focalTop: 50,
-    customizable: null
-  }
-
   const scaleUpdateResponse: ImageBlockUpdate = {
     imageBlockUpdate: {
       ...selectedBlock,
@@ -94,6 +83,17 @@ describe('ImageOptions', () => {
   }
 
   it('updates image block from gallery selection', async () => {
+    const undoInput = {
+      src: selectedBlock.src,
+      alt: selectedBlock.alt,
+      blurhash: selectedBlock.blurhash,
+      height: selectedBlock.height,
+      width: selectedBlock.width,
+      scale: selectedBlock.scale,
+      focalLeft: selectedBlock.focalLeft,
+      focalTop: selectedBlock.focalTop,
+      customizable: selectedBlock.customizable
+    }
     const updateResult = jest.fn(() => ({
       data: {
         imageBlockUpdate: {
@@ -102,27 +102,56 @@ describe('ImageOptions', () => {
         }
       }
     }))
+    const undoResult = jest.fn(() => ({
+      data: {
+        imageBlockUpdate: {
+          ...selectedBlock,
+          ...undoInput
+        }
+      }
+    }))
+    const updateMock: MockedResponse<
+      ImageBlockUpdate,
+      ImageBlockUpdateVariables
+    > = {
+      request: {
+        query: IMAGE_BLOCK_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          input: unsplashImageInput
+        }
+      },
+      result: updateResult
+    }
+    const undoMock: MockedResponse<
+      ImageBlockUpdate,
+      ImageBlockUpdateVariables
+    > = {
+      request: {
+        query: IMAGE_BLOCK_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          input: undoInput
+        }
+      },
+      result: undoResult
+    }
 
     render(
       <MockedProvider
         mocks={[
           listUnsplashCollectionPhotosMock,
           triggerUnsplashDownloadMock,
-          {
-            request: {
-              query: IMAGE_BLOCK_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                input: unsplashImageInput
-              }
-            },
-            result: updateResult
-          }
+          updateMock,
+          undoMock,
+          updateMock
         ]}
       >
         <CommandProvider>
           <EditorProvider initialState={{ selectedBlock }}>
             <ImageOptions />
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
           </EditorProvider>
         </CommandProvider>
       </MockedProvider>
@@ -141,6 +170,10 @@ describe('ImageOptions', () => {
     )
 
     await waitFor(() => expect(updateResult).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(undoResult).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(updateResult).toHaveBeenCalledTimes(2))
   })
 
   it('fake delete image block', async () => {

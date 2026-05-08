@@ -21,7 +21,8 @@ import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 import {
   listUnsplashCollectionPhotosMock,
-  triggerUnsplashDownloadMock
+  triggerUnsplashDownloadMock,
+  unsplashImageInput
 } from '../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
 import { IMAGE_BLOCK_UPDATE } from '../../Properties/blocks/Image/Options/ImageOptions'
 
@@ -59,18 +60,6 @@ describe('Logo', () => {
     width: 1,
     height: 1,
     blurhash: '',
-    focalLeft: 50,
-    focalTop: 50,
-    customizable: null
-  }
-
-  const unsplashImageInput = {
-    src: 'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNzIxODUyNzc0fA&ixlib=rb-4.0.3&q=80&w=1080',
-    alt: 'white dome building during daytime',
-    blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
-    height: 720,
-    width: 1080,
-    scale: 100,
     focalLeft: 50,
     focalTop: 50,
     customizable: null
@@ -218,23 +207,44 @@ describe('Logo', () => {
       ...defaultJourney,
       logoImageBlock: imageBlock
     }
+    const undoInput: ImageBlockUpdateInput = {
+      src: imageBlock.src,
+      alt: imageBlock.alt,
+      blurhash: imageBlock.blurhash,
+      height: imageBlock.height,
+      width: imageBlock.width,
+      scale: imageBlock.scale,
+      focalLeft: imageBlock.focalLeft,
+      focalTop: imageBlock.focalTop,
+      customizable: imageBlock.customizable
+    }
     const updateMock = getImageBlockUpdateMock(
       imageBlock.id,
       unsplashImageInput,
       true
     )
+    const redoMock = getImageBlockUpdateMock(
+      imageBlock.id,
+      unsplashImageInput,
+      true
+    )
+    const undoMock = getImageBlockUpdateMock(imageBlock.id, undoInput, true)
 
     render(
       <MockedProvider
         mocks={[
           listUnsplashCollectionPhotosMock,
           triggerUnsplashDownloadMock,
-          updateMock
+          updateMock,
+          undoMock,
+          redoMock
         ]}
       >
         <JourneyProvider value={{ journey }}>
           <CommandProvider>
             <Logo />
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
           </CommandProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -250,6 +260,10 @@ describe('Logo', () => {
     )
 
     await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(undoMock.result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(redoMock.result).toHaveBeenCalled())
   })
 
   it('should delete logo image block', async () => {

@@ -21,7 +21,8 @@ import { JOURNEY_IMAGE_BLOCK_DELETE } from '../../../../../../libs/useJourneyIma
 import { JOURNEY_IMAGE_BLOCK_UPDATE } from '../../../../../../libs/useJourneyImageBlockUpdateMutation'
 import {
   listUnsplashCollectionPhotosMock,
-  triggerUnsplashDownloadMock
+  triggerUnsplashDownloadMock,
+  unsplashImageInput
 } from '../ImageBlockEditor/UnsplashGallery/data'
 
 import { ImageEdit } from './ImageEdit'
@@ -43,18 +44,6 @@ describe('ImageEdit', () => {
     height: 1080,
     blurhash: '',
     scale: null,
-    focalLeft: 50,
-    focalTop: 50,
-    customizable: null
-  }
-
-  const unsplashImageInput = {
-    src: 'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNzIxODUyNzc0fA&ixlib=rb-4.0.3&q=80&w=1080',
-    alt: 'white dome building during daytime',
-    blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
-    height: 720,
-    width: 1080,
-    scale: 100,
     focalLeft: 50,
     focalTop: 50,
     customizable: null

@@ -40,7 +40,8 @@ import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoI
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import {
   listUnsplashCollectionPhotosMock,
-  triggerUnsplashDownloadMock
+  triggerUnsplashDownloadMock,
+  unsplashImageInput
 } from '../../../../ImageBlockEditor/UnsplashGallery/data'
 
 import {
@@ -184,18 +185,6 @@ const image: ImageBlock = {
   height: 1080,
   blurhash: '',
   scale: null,
-  focalLeft: 50,
-  focalTop: 50,
-  customizable: null
-}
-
-const unsplashImageInput = {
-  src: 'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNzIxODUyNzc0fA&ixlib=rb-4.0.3&q=80&w=1080',
-  alt: 'white dome building during daytime',
-  blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
-  height: 720,
-  width: 1080,
-  scale: 100,
   focalLeft: 50,
   focalTop: 50,
   customizable: null
@@ -370,11 +359,30 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
 
   describe('Existing image poster', () => {
     it('updates image poster block from gallery selection', async () => {
+      const undoInput = {
+        src: image.src,
+        alt: image.alt,
+        blurhash: image.blurhash,
+        height: image.height,
+        width: image.width,
+        scale: image.scale,
+        focalLeft: image.focalLeft,
+        focalTop: image.focalTop,
+        customizable: image.customizable
+      }
       const updateResult = jest.fn(() => ({
         data: {
           imageBlockUpdate: {
             ...image,
             ...unsplashImageInput
+          }
+        }
+      }))
+      const undoResult = jest.fn(() => ({
+        data: {
+          imageBlockUpdate: {
+            ...image,
+            ...undoInput
           }
         }
       }))
@@ -391,12 +399,27 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
         },
         result: updateResult
       }
+      const posterImageBlockUpdateUndoMock: MockedResponse<
+        PosterImageBlockUpdate,
+        PosterImageBlockUpdateVariables
+      > = {
+        request: {
+          query: POSTER_IMAGE_BLOCK_UPDATE,
+          variables: {
+            id: image.id,
+            input: undoInput
+          }
+        },
+        result: undoResult
+      }
 
       render(
         <MockedProvider
           mocks={[
             listUnsplashCollectionPhotosMock,
             triggerUnsplashDownloadMock,
+            posterImageBlockUpdateMock,
+            posterImageBlockUpdateUndoMock,
             posterImageBlockUpdateMock
           ]}
         >
@@ -409,6 +432,8 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
                   onClose={onClose}
                   open
                 />
+                <CommandUndoItem variant="button" />
+                <CommandRedoItem variant="button" />
               </CommandProvider>
             </SnackbarProvider>
           </JourneyProvider>
@@ -425,6 +450,10 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
       )
 
       await waitFor(() => expect(updateResult).toHaveBeenCalled())
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() => expect(undoResult).toHaveBeenCalled())
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+      await waitFor(() => expect(updateResult).toHaveBeenCalledTimes(2))
     })
 
     it('deletes an image block', async () => {
