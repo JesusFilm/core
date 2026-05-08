@@ -330,8 +330,7 @@ describe('BackgroundMediaImage', () => {
     }
 
     it('updates image cover block from gallery selection', async () => {
-      const priorImage = existingCoverBlock
-        .children[0] as TreeBlock<ImageBlock>
+      const priorImage = existingCoverBlock.children[0] as TreeBlock<ImageBlock>
       const undoInput = {
         src: priorImage.src,
         alt: priorImage.alt,
