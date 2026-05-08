@@ -566,29 +566,19 @@ export const unsplashImageInput = {
   customizable: null
 } satisfies ImageBlockUpdateInput
 
+type UnsplashImageInputFields =
+  | 'src'
+  | 'alt'
+  | 'blurhash'
+  | 'height'
+  | 'width'
+  | 'scale'
+  | 'focalLeft'
+  | 'focalTop'
+  | 'customizable'
+
 export function toImageBlockUpdateInput(
-  block: Pick<
-    ImageBlock,
-    | 'src'
-    | 'alt'
-    | 'blurhash'
-    | 'height'
-    | 'width'
-    | 'scale'
-    | 'focalLeft'
-    | 'focalTop'
-    | 'customizable'
-  >
-) {
-  return {
-    src: block.src,
-    alt: block.alt,
-    blurhash: block.blurhash,
-    height: block.height,
-    width: block.width,
-    scale: block.scale,
-    focalLeft: block.focalLeft,
-    focalTop: block.focalTop,
-    customizable: block.customizable
-  }
+  block: Pick<ImageBlock, UnsplashImageInputFields>
+): Pick<ImageBlock, UnsplashImageInputFields> {
+  return { ...block }
 }
