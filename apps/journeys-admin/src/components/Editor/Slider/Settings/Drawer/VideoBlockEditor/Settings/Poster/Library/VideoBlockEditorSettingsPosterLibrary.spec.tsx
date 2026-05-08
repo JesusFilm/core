@@ -40,6 +40,7 @@ import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoI
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import {
   listUnsplashCollectionPhotosMock,
+  toImageBlockUpdateInput,
   triggerUnsplashDownloadMock,
   unsplashImageInput
 } from '../../../../ImageBlockEditor/UnsplashGallery/data'
@@ -359,17 +360,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
 
   describe('Existing image poster', () => {
     it('updates image poster block from gallery selection', async () => {
-      const undoInput = {
-        src: image.src,
-        alt: image.alt,
-        blurhash: image.blurhash,
-        height: image.height,
-        width: image.width,
-        scale: image.scale,
-        focalLeft: image.focalLeft,
-        focalTop: image.focalTop,
-        customizable: image.customizable
-      }
+      const undoInput = toImageBlockUpdateInput(image)
       const updateResult = jest.fn(() => ({
         data: {
           imageBlockUpdate: {
@@ -413,8 +404,14 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
         result: undoResult
       }
 
+      const cache = new InMemoryCache()
+      cache.restore({
+        [`ImageBlock:${image.id}`]: { ...image }
+      })
+
       render(
         <MockedProvider
+          cache={cache}
           mocks={[
             listUnsplashCollectionPhotosMock,
             triggerUnsplashDownloadMock,
@@ -450,10 +447,17 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
       )
 
       await waitFor(() => expect(updateResult).toHaveBeenCalled())
+      expect(cache.extract()[`ImageBlock:${image.id}`]?.src).toEqual(
+        unsplashImageInput.src
+      )
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
       await waitFor(() => expect(undoResult).toHaveBeenCalled())
+      expect(cache.extract()[`ImageBlock:${image.id}`]?.src).toEqual(image.src)
       fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
       await waitFor(() => expect(updateResult).toHaveBeenCalledTimes(2))
+      expect(cache.extract()[`ImageBlock:${image.id}`]?.src).toEqual(
+        unsplashImageInput.src
+      )
     })
 
     it('deletes an image block', async () => {

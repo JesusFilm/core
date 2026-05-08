@@ -172,5 +172,69 @@ describe('ImageSource', () => {
 
       expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
     })
+
+    it('renders when journey is a template and customizableMedia flag is true', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <FlagsProvider flags={{ customizableMedia: true }}>
+              <JourneyProvider
+                value={{
+                  journey: { template: true } as unknown as JourneyFields,
+                  variant: 'admin'
+                }}
+              >
+                <CommandProvider>
+                  <EditorProvider>
+                    <ImageSource
+                      selectedBlock={imageBlock}
+                      onChange={onChange}
+                      onDelete={onDelete}
+                    />
+                  </EditorProvider>
+                </CommandProvider>
+              </JourneyProvider>
+            </FlagsProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+      expect(
+        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+      ).not.toBeDisabled()
+    })
+
+    it('renders disabled when no image is selected', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <FlagsProvider flags={{ customizableMedia: true }}>
+              <JourneyProvider
+                value={{
+                  journey: { template: true } as unknown as JourneyFields,
+                  variant: 'admin'
+                }}
+              >
+                <CommandProvider>
+                  <EditorProvider>
+                    <ImageSource
+                      selectedBlock={null}
+                      onChange={onChange}
+                      onDelete={onDelete}
+                    />
+                  </EditorProvider>
+                </CommandProvider>
+              </JourneyProvider>
+            </FlagsProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+      expect(
+        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+      ).toBeDisabled()
+    })
   })
 })

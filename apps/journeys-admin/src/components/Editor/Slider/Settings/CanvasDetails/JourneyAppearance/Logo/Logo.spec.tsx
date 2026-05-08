@@ -21,6 +21,7 @@ import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 import {
   listUnsplashCollectionPhotosMock,
+  toImageBlockUpdateInput,
   triggerUnsplashDownloadMock,
   unsplashImageInput
 } from '../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
@@ -207,17 +208,7 @@ describe('Logo', () => {
       ...defaultJourney,
       logoImageBlock: imageBlock
     }
-    const undoInput: ImageBlockUpdateInput = {
-      src: imageBlock.src,
-      alt: imageBlock.alt,
-      blurhash: imageBlock.blurhash,
-      height: imageBlock.height,
-      width: imageBlock.width,
-      scale: imageBlock.scale,
-      focalLeft: imageBlock.focalLeft,
-      focalTop: imageBlock.focalTop,
-      customizable: imageBlock.customizable
-    }
+    const undoInput = toImageBlockUpdateInput(imageBlock)
     const updateMock = getImageBlockUpdateMock(
       imageBlock.id,
       unsplashImageInput,
@@ -230,8 +221,14 @@ describe('Logo', () => {
     )
     const undoMock = getImageBlockUpdateMock(imageBlock.id, undoInput, true)
 
+    const cache = new InMemoryCache()
+    cache.restore({
+      [`ImageBlock:${imageBlock.id}`]: { ...imageBlock }
+    })
+
     render(
       <MockedProvider
+        cache={cache}
         mocks={[
           listUnsplashCollectionPhotosMock,
           triggerUnsplashDownloadMock,
@@ -260,10 +257,19 @@ describe('Logo', () => {
     )
 
     await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
+    expect(cache.extract()[`ImageBlock:${imageBlock.id}`]?.src).toEqual(
+      unsplashImageInput.src
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(undoMock.result).toHaveBeenCalled())
+    expect(cache.extract()[`ImageBlock:${imageBlock.id}`]?.src).toEqual(
+      imageBlock.src
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(redoMock.result).toHaveBeenCalled())
+    expect(cache.extract()[`ImageBlock:${imageBlock.id}`]?.src).toEqual(
+      unsplashImageInput.src
+    )
   })
 
   it('should delete logo image block', async () => {

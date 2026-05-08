@@ -1,5 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
 
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
+import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import {
   ListUnsplashCollectionPhotos,
   ListUnsplashCollectionPhotosVariables
@@ -552,7 +554,7 @@ export const triggerUnsplashDownloadMock: MockedResponse<
   }
 }
 
-export const unsplashImageInput = {
+export const unsplashImageInput: ImageBlockUpdateInput = {
   src: 'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNzIxODUyNzc0fA&ixlib=rb-4.0.3&q=80&w=1080',
   alt: 'white dome building during daytime',
   blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
@@ -562,4 +564,31 @@ export const unsplashImageInput = {
   focalLeft: 50,
   focalTop: 50,
   customizable: null
+}
+
+export function toImageBlockUpdateInput(
+  block: Pick<
+    ImageBlock,
+    | 'src'
+    | 'alt'
+    | 'blurhash'
+    | 'height'
+    | 'width'
+    | 'scale'
+    | 'focalLeft'
+    | 'focalTop'
+    | 'customizable'
+  >
+): ImageBlockUpdateInput {
+  return {
+    src: block.src,
+    alt: block.alt,
+    blurhash: block.blurhash,
+    height: block.height,
+    width: block.width,
+    scale: block.scale,
+    focalLeft: block.focalLeft,
+    focalTop: block.focalTop,
+    customizable: block.customizable
+  }
 }
