@@ -8,5 +8,5 @@
     "types": []
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["**/*.spec.ts", "jest.config.ts"]
+  "exclude": ["**/*.spec.ts", "**/*.spec.tsx", "vitest.config.mts"]
 }

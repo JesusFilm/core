@@ -4,7 +4,7 @@
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "moduleResolution": "node",
-    "types": ["jest", "@jest/globals", "node"],
+    "types": ["vitest/globals", "node"],
     "jsx": "react-jsx"
   },
   "include": [
@@ -13,6 +13,6 @@
     "**/*.spec.js",
     "**/*.spec.jsx",
     "**/*.d.ts",
-    "jest.config.ts"
+    "vitest.config.mts"
   ]
 }

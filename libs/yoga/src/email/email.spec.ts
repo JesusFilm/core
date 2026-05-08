@@ -1,32 +1,34 @@
 import nodemailer from 'nodemailer'
+import { type Mocked } from 'vitest'
 
 import { sendEmail } from './email'
 
-jest.mock('nodemailer', () => {
-  const originalModule = jest.requireActual('nodemailer')
+vi.mock('nodemailer', async () => {
+  const originalModule =
+    await vi.importActual<typeof nodemailer>('nodemailer')
   return {
     ...originalModule,
-    default: jest.fn()
+    default: vi.fn()
   }
 })
 
-const mockNodeMailer = nodemailer as jest.Mocked<typeof nodemailer>
+const mockNodeMailer = nodemailer as Mocked<typeof nodemailer>
 
-const sendEmailMock = jest.fn().mockReturnValue({})
+const sendEmailMock = vi.fn().mockReturnValue({})
 
 describe('email', () => {
   const OLD_ENV = process.env
 
   beforeEach(() => {
     process.env = { ...OLD_ENV } // make a copy,
-    mockNodeMailer.createTransport = jest.fn().mockReturnValue({
+    mockNodeMailer.createTransport = vi.fn().mockReturnValue({
       sendMail: sendEmailMock
     })
   })
 
   afterEach(() => {
     process.env = OLD_ENV
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const email = {

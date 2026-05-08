@@ -10,7 +10,7 @@ describe('crypto', () => {
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = OLD_ENV
   })
 
