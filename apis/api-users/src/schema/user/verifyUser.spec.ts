@@ -20,8 +20,11 @@ vi.mock('../../workers/email/queue', () => ({
 }))
 
 describe('verifyUser', () => {
+  const originalExampleEmailToken = process.env.EXAMPLE_EMAIL_TOKEN
+
   afterEach(() => {
     vi.clearAllMocks()
+    process.env.EXAMPLE_EMAIL_TOKEN = originalExampleEmailToken
   })
 
   it('should send an email with the correct subject and body', async () => {
