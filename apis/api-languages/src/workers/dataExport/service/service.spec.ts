@@ -9,51 +9,53 @@ import {
   S3Client
 } from '@aws-sdk/client-s3'
 import { Logger } from 'pino'
+import { Mock, vi } from 'vitest'
 
 import { service } from './service'
 
 // Mock fs functions
-jest.mock('fs', () => ({
-  createReadStream: jest.fn().mockReturnValue({
-    pipe: jest.fn().mockReturnThis()
+vi.mock('fs', () => ({
+  createReadStream: vi.fn().mockReturnValue({
+    pipe: vi.fn().mockReturnThis()
   }),
-  createWriteStream: jest.fn().mockReturnValue({
-    on: jest.fn(),
-    once: jest.fn()
+  createWriteStream: vi.fn().mockReturnValue({
+    on: vi.fn(),
+    once: vi.fn()
   }),
   promises: {
-    mkdir: jest.fn().mockResolvedValue(undefined),
-    unlink: jest.fn().mockResolvedValue(undefined),
-    readFile: jest.fn().mockResolvedValue(Buffer.from('test'))
+    mkdir: vi.fn().mockResolvedValue(undefined),
+    unlink: vi.fn().mockResolvedValue(undefined),
+    readFile: vi.fn().mockResolvedValue(Buffer.from('test'))
   }
 }))
 
 // Mock zlib
-jest.mock('zlib', () => ({
-  createGzip: jest.fn().mockReturnValue({
-    pipe: jest.fn().mockReturnThis()
+vi.mock('zlib', () => ({
+  createGzip: vi.fn().mockReturnValue({
+    pipe: vi.fn().mockReturnThis()
   })
 }))
 
 // Mock stream/promises
-jest.mock('stream/promises', () => ({
-  pipeline: jest.fn().mockResolvedValue(undefined)
+vi.mock('stream/promises', () => ({
+  pipeline: vi.fn().mockResolvedValue(undefined)
 }))
 
 // Mock child_process
-jest.mock('child_process', () => ({
-  spawn: jest.fn().mockImplementation(() => {
+vi.mock('child_process', () => ({
+  spawn: vi.fn().mockImplementation(() => {
     const mockProcess = {
-      stdout: { on: jest.fn() },
-      stderr: { on: jest.fn() },
-      on: jest.fn()
+      stdout: { on: vi.fn() },
+      stderr: { on: vi.fn() },
+      on: vi.fn()
     }
 
     // Simulate successful completion
     setTimeout(() => {
       const closeHandler = mockProcess.on.mock.calls.find(
         (call) => call[0] === 'close'
-      )[1]
+      )?.[1]
+      if (closeHandler == null) throw new Error('close handler was not registered')
       closeHandler(0) // Call with exit code 0 (success)
     }, 10)
 
@@ -62,28 +64,28 @@ jest.mock('child_process', () => ({
 }))
 
 // Mock S3Client
-jest.mock('@aws-sdk/client-s3', () => {
-  const mockSend = jest.fn().mockImplementation((command) => {
+vi.mock('@aws-sdk/client-s3', () => {
+  const mockSend = vi.fn().mockImplementation((command) => {
     if (command.constructor.name === 'HeadObjectCommand') {
       // Simulate file not found by default
       throw new Error('NotFound')
     }
     return {}
   })
-  const MockS3Client = jest.fn().mockImplementation(() => ({
+  const MockS3Client = vi.fn().mockImplementation(() => ({
     send: mockSend
   }))
   return {
     S3Client: MockS3Client,
-    HeadObjectCommand: jest.fn().mockImplementation((params) => ({
+    HeadObjectCommand: vi.fn().mockImplementation((params) => ({
       constructor: { name: 'HeadObjectCommand' },
       ...params
     })),
-    CopyObjectCommand: jest.fn().mockImplementation((params) => ({
+    CopyObjectCommand: vi.fn().mockImplementation((params) => ({
       constructor: { name: 'CopyObjectCommand' },
       ...params
     })),
-    PutObjectCommand: jest.fn().mockImplementation((params) => ({
+    PutObjectCommand: vi.fn().mockImplementation((params) => ({
       constructor: { name: 'PutObjectCommand' },
       ...params
     }))
@@ -95,7 +97,7 @@ describe('Database Export Service', () => {
   const originalEnv = process.env
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = {
       ...originalEnv,
       PG_DATABASE_URL_LANGUAGES:
@@ -113,10 +115,10 @@ describe('Database Export Service', () => {
 
   it('should export database and upload to R2', async () => {
     const mockLogger = {
-      info: jest.fn(),
-      debug: jest.fn(),
-      error: jest.fn(),
-      child: jest.fn().mockReturnThis()
+      info: vi.fn(),
+      debug: vi.fn(),
+      error: vi.fn(),
+      child: vi.fn().mockReturnThis()
     } as unknown as Logger
 
     await service(mockLogger)
@@ -213,21 +215,21 @@ describe('Database Export Service', () => {
 
   it('should create backup of existing file', async () => {
     // Mock HeadObjectCommand to indicate file exists
-    const mockSend = jest.fn().mockImplementation((command) => {
+    const mockSend = vi.fn().mockImplementation((command) => {
       if (command.constructor.name === 'HeadObjectCommand') {
         return {} // File exists
       }
       return {}
     })
-    ;(S3Client as jest.Mock).mockImplementation(() => ({
+    ;(S3Client as Mock).mockImplementation(() => ({
       send: mockSend
     }))
 
     const mockLogger = {
-      info: jest.fn(),
-      debug: jest.fn(),
-      error: jest.fn(),
-      child: jest.fn().mockReturnThis()
+      info: vi.fn(),
+      debug: vi.fn(),
+      error: vi.fn(),
+      child: vi.fn().mockReturnThis()
     } as unknown as Logger
 
     await service(mockLogger)
@@ -249,10 +251,10 @@ describe('Database Export Service', () => {
     delete process.env.PG_DATABASE_URL_LANGUAGES
 
     const mockLogger = {
-      info: jest.fn(),
-      debug: jest.fn(),
-      error: jest.fn(),
-      child: jest.fn().mockReturnThis()
+      info: vi.fn(),
+      debug: vi.fn(),
+      error: vi.fn(),
+      child: vi.fn().mockReturnThis()
     } as unknown as Logger
 
     await expect(service(mockLogger)).rejects.toThrow()
@@ -264,10 +266,10 @@ describe('Database Export Service', () => {
     delete process.env.CLOUDFLARE_R2_SECRET
 
     const mockLogger = {
-      info: jest.fn(),
-      debug: jest.fn(),
-      error: jest.fn(),
-      child: jest.fn().mockReturnThis()
+      info: vi.fn(),
+      debug: vi.fn(),
+      error: vi.fn(),
+      child: vi.fn().mockReturnThis()
     } as unknown as Logger
 
     await expect(service(mockLogger)).rejects.toThrow(
@@ -279,10 +281,10 @@ describe('Database Export Service', () => {
     delete process.env.CLOUDFLARE_R2_BUCKET
 
     const mockLogger = {
-      info: jest.fn(),
-      debug: jest.fn(),
-      error: jest.fn(),
-      child: jest.fn().mockReturnThis()
+      info: vi.fn(),
+      debug: vi.fn(),
+      error: vi.fn(),
+      child: vi.fn().mockReturnThis()
     } as unknown as Logger
 
     await expect(service(mockLogger)).rejects.toThrow(
