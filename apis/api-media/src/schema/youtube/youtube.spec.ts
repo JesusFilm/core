@@ -1,21 +1,22 @@
 import axios, { isAxiosError } from 'axios'
+import { type Mocked, type MockedFunction, vi } from 'vitest'
 
 import { graphql } from '@core/shared/gql'
 import { createApolloClient } from '@core/yoga/apolloClient'
 
 import { getClient } from '../../../test/client'
 
-jest.mock('axios')
-const mockedAxios = axios as jest.Mocked<typeof axios>
-const mockedIsAxiosError = isAxiosError as jest.MockedFunction<
+vi.mock('axios')
+const mockedAxios = axios as Mocked<typeof axios>
+const mockedIsAxiosError = isAxiosError as unknown as MockedFunction<
   typeof isAxiosError
 >
 
-jest.mock('@core/yoga/apolloClient', () => ({
-  createApolloClient: jest.fn()
+vi.mock('@core/yoga/apolloClient', () => ({
+  createApolloClient: vi.fn()
 }))
 
-const mockedCreateApolloClient = createApolloClient as jest.MockedFunction<
+const mockedCreateApolloClient = createApolloClient as MockedFunction<
   typeof createApolloClient
 >
 
@@ -79,7 +80,7 @@ describe('youtube', () => {
     }
 
     beforeEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       process.env.FIREBASE_API_KEY = 'test-api-key'
       process.env.GATEWAY_URL = 'http://test-gateway'
       process.env.INTEROP_TOKEN = 'test-token'
@@ -147,9 +148,7 @@ describe('youtube', () => {
 
       mockedAxios.get.mockResolvedValueOnce(mockYouTubeResponse)
 
-      const mockApolloQuery = jest
-        .fn()
-        .mockResolvedValueOnce(mockGatewayResponse)
+      const mockApolloQuery = vi.fn().mockResolvedValueOnce(mockGatewayResponse)
       mockedCreateApolloClient.mockReturnValue({
         query: mockApolloQuery
       } as any)
@@ -262,9 +261,7 @@ describe('youtube', () => {
 
       mockedAxios.get.mockResolvedValueOnce(mockYouTubeResponse)
 
-      const mockApolloQuery = jest
-        .fn()
-        .mockResolvedValueOnce(mockGatewayResponse)
+      const mockApolloQuery = vi.fn().mockResolvedValueOnce(mockGatewayResponse)
       mockedCreateApolloClient.mockReturnValue({
         query: mockApolloQuery
       } as any)
@@ -428,7 +425,7 @@ describe('youtube', () => {
 
       mockedAxios.get.mockResolvedValueOnce(mockYouTubeResponse)
 
-      const mockApolloQuery = jest
+      const mockApolloQuery = vi
         .fn()
         .mockRejectedValueOnce(new Error('Gateway error'))
       mockedCreateApolloClient.mockReturnValue({

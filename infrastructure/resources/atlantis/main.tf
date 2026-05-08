@@ -8,6 +8,12 @@ module "atlantis" {
   version = "~> 3.0"
 
   name = "atlantis"
+  # Pinned to first stable Atlantis release built after HashiCorp's
+  # release-signing GPG key expired (2026-04-18). Earlier images (including
+  # the previously floating :latest) trust the now-expired key and fail
+  # terraform downloads with "openpgp: key expired". See
+  # https://github.com/runatlantis/atlantis/issues/6405.
+  atlantis_version = "v0.43.0"
   # user needed because of https://github.com/runatlantis/atlantis/issues/2221
   # this is atlantis user per the official docker image
   user = "100:1000"
