@@ -1,10 +1,11 @@
-import { DeepMockProxy, mockDeep, mockReset } from 'jest-mock-extended'
+import { beforeEach, vi } from 'vitest'
+import { DeepMockProxy, mockDeep, mockReset } from 'vitest-mock-extended'
 
 import { PrismaClient, prisma } from '@core/prisma/users/client'
 
-jest.mock('@core/prisma/users/client', () => ({
+vi.mock('@core/prisma/users/client', async () => ({
   __esModule: true,
-  ...jest.requireActual('@core/prisma/users/client'),
+  ...(await vi.importActual('@core/prisma/users/client')),
   prisma: mockDeep<PrismaClient>()
 }))
 
