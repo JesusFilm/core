@@ -9,7 +9,7 @@ import {
   CreateAiImageVariables
 } from '../../../../../../../../__generated__/CreateAiImage'
 import { SegmindModel } from '../../../../../../../../__generated__/globalTypes'
-import { GET_MY_CLOUDFLARE_IMAGES } from '../MyCloudflareImagesGrid'
+import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibraryImagesGrid'
 
 import { CREATE_AI_IMAGE } from './AIGallery'
 
@@ -115,7 +115,7 @@ describe('AIGallery', () => {
     )
     expect(screen.queryByText('Your generations')).not.toBeInTheDocument()
     expect(
-      screen.queryByTestId('MyCloudflareImagesGrid')
+      screen.queryByTestId('MediaLibraryImagesGrid')
     ).not.toBeInTheDocument()
   })
 

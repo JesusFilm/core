@@ -7,7 +7,7 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
-import { MyCloudflareImagesGrid } from '../MyCloudflareImagesGrid'
+import { MediaLibraryImagesGrid } from '../MediaLibraryImagesGrid'
 
 import { CustomUrl } from './CustomUrl'
 import { ImageUpload } from './ImageUpload'
@@ -31,7 +31,16 @@ export function CustomImage({
   const { mediaLibrary } = useFlags()
 
   return (
-    <Stack sx={{ bgcolor: 'background.paper' }} data-testid="CustomImage">
+    <Stack
+      sx={{
+        bgcolor: 'background.paper',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        minHeight: 0
+      }}
+      data-testid="CustomImage"
+    >
       <ImageUpload
         onChange={onChange}
         setUploading={setUploading}
@@ -44,7 +53,7 @@ export function CustomImage({
       {mediaLibrary === true && (
         <>
           <Divider sx={{ my: 4 }} />
-          <MyCloudflareImagesGrid
+          <MediaLibraryImagesGrid
             title={t('Your uploads')}
             selectedSrc={selectedBlock?.src}
             onSelect={onChange}

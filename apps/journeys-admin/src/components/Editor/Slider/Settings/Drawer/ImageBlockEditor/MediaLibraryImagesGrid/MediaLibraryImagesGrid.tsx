@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
+
 import {
   GetMyCloudflareImages,
   GetMyCloudflareImagesVariables
@@ -24,7 +26,7 @@ export const GET_MY_CLOUDFLARE_IMAGES = gql`
   }
 `
 
-interface MyCloudflareImagesGridProps {
+interface MediaLibraryImagesGridProps {
   title: string
   selectedSrc?: string | null
   onSelect: (input: ImageBlockUpdateInput) => void
@@ -38,16 +40,16 @@ interface RenderedImage {
   blurhash: string | null
 }
 
-const PAGE_SIZE = 9
+const PAGE_SIZE = 10
 const PEEK_LIMIT = PAGE_SIZE + 1
 
-export function MyCloudflareImagesGrid({
+export function MediaLibraryImagesGrid({
   title,
   selectedSrc,
   onSelect,
   isAi,
   uploading
-}: MyCloudflareImagesGridProps): ReactElement | null {
+}: MediaLibraryImagesGridProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const [displayCount, setDisplayCount] = useState<number | null>(null)
 
@@ -105,7 +107,16 @@ export function MyCloudflareImagesGrid({
   }
 
   return (
-    <Stack sx={{ px: 6, pb: 4, pt: 2 }} data-testid="MyCloudflareImagesGrid">
+    <Stack
+      sx={{
+        px: 6,
+        pb: 4,
+        pt: 2,
+        flex: 1,
+        minHeight: 0
+      }}
+      data-testid="MediaLibraryImagesGrid"
+    >
       <Typography
         sx={{
           fontFamily: 'Montserrat, sans-serif',
@@ -128,32 +139,19 @@ export function MyCloudflareImagesGrid({
       )}
       <Box
         sx={{
-          maxHeight: { xs: 220, sm: 320 },
-          overflowX: 'hidden',
+          flex: 1,
+          minHeight: 0,
           overflowY: 'auto',
-          scrollbarWidth: 'thin',
-          scrollbarColor: 'rgba(0,0,0,0.28) transparent',
-          '&::-webkit-scrollbar': { width: 8, height: 8 },
-          '&::-webkit-scrollbar-track': { background: 'transparent' },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'rgba(0,0,0,0.24)',
-            borderRadius: 8,
-            border: '2px solid transparent',
-            backgroundClip: 'padding-box',
-            minHeight: 32
-          }
+          overflowX: 'hidden',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '12px',
+          alignContent: 'flex-start'
         }}
       >
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '12px'
-          }}
-        >
           {uploading === true && (
             <Box
-              data-testid="my-cloudflare-image-uploading"
+              data-testid="media-library-image-uploading"
               sx={{
                 aspectRatio: '1 / 1',
                 borderRadius: '8px',
@@ -169,7 +167,7 @@ export function MyCloudflareImagesGrid({
           {images.map((img) => (
             <ButtonBase
               key={img.id}
-              data-testid={`my-cloudflare-image-${img.id}`}
+              data-testid={`media-library-image-${img.id}`}
               onClick={() => handleClick(img)}
               sx={{
                 position: 'relative',
@@ -210,38 +208,24 @@ export function MyCloudflareImagesGrid({
                   }}
                 />
               )}
-            </ButtonBase>
-          ))}
-        </Box>
+        </ButtonBase>
+        ))}
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
-        <Button
-          variant="outlined"
-          onClick={() => void handleLoadMore()}
-          disabled={!hasMore || isFetchingMore}
-          sx={{
-            height: 32,
-            fontSize: 14,
-            fontWeight: 600,
-            px: '10px',
-            borderRadius: '8px',
-            borderColor: '#DEDFE0',
-            color: '#444451',
-            textTransform: 'none',
-            fontFamily: 'Montserrat, sans-serif',
-            '&:hover': {
-              borderColor: '#C7C9D3',
-              backgroundColor: 'transparent'
-            }
-          }}
-        >
-          {!hasMore
-            ? t('No more to load')
-            : isFetchingMore
-              ? t('Loading...')
-              : t('Load More')}
-        </Button>
-      </Box>
+      <Button
+        variant="outlined"
+        onClick={() => void handleLoadMore()}
+        disabled={!hasMore || isFetchingMore}
+        loading={isFetchingMore}
+        startIcon={<Plus2Icon />}
+        size="medium"
+        sx={{ mt: 4 }}
+      >
+        {!hasMore
+          ? t('No more to load')
+          : isFetchingMore
+            ? t('Loading...')
+            : t('Load More')}
+      </Button>
     </Stack>
   )
 }

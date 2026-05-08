@@ -12,7 +12,7 @@ import {
   ImageBlockUpdateInput,
   SegmindModel
 } from '../../../../../../../../__generated__/globalTypes'
-import { MyCloudflareImagesGrid } from '../MyCloudflareImagesGrid'
+import { MediaLibraryImagesGrid } from '../MediaLibraryImagesGrid'
 
 import { AIPrompt } from './AIPrompt'
 
@@ -84,14 +84,22 @@ export function AIGallery({
   }
 
   return (
-    <Box data-testid="AIGallery">
+    <Box
+      data-testid="AIGallery"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        minHeight: 0
+      }}
+    >
       <AIPrompt
         handleSubmit={handleSubmit}
         loading={loading}
         selectedBlock={selectedBlock}
       />
       {mediaLibrary === true && (
-        <MyCloudflareImagesGrid
+        <MediaLibraryImagesGrid
           title={t('Your generations')}
           selectedSrc={selectedBlock?.src}
           onSelect={onChange}

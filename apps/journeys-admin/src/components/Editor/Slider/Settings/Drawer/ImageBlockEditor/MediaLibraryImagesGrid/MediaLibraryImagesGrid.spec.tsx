@@ -5,8 +5,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import {
   GET_MY_CLOUDFLARE_IMAGES,
-  MyCloudflareImagesGrid
-} from './MyCloudflareImagesGrid'
+  MediaLibraryImagesGrid
+} from './MediaLibraryImagesGrid'
 
 function makeImages(count: number, offset = 0): Array<{
   __typename: 'CloudflareImage'
@@ -54,11 +54,11 @@ function paginatedCache(): InMemoryCache {
   })
 }
 
-describe('MyCloudflareImagesGrid', () => {
+describe('MediaLibraryImagesGrid', () => {
   it('should render images returned by the query', async () => {
     render(
       <MockedProvider mocks={[firstPageMock]}>
-        <MyCloudflareImagesGrid
+        <MediaLibraryImagesGrid
           title="Your uploads"
           onSelect={jest.fn()}
           isAi={false}
@@ -66,7 +66,7 @@ describe('MyCloudflareImagesGrid', () => {
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.getByTestId('my-cloudflare-image-img-0')).toBeInTheDocument()
+      expect(screen.getByTestId('media-library-image-img-0')).toBeInTheDocument()
     })
     expect(screen.getByText('Your uploads')).toBeInTheDocument()
   })
@@ -75,14 +75,14 @@ describe('MyCloudflareImagesGrid', () => {
     const onSelect = jest.fn()
     render(
       <MockedProvider mocks={[firstPageMock]}>
-        <MyCloudflareImagesGrid
+        <MediaLibraryImagesGrid
           title="Your uploads"
           onSelect={onSelect}
           isAi={false}
         />
       </MockedProvider>
     )
-    const tile = await screen.findByTestId('my-cloudflare-image-img-0')
+    const tile = await screen.findByTestId('media-library-image-img-0')
     fireEvent.click(tile)
     expect(onSelect).toHaveBeenCalledWith({
       src: 'https://imagedelivery.net/key/img-0/public',
@@ -97,7 +97,7 @@ describe('MyCloudflareImagesGrid', () => {
   it('should render the processing tile when uploading is true', () => {
     render(
       <MockedProvider mocks={[firstPageMock]}>
-        <MyCloudflareImagesGrid
+        <MediaLibraryImagesGrid
           title="Your uploads"
           onSelect={jest.fn()}
           isAi={false}
@@ -106,7 +106,7 @@ describe('MyCloudflareImagesGrid', () => {
       </MockedProvider>
     )
     expect(
-      screen.getByTestId('my-cloudflare-image-uploading')
+      screen.getByTestId('media-library-image-uploading')
     ).toBeInTheDocument()
   })
 
@@ -116,28 +116,28 @@ describe('MyCloudflareImagesGrid', () => {
         mocks={[firstPageMock, secondPageMock]}
         cache={paginatedCache()}
       >
-        <MyCloudflareImagesGrid
+        <MediaLibraryImagesGrid
           title="Your uploads"
           onSelect={jest.fn()}
           isAi={false}
         />
       </MockedProvider>
     )
-    await screen.findByTestId('my-cloudflare-image-img-0')
+    await screen.findByTestId('media-library-image-img-0')
     await waitFor(() => {
-      expect(screen.getByTestId('my-cloudflare-image-img-8')).toBeInTheDocument()
+      expect(screen.getByTestId('media-library-image-img-8')).toBeInTheDocument()
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Load More' }))
 
     await waitFor(() => {
-      expect(screen.getByTestId('my-cloudflare-image-img-9')).toBeInTheDocument()
+      expect(screen.getByTestId('media-library-image-img-9')).toBeInTheDocument()
     })
-    expect(screen.getByTestId('my-cloudflare-image-img-11')).toBeInTheDocument()
+    expect(screen.getByTestId('media-library-image-img-11')).toBeInTheDocument()
     // No duplicates: img-0 still rendered exactly once
-    expect(screen.getAllByTestId('my-cloudflare-image-img-0')).toHaveLength(1)
+    expect(screen.getAllByTestId('media-library-image-img-0')).toHaveLength(1)
     // No skips: img-8 (last of first page) and img-9 (first of second page) both present
-    expect(screen.getByTestId('my-cloudflare-image-img-8')).toBeInTheDocument()
+    expect(screen.getByTestId('media-library-image-img-8')).toBeInTheDocument()
   })
 
   it('should disable Load More with "No more to load" once a short page returns', async () => {
@@ -146,14 +146,14 @@ describe('MyCloudflareImagesGrid', () => {
         mocks={[firstPageMock, secondPageMock]}
         cache={paginatedCache()}
       >
-        <MyCloudflareImagesGrid
+        <MediaLibraryImagesGrid
           title="Your uploads"
           onSelect={jest.fn()}
           isAi={false}
         />
       </MockedProvider>
     )
-    await screen.findByTestId('my-cloudflare-image-img-0')
+    await screen.findByTestId('media-library-image-img-0')
     fireEvent.click(screen.getByRole('button', { name: 'Load More' }))
     await waitFor(() => {
       expect(
