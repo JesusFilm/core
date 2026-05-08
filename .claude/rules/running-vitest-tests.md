@@ -2,14 +2,15 @@
 
 **Applies when:** Running Vitest tests for any app or library in this monorepo. This rule covers Vitest unit/component tests only — E2E tests use a different workflow.
 
-Apps and APIs that use Vitest (have a `vitest.config.mts` at the workspace root):
+Workspaces that use Vitest (have a `vitest.config.mts` at the workspace root):
 
-| Workspace            | Config                                 |
-| -------------------- | -------------------------------------- |
-| `apps/arclight`      | `apps/arclight/vitest.config.mts`      |
-| `apps/journeys`      | `apps/journeys/vitest.config.mts`      |
-| `apis/api-analytics` | `apis/api-analytics/vitest.config.mts` |
-| `apis/api-media`     | `apis/api-media/vitest.config.mts`     |
+| Workspace                | Config                                     |
+| ------------------------ | ------------------------------------------ |
+| `apps/arclight`          | `apps/arclight/vitest.config.mts`          |
+| `apps/journeys`          | `apps/journeys/vitest.config.mts`          |
+| `apis/api-analytics`     | `apis/api-analytics/vitest.config.mts`     |
+| `apis/api-media`         | `apis/api-media/vitest.config.mts`         |
+| `libs/shared/ui-dynamic` | `libs/shared/ui-dynamic/vitest.config.mts` |
 
 For workspaces with a `jest.config.ts` (e.g. `apps/journeys-admin`, `apps/cms`, `apps/watch`), see `running-jest-tests.md`.
 
