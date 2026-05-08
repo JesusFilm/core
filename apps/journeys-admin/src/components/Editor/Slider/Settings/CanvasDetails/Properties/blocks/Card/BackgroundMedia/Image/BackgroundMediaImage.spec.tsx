@@ -131,7 +131,9 @@ const card: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: []
+  children: [],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 const image: TreeBlock<ImageBlock> = {

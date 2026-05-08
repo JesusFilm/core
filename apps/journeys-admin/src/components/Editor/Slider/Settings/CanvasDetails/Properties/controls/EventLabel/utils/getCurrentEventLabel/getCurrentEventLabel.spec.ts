@@ -38,7 +38,9 @@ describe('getCurrentEventLabel', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
 
     const result = getCurrentEventLabel(t, cardBlock)

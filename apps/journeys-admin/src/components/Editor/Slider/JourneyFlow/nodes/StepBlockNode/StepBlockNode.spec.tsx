@@ -179,7 +179,9 @@ describe('StepBlockNode', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: null,
-          children: [button, radioQuestion, signUp, video, textResponse]
+          children: [button, radioQuestion, signUp, video, textResponse],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     }

@@ -123,7 +123,9 @@ const lastStepOnly: TreeBlock[] = [
         themeName: null,
         fullscreen: false,
         eventLabel: null,
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   }
