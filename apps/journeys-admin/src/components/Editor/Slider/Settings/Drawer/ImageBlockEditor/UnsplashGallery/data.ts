@@ -566,8 +566,8 @@ export const unsplashImageInput = {
   customizable: null
 } satisfies ImageBlockUpdateInput
 
-export function toImageBlockUpdateInput<
-  T extends Pick<
+export function toImageBlockUpdateInput(
+  block: Pick<
     ImageBlock,
     | 'src'
     | 'alt'
@@ -579,20 +579,7 @@ export function toImageBlockUpdateInput<
     | 'focalTop'
     | 'customizable'
   >
->(
-  block: T
-): Pick<
-  T,
-  | 'src'
-  | 'alt'
-  | 'blurhash'
-  | 'height'
-  | 'width'
-  | 'scale'
-  | 'focalLeft'
-  | 'focalTop'
-  | 'customizable'
-> {
+) {
   return {
     src: block.src,
     alt: block.alt,
