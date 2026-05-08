@@ -25,7 +25,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "next-env.d.ts",
     "next.config.js",
     "postcss.config.mjs",
     "../../dist/apps/arclight/.next/types/**/*.ts"
