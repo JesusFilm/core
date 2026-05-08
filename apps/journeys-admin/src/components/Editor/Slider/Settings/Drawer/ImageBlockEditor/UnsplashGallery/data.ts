@@ -580,5 +580,15 @@ type UnsplashImageInputFields =
 export function toImageBlockUpdateInput(
   block: Pick<ImageBlock, UnsplashImageInputFields>
 ): Pick<ImageBlock, UnsplashImageInputFields> {
-  return { ...block }
+  return {
+    src: block.src,
+    alt: block.alt,
+    blurhash: block.blurhash,
+    height: block.height,
+    width: block.width,
+    scale: block.scale,
+    focalLeft: block.focalLeft,
+    focalTop: block.focalTop,
+    customizable: block.customizable
+  }
 }
