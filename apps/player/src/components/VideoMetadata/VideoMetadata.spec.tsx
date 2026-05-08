@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import { VideoMetadata } from '.'
 
-jest.mock('@/components/StudyQuestions', () => ({
+vi.mock('@/components/StudyQuestions', () => ({
   StudyQuestions: ({ questions }: { questions: unknown[] }) => (
     <div data-testid="study-questions">{questions.length} questions</div>
   )

@@ -76,7 +76,7 @@ const mockItems = [
 ]
 
 describe('PlaylistList', () => {
-  const mockOnVideoSelect = jest.fn()
+  const mockOnVideoSelect = vi.fn()
 
   beforeEach(() => {
     mockOnVideoSelect.mockClear()

@@ -2,12 +2,13 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import videojs from 'video.js'
 import type Player from 'video.js/dist/types/player'
+import type { Mock } from 'vitest'
 
 import { VideoPlayer } from '.'
 
 import { mockPlayer } from '@/setupTests'
 
-jest.mock('@/env', () => ({
+vi.mock('@/env', () => ({
   env: {
     NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY: 'test-key'
   }
@@ -15,10 +16,10 @@ jest.mock('@/env', () => ({
 
 describe('VideoPlayer', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockPlayer.paused.mockReturnValue(true)
     mockPlayer.isDisposed.mockReturnValue(false)
-    ;(videojs.getPlayer as jest.Mock).mockReturnValue(
+    ;(videojs.getPlayer as Mock).mockReturnValue(
       mockPlayer as unknown as Player
     )
   })
@@ -67,7 +68,7 @@ describe('VideoPlayer', () => {
   })
 
   it('calls onVideoEnd when video ends', () => {
-    const onVideoEnd = jest.fn()
+    const onVideoEnd = vi.fn()
     render(
       <VideoPlayer
         hlsUrl="https://example.com/video.m3u8"
@@ -176,7 +177,7 @@ describe('VideoPlayer', () => {
   it('does not toggle when clicking controls', async () => {
     const user = userEvent.setup()
     mockPlayer.paused.mockReturnValue(true)
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const { container } = render(
       <VideoPlayer
@@ -208,9 +209,9 @@ describe('VideoPlayer', () => {
   it('handles existing player disposal before creating new one', () => {
     const existingPlayer = {
       ...mockPlayer,
-      dispose: jest.fn()
+      dispose: vi.fn()
     }
-    ;(videojs.getPlayer as jest.Mock).mockReturnValueOnce(existingPlayer)
+    ;(videojs.getPlayer as Mock).mockReturnValueOnce(existingPlayer)
 
     render(
       <VideoPlayer
@@ -250,8 +251,8 @@ describe('VideoPlayer', () => {
   })
 
   it('updates onVideoEnd callback when prop changes', () => {
-    const onVideoEnd1 = jest.fn()
-    const onVideoEnd2 = jest.fn()
+    const onVideoEnd1 = vi.fn()
+    const onVideoEnd2 = vi.fn()
 
     const { rerender } = render(
       <VideoPlayer

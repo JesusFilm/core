@@ -1,11 +1,18 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest'
 import 'isomorphic-fetch'
+import { ReadableStream, TransformStream, WritableStream } from 'stream/web'
+
 import { configure } from '@testing-library/react'
 import type Player from 'video.js/dist/types/player'
+import type { Mock } from 'vitest'
+
+if (typeof globalThis.TransformStream === 'undefined') {
+  Object.assign(globalThis, { ReadableStream, TransformStream, WritableStream })
+}
 
 configure({ asyncUtilTimeout: 2500 })
 
-jest.mock('next/image', () => ({
+vi.mock('next/image', () => ({
   __esModule: true,
   default: ({
     src,
@@ -21,7 +28,7 @@ jest.mock('next/image', () => ({
   }) => <img src={src} alt={alt} {...props} />
 }))
 
-jest.mock('next-intl', () => ({
+vi.mock('next-intl', () => ({
   useTranslations: () => {
     const t = (key: string, values?: Record<string, unknown>) => {
       if (key.includes('.')) {
@@ -61,7 +68,7 @@ jest.mock('next-intl', () => ({
   }
 }))
 
-jest.mock('next-intl/server', () => ({
+vi.mock('next-intl/server', () => ({
   getTranslations: async () => {
     return (key: string, values?: Record<string, unknown>) => {
       if (key.includes('.')) {
@@ -73,41 +80,41 @@ jest.mock('next-intl/server', () => ({
   getLocale: async () => 'en'
 }))
 
-const mockSetTheme = jest.fn()
+const mockSetTheme = vi.fn()
 const mockTheme = { theme: 'light', setTheme: mockSetTheme }
 
-jest.mock('next-themes', () => ({
+vi.mock('next-themes', () => ({
   useTheme: () => mockTheme,
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children
 }))
 
 const mockPlayer = {
-  play: jest.fn().mockResolvedValue(undefined),
-  pause: jest.fn(),
-  paused: jest.fn().mockReturnValue(true),
-  currentTime: jest.fn().mockReturnValue(0),
-  duration: jest.fn().mockReturnValue(0),
-  buffered: jest.fn().mockReturnValue({
+  play: vi.fn().mockResolvedValue(undefined),
+  pause: vi.fn(),
+  paused: vi.fn().mockReturnValue(true),
+  currentTime: vi.fn().mockReturnValue(0),
+  duration: vi.fn().mockReturnValue(0),
+  buffered: vi.fn().mockReturnValue({
     length: 0,
-    start: jest.fn(),
-    end: jest.fn()
+    start: vi.fn(),
+    end: vi.fn()
   }),
-  muted: jest.fn().mockReturnValue(false),
-  volume: jest.fn().mockReturnValue(1),
-  isFullscreen: jest.fn().mockReturnValue(false),
-  requestFullscreen: jest.fn().mockResolvedValue(undefined),
-  exitFullscreen: jest.fn().mockResolvedValue(undefined),
-  isDisposed: jest.fn().mockReturnValue(false),
-  dispose: jest.fn(),
-  on: jest.fn(),
-  off: jest.fn(),
-  src: jest.fn(),
-  poster: jest.fn()
+  muted: vi.fn().mockReturnValue(false),
+  volume: vi.fn().mockReturnValue(1),
+  isFullscreen: vi.fn().mockReturnValue(false),
+  requestFullscreen: vi.fn().mockResolvedValue(undefined),
+  exitFullscreen: vi.fn().mockResolvedValue(undefined),
+  isDisposed: vi.fn().mockReturnValue(false),
+  dispose: vi.fn(),
+  on: vi.fn(),
+  off: vi.fn(),
+  src: vi.fn(),
+  poster: vi.fn()
 }
 
-jest.mock('video.js', () => {
-  const mockVideojs = jest.fn(() => mockPlayer as unknown as Player)
-  ;(mockVideojs as unknown as { getPlayer: jest.Mock }).getPlayer = jest.fn(
+vi.mock('video.js', () => {
+  const mockVideojs = vi.fn(() => mockPlayer as unknown as Player)
+  ;(mockVideojs as unknown as { getPlayer: Mock }).getPlayer = vi.fn(
     () => mockPlayer as unknown as Player
   )
   return {
@@ -116,9 +123,9 @@ jest.mock('video.js', () => {
   }
 })
 
-jest.mock('videojs-mux', () => ({}))
+vi.mock('videojs-mux', () => ({}))
 
-jest.mock('react-transition-group', () => ({
+vi.mock('react-transition-group', () => ({
   CSSTransition: ({
     children,
     in: inProp
@@ -148,9 +155,9 @@ Object.defineProperty(window.navigator, 'vendor', {
   value: ''
 })
 
-jest.mock('next/router', () => require('next-router-mock'))
-
-if (process.env['CI'] === 'true')
-  jest.retryTimes(3, { logErrorsBeforeRetry: true })
+vi.mock(
+  'next/router',
+  () => import(/* webpackChunkName: "next-router-mock" */ 'next-router-mock')
+)
 
 export { mockPlayer, mockSetTheme, mockTheme }

@@ -5,7 +5,7 @@ import { usePlatformDetection } from './SharedPlaylistBanner'
 
 import { SharedPlaylistBanner } from '.'
 
-jest.mock('@/env', () => ({
+vi.mock('@/env', () => ({
   env: {
     NEXT_PUBLIC_IOS_APP_ID: '123456789',
     NEXT_PUBLIC_ANDROID_APP_ID: 'com.example.app'
