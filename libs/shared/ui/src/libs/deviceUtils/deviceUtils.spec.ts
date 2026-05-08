@@ -8,17 +8,14 @@ import {
 
 describe('hasTouchScreen', () => {
   const originalNavigator = { ...global.navigator }
-  const orignalDocument = { ...global.document }
 
   beforeEach(() => {
     Object.assign(navigator, { ...originalNavigator })
-    Object.assign(document, { ...orignalDocument })
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     Object.assign(navigator, originalNavigator)
-    Object.assign(document, { ...orignalDocument })
   })
 
   it('should return false if device does not have a touch screen', () => {
@@ -26,7 +23,7 @@ describe('hasTouchScreen', () => {
       maxTouchPoints: 0,
       msMaxTouchPoints: 0
     })
-    window.matchMedia = jest.fn().mockImplementation((query) => {
+    window.matchMedia = vi.fn().mockImplementation((query) => {
       return {
         matches: query === '(pointer:coarse)',
         media: query
@@ -43,7 +40,7 @@ describe('hasTouchScreen', () => {
   })
 
   it('should return true if matchMedia matches pointer:coarse', () => {
-    window.matchMedia = jest.fn().mockImplementation((query) => {
+    window.matchMedia = vi.fn().mockImplementation((query) => {
       return {
         matches: query === '(pointer:coarse)',
         media: query
@@ -78,7 +75,7 @@ describe('hasTouchScreen', () => {
       value: '',
       configurable: true
     })
-    window.matchMedia = jest.fn().mockImplementation(() => {
+    window.matchMedia = vi.fn().mockImplementation(() => {
       return {
         matches: false,
         media: ''
@@ -99,7 +96,7 @@ describe('iPhone function', () => {
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     Object.assign(navigator, originalNavigator)
   })
 
@@ -135,7 +132,7 @@ describe('isIPhone/isIOS/isMobile functions', () => {
   const originalNavigator = { ...global.navigator }
 
   afterAll(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     Object.assign(navigator, originalNavigator)
   })
 

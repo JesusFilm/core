@@ -8,7 +8,7 @@ import { Dialog } from './Dialog'
 describe('Dialog', () => {
   const dialogProps: ComponentProps<typeof Dialog> = {
     open: true,
-    onClose: jest.fn(),
+    onClose: vi.fn(),
     dialogTitle: {
       icon: <Language />,
       title: 'Title',
@@ -37,7 +37,7 @@ describe('Dialog', () => {
     const input: ComponentProps<typeof Dialog> = {
       ...dialogProps,
       dialogAction: {
-        onSubmit: jest.fn(),
+        onSubmit: vi.fn(),
         submitLabel: 'Accept',
         closeLabel: 'Cancel'
       },
@@ -46,7 +46,7 @@ describe('Dialog', () => {
 
     it('should show Save button by default', () => {
       const { getByTestId, getByRole } = render(
-        <Dialog {...input} dialogAction={{ onSubmit: jest.fn() }} />
+        <Dialog {...input} dialogAction={{ onSubmit: vi.fn() }} />
       )
       expect(getByTestId('dialog-action').children).toHaveLength(1)
       expect(getByTestId('dialog-action').children[0]).toEqual(
