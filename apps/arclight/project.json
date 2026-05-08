@@ -105,10 +105,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/arclight/jest.config.ts"
+        "configFile": "apps/arclight/vitest.config.mts"
       }
     },
     "lint": {
