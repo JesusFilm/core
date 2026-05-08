@@ -161,13 +161,16 @@ describe('StepFooter apologistChat flag gating', () => {
     expect(queryByTestId('AiChatButton')).not.toBeInTheDocument()
   })
 
-  it('renders AiChatButton when flag is on and showAssistant is true', async () => {
-    const { findByTestId } = renderStepFooter({ apologistChat: true })
+  it('renders AiChatButton when flag is on and card.showAssistant is true', async () => {
+    const { findByTestId } = renderStepFooter({
+      apologistChat: true,
+      selectedStep: buildStep({ showAssistant: true })
+    })
     expect(await findByTestId('AiChatButton')).toBeInTheDocument()
   })
 
   describe('per-card showAssistant', () => {
-    it('renders when card.showAssistant is true and journey is null', async () => {
+    it('renders when card.showAssistant is true and journey.showAssistant is null', async () => {
       const journey: Journey = { ...baseJourney, showAssistant: null }
       const { findByTestId } = renderStepFooter({
         apologistChat: true,
@@ -177,17 +180,17 @@ describe('StepFooter apologistChat flag gating', () => {
       expect(await findByTestId('AiChatButton')).toBeInTheDocument()
     })
 
-    it('falls back to journey.showAssistant when card.showAssistant is null', async () => {
+    it('does not fall back to journey.showAssistant when card.showAssistant is null', () => {
       const journey: Journey = { ...baseJourney, showAssistant: true }
-      const { findByTestId } = renderStepFooter({
+      const { queryByTestId } = renderStepFooter({
         apologistChat: true,
         journey,
         selectedStep: buildStep({ showAssistant: null })
       })
-      expect(await findByTestId('AiChatButton')).toBeInTheDocument()
+      expect(queryByTestId('AiChatButton')).not.toBeInTheDocument()
     })
 
-    it('per-card opt-out wins over journey opt-in', () => {
+    it('does not render when card.showAssistant is false even if journey.showAssistant is true', () => {
       const journey: Journey = { ...baseJourney, showAssistant: true }
       const { queryByTestId } = renderStepFooter({
         apologistChat: true,

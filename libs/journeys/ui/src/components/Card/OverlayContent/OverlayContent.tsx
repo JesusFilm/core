@@ -18,8 +18,10 @@ interface OverlayContentProps {
   sx: SxProps
   hasFullscreenVideo?: boolean
   /**
-   * Active card for this overlay's footer-spacing calculation. When omitted,
-   * the per-card opt-in/out falls back to `journey.showAssistant`.
+   * Active card for this overlay's footer-spacing calculation. The chat
+   * affordance is purely card-level — when omitted (or when
+   * `card.showAssistant` is null), no AI chat button or pinned bar is
+   * rendered. `Journey.showAssistant` is no longer consulted.
    */
   card?: TreeBlock<CardFields> | null
 }

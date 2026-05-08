@@ -217,15 +217,17 @@ describe('Conductor per-card chat', () => {
       expect(queryByTestId('PinnedChatBar')).not.toBeInTheDocument()
     })
 
-    it('falls back to journey.showAssistant when card.showAssistant is null', async () => {
-      const { findByTestId } = renderConductor({
+    it('does not fall back to journey.showAssistant when card.showAssistant is null', async () => {
+      const { findByTestId, queryByTestId } = renderConductor({
         journey: { ...baseJourney, showAssistant: true },
         blocks: buildBlocks({
           showAssistant: null,
           expandChatByDefault: null
         })
       })
-      expect(await findByTestId('PinnedChatBar')).toBeInTheDocument()
+      // Wait for the activeBlock-driven re-render so the verdict is stable.
+      await findByTestId('Conductor')
+      expect(queryByTestId('PinnedChatBar')).not.toBeInTheDocument()
     })
   })
 

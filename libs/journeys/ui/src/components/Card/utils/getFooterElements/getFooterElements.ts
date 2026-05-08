@@ -12,9 +12,9 @@ interface JourneyInfoProps {
   journey?: JourneyFields
   variant?: JourneyProviderContext['variant'] | undefined
   /**
-   * Active card. When omitted, `hasAiChatButton` falls back to
-   * `journey.showAssistant`. Pass through from any consumer that knows the
-   * current card so per-card opt-in/out wins over the journey value.
+   * Active card. `hasAiChatButton` is purely card-level — when omitted (or
+   * when `card.showAssistant` is null), the chat does not render. The
+   * deprecated `Journey.showAssistant` field is no longer consulted.
    */
   card?: TreeBlock<CardFields> | null
 }
@@ -53,16 +53,13 @@ export function hasChatWidget({
 }
 
 export function hasAiChatButton({
-  journey,
   variant = 'default',
   card
 }: JourneyInfoProps): boolean {
   if (variant === 'admin' || variant === 'embed') return false
-  // Per-card overrides per-journey; nullish fallback to the (deprecated)
-  // journey value during the NES-1585 transition. Removal is tracked in
-  // NES-1624 ("Fallback removal") once verification SQL confirms zero
-  // remaining nulls on Block.showAssistant.
-  return (card?.showAssistant ?? journey?.showAssistant) === true
+  // Card-level only. The deprecated `Journey.showAssistant` is intentionally
+  // ignored here — the field itself is removed in NES-1624.
+  return card?.showAssistant === true
 }
 
 export function getTitle({ journey }: JourneyInfoProps): string | null {
