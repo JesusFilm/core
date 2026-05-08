@@ -59,7 +59,8 @@ vi.mock('child_process', () => ({
       const closeHandler = mockProcess.on.mock.calls.find(
         (call) => call[0] === 'close'
       )?.[1]
-      if (closeHandler == null) throw new Error('close handler was not registered')
+      if (closeHandler == null)
+        throw new Error('close handler was not registered')
       closeHandler(0) // Call with exit code 0 (success)
     }, 10)
 
@@ -208,7 +209,8 @@ describe('data-import script', () => {
         const closeHandler = mockProcess.on.mock.calls.find(
           (call) => call[0] === 'close'
         )?.[1]
-        if (closeHandler == null) throw new Error('close handler was not registered')
+        if (closeHandler == null)
+          throw new Error('close handler was not registered')
         closeHandler(1) // Call with exit code 1 (failure)
       }, 10)
 

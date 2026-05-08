@@ -247,9 +247,7 @@ describe('api-users', () => {
         emailVerified: true
       })
 
-      const verifyUserMock = verifyUser as MockedFunction<
-        typeof verifyUser
-      >
+      const verifyUserMock = verifyUser as MockedFunction<typeof verifyUser>
       verifyUserMock.mockClear()
 
       await authClient({ document: ME_QUERY })
@@ -284,9 +282,7 @@ describe('api-users', () => {
         emailVerified: false
       }
       prismaMock.user.update.mockResolvedValueOnce(updatedUser)
-      const verifyUserMock = verifyUser as MockedFunction<
-        typeof verifyUser
-      >
+      const verifyUserMock = verifyUser as MockedFunction<typeof verifyUser>
       verifyUserMock.mockRejectedValueOnce(new Error('Queue unavailable'))
 
       const data = await authClient({ document: ME_QUERY })
