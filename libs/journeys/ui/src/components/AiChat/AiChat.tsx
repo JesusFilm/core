@@ -302,9 +302,9 @@ export function AiChat({
   const isLoading = status === 'submitted' || status === 'streaming'
 
   const handleRetry = useCallback(() => {
-    setCollapsed(false)
+    if (collapsed) setCollapsed(false)
     void regenerate()
-  }, [regenerate, setCollapsed])
+  }, [collapsed, regenerate, setCollapsed])
 
   useEffect(() => {
     if (
@@ -313,20 +313,23 @@ export function AiChat({
       !initialMessageSent.current
     ) {
       initialMessageSent.current = true
-      setCollapsed(false)
+      if (collapsed) setCollapsed(false)
       void sendMessage({ text: initialMessage })
     }
-  }, [initialMessage, sendMessage, setCollapsed])
+  }, [initialMessage, sendMessage, setCollapsed, collapsed])
 
   const handleSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault()
       if (input.trim().length === 0 || isLoading) return
-      setCollapsed(false)
+      // Only force-expand if currently collapsed — otherwise we'd snap a
+      // user-dragged full-height sheet down to the default large stop on
+      // every send.
+      if (collapsed) setCollapsed(false)
       void sendMessage({ text: input })
       setInput('')
     },
-    [input, isLoading, sendMessage, setCollapsed]
+    [collapsed, input, isLoading, sendMessage, setCollapsed]
   )
 
   const lastAssistantIndex = useMemo(() => {
