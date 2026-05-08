@@ -1,4 +1,5 @@
 import type { Logger } from 'pino'
+import { type Mocked, vi } from 'vitest'
 
 import { BibleBookName } from '@core/prisma/media/client'
 
@@ -8,7 +9,7 @@ import { ProcessedTranslation } from '../../types'
 
 import { importBibleBooks } from './bibleBooks'
 
-jest.mock('../../importer')
+vi.mock('../../importer')
 
 const testTranslation: ProcessedTranslation = {
   identifier: 'GEN',
@@ -29,21 +30,19 @@ const expectedBibleBookName: Omit<
 
 describe('importBibleBooks', () => {
   const mockLogger = {
-    info: jest.fn(),
-    error: jest.fn(),
-    child: jest.fn().mockReturnThis()
-  } as unknown as Partial<Logger> as jest.Mocked<Logger>
+    info: vi.fn(),
+    error: vi.fn(),
+    child: vi.fn().mockReturnThis()
+  } as unknown as Partial<Logger> as Mocked<Logger>
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should import bible books successfully', async () => {
-    jest
-      .spyOn({ processFile }, 'processFile')
-      .mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+      await callback(testTranslation)
+    })
 
     await importBibleBooks(mockLogger)
 
@@ -67,11 +66,9 @@ describe('importBibleBooks', () => {
       identifier: null
     } as unknown as ProcessedTranslation
 
-    jest
-      .spyOn({ processFile }, 'processFile')
-      .mockImplementation(async (_, callback) => {
-        await callback(invalidTranslation)
-      })
+    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+      await callback(invalidTranslation)
+    })
 
     await importBibleBooks(mockLogger)
 
@@ -82,11 +79,9 @@ describe('importBibleBooks', () => {
   })
 
   it('should handle database errors', async () => {
-    jest
-      .spyOn({ processFile }, 'processFile')
-      .mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+      await callback(testTranslation)
+    })
 
     prismaMock.bibleBookName.upsert.mockRejectedValueOnce(
       new Error('Database error')

@@ -1,4 +1,5 @@
 import { Response } from 'node-fetch'
+import { type Mocked, type MockedFunction, vi } from 'vitest'
 
 import { CloudflareImage, ImageAspectRatio } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
@@ -15,37 +16,36 @@ import {
   deleteImage
 } from './service'
 
-jest.mock('../../../workers/processImageBlurhash/queue', () => ({
+vi.mock('../../../workers/processImageBlurhash/queue', () => ({
   queue: {
-    add: jest.fn().mockResolvedValue({ id: 'job-id' })
+    add: vi.fn().mockResolvedValue({ id: 'job-id' })
   }
 }))
 
-const mockedQueue = queue as jest.Mocked<typeof queue>
+const mockedQueue = queue as Mocked<typeof queue>
 
 const mockCreateImageByDirectUpload =
-  createImageByDirectUpload as jest.MockedFunction<
-    typeof createImageByDirectUpload
-  >
-const mockCreateImageFromText = createImageFromText as jest.MockedFunction<
+  createImageByDirectUpload as MockedFunction<typeof createImageByDirectUpload>
+const mockCreateImageFromText = createImageFromText as MockedFunction<
   typeof createImageFromText
 >
-const mockCreateImageFromResponse =
-  createImageFromResponse as jest.MockedFunction<typeof createImageFromResponse>
+const mockCreateImageFromResponse = createImageFromResponse as MockedFunction<
+  typeof createImageFromResponse
+>
 
-const mockCreateImageFromUrl = createImageFromUrl as jest.MockedFunction<
+const mockCreateImageFromUrl = createImageFromUrl as MockedFunction<
   typeof createImageFromUrl
 >
 
-const mockDeleteImage = deleteImage as jest.MockedFunction<typeof deleteImage>
+const mockDeleteImage = deleteImage as MockedFunction<typeof deleteImage>
 
-jest.mock('./service', () => ({
+vi.mock('./service', () => ({
   __esModule: true,
-  createImageByDirectUpload: jest.fn(),
-  createImageFromResponse: jest.fn(),
-  createImageFromText: jest.fn(),
-  createImageFromUrl: jest.fn(),
-  deleteImage: jest.fn()
+  createImageByDirectUpload: vi.fn(),
+  createImageFromResponse: vi.fn(),
+  createImageFromText: vi.fn(),
+  createImageFromUrl: vi.fn(),
+  deleteImage: vi.fn()
 }))
 
 describe('cloudflareImage', () => {
