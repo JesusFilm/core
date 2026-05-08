@@ -56,16 +56,16 @@ Usage: open Claude Code in the core repo and type the command. Parameters are th
 
 `.claude/rules/` contains coding convention files that `review-pr` auto-loads based on which files a PR changes. Engineers don't need to configure anything — the rules are applied automatically.
 
-| Rule file                        | Covers                                                           |
-| -------------------------------- | ---------------------------------------------------------------- |
-| `backend/apis.md`                | GraphQL API layer, Prisma patterns, Federation, auth, logging    |
-| `backend/workers.md`             | Background job patterns                                          |
-| `backend/customizable-blocks.md` | Custom block sync guardrails                                     |
-| `frontend/apps.md`               | React application conventions                                    |
-| `frontend/watch-modern.md`       | Watch Modern app-specific rules                                  |
-| `infra/kubernetes.md`            | Kubernetes deployment conventions                                |
-| `infra/terraform.md`             | Infrastructure-as-code patterns                                  |
-| `running-jest-tests.md`          | Jest testing workflow for apps with `jest.config.ts` (use `npx jest` directly, never `nx test`) |
+| Rule file                        | Covers                                                                                                     |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `backend/apis.md`                | GraphQL API layer, Prisma patterns, Federation, auth, logging                                              |
+| `backend/workers.md`             | Background job patterns                                                                                    |
+| `backend/customizable-blocks.md` | Custom block sync guardrails                                                                               |
+| `frontend/apps.md`               | React application conventions                                                                              |
+| `frontend/watch-modern.md`       | Watch Modern app-specific rules                                                                            |
+| `infra/kubernetes.md`            | Kubernetes deployment conventions                                                                          |
+| `infra/terraform.md`             | Infrastructure-as-code patterns                                                                            |
+| `running-jest-tests.md`          | Jest testing workflow for apps with `jest.config.ts` (use `npx jest` directly, never `nx test`)            |
 | `running-vitest-tests.md`        | Vitest testing workflow for apps with `vitest.config.mts` (use `npx vitest run` directly, never `nx test`) |
 
 ## Troubleshooting

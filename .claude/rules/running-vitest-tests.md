@@ -4,12 +4,12 @@
 
 Apps and APIs that use Vitest (have a `vitest.config.mts` at the workspace root):
 
-| Workspace             | Config                              |
-| --------------------- | ----------------------------------- |
-| `apps/arclight`       | `apps/arclight/vitest.config.mts`   |
-| `apps/journeys`       | `apps/journeys/vitest.config.mts`   |
-| `apis/api-analytics`  | `apis/api-analytics/vitest.config.mts` |
-| `apis/api-media`      | `apis/api-media/vitest.config.mts`  |
+| Workspace            | Config                                 |
+| -------------------- | -------------------------------------- |
+| `apps/arclight`      | `apps/arclight/vitest.config.mts`      |
+| `apps/journeys`      | `apps/journeys/vitest.config.mts`      |
+| `apis/api-analytics` | `apis/api-analytics/vitest.config.mts` |
+| `apis/api-media`     | `apis/api-media/vitest.config.mts`     |
 
 For workspaces with a `jest.config.ts` (e.g. `apps/journeys-admin`, `apps/cms`, `apps/watch`), see `running-jest-tests.md`.
 
@@ -45,10 +45,10 @@ npx vitest run --config <workspace-path>/vitest.config.mts '<path-to-folder>'
 
 Each workspace has its own `vitest.config.mts` at the workspace root. Match the spec file's workspace:
 
-| Spec file path starts with | Vitest config                          |
-| -------------------------- | -------------------------------------- |
-| `apps/<app-name>/`         | `apps/<app-name>/vitest.config.mts`    |
-| `apis/<api-name>/`         | `apis/<api-name>/vitest.config.mts`    |
+| Spec file path starts with | Vitest config                                    |
+| -------------------------- | ------------------------------------------------ |
+| `apps/<app-name>/`         | `apps/<app-name>/vitest.config.mts`              |
+| `apis/<api-name>/`         | `apis/<api-name>/vitest.config.mts`              |
 | `libs/<lib-name>/`         | `libs/<lib-name>/vitest.config.mts` (if present) |
 
 ## Common mistakes to avoid

@@ -84,7 +84,7 @@ None required — every pattern needed is in-repo (`apps/journeys/*` and `apis/a
 - **Add `setupTests.ts` even though there are no tests yet.** R6 is forward-looking: the very next test will need `@testing-library/jest-dom/vitest` matchers and the `next/router` mock. Materializing the file now eliminates a "second migration" later and keeps the diff close to journeys.
 - **`retry: process.env.CI === 'true' ? 3 : 0` is journeys-specific (mitigates Conductor flake) — DO NOT carry it forward to arclight.** Arclight has no flaky integration tests today; turning on retries by default would mask real failures the moment a test is added. Leave the field out; it can be added later if a real flake appears.
 - **Do not touch root `jest.preset.js`, root `package.json` Jest deps, or `apps/__mocks__/`.** Other apps still rely on them. The journeys migration also left them in place. The `apps/__mocks__/swiper/css.ts` change in #9132 was journeys-specific, not a global behavior change.
-- **`tsconfig.json` `exclude` of `**/*.spec.ts` should be removed**, matching journeys. Vitest uses its own resolver via the spec tsconfig, and leaving the broad exclude in place causes editor tooling to flag spec files as not-in-program.
+- **`tsconfig.json` `exclude` of `**/\*.spec.ts` should be removed\*\*, matching journeys. Vitest uses its own resolver via the spec tsconfig, and leaving the broad exclude in place causes editor tooling to flag spec files as not-in-program.
 
 ---
 
@@ -115,22 +115,27 @@ None required — every pattern needed is in-repo (`apps/journeys/*` and `apis/a
 **Dependencies:** None.
 
 **Files:**
+
 - Create: `apps/arclight/vitest.config.mts`
 - Create: `apps/arclight/setupTests.ts`
 
 **Approach:**
+
 - Read `apps/journeys/vitest.config.mts` and `apps/journeys/setupTests.ts` first; copy verbatim then apply the diffs in this unit.
 - `vitest.config.mts`: keep `react()` plugin, keep `tsconfigPaths({ root: resolve(__dirname, '../..') })`, keep `environment: 'jsdom'` with `url: 'http://localhost'`, keep `globals: true`, keep `passWithNoTests: true`, keep cobertura coverage to `'../../coverage/apps/arclight'`. **Drop** the `alias` block (no styled-jsx in arclight). **Drop** the `retry: process.env.CI === 'true' ? 3 : 0` setting (decision above).
 - `setupTests.ts`: include `@testing-library/jest-dom/vitest`, the `stream/web` polyfill block, `configure({ asyncUtilTimeout: 2500 })`, and the `vi.mock('next/router', ...)` block exactly as in journeys.
 
 **Patterns to follow:**
+
 - `apps/journeys/vitest.config.mts`
 - `apps/journeys/setupTests.ts`
 
 **Test scenarios:**
+
 - Test expectation: none — pure config and setup file creation. Verification is via U4's `nx test arclight` end-to-end run.
 
 **Verification:**
+
 - File `apps/arclight/vitest.config.mts` exists, parses as a valid TS module (no syntax errors), and references `coverage/apps/arclight` (not `coverage/apps/journeys`).
 - File `apps/arclight/setupTests.ts` exists and imports `@testing-library/jest-dom/vitest`.
 
@@ -145,20 +150,25 @@ None required — every pattern needed is in-repo (`apps/journeys/*` and `apis/a
 **Dependencies:** U1.
 
 **Files:**
+
 - Modify: `apps/arclight/project.json`
 - Delete: `apps/arclight/jest.config.ts`
 
 **Approach:**
+
 - In `project.json` `targets.test`, change `executor` from `@nx/jest:jest` to `@nx/vitest:test`, and replace `options.jestConfig: "apps/arclight/jest.config.ts"` with `options.configFile: "apps/arclight/vitest.config.mts"`. Keep the existing `outputs: ["{workspaceRoot}/coverage/{projectRoot}"]` shape (note: journeys uses the literal `coverage/apps/journeys`; either form works — use `{projectRoot}` since the existing arclight `project.json` already does, to minimize diff).
 - Delete `apps/arclight/jest.config.ts`.
 
 **Patterns to follow:**
+
 - The journeys `project.json` `test` target stanza in commit `55dd5e540`.
 
 **Test scenarios:**
+
 - Test expectation: none — config-only change. Behavioral verification is U4.
 
 **Verification:**
+
 - `apps/arclight/jest.config.ts` does not exist.
 - `apps/arclight/project.json` contains `"executor": "@nx/vitest:test"` and `"configFile": "apps/arclight/vitest.config.mts"` and contains zero `jest` references.
 
@@ -173,22 +183,27 @@ None required — every pattern needed is in-repo (`apps/journeys/*` and `apis/a
 **Dependencies:** U1 (so `setupTests.ts` exists for `tsconfig.spec.json` to reference).
 
 **Files:**
+
 - Modify: `apps/arclight/tsconfig.json`
 - Modify: `apps/arclight/tsconfig.spec.json`
 - Modify: `apps/arclight/eslint.config.mjs`
 
 **Approach:**
+
 - `tsconfig.json`: change `types: ["jest", "node"]` to `types: ["node", "vitest/globals"]`; remove `**/*.spec.ts` from `exclude`. Leave the rest (next plugin, jsx preserve) untouched.
 - `tsconfig.spec.json`: replace `types: ["jest", "@jest/globals", "node"]` with `types: ["vitest/globals", "node"]`; remove `module: "commonjs"` if present (journeys did); remove `jsx: "react"` (inherits `jsx: "preserve"` from `tsconfig.json`); add `"setupTests.ts"` to `include`; remove `jest.config.ts` from `include`.
 - `eslint.config.mjs`: change the existing `ignores: ['apps/arclight/next.config.js']` to `ignores: ['apps/arclight/next.config.js', 'apps/arclight/vitest.config.mts']`. (No prior `jest.config.ts` ignore exists in arclight's eslint config to remove.)
 
 **Patterns to follow:**
+
 - `apps/journeys/tsconfig.json`, `apps/journeys/tsconfig.spec.json`, `apps/journeys/eslint.config.mjs` post-migration.
 
 **Test scenarios:**
+
 - Test expectation: none — config-only change. Verification is via U4.
 
 **Verification:**
+
 - `grep -r "jest\|@jest" apps/arclight/tsconfig*.json apps/arclight/eslint.config.mjs` returns zero matches.
 - `apps/arclight/tsconfig.spec.json` `include` contains `"setupTests.ts"`.
 
@@ -203,20 +218,24 @@ None required — every pattern needed is in-repo (`apps/journeys/*` and `apis/a
 **Dependencies:** U1, U2, U3.
 
 **Files:**
+
 - Touch: none (verification only).
 
 **Approach:**
+
 - Run `nx test arclight --skip-nx-cache`. Expected: Vitest banner prints, `passWithNoTests: true` allows exit 0, coverage directory is created at `coverage/apps/arclight`.
 - Run `nx lint arclight --skip-nx-cache`. Expected: clean (no `vitest.config.mts` lint errors, no leftover Jest type references).
 - Run `nx type-check arclight --skip-nx-cache` (if the target exists in `project.json` — it does). Expected: clean.
 - Run `grep -rE "jest|@jest|babel-jest|ts-jest" apps/arclight/ --include="*.ts" --include="*.tsx" --include="*.json" --include="*.mjs" --include="*.js"` excluding `node_modules` and `.next`. Expected: zero matches.
 
 **Test scenarios:**
+
 - Happy path: `nx test arclight` exits 0 with output indicating Vitest ran (not Jest) and zero specs were collected.
 - Edge case: re-run with `--skip-nx-cache` confirms the result is not cache-stale from a prior Jest run.
 - Error path (negative): introduce a stub `apps/arclight/src/lib/cache.spec.ts` containing `it('compiles', () => expect(true).toBe(true))`, run `nx test arclight`, confirm Vitest collects and passes the spec, then **delete the stub** before commit. This validates that the rig works end-to-end without committing a placeholder test.
 
 **Verification:**
+
 - All four shell checks above produce expected output.
 - The stub-test smoke check (run only locally during U4; not committed) passes.
 
@@ -235,13 +254,13 @@ None required — every pattern needed is in-repo (`apps/journeys/*` and `apis/a
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| `@nx/vitest:test` 22.7.1 has a different `outputs` glob shape than `@nx/jest:jest` and silently fails to upload coverage in CI. | U4 includes a `--skip-nx-cache` test run that materializes `coverage/apps/arclight`; CI parity is also confirmed by the journeys migration shipping under the same Nx version on the same workflow. |
+| Risk                                                                                                                                          | Mitigation                                                                                                                                                                                                                                                                                      |
+| --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@nx/vitest:test` 22.7.1 has a different `outputs` glob shape than `@nx/jest:jest` and silently fails to upload coverage in CI.               | U4 includes a `--skip-nx-cache` test run that materializes `coverage/apps/arclight`; CI parity is also confirmed by the journeys migration shipping under the same Nx version on the same workflow.                                                                                             |
 | A future arclight test relies on a `@nx/next/babel`-only transform (e.g., MDX, `next/font` macro) that `@vitejs/plugin-react` doesn't handle. | Out of scope — no such test exists today. The journeys migration solved this for an equivalent stack and provides the recipe if it ever surfaces. The plan ships with `passWithNoTests: true`, so the worst case is "the next test author needs a 5-line vitest plugin tweak", not a broken CI. |
-| `setupTests.ts` polyfills `stream/web` globally and a future arclight test conflicts with that polyfill. | Low risk — journeys uses the identical polyfill in production for ~70 spec files. Documented in U1 so the next author sees the rationale. |
-| Forgotten Jest reference in a generated file or `.cache/`. | U4's grep sweep covers the source tree. `.cache/` is excluded by `.gitignore` and rebuilt fresh — not a real risk. |
-| `nx test` cache picks up a stale Jest pass and lies about success. | U4 mandates `--skip-nx-cache` for the verification run. |
+| `setupTests.ts` polyfills `stream/web` globally and a future arclight test conflicts with that polyfill.                                      | Low risk — journeys uses the identical polyfill in production for ~70 spec files. Documented in U1 so the next author sees the rationale.                                                                                                                                                       |
+| Forgotten Jest reference in a generated file or `.cache/`.                                                                                    | U4's grep sweep covers the source tree. `.cache/` is excluded by `.gitignore` and rebuilt fresh — not a real risk.                                                                                                                                                                              |
+| `nx test` cache picks up a stale Jest pass and lies about success.                                                                            | U4 mandates `--skip-nx-cache` for the verification run.                                                                                                                                                                                                                                         |
 
 ---
 
