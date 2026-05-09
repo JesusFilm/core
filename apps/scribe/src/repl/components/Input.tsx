@@ -2,18 +2,28 @@ import { Box, Text, useInput } from 'ink'
 import { type ReactElement, useEffect, useState } from 'react'
 
 import { filterCommands } from '../commands/registry'
-import type { SlashCommand } from '../commands/types'
+import type { CommandContext, SlashCommand } from '../commands/types'
 
 interface InputProps {
   /** Whether the input accepts keystrokes. False while the agent is running. */
   enabled: boolean
   placeholder: string
   onSubmit: (value: string) => void
+  /**
+   * Used to gate availability-restricted slash commands (e.g. /impersonate
+   * is only shown to superadmins). Pass null while still booting.
+   */
+  commandContext: CommandContext | null
 }
 
 const CURSOR_BLINK_MS = 500
 
-export function Input({ enabled, placeholder, onSubmit }: InputProps): ReactElement {
+export function Input({
+  enabled,
+  placeholder,
+  onSubmit,
+  commandContext
+}: InputProps): ReactElement {
   const [value, setValue] = useState('')
   const [cursorVisible, setCursorVisible] = useState(true)
   const [menuIndex, setMenuIndex] = useState(0)
@@ -27,7 +37,7 @@ export function Input({ enabled, placeholder, onSubmit }: InputProps): ReactElem
     return () => clearInterval(interval)
   }, [enabled])
 
-  const slashMatches = computeSlashMatches(value)
+  const slashMatches = computeSlashMatches(value, commandContext)
   const showMenu = slashMatches != null && slashMatches.length > 0
 
   // Clamp menu selection when matches shrink.
@@ -118,13 +128,16 @@ export function Input({ enabled, placeholder, onSubmit }: InputProps): ReactElem
   )
 }
 
-function computeSlashMatches(value: string): SlashCommand[] | null {
+function computeSlashMatches(
+  value: string,
+  context: CommandContext | null
+): SlashCommand[] | null {
   if (!value.startsWith('/')) return null
   const afterSlash = value.slice(1)
   // Once the user types a space, they have committed to a command name and
   // are typing arguments — don't show completions.
   if (afterSlash.includes(' ')) return null
-  return filterCommands(afterSlash)
+  return filterCommands(afterSlash, context)
 }
 
 function applyMenuSelection(value: string, command: SlashCommand): string {

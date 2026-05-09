@@ -28,6 +28,7 @@ declare module 'ink' {
     paddingY?: number
     borderStyle?: 'single' | 'double' | 'round' | 'bold' | 'singleDouble'
     borderColor?: string
+    backgroundColor?: string
   }
 
   export interface TextProps {

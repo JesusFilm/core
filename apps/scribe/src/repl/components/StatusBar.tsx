@@ -4,12 +4,14 @@ import type { ReactElement } from 'react'
 import type { ActiveSession } from '../../auth/login'
 import type { JourneyListItem } from '../../tools/journey/api'
 import type {
+  ImpersonationSession,
   JourneysLoadState,
   ReplState,
   TeamSelection,
   TeamsLoadState
 } from '../state/types'
 
+import { ImpersonationCountdown } from './ImpersonationCountdown'
 import { Spinner } from './Spinner'
 
 interface StatusBarProps {
@@ -20,6 +22,7 @@ interface StatusBarProps {
   activeTeam: TeamSelection | null
   journeys: JourneysLoadState
   activeJourney: JourneyListItem | null
+  impersonating: ImpersonationSession | null
 }
 
 const ENV_COLORS: Record<string, string> = {
@@ -35,7 +38,8 @@ export function StatusBar({
   teams,
   activeTeam,
   journeys,
-  activeJourney
+  activeJourney,
+  impersonating
 }: StatusBarProps): ReactElement {
   const envColor = ENV_COLORS[session.environment.id] ?? 'white'
   const who = session.email ?? session.userId ?? 'anonymous'
@@ -62,12 +66,27 @@ export function StatusBar({
     status === 'thinking' ? 'yellow' : status === 'tool' ? 'magenta' : 'green'
 
   return (
-    <Box
-      borderStyle="single"
-      borderColor="gray"
-      paddingX={1}
-      justifyContent="space-between"
-    >
+    <Box flexDirection="column">
+      {impersonating != null ? (
+        <Box paddingX={1} backgroundColor="red" justifyContent="space-between">
+          <Box>
+            <Text color="white" bold>
+              {' '}
+              IMPERSONATING {impersonating.email}{' '}
+            </Text>
+            <Text color="white"> · /stop-impersonate to return</Text>
+          </Box>
+          <Box>
+            <ImpersonationCountdown expiresAt={impersonating.expiresAt} />
+          </Box>
+        </Box>
+      ) : null}
+      <Box
+        borderStyle="single"
+        borderColor="gray"
+        paddingX={1}
+        justifyContent="space-between"
+      >
       <Box>
         <Text bold color={envColor}>
           {session.environment.id.toUpperCase()}
@@ -98,6 +117,7 @@ export function StatusBar({
             <Text color={statusColor}> {statusLabel}</Text>
           </>
         )}
+      </Box>
       </Box>
     </Box>
   )

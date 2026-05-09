@@ -1,26 +1,33 @@
 import type { ActiveSession } from '../auth/login'
 import type { JourneyListItem } from '../tools/journey/api'
 
-import type { TeamSelection } from './state/types'
+import type { ImpersonationSession, TeamSelection } from './state/types'
 
 interface SystemPromptInput {
+  /** The session your tool calls actually authenticate as (effective). */
   session: ActiveSession
   activeTeam: TeamSelection | null
   activeJourney: JourneyListItem | null
+  /** Email of the real operator behind the keyboard, even mid-impersonation. */
+  operatorEmail: string | null
+  impersonating: ImpersonationSession | null
 }
 
 export function buildSystemPrompt({
   session,
   activeTeam,
-  activeJourney
+  activeJourney,
+  operatorEmail,
+  impersonating
 }: SystemPromptInput): string {
   const who =
     session.email != null ? `${session.email} (id ${session.userId ?? '?'})` : 'a superadmin operator'
   const teamLine = describeActiveTeam(activeTeam)
   const journeyLine = describeActiveJourney(activeJourney)
+  const impersonationLine = describeImpersonation(operatorEmail, impersonating)
   return `You are scribe, an interactive assistant for operating on the Core platform from the command line.
 
-You are signed in to the **${session.environment.label}** environment as ${who}. ${teamLine} ${journeyLine} Every API call is authenticated as this user. Be careful: changes you make on staging or production are real.
+You are signed in to the **${session.environment.label}** environment as ${who}. ${teamLine} ${journeyLine} ${impersonationLine} Every API call is authenticated as this user. Be careful: changes you make on staging or production are real.
 
 # Your tools
 
@@ -75,4 +82,13 @@ function describeActiveJourney(active: JourneyListItem | null): string {
     return 'No journey is currently active — the user can pick one with /journey.'
   }
   return `Active journey: **${active.title}** (id \`${active.id}\`, slug \`${active.slug}\`, status ${active.status}).`
+}
+
+function describeImpersonation(
+  operatorEmail: string | null,
+  impersonating: ImpersonationSession | null
+): string {
+  if (impersonating == null) return ''
+  const operator = operatorEmail ?? 'a superadmin'
+  return `**IMPERSONATION ACTIVE** — ${operator} is operating as ${impersonating.email}; every tool call uses ${impersonating.email}'s permissions, not the operator's. Be especially careful about destructive operations and surface this context to the user when relevant.`
 }

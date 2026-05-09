@@ -26,6 +26,11 @@ import {
   fetchTeamsAndActiveTeam,
   persistLastActiveTeamId
 } from '../tools/team/api'
+import {
+  exchangeCustomTokenForIdToken,
+  fetchMe,
+  requestImpersonationCustomToken
+} from '../tools/user/api'
 
 import { ActivityIndicator } from './components/ActivityIndicator'
 import { Input } from './components/Input'
@@ -36,11 +41,12 @@ import { Transcript } from './components/Transcript'
 import { findCommand } from './commands/registry'
 import type { CommandContext } from './commands/types'
 import { buildSystemPrompt } from './systemPrompt'
-import type {
-  ReplState,
-  TeamSelection,
-  TranscriptEntry,
-  UsageTotals
+import {
+  getEffectiveSession,
+  type ReplState,
+  type TeamSelection,
+  type TranscriptEntry,
+  type UsageTotals
 } from './state/types'
 
 const SERVER_NAME = 'scribe'
@@ -87,7 +93,9 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     teamPickerOpen: false,
     journeys: { status: 'idle' },
     activeJourney: null,
-    journeyPickerOpen: false
+    journeyPickerOpen: false,
+    me: null,
+    impersonating: null
   }))
   // Bumped to force a teams refetch (e.g. after a load error, or on /env switch).
   const [teamsEpoch, setTeamsEpoch] = useState(0)
@@ -239,7 +247,10 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       // best-effort in the background — failures are surfaced as warnings,
       // not blockers.
       const persistedId = selection.kind === 'team' ? selection.team.id : null
-      void persistLastActiveTeamId(state.session, persistedId).catch(
+      // Persist against whichever session is effective — if the operator is
+      // impersonating, the lastActiveTeamId belongs to the impersonated user.
+      const effective = getEffectiveSession(state)
+      void persistLastActiveTeamId(effective, persistedId).catch(
         (error: unknown) => {
           const message =
             error instanceof Error ? error.message : String(error)
@@ -289,6 +300,83 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     setJourneysEpoch((n) => n + 1)
   }, [])
 
+  const startImpersonation = useCallback(
+    async (email: string) => {
+      // Always run this against the operator's own session — the userImpersonate
+      // mutation requires the caller to be a real superadmin, not an alias.
+      const operatorSession = state.session
+      try {
+        appendSystemMessage(
+          `Requesting impersonation token for ${email}…`,
+          'info'
+        )
+        const customToken = await requestImpersonationCustomToken(
+          operatorSession,
+          email
+        )
+        const exchanged = await exchangeCustomTokenForIdToken(
+          operatorSession,
+          customToken
+        )
+        const expiresInSeconds = Number.parseInt(exchanged.expiresIn, 10)
+        // Default to 60 minutes if Firebase returns something unparseable —
+        // never preserve `NaN` as the expiry.
+        const lifetimeMs =
+          Number.isFinite(expiresInSeconds) && expiresInSeconds > 0
+            ? expiresInSeconds * 1000
+            : 60 * 60 * 1000
+        setState((prev) => ({
+          ...prev,
+          impersonating: {
+            email,
+            userId: exchanged.localId,
+            token: exchanged.idToken,
+            startedAt: new Date().toISOString(),
+            expiresAt: Date.now() + lifetimeMs
+          },
+          // Restart the agent loop so the new system prompt + effective
+          // session propagate. Reset team and journey state so they refetch
+          // for the impersonated user.
+          agentEpoch: prev.agentEpoch + 1,
+          teams: { status: 'idle' },
+          activeTeam: null,
+          journeys: { status: 'idle' },
+          activeJourney: null
+        }))
+        setTeamsEpoch((n) => n + 1)
+        setJourneysEpoch((n) => n + 1)
+        appendSystemMessage(
+          `Impersonating ${email}. Run /stop-impersonate to return to your own session.`,
+          'warn'
+        )
+      } catch (error) {
+        appendSystemMessage(
+          `Could not impersonate ${email}: ${formatError(error)}`,
+          'error'
+        )
+      }
+    },
+    [state.session, appendSystemMessage]
+  )
+
+  const stopImpersonation = useCallback(() => {
+    setState((prev) => {
+      if (prev.impersonating == null) return prev
+      return {
+        ...prev,
+        impersonating: null,
+        agentEpoch: prev.agentEpoch + 1,
+        teams: { status: 'idle' },
+        activeTeam: null,
+        journeys: { status: 'idle' },
+        activeJourney: null
+      }
+    })
+    setTeamsEpoch((n) => n + 1)
+    setJourneysEpoch((n) => n + 1)
+    appendSystemMessage('Stopped impersonating. Back to your own session.', 'info')
+  }, [appendSystemMessage])
+
   const commandContext = useMemo<CommandContext>(
     () => ({
       session: state.session,
@@ -296,6 +384,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       activeTeam: state.activeTeam,
       journeys: state.journeys,
       activeJourney: state.activeJourney,
+      me: state.me,
+      impersonating: state.impersonating,
       appendSystemMessage,
       setSession: replaceSession,
       switchEnvironment,
@@ -307,6 +397,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       openJourneyPicker,
       setActiveJourney,
       refreshJourneys,
+      startImpersonation,
+      stopImpersonation,
       exit: () => exit()
     }),
     [
@@ -315,6 +407,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       state.activeTeam,
       state.journeys,
       state.activeJourney,
+      state.me,
+      state.impersonating,
       appendSystemMessage,
       replaceSession,
       switchEnvironment,
@@ -326,6 +420,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       openJourneyPicker,
       setActiveJourney,
       refreshJourneys,
+      startImpersonation,
+      stopImpersonation,
       exit
     ]
   )
@@ -370,14 +466,34 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     [appendEntry, appendSystemMessage, commandContext, beginThinking]
   )
 
-  // Fetch the user's teams + their journeys-admin "last active team" whenever
-  // the session changes or a refresh is requested. The persisted lastActiveTeamId
-  // is used to seed the active selection so scribe matches what the user already
-  // has selected in journeys-admin.
+  // Fetch the operator's `me` profile (real user — never impersonated) once
+  // per real session. Drives /impersonate availability and the "(impersonating)"
+  // banner.
   useEffect(() => {
     let cancelled = false
+    fetchMe(state.session)
+      .then((me) => {
+        if (cancelled) return
+        setState((prev) => ({ ...prev, me }))
+      })
+      .catch(() => {
+        // Failure here is non-fatal — /impersonate just won't show up in the
+        // slash menu, and the API will reject the call with FORBIDDEN if the
+        // user types it directly.
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [state.session])
+
+  // Fetch the user's teams + their journeys-admin "last active team" whenever
+  // the session, impersonation, or refresh epoch changes. Uses the effective
+  // session so impersonated teams show up while impersonating.
+  useEffect(() => {
+    let cancelled = false
+    const effective = getEffectiveSession(state)
     setState((prev) => ({ ...prev, teams: { status: 'loading' } }))
-    fetchTeamsAndActiveTeam(state.session)
+    fetchTeamsAndActiveTeam(effective)
       .then(({ teams, lastActiveTeamId }) => {
         if (cancelled) return
         setState((prev) => {
@@ -419,19 +535,20 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.session, teamsEpoch])
+  }, [state.session, state.impersonating, teamsEpoch])
 
-  // Fetch journeys whenever the session, active team, or refresh epoch
-  // changes. The query is scoped to the active team — for "Shared with me"
-  // (or no team), the resolver returns shared/personal journeys.
+  // Fetch journeys whenever the effective session, active team, or refresh
+  // epoch changes. Scoped to the active team — for "Shared with me" (or no
+  // team), the resolver returns shared/personal journeys.
   useEffect(() => {
     let cancelled = false
     const teamSelection = state.activeTeam
     const teamId =
       teamSelection?.kind === 'team' ? teamSelection.team.id : null
+    const effective = getEffectiveSession(state)
 
     setState((prev) => ({ ...prev, journeys: { status: 'loading' } }))
-    listJourneys(state.session, { teamId })
+    listJourneys(effective, { teamId })
       .then((journeys) => {
         if (cancelled) return
         setState((prev) => {
@@ -460,14 +577,16 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.session, state.activeTeam, journeysEpoch])
+  }, [state.session, state.activeTeam, state.impersonating, journeysEpoch])
 
   // Run the agent loop, restarting whenever the session epoch advances.
   useEffect(() => {
     let cancelled = false
     const queue = createPromptQueue()
     promptQueue.current = queue
-    const session = state.session
+    // The agent always operates with the effective session — under
+    // impersonation, tool calls are authenticated as the impersonated user.
+    const session = getEffectiveSession(state)
     const tools = buildJourneyTools(session)
     const allowedTools = tools.map(
       (tool) => `mcp__${SERVER_NAME}__${tool.name}`
@@ -484,7 +603,9 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         systemPrompt: buildSystemPrompt({
           session,
           activeTeam: state.activeTeam,
-          activeJourney: state.activeJourney
+          activeJourney: state.activeJourney,
+          operatorEmail: state.session.email ?? null,
+          impersonating: state.impersonating
         }),
         mcpServers: { [SERVER_NAME]: mcpServer },
         allowedTools,
@@ -592,6 +713,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
             enabled={true}
             placeholder="Ask the agent, or type / for commands"
             onSubmit={handleSubmit}
+            commandContext={commandContext}
           />
         </>
       )}
@@ -603,6 +725,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         activeTeam={state.activeTeam}
         journeys={state.journeys}
         activeJourney={state.activeJourney}
+        impersonating={state.impersonating}
       />
     </Box>
   )

@@ -1,7 +1,9 @@
 import type { ActiveSession } from '../../auth/login'
 import type { EnvironmentId } from '../../config/environments'
 import type { JourneyListItem } from '../../tools/journey/api'
+import type { MeUser } from '../../tools/user/api'
 import type {
+  ImpersonationSession,
   JourneysLoadState,
   TeamSelection,
   TeamsLoadState
@@ -13,6 +15,8 @@ export interface CommandContext {
   activeTeam: TeamSelection | null
   journeys: JourneysLoadState
   activeJourney: JourneyListItem | null
+  me: MeUser | null
+  impersonating: ImpersonationSession | null
   appendSystemMessage: (text: string, tone?: 'info' | 'warn' | 'error') => void
   setSession: (session: ActiveSession) => void
   switchEnvironment: (envId: EnvironmentId) => Promise<void>
@@ -24,6 +28,8 @@ export interface CommandContext {
   openJourneyPicker: () => void
   setActiveJourney: (journey: JourneyListItem) => void
   refreshJourneys: () => void
+  startImpersonation: (email: string) => Promise<void>
+  stopImpersonation: () => void
   exit: () => void
 }
 
@@ -32,5 +38,11 @@ export interface SlashCommand {
   /** Optional inline argument hint shown in the popup. */
   argHint?: string
   description: string
+  /**
+   * Optional gate that hides the command from the menu and rejects direct
+   * invocation when it returns false. Use for role-gated commands like
+   * /impersonate (superadmin only) or /stop-impersonate (only when active).
+   */
+  isAvailable?: (context: CommandContext) => boolean
   run: (args: string[], context: CommandContext) => Promise<void> | void
 }

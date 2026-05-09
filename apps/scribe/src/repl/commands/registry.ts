@@ -6,7 +6,7 @@ import {
 import { findJourneyByQuery } from '../components/JourneyPicker'
 import { findSelectionByName } from '../components/TeamPicker'
 
-import type { SlashCommand } from './types'
+import type { CommandContext, SlashCommand } from './types'
 
 const envCommand: SlashCommand = {
   name: 'env',
@@ -76,7 +76,7 @@ const helpCommand: SlashCommand = {
   name: 'help',
   description: 'Show available slash commands.',
   run(_args, ctx) {
-    const lines = COMMANDS.map(
+    const lines = COMMANDS.filter((cmd) => isCommandAvailable(cmd, ctx)).map(
       (cmd) =>
         `  /${cmd.name}${cmd.argHint != null ? ` ${cmd.argHint}` : ''} — ${cmd.description}`
     )
@@ -123,6 +123,44 @@ const teamCommand: SlashCommand = {
       return
     }
     ctx.setActiveTeam(selection)
+  }
+}
+
+const impersonateCommand: SlashCommand = {
+  name: 'impersonate',
+  argHint: '<email>',
+  description: 'Run as another user (superadmin only).',
+  isAvailable(ctx) {
+    return ctx.me?.superAdmin === true
+  },
+  async run(args, ctx) {
+    const email = args.join(' ').trim()
+    if (email.length === 0) {
+      ctx.appendSystemMessage(
+        'Pass an email: /impersonate someone@example.com',
+        'info'
+      )
+      return
+    }
+    if (!email.includes('@')) {
+      ctx.appendSystemMessage(
+        `"${email}" doesn\'t look like an email address.`,
+        'error'
+      )
+      return
+    }
+    await ctx.startImpersonation(email)
+  }
+}
+
+const stopImpersonateCommand: SlashCommand = {
+  name: 'stop-impersonate',
+  description: 'Return to your own session and stop impersonating.',
+  isAvailable(ctx) {
+    return ctx.impersonating != null
+  },
+  run(_args, ctx) {
+    ctx.stopImpersonation()
   }
 }
 
@@ -183,6 +221,8 @@ export const COMMANDS: SlashCommand[] = [
   envCommand,
   teamCommand,
   journeyCommand,
+  impersonateCommand,
+  stopImpersonateCommand,
   loginCommand,
   logoutCommand,
   clearCommand,
@@ -194,8 +234,21 @@ export function findCommand(name: string): SlashCommand | undefined {
   return COMMANDS.find((cmd) => cmd.name === name)
 }
 
-export function filterCommands(prefix: string): SlashCommand[] {
-  if (prefix.length === 0) return COMMANDS
+export function isCommandAvailable(
+  cmd: SlashCommand,
+  ctx: CommandContext | null
+): boolean {
+  if (cmd.isAvailable == null) return true
+  if (ctx == null) return true // before context is wired, show everything
+  return cmd.isAvailable(ctx)
+}
+
+export function filterCommands(
+  prefix: string,
+  context: CommandContext | null = null
+): SlashCommand[] {
+  const available = COMMANDS.filter((cmd) => isCommandAvailable(cmd, context))
+  if (prefix.length === 0) return available
   const lower = prefix.toLowerCase()
-  return COMMANDS.filter((cmd) => cmd.name.startsWith(lower))
+  return available.filter((cmd) => cmd.name.startsWith(lower))
 }
