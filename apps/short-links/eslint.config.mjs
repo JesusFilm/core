@@ -10,6 +10,9 @@ export default [
     }
   },
   {
-    ignores: ['apps/short-links/.next/**/*', 'apps/short-links/vitest.config.mts']
+    ignores: [
+      'apps/short-links/.next/**/*',
+      'apps/short-links/vitest.config.mts'
+    ]
   }
 ]
