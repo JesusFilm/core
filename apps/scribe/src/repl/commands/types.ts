@@ -11,6 +11,7 @@ import type {
 
 export interface CommandContext {
   session: ActiveSession
+  model: string | null
   teams: TeamsLoadState
   activeTeam: TeamSelection | null
   journeys: JourneysLoadState
@@ -30,6 +31,8 @@ export interface CommandContext {
   refreshJourneys: () => void
   startImpersonation: (email: string) => Promise<void>
   stopImpersonation: () => void
+  setModel: (model: string | null) => void
+  openModelPicker: () => void
   exit: () => void
 }
 

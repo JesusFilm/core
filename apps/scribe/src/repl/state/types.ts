@@ -87,6 +87,12 @@ export type TranscriptEntry =
 
 export interface ReplState {
   session: ActiveSession
+  /**
+   * Model alias (e.g. 'opus', 'sonnet', 'haiku') or full model ID passed
+   * through to the Claude Agent SDK. `null` means "use the SDK default" —
+   * the same behaviour as omitting `--model` at startup.
+   */
+  model: string | null
   transcript: TranscriptEntry[]
   usage: UsageTotals
   status: 'idle' | 'thinking' | 'tool'
@@ -106,6 +112,7 @@ export interface ReplState {
   journeys: JourneysLoadState
   activeJourney: JourneyListItem | null
   journeyPickerOpen: boolean
+  modelPickerOpen: boolean
   /**
    * Profile of the operator who actually signed in (never the impersonated
    * user). Loaded once after login. `null` while loading; the `me` field

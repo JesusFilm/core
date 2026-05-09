@@ -23,6 +23,7 @@ interface StatusBarProps {
   journeys: JourneysLoadState
   activeJourney: JourneyListItem | null
   impersonating: ImpersonationSession | null
+  model: string | null
 }
 
 const ENV_COLORS: Record<string, string> = {
@@ -39,7 +40,8 @@ export function StatusBar({
   activeTeam,
   journeys,
   activeJourney,
-  impersonating
+  impersonating,
+  model
 }: StatusBarProps): ReactElement {
   const envColor = ENV_COLORS[session.environment.id] ?? 'white'
   const who = session.email ?? session.userId ?? 'anonymous'
@@ -97,6 +99,12 @@ export function StatusBar({
         <Text color={teamColor}>{teamLabel}</Text>
         <Text color="gray"> · </Text>
         <Text color={journeyColor}>{journeyLabel}</Text>
+        {model != null ? (
+          <>
+            <Text color="gray"> · </Text>
+            <Text color="blue">{model}</Text>
+          </>
+        ) : null}
       </Box>
       <Box>
         <Text color="gray">in </Text>

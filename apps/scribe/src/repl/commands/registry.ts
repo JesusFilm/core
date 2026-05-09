@@ -209,6 +209,33 @@ const journeyCommand: SlashCommand = {
   }
 }
 
+const modelCommand: SlashCommand = {
+  name: 'model',
+  argHint: '[alias|model-id|default]',
+  description:
+    'Switch the Claude model. Pick from a list, or pass an alias/ID directly.',
+  run(args, ctx) {
+    if (args.length === 0) {
+      ctx.openModelPicker()
+      return
+    }
+    const target = args.join(' ').trim()
+    if (target === 'default' || target === 'inherit') {
+      if (ctx.model == null) {
+        ctx.appendSystemMessage('Already on the SDK default model.', 'info')
+        return
+      }
+      ctx.setModel(null)
+      return
+    }
+    if (target === ctx.model) {
+      ctx.appendSystemMessage(`Already on model "${target}".`, 'info')
+      return
+    }
+    ctx.setModel(target)
+  }
+}
+
 const exitCommand: SlashCommand = {
   name: 'exit',
   description: 'Exit scribe.',
@@ -221,6 +248,7 @@ export const COMMANDS: SlashCommand[] = [
   envCommand,
   teamCommand,
   journeyCommand,
+  modelCommand,
   impersonateCommand,
   stopImpersonateCommand,
   loginCommand,

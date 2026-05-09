@@ -35,6 +35,7 @@ import {
 import { ActivityIndicator } from './components/ActivityIndicator'
 import { Input } from './components/Input'
 import { JourneyPicker } from './components/JourneyPicker'
+import { ModelPicker } from './components/ModelPicker'
 import { StatusBar } from './components/StatusBar'
 import { TeamPicker, describeSelection } from './components/TeamPicker'
 import { Transcript } from './components/Transcript'
@@ -73,6 +74,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
   const { exit } = useApp()
   const [state, setState] = useState<ReplState>(() => ({
     session: initialSession,
+    model: model ?? null,
     transcript: [
       {
         kind: 'system',
@@ -94,6 +96,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     journeys: { status: 'idle' },
     activeJourney: null,
     journeyPickerOpen: false,
+    modelPickerOpen: false,
     me: null,
     impersonating: null
   }))
@@ -171,7 +174,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       teamPickerOpen: false,
       journeys: { status: 'idle' },
       activeJourney: null,
-      journeyPickerOpen: false
+      journeyPickerOpen: false,
+      modelPickerOpen: false
     }))
     setTeamsEpoch((n) => n + 1)
     setJourneysEpoch((n) => n + 1)
@@ -359,6 +363,45 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     [state.session, appendSystemMessage]
   )
 
+  const setModel = useCallback(
+    (next: string | null) => {
+      let changed = false
+      setState((prev) => {
+        if (prev.model === next) {
+          // Still close the picker if it's open.
+          return prev.modelPickerOpen
+            ? { ...prev, modelPickerOpen: false }
+            : prev
+        }
+        changed = true
+        return {
+          ...prev,
+          model: next,
+          modelPickerOpen: false,
+          // Restart the agent loop so the new model takes effect on the next
+          // turn. Token usage stays — it's already a running tally.
+          agentEpoch: prev.agentEpoch + 1
+        }
+      })
+      if (!changed) return
+      appendSystemMessage(
+        next == null
+          ? 'Model cleared — using the SDK default on the next turn.'
+          : `Model set to "${next}" — applies on the next turn.`,
+        'info'
+      )
+    },
+    [appendSystemMessage]
+  )
+
+  const openModelPicker = useCallback(() => {
+    setState((prev) => ({ ...prev, modelPickerOpen: true }))
+  }, [])
+
+  const closeModelPicker = useCallback(() => {
+    setState((prev) => ({ ...prev, modelPickerOpen: false }))
+  }, [])
+
   const stopImpersonation = useCallback(() => {
     setState((prev) => {
       if (prev.impersonating == null) return prev
@@ -380,6 +423,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
   const commandContext = useMemo<CommandContext>(
     () => ({
       session: state.session,
+      model: state.model,
       teams: state.teams,
       activeTeam: state.activeTeam,
       journeys: state.journeys,
@@ -399,10 +443,13 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       refreshJourneys,
       startImpersonation,
       stopImpersonation,
+      setModel,
+      openModelPicker,
       exit: () => exit()
     }),
     [
       state.session,
+      state.model,
       state.teams,
       state.activeTeam,
       state.journeys,
@@ -422,6 +469,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       refreshJourneys,
       startImpersonation,
       stopImpersonation,
+      setModel,
+      openModelPicker,
       exit
     ]
   )
@@ -609,7 +658,9 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         }),
         mcpServers: { [SERVER_NAME]: mcpServer },
         allowedTools,
-        model,
+        // `state.model` is the runtime override (set via /model). When it's
+        // `null` we omit the field so the SDK falls back to its default.
+        model: state.model ?? undefined,
         permissionMode: 'default'
       }
     })
@@ -702,6 +753,12 @@ export function App({ initialSession, model }: AppProps): ReactElement {
           onSelect={setActiveJourney}
           onCancel={closeJourneyPicker}
         />
+      ) : state.modelPickerOpen ? (
+        <ModelPicker
+          activeModel={state.model}
+          onSelect={setModel}
+          onCancel={closeModelPicker}
+        />
       ) : (
         <>
           <ActivityIndicator
@@ -726,6 +783,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         journeys={state.journeys}
         activeJourney={state.activeJourney}
         impersonating={state.impersonating}
+        model={state.model}
       />
     </Box>
   )
