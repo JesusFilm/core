@@ -1,3 +1,5 @@
+import { graphql } from 'gql.tada'
+
 import type { ActiveSession } from '../../auth/login'
 import { graphqlRequest } from '../../graphql/client'
 
@@ -17,7 +19,7 @@ export interface TeamsAndActiveTeam {
   lastActiveTeamId: string | null
 }
 
-const TEAMS_AND_PROFILE_QUERY = /* GraphQL */ `
+const TEAMS_AND_PROFILE_QUERY = graphql(`
   query ScribeTeamsAndProfile {
     teams {
       id
@@ -29,41 +31,31 @@ const TEAMS_AND_PROFILE_QUERY = /* GraphQL */ `
       lastActiveTeamId
     }
   }
-`
-
-interface TeamsAndProfileData {
-  teams: Team[]
-  getJourneyProfile: { id: string; lastActiveTeamId: string | null } | null
-}
+`)
 
 export async function fetchTeamsAndActiveTeam(
   session: ActiveSession
 ): Promise<TeamsAndActiveTeam> {
-  const data = await graphqlRequest<TeamsAndProfileData>(session, {
-    query: TEAMS_AND_PROFILE_QUERY,
-    operationName: 'ScribeTeamsAndProfile'
-  })
+  const data = await graphqlRequest(session, TEAMS_AND_PROFILE_QUERY)
   return {
     teams: data.teams,
     lastActiveTeamId: data.getJourneyProfile?.lastActiveTeamId ?? null
   }
 }
 
-const UPDATE_LAST_ACTIVE_TEAM_ID = /* GraphQL */ `
+const UPDATE_LAST_ACTIVE_TEAM_ID = graphql(`
   mutation ScribeUpdateLastActiveTeamId($input: JourneyProfileUpdateInput!) {
     journeyProfileUpdate(input: $input) {
       id
     }
   }
-`
+`)
 
 export async function persistLastActiveTeamId(
   session: ActiveSession,
   lastActiveTeamId: string | null
 ): Promise<void> {
-  await graphqlRequest(session, {
-    query: UPDATE_LAST_ACTIVE_TEAM_ID,
-    variables: { input: { lastActiveTeamId } },
-    operationName: 'ScribeUpdateLastActiveTeamId'
+  await graphqlRequest(session, UPDATE_LAST_ACTIVE_TEAM_ID, {
+    input: { lastActiveTeamId }
   })
 }

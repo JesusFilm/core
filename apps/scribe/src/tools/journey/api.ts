@@ -1,21 +1,23 @@
+import { graphql } from 'gql.tada'
+
 import type { ActiveSession } from '../../auth/login'
 import { graphqlRequest } from '../../graphql/client'
 
 import type { JourneySimple } from './types'
 
-const JOURNEY_SIMPLE_GET = /* GraphQL */ `
+const JOURNEY_SIMPLE_GET = graphql(`
   query JourneySimpleGet($id: ID!) {
     journeySimpleGet(id: $id)
   }
-`
+`)
 
-const JOURNEY_SIMPLE_UPDATE = /* GraphQL */ `
+const JOURNEY_SIMPLE_UPDATE = graphql(`
   mutation JourneySimpleUpdate($id: ID!, $journey: Json!) {
     journeySimpleUpdate(id: $id, journey: $journey)
   }
-`
+`)
 
-const ADMIN_JOURNEY_RESOLVE_ID = /* GraphQL */ `
+const ADMIN_JOURNEY_RESOLVE_ID = graphql(`
   query AdminJourneyResolveId($id: ID!, $idType: IdType) {
     adminJourney(id: $id, idType: $idType) {
       id
@@ -23,19 +25,7 @@ const ADMIN_JOURNEY_RESOLVE_ID = /* GraphQL */ `
       slug
     }
   }
-`
-
-interface JourneySimpleGetData {
-  journeySimpleGet: JourneySimple
-}
-
-interface JourneySimpleUpdateData {
-  journeySimpleUpdate: JourneySimple
-}
-
-interface AdminJourneyResolveIdData {
-  adminJourney: { id: string; title: string; slug: string }
-}
+`)
 
 export type JourneyListItemStatus =
   | 'draft'
@@ -53,7 +43,7 @@ export interface JourneyListItem {
   teamId: string | null
 }
 
-const ADMIN_JOURNEYS_LIST = /* GraphQL */ `
+const ADMIN_JOURNEYS_LIST = graphql(`
   query ScribeAdminJourneys($status: [JourneyStatus!], $teamId: ID) {
     adminJourneys(status: $status, teamId: $teamId) {
       id
@@ -66,18 +56,7 @@ const ADMIN_JOURNEYS_LIST = /* GraphQL */ `
       }
     }
   }
-`
-
-interface AdminJourneysListData {
-  adminJourneys: Array<{
-    id: string
-    title: string
-    slug: string
-    status: JourneyListItemStatus
-    updatedAt: string
-    team: { id: string } | null
-  }>
-}
+`)
 
 export interface ListJourneysOptions {
   /**
@@ -92,22 +71,16 @@ export async function listJourneys(
   session: ActiveSession,
   options: ListJourneysOptions
 ): Promise<JourneyListItem[]> {
-  const variables: Record<string, unknown> = {
-    status: options.statuses ?? ['draft', 'published']
-  }
-  if (options.teamId != null) variables.teamId = options.teamId
-
-  const data = await graphqlRequest<AdminJourneysListData>(session, {
-    query: ADMIN_JOURNEYS_LIST,
-    variables,
-    operationName: 'ScribeAdminJourneys'
+  const data = await graphqlRequest(session, ADMIN_JOURNEYS_LIST, {
+    status: options.statuses ?? ['draft', 'published'],
+    teamId: options.teamId
   })
   return data.adminJourneys.map((entry) => ({
     id: entry.id,
     title: entry.title,
     slug: entry.slug,
     status: entry.status,
-    updatedAt: entry.updatedAt,
+    updatedAt: String(entry.updatedAt),
     teamId: entry.team?.id ?? null
   }))
 }
@@ -116,12 +89,8 @@ export async function fetchJourneySimple(
   session: ActiveSession,
   id: string
 ): Promise<JourneySimple> {
-  const data = await graphqlRequest<JourneySimpleGetData>(session, {
-    query: JOURNEY_SIMPLE_GET,
-    variables: { id },
-    operationName: 'JourneySimpleGet'
-  })
-  return data.journeySimpleGet
+  const data = await graphqlRequest(session, JOURNEY_SIMPLE_GET, { id })
+  return data.journeySimpleGet as JourneySimple
 }
 
 export async function applyJourneySimpleUpdate(
@@ -129,23 +98,20 @@ export async function applyJourneySimpleUpdate(
   id: string,
   journey: JourneySimple
 ): Promise<JourneySimple> {
-  const data = await graphqlRequest<JourneySimpleUpdateData>(session, {
-    query: JOURNEY_SIMPLE_UPDATE,
-    variables: { id, journey },
-    operationName: 'JourneySimpleUpdate'
+  const data = await graphqlRequest(session, JOURNEY_SIMPLE_UPDATE, {
+    id,
+    journey
   })
-  return data.journeySimpleUpdate
+  return data.journeySimpleUpdate as JourneySimple
 }
 
 export async function resolveJourneyByIdOrSlug(
   session: ActiveSession,
   value: string
 ): Promise<{ id: string; title: string; slug: string }> {
-  const idType = isUuid(value) ? 'databaseId' : 'slug'
-  const data = await graphqlRequest<AdminJourneyResolveIdData>(session, {
-    query: ADMIN_JOURNEY_RESOLVE_ID,
-    variables: { id: value, idType },
-    operationName: 'AdminJourneyResolveId'
+  const data = await graphqlRequest(session, ADMIN_JOURNEY_RESOLVE_ID, {
+    id: value,
+    idType: isUuid(value) ? 'databaseId' : 'slug'
   })
   return data.adminJourney
 }

@@ -1,3 +1,7 @@
+import { print } from 'graphql'
+
+import { type TadaDocumentNode } from '@core/shared/gql'
+
 import type { ActiveSession } from '../auth/login'
 
 export interface GraphQLErrorEntry {
@@ -22,16 +26,31 @@ export class GraphQLRequestError extends Error {
   }
 }
 
-interface RequestInput<TVariables> {
-  query: string
-  variables?: TVariables
-  operationName?: string
+function getOperationName(
+  document: TadaDocumentNode<any, any>
+): string | undefined {
+  for (const definition of document.definitions) {
+    if (definition.kind === 'OperationDefinition') {
+      return definition.name?.value
+    }
+  }
+  return undefined
 }
 
-export async function graphqlRequest<TData, TVariables = Record<string, unknown>>(
+export async function graphqlRequest<TResult>(
   session: ActiveSession,
-  input: RequestInput<TVariables>
-): Promise<TData> {
+  document: TadaDocumentNode<TResult, Record<string, never>>
+): Promise<TResult>
+export async function graphqlRequest<TResult, TVariables>(
+  session: ActiveSession,
+  document: TadaDocumentNode<TResult, TVariables>,
+  variables: TVariables
+): Promise<TResult>
+export async function graphqlRequest<TResult, TVariables>(
+  session: ActiveSession,
+  document: TadaDocumentNode<TResult, TVariables>,
+  variables?: TVariables
+): Promise<TResult> {
   const response = await fetch(session.environment.gatewayUrl, {
     method: 'POST',
     headers: {
@@ -39,7 +58,11 @@ export async function graphqlRequest<TData, TVariables = Record<string, unknown>
       'x-graphql-client-name': 'scribe',
       Authorization: `JWT ${session.token}`
     },
-    body: JSON.stringify(input)
+    body: JSON.stringify({
+      query: print(document),
+      variables,
+      operationName: getOperationName(document)
+    })
   })
 
   if (response.status === 401) {
@@ -48,7 +71,7 @@ export async function graphqlRequest<TData, TVariables = Record<string, unknown>
     ])
   }
 
-  let payload: { data?: TData; errors?: GraphQLErrorEntry[] }
+  let payload: { data?: TResult; errors?: GraphQLErrorEntry[] }
   try {
     payload = (await response.json()) as typeof payload
   } catch {

@@ -15,8 +15,14 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "types": ["node"],
-    "outDir": "../../dist/apps/scribe",
-    "rootDir": "src"
+    "noEmit": true,
+    "plugins": [
+      {
+        "name": "gql.tada/ts-plugin",
+        "schema": "../../apis/api-gateway/schema.graphql",
+        "tadaOutputLocation": "../../libs/shared/gql/src/__generated__/graphql-env.d.ts"
+      }
+    ]
   },
   "include": ["src/**/*", "types/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]

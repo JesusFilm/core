@@ -1,3 +1,5 @@
+import { graphql } from 'gql.tada'
+
 import type { ActiveSession } from '../../auth/login'
 import { resolveFirebaseApiKey } from '../../config/environments'
 import { graphqlRequest } from '../../graphql/client'
@@ -8,15 +10,7 @@ export interface MeUser {
   superAdmin: boolean
 }
 
-interface MeQueryData {
-  me: {
-    id: string
-    email: string | null
-    superAdmin: boolean
-  } | null
-}
-
-const ME_QUERY = /* GraphQL */ `
+const ME_QUERY = graphql(`
   query ScribeMe {
     me {
       __typename
@@ -27,25 +21,23 @@ const ME_QUERY = /* GraphQL */ `
       }
     }
   }
-`
+`)
 
 export async function fetchMe(session: ActiveSession): Promise<MeUser | null> {
-  const data = await graphqlRequest<MeQueryData>(session, {
-    query: ME_QUERY,
-    operationName: 'ScribeMe'
-  })
-  return data.me
+  const data = await graphqlRequest(session, ME_QUERY)
+  if (data.me?.__typename !== 'AuthenticatedUser') return null
+  return {
+    id: data.me.id,
+    email: data.me.email,
+    superAdmin: data.me.superAdmin ?? false
+  }
 }
 
-const USER_IMPERSONATE = /* GraphQL */ `
+const USER_IMPERSONATE = graphql(`
   mutation ScribeUserImpersonate($email: String!) {
     userImpersonate(email: $email)
   }
-`
-
-interface UserImpersonateData {
-  userImpersonate: string | null
-}
+`)
 
 /**
  * Calls the superadmin-only `userImpersonate` mutation and returns a Firebase
@@ -57,11 +49,7 @@ export async function requestImpersonationCustomToken(
   session: ActiveSession,
   email: string
 ): Promise<string> {
-  const data = await graphqlRequest<UserImpersonateData>(session, {
-    query: USER_IMPERSONATE,
-    variables: { email },
-    operationName: 'ScribeUserImpersonate'
-  })
+  const data = await graphqlRequest(session, USER_IMPERSONATE, { email })
   if (data.userImpersonate == null) {
     throw new Error(
       `userImpersonate returned no token for "${email}".`
