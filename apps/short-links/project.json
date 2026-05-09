@@ -101,10 +101,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/short-links/jest.config.ts"
+        "configFile": "apps/short-links/vitest.config.mts"
       }
     },
     "lint": {

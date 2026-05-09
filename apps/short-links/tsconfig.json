@@ -12,7 +12,7 @@
     "isolatedModules": true,
     "incremental": true,
     "tsBuildInfoFile": "../../.cache/short-links/tsc/.tsbuildinfo",
-    "types": ["jest", "node"],
+    "types": ["node", "vitest/globals"],
     "plugins": [
       {
         "name": "next"
@@ -28,5 +28,5 @@
     "../../dist/apps/short-links/.next/types/**/*.ts",
     "eslint.config.mjs"
   ],
-  "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts"]
+  "exclude": ["node_modules", "vitest.config.mts"]
 }

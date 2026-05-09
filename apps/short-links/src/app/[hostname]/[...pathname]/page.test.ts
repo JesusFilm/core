@@ -1,8 +1,7 @@
-/**
- * @jest-environment node
- */
+// @vitest-environment node
 import { createMockClient } from '@apollo/client/testing'
 import { notFound, redirect } from 'next/navigation'
+import type { MockedFunction } from 'vitest'
 
 import { ResultOf, VariablesOf } from '@core/shared/gql'
 
@@ -11,22 +10,22 @@ import { getApolloClient } from '../../../lib/apolloClient'
 import { GET_SHORT_LINK_QUERY } from './getShortLinkQuery'
 import PathnamePage from './page'
 
-jest.mock('next/navigation', () => ({
-  notFound: jest.fn(),
-  redirect: jest.fn()
+vi.mock('next/navigation', () => ({
+  notFound: vi.fn(),
+  redirect: vi.fn()
 }))
 
-jest.mock('../../../lib/apolloClient', () => ({
-  getApolloClient: jest.fn()
+vi.mock('../../../lib/apolloClient', () => ({
+  getApolloClient: vi.fn()
 }))
 
-const mockGetApolloClient = getApolloClient as jest.MockedFunction<
+const mockGetApolloClient = getApolloClient as MockedFunction<
   typeof getApolloClient
 >
 
 describe('PathnamePage', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should redirect if short link is found', async () => {
