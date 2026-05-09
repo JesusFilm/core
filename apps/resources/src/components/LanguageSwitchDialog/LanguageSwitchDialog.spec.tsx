@@ -11,9 +11,7 @@ import { LanguageSwitchDialog } from './LanguageSwitchDialog'
 vi.mock('../../libs/useLanguages', async () => ({
   useLanguages: vi.fn()
 }))
-const useLanguagesMock = useLanguages as MockedFunction<
-  typeof useLanguages
->
+const useLanguagesMock = useLanguages as MockedFunction<typeof useLanguages>
 
 describe('LanguageSwitchDialog', () => {
   const french = {

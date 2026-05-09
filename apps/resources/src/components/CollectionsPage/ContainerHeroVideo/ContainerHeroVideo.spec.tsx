@@ -7,7 +7,8 @@ import type { MockedFunction } from 'vitest'
 import { ContainerHeroVideo } from './ContainerHeroVideo'
 
 vi.mock('video.js', async () => {
-  const originalModule = await vi.importActual<typeof import('video.js')>('video.js')
+  const originalModule =
+    await vi.importActual<typeof import('video.js')>('video.js')
 
   const mockPlayer = {
     on: vi.fn(),

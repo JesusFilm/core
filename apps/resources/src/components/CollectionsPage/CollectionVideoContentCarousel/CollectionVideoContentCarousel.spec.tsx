@@ -9,7 +9,9 @@ vi.mock('next/router', async () => ({
 }))
 
 vi.mock('next-i18next/pages', async () => ({
-  ...(await vi.importActual<typeof import('next-i18next/pages')>('next-i18next/pages')),
+  ...(await vi.importActual<typeof import('next-i18next/pages')>(
+    'next-i18next/pages'
+  )),
   useTranslation: vi.fn().mockReturnValue({
     t: vi.fn().mockImplementation((key) => key)
   })

@@ -16,9 +16,7 @@ import { ResourcesView } from './ResourcesView'
 
 vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 const mockedUseHits = useHits as MockedFunction<typeof useHits>
 const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList

@@ -12,7 +12,9 @@ import { AudioTrackSelect } from './AudioTrackSelect'
 // Mock useLanguageActions hook specifically for testing onChange behavior
 const mockUpdateAudioLanguage = vi.fn()
 vi.mock('../../../libs/watchContext', async () => ({
-  ...await vi.importActual<typeof import('../../../libs/watchContext')>('../../../libs/watchContext'),
+  ...(await vi.importActual<typeof import('../../../libs/watchContext')>(
+    '../../../libs/watchContext'
+  )),
   useLanguageActions: () => ({
     updateAudioLanguage: mockUpdateAudioLanguage
   })
@@ -22,9 +24,7 @@ vi.mock('../../../libs/useLanguages', async () => ({
   useLanguages: vi.fn()
 }))
 
-const useLanguagesMock = useLanguages as MockedFunction<
-  typeof useLanguages
->
+const useLanguagesMock = useLanguages as MockedFunction<typeof useLanguages>
 
 // Mock useInstantSearch hook specifically for testing instant search behavior
 const mockSetIndexUiState = vi.fn()

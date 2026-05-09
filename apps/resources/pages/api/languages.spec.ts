@@ -39,7 +39,6 @@ describe('Languages API', () => {
       get: mockRedisGet,
       setex: mockRedisSetex
     }
-
     ;(createApolloClient as unknown as Mock).mockReturnValue(mockApolloClient)
     ;(Redis as unknown as Mock).mockImplementation(() => mockRedis)
   })

@@ -12,7 +12,9 @@ import { SubtitlesSelect } from './SubtitlesSelect'
 const mockUpdateSubtitleLanguage = vi.fn()
 const mockUpdateSubtitlesOn = vi.fn()
 vi.mock('../../../libs/watchContext', async () => ({
-  ...await vi.importActual<typeof import('../../../libs/watchContext')>('../../../libs/watchContext'),
+  ...(await vi.importActual<typeof import('../../../libs/watchContext')>(
+    '../../../libs/watchContext'
+  )),
   useLanguageActions: () => ({
     updateSubtitleLanguage: mockUpdateSubtitleLanguage,
     updateSubtitlesOn: mockUpdateSubtitlesOn
@@ -23,9 +25,7 @@ vi.mock('../../../libs/useLanguages', async () => ({
   useLanguages: vi.fn()
 }))
 
-const useLanguagesMock = useLanguages as MockedFunction<
-  typeof useLanguages
->
+const useLanguagesMock = useLanguages as MockedFunction<typeof useLanguages>
 
 describe('SubtitlesSelect', () => {
   const french = {

@@ -3,7 +3,9 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { Questions } from './Questions'
 
 vi.mock('next-i18next/pages', async () => ({
-  ...(await vi.importActual<typeof import('next-i18next/pages')>('next-i18next/pages')),
+  ...(await vi.importActual<typeof import('next-i18next/pages')>(
+    'next-i18next/pages'
+  )),
   useTranslation: vi.fn().mockReturnValue({
     t: vi.fn()
   })

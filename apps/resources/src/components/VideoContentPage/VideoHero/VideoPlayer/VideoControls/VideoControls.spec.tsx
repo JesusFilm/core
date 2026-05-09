@@ -37,9 +37,7 @@ vi.mock('fscreen', async () => ({
 vi.mock('../../../../..//libs/useLanguages', async () => ({
   useLanguages: vi.fn()
 }))
-const useLanguagesMock = useLanguages as MockedFunction<
-  typeof useLanguages
->
+const useLanguagesMock = useLanguages as MockedFunction<typeof useLanguages>
 
 describe('VideoControls', () => {
   let player
@@ -193,9 +191,7 @@ describe('VideoControls', () => {
     await act(async () => {
       fireEvent.click(getByTestId('LanguageOutlinedIcon').closest('button')!)
     })
-    await waitFor(() =>
-      expect(screen.getByRole('dialog')).toBeInTheDocument()
-    )
+    await waitFor(() => expect(screen.getByRole('dialog')).toBeInTheDocument())
   })
 
   it('fullscreens the video player on fullscreen icon click when mobile', async () => {

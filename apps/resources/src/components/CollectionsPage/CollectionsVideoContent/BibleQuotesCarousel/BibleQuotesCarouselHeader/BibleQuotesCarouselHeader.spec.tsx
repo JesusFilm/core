@@ -5,7 +5,9 @@ import { changeJSDOMURL } from '../../../../../libs/utils/changeJSDOMURL'
 import { BibleQuotesCarouselHeader } from './BibleQuotesCarouselHeader'
 
 vi.mock('next-i18next/pages', async () => ({
-  ...(await vi.importActual<typeof import('next-i18next/pages')>('next-i18next/pages')),
+  ...(await vi.importActual<typeof import('next-i18next/pages')>(
+    'next-i18next/pages'
+  )),
   useTranslation: () => ({
     t: (key: string) => key
   })

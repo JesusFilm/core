@@ -13,9 +13,7 @@ import { AudioLanguageSelect } from './AudioLanguageSelect'
 vi.mock('../../../libs/useLanguages', async () => ({
   useLanguages: vi.fn()
 }))
-const useLanguagesMock = useLanguages as MockedFunction<
-  typeof useLanguages
->
+const useLanguagesMock = useLanguages as MockedFunction<typeof useLanguages>
 
 describe('AudioLanguageSelect', () => {
   const mockVideo = videos[0]

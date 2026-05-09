@@ -20,7 +20,9 @@ vi.mock('fscreen', async () => ({
 }))
 
 vi.mock('next-i18next/pages', async () => ({
-  ...(await vi.importActual<typeof import('next-i18next/pages')>('next-i18next/pages')),
+  ...(await vi.importActual<typeof import('next-i18next/pages')>(
+    'next-i18next/pages'
+  )),
   useTranslation: vi.fn().mockReturnValue({
     t: (key: string) => key
   })
@@ -64,8 +66,7 @@ describe('VideoContentHero', () => {
       expect.any(Function)
     )
 
-    const listener = (mockedFscreen.addEventListener as Mock).mock
-      .calls[0][1]
+    const listener = (mockedFscreen.addEventListener as Mock).mock.calls[0][1]
 
     unmount()
     expect(mockedFscreen.removeEventListener).toHaveBeenCalledWith(
@@ -94,9 +95,8 @@ describe('VideoContentHero', () => {
           </VideoProvider>
         </MockedProvider>
       )
-      const fullscreenchangeCallback = (
-        mockedFscreen.addEventListener as Mock
-      ).mock.calls[0][1]
+      const fullscreenchangeCallback = (mockedFscreen.addEventListener as Mock)
+        .mock.calls[0][1]
 
       ;(mockedFscreen as any).fullscreenElement = document.createElement('div')
       fullscreenchangeCallback()
@@ -127,9 +127,8 @@ describe('VideoContentHero', () => {
           </VideoProvider>
         </MockedProvider>
       )
-      const fullscreenchangeCallback = (
-        mockedFscreen.addEventListener as Mock
-      ).mock.calls[0][1]
+      const fullscreenchangeCallback = (mockedFscreen.addEventListener as Mock)
+        .mock.calls[0][1]
 
       ;(mockedFscreen as any).fullscreenElement = document.createElement('div')
       fullscreenchangeCallback()
@@ -160,9 +159,8 @@ describe('VideoContentHero', () => {
           </VideoProvider>
         </MockedProvider>
       )
-      const fullscreenchangeCallback = (
-        mockedFscreen.addEventListener as Mock
-      ).mock.calls[0][1]
+      const fullscreenchangeCallback = (mockedFscreen.addEventListener as Mock)
+        .mock.calls[0][1]
 
       ;(mockedFscreen as any).fullscreenElement = null
       fullscreenchangeCallback()

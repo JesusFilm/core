@@ -29,14 +29,17 @@ const mockVideoData = {
 }
 
 vi.mock('next-i18next/pages', async () => ({
-  ...(await vi.importActual<typeof import('next-i18next/pages')>('next-i18next/pages')),
+  ...(await vi.importActual<typeof import('next-i18next/pages')>(
+    'next-i18next/pages'
+  )),
   useTranslation: vi.fn().mockReturnValue({
     t: vi.fn()
   })
 }))
 
 vi.mock('video.js', async () => {
-  const originalModule = await vi.importActual<typeof import('video.js')>('video.js')
+  const originalModule =
+    await vi.importActual<typeof import('video.js')>('video.js')
 
   const mockPlayer = {
     on: vi.fn(),

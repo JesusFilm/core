@@ -25,9 +25,7 @@ const mockUseHits = useHits as MockedFunction<typeof useHits>
 const mockUseAlgoliaVideos = useAlgoliaVideos as MockedFunction<
   typeof useAlgoliaVideos
 >
-const mockUseSearchBox = useSearchBox as MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 const mockUseMenu = useMenu as MockedFunction<typeof useMenu>
 const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
