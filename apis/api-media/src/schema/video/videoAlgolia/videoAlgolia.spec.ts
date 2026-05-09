@@ -1,12 +1,16 @@
+import { vi } from 'vitest'
+
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
+import { updateVideoInAlgolia } from '../../../lib/algolia/algoliaVideoUpdate'
+import { updateVideoVariantInAlgolia } from '../../../lib/algolia/algoliaVideoVariantUpdate'
 
-const getObjectSpy = jest.fn()
+const getObjectSpy = vi.fn()
 
 // Mock the algolia client helper
-jest.mock('../../../lib/algolia/algoliaClient', () => ({
+vi.mock('../../../lib/algolia/algoliaClient', () => ({
   getAlgoliaClient: () => ({
     getObject: getObjectSpy
   }),
@@ -19,21 +23,17 @@ jest.mock('../../../lib/algolia/algoliaClient', () => ({
 }))
 
 // Mock the algolia update functions
-jest.mock('../../../lib/algolia/algoliaVideoUpdate', () => ({
-  updateVideoInAlgolia: jest.fn()
+vi.mock('../../../lib/algolia/algoliaVideoUpdate', () => ({
+  updateVideoInAlgolia: vi.fn()
 }))
 
-jest.mock('../../../lib/algolia/algoliaVideoVariantUpdate', () => ({
-  updateVideoVariantInAlgolia: jest.fn()
+vi.mock('../../../lib/algolia/algoliaVideoVariantUpdate', () => ({
+  updateVideoVariantInAlgolia: vi.fn()
 }))
 
 // Get the mocked functions
-const {
-  updateVideoInAlgolia
-} = require('../../../lib/algolia/algoliaVideoUpdate')
-const {
-  updateVideoVariantInAlgolia
-} = require('../../../lib/algolia/algoliaVideoVariantUpdate')
+const mockedUpdateVideoInAlgolia = vi.mocked(updateVideoInAlgolia)
+const mockedUpdateVideoVariantInAlgolia = vi.mocked(updateVideoVariantInAlgolia)
 
 describe('videoAlgolia', () => {
   const client = getClient()
@@ -48,15 +48,15 @@ describe('videoAlgolia', () => {
   })
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     getObjectSpy.mockReset()
-    updateVideoInAlgolia.mockResolvedValue(undefined)
-    updateVideoVariantInAlgolia.mockResolvedValue(undefined)
+    mockedUpdateVideoInAlgolia.mockResolvedValue(undefined)
+    mockedUpdateVideoVariantInAlgolia.mockResolvedValue(undefined)
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   describe('queries', () => {

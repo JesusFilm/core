@@ -1,4 +1,5 @@
-import { DeepMockProxy, mockDeep, mockReset } from 'jest-mock-extended'
+import { beforeEach, vi } from 'vitest'
+import { DeepMockProxy, mockDeep, mockReset } from 'vitest-mock-extended'
 
 import { crowdinClient } from '../src/lib/crowdin/crowdinClient'
 
@@ -45,7 +46,7 @@ export const mockTranslation = {
   updatedAt: '2024-01-01T00:00:00Z'
 }
 
-jest.mock('../src/lib/crowdin/crowdinClient', () => ({
+vi.mock('../src/lib/crowdin/crowdinClient', () => ({
   __esModule: true,
   crowdinClient: mockDeep<typeof crowdinClient>(),
   crowdinProjectId: 1
