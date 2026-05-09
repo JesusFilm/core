@@ -10,6 +10,8 @@ import type {
   TeamsLoadState
 } from '../state/types'
 
+import { Spinner } from './Spinner'
+
 interface StatusBarProps {
   session: ActiveSession
   status: ReplState['status']
@@ -88,7 +90,14 @@ export function StatusBar({
         <Text color="gray"> · turns </Text>
         <Text>{usage.turns}</Text>
         <Text color="gray"> · </Text>
-        <Text color={statusColor}>{statusLabel}</Text>
+        {status === 'idle' ? (
+          <Text color={statusColor}>{statusLabel}</Text>
+        ) : (
+          <>
+            <Spinner color={statusColor} />
+            <Text color={statusColor}> {statusLabel}</Text>
+          </>
+        )}
       </Box>
     </Box>
   )

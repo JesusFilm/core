@@ -55,6 +55,10 @@ export interface ReplState {
   transcript: TranscriptEntry[]
   usage: UsageTotals
   status: 'idle' | 'thinking' | 'tool'
+  /** Name of the MCP tool currently executing. Set when status === 'tool'. */
+  currentToolName: string | null
+  /** Epoch ms timestamp when the current activity (thinking/tool) began. */
+  activityStartedAt: number | null
   /** Bumped whenever the agent loop should be torn down and rebuilt. */
   agentEpoch: number
   teams: TeamsLoadState

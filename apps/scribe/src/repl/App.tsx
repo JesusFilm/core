@@ -27,6 +27,7 @@ import {
   persistLastActiveTeamId
 } from '../tools/team/api'
 
+import { ActivityIndicator } from './components/ActivityIndicator'
 import { Input } from './components/Input'
 import { JourneyPicker } from './components/JourneyPicker'
 import { StatusBar } from './components/StatusBar'
@@ -78,6 +79,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     ],
     usage: EMPTY_USAGE,
     status: 'idle',
+    currentToolName: null,
+    activityStartedAt: null,
     agentEpoch: 0,
     teams: { status: 'idle' },
     activeTeam: null,
@@ -106,8 +109,35 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     [appendEntry]
   )
 
-  const setStatus = useCallback((status: ReplState['status']) => {
-    setState((prev) => ({ ...prev, status }))
+  const beginThinking = useCallback(() => {
+    setState((prev) =>
+      prev.status === 'thinking'
+        ? prev
+        : {
+            ...prev,
+            status: 'thinking',
+            currentToolName: null,
+            activityStartedAt: prev.activityStartedAt ?? Date.now()
+          }
+    )
+  }, [])
+
+  const beginTool = useCallback((name: string) => {
+    setState((prev) => ({
+      ...prev,
+      status: 'tool',
+      currentToolName: name,
+      activityStartedAt: prev.activityStartedAt ?? Date.now()
+    }))
+  }, [])
+
+  const endActivity = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      status: 'idle',
+      currentToolName: null,
+      activityStartedAt: null
+    }))
   }, [])
 
   const replaceSession = useCallback((session: ActiveSession) => {
@@ -332,9 +362,12 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       }
 
       appendEntry({ kind: 'user', id: nextEntryId('user'), text: trimmed })
+      // Kick the activity indicator the moment the user submits — there can
+      // be a noticeable gap before the SDK emits its first message.
+      beginThinking()
       promptQueue.current?.push(trimmed)
     },
-    [appendEntry, appendSystemMessage, commandContext]
+    [appendEntry, appendSystemMessage, commandContext, beginThinking]
   )
 
   // Fetch the user's teams + their journeys-admin "last active team" whenever
@@ -469,7 +502,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       } catch (error) {
         if (cancelled) return
         appendSystemMessage(`Agent error: ${formatError(error)}`, 'error')
-        setStatus('idle')
+        endActivity()
       }
     }
 
@@ -479,14 +512,14 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         if (!Array.isArray(blocks)) return
         for (const block of blocks) {
           if (block.type === 'text' && block.text.trim().length > 0) {
-            setStatus('thinking')
+            beginThinking()
             appendEntry({
               kind: 'assistant',
               id: nextEntryId('asst'),
               text: block.text
             })
           } else if (block.type === 'tool_use') {
-            setStatus('tool')
+            beginTool(block.name)
             appendEntry({
               kind: 'tool_call',
               id: nextEntryId('tool'),
@@ -502,6 +535,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         setState((prev) => ({
           ...prev,
           status: 'idle',
+          currentToolName: null,
+          activityStartedAt: null,
           usage: {
             inputTokens: prev.usage.inputTokens + (usage?.input_tokens ?? 0),
             outputTokens: prev.usage.outputTokens + (usage?.output_tokens ?? 0),
@@ -547,11 +582,18 @@ export function App({ initialSession, model }: AppProps): ReactElement {
           onCancel={closeJourneyPicker}
         />
       ) : (
-        <Input
-          enabled={true}
-          placeholder="Ask the agent, or type / for commands"
-          onSubmit={handleSubmit}
-        />
+        <>
+          <ActivityIndicator
+            status={state.status}
+            currentToolName={state.currentToolName}
+            startedAt={state.activityStartedAt}
+          />
+          <Input
+            enabled={true}
+            placeholder="Ask the agent, or type / for commands"
+            onSubmit={handleSubmit}
+          />
+        </>
       )}
       <StatusBar
         session={state.session}
