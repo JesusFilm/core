@@ -1,15 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
 import { fireEvent, render, screen } from '@testing-library/react'
+import type { Mock } from 'vitest'
 
 import { Header } from './Header'
 
-jest.mock('@mui/material/useScrollTrigger', () => ({
+vi.mock('@mui/material/useScrollTrigger', async () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-const useScrollTriggerMock = useScrollTrigger as jest.Mock
+const useScrollTriggerMock = useScrollTrigger as Mock
 
 describe('Header', () => {
   beforeEach(() => {

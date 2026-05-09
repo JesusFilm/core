@@ -1,17 +1,20 @@
 import { act, render, screen } from '@testing-library/react'
 import React, { useRef } from 'react'
+import type { Mock, Mocked } from 'vitest'
 
 import { useIsInViewport } from './useIsInViewport'
 
-type MockedIntersectionObserver = jest.Mock<
-  Partial<IntersectionObserver>,
-  [IntersectionObserverCallback, IntersectionObserverInit?]
+type MockedIntersectionObserver = Mock<
+  (
+    callback: IntersectionObserverCallback,
+    options?: IntersectionObserverInit
+  ) => Partial<IntersectionObserver>
 >
 
-const mockIntersectionObserver = jest.fn() as MockedIntersectionObserver
-const mockObserve = jest.fn()
-const mockUnobserve = jest.fn()
-const mockDisconnect = jest.fn()
+const mockIntersectionObserver = vi.fn() as MockedIntersectionObserver
+const mockObserve = vi.fn()
+const mockUnobserve = vi.fn()
+const mockDisconnect = vi.fn()
 
 const TestComponent = () => {
   const ref = useRef<HTMLDivElement>(null)
@@ -51,7 +54,7 @@ describe('useIsInViewport hook', () => {
       return instance
     })
 
-    window.IntersectionObserver = mockIntersectionObserver as jest.Mocked<
+    window.IntersectionObserver = mockIntersectionObserver as Mocked<
       typeof window.IntersectionObserver
     >
   })

@@ -5,6 +5,7 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { HttpResponse, http } from 'msw'
 import { useHits, useRefinementList, useSearchBox } from 'react-instantsearch'
+import type { MockedFunction } from 'vitest'
 
 import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
 
@@ -13,18 +14,18 @@ import { server } from '../../../test/mswServer'
 import { resourceItems } from './ResourceSections/ResourceSection/data'
 import { ResourcesView } from './ResourcesView'
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<
   typeof useSearchBox
 >
-const mockedUseHits = useHits as jest.MockedFunction<typeof useHits>
-const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+const mockedUseHits = useHits as MockedFunction<typeof useHits>
+const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
 
-describe('ResourcesView', () => {
-  const refine = jest.fn()
+describe('ResourcesView', async () => {
+  const refine = vi.fn()
 
   const useSearchBox = {
     query: 'Hello World!',

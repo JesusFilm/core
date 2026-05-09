@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useInstantSearch } from 'react-instantsearch'
+import type { Mock, MockedFunction } from 'vitest'
 
 import { useLanguages } from '../../../libs/useLanguages'
 import { WatchProvider } from '../../../libs/watchContext'
@@ -8,34 +10,33 @@ import { WatchProvider } from '../../../libs/watchContext'
 import { AudioTrackSelect } from './AudioTrackSelect'
 
 // Mock useLanguageActions hook specifically for testing onChange behavior
-const mockUpdateAudioLanguage = jest.fn()
-jest.mock('../../../libs/watchContext', () => ({
-  ...jest.requireActual('../../../libs/watchContext'),
+const mockUpdateAudioLanguage = vi.fn()
+vi.mock('../../../libs/watchContext', async () => ({
+  ...await vi.importActual<typeof import('../../../libs/watchContext')>('../../../libs/watchContext'),
   useLanguageActions: () => ({
     updateAudioLanguage: mockUpdateAudioLanguage
   })
 }))
 
-jest.mock('../../../libs/useLanguages', () => ({
-  useLanguages: jest.fn()
+vi.mock('../../../libs/useLanguages', async () => ({
+  useLanguages: vi.fn()
 }))
 
-const useLanguagesMock = useLanguages as jest.MockedFunction<
+const useLanguagesMock = useLanguages as MockedFunction<
   typeof useLanguages
 >
 
 // Mock useInstantSearch hook specifically for testing instant search behavior
-const mockSetIndexUiState = jest.fn()
+const mockSetIndexUiState = vi.fn()
 const mockInstantSearch = {
   setIndexUiState: mockSetIndexUiState
 }
 
-jest.mock('react-instantsearch', () => ({
-  useInstantSearch: jest.fn()
+vi.mock('react-instantsearch', async () => ({
+  useInstantSearch: vi.fn()
 }))
 
-const useInstantSearchMock = require('react-instantsearch')
-  .useInstantSearch as jest.Mock
+const useInstantSearchMock = useInstantSearch as Mock
 
 describe('AudioTrackSelect', () => {
   const french = {
@@ -49,7 +50,7 @@ describe('AudioTrackSelect', () => {
 
   beforeEach(() => {
     useInstantSearchMock.mockReturnValue(undefined) // Default to no instant search
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     useLanguagesMock.mockReturnValue({
       languages: [
         {

@@ -1,28 +1,29 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import type { Mock } from 'vitest'
+
+import { createApolloClient } from '../../src/libs/apolloClient'
 
 import handler from './variantLanguages'
 
 // Mock the Apollo client
-jest.mock('../../src/libs/apolloClient', () => ({
-  createApolloClient: jest.fn()
+vi.mock('../../src/libs/apolloClient', async () => ({
+  createApolloClient: vi.fn()
 }))
-
-const { createApolloClient } = require('../../src/libs/apolloClient')
 
 describe('VariantLanguages API', () => {
   let mockApolloClient: any
-  let mockQuery: jest.Mock
+  let mockQuery: Mock
 
   beforeEach(() => {
-    mockQuery = jest.fn()
+    mockQuery = vi.fn()
     mockApolloClient = {
       query: mockQuery
     }
-    createApolloClient.mockReturnValue(mockApolloClient)
+    ;(createApolloClient as unknown as Mock).mockReturnValue(mockApolloClient)
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const createMockRequest = (method: string, query: any = {}): NextApiRequest =>
@@ -33,9 +34,9 @@ describe('VariantLanguages API', () => {
 
   const createMockResponse = (): NextApiResponse => {
     const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-      setHeader: jest.fn()
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+      setHeader: vi.fn()
     } as unknown as NextApiResponse
     return res
   }
@@ -415,7 +416,9 @@ describe('VariantLanguages API', () => {
     })
 
     it('should log error to console when GraphQL query fails', async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
       const req = createMockRequest('GET', { slug: 'jesus/english' })
       const res = createMockResponse()
 

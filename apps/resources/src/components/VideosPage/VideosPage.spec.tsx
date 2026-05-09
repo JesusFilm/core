@@ -10,6 +10,7 @@ import {
   useMenu,
   useSearchBox
 } from 'react-instantsearch'
+import type { MockedFunction } from 'vitest'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
@@ -17,22 +18,22 @@ import { type CoreVideo } from '../../libs/algolia/transformAlgoliaVideos'
 
 import { VideosPage } from './VideosPage'
 
-jest.mock('react-instantsearch')
-jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
+vi.mock('react-instantsearch')
+vi.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 
-const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
-const mockUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
+const mockUseHits = useHits as MockedFunction<typeof useHits>
+const mockUseAlgoliaVideos = useAlgoliaVideos as MockedFunction<
   typeof useAlgoliaVideos
 >
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<
   typeof useSearchBox
 >
-const mockUseMenu = useMenu as jest.MockedFunction<typeof useMenu>
-const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+const mockUseMenu = useMenu as MockedFunction<typeof useMenu>
+const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >
 
-describe('VideosPage', () => {
+describe('VideosPage', async () => {
   const transformedVideos = [
     {
       __typename: 'Video',
@@ -72,27 +73,27 @@ describe('VideosPage', () => {
       loading: false,
       noResults: false,
       items: transformedVideos,
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     mockUseHits.mockReturnValue({
       hits: transformedVideos,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     } as unknown as HitsRenderState)
 
     mockUseSearchBox.mockReturnValue({
-      refine: jest.fn
+      refine: vi.fn
     } as unknown as SearchBoxRenderState)
 
     mockUseMenu.mockReturnValue({
       items: [],
-      refine: jest.fn()
+      refine: vi.fn()
     } as unknown as RefinementListRenderState)
 
     mockUseInstantSearch.mockReturnValue({
-      refresh: jest.fn()
+      refresh: vi.fn()
     } as unknown as InstantSearchApi)
   })
 

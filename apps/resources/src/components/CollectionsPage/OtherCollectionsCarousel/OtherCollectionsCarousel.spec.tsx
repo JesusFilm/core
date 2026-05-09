@@ -17,7 +17,7 @@ describe('OtherCollectionsCarousel', () => {
   ]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders without crashing', () => {

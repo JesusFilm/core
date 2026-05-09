@@ -34,7 +34,7 @@ const mockFreeResource = {
   text: 'Get your free resource now',
   cta: {
     label: 'Download',
-    onClick: jest.fn()
+    onClick: vi.fn()
   }
 }
 

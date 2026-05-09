@@ -9,8 +9,9 @@ import { videos } from '../../Videos/__generated__/testData'
 
 import { NewVideoContentHeader } from './NewVideoContentHeader'
 
-jest.mock('next-i18next/pages', () => ({
-  useTranslation: jest.fn(() => ({
+vi.mock('next-i18next/pages', async () => ({
+  ...(await vi.importActual<typeof import('next-i18next/pages')>('next-i18next/pages')),
+  useTranslation: vi.fn(() => ({
     t: (str: string) => str
   }))
 }))

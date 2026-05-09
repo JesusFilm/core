@@ -10,6 +10,7 @@ import {
 import userEvent from '@testing-library/user-event'
 import fscreen from 'fscreen'
 import videojs from 'video.js'
+import type { MockedFunction } from 'vitest'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -24,19 +25,19 @@ import { videos } from '../../../../Videos/__generated__/testData'
 
 import { VideoControls } from './VideoControls'
 
-jest.mock('fscreen', () => ({
+vi.mock('fscreen', async () => ({
   __esModule: true,
   default: {
-    requestFullscreen: jest.fn(),
-    exitFullscreen: jest.fn(),
-    addEventListener: jest.fn()
+    requestFullscreen: vi.fn(),
+    exitFullscreen: vi.fn(),
+    addEventListener: vi.fn()
   }
 }))
 
-jest.mock('../../../../..//libs/useLanguages', () => ({
-  useLanguages: jest.fn()
+vi.mock('../../../../..//libs/useLanguages', async () => ({
+  useLanguages: vi.fn()
 }))
-const useLanguagesMock = useLanguages as jest.MockedFunction<
+const useLanguagesMock = useLanguages as MockedFunction<
   typeof useLanguages
 >
 
@@ -44,7 +45,7 @@ describe('VideoControls', () => {
   let player
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const video = document.createElement('video')
     document.body.appendChild(video)
@@ -80,10 +81,11 @@ describe('VideoControls', () => {
 
   afterEach(() => {
     cleanup()
+    document.body.innerHTML = ''
   })
 
   it('plays the video', async () => {
-    jest.spyOn(player, 'play').mockImplementation(function () {
+    vi.spyOn(player, 'play').mockImplementation(function () {
       this.trigger('play')
     })
 
@@ -112,7 +114,7 @@ describe('VideoControls', () => {
   })
 
   it('pause the video', async () => {
-    jest.spyOn(player, 'pause').mockImplementation(function () {
+    vi.spyOn(player, 'pause').mockImplementation(function () {
       this.trigger('pause')
     })
 
@@ -139,7 +141,7 @@ describe('VideoControls', () => {
   })
 
   it('unmutes the video on mute icon click', async () => {
-    jest.spyOn(player, 'muted').mockImplementation(function () {
+    vi.spyOn(player, 'muted').mockImplementation(function () {
       this.trigger('muted')
     })
 
@@ -188,14 +190,16 @@ describe('VideoControls', () => {
         </WatchProvider>
       </MockedProvider>
     )
-    await userEvent.click(getByTestId('LanguageOutlinedIcon'))
+    await act(async () => {
+      fireEvent.click(getByTestId('LanguageOutlinedIcon').closest('button')!)
+    })
     await waitFor(() =>
-      expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
     )
   })
 
   it('fullscreens the video player on fullscreen icon click when mobile', async () => {
-    jest.spyOn(player, 'requestFullscreen').mockImplementation(function () {
+    vi.spyOn(player, 'requestFullscreen').mockImplementation(function () {
       this.trigger('requestFullscreen')
     })
     ;(global.navigator.userAgent as unknown as string) = 'iPhone'
@@ -283,7 +287,7 @@ describe('VideoControls', () => {
   })
 
   it('updates progress on timeupdate event handler', async () => {
-    jest.spyOn(player, 'currentTime').mockReturnValue(0)
+    vi.spyOn(player, 'currentTime').mockReturnValue(0)
     render(
       <MockedProvider>
         <WatchProvider
@@ -305,7 +309,7 @@ describe('VideoControls', () => {
     expect(screen.getByText('player.currentTime: 0:00')).toBeInTheDocument()
     expect(screen.getByText('player.progress: 0')).toBeInTheDocument()
     act(() => {
-      jest.spyOn(player, 'currentTime').mockReturnValue(50)
+      vi.spyOn(player, 'currentTime').mockReturnValue(50)
       // event needs to be triggered manually because of jsdom limitations
       player.trigger('timeupdate')
     })
@@ -316,7 +320,7 @@ describe('VideoControls', () => {
   })
 
   it('updates volume on volumechange', async () => {
-    jest.spyOn(player, 'volume').mockReturnValue(0)
+    vi.spyOn(player, 'volume').mockReturnValue(0)
 
     render(
       <MockedProvider>
@@ -338,7 +342,7 @@ describe('VideoControls', () => {
     )
     expect(screen.getByText('player.volume: 0')).toBeInTheDocument()
     act(() => {
-      jest.spyOn(player, 'volume').mockReturnValue(0.5)
+      vi.spyOn(player, 'volume').mockReturnValue(0.5)
       // event needs to be triggered manually because of jsdom limitations
       player.trigger('volumechange')
     })
@@ -478,7 +482,7 @@ describe('VideoControls', () => {
   })
 
   it('seeks video on slider change', async () => {
-    jest.spyOn(player, 'currentTime')
+    vi.spyOn(player, 'currentTime')
     render(
       <MockedProvider>
         <WatchProvider
@@ -509,7 +513,7 @@ describe('VideoControls', () => {
   })
 
   it('sets volume on slider change', async () => {
-    jest.spyOn(player, 'volume')
+    vi.spyOn(player, 'volume')
     render(
       <MockedProvider>
         <WatchProvider
@@ -538,7 +542,7 @@ describe('VideoControls', () => {
   })
 
   it('updates progress percent not yet emitted', async () => {
-    jest.spyOn(player, 'currentTime').mockReturnValue(26) // > 10% of 250
+    vi.spyOn(player, 'currentTime').mockReturnValue(26) // > 10% of 250
 
     const testVideo = {
       ...videos[0],

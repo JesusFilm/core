@@ -2,17 +2,18 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { Questions } from './Questions'
 
-jest.mock('next-i18next/pages', () => ({
-  useTranslation: jest.fn().mockReturnValue({
-    t: jest.fn()
+vi.mock('next-i18next/pages', async () => ({
+  ...(await vi.importActual<typeof import('next-i18next/pages')>('next-i18next/pages')),
+  useTranslation: vi.fn().mockReturnValue({
+    t: vi.fn()
   })
 }))
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', async () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-jest.mock('./Question', () => ({
+vi.mock('./Question', async () => ({
   Question: ({ children, question, isOpen, onToggle }: any) => (
     <div data-testid="question-component">
       <div data-testid="question-text">{question}</div>

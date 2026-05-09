@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { MockedFunction } from 'vitest'
 
 import { useLanguages } from '../../../../libs/useLanguages'
 import { VideoPageProps, VideoProvider } from '../../../../libs/videoContext'
@@ -10,11 +11,11 @@ import { videos } from '../../../Videos/__generated__/testData'
 
 import { AudioLanguageSelectContent } from './AudioLanguageSelectContent'
 
-jest.mock('../../../../libs/useLanguages', () => ({
-  useLanguages: jest.fn()
+vi.mock('../../../../libs/useLanguages', async () => ({
+  useLanguages: vi.fn()
 }))
 
-const useLanguagesMock = useLanguages as jest.MockedFunction<
+const useLanguagesMock = useLanguages as MockedFunction<
   typeof useLanguages
 >
 
@@ -59,11 +60,11 @@ describe('AudioLanguageSelectContent', () => {
     // Mock HTMLElement methods globally - needed for shadcn/ui Select component testing
     // https://stackoverflow.com/questions/78975098/testing-shadcn-select-with-jest-and-react-testing-library | https://github.com/shadcn-ui/ui/discussions/4168#discussioncomment-10502077
     Object.assign(window.HTMLElement.prototype, {
-      scrollIntoView: jest.fn(),
-      releasePointerCapture: jest.fn(),
-      hasPointerCapture: jest.fn()
+      scrollIntoView: vi.fn(),
+      releasePointerCapture: vi.fn(),
+      hasPointerCapture: vi.fn()
     })
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   afterEach(() => {

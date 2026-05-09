@@ -76,7 +76,7 @@ const wrapper = ({
 
 describe('useVideoChildren', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should return loading state initially', () => {

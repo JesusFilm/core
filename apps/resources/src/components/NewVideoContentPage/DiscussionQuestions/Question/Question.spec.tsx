@@ -2,16 +2,17 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { Question } from './Question'
 
-jest.mock('next-i18next/pages', () => ({
-  useTranslation: jest.fn().mockReturnValue({
+vi.mock('next-i18next/pages', async () => ({
+  ...(await vi.importActual<typeof import('next-i18next/pages')>('next-i18next/pages')),
+  useTranslation: vi.fn().mockReturnValue({
     t: (key: string) => key
   })
 }))
 
 describe('Question', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-    window.open = jest.fn()
+    vi.clearAllMocks()
+    window.open = vi.fn()
   })
 
   it('renders the questions correcttly', () => {

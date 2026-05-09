@@ -36,7 +36,7 @@ const mockVideo: Video = {
 
 describe('useVariantLanguagesIdAndSlugQuery', () => {
   it('should get variant languages and subtitles for a video', async () => {
-    const mockResult = jest.fn(() => ({
+    const mockResult = vi.fn(() => ({
       data: {
         video: mockVideo
       }
@@ -78,7 +78,7 @@ describe('useVariantLanguagesIdAndSlugQuery', () => {
   })
 
   it('should handle empty variant languages and subtitles', async () => {
-    const mockResult = jest.fn(() => ({
+    const mockResult = vi.fn(() => ({
       data: {
         video: {
           __typename: 'Video',

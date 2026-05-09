@@ -5,10 +5,11 @@ import { videos } from '../../Videos/__generated__/testData'
 import { VideoCarousel } from './VideoCarousel'
 
 // Mock Swiper modules
-jest.mock('swiper/modules', () => ({
-  A11y: jest.fn(),
-  FreeMode: jest.fn(),
-  Mousewheel: jest.fn()
+vi.mock('swiper/modules', async () => ({
+  ...(await vi.importActual<typeof import('swiper/modules')>('swiper/modules')),
+  A11y: vi.fn(),
+  FreeMode: vi.fn(),
+  Mousewheel: vi.fn()
 }))
 
 describe('VideoCarousel', () => {

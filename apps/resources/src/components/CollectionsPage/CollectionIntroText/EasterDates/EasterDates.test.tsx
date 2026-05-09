@@ -6,11 +6,11 @@ import { EasterDates, EasterDatesProps } from './EasterDates'
 
 describe('EasterDates', () => {
   beforeEach(() => {
-    jest.useFakeTimers().setSystemTime(new Date('2024-01-01'))
+    vi.useFakeTimers().setSystemTime(new Date('2024-01-01'))
   })
 
   afterEach(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   const defaultProps: EasterDatesProps = {

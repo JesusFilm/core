@@ -13,7 +13,7 @@ import { ContentHeader } from './ContentHeader'
 
 describe('ContentHeader', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders the header with a logo', () => {

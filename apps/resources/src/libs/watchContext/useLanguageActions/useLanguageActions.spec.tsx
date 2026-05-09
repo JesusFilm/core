@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react'
 import mockRouter from 'next-router-mock'
 import { ReactNode } from 'react'
+import type { MockedFunction } from 'vitest'
 
 import { setCookie } from '../../cookieHandler'
 import { WatchProvider, WatchState } from '../WatchContext'
@@ -8,11 +9,11 @@ import { WatchProvider, WatchState } from '../WatchContext'
 import { useLanguageActions } from './useLanguageActions'
 
 // Mock the dependencies
-jest.mock('../../cookieHandler', () => ({
-  setCookie: jest.fn()
+vi.mock('../../cookieHandler', async () => ({
+  setCookie: vi.fn()
 }))
 
-const mockSetCookie = setCookie as jest.MockedFunction<typeof setCookie>
+const mockSetCookie = setCookie as MockedFunction<typeof setCookie>
 
 describe('useLanguageActions', () => {
   const defaultInitialState: WatchState = {
@@ -22,7 +23,7 @@ describe('useLanguageActions', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('updateAudioLanguage', () => {

@@ -3,10 +3,10 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ContainerHeroMuteButton } from './ContainerHeroMuteButton'
 
 describe('ContainerHeroMuteButton', () => {
-  const mockOnClick = jest.fn()
+  const mockOnClick = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render correctly when muted', async () => {

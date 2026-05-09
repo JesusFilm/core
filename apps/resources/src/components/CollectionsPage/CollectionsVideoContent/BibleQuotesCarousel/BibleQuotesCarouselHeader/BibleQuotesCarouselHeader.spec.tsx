@@ -4,14 +4,15 @@ import { changeJSDOMURL } from '../../../../../libs/utils/changeJSDOMURL'
 
 import { BibleQuotesCarouselHeader } from './BibleQuotesCarouselHeader'
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', async () => ({
+  ...(await vi.importActual<typeof import('next-i18next/pages')>('next-i18next/pages')),
   useTranslation: () => ({
     t: (key: string) => key
   })
 }))
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', async () => ({
+  sendGTMEvent: vi.fn()
 }))
 
 describe('BibleQuotesCarouselHeader', () => {
@@ -23,13 +24,13 @@ describe('BibleQuotesCarouselHeader', () => {
   }
 
   const originalNavigator = { ...global.navigator }
-  const mockShare = jest.fn().mockResolvedValue(undefined)
+  const mockShare = vi.fn().mockResolvedValue(undefined)
   const mockClipboard = {
-    writeText: jest.fn().mockResolvedValue(undefined)
+    writeText: vi.fn().mockResolvedValue(undefined)
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     Object.defineProperty(global.navigator, 'share', {
       value: mockShare,
       configurable: true

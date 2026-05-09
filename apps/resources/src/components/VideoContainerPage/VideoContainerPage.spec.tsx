@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import type { MockedFunction } from 'vitest'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
@@ -10,24 +11,24 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContainerPage } from '.'
 
-jest.mock('react-instantsearch')
-jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
+vi.mock('react-instantsearch')
+vi.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 
-const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
+const mockedUseAlgoliaVideos = useAlgoliaVideos as MockedFunction<
   typeof useAlgoliaVideos
 >
 
-describe('VideoContainerPage', () => {
+describe('VideoContainerPage', async () => {
   beforeEach(() => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should show language switcher', () => {

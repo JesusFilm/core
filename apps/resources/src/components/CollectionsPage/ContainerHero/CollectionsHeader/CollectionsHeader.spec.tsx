@@ -1,18 +1,19 @@
 import useScrollTrigger from '@mui/material/useScrollTrigger'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import type { Mock } from 'vitest'
 
 import { CollectionsHeader } from './CollectionsHeader'
 
 // Mock the useScrollTrigger hook
-jest.mock('@mui/material/useScrollTrigger')
+vi.mock('@mui/material/useScrollTrigger')
 
-describe('CollectionsHeader', () => {
+describe('CollectionsHeader', async () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders the header with a logo', () => {
-    ;(useScrollTrigger as jest.Mock).mockReturnValue(false)
+    ;(useScrollTrigger as Mock).mockReturnValue(false)
 
     render(<CollectionsHeader feedbackButtonLabel="Feedback" />)
 
@@ -24,7 +25,7 @@ describe('CollectionsHeader', () => {
   })
 
   it('opens language modal when language button is clicked and closes when close button is clicked', async () => {
-    ;(useScrollTrigger as jest.Mock).mockReturnValue(false)
+    ;(useScrollTrigger as Mock).mockReturnValue(false)
 
     render(<CollectionsHeader feedbackButtonLabel="Feedback" />)
 

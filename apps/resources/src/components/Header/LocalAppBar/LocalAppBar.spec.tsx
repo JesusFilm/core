@@ -6,7 +6,7 @@ import { WatchProvider } from '../../../libs/watchContext'
 import { LocalAppBar } from './LocalAppBar'
 
 describe('LocalAppBar', () => {
-  const mockOnMenuClick = jest.fn()
+  const mockOnMenuClick = vi.fn()
 
   beforeEach(() => {
     mockOnMenuClick.mockReset()
@@ -78,7 +78,7 @@ describe('LocalAppBar', () => {
   it('should hide language switcher by default', () => {
     render(
       <MockedProvider>
-        <LocalAppBar onMenuClick={jest.fn()} />
+        <LocalAppBar onMenuClick={vi.fn()} />
       </MockedProvider>
     )
 

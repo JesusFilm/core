@@ -2,22 +2,23 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import noop from 'lodash/lodash'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
+import type { MockedFunction } from 'vitest'
 
 import { ContainerHeroVideo } from './ContainerHeroVideo'
 
-jest.mock('video.js', () => {
-  const originalModule = jest.requireActual('video.js')
+vi.mock('video.js', async () => {
+  const originalModule = await vi.importActual<typeof import('video.js')>('video.js')
 
   const mockPlayer = {
-    on: jest.fn(),
-    play: jest.fn().mockReturnValue(Promise.resolve()),
-    pause: jest.fn(),
-    muted: jest.fn(),
-    dispose: jest.fn(),
-    src: jest.fn()
+    on: vi.fn(),
+    play: vi.fn().mockReturnValue(Promise.resolve()),
+    pause: vi.fn(),
+    muted: vi.fn(),
+    dispose: vi.fn(),
+    src: vi.fn()
   }
 
-  const mockVideoJs = jest.fn(() => mockPlayer)
+  const mockVideoJs = vi.fn(() => mockPlayer)
 
   return {
     ...originalModule,
@@ -26,11 +27,11 @@ jest.mock('video.js', () => {
   }
 })
 
-const mockVideoJs = videojs as jest.MockedFunction<typeof videojs>
+const mockVideoJs = videojs as MockedFunction<typeof videojs>
 
 describe('ContainerHeroVideo', () => {
-  const mockOnMutedChange = jest.fn()
-  const mockOnPlayerReady = jest.fn()
+  const mockOnMutedChange = vi.fn()
+  const mockOnPlayerReady = vi.fn()
   let mockPlayer: Partial<Player>
 
   // Cache original values
@@ -38,15 +39,15 @@ describe('ContainerHeroVideo', () => {
   const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     mockPlayer = {
-      on: jest.fn(),
-      play: jest.fn().mockReturnValue(Promise.resolve()),
-      pause: jest.fn(),
-      muted: jest.fn(),
-      dispose: jest.fn(),
-      src: jest.fn()
+      on: vi.fn(),
+      play: vi.fn().mockReturnValue(Promise.resolve()),
+      pause: vi.fn(),
+      muted: vi.fn(),
+      dispose: vi.fn(),
+      src: vi.fn()
     }
 
     mockVideoJs.mockImplementation(() => mockPlayer as Player)
@@ -57,7 +58,7 @@ describe('ContainerHeroVideo', () => {
       writable: true
     })
 
-    Element.prototype.getBoundingClientRect = jest.fn(() => ({
+    Element.prototype.getBoundingClientRect = vi.fn(() => ({
       width: 1200,
       height: 800,
       top: 0,
@@ -78,7 +79,7 @@ describe('ContainerHeroVideo', () => {
     )
     Element.prototype.getBoundingClientRect = originalGetBoundingClientRect
 
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 
   it('should render correctly with video element', () => {

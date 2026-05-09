@@ -1,19 +1,21 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
+import type { Mock } from 'vitest'
 
 import { CollectionVideoContentCarousel } from './CollectionVideoContentCarousel'
 
-jest.mock('next/router', () => ({
-  useRouter: jest.fn()
+vi.mock('next/router', async () => ({
+  useRouter: vi.fn()
 }))
 
-jest.mock('next-i18next/pages', () => ({
-  useTranslation: jest.fn().mockReturnValue({
-    t: jest.fn().mockImplementation((key) => key)
+vi.mock('next-i18next/pages', async () => ({
+  ...(await vi.importActual<typeof import('next-i18next/pages')>('next-i18next/pages')),
+  useTranslation: vi.fn().mockReturnValue({
+    t: vi.fn().mockImplementation((key) => key)
   })
 }))
 
-jest.mock('../CollectionVideoPlayer/CollectionVideoPlayer', () => ({
+vi.mock('../CollectionVideoPlayer/CollectionVideoPlayer', async () => ({
   CollectionVideoPlayer: ({
     contentId,
     title,
@@ -43,7 +45,7 @@ jest.mock('../CollectionVideoPlayer/CollectionVideoPlayer', () => ({
 
 describe('CollectionVideoContentCarousel', () => {
   const mockRouter = {
-    push: jest.fn()
+    push: vi.fn()
   }
 
   const defaultProps = {
@@ -76,14 +78,14 @@ describe('CollectionVideoContentCarousel', () => {
       }
     ],
     mutePage: false,
-    setMutePage: jest.fn(),
+    setMutePage: vi.fn(),
     seeAllText: 'See All',
     shortVideoText: 'Short'
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    ;(useRouter as jest.Mock).mockReturnValue(mockRouter)
+    vi.clearAllMocks()
+    ;(useRouter as Mock).mockReturnValue(mockRouter)
   })
 
   it('renders the component with all props correctly', async () => {
@@ -161,7 +163,7 @@ describe('CollectionVideoContentCarousel', () => {
   })
 
   it('passes mute state to video player and handles mute changes', () => {
-    const setMutePageMock = jest.fn()
+    const setMutePageMock = vi.fn()
     render(
       <CollectionVideoContentCarousel
         {...defaultProps}

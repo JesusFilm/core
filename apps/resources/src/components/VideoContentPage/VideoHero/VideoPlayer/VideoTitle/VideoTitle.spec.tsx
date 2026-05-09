@@ -7,7 +7,8 @@ import {
 
 import { VideoTitle } from './VideoTitle'
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', async () => ({
+  ...(await vi.importActual<typeof import('next-i18next/pages')>('next-i18next/pages')),
   useTranslation: () => ({
     t: (str: string) => str
   })
@@ -78,7 +79,7 @@ describe('VideoTitle', () => {
   })
 
   it('should call onClick when play button is clicked', () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     render(
       <PlayerProvider initialState={initialState}>
         <VideoTitle videoTitle="Test Video" showButton onClick={onClick} />
@@ -104,7 +105,7 @@ describe('VideoTitle', () => {
   })
 
   it('should call onClick when unmute button is clicked', () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     const state = {
       ...initialState,
       mute: true

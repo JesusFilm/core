@@ -24,7 +24,7 @@ describe('VideoHeroOverlay', () => {
   })
 
   it('should play video on the Play Video button click', () => {
-    const handlePlay = jest.fn()
+    const handlePlay = vi.fn()
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>

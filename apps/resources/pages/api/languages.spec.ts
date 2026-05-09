@@ -1,35 +1,35 @@
+import { Redis } from '@upstash/redis'
 import { NextApiRequest, NextApiResponse } from 'next'
+import type { Mock } from 'vitest'
+
+import { createApolloClient } from '../../src/libs/apolloClient'
 
 import handler, { LANGUAGES_CACHE_SCHEMA_VERSION } from './languages'
 
 // Mock the Apollo client
-jest.mock('../../src/libs/apolloClient', () => ({
-  createApolloClient: jest.fn()
+vi.mock('../../src/libs/apolloClient', async () => ({
+  createApolloClient: vi.fn()
 }))
 
 // Mock Redis
-jest.mock('@upstash/redis', () => ({
-  Redis: jest.fn().mockImplementation(() => ({
-    get: jest.fn(),
-    setex: jest.fn()
+vi.mock('@upstash/redis', async () => ({
+  Redis: vi.fn().mockImplementation(() => ({
+    get: vi.fn(),
+    setex: vi.fn()
   }))
 }))
 
-const { Redis } = require('@upstash/redis')
-
-const { createApolloClient } = require('../../src/libs/apolloClient')
-
 describe('Languages API', () => {
   let mockApolloClient: any
-  let mockQuery: jest.Mock
+  let mockQuery: Mock
   let mockRedis: any
-  let mockRedisGet: jest.Mock
-  let mockRedisSetex: jest.Mock
+  let mockRedisGet: Mock
+  let mockRedisSetex: Mock
 
   beforeEach(() => {
-    mockQuery = jest.fn()
-    mockRedisGet = jest.fn()
-    mockRedisSetex = jest.fn()
+    mockQuery = vi.fn()
+    mockRedisGet = vi.fn()
+    mockRedisSetex = vi.fn()
 
     mockApolloClient = {
       query: mockQuery
@@ -40,12 +40,12 @@ describe('Languages API', () => {
       setex: mockRedisSetex
     }
 
-    createApolloClient.mockReturnValue(mockApolloClient)
-    ;(Redis as jest.Mock).mockImplementation(() => mockRedis)
+    ;(createApolloClient as unknown as Mock).mockReturnValue(mockApolloClient)
+    ;(Redis as unknown as Mock).mockImplementation(() => mockRedis)
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const createMockRequest = (method: string): NextApiRequest =>
@@ -55,9 +55,9 @@ describe('Languages API', () => {
 
   const createMockResponse = (): NextApiResponse => {
     const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-      setHeader: jest.fn()
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+      setHeader: vi.fn()
     } as unknown as NextApiResponse
     return res
   }

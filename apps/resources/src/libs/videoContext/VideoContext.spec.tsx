@@ -7,7 +7,7 @@ import { VideoProvider, useVideo } from './VideoContext'
 
 const chapter1 = videos[1]
 
-const handleClick = jest.fn()
+const handleClick = vi.fn()
 
 const TestComponent = (): ReactElement => {
   const video = useVideo()

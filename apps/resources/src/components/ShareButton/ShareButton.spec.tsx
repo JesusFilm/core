@@ -19,7 +19,7 @@ describe('ShareButton', () => {
   })
 
   it('should call onClick when button is clicked', () => {
-    const setOpenShare = jest.fn()
+    const setOpenShare = vi.fn()
 
     const { getByRole } = render(
       <ShareButton variant="button" onClick={setOpenShare} />
@@ -30,7 +30,7 @@ describe('ShareButton', () => {
   })
 
   it('should call onClick when icon is clicked', () => {
-    const setOpenShare = jest.fn()
+    const setOpenShare = vi.fn()
 
     const { getByTestId } = render(
       <ShareButton variant="icon" onClick={setOpenShare} />

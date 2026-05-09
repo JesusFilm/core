@@ -1,19 +1,18 @@
-import { jest } from '@jest/globals'
 import Player from 'video.js/dist/types/player'
 
 import { handleVideoTitleClick } from '.'
 
 describe('handleVideoTitleClick', () => {
-  const dispatch = jest.fn()
+  const dispatch = vi.fn()
 
   const player = {
-    muted: jest.fn(),
-    volume: jest.fn(),
-    play: jest.fn()
+    muted: vi.fn(),
+    volume: vi.fn(),
+    play: vi.fn()
   } as unknown as Player
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should do nothing if player is not provided', () => {

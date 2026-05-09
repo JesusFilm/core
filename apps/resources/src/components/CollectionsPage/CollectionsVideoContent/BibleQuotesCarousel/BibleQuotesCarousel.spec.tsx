@@ -4,15 +4,16 @@ import { changeJSDOMURL } from '../../../../libs/utils/changeJSDOMURL'
 
 import { BibleQuotesCarousel } from './BibleQuotesCarousel'
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', async () => ({
+  ...(await vi.importActual<typeof import('next-i18next/pages')>('next-i18next/pages')),
   useTranslation: () => ({
     t: (key: string) => (key === 'Share' ? 'Share' : key)
   })
 }))
 
-jest.mock('@next/third-parties/google')
+vi.mock('@next/third-parties/google')
 
-describe('BibleQuotesCarousel', () => {
+describe('BibleQuotesCarousel', async () => {
   const mockBibleQuotes = [
     {
       imageUrl: 'https://example.com/image1.jpg',
@@ -35,17 +36,17 @@ describe('BibleQuotesCarousel', () => {
     buttonText: 'Start studying'
   }
 
-  const mockOpenDialog = jest.fn()
+  const mockOpenDialog = vi.fn()
 
   // Store original navigator methods
   const originalNavigator = { ...global.navigator }
-  const mockShare = jest.fn().mockResolvedValue(undefined)
+  const mockShare = vi.fn().mockResolvedValue(undefined)
   const mockClipboard = {
-    writeText: jest.fn().mockResolvedValue(undefined)
+    writeText: vi.fn().mockResolvedValue(undefined)
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Mock the navigator.share API
     Object.defineProperty(global.navigator, 'share', {

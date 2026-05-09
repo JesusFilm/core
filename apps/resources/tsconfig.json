@@ -5,7 +5,7 @@
     "jsxImportSource": "@emotion/react",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "types": ["node", "jest"],
+    "types": ["node", "vitest/globals"],
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
@@ -17,5 +17,5 @@
     "moduleResolution": "bundler"
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.mjs"],
-  "exclude": ["node_modules", "jest.config.ts"]
+  "exclude": ["node_modules", "vitest.config.mts"]
 }

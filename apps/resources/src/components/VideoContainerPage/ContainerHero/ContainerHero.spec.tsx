@@ -49,7 +49,7 @@ describe('ContainerHero', () => {
   })
 
   it('should call openDialog on click', () => {
-    const openDialog = jest.fn()
+    const openDialog = vi.fn()
     render(
       <VideoProvider value={{ content: defaultVideo }}>
         <ContainerHero openDialog={openDialog} />
@@ -60,7 +60,7 @@ describe('ContainerHero', () => {
   })
 
   it('should render with Audio Language Select', () => {
-    const openDialog = jest.fn()
+    const openDialog = vi.fn()
 
     render(
       <VideoProvider value={{ content: defaultVideo }}>

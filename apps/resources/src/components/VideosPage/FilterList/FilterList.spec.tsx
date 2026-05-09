@@ -3,6 +3,7 @@ import { MenuRenderState } from 'instantsearch.js/es/connectors/menu/connectMenu
 import type { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useMenu, useSearchBox } from 'react-instantsearch'
+import type { MockedFunction } from 'vitest'
 
 import {
   FilterParams,
@@ -13,24 +14,24 @@ import { languages } from '../data'
 import { languageIdRefinements, subtitleIdRefinements } from './data'
 import { FilterList } from './FilterList'
 
-jest.mock('react-instantsearch')
-jest.mock('../../../libs/algolia/useAlgoliaRouter/useAlgoliaRouter')
+vi.mock('react-instantsearch')
+vi.mock('../../../libs/algolia/useAlgoliaRouter/useAlgoliaRouter')
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<
   typeof useSearchBox
 >
-const mockUseMenu = useMenu as jest.MockedFunction<typeof useMenu>
-const mockUseAlgoliaRouter = useAlgoliaRouter as jest.MockedFunction<
+const mockUseMenu = useMenu as MockedFunction<typeof useMenu>
+const mockUseAlgoliaRouter = useAlgoliaRouter as MockedFunction<
   typeof useAlgoliaRouter
 >
 
-describe('FilterList', () => {
+describe('FilterList', async () => {
   const useSearchBox = {
-    refine: jest.fn()
+    refine: vi.fn()
   } as unknown as SearchBoxRenderState
 
   const useMenu = {
-    refine: jest.fn()
+    refine: vi.fn()
   } as unknown as MenuRenderState
 
   const useAlgoliaRouter: FilterParams = {
@@ -47,7 +48,7 @@ describe('FilterList', () => {
 
   describe('Language Filter', () => {
     it('should refine by language on audio language filter', async () => {
-      const refineLanguages = jest.fn()
+      const refineLanguages = vi.fn()
       mockUseMenu.mockReturnValue({
         items: languageIdRefinements,
         refine: refineLanguages
@@ -72,7 +73,7 @@ describe('FilterList', () => {
 
   describe('Subtitles Filter', () => {
     it('should refine by subtitle on subtitle language filter', async () => {
-      const refineSubtitles = jest.fn()
+      const refineSubtitles = vi.fn()
       mockUseMenu.mockReturnValue({
         items: subtitleIdRefinements,
         refine: refineSubtitles
@@ -96,7 +97,7 @@ describe('FilterList', () => {
 
   describe('Search Filter', () => {
     it('should refine by title on title search', async () => {
-      const refine = jest.fn()
+      const refine = vi.fn()
       mockUseSearchBox.mockReturnValue({
         refine
       } as unknown as SearchBoxRenderState)
