@@ -18,14 +18,29 @@ import { ensureSession } from '../auth/login'
 import { clearCredential } from '../config/credentials'
 import { getEnvironment, type EnvironmentId } from '../config/environments'
 import { buildJourneyTools } from '../tools/journey'
+import {
+  type JourneyListItem,
+  listJourneys
+} from '../tools/journey/api'
+import {
+  fetchTeamsAndActiveTeam,
+  persistLastActiveTeamId
+} from '../tools/team/api'
 
 import { Input } from './components/Input'
+import { JourneyPicker } from './components/JourneyPicker'
 import { StatusBar } from './components/StatusBar'
+import { TeamPicker, describeSelection } from './components/TeamPicker'
 import { Transcript } from './components/Transcript'
 import { findCommand } from './commands/registry'
 import type { CommandContext } from './commands/types'
 import { buildSystemPrompt } from './systemPrompt'
-import type { ReplState, TranscriptEntry, UsageTotals } from './state/types'
+import type {
+  ReplState,
+  TeamSelection,
+  TranscriptEntry,
+  UsageTotals
+} from './state/types'
 
 const SERVER_NAME = 'scribe'
 const EMPTY_USAGE: UsageTotals = {
@@ -63,8 +78,17 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     ],
     usage: EMPTY_USAGE,
     status: 'idle',
-    agentEpoch: 0
+    agentEpoch: 0,
+    teams: { status: 'idle' },
+    activeTeam: null,
+    teamPickerOpen: false,
+    journeys: { status: 'idle' },
+    activeJourney: null,
+    journeyPickerOpen: false
   }))
+  // Bumped to force a teams refetch (e.g. after a load error, or on /env switch).
+  const [teamsEpoch, setTeamsEpoch] = useState(0)
+  const [journeysEpoch, setJourneysEpoch] = useState(0)
 
   const promptQueue = useRef<PromptQueue | null>(null)
 
@@ -102,8 +126,17 @@ export function App({ initialSession, model }: AppProps): ReactElement {
           tone: 'info'
         }
       ],
-      agentEpoch: prev.agentEpoch + 1
+      agentEpoch: prev.agentEpoch + 1,
+      // Teams are scoped per environment — drop the previous result and re-fetch.
+      teams: { status: 'idle' },
+      activeTeam: null,
+      teamPickerOpen: false,
+      journeys: { status: 'idle' },
+      activeJourney: null,
+      journeyPickerOpen: false
     }))
+    setTeamsEpoch((n) => n + 1)
+    setJourneysEpoch((n) => n + 1)
   }, [])
 
   const switchEnvironment = useCallback(
@@ -149,23 +182,120 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     }))
   }, [])
 
+  const openTeamPicker = useCallback(() => {
+    setState((prev) => ({ ...prev, teamPickerOpen: true }))
+  }, [])
+
+  const closeTeamPicker = useCallback(() => {
+    setState((prev) => ({ ...prev, teamPickerOpen: false }))
+  }, [])
+
+  const setActiveTeam = useCallback(
+    (selection: TeamSelection) => {
+      setState((prev) => ({
+        ...prev,
+        activeTeam: selection,
+        teamPickerOpen: false,
+        // Restart the agent loop so the new system prompt (with team context)
+        // takes effect on the next turn.
+        agentEpoch: prev.agentEpoch + 1
+      }))
+      appendSystemMessage(
+        `Active team set to ${describeSelection(selection)}.`,
+        'info'
+      )
+      // Persist to the same JourneyProfile.lastActiveTeamId journeys-admin
+      // reads, so the selection survives across sessions and clients. Run
+      // best-effort in the background — failures are surfaced as warnings,
+      // not blockers.
+      const persistedId = selection.kind === 'team' ? selection.team.id : null
+      void persistLastActiveTeamId(state.session, persistedId).catch(
+        (error: unknown) => {
+          const message =
+            error instanceof Error ? error.message : String(error)
+          appendSystemMessage(
+            `Could not save team selection to your profile: ${message}`,
+            'warn'
+          )
+        }
+      )
+    },
+    [appendSystemMessage, state.session]
+  )
+
+  const refreshTeams = useCallback(() => {
+    setState((prev) => ({ ...prev, teams: { status: 'idle' } }))
+    setTeamsEpoch((n) => n + 1)
+  }, [])
+
+  const openJourneyPicker = useCallback(() => {
+    setState((prev) => ({ ...prev, journeyPickerOpen: true }))
+  }, [])
+
+  const closeJourneyPicker = useCallback(() => {
+    setState((prev) => ({ ...prev, journeyPickerOpen: false }))
+  }, [])
+
+  const setActiveJourney = useCallback(
+    (journey: JourneyListItem) => {
+      setState((prev) => ({
+        ...prev,
+        activeJourney: journey,
+        journeyPickerOpen: false,
+        // Restart the agent loop so the next turn sees the updated journey
+        // context in the system prompt.
+        agentEpoch: prev.agentEpoch + 1
+      }))
+      appendSystemMessage(
+        `Active journey set to "${journey.title}" (${journey.slug}).`,
+        'info'
+      )
+    },
+    [appendSystemMessage]
+  )
+
+  const refreshJourneys = useCallback(() => {
+    setState((prev) => ({ ...prev, journeys: { status: 'idle' } }))
+    setJourneysEpoch((n) => n + 1)
+  }, [])
+
   const commandContext = useMemo<CommandContext>(
     () => ({
       session: state.session,
+      teams: state.teams,
+      activeTeam: state.activeTeam,
+      journeys: state.journeys,
+      activeJourney: state.activeJourney,
       appendSystemMessage,
       setSession: replaceSession,
       switchEnvironment,
       forceLogin,
       clearTranscript,
+      openTeamPicker,
+      setActiveTeam,
+      refreshTeams,
+      openJourneyPicker,
+      setActiveJourney,
+      refreshJourneys,
       exit: () => exit()
     }),
     [
       state.session,
+      state.teams,
+      state.activeTeam,
+      state.journeys,
+      state.activeJourney,
       appendSystemMessage,
       replaceSession,
       switchEnvironment,
       forceLogin,
       clearTranscript,
+      openTeamPicker,
+      setActiveTeam,
+      refreshTeams,
+      openJourneyPicker,
+      setActiveJourney,
+      refreshJourneys,
       exit
     ]
   )
@@ -207,6 +337,98 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     [appendEntry, appendSystemMessage, commandContext]
   )
 
+  // Fetch the user's teams + their journeys-admin "last active team" whenever
+  // the session changes or a refresh is requested. The persisted lastActiveTeamId
+  // is used to seed the active selection so scribe matches what the user already
+  // has selected in journeys-admin.
+  useEffect(() => {
+    let cancelled = false
+    setState((prev) => ({ ...prev, teams: { status: 'loading' } }))
+    fetchTeamsAndActiveTeam(state.session)
+      .then(({ teams, lastActiveTeamId }) => {
+        if (cancelled) return
+        setState((prev) => {
+          const previous = prev.activeTeam
+          // If the user already picked a team in this session, keep that
+          // choice as long as it still exists. Otherwise seed from the
+          // server-side lastActiveTeamId.
+          let nextActive: TeamSelection | null
+          if (previous != null) {
+            const stillValid =
+              previous.kind === 'shared' ||
+              teams.some((t) => t.id === previous.team.id)
+            nextActive = stillValid ? previous : null
+          } else if (lastActiveTeamId == null) {
+            // null in JourneyProfile means the user explicitly chose
+            // "Shared with me" or has never picked. Mirror journeys-admin:
+            // leave activeTeam null and let the status bar show "no team".
+            nextActive = null
+          } else {
+            const team = teams.find((t) => t.id === lastActiveTeamId)
+            nextActive = team != null ? { kind: 'team', team } : null
+          }
+          return {
+            ...prev,
+            teams: { status: 'loaded', teams },
+            activeTeam: nextActive
+          }
+        })
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return
+        const message = error instanceof Error ? error.message : String(error)
+        setState((prev) => ({
+          ...prev,
+          teams: { status: 'error', message }
+        }))
+      })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.session, teamsEpoch])
+
+  // Fetch journeys whenever the session, active team, or refresh epoch
+  // changes. The query is scoped to the active team — for "Shared with me"
+  // (or no team), the resolver returns shared/personal journeys.
+  useEffect(() => {
+    let cancelled = false
+    const teamSelection = state.activeTeam
+    const teamId =
+      teamSelection?.kind === 'team' ? teamSelection.team.id : null
+
+    setState((prev) => ({ ...prev, journeys: { status: 'loading' } }))
+    listJourneys(state.session, { teamId })
+      .then((journeys) => {
+        if (cancelled) return
+        setState((prev) => {
+          const previous = prev.activeJourney
+          // If the previously-active journey is still in scope, keep it.
+          // Otherwise drop it so the user re-picks from the new list.
+          const stillValid =
+            previous != null &&
+            journeys.some((j) => j.id === previous.id)
+          return {
+            ...prev,
+            journeys: { status: 'loaded', journeys },
+            activeJourney: stillValid ? previous : null
+          }
+        })
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return
+        const message = error instanceof Error ? error.message : String(error)
+        setState((prev) => ({
+          ...prev,
+          journeys: { status: 'error', message }
+        }))
+      })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.session, state.activeTeam, journeysEpoch])
+
   // Run the agent loop, restarting whenever the session epoch advances.
   useEffect(() => {
     let cancelled = false
@@ -226,7 +448,11 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     const stream = query({
       prompt: queue.iterable,
       options: {
-        systemPrompt: buildSystemPrompt(session),
+        systemPrompt: buildSystemPrompt({
+          session,
+          activeTeam: state.activeTeam,
+          activeJourney: state.activeJourney
+        }),
         mcpServers: { [SERVER_NAME]: mcpServer },
         allowedTools,
         model,
@@ -306,15 +532,35 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     <Box flexDirection="column">
       <Header session={state.session} />
       <Transcript entries={state.transcript} />
-      <Input
-        enabled={true}
-        placeholder="Ask the agent, or type / for commands"
-        onSubmit={handleSubmit}
-      />
+      {state.teamPickerOpen ? (
+        <TeamPicker
+          teams={state.teams}
+          activeTeam={state.activeTeam}
+          onSelect={setActiveTeam}
+          onCancel={closeTeamPicker}
+        />
+      ) : state.journeyPickerOpen ? (
+        <JourneyPicker
+          journeys={state.journeys}
+          activeJourney={state.activeJourney}
+          onSelect={setActiveJourney}
+          onCancel={closeJourneyPicker}
+        />
+      ) : (
+        <Input
+          enabled={true}
+          placeholder="Ask the agent, or type / for commands"
+          onSubmit={handleSubmit}
+        />
+      )}
       <StatusBar
         session={state.session}
         status={state.status}
         usage={state.usage}
+        teams={state.teams}
+        activeTeam={state.activeTeam}
+        journeys={state.journeys}
+        activeJourney={state.activeJourney}
       />
     </Box>
   )

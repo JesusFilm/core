@@ -37,6 +37,81 @@ interface AdminJourneyResolveIdData {
   adminJourney: { id: string; title: string; slug: string }
 }
 
+export type JourneyListItemStatus =
+  | 'draft'
+  | 'published'
+  | 'archived'
+  | 'trashed'
+  | 'deleted'
+
+export interface JourneyListItem {
+  id: string
+  title: string
+  slug: string
+  status: JourneyListItemStatus
+  updatedAt: string
+  teamId: string | null
+}
+
+const ADMIN_JOURNEYS_LIST = /* GraphQL */ `
+  query ScribeAdminJourneys($status: [JourneyStatus!], $teamId: ID) {
+    adminJourneys(status: $status, teamId: $teamId) {
+      id
+      title
+      slug
+      status
+      updatedAt
+      team {
+        id
+      }
+    }
+  }
+`
+
+interface AdminJourneysListData {
+  adminJourneys: Array<{
+    id: string
+    title: string
+    slug: string
+    status: JourneyListItemStatus
+    updatedAt: string
+    team: { id: string } | null
+  }>
+}
+
+export interface ListJourneysOptions {
+  /**
+   * `null` queries shared-with-me / personal journeys (no teamId filter on
+   * the resolver). A real id scopes to that team.
+   */
+  teamId: string | null
+  statuses?: JourneyListItemStatus[]
+}
+
+export async function listJourneys(
+  session: ActiveSession,
+  options: ListJourneysOptions
+): Promise<JourneyListItem[]> {
+  const variables: Record<string, unknown> = {
+    status: options.statuses ?? ['draft', 'published']
+  }
+  if (options.teamId != null) variables.teamId = options.teamId
+
+  const data = await graphqlRequest<AdminJourneysListData>(session, {
+    query: ADMIN_JOURNEYS_LIST,
+    variables,
+    operationName: 'ScribeAdminJourneys'
+  })
+  return data.adminJourneys.map((entry) => ({
+    id: entry.id,
+    title: entry.title,
+    slug: entry.slug,
+    status: entry.status,
+    updatedAt: entry.updatedAt,
+    teamId: entry.team?.id ?? null
+  }))
+}
+
 export async function fetchJourneySimple(
   session: ActiveSession,
   id: string

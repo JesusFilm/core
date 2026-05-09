@@ -1,11 +1,26 @@
 import type { ActiveSession } from '../auth/login'
+import type { JourneyListItem } from '../tools/journey/api'
 
-export function buildSystemPrompt(session: ActiveSession): string {
+import type { TeamSelection } from './state/types'
+
+interface SystemPromptInput {
+  session: ActiveSession
+  activeTeam: TeamSelection | null
+  activeJourney: JourneyListItem | null
+}
+
+export function buildSystemPrompt({
+  session,
+  activeTeam,
+  activeJourney
+}: SystemPromptInput): string {
   const who =
     session.email != null ? `${session.email} (id ${session.userId ?? '?'})` : 'a superadmin operator'
+  const teamLine = describeActiveTeam(activeTeam)
+  const journeyLine = describeActiveJourney(activeJourney)
   return `You are scribe, an interactive assistant for operating on the Core platform from the command line.
 
-You are signed in to the **${session.environment.label}** environment as ${who}. Every API call is authenticated as this user. Be careful: changes you make on staging or production are real.
+You are signed in to the **${session.environment.label}** environment as ${who}. ${teamLine} ${journeyLine} Every API call is authenticated as this user. Be careful: changes you make on staging or production are real.
 
 # Your tools
 
@@ -40,5 +55,24 @@ When the user asks you to "troubleshoot", "fix", or "investigate" a specific jou
 - If a tool returns an error, read it carefully and report it to the user. Do not paper over it.
 - Stay inside the JourneySimple contract. Do not propose direct Block-level edits.
 - If the user asks for something outside the journey troubleshooter workflow, use your tools however makes sense for the request — they are general-purpose.
+- Respect the active team. When the user asks about "my journeys", "this team", or anything ambiguous about scope, interpret it relative to the active team described above. If the user has not picked a team yet, prompt them to run \`/team\` rather than guessing.
+- Respect the active journey. When the user says "this journey", "the journey", "fix it", or otherwise refers to a journey without naming one, assume they mean the active journey above. Use its id directly with the journey tools (skip \`resolve_journey\` since you already have the id). If no journey is active, ask the user to run \`/journey\` instead of guessing.
 `
+}
+
+function describeActiveTeam(active: TeamSelection | null): string {
+  if (active == null) {
+    return 'No team is currently active — the user can pick one with /team.'
+  }
+  if (active.kind === 'shared') {
+    return 'Active team: **Shared with me** (journeys shared with the user outside their teams).'
+  }
+  return `Active team: **${active.team.title}** (id ${active.team.id}).`
+}
+
+function describeActiveJourney(active: JourneyListItem | null): string {
+  if (active == null) {
+    return 'No journey is currently active — the user can pick one with /journey.'
+  }
+  return `Active journey: **${active.title}** (id \`${active.id}\`, slug \`${active.slug}\`, status ${active.status}).`
 }

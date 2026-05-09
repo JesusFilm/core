@@ -3,6 +3,8 @@ import {
   isEnvironmentId,
   listEnvironments
 } from '../../config/environments'
+import { findJourneyByQuery } from '../components/JourneyPicker'
+import { findSelectionByName } from '../components/TeamPicker'
 
 import type { SlashCommand } from './types'
 
@@ -82,6 +84,93 @@ const helpCommand: SlashCommand = {
   }
 }
 
+const teamCommand: SlashCommand = {
+  name: 'team',
+  argHint: '[name | shared]',
+  description: 'Pick which team scribe is working in (or "shared with me").',
+  run(args, ctx) {
+    if (args.length === 0) {
+      ctx.openTeamPicker()
+      return
+    }
+    if (ctx.teams.status === 'loading') {
+      ctx.appendSystemMessage('Teams are still loading. Try again in a sec.', 'info')
+      return
+    }
+    if (ctx.teams.status === 'error') {
+      ctx.appendSystemMessage(
+        `Cannot select a team — load failed: ${ctx.teams.message}. Run /team to retry.`,
+        'error'
+      )
+      ctx.refreshTeams()
+      return
+    }
+    if (ctx.teams.status === 'idle') {
+      ctx.appendSystemMessage(
+        'No teams loaded yet. Open the picker with /team.',
+        'info'
+      )
+      ctx.refreshTeams()
+      return
+    }
+    const phrase = args.join(' ')
+    const selection = findSelectionByName(ctx.teams.teams, phrase)
+    if (selection == null) {
+      ctx.appendSystemMessage(
+        `No team matched "${phrase}". Run /team to see the list.`,
+        'error'
+      )
+      return
+    }
+    ctx.setActiveTeam(selection)
+  }
+}
+
+const journeyCommand: SlashCommand = {
+  name: 'journey',
+  argHint: '[id|slug|title]',
+  description: 'Pick which journey scribe is working on within the active team.',
+  run(args, ctx) {
+    if (args.length === 0) {
+      ctx.openJourneyPicker()
+      return
+    }
+    if (ctx.journeys.status === 'loading') {
+      ctx.appendSystemMessage(
+        'Journeys are still loading. Try again in a sec.',
+        'info'
+      )
+      return
+    }
+    if (ctx.journeys.status === 'error') {
+      ctx.appendSystemMessage(
+        `Cannot select a journey — load failed: ${ctx.journeys.message}. Run /journey to retry.`,
+        'error'
+      )
+      ctx.refreshJourneys()
+      return
+    }
+    if (ctx.journeys.status === 'idle') {
+      ctx.appendSystemMessage(
+        'No journeys loaded yet. Open the picker with /journey.',
+        'info'
+      )
+      ctx.refreshJourneys()
+      return
+    }
+    const phrase = args.join(' ')
+    const match = findJourneyByQuery(ctx.journeys.journeys, phrase)
+    if (match == null) {
+      ctx.appendSystemMessage(
+        `No journey matched "${phrase}". Run /journey to see the list.`,
+        'error'
+      )
+      return
+    }
+    ctx.setActiveJourney(match)
+  }
+}
+
 const exitCommand: SlashCommand = {
   name: 'exit',
   description: 'Exit scribe.',
@@ -92,6 +181,8 @@ const exitCommand: SlashCommand = {
 
 export const COMMANDS: SlashCommand[] = [
   envCommand,
+  teamCommand,
+  journeyCommand,
   loginCommand,
   logoutCommand,
   clearCommand,

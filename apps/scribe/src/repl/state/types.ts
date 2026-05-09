@@ -1,4 +1,22 @@
 import type { ActiveSession } from '../../auth/login'
+import type { JourneyListItem } from '../../tools/journey/api'
+import type { Team } from '../../tools/team/api'
+
+export type TeamSelection =
+  | { kind: 'team'; team: Team }
+  | { kind: 'shared' }
+
+export type TeamsLoadState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'loaded'; teams: Team[] }
+  | { status: 'error'; message: string }
+
+export type JourneysLoadState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'loaded'; journeys: JourneyListItem[] }
+  | { status: 'error'; message: string }
 
 export interface UsageTotals {
   inputTokens: number
@@ -39,4 +57,14 @@ export interface ReplState {
   status: 'idle' | 'thinking' | 'tool'
   /** Bumped whenever the agent loop should be torn down and rebuilt. */
   agentEpoch: number
+  teams: TeamsLoadState
+  /**
+   * `null` until teams have loaded the first time. After that, `kind: 'team'`
+   * for a real team or `kind: 'shared'` for the "Shared with me" pseudo-team.
+   */
+  activeTeam: TeamSelection | null
+  teamPickerOpen: boolean
+  journeys: JourneysLoadState
+  activeJourney: JourneyListItem | null
+  journeyPickerOpen: boolean
 }
