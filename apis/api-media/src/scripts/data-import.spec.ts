@@ -3,72 +3,77 @@ import fs, { promises as fsPromises } from 'fs'
 import { createInterface } from 'readline'
 import { createGunzip } from 'zlib'
 
+import { type Mock, vi } from 'vitest'
+
 import main, { preprocessSqlFile } from './data-import'
 
 // Mock fs functions
-jest.mock('fs', () => ({
-  createReadStream: jest.fn().mockReturnValue({
-    pipe: jest.fn().mockReturnThis(),
-    on: jest.fn((event, handler) => {
-      if (event === 'data') {
-        // Simulate some data being read
-        handler(Buffer.from('test data'))
-      }
-      return { pipe: jest.fn().mockReturnThis(), on: jest.fn() }
-    })
-  }),
-  createWriteStream: jest.fn().mockReturnValue({
-    write: jest.fn(),
-    end: jest.fn(),
-    on: jest.fn((event, handler) => {
-      if (event === 'finish') {
-        // Simulate write stream finishing
-        setTimeout(() => handler(), 0)
-      }
-      return { write: jest.fn(), end: jest.fn(), on: jest.fn() }
-    })
-  }),
-  promises: {
-    mkdir: jest.fn().mockResolvedValue(undefined),
-    unlink: jest.fn().mockResolvedValue(undefined),
-    access: jest.fn().mockResolvedValue(undefined),
-    stat: jest.fn().mockResolvedValue({ size: 1000 }),
-    readFile: jest
-      .fn()
-      .mockResolvedValue('CREATE PUBLICATION bq_publication FOR ALL TABLES;'),
-    writeFile: jest.fn().mockResolvedValue(undefined)
+vi.mock('fs', () => {
+  const fsMock = {
+    createReadStream: vi.fn().mockReturnValue({
+      pipe: vi.fn().mockReturnThis(),
+      on: vi.fn((event, handler) => {
+        if (event === 'data') {
+          // Simulate some data being read
+          handler(Buffer.from('test data'))
+        }
+        return { pipe: vi.fn().mockReturnThis(), on: vi.fn() }
+      })
+    }),
+    createWriteStream: vi.fn().mockReturnValue({
+      write: vi.fn(),
+      end: vi.fn(),
+      on: vi.fn((event, handler) => {
+        if (event === 'finish') {
+          // Simulate write stream finishing
+          setTimeout(() => handler(), 0)
+        }
+        return { write: vi.fn(), end: vi.fn(), on: vi.fn() }
+      })
+    }),
+    promises: {
+      mkdir: vi.fn().mockResolvedValue(undefined),
+      unlink: vi.fn().mockResolvedValue(undefined),
+      access: vi.fn().mockResolvedValue(undefined),
+      stat: vi.fn().mockResolvedValue({ size: 1000 }),
+      readFile: vi
+        .fn()
+        .mockResolvedValue('CREATE PUBLICATION bq_publication FOR ALL TABLES;'),
+      writeFile: vi.fn().mockResolvedValue(undefined)
+    }
   }
-}))
+  return { ...fsMock, default: fsMock }
+})
 
 // Mock stream
-jest.mock('stream', () => ({
+vi.mock('stream', () => ({
   Readable: {
-    fromWeb: jest.fn().mockReturnValue({
-      pipe: jest.fn().mockReturnThis()
+    fromWeb: vi.fn().mockReturnValue({
+      pipe: vi.fn().mockReturnThis()
     })
   }
 }))
 
 // Mock stream/promises
-jest.mock('stream/promises', () => ({
-  pipeline: jest.fn().mockImplementation((...args) => {
+vi.mock('stream/promises', () => ({
+  pipeline: vi.fn().mockImplementation((...args) => {
     // Simulate the pipeline completing successfully
     return Promise.resolve()
   })
 }))
 
 // Mock zlib
-jest.mock('zlib', () => ({
-  createGunzip: jest.fn().mockReturnValue({
-    pipe: jest.fn().mockReturnThis()
+vi.mock('zlib', () => ({
+  createGunzip: vi.fn().mockReturnValue({
+    pipe: vi.fn().mockReturnThis()
   })
 }))
 
 // Mock readline
-jest.mock('readline', () => ({
-  createInterface: jest.fn().mockReturnValue({
-    [Symbol.asyncIterator]: jest.fn().mockReturnValue({
-      next: jest
+vi.mock('readline', () => ({
+  createInterface: vi.fn().mockReturnValue({
+    [Symbol.asyncIterator]: vi.fn().mockReturnValue({
+      next: vi
         .fn()
         .mockResolvedValueOnce({
           value: 'CREATE TABLE test (id INT);',
@@ -88,12 +93,12 @@ jest.mock('readline', () => ({
 }))
 
 // Mock child_process
-jest.mock('child_process', () => ({
-  spawn: jest.fn().mockImplementation(() => {
+vi.mock('child_process', () => ({
+  spawn: vi.fn().mockImplementation(() => {
     const mockProcess = {
-      stdout: { on: jest.fn() },
-      stderr: { on: jest.fn() },
-      on: jest.fn()
+      stdout: { on: vi.fn() },
+      stderr: { on: vi.fn() },
+      on: vi.fn()
     }
 
     // Simulate successful completion
@@ -111,8 +116,8 @@ jest.mock('child_process', () => ({
 }))
 
 // Mock prisma client
-jest.mock('../../../../libs/prisma/media/src/client', () => {
-  const upsert = jest.fn().mockResolvedValue({ id: 1 })
+vi.mock('../../../../libs/prisma/media/src/client', () => {
+  const upsert = vi.fn().mockResolvedValue({ id: 1 })
   return {
     prisma: {
       importTimes: { upsert }
@@ -121,45 +126,43 @@ jest.mock('../../../../libs/prisma/media/src/client', () => {
 })
 
 // Mock fetch function
-global.fetch = jest.fn().mockResolvedValue({
+global.fetch = vi.fn().mockResolvedValue({
   ok: true,
   status: 200,
   statusText: 'OK',
   headers: new Map([['content-length', '1000']]),
   body: {
-    pipeThrough: jest.fn().mockReturnValue({
-      getReader: jest.fn().mockReturnValue({
-        read: jest
-          .fn()
-          .mockResolvedValue({ done: true, value: new Uint8Array() })
+    pipeThrough: vi.fn().mockReturnValue({
+      getReader: vi.fn().mockReturnValue({
+        read: vi.fn().mockResolvedValue({ done: true, value: new Uint8Array() })
       })
     })
   },
-  text: jest.fn().mockResolvedValue('')
+  text: vi.fn().mockResolvedValue('')
 })
 
 // Mock path.join
-jest.mock('path', () => ({
-  join: jest.fn().mockImplementation((...args) => args.join('/'))
+vi.mock('path', () => ({
+  join: vi.fn().mockImplementation((...args) => args.join('/'))
 }))
 
 // Mock console and process.exit
-jest.spyOn(console, 'log').mockImplementation(() => undefined)
-jest.spyOn(console, 'error').mockImplementation(() => undefined)
-jest.spyOn(console, 'warn').mockImplementation(() => undefined)
-jest
-  .spyOn(process, 'exit')
-  .mockImplementation(((code?: number | string | null) => undefined) as any)
+vi.spyOn(console, 'log').mockImplementation(() => undefined)
+vi.spyOn(console, 'error').mockImplementation(() => undefined)
+vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+vi.spyOn(process, 'exit').mockImplementation(
+  ((code?: number | string | null) => undefined) as any
+)
 
 describe('data-import script', () => {
   const originalEnv = process.env
   const originalCwd = process.cwd
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Mock process.cwd to return a known path
-    process.cwd = jest.fn().mockReturnValue('/workspace')
+    process.cwd = vi.fn().mockReturnValue('/workspace')
 
     process.env = {
       ...originalEnv,
@@ -237,11 +240,11 @@ describe('data-import script', () => {
   })
 
   it('should handle download errors', async () => {
-    global.fetch = jest.fn().mockResolvedValueOnce({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: false,
       status: 404,
       statusText: 'Not Found',
-      text: jest.fn().mockResolvedValueOnce('File not found')
+      text: vi.fn().mockResolvedValueOnce('File not found')
     })
 
     await main()
@@ -251,11 +254,11 @@ describe('data-import script', () => {
   })
 
   it('should handle psql process errors', async () => {
-    ;(spawn as jest.Mock).mockImplementationOnce(() => {
+    ;(spawn as Mock).mockImplementationOnce(() => {
       const mockProcess = {
-        stdout: { on: jest.fn() },
-        stderr: { on: jest.fn() },
-        on: jest.fn()
+        stdout: { on: vi.fn() },
+        stderr: { on: vi.fn() },
+        on: vi.fn()
       }
 
       // Simulate failure
@@ -289,8 +292,8 @@ describe('data-import script', () => {
       ]
 
       const mockReadlineInterface = {
-        [Symbol.asyncIterator]: jest.fn().mockReturnValue({
-          next: jest
+        [Symbol.asyncIterator]: vi.fn().mockReturnValue({
+          next: vi
             .fn()
             .mockResolvedValueOnce({ value: mockLines[0], done: false })
             .mockResolvedValueOnce({ value: mockLines[1], done: false })
@@ -301,12 +304,12 @@ describe('data-import script', () => {
         })
       }
 
-      ;(createInterface as jest.Mock).mockReturnValueOnce(mockReadlineInterface)
+      ;(createInterface as Mock).mockReturnValueOnce(mockReadlineInterface)
 
       const mockWriteStream: any = {
-        write: jest.fn(),
-        end: jest.fn(),
-        on: jest.fn((event: string, handler: () => void) => {
+        write: vi.fn(),
+        end: vi.fn(),
+        on: vi.fn((event: string, handler: () => void) => {
           if (event === 'finish') {
             setTimeout(() => handler(), 0)
           }
@@ -314,7 +317,7 @@ describe('data-import script', () => {
         })
       }
 
-      ;(fs.createWriteStream as jest.Mock).mockReturnValueOnce(mockWriteStream)
+      ;(fs.createWriteStream as Mock).mockReturnValueOnce(mockWriteStream)
 
       await preprocessSqlFile('/input/test.sql', '/output/test.sql')
 
