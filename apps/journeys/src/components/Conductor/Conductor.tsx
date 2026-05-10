@@ -82,7 +82,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const activeCard = getCardChild(activeBlock)
 
   const showPinnedChat =
-    apologistChatEnabled && hasAiChatButton({ journey, variant, card: activeCard })
+    apologistChatEnabled &&
+    hasAiChatButton({ journey, variant, card: activeCard })
 
   // Mobile: per-card `expandChatByDefault === true` lands the bar in
   // `'idle'` (header + input visible, ready). Otherwise the bar starts

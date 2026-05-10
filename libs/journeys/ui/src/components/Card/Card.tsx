@@ -84,10 +84,7 @@ const StyledForm = styled(Form)(() => ({}))
  *
  * @returns {ReactElement} The rendered Card component
  */
-export function Card({
-  wrappers,
-  ...cardForFooter
-}: CardProps): ReactElement {
+export function Card({ wrappers, ...cardForFooter }: CardProps): ReactElement {
   const {
     id,
     children,
