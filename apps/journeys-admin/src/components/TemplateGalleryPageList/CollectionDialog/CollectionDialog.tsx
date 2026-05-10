@@ -383,7 +383,7 @@ export function CollectionDialog({
                             }
                             helperText={
                               (touched.mediaUrl === true && errors.mediaUrl) ||
-                              t('Google Slides, Canva, YouTube, Loom, etc')
+                              t('Paste a Canva or Google Slides link')
                             }
                           />
                         </Stack>

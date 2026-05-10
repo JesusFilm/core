@@ -197,7 +197,7 @@ describe('useCollectionForm', () => {
       ).resolves.toBeTruthy()
     })
 
-    it('rejects http URLs but accepts https URLs for mediaUrl', async () => {
+    it('only accepts Canva and Google Slides URLs for mediaUrl (NES-1649)', async () => {
       const { result } = renderHook(
         () =>
           useCollectionForm({
@@ -208,14 +208,57 @@ describe('useCollectionForm', () => {
         { wrapper: wrapperWithMocks([]) }
       )
 
+      // Reject anything else, even valid https URLs — the render layer
+      // only knows how to embed Canva and Google Slides.
       await expect(
         result.current.schema.validate(
           defaultValues({ mediaUrl: 'http://insecure.example' })
         )
-      ).rejects.toThrow(/https/i)
+      ).rejects.toThrow(/canva or google slides/i)
       await expect(
         result.current.schema.validate(
-          defaultValues({ mediaUrl: 'https://secure.example' })
+          defaultValues({ mediaUrl: 'https://www.youtube.com/watch?v=abc' })
+        )
+      ).rejects.toThrow(/canva or google slides/i)
+      await expect(
+        result.current.schema.validate(
+          defaultValues({ mediaUrl: 'https://www.loom.com/share/abc' })
+        )
+      ).rejects.toThrow(/canva or google slides/i)
+
+      // Accept real-world Canva share URLs with utm tags / extra params —
+      // intentionally more permissive than the Strategy section's regex.
+      await expect(
+        result.current.schema.validate(
+          defaultValues({
+            mediaUrl: 'https://www.canva.com/design/DAHJBsAPHB4/view'
+          })
+        )
+      ).resolves.toBeTruthy()
+      await expect(
+        result.current.schema.validate(
+          defaultValues({
+            mediaUrl:
+              'https://www.canva.com/design/DAHJBsAPHB4/view?utm_content=DAHJBsAPHB4&utm_campaign=designshare'
+          })
+        )
+      ).resolves.toBeTruthy()
+
+      // Accept Google Slides /pub URLs regardless of query-param order.
+      await expect(
+        result.current.schema.validate(
+          defaultValues({
+            mediaUrl:
+              'https://docs.google.com/presentation/d/e/2PACX-1vS/pub?start=true&loop=false&delayms=3000'
+          })
+        )
+      ).resolves.toBeTruthy()
+      await expect(
+        result.current.schema.validate(
+          defaultValues({
+            mediaUrl:
+              'https://docs.google.com/presentation/d/e/2PACX-1vS/pub?delayms=3000&loop=true&start=false'
+          })
         )
       ).resolves.toBeTruthy()
     })

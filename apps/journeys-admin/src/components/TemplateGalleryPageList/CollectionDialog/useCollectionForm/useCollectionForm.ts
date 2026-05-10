@@ -81,14 +81,28 @@ function buildSchema(
     mediaUrl: string()
       .max(2048, t('URL too long'))
       .default('')
-      .test('https-only', t('Must be an https URL'), (value) => {
-        if (value == null || value === '') return true
-        try {
-          return new URL(value).protocol === 'https:'
-        } catch {
-          return false
+      .test(
+        'canva-or-google-slides',
+        t('Only Canva or Google Slides links work here'),
+        (value) => {
+          if (value == null || value === '') return true
+          // Intentionally more permissive than the editor's Strategy
+          // section regex (which requires a trailing /view|/watch and
+          // exact Google Slides query-param ordering). Real-world share
+          // URLs include utm tags, fragments, and varying param orders;
+          // we accept them as long as the host + path identify a Canva
+          // design or a published Google Slides deck. The render layer
+          // (`StrategySection` in libs/journeys/ui) only knows how to
+          // embed these two — anything else iframes the raw URL and
+          // fails with "refused to connect" (NES-1649).
+          return (
+            /^https:\/\/(www\.)?canva\.com\/design\/[^\s]+/i.test(value) ||
+            /^https:\/\/docs\.google\.com\/presentation\/d\/e\/[^/]+\/pub(\?|$|#)/i.test(
+              value
+            )
+          )
         }
-      }),
+      ),
     slug: string()
       .max(200, t('Max 200 characters'))
       .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, {
