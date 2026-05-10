@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -7,12 +7,23 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
+import {
+  JourneyImageBlockCreate,
+  JourneyImageBlockCreateVariables
+} from '../../../../../../../__generated__/JourneyImageBlockCreate'
+import {
+  JourneyImageBlockUpdate,
+  JourneyImageBlockUpdateVariables
+} from '../../../../../../../__generated__/JourneyImageBlockUpdate'
 import { JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation'
 import { JOURNEY_IMAGE_BLOCK_CREATE } from '../../../../../../libs/useJourneyImageBlockCreateMutation'
 import { JOURNEY_IMAGE_BLOCK_DELETE } from '../../../../../../libs/useJourneyImageBlockDeleteMutation'
 import { JOURNEY_IMAGE_BLOCK_UPDATE } from '../../../../../../libs/useJourneyImageBlockUpdateMutation'
-import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
-import { listUnsplashCollectionPhotosMock } from '../ImageBlockEditor/UnsplashGallery/data'
+import {
+  listUnsplashCollectionPhotosMock,
+  triggerUnsplashDownloadMock,
+  unsplashImageInput
+} from '../ImageBlockEditor/UnsplashGallery/data'
 
 import { ImageEdit } from './ImageEdit'
 
@@ -22,20 +33,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('ImageEdit', () => {
-  let originalEnv
-
-  beforeEach(() => {
-    originalEnv = process.env
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
-    }
-  })
-
-  afterEach(() => {
-    process.env = originalEnv
-  })
-
   const image: ImageBlock = {
     id: 'image1.id',
     __typename: 'ImageBlock',
@@ -50,6 +47,31 @@ describe('ImageEdit', () => {
     focalLeft: 50,
     focalTop: 50,
     customizable: null
+  }
+
+  function getJourneyImageBlockCreateMock(): MockedResponse<
+    JourneyImageBlockCreate,
+    JourneyImageBlockCreateVariables
+  > {
+    return {
+      request: {
+        query: JOURNEY_IMAGE_BLOCK_CREATE,
+        variables: {
+          input: {
+            journeyId: 'journey.id',
+            ...unsplashImageInput
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          imageBlockCreate: {
+            ...image,
+            ...unsplashImageInput
+          }
+        }
+      }))
+    }
   }
 
   it('should disaply placeholder icon when no image set', () => {
@@ -93,213 +115,147 @@ describe('ImageEdit', () => {
     expect(screen.getByRole('img')).toBeInTheDocument()
   })
 
-  it('creates the primaryImage', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      ['Journey:' + 'journey.id']: {
-        blocks: [],
-        id: 'journey.id',
-        __typename: 'Journey'
-      }
-    })
-
-    const imageBlockResult = jest.fn(() => ({
-      data: {
-        imageBlockCreate: {
-          __typename: 'ImageBlock',
-          id: image.id,
-          src: image.src,
-          alt: image.alt,
-          width: image.width,
-          height: image.height,
-          parentOrder: image.parentOrder,
-          blurhash: image.blurhash
-        }
-      }
-    }))
-
-    const journeyResult = jest.fn(() => ({
-      data: {
-        journeyUpdate: {
-          __typename: 'Journey',
-          id: 'journey.id',
-          primaryImageBlock: {
-            id: image.id
+  it.each([
+    ['primary', 'primaryImageBlockId'],
+    ['creator', 'creatorImageBlockId']
+  ] as const)(
+    'creates the %s image from gallery selection',
+    async (target, field) => {
+      const imageBlockCreateMock = getJourneyImageBlockCreateMock()
+      const journeyUpdateResult = jest.fn(() => ({
+        data: {
+          journeyUpdate: {
+            __typename: 'Journey',
+            id: 'journey.id',
+            [field]: {
+              id: image.id
+            }
           }
         }
-      }
-    }))
+      }))
 
-    render(
-      <MockedProvider
-        cache={cache}
-        mocks={[
-          createCloudflareUploadByUrlMock,
-          listUnsplashCollectionPhotosMock,
-          {
-            request: {
-              query: JOURNEY_IMAGE_BLOCK_CREATE,
-              variables: {
-                input: {
-                  journeyId: 'journey.id',
-                  src: image.src,
-                  alt: image.alt
+      render(
+        <MockedProvider
+          mocks={[
+            listUnsplashCollectionPhotosMock,
+            triggerUnsplashDownloadMock,
+            imageBlockCreateMock,
+            {
+              request: {
+                query: JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE,
+                variables: {
+                  id: 'journey.id',
+                  input: {
+                    [field]: image.id
+                  }
                 }
-              }
-            },
-            result: imageBlockResult
-          },
-          {
-            request: {
-              query: JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE,
-              variables: {
-                id: 'journey.id',
-                input: {
-                  primaryImageBlockId: image.id
-                }
-              }
-            },
-            result: journeyResult
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journey.id',
-                hostname: null,
-                slug: 'journey-id'
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <ImageEdit />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByRole('button'))
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-    )
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
-    )
-    const textBox = screen.getByRole('textbox')
-    fireEvent.change(textBox, {
-      target: { value: 'https://example.com/image.jpg' }
-    })
-    fireEvent.blur(textBox)
+              },
+              result: journeyUpdateResult
+            }
+          ]}
+        >
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journey.id',
+                  hostname: null,
+                  slug: 'journey-id'
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <ImageEdit target={target} />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
 
-    await waitFor(() =>
-      expect(screen.getByRole('progressbar')).toBeInTheDocument()
-    )
-    await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
-    await waitFor(() => expect(journeyResult).toHaveBeenCalled())
-  })
+      fireEvent.click(screen.getByRole('button'))
+      await waitFor(() =>
+        expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'white dome building during daytime'
+        })
+      )
 
-  it('creates the creator image', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      ['Journey:' + 'journey.id']: {
-        blocks: [],
-        id: 'journey.id',
-        __typename: 'Journey'
-      }
-    })
+      await waitFor(() =>
+        expect(imageBlockCreateMock.result).toHaveBeenCalled()
+      )
+      await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
+    }
+  )
 
-    const imageBlockResult = jest.fn(() => ({
-      data: {
-        imageBlockCreate: {
-          __typename: 'ImageBlock',
-          id: image.id,
-          src: image.src,
-          alt: image.alt,
-          width: image.width,
-          height: image.height,
-          parentOrder: image.parentOrder,
-          blurhash: image.blurhash
-        }
-      }
-    }))
-
-    const journeyResult = jest.fn(() => ({
-      data: {
-        journeyUpdate: {
-          __typename: 'Journey',
-          id: 'journey.id',
-          primaryImageBlock: {
-            id: image.id
+  it.each([
+    ['primary', 'primaryImageBlock'],
+    ['creator', 'creatorImageBlock']
+  ] as const)(
+    'updates the %s image from gallery selection',
+    async (target, field) => {
+      const updateResult = jest.fn(() => ({
+        data: {
+          imageBlockUpdate: {
+            ...image,
+            ...unsplashImageInput
           }
         }
-      }
-    }))
-
-    render(
-      <MockedProvider
-        cache={cache}
-        mocks={[
-          createCloudflareUploadByUrlMock,
-          listUnsplashCollectionPhotosMock,
-          {
-            request: {
-              query: JOURNEY_IMAGE_BLOCK_CREATE,
-              variables: {
-                input: {
-                  journeyId: 'journey.id',
-                  src: image.src,
-                  alt: image.alt
-                }
-              }
-            },
-            result: imageBlockResult
-          },
-          {
-            request: {
-              query: JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE,
-              variables: {
-                id: 'journey.id',
-                input: {
-                  creatorImageBlockId: image.id
-                }
-              }
-            },
-            result: journeyResult
+      }))
+      const imageBlockUpdateMock: MockedResponse<
+        JourneyImageBlockUpdate,
+        JourneyImageBlockUpdateVariables
+      > = {
+        request: {
+          query: JOURNEY_IMAGE_BLOCK_UPDATE,
+          variables: {
+            id: image.id,
+            journeyId: 'journey.id',
+            input: unsplashImageInput
           }
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <ImageEdit target="creator" />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByRole('button'))
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-    )
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
-    )
-    const textBox = screen.getByRole('textbox')
-    fireEvent.change(textBox, {
-      target: { value: 'https://example.com/image.jpg' }
-    })
-    fireEvent.blur(textBox)
+        },
+        result: updateResult
+      }
 
-    await waitFor(() =>
-      expect(screen.getByRole('progressbar')).toBeInTheDocument()
-    )
-    await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
-    await waitFor(() => expect(journeyResult).toHaveBeenCalled())
-  })
+      render(
+        <MockedProvider
+          mocks={[
+            listUnsplashCollectionPhotosMock,
+            triggerUnsplashDownloadMock,
+            imageBlockUpdateMock
+          ]}
+        >
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journey.id',
+                  hostname: null,
+                  slug: 'journey-id',
+                  [field]: image
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <ImageEdit target={target} />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(screen.getByRole('button'))
+      await waitFor(() =>
+        expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'white dome building during daytime'
+        })
+      )
+
+      await waitFor(() => expect(updateResult).toHaveBeenCalled())
+    }
+  )
 
   it('delete the primaryImage', async () => {
     const cache = new InMemoryCache()
@@ -382,7 +338,9 @@ describe('ImageEdit', () => {
       </MockedProvider>
     )
     fireEvent.click(screen.getByRole('button'))
-    fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
+    await waitFor(() =>
+      fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
+    )
     await waitFor(() => expect(imageDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
@@ -477,82 +435,5 @@ describe('ImageEdit', () => {
     await waitFor(() => expect(imageDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
-  })
-
-  it('updates the image', async () => {
-    const imageBlockResultForUpdateMock = jest.fn(() => ({
-      data: {
-        imageBlockCreate: {
-          __typename: 'ImageBlock',
-          id: image.id,
-          src: image.src,
-          alt: image.alt,
-          width: image.width,
-          height: image.height,
-          parentOrder: image.parentOrder,
-          blurhash: image.blurhash
-        }
-      }
-    }))
-
-    render(
-      <MockedProvider
-        mocks={[
-          createCloudflareUploadByUrlMock,
-          listUnsplashCollectionPhotosMock,
-          {
-            request: {
-              query: JOURNEY_IMAGE_BLOCK_UPDATE,
-              variables: {
-                id: image.id,
-                journeyId: 'journey.id',
-                input: {
-                  src: image.src,
-                  alt: 'public'
-                }
-              }
-            },
-            result: imageBlockResultForUpdateMock
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journey.id',
-                hostname: null,
-                slug: 'journey-id',
-                primaryImageBlock: {
-                  ...image,
-                  src: 'https://imagedelivery.net/cloudflare-key/uploadId/public2'
-                }
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <ImageEdit />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByRole('button'))
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-    )
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
-    )
-    const textBox = screen.getByRole('textbox')
-    fireEvent.change(textBox, {
-      target: { value: 'https://example.com/image.jpg' }
-    })
-    fireEvent.blur(textBox)
-    await waitFor(() =>
-      expect(screen.getByRole('progressbar')).toBeInTheDocument()
-    )
-    await waitFor(() =>
-      expect(imageBlockResultForUpdateMock).toHaveBeenCalled()
-    )
   })
 })
