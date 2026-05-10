@@ -88,10 +88,7 @@ export function OverlayContent({
 
   const flags = useFlags()
   const pinnedChatActive =
-    flags.apologistChat === true &&
-    hasAiChatButton({ journey, variant, card }) &&
-    variant !== 'admin' &&
-    variant !== 'embed'
+    flags.apologistChat === true && hasAiChatButton({ journey, variant, card })
 
   // Idle PinnedChatBar is 168px tall (handle + ChatHeader + input). Add a
   // small buffer so the last interactive card element clears the sheet's

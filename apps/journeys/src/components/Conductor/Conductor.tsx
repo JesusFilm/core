@@ -82,16 +82,17 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const activeCard = getCardChild(activeBlock)
 
   const showPinnedChat =
-    apologistChatEnabled &&
-    hasAiChatButton({ journey, variant, card: activeCard }) &&
-    variant !== 'admin' &&
-    variant !== 'embed'
+    apologistChatEnabled && hasAiChatButton({ journey, variant, card: activeCard })
 
   // Mobile: per-card `expandChatByDefault === true` lands the bar in
   // `'idle'` (header + input visible, ready). Otherwise the bar starts
   // `'collapsed'` (drag handle only) so creators who haven't opted in
   // do not get the chat surface eating screen real estate. Sticky after
-  // mount — drag interactions own the state from there.
+  // mount — drag interactions own the state from there. So on mobile,
+  // `expandChatByDefault` only seeds the first card a visitor lands on;
+  // subsequent card navigations preserve whatever sheet state the user
+  // (or the previous card's seed) produced. Mobile per-card re-seeding
+  // is tracked as follow-up work.
   const initialChatExpanded = activeCard?.expandChatByDefault === true
 
   const { setOpen, shouldAutoOpen, markAutoOpened } = useChatOverlay()
@@ -109,22 +110,26 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   // loading after the first card was active). `setOpen` /
   // `shouldAutoOpen` / `markAutoOpened` are stable callbacks from the
   // provider — depending on them is cheap and keeps the lint happy
-  // without re-firing on every overlay open/close. Re-firing on the
-  // remaining deps is safe: `shouldAutoOpen` dedups on
-  // (journeyId, cardId) via sessionStorage, so a manual dismiss is not
-  // overridden by a later re-evaluation in the same tab.
+  // without re-firing on every overlay open/close. `journey` is no
+  // longer in deps: `hasAiChatButton` is purely card-level since
+  // NES-1622 dropped the `Journey.showAssistant` fallback, so depending
+  // on the whole `journey` reference would re-fire on every Apollo
+  // cache write (analytics mutations, language updates, …) for no
+  // signal. Re-firing on the remaining deps is safe: `shouldAutoOpen`
+  // dedups on (journeyId, cardId) via sessionStorage, so a manual
+  // dismiss is not overridden by a later re-evaluation in the same tab.
   useEffect(() => {
     if (!apologistChatEnabled) return
-    const card = getCardChild(activeBlock)
-    if (card == null || card.expandChatByDefault !== true) return
-    if (!hasAiChatButton({ journey, variant, card })) return
-    if (!shouldAutoOpen(card.id)) return
-    markAutoOpened(card.id)
+    if (activeCard == null || activeCard.expandChatByDefault !== true) return
+    if (!hasAiChatButton({ journey, variant, card: activeCard })) return
+    if (!shouldAutoOpen(activeCard.id)) return
+    markAutoOpened(activeCard.id)
     setOpen(true)
+    // `journey` intentionally omitted — see comment above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    activeBlock?.id,
+    activeCard?.id,
     apologistChatEnabled,
-    journey,
     variant,
     setOpen,
     shouldAutoOpen,

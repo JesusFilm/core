@@ -85,24 +85,17 @@ const StyledForm = styled(Form)(() => ({}))
  * @returns {ReactElement} The rendered Card component
  */
 export function Card({
-  id,
-  children,
-  backgroundColor,
-  backdropBlur,
-  coverBlockId,
-  fullscreen,
   wrappers,
-  ...rest
+  ...cardForFooter
 }: CardProps): ReactElement {
-  const cardForFooter = {
+  const {
     id,
     children,
     backgroundColor,
     backdropBlur,
     coverBlockId,
-    fullscreen,
-    ...rest
-  } as TreeBlock<CardFields>
+    fullscreen
+  } = cardForFooter
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { enqueueSnackbar } = useSnackbar()
 
