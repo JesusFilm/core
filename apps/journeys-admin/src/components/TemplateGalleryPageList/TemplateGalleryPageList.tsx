@@ -19,6 +19,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import {
   GetAdminJourneysVariables,
@@ -93,6 +94,7 @@ export function TemplateGalleryPageList({
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { enqueueSnackbar } = useSnackbar()
+  const breakpoints = useBreakpoints()
   const teamId = activeTeam?.id
 
   // Collections + DnD are only meaningful in the active view. In archived
@@ -152,6 +154,24 @@ export function TemplateGalleryPageList({
   // user is still looking at the dialog).
   const [publishSuccessCollection, setPublishSuccessCollection] =
     useState<TemplateGalleryPage | null>(null)
+
+  // True when any modal is open. While modal is open, page-level draggables
+  // and droppables are disabled and any in-flight drag state is cleared
+  // (NES-1653): cursor moves inside the dialog were continuing to drive
+  // dnd-kit's SortableContext, rearranging the cards visible behind the
+  // dialog because the DragOverlay (z-index 999) tracks cursor position
+  // beneath the dialog (z-index 1300) even while hidden.
+  const dialogOpen =
+    createDialogOpen ||
+    editTargetId != null ||
+    publishSuccessCollection != null
+  const interactionsLocked = dragInFlight || dialogOpen
+
+  useEffect(() => {
+    if (dialogOpen) {
+      setActiveDragId(null)
+    }
+  }, [dialogOpen])
 
   async function handlePublish(
     collection: TemplateGalleryPage
@@ -261,14 +281,16 @@ export function TemplateGalleryPageList({
   }
 
   function handleDragStart(event: DragStartEvent): void {
-    // Don't even paint a drag overlay if a previous mutation is still in
-    // flight — handleDragEnd would silently swallow the drop, leaving the
-    // user with the impression their move just vanished.
-    if (dragInFlight) {
-      enqueueSnackbar(t('Finishing previous move…'), {
-        variant: 'info',
-        preventDuplicate: true
-      })
+    // Refuse any new drag while a dialog is open (NES-1653) or a previous
+    // mutation is still in flight — handleDragEnd would silently swallow
+    // the drop, leaving the user with the impression their move vanished.
+    if (interactionsLocked) {
+      if (dragInFlight) {
+        enqueueSnackbar(t('Finishing previous move…'), {
+          variant: 'info',
+          preventDuplicate: true
+        })
+      }
       return
     }
     setActiveDragId(String(event.active.id))
@@ -317,9 +339,13 @@ export function TemplateGalleryPageList({
           direction="row"
           justifyContent="space-between"
           alignItems="center"
+          spacing={2}
           sx={{ mb: 3 }}
         >
-          <Stack>
+          {/* min-width: 0 lets the description text wrap inside the flex
+              row instead of pushing into the button on narrow viewports
+              (NES-1652). */}
+          <Stack sx={{ minWidth: 0, flex: 1 }}>
             <Typography variant="h4">{t('Collections')}</Typography>
             <Typography variant="body2" color="text.secondary">
               {t('Group your team templates into a public gallery page.')}
@@ -329,9 +355,10 @@ export function TemplateGalleryPageList({
             variant="contained"
             color="primary"
             onClick={handleOpenCreate}
+            sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
             data-testid="CreateCollectionButton"
           >
-            {t('Create Collection')}
+            {breakpoints.sm ? t('Create Collection') : t('Create')}
           </Button>
         </Stack>
       )}
@@ -357,7 +384,7 @@ export function TemplateGalleryPageList({
                   id={collection.id}
                   disabled={
                     collection.status === TemplateGalleryPageStatus.published ||
-                    dragInFlight ||
+                    interactionsLocked ||
                     busyId === collection.id
                   }
                 >
@@ -374,7 +401,7 @@ export function TemplateGalleryPageList({
                       publishedLock={
                         collection.status === TemplateGalleryPageStatus.published
                       }
-                      dragInFlight={dragInFlight}
+                      dragInFlight={interactionsLocked}
                     />
                   </CollectionCard>
                 </DroppableCollectionWrapper>
@@ -386,7 +413,7 @@ export function TemplateGalleryPageList({
           <Typography variant="h6" sx={{ mb: 2 }}>
             {t('All Templates')}
           </Typography>
-          <UnsectionedDroppable disabled={dragInFlight}>
+          <UnsectionedDroppable disabled={interactionsLocked}>
             {unsectioned.length === 0 ? (
               <Box sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}>
                 <Typography variant="caption">
@@ -399,7 +426,7 @@ export function TemplateGalleryPageList({
               <DraggableJourneysGrid
                 journeys={unsectioned}
                 publishedLock={false}
-                dragInFlight={dragInFlight}
+                dragInFlight={interactionsLocked}
               />
             )}
           </UnsectionedDroppable>

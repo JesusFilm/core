@@ -49,8 +49,8 @@ describe('CollectionPublishSuccessDialog', () => {
   it('renders the public URL in a read-only input', () => {
     renderDialog()
     const input = screen.getByLabelText('Public URL')
-    expect(input.value).toBe('https://example.com/p/my-collection')
-    expect(input.readOnly).toBe(true)
+    expect(input).toHaveValue('https://example.com/p/my-collection')
+    expect(input).toHaveAttribute('readonly')
   })
 
   it('disables the copy button when publicUrl is null', () => {
