@@ -39,31 +39,29 @@ builder.mutationField('templateGalleryPagePublish', (t) =>
         )
       }
 
-      // Atomic transition under concurrent publishes: the `status: 'draft'`
-      // predicate makes updateMany a no-op for any caller that lost the race.
-      // First-publish wins, and `publishedAt` is set on the winning
-      // transition only — never re-stamped (monotonic).
+      // Atomic transition + canonical re-read in one transaction. The
+      // `status: 'draft'` predicate on updateMany makes it a no-op for any
+      // caller that lost the race; `publishedAt` is set on the winning
+      // transition only — never re-stamped (monotonic). The re-read returns
+      // the current row regardless of whether this caller won or lost.
       //
       // Idempotent re-publish: when status is already 'published' we skip
-      // updateMany entirely and return the canonical row. Avoids a redundant
-      // SQL round-trip on the hot read-modify path.
-      if (page.status !== 'published') {
-        await prisma.templateGalleryPage.updateMany({
-          where: { id, status: 'draft' },
-          data: {
-            status: 'published',
-            publishedAt: new Date()
-          }
-        })
-      }
-
-      // Re-read canonically. Whether we won the race, lost it, or no-op'd
-      // (already published), we want the current row with whichever
-      // publishedAt the winner stamped.
+      // updateMany entirely and just re-read.
       try {
-        return await prisma.templateGalleryPage.findUniqueOrThrow({
-          ...query,
-          where: { id }
+        return await prisma.$transaction(async (tx) => {
+          if (page.status !== 'published') {
+            await tx.templateGalleryPage.updateMany({
+              where: { id, status: 'draft' },
+              data: {
+                status: 'published',
+                publishedAt: new Date()
+              }
+            })
+          }
+          return await tx.templateGalleryPage.findUniqueOrThrow({
+            ...query,
+            where: { id }
+          })
         })
       } catch (error) {
         // Edge case: the page was deleted between our auth-fetch and the

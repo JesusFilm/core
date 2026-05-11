@@ -51,6 +51,9 @@ describe('templateGalleryPagePublish', () => {
       teamId: 'team-1',
       userId: mockUser.id
     } as any)
+    prismaMock.$transaction.mockImplementation(
+      async (callback: any) => await callback(prismaMock)
+    )
   })
 
   it('transitions a draft page to published and sets publishedAt', async () => {
