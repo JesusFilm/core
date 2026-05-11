@@ -1,5 +1,7 @@
+import type { TreeBlock } from '../../../../libs/block'
 import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { JourneyProviderContext } from '../../../../libs/JourneyProvider/JourneyProvider'
+import { CardFields } from '../../__generated__/CardFields'
 
 export const FULL_HEIGHT = '90px'
 export const HALF_HEIGHT = '60px'
@@ -9,6 +11,12 @@ export const WEBSITE_HEIGHT = '0px'
 interface JourneyInfoProps {
   journey?: JourneyFields
   variant?: JourneyProviderContext['variant'] | undefined
+  /**
+   * Active card. `hasAiChatButton` is purely card-level — when omitted (or
+   * when `card.showAssistant` is null), the chat does not render. The
+   * deprecated `Journey.showAssistant` field is no longer consulted.
+   */
+  card?: TreeBlock<CardFields> | null
 }
 
 export function hasReactions({ journey }: JourneyInfoProps): boolean {
@@ -45,11 +53,13 @@ export function hasChatWidget({
 }
 
 export function hasAiChatButton({
-  journey,
-  variant = 'default'
+  variant = 'default',
+  card
 }: JourneyInfoProps): boolean {
   if (variant === 'admin' || variant === 'embed') return false
-  return journey?.showAssistant === true
+  // Card-level only. The deprecated `Journey.showAssistant` is intentionally
+  // ignored here — the field itself is removed in NES-1624.
+  return card?.showAssistant === true
 }
 
 export function getTitle({ journey }: JourneyInfoProps): string | null {
@@ -76,7 +86,8 @@ export function hasCombinedFooter({
 
 export function getFooterMobileSpacing({
   journey,
-  variant = 'default'
+  variant = 'default',
+  card
 }: JourneyInfoProps): string {
   if (journey?.website === true) {
     return variant === 'admin' ? HALF_HEIGHT : WEBSITE_HEIGHT
@@ -90,7 +101,7 @@ export function getFooterMobileSpacing({
     const hasBottomRow =
       hasHost ||
       hasChatWidget({ journey, variant }) ||
-      hasAiChatButton({ journey, variant }) ||
+      hasAiChatButton({ journey, variant, card }) ||
       title != null ||
       reactions
 
@@ -106,7 +117,8 @@ export function getFooterMobileSpacing({
 
 export function getFooterMobileHeight({
   journey,
-  variant = 'default'
+  variant = 'default',
+  card
 }: JourneyInfoProps): string {
   if (journey?.website === true) {
     return HALF_HEIGHT
@@ -116,7 +128,7 @@ export function getFooterMobileHeight({
       hasHostAvatar({ journey, variant }) ||
       hasHostDetails({ journey }) ||
       hasChatWidget({ journey, variant }) ||
-      hasAiChatButton({ journey, variant }) ||
+      hasAiChatButton({ journey, variant, card }) ||
       getTitle({ journey }) != null
 
     if (hasBottomRow) {
