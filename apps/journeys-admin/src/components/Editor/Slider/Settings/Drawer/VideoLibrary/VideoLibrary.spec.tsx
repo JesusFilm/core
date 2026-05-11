@@ -163,7 +163,7 @@ describe('VideoLibrary', () => {
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
       expect(
-        screen.getByTestId('VideoLibrary').closest('.MuiDrawer-paper')
+        screen.getByTestId('VideoLibrary').parentElement?.parentElement
       ).toHaveClass('MuiDrawer-paperAnchorRight')
     })
 
@@ -321,7 +321,7 @@ describe('VideoLibrary', () => {
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
       expect(
-        screen.getByTestId('VideoLibrary').closest('.MuiDrawer-paper')
+        screen.getByTestId('VideoLibrary').parentElement?.parentElement
       ).toHaveClass('MuiDrawer-paperAnchorBottom')
     })
   })
