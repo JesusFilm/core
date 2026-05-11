@@ -443,5 +443,4 @@ describe('UseTemplateDeepLink', () => {
     expect(push).not.toHaveBeenCalled()
     expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
   })
-
 })

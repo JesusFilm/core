@@ -24,12 +24,12 @@ Add a thin self-contained "deep link receiver" in `apps/journeys-admin` that wat
 
 ### File-level surface
 
-| File | Action |
-|---|---|
-| [apps/journeys-admin/pages/index.tsx](apps/journeys-admin/pages/index.tsx) | Mount the new `UseTemplateDeepLink` component; suppress `onboarding` popover when `useTemplate` param is present. |
-| `apps/journeys-admin/src/components/UseTemplateDeepLink/UseTemplateDeepLink.tsx` | **New.** Hook-driven component: reads `router.query.useTemplate`, fetches journey, renders modal, handles submit + close + URL strip. |
-| `apps/journeys-admin/src/components/UseTemplateDeepLink/UseTemplateDeepLink.spec.tsx` | **New.** Unit tests. |
-| `apps/journeys-admin/src/components/UseTemplateDeepLink/index.ts` | **New.** Barrel export. |
+| File                                                                                  | Action                                                                                                                                |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [apps/journeys-admin/pages/index.tsx](apps/journeys-admin/pages/index.tsx)            | Mount the new `UseTemplateDeepLink` component; suppress `onboarding` popover when `useTemplate` param is present.                     |
+| `apps/journeys-admin/src/components/UseTemplateDeepLink/UseTemplateDeepLink.tsx`      | **New.** Hook-driven component: reads `router.query.useTemplate`, fetches journey, renders modal, handles submit + close + URL strip. |
+| `apps/journeys-admin/src/components/UseTemplateDeepLink/UseTemplateDeepLink.spec.tsx` | **New.** Unit tests.                                                                                                                  |
+| `apps/journeys-admin/src/components/UseTemplateDeepLink/index.ts`                     | **New.** Barrel export.                                                                                                               |
 
 No other files change.
 
@@ -60,7 +60,7 @@ Per the architecture note on the ticket, a future "use all templates from a gall
 
 - New self-contained component in `apps/journeys-admin/src/components/`. No new app dependencies.
 - Reuses existing GraphQL operations (`GetJourney`, `JourneyDuplicate`, the team list inside `TeamProvider`).
-- `<TeamProvider>` is mounted globally in [apps/journeys-admin/pages/_app.tsx:19](apps/journeys-admin/pages/_app.tsx) so `useTeam()` works inside the new component without extra wiring.
+- `<TeamProvider>` is mounted globally in [apps/journeys-admin/pages/\_app.tsx:19](apps/journeys-admin/pages/_app.tsx) so `useTeam()` works inside the new component without extra wiring.
 - Snackbar provider also globally mounted, so `useSnackbar()` works.
 
 ### Performance implications
@@ -77,17 +77,17 @@ Per the architecture note on the ticket, a future "use all templates from a gall
 
 ### Edge cases
 
-| Scenario | Behaviour |
-|---|---|
-| `useTemplate` empty string | Coerce to absent → render nothing. |
-| `useTemplate` is an unknown id | Resolver returns `null` → dialog stays mounted with submit disabled and a placeholder. Acceptable UX for an internal tool — the user can close and try again. (Future polish: switch to a "template not found" snackbar + auto-close. Not in MVP scope.) |
-| `useTemplate` is an array (`?useTemplate=a&useTemplate=b`) | Take first element. |
-| User has no teams | Submit stays disabled (existing dialog validation). The user is prompted to create a team via the empty dropdown's helper text. |
-| Active team not yet hydrated when the param lands | Dialog opens with submit disabled until the team list resolves. `defaultToActiveTeam` re-evaluates via `enableReinitialize` on the Formik form. |
-| User closes before submit | Param is stripped, no journey is created. |
-| Translation enabled, then user closes mid-flight | Existing dialog behaviour: backdrop/escape are blocked while translating, so this is impossible from the user side. The submit promise resolves on completion or error and the dialog closes itself. |
-| Both `useTemplate` and `onboarding=true` present | Onboarding popover suppressed; only the deep-link modal opens. |
-| Both `useTemplate` and `type=templates` present | Modal opens regardless of tab; `?type=templates` does not affect the deep-link flow because the page renders the modal in `mainHeaderChildren`-adjacent space (the modal is portal-rendered and tab-independent). |
+| Scenario                                                   | Behaviour                                                                                                                                                                                                                                                |
+| ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `useTemplate` empty string                                 | Coerce to absent → render nothing.                                                                                                                                                                                                                       |
+| `useTemplate` is an unknown id                             | Resolver returns `null` → dialog stays mounted with submit disabled and a placeholder. Acceptable UX for an internal tool — the user can close and try again. (Future polish: switch to a "template not found" snackbar + auto-close. Not in MVP scope.) |
+| `useTemplate` is an array (`?useTemplate=a&useTemplate=b`) | Take first element.                                                                                                                                                                                                                                      |
+| User has no teams                                          | Submit stays disabled (existing dialog validation). The user is prompted to create a team via the empty dropdown's helper text.                                                                                                                          |
+| Active team not yet hydrated when the param lands          | Dialog opens with submit disabled until the team list resolves. `defaultToActiveTeam` re-evaluates via `enableReinitialize` on the Formik form.                                                                                                          |
+| User closes before submit                                  | Param is stripped, no journey is created.                                                                                                                                                                                                                |
+| Translation enabled, then user closes mid-flight           | Existing dialog behaviour: backdrop/escape are blocked while translating, so this is impossible from the user side. The submit promise resolves on completion or error and the dialog closes itself.                                                     |
+| Both `useTemplate` and `onboarding=true` present           | Onboarding popover suppressed; only the deep-link modal opens.                                                                                                                                                                                           |
+| Both `useTemplate` and `type=templates` present            | Modal opens regardless of tab; `?type=templates` does not affect the deep-link flow because the page renders the modal in `mainHeaderChildren`-adjacent space (the modal is portal-rendered and tab-independent).                                        |
 
 ### Tests
 

@@ -83,11 +83,9 @@ export function UseTemplateDeepLink(): ReactElement | null {
 
   const stripParamFromUrl = useCallback((): void => {
     const { useTemplate, ...rest } = router.query
-    void router.replace(
-      { pathname: router.pathname, query: rest },
-      undefined,
-      { shallow: true }
-    )
+    void router.replace({ pathname: router.pathname, query: rest }, undefined, {
+      shallow: true
+    })
   }, [router])
 
   const navigateToJourneyList = useCallback((): void => {
