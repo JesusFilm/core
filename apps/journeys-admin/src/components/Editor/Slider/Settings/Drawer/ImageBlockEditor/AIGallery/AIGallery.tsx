@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
@@ -12,7 +12,8 @@ import {
   ImageBlockUpdateInput,
   SegmindModel
 } from '../../../../../../../../__generated__/globalTypes'
-import { MediaLibraryImagesGrid } from '../MediaLibraryImagesGrid'
+import { MediaLibrary } from '../MediaLibrary'
+import { prependCloudflareImageToCache } from '../libs/prependCloudflareImageToCache'
 
 import { AIPrompt } from './AIPrompt'
 
@@ -40,11 +41,10 @@ export function AIGallery({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { mediaLibrary } = useFlags()
-  const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE, {
-    refetchQueries: ['GetMyCloudflareImages']
-  })
+  const apolloClient = useApolloClient()
+  const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
 
-  const handleSubmit = async ({ prompt }): Promise<void> => {
+  async function handleSubmit({ prompt }): Promise<void> {
     setUploading?.(true)
     try {
       const { data } = await createAiImage({
@@ -55,11 +55,17 @@ export function AIGallery({
       })
 
       if (data?.createImageBySegmindPrompt?.id != null) {
-        const src = `https://imagedelivery.net/${
+        const cloudflareId = data.createImageBySegmindPrompt.id
+        const url = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
-        }/${data?.createImageBySegmindPrompt?.id}/public`
+        }/${cloudflareId}`
+        prependCloudflareImageToCache(apolloClient.cache, {
+          cloudflareId,
+          url,
+          isAi: true
+        })
         await onChange({
-          src,
+          src: `${url}/public`,
           alt: `Prompt: ${prompt}`,
           scale: 100,
           focalLeft: 50,
@@ -99,8 +105,8 @@ export function AIGallery({
         selectedBlock={selectedBlock}
       />
       {mediaLibrary === true && (
-        <MediaLibraryImagesGrid
-          title={t('Your generations')}
+        <MediaLibrary
+          title={t('Generations')}
           selectedSrc={selectedBlock?.src}
           onSelect={onChange}
           isAi={true}

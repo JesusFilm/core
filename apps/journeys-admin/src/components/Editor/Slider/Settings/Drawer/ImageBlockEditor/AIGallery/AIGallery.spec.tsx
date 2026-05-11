@@ -9,7 +9,7 @@ import {
   CreateAiImageVariables
 } from '../../../../../../../../__generated__/CreateAiImage'
 import { SegmindModel } from '../../../../../../../../__generated__/globalTypes'
-import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibraryImagesGrid'
+import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibrary'
 
 import { CREATE_AI_IMAGE } from './AIGallery'
 
@@ -115,7 +115,7 @@ describe('AIGallery', () => {
     )
     expect(screen.queryByText('Your generations')).not.toBeInTheDocument()
     expect(
-      screen.queryByTestId('MediaLibraryImagesGrid')
+      screen.queryByTestId('MediaLibrary')
     ).not.toBeInTheDocument()
   })
 
@@ -152,24 +152,27 @@ describe('AIGallery', () => {
     })
   })
 
-  it('should refetch GetMyCloudflareImages after a successful AI generation', async () => {
-    let refetchCount = 0
+  it('should prepend the new image into the AI grid cache after a successful generation', async () => {
     const myAiImagesMock: MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
-        variables: { offset: 0, limit: 9, isAi: true }
+        variables: { offset: 0, limit: 11, isAi: true }
       },
-      newData: () => {
-        refetchCount += 1
-        return {
-          data: {
-            getMyCloudflareImages: []
-          }
+      result: {
+        data: {
+          getMyCloudflareImages: [
+            {
+              __typename: 'CloudflareImage',
+              id: 'existing',
+              url: 'https://imagedelivery.net/cloudflare-key/existing',
+              blurhash: null
+            }
+          ]
         }
       }
     }
     render(
-      <MockedProvider mocks={[getAIImage, myAiImagesMock, myAiImagesMock]}>
+      <MockedProvider mocks={[myAiImagesMock, getAIImage]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ mediaLibrary: true }}>
             <AIGallery onChange={jest.fn()} />
@@ -177,13 +180,16 @@ describe('AIGallery', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    await waitFor(() => expect(refetchCount).toBeGreaterThanOrEqual(1))
-    const initialCount = refetchCount
+    await waitFor(() =>
+      expect(screen.getByTestId('media-library-image-existing')).toBeInTheDocument()
+    )
     fireEvent.change(screen.getByRole('textbox', { name: 'Prompt' }), {
       target: { value: 'an image of the New Jerusalem' }
     })
     fireEvent.click(screen.getByRole('button', { name: 'Prompt' }))
-    await waitFor(() => expect(refetchCount).toBeGreaterThan(initialCount))
+    await waitFor(() =>
+      expect(screen.getByTestId('media-library-image-imageId')).toBeInTheDocument()
+    )
   })
 
   it('should show error snackbar on request failure', async () => {

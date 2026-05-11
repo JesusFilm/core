@@ -7,7 +7,7 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
-import { MediaLibraryImagesGrid } from '../MediaLibraryImagesGrid'
+import { MediaLibrary } from '../MediaLibrary'
 
 import { ImageUpload } from './ImageUpload'
 
@@ -50,8 +50,8 @@ export function CustomImage({
       {mediaLibrary === true && (
         <>
           <Divider sx={{ my: 4 }} />
-          <MediaLibraryImagesGrid
-            title={t('Your uploads')}
+          <MediaLibrary
+            title={t('Uploads')}
             selectedSrc={selectedBlock?.src}
             onSelect={onChange}
             isAi={false}

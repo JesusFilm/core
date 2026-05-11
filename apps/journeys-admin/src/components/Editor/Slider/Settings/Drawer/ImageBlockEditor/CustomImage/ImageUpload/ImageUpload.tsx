@@ -16,6 +16,7 @@ import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/useCloudflareUploadByFileMutation'
+import { prependCloudflareImageToCache } from '../../libs/prependCloudflareImageToCache'
 
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
@@ -42,10 +43,10 @@ export function ImageUpload({
     setErrorCode(undefined)
   }, [selectedBlock])
 
-  const onDrop = async (
+  async function onDrop(
     acceptedFiles: File[],
     rejectedFiles: FileRejection[]
-  ): Promise<void> => {
+  ): Promise<void> {
     if (rejectedFiles.length > 0) {
       setErrorCode(rejectedFiles[0].errors[0].code as ErrorCode)
       setUploading?.(false)
@@ -80,13 +81,16 @@ export function ImageUpload({
           return
         }
 
-        const src = `https://imagedelivery.net/${
+        const cloudflareId = response.result.id as string
+        const url = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
-        }/${response.result.id as string}/public`
-        await apolloClient.refetchQueries({
-          include: ['GetMyCloudflareImages']
+        }/${cloudflareId}`
+        prependCloudflareImageToCache(apolloClient.cache, {
+          cloudflareId,
+          url,
+          isAi: false
         })
-        onChange({ src, scale: 100, focalLeft: 50, focalTop: 50 })
+        onChange({ src: `${url}/public`, scale: 100, focalLeft: 50, focalTop: 50 })
         setTimeout(() => setSuccess(undefined), 4000)
         setUploading?.(undefined)
       } catch {

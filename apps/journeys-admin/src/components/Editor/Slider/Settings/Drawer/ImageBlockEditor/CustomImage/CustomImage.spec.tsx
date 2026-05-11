@@ -5,7 +5,7 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 
-import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibraryImagesGrid'
+import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibrary'
 
 import { CustomImage } from '.'
 
@@ -65,7 +65,7 @@ describe('CustomImage', () => {
     )
     expect(screen.queryByText('Your uploads')).not.toBeInTheDocument()
     expect(
-      screen.queryByTestId('MediaLibraryImagesGrid')
+      screen.queryByTestId('MediaLibrary')
     ).not.toBeInTheDocument()
   })
 
@@ -80,6 +80,6 @@ describe('CustomImage', () => {
     await waitFor(() => {
       expect(screen.getByText('Your uploads')).toBeInTheDocument()
     })
-    expect(screen.getByTestId('MediaLibraryImagesGrid')).toBeInTheDocument()
+    expect(screen.getByTestId('MediaLibrary')).toBeInTheDocument()
   })
 })

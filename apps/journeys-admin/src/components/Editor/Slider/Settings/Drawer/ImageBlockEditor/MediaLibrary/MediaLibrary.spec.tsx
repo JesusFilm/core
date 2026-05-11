@@ -3,10 +3,7 @@ import { offsetLimitPagination } from '@apollo/client/utilities'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import {
-  GET_MY_CLOUDFLARE_IMAGES,
-  MediaLibraryImagesGrid
-} from './MediaLibraryImagesGrid'
+import { GET_MY_CLOUDFLARE_IMAGES, MediaLibrary } from './MediaLibrary'
 
 function makeImages(count: number, offset = 0): Array<{
   __typename: 'CloudflareImage'
@@ -54,11 +51,11 @@ function paginatedCache(): InMemoryCache {
   })
 }
 
-describe('MediaLibraryImagesGrid', () => {
+describe('MediaLibrary', () => {
   it('should render images returned by the query', async () => {
     render(
       <MockedProvider mocks={[firstPageMock]}>
-        <MediaLibraryImagesGrid
+        <MediaLibrary
           title="Your uploads"
           onSelect={jest.fn()}
           isAi={false}
@@ -75,7 +72,7 @@ describe('MediaLibraryImagesGrid', () => {
     const onSelect = jest.fn()
     render(
       <MockedProvider mocks={[firstPageMock]}>
-        <MediaLibraryImagesGrid
+        <MediaLibrary
           title="Your uploads"
           onSelect={onSelect}
           isAi={false}
@@ -97,7 +94,7 @@ describe('MediaLibraryImagesGrid', () => {
   it('should render the processing tile when uploading is true', () => {
     render(
       <MockedProvider mocks={[firstPageMock]}>
-        <MediaLibraryImagesGrid
+        <MediaLibrary
           title="Your uploads"
           onSelect={jest.fn()}
           isAi={false}
@@ -116,7 +113,7 @@ describe('MediaLibraryImagesGrid', () => {
         mocks={[firstPageMock, secondPageMock]}
         cache={paginatedCache()}
       >
-        <MediaLibraryImagesGrid
+        <MediaLibrary
           title="Your uploads"
           onSelect={jest.fn()}
           isAi={false}
@@ -146,7 +143,7 @@ describe('MediaLibraryImagesGrid', () => {
         mocks={[firstPageMock, secondPageMock]}
         cache={paginatedCache()}
       >
-        <MediaLibraryImagesGrid
+        <MediaLibrary
           title="Your uploads"
           onSelect={jest.fn()}
           isAi={false}

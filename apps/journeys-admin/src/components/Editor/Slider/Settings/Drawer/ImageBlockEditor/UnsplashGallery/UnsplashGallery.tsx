@@ -1,11 +1,8 @@
 import { gql, useQuery } from '@apollo/client'
-import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
-
-import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
@@ -17,6 +14,8 @@ import {
   SearchUnsplashPhotos,
   SearchUnsplashPhotosVariables
 } from '../../../../../../../../__generated__/SearchUnsplashPhotos'
+
+import { LoadMoreButton } from '../LoadMoreButton'
 
 import { UnsplashCollections } from './UnsplashCollections'
 import { UnsplashList } from './UnsplashList'
@@ -185,15 +184,11 @@ export function UnsplashGallery({
         gallery={gallery}
         onChange={onChange}
       />
-      <Button
-        variant="outlined"
-        onClick={handleFetchMore}
+      <LoadMoreButton
+        hasMore
         loading={loading}
-        startIcon={<Plus2Icon />}
-        size="medium"
-      >
-        {loading ? t('Loading...') : t('Load More')}
-      </Button>
+        onClick={() => void handleFetchMore()}
+      />
     </Stack>
   )
 }
