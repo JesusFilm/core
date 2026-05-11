@@ -121,8 +121,8 @@ export const JOURNEY_FIELDS = gql`
     }
     fromTemplateId
     customizable
-    # Transitional: kept as the read-time fallback while CardBlock.showAssistant
-    # rolls out. Remove together with the fallback in the NES-1624 follow-up.
+    # Deprecated. No longer consulted at runtime — chat affordance is
+    # card-level only. Field removal is tracked in NES-1624.
     showAssistant
   }
 `

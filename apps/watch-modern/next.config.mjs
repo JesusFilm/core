@@ -54,17 +54,11 @@ const nextConfig = {
     }
   },
   nx: {},
-  experimental: {
-    reactCompiler: true
-  },
+  reactCompiler: true,
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
     ignoreBuildErrors: env.CI
-  },
-  eslint: {
-    // handled by github actions
-    ignoreDuringBuilds: env.CI
   },
   basePath: '/watch',
   async redirects() {
