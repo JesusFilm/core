@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
+
 // Import the component under test
 import DeleteAudio from './page'
 
@@ -89,10 +91,10 @@ describe('DeleteAudio', () => {
   it('renders the delete audio dialog with confirmation message', () => {
     render(
       <DeleteAudio
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 
@@ -114,10 +116,10 @@ describe('DeleteAudio', () => {
   it('navigates back when cancel button is clicked', () => {
     render(
       <DeleteAudio
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 
@@ -133,10 +135,10 @@ describe('DeleteAudio', () => {
   it('calls delete mutation when delete button is clicked', () => {
     render(
       <DeleteAudio
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 
@@ -155,10 +157,10 @@ describe('DeleteAudio', () => {
 
     render(
       <DeleteAudio
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 

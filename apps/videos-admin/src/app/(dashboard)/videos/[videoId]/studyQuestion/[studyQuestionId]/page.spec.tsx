@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
+import { resolvedParams } from '../../../../../../test/utils/resolvedParams'
+
 import StudyQuestionDialog from './page'
 
 // Mock the StudyQuestionForm component
@@ -73,10 +75,10 @@ describe('StudyQuestionDialog', () => {
     render(
       <SnackbarProvider>
         <StudyQuestionDialog
-          params={{
+          params={resolvedParams({
             videoId: mockVideoId,
             studyQuestionId: mockStudyQuestionId
-          }}
+          })}
         />
       </SnackbarProvider>
     )
