@@ -146,14 +146,22 @@ export function VideoLibrary({
       <Drawer title={t('Video Library')} open={open} onClose={onClose}>
         <Box
           sx={{
-            borderBottom: 1,
-            borderColor: 'divider',
-            width: '100%',
-            height: 73,
-            backgroundColor: (theme) => theme.palette.background.paper
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%'
           }}
-          data-testid="VideoLibrary"
         >
+          <Box
+            sx={{
+              borderBottom: 1,
+              borderColor: 'divider',
+              width: '100%',
+              height: 73,
+              flexShrink: 0,
+              backgroundColor: (theme) => theme.palette.background.paper
+            }}
+            data-testid="VideoLibrary"
+          >
           <Tabs
             value={activeTab}
             onChange={handleChange}
@@ -183,10 +191,8 @@ export function VideoLibrary({
         <Box
           sx={{
             width: '100%',
-            height: {
-              xs: 'calc(100vh - 295px)',
-              sm: 'calc(100vh - 265px)'
-            },
+            flexGrow: 1,
+            minHeight: 0,
             overflowY: 'auto'
           }}
         >
@@ -216,6 +222,7 @@ export function VideoLibrary({
           >
             <VideoFromMux onSelect={onSelect} />
           </TabPanel>
+        </Box>
         </Box>
       </Drawer>
       {selectedBlock?.videoId != null && uploadStatus == null && (
