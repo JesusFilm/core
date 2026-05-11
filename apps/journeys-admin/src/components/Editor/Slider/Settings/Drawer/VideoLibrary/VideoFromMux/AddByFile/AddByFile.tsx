@@ -239,7 +239,10 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
                 sx={{ color: 'common.white', fontWeight: 600 }}
               >
                 {waiting && t('Waiting in queue...')}
-                {uploading && t('Uploading... {{progress}}%', { progress: Math.round(progress) })}
+                {uploading &&
+                  t('Uploading... {{progress}}%', {
+                    progress: Math.round(progress)
+                  })}
                 {processing && t('Processing...')}
               </Typography>
             </Box>
