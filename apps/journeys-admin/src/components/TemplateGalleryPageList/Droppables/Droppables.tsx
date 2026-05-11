@@ -84,7 +84,10 @@ function DraggableJourneysGridImpl({
   const ids = journeys.map((j) => j.id)
   return (
     <SortableContext items={ids} strategy={rectSortingStrategy}>
-      <Box sx={{ mt: -1, p: 1 }}>
+      {/* Outer padding matches the Grid's spacing/rowSpacing so the gap
+          between a card and the collection edge equals the gap between
+          two cards — Sushma flagged the inconsistent 8px-vs-32px in DM. */}
+      <Box sx={{ p: { xs: 2.5, sm: 4 } }}>
         <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
           {journeys.map((journey) => (
             <Grid
