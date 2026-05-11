@@ -33,7 +33,8 @@ builder.mutationFields((t) => ({
           data: {
             id: image.id,
             uploaded: true,
-            userId: user.id
+            userId: user.id,
+            isAi: true
           }
         })
       }

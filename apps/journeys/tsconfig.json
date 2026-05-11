@@ -20,7 +20,6 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx",
-    "next-env.d.ts",
     "postcss.config.mjs"
   ],
   "exclude": ["node_modules", "vitest.config.mts"]

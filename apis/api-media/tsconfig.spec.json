@@ -4,18 +4,11 @@
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "types": [
-      "jest",
-      "@jest/globals",
+      "vitest/globals",
       "node",
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"
     ]
   },
-  "include": [
-    "**/*.spec.ts",
-    "**/*.d.ts",
-    "**/__mocks__/*.ts",
-    "jest.config.ts",
-    "**/test/*.ts"
-  ]
+  "include": ["**/*.spec.ts", "**/*.d.ts", "vitest.config.mts", "test/**/*.ts"]
 }

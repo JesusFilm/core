@@ -53,7 +53,9 @@ describe('NewTypographyButton', () => {
         fullscreen: false,
         backdropBlur: null,
         eventLabel: null,
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   }
@@ -70,7 +72,9 @@ describe('NewTypographyButton', () => {
     fullscreen: false,
     backdropBlur: null,
     eventLabel: null,
-    children: []
+    children: [],
+    showAssistant: null,
+    expandChatByDefault: null
   }
 
   const typographyBlock: TreeBlock<TypographyBlock> = {

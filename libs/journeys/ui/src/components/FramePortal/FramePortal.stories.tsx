@@ -49,6 +49,8 @@ const block: TreeBlock<Block> = {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
+      showAssistant: null,
+      expandChatByDefault: null,
       children: [
         {
           id: 'image0.id',
