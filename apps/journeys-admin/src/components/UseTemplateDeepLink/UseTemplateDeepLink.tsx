@@ -34,41 +34,6 @@ function getJourneyIdParam(
   return null
 }
 
-// Cross-tab idempotency: a session-storage lock that blocks the same
-// journeyId+teamId from being duplicated again while a mutation is in
-// flight elsewhere (e.g. the deep link opened in two tabs, or browser-
-// back replays the URL after a successful submit). Keyed in sessionStorage
-// so it expires with the tab; TTL is a defence-in-depth so a crashed tab
-// doesn't lock the user out for the rest of the session.
-const LOCK_PREFIX = 'useTemplate:lock:'
-const LOCK_TTL_MS = 5 * 60 * 1000
-
-function lockKey(journeyId: string, teamId: string): string {
-  return `${LOCK_PREFIX}${journeyId}:${teamId}`
-}
-
-function isLocked(key: string): boolean {
-  if (typeof window === 'undefined') return false
-  const raw = window.sessionStorage.getItem(key)
-  if (raw == null) return false
-  const ts = Number(raw)
-  if (Number.isNaN(ts) || Date.now() - ts > LOCK_TTL_MS) {
-    window.sessionStorage.removeItem(key)
-    return false
-  }
-  return true
-}
-
-function acquireLock(key: string): void {
-  if (typeof window === 'undefined') return
-  window.sessionStorage.setItem(key, Date.now().toString())
-}
-
-function releaseLock(key: string): void {
-  if (typeof window === 'undefined') return
-  window.sessionStorage.removeItem(key)
-}
-
 /**
  * Receiver for the public template gallery's "Use" deep link
  * (`/?useTemplate=<journeyId>`).
@@ -183,19 +148,6 @@ export function UseTemplateDeepLink(): ReactElement | null {
         return
       }
 
-      const key = lockKey(journeyId, teamId)
-      if (isLocked(key)) {
-        enqueueSnackbar(t('Already creating a copy — please wait'), {
-          variant: 'warning',
-          preventDuplicate: true
-        })
-        // Throw so the dialog's submit pipeline halts before its auto-onClose
-        // call — keep the dialog open so the user can decide when to dismiss
-        // instead of having it vanish under them.
-        throw new Error('useTemplate:lock-busy')
-      }
-      acquireLock(key)
-
       setLoading(true)
       try {
         const { data } = await journeyDuplicate({
@@ -207,7 +159,6 @@ export function UseTemplateDeepLink(): ReactElement | null {
         }
 
         if (!wantsTranslation || journey == null) {
-          releaseLock(key)
           setLoading(false)
           enqueueSnackbar(t('Journey Copied'), {
             variant: 'success',
@@ -219,10 +170,6 @@ export function UseTemplateDeepLink(): ReactElement | null {
           // the param so the journey-list nav above isn't clobbered.
           return
         }
-
-        // Translation path: the duplicate already ran, so release the lock
-        // before handing off to the subscription.
-        releaseLock(key)
 
         const currentLanguageName =
           journey.language.name.find(({ primary }) => !primary)?.value ?? ''
@@ -238,7 +185,6 @@ export function UseTemplateDeepLink(): ReactElement | null {
           userLanguageName: currentLanguageName
         })
       } catch (error) {
-        releaseLock(key)
         setLoading(false)
         enqueueSnackbar(t('Journey duplication failed'), {
           variant: 'error',

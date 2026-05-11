@@ -1,11 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within
-} from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
@@ -146,18 +140,16 @@ function buildJourneyDuplicateMock(
     teamId: string
     forceNonTemplate: boolean
   },
-  options: { shouldError?: boolean; delay?: number } = {}
+  options: { shouldError?: boolean } = {}
 ): MockedResponse<JourneyDuplicate> {
   if (options.shouldError === true) {
     return {
       request: { query: JOURNEY_DUPLICATE, variables },
-      error: new Error('boom'),
-      delay: options.delay
+      error: new Error('boom')
     }
   }
   return {
     request: { query: JOURNEY_DUPLICATE, variables },
-    delay: options.delay,
     result: {
       data: {
         journeyDuplicate: {
@@ -237,39 +229,16 @@ function buildTranslateSubscriptionMock(options: {
 interface SetupOptions {
   useTemplate?: string | string[] | null
   duplicateError?: boolean
-  duplicateDelay?: number
   includeJourneyMock?: boolean
   translationError?: boolean
   push?: jest.Mock
   replace?: jest.Mock
-  extraMocks?: MockedResponse[]
 }
 
-function buildDefaultMocks(options: SetupOptions = {}): MockedResponse[] {
-  const mocks: MockedResponse[] = [
-    teamsMock,
-    updateLastActiveTeamIdMock,
-    languagesMock,
-    buildJourneyDuplicateMock(
-      { id: sourceJourneyId, teamId: 'team-1', forceNonTemplate: true },
-      { shouldError: options.duplicateError, delay: options.duplicateDelay }
-    )
-  ]
-  if (options.includeJourneyMock !== false) {
-    mocks.push(buildJourneyMock())
-  }
-  if (options.translationError != null) {
-    mocks.push(
-      buildTranslateSubscriptionMock({ shouldError: options.translationError })
-    )
-  }
-  if (options.extraMocks != null) mocks.push(...options.extraMocks)
-  return mocks
-}
-
-function setRouter(
-  options: SetupOptions = {}
-): { push: jest.Mock; replace: jest.Mock } {
+function setup(options: SetupOptions = {}): {
+  push: jest.Mock
+  replace: jest.Mock
+} {
   const useTemplate =
     'useTemplate' in options ? options.useTemplate : sourceJourneyId
   const push = options.push ?? jest.fn().mockResolvedValue(true)
@@ -281,15 +250,23 @@ function setRouter(
     push,
     replace
   } as unknown as NextRouter)
-  return { push, replace }
-}
 
-function setup(options: SetupOptions = {}): {
-  push: jest.Mock
-  replace: jest.Mock
-} {
-  const router = setRouter(options)
-  const mocks = buildDefaultMocks(options)
+  const mocks: MockedResponse[] = [
+    teamsMock,
+    updateLastActiveTeamIdMock,
+    languagesMock,
+    buildJourneyDuplicateMock(
+      { id: sourceJourneyId, teamId: 'team-1', forceNonTemplate: true },
+      { shouldError: options.duplicateError }
+    )
+  ]
+  if (options.includeJourneyMock !== false) mocks.push(buildJourneyMock())
+  if (options.translationError != null) {
+    mocks.push(
+      buildTranslateSubscriptionMock({ shouldError: options.translationError })
+    )
+  }
+
   render(
     <MockedProvider mocks={mocks}>
       <SnackbarProvider>
@@ -299,7 +276,7 @@ function setup(options: SetupOptions = {}): {
       </SnackbarProvider>
     </MockedProvider>
   )
-  return router
+  return { push, replace }
 }
 
 async function selectTranslationSpanish(): Promise<void> {
@@ -320,7 +297,6 @@ async function selectTranslationSpanish(): Promise<void> {
 describe('UseTemplateDeepLink', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    if (typeof window !== 'undefined') window.sessionStorage.clear()
   })
 
   it('renders nothing when useTemplate param is absent', () => {
@@ -468,90 +444,4 @@ describe('UseTemplateDeepLink', () => {
     expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
   })
 
-  it('blocks a concurrent submit on the same template+team via the session-storage lock', async () => {
-    // First mount: never-resolving duplicate keeps the lock acquired.
-    const firstRouter = setRouter({})
-    const firstMocks: MockedResponse[] = [
-      ...buildDefaultMocks({ duplicateDelay: 60_000 })
-    ]
-    const first = render(
-      <MockedProvider mocks={firstMocks}>
-        <SnackbarProvider>
-          <TeamProvider>
-            <UseTemplateDeepLink />
-          </TeamProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(
-        within(first.baseElement).getByTestId('CopyToTeamDialog')
-      ).toBeInTheDocument()
-    )
-    fireEvent.click(
-      within(first.baseElement).getByRole('button', {
-        name: 'Add'
-      })
-    )
-
-    // Second mount: simulates another tab trying the same deep link while
-    // the first mutation is still in flight. Lock should reject the click
-    // before the duplicate mutation fires.
-    const secondRouter = setRouter({})
-    const secondDuplicate = jest.fn(() => ({
-      data: {
-        journeyDuplicate: {
-          __typename: 'Journey' as const,
-          id: 'should-never-fire',
-          template: false
-        }
-      }
-    }))
-    const secondMocks: MockedResponse[] = [
-      teamsMock,
-      updateLastActiveTeamIdMock,
-      languagesMock,
-      buildJourneyMock(),
-      {
-        request: {
-          query: JOURNEY_DUPLICATE,
-          variables: {
-            id: sourceJourneyId,
-            teamId: 'team-1',
-            forceNonTemplate: true
-          }
-        },
-        result: secondDuplicate
-      }
-    ]
-    const second = render(
-      <MockedProvider mocks={secondMocks}>
-        <SnackbarProvider>
-          <TeamProvider>
-            <UseTemplateDeepLink />
-          </TeamProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(
-        within(second.baseElement).getAllByTestId(
-          'CopyToTeamDialog'
-        ).length
-      ).toBeGreaterThanOrEqual(1)
-    )
-    // Click the most recently mounted dialog's Add button.
-    const addButtons = screen.getAllByRole('button', { name: 'Add' })
-    fireEvent.click(addButtons[addButtons.length - 1])
-
-    await waitFor(() =>
-      expect(
-        screen.getByText('Already creating a copy — please wait')
-      ).toBeInTheDocument()
-    )
-
-    expect(secondDuplicate).not.toHaveBeenCalled()
-    expect(firstRouter.replace).not.toHaveBeenCalled()
-    expect(secondRouter.replace).not.toHaveBeenCalled()
-  })
 })
