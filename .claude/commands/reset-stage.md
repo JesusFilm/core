@@ -1,15 +1,6 @@
----
-name: reset-stage
-description: >-
-  Reset the stage branch from main and re-merge all "on stage" PRs.
-  Auto-resolves merge conflicts by accepting incoming changes (-X theirs).
-  Posts a Slack notification only when an --apply run produced conflicts.
-  Use when stage has conflicts, drift, or needs a clean rebuild.
----
+Reset the stage branch from main and re-merge all "on stage" PRs, auto-resolving conflicts and posting to Slack only when an `--apply` run had conflicts.
 
-<!-- sync: simplified subset of .claude/commands/reset-stage.md (canonical). Keep the summary comment step aligned. -->
-
-# Reset Stage
+<!-- sync: canonical version. .cursor/skills/reset-stage/SKILL.md is a simplified subset — keep the summary comment step aligned. -->
 
 Automates the stage branch reset process documented in
 `apps/docs/docs/04-engineering-practices/02-deployment/index.md`.
@@ -42,12 +33,12 @@ Automates the stage branch reset process documented in
 3. Show the full output to the user.
 
 4. If `--apply` was used, remind the user:
-   - Stage deploy workflows will trigger automatically on push
+   - Stage deploy workflows will trigger automatically on push.
    - Slack was notified **only if** the run had auto-resolved or failed
      conflicts. Clean apply runs and dry runs stay silent — this is by
-     design (ENG-3679) so the channel only fires when someone's on-stage
-     PR may have actually been touched.
-   - Any truly unresolvable PRs (very rare) need their authors to investigate
+     design (ENG-3679) so the engineering channel only fires when
+     someone's on-stage PR may have actually been touched.
+   - Any truly unresolvable PRs (very rare) need their authors to investigate.
 
 ## Trigger phrases
 
@@ -56,6 +47,25 @@ Automates the stage branch reset process documented in
 - "stage is broken"
 - "what if stage reset"
 - "dry run stage"
+
+## Slack-notification policy
+
+| Run type                            | Posts to Slack? |
+| ----------------------------------- | --------------- |
+| Dry run (default, no `--apply`)     | Never           |
+| `--apply` with zero conflicts       | Never           |
+| `--apply` with auto-resolved conflicts | Yes          |
+| `--apply` with failed conflicts     | Yes             |
+| `--apply --no-slack` (any outcome)  | Never           |
+
+When Slack does fire, the message includes the threaded breakdown
+(merged PR list + per-PR resolution detail), so the affected engineer
+can see what got auto-resolved against their branch.
+
+Rationale: the engineering channel had become noisy when every reset
+posted a summary. The signal worth surfacing is "someone else's reset
+may have touched your on-stage PR" — clean merges and dry runs don't
+need a broadcast.
 
 ## How conflict resolution works
 
@@ -71,7 +81,7 @@ The script uses a two-phase merge for each PR:
 
 1. **Try a clean merge** — `git merge origin/<branch> --no-ff`
 2. **If that conflicts** — abort, retry with `git merge -X theirs`
-3. **If -X theirs still fails** (rare; e.g. modify/delete conflicts) —
+3. **If `-X theirs` still fails** (rare; e.g. modify/delete conflicts) —
    force-resolve remaining files by checking out the PR's version
 
 `-X theirs` tells Git to resolve conflicted hunks by taking the incoming
@@ -97,7 +107,7 @@ deterministic — same PR set + same order = same result.
 ### Report categories
 
 | Category        | Meaning                                                |
-|-----------------|--------------------------------------------------------|
+| --------------- | ------------------------------------------------------ |
 | Clean merge     | No conflicts at all                                    |
 | Auto-resolved   | Had conflicts, resolved automatically via `-X theirs`  |
 | Failed          | Could not be resolved even with force (very rare)      |
@@ -124,9 +134,9 @@ The script only merges PRs that currently have the label.
 
 ## Prerequisites
 
-- `gh` CLI must be authenticated (`gh auth login`)
-- Doppler must be authenticated for Slack notifications (`doppler login`)
+- `gh` CLI must be authenticated (`gh auth login`).
+- Doppler must be authenticated for Slack notifications (`doppler login`).
   - Secrets: `STAGE_RESET_SLACK_BOT_TOKEN`, `SLACK_ENGINEERING_CHANNEL_ID`
   - Location: Doppler project `core`, config `dev`
-- If Doppler is not authenticated, the script runs but skips Slack
-- A confirmation prompt prevents accidental real resets (`--apply`)
+- If Doppler is not authenticated, the script runs but skips Slack.
+- A confirmation prompt prevents accidental real resets (`--apply`).
