@@ -116,17 +116,8 @@ import { ReactElement } from 'react'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 import { TemplateGalleryView } from '@core/journeys/ui/TemplateGalleryView'
 
-import {
-  GetTemplateGalleryPage,
-  GetTemplateGalleryPageVariables,
-  GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage,
-  GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate
-} from '../../../__generated__/GetTemplateGalleryPage'
-import {
-  GetJourney,
-  GetJourneyVariables,
-  GetJourney_journey as Journey
-} from '../../../__generated__/GetJourney'
+import { GetTemplateGalleryPage, GetTemplateGalleryPageVariables, GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage, GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate } from '../../../__generated__/GetTemplateGalleryPage'
+import { GetJourney, GetJourneyVariables, GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { IdType } from '../../../__generated__/globalTypes'
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../../../src/libs/apolloClient'
@@ -140,10 +131,7 @@ interface TemplateGalleryPageProps {
   templates: Journey[]
 }
 
-function TemplateGalleryPageRoute({
-  gallery,
-  templates
-}: TemplateGalleryPageProps): ReactElement {
+function TemplateGalleryPageRoute({ gallery, templates }: TemplateGalleryPageProps): ReactElement {
   return (
     <>
       <NextSeo
@@ -177,9 +165,7 @@ function TemplateGalleryPageRoute({
   )
 }
 
-export const getStaticProps: GetStaticProps<TemplateGalleryPageProps> = async (
-  context
-) => {
+export const getStaticProps: GetStaticProps<TemplateGalleryPageProps> = async (context) => {
   // FEATURE FLAG: insert `templateGalleryPage` flag check here once the flag is added.
   // When the flag is OFF, return { notFound: true }.
 
@@ -187,11 +173,7 @@ export const getStaticProps: GetStaticProps<TemplateGalleryPageProps> = async (
   if (!isValidGallerySlug(slug)) {
     return {
       props: {
-        ...(await serverSideTranslations(
-          context.locale ?? 'en',
-          ['apps-journeys', 'libs-journeys-ui'],
-          i18nConfig
-        ))
+        ...(await serverSideTranslations(context.locale ?? 'en', ['apps-journeys', 'libs-journeys-ui'], i18nConfig))
       },
       notFound: true,
       revalidate: 60
@@ -199,10 +181,7 @@ export const getStaticProps: GetStaticProps<TemplateGalleryPageProps> = async (
   }
 
   const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<
-    GetTemplateGalleryPage,
-    GetTemplateGalleryPageVariables
-  >({
+  const { data } = await apolloClient.query<GetTemplateGalleryPage, GetTemplateGalleryPageVariables>({
     query: GET_TEMPLATE_GALLERY_PAGE,
     variables: { slug },
     errorPolicy: 'all'
@@ -212,30 +191,19 @@ export const getStaticProps: GetStaticProps<TemplateGalleryPageProps> = async (
   if (gallery == null) {
     return {
       props: {
-        ...(await serverSideTranslations(
-          context.locale ?? 'en',
-          ['apps-journeys', 'libs-journeys-ui'],
-          i18nConfig
-        ))
+        ...(await serverSideTranslations(context.locale ?? 'en', ['apps-journeys', 'libs-journeys-ui'], i18nConfig))
       },
       notFound: true,
       revalidate: 60
     }
   }
 
-  const templates = await fetchTemplatesInOrder(
-    apolloClient,
-    gallery.templates ?? []
-  )
+  const templates = await fetchTemplatesInOrder(apolloClient, gallery.templates ?? [])
 
   return {
     props: {
       flags: await getFlags(),
-      ...(await serverSideTranslations(
-        context.locale ?? 'en',
-        ['apps-journeys', 'libs-journeys-ui'],
-        i18nConfig
-      )),
+      ...(await serverSideTranslations(context.locale ?? 'en', ['apps-journeys', 'libs-journeys-ui'], i18nConfig)),
       gallery,
       templates
     },
@@ -243,10 +211,7 @@ export const getStaticProps: GetStaticProps<TemplateGalleryPageProps> = async (
   }
 }
 
-async function fetchTemplatesInOrder(
-  apolloClient: ReturnType<typeof createApolloClient>,
-  ordered: GalleryTemplate[]
-): Promise<Journey[]> {
+async function fetchTemplatesInOrder(apolloClient: ReturnType<typeof createApolloClient>, ordered: GalleryTemplate[]): Promise<Journey[]> {
   const results = await Promise.allSettled(
     ordered.map(({ id }) =>
       apolloClient.query<GetJourney, GetJourneyVariables>({
@@ -256,9 +221,7 @@ async function fetchTemplatesInOrder(
       })
     )
   )
-  return results
-    .map((r) => (r.status === 'fulfilled' ? r.value.data?.journey : null))
-    .filter((j): j is Journey => j != null)
+  return results.map((r) => (r.status === 'fulfilled' ? r.value.data?.journey : null)).filter((j): j is Journey => j != null)
 }
 
 export const getStaticPaths: GetStaticPaths = async () => ({

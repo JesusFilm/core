@@ -1,8 +1,7 @@
 import { GetStaticPropsContext } from 'next'
 
-import { GET_TEMPLATE_GALLERY_PAGE } from '../../../../src/libs/getTemplateGalleryPage'
-
 import { getStaticProps } from '../../../../pages/home/template-gallery/[slug]'
+import { GET_TEMPLATE_GALLERY_PAGE } from '../../../../src/libs/getTemplateGalleryPage'
 
 vi.mock('../../../../src/libs/getFlags', () => ({
   getFlags: vi.fn().mockResolvedValue({})

@@ -13,11 +13,10 @@ import i18nConfig from '../../../next-i18next.config'
 import { TemplateGalleryView } from '../../../src/components/TemplateGalleryView'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getFlags } from '../../../src/libs/getFlags'
-import { isValidGallerySlug } from '../../../src/libs/isValidGallerySlug'
 import { GET_TEMPLATE_GALLERY_PAGE } from '../../../src/libs/getTemplateGalleryPage'
+import { isValidGallerySlug } from '../../../src/libs/isValidGallerySlug'
 
-const ROOT_DOMAIN =
-  process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? 'your.nextstep.is'
+const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? 'your.nextstep.is'
 
 interface TemplateGalleryPageRouteProps {
   gallery: TemplateGalleryPage

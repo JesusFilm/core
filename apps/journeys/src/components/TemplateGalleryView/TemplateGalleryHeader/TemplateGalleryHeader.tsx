@@ -8,7 +8,11 @@ import { GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage
 interface TemplateGalleryHeaderProps {
   gallery: Pick<
     TemplateGalleryPage,
-    'title' | 'description' | 'creatorName' | 'creatorImageSrc' | 'creatorImageAlt'
+    | 'title'
+    | 'description'
+    | 'creatorName'
+    | 'creatorImageSrc'
+    | 'creatorImageAlt'
   >
 }
 

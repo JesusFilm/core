@@ -3,8 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { makeGallery, mockTemplate } from './galleryFixture'
 import { TemplateGalleryView } from './TemplateGalleryView'
 
-const buildHref = (id: string) =>
-  `https://admin.nextstep.is/?useTemplate=${id}`
+const buildHref = (id: string) => `https://admin.nextstep.is/?useTemplate=${id}`
 
 describe('TemplateGalleryView', () => {
   it('renders gallery header, media, and template grid when populated', () => {
@@ -31,9 +30,7 @@ describe('TemplateGalleryView', () => {
         buildTemplateHref={(t) => buildHref(t.id)}
       />
     )
-    expect(
-      screen.getByTestId('TemplateGalleryEmptyState')
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('TemplateGalleryEmptyState')).toBeInTheDocument()
     expect(screen.queryByTestId('TemplateGalleryGrid')).not.toBeInTheDocument()
   })
 

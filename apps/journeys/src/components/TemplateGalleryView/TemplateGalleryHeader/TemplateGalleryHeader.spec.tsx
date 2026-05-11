@@ -29,20 +29,14 @@ describe('TemplateGalleryHeader', () => {
   })
 
   it('omits the description block when description is empty', () => {
-    render(
-      <TemplateGalleryHeader gallery={makeGallery({ description: '' })} />
-    )
+    render(<TemplateGalleryHeader gallery={makeGallery({ description: '' })} />)
     expect(
       screen.queryByText('A curated set of Easter outreach templates.')
     ).not.toBeInTheDocument()
   })
 
   it('renders the avatar without a name when only the image is set', () => {
-    render(
-      <TemplateGalleryHeader
-        gallery={makeGallery({ creatorName: '' })}
-      />
-    )
+    render(<TemplateGalleryHeader gallery={makeGallery({ creatorName: '' })} />)
     expect(screen.getByAltText('Jane Doe avatar')).toBeInTheDocument()
     expect(screen.queryByText('Jane Doe')).not.toBeInTheDocument()
   })

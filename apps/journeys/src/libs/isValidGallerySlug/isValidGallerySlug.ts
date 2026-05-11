@@ -6,8 +6,6 @@ const SLUG_MAX_LENGTH = 200
 
 export function isValidGallerySlug(slug: string): boolean {
   return (
-    slug.length > 0 &&
-    slug.length <= SLUG_MAX_LENGTH &&
-    SLUG_PATTERN.test(slug)
+    slug.length > 0 && slug.length <= SLUG_MAX_LENGTH && SLUG_PATTERN.test(slug)
   )
 }
