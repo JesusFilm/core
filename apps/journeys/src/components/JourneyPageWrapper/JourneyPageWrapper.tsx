@@ -1,6 +1,7 @@
 import PlausibleProvider from 'next-plausible'
 import { ReactElement, ReactNode } from 'react'
 
+import { ChatOverlayProvider } from '@core/journeys/ui/ChatOverlayProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -57,14 +58,16 @@ export function JourneyPageWrapper({
       domain={`${journeyDomain}${teamDomain}${templateDomain}`}
     >
       <JourneyProvider value={{ journey, variant: variant ?? 'default' }}>
-        <ThemeProvider
-          {...journeyTheme}
-          rtl={rtl}
-          locale={locale}
-          fontFamilies={fontFamilies}
-        >
-          {children}
-        </ThemeProvider>
+        <ChatOverlayProvider journeyId={journeyId}>
+          <ThemeProvider
+            {...journeyTheme}
+            rtl={rtl}
+            locale={locale}
+            fontFamilies={fontFamilies}
+          >
+            {children}
+          </ThemeProvider>
+        </ChatOverlayProvider>
       </JourneyProvider>
     </PlausibleProvider>
   )

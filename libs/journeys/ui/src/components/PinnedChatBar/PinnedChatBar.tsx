@@ -139,6 +139,15 @@ const AiChat = dynamic(
 
 interface PinnedChatBarProps {
   sx?: SxProps
+  /**
+   * Seeds the bar's initial sheet state. `true` → `'idle'` (handle +
+   * ChatHeader + input visible, ready to type). `false` → `'collapsed'`
+   * (drag handle only, ~32px). Defaults to `true` to preserve the
+   * pre-NES-1622 behaviour for callers that don't opt in. Only the
+   * mount value matters — once the user drags the handle or sends a
+   * message, the sheet state is owned by interaction.
+   */
+  initialExpanded?: boolean
 }
 
 // Pixel height for the collapsed state. 32px = the drag handle's 14px
@@ -150,9 +159,14 @@ const COLLAPSED_HEIGHT_PX = 32
 // interpolate between when transitioning out of `auto` height.
 const IDLE_HEIGHT_PX = 168
 
-export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
+export function PinnedChatBar({
+  sx,
+  initialExpanded = true
+}: PinnedChatBarProps): ReactElement | null {
   const { variant } = useJourney()
-  const [sheetState, setSheetState] = useState<AiChatSheetState>('idle')
+  const [sheetState, setSheetState] = useState<AiChatSheetState>(
+    initialExpanded ? 'idle' : 'collapsed'
+  )
 
   const handleSheetStateChange = useCallback((next: AiChatSheetState) => {
     setSheetState(next)
@@ -199,7 +213,10 @@ export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
         ...sx
       }}
     >
-      <AiChat onSheetStateChange={handleSheetStateChange} />
+      <AiChat
+        onSheetStateChange={handleSheetStateChange}
+        initialCollapsed={!initialExpanded}
+      />
     </Box>
   )
 }

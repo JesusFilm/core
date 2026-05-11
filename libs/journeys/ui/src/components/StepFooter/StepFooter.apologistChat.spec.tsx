@@ -9,9 +9,11 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { TreeBlock } from '../../libs/block'
 import { EditorProvider } from '../../libs/EditorProvider'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { StepFields } from '../Step/__generated__/StepFields'
 
 import { StepFooter } from './StepFooter'
 
@@ -86,16 +88,55 @@ const baseJourney: Journey = {
   showAssistant: true
 }
 
+function buildStep(
+  cardOverrides: Partial<{
+    showAssistant: boolean | null
+    expandChatByDefault: boolean | null
+  }> = {}
+): TreeBlock<StepFields> {
+  return {
+    __typename: 'StepBlock',
+    id: 'step1.id',
+    parentBlockId: null,
+    parentOrder: 0,
+    locked: false,
+    nextBlockId: null,
+    slug: null,
+    children: [
+      {
+        __typename: 'CardBlock',
+        id: 'card1.id',
+        parentBlockId: 'step1.id',
+        parentOrder: 0,
+        backgroundColor: null,
+        backdropBlur: null,
+        coverBlockId: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        eventLabel: null,
+        showAssistant: null,
+        expandChatByDefault: null,
+        ...cardOverrides,
+        children: []
+      }
+    ]
+  }
+}
+
 function renderStepFooter(opts: {
   apologistChat?: boolean
   withProvider?: boolean
+  journey?: Journey
+  selectedStep?: TreeBlock<StepFields> | null
 }) {
+  const journey = opts.journey ?? baseJourney
   const tree = (
     <MockedProvider>
       <SnackbarProvider>
-        <JourneyProvider value={{ journey: baseJourney, variant: 'default' }}>
+        <JourneyProvider value={{ journey, variant: 'default' }}>
           <EditorProvider>
-            <StepFooter />
+            <StepFooter selectedStep={opts.selectedStep} />
           </EditorProvider>
         </JourneyProvider>
       </SnackbarProvider>
@@ -120,8 +161,43 @@ describe('StepFooter apologistChat flag gating', () => {
     expect(queryByTestId('AiChatButton')).not.toBeInTheDocument()
   })
 
-  it('renders AiChatButton when flag is on and showAssistant is true', async () => {
-    const { findByTestId } = renderStepFooter({ apologistChat: true })
+  it('renders AiChatButton when flag is on and card.showAssistant is true', async () => {
+    const { findByTestId } = renderStepFooter({
+      apologistChat: true,
+      selectedStep: buildStep({ showAssistant: true })
+    })
     expect(await findByTestId('AiChatButton')).toBeInTheDocument()
+  })
+
+  describe('per-card showAssistant', () => {
+    it('renders when card.showAssistant is true and journey.showAssistant is null', async () => {
+      const journey: Journey = { ...baseJourney, showAssistant: null }
+      const { findByTestId } = renderStepFooter({
+        apologistChat: true,
+        journey,
+        selectedStep: buildStep({ showAssistant: true })
+      })
+      expect(await findByTestId('AiChatButton')).toBeInTheDocument()
+    })
+
+    it('does not fall back to journey.showAssistant when card.showAssistant is null', () => {
+      const journey: Journey = { ...baseJourney, showAssistant: true }
+      const { queryByTestId } = renderStepFooter({
+        apologistChat: true,
+        journey,
+        selectedStep: buildStep({ showAssistant: null })
+      })
+      expect(queryByTestId('AiChatButton')).not.toBeInTheDocument()
+    })
+
+    it('does not render when card.showAssistant is false even if journey.showAssistant is true', () => {
+      const journey: Journey = { ...baseJourney, showAssistant: true }
+      const { queryByTestId } = renderStepFooter({
+        apologistChat: true,
+        journey,
+        selectedStep: buildStep({ showAssistant: false })
+      })
+      expect(queryByTestId('AiChatButton')).not.toBeInTheDocument()
+    })
   })
 })
