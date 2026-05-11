@@ -346,18 +346,31 @@ function CollectionPreviewPaneImpl({
             uses for strategy embeds. Renders an iframe for Canva /
             Google Slides URLs and a "Case Study Preview" placeholder
             otherwise. */}
-        <Box
-          sx={{
-            mt: 2.5,
-            // Strip StrategySection's xs/sm bottom padding so it sits
-            // flush within the preview card layout.
-            '& > .MuiStack-root': { pb: 0 }
-          }}
-        >
-          <StrategySection
-            strategySlug={values.mediaUrl !== '' ? values.mediaUrl : null}
-            variant="placeholder"
-          />
+        <Box sx={{ mt: 2.5 }}>
+          <Typography
+            sx={{
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: 600,
+              fontSize: 16,
+              lineHeight: 1.2,
+              color: '#444451',
+              mb: 1.5
+            }}
+          >
+            {t('Strategy')}
+          </Typography>
+          <Box
+            sx={{
+              // Strip StrategySection's xs/sm bottom padding so it sits
+              // flush within the preview card layout.
+              '& > .MuiStack-root': { pb: 0 }
+            }}
+          >
+            <StrategySection
+              strategySlug={values.mediaUrl !== '' ? values.mediaUrl : null}
+              variant="placeholder"
+            />
+          </Box>
         </Box>
       </Box>
     </Box>
