@@ -1,7 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import {
   GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate,
@@ -18,18 +18,37 @@ import { GET_TEMPLATE_GALLERY_PAGE } from '../../../src/libs/getTemplateGalleryP
 
 const ROOT_DOMAIN =
   process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? 'your.nextstep.is'
-const ADMIN_URL =
-  process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? 'https://admin.nextstep.is'
 
 interface TemplateGalleryPageRouteProps {
   gallery: TemplateGalleryPage
 }
 
-function buildTemplateHref(template: GalleryTemplate): string {
-  // NES-1608 deep link target. The admin app may not yet handle this query
-  // param; that is intentional — wiring the URL here unblocks public sharing
-  // ahead of the admin-side modal landing.
-  return `${ADMIN_URL}/?useTemplate=${encodeURIComponent(template.id)}`
+// Derive the admin URL that matches the current deployment context. The env
+// var is the source of truth when set; otherwise infer from the current
+// browser location so links don't silently leak across environments
+// (e.g. local dev pointing at production admin).
+function deriveAdminUrlFromLocation(): string | null {
+  if (typeof window === 'undefined') return null
+  const { protocol, hostname, port } = window.location
+  // Local dev: journeys is on :4100, admin is on :4200.
+  if (port === '4100') return `${protocol}//${hostname}:4200`
+  // Stage / prod: subdomain pattern your.* → admin.* (e.g. your.nextstep.is →
+  // admin.nextstep.is, your.nextstep.stage → admin.nextstep.stage).
+  if (hostname.startsWith('your.')) {
+    return `${protocol}//${hostname.replace('your.', 'admin.')}`
+  }
+  return null
+}
+
+function useAdminUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL
+  const [adminUrl, setAdminUrl] = useState<string>(envUrl ?? '')
+  useEffect(() => {
+    if (envUrl != null && envUrl !== '') return
+    const derived = deriveAdminUrlFromLocation()
+    if (derived != null) setAdminUrl(derived)
+  }, [envUrl])
+  return adminUrl
 }
 
 function ogImageFor(
@@ -67,6 +86,13 @@ function TemplateGalleryPageRoute({
   gallery
 }: TemplateGalleryPageRouteProps): ReactElement {
   const canonicalUrl = `https://${ROOT_DOMAIN}/template-gallery/${gallery.slug}`
+  const adminUrl = useAdminUrl()
+
+  // NES-1608 deep link target. The admin app may not yet handle this query
+  // param; that is intentional — wiring the URL here unblocks public sharing
+  // ahead of the admin-side modal landing.
+  const buildTemplateHref = (template: GalleryTemplate): string =>
+    `${adminUrl}/?useTemplate=${encodeURIComponent(template.id)}`
 
   return (
     <>
