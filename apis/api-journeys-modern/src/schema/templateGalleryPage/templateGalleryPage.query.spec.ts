@@ -54,7 +54,12 @@ describe('templateGalleryPage', () => {
   })
 
   it('returns a page when caller is in the team', async () => {
+    // First call: cheap auth fetch. Second call: full canonical re-read.
     prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'p1',
+      teamId: 'team-1'
+    } as any)
+    prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue({
       id: 'p1',
       teamId: 'team-1',
       title: 'Hello',
