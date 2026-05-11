@@ -2047,7 +2047,7 @@ export type Mutation = {
    */
   templateGalleryPagePublish: TemplateGalleryPage;
   /**
-   * Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range.
+   * Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney`).
    *
    * Idempotent: when the journey is already at the requested display index, the call is a no-op.
    *
@@ -2056,7 +2056,6 @@ export type Mutation = {
    * Errors:
    * - NOT_FOUND: `pageId` does not resolve.
    * - FORBIDDEN: caller is not in the page's team.
-   * - CONFLICT (field: `status`): the page is currently `published` — reorder is blocked on published pages; unpublish first to reorder.
    * - BAD_USER_INPUT (field: `journeyId`): journey is not currently a member of the page.
    * - BAD_USER_INPUT (field: `order`): order is out of range; must satisfy `0 <= order < count(templates in page)`.
    */
@@ -2079,7 +2078,7 @@ export type Mutation = {
    * Errors:
    * - NOT_FOUND: id does not resolve.
    * - FORBIDDEN: caller is not in the page's team.
-   * - BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks.
+   * - BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks — including the concurrent-Update race where two callers pass the same slug and the second one trips the DB unique constraint at commit time.
    * - BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.
    * - CONFLICT (field: `journeyIds`; extension `journeyId` carries the offending id): one of the supplied journeys is already a member of another TemplateGalleryPage.
    */
@@ -5198,6 +5197,21 @@ export type TemplateFamilyStatsEventResponse = {
   visitors: Scalars['Int']['output'];
 };
 
+/** A template journey assigned to a TemplateGalleryPage, narrowed to the fields the public renderer consumes. Backed by the underlying Journey row but exposed as a separate type so the public anonymous query surface cannot traverse to Journey-wide relations (userJourneys, team, blocks, etc.). */
+export type TemplateGalleryItem = {
+  __typename?: 'TemplateGalleryItem';
+  createdAt: Scalars['DateTime']['output'];
+  customizable?: Maybe<Scalars['Boolean']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  language: Language;
+  primaryImageBlock?: Maybe<ImageBlock>;
+  slug: Scalars['String']['output'];
+  template?: Maybe<Scalars['Boolean']['output']>;
+  title: Scalars['String']['output'];
+  website?: Maybe<Scalars['Boolean']['output']>;
+};
+
 /** A team-curated, slug-addressable public landing page that bundles a hand-picked, hand-ordered list of template journeys. The slug is mutable post-publish — changing it breaks any external links to the old URL. `publishedAt` is monotonic: stamped only on the first publish, never re-stamped on subsequent unpublish/republish, and never cleared. `creatorImageSrc` and `creatorImageAlt` are plain string columns (not a Block FK) — the avatar URL survives independently of any owning Block. */
 export type TemplateGalleryPage = {
   __typename?: 'TemplateGalleryPage';
@@ -5222,8 +5236,8 @@ export type TemplateGalleryPage = {
   status: TemplateGalleryPageStatus;
   /** Owning team. The page is hard-deleted when the team is deleted. */
   team: Team;
-  /** Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. */
-  templates: Array<Journey>;
+  /** Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type. */
+  templates: Array<TemplateGalleryItem>;
   /** Display title shown in admin UI and on the public page. */
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTimeISO']['output'];
