@@ -1,20 +1,20 @@
 import { GetStaticPropsContext } from 'next'
 
-import { GET_TEMPLATE_GALLERY_PAGE } from '../../../src/libs/getTemplateGalleryPage'
+import { GET_TEMPLATE_GALLERY_PAGE } from '../../../../src/libs/getTemplateGalleryPage'
 
-import { getStaticProps } from './[slug]'
+import { getStaticProps } from '../../../../pages/home/template-gallery/[slug]'
 
-jest.mock('../../../src/libs/getFlags', () => ({
-  getFlags: jest.fn().mockResolvedValue({})
+vi.mock('../../../../src/libs/getFlags', () => ({
+  getFlags: vi.fn().mockResolvedValue({})
 }))
 
-const mockQuery = jest.fn()
-jest.mock('../../../src/libs/apolloClient', () => ({
+const mockQuery = vi.fn()
+vi.mock('../../../../src/libs/apolloClient', () => ({
   createApolloClient: () => ({ query: mockQuery })
 }))
 
-jest.mock('next-i18next/pages/serverSideTranslations', () => ({
-  serverSideTranslations: jest.fn().mockResolvedValue({ _nextI18Next: {} })
+vi.mock('next-i18next/pages/serverSideTranslations', () => ({
+  serverSideTranslations: vi.fn().mockResolvedValue({ _nextI18Next: {} })
 }))
 
 const baseContext = {
