@@ -188,27 +188,25 @@ export function ImageUpload({
           />
         )}
         <Stack alignItems="center">
-          <Typography
-            variant="body1"
-            color={
-              loading
-                ? 'secondary.main'
+          {(loading || uploadSuccess || hasError) && (
+            <Typography
+              variant="body1"
+              color={
+                loading
+                  ? 'secondary.main'
+                  : uploadSuccess
+                    ? 'success.main'
+                    : 'error.main'
+              }
+              sx={{ display: { xs: 'none', sm: 'block' } }}
+            >
+              {loading
+                ? t('Uploading...')
                 : uploadSuccess
-                  ? 'success.main'
-                  : hasError
-                    ? 'error.main'
-                    : 'secondary.main'
-            }
-            sx={{ display: { xs: 'none', sm: 'block' } }}
-          >
-            {loading
-              ? t('Uploading...')
-              : uploadSuccess
-                ? t('Upload Successful!')
-                : hasError
-                  ? t('Upload Failed!')
-                  : t('Drop an image here')}
-          </Typography>
+                  ? t('Upload Successful!')
+                  : t('Upload Failed!')}
+            </Typography>
+          )}
           <Typography
             variant="caption"
             color="secondary.main"

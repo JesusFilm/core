@@ -188,26 +188,26 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           />
         )}
         <Stack alignItems="center">
-          <Typography
-            variant="body1"
-            color={
-              error != null || errorType != null
-                ? 'error.main'
-                : 'secondary.main'
-            }
-            sx={{ display: { xs: 'none', sm: 'block' } }}
-          >
-            {waiting && t('Waiting in queue...')}
-            {uploading && t('Uploading...')}
-            {processing && t('Processing...')}
-            {(error != null || errorType != null) && t('Upload Failed!')}
-            {!waiting &&
-              !uploading &&
-              !processing &&
-              !errorType &&
-              error == null &&
-              t('Drop a video here')}
-          </Typography>
+          {(waiting ||
+            uploading ||
+            processing ||
+            error != null ||
+            errorType != null) && (
+            <Typography
+              variant="body1"
+              color={
+                error != null || errorType != null
+                  ? 'error.main'
+                  : 'secondary.main'
+              }
+              sx={{ display: { xs: 'none', sm: 'block' } }}
+            >
+              {waiting && t('Waiting in queue...')}
+              {uploading && t('Uploading...')}
+              {processing && t('Processing...')}
+              {(error != null || errorType != null) && t('Upload Failed!')}
+            </Typography>
+          )}
           <Typography
             variant="caption"
             color="secondary.main"
