@@ -136,7 +136,9 @@ export const basic: TreeBlock[] = [
             focalTop: 50,
             customizable: null
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -249,7 +251,9 @@ export const basic: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -362,7 +366,9 @@ export const basic: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -475,7 +481,9 @@ export const basic: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   }
@@ -579,7 +587,9 @@ export const imageBlocks: TreeBlock[] = [
             focalTop: 50,
             customizable: null
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -679,7 +689,9 @@ export const imageBlocks: TreeBlock[] = [
             focalTop: 50,
             customizable: null
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -767,7 +779,9 @@ export const imageBlocks: TreeBlock[] = [
             focalTop: 50,
             customizable: null
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -870,7 +884,9 @@ export const imageBlocks: TreeBlock[] = [
             focalTop: 50,
             customizable: null
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -992,7 +1008,9 @@ export const imageBlocks: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   }
@@ -1084,7 +1102,9 @@ export const videoBlocks: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -1181,7 +1201,9 @@ export const videoBlocks: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -1256,7 +1278,9 @@ export const videoBlocks: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -1314,7 +1338,9 @@ export const videoBlocks: TreeBlock[] = [
             notes: null,
             children: []
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   }
@@ -1390,7 +1416,9 @@ export const videoBlocksNoPoster: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -1487,7 +1515,9 @@ export const videoBlocksNoPoster: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -1562,7 +1592,9 @@ export const videoBlocksNoPoster: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -1620,7 +1652,9 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             notes: null,
             children: []
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   }
@@ -1705,7 +1739,9 @@ export const videoBlocksNoVideo: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -1802,7 +1838,9 @@ export const videoBlocksNoVideo: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -1877,7 +1915,9 @@ export const videoBlocksNoVideo: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -1935,7 +1975,9 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             notes: null,
             children: []
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   }
@@ -2072,7 +2114,9 @@ export const videoLoop: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -2152,7 +2196,9 @@ export const videoLoop: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -2227,7 +2273,9 @@ export const videoLoop: TreeBlock[] = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   }

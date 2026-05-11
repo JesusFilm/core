@@ -1,6 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
+import { resolvedParams } from '../../../../../../../../../test/utils/resolvedParams'
+
 // Import the component under test
 import AddVideoVariantDownloadDialog from './page'
 
@@ -379,11 +381,11 @@ describe('AddVideoVariantDownloadDialog', () => {
 
     render(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 
@@ -402,11 +404,11 @@ describe('AddVideoVariantDownloadDialog', () => {
   it('navigates back when dialog is closed', () => {
     render(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 
@@ -422,11 +424,11 @@ describe('AddVideoVariantDownloadDialog', () => {
   it('shows auto generate option when Mux video is available', () => {
     render(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 
@@ -448,11 +450,11 @@ describe('AddVideoVariantDownloadDialog', () => {
     // First render with high quality (should have "Add" button)
     const { rerender } = render(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 
@@ -469,11 +471,11 @@ describe('AddVideoVariantDownloadDialog', () => {
     // Re-render to reflect the new quality value
     rerender(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 

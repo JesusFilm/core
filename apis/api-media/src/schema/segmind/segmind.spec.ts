@@ -1,3 +1,5 @@
+import { type Mock, vi } from 'vitest'
+
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -9,13 +11,13 @@ import {
 
 import { SegmindModelEnum } from './enums/segmindModel'
 
-const mockCreateImageFromText = createImageFromText as jest.Mock
-const mockCreateImageFromResponse = createImageFromResponse as jest.Mock
+const mockCreateImageFromText = createImageFromText as Mock
+const mockCreateImageFromResponse = createImageFromResponse as Mock
 
-jest.mock('../cloudflare/image/service', () => ({
+vi.mock('../cloudflare/image/service', () => ({
   __esModule: true,
-  createImageFromResponse: jest.fn(),
-  createImageFromText: jest.fn()
+  createImageFromResponse: vi.fn(),
+  createImageFromText: vi.fn()
 }))
 
 describe('segmind', () => {
@@ -58,7 +60,8 @@ describe('segmind', () => {
         aspectRatio: null,
         videoId: null,
         blurhash: null,
-        blurhashAttemptedAt: null
+        blurhashAttemptedAt: null,
+        isAi: true
       })
       const result = await authClient({
         document: CREATE_IMAGE_BY_SEGMIND_PROMPT_MUTATION,
@@ -80,7 +83,8 @@ describe('segmind', () => {
         data: {
           id: 'id',
           uploaded: true,
-          userId: 'testUserId'
+          userId: 'testUserId',
+          isAi: true
         }
       })
     })

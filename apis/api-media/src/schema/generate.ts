@@ -4,8 +4,7 @@ import { printSubgraphSchema } from '@apollo/subgraph'
 import { lexicographicSortSchema } from 'graphql'
 
 import { logger } from './logger'
-
-import { schema } from '.'
+import { schema } from './schema'
 
 const filename = 'apis/api-media/schema.graphql'
 export function generate(): void {
