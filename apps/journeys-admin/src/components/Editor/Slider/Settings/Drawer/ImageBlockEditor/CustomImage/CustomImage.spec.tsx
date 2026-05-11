@@ -29,7 +29,7 @@ describe('CustomImage', () => {
   const myImagesMock: MockedResponse = {
     request: {
       query: GET_MY_CLOUDFLARE_IMAGES,
-      variables: { offset: 0, limit: 9, isAi: false }
+      variables: { offset: 0, limit: 11, isAi: false }
     },
     result: {
       data: {
@@ -63,10 +63,8 @@ describe('CustomImage', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(screen.queryByText('Your uploads')).not.toBeInTheDocument()
-    expect(
-      screen.queryByTestId('MediaLibrary')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Uploads')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('MediaLibrary')).not.toBeInTheDocument()
   })
 
   it('should render the uploads grid when mediaLibrary flag is on', async () => {
@@ -78,8 +76,8 @@ describe('CustomImage', () => {
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.getByText('Your uploads')).toBeInTheDocument()
+      expect(screen.getByTestId('MediaLibrary')).toBeInTheDocument()
     })
-    expect(screen.getByTestId('MediaLibrary')).toBeInTheDocument()
+    expect(screen.getByText('Uploads')).toBeInTheDocument()
   })
 })

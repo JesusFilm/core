@@ -113,7 +113,7 @@ describe('AIGallery', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(screen.queryByText('Your generations')).not.toBeInTheDocument()
+    expect(screen.queryByText('Generations')).not.toBeInTheDocument()
     expect(
       screen.queryByTestId('MediaLibrary')
     ).not.toBeInTheDocument()
@@ -123,7 +123,7 @@ describe('AIGallery', () => {
     const myAiImagesMock: MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
-        variables: { offset: 0, limit: 9, isAi: true }
+        variables: { offset: 0, limit: 11, isAi: true }
       },
       result: {
         data: {
@@ -148,7 +148,7 @@ describe('AIGallery', () => {
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.getByText('Your generations')).toBeInTheDocument()
+      expect(screen.getByText('Generations')).toBeInTheDocument()
     })
   })
 
