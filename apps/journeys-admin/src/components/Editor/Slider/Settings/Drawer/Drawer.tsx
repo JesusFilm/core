@@ -113,7 +113,7 @@ export function Drawer({
           top: { xs: 0, md: 32 },
           right: { xs: 0, md: 32 },
           bottom: 0,
-          height: 'calc(100% - 20px)'
+          height: { xs: '100%', sm: 'calc(100% - 20px)' }
         }
       }}
     >
