@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
@@ -26,10 +26,47 @@ interface TranslationVariables {
   userLanguageName?: string
 }
 
-function getJourneyIdParam(value: string | string[] | undefined): string | null {
+function getJourneyIdParam(
+  value: string | string[] | undefined
+): string | null {
   if (Array.isArray(value)) return value[0] ?? null
   if (typeof value === 'string' && value.length > 0) return value
   return null
+}
+
+// Cross-tab idempotency: a session-storage lock that blocks the same
+// journeyId+teamId from being duplicated again while a mutation is in
+// flight elsewhere (e.g. the deep link opened in two tabs, or browser-
+// back replays the URL after a successful submit). Keyed in sessionStorage
+// so it expires with the tab; TTL is a defence-in-depth so a crashed tab
+// doesn't lock the user out for the rest of the session.
+const LOCK_PREFIX = 'useTemplate:lock:'
+const LOCK_TTL_MS = 5 * 60 * 1000
+
+function lockKey(journeyId: string, teamId: string): string {
+  return `${LOCK_PREFIX}${journeyId}:${teamId}`
+}
+
+function isLocked(key: string): boolean {
+  if (typeof window === 'undefined') return false
+  const raw = window.sessionStorage.getItem(key)
+  if (raw == null) return false
+  const ts = Number(raw)
+  if (Number.isNaN(ts) || Date.now() - ts > LOCK_TTL_MS) {
+    window.sessionStorage.removeItem(key)
+    return false
+  }
+  return true
+}
+
+function acquireLock(key: string): void {
+  if (typeof window === 'undefined') return
+  window.sessionStorage.setItem(key, Date.now().toString())
+}
+
+function releaseLock(key: string): void {
+  if (typeof window === 'undefined') return
+  window.sessionStorage.removeItem(key)
 }
 
 /**
@@ -38,8 +75,9 @@ function getJourneyIdParam(value: string | string[] | undefined): string | null 
  *
  * When the param is present, fetches the public template, opens a confirm
  * dialog defaulted to the active team, calls `journeyDuplicate` on submit,
- * routes to the journey list with the new copy in view, and strips the
- * param on close.
+ * routes to `/?type=journeys&refresh=true` so the new copy appears in the
+ * journey list, and strips the param via shallow `router.replace` on plain
+ * dismiss/error.
  */
 export function UseTemplateDeepLink(): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
@@ -53,6 +91,13 @@ export function UseTemplateDeepLink(): ReactElement | null {
   const [translationVariables, setTranslationVariables] = useState<
     TranslationVariables | undefined
   >(undefined)
+
+  // Set true the moment a success/error path issues `router.replace` to the
+  // journey list. CopyToTeamDialog calls `onClose()` after submitAction
+  // resolves on the non-translation success path; without this guard,
+  // handleClose would fire `stripParamFromUrl` and clobber the intentional
+  // `?type=journeys&refresh=true` destination back to bare `/`.
+  const navigatedAwayRef = useRef(false)
 
   useEffect(() => {
     if (journeyId != null) setOpen(true)
@@ -80,6 +125,15 @@ export function UseTemplateDeepLink(): ReactElement | null {
     )
   }, [router])
 
+  const navigateToJourneyList = useCallback((): void => {
+    navigatedAwayRef.current = true
+    void router.replace(
+      { pathname: '/', query: { type: 'journeys', refresh: 'true' } },
+      undefined,
+      { shallow: true }
+    )
+  }, [router])
+
   const { data: translationData } = useJourneyAiTranslateSubscription({
     variables: translationVariables,
     skip: translationVariables == null,
@@ -91,8 +145,7 @@ export function UseTemplateDeepLink(): ReactElement | null {
       setLoading(false)
       setTranslationVariables(undefined)
       setOpen(false)
-      stripParamFromUrl()
-      void router.push('/?type=journeys&refresh=true')
+      navigateToJourneyList()
     },
     onError(error) {
       enqueueSnackbar(error.message, {
@@ -102,7 +155,10 @@ export function UseTemplateDeepLink(): ReactElement | null {
       setLoading(false)
       setTranslationVariables(undefined)
       setOpen(false)
-      stripParamFromUrl()
+      // The duplicate mutation already succeeded before translation began,
+      // so the (untranslated) journey exists. Take the user to the list
+      // instead of leaving them on the deep-link URL with no breadcrumb.
+      navigateToJourneyList()
     }
   })
 
@@ -114,11 +170,31 @@ export function UseTemplateDeepLink(): ReactElement | null {
     ): Promise<void> => {
       if (journeyId == null) return
 
-      const wantsTranslation = showTranslation === true && selectedLanguage != null
+      const wantsTranslation =
+        showTranslation === true && selectedLanguage != null
 
       // Translation needs the source journey to read its current language
-      // metadata; if it hasn't resolved yet the user must wait.
-      if (wantsTranslation && journey == null) return
+      // metadata; surface a hint instead of silently swallowing the click.
+      if (wantsTranslation && journey == null) {
+        enqueueSnackbar(t('Loading template — please retry'), {
+          variant: 'info',
+          preventDuplicate: true
+        })
+        return
+      }
+
+      const key = lockKey(journeyId, teamId)
+      if (isLocked(key)) {
+        enqueueSnackbar(t('Already creating a copy — please wait'), {
+          variant: 'warning',
+          preventDuplicate: true
+        })
+        // Throw so the dialog's submit pipeline halts before its auto-onClose
+        // call — keep the dialog open so the user can decide when to dismiss
+        // instead of having it vanish under them.
+        throw new Error('useTemplate:lock-busy')
+      }
+      acquireLock(key)
 
       setLoading(true)
       try {
@@ -131,16 +207,22 @@ export function UseTemplateDeepLink(): ReactElement | null {
         }
 
         if (!wantsTranslation || journey == null) {
+          releaseLock(key)
           setLoading(false)
           enqueueSnackbar(t('Journey Copied'), {
             variant: 'success',
             preventDuplicate: true
           })
-          void router.push('/?type=journeys&refresh=true')
+          navigateToJourneyList()
           // Dialog auto-closes via its own onClose call after submitAction
-          // resolves; that path fires handleClose which strips the param.
+          // resolves; navigatedAwayRef tells handleClose to skip stripping
+          // the param so the journey-list nav above isn't clobbered.
           return
         }
+
+        // Translation path: the duplicate already ran, so release the lock
+        // before handing off to the subscription.
+        releaseLock(key)
 
         const currentLanguageName =
           journey.language.name.find(({ primary }) => !primary)?.value ?? ''
@@ -156,6 +238,7 @@ export function UseTemplateDeepLink(): ReactElement | null {
           userLanguageName: currentLanguageName
         })
       } catch (error) {
+        releaseLock(key)
         setLoading(false)
         enqueueSnackbar(t('Journey duplication failed'), {
           variant: 'error',
@@ -166,12 +249,23 @@ export function UseTemplateDeepLink(): ReactElement | null {
         throw error
       }
     },
-    [journeyId, journey, journeyDuplicate, enqueueSnackbar, t, router]
+    [
+      journeyId,
+      journey,
+      journeyDuplicate,
+      enqueueSnackbar,
+      t,
+      navigateToJourneyList
+    ]
   )
 
   const handleClose = useCallback((): void => {
     if (loading || translationVariables != null) return
     setOpen(false)
+    if (navigatedAwayRef.current) {
+      navigatedAwayRef.current = false
+      return
+    }
     stripParamFromUrl()
   }, [loading, translationVariables, stripParamFromUrl])
 
