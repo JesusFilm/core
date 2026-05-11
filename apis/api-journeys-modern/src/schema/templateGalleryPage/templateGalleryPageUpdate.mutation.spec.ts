@@ -1,3 +1,4 @@
+import { Prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
@@ -367,6 +368,77 @@ describe('templateGalleryPageUpdate', () => {
         expect.objectContaining({
           message: expect.stringContaining('slug must contain only')
         })
+      ]
+    })
+  })
+
+  it('surfaces P2002 on slug as SlugTakenError (concurrent-Update slug race)', async () => {
+    // Two concurrent Updates can both pass validateUserSuppliedSlug
+    // (which runs outside the tx); the loser trips the slug UNIQUE
+    // constraint at commit. Make sure that surfaces as the same
+    // BAD_USER_INPUT/field=slug shape the validation path uses, not a
+    // raw Prisma P2002 leaking out as a 500.
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'p1',
+      teamId: 'team-1'
+    } as any)
+    // validateUserSuppliedSlug's findFirst returns null — slug looks free
+    // at validation time, but the inner update races a sibling write.
+    prismaMock.templateGalleryPage.findFirst.mockResolvedValue(null)
+    prismaMock.templateGalleryPage.update.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('unique constraint', {
+        code: 'P2002',
+        clientVersion: '7.0.0',
+        meta: { target: ['slug'] }
+      })
+    )
+
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_UPDATE,
+      variables: { id: 'p1', input: { slug: 'taken-mid-flight' } }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'slug already in use',
+          extensions: expect.objectContaining({
+            code: 'BAD_USER_INPUT',
+            field: 'slug'
+          })
+        })
+      ]
+    })
+  })
+
+  it('does not swallow P2002 errors from non-slug targets', async () => {
+    // Defensive: only convert P2002 to SlugTakenError when the conflict
+    // is actually on the slug column. Other P2002s (e.g. from the join
+    // table) must propagate so the caller sees the real failure.
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'p1',
+      teamId: 'team-1'
+    } as any)
+    prismaMock.templateGalleryPage.update.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('other unique constraint', {
+        code: 'P2002',
+        clientVersion: '7.0.0',
+        meta: { target: ['someOtherColumn'] }
+      })
+    )
+
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_UPDATE,
+      variables: { id: 'p1', input: { title: 'new title' } }
+    })
+
+    // Surfaces as the raw Prisma error wrapped by GraphQL, NOT as
+    // SlugTakenError.
+    expect(result).not.toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({ message: 'slug already in use' })
       ]
     })
   })

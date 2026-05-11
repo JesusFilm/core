@@ -8,14 +8,17 @@ import { builder } from '../builder'
 import { lockPage } from './applyContiguousOrder'
 import { assertHttpsUrl } from './assertHttpsUrl'
 import { filterToTeamTemplates } from './filterToTeamTemplates'
-import { validateUserSuppliedSlug } from './generateUniqueSlug'
+import {
+  SlugTakenError,
+  validateUserSuppliedSlug
+} from './generateUniqueSlug'
 import { TemplateGalleryPageUpdateInput } from './inputs'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      "Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced — existing assignments are deleted and recreated in the given order. Single-membership is enforced: if any supplied journey id is currently a member of another TemplateGalleryPage, the call fails before any write. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the page's team.\n- BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks.\n- BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.\n- CONFLICT (field: `journeyIds`; extension `journeyId` carries the offending id): one of the supplied journeys is already a member of another TemplateGalleryPage.",
+      "Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced — existing assignments are deleted and recreated in the given order. Single-membership is enforced: if any supplied journey id is currently a member of another TemplateGalleryPage, the call fails before any write. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the page's team.\n- BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks — including the concurrent-Update race where two callers pass the same slug and the second one trips the DB unique constraint at commit time.\n- BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.\n- CONFLICT (field: `journeyIds`; extension `journeyId` carries the offending id): one of the supplied journeys is already a member of another TemplateGalleryPage.",
     type: TemplateGalleryPageRef,
     nullable: false,
     args: {
@@ -132,11 +135,29 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
           data.creatorImageAlt = input.creatorImageAlt
         }
 
-        return await tx.templateGalleryPage.update({
-          ...query,
-          where: { id },
-          data
-        })
+        // P2002 on the slug UNIQUE constraint can fire under two concurrent
+        // Updates with the same slug: validateUserSuppliedSlug runs outside
+        // the transaction, so both calls pass validation, one writes first,
+        // the second trips the constraint at commit. Surface as
+        // SlugTakenError (same shape as the up-front validation) instead of
+        // leaking a Prisma P2002 as an unwrapped 500.
+        try {
+          return await tx.templateGalleryPage.update({
+            ...query,
+            where: { id },
+            data
+          })
+        } catch (error) {
+          if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === 'P2002' &&
+            Array.isArray(error.meta?.target) &&
+            (error.meta.target as string[]).includes('slug')
+          ) {
+            throw new SlugTakenError()
+          }
+          throw error
+        }
       })
     }
   })
