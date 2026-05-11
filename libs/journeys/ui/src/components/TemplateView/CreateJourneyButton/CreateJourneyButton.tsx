@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem'
 import { sendGTMEvent } from '@next/third-parties/google'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
@@ -23,6 +23,7 @@ export interface JourneyForTemplate {
   template?: boolean | null
   customizable?: boolean | null
   fromTemplateId?: string | null
+  team?: { id: string } | null
   language: {
     id: string
     name: Array<{ value: string; primary: boolean }>
@@ -359,6 +360,10 @@ export function CreateJourneyButton({
           isTranslating={translationVariables != null}
           journeyIsTemplate={journeyDataToUse?.template ?? false}
           journeyFromTemplateId={journeyDataToUse?.fromTemplateId}
+          defaultToActiveTeam={
+            journeyDataToUse?.team != null &&
+            journeyDataToUse.team.id !== 'jfp-team'
+          }
         />
       )}
     </>

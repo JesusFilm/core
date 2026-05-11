@@ -315,6 +315,8 @@ export type CardBlock = Block & {
    */
   coverBlockId?: Maybe<Scalars['ID']['output']>;
   eventLabel?: Maybe<BlockEventLabel>;
+  /** When true, the chat drawer auto-opens on first visit to this card. */
+  expandChatByDefault?: Maybe<Scalars['Boolean']['output']>;
   /**
    * fullscreen should control how the coverBlock is displayed. When fullscreen
    * is set to true the coverBlock Image should be displayed as a blur in the
@@ -325,6 +327,8 @@ export type CardBlock = Block & {
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  /** When true, this card displays the AI chat button. */
+  showAssistant?: Maybe<Scalars['Boolean']['output']>;
   /**
    * themeMode can override journey themeMode. If nothing is set then use
    * themeMode from journey
@@ -354,8 +358,10 @@ export type CardBlockUpdateInput = {
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   coverBlockId?: InputMaybe<Scalars['ID']['input']>;
   eventLabel?: InputMaybe<BlockEventLabel>;
+  expandChatByDefault?: InputMaybe<Scalars['Boolean']['input']>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  showAssistant?: InputMaybe<Scalars['Boolean']['input']>;
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
 };
@@ -451,13 +457,16 @@ export type CloudflareImage = {
   blurhash?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
+  isAi?: Maybe<Scalars['Boolean']['output']>;
   mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
   mobileCinematicLow?: Maybe<Scalars['String']['output']>;
   mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
   thumbnail?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
   uploadUrl?: Maybe<Scalars['String']['output']>;
   url?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
+  videoId?: Maybe<Scalars['ID']['output']>;
   videoStill?: Maybe<Scalars['String']['output']>;
 };
 
@@ -645,19 +654,9 @@ export type CustomDomain = {
 
 export type CustomDomainCheck = {
   __typename?: 'CustomDomainCheck';
-  /**
-   * Is the domain correctly configured in the DNS?
-   * If false, A Record and CNAME Record should be added by the user.
-   */
   configured: Scalars['Boolean']['output'];
-  /** Verification records to be added to the DNS to confirm ownership. */
   verification?: Maybe<Array<CustomDomainVerification>>;
-  /** Reasoning as to why verification is required. */
   verificationResponse?: Maybe<CustomDomainVerificationResponse>;
-  /**
-   * Does the domain belong to the team?
-   * If false, verification and verificationResponse will be populated.
-   */
   verified: Scalars['Boolean']['output'];
 };
 
@@ -1122,6 +1121,7 @@ export type Journey = {
   seoDescription?: Maybe<Scalars['String']['output']>;
   /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
+  /** @deprecated Use CardBlock.showAssistant. Removal tracked in NES-1624. */
   showAssistant?: Maybe<Scalars['Boolean']['output']>;
   showChatButtons?: Maybe<Scalars['Boolean']['output']>;
   showDislikeButton?: Maybe<Scalars['Boolean']['output']>;
@@ -3860,6 +3860,7 @@ export type Query = {
    */
   journeysPlausibleStatsTimeseries: Array<PlausibleStatsResponse>;
   keywords: Array<Keyword>;
+  keywordsCount: Scalars['Int']['output'];
   language?: Maybe<Language>;
   languages: Array<Language>;
   languagesCount: Scalars['Int']['output'];
@@ -3898,8 +3899,16 @@ export type Query = {
   video: Video;
   videoEdition?: Maybe<VideoEdition>;
   videoEditions: Array<VideoEdition>;
+  videoEditionsCount: Scalars['Int']['output'];
+  videoImages: Array<CloudflareImage>;
+  videoImagesCount: Scalars['Int']['output'];
   videoOrigins: Array<VideoOrigin>;
+  videoOriginsCount: Scalars['Int']['output'];
+  videoSubtitles: Array<VideoSubtitle>;
+  videoSubtitlesCount: Scalars['Int']['output'];
   videoVariant: VideoVariant;
+  videoVariantDownloads: Array<VideoVariantDownload>;
+  videoVariantDownloadsCount: Scalars['Int']['output'];
   videoVariants: Array<VideoVariant>;
   videoVariantsCount: Scalars['Int']['output'];
   videos: Array<Video>;
@@ -4023,6 +4032,7 @@ export type QueryGetMyCloudflareImageArgs = {
 
 
 export type QueryGetMyCloudflareImagesArgs = {
+  isAi?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -4168,6 +4178,13 @@ export type QueryJourneysPlausibleStatsTimeseriesArgs = {
 
 
 export type QueryKeywordsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<KeywordsFilter>;
+};
+
+
+export type QueryKeywordsCountArgs = {
   where?: InputMaybe<KeywordsFilter>;
 };
 
@@ -4346,8 +4363,68 @@ export type QueryVideoEditionArgs = {
 };
 
 
+export type QueryVideoEditionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideoEditionsFilter>;
+};
+
+
+export type QueryVideoEditionsCountArgs = {
+  where?: InputMaybe<VideoEditionsFilter>;
+};
+
+
+export type QueryVideoImagesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideoImagesFilter>;
+};
+
+
+export type QueryVideoImagesCountArgs = {
+  where?: InputMaybe<VideoImagesFilter>;
+};
+
+
+export type QueryVideoOriginsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideoOriginsFilter>;
+};
+
+
+export type QueryVideoOriginsCountArgs = {
+  where?: InputMaybe<VideoOriginsFilter>;
+};
+
+
+export type QueryVideoSubtitlesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideoSubtitlesFilter>;
+};
+
+
+export type QueryVideoSubtitlesCountArgs = {
+  where?: InputMaybe<VideoSubtitlesFilter>;
+};
+
+
 export type QueryVideoVariantArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryVideoVariantDownloadsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideoVariantDownloadsFilter>;
+};
+
+
+export type QueryVideoVariantDownloadsCountArgs = {
+  where?: InputMaybe<VideoVariantDownloadsFilter>;
 };
 
 
@@ -5782,6 +5859,10 @@ export type VideoEditionUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type VideoEditionsFilter = {
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
 export type VideoExpandEvent = Event & {
   __typename?: 'VideoExpandEvent';
   /** time event was created */
@@ -5821,6 +5902,12 @@ export type VideoImageAlt = {
   value: Scalars['String']['output'];
 };
 
+export type VideoImagesFilter = {
+  aspectRatio?: InputMaybe<ImageAspectRatio>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  videoId?: InputMaybe<Scalars['ID']['input']>;
+};
+
 export enum VideoLabel {
   BehindTheScenes = 'behindTheScenes',
   Collection = 'collection',
@@ -5837,6 +5924,11 @@ export type VideoOrigin = {
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type VideoOriginsFilter = {
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type VideoPauseEvent = Event & {
@@ -6048,8 +6140,10 @@ export type VideoSubtitle = {
   srtSrc?: Maybe<Scalars['String']['output']>;
   /** version control for subtitle file */
   srtVersion: Scalars['Int']['output'];
+  updatedAt: Scalars['DateTime']['output'];
   value: Scalars['String']['output'];
   videoEdition: VideoEdition;
+  videoId: Scalars['ID']['output'];
   /** subtitle file */
   vttAsset?: Maybe<CloudflareR2>;
   vttSrc?: Maybe<Scalars['String']['output']>;
@@ -6082,6 +6176,14 @@ export type VideoSubtitleUpdateInput = {
   vttAssetId?: InputMaybe<Scalars['ID']['input']>;
   vttSrc?: InputMaybe<Scalars['String']['input']>;
   vttVersion?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type VideoSubtitlesFilter = {
+  edition?: InputMaybe<Scalars['String']['input']>;
+  languageId?: InputMaybe<Scalars['ID']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  videoId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type VideoTitle = {
@@ -6201,9 +6303,11 @@ export type VideoVariantDownload = {
   id: Scalars['ID']['output'];
   quality: VideoVariantDownloadQuality;
   size: Scalars['Float']['output'];
+  updatedAt: Scalars['DateTime']['output'];
   url: Scalars['String']['output'];
   /** master video file version */
   version: Scalars['Int']['output'];
+  videoVariantId?: Maybe<Scalars['ID']['output']>;
   width: Scalars['Int']['output'];
 };
 
@@ -6244,6 +6348,12 @@ export type VideoVariantDownloadUpdateInput = {
   version?: InputMaybe<Scalars['Int']['input']>;
   videoVariantId?: InputMaybe<Scalars['String']['input']>;
   width?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type VideoVariantDownloadsFilter = {
+  quality?: InputMaybe<VideoVariantDownloadQuality>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  videoVariantId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type VideoVariantFilter = {

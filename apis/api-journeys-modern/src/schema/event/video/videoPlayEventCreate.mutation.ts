@@ -18,10 +18,6 @@ builder.mutationField('videoPlayEventCreate', (t) =>
       const { input } = args
       const userId = context.user?.id
 
-      if (userId == null) {
-        throw new Error('User not authenticated')
-      }
-
       const { visitor, journeyId } = await validateBlockEvent(
         userId,
         input.blockId,

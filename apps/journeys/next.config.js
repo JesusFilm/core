@@ -33,10 +33,6 @@ const nextConfig = {
     // handled by github actions
     ignoreBuildErrors: process.env.CI === 'true'
   },
-  eslint: {
-    // handled by github actions
-    ignoreDuringBuilds: process.env.CI === 'true'
-  },
   transpilePackages: ['journeys-ui'],
   outputFileTracingExcludes: {
     '*': [

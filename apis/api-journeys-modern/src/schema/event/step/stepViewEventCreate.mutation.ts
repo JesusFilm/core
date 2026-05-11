@@ -18,10 +18,6 @@ builder.mutationField('stepViewEventCreate', (t) =>
       const { input } = args
       const userId = context.user?.id
 
-      if (userId == null) {
-        throw new Error('User not authenticated')
-      }
-
       const { visitor, journeyVisitor, journeyId } = await validateBlockEvent(
         userId,
         input.blockId,
@@ -33,6 +29,7 @@ builder.mutationField('stepViewEventCreate', (t) =>
           data: {
             ...(input.id != null ? { id: input.id } : {}),
             typename: 'StepViewEvent',
+            blockId: input.blockId,
             value: input.value ?? undefined,
             visitor: { connect: { id: visitor.id } },
             journey: { connect: { id: journeyId } },

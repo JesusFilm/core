@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
 
+import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
+
 // Import the component under test
 import DownloadPage from './page'
 
@@ -32,7 +34,10 @@ describe('Audio Variant Download Page', () => {
   it('should redirect to the variant page with correct path', () => {
     render(
       <DownloadPage
-        params={{ videoId: mockVideoId, variantId: mockVariantId }}
+        params={resolvedParams({
+          videoId: mockVideoId,
+          variantId: mockVariantId
+        })}
       />
     )
 
@@ -46,7 +51,10 @@ describe('Audio Variant Download Page', () => {
   it('should render an empty fragment (no visible UI)', () => {
     const { container } = render(
       <DownloadPage
-        params={{ videoId: mockVideoId, variantId: mockVariantId }}
+        params={resolvedParams({
+          videoId: mockVideoId,
+          variantId: mockVariantId
+        })}
       />
     )
 

@@ -1,4 +1,4 @@
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { transformer } from '@core/journeys/ui/transformer'
@@ -40,7 +40,9 @@ export function Custom404(): ReactElement {
       parentOrder: 0,
       themeMode: null,
       themeName: null,
-      eventLabel: null
+      eventLabel: null,
+      showAssistant: null,
+      expandChatByDefault: null
     },
     {
       __typename: 'ImageBlock',

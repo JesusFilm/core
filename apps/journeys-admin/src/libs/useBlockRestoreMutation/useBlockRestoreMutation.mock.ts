@@ -49,7 +49,9 @@ export const cardBlock = {
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
-  children: []
+  children: [],
+  showAssistant: null,
+  expandChatByDefault: null
 } as unknown as TreeBlock<CardBlock>
 
 export const useBlockRestoreMutationMock: MockedResponse<
@@ -116,7 +118,9 @@ const selectedStep: TreeBlock<StepBlock> = {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: [selectedBlock, block1, block2]
+      children: [selectedBlock, block1, block2],
+      showAssistant: null,
+      expandChatByDefault: null
     }
   ]
 }
@@ -150,7 +154,9 @@ export const restoreStepMock: MockedResponse<
           themeName: null,
           fullscreen: false,
           backdropBlur: null,
-          eventLabel: null
+          eventLabel: null,
+          showAssistant: null,
+          expandChatByDefault: null
         },
         selectedBlock,
         block1,
