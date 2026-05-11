@@ -187,8 +187,8 @@ export function ImageUpload({
             }}
           />
         )}
-        <Stack alignItems="center">
-          {(loading || uploadSuccess || hasError) && (
+        <Stack alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+          {loading || uploadSuccess || hasError ? (
             <Typography
               variant="body1"
               color={
@@ -198,7 +198,6 @@ export function ImageUpload({
                     ? 'success.main'
                     : 'error.main'
               }
-              sx={{ display: { xs: 'none', sm: 'block' } }}
             >
               {loading
                 ? t('Uploading...')
@@ -206,14 +205,16 @@ export function ImageUpload({
                   ? t('Upload Successful!')
                   : t('Upload Failed!')}
             </Typography>
+          ) : (
+            <>
+              <Typography variant="body1" color="secondary.main">
+                {t('Drop an image here')}
+              </Typography>
+              <Typography variant="caption" color="secondary.main">
+                {t('or click to browse your files')}
+              </Typography>
+            </>
           )}
-          <Typography
-            variant="caption"
-            color="secondary.main"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
-          >
-            {t('or click to browse your files')}
-          </Typography>
         </Stack>
         <Button
           variant="blockOutlined"

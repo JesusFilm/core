@@ -187,12 +187,12 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
             }}
           />
         )}
-        <Stack alignItems="center">
-          {(waiting ||
-            uploading ||
-            processing ||
-            error != null ||
-            errorType != null) && (
+        <Stack alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+          {waiting ||
+          uploading ||
+          processing ||
+          error != null ||
+          errorType != null ? (
             <Typography
               variant="body1"
               color={
@@ -200,21 +200,22 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
                   ? 'error.main'
                   : 'secondary.main'
               }
-              sx={{ display: { xs: 'none', sm: 'block' } }}
             >
               {waiting && t('Waiting in queue...')}
               {uploading && t('Uploading...')}
               {processing && t('Processing...')}
               {(error != null || errorType != null) && t('Upload Failed!')}
             </Typography>
+          ) : (
+            <>
+              <Typography variant="body1" color="secondary.main">
+                {t('Drop a video here')}
+              </Typography>
+              <Typography variant="caption" color="secondary.main">
+                {t('or click to browse your files')}
+              </Typography>
+            </>
           )}
-          <Typography
-            variant="caption"
-            color="secondary.main"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
-          >
-            {t('or click to browse your files')}
-          </Typography>
         </Stack>
         {waiting || uploading || processing ? (
           <Box sx={{ width: '100%' }}>
