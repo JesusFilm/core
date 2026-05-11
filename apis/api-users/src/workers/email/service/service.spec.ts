@@ -1,5 +1,6 @@
 import { render } from '@react-email/render'
 import { Job } from 'bullmq'
+import { MockedFunction, vi } from 'vitest'
 
 import { sendEmail } from '@core/yoga/email'
 
@@ -8,19 +9,19 @@ import { user } from '../../../schema/user/user.mock'
 
 import { type VerifyUserJob, service } from './service'
 
-jest.mock('@react-email/render')
+vi.mock('@react-email/render')
 
-jest.mock('@core/yoga/email')
+vi.mock('@core/yoga/email')
 
-const renderMock = render as jest.MockedFunction<typeof render>
-const sendEmailMock = sendEmail as jest.MockedFunction<typeof sendEmail>
+const renderMock = render as MockedFunction<typeof render>
+const sendEmailMock = sendEmail as MockedFunction<typeof sendEmail>
 
 describe('service', () => {
   const originalEnv = { ...process.env }
 
   beforeEach(() => {
     process.env.JOURNEYS_ADMIN_URL = 'https://admin.example.com'
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   afterEach(() => {
