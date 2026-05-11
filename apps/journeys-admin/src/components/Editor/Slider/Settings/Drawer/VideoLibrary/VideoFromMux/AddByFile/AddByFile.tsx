@@ -234,10 +234,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
                 pointerEvents: 'none'
               }}
             >
-              <Typography
-                variant="caption"
-                sx={{ color: 'common.white', fontWeight: 600 }}
-              >
+              <Typography variant="body2" sx={{ color: 'background.paper' }}>
                 {waiting && t('Waiting in queue...')}
                 {uploading &&
                   t('Uploading... {{progress}}%', {
