@@ -95,6 +95,16 @@ export const yoga = createYoga<
             'Query.getJourneyProfile': 0,
             'Query.getUserRole': 0,
             'Query.googleSheetsSyncs': 0,
+            // Team-scoped admin reads. The default TTL of Infinity caches the
+            // first response indefinitely, keyed only on (query, teamId). When
+            // a fresh user's first read returns an empty list, the cached
+            // entry has no TemplateGalleryPage entity IDs in it — so
+            // mutation-based invalidation cannot match it, and subsequent
+            // creates appear to "disappear" until the cache is manually
+            // flushed (NES-1648). templateGalleryPageBySlug (public renderer)
+            // is intentionally left at the default TTL.
+            'Query.templateGalleryPage': 0,
+            'Query.templateGalleryPages': 0,
             'Query.journeysPlausibleStatsAggregate': 5000,
             'Query.journeysPlausibleStatsBreakdown': 5000,
             'Query.journeysPlausibleStatsRealtimeVisitors': 5000,
