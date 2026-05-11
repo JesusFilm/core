@@ -27,22 +27,29 @@ builder.queryField('templateGalleryPage', (t) =>
     },
     resolve: async (query, _parent, args, context) => {
       const id = String(args.id)
-      const page = await prisma.templateGalleryPage.findUnique({
-        ...query,
-        where: { id }
+      // Two-step load: first a cheap {id, teamId} fetch for the auth check,
+      // then the full client-requested selection only after isInTeam passes.
+      // Without this, a request that will receive FORBIDDEN still pays for
+      // the full nested template/journey/team walk.
+      const auth = await prisma.templateGalleryPage.findUnique({
+        where: { id },
+        select: { id: true, teamId: true }
       })
-      if (page == null) {
+      if (auth == null) {
         throw new GraphQLError('template gallery page not found', {
           extensions: { code: 'NOT_FOUND' }
         })
       }
-      if (!(await isInTeam({ context, teamId: page.teamId }))) {
+      if (!(await isInTeam({ context, teamId: auth.teamId }))) {
         throw new GraphQLError(
           'user is not allowed to read template gallery page',
           { extensions: { code: 'FORBIDDEN' } }
         )
       }
-      return page
+      return await prisma.templateGalleryPage.findUniqueOrThrow({
+        ...query,
+        where: { id }
+      })
     }
   })
 )
