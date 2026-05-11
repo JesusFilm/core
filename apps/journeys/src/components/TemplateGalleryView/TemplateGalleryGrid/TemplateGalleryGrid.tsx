@@ -7,12 +7,10 @@ import { GalleryTemplateCard } from './GalleryTemplateCard'
 
 interface TemplateGalleryGridProps {
   templates: readonly GalleryTemplate[]
-  buildHref: (template: GalleryTemplate) => string
 }
 
 export function TemplateGalleryGrid({
-  templates,
-  buildHref
+  templates
 }: TemplateGalleryGridProps): ReactElement {
   return (
     <Box
@@ -36,20 +34,11 @@ export function TemplateGalleryGrid({
       }}
     >
       {templates.map((template, index) => (
-        <Box
+        <GalleryTemplateCard
           key={template.id}
-          sx={{
-            flex: '0 0 auto',
-            width: { xs: 220, sm: 240, md: 260 },
-            scrollSnapAlign: 'start'
-          }}
-        >
-          <GalleryTemplateCard
-            template={template}
-            href={buildHref(template)}
-            priority={index < 3}
-          />
-        </Box>
+          template={template}
+          priority={index < 3}
+        />
       ))}
     </Box>
   )

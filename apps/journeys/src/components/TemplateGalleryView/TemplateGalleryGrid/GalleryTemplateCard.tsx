@@ -2,7 +2,7 @@ import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { intlFormat, parseISO } from 'date-fns'
+import { intlFormat, isValid, parseISO } from 'date-fns'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
@@ -12,7 +12,6 @@ import { GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTe
 
 interface GalleryTemplateCardProps {
   template: GalleryTemplate
-  href: string
   priority?: boolean
 }
 
@@ -29,12 +28,11 @@ export function GalleryTemplateCard({
     localLanguage ?? nativeLanguage
   )
 
+  const parsedCreatedAt =
+    template.createdAt != null ? parseISO(String(template.createdAt)) : null
   const date =
-    template.createdAt != null
-      ? intlFormat(parseISO(String(template.createdAt)), {
-          month: 'long',
-          year: 'numeric'
-        })
+    parsedCreatedAt != null && isValid(parsedCreatedAt)
+      ? intlFormat(parsedCreatedAt, { month: 'long', year: 'numeric' })
       : null
   const metaParts = [date, displayLanguage].filter(
     (part): part is string => part != null && part !== ''
@@ -48,13 +46,14 @@ export function GalleryTemplateCard({
       data-testid="GalleryTemplateCard"
       sx={{
         position: 'relative',
-        display: 'block',
-        width: '100%',
+        flex: '0 0 auto',
+        width: { xs: 220, sm: 240, md: 260 },
         aspectRatio: '3 / 5',
         borderRadius: 3,
         overflow: 'hidden',
         backgroundColor: '#ECECEC',
-        color: 'common.white'
+        color: 'common.white',
+        scrollSnapAlign: 'start'
       }}
     >
       {imageSrc != null ? (
@@ -70,10 +69,7 @@ export function GalleryTemplateCard({
         <Stack
           alignItems="center"
           justifyContent="center"
-          sx={{
-            position: 'absolute',
-            inset: 0
-          }}
+          sx={{ position: 'absolute', inset: 0 }}
         >
           <InsertPhotoRoundedIcon
             sx={{ fontSize: 56, color: 'rgba(0, 0, 0, 0.25)' }}
