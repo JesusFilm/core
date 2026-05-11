@@ -962,17 +962,6 @@ describe('journeyAiTranslateCreateSubscription', () => {
     expect(radioOption?.parentBlockId).toBe('radio1')
   })
 
-  it('should translate customization fields in subscription', async () => {
-    // Verify that translateCustomizationFields is called with correct parameters
-    expect(mockTranslateCustomizationFields).toBeDefined()
-
-    // The function should be called during the subscription flow
-    // This is verified by the mock setup in beforeEach
-    expect(
-      mockTranslateCustomizationFields.mock.calls.length
-    ).toBeGreaterThanOrEqual(0)
-  })
-
   it('should handle journey with no customization fields', async () => {
     const journeyWithoutCustomization = {
       ...mockJourney,

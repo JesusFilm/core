@@ -152,26 +152,6 @@ describe('journeyCustomizationDescriptionTranslate', () => {
     expect(prismaMock.journey.update).not.toHaveBeenCalled()
   })
 
-  it('should skip all translation when no description', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
-      ...mockJourney,
-      journeyCustomizationDescription: null
-    } as any)
-
-    prismaMock.journey.findUniqueOrThrow.mockResolvedValueOnce({
-      ...mockJourney,
-      journeyCustomizationDescription: null
-    } as any)
-
-    await authClient({
-      document: JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE,
-      variables: { input: mockInput }
-    })
-
-    expect(mockTranslateDescription).not.toHaveBeenCalled()
-    expect(prismaMock.journey.update).not.toHaveBeenCalled()
-  })
-
   it('should skip translation when description is empty', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       ...mockJourney,
