@@ -162,67 +162,67 @@ export function VideoLibrary({
             }}
             data-testid="VideoLibrary"
           >
-          <Tabs
-            value={activeTab}
-            onChange={handleChange}
-            aria-label="video library tabs"
-          >
-            <Tab
-              icon={<MediaStrip1Icon />}
-              label={t('Library')}
-              {...tabA11yProps('video-from-local', LIBRARY_TAB)}
-              sx={{ flexGrow: 1 }}
-            />
-            <Tab
-              icon={<YoutubeIcon />}
-              label={t('YouTube')}
-              {...tabA11yProps('video-from-youtube', YOUTUBE_TAB)}
-              sx={{ flexGrow: 1 }}
-            />
-            <Tab
-              icon={<Upload1Icon />}
-              label={t('Upload')}
-              {...tabA11yProps('video-from-mux', UPLOAD_TAB)}
-              sx={{ flexGrow: 1 }}
-            />
-          </Tabs>
-        </Box>
+            <Tabs
+              value={activeTab}
+              onChange={handleChange}
+              aria-label="video library tabs"
+            >
+              <Tab
+                icon={<MediaStrip1Icon />}
+                label={t('Library')}
+                {...tabA11yProps('video-from-local', LIBRARY_TAB)}
+                sx={{ flexGrow: 1 }}
+              />
+              <Tab
+                icon={<YoutubeIcon />}
+                label={t('YouTube')}
+                {...tabA11yProps('video-from-youtube', YOUTUBE_TAB)}
+                sx={{ flexGrow: 1 }}
+              />
+              <Tab
+                icon={<Upload1Icon />}
+                label={t('Upload')}
+                {...tabA11yProps('video-from-mux', UPLOAD_TAB)}
+                sx={{ flexGrow: 1 }}
+              />
+            </Tabs>
+          </Box>
 
-        <Box
-          sx={{
-            width: '100%',
-            flexGrow: 1,
-            minHeight: 0,
-            overflowY: 'auto'
-          }}
-        >
-          <TabPanel
-            name="video-from-local"
-            value={activeTab}
-            index={LIBRARY_TAB}
-            sx={{ flexGrow: 1, overflow: 'auto' }}
+          <Box
+            sx={{
+              width: '100%',
+              flexGrow: 1,
+              minHeight: 0,
+              overflowY: 'auto'
+            }}
           >
-            <VideoFromLocal onSelect={onSelect} />
-          </TabPanel>
-          <TabPanel
-            name="video-from-youtube"
-            value={activeTab}
-            index={YOUTUBE_TAB}
-            sx={{ flexGrow: 1, overflow: 'auto' }}
-            unmountUntilVisible
-          >
-            <VideoFromYouTube onSelect={onSelect} />
-          </TabPanel>
-          <TabPanel
-            name="video-from-mux"
-            value={activeTab}
-            index={UPLOAD_TAB}
-            sx={{ flexGrow: 1, overflow: 'auto' }}
-            unmountUntilVisible
-          >
-            <VideoFromMux onSelect={onSelect} />
-          </TabPanel>
-        </Box>
+            <TabPanel
+              name="video-from-local"
+              value={activeTab}
+              index={LIBRARY_TAB}
+              sx={{ flexGrow: 1, overflow: 'auto' }}
+            >
+              <VideoFromLocal onSelect={onSelect} />
+            </TabPanel>
+            <TabPanel
+              name="video-from-youtube"
+              value={activeTab}
+              index={YOUTUBE_TAB}
+              sx={{ flexGrow: 1, overflow: 'auto' }}
+              unmountUntilVisible
+            >
+              <VideoFromYouTube onSelect={onSelect} />
+            </TabPanel>
+            <TabPanel
+              name="video-from-mux"
+              value={activeTab}
+              index={UPLOAD_TAB}
+              sx={{ flexGrow: 1, overflow: 'auto' }}
+              unmountUntilVisible
+            >
+              <VideoFromMux onSelect={onSelect} />
+            </TabPanel>
+          </Box>
         </Box>
       </Drawer>
       {selectedBlock?.videoId != null && uploadStatus == null && (
