@@ -206,6 +206,43 @@ describe('MediaLibrary', () => {
     ).toBeDisabled()
   })
 
+  it('should page via the mobile sentinel intersecting', async () => {
+    const callbacks: IntersectionObserverCallback[] = []
+    ;(globalThis as any).IntersectionObserver = class {
+      constructor(cb: IntersectionObserverCallback) {
+        callbacks.push(cb)
+      }
+      observe(): void {}
+      disconnect(): void {}
+      unobserve(): void {}
+      takeRecords(): IntersectionObserverEntry[] {
+        return []
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[firstFullPageMock, secondShortPageMock]}
+        cache={paginatedCache()}
+      >
+        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+      </MockedProvider>
+    )
+    await screen.findByTestId('media-library-image-img-0')
+    await waitFor(() => expect(callbacks.length).toBeGreaterThan(0))
+
+    callbacks[callbacks.length - 1](
+      [{ isIntersecting: true } as IntersectionObserverEntry],
+      {} as IntersectionObserver
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('media-library-image-img-11')
+      ).toBeInTheDocument()
+    })
+  })
+
   it('should forward isAi=true to the query variables', async () => {
     const aiMock: MockedResponse = {
       request: {

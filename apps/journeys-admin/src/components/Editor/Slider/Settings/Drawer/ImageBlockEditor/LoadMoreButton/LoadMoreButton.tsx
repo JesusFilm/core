@@ -25,6 +25,7 @@ export function LoadMoreButton({
       loading={loading}
       startIcon={<Plus2Icon />}
       size="medium"
+      fullWidth
     >
       {!hasMore
         ? t('No more to load')

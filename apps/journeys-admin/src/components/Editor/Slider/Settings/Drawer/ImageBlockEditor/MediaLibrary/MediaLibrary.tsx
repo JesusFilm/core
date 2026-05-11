@@ -1,4 +1,5 @@
 import { NetworkStatus, gql, useQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
@@ -126,12 +127,17 @@ export function MediaLibrary({
         selectedSrc={selectedSrc}
         handleSelect={handleSelect}
         uploading={uploading}
-      />
-      <LoadMoreButton
         hasMore={hasMore}
-        loading={isFetchingMore}
-        onClick={() => void handleLoadMore()}
+        loadingMore={isFetchingMore}
+        onLoadMore={() => void handleLoadMore()}
       />
+      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+        <LoadMoreButton
+          hasMore={hasMore}
+          loading={isFetchingMore}
+          onClick={() => void handleLoadMore()}
+        />
+      </Box>
     </Stack>
   )
 }
