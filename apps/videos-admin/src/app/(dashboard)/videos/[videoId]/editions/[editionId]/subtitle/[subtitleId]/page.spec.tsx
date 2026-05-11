@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
+import { resolvedParams } from '../../../../../../../../test/utils/resolvedParams'
+
 import SubtitlePage from './page'
 
 // Mock the components used in the page
@@ -146,11 +148,11 @@ describe('SubtitlePage', () => {
     render(
       <SnackbarProvider>
         <SubtitlePage
-          params={{
+          params={resolvedParams({
             videoId: 'video-123',
             editionId: 'edition-123',
             subtitleId: 'subtitle-123'
-          }}
+          })}
         />
       </SnackbarProvider>
     )
