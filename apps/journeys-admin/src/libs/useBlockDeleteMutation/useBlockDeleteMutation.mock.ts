@@ -57,7 +57,9 @@ export const selectedStepCardBlock: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: [selectedBlock, block1, block2]
+  children: [selectedBlock, block1, block2],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 export const selectedStep: TreeBlock<StepBlock> = {

@@ -1,5 +1,6 @@
-import { mockDeep } from 'jest-mock-extended'
 import { createApi } from 'unsplash-js'
+import { vi } from 'vitest'
+import { mockDeep } from 'vitest-mock-extended'
 
 import { UnsplashColorEnum } from './enums/UnsplashColor'
 import { UnsplashContentFilterEnum } from './enums/UnsplashContentFilter'
@@ -14,10 +15,10 @@ import { unsplashImageReponse, unsplashListResponse } from './testData'
 
 const mockUnsplashApi = mockDeep<ReturnType<typeof createApi>>()
 
-jest.mock('unsplash-js', () => {
+vi.mock('unsplash-js', () => {
   return {
     __esModule: true,
-    createApi: jest.fn(() => mockUnsplashApi)
+    createApi: vi.fn(() => mockUnsplashApi)
   }
 })
 

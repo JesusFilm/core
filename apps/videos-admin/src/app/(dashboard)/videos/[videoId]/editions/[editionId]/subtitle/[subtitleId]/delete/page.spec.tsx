@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
+import { resolvedParams } from '../../../../../../../../../test/utils/resolvedParams'
+
 import SubtitleDeletePage from './page'
 
 // Mock the Apollo Client hooks
@@ -41,11 +43,11 @@ describe('SubtitleDeletePage', () => {
     render(
       <SnackbarProvider>
         <SubtitleDeletePage
-          params={{
+          params={resolvedParams({
             videoId: 'video-123',
             editionId: 'edition-123',
             subtitleId: 'subtitle-123'
-          }}
+          })}
         />
       </SnackbarProvider>
     )
@@ -79,11 +81,11 @@ describe('SubtitleDeletePage', () => {
     render(
       <SnackbarProvider>
         <SubtitleDeletePage
-          params={{
+          params={resolvedParams({
             videoId: 'video-123',
             editionId: 'edition-123',
             subtitleId: 'subtitle-123'
-          }}
+          })}
         />
       </SnackbarProvider>
     )
@@ -107,11 +109,11 @@ describe('SubtitleDeletePage', () => {
     render(
       <SnackbarProvider>
         <SubtitleDeletePage
-          params={{
+          params={resolvedParams({
             videoId: 'video-123',
             editionId: 'edition-123',
             subtitleId: 'subtitle-123'
-          }}
+          })}
         />
       </SnackbarProvider>
     )

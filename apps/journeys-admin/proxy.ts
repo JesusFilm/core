@@ -151,9 +151,7 @@ function handleLocaleRedirect(
   return response
 }
 
-export default async function middleware(
-  req: NextRequest
-): Promise<NextResponse> {
+export default async function proxy(req: NextRequest): Promise<NextResponse> {
   return await authMiddleware(req, {
     ...authConfig,
     loginPath: '/api/login',

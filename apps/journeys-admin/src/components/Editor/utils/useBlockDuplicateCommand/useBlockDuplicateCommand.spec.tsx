@@ -20,7 +20,9 @@ const block: CardBlock = {
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
-  eventLabel: null
+  eventLabel: null,
+  showAssistant: null,
+  expandChatByDefault: null
 }
 const execute = jest.fn().mockResolvedValue(block)
 

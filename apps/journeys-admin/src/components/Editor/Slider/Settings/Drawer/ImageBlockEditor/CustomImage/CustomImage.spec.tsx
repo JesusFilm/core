@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
@@ -45,14 +45,14 @@ describe('CustomImage', () => {
     }
   }
 
-  it('should render custom url image upload', () => {
-    const { getByRole, getByText } = render(
+  it('should render image upload', () => {
+    render(
       <MockedProvider>
         <CustomImage onChange={jest.fn()} selectedBlock={imageBlock} />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    expect(getByText('Paste URL of image...')).toBeInTheDocument()
+
+    expect(screen.getByTestId('ImageUpload')).toBeInTheDocument()
   })
 
   it('should not render the uploads grid when mediaLibrary flag is off', async () => {

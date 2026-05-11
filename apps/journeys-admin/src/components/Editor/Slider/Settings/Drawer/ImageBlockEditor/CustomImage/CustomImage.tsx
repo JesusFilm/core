@@ -9,7 +9,6 @@ import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import { MediaLibraryImagesGrid } from '../MediaLibraryImagesGrid'
 
-import { CustomUrl } from './CustomUrl'
 import { ImageUpload } from './ImageUpload'
 
 interface CustomImageProps {
@@ -48,8 +47,6 @@ export function CustomImage({
         selectedBlock={selectedBlock}
         error={error}
       />
-      <Divider sx={{ my: 4 }} />
-      <CustomUrl onChange={onChange} />
       {mediaLibrary === true && (
         <>
           <Divider sx={{ my: 4 }} />
