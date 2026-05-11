@@ -137,10 +137,10 @@ export function ImageUpload({
       <Box
         data-testid="drop zone"
         sx={{
-          mt: { xs: 0, sm: 3 },
+          mt: 3,
           display: 'flex',
           width: '100%',
-          minHeight: { xs: 0, sm: 200 },
+          minHeight: { xs: 0, sm: 162 },
           borderWidth: { xs: 0, sm: noBorder ? 0 : 2 },
           backgroundColor: {
             xs: 'transparent',
@@ -166,7 +166,7 @@ export function ImageUpload({
           <Upload1IconIcon
             sx={{
               display: { xs: 'none', sm: 'flex' },
-              fontSize: 48,
+              fontSize: 30,
               color: 'secondary.light'
             }}
           />
@@ -174,7 +174,7 @@ export function ImageUpload({
           <CheckBrokenIcon
             sx={{
               display: { xs: 'none', sm: 'flex' },
-              fontSize: 48,
+              fontSize: 30,
               color: 'success.main'
             }}
           />
@@ -182,32 +182,41 @@ export function ImageUpload({
           <AlertTriangleIcon
             sx={{
               display: { xs: 'none', sm: 'flex' },
-              fontSize: 48,
+              fontSize: 30,
               color: 'primary.main'
             }}
           />
         )}
-        <Typography
-          variant="body1"
-          color={
-            loading
-              ? 'secondary.main'
+        <Stack alignItems="center">
+          <Typography
+            variant="body1"
+            color={
+              loading
+                ? 'secondary.main'
+                : uploadSuccess
+                  ? 'success.main'
+                  : hasError
+                    ? 'error.main'
+                    : 'secondary.main'
+            }
+            sx={{ display: { xs: 'none', sm: 'block' } }}
+          >
+            {loading
+              ? t('Uploading...')
               : uploadSuccess
-                ? 'success.main'
+                ? t('Upload Successful!')
                 : hasError
-                  ? 'error.main'
-                  : 'secondary.main'
-          }
-          sx={{ display: { xs: 'none', sm: 'block' } }}
-        >
-          {loading
-            ? t('Uploading...')
-            : uploadSuccess
-              ? t('Upload Successful!')
-              : hasError
-                ? t('Upload Failed!')
-                : t('Drop an image here')}
-        </Typography>
+                  ? t('Upload Failed!')
+                  : t('Drop an image here')}
+          </Typography>
+          <Typography
+            variant="caption"
+            color="secondary.main"
+            sx={{ display: { xs: 'none', sm: 'block' } }}
+          >
+            {t('or click to browse your files')}
+          </Typography>
+        </Stack>
         <Button
           variant="blockOutlined"
           color="solid"

@@ -146,17 +146,23 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           mt: 3,
           display: 'flex',
           width: '100%',
-          height: 162,
-          borderWidth: noBorder ? undefined : 2,
-          backgroundColor:
-            isDragAccept || uploading
-              ? 'rgba(239, 239, 239, 0.9)'
-              : error != null || errorType != null
-                ? 'rgba(197, 45, 58, 0.08)'
-                : 'rgba(239, 239, 239, 0.35)',
+          minHeight: { xs: 0, sm: 162 },
+          borderWidth: { xs: 0, sm: noBorder ? 0 : 2 },
+          backgroundColor: {
+            xs: 'transparent',
+            sm:
+              isDragAccept || uploading
+                ? 'rgba(239, 239, 239, 0.9)'
+                : error != null || errorType != null
+                  ? 'rgba(197, 45, 58, 0.08)'
+                  : 'rgba(239, 239, 239, 0.35)'
+          },
           borderColor: 'divider',
-          borderStyle: noBorder ? undefined : 'dashed',
+          borderStyle: { xs: 'none', sm: noBorder ? 'none' : 'dashed' },
           borderRadius: 2,
+          px: { xs: 0, sm: 3 },
+          py: { xs: 0, sm: 4 },
+          gap: 2,
           justifyContent: 'center',
           flexDirection: 'column',
           alignItems: 'center'
@@ -166,29 +172,75 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         <input {...getInputProps()} />
         {error != null || errorType != null ? (
           <AlertTriangleIcon
-            sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+              fontSize: 30,
+              color: 'primary.main'
+            }}
           />
         ) : (
-          <Upload1Icon sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
+          <Upload1Icon
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+              fontSize: 30,
+              color: 'secondary.light'
+            }}
+          />
         )}
-        <Typography
-          variant="body1"
-          color={
-            error != null || errorType != null ? 'error.main' : 'secondary.main'
-          }
-          sx={{ pb: 4 }}
-        >
-          {waiting && t('Waiting in queue...')}
-          {uploading && t('Uploading...')}
-          {processing && t('Processing...')}
-          {(error != null || errorType != null) && t('Upload Failed!')}
-          {!waiting &&
-            !uploading &&
-            !processing &&
-            !errorType &&
-            error == null &&
-            t('Drop a video here')}
-        </Typography>
+        <Stack alignItems="center">
+          <Typography
+            variant="body1"
+            color={
+              error != null || errorType != null
+                ? 'error.main'
+                : 'secondary.main'
+            }
+            sx={{ display: { xs: 'none', sm: 'block' } }}
+          >
+            {waiting && t('Waiting in queue...')}
+            {uploading && t('Uploading...')}
+            {processing && t('Processing...')}
+            {(error != null || errorType != null) && t('Upload Failed!')}
+            {!waiting &&
+              !uploading &&
+              !processing &&
+              !errorType &&
+              error == null &&
+              t('Drop a video here')}
+          </Typography>
+          <Typography
+            variant="caption"
+            color="secondary.main"
+            sx={{ display: { xs: 'none', sm: 'block' } }}
+          >
+            {t('or click to browse your files')}
+          </Typography>
+        </Stack>
+        {waiting || uploading || processing ? (
+          <Box sx={{ width: '100%' }}>
+            <LinearProgress
+              variant={processing || waiting ? 'indeterminate' : 'determinate'}
+              value={progress}
+              sx={{ height: 32, borderRadius: 2 }}
+            />
+          </Box>
+        ) : (
+          <Button
+            variant="blockOutlined"
+            color="solid"
+            size="small"
+            onClick={open}
+            disabled={videoBlockId == null || uploadTask != null}
+            sx={{
+              width: { xs: '100%', sm: 'auto' },
+              minWidth: { sm: 160 }
+            }}
+          >
+            {videoBlockId == null
+              ? t('Select a video block first')
+              : t('Upload file')}
+          </Button>
+        )}
       </Box>
       <Stack
         direction="row"
@@ -196,7 +248,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         color={
           error != null || errorType != null ? 'error.main' : 'secondary.light'
         }
-        sx={{ justifyContent: 'center', alignItems: 'center' }}
+        sx={{ mt: 1, alignItems: 'flex-start' }}
       >
         <AlertTriangleIcon
           fontSize="small"
@@ -220,32 +272,6 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           </Typography>
         )}
       </Stack>
-
-      {waiting || uploading || processing ? (
-        <Box sx={{ width: '100%', mt: 4 }}>
-          <LinearProgress
-            variant={processing || waiting ? 'indeterminate' : 'determinate'}
-            value={progress}
-            sx={{ height: 32, borderRadius: 2 }}
-          />
-        </Box>
-      ) : (
-        <Button
-          variant="blockOutlined"
-          color="solid"
-          size="small"
-          onClick={open}
-          disabled={videoBlockId == null || uploadTask != null}
-          sx={{
-            mt: 4,
-            width: '100%'
-          }}
-        >
-          {videoBlockId == null
-            ? t('Select a video block first')
-            : t('Upload file')}
-        </Button>
-      )}
     </Stack>
   )
 }
