@@ -137,20 +137,26 @@ export function ImageUpload({
       <Box
         data-testid="drop zone"
         sx={{
-          mt: 3,
+          mt: { xs: 0, sm: 3 },
           display: 'flex',
           width: '100%',
-          height: 162,
-          borderWidth: noBorder ? undefined : 2,
-          backgroundColor:
-            isDragAccept || loading === true
-              ? 'rgba(239, 239, 239, 0.9)'
-              : hasError
-                ? 'rgba(197, 45, 58, 0.08)'
-                : 'rgba(239, 239, 239, 0.35)',
+          minHeight: { xs: 0, sm: 200 },
+          borderWidth: { xs: 0, sm: noBorder ? 0 : 2 },
+          backgroundColor: {
+            xs: 'transparent',
+            sm:
+              isDragAccept || loading === true
+                ? 'rgba(239, 239, 239, 0.9)'
+                : hasError
+                  ? 'rgba(197, 45, 58, 0.08)'
+                  : 'rgba(239, 239, 239, 0.35)'
+          },
           borderColor: 'divider',
-          borderStyle: noBorder ? undefined : 'dashed',
+          borderStyle: { xs: 'none', sm: noBorder ? 'none' : 'dashed' },
           borderRadius: 2,
+          px: { xs: 0, sm: 3 },
+          py: { xs: 0, sm: 4 },
+          gap: 2,
           justifyContent: 'center',
           flexDirection: 'column',
           alignItems: 'center'
@@ -158,15 +164,27 @@ export function ImageUpload({
       >
         {loading || (!uploadSuccess && !hasError) ? (
           <Upload1IconIcon
-            sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }}
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+              fontSize: 48,
+              color: 'secondary.light'
+            }}
           />
         ) : uploadSuccess ? (
           <CheckBrokenIcon
-            sx={{ fontSize: 48, color: 'success.main', mb: 1 }}
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+              fontSize: 48,
+              color: 'success.main'
+            }}
           />
         ) : (
           <AlertTriangleIcon
-            sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+              fontSize: 48,
+              color: 'primary.main'
+            }}
           />
         )}
         <Typography
@@ -180,7 +198,7 @@ export function ImageUpload({
                   ? 'error.main'
                   : 'secondary.main'
           }
-          sx={{ pb: 4 }}
+          sx={{ display: { xs: 'none', sm: 'block' } }}
         >
           {loading
             ? t('Uploading...')
@@ -190,11 +208,25 @@ export function ImageUpload({
                 ? t('Upload Failed!')
                 : t('Drop an image here')}
         </Typography>
+        <Button
+          variant="blockOutlined"
+          color="solid"
+          size="small"
+          disabled={loading === true}
+          onClick={open}
+          sx={{
+            width: { xs: '100%', sm: 'auto' },
+            minWidth: { sm: 160 }
+          }}
+        >
+          {t('Upload file')}
+        </Button>
       </Box>
       <Stack
         direction="row"
         spacing={1}
         color={hasError ? 'error.main' : 'secondary.light'}
+        sx={{ mt: 1, alignItems: 'flex-start' }}
       >
         <AlertTriangleIcon
           fontSize="small"
@@ -210,19 +242,6 @@ export function ImageUpload({
               )}
         </Typography>
       </Stack>
-      <Button
-        variant="blockOutlined"
-        color="solid"
-        size="small"
-        disabled={loading === true}
-        onClick={open}
-        sx={{
-          mt: 4,
-          width: '100%'
-        }}
-      >
-        {t('Upload file')}
-      </Button>
     </Stack>
   )
 }
