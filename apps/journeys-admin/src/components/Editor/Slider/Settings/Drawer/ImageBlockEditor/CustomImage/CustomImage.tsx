@@ -48,7 +48,6 @@ export function CustomImage({
         error={error}
       />
       {mediaLibrary === true && (
-        <>
           <Divider sx={{ my: 4 }} />
           <MediaLibrary
             title={t('Uploads')}
@@ -57,7 +56,6 @@ export function CustomImage({
             isAi={false}
             uploading={loading}
           />
-        </>
       )}
     </Stack>
   )
