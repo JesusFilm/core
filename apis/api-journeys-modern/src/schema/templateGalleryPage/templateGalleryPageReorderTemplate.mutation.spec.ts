@@ -334,28 +334,32 @@ describe('templateGalleryPageReorderTemplate', () => {
       ).not.toHaveBeenCalled()
     })
 
-    it('throws CONFLICT when the page is published', async () => {
+    it('allows reorder on a published page (no publish-state gating on the backend)', async () => {
+      // Mirrors templateGalleryPageUpdate / AssignJourney — backend accepts
+      // structural edits regardless of publish state. The frontend gates the
+      // UX; the backend stays symmetric across these three mutations.
       prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
         ...draftPage,
         status: 'published'
       } as any)
+      prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
+        { id: 'tpt-A', journeyId: 'jA' },
+        { id: 'tpt-B', journeyId: 'jB' }
+      ] as any)
 
       const result = await authClient({
         document: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE,
-        variables: { pageId: 'page-1', journeyId: 'j1', order: 0 }
+        variables: { pageId: 'page-1', journeyId: 'jB', order: 0 }
       })
 
       expect(result).toEqual({
-        data: null,
-        errors: [
-          expect.objectContaining({
-            message: 'cannot reorder templates on a published page'
-          })
-        ]
+        data: {
+          templateGalleryPageReorderTemplate: { id: 'page-1', title: 'Page 1' }
+        }
       })
       expect(
         prismaMock.templateGalleryPageTemplate.findMany
-      ).not.toHaveBeenCalled()
+      ).toHaveBeenCalled()
     })
   })
 

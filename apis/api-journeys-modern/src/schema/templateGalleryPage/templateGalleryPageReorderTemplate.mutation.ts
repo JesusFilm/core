@@ -11,7 +11,7 @@ import { TemplateGalleryPageRef } from './templateGalleryPage'
 builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      "Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range.\n\nIdempotent: when the journey is already at the requested display index, the call is a no-op.\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: `pageId` does not resolve.\n- FORBIDDEN: caller is not in the page's team.\n- CONFLICT (field: `status`): the page is currently `published` — reorder is blocked on published pages; unpublish first to reorder.\n- BAD_USER_INPUT (field: `journeyId`): journey is not currently a member of the page.\n- BAD_USER_INPUT (field: `order`): order is out of range; must satisfy `0 <= order < count(templates in page)`.",
+      "Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney`).\n\nIdempotent: when the journey is already at the requested display index, the call is a no-op.\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: `pageId` does not resolve.\n- FORBIDDEN: caller is not in the page's team.\n- BAD_USER_INPUT (field: `journeyId`): journey is not currently a member of the page.\n- BAD_USER_INPUT (field: `order`): order is out of range; must satisfy `0 <= order < count(templates in page)`.",
     type: TemplateGalleryPageRef,
     nullable: false,
     args: {
@@ -46,7 +46,7 @@ builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
 
         const page = await tx.templateGalleryPage.findUnique({
           where: { id: pageId },
-          select: { id: true, teamId: true, status: true }
+          select: { id: true, teamId: true }
         })
         if (page == null) {
           throw new GraphQLError('template gallery page not found', {
@@ -57,12 +57,6 @@ builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
           throw new GraphQLError(
             'user is not allowed to modify template gallery page',
             { extensions: { code: 'FORBIDDEN' } }
-          )
-        }
-        if (page.status === 'published') {
-          throw new GraphQLError(
-            'cannot reorder templates on a published page',
-            { extensions: { code: 'CONFLICT', field: 'status' } }
           )
         }
 
