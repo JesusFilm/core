@@ -48,9 +48,7 @@ describe('GalleryTemplateCard', () => {
 
   it('omits the description Typography when description is empty', () => {
     render(
-      <GalleryTemplateCard
-        template={{ ...mockTemplate, description: '' }}
-      />
+      <GalleryTemplateCard template={{ ...mockTemplate, description: '' }} />
     )
     expect(
       screen.queryByText('A sample template for testing')

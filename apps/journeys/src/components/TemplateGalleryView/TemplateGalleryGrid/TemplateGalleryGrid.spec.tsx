@@ -22,10 +22,7 @@ vi.mock('./GalleryTemplateCard', () => ({
   )
 }))
 
-function makeTemplate(
-  id: string,
-  title: string
-): typeof mockTemplate {
+function makeTemplate(id: string, title: string): typeof mockTemplate {
   return { ...mockTemplate, id, title }
 }
 
