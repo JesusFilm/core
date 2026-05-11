@@ -2,6 +2,7 @@
 title: 'Pothos public/unauthenticated query pattern in api-journeys-modern'
 category: integration-issues
 date: 2026-04-29
+last_updated: 2026-05-11
 severity: medium
 module: apis/api-journeys-modern
 ticket: NES-1547
@@ -14,6 +15,8 @@ tags:
   - anonymous
   - api-journeys-modern
   - withAuth
+  - response-cache
+  - public-dto
 related_issues:
   - NES-1547
 related_docs:
@@ -169,9 +172,9 @@ This guards against a future contributor "fixing" the resolver by adding a `with
 
 A public root resolver can still leak through nested fields if the child types declare `withAuth` or rely on team membership. Confirm what the public consumer asks for:
 
-- `TemplateGalleryPageRef.team` — `t.relation('team', { nullable: false })` — `Team` has no field-level `withAuth`. Verified safe.
-- `TemplateGalleryPageRef.templates` — resolves to `[JourneyRef]`. The `templates` field's `select.where` filters at read time to `{ template: true, status: 'published' }`, and the resolve callback enforces `journey.teamId === page.teamId`. Even if a journey was transferred to another team or had its `template` flag flipped after being added, the public page never exposes it.
-- `TemplateGalleryPageRef.creatorImageBlock` — must be validated as same-team **at write time** (Create/Update mutations). See `validateCreatorImageBlock.ts`.
+- `TemplateGalleryPageRef.team` — `t.relation('team', { nullable: false })` — `Team` is `shareable: true` with no field-level `withAuth` on the modern subgraph. Verified safe but **note**: anything the modern `TeamRef` exposes (`userTeams`, `customDomains`, `integrations`, `qrCodes`) becomes anonymously reachable via this path. Audit that surface every time you add a public root that reaches `Team`.
+- `TemplateGalleryPageRef.templates` — resolves to `[TemplateGalleryItem!]!`, NOT `[Journey!]`. The `TemplateGalleryItem` is a **narrow public DTO** (Pothos `prismaObject('Journey', { variant: 'TemplateGalleryItem', ... })`) exposing only the eight scalars + `language` + `primaryImageBlock` the public renderer consumes. Returning the full `JourneyRef` would have made `Journey.userJourneys`, `Journey.team.userTeams`, etc. anonymously reachable through the modern subgraph's unguarded Pothos `t.relation` auto-resolvers — see the [ordered-join-table doc](../architecture-patterns/pothos-prisma-ordered-join-locking-pattern-2026-05-06.md#7-narrow-the-public-anonymous-return-type-with-a-dedicated-dto) for the full pattern rationale. The `select.where` filter at read time scopes to `{ template: true, status: 'published', deletedAt: null }`, and the in-memory `resolve` enforces `journey.teamId === page.teamId`.
+- Creator avatar — stored as plain scalars (`creatorImageSrc` / `creatorImageAlt`), not a Block FK, so no transitive Block surface to audit. The earlier `creatorImageBlock` relation was withdrawn for exactly this reason — see PR #9119 commit history.
 
 ## Why the existing `$any: { isAuthenticated, isAnonymous }` precedent does not apply
 
@@ -187,6 +190,33 @@ If you are adding a resolver where the consumer **always has a token** (e.g., a 
 4. **Avoid `skipTypeScopes: true` as a "make it public" lever.** Reach for it only when you actually have a type-level scope to bypass.
 5. **Read [authScopes.ts](apis/api-journeys-modern/src/schema/authScopes.ts) before designing auth on a new resolver.** The `Context` discriminated union and the `default → defaultScopes` fallthrough is the source of truth; intuition from sibling resolvers can mislead.
 
+### Response-cache TTL on the public branch
+
+Yoga's `useResponseCache` (configured in `apis/api-journeys-modern/src/yoga.ts`) defaults to TTL `Infinity` per operation. The cache invalidates by entity ID: a successful mutation returning a `TemplateGalleryPage` evicts every cached query whose response embedded that entity ID. **A `null` response embeds no entity ID at all** — for `templateGalleryPageBySlug` that's the unknown-slug, malformed-slug, and draft-slug branches.
+
+Without a finite TTL on this query, an anonymous attacker can pre-poison popular slugs by hitting them while the page doesn't yet exist (or is still a draft). The `null` response caches forever, with no entity ID for any subsequent `templateGalleryPagePublish` mutation to invalidate against. A legitimate publish later "succeeds" but the public renderer keeps serving 404 until the cache is manually flushed.
+
+The fix (added to `yoga.ts` after Mike's PR review for NES-1547):
+
+```ts
+ttlPerSchemaCoordinate: {
+  // ... admin queries at TTL 0 (NES-1648) ...
+
+  // Public renderer. Finite TTL caps cache-poisoning impact: a `null`
+  // response (unknown slug / draft / malformed) caches with no entity
+  // ID, so the publish mutation's entity-ID invalidation cannot evict
+  // it. Without a finite TTL the null branch would persist for the
+  // lifetime of the cache, letting an attacker pre-poison popular
+  // slugs so legitimate later publishes appear 404. 60 s gives the
+  // renderer reasonable cache hit-rate while bounding poisoning impact.
+  'Query.templateGalleryPageBySlug': 60_000
+}
+```
+
+**The TTL choice is a deliberate trade-off:** higher = better cache hit rate for hot anonymous traffic, longer poisoning window; lower = poorer hit rate, shorter window. 60 s is the sweet spot for slug-addressable pages where a publish-then-share workflow is the common case — 60 s is short enough that a publisher hitting "share" right after publish gets the real response, long enough that a typical renderer-hit workload sees meaningful cache reuse.
+
+**See also the admin-side cache fix at TTL 0** for `Query.templateGalleryPage` and `Query.templateGalleryPages` (NES-1648). The admin queries get TTL 0 because their cached empty-list response would similarly defeat mutation invalidation — but for admin queries we accept the cache-bypass cost since traffic volume is low. The public query keeps a finite TTL because traffic volume there matters.
+
 ## Pre-merge checklist for any new public resolver in `api-journeys-modern`
 
 - [ ] No `withAuth` call on the field
@@ -195,9 +225,11 @@ If you are adding a resolver where the consumer **always has a token** (e.g., a 
 - [ ] Input args validated with regex/length/charset before the DB query
 - [ ] Spec uses `getClient()` with no `Authorization` header and asserts a successful response
 - [ ] Nested fields on the returned type were checked — none reach for team auth
+- [ ] **If the return type is a federated/`shareable` entity, narrow it with a dedicated public DTO** (Pothos `variant`) instead of returning the full `*Ref`. The federated `*Ref` makes every `t.relation` it exposes anonymously reachable through the local subgraph's unguarded resolvers, regardless of guards on federation peers.
+- [ ] **Add a finite TTL to `ttlPerSchemaCoordinate`** in `yoga.ts` for the new operation. The default `Infinity` lets the `null` branch cache forever and become a poisoning vector. 60 s is a sensible default; pick higher only if cache poisoning is uninteresting for your operation.
 - [ ] PR description flags this as a new public surface for federation reviewers
 
-## Related findings (NES-1547 implementation, same PR)
+## Related findings (NES-1547 implementation + Mike's review hardening)
 
 These came up alongside the public-resolver pattern and are worth knowing:
 
@@ -205,3 +237,10 @@ These came up alongside the public-resolver pattern and are worth knowing:
 - **TOCTOU on validation outside transactions.** When fetching a row, validating ownership of a foreign-key id, then writing — keep the validation inside `prisma.$transaction(async tx => ...)` and pass `tx` to the validator. Validating against the live `prisma` client opens a window where the validated resource can be transferred to another team between SELECT and UPDATE.
 - **`nanoid` default alphabet leaks `_` into slugs.** If a slug-generation fallback uses `nanoid(6)`, characters like `_` will fail the public-query regex (`[a-z0-9-]`). Use `customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 6)` to constrain the alphabet.
 - **`prisma migrate diff` for drifted local DBs.** When `prisma migrate dev` rejects due to unrelated drift on the local Postgres instance, generate the migration SQL via `prisma migrate diff --from-schema=<old> --to-schema=<new> --script -o <migration.sql>` instead. The output is identical to what `migrate dev` would have produced and can be committed safely; CI/devcontainer applies it cleanly.
+- **Public DTO replaces shareable-type re-exposure.** Initially the `templates` field returned `[JourneyRef]` — the full federated Journey type — making `Journey.userJourneys` and `Journey.team.userTeams` anonymously reachable via the modern subgraph's unguarded `t.relation` resolvers, a regression vs the legacy `api-journeys` public path. Mike's PR review (2026-05-11) caught this; the fix was a narrow `TemplateGalleryItem` Pothos DTO exposing only the 10 fields the public renderer queries. **The FE GraphQL document didn't need to change** — field names match. The supergraph confirms `type TemplateGalleryItem @join__type(graph: API_JOURNEYS_MODERN)` (single-subgraph ownership, no federation re-exposure).
+- **Cache-TTL fixes are symmetric across admin + public surfaces.** NES-1648 fixed the admin-side cache-bypass (empty-list responses had no entity ID to invalidate against, so freshly-created collections appeared not-yet-saved). Mike's review surfaced the symmetric public-side issue: `null` responses on `templateGalleryPageBySlug` similarly can't be invalidated, opening a cache-poisoning vector. **Always add both** when shipping a new entity type with mutation/query pairs.
+- **P2002 retry-on-Update for slug-changing mutations.** The Create resolver had a P2002-catch-and-retry for slug uniqueness collisions; Update did not. Two concurrent Updates with the same slug both pass `validateUserSuppliedSlug` (which runs outside the tx), then one wins, the other surfaces an unwrapped Prisma 500. Mirror Create's retry: `try { tx.update(...) } catch (e) { if e.code === 'P2002' && e.meta?.target.includes('slug') throw SlugTakenError } throw e`. Defensive: only convert when target is the slug column; other P2002 targets must propagate untouched.
+- **Cheap-fetch-then-auth on by-id resolvers.** The original `templateGalleryPage(id)` resolver did one big `findUnique({ ...query })` (spreading the client's selection) then ran `isInTeam`. Callers who'd receive FORBIDDEN still paid for the full nested template/journey/team walk. Refactor: first `findUnique({ select: { id: true, teamId: true } })` for the auth check, then `findUniqueOrThrow({ ...query })` only after auth passes. Mirrors the Delete mutation's existing pattern. Cheap; should be standard for all in-team-only by-id resolvers.
+- **Squash add-then-drop migrations in the same PR.** The original NES-1547 work shipped `creatorImageBlockId` as an FK in migration #1, then dropped it in migration #2 in favour of plain scalar `creatorImageSrc/Alt`. Both ship in the same PR. Squashed to one additive migration during Mike's review pass — saves a transient FK that never matters in production, and makes `git log -p libs/prisma/journeys/db/migrations/` readable as "what this PR adds to schema" rather than "what it adds then takes away".
+- **Curate the reserved-slug list before merge.** `RESERVED_SLUGS` started with 15 entries; Mike's review expanded to ~45 covering Next.js conventions (`_next`, `_app`, `favicon-ico`, etc.), HTTP error pages (`404`, `500`), and likely-future auth flows (`login`, `signin`, `account`, `me`). First slug-reservation list in this repo — verified no precedent via `rg -l RESERVED_SLUGS apis/ libs/`. Squat-prevention is cheap; backfilling after a customer claims `/me` is not.
+- **Publish-state guard symmetry across mutations.** Reorder originally threw CONFLICT on published pages while Update + AssignJourney accepted them — internal asymmetry that looks like a bug. Pick one rule: either ALL structural mutations gate on `status: 'draft'`, or NONE do. We picked "none — backend accepts unconditionally; FE handles the UX". The asymmetry is the actual bug, not either rule individually.
