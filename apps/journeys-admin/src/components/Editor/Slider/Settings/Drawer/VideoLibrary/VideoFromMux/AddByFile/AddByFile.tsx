@@ -218,12 +218,31 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           )}
         </Stack>
         {waiting || uploading || processing ? (
-          <Box sx={{ width: '100%' }}>
+          <Box sx={{ position: 'relative', width: '100%' }}>
             <LinearProgress
               variant={processing || waiting ? 'indeterminate' : 'determinate'}
               value={progress}
               sx={{ height: 32, borderRadius: 2 }}
             />
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                display: { xs: 'flex', sm: 'none' },
+                alignItems: 'center',
+                justifyContent: 'center',
+                pointerEvents: 'none'
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{ color: 'common.white', fontWeight: 600 }}
+              >
+                {waiting && t('Waiting in queue...')}
+                {uploading && t('Uploading... {{progress}}%', { progress: Math.round(progress) })}
+                {processing && t('Processing...')}
+              </Typography>
+            </Box>
           </Box>
         ) : (
           <Button
