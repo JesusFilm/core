@@ -50,13 +50,13 @@ Automates the stage branch reset process documented in
 
 ## Slack-notification policy
 
-| Run type                            | Posts to Slack? |
-| ----------------------------------- | --------------- |
-| Dry run (default, no `--apply`)     | Never           |
-| `--apply` with zero conflicts       | Never           |
-| `--apply` with auto-resolved conflicts | Yes          |
-| `--apply` with failed conflicts     | Yes             |
-| `--apply --no-slack` (any outcome)  | Never           |
+| Run type                               | Posts to Slack? |
+| -------------------------------------- | --------------- |
+| Dry run (default, no `--apply`)        | Never           |
+| `--apply` with zero conflicts          | Never           |
+| `--apply` with auto-resolved conflicts | Yes             |
+| `--apply` with failed conflicts        | Yes             |
+| `--apply --no-slack` (any outcome)     | Never           |
 
 When Slack does fire, the message includes the threaded breakdown
 (merged PR list + per-PR resolution detail), so the affected engineer
@@ -106,12 +106,12 @@ deterministic — same PR set + same order = same result.
 
 ### Report categories
 
-| Category        | Meaning                                                |
-| --------------- | ------------------------------------------------------ |
-| Clean merge     | No conflicts at all                                    |
-| Auto-resolved   | Had conflicts, resolved automatically via `-X theirs`  |
-| Failed          | Could not be resolved even with force (very rare)      |
-| Missing branch  | Remote branch no longer exists                         |
+| Category       | Meaning                                               |
+| -------------- | ----------------------------------------------------- |
+| Clean merge    | No conflicts at all                                   |
+| Auto-resolved  | Had conflicts, resolved automatically via `-X theirs` |
+| Failed         | Could not be resolved even with force (very rare)     |
+| Missing branch | Remote branch no longer exists                        |
 
 ## Recovery
 
