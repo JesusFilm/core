@@ -162,9 +162,7 @@ export function TemplateGalleryPageList({
   // dialog because the DragOverlay (z-index 999) tracks cursor position
   // beneath the dialog (z-index 1300) even while hidden.
   const dialogOpen =
-    createDialogOpen ||
-    editTargetId != null ||
-    publishSuccessCollection != null
+    createDialogOpen || editTargetId != null || publishSuccessCollection != null
   const interactionsLocked = dragInFlight || dialogOpen
 
   useEffect(() => {
@@ -173,9 +171,7 @@ export function TemplateGalleryPageList({
     }
   }, [dialogOpen])
 
-  async function handlePublish(
-    collection: TemplateGalleryPage
-  ): Promise<void> {
+  async function handlePublish(collection: TemplateGalleryPage): Promise<void> {
     const published = await rawPublish(collection)
     if (published != null) setPublishSuccessCollection(published)
   }
@@ -234,9 +230,7 @@ export function TemplateGalleryPageList({
 
   const unsectioned = useMemo<readonly Journey[]>(
     () =>
-      allTemplates.filter(
-        (journey) => !templateIdToCollection.has(journey.id)
-      ),
+      allTemplates.filter((journey) => !templateIdToCollection.has(journey.id)),
     [allTemplates, templateIdToCollection]
   )
 
@@ -399,7 +393,8 @@ export function TemplateGalleryPageList({
                     <DraggableJourneysGrid
                       journeys={journeysByCollection.get(collection.id) ?? []}
                       publishedLock={
-                        collection.status === TemplateGalleryPageStatus.published
+                        collection.status ===
+                        TemplateGalleryPageStatus.published
                       }
                       dragInFlight={interactionsLocked}
                     />
@@ -479,4 +474,3 @@ export function TemplateGalleryPageList({
     </Box>
   )
 }
-

@@ -9,7 +9,10 @@ import { TEMPLATE_GALLERY_PAGE_DELETE } from './useTemplateGalleryPageDeleteMuta
 
 export const getTemplateGalleryPageDeleteMock = (
   variables: TemplateGalleryPageDeleteVariables
-): MockedResponse<TemplateGalleryPageDelete, TemplateGalleryPageDeleteVariables> => ({
+): MockedResponse<
+  TemplateGalleryPageDelete,
+  TemplateGalleryPageDeleteVariables
+> => ({
   request: { query: TEMPLATE_GALLERY_PAGE_DELETE, variables },
   result: jest.fn(() => ({
     data: {

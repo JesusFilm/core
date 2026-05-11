@@ -50,6 +50,7 @@ The backend (NES-1547) is already implemented on the parent branch and exposes `
 > **No LaunchDarkly flag for now.** Siyang will add the `templateGalleryPage` flag next week as a thin wrapper around the new tab's visibility (gate the `contentTypeOptions[2]` entry and the `TabPanel`). The plan below leaves a single, obvious gating point so adding the flag is a one-line change.
 
 The tab:
+
 - Tab label: **"Collections"** (compact: `t('Collections')`; mobile: same).
 - URL: `/?type=collections`.
 - `ContentType` union extended: `'journeys' | 'templates' | 'collections'`.
@@ -64,16 +65,18 @@ This section consolidates findings from the parallel review pass. Where it confl
 - **`ContentType` switch must be exhaustive.** Use a `switch (contentType) { case 'journeys': ... case 'templates': ... case 'collections': ... default: assertNever(contentType) }` in `JourneyList.renderList`, not the `if (contentType === 'collections') return <X />; return <Y />` form. Add `function assertNever(x: never): never { throw new Error(...) }` to `apps/journeys-admin/src/libs/assertNever/`.
 - **Drag-id encoding is a discriminated union, not string-prefix parsing.**
   ```ts
-  type DropZoneId =
-    | { kind: 'unsectioned' }
-    | { kind: 'collection'; id: string }
-  function encodeDropZoneId(z: DropZoneId): string { return z.kind === 'unsectioned' ? 'unsectioned' : `collection:${z.id}` }
-  function parseDropZoneId(raw: UniqueIdentifier): DropZoneId | null { /* ... */ }
+  type DropZoneId = { kind: 'unsectioned' } | { kind: 'collection'; id: string }
+  function encodeDropZoneId(z: DropZoneId): string {
+    return z.kind === 'unsectioned' ? 'unsectioned' : `collection:${z.id}`
+  }
+  function parseDropZoneId(raw: UniqueIdentifier): DropZoneId | null {
+    /* ... */
+  }
   ```
   `handleDragEnd` switches on the parsed `kind`. No more `String(over.id)` + `.replace('collection:', '')`.
 - **Optimistic responses are typed with `satisfies`.** Each `optimisticResponse` payload is constrained to the codegen-derived `TemplateGalleryPageUpdateMutation['templateGalleryPageUpdate']` shape. Every nested object (`templates[]`, `creatorImageBlock`) includes `__typename` — Apollo silently rejects optimistic data missing `__typename` and falls back to the network response, defeating the optimism.
 - **Formik field shape is `string | null` for nullable fields.** Never `undefined`. `initialValues` is `''` becomes `null` for empty inputs. The submit-time diff converts unchanged values to `undefined` (omits from payload) and explicitly-emptied values to `null` (clears server-side).
-- **Yup cannot express the tri-state `undefined leaves alone, null clears`.** Add a `getDirtyValues(values, initialValues, isEqual)` helper (using `lodash.isEqual` for nested object fields) in the dialog file. Yup validates the form's *current* state; the helper produces the wire payload. Unit-test the helper directly.
+- **Yup cannot express the tri-state `undefined leaves alone, null clears`.** Add a `getDirtyValues(values, initialValues, isEqual)` helper (using `lodash.isEqual` for nested object fields) in the dialog file. Yup validates the form's _current_ state; the helper produces the wire payload. Unit-test the helper directly.
 - **`process.env.NEXT_PUBLIC_JOURNEYS_URL` is `string | undefined`.** Wrap in a typed helper `function buildPublicGalleryUrl(slug: string): string` that throws at module load if the env var is missing. Single source of truth for the future NES-1552 swap.
 - **Codegen-derived fragments only.** The `cache.modify` create-path uses the fragment from `__generated__/GetTemplateGalleryPagesQuery` — no inline `gql\`fragment ...\`` literals.
 - **All new components declared `function X(props: XProps): ReactElement`.** Per `apps/journeys-admin/AGENTS.md`. No `JSX.Element`, no implicit returns.
@@ -151,19 +154,13 @@ Backend follow-ups (parent branch — Phase 0):
 
 1. **Memoize the unsectioned-templates derivation** with a `Set` and a parallel `templateId → Collection` `Map`:
    ```ts
-   const collectedIds = useMemo(
-     () => new Set(collections.flatMap((c) => c.templates.map((t) => t.id))),
-     [collections]
-   )
+   const collectedIds = useMemo(() => new Set(collections.flatMap((c) => c.templates.map((t) => t.id))), [collections])
    const templateIdToCollection = useMemo(() => {
      const m = new Map<string, TemplateGalleryPage>()
      for (const c of collections) for (const t of c.templates) m.set(t.id, c)
      return m
    }, [collections])
-   const unsectioned = useMemo(
-     () => allTemplates.filter((t) => !collectedIds.has(t.id)),
-     [allTemplates, collectedIds]
-   )
+   const unsectioned = useMemo(() => allTemplates.filter((t) => !collectedIds.has(t.id)), [allTemplates, collectedIds])
    ```
    `handleDragEnd`'s source-collection lookup becomes `templateIdToCollection.get(templateId)` — O(1), not O(N×M). At 100 templates × 10 collections this drops from ~10 000 ops/render to ~300, and re-derives only when `collections` or `allTemplates` reference-change.
 2. **Drop `enableReinitialize` on the Formik in `<CollectionDialog>`.** Background DnD writes return new `templateGalleryPages` references on every cache notification, blowing away unsaved typing in the dialog. **Fix:** snapshot `initialValues` once on dialog open, keyed only on `collection?.id`:
@@ -188,8 +185,7 @@ Other performance items (verified; no V1 action):
 - **Sensors:** `MouseSensor({distance: 8})`, `TouchSensor({delay: 200, tolerance: 5})`, `KeyboardSensor` — all per `DragDropWrapper.tsx:63-68` precedent.
 - **Each in-card interactive element gets `data-no-dnd`** so the sensor `activationConstraint` predicate ignores events that originate on those targets:
   ```ts
-  const shouldHandleEvent = ({ event }: { event: { target: EventTarget | null } }) =>
-    !(event.target instanceof Element && event.target.closest('[data-no-dnd], button, [role="menuitem"]'))
+  const shouldHandleEvent = ({ event }: { event: { target: EventTarget | null } }) => !(event.target instanceof Element && event.target.closest('[data-no-dnd], button, [role="menuitem"]'))
   ```
   Apply via `MouseSensor` and `TouchSensor` activation constraints.
 - **`<DragOverlay>` stays mounted at all times.** Conditionally render only its children (`<DragOverlay>{activeId ? <TemplateCard isDragOverlay /> : null}</DragOverlay>`). Don't toggle the overlay component itself — that breaks drop animations.
@@ -226,14 +222,14 @@ Adding to "Acceptance Criteria → Functional Requirements":
 - All mutation-triggering buttons (Publish, Unpublish, Ungroup confirm, Save) disable on click and remain disabled until the mutation settles. Spec: simulating two rapid clicks fires exactly one mutation.
 - Snackbar copy table:
 
-  | Action | Success | Error | Undo? |
-  |---|---|---|---|
-  | Create | _"Collection created"_ | _"Couldn't create collection"_ | No |
-  | Update | _"Collection updated"_ | _"Couldn't save changes"_ | No |
-  | Publish | _"Collection published"_ | _"Couldn't publish"_ | No |
-  | Unpublish | _"Collection unpublished"_ | _"Couldn't unpublish"_ | **Yes** (10s, re-publishes) |
-  | Ungroup | _"Collection ungrouped"_ | _"Couldn't ungroup"_ | No (modal already confirmed) |
-  | DnD move | _"Moved {{title}} to {{collection}}"_ | _"Couldn't move {{title}} to {{collection}}"_ + Retry | Retry |
+  | Action    | Success                               | Error                                                 | Undo?                        |
+  | --------- | ------------------------------------- | ----------------------------------------------------- | ---------------------------- |
+  | Create    | _"Collection created"_                | _"Couldn't create collection"_                        | No                           |
+  | Update    | _"Collection updated"_                | _"Couldn't save changes"_                             | No                           |
+  | Publish   | _"Collection published"_              | _"Couldn't publish"_                                  | No                           |
+  | Unpublish | _"Collection unpublished"_            | _"Couldn't unpublish"_                                | **Yes** (10s, re-publishes)  |
+  | Ungroup   | _"Collection ungrouped"_              | _"Couldn't ungroup"_                                  | No (modal already confirmed) |
+  | DnD move  | _"Moved {{title}} to {{collection}}"_ | _"Couldn't move {{title}} to {{collection}}"_ + Retry | Retry                        |
 
 - Card title truncates to 2 lines (`WebkitLineClamp: 2`) with full title via `<Tooltip>`. `direction="auto"` for RTL.
 - Cold-load on `/?type=collections` selects the third Tab on first paint without flicker.
@@ -250,6 +246,7 @@ Adding to "Acceptance Criteria → Functional Requirements":
 ## Problem Statement / Motivation
 
 Teams want to publish curated subsets of their templates as a public gallery page (eventually consumed by the public route built in NES-1552). Today, templates exist only as a flat list scoped to the JFP team-managed gallery. Local teams cannot:
+
 1. Group their own templates into themed collections.
 2. Add metadata (title, description, creator name + image, media URL) suitable for a public landing page.
 3. Publish a stable slug-addressable gallery URL.
@@ -286,11 +283,11 @@ templateGalleryPageAssignJourney(journeyId: ID!, pageId: ID): TemplateGalleryPag
 
 `pageId == null` returns the journey to the flat list (unassigns). The mutation is atomic, transactional, and **enforces single-membership server-side** — the frontend no longer fakes the invariant on top of an M:N backend. Every drag fires exactly one mutation:
 
-| Drop scenario | Mutation call |
-|---|---|
-| Unsectioned → collection X | `assignJourney({ journeyId, pageId: X })` |
+| Drop scenario               | Mutation call                                                          |
+| --------------------------- | ---------------------------------------------------------------------- |
+| Unsectioned → collection X  | `assignJourney({ journeyId, pageId: X })`                              |
 | Collection A → collection B | `assignJourney({ journeyId, pageId: B })` (server moves it atomically) |
-| Collection A → unsectioned | `assignJourney({ journeyId, pageId: null })` |
+| Collection A → unsectioned  | `assignJourney({ journeyId, pageId: null })`                           |
 
 `unsectionedTemplates` is still derived client-side as `allTemplates − flatten(collections.templates)` (with the Set-based memoization from Research Insights → F.1). The two-mutation pattern, the inter-drag race mitigations, and the saga-rollback discussion are now obsolete.
 
@@ -299,6 +296,7 @@ Published collections remain immutable in the UI: cards inside are non-draggable
 ### Publish lock
 
 A `TemplateGalleryPage` with `status === 'published'` is treated as immutable in the UI. Specifically:
+
 - Cards inside are non-draggable (`useDraggable({ disabled: true })`); the card wraps with `<Tooltip title={t('Published — unpublish to edit')} />`.
 - The collection itself is not a drop target (`useDroppable` returns `disabled: true`).
 - The "Edit" menu item opens the dialog in **read-only mode** with a banner: _"This collection is published. Unpublish to edit."_ and a single inline **Unpublish** button (which calls the new `templateGalleryPageUnpublish` mutation, no confirmation). After unpublishing, the dialog re-renders in normal edit mode against the same id without closing — UX is one click and a state flip.
@@ -307,13 +305,14 @@ A `TemplateGalleryPage` with `status === 'published'` is treated as immutable in
 
 Per Siyang's update (2026-05-01), the destructive surface is split into **two distinct buttons** with non-overlapping semantics:
 
-| Action | Status before → after | Backend call | Public URL effect | Confirmation? |
-|---|---|---|---|---|
-| **Publish** | `draft` → `published` | `templateGalleryPagePublish(id)` (existing) | URL goes live | No |
-| **Unpublish** | `published` → `draft` | `templateGalleryPageUnpublish(id)` _(**new — backend dependency**)_ | URL returns 404; collection + templates preserved | No (one click; toast confirms) |
-| **Ungroup** | any → entity deleted | `templateGalleryPageDelete(id)` (existing) | URL returns 404; templates return to the flat "All Templates" list | **Yes** (full modal) |
+| Action        | Status before → after | Backend call                                                        | Public URL effect                                                  | Confirmation?                  |
+| ------------- | --------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------ |
+| **Publish**   | `draft` → `published` | `templateGalleryPagePublish(id)` (existing)                         | URL goes live                                                      | No                             |
+| **Unpublish** | `published` → `draft` | `templateGalleryPageUnpublish(id)` _(**new — backend dependency**)_ | URL returns 404; collection + templates preserved                  | No (one click; toast confirms) |
+| **Ungroup**   | any → entity deleted  | `templateGalleryPageDelete(id)` (existing)                          | URL returns 404; templates return to the flat "All Templates" list | **Yes** (full modal)           |
 
 Button visibility per state:
+
 - **Draft collection card menu:** `Publish`, `Edit`, `Ungroup`.
 - **Published collection card menu:** `Unpublish`, `Edit (disabled — Unpublish to edit)`, `Ungroup`.
 
@@ -421,45 +420,103 @@ query GetTemplateGalleryPages($teamId: ID!) {
     slug
     status
     creatorName
-    creatorImageBlock { id ... on ImageBlock { src alt } }
+    creatorImageBlock {
+      id
+      ... on ImageBlock {
+        src
+        alt
+      }
+    }
     mediaUrl
     publishedAt
     updatedAt
-    templates { id title primaryImageBlock { id ... on ImageBlock { src alt } } }
+    templates {
+      id
+      title
+      primaryImageBlock {
+        id
+        ... on ImageBlock {
+          src
+          alt
+        }
+      }
+    }
   }
 }
 
 mutation TemplateGalleryPageCreate($input: TemplateGalleryPageCreateInput!) {
   templateGalleryPageCreate(input: $input) {
-    id title description slug status creatorName mediaUrl
-    creatorImageBlock { id ... on ImageBlock { src alt } }
-    publishedAt updatedAt templates { id title }
+    id
+    title
+    description
+    slug
+    status
+    creatorName
+    mediaUrl
+    creatorImageBlock {
+      id
+      ... on ImageBlock {
+        src
+        alt
+      }
+    }
+    publishedAt
+    updatedAt
+    templates {
+      id
+      title
+    }
   }
 }
 
 mutation TemplateGalleryPageUpdate($id: ID!, $input: TemplateGalleryPageUpdateInput!) {
   templateGalleryPageUpdate(id: $id, input: $input) {
-    id title description slug status creatorName mediaUrl
-    creatorImageBlock { id ... on ImageBlock { src alt } }
-    updatedAt templates { id title }
+    id
+    title
+    description
+    slug
+    status
+    creatorName
+    mediaUrl
+    creatorImageBlock {
+      id
+      ... on ImageBlock {
+        src
+        alt
+      }
+    }
+    updatedAt
+    templates {
+      id
+      title
+    }
   }
 }
 
 mutation TemplateGalleryPagePublish($id: ID!) {
   templateGalleryPagePublish(id: $id) {
-    id status publishedAt updatedAt slug
+    id
+    status
+    publishedAt
+    updatedAt
+    slug
   }
 }
 
 # NEW — depends on backend follow-up on the parent branch
 mutation TemplateGalleryPageUnpublish($id: ID!) {
   templateGalleryPageUnpublish(id: $id) {
-    id status publishedAt updatedAt
+    id
+    status
+    publishedAt
+    updatedAt
   }
 }
 
 mutation TemplateGalleryPageDelete($id: ID!) {
-  templateGalleryPageDelete(id: $id) { id }
+  templateGalleryPageDelete(id: $id) {
+    id
+  }
 }
 ```
 
@@ -477,6 +534,7 @@ mutation TemplateGalleryPageDelete($id: ID!) {
 Library: `@dnd-kit/core` + `@dnd-kit/sortable` (already in repo at root `package.json`; reference impl at `apps/journeys-admin/src/components/Editor/Slider/Content/Canvas/DragDropWrapper/DragDropWrapper.tsx`).
 
 Topology:
+
 ```
 <DndContext onDragStart={...} onDragEnd={...} sensors={[Mouse,Touch,Keyboard]}>
   <UnsectionedTemplates />            // useDroppable({ id: 'unsectioned' })
@@ -489,6 +547,7 @@ Topology:
 **Drag id encoding:** drop zones use `unsectioned` and `collection:<id>` to make the source/target unambiguous in `handleDragEnd`. Draggable id is the bare `template.id`.
 
 **`handleDragEnd` algorithm** (pseudocode — single-mutation per Siyang's update):
+
 ```ts
 function handleDragEnd({ active, over }: DragEndEvent) {
   if (over == null) return
@@ -526,15 +585,15 @@ Sensors for V1: `MouseSensor` (8px activation), `TouchSensor` (200ms / 5px). **`
 - Stack: `<Dialog>` from `@core/shared/ui/Dialog` + Formik + Yup. Pattern: `TeamUpdateDialog`, `JourneyDetailsDialog`, `SlugDialog` (see findings).
 - Fields:
 
-  | Field | Required | Validation | UI |
-  |---|---|---|---|
-  | `title` | yes (create + edit) | `string().required().max(100)` | TextField, autofocus on open |
-  | `description` | no | `string().max(500)` | TextField multiline rows 3 |
-  | `creatorName` | yes | `string().required().max(100)` | TextField |
-  | `creatorImageBlockId` | no | block must belong to a team-owned Journey (server-side `validateCreatorImageBlock`) | **`<CollectionCreatorImagePicker />`** — thin wrapper around the existing `<ImageLibrary />` (see "Creator image picker — reuse" section below) |
-  | `mediaUrl` | no | `string().matches(/^https:\/\//, t('Must be an https URL')).max(2048)` | TextField with `helperText="https://…"` |
-  | `slug` | edit only | `string().matches(/^[a-z0-9-]+$/).max(100)` | TextField with **bold warning helperText** below: _"Changing the slug breaks existing public links to this collection."_ |
-  | `journeyIds` | no | n/a | **Not in dialog** — managed via DnD only |
+  | Field                 | Required            | Validation                                                                          | UI                                                                                                                                              |
+  | --------------------- | ------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+  | `title`               | yes (create + edit) | `string().required().max(100)`                                                      | TextField, autofocus on open                                                                                                                    |
+  | `description`         | no                  | `string().max(500)`                                                                 | TextField multiline rows 3                                                                                                                      |
+  | `creatorName`         | yes                 | `string().required().max(100)`                                                      | TextField                                                                                                                                       |
+  | `creatorImageBlockId` | no                  | block must belong to a team-owned Journey (server-side `validateCreatorImageBlock`) | **`<CollectionCreatorImagePicker />`** — thin wrapper around the existing `<ImageLibrary />` (see "Creator image picker — reuse" section below) |
+  | `mediaUrl`            | no                  | `string().matches(/^https:\/\//, t('Must be an https URL')).max(2048)`              | TextField with `helperText="https://…"`                                                                                                         |
+  | `slug`                | edit only           | `string().matches(/^[a-z0-9-]+$/).max(100)`                                         | TextField with **bold warning helperText** below: _"Changing the slug breaks existing public links to this collection."_                        |
+  | `journeyIds`          | no                  | n/a                                                                                 | **Not in dialog** — managed via DnD only                                                                                                        |
 
 - On submit (create): call `templateGalleryPageCreate({ teamId, title, description, creatorName, mediaUrl })` → snackbar success → close.
 - On submit (edit): call `templateGalleryPageUpdate(id, input)` with **only changed fields** (compute diff from `initialValues`). This respects the backend's `undefined leaves alone, null clears it` semantics.
@@ -547,6 +606,7 @@ Sensors for V1: `MouseSensor` (8px activation), `TouchSensor` (200ms / 5px). **`
 Per Siyang's update (2026-05-01), do **not** build a new image picker. Reuse the existing editor component at `apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/ImageLibrary/ImageLibrary.tsx` (the same component used by `ImageEdit`, `ImageSource`, `VideoBlockEditorSettingsPosterLibrary`, and `HostAvatarsButton`).
 
 **Component contract** (verified at `ImageLibrary.tsx:42-86`):
+
 ```ts
 interface ImageLibraryProps {
   variant?: 'drawer' | 'dialog'
@@ -560,18 +620,22 @@ interface ImageLibraryProps {
   error?: boolean
 }
 ```
+
 The component is a UI shell over `<ImageBlockEditor>`; the consumer wires persistence in `onChange`. Pass `variant="dialog"` so it renders inside its own MUI Dialog (consistent with `HostAvatarsButton`'s pattern of opening the picker over the form).
 
 **Reuse pattern (mirroring `HostAvatarsButton.tsx:14-20`):**
+
 ```tsx
 const ImageLibrary = dynamic(
-  async () => await import(
-    /* webpackChunkName: "Editor/ImageLibrary/ImageLibrary" */
-    '../../../Editor/Slider/Settings/Drawer/ImageLibrary'
-  ).then((mod) => mod.ImageLibrary),
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ImageLibrary/ImageLibrary" */
+      '../../../Editor/Slider/Settings/Drawer/ImageLibrary'
+    ).then((mod) => mod.ImageLibrary),
   { ssr: false }
 )
 ```
+
 This deduplicates the same chunk that the editor already lazy-loads — no double-shipping.
 
 **The hard part — persistence path.** The backend constraint is server-enforced: `creatorImageBlockId` must reference a `Block` whose parent `Journey.teamId` equals the gallery page's `teamId` (see `apis/api-journeys-modern/src/schema/templateGalleryPage/validateCreatorImageBlock.ts:15-39`). `<ImageLibrary>` itself doesn't create blocks — its `onChange` returns an `ImageBlockUpdateInput` (`{ src, alt, blurhash, width, height }`). The consumer is responsible for translating that into a Block id.
@@ -591,6 +655,7 @@ There are **three viable persistence strategies**, and the right one is a **back
 Mirror `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/DeleteJourneyDialog/DeleteJourneyDialog.tsx`. Title: _"Ungroup this collection?"_
 
 Body, conditional on prior status:
+
 - **was draft:** _"This dissolves the collection. Templates inside return to the flat list."_
 - **was published (or currently published):** _"This dissolves the collection. Templates inside return to the flat list. The public URL `https://…/collections/<slug>` will return 404."_
 
@@ -718,18 +783,18 @@ Frontend writes hooks against the real generated types after `pnpm dlx nx run jo
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| Single-membership invariant on M:N backend (frontend-only) | Medium | High | **Coordinate Phase 0 backend `templateGalleryPageMoveJourney` + uniqueness rule.** If unavailable, document the invariant in `<TemplateGalleryPageList>` header + add an integration test. |
-| Two-mutation DnD partial failure orphans a template | Low | Medium | Eliminated when `templateGalleryPageMoveJourney` lands (Phase 0 #4). Until then: drag mutex, snackbar with template-specific retry CTA, refetch on second-mutation failure to resync. |
-| Race-condition cluster (stale closure on drag, inter-drag clobber, out-of-order publish/unpublish, edit-dialog crash on cache evict, touch-sensor menu collision) | Medium | High | Per-collection action lock + drag mutex + dialog auto-close on entity-evict + `data-no-dnd` attributes on in-card interactives. See "Research Insights → B." |
-| Optimistic response order mismatches server | Medium | Low | Compute optimistic `templates` from the same `journeyIds` we send |
-| Slug collisions surface as opaque errors | Low | Medium | Map `extensions.field === 'slug'` to a Formik field error |
-| Tab visible to all teams pre-flag | High | Low | Acceptable per Siyang's instruction; flag wraps two JSX nodes once it lands |
-| `creatorImageBlock` persistence strategy still TBD on backend | Medium | Medium | Plan recommends `creatorImageSrc` input field; coordinate with Siyang before frontend-only branch is merged. Frontend can build wrapper UI against placeholder mutation hook in parallel. |
-| `templateGalleryPageUnpublish` not yet on parent branch | Medium | Medium | Add the mutation to the parent branch (Phase 0). If schema is missing at codegen time, hook fails to type-check — this is the desired forcing function. |
-| `@dnd-kit` interaction with MUI Tab focus management | Low | Low | Reference impl already uses dnd-kit + MUI in the editor canvas; same patterns apply |
-| Reused `<ImageLibrary />` lazy-import path is brittle from a sibling-tree consumer | Low | Low | `HostAvatarsButton` already uses the same dynamic-import path from a non-editor location; mirror its precedent verbatim |
+| Risk                                                                                                                                                              | Likelihood | Impact | Mitigation                                                                                                                                                                                 |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Single-membership invariant on M:N backend (frontend-only)                                                                                                        | Medium     | High   | **Coordinate Phase 0 backend `templateGalleryPageMoveJourney` + uniqueness rule.** If unavailable, document the invariant in `<TemplateGalleryPageList>` header + add an integration test. |
+| Two-mutation DnD partial failure orphans a template                                                                                                               | Low        | Medium | Eliminated when `templateGalleryPageMoveJourney` lands (Phase 0 #4). Until then: drag mutex, snackbar with template-specific retry CTA, refetch on second-mutation failure to resync.      |
+| Race-condition cluster (stale closure on drag, inter-drag clobber, out-of-order publish/unpublish, edit-dialog crash on cache evict, touch-sensor menu collision) | Medium     | High   | Per-collection action lock + drag mutex + dialog auto-close on entity-evict + `data-no-dnd` attributes on in-card interactives. See "Research Insights → B."                               |
+| Optimistic response order mismatches server                                                                                                                       | Medium     | Low    | Compute optimistic `templates` from the same `journeyIds` we send                                                                                                                          |
+| Slug collisions surface as opaque errors                                                                                                                          | Low        | Medium | Map `extensions.field === 'slug'` to a Formik field error                                                                                                                                  |
+| Tab visible to all teams pre-flag                                                                                                                                 | High       | Low    | Acceptable per Siyang's instruction; flag wraps two JSX nodes once it lands                                                                                                                |
+| `creatorImageBlock` persistence strategy still TBD on backend                                                                                                     | Medium     | Medium | Plan recommends `creatorImageSrc` input field; coordinate with Siyang before frontend-only branch is merged. Frontend can build wrapper UI against placeholder mutation hook in parallel.  |
+| `templateGalleryPageUnpublish` not yet on parent branch                                                                                                           | Medium     | Medium | Add the mutation to the parent branch (Phase 0). If schema is missing at codegen time, hook fails to type-check — this is the desired forcing function.                                    |
+| `@dnd-kit` interaction with MUI Tab focus management                                                                                                              | Low        | Low    | Reference impl already uses dnd-kit + MUI in the editor canvas; same patterns apply                                                                                                        |
+| Reused `<ImageLibrary />` lazy-import path is brittle from a sibling-tree consumer                                                                                | Low        | Low    | `HostAvatarsButton` already uses the same dynamic-import path from a non-editor location; mirror its precedent verbatim                                                                    |
 
 ## Dependencies & Prerequisites
 
@@ -788,7 +853,7 @@ Smoke-test by visiting `/?type=collections` locally. No GraphQL yet.
 
 1. Add `<DndContext>` (with `collisionDetection={closestCenter}` per repo precedent), sensors, `<DragOverlay>` (mounted continuously; conditional children) around the cards grid.
 2. Wire `useDroppable` on `<CollectionCard>` and the unsectioned `<Box>`; `useDraggable` on `<TemplateCard>`.
-3. Implement `handleDragEnd` using the typed `DropZoneId` discriminated union (per Research Insights → A) — read the target's `templates` from cache *just before* the second mutation (per Research Insights → B.1).
+3. Implement `handleDragEnd` using the typed `DropZoneId` discriminated union (per Research Insights → A) — read the target's `templates` from cache _just before_ the second mutation (per Research Insights → B.1).
 4. Add `MouseSensor`, `TouchSensor`, `KeyboardSensor` with `data-no-dnd` activation predicate (per Research Insights → G).
 5. Add `accessibility.announcements` config (per Research Insights → G).
 6. Drag mutex: refuse `handleDragEnd` while any DnD mutation is in flight; disable other drags via `useDraggable({ disabled })` (per Research Insights → B.2).

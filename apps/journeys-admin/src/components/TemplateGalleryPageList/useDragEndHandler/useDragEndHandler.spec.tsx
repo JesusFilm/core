@@ -22,9 +22,7 @@ const journey = (id: string, title: string): Journey =>
     primaryImageBlock: null
   }) as unknown as Journey
 
-const templateRef = (
-  j: Journey
-): TemplateGalleryPage['templates'][number] => ({
+const templateRef = (j: Journey): TemplateGalleryPage['templates'][number] => ({
   __typename: 'Journey',
   id: j.id,
   title: j.title,
@@ -60,10 +58,7 @@ interface Harness {
   journeys: Journey[]
 }
 
-function buildIndexes({
-  collections,
-  journeys
-}: Harness): {
+function buildIndexes({ collections, journeys }: Harness): {
   journeyById: Map<string, Journey>
   templateIdToCollection: Map<string, TemplateGalleryPage>
   collectionsById: Map<string, TemplateGalleryPage>

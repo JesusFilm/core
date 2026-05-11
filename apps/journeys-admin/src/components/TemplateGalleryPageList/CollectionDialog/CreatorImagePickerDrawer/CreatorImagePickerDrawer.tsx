@@ -97,9 +97,7 @@ export function CreatorImagePickerDrawer({
       </Stack>
       <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
         <ImageBlockEditor
-          selectedBlock={
-            src !== '' ? buildSyntheticImageBlock(src, alt) : null
-          }
+          selectedBlock={src !== '' ? buildSyntheticImageBlock(src, alt) : null}
           onChange={async (input: ImageBlockUpdateInput) => {
             if (input.src == null || input.src === '') return
             await handleSet(input.src, input.alt ?? '')

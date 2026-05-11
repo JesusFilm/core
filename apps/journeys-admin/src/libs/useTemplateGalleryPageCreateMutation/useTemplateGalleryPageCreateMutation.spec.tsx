@@ -60,9 +60,12 @@ describe('useTemplateGalleryPageCreateMutation', () => {
       }
     })
 
-    const { result } = renderHook(() => useTemplateGalleryPageCreateMutation(), {
-      wrapper: buildWrapper(cache)
-    })
+    const { result } = renderHook(
+      () => useTemplateGalleryPageCreateMutation(),
+      {
+        wrapper: buildWrapper(cache)
+      }
+    )
 
     await act(async () => {
       await result.current[0]({
@@ -118,9 +121,12 @@ describe('useTemplateGalleryPageCreateMutation', () => {
       }
     })
 
-    const { result } = renderHook(() => useTemplateGalleryPageCreateMutation(), {
-      wrapper: buildWrapper(cache)
-    })
+    const { result } = renderHook(
+      () => useTemplateGalleryPageCreateMutation(),
+      {
+        wrapper: buildWrapper(cache)
+      }
+    )
 
     await act(async () => {
       await result.current[0]({
@@ -148,9 +154,12 @@ describe('useTemplateGalleryPageCreateMutation', () => {
 
   it('no-ops when no cached list exists for this team yet', async () => {
     const cache = new InMemoryCache()
-    const { result } = renderHook(() => useTemplateGalleryPageCreateMutation(), {
-      wrapper: buildWrapper(cache)
-    })
+    const { result } = renderHook(
+      () => useTemplateGalleryPageCreateMutation(),
+      {
+        wrapper: buildWrapper(cache)
+      }
+    )
 
     await act(async () => {
       await result.current[0]({

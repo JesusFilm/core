@@ -10,7 +10,10 @@ import { TEMPLATE_GALLERY_PAGE_UNPUBLISH } from './useTemplateGalleryPageUnpubli
 
 export const getTemplateGalleryPageUnpublishMock = (
   variables: TemplateGalleryPageUnpublishVariables
-): MockedResponse<TemplateGalleryPageUnpublish, TemplateGalleryPageUnpublishVariables> => ({
+): MockedResponse<
+  TemplateGalleryPageUnpublish,
+  TemplateGalleryPageUnpublishVariables
+> => ({
   request: { query: TEMPLATE_GALLERY_PAGE_UNPUBLISH, variables },
   result: jest.fn(() => ({
     data: {

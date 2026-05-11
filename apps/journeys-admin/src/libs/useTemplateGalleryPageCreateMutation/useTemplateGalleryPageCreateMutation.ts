@@ -16,9 +16,7 @@ import {
 import { GET_TEMPLATE_GALLERY_PAGES } from '../useTemplateGalleryPagesQuery'
 
 export const TEMPLATE_GALLERY_PAGE_CREATE = gql`
-  mutation TemplateGalleryPageCreate(
-    $input: TemplateGalleryPageCreateInput!
-  ) {
+  mutation TemplateGalleryPageCreate($input: TemplateGalleryPageCreateInput!) {
     templateGalleryPageCreate(input: $input) {
       id
       title

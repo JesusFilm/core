@@ -10,7 +10,10 @@ import { TEMPLATE_GALLERY_PAGE_PUBLISH } from './useTemplateGalleryPagePublishMu
 
 export const getTemplateGalleryPagePublishMock = (
   variables: TemplateGalleryPagePublishVariables
-): MockedResponse<TemplateGalleryPagePublish, TemplateGalleryPagePublishVariables> => ({
+): MockedResponse<
+  TemplateGalleryPagePublish,
+  TemplateGalleryPagePublishVariables
+> => ({
   request: { query: TEMPLATE_GALLERY_PAGE_PUBLISH, variables },
   result: jest.fn(() => ({
     data: {

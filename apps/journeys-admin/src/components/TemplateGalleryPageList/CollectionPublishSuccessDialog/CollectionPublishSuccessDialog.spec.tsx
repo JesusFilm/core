@@ -28,7 +28,9 @@ describe('CollectionPublishSuccessDialog', () => {
   })
 
   function renderDialog(
-    props: Partial<React.ComponentProps<typeof CollectionPublishSuccessDialog>> = {}
+    props: Partial<
+      React.ComponentProps<typeof CollectionPublishSuccessDialog>
+    > = {}
   ): {
     onClose: jest.Mock
   } {
@@ -86,9 +88,7 @@ describe('CollectionPublishSuccessDialog', () => {
 
   it('opens the public URL in a new tab and closes the dialog when "View the page" is clicked', async () => {
     const { onClose } = renderDialog()
-    await userEvent.click(
-      screen.getByRole('button', { name: 'View the page' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
     expect(window.open).toHaveBeenCalledWith(
       'https://example.com/p/my-collection',
       '_blank',
@@ -99,9 +99,7 @@ describe('CollectionPublishSuccessDialog', () => {
 
   it('does not open a new tab if publicUrl is null', async () => {
     const { onClose } = renderDialog({ publicUrl: null })
-    await userEvent.click(
-      screen.getByRole('button', { name: 'View the page' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
     expect(window.open).not.toHaveBeenCalled()
     expect(onClose).not.toHaveBeenCalled()
   })

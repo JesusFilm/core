@@ -12,10 +12,7 @@ import { getTemplateGalleryPageCreateMock } from '../../../../libs/useTemplateGa
 import { TEMPLATE_GALLERY_PAGE_UPDATE } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation'
 import { getTemplateGalleryPageUpdateMock } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation.mock'
 
-import {
-  CollectionFormValues,
-  useCollectionForm
-} from './useCollectionForm'
+import { CollectionFormValues, useCollectionForm } from './useCollectionForm'
 
 const mockEnqueueSnackbar = jest.fn()
 jest.mock('notistack', () => {

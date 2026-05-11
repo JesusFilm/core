@@ -65,9 +65,7 @@ function JourneyPickerFieldImpl({
 
   return (
     <Stack spacing={1}>
-      <Typography sx={SECTION_HEADER}>
-        {t('Templates on the page:')}
-      </Typography>
+      <Typography sx={SECTION_HEADER}>{t('Templates on the page:')}</Typography>
       <Autocomplete
         multiple
         disableCloseOnSelect
@@ -84,12 +82,7 @@ function JourneyPickerFieldImpl({
           value.map((option, index) => {
             const { key, ...tagProps } = getTagProps({ index })
             return (
-              <Chip
-                key={key}
-                label={option.title}
-                size="small"
-                {...tagProps}
-              />
+              <Chip key={key} label={option.title} size="small" {...tagProps} />
             )
           })
         }

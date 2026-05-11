@@ -1,4 +1,9 @@
-import { QueryResult, WatchQueryFetchPolicy, gql, useQuery } from '@apollo/client'
+import {
+  QueryResult,
+  WatchQueryFetchPolicy,
+  gql,
+  useQuery
+} from '@apollo/client'
 
 import {
   GetAdminJourneys,

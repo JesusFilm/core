@@ -28,14 +28,8 @@ import {
 // "ghost card" flash on rapid back-to-back drops (NES-1539 review todo
 // 021).
 export const TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY = gql`
-  mutation TemplateGalleryPageAssignJourney(
-    $journeyId: ID!
-    $pageId: ID
-  ) {
-    templateGalleryPageAssignJourney(
-      journeyId: $journeyId
-      pageId: $pageId
-    ) {
+  mutation TemplateGalleryPageAssignJourney($journeyId: ID!, $pageId: ID) {
+    templateGalleryPageAssignJourney(journeyId: $journeyId, pageId: $pageId) {
       id
       title
       description

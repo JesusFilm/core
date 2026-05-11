@@ -75,9 +75,12 @@ describe('useTemplateGalleryPageDeleteMutation', () => {
       }
     })
 
-    const { result } = renderHook(() => useTemplateGalleryPageDeleteMutation(), {
-      wrapper: buildWrapper(cache, 'page-1')
-    })
+    const { result } = renderHook(
+      () => useTemplateGalleryPageDeleteMutation(),
+      {
+        wrapper: buildWrapper(cache, 'page-1')
+      }
+    )
 
     await act(async () => {
       await result.current[0]({ variables: { id: 'page-1' } })
@@ -120,9 +123,12 @@ describe('useTemplateGalleryPageDeleteMutation', () => {
     expect(entityId).toBeTruthy()
     expect(cache.extract()[entityId as string]).toBeDefined()
 
-    const { result } = renderHook(() => useTemplateGalleryPageDeleteMutation(), {
-      wrapper: buildWrapper(cache, 'page-1')
-    })
+    const { result } = renderHook(
+      () => useTemplateGalleryPageDeleteMutation(),
+      {
+        wrapper: buildWrapper(cache, 'page-1')
+      }
+    )
 
     await act(async () => {
       await result.current[0]({ variables: { id: 'page-1' } })

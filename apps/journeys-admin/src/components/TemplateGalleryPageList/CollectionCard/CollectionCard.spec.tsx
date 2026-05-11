@@ -30,9 +30,7 @@ function makeCollection(
   }
 }
 
-const journeyRef = (
-  id: string
-): TemplateGalleryPage['templates'][number] => ({
+const journeyRef = (id: string): TemplateGalleryPage['templates'][number] => ({
   __typename: 'Journey',
   id,
   title: id,
@@ -156,9 +154,7 @@ describe('CollectionCard', () => {
   it('opens the ungroup confirmation dialog from the menu and fires onUngroup on confirm', async () => {
     const onUngroup = jest.fn()
     const collection = makeCollection({ templates: [journeyRef('j1')] })
-    render(
-      <CollectionCard collection={collection} onUngroup={onUngroup} />
-    )
+    render(<CollectionCard collection={collection} onUngroup={onUngroup} />)
     await userEvent.click(
       screen.getByRole('button', { name: 'Collection actions' })
     )
@@ -166,8 +162,12 @@ describe('CollectionCard', () => {
       screen.getByRole('menuitem', { name: 'Remove Collection' })
     )
     const dialog = screen.getByTestId('CollectionUngroupDialog')
-    expect(within(dialog).getByText('Remove this collection?')).toBeInTheDocument()
-    await userEvent.click(within(dialog).getByRole('button', { name: 'Remove' }))
+    expect(
+      within(dialog).getByText('Remove this collection?')
+    ).toBeInTheDocument()
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: 'Remove' })
+    )
     expect(onUngroup).toHaveBeenCalledWith(collection)
   })
 

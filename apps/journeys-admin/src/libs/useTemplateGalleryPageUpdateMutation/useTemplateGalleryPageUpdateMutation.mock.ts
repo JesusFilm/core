@@ -29,7 +29,10 @@ const defaultUpdated: Updated = {
 export const getTemplateGalleryPageUpdateMock = (
   variables: TemplateGalleryPageUpdateVariables,
   overrides: Partial<Updated> = {}
-): MockedResponse<TemplateGalleryPageUpdate, TemplateGalleryPageUpdateVariables> => ({
+): MockedResponse<
+  TemplateGalleryPageUpdate,
+  TemplateGalleryPageUpdateVariables
+> => ({
   request: { query: TEMPLATE_GALLERY_PAGE_UPDATE, variables },
   result: jest.fn(() => ({
     data: {

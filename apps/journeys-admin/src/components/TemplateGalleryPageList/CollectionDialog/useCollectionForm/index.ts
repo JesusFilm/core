@@ -1,6 +1,4 @@
-export {
-  useCollectionForm
-} from './useCollectionForm'
+export { useCollectionForm } from './useCollectionForm'
 export type {
   CollectionFormValues,
   UseCollectionFormParams,

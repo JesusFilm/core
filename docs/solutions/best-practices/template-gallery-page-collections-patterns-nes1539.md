@@ -58,7 +58,7 @@ of) the legacy team-templates list — additive rollout, never destructive.
 ### 1. List-shaped Apollo cache mutations: prefer `cache.updateQuery` over `cache.modify` with `storeFieldName`
 
 `cache.modify` is the right hammer when you have to surgically patch a
-single field. For prepending into a *list-shaped* query result, the
+single field. For prepending into a _list-shaped_ query result, the
 substring-matching `storeFieldName.includes(...)` pattern is fragile —
 Apollo's argument serialization order is not stable across versions, and
 any falsy `teamId == null` falls through to "modify every variant" by
@@ -129,6 +129,7 @@ round-trip and drop it; `handleDragEnd`'s early-return swallows the drop
 silently — the card flies, the overlay disappears, nothing saves.
 
 Fix:
+
 - Gate `handleDragStart` first: short-circuit and surface a snackbar if
   `dragInFlight`.
 - Pass `dragInFlight` into `useSortable({ disabled })` on every draggable
@@ -228,12 +229,12 @@ mid-work; flag names follow UX vocabulary.
 
 ### 10. Flag rollout: ship the simplest version, iterate later
 
-The first attempt at the rollout was *additive* — render the gallery
+The first attempt at the rollout was _additive_ — render the gallery
 above the legacy team-templates list when the flag is on, so users
 keep archive/trash/sort. In practice it duplicated every template
 twice (once in the gallery's "All Templates" pool, once in the legacy
 list below) and read as a bug. The shipped behavior is the simpler
-*total replacement*: when the flag is on, Templates renders only the
+_total replacement_: when the flag is on, Templates renders only the
 gallery panel.
 
 The lesson is less "additive vs replacing" and more "new UI surfaces
@@ -246,14 +247,14 @@ in tree (we did — `JourneyListContent` is one if/return away).
 Without an `optimisticResponse`, Apollo waits for the network round-trip
 before re-rendering. dnd-kit's drop animation fires immediately on
 release and snaps the active card back to its source position — which
-visually *flashes the old order* before the cache update lands.
+visually _flashes the old order_ before the cache update lands.
 
 For intra-collection reorder, an `optimisticResponse` is enough — the
 mutation returns the full TemplateGalleryPage, the splice is computable
 client-side, Apollo writes it on the same tick the drop happens.
 
 For cross-collection moves (`templateGalleryPageAssignJourney`), the
-mutation only returns the *target* page. The source page's `templates`
+mutation only returns the _target_ page. The source page's `templates`
 field is a sibling on a different normalized entity that the response
 can't update. The fix: pair the optimistic response with a
 `cache.modify` in the mutation's `update` callback that trims the
@@ -262,7 +263,9 @@ moving journey ref from the source page's templates list.
 ```ts
 await templateGalleryPageAssignJourney({
   variables: { journeyId, pageId: targetCollectionId },
-  optimisticResponse: { /* target with the journey appended */ },
+  optimisticResponse: {
+    /* target with the journey appended */
+  },
   update: (cache) => {
     if (sourceCollection == null || sourceCollection.id === targetCollectionId) return
     const sourceCacheId = cache.identify({
@@ -342,14 +345,14 @@ absolute `order` column value and shifted the affected window with
    `(templateGalleryPageId, order)` UNIQUE constraint.
 2. **Assign/unassign produced gappy orders** (`{0, 2, 4, 5}` after
    churn) because the unassign path didn't renumber. The frontend
-   sent a *display index* (computed from the array index of the
+   sent a _display index_ (computed from the array index of the
    over-row), the resolver compared it to absolute `order` values,
    and drags through gaps silently no-op'd.
 
 The shipped fix in `apis/api-journeys-modern/src/schema/templateGalleryPage/applyContiguousOrder.ts`:
 
 - **`lockPage(tx, pageId)`**: `SELECT 1 FROM "TemplateGalleryPage"
-  WHERE id = ${pageId} FOR UPDATE`. Caller MUST be inside a
+WHERE id = ${pageId} FOR UPDATE`. Caller MUST be inside a
   transaction. Serializes concurrent reorder/assign mutations on the
   same page.
 - **`applyContiguousOrder(tx, pageId, rowsInOrder)`**: stages every
@@ -359,7 +362,7 @@ The shipped fix in `apis/api-journeys-modern/src/schema/templateGalleryPage/appl
   UNIQUE check on the unique index never sees a transient duplicate.
 - **Reorder protocol**: read rows in display order, splice in memory
   by the display-index input, call `applyContiguousOrder`. The input
-  is now *unambiguously* a display index — the resolver never
+  is now _unambiguously_ a display index — the resolver never
   compares it to a stored `order`.
 - **Assign/unassign**: lock both source and target pages in
   lexicographic id order (deadlock-safe), then renumber both pages

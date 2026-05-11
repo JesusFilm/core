@@ -7,10 +7,10 @@ problem_type: logic_error
 component: database
 severity: high
 symptoms:
-  - "templateGalleryPages query returns empty for some users despite rows existing in the DB"
-  - "Newly created collections appear immediately, then vanish on hard refresh"
-  - "Bug only reproduces on fresh accounts whose first cached read was empty"
-  - "Response body is clean — just data.templateGalleryPages: [] with no errors array"
+  - 'templateGalleryPages query returns empty for some users despite rows existing in the DB'
+  - 'Newly created collections appear immediately, then vanish on hard refresh'
+  - 'Bug only reproduces on fresh accounts whose first cached read was empty'
+  - 'Response body is clean — just data.templateGalleryPages: [] with no errors array'
 root_cause: config_error
 resolution_type: config_change
 related_components:
@@ -77,7 +77,7 @@ useResponseCache({
     // templateGalleryPageBySlug (public renderer) is intentionally left
     // at the default TTL.
     'Query.templateGalleryPage': 0,
-    'Query.templateGalleryPages': 0,
+    'Query.templateGalleryPages': 0
     // ...plausible stats etc.
   }
 })
@@ -115,7 +115,7 @@ rg 'queryField.*\b(prismaField|field).*\[.*Ref' apis/api-journeys-modern/src/sch
 rg "'Query\.\w+':\s*0" apis/api-journeys-modern/src/yoga.ts
 ```
 
-If a list-returning `Query.X` is missing from the second list, the reviewer should ask: *can its first response be empty? If yes, set TTL 0 explicitly.*
+If a list-returning `Query.X` is missing from the second list, the reviewer should ask: _can its first response be empty? If yes, set TTL 0 explicitly._
 
 ### Integration test pattern
 

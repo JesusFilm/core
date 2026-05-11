@@ -120,11 +120,7 @@ describe('TemplateGalleryPageList', () => {
   it('renders the Collections heading and the existing collection card', async () => {
     const { getByText, getByTestId } = render(
       <MockedProvider
-        mocks={[
-          getLastActiveTeamIdAndTeamsMock,
-          collectionsMock,
-          journeysMock
-        ]}
+        mocks={[getLastActiveTeamIdAndTeamsMock, collectionsMock, journeysMock]}
       >
         <ThemeProvider>
           <SnackbarProvider>

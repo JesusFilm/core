@@ -77,7 +77,12 @@ function CollectionCardImpl({
   return (
     <Card
       data-testid={`CollectionCard-${collection.id}`}
-      sx={{ p: 2, borderColor: 'divider', borderWidth: 1, borderStyle: 'solid' }}
+      sx={{
+        p: 2,
+        borderColor: 'divider',
+        borderWidth: 1,
+        borderStyle: 'solid'
+      }}
       variant="outlined"
     >
       <Stack
@@ -94,11 +99,7 @@ function CollectionCardImpl({
             label={isPublished ? t('Published') : t('Draft')}
           />
           {collection.templates.length === 0 && (
-            <Chip
-              size="small"
-              variant="outlined"
-              label={t('Empty')}
-            />
+            <Chip size="small" variant="outlined" label={t('Empty')} />
           )}
         </Stack>
         <IconButton
@@ -203,4 +204,3 @@ function CollectionCardImpl({
 }
 
 export const CollectionCard = memo(CollectionCardImpl)
-

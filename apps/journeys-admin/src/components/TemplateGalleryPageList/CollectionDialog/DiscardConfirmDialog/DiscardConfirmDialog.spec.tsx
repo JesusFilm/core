@@ -21,11 +21,7 @@ describe('DiscardConfirmDialog', () => {
 
   it('renders the title and explanatory copy when open', () => {
     render(
-      <DiscardConfirmDialog
-        open
-        onCancel={jest.fn()}
-        onConfirm={jest.fn()}
-      />
+      <DiscardConfirmDialog open onCancel={jest.fn()} onConfirm={jest.fn()} />
     )
     expect(
       screen.getByText('You have unsaved changes — discard?')
@@ -39,11 +35,7 @@ describe('DiscardConfirmDialog', () => {
     const onConfirm = jest.fn()
     const onCancel = jest.fn()
     render(
-      <DiscardConfirmDialog
-        open
-        onCancel={onCancel}
-        onConfirm={onConfirm}
-      />
+      <DiscardConfirmDialog open onCancel={onCancel} onConfirm={onConfirm} />
     )
     await userEvent.click(screen.getByRole('button', { name: 'Discard' }))
     expect(onConfirm).toHaveBeenCalledTimes(1)
@@ -54,11 +46,7 @@ describe('DiscardConfirmDialog', () => {
     const onConfirm = jest.fn()
     const onCancel = jest.fn()
     render(
-      <DiscardConfirmDialog
-        open
-        onCancel={onCancel}
-        onConfirm={onConfirm}
-      />
+      <DiscardConfirmDialog open onCancel={onCancel} onConfirm={onConfirm} />
     )
     await userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     expect(onCancel).toHaveBeenCalledTimes(1)

@@ -163,8 +163,7 @@ export function DraggableJourney({
       sx={{
         opacity: isDragging ? 0.4 : 1,
         touchAction: 'manipulation',
-        cursor:
-          disabled === true ? 'default' : isDragging ? 'grabbing' : 'grab'
+        cursor: disabled === true ? 'default' : isDragging ? 'grabbing' : 'grab'
       }}
     >
       <JourneyCard journey={journey} />

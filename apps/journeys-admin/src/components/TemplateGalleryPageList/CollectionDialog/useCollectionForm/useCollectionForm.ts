@@ -65,17 +65,13 @@ const FIELD_ERROR_KEYS = new Set([
   'title'
 ])
 
-function buildSchema(
-  t: TFunction
-): ObjectSchema<CollectionFormValues> {
+function buildSchema(t: TFunction): ObjectSchema<CollectionFormValues> {
   return object({
     title: string()
       .required(t('Title is required'))
       .max(100, t('Max 100 characters')),
     description: string().default(''),
-    creatorName: string()
-      .max(100, t('Max 100 characters'))
-      .default(''),
+    creatorName: string().max(100, t('Max 100 characters')).default(''),
     creatorImageSrc: string().default(''),
     creatorImageAlt: string().default(''),
     mediaUrl: string()
@@ -112,10 +108,7 @@ function buildSchema(
         excludeEmptyString: true
       })
       .default(''),
-    journeyIds: array()
-      .of(string().required())
-      .required()
-      .default([])
+    journeyIds: array().of(string().required()).required().default([])
   })
 }
 
@@ -157,8 +150,7 @@ export function useCollectionForm({
 
   const schema = useMemo(() => buildSchema(t), [t])
 
-  const isPublished =
-    collection?.status === TemplateGalleryPageStatus.published
+  const isPublished = collection?.status === TemplateGalleryPageStatus.published
 
   // Synchronous double-submit guard. Formik's `isSubmitting` flips
   // through React state, so a sub-frame second click can squeeze through
@@ -223,9 +215,7 @@ export function useCollectionForm({
           input.mediaUrl = values.mediaUrl === '' ? null : values.mediaUrl
         }
         if (values.slug !== collection.slug) input.slug = values.slug
-        const initialIds = collection.templates
-          .map((tpl) => tpl.id)
-          .join(',')
+        const initialIds = collection.templates.map((tpl) => tpl.id).join(',')
         const nextIds = values.journeyIds.join(',')
         if (initialIds !== nextIds) {
           input.journeyIds = values.journeyIds
@@ -253,9 +243,7 @@ export function useCollectionForm({
         }
       }
       enqueueSnackbar(
-        error instanceof Error
-          ? error.message
-          : t("Couldn't save collection"),
+        error instanceof Error ? error.message : t("Couldn't save collection"),
         { variant: 'error', preventDuplicate: true }
       )
     } finally {

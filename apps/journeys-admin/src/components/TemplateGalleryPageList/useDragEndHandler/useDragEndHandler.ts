@@ -100,9 +100,7 @@ export function useDragEndHandler(
     if (sourceCollection?.status === TemplateGalleryPageStatus.published) return
     if (targetCollectionId != null) {
       const targetCollection = collectionsById.get(targetCollectionId)
-      if (
-        targetCollection?.status === TemplateGalleryPageStatus.published
-      )
+      if (targetCollection?.status === TemplateGalleryPageStatus.published)
         return
     }
 
