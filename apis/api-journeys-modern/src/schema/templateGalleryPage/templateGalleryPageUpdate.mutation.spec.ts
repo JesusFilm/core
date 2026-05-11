@@ -437,9 +437,7 @@ describe('templateGalleryPageUpdate', () => {
     // SlugTakenError.
     expect(result).not.toEqual({
       data: null,
-      errors: [
-        expect.objectContaining({ message: 'slug already in use' })
-      ]
+      errors: [expect.objectContaining({ message: 'slug already in use' })]
     })
   })
 

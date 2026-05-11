@@ -8,10 +8,7 @@ import { builder } from '../builder'
 import { lockPage } from './applyContiguousOrder'
 import { assertHttpsUrl } from './assertHttpsUrl'
 import { filterToTeamTemplates } from './filterToTeamTemplates'
-import {
-  SlugTakenError,
-  validateUserSuppliedSlug
-} from './generateUniqueSlug'
+import { SlugTakenError, validateUserSuppliedSlug } from './generateUniqueSlug'
 import { TemplateGalleryPageUpdateInput } from './inputs'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 

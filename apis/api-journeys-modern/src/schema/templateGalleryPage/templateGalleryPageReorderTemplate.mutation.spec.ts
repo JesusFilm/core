@@ -357,9 +357,7 @@ describe('templateGalleryPageReorderTemplate', () => {
           templateGalleryPageReorderTemplate: { id: 'page-1', title: 'Page 1' }
         }
       })
-      expect(
-        prismaMock.templateGalleryPageTemplate.findMany
-      ).toHaveBeenCalled()
+      expect(prismaMock.templateGalleryPageTemplate.findMany).toHaveBeenCalled()
     })
   })
 
