@@ -116,7 +116,13 @@ describe('useCollectionMutations', () => {
         await promise
       })
 
-      expect(result.current.busyId).toBe(null)
+      // setBusyId(null) runs inside publish's finally block. React's state
+      // update is enqueued but not necessarily visible by the time await
+      // returns control — CI scheduling has been observed to race this. Use
+      // waitFor so the assertion polls until the post-finally render lands.
+      await waitFor(() => {
+        expect(result.current.busyId).toBe(null)
+      })
     })
 
     it('returns null and shows an error snackbar when the mutation fails', async () => {
