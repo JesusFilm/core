@@ -111,10 +111,10 @@ importers:
         version: 3.17.1(graphql-yoga@5.15.1(graphql@16.10.0))(graphql@16.10.0)
       '@hono/swagger-ui':
         specifier: ^0.5.0
-        version: 0.5.2(hono@4.11.10)
+        version: 0.5.2(hono@4.12.18)
       '@hono/zod-openapi':
         specifier: ^1.1.4
-        version: 1.1.4(hono@4.11.10)(zod@4.3.5)
+        version: 1.1.4(hono@4.12.18)(zod@4.3.5)
       '@launchdarkly/node-server-sdk':
         specifier: ^9.10.2
         version: 9.10.2
@@ -429,7 +429,7 @@ importers:
         version: 5.15.1(graphql@16.10.0)
       hono:
         specifier: ^4.7.1
-        version: 4.11.10
+        version: 4.12.18
       i18next:
         specifier: ^23.16.8
         version: 23.16.8
@@ -16702,12 +16702,12 @@ packages:
     resolution: {integrity: sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==}
     engines: {node: '>=0.10.0'}
 
-  hono@4.11.10:
-    resolution: {integrity: sha512-kyWP5PAiMooEvGrA9jcD3IXF7ATu8+o7B3KCbPXid5se52NPqnOpM/r9qeW2heMnOekF4kqR1fXJqCYeCLKrZg==}
-    engines: {node: '>=16.9.0'}
-
   hono@4.11.4:
     resolution: {integrity: sha512-U7tt8JsyrxSRKspfhtLET79pU8K+tInj5QZXs1jSugO1Vq5dFj3kmZsRldo29mTBfcjDRVRXrEZ6LS63Cog9ZA==}
+    engines: {node: '>=16.9.0'}
+
+  hono@4.12.18:
+    resolution: {integrity: sha512-RWzP96k/yv0PQfyXnWjs6zot20TqfpfsNXhOnev8d1InAxubW93L11/oNUc3tQqn2G0bSdAOBpX+2uDFHV7kdQ==}
     engines: {node: '>=16.9.0'}
 
   hosted-git-info@2.8.9:
@@ -28891,7 +28891,7 @@ snapshots:
       '@babel/preset-env': 7.29.2(@babel/core@7.29.0)
       '@babel/preset-react': 7.28.5(@babel/core@7.29.0)
       '@babel/preset-typescript': 7.28.5(@babel/core@7.29.0)
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       '@babel/runtime-corejs3': 7.28.4
       '@babel/traverse': 7.28.5
       '@docusaurus/logger': 3.9.2
@@ -29484,7 +29484,7 @@ snapshots:
       '@docusaurus/utils': 3.9.2(@swc/core@1.15.8(@swc/helpers@0.5.21))(esbuild@0.19.12)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@docusaurus/utils-common': 3.9.2(@swc/core@1.15.8(@swc/helpers@0.5.21))(esbuild@0.19.12)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@types/history': 4.7.11
-      '@types/react': 18.3.27
+      '@types/react': 19.2.2
       '@types/react-router-config': 5.0.11
       clsx: 2.1.1
       parse-numeric-range: 1.3.0
@@ -32582,21 +32582,21 @@ snapshots:
     dependencies:
       hono: 4.11.4
 
-  '@hono/swagger-ui@0.5.2(hono@4.11.10)':
+  '@hono/swagger-ui@0.5.2(hono@4.12.18)':
     dependencies:
-      hono: 4.11.10
+      hono: 4.12.18
 
-  '@hono/zod-openapi@1.1.4(hono@4.11.10)(zod@4.3.5)':
+  '@hono/zod-openapi@1.1.4(hono@4.12.18)(zod@4.3.5)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 8.1.0(zod@4.3.5)
-      '@hono/zod-validator': 0.7.4(hono@4.11.10)(zod@4.3.5)
-      hono: 4.11.10
+      '@hono/zod-validator': 0.7.4(hono@4.12.18)(zod@4.3.5)
+      hono: 4.12.18
       openapi3-ts: 4.5.0
       zod: 4.3.5
 
-  '@hono/zod-validator@0.7.4(hono@4.11.10)(zod@4.3.5)':
+  '@hono/zod-validator@0.7.4(hono@4.12.18)(zod@4.3.5)':
     dependencies:
-      hono: 4.11.10
+      hono: 4.12.18
       zod: 4.3.5
 
   '@humanfs/core@0.19.1': {}
@@ -33869,7 +33869,7 @@ snapshots:
 
   '@mui/private-theming@7.1.1(@types/react@19.2.2)(react@19.2.0)':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       '@mui/utils': 7.1.1(@types/react@19.2.2)(react@19.2.0)
       prop-types: 15.8.1
       react: 19.2.0
@@ -33878,7 +33878,7 @@ snapshots:
 
   '@mui/styled-engine@7.1.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       '@emotion/cache': 11.14.0
       '@emotion/serialize': 1.3.3
       '@emotion/sheet': 1.4.0
@@ -33907,7 +33907,7 @@ snapshots:
 
   '@mui/types@7.4.3(@types/react@19.2.2)':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
     optionalDependencies:
       '@types/react': 19.2.2
 
@@ -33925,7 +33925,7 @@ snapshots:
 
   '@mui/x-charts-vendor@8.5.2':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       '@types/d3-color': 3.1.3
       '@types/d3-delaunay': 6.0.4
       '@types/d3-interpolate': 3.0.4
@@ -34006,7 +34006,7 @@ snapshots:
 
   '@mui/x-internals@8.5.2(@mui/system@7.1.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0)':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       '@mui/system': 7.1.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0)
       '@mui/utils': 7.1.1(@types/react@19.2.2)(react@19.2.0)
       react: 19.2.0
@@ -38755,7 +38755,7 @@ snapshots:
 
   '@types/hoist-non-react-statics@3.3.6':
     dependencies:
-      '@types/react': 18.3.27
+      '@types/react': 19.2.2
       hoist-non-react-statics: 3.3.2
 
   '@types/hoist-non-react-statics@3.3.7(@types/react@19.2.2)':
@@ -38944,7 +38944,7 @@ snapshots:
   '@types/react-router@5.1.20':
     dependencies:
       '@types/history': 4.7.11
-      '@types/react': 18.3.27
+      '@types/react': 19.2.2
 
   '@types/react-transition-group@4.4.12(@types/react@19.2.2)':
     dependencies:
@@ -39794,7 +39794,7 @@ snapshots:
 
   '@videojs/http-streaming@3.17.0(video.js@8.21.0)':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       '@videojs/vhs-utils': 4.1.1
       aes-decrypter: 4.0.2
       global: 4.4.0
@@ -39805,12 +39805,12 @@ snapshots:
 
   '@videojs/vhs-utils@4.1.1':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       global: 4.4.0
 
   '@videojs/xhr@2.7.0':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       global: 4.4.0
       is-function: 1.0.2
 
@@ -40300,7 +40300,7 @@ snapshots:
 
   aes-decrypter@4.0.2:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       '@videojs/vhs-utils': 4.1.1
       global: 4.4.0
       pkcs7: 1.0.4
@@ -42839,7 +42839,7 @@ snapshots:
 
   dom-helpers@5.2.1:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       csstype: 3.2.3
 
   dom-serializer@1.4.1:
@@ -45306,9 +45306,9 @@ snapshots:
     dependencies:
       parse-passwd: 1.0.0
 
-  hono@4.11.10: {}
-
   hono@4.11.4: {}
+
+  hono@4.12.18: {}
 
   hosted-git-info@2.8.9: {}
 
@@ -45745,7 +45745,7 @@ snapshots:
 
   instantsearch-ui-components@0.11.2:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
 
   instantsearch.js@4.79.2(algoliasearch@5.21.0):
     dependencies:
@@ -47439,7 +47439,7 @@ snapshots:
 
   m3u8-parser@7.2.0:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       '@videojs/vhs-utils': 4.1.1
       global: 4.4.0
 
@@ -48289,7 +48289,7 @@ snapshots:
 
   mpd-parser@1.3.1:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       '@videojs/vhs-utils': 4.1.1
       '@xmldom/xmldom': 0.8.6
       global: 4.4.0
@@ -48415,7 +48415,7 @@ snapshots:
 
   mux.js@7.1.0:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       global: 4.4.0
 
   mysql2@3.15.3:
@@ -50930,7 +50930,7 @@ snapshots:
 
   react-instantsearch-core@7.16.2(algoliasearch@5.21.0)(react@19.2.0):
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       algoliasearch: 5.21.0
       algoliasearch-helper: 3.26.0(algoliasearch@5.21.0)
       instantsearch.js: 4.79.2(algoliasearch@5.21.0)
@@ -50970,7 +50970,7 @@ snapshots:
 
   react-loadable-ssr-addon-v5-slorber@1.0.1(@docusaurus/react-loadable@6.0.0(react@19.2.0))(webpack@5.104.1(@swc/core@1.15.8(@swc/helpers@0.5.21))(esbuild@0.19.12)):
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       react-loadable: '@docusaurus/react-loadable@6.0.0(react@19.2.0)'
       webpack: 5.104.1(@swc/core@1.15.8(@swc/helpers@0.5.21))(esbuild@0.19.12)
 
@@ -51026,13 +51026,13 @@ snapshots:
 
   react-router-config@5.1.1(react-router@5.3.4(react@19.2.0))(react@19.2.0):
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       react: 19.2.0
       react-router: 5.3.4(react@19.2.0)
 
   react-router-dom@5.3.4(react@19.2.0):
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       history: 4.10.1
       loose-envify: 1.4.0
       prop-types: 15.8.1
@@ -51051,7 +51051,7 @@ snapshots:
 
   react-router@5.3.4(react@19.2.0):
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       history: 4.10.1
       hoist-non-react-statics: 3.3.2
       loose-envify: 1.4.0
