@@ -1,4 +1,4 @@
-import Grid from '@mui/material/Grid'
+import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
 import { GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate } from '../../../../__generated__/GetTemplateGalleryPage'
@@ -15,21 +15,42 @@ export function TemplateGalleryGrid({
   buildHref
 }: TemplateGalleryGridProps): ReactElement {
   return (
-    <Grid
-      container
-      spacing={3}
+    <Box
       data-testid="TemplateGalleryGrid"
-      columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}
+      sx={{
+        display: 'flex',
+        gap: 3,
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        scrollSnapType: 'x mandatory',
+        pb: 2,
+        '&::-webkit-scrollbar': { height: 8 },
+        '&::-webkit-scrollbar-track': { backgroundColor: 'transparent' },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: 'rgba(0,0,0,0.2)',
+          borderRadius: 4
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: 'rgba(0,0,0,0.35)'
+        }
+      }}
     >
       {templates.map((template, index) => (
-        <Grid key={template.id} size={1}>
+        <Box
+          key={template.id}
+          sx={{
+            flex: '0 0 auto',
+            width: { xs: 220, sm: 240, md: 260 },
+            scrollSnapAlign: 'start'
+          }}
+        >
           <GalleryTemplateCard
             template={template}
             href={buildHref(template)}
-            priority={index < 4}
+            priority={index < 3}
           />
-        </Grid>
+        </Box>
       ))}
-    </Grid>
+    </Box>
   )
 }

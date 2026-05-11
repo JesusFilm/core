@@ -20,12 +20,8 @@ describe('TemplateGalleryView', () => {
     expect(screen.getByTestId('TemplateGalleryHeader')).toBeInTheDocument()
     expect(screen.getByTestId('TemplateGalleryMedia')).toBeInTheDocument()
     expect(screen.getByTestId('TemplateGalleryGrid')).toBeInTheDocument()
-    expect(
-      screen.getByRole('link', { name: 'Sample Template' })
-    ).toHaveAttribute(
-      'href',
-      'https://admin.nextstep.is/?useTemplate=template-1'
-    )
+    expect(screen.getByTestId('GalleryTemplateCard')).toBeInTheDocument()
+    expect(screen.getByText('Sample Template')).toBeInTheDocument()
   })
 
   it('shows the empty state when there are no templates', () => {

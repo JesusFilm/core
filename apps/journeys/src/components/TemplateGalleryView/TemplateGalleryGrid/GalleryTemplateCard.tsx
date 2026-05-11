@@ -1,8 +1,8 @@
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { intlFormat, parseISO } from 'date-fns'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
@@ -18,7 +18,6 @@ interface GalleryTemplateCardProps {
 
 export function GalleryTemplateCard({
   template,
-  href,
   priority = false
 }: GalleryTemplateCardProps): ReactElement {
   const localLanguage = template.language.name.find(
@@ -30,82 +29,90 @@ export function GalleryTemplateCard({
     localLanguage ?? nativeLanguage
   )
 
+  const date =
+    template.createdAt != null
+      ? intlFormat(parseISO(String(template.createdAt)), {
+          month: 'long',
+          year: 'numeric'
+        })
+      : null
+  const metaParts = [date, displayLanguage].filter(
+    (part): part is string => part != null && part !== ''
+  )
+
   const imageSrc = template.primaryImageBlock?.src ?? null
   const imageAlt = template.primaryImageBlock?.alt ?? template.title
 
   return (
-    <Card
+    <Box
       data-testid="GalleryTemplateCard"
       sx={{
-        height: '100%',
-        backgroundColor: 'transparent',
-        boxShadow: 'none',
-        borderRadius: 2,
-        overflow: 'hidden'
+        position: 'relative',
+        display: 'block',
+        width: '100%',
+        aspectRatio: '3 / 5',
+        borderRadius: 3,
+        overflow: 'hidden',
+        backgroundColor: '#ECECEC',
+        color: 'common.white'
       }}
     >
-      <Box
-        component="a"
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={template.title}
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-          color: 'inherit',
-          textDecoration: 'none',
-          '&:focus-visible': {
-            outline: '2px solid',
-            outlineColor: (theme) => theme.palette.primary.main,
-            outlineOffset: 2,
-            borderRadius: 2
-          }
-        }}
-      >
-        <Box
+      {imageSrc != null ? (
+        <Image
+          src={imageSrc}
+          alt={imageAlt}
+          fill
+          priority={priority}
+          sizes="(max-width: 600px) 60vw, (max-width: 900px) 40vw, 260px"
+          style={{ objectFit: 'cover' }}
+        />
+      ) : (
+        <Stack
+          alignItems="center"
+          justifyContent="center"
           sx={{
-            position: 'relative',
-            aspectRatio: '1 / 1',
-            borderRadius: 2,
-            overflow: 'hidden',
-            backgroundColor: 'background.default'
+            position: 'absolute',
+            inset: 0
           }}
         >
-          {imageSrc != null ? (
-            <Image
-              src={imageSrc}
-              alt={imageAlt}
-              fill
-              priority={priority}
-              sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, (max-width: 1200px) 33vw, 25vw"
-              style={{ objectFit: 'cover' }}
-            />
-          ) : (
-            <Stack
-              alignItems="center"
-              justifyContent="center"
-              sx={{ width: '100%', height: '100%' }}
-            >
-              <InsertPhotoRoundedIcon
-                sx={{ fontSize: 48, color: 'text.secondary' }}
-              />
-            </Stack>
-          )}
-        </Box>
-        <Stack spacing={1} sx={{ py: 2 }}>
-          {displayLanguage != null && (
+          <InsertPhotoRoundedIcon
+            sx={{ fontSize: 56, color: 'rgba(0, 0, 0, 0.25)' }}
+          />
+        </Stack>
+      )}
+
+      <Box
+        sx={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          p: 2.5,
+          pt: 5,
+          background:
+            'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 55%, rgba(0,0,0,0) 100%)'
+        }}
+      >
+        <Stack spacing={0.75}>
+          {metaParts.length > 0 && (
             <Typography
-              variant="overline"
-              sx={{ color: (theme) => theme.palette.grey[700] }}
+              sx={{
+                color: 'rgba(255,255,255,0.85)',
+                fontSize: '0.65rem',
+                fontWeight: 600,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase'
+              }}
             >
-              {displayLanguage}
+              {metaParts.join(' · ')}
             </Typography>
           )}
           <Typography
-            variant="subtitle1"
             sx={{
+              color: 'common.white',
+              fontWeight: 700,
+              fontSize: '1.125rem',
+              lineHeight: 1.25,
               display: '-webkit-box',
               WebkitBoxOrient: 'vertical',
               WebkitLineClamp: 2,
@@ -116,12 +123,13 @@ export function GalleryTemplateCard({
           </Typography>
           {template.description != null && template.description !== '' && (
             <Typography
-              variant="body2"
-              color="text.secondary"
               sx={{
+                color: 'rgba(255,255,255,0.85)',
+                fontSize: '0.8125rem',
+                lineHeight: 1.4,
                 display: '-webkit-box',
                 WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: 3,
+                WebkitLineClamp: 2,
                 overflow: 'hidden'
               }}
             >
@@ -130,6 +138,6 @@ export function GalleryTemplateCard({
           )}
         </Stack>
       </Box>
-    </Card>
+    </Box>
   )
 }
