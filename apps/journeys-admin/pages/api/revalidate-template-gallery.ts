@@ -4,9 +4,19 @@ import fetch from 'node-fetch'
 
 import { authConfig } from '../../src/libs/auth/config'
 
+// Same shape we enforce at the form layer. Reject anything else before
+// forwarding to the public app — defense-in-depth alongside the upstream
+// endpoint's identical check.
+const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
+
 // Authenticated proxy that asks the public journeys app to revalidate a
 // template-gallery page. Fire-and-forget from the admin client after a
 // mutation succeeds (save, publish, unpublish, assign, reorder, delete).
+//
+// CSRF posture: POST only + `X-Requested-With: XMLHttpRequest`. `<img>`
+// tags can't issue POSTs and cross-site `fetch` can't set custom headers
+// without a CORS preflight the admin doesn't allow — together they block
+// cookie-borne cross-site invocation.
 //
 // Unlike `preview-template-gallery.ts`, this endpoint does NOT redirect —
 // the caller stays on the admin page. The 300ms edge-cache sleep that the
@@ -16,6 +26,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' })
+  }
+  if (req.headers['x-requested-with'] !== 'XMLHttpRequest') {
+    return res.status(403).json({ error: 'Forbidden' })
+  }
+
   if (
     process.env.JOURNEYS_URL == null ||
     process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN == null
@@ -31,8 +48,10 @@ export default async function handler(
     return res.status(403).json({ error: 'Not authorized' })
   }
 
-  const slug = req.query.slug?.toString()
-  if (slug == null) return res.status(400).json({ error: 'Missing Slug' })
+  const slug = req.query.slug
+  if (typeof slug !== 'string' || !SLUG_RE.test(slug)) {
+    return res.status(400).json({ error: 'Invalid slug' })
+  }
 
   const params = new URLSearchParams({
     accessToken: process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN,
@@ -46,7 +65,14 @@ export default async function handler(
       }/api/revalidate-template-gallery?${params.toString()}`
     )
     if (!response.ok) {
-      return res.status(response.status).json(await response.text())
+      // Log the upstream text server-side for debug; never forward it to
+      // the client (the body could leak failing-URL fragments including
+      // the access-token query param if a future upstream change starts
+      // surfacing them).
+      console.error('upstream revalidate failed', {
+        status: response.status
+      })
+      return res.status(response.status).json({ error: 'Error revalidating' })
     }
   } catch (e) {
     return res.status(500).json({ error: 'Error revalidating' })

@@ -25,9 +25,20 @@ function mockResponse(): CapturedRes {
   return { res, status, json }
 }
 
+function authedPostReq(
+  query: Record<string, string | undefined> = { slug: 'my-collection' }
+): NextApiRequest {
+  return {
+    method: 'POST',
+    headers: { 'x-requested-with': 'XMLHttpRequest' },
+    query
+  } as unknown as NextApiRequest
+}
+
 describe('revalidate-template-gallery', () => {
   const ORIGINAL_JOURNEYS_URL = process.env.JOURNEYS_URL
   const ORIGINAL_TOKEN = process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN
+  let consoleError: jest.SpyInstance
 
   beforeEach(() => {
     process.env.JOURNEYS_URL = 'https://your.nextstep.is'
@@ -35,21 +46,48 @@ describe('revalidate-template-gallery', () => {
     mockFetch.mockReset()
     mockGetApiRequestTokens.mockReset()
     mockGetApiRequestTokens.mockResolvedValue({ token: 'firebase-token' })
+    consoleError = jest.spyOn(console, 'error').mockImplementation(() => {})
   })
 
   afterEach(() => {
     process.env.JOURNEYS_URL = ORIGINAL_JOURNEYS_URL
     process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN = ORIGINAL_TOKEN
+    consoleError.mockRestore()
   })
 
-  it('returns 500 when JOURNEYS_URL env var is missing', async () => {
-    delete process.env.JOURNEYS_URL
+  it('returns 405 for GET requests (CSRF guard)', async () => {
     const req = {
+      method: 'GET',
+      headers: { 'x-requested-with': 'XMLHttpRequest' },
       query: { slug: 'my-collection' }
     } as unknown as NextApiRequest
     const { res, status, json } = mockResponse()
 
     await handler(req, res)
+
+    expect(status).toHaveBeenCalledWith(405)
+    expect(json).toHaveBeenCalledWith({ error: 'Method not allowed' })
+  })
+
+  it('returns 403 when X-Requested-With header is missing', async () => {
+    const req = {
+      method: 'POST',
+      headers: {},
+      query: { slug: 'my-collection' }
+    } as unknown as NextApiRequest
+    const { res, status, json } = mockResponse()
+
+    await handler(req, res)
+
+    expect(status).toHaveBeenCalledWith(403)
+    expect(json).toHaveBeenCalledWith({ error: 'Forbidden' })
+  })
+
+  it('returns 500 when JOURNEYS_URL env var is missing', async () => {
+    delete process.env.JOURNEYS_URL
+    const { res, status, json } = mockResponse()
+
+    await handler(authedPostReq(), res)
 
     expect(status).toHaveBeenCalledWith(500)
     expect(json).toHaveBeenCalledWith({
@@ -59,12 +97,9 @@ describe('revalidate-template-gallery', () => {
 
   it('returns 500 when JOURNEYS_REVALIDATE_ACCESS_TOKEN env var is missing', async () => {
     delete process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN
-    const req = {
-      query: { slug: 'my-collection' }
-    } as unknown as NextApiRequest
     const { res, status, json } = mockResponse()
 
-    await handler(req, res)
+    await handler(authedPostReq(), res)
 
     expect(status).toHaveBeenCalledWith(500)
     expect(json).toHaveBeenCalledWith({
@@ -74,12 +109,9 @@ describe('revalidate-template-gallery', () => {
 
   it('returns 403 when getApiRequestTokens resolves null', async () => {
     mockGetApiRequestTokens.mockResolvedValueOnce(null)
-    const req = {
-      query: { slug: 'my-collection' }
-    } as unknown as NextApiRequest
     const { res, status, json } = mockResponse()
 
-    await handler(req, res)
+    await handler(authedPostReq(), res)
 
     expect(status).toHaveBeenCalledWith(403)
     expect(json).toHaveBeenCalledWith({ error: 'Not authorized' })
@@ -87,35 +119,44 @@ describe('revalidate-template-gallery', () => {
 
   it('returns 403 when getApiRequestTokens throws', async () => {
     mockGetApiRequestTokens.mockRejectedValueOnce(new Error('boom'))
-    const req = {
-      query: { slug: 'my-collection' }
-    } as unknown as NextApiRequest
     const { res, status, json } = mockResponse()
 
-    await handler(req, res)
+    await handler(authedPostReq(), res)
 
     expect(status).toHaveBeenCalledWith(403)
     expect(json).toHaveBeenCalledWith({ error: 'Not authorized' })
   })
 
-  it('returns 400 when slug is missing', async () => {
-    const req = { query: {} } as unknown as NextApiRequest
+  it.each([
+    ['../privacy-policy'],
+    ['foo/bar'],
+    [''],
+    ['Foo'],
+    ['foo bar']
+  ])('returns 400 for malformed slug %j', async (badSlug) => {
     const { res, status, json } = mockResponse()
 
-    await handler(req, res)
+    await handler(authedPostReq({ slug: badSlug }), res)
+
+    expect(mockFetch).not.toHaveBeenCalled()
+    expect(status).toHaveBeenCalledWith(400)
+    expect(json).toHaveBeenCalledWith({ error: 'Invalid slug' })
+  })
+
+  it('returns 400 when slug is omitted entirely', async () => {
+    const { res, status, json } = mockResponse()
+
+    await handler(authedPostReq({}), res)
 
     expect(status).toHaveBeenCalledWith(400)
-    expect(json).toHaveBeenCalledWith({ error: 'Missing Slug' })
+    expect(json).toHaveBeenCalledWith({ error: 'Invalid slug' })
   })
 
   it('returns 200 after revalidating the upstream slug', async () => {
     mockFetch.mockResolvedValueOnce({ ok: true } as never)
-    const req = {
-      query: { slug: 'my-collection' }
-    } as unknown as NextApiRequest
     const { res, status, json } = mockResponse()
 
-    await handler(req, res)
+    await handler(authedPostReq(), res)
 
     expect(mockFetch).toHaveBeenCalledTimes(1)
     const fetchUrl = mockFetch.mock.calls[0][0] as string
@@ -128,31 +169,29 @@ describe('revalidate-template-gallery', () => {
     expect(json).toHaveBeenCalledWith({ revalidated: true })
   })
 
-  it('proxies the upstream status when the revalidate fetch is not ok', async () => {
+  it('returns a generic error and logs upstream status when fetch is not ok', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
       status: 502,
-      text: async () => 'Bad gateway'
+      text: async () => 'leaky upstream body'
     } as never)
-    const req = {
-      query: { slug: 'my-collection' }
-    } as unknown as NextApiRequest
     const { res, status, json } = mockResponse()
 
-    await handler(req, res)
+    await handler(authedPostReq(), res)
 
     expect(status).toHaveBeenCalledWith(502)
-    expect(json).toHaveBeenCalledWith('Bad gateway')
+    expect(json).toHaveBeenCalledWith({ error: 'Error revalidating' })
+    expect(consoleError).toHaveBeenCalledWith(
+      'upstream revalidate failed',
+      expect.objectContaining({ status: 502 })
+    )
   })
 
   it('returns 500 when the revalidate fetch throws', async () => {
     mockFetch.mockRejectedValueOnce(new Error('network down'))
-    const req = {
-      query: { slug: 'my-collection' }
-    } as unknown as NextApiRequest
     const { res, status, json } = mockResponse()
 
-    await handler(req, res)
+    await handler(authedPostReq(), res)
 
     expect(status).toHaveBeenCalledWith(500)
     expect(json).toHaveBeenCalledWith({ error: 'Error revalidating' })

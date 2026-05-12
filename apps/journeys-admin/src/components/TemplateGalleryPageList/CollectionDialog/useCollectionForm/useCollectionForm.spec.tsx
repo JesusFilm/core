@@ -521,6 +521,59 @@ describe('useCollectionForm', () => {
       // no live public page to bust, so revalidate should not fire.
       expect(mockRevalidate).not.toHaveBeenCalled()
     })
+
+    it('revalidates when the server response reports published, even if the cached status was draft (concurrent-publish race)', async () => {
+      // Cached pre-mutation status is draft (the default). The server
+      // response overrides to `published`, simulating a sibling-tab
+      // publish that landed between cache hydration and submit.
+      const onClose = jest.fn()
+      const collection = makeCollection({
+        id: 'page-7',
+        title: 'Old',
+        slug: 'old-slug',
+        status: TemplateGalleryPageStatus.draft
+      })
+      const updateMock = getTemplateGalleryPageUpdateMock(
+        {
+          id: 'page-7',
+          input: { title: 'New title' }
+        },
+        { status: TemplateGalleryPageStatus.published }
+      )
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: 'New title',
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            mediaUrl: '',
+            slug: collection.slug,
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      expect(mockRevalidate).toHaveBeenCalledTimes(1)
+      expect(mockRevalidate).toHaveBeenCalledWith([
+        'old-slug',
+        'my-collection'
+      ])
+    })
   })
 
   describe('handleSubmit — error mapping', () => {

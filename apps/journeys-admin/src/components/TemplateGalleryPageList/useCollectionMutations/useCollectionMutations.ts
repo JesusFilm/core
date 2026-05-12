@@ -55,9 +55,12 @@ export function useCollectionMutations(): CollectionMutations {
   const [templateGalleryPageUnpublish] =
     useTemplateGalleryPageUnpublishMutation()
   const [templateGalleryPageDelete] = useTemplateGalleryPageDeleteMutation()
-  const revalidate = useRevalidateTemplateGallery()
+  const revalidateGallery = useRevalidateTemplateGallery()
 
   function showError(error: unknown, fallback: string): void {
+    // Guarded so a mutation that rejects after the consumer unmounted
+    // doesn't enqueue a snackbar onto the next page's SnackbarProvider.
+    if (!mountedRef.current) return
     enqueueSnackbar(error instanceof Error ? error.message : fallback, {
       variant: 'error',
       preventDuplicate: true
@@ -67,6 +70,10 @@ export function useCollectionMutations(): CollectionMutations {
   async function publish(
     collection: TemplateGalleryPage
   ): Promise<TemplateGalleryPage | null> {
+    // Entry-guard: a second concurrent click on a different row would
+    // overwrite busyId mid-flight and de-disable the first row's menu
+    // before its mutation resolved.
+    if (busyId != null) return null
     setBusyId(collection.id)
     try {
       const { data } = await templateGalleryPagePublish({
@@ -78,7 +85,7 @@ export function useCollectionMutations(): CollectionMutations {
       // the slug today, but the server returns it authoritatively — pass
       // both into the deduper so we're correct even if that invariant
       // shifts in future.
-      void revalidate([collection.slug, result.slug])
+      void revalidateGallery([collection.slug, result.slug])
       // Merge server-set fields (status, publishedAt, updatedAt, slug)
       // into the input collection so the caller can open the success
       // dialog with the live public URL — and so any later read sees
@@ -99,6 +106,7 @@ export function useCollectionMutations(): CollectionMutations {
   }
 
   async function unpublish(collection: TemplateGalleryPage): Promise<void> {
+    if (busyId != null) return
     setBusyId(collection.id)
     try {
       await templateGalleryPageUnpublish({ variables: { id: collection.id } })
@@ -107,12 +115,14 @@ export function useCollectionMutations(): CollectionMutations {
       // an idempotent no-op — no cached page to bust, no revalidate
       // needed.
       if (collection.status === TemplateGalleryPageStatus.published) {
-        void revalidate([collection.slug])
+        void revalidateGallery([collection.slug])
       }
-      enqueueSnackbar(t('Collection unpublished'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
+      if (mountedRef.current) {
+        enqueueSnackbar(t('Collection unpublished'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      }
     } catch (error) {
       showError(error, t("Couldn't unpublish collection"))
     } finally {
@@ -121,18 +131,21 @@ export function useCollectionMutations(): CollectionMutations {
   }
 
   async function ungroup(collection: TemplateGalleryPage): Promise<void> {
+    if (busyId != null) return
     setBusyId(collection.id)
     try {
       await templateGalleryPageDelete({ variables: { id: collection.id } })
       // Revalidate only when the collection had a public page to clear.
       // Deleting a draft leaves no orphaned cache entry behind.
       if (collection.status === TemplateGalleryPageStatus.published) {
-        void revalidate([collection.slug])
+        void revalidateGallery([collection.slug])
       }
-      enqueueSnackbar(t('Collection removed'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
+      if (mountedRef.current) {
+        enqueueSnackbar(t('Collection removed'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      }
     } catch (error) {
       showError(error, t("Couldn't remove collection"))
     } finally {

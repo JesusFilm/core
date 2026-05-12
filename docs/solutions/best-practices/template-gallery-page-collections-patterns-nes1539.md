@@ -109,7 +109,18 @@ loses errors.
 
 ```ts
 const mountedRef = useRef(true)
-useEffect(() => () => { mountedRef.current = false }, [])
+useEffect(() => {
+  // Setup MUST flip mountedRef.current = true. Under React StrictMode
+  // (Next.js dev) effects run setup → cleanup → setup; a body-less setup
+  // leaves the ref stuck at `false` after the second setup, breaking
+  // every later post-await guard. NES-1644 hit exactly this: an unpublish
+  // would never clear `busyId`, so the 3-dot menu stayed permanently
+  // disabled.
+  mountedRef.current = true
+  return () => {
+    mountedRef.current = false
+  }
+}, [])
 
 // in handleSubmit, after each await:
 if (!mountedRef.current) return

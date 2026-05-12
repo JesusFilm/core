@@ -143,7 +143,7 @@ export function useCollectionForm({
 
   const [templateGalleryPageCreate] = useTemplateGalleryPageCreateMutation()
   const [templateGalleryPageUpdate] = useTemplateGalleryPageUpdateMutation()
-  const revalidate = useRevalidateTemplateGallery()
+  const revalidateGallery = useRevalidateTemplateGallery()
 
   // Memoize so identity is stable across re-renders. Formik uses
   // initialValues identity to compute `dirty`; a fresh literal each
@@ -237,13 +237,19 @@ export function useCollectionForm({
         const updateResult = await templateGalleryPageUpdate({
           variables: { id: collection.id, input }
         })
-        // Revalidate only when the collection has a live public page —
-        // edits to a draft have nothing to bust. When published, fire for
-        // both the old slug (caller-known) and the new slug from the
-        // server response so slug-rename moves don't leave the previous
-        // URL serving a cached page.
-        if (collection.status === TemplateGalleryPageStatus.published) {
-          void revalidate([
+        // Revalidate when EITHER the cached pre-mutation status OR the
+        // server's post-mutation status says published. The OR closes a
+        // narrow race: if a sibling tab published between cache hydration
+        // and submit, the cached status is still draft but the public
+        // page is live — without the server-side check we'd skip
+        // revalidate and leave the URL serving stale content.
+        const serverStatus =
+          updateResult.data?.templateGalleryPageUpdate.status
+        if (
+          collection.status === TemplateGalleryPageStatus.published ||
+          serverStatus === TemplateGalleryPageStatus.published
+        ) {
+          void revalidateGallery([
             collection.slug,
             updateResult.data?.templateGalleryPageUpdate.slug
           ])

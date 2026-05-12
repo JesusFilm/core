@@ -322,4 +322,81 @@ describe('useCollectionMutations', () => {
       expect(mockRevalidate).not.toHaveBeenCalled()
     })
   })
+
+  describe('entry-guard against interleaved mutations', () => {
+    it('second concurrent unpublish on a different collection no-ops while the first is in flight', async () => {
+      const a = makeCollection({
+        id: 'page-A',
+        status: TemplateGalleryPageStatus.published
+      })
+      const b = makeCollection({
+        id: 'page-B',
+        status: TemplateGalleryPageStatus.published
+      })
+      // First mock hangs long enough that the second call dispatches
+      // before the first resolves. Apollo's MockedResponse `delay`
+      // controls when the mutation result becomes observable.
+      const firstMock: MockedResponse = {
+        ...getTemplateGalleryPageUnpublishMock({ id: 'page-A' }),
+        delay: 10_000
+      }
+      // Second mock should never fire — the entry guard short-circuits.
+      const secondMock = getTemplateGalleryPageUnpublishMock({ id: 'page-B' })
+
+      const { result } = renderHook(() => useCollectionMutations(), {
+        wrapper: wrapperWithMocks([firstMock, secondMock])
+      })
+
+      // Kick off the first unpublish without awaiting it (it will be
+      // pending for 10s).
+      act(() => {
+        void result.current.unpublish(a)
+      })
+      await waitFor(() => {
+        expect(result.current.busyId).toBe('page-A')
+      })
+
+      // Fire the second call while the first is still in flight.
+      await act(async () => {
+        await result.current.unpublish(b)
+      })
+
+      // The second call returned synchronously without firing its mutation.
+      expect(secondMock.result).not.toHaveBeenCalled()
+      expect(result.current.busyId).toBe('page-A')
+    })
+  })
+
+  describe('snackbar mount-guard', () => {
+    it('does not enqueue the success snackbar when the consumer unmounts mid-mutation', async () => {
+      const collection = makeCollection({
+        id: 'page-7',
+        status: TemplateGalleryPageStatus.published
+      })
+      const slowMock: MockedResponse = {
+        ...getTemplateGalleryPageUnpublishMock({ id: 'page-7' }),
+        delay: 80
+      }
+
+      const { result, unmount } = renderHook(() => useCollectionMutations(), {
+        wrapper: wrapperWithMocks([slowMock])
+      })
+
+      act(() => {
+        void result.current.unpublish(collection)
+      })
+      await waitFor(() => {
+        expect(result.current.busyId).toBe('page-7')
+      })
+
+      // Unmount before the mutation resolves; the post-await snackbar
+      // code must observe `mountedRef.current === false` and skip.
+      unmount()
+
+      // Let Apollo deliver the mock response after the delay.
+      await new Promise((resolve) => setTimeout(resolve, 200))
+
+      expect(mockEnqueueSnackbar).not.toHaveBeenCalled()
+    })
+  })
 })

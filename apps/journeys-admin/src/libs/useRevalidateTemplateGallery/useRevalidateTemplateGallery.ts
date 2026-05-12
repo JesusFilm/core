@@ -1,56 +1,28 @@
-import { useCallback } from 'react'
-
-/**
- * Endpoint exported for tests so they can assert against the URL without
- * duplicating the literal. Production code should call the hook, not the
- * endpoint directly.
- */
-export const REVALIDATE_TEMPLATE_GALLERY_ENDPOINT =
-  '/api/revalidate-template-gallery'
-
-/**
- * Fires a fire-and-forget request to the admin revalidate proxy for each
- * unique non-empty slug. The proxy authenticates the caller, asks the
- * public journeys app to revalidate `/home/template-gallery/<slug>`, and
- * returns 200. The promise resolves once every request settles — callers
- * may await it (e.g. for a snackbar) but most won't, since the public
- * page revalidate doesn't block the admin UI.
- *
- * Errors are swallowed. A failed revalidate doesn't undo the mutation
- * that just succeeded; the next mutation (or the fallback ISR cadence
- * on the public route) will pick the page back up.
- */
-export type RevalidateTemplateGalleryFn = (
-  slugs: ReadonlyArray<string | null | undefined>
-) => Promise<void>
-
-export function useRevalidateTemplateGallery(): RevalidateTemplateGalleryFn {
-  return useCallback(async (slugs) => {
-    const unique = Array.from(
-      new Set(
-        slugs.filter(
-          (slug): slug is string => typeof slug === 'string' && slug.length > 0
-        )
-      )
-    )
-    if (unique.length === 0) return
+// Fire-and-forget hook for asking the admin revalidate proxy to refresh
+// public template-gallery pages by slug. Dedupes, drops empties, swallows
+// network errors; logs non-OK HTTP responses so prod has a debug signal.
+//
+// Endpoint contract: POST + `X-Requested-With: XMLHttpRequest` (CSRF).
+export function useRevalidateTemplateGallery() {
+  return async (slugs: ReadonlyArray<string | null | undefined>) => {
+    const unique = [...new Set(slugs.filter((s): s is string => !!s))]
     await Promise.all(
       unique.map(async (slug) => {
+        const url = `/api/revalidate-template-gallery?slug=${encodeURIComponent(slug)}`
         try {
-          await fetch(
-            `${REVALIDATE_TEMPLATE_GALLERY_ENDPOINT}?${new URLSearchParams({
-              slug
-            }).toString()}`,
-            {
-              method: 'GET',
-              credentials: 'same-origin'
-            }
-          )
+          const response = await fetch(url, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+          })
+          if (!response.ok) {
+            console.warn('revalidate failed', { slug, status: response.status })
+          }
         } catch {
-          // Swallow — the mutation already succeeded. The public page will
-          // catch up on its next ISR window or the next successful mutation.
+          // Network-level failure — already swallowed-by-design. Mutation
+          // succeeded; ISR fallback or the next mutation will catch up.
         }
       })
     )
-  }, [])
+  }
 }

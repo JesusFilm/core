@@ -3,6 +3,11 @@ import { getApiRequestTokens } from 'next-firebase-auth-edge'
 
 import { authConfig } from '../../src/libs/auth/config'
 
+// Same shape we enforce at the form layer. Reject anything else so the
+// redirect can't smuggle the authed admin onto an unrelated path on
+// `${JOURNEYS_URL}` via `..`, `?`, `#`, or `/` segments.
+const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
+
 // Authenticated jump-link to the public template gallery page. The admin
 // UI hits this proxy so we can gate Preview behind the same auth as the
 // rest of the admin app, then redirect to the canonical public URL.
@@ -29,8 +34,10 @@ export default async function handler(
     return res.status(403).json({ error: 'Not authorized' })
   }
 
-  const slug = req.query.slug?.toString()
-  if (slug == null) return res.status(400).json({ error: 'Missing Slug' })
+  const slug = req.query.slug
+  if (typeof slug !== 'string' || !SLUG_RE.test(slug)) {
+    return res.status(400).json({ error: 'Invalid slug' })
+  }
 
   res.redirect(307, `${process.env.JOURNEYS_URL}/template-gallery/${slug}`)
 }
