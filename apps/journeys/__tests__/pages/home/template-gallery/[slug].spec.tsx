@@ -127,7 +127,10 @@ describe('template-gallery [slug] getStaticProps', () => {
 
 describe('TemplateGalleryPageRoute', () => {
   it('renders TemplateGalleryView with the gallery prop', () => {
-    const gallery = makeGallery({ slug: 'easter-2026', title: 'Easter Gallery' })
+    const gallery = makeGallery({
+      slug: 'easter-2026',
+      title: 'Easter Gallery'
+    })
     render(<TemplateGalleryPageRoute gallery={gallery} />)
     const view = screen.getByTestId('TemplateGalleryViewMock')
     expect(view).toHaveAttribute('data-gallery-slug', 'easter-2026')
