@@ -316,7 +316,6 @@ export function AlgoliaVideoList(): ReactElement {
     <InstantSearch searchClient={searchClient} indexName={indexName}>
       <Configure
         hitsPerPage={50}
-        typoTolerance={false}
         restrictSearchableAttributes={SEARCHABLE_ATTRIBUTES}
         attributesToRetrieve={[
           'objectID',
