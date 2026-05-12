@@ -1,7 +1,5 @@
 import { createOtlpGrpcExporter, defineConfig } from '@graphql-hive/gateway'
 
-import { getDevHosts } from '@core/shared/dev-hosts'
-
 import { commonConfig } from './src/common.config'
 
 // configuration specific to stage and production
@@ -30,49 +28,31 @@ export const gatewayConfig = defineConfig({
       maxAge: 86400
     }
 
-    // Build one regex per allow-listed dev host. The dev servers run on
-    // :4100 / :4200, so the browser will send `Origin:
-    // http://<fqdn>:<port>` — the optional `(:\d+)?` group covers that.
-    // Empty `DEV_HOSTS` → empty array → no relaxation; absence of the
-    // secret IS the gate.
-    const devHostRegexes = getDevHosts().map((host) => {
-      const escaped = host.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      return new RegExp(`^http:\\/\\/${escaped}(:\\d+)?$`, 'i')
-    })
-
-    const matchers: Array<string | RegExp> = [
-      // gateway
-      'https://api-gateway.central.jesusfilm.org',
-      'https://api-gateway.stage.central.jesusfilm.org',
-      // apollo studio
-      'https://studio.apollographql.com',
-      // graphql hive
-      'https://app.graphql-hive.com',
-      // journeys-admin
-      'https://admin.nextstep.is',
-      'https://admin-stage.nextstep.is',
-      // journeys
-      'https://your.nextstep.is',
-      'https://your-stage.nextstep.is',
-      // nexus-admin
-      'https://nexus.jesusfilm.org',
-      'https://nexus-stage.jesusfilm.org',
-      // any localhost
-      /^http:\/\/localhost:\d+$/,
-      // any project deployed on the jesusfilm vercel account
-      /^https:\/\/([a-z0-9-]+)-jesusfilm[.]vercel[.]app$/,
-      // any project deployed on the jesusfilm.org domain (used primarily for watch)
-      /^https:\/\/([a-z0-9-]+)[.]jesusfilm[.]org$/,
-      // dev-only: hostnames listed in `DEV_HOSTS` (Doppler dev config) so
-      // cross-device dev testing works without per-developer regex
-      // fiddling. HTTP-only (Tailnet traffic is unencrypted by default;
-      // Funnel HTTPS is a separate opt-in we don't widen for here). See
-      // docs/development/tailscale-dev-access.md.
-      ...devHostRegexes
-    ]
-
     if (
-      matchers.some((matcher) =>
+      [
+        // gateway
+        'https://api-gateway.central.jesusfilm.org',
+        'https://api-gateway.stage.central.jesusfilm.org',
+        // apollo studio
+        'https://studio.apollographql.com',
+        // graphql hive
+        'https://app.graphql-hive.com',
+        // journeys-admin
+        'https://admin.nextstep.is',
+        'https://admin-stage.nextstep.is',
+        // journeys
+        'https://your.nextstep.is',
+        'https://your-stage.nextstep.is',
+        // nexus-admin
+        'https://nexus.jesusfilm.org',
+        'https://nexus-stage.jesusfilm.org',
+        // any localhost
+        /^http:\/\/localhost:\d+$/,
+        // any project deployed on the jesusfilm vercel account
+        /^https:\/\/([a-z0-9-]+)-jesusfilm[.]vercel[.]app$/,
+        // any project deployed on the jesusfilm.org domain (used primarily for watch)
+        /^https:\/\/([a-z0-9-]+)[.]jesusfilm[.]org$/
+      ].some((matcher) =>
         typeof matcher === 'string' ? matcher === origin : matcher.test(origin)
       )
     )
