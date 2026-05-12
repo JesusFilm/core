@@ -2,6 +2,7 @@
 title: 'Template Gallery Page (Collections) frontend patterns (NES-1539)'
 category: best-practices
 date: 2026-05-06
+last_updated: 2026-05-12
 problem_type: ui_pattern
 component: journeys-admin/TemplateGalleryPageList
 tags:
@@ -23,10 +24,12 @@ tags:
 related_prs:
   - 'https://github.com/JesusFilm/core/pull/9143'
   - 'https://github.com/JesusFilm/core/pull/9119'
+  - 'https://github.com/JesusFilm/core/pull/9174'
 related_tickets:
   - NES-1539
   - NES-1607
   - NES-1547
+  - NES-1644
 related_docs:
   - docs/solutions/best-practices/local-template-dialog-consolidation-patterns-nes1543.md
   - docs/solutions/integration-issues/pothos-public-unauthenticated-query-pattern-api-journeys-modern.md
@@ -131,6 +134,16 @@ enqueueSnackbar(...)
 Pair it with a `guardedClose` that no-ops while `isSubmitting` is true so
 backdrop / Escape / Cancel can't dismiss mid-mutation. See
 `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionDialog/CollectionDialog.tsx`.
+
+The same `mountedRef` shape also guards async post-await branches inside
+non-dialog hooks — see `useCollectionMutations.ts:46-52` for the
+`if (mountedRef.current) setBusyId(null)` finally-block + snackbar guards
+that NES-1644 wired up after the StrictMode regression. Jest tests
+(`NODE_ENV=test`) do NOT trigger React's StrictMode double-invoke, so a
+`<StrictMode>` wrapper around `renderHook` is a false guardrail —
+the only real defense is the corrected setup-body-resets-ref pattern
+itself and code review when reading any `useRef(true)` /
+`useEffect(() => () => …, [])` shape.
 
 ### 4. DnD single-flight: gate START, not just END
 
