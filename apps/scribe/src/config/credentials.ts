@@ -8,6 +8,8 @@ import {
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 
+import { env } from '../env'
+
 import type { EnvironmentId } from './environments'
 
 interface StoredCredential {
@@ -23,7 +25,7 @@ interface CredentialsFile {
 }
 
 function configDir(): string {
-  return process.env.SCRIBE_CONFIG_DIR ?? join(homedir(), '.config', 'scribe')
+  return env.SCRIBE_CONFIG_DIR ?? join(homedir(), '.config', 'scribe')
 }
 
 function credentialsPath(): string {
