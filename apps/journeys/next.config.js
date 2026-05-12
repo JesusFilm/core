@@ -9,6 +9,11 @@ const { i18n } = require('./next-i18next.config')
 const nextConfig = {
   nx: {},
   i18n,
+  // Permit Tailscale MagicDNS hosts (e.g. `tailscale-mbp-siyang`) to load
+  // the dev server. Wildcards (not regex) per Next.js docs:
+  // https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+  // Dev-only by Next.js semantics — no NODE_ENV gate needed.
+  allowedDevOrigins: ['tailscale-*'],
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
