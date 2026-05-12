@@ -34,7 +34,7 @@ The project is an **Nx monorepo**.
 
 ## Documented Solutions
 
-`docs/solutions/` — documented solutions to past problems (bugs, best practices, workflow patterns), organized by category (`runtime-errors/`, `architecture-patterns/`, etc.) with YAML frontmatter (`module`, `tags`, `problem_type`). Relevant when implementing or debugging in documented areas.
+`docs/solutions/` — documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`). Relevant when implementing or debugging in documented areas.
 
 ## Branch Naming
 

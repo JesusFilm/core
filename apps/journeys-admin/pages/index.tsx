@@ -34,7 +34,8 @@ export default function IndexPage(): ReactElement {
   }, [user?.id, query, activeTeam, refetch])
 
   const currentContentType =
-    (router?.query?.type as 'journeys' | 'templates') ?? 'journeys'
+    (router?.query?.type as 'journeys' | 'templates' | 'collections') ??
+    'journeys'
   const showSidePanel = currentContentType === 'journeys'
 
   const userInfo = {
