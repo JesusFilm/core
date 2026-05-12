@@ -820,7 +820,7 @@ describe('/api/chat handler', () => {
     })
 
     it('rejects when the messages array exceeds the count cap', async () => {
-      const messages = Array.from({ length: 51 }, () => ({
+      const messages = Array.from({ length: 21 }, () => ({
         role: 'user',
         content: 'hi'
       }))

@@ -20,7 +20,7 @@ import {
 
 // Request bounds (NES-1579). Hard ceilings so a single chat request can't be
 // arbitrarily expensive or arbitrarily shaped.
-const MAX_MESSAGES = 50
+const MAX_MESSAGES = 20
 const MAX_MESSAGE_CHARS = 4000
 // ~2000 input-token budget at ~4 chars/token. Cheap proxy for a real tokenizer.
 const MAX_TOTAL_CHARS = 8000
