@@ -1,33 +1,8 @@
 import { createOtlpGrpcExporter, defineConfig } from '@graphql-hive/gateway'
 
-import { commonConfig } from './src/common.config'
+import { getDevHosts } from '@core/shared/dev-hosts'
 
-/**
- * Resolves the set of dev hostnames that should opt into the dev-only
- * CORS relaxation. Reads `DEV_HOSTS` (no `NEXT_PUBLIC_` prefix — this is
- * server-side, the gateway never ships its env to the browser) and parses
- * it as a JSON object whose values are the FQDNs to allow, e.g.
- *
- *   { "siyang": "tailscale-dev-siyang.taila2a609.ts.net" }
- *
- * Populated from Doppler's dev config; absent in stage/prod, so this
- * returns `[]` everywhere outside dev. Absence of the secret IS the gate.
- * Fail-closed on missing, empty, malformed JSON, `null`, or non-object
- * payloads. See docs/development/tailscale-dev-access.md.
- */
-function getDevHosts(): string[] {
-  const raw = process.env.DEV_HOSTS
-  if (raw == null || raw === '') return []
-  try {
-    const parsed: unknown = JSON.parse(raw)
-    if (parsed === null || typeof parsed !== 'object') return []
-    return Object.values(parsed as Record<string, unknown>).filter(
-      (v): v is string => typeof v === 'string'
-    )
-  } catch {
-    return []
-  }
-}
+import { commonConfig } from './src/common.config'
 
 // configuration specific to stage and production
 export const gatewayConfig = defineConfig({
