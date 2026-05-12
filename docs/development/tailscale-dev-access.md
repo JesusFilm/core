@@ -1,5 +1,7 @@
 # Tailscale dev-server access
 
+> **Note:** Screenshots will be added in a follow-up — the steps below are accurate as text.
+
 Share your local `journeys`, `journeys-admin`, and `api-gateway` over the
 Tailscale tailnet so you (or a teammate) can hit them from a phone, tablet, or
 another machine without ngrok, without exposing them publicly, and without a
@@ -31,8 +33,6 @@ brew install --cask tailscale
 Sign in with your work account. Accept the invite in the Tailscale admin
 console.
 
-> Screenshot TBD — Tailscale sign-in flow with the JFP tailnet selected.
-
 ## Step 2 — Rename your device to `tailscale-<initials>-<machine>`
 
 Open the Tailscale admin console at https://login.tailscale.com/admin/machines,
@@ -44,15 +44,11 @@ This prefix is the contract: the repo's middleware, Apollo client, redirect
 allow-list, and gateway CORS only relax their dev-mode checks for hostnames
 that start with `tailscale-`.
 
-> Screenshot TBD — admin console "Edit machine name" dialog.
-
 ## Step 3 — Enable MagicDNS
 
 In the admin console go to **DNS** and enable **MagicDNS**. With MagicDNS
 on, every device on the tailnet can address every other by the short
 hostname (e.g. `http://tailscale-mbp-siyang:4100`).
-
-> Screenshot TBD — DNS tab with MagicDNS toggled on.
 
 ## Step 4 — Verify connectivity
 
@@ -84,9 +80,6 @@ interfaces by default.
 Once the code in this guide's PR has landed, no env-var changes are
 required — load `http://tailscale-mbp-siyang:4100/` (or `:4200`) from
 your phone and you're in.
-
-> Screenshot TBD — iOS Safari loading `http://tailscale-mbp-siyang:4100/`
-> rendering the journeys home page.
 
 ### Step 5a — Workaround before the PR merges
 
@@ -162,13 +155,3 @@ gateway CORS regex only accepts `http://tailscale-...`. If you need
 Funnel support, widen the regex and the Apollo derivation to accept
 `https://` too; that's deliberately out of scope for the first
 iteration.
-
-## Screenshots TBD
-
-The following screenshots are placeholders to be captured during the
-first dogfood pass. Replace this section with embedded images:
-
-1. Tailscale sign-in / tailnet selection.
-2. Admin console — renaming a machine to `tailscale-mbp-siyang`.
-3. Admin console — DNS tab with MagicDNS enabled.
-4. iOS Safari rendering `http://tailscale-mbp-siyang:4100/`.
