@@ -1,12 +1,8 @@
-/**
- * @jest-environment jest-fixed-jsdom
- */
-
 import { NextRequest } from 'next/server'
 
-import middleware from './middleware'
+import proxy from './proxy'
 
-describe('journeys middleware', () => {
+describe('journeys proxy', () => {
   const originalEnv = process.env
 
   beforeEach(() => {
@@ -27,7 +23,7 @@ describe('journeys middleware', () => {
 
   it('rewrites root domain requests to /home', async () => {
     process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'localhost:4100'
-    const result = await middleware(buildRequest('localhost:4100', '/'))
+    const result = await proxy(buildRequest('localhost:4100', '/'))
 
     expect(result?.headers.get('x-middleware-rewrite')).toBe(
       'http://localhost:4100/home'
@@ -36,7 +32,7 @@ describe('journeys middleware', () => {
 
   it('rewrites non-root-domain requests to /[hostname][path]', async () => {
     process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'localhost:4100'
-    const result = await middleware(
+    const result = await proxy(
       buildRequest('custom.example.com', '/my-journey')
     )
 
@@ -49,7 +45,7 @@ describe('journeys middleware', () => {
     it('treats deployment-suffix hosts as the root domain', async () => {
       process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
       process.env.NEXT_PUBLIC_VERCEL_DEPLOYMENT_SUFFIX = '-jesusfilm.vercel.app'
-      const result = await middleware(
+      const result = await proxy(
         buildRequest('preview-abc-jesusfilm.vercel.app', '/')
       )
 
@@ -66,7 +62,7 @@ describe('journeys middleware', () => {
     })
 
     it('rewrites tailscale-* host to /home in dev', async () => {
-      const result = await middleware(
+      const result = await proxy(
         buildRequest('tailscale-mbp-siyang:4100', '/')
       )
 
@@ -76,7 +72,7 @@ describe('journeys middleware', () => {
     })
 
     it('rewrites uppercase tailscale-* host to /home (case-insensitive)', async () => {
-      const result = await middleware(
+      const result = await proxy(
         buildRequest('TAILSCALE-MBP-SIYANG:4100', '/')
       )
 
@@ -86,7 +82,7 @@ describe('journeys middleware', () => {
     })
 
     it('preserves path and query when rewriting to /home', async () => {
-      const result = await middleware(
+      const result = await proxy(
         buildRequest('tailscale-mbp:4100', '/dashboard?ref=phone')
       )
 
@@ -96,7 +92,7 @@ describe('journeys middleware', () => {
     })
 
     it('does NOT short-circuit non-tailscale hosts', async () => {
-      const result = await middleware(
+      const result = await proxy(
         buildRequest('tailscaleother.com', '/foo')
       )
 
@@ -111,7 +107,7 @@ describe('journeys middleware', () => {
     it('does NOT short-circuit tailscale-* in production', async () => {
       ;(process.env as Record<string, string>).NODE_ENV = 'production'
       process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
-      const result = await middleware(
+      const result = await proxy(
         buildRequest('tailscale-mbp-siyang:4100', '/')
       )
 
@@ -123,7 +119,7 @@ describe('journeys middleware', () => {
   })
 
   it('returns undefined for /plausible paths', async () => {
-    const result = await middleware(
+    const result = await proxy(
       buildRequest('localhost:4100', '/plausible/script.js')
     )
 
