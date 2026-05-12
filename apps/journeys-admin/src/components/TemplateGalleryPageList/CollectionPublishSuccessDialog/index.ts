@@ -1,0 +1,1 @@
+export { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
