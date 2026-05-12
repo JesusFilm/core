@@ -1,14 +1,29 @@
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isValid, parseISO } from 'date-fns'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { abbreviateLanguageName } from '@core/journeys/ui/abbreviateLanguageName'
+import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate } from '../../../../__generated__/GetTemplateGalleryPage'
+
+// Mirror of `palette[900]` from
+// libs/shared/ui/src/libs/themes/journeysAdmin/tokens/colors.ts (the
+// admin "almost black" token, re-exported on the admin theme as
+// `palette.solid.main`). The public journeys app uses the website
+// theme, which doesn't expose this token, so the value is hardcoded
+// here. Keep in sync with the admin token if it ever changes.
+const ADMIN_PALETTE_900 = '#26262E'
+
+const ADMIN_URL =
+  process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? 'https://admin.nextstep.is'
 
 interface GalleryTemplateCardProps {
   template: GalleryTemplate
@@ -19,6 +34,8 @@ export function GalleryTemplateCard({
   template,
   priority = false
 }: GalleryTemplateCardProps): ReactElement {
+  const { t } = useTranslation('apps-journeys')
+
   const localLanguage = template.language.name.find(
     ({ primary }) => !primary
   )?.value
@@ -40,6 +57,13 @@ export function GalleryTemplateCard({
 
   const imageSrc = template.primaryImageBlock?.src ?? null
   const imageAlt = template.primaryImageBlock?.alt ?? template.title
+
+  // Deep link into the admin "Use Template" receiver (NES-1608).
+  const useTemplateHref = `${ADMIN_URL}/?useTemplate=${encodeURIComponent(template.id)}`
+  // Public viewer route on the same root domain (middleware rewrites
+  // `/<slug>` → `/home/<slug>`).
+  const previewHref = `/${template.slug}`
+  const previewLabel = t('Preview')
 
   return (
     <Box
@@ -132,6 +156,55 @@ export function GalleryTemplateCard({
               {template.description}
             </Typography>
           )}
+          {/*
+            Use sits to the left as a labelled outlined button; Preview
+            is the compact filled icon-button accent on the right. Both
+            open in a new tab so the visitor stays on the gallery.
+
+            ADMIN_PALETTE_900 as outlined text/border on a dark gradient
+            would be unreadable, so Use uses white for legibility; the
+            Preview IconButton retains ADMIN_PALETTE_900 as the filled
+            accent (matches the original Figma spec for that affordance).
+          */}
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1 }}>
+            <Button
+              component="a"
+              href={useTemplateHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="outlined"
+              fullWidth
+              data-testid="GalleryTemplateCardUseButton"
+              sx={{
+                color: 'common.white',
+                borderColor: 'common.white',
+                '&:hover': {
+                  borderColor: 'common.white',
+                  backgroundColor: 'rgba(255, 255, 255, 0.12)'
+                }
+              }}
+            >
+              {t('Use')}
+            </Button>
+            <IconButton
+              component="a"
+              href={previewHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={previewLabel}
+              data-testid="GalleryTemplateCardPreviewButton"
+              sx={{
+                backgroundColor: ADMIN_PALETTE_900,
+                color: '#FFFFFF',
+                borderRadius: 2,
+                '&:hover': {
+                  backgroundColor: '#000000'
+                }
+              }}
+            >
+              <Play3Icon />
+            </IconButton>
+          </Stack>
         </Stack>
       </Box>
     </Box>

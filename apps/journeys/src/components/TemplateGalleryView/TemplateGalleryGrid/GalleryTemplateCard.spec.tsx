@@ -17,11 +17,29 @@ describe('GalleryTemplateCard', () => {
     expect(screen.getByAltText('Sample image')).toBeInTheDocument()
   })
 
-  it('does not render the card as a clickable link', () => {
+  it('renders a labelled Use button that opens the admin deep link in a new tab', () => {
     render(<GalleryTemplateCard template={mockTemplate} />)
-    // Card is no longer wrapped in an anchor — click handlers will be added
-    // to dedicated buttons in a separate ticket.
-    expect(screen.queryByRole('link')).not.toBeInTheDocument()
+
+    const useButton = screen.getByRole('link', { name: 'Use' })
+    expect(useButton).toHaveAttribute(
+      'href',
+      'https://admin.nextstep.is/?useTemplate=template-1'
+    )
+    expect(useButton).toHaveAttribute('target', '_blank')
+    expect(useButton).toHaveAttribute('rel', 'noopener noreferrer')
+  })
+
+  it('renders Preview as an unlabelled icon button with the Play3 icon that opens the journey slug in a new tab', () => {
+    render(<GalleryTemplateCard template={mockTemplate} />)
+
+    const previewIconButton = screen.getByRole('link', { name: 'Preview' })
+    expect(previewIconButton).toHaveAttribute('href', '/sample-template')
+    expect(previewIconButton).toHaveAttribute('target', '_blank')
+    expect(previewIconButton).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(previewIconButton).not.toHaveTextContent('Preview')
+    expect(
+      previewIconButton.querySelector('[data-testid="Play3Icon"]')
+    ).not.toBeNull()
   })
 
   it('renders the meta line with the formatted year and the language', () => {
