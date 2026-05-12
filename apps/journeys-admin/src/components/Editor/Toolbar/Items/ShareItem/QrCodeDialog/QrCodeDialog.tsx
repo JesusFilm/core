@@ -18,6 +18,7 @@ import {
   QrCodeCreateVariables
 } from '../../../../../../../__generated__/QrCodeCreate'
 import { QrCodeFields as QrCode } from '../../../../../../../__generated__/QrCodeFields'
+import { TAILSCALE_HOST_PATTERN } from '../../../../../../libs/tailscaleHostPattern'
 
 import { CodeActionButton } from './CodeActionButton'
 import { CodeCanvas } from './CodeCanvas'
@@ -148,7 +149,7 @@ export function QrCodeDialog({
       isLocal &&
       process.env.NODE_ENV !== 'production' &&
       typeof window !== 'undefined' &&
-      window.location.hostname.toLowerCase().startsWith('tailscale-')
+      TAILSCALE_HOST_PATTERN.test(window.location.hostname)
     ) {
       devHostname = window.location.hostname
     }

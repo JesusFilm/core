@@ -95,6 +95,17 @@ describe('journeys proxy', () => {
         'http://tailscaleother.com/tailscaleother.com/foo'
       )
     })
+
+    it('does NOT short-circuit tailscale-* attacker subdomain spoofs', async () => {
+      const result = await proxy(
+        buildRequest('tailscale-evil.attacker.com:4100', '/foo')
+      )
+
+      // Dot in the suffix → falls through to /[hostname][path], not /home
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://tailscale-evil.attacker.com:4100/tailscale-evil.attacker.com:4100/foo'
+      )
+    })
   })
 
   describe('tailscale hostname (production gate)', () => {

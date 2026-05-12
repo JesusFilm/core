@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+/**
+ * Matches a Tailscale MagicDNS host (lowercase letters, digits, hyphens,
+ * optional port). No dots — so `tailscale-evil.attacker.com` cannot
+ * smuggle through. Mirrored from
+ * apps/journeys-admin/src/libs/tailscaleHostPattern; Nx forbids cross-`apps/`
+ * imports, so the constant is duplicated rather than shared.
+ */
+const TAILSCALE_HOST_PATTERN = /^tailscale-[a-z0-9-]+(:\d+)?$/i
+
 export const config = {
   matcher: [
     /*
@@ -40,7 +49,7 @@ export default async function proxy(
   // See docs/development/tailscale-dev-access.md for setup.
   if (
     process.env.NODE_ENV !== 'production' &&
-    hostname.toLowerCase().startsWith('tailscale-') &&
+    TAILSCALE_HOST_PATTERN.test(hostname) &&
     process.env.NEXT_PUBLIC_ROOT_DOMAIN != null
   ) {
     hostname = process.env.NEXT_PUBLIC_ROOT_DOMAIN

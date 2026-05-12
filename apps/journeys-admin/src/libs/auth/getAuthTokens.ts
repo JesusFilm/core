@@ -3,6 +3,8 @@ import { Tokens, getTokensFromObject } from 'next-firebase-auth-edge'
 
 import { allowedHost } from '@core/journeys/ui/allowedHost'
 
+import { TAILSCALE_HOST_PATTERN } from '../tailscaleHostPattern'
+
 import { User } from './authContext'
 import { authConfig } from './config'
 
@@ -71,7 +73,7 @@ export function isAllowedRedirectHost(host: string): boolean {
   if (allowedHost(host, ALLOWED_REDIRECT_HOSTS)) return true
   if (
     process.env.NODE_ENV !== 'production' &&
-    host.toLowerCase().startsWith('tailscale-')
+    TAILSCALE_HOST_PATTERN.test(host)
   )
     return true
   return false

@@ -39,6 +39,14 @@ describe('isAllowedRedirectHost', () => {
     ;(process.env as Record<string, string>).NODE_ENV = 'development'
     expect(isAllowedRedirectHost('attacker.example.com')).toBe(false)
   })
+
+  it('rejects tailscale-* attacker subdomain spoofs in dev', () => {
+    ;(process.env as Record<string, string>).NODE_ENV = 'development'
+    expect(isAllowedRedirectHost('tailscale-evil.attacker.com')).toBe(false)
+    expect(isAllowedRedirectHost('tailscale-evil.attacker.com:4200')).toBe(
+      false
+    )
+  })
 })
 
 describe('redirectToApp', () => {

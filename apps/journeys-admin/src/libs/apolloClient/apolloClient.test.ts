@@ -254,6 +254,17 @@ describe('resolveGatewayUrl', () => {
       })
     ).toBe('http://localhost:4000')
   })
+
+  it('falls back to localhost for tailscale-* attacker subdomain spoofs', () => {
+    ;(process.env as Record<string, string>).NODE_ENV = 'development'
+
+    expect(
+      resolveGatewayUrl({
+        hostname: 'tailscale-evil.attacker.com',
+        protocol: 'http:'
+      })
+    ).toBe('http://localhost:4000')
+  })
 })
 
 describe('createErrorLink', () => {

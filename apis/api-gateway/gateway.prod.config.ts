@@ -58,7 +58,7 @@ export const gatewayConfig = defineConfig({
       // traffic is unencrypted by default; Funnel HTTPS is a separate
       // opt-in we don't widen for here). See
       // docs/development/tailscale-dev-access.md.
-      ...(isDev ? [/^http:\/\/tailscale-[a-z0-9-]+(:\d+)?$/] : [])
+      ...(isDev ? [/^http:\/\/tailscale-[a-z0-9-]+(:\d+)?$/i] : [])
     ]
 
     if (

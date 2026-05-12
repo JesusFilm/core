@@ -23,6 +23,7 @@ import { useMemo } from 'react'
 import { Observable } from 'zen-observable-ts'
 
 import { logout } from '../auth/firebase'
+import { TAILSCALE_HOST_PATTERN } from '../tailscaleHostPattern'
 
 import { cache } from './cache'
 
@@ -66,7 +67,7 @@ export function resolveGatewayUrl(
   if (
     process.env.NODE_ENV !== 'production' &&
     location != null &&
-    location.hostname.toLowerCase().startsWith('tailscale-')
+    TAILSCALE_HOST_PATTERN.test(location.hostname)
   )
     return `${location.protocol}//${location.hostname}:4000`
 
