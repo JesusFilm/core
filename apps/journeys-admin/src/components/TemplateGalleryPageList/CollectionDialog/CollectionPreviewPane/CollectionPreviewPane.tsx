@@ -1,6 +1,5 @@
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
@@ -291,37 +290,34 @@ function CollectionPreviewPaneImpl({
                       </Box>
                     </Box>
                     {/* Use + Play buttons mirror the public gallery
-                        card. They're decorative here — clicks no-op,
-                        but hover styles stay so the preview
-                        represents the live experience. */}
-                    <Stack direction="row" spacing={0.75}>
-                      <Button
-                        variant="outlined"
-                        onClick={() => undefined}
+                        card. They're decorative here — render as Box
+                        so they're not keyboard-focusable and assistive
+                        tech doesn't announce them as actionable. */}
+                    <Stack
+                      direction="row"
+                      spacing={0.75}
+                      aria-hidden="true"
+                    >
+                      <Box
                         sx={{
                           flex: '0 0 auto',
                           width: 96,
                           height: 32,
                           borderRadius: 1,
-                          px: 0,
+                          border: '1px solid #444451',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                           fontFamily: 'Montserrat, sans-serif',
                           fontWeight: 700,
                           fontSize: 12,
-                          textTransform: 'none',
                           color: '#444451',
-                          borderColor: '#444451',
-                          opacity: 0.6,
-                          '&:hover': {
-                            borderColor: '#444451',
-                            opacity: 1
-                          }
+                          opacity: 0.6
                         }}
                       >
                         {t('Use')}
-                      </Button>
-                      <IconButton
-                        aria-label={t('Play')}
-                        onClick={() => undefined}
+                      </Box>
+                      <Box
                         sx={{
                           flex: 1,
                           height: 32,
@@ -329,14 +325,13 @@ function CollectionPreviewPaneImpl({
                           bgcolor: '#26262E',
                           color: 'common.white',
                           opacity: 0.6,
-                          '&:hover': {
-                            bgcolor: '#26262E',
-                            opacity: 1
-                          }
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
                         }}
                       >
                         <Play3Icon sx={{ fontSize: 18 }} />
-                      </IconButton>
+                      </Box>
                     </Stack>
                   </Stack>
                 ))}

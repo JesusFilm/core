@@ -353,17 +353,20 @@ describe('useDragEndHandler', () => {
   })
 
   it('skips the dispatch when dragInFlight is true', async () => {
+    // Use a real cross-collection drop target so this test proves the
+    // guard is what's suppressing dispatch — not the same-slot no-op
+    // short-circuit that would skip the mutation regardless.
     const j1 = journey('j1', 'A')
-    const collection = makeCollection('page-1', [j1])
+    const source = makeCollection('page-A', [j1])
+    const target = makeCollection('page-B', [])
     const indexes = buildIndexes({
-      collections: [collection],
+      collections: [source, target],
       journeys: [j1]
     })
 
-    const reorderMock = getTemplateGalleryPageReorderTemplateMock({
-      pageId: 'page-1',
+    const assignMock = getTemplateGalleryPageAssignJourneyMock({
       journeyId: 'j1',
-      order: 0
+      pageId: 'page-B'
     })
     const setDragInFlight = jest.fn()
 
@@ -375,13 +378,18 @@ describe('useDragEndHandler', () => {
           setDragInFlight,
           setActiveDragId: jest.fn()
         }),
-      { wrapper: wrapperWithMocks([reorderMock]) }
+      { wrapper: wrapperWithMocks([assignMock]) }
     )
 
     await act(async () => {
-      await result.current(dropEvent('j1', 'j1'))
+      await result.current(
+        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
+      )
     })
 
-    expect(reorderMock.result).not.toHaveBeenCalled()
+    expect(assignMock.result).not.toHaveBeenCalled()
+    // The guard MUST short-circuit before setDragInFlight(true) too — if
+    // a mutation had started, setDragInFlight would have been toggled.
+    expect(setDragInFlight).not.toHaveBeenCalledWith(true)
   })
 })

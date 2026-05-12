@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
@@ -77,7 +78,11 @@ export function CollectionPublishSuccessDialog({
             endAdornment: (
               <InputAdornment position="end">
                 <Tooltip title={t('Copy link')}>
-                  <span>
+                  {/* Box wrapper so the Tooltip can attach to a disabled
+                      child (MUI requires a non-disabled element to forward
+                      events; <Box component="span"> matches the inline
+                      flow MUI's InputAdornment expects). */}
+                  <Box component="span">
                     <IconButton
                       aria-label={t('Copy link')}
                       onClick={handleCopy}
@@ -86,7 +91,7 @@ export function CollectionPublishSuccessDialog({
                     >
                       <LinkAngledIcon />
                     </IconButton>
-                  </span>
+                  </Box>
                 </Tooltip>
               </InputAdornment>
             )

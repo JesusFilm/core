@@ -209,7 +209,10 @@ export function CollectionDialog({
                             touched.title === true && Boolean(errors.title)
                           }
                           helperText={touched.title === true && errors.title}
-                          inputProps={{ maxLength: 100 }}
+                          inputProps={{
+                            'aria-label': t('Page title'),
+                            maxLength: 100
+                          }}
                         />
                       </Stack>
 
@@ -267,6 +270,11 @@ export function CollectionDialog({
                                 rows={4}
                                 variant="filled"
                                 hiddenLabel
+                                inputProps={{
+                                  'aria-label': t(
+                                    'Page description / instructions'
+                                  )
+                                }}
                                 value={values.description}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
@@ -348,7 +356,10 @@ export function CollectionDialog({
                                     touched.creatorName === true &&
                                     errors.creatorName
                                   }
-                                  inputProps={{ maxLength: 100 }}
+                                  inputProps={{
+                                    'aria-label': t('Creator name'),
+                                    maxLength: 100
+                                  }}
                                 />
                               </Stack>
                               {values.creatorImageSrc !== '' && (
@@ -379,6 +390,11 @@ export function CollectionDialog({
                                 fullWidth
                                 variant="filled"
                                 hiddenLabel
+                                inputProps={{
+                                  'aria-label': t(
+                                    'PDF or video URL with instructions'
+                                  )
+                                }}
                                 value={values.mediaUrl}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
