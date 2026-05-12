@@ -2,7 +2,8 @@ import { type ReactElement, useEffect, useState } from 'react'
 
 import type { ActiveSession } from '../auth/login'
 import { ensureSession } from '../auth/login'
-import { getEnvironment, type EnvironmentId } from '../config/environments'
+import { type EnvironmentId, getEnvironment } from '../config/environments'
+import type { ProviderId } from '../config/providers'
 
 import { App } from './App'
 import { EnvPicker } from './components/EnvPicker'
@@ -12,6 +13,7 @@ interface RootProps {
   initialEnvId?: EnvironmentId
   forceLogin?: boolean
   model?: string
+  initialProvider: ProviderId
 }
 
 type Phase =
@@ -22,7 +24,8 @@ type Phase =
 export function Root({
   initialEnvId,
   forceLogin = false,
-  model
+  model,
+  initialProvider
 }: RootProps): ReactElement {
   const [phase, setPhase] = useState<Phase>(() =>
     initialEnvId != null
@@ -77,5 +80,11 @@ export function Root({
     )
   }
 
-  return <App initialSession={phase.session} model={model} />
+  return (
+    <App
+      initialSession={phase.session}
+      initialProvider={initialProvider}
+      model={model}
+    />
+  )
 }

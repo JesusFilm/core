@@ -1,8 +1,3 @@
-import {
-  createSdkMcpServer,
-  query,
-  type SDKMessage
-} from '@anthropic-ai/claude-agent-sdk'
 import { Box, Text, useApp } from 'ink'
 import {
   type ReactElement,
@@ -13,19 +8,29 @@ import {
   useState
 } from 'react'
 
+import {
+  createProvider,
+  getProviderMeta,
+  isInstantiationError,
+  isProviderReady
+} from '../agents/registry'
 import type { ActiveSession } from '../auth/login'
 import { ensureSession } from '../auth/login'
 import { clearCredential } from '../config/credentials'
-import { getEnvironment, type EnvironmentId } from '../config/environments'
+import { type EnvironmentId, getEnvironment } from '../config/environments'
+import {
+  type ApiProviderId,
+  type ProviderId,
+  saveActiveProvider,
+  saveProviderCredential
+} from '../config/providers'
 import { buildJourneyTools } from '../tools/journey'
 import {
-  fetchJourneySimple,
   type JourneyListItem,
+  fetchJourneySimple,
   listJourneys
 } from '../tools/journey/api'
 import type { JourneySimpleCard } from '../tools/journey/types'
-
-import { BlockPicker } from './components/BlockPicker'
 import {
   fetchTeamsAndActiveTeam,
   persistLastActiveTeamId
@@ -36,27 +41,31 @@ import {
   requestImpersonationCustomToken
 } from '../tools/user/api'
 
+import { findCommand } from './commands/registry'
+import type { CommandContext } from './commands/types'
 import { ActivityIndicator } from './components/ActivityIndicator'
+import { BlockPicker } from './components/BlockPicker'
 import { CardPicker } from './components/CardPicker'
 import { Input, usePromptHistory } from './components/Input'
 import { JourneyPicker } from './components/JourneyPicker'
 import { ModelPicker } from './components/ModelPicker'
+import {
+  type ProviderCredentialInput,
+  ProviderPicker
+} from './components/ProviderPicker'
 import { StatusBar } from './components/StatusBar'
 import { TeamPicker, describeSelection } from './components/TeamPicker'
 import { Transcript } from './components/Transcript'
-import { findCommand } from './commands/registry'
-import type { CommandContext } from './commands/types'
-import { buildSystemPrompt } from './systemPrompt'
 import {
-  getEffectiveSession,
   type BlockKind,
   type ReplState,
   type TeamSelection,
   type TranscriptEntry,
-  type UsageTotals
+  type UsageTotals,
+  getEffectiveSession
 } from './state/types'
+import { buildSystemPrompt } from './systemPrompt'
 
-const SERVER_NAME = 'scribe'
 const EMPTY_USAGE: UsageTotals = {
   inputTokens: 0,
   outputTokens: 0,
@@ -67,6 +76,7 @@ const EMPTY_USAGE: UsageTotals = {
 
 interface AppProps {
   initialSession: ActiveSession
+  initialProvider: ProviderId
   model?: string
 }
 
@@ -76,7 +86,11 @@ function nextEntryId(prefix: string): string {
   return `${prefix}-${entryIdSeq}`
 }
 
-export function App({ initialSession, model }: AppProps): ReactElement {
+export function App({
+  initialSession,
+  initialProvider,
+  model
+}: AppProps): ReactElement {
   const { exit } = useApp()
   // Owned at the App level so prompt history survives whenever the Input
   // unmounts (e.g. while a slash command opens a picker).
@@ -90,7 +104,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         id: nextEntryId('sys'),
         text: `Signed in to ${initialSession.environment.label}${
           initialSession.email != null ? ` as ${initialSession.email}` : ''
-        }. Type / for commands.`,
+        }. Using ${getProviderMeta(initialProvider).label}. Type / for commands.`,
         tone: 'info'
       }
     ],
@@ -111,6 +125,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     activeBlock: null,
     blockPickerOpen: false,
     modelPickerOpen: false,
+    provider: initialProvider,
+    providerPickerOpen: false,
     me: null,
     impersonating: null
   }))
@@ -487,6 +503,61 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     setState((prev) => ({ ...prev, modelPickerOpen: false }))
   }, [])
 
+  const setProvider = useCallback(
+    (next: ProviderId) => {
+      let changed = false
+      setState((prev) => {
+        if (prev.provider === next) {
+          return prev.providerPickerOpen
+            ? { ...prev, providerPickerOpen: false }
+            : prev
+        }
+        changed = true
+        return {
+          ...prev,
+          provider: next,
+          providerPickerOpen: false,
+          // Reset token usage so per-provider numbers do not bleed together,
+          // and bump agentEpoch so the new provider takes over immediately.
+          usage: EMPTY_USAGE,
+          agentEpoch: prev.agentEpoch + 1
+        }
+      })
+      if (!changed) return
+      saveActiveProvider(next)
+      const meta = getProviderMeta(next)
+      if (meta.needsCredential && !isProviderReady(next)) {
+        appendSystemMessage(
+          `${meta.label} has no stored credential — agent loop is paused. Run /provider to configure it.`,
+          'warn'
+        )
+        return
+      }
+      appendSystemMessage(`Switched to ${meta.label}.`, 'info')
+    },
+    [appendSystemMessage]
+  )
+
+  const configureProvider = useCallback(
+    (id: ApiProviderId, credential: ProviderCredentialInput) => {
+      saveProviderCredential(id, credential)
+      const meta = getProviderMeta(id)
+      appendSystemMessage(`Saved ${meta.label} credential.`, 'info')
+      // Activate the freshly-configured provider so the user gets immediate
+      // feedback rather than having to switch a second time.
+      setProvider(id)
+    },
+    [appendSystemMessage, setProvider]
+  )
+
+  const openProviderPicker = useCallback(() => {
+    setState((prev) => ({ ...prev, providerPickerOpen: true }))
+  }, [])
+
+  const closeProviderPicker = useCallback(() => {
+    setState((prev) => ({ ...prev, providerPickerOpen: false }))
+  }, [])
+
   const stopImpersonation = useCallback(() => {
     setState((prev) => {
       if (prev.impersonating == null) return prev
@@ -532,6 +603,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       activeBlock: state.activeBlock,
       me: state.me,
       impersonating: state.impersonating,
+      provider: state.provider,
       appendSystemMessage,
       submitPrompt,
       setSession: replaceSession,
@@ -553,6 +625,9 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       stopImpersonation,
       setModel,
       openModelPicker,
+      setProvider,
+      configureProvider,
+      openProviderPicker,
       exit: () => exit()
     }),
     [
@@ -567,6 +642,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       state.activeBlock,
       state.me,
       state.impersonating,
+      state.provider,
       appendSystemMessage,
       submitPrompt,
       replaceSession,
@@ -588,6 +664,9 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       stopImpersonation,
       setModel,
       openModelPicker,
+      setProvider,
+      configureProvider,
+      openProviderPicker,
       exit
     ]
   )
@@ -792,114 +871,93 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     cardsEpoch
   ])
 
-  // Run the agent loop, restarting whenever the session epoch advances.
+  // Run the agent loop, restarting whenever the session or agent epoch
+  // advances. Each restart instantiates the active provider, builds the tool
+  // set, and wires the provider's events back into ReplState.
   useEffect(() => {
-    let cancelled = false
+    const providerOrError = createProvider(state.provider)
+    if (isInstantiationError(providerOrError)) {
+      // Surface the error once per epoch and bail — the loop will restart on
+      // the next agentEpoch bump (e.g. after the user configures credentials).
+      appendSystemMessage(providerOrError.message, 'error')
+      endActivity()
+      return
+    }
+
+    const provider = providerOrError
+    const controller = new AbortController()
     const queue = createPromptQueue()
     promptQueue.current = queue
     // The agent always operates with the effective session — under
     // impersonation, tool calls are authenticated as the impersonated user.
     const session = getEffectiveSession(state)
     const tools = buildJourneyTools(session, state.activeTeam)
-    const allowedTools = tools.map(
-      (tool) => `mcp__${SERVER_NAME}__${tool.name}`
-    )
-    const mcpServer = createSdkMcpServer({
-      name: SERVER_NAME,
-      version: '0.1.0',
-      tools
+    const systemPrompt = buildSystemPrompt({
+      session,
+      activeTeam: state.activeTeam,
+      activeJourney: state.activeJourney,
+      activeCard: state.activeCard,
+      activeBlock: state.activeBlock,
+      operatorEmail: state.session.email ?? null,
+      impersonating: state.impersonating
     })
 
-    const stream = query({
-      prompt: queue.iterable,
-      options: {
-        systemPrompt: buildSystemPrompt({
-          session,
-          activeTeam: state.activeTeam,
-          activeJourney: state.activeJourney,
-          activeCard: state.activeCard,
-          activeBlock: state.activeBlock,
-          operatorEmail: state.session.email ?? null,
-          impersonating: state.impersonating
-        }),
-        mcpServers: { [SERVER_NAME]: mcpServer },
-        allowedTools,
-        // `state.model` is the runtime override (set via /model). When it's
-        // `null` we omit the field so the SDK falls back to its default.
-        model: state.model ?? undefined,
-        permissionMode: 'default'
-      }
-    })
-
-    async function run(): Promise<void> {
-      try {
-        for await (const message of stream as AsyncIterable<SDKMessage>) {
-          if (cancelled) return
-          handleAgentMessage(message)
-        }
-      } catch (error) {
-        if (cancelled) return
-        appendSystemMessage(`Agent error: ${formatError(error)}`, 'error')
-        endActivity()
-      }
-    }
-
-    function handleAgentMessage(message: SDKMessage): void {
-      if (message.type === 'assistant') {
-        const blocks = message.message?.content
-        if (!Array.isArray(blocks)) return
-        for (const block of blocks) {
-          if (block.type === 'text' && block.text.trim().length > 0) {
-            beginThinking()
-            appendEntry({
-              kind: 'assistant',
-              id: nextEntryId('asst'),
-              text: block.text
-            })
-          } else if (block.type === 'tool_use') {
-            beginTool(block.name)
-            appendEntry({
-              kind: 'tool_call',
-              id: nextEntryId('tool'),
-              name: block.name,
-              input: block.input
-            })
-          }
-        }
-        return
-      }
-      if (message.type === 'result') {
-        const usage = message.usage
+    void provider.run({
+      systemPrompt,
+      userPrompts: queue.iterable,
+      tools,
+      model: state.model ?? undefined,
+      signal: controller.signal,
+      onAssistantText: (text) => {
+        beginThinking()
+        appendEntry({
+          kind: 'assistant',
+          id: nextEntryId('asst'),
+          text
+        })
+      },
+      onToolCall: (name, input) => {
+        beginTool(name)
+        appendEntry({
+          kind: 'tool_call',
+          id: nextEntryId('tool'),
+          name,
+          input
+        })
+      },
+      onUsage: (delta) => {
         setState((prev) => ({
           ...prev,
-          status: 'idle',
-          currentToolName: null,
-          activityStartedAt: null,
           usage: {
-            inputTokens: prev.usage.inputTokens + (usage?.input_tokens ?? 0),
-            outputTokens: prev.usage.outputTokens + (usage?.output_tokens ?? 0),
+            inputTokens: prev.usage.inputTokens + (delta.inputTokens ?? 0),
+            outputTokens: prev.usage.outputTokens + (delta.outputTokens ?? 0),
             cacheCreationInputTokens:
               prev.usage.cacheCreationInputTokens +
-              (usage?.cache_creation_input_tokens ?? 0),
+              (delta.cacheCreationInputTokens ?? 0),
             cacheReadInputTokens:
               prev.usage.cacheReadInputTokens +
-              (usage?.cache_read_input_tokens ?? 0),
-            turns: prev.usage.turns + (message.num_turns ?? 1)
+              (delta.cacheReadInputTokens ?? 0),
+            turns: prev.usage.turns + (delta.turns ?? 0)
           }
         }))
+      },
+      onTurnEnd: () => {
+        endActivity()
+      },
+      onError: (message) => {
+        appendSystemMessage(`Agent error: ${message}`, 'error')
+        endActivity()
       }
-    }
-
-    void run()
+    })
 
     return () => {
-      cancelled = true
+      controller.abort()
       queue.close()
       if (promptQueue.current === queue) promptQueue.current = null
     }
-    // We intentionally restart the agent loop on session/epoch change only.
+    // We intentionally restart the agent loop on session/provider/epoch change only.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.session, state.agentEpoch])
+  }, [state.session, state.provider, state.agentEpoch])
 
   return (
     <Box flexDirection="column">
@@ -939,6 +997,13 @@ export function App({ initialSession, model }: AppProps): ReactElement {
           onSelect={setModel}
           onCancel={closeModelPicker}
         />
+      ) : state.providerPickerOpen ? (
+        <ProviderPicker
+          activeProvider={state.provider}
+          onSelect={setProvider}
+          onConfigure={configureProvider}
+          onCancel={closeProviderPicker}
+        />
       ) : (
         <>
           <ActivityIndicator
@@ -967,6 +1032,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         activeBlock={state.activeBlock}
         impersonating={state.impersonating}
         model={state.model}
+        provider={state.provider}
       />
     </Box>
   )
@@ -982,23 +1048,13 @@ function Header({ session }: { session: ActiveSession }): ReactElement {
 }
 
 interface PromptQueue {
-  iterable: AsyncIterable<{
-    type: 'user'
-    message: { role: 'user'; content: string }
-  }>
+  iterable: AsyncIterable<string>
   push: (text: string) => void
   close: () => void
 }
 
 function createPromptQueue(): PromptQueue {
-  let resolveNext:
-    | ((
-        value: IteratorResult<{
-          type: 'user'
-          message: { role: 'user'; content: string }
-        }>
-      ) => void)
-    | null = null
+  let resolveNext: ((value: IteratorResult<string>) => void) | null = null
   const buffer: string[] = []
   let closed = false
 
@@ -1014,10 +1070,7 @@ function createPromptQueue(): PromptQueue {
     if (next == null) return
     const resolver = resolveNext
     resolveNext = null
-    resolver({
-      value: { type: 'user', message: { role: 'user', content: next } },
-      done: false
-    })
+    resolver({ value: next, done: false })
   }
 
   const iterable: PromptQueue['iterable'] = {

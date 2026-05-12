@@ -1,8 +1,10 @@
 import type { ActiveSession } from '../../auth/login'
 import type { EnvironmentId } from '../../config/environments'
+import type { ApiProviderId, ProviderId } from '../../config/providers'
 import type { JourneyListItem } from '../../tools/journey/api'
 import type { JourneySimpleCard } from '../../tools/journey/types'
 import type { MeUser } from '../../tools/user/api'
+import type { ProviderCredentialInput } from '../components/ProviderPicker'
 import type {
   BlockKind,
   CardsLoadState,
@@ -24,6 +26,7 @@ export interface CommandContext {
   activeBlock: BlockKind | null
   me: MeUser | null
   impersonating: ImpersonationSession | null
+  provider: ProviderId
   appendSystemMessage: (text: string, tone?: 'info' | 'warn' | 'error') => void
   /**
    * Submit a synthetic user prompt to the agent loop. Behaves as if the user
@@ -50,6 +53,12 @@ export interface CommandContext {
   stopImpersonation: () => void
   setModel: (model: string | null) => void
   openModelPicker: () => void
+  setProvider: (id: ProviderId) => void
+  configureProvider: (
+    id: ApiProviderId,
+    credential: ProviderCredentialInput
+  ) => void
+  openProviderPicker: () => void
   exit: () => void
 }
 

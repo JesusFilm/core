@@ -1,12 +1,16 @@
 # scribe
 
-An interactive Claude-driven CLI for operating on the Core platform.
+An interactive, agent-driven CLI for operating on the Core platform.
 
 `scribe` signs you in to dev, stage, or production via a browser flow,
-caches the resulting Firebase ID token, and drops you into a Claude Agent SDK
-prompt with a tightly-scoped tool set. The first built-in skill is the
+caches the resulting Firebase ID token, and drops you into an agent prompt
+with a tightly-scoped tool set. The first built-in skill is the
 **journey structure troubleshooter**: it can fetch, lint, diff, and update
 journeys via the existing GraphQL gateway operations.
+
+Multiple agent backends are supported — Claude Code (default), OpenRouter,
+any OpenAI-compatible Hermes endpoint, and a local LM Studio server. See
+[Providers](#providers).
 
 ## Status
 
@@ -50,11 +54,17 @@ pnpm exec nx serve scribe -- --environment stage
 # Force a fresh browser login (ignore the cached token).
 pnpm exec nx serve scribe -- --environment stage --force-login
 
-# Override the Claude model.
+# Override the model.
 pnpm exec nx serve scribe -- --environment dev --model claude-opus-4-7
 
-# Forget a stored credential.
+# Pick an agent backend up front.
+pnpm exec nx serve scribe -- --provider openrouter --model anthropic/claude-sonnet-4
+
+# Forget a stored Firebase credential.
 pnpm exec nx serve scribe -- logout --environment stage
+
+# Forget a stored provider API key.
+pnpm exec nx serve scribe -- logout --provider openrouter
 ```
 
 The first time you run against an environment, `scribe` opens a browser
@@ -81,12 +91,14 @@ behaves like Claude Code:
 
 | Command         | Effect                                                                        |
 | --------------- | ----------------------------------------------------------------------------- |
-| `/env <id>`     | Switch to `dev`, `stage`, or `prod`. Re-uses cached creds, prompts if needed. |
-| `/login`        | Force a fresh browser sign-in for the current environment.                    |
-| `/logout`       | Clear the cached credential for the current environment and exit.             |
-| `/clear`        | Clear the transcript and start a fresh agent session (resets token totals).   |
-| `/help`         | List slash commands.                                                          |
-| `/exit`         | Quit scribe.                                                                |
+| `/env <id>`       | Switch to `dev`, `stage`, or `prod`. Re-uses cached creds, prompts if needed. |
+| `/login`          | Force a fresh browser sign-in for the current environment.                    |
+| `/logout`         | Clear the cached credential for the current environment and exit.             |
+| `/clear`          | Clear the transcript and start a fresh agent session (resets token totals).   |
+| `/provider [id]`  | Switch the agent backend (Claude Code, OpenRouter, Hermes). See [Providers](#providers). |
+| `/model [id]`     | Switch the model. Aliases like `opus`/`sonnet`/`haiku` apply to Claude Code; OpenRouter and Hermes take full model ids like `openai/gpt-4o-mini`. |
+| `/help`           | List slash commands.                                                          |
+| `/exit`           | Quit scribe.                                                                |
 
 Switching environments clears the active agent conversation — the new
 environment gets its own system prompt, MCP tools, and token counters.
@@ -103,6 +115,49 @@ The current values are:
 | prod  | `https://api-gateway.central.jesusfilm.org/`        | `https://admin.nextstep.is`     |
 
 Override the config directory with `SCRIBE_CONFIG_DIR`.
+
+## Providers
+
+`scribe` can drive its agent loop with several backends. The active provider
+is persisted at `~/.config/scribe/providers.json` (mode 0600) and survives
+across runs. Switch in the REPL with `/provider`, or pin one at launch with
+`--provider <id>`.
+
+| id            | how it talks to the model                                     | credentials                                                                                                  |
+| ------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `claude-code` | Anthropic Claude via the Claude Agent SDK (default).          | Rides on your existing Claude Code credentials. Nothing extra to configure.                                  |
+| `openrouter`  | OpenAI-compatible chat completions against OpenRouter.        | API key (stored locally). Base URL defaults to `https://openrouter.ai/api/v1`.                               |
+| `hermes`      | OpenAI-compatible chat completions against a Hermes endpoint. | API key **and** base URL (both stored locally). The URL is the endpoint root, without `/chat/completions`.    |
+| `lm-studio`   | Local OpenAI-compatible server (LM Studio).                   | API key is optional (leave blank for the default no-auth setup; set one when running LM Studio behind a proxy or with auth enabled). Base URL defaults to `http://localhost:1234/v1` — override it for a remote LM Studio. |
+
+The first time you select `openrouter`, `hermes`, or `lm-studio` via
+`/provider`, scribe walks through base URL and API key prompts and writes
+the result to `~/.config/scribe/providers.json` (mode 0600). For `lm-studio`
+both fields have sensible defaults — confirm the URL with Enter, and leave
+the API key blank to run without auth (or set one if your LM Studio is
+behind a proxy or has auth enabled). To forget a stored credential:
+
+```bash
+pnpm exec nx serve scribe -- logout --provider openrouter
+```
+
+Things to know when using OpenRouter, Hermes, or LM Studio:
+
+- The journey tools are translated to OpenAI tool-call schemas on the fly via
+  Zod's built-in JSON Schema generator. Tool-call quality depends on the
+  model — Anthropic and OpenAI flagship models are the most reliable; on
+  LM Studio, pick a model with native function-calling support (e.g. recent
+  Llama, Qwen, or Mistral instruct variants).
+- Aliases like `opus`/`sonnet`/`haiku` are Claude-specific. Use full model
+  ids on OpenRouter (e.g. `anthropic/claude-sonnet-4`,
+  `openai/gpt-4o-mini`), on Hermes, and on LM Studio (the model id LM Studio
+  shows for the loaded model).
+- Token usage on non-Claude providers fills `in`/`out` only; cache columns
+  show 0 because the OpenAI chat-completions response has no cache fields.
+- LM Studio must be running with a model loaded before scribe can talk to
+  it. Start the LM Studio server (defaults to port 1234), load a tool-capable
+  model, then `/provider lm-studio` in scribe and set `--model` to the id
+  shown in LM Studio.
 
 ## Auth notes
 
@@ -144,13 +199,19 @@ apps/scribe/
 ├── tsconfig.lint.json
 └── src/
     ├── main.ts                    # CLI entry — env selection, login, REPL
+    ├── agents/
+    │   ├── types.ts               # AgentProvider, RawTool, UsageDelta
+    │   ├── claudeCode.ts          # Anthropic SDK backend
+    │   ├── openaiCompat.ts        # OpenAI-compatible backend (OpenRouter, Hermes)
+    │   └── registry.ts            # provider metadata + factory
     ├── auth/
     │   ├── browserLogin.ts        # one-shot localhost listener + open
     │   ├── login.ts               # high-level ensureSession()
     │   └── openBrowser.ts         # cross-platform browser launcher
     ├── config/
-    │   ├── credentials.ts         # ~/.config/scribe persistence
-    │   └── environments.ts        # dev/stage/prod URL table
+    │   ├── credentials.ts         # ~/.config/scribe Firebase persistence
+    │   ├── environments.ts        # dev/stage/prod URL table
+    │   └── providers.ts           # ~/.config/scribe provider API keys
     ├── graphql/
     │   └── client.ts              # fetch-based GraphQL client
     ├── repl/

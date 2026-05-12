@@ -1,7 +1,9 @@
 import { Box, Text } from 'ink'
 import type { ReactElement } from 'react'
 
+import { getProviderMeta } from '../../agents/registry'
 import type { ActiveSession } from '../../auth/login'
+import type { ProviderId } from '../../config/providers'
 import type { JourneyListItem } from '../../tools/journey/api'
 import type { JourneySimpleCard } from '../../tools/journey/types'
 import type {
@@ -28,6 +30,7 @@ interface StatusBarProps {
   activeBlock: BlockKind | null
   impersonating: ImpersonationSession | null
   model: string | null
+  provider: ProviderId
 }
 
 const ENV_COLORS: Record<string, string> = {
@@ -47,8 +50,10 @@ export function StatusBar({
   activeCard,
   activeBlock,
   impersonating,
-  model
+  model,
+  provider
 }: StatusBarProps): ReactElement {
+  const providerLabel = getProviderMeta(provider).label
   const envColor = ENV_COLORS[session.environment.id] ?? 'white'
   const who = session.email ?? session.userId ?? 'anonymous'
   const teamLabel = describeTeam(teams, activeTeam)
@@ -133,6 +138,8 @@ export function StatusBar({
                 <Text color="cyan">{activeBlock}</Text>
               </>
             ) : null}
+            <Text color="gray"> · </Text>
+            <Text color="blue">{providerLabel}</Text>
             {model != null ? (
               <>
                 <Text color="gray"> · </Text>

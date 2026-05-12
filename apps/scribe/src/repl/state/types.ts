@@ -1,4 +1,5 @@
 import type { ActiveSession } from '../../auth/login'
+import type { ProviderId } from '../../config/providers'
 import type { JourneyListItem } from '../../tools/journey/api'
 import type { JourneySimpleCard } from '../../tools/journey/types'
 import type { Team } from '../../tools/team/api'
@@ -149,6 +150,9 @@ export interface ReplState {
   activeBlock: BlockKind | null
   blockPickerOpen: boolean
   modelPickerOpen: boolean
+  /** Active agent backend. Persisted to ~/.config/scribe/providers.json. */
+  provider: ProviderId
+  providerPickerOpen: boolean
   /**
    * Profile of the operator who actually signed in (never the impersonated
    * user). Loaded once after login. `null` while loading; the `me` field

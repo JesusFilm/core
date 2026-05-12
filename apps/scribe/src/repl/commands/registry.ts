@@ -1,3 +1,4 @@
+import { PROVIDER_METAS, isProviderId } from '../../agents/registry'
 import { clearCredential } from '../../config/credentials'
 import {
   isEnvironmentId,
@@ -146,7 +147,7 @@ const impersonateCommand: SlashCommand = {
     }
     if (!email.includes('@')) {
       ctx.appendSystemMessage(
-        `"${email}" doesn\'t look like an email address.`,
+        `"${email}" does not look like an email address.`,
         'error'
       )
       return
@@ -409,6 +410,33 @@ const modelCommand: SlashCommand = {
   }
 }
 
+const providerCommand: SlashCommand = {
+  name: 'provider',
+  argHint: '[claude-code|openrouter|hermes]',
+  description:
+    'Switch the agent backend. Pick from a list, or pass an id directly.',
+  run(args, ctx) {
+    if (args.length === 0) {
+      ctx.openProviderPicker()
+      return
+    }
+    const target = args[0]
+    if (!isProviderId(target)) {
+      const available = PROVIDER_METAS.map((p) => p.id).join(', ')
+      ctx.appendSystemMessage(
+        `Unknown provider "${target}". Expected one of: ${available}.`,
+        'error'
+      )
+      return
+    }
+    if (target === ctx.provider) {
+      ctx.appendSystemMessage(`Already using ${target}.`, 'info')
+      return
+    }
+    ctx.setProvider(target)
+  }
+}
+
 const exitCommand: SlashCommand = {
   name: 'exit',
   description: 'Exit scribe.',
@@ -425,6 +453,7 @@ export const COMMANDS: SlashCommand[] = [
   blockCommand,
   translateCommand,
   modelCommand,
+  providerCommand,
   impersonateCommand,
   stopImpersonateCommand,
   loginCommand,
