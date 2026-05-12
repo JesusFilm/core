@@ -10,6 +10,8 @@ branch_target: siyangcao/nes-1659-tailscale-dev-server-access
 
 # feat(NES-1659): Tailscale dev-server access — setup docs + remove hardcoded hostnames
 
+> **Update 2026-05-13:** Replaced the regex / prefix approach (`tailscale-*` host matcher + `NODE_ENV !== 'production'` gate) with a Doppler-driven JSON allow-list. The Next.js apps read `NEXT_PUBLIC_DEV_HOSTS`, the gateway reads `DEV_HOSTS` (no `NEXT_PUBLIC_` prefix); both are JSON objects whose values are the FQDNs to allow. Absence of the secret is now the gate, so all `NODE_ENV` checks for dev relaxation have been removed. The `TAILSCALE_HOST_PATTERN` constant and its inline duplicate in `apps/journeys/proxy.ts` are gone, and the helpers live in `apps/journeys-admin/src/libs/devHosts/` and `apps/journeys/src/libs/devHosts/`. See `docs/development/tailscale-dev-access.md` for the runbook.
+
 ## Summary
 
 Add manual Tailscale setup documentation so developers can share their local `journeys` / `journeys-admin` / `api-gateway` over the Tailnet for cross-device testing, audit the codebase for hostname assumptions that break the moment the dev server is reached over a non-`localhost` host, and ship the minimum code changes (Next.js middleware host check, Apollo gateway URL derivation from `window.location`, `allowedDevOrigins` entries, gateway CORS dev regex) that let those Tailscale hostnames work without per-developer env var fiddling.

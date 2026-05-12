@@ -10,10 +10,43 @@ prod cert. This unblocks real mobile-device QA without leaving the laptop.
 ## Why this exists
 
 - Cross-device QA over HTTP, no ngrok tunnel, no public exposure.
-- The repo opts in to a single hostname prefix — `tailscale-*` — that the
-  middleware, Apollo client, redirect allow-list, and gateway CORS recognise
-  as a dev-only origin.
-- Zero per-developer env vars after the initial setup.
+- The repo opts in to a **Doppler-managed allow-list of dev hostnames**. The
+  middleware, Apollo client, redirect allow-list, Next.js `allowedDevOrigins`,
+  and gateway CORS read that list and relax their checks only for hostnames
+  that appear in it.
+- Naturally safe in stage / prod: the secret only exists in dev's Doppler
+  config, so the helpers return `[]` everywhere else and no relaxation
+  happens. **Absence of the secret IS the gate; no `NODE_ENV` checks
+  anywhere.**
+
+## How the gate works
+
+Two Doppler env vars in the **`core` project, `dev` config** drive everything:
+
+| Env var                  | Consumer                   | Notes                                |
+| ------------------------ | -------------------------- | ------------------------------------ |
+| `NEXT_PUBLIC_DEV_HOSTS`  | Next.js apps (browser + SSR) | `NEXT_PUBLIC_` prefix so it ships to the bundle. |
+| `DEV_HOSTS`              | `api-gateway` (server only)  | No `NEXT_PUBLIC_` prefix — never reaches the browser. |
+
+Both hold the **same JSON** — an object whose values are the FQDNs to allow.
+Keys are arbitrary labels (we use developer initials) and exist only to make
+the JSON readable in Doppler's UI.
+
+```json
+{
+  "siyang": "tailscale-dev-siyang.taila2a609.ts.net",
+  "mike": "tailscale-dev-mike.taila2a609.ts.net"
+}
+```
+
+Hostnames can be anything — they just need to match the FQDN your device
+exposes on the tailnet. Full FQDNs (the form Tailscale MagicDNS emits when
+the `tailnet-name.ts.net` suffix is enabled) are recommended for clarity, but
+any string the helper sees in `window.location.hostname` / `req.headers.host`
+will work.
+
+Missing var, empty string, malformed JSON, or a non-object payload → the
+helpers return `[]` → no relaxation. Fail-closed by default.
 
 ## Prerequisites
 
@@ -23,6 +56,7 @@ prod cert. This unblocks real mobile-device QA without leaving the laptop.
   (https://tailscale.com/download).
 - Local stack already runs on `localhost:4100` (journeys), `localhost:4200`
   (journeys-admin), `localhost:4000` (api-gateway).
+- Doppler CLI installed and authenticated against the `core` project.
 
 ## Step 1 — Install Tailscale and join the tailnet
 
@@ -33,22 +67,31 @@ brew install --cask tailscale
 Sign in with your work account. Accept the invite in the Tailscale admin
 console.
 
-## Step 2 — Rename your device to `tailscale-<initials>-<machine>`
+## Step 2 — Enable MagicDNS and note your FQDN
 
-Open the Tailscale admin console at https://login.tailscale.com/admin/machines,
-locate your device, click the three-dot menu, and choose "Edit machine name".
-Use the pattern `tailscale-<initials>-<machine>` — for example
-`tailscale-mbp-siyang`.
+In the Tailscale admin console (https://login.tailscale.com/admin/dns)
+enable **MagicDNS**. With MagicDNS on, every device on the tailnet can
+address every other by name.
 
-This prefix is the contract: the repo's middleware, Apollo client, redirect
-allow-list, and gateway CORS only relax their dev-mode checks for hostnames
-that start with `tailscale-`.
+Your device's FQDN looks like `<machine-name>.<tailnet-suffix>` — e.g.
+`tailscale-dev-siyang.taila2a609.ts.net`. You can find it in the Tailscale
+admin console under **Machines**, or by running `tailscale status` locally.
 
-## Step 3 — Enable MagicDNS
+## Step 3 — Add your entry to Doppler
 
-In the admin console go to **DNS** and enable **MagicDNS**. With MagicDNS
-on, every device on the tailnet can address every other by the short
-hostname (e.g. `http://tailscale-mbp-siyang:4100`).
+In the **`core` project, `dev` config**, edit both `NEXT_PUBLIC_DEV_HOSTS`
+and `DEV_HOSTS` to include your FQDN:
+
+```json
+{
+  "siyang": "tailscale-dev-siyang.taila2a609.ts.net",
+  "<your-initials>": "<your-fqdn>"
+}
+```
+
+Keep the two vars in sync. If `NEXT_PUBLIC_DEV_HOSTS` lists your host but
+`DEV_HOSTS` doesn't, the page will load over the tailnet but every GraphQL
+request will be rejected by gateway CORS.
 
 ## Step 4 — Verify connectivity
 
@@ -56,7 +99,7 @@ From the device you want to test on (phone, second laptop), ping your dev
 machine over the tailnet:
 
 ```sh
-ping tailscale-mbp-siyang
+ping <your-fqdn>
 ```
 
 Or on iOS / Android, open the Tailscale app and confirm your dev machine
@@ -77,26 +120,7 @@ default on macOS and Linux), so it's reachable over the tailnet
 without any extra configuration. Next.js dev server also binds to all
 interfaces by default.
 
-Once the code in this guide's PR has landed, no env-var changes are
-required — load `http://tailscale-mbp-siyang:4100/` (or `:4200`) from
-your phone and you're in.
-
-### Step 5a — Workaround before the PR merges
-
-If you need this working _today_ before this PR ships, set both env vars
-in `.env.local` for each app:
-
-```sh
-# apps/journeys-admin/.env.local
-NEXT_PUBLIC_GATEWAY_URL=http://tailscale-mbp-siyang:4000
-
-# apps/journeys/.env.local
-GATEWAY_URL=http://tailscale-mbp-siyang:4000
-```
-
-You'll also need to manually toggle the middleware host check off, or hit
-`/home` directly to skip the catch-all route. The PR removes both
-workarounds.
+Load `http://<your-fqdn>:4100/` (or `:4200`) from your phone and you're in.
 
 ## Step 6 — Testing other apps over Tailscale
 
@@ -108,20 +132,25 @@ tailnet, point that one env var at your tailnet gateway in the app's
 `.env.local`:
 
 ```sh
-NEXT_PUBLIC_GATEWAY_URL=http://tailscale-mbp-siyang:4000
+NEXT_PUBLIC_GATEWAY_URL=http://<your-fqdn>:4000
 ```
 
-`short-links` is exercised by journeys/journeys-admin's QR-code dialog
-(see code below), so the same env var change is enough for that path.
+`short-links` is exercised by journeys/journeys-admin's QR-code dialog,
+so the same env var change is enough for that path.
 
 ## Troubleshooting
 
 ### "Blocked cross-origin request" in dev-server stdout
 
-The `allowedDevOrigins: ['tailscale-*']` entry in `apps/journeys/next.config.js`
-and `apps/journeys-admin/next.config.js` should suppress this. If you're seeing
-it, you're probably loading the app over an IP address (e.g. `100.x.y.z`) instead
-of the MagicDNS hostname. Use the hostname.
+The `allowedDevOrigins` entry in `apps/journeys/next.config.js` and
+`apps/journeys-admin/next.config.js` reads `NEXT_PUBLIC_DEV_HOSTS` at
+process start. If you're seeing the message, check:
+
+- The dev server was started **after** the Doppler update — Next.js
+  reads env at boot, not per-request.
+- The hostname in your URL matches the FQDN you put in Doppler **exactly**
+  (matching is case-sensitive).
+- You're loading via the MagicDNS hostname, not the raw `100.x.y.z` IP.
 
 ### Phone can ping the dev machine but the browser hangs
 
@@ -137,21 +166,22 @@ explicitly in `apis/api-gateway/src/common.config.ts` and restart.
 ### Sign-in redirect bounces to `localhost`
 
 The redirect-allow-list in `apps/journeys-admin/src/libs/auth/getAuthTokens.ts`
-accepts `tailscale-*` hosts in dev. If the redirect still fails, confirm
-`NODE_ENV !== 'production'` in your dev environment (the production gate
-deliberately rejects `tailscale-*` redirects).
+accepts hosts listed in `NEXT_PUBLIC_DEV_HOSTS`. If the redirect still
+fails, confirm your FQDN is in the JSON and the dev server was restarted
+after the Doppler change.
 
 ### GraphQL requests fail with CORS error
 
 The gateway CORS allow-list in `apis/api-gateway/gateway.prod.config.ts`
-adds a `tailscale-*` regex when `NODE_ENV !== 'production'`. If you're
-testing against a stage gateway, the regex is also active there. For
-production builds the regex is omitted.
+builds one regex per host listed in `DEV_HOSTS` (server-side env, no
+`NEXT_PUBLIC_` prefix). If you're getting CORS errors, your FQDN is
+probably in `NEXT_PUBLIC_DEV_HOSTS` (so the page loaded) but not in
+`DEV_HOSTS` (so the gateway rejects the request). Add it to both.
 
 ### HTTPS / Tailscale Funnel
 
 HTTPS over Tailscale Funnel is **not** supported by this setup — the
-gateway CORS regex only accepts `http://tailscale-...`. If you need
-Funnel support, widen the regex and the Apollo derivation to accept
-`https://` too; that's deliberately out of scope for the first
+gateway CORS regex only accepts `http://<fqdn>`. If you need Funnel
+support, widen the regex generator in `gateway.prod.config.ts` to emit
+an `https?` alternation; that's deliberately out of scope for the first
 iteration.
