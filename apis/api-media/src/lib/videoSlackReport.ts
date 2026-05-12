@@ -1,7 +1,8 @@
-import { logger } from '../logger'
 
 import { prisma as languagesPrisma } from '@core/prisma/languages/client'
 import { prisma } from '@core/prisma/media/client'
+
+import { logger } from '../logger'
 
 const oneWeekInDays = 7
 const englishLanguageIdForNames = '529'
