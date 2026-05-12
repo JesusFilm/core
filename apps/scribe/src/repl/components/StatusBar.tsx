@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 
 import type { ActiveSession } from '../../auth/login'
 import type { JourneyListItem } from '../../tools/journey/api'
+import type { JourneySimpleCard } from '../../tools/journey/types'
 import type {
   ImpersonationSession,
   JourneysLoadState,
@@ -22,6 +23,7 @@ interface StatusBarProps {
   activeTeam: TeamSelection | null
   journeys: JourneysLoadState
   activeJourney: JourneyListItem | null
+  activeCard: JourneySimpleCard | null
   impersonating: ImpersonationSession | null
   model: string | null
 }
@@ -40,6 +42,7 @@ export function StatusBar({
   activeTeam,
   journeys,
   activeJourney,
+  activeCard,
   impersonating,
   model
 }: StatusBarProps): ReactElement {
@@ -49,6 +52,7 @@ export function StatusBar({
   const teamColor = activeTeam == null ? 'gray' : 'magenta'
   const journeyLabel = describeJourney(journeys, activeJourney)
   const journeyColor = activeJourney == null ? 'gray' : 'cyan'
+  const cardLabel = describeCard(activeCard)
   const totalInput = usage.inputTokens + usage.cacheReadInputTokens
   const cacheHits =
     usage.inputTokens + usage.cacheReadInputTokens > 0
@@ -84,48 +88,60 @@ export function StatusBar({
         </Box>
       ) : null}
       <Box
+        flexDirection="column"
         borderStyle="single"
         borderColor="gray"
         paddingX={1}
-        justifyContent="space-between"
       >
-      <Box>
-        <Text bold color={envColor}>
-          {session.environment.id.toUpperCase()}
-        </Text>
-        <Text color="gray"> · </Text>
-        <Text>{who}</Text>
-        <Text color="gray"> · </Text>
-        <Text color={teamColor}>{teamLabel}</Text>
-        <Text color="gray"> · </Text>
-        <Text color={journeyColor}>{journeyLabel}</Text>
-        {model != null ? (
-          <>
+        <Box justifyContent="space-between">
+          <Box>
+            <Text bold color={envColor}>
+              {session.environment.id.toUpperCase()}
+            </Text>
             <Text color="gray"> · </Text>
-            <Text color="blue">{model}</Text>
-          </>
-        ) : null}
-      </Box>
-      <Box>
-        <Text color="gray">in </Text>
-        <Text>{formatTokens(totalInput)}</Text>
-        {usage.cacheReadInputTokens > 0 ? (
-          <Text color="gray"> ({cacheHits}% cached)</Text>
-        ) : null}
-        <Text color="gray"> · out </Text>
-        <Text>{formatTokens(usage.outputTokens)}</Text>
-        <Text color="gray"> · turns </Text>
-        <Text>{usage.turns}</Text>
-        <Text color="gray"> · </Text>
-        {status === 'idle' ? (
-          <Text color={statusColor}>{statusLabel}</Text>
-        ) : (
-          <>
-            <Spinner color={statusColor} />
-            <Text color={statusColor}> {statusLabel}</Text>
-          </>
-        )}
-      </Box>
+            <Text>{who}</Text>
+          </Box>
+          <Box>
+            <Text color="gray">in </Text>
+            <Text>{formatTokens(totalInput)}</Text>
+            {usage.cacheReadInputTokens > 0 ? (
+              <Text color="gray"> ({cacheHits}% cached)</Text>
+            ) : null}
+            <Text color="gray"> · out </Text>
+            <Text>{formatTokens(usage.outputTokens)}</Text>
+            <Text color="gray"> · turns </Text>
+            <Text>{usage.turns}</Text>
+          </Box>
+        </Box>
+        <Box justifyContent="space-between">
+          <Box>
+            <Text color={teamColor}>{teamLabel}</Text>
+            <Text color="gray"> · </Text>
+            <Text color={journeyColor}>{journeyLabel}</Text>
+            {cardLabel != null ? (
+              <>
+                <Text color="gray"> › </Text>
+                <Text color="cyan">{cardLabel}</Text>
+              </>
+            ) : null}
+            {model != null ? (
+              <>
+                <Text color="gray"> · </Text>
+                <Text color="blue">{model}</Text>
+              </>
+            ) : null}
+          </Box>
+          <Box>
+            {status === 'idle' ? (
+              <Text color={statusColor}>{statusLabel}</Text>
+            ) : (
+              <>
+                <Spinner color={statusColor} />
+                <Text color={statusColor}> {statusLabel}</Text>
+              </>
+            )}
+          </Box>
+        </Box>
       </Box>
     </Box>
   )
@@ -157,6 +173,12 @@ function describeJourney(
   if (journeys.status === 'loading') return 'journey: loading…'
   if (journeys.status === 'error') return 'journey: error'
   return 'no journey'
+}
+
+function describeCard(active: JourneySimpleCard | null): string | null {
+  if (active == null) return null
+  const label = active.heading ?? active.text ?? active.id
+  return truncate(label, 25)
 }
 
 function truncate(text: string, max: number): string {

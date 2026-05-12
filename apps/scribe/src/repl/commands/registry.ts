@@ -3,6 +3,7 @@ import {
   isEnvironmentId,
   listEnvironments
 } from '../../config/environments'
+import { findCardByQuery } from '../components/CardPicker'
 import { findJourneyByQuery } from '../components/JourneyPicker'
 import { findSelectionByName } from '../components/TeamPicker'
 
@@ -170,6 +171,10 @@ const journeyCommand: SlashCommand = {
   description: 'Pick which journey scribe is working on within the active team.',
   run(args, ctx) {
     if (args.length === 0) {
+      // Always refetch when the user opens the picker — they may have
+      // created, duplicated, or translated a journey since the list was
+      // last loaded.
+      ctx.refreshJourneys()
       ctx.openJourneyPicker()
       return
     }
@@ -207,6 +212,135 @@ const journeyCommand: SlashCommand = {
     }
     ctx.setActiveJourney(match)
   }
+}
+
+const cardCommand: SlashCommand = {
+  name: 'card',
+  argHint: '[id|heading]',
+  description: 'Pick which card within the active journey scribe is focused on.',
+  isAvailable(ctx) {
+    return ctx.activeJourney != null
+  },
+  run(args, ctx) {
+    if (ctx.activeJourney == null) {
+      ctx.appendSystemMessage(
+        'No active journey. Pick one with /journey before selecting a card.',
+        'info'
+      )
+      return
+    }
+    if (args.length === 0) {
+      ctx.refreshCards()
+      ctx.openCardPicker()
+      return
+    }
+    if (ctx.cards.status === 'loading') {
+      ctx.appendSystemMessage(
+        'Cards are still loading. Try again in a sec.',
+        'info'
+      )
+      return
+    }
+    if (ctx.cards.status === 'error') {
+      ctx.appendSystemMessage(
+        `Cannot select a card — load failed: ${ctx.cards.message}. Run /card to retry.`,
+        'error'
+      )
+      ctx.refreshCards()
+      return
+    }
+    if (ctx.cards.status === 'idle') {
+      ctx.appendSystemMessage(
+        'No cards loaded yet. Open the picker with /card.',
+        'info'
+      )
+      ctx.refreshCards()
+      return
+    }
+    const phrase = args.join(' ')
+    const match = findCardByQuery(ctx.cards.cards, phrase)
+    if (match == null) {
+      ctx.appendSystemMessage(
+        `No card matched "${phrase}". Run /card to see the list.`,
+        'error'
+      )
+      return
+    }
+    ctx.setActiveCard(match)
+  }
+}
+
+const translateCommand: SlashCommand = {
+  name: 'translate',
+  argHint: '[id|slug|title]',
+  description:
+    'Translate a journey to another language. Asks duplicate vs in-place, then picks a target language.',
+  run(args, ctx) {
+    const phrase = args.join(' ').trim()
+
+    if (phrase.length === 0) {
+      if (ctx.activeJourney == null) {
+        ctx.appendSystemMessage(
+          'No active journey. Pass an id/slug/title: /translate <journey>, or pick one with /journey first.',
+          'info'
+        )
+        return
+      }
+      submitTranslatePrompt(ctx, ctx.activeJourney.id, ctx.activeJourney.title)
+      return
+    }
+
+    if (ctx.journeys.status === 'loading') {
+      ctx.appendSystemMessage(
+        'Journeys are still loading. Try again in a sec.',
+        'info'
+      )
+      return
+    }
+    if (ctx.journeys.status === 'error') {
+      ctx.appendSystemMessage(
+        `Cannot translate — journey load failed: ${ctx.journeys.message}. Run /journey to retry.`,
+        'error'
+      )
+      ctx.refreshJourneys()
+      return
+    }
+    if (ctx.journeys.status === 'idle') {
+      ctx.appendSystemMessage(
+        'No journeys loaded yet. Open the picker with /journey first.',
+        'info'
+      )
+      ctx.refreshJourneys()
+      return
+    }
+
+    const match = findJourneyByQuery(ctx.journeys.journeys, phrase)
+    if (match == null) {
+      // Not in the team's list — hand the raw phrase to the agent and let
+      // it resolve via resolve_journey (covers journeys outside the active
+      // team that the user has access to).
+      submitTranslatePrompt(ctx, phrase, phrase)
+      return
+    }
+    submitTranslatePrompt(ctx, match.id, match.title)
+  }
+}
+
+function submitTranslatePrompt(
+  ctx: CommandContext,
+  idOrSlug: string,
+  label: string
+): void {
+  ctx.submitPrompt(
+    `Translate the journey "${label}" (id-or-slug: ${idOrSlug}).\n\n` +
+      `Follow the translate workflow in your system prompt:\n` +
+      `1. Resolve the journey via resolve_journey if you only have a slug or partial reference, and report the title back.\n` +
+      `2. Ask me whether to translate IN PLACE (overwrites the original) or DUPLICATE FIRST (translated copy in the active team). Wait for my answer.\n` +
+      `3. Ask me which target language to translate to. Use list_supported_languages to show the available options if I haven't named one.\n` +
+      `4. If I picked duplicate, call duplicate_journey to make the copy and use its id; otherwise use the original id.\n` +
+      `5. Call translate_journey with the source language name from resolve_journey and the target language from list_supported_languages.\n` +
+      `6. Report the resulting journey id, slug, and the new language.`
+  )
 }
 
 const modelCommand: SlashCommand = {
@@ -248,6 +382,8 @@ export const COMMANDS: SlashCommand[] = [
   envCommand,
   teamCommand,
   journeyCommand,
+  cardCommand,
+  translateCommand,
   modelCommand,
   impersonateCommand,
   stopImpersonateCommand,

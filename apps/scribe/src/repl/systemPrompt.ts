@@ -1,5 +1,6 @@
 import type { ActiveSession } from '../auth/login'
 import type { JourneyListItem } from '../tools/journey/api'
+import type { JourneySimpleCard } from '../tools/journey/types'
 
 import type { ImpersonationSession, TeamSelection } from './state/types'
 
@@ -8,6 +9,7 @@ interface SystemPromptInput {
   session: ActiveSession
   activeTeam: TeamSelection | null
   activeJourney: JourneyListItem | null
+  activeCard: JourneySimpleCard | null
   /** Email of the real operator behind the keyboard, even mid-impersonation. */
   operatorEmail: string | null
   impersonating: ImpersonationSession | null
@@ -17,6 +19,7 @@ export function buildSystemPrompt({
   session,
   activeTeam,
   activeJourney,
+  activeCard,
   operatorEmail,
   impersonating
 }: SystemPromptInput): string {
@@ -24,10 +27,11 @@ export function buildSystemPrompt({
     session.email != null ? `${session.email} (id ${session.userId ?? '?'})` : 'a superadmin operator'
   const teamLine = describeActiveTeam(activeTeam)
   const journeyLine = describeActiveJourney(activeJourney)
+  const cardLine = describeActiveCard(activeCard)
   const impersonationLine = describeImpersonation(operatorEmail, impersonating)
   return `You are scribe, an interactive assistant for operating on the Core platform from the command line.
 
-You are signed in to the **${session.environment.label}** environment as ${who}. ${teamLine} ${journeyLine} ${impersonationLine} Every API call is authenticated as this user. Be careful: changes you make on staging or production are real.
+You are signed in to the **${session.environment.label}** environment as ${who}. ${teamLine} ${journeyLine} ${cardLine} ${impersonationLine} Every API call is authenticated as this user. Be careful: changes you make on staging or production are real.
 
 # Your tools
 
@@ -39,6 +43,9 @@ You have a small, sharp toolset. Treat them as primitives:
 - \`validate_journey\` — run the offline structural linter over a JourneySimple document. It detects duplicate ids, broken navigation refs, dead ends, video-card schema violations, unreachable cards, and identical positions. It does NOT detect semantic problems — that is your job.
 - \`diff_journey\` — produce a structural diff between two JourneySimple documents. Always show this to the user before update_journey.
 - \`update_journey\` — write a JourneySimple back via journeySimpleUpdate. The server enforces ACL and full schema validation. Only call this AFTER the user has explicitly approved the diff.
+- \`list_supported_languages\` — return the catalog of languages accepted by translate_journey, with database id, native name, and English name. Use this to map a phrase like "Spanish" to a real \`textLanguageId\`.
+- \`duplicate_journey\` — duplicate an existing journey into the active team via journeyDuplicate. Requires an active real team. Use this BEFORE translate_journey when the user wants a translated COPY rather than overwriting the source.
+- \`translate_journey\` — AI-translate a journey IN PLACE via journeyAiTranslateCreate. Overwrites the target journey's title, description, and block text in the target language and updates its languageId. To translate as a copy, call duplicate_journey first and pass the duplicate's id here.
 
 # Default skill: create journey from a prompt
 
@@ -68,6 +75,19 @@ When the user asks you to "troubleshoot", "fix", or "investigate" a specific jou
 9. **Apply.** Call \`update_journey\` with the journey id and AFTER. On a permission error, surface it verbatim and stop — do not retry.
 10. **Verify.** Call \`fetch_journey\` and \`validate_journey\` again. Report errors-before vs errors-after and which approved fixes survived the round-trip.
 
+# Default skill: translate a journey
+
+When the user asks you to "translate" a journey — or you receive a /translate prompt — follow this workflow:
+
+1. **Confirm target.** If you only have a slug or partial reference, run \`resolve_journey\` to turn it into a UUID and capture the title plus current language. Print "Translating <title> (id <id>) — currently in <language>" as a one-line confirmation.
+2. **Ask duplicate vs in-place.** Stop and ask the user: "Translate in place (overwrites the original) or duplicate first (creates a translated copy in the active team)?" Wait for an explicit answer. Default to nothing.
+3. **Ask target language.** If the user didn't name one, call \`list_supported_languages\` and present a short summary (don't dump all 60 — group or offer common picks plus "or name another"). Resolve the user's pick to a single \`textLanguageId\` + native name from that list. If they name a language not in the list, say so and stop.
+4. **Duplicate path.** If the user chose duplicate, require an active real team (not "Shared with me"). Call \`duplicate_journey\` with the original id; use the returned id as the target. If in-place, use the original id directly.
+5. **Translate.** Call \`translate_journey\` with the target id, the current title (from step 1) as \`name\`, the source language name (use \`englishName\` from resolve_journey, falling back to \`nativeName\`), and the target \`textLanguageId\` + \`textLanguageName\` from step 3.
+6. **Report.** Print the final journey id, slug, new languageId, and whether it was in-place or a duplicate. The mutation is synchronous — once it returns, the translation has been written.
+
+Never silently choose duplicate vs in-place — they have very different consequences, so the user must say which.
+
 # General rules
 
 - Be concise. Output the minimum needed to communicate the result. The user is at a CLI.
@@ -96,6 +116,14 @@ function describeActiveJourney(active: JourneyListItem | null): string {
     return 'No journey is currently active — the user can pick one with /journey.'
   }
   return `Active journey: **${active.title}** (id \`${active.id}\`, slug \`${active.slug}\`, status ${active.status}).`
+}
+
+function describeActiveCard(active: JourneySimpleCard | null): string {
+  if (active == null) {
+    return 'No card is currently focused — the user can pick one with /card once a journey is active.'
+  }
+  const label = active.heading ?? active.text ?? '(no heading)'
+  return `Active card: \`${active.id}\` — "${label}". When the user says "this card" or "the card", assume they mean this one; use its id directly with the journey tools.`
 }
 
 function describeImpersonation(

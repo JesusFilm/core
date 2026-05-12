@@ -1,5 +1,6 @@
 import type { ActiveSession } from '../../auth/login'
 import type { JourneyListItem } from '../../tools/journey/api'
+import type { JourneySimpleCard } from '../../tools/journey/types'
 import type { Team } from '../../tools/team/api'
 import type { MeUser } from '../../tools/user/api'
 
@@ -51,6 +52,12 @@ export type JourneysLoadState =
   | { status: 'idle' }
   | { status: 'loading' }
   | { status: 'loaded'; journeys: JourneyListItem[] }
+  | { status: 'error'; message: string }
+
+export type CardsLoadState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'loaded'; cards: JourneySimpleCard[] }
   | { status: 'error'; message: string }
 
 export interface UsageTotals {
@@ -112,6 +119,13 @@ export interface ReplState {
   journeys: JourneysLoadState
   activeJourney: JourneyListItem | null
   journeyPickerOpen: boolean
+  /**
+   * Cards inside the active journey. `idle` whenever no journey is selected;
+   * fetched via fetchJourneySimple after a journey becomes active.
+   */
+  cards: CardsLoadState
+  activeCard: JourneySimpleCard | null
+  cardPickerOpen: boolean
   modelPickerOpen: boolean
   /**
    * Profile of the operator who actually signed in (never the impersonated

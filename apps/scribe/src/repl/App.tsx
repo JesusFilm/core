@@ -19,9 +19,11 @@ import { clearCredential } from '../config/credentials'
 import { getEnvironment, type EnvironmentId } from '../config/environments'
 import { buildJourneyTools } from '../tools/journey'
 import {
+  fetchJourneySimple,
   type JourneyListItem,
   listJourneys
 } from '../tools/journey/api'
+import type { JourneySimpleCard } from '../tools/journey/types'
 import {
   fetchTeamsAndActiveTeam,
   persistLastActiveTeamId
@@ -33,6 +35,7 @@ import {
 } from '../tools/user/api'
 
 import { ActivityIndicator } from './components/ActivityIndicator'
+import { CardPicker } from './components/CardPicker'
 import { Input } from './components/Input'
 import { JourneyPicker } from './components/JourneyPicker'
 import { ModelPicker } from './components/ModelPicker'
@@ -96,6 +99,9 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     journeys: { status: 'idle' },
     activeJourney: null,
     journeyPickerOpen: false,
+    cards: { status: 'idle' },
+    activeCard: null,
+    cardPickerOpen: false,
     modelPickerOpen: false,
     me: null,
     impersonating: null
@@ -103,6 +109,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
   // Bumped to force a teams refetch (e.g. after a load error, or on /env switch).
   const [teamsEpoch, setTeamsEpoch] = useState(0)
   const [journeysEpoch, setJourneysEpoch] = useState(0)
+  const [cardsEpoch, setCardsEpoch] = useState(0)
 
   const promptQueue = useRef<PromptQueue | null>(null)
 
@@ -175,6 +182,9 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       journeys: { status: 'idle' },
       activeJourney: null,
       journeyPickerOpen: false,
+      cards: { status: 'idle' },
+      activeCard: null,
+      cardPickerOpen: false,
       modelPickerOpen: false
     }))
     setTeamsEpoch((n) => n + 1)
@@ -287,10 +297,15 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         ...prev,
         activeJourney: journey,
         journeyPickerOpen: false,
+        // Cards are scoped to a journey — drop them so they refetch for the
+        // new selection. Any previously selected card is no longer valid.
+        cards: { status: 'idle' },
+        activeCard: null,
         // Restart the agent loop so the next turn sees the updated journey
         // context in the system prompt.
         agentEpoch: prev.agentEpoch + 1
       }))
+      setCardsEpoch((n) => n + 1)
       appendSystemMessage(
         `Active journey set to "${journey.title}" (${journey.slug}).`,
         'info'
@@ -302,6 +317,37 @@ export function App({ initialSession, model }: AppProps): ReactElement {
   const refreshJourneys = useCallback(() => {
     setState((prev) => ({ ...prev, journeys: { status: 'idle' } }))
     setJourneysEpoch((n) => n + 1)
+  }, [])
+
+  const openCardPicker = useCallback(() => {
+    setState((prev) => ({ ...prev, cardPickerOpen: true }))
+  }, [])
+
+  const closeCardPicker = useCallback(() => {
+    setState((prev) => ({ ...prev, cardPickerOpen: false }))
+  }, [])
+
+  const setActiveCard = useCallback(
+    (card: JourneySimpleCard) => {
+      setState((prev) => ({
+        ...prev,
+        activeCard: card,
+        cardPickerOpen: false,
+        // Restart the agent loop so the next turn sees the updated card
+        // context in the system prompt.
+        agentEpoch: prev.agentEpoch + 1
+      }))
+      appendSystemMessage(
+        `Active card set to ${card.id}${card.heading != null ? ` — "${card.heading}"` : ''}.`,
+        'info'
+      )
+    },
+    [appendSystemMessage]
+  )
+
+  const refreshCards = useCallback(() => {
+    setState((prev) => ({ ...prev, cards: { status: 'idle' } }))
+    setCardsEpoch((n) => n + 1)
   }, [])
 
   const startImpersonation = useCallback(
@@ -345,7 +391,9 @@ export function App({ initialSession, model }: AppProps): ReactElement {
           teams: { status: 'idle' },
           activeTeam: null,
           journeys: { status: 'idle' },
-          activeJourney: null
+          activeJourney: null,
+          cards: { status: 'idle' },
+          activeCard: null
         }))
         setTeamsEpoch((n) => n + 1)
         setJourneysEpoch((n) => n + 1)
@@ -412,13 +460,26 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         teams: { status: 'idle' },
         activeTeam: null,
         journeys: { status: 'idle' },
-        activeJourney: null
+        activeJourney: null,
+        cards: { status: 'idle' },
+        activeCard: null
       }
     })
     setTeamsEpoch((n) => n + 1)
     setJourneysEpoch((n) => n + 1)
     appendSystemMessage('Stopped impersonating. Back to your own session.', 'info')
   }, [appendSystemMessage])
+
+  const submitPrompt = useCallback(
+    (text: string) => {
+      const trimmed = text.trim()
+      if (trimmed.length === 0) return
+      appendEntry({ kind: 'user', id: nextEntryId('user'), text: trimmed })
+      beginThinking()
+      promptQueue.current?.push(trimmed)
+    },
+    [appendEntry, beginThinking]
+  )
 
   const commandContext = useMemo<CommandContext>(
     () => ({
@@ -428,9 +489,12 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       activeTeam: state.activeTeam,
       journeys: state.journeys,
       activeJourney: state.activeJourney,
+      cards: state.cards,
+      activeCard: state.activeCard,
       me: state.me,
       impersonating: state.impersonating,
       appendSystemMessage,
+      submitPrompt,
       setSession: replaceSession,
       switchEnvironment,
       forceLogin,
@@ -441,6 +505,9 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       openJourneyPicker,
       setActiveJourney,
       refreshJourneys,
+      openCardPicker,
+      setActiveCard,
+      refreshCards,
       startImpersonation,
       stopImpersonation,
       setModel,
@@ -454,9 +521,12 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       state.activeTeam,
       state.journeys,
       state.activeJourney,
+      state.cards,
+      state.activeCard,
       state.me,
       state.impersonating,
       appendSystemMessage,
+      submitPrompt,
       replaceSession,
       switchEnvironment,
       forceLogin,
@@ -467,6 +537,9 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       openJourneyPicker,
       setActiveJourney,
       refreshJourneys,
+      openCardPicker,
+      setActiveCard,
+      refreshCards,
       startImpersonation,
       stopImpersonation,
       setModel,
@@ -628,6 +701,53 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.session, state.activeTeam, state.impersonating, journeysEpoch])
 
+  // Fetch the active journey's cards via journeySimpleGet whenever the
+  // selected journey, effective session, or refresh epoch changes. With no
+  // active journey, leave cards idle.
+  useEffect(() => {
+    const journey = state.activeJourney
+    if (journey == null) return
+    let cancelled = false
+    const effective = getEffectiveSession(state)
+    setState((prev) => ({ ...prev, cards: { status: 'loading' } }))
+    fetchJourneySimple(effective, journey.id)
+      .then((simple) => {
+        if (cancelled) return
+        setState((prev) => {
+          // Bail if the user switched journeys mid-fetch — this result is
+          // stale and would overwrite a fresh load.
+          if (prev.activeJourney?.id !== journey.id) return prev
+          const previous = prev.activeCard
+          const stillValid =
+            previous != null && simple.cards.some((c) => c.id === previous.id)
+          return {
+            ...prev,
+            cards: { status: 'loaded', cards: simple.cards },
+            activeCard: stillValid
+              ? simple.cards.find((c) => c.id === previous.id) ?? null
+              : null
+          }
+        })
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return
+        const message = error instanceof Error ? error.message : String(error)
+        setState((prev) => {
+          if (prev.activeJourney?.id !== journey.id) return prev
+          return { ...prev, cards: { status: 'error', message } }
+        })
+      })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    state.session,
+    state.activeJourney,
+    state.impersonating,
+    cardsEpoch
+  ])
+
   // Run the agent loop, restarting whenever the session epoch advances.
   useEffect(() => {
     let cancelled = false
@@ -653,6 +773,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
           session,
           activeTeam: state.activeTeam,
           activeJourney: state.activeJourney,
+          activeCard: state.activeCard,
           operatorEmail: state.session.email ?? null,
           impersonating: state.impersonating
         }),
@@ -753,6 +874,13 @@ export function App({ initialSession, model }: AppProps): ReactElement {
           onSelect={setActiveJourney}
           onCancel={closeJourneyPicker}
         />
+      ) : state.cardPickerOpen ? (
+        <CardPicker
+          cards={state.cards}
+          activeCard={state.activeCard}
+          onSelect={setActiveCard}
+          onCancel={closeCardPicker}
+        />
       ) : state.modelPickerOpen ? (
         <ModelPicker
           activeModel={state.model}
@@ -782,6 +910,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         activeTeam={state.activeTeam}
         journeys={state.journeys}
         activeJourney={state.activeJourney}
+        activeCard={state.activeCard}
         impersonating={state.impersonating}
         model={state.model}
       />

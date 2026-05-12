@@ -6,12 +6,16 @@ import { GraphQLRequestError } from '../../graphql/client'
 import type { TeamSelection } from '../../repl/state/types'
 
 import {
+  aiTranslateJourney,
   applyJourneySimpleUpdate,
   createJourney,
+  duplicateJourney,
   fetchJourneySimple,
+  fetchLanguagesByIds,
   resolveJourneyByIdOrSlug
 } from './api'
 import { diffJourney } from './diffJourney'
+import { SUPPORTED_LANGUAGE_IDS } from './supportedLanguages'
 import type { JourneySimple } from './types'
 import { validateJourney } from './validateJourney'
 
@@ -174,6 +178,110 @@ export function buildJourneyTools(
             id,
             journey as unknown as JourneySimple
           )
+          return jsonResult(result)
+        } catch (error) {
+          return errorResult(formatGraphqlError(error))
+        }
+      }
+    ),
+    tool(
+      'list_supported_languages',
+      'List the languages accepted by translate_journey. Returns each language\'s database id, native name (e.g. "Português"), and English name (e.g. "Portuguese"). Use this to map a user-provided language phrase ("Spanish", "Brazilian Portuguese") onto a textLanguageId.',
+      {},
+      async () => {
+        try {
+          const languages = await fetchLanguagesByIds(session, [
+            ...SUPPORTED_LANGUAGE_IDS
+          ])
+          return jsonResult({ languages })
+        } catch (error) {
+          return errorResult(formatGraphqlError(error))
+        }
+      }
+    ),
+    tool(
+      'duplicate_journey',
+      'Duplicate a journey into the active team via journeyDuplicate. Returns the new journey id, title, and slug. Requires an active real team (not "Shared with me"). Use this before translate_journey when the user wants a translated COPY rather than overwriting the source.',
+      {
+        id: z.string().min(1).describe('Journey UUID to duplicate.'),
+        duplicateAsDraft: z
+          .boolean()
+          .optional()
+          .describe('Optional. When true, the copy starts in draft status.')
+      },
+      async ({ id, duplicateAsDraft }) => {
+        if (activeTeam == null) {
+          return errorResult(
+            'No active team is set. Ask the user to run /team and pick a team before duplicating a journey.'
+          )
+        }
+        if (activeTeam.kind !== 'team') {
+          return errorResult(
+            'The active selection is "Shared with me", which is not a real team. Ask the user to /team and pick a real team before duplicating a journey.'
+          )
+        }
+        try {
+          const result = await duplicateJourney(session, {
+            id,
+            teamId: activeTeam.team.id,
+            duplicateAsDraft
+          })
+          return jsonResult(result)
+        } catch (error) {
+          return errorResult(formatGraphqlError(error))
+        }
+      }
+    ),
+    tool(
+      'translate_journey',
+      'Translate a journey IN PLACE via journeyAiTranslateCreate. The mutation rewrites the target journey\'s title, description, and block text in the target language and updates its languageId. To produce a translated COPY instead, call duplicate_journey first and pass the duplicate\'s id here. Server enforces ACL.',
+      {
+        journeyId: z
+          .string()
+          .min(1)
+          .describe(
+            'Journey UUID to write the translation into. Pass a duplicated journey id for "translate as copy"; pass the original id for "translate in place".'
+          ),
+        name: z
+          .string()
+          .min(1)
+          .describe(
+            'The journey title to translate. Usually the current title of the target journey.'
+          ),
+        journeyLanguageName: z
+          .string()
+          .min(1)
+          .describe(
+            'Source language name (e.g. "English"). Read it from resolve_journey\'s language.englishName, or language.nativeName if englishName is missing.'
+          ),
+        textLanguageId: z
+          .string()
+          .min(1)
+          .describe(
+            'Target language database id (e.g. "21028"). Must come from list_supported_languages.'
+          ),
+        textLanguageName: z
+          .string()
+          .min(1)
+          .describe(
+            'Target language name (native preferred, e.g. "Español"). Use the nativeName from list_supported_languages.'
+          )
+      },
+      async ({
+        journeyId,
+        name,
+        journeyLanguageName,
+        textLanguageId,
+        textLanguageName
+      }) => {
+        try {
+          const result = await aiTranslateJourney(session, {
+            journeyId,
+            name,
+            journeyLanguageName,
+            textLanguageId,
+            textLanguageName
+          })
           return jsonResult(result)
         } catch (error) {
           return errorResult(formatGraphqlError(error))

@@ -1,8 +1,10 @@
 import type { ActiveSession } from '../../auth/login'
 import type { EnvironmentId } from '../../config/environments'
 import type { JourneyListItem } from '../../tools/journey/api'
+import type { JourneySimpleCard } from '../../tools/journey/types'
 import type { MeUser } from '../../tools/user/api'
 import type {
+  CardsLoadState,
   ImpersonationSession,
   JourneysLoadState,
   TeamSelection,
@@ -16,9 +18,17 @@ export interface CommandContext {
   activeTeam: TeamSelection | null
   journeys: JourneysLoadState
   activeJourney: JourneyListItem | null
+  cards: CardsLoadState
+  activeCard: JourneySimpleCard | null
   me: MeUser | null
   impersonating: ImpersonationSession | null
   appendSystemMessage: (text: string, tone?: 'info' | 'warn' | 'error') => void
+  /**
+   * Submit a synthetic user prompt to the agent loop. Behaves as if the user
+   * had typed `text` into the input — appends it to the transcript and
+   * advances the agent. Used by commands that hand work off to the model.
+   */
+  submitPrompt: (text: string) => void
   setSession: (session: ActiveSession) => void
   switchEnvironment: (envId: EnvironmentId) => Promise<void>
   forceLogin: () => Promise<void>
@@ -29,6 +39,9 @@ export interface CommandContext {
   openJourneyPicker: () => void
   setActiveJourney: (journey: JourneyListItem) => void
   refreshJourneys: () => void
+  openCardPicker: () => void
+  setActiveCard: (card: JourneySimpleCard) => void
+  refreshCards: () => void
   startImpersonation: (email: string) => Promise<void>
   stopImpersonation: () => void
   setModel: (model: string | null) => void
