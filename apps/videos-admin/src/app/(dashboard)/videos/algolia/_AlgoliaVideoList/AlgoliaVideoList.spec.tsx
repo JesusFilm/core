@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { algoliasearch } from 'algoliasearch'
 import {
   useHits,
@@ -94,7 +94,7 @@ describe('AlgoliaVideoList', () => {
     process.env = originalEnv
   })
 
-  it('renders search and published filter controls', () => {
+  it('renders search and published filter controls with facet counts', () => {
     render(<AlgoliaVideoList />)
 
     expect(screen.getByLabelText('Search Algolia')).toBeInTheDocument()
@@ -106,6 +106,15 @@ describe('AlgoliaVideoList', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole('combobox', { name: 'Published' })
+    ).toBeInTheDocument()
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Published' }))
+    expect(screen.getByRole('option', { name: 'Both (3)' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: 'Published (2)' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: 'Draft (1)' })
     ).toBeInTheDocument()
   })
 
@@ -142,11 +151,11 @@ describe('AlgoliaVideoList', () => {
 
     expect(screen.getByText('English Title')).toBeInTheDocument()
     expect(screen.getByText('Fallback Title')).toBeInTheDocument()
-    const publishedRow = screen.getByRole('row', { name: /english title/i })
-    expect(
-      within(publishedRow).getByTestId('PublishedChip')
-    ).toBeInTheDocument()
-    expect(screen.getByText('Draft')).toBeInTheDocument()
+    const publishedChips = screen.getAllByTestId('PublishedChip')
+    expect(publishedChips).toHaveLength(2)
+    expect(publishedChips.map((chip) => chip.textContent)).toEqual(
+      expect.arrayContaining(['Published', 'Draft'])
+    )
   })
 
   it('navigates to media component detail on row click', () => {
@@ -171,11 +180,32 @@ describe('AlgoliaVideoList', () => {
     expect(mockPush).toHaveBeenCalledWith('/videos/video-id')
   })
 
+  it('does not navigate when row has no mediaComponentId', () => {
+    mockUseHits.mockReturnValue({
+      items: [
+        {
+          objectID: 'orphan-id',
+          title: 'Orphan Record',
+          description: 'No editable mapping',
+          published: false,
+          subType: '',
+          containsCount: 0
+        }
+      ]
+    } as any)
+
+    render(<AlgoliaVideoList />)
+
+    fireEvent.click(screen.getByText('orphan-id'))
+
+    expect(mockPush).not.toHaveBeenCalled()
+  })
+
   it('refines published filter with dropdown selections', () => {
     render(<AlgoliaVideoList />)
 
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Published' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Published' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Published (2)' }))
 
     expect(mockPublishedRefine).toHaveBeenCalledWith('published:true')
   })
