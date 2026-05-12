@@ -1,3 +1,4 @@
+import type { ProviderModel } from '../../agents/types'
 import type { ActiveSession } from '../../auth/login'
 import type { ProviderId } from '../../config/providers'
 import type { JourneyListItem } from '../../tools/journey/api'
@@ -59,6 +60,12 @@ export type CardsLoadState =
   | { status: 'idle' }
   | { status: 'loading' }
   | { status: 'loaded'; cards: JourneySimpleCard[] }
+  | { status: 'error'; message: string }
+
+export type ModelsLoadState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'loaded'; models: ProviderModel[] }
   | { status: 'error'; message: string }
 
 /**
@@ -150,6 +157,12 @@ export interface ReplState {
   activeBlock: BlockKind | null
   blockPickerOpen: boolean
   modelPickerOpen: boolean
+  /**
+   * Catalog of models offered by the current provider. Refetched whenever
+   * the provider changes (or when the user opens /model on a fresh provider
+   * via the refresh affordance).
+   */
+  models: ModelsLoadState
   /** Active agent backend. Persisted to ~/.config/scribe/providers.json. */
   provider: ProviderId
   providerPickerOpen: boolean

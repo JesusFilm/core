@@ -125,6 +125,7 @@ export function App({
     activeBlock: null,
     blockPickerOpen: false,
     modelPickerOpen: false,
+    models: { status: 'idle' },
     provider: initialProvider,
     providerPickerOpen: false,
     me: null,
@@ -134,6 +135,7 @@ export function App({
   const [teamsEpoch, setTeamsEpoch] = useState(0)
   const [journeysEpoch, setJourneysEpoch] = useState(0)
   const [cardsEpoch, setCardsEpoch] = useState(0)
+  const [modelsEpoch, setModelsEpoch] = useState(0)
 
   const promptQueue = useRef<PromptQueue | null>(null)
 
@@ -520,11 +522,15 @@ export function App({
           // Reset token usage so per-provider numbers do not bleed together,
           // and bump agentEpoch so the new provider takes over immediately.
           usage: EMPTY_USAGE,
+          // Drop the previous catalog — it belongs to the old provider. The
+          // model-fetch effect will refetch for the new one.
+          models: { status: 'idle' },
           agentEpoch: prev.agentEpoch + 1
         }
       })
       if (!changed) return
       saveActiveProvider(next)
+      setModelsEpoch((n) => n + 1)
       const meta = getProviderMeta(next)
       if (meta.needsCredential && !isProviderReady(next)) {
         appendSystemMessage(
@@ -537,6 +543,11 @@ export function App({
     },
     [appendSystemMessage]
   )
+
+  const refreshModels = useCallback(() => {
+    setState((prev) => ({ ...prev, models: { status: 'idle' } }))
+    setModelsEpoch((n) => n + 1)
+  }, [])
 
   const configureProvider = useCallback(
     (id: ApiProviderId, credential: ProviderCredentialInput) => {
@@ -625,6 +636,8 @@ export function App({
       stopImpersonation,
       setModel,
       openModelPicker,
+      models: state.models,
+      refreshModels,
       setProvider,
       configureProvider,
       openProviderPicker,
@@ -643,6 +656,7 @@ export function App({
       state.me,
       state.impersonating,
       state.provider,
+      state.models,
       appendSystemMessage,
       submitPrompt,
       replaceSession,
@@ -664,6 +678,7 @@ export function App({
       stopImpersonation,
       setModel,
       openModelPicker,
+      refreshModels,
       setProvider,
       configureProvider,
       openProviderPicker,
@@ -871,6 +886,47 @@ export function App({
     cardsEpoch
   ])
 
+  // Fetch the provider's model catalog whenever the provider changes (or the
+  // user manually refreshes via /model). Skipped when the provider isn't
+  // ready (e.g. OpenRouter without a stored API key) — the picker will
+  // surface a configuration hint instead.
+  useEffect(() => {
+    if (!isProviderReady(state.provider)) {
+      setState((prev) => ({ ...prev, models: { status: 'idle' } }))
+      return
+    }
+    const providerOrError = createProvider(state.provider)
+    if (isInstantiationError(providerOrError)) {
+      setState((prev) => ({
+        ...prev,
+        models: { status: 'error', message: providerOrError.message }
+      }))
+      return
+    }
+    const controller = new AbortController()
+    setState((prev) => ({ ...prev, models: { status: 'loading' } }))
+    providerOrError
+      .listModels(controller.signal)
+      .then((models) => {
+        if (controller.signal.aborted) return
+        setState((prev) => ({
+          ...prev,
+          models: { status: 'loaded', models }
+        }))
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return
+        const message = error instanceof Error ? error.message : String(error)
+        setState((prev) => ({
+          ...prev,
+          models: { status: 'error', message }
+        }))
+      })
+    return () => {
+      controller.abort()
+    }
+  }, [state.provider, modelsEpoch])
+
   // Run the agent loop, restarting whenever the session or agent epoch
   // advances. Each restart instantiates the active provider, builds the tool
   // set, and wires the provider's events back into ReplState.
@@ -994,7 +1050,10 @@ export function App({
       ) : state.modelPickerOpen ? (
         <ModelPicker
           activeModel={state.model}
+          provider={state.provider}
+          models={state.models}
           onSelect={setModel}
+          onRefresh={refreshModels}
           onCancel={closeModelPicker}
         />
       ) : state.providerPickerOpen ? (

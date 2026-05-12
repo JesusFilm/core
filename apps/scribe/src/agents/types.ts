@@ -43,10 +43,28 @@ export interface AgentRunArgs {
   onError: (message: string) => void
 }
 
+/**
+ * One model offered by an agent backend. `id` is the value scribe sends in
+ * the `model` field — for Claude Code that is an alias like `sonnet` or a
+ * full Anthropic model id; for OpenAI-compatible backends it is the id the
+ * server reports from `/v1/models`.
+ */
+export interface ProviderModel {
+  id: string
+  label?: string
+  description?: string
+}
+
 export interface AgentProvider {
   readonly id: ProviderId
   readonly label: string
   run(args: AgentRunArgs): Promise<void>
+  /**
+   * Return the catalog of models this backend exposes. Local-only backends
+   * may return an empty array when no model is loaded; remote backends
+   * typically return their full server-side list.
+   */
+  listModels(signal: AbortSignal): Promise<ProviderModel[]>
 }
 
 export interface ProviderMeta {

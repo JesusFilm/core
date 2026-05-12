@@ -95,8 +95,8 @@ behaves like Claude Code:
 | `/login`          | Force a fresh browser sign-in for the current environment.                    |
 | `/logout`         | Clear the cached credential for the current environment and exit.             |
 | `/clear`          | Clear the transcript and start a fresh agent session (resets token totals).   |
-| `/provider [id]`  | Switch the agent backend (Claude Code, OpenRouter, Hermes). See [Providers](#providers). |
-| `/model [id]`     | Switch the model. Aliases like `opus`/`sonnet`/`haiku` apply to Claude Code; OpenRouter and Hermes take full model ids like `openai/gpt-4o-mini`. |
+| `/provider [id]`  | Switch the agent backend (Claude Code, OpenRouter, Hermes, LM Studio). See [Providers](#providers). |
+| `/model [id]`     | Switch the model. Opens a picker populated by the active provider's catalog (Claude Code presets, OpenRouter's `GET /models`, Hermes's `GET /models`, or LM Studio's loaded models). Type to filter, Tab to refresh, "Other…" for a custom id. |
 | `/help`           | List slash commands.                                                          |
 | `/exit`           | Quit scribe.                                                                |
 

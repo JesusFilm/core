@@ -2,7 +2,13 @@ import { z } from 'zod'
 
 import type { ProviderId } from '../config/providers'
 
-import type { AgentProvider, AgentRunArgs, RawTool, UsageDelta } from './types'
+import type {
+  AgentProvider,
+  AgentRunArgs,
+  ProviderModel,
+  RawTool,
+  UsageDelta
+} from './types'
 
 interface OpenAICompatConfig {
   id: Extract<ProviderId, 'openrouter' | 'hermes' | 'lm-studio'>
@@ -63,12 +69,45 @@ interface OpenAIResponse {
   }
 }
 
+interface OpenAIModelsResponse {
+  data: Array<{
+    id: string
+    /** OpenRouter-specific friendly name. */
+    name?: string
+    /** OpenRouter-specific description. */
+    description?: string
+  }>
+}
+
 export function createOpenAICompatProvider(
   config: OpenAICompatConfig
 ): AgentProvider {
   return {
     id: config.id,
     label: config.label,
+    async listModels(signal: AbortSignal): Promise<ProviderModel[]> {
+      const url = joinUrl(config.baseUrl, 'models')
+      const headers: Record<string, string> = {
+        ...config.extraHeaders
+      }
+      if (config.apiKey.length > 0) {
+        headers.Authorization = `Bearer ${config.apiKey}`
+      }
+      const response = await fetch(url, { headers, signal })
+      if (!response.ok) {
+        const detail = await response.text().catch(() => '')
+        throw new Error(
+          `${config.label} GET /models failed (HTTP ${response.status}): ${truncate(detail, 200)}`
+        )
+      }
+      const payload = (await response.json()) as Partial<OpenAIModelsResponse>
+      if (payload.data == null || !Array.isArray(payload.data)) return []
+      return payload.data.map((entry) => ({
+        id: entry.id,
+        label: entry.name,
+        description: entry.description
+      }))
+    },
     async run(args: AgentRunArgs): Promise<void> {
       const {
         systemPrompt,

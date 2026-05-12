@@ -5,14 +5,39 @@ import {
   query
 } from '@anthropic-ai/claude-agent-sdk'
 
-import type { AgentProvider, AgentRunArgs } from './types'
+import type { AgentProvider, AgentRunArgs, ProviderModel } from './types'
 
 const SERVER_NAME = 'scribe'
+
+const CLAUDE_PRESETS: ProviderModel[] = [
+  {
+    id: 'opus',
+    label: 'opus',
+    description: 'Most capable; slower and higher cost.'
+  },
+  {
+    id: 'sonnet',
+    label: 'sonnet',
+    description: 'Balanced quality and speed.'
+  },
+  {
+    id: 'haiku',
+    label: 'haiku',
+    description: 'Fastest and cheapest.'
+  }
+]
 
 export function createClaudeCodeProvider(): AgentProvider {
   return {
     id: 'claude-code',
     label: 'Claude Code',
+    async listModels(): Promise<ProviderModel[]> {
+      // The Claude Agent SDK does not expose a model-listing API. Return the
+      // SDK aliases so users have something concrete to pick from; the
+      // ModelPicker's "Other…" option remains available for full model ids
+      // (e.g. claude-opus-4-7).
+      return CLAUDE_PRESETS
+    },
     async run(args: AgentRunArgs): Promise<void> {
       const {
         systemPrompt,

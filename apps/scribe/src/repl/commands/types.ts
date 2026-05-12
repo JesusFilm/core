@@ -10,6 +10,7 @@ import type {
   CardsLoadState,
   ImpersonationSession,
   JourneysLoadState,
+  ModelsLoadState,
   TeamSelection,
   TeamsLoadState
 } from '../state/types'
@@ -53,6 +54,8 @@ export interface CommandContext {
   stopImpersonation: () => void
   setModel: (model: string | null) => void
   openModelPicker: () => void
+  models: ModelsLoadState
+  refreshModels: () => void
   setProvider: (id: ProviderId) => void
   configureProvider: (
     id: ApiProviderId,
