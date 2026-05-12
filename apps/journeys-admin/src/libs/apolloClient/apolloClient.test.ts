@@ -11,7 +11,12 @@ import { createClient } from 'graphql-sse'
 
 import { logout } from '../auth/firebase'
 
-import { SSELink, createApolloClient, createErrorLink } from './apolloClient'
+import {
+  SSELink,
+  createApolloClient,
+  createErrorLink,
+  resolveGatewayUrl
+} from './apolloClient'
 
 jest.mock('graphql-sse', () => ({
   createClient: jest.fn()
@@ -172,6 +177,82 @@ describe('SSELink', () => {
           done()
         }
       })
+  })
+})
+
+describe('resolveGatewayUrl', () => {
+  const originalEnv = process.env
+
+  beforeEach(() => {
+    process.env = { ...originalEnv }
+    delete process.env.NEXT_PUBLIC_GATEWAY_URL
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
+  it('uses NEXT_PUBLIC_GATEWAY_URL when set, regardless of hostname', () => {
+    process.env.NEXT_PUBLIC_GATEWAY_URL = 'https://stage-gw.example.com'
+
+    expect(
+      resolveGatewayUrl({
+        hostname: 'tailscale-mbp-siyang',
+        protocol: 'http:'
+      })
+    ).toBe('https://stage-gw.example.com')
+  })
+
+  it('derives gateway URL from location for tailscale-* host in dev', () => {
+    ;(process.env as Record<string, string>).NODE_ENV = 'development'
+
+    expect(
+      resolveGatewayUrl({
+        hostname: 'tailscale-mbp-siyang',
+        protocol: 'http:'
+      })
+    ).toBe('http://tailscale-mbp-siyang:4000')
+  })
+
+  it('preserves protocol when deriving (https for Tailscale Funnel)', () => {
+    ;(process.env as Record<string, string>).NODE_ENV = 'development'
+
+    expect(
+      resolveGatewayUrl({ hostname: 'tailscale-mbp', protocol: 'https:' })
+    ).toBe('https://tailscale-mbp:4000')
+  })
+
+  it('matches uppercase TAILSCALE-* host (case-insensitive)', () => {
+    ;(process.env as Record<string, string>).NODE_ENV = 'development'
+
+    expect(
+      resolveGatewayUrl({ hostname: 'TAILSCALE-MBP', protocol: 'http:' })
+    ).toBe('http://TAILSCALE-MBP:4000')
+  })
+
+  it('falls back to localhost for non-tailscale dev host', () => {
+    ;(process.env as Record<string, string>).NODE_ENV = 'development'
+
+    expect(
+      resolveGatewayUrl({ hostname: 'localhost', protocol: 'http:' })
+    ).toBe('http://localhost:4000')
+  })
+
+  it('falls back to localhost on the server (no location)', () => {
+    ;(process.env as Record<string, string>).NODE_ENV = 'development'
+
+    expect(resolveGatewayUrl(undefined)).toBe('http://localhost:4000')
+  })
+
+  it('never derives in production, even for tailscale-* host', () => {
+    ;(process.env as Record<string, string>).NODE_ENV = 'production'
+
+    expect(
+      resolveGatewayUrl({
+        hostname: 'tailscale-mbp-siyang',
+        protocol: 'http:'
+      })
+    ).toBe('http://localhost:4000')
   })
 })
 

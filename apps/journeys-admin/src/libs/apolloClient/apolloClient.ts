@@ -31,6 +31,48 @@ let apolloClient: ApolloClient<NormalizedCacheObject>
 
 const DEFAULT_DEBOUNCE_TIMEOUT = 500
 
+interface GatewayUrlLocation {
+  hostname: string
+  protocol: string
+}
+
+/**
+ * Resolves the api-gateway URL for the Apollo HTTP + SSE links.
+ *
+ * 1. Explicit override: `NEXT_PUBLIC_GATEWAY_URL` always wins.
+ * 2. Browser dev with a Tailscale MagicDNS host (`tailscale-*`): derive
+ *    the gateway URL from the current window so a phone / tablet
+ *    loading the bundle over the tailnet hits the dev machine's
+ *    gateway port (4000) at the same hostname, not `localhost`.
+ * 3. Fallback: `http://localhost:4000` (today's behavior — preserves
+ *    SSR and non-Tailscale dev).
+ *
+ * See docs/development/tailscale-dev-access.md.
+ *
+ * `location` is injectable for tests; defaults to `window.location` when
+ * available, otherwise `undefined` (SSR).
+ */
+export function resolveGatewayUrl(
+  location: GatewayUrlLocation | undefined = typeof window !== 'undefined'
+    ? window.location
+    : undefined
+): string {
+  if (
+    process.env.NEXT_PUBLIC_GATEWAY_URL != null &&
+    process.env.NEXT_PUBLIC_GATEWAY_URL !== ''
+  )
+    return process.env.NEXT_PUBLIC_GATEWAY_URL
+
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    location != null &&
+    location.hostname.toLowerCase().startsWith('tailscale-')
+  )
+    return `${location.protocol}//${location.hostname}:4000`
+
+  return 'http://localhost:4000'
+}
+
 // Custom Apollo Link for Server-Sent Events using graphql-sse.
 // A new graphql-sse Client is created per request so each subscription
 // captures its own auth headers in a closure, avoiding race conditions
@@ -109,8 +151,7 @@ export function createErrorLink(): ApolloLink {
 export function createApolloClient(
   token?: string
 ): ApolloClient<NormalizedCacheObject> {
-  const gatewayUrl =
-    process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:4000'
+  const gatewayUrl = resolveGatewayUrl()
 
   // Create HTTP link for queries and mutations
   const httpLink = new HttpLink({
