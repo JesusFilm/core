@@ -3,7 +3,7 @@ import { Tokens, getTokensFromObject } from 'next-firebase-auth-edge'
 
 import { allowedHost } from '@core/journeys/ui/allowedHost'
 
-import { TAILSCALE_HOST_PATTERN } from '../tailscaleHostPattern'
+import { isDevHost } from '../devHosts'
 
 import { User } from './authContext'
 import { authConfig } from './config'
@@ -65,17 +65,17 @@ const ALLOWED_REDIRECT_HOSTS = [
 ]
 
 /**
- * In dev, Tailscale MagicDNS hostnames (`tailscale-*`) need to round-trip
- * through the sign-in redirect flow. The prefix is the dev-only opt-in
- * marker — see docs/development/tailscale-dev-access.md.
+ * In dev, developer hostnames listed in `NEXT_PUBLIC_DEV_HOSTS` (Doppler
+ * dev config) need to round-trip through the sign-in redirect flow. The
+ * secret is only set in dev's Doppler config, so `isDevHost` returns false
+ * everywhere else — absence of the secret IS the gate. The host may carry
+ * an optional `:port` suffix.
+ * See docs/development/tailscale-dev-access.md.
  */
 export function isAllowedRedirectHost(host: string): boolean {
   if (allowedHost(host, ALLOWED_REDIRECT_HOSTS)) return true
-  if (
-    process.env.NODE_ENV !== 'production' &&
-    TAILSCALE_HOST_PATTERN.test(host)
-  )
-    return true
+  const hostWithoutPort = host.split(':')[0]
+  if (isDevHost(hostWithoutPort)) return true
   return false
 }
 

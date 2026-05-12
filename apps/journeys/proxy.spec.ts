@@ -55,68 +55,96 @@ describe('journeys proxy', () => {
     })
   })
 
-  describe('tailscale hostname (dev)', () => {
+  describe('dev hostname (NEXT_PUBLIC_DEV_HOSTS)', () => {
+    const DEV_HOSTS_JSON = JSON.stringify({
+      siyang: 'tailscale-dev-siyang.taila2a609.ts.net',
+      mike: 'tailscale-dev-mike.taila2a609.ts.net'
+    })
+
     beforeEach(() => {
-      ;(process.env as Record<string, string>).NODE_ENV = 'development'
       process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'localhost:4100'
+      process.env.NEXT_PUBLIC_DEV_HOSTS = DEV_HOSTS_JSON
     })
 
-    it('rewrites tailscale-* host to /home in dev', async () => {
-      const result = await proxy(buildRequest('tailscale-mbp-siyang:4100', '/'))
-
-      expect(result?.headers.get('x-middleware-rewrite')).toBe(
-        'http://tailscale-mbp-siyang:4100/home'
+    it('rewrites a host listed in NEXT_PUBLIC_DEV_HOSTS to /home', async () => {
+      const result = await proxy(
+        buildRequest('tailscale-dev-siyang.taila2a609.ts.net', '/')
       )
-    })
-
-    it('rewrites uppercase tailscale-* host to /home (case-insensitive)', async () => {
-      const result = await proxy(buildRequest('TAILSCALE-MBP-SIYANG:4100', '/'))
 
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
-        'http://tailscale-mbp-siyang:4100/home'
+        'http://tailscale-dev-siyang.taila2a609.ts.net/home'
       )
     })
 
     it('preserves path and query when rewriting to /home', async () => {
       const result = await proxy(
-        buildRequest('tailscale-mbp:4100', '/dashboard?ref=phone')
+        buildRequest(
+          'tailscale-dev-mike.taila2a609.ts.net',
+          '/dashboard?ref=phone'
+        )
       )
 
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
-        'http://tailscale-mbp:4100/home/dashboard?ref=phone'
+        'http://tailscale-dev-mike.taila2a609.ts.net/home/dashboard?ref=phone'
       )
     })
 
-    it('does NOT short-circuit non-tailscale hosts', async () => {
+    it('does NOT short-circuit hosts not in NEXT_PUBLIC_DEV_HOSTS', async () => {
       const result = await proxy(buildRequest('tailscaleother.com', '/foo'))
 
-      // No trailing hyphen → falls through to /[hostname][path]
+      // Not listed → falls through to /[hostname][path]
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
         'http://tailscaleother.com/tailscaleother.com/foo'
       )
     })
 
-    it('does NOT short-circuit tailscale-* attacker subdomain spoofs', async () => {
+    it('does NOT short-circuit spoofed hosts not in NEXT_PUBLIC_DEV_HOSTS', async () => {
       const result = await proxy(
         buildRequest('tailscale-evil.attacker.com:4100', '/foo')
       )
 
-      // Dot in the suffix → falls through to /[hostname][path], not /home
+      // Not in the allow-list → falls through to /[hostname][path], not /home
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
         'http://tailscale-evil.attacker.com:4100/tailscale-evil.attacker.com:4100/foo'
       )
     })
   })
 
-  describe('tailscale hostname (production gate)', () => {
-    it('does NOT short-circuit tailscale-* in production', async () => {
-      ;(process.env as Record<string, string>).NODE_ENV = 'production'
+  describe('dev hostname (gating)', () => {
+    it('does NOT short-circuit when NEXT_PUBLIC_DEV_HOSTS is unset', async () => {
+      delete process.env.NEXT_PUBLIC_DEV_HOSTS
       process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
-      const result = await proxy(buildRequest('tailscale-mbp-siyang:4100', '/'))
+      const result = await proxy(
+        buildRequest('tailscale-dev-siyang.taila2a609.ts.net', '/')
+      )
 
-      // Falls through to /[hostname][path] — no Tailscale shortcut in prod
+      // Absence of the secret IS the gate — falls through to /[hostname][path]
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
-        'http://tailscale-mbp-siyang:4100/tailscale-mbp-siyang:4100/'
+        'http://tailscale-dev-siyang.taila2a609.ts.net/tailscale-dev-siyang.taila2a609.ts.net/'
+      )
+    })
+
+    it('does NOT short-circuit when NEXT_PUBLIC_DEV_HOSTS is empty', async () => {
+      process.env.NEXT_PUBLIC_DEV_HOSTS = ''
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      const result = await proxy(
+        buildRequest('tailscale-dev-siyang.taila2a609.ts.net', '/')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://tailscale-dev-siyang.taila2a609.ts.net/tailscale-dev-siyang.taila2a609.ts.net/'
+      )
+    })
+
+    it('does NOT short-circuit when NEXT_PUBLIC_DEV_HOSTS is malformed JSON', async () => {
+      process.env.NEXT_PUBLIC_DEV_HOSTS = '{not valid json'
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      const result = await proxy(
+        buildRequest('tailscale-dev-siyang.taila2a609.ts.net', '/')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://tailscale-dev-siyang.taila2a609.ts.net/tailscale-dev-siyang.taila2a609.ts.net/'
       )
     })
   })

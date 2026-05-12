@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-/**
- * Matches a Tailscale MagicDNS host (lowercase letters, digits, hyphens,
- * optional port). No dots — so `tailscale-evil.attacker.com` cannot
- * smuggle through. Mirrored from
- * apps/journeys-admin/src/libs/tailscaleHostPattern; Nx forbids cross-`apps/`
- * imports, so the constant is duplicated rather than shared.
- */
-const TAILSCALE_HOST_PATTERN = /^tailscale-[a-z0-9-]+(:\d+)?$/i
+import { isDevHost } from './src/libs/devHosts'
 
 export const config = {
   matcher: [
@@ -43,13 +36,14 @@ export default async function proxy(
     hostname = process.env.NEXT_PUBLIC_ROOT_DOMAIN
   }
 
-  // dev-only: treat any `tailscale-*` MagicDNS hostname as the root domain
-  // so cross-device testing over Tailscale resolves to `/home` instead of
-  // the catch-all `/[hostname]/[slug]` route. Strictly gated on NODE_ENV.
-  // See docs/development/tailscale-dev-access.md for setup.
+  // dev-only: when the request hits one of the developer hostnames listed
+  // in `NEXT_PUBLIC_DEV_HOSTS` (Doppler dev config), treat it as the root
+  // domain so cross-device testing resolves to `/home` instead of the
+  // catch-all `/[hostname]/[slug]` route. The secret is only set in dev's
+  // Doppler config, so `isDevHost` returns false everywhere else — absence
+  // of the secret IS the gate. See docs/development/tailscale-dev-access.md.
   if (
-    process.env.NODE_ENV !== 'production' &&
-    TAILSCALE_HOST_PATTERN.test(hostname) &&
+    isDevHost(hostname) &&
     process.env.NEXT_PUBLIC_ROOT_DOMAIN != null
   ) {
     hostname = process.env.NEXT_PUBLIC_ROOT_DOMAIN

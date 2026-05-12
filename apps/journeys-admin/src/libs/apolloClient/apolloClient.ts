@@ -23,7 +23,7 @@ import { useMemo } from 'react'
 import { Observable } from 'zen-observable-ts'
 
 import { logout } from '../auth/firebase'
-import { TAILSCALE_HOST_PATTERN } from '../tailscaleHostPattern'
+import { isDevHost } from '../devHosts'
 
 import { cache } from './cache'
 
@@ -49,12 +49,15 @@ function getDefaultLocation(): GatewayUrlLocation | undefined {
  * Resolves the api-gateway URL for the Apollo HTTP + SSE links.
  *
  * 1. Explicit override: `NEXT_PUBLIC_GATEWAY_URL` always wins.
- * 2. Browser dev with a Tailscale MagicDNS host (`tailscale-*`): derive
- *    the gateway URL from the current window so a phone / tablet
- *    loading the bundle over the tailnet hits the dev machine's
- *    gateway port (4000) at the same hostname, not `localhost`.
+ * 2. Browser dev with a hostname listed in `NEXT_PUBLIC_DEV_HOSTS`
+ *    (Doppler dev config): derive the gateway URL from the current
+ *    window so a phone / tablet loading the bundle over the tailnet
+ *    hits the dev machine's gateway port (4000) at the same hostname,
+ *    not `localhost`. The secret is only set in dev's Doppler config,
+ *    so `isDevHost` returns false everywhere else — absence of the
+ *    secret IS the gate.
  * 3. Fallback: `http://localhost:4000` (today's behavior — preserves
- *    SSR and non-Tailscale dev).
+ *    SSR and non-dev hosts).
  *
  * See docs/development/tailscale-dev-access.md.
  *
@@ -70,11 +73,7 @@ export function resolveGatewayUrl(
   )
     return process.env.NEXT_PUBLIC_GATEWAY_URL
 
-  if (
-    process.env.NODE_ENV !== 'production' &&
-    location != null &&
-    TAILSCALE_HOST_PATTERN.test(location.hostname)
-  )
+  if (location != null && isDevHost(location.hostname))
     return `${location.protocol}//${location.hostname}:4000`
 
   return 'http://localhost:4000'

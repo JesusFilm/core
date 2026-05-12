@@ -4,44 +4,59 @@ import { isAllowedRedirectHost, redirectToApp } from './getAuthTokens'
 
 describe('isAllowedRedirectHost', () => {
   const originalEnv = process.env
+  const DEV_HOSTS_JSON = JSON.stringify({
+    siyang: 'tailscale-dev-siyang.taila2a609.ts.net'
+  })
 
   beforeEach(() => {
     process.env = { ...originalEnv }
+    delete process.env.NEXT_PUBLIC_DEV_HOSTS
   })
 
   afterEach(() => {
     process.env = originalEnv
   })
 
-  it('allows known hosts in any environment', () => {
-    ;(process.env as Record<string, string>).NODE_ENV = 'production'
+  it('allows known hosts regardless of NEXT_PUBLIC_DEV_HOSTS', () => {
     expect(isAllowedRedirectHost('localhost:4200')).toBe(true)
     expect(isAllowedRedirectHost('admin.nextstep.is')).toBe(true)
     expect(isAllowedRedirectHost('admin-stage.nextstep.is')).toBe(true)
   })
 
-  it('allows tailscale-* host in dev', () => {
-    ;(process.env as Record<string, string>).NODE_ENV = 'development'
-    expect(isAllowedRedirectHost('tailscale-mbp-siyang:4200')).toBe(true)
+  it('allows a host listed in NEXT_PUBLIC_DEV_HOSTS', () => {
+    process.env.NEXT_PUBLIC_DEV_HOSTS = DEV_HOSTS_JSON
+    expect(
+      isAllowedRedirectHost('tailscale-dev-siyang.taila2a609.ts.net:4200')
+    ).toBe(true)
   })
 
-  it('allows uppercase TAILSCALE-* host in dev (case-insensitive)', () => {
-    ;(process.env as Record<string, string>).NODE_ENV = 'development'
-    expect(isAllowedRedirectHost('TAILSCALE-MBP:4200')).toBe(true)
+  it('rejects a dev host when NEXT_PUBLIC_DEV_HOSTS is unset (no dev relaxation)', () => {
+    expect(
+      isAllowedRedirectHost('tailscale-dev-siyang.taila2a609.ts.net:4200')
+    ).toBe(false)
   })
 
-  it('rejects tailscale-* host in production', () => {
-    ;(process.env as Record<string, string>).NODE_ENV = 'production'
-    expect(isAllowedRedirectHost('tailscale-mbp-siyang:4200')).toBe(false)
+  it('rejects a dev host when NEXT_PUBLIC_DEV_HOSTS is empty', () => {
+    process.env.NEXT_PUBLIC_DEV_HOSTS = ''
+    expect(
+      isAllowedRedirectHost('tailscale-dev-siyang.taila2a609.ts.net:4200')
+    ).toBe(false)
   })
 
-  it('rejects unknown hosts in dev', () => {
-    ;(process.env as Record<string, string>).NODE_ENV = 'development'
+  it('rejects a dev host when NEXT_PUBLIC_DEV_HOSTS is malformed JSON', () => {
+    process.env.NEXT_PUBLIC_DEV_HOSTS = '{not valid json'
+    expect(
+      isAllowedRedirectHost('tailscale-dev-siyang.taila2a609.ts.net:4200')
+    ).toBe(false)
+  })
+
+  it('rejects unknown hosts even when NEXT_PUBLIC_DEV_HOSTS is set', () => {
+    process.env.NEXT_PUBLIC_DEV_HOSTS = DEV_HOSTS_JSON
     expect(isAllowedRedirectHost('attacker.example.com')).toBe(false)
   })
 
-  it('rejects tailscale-* attacker subdomain spoofs in dev', () => {
-    ;(process.env as Record<string, string>).NODE_ENV = 'development'
+  it('rejects spoofed hosts not present in NEXT_PUBLIC_DEV_HOSTS', () => {
+    process.env.NEXT_PUBLIC_DEV_HOSTS = DEV_HOSTS_JSON
     expect(isAllowedRedirectHost('tailscale-evil.attacker.com')).toBe(false)
     expect(isAllowedRedirectHost('tailscale-evil.attacker.com:4200')).toBe(
       false
@@ -54,6 +69,7 @@ describe('redirectToApp', () => {
 
   beforeEach(() => {
     process.env = { ...originalEnv }
+    delete process.env.NEXT_PUBLIC_DEV_HOSTS
   })
 
   afterEach(() => {
@@ -81,20 +97,25 @@ describe('redirectToApp', () => {
     expect(result.redirect.destination).toBe('https://admin.nextstep.is/dash')
   })
 
-  it('allows absolute URL to tailscale-* host in dev', () => {
-    ;(process.env as Record<string, string>).NODE_ENV = 'development'
+  it('allows absolute URL to a host listed in NEXT_PUBLIC_DEV_HOSTS', () => {
+    process.env.NEXT_PUBLIC_DEV_HOSTS = JSON.stringify({
+      siyang: 'tailscale-dev-siyang.taila2a609.ts.net'
+    })
     const result = redirectToApp(
-      buildCtx('http://tailscale-mbp-siyang:4200/journeys/abc')
+      buildCtx(
+        'http://tailscale-dev-siyang.taila2a609.ts.net:4200/journeys/abc'
+      )
     )
     expect(result.redirect.destination).toBe(
-      'http://tailscale-mbp-siyang:4200/journeys/abc'
+      'http://tailscale-dev-siyang.taila2a609.ts.net:4200/journeys/abc'
     )
   })
 
-  it('rejects absolute URL to tailscale-* host in production', () => {
-    ;(process.env as Record<string, string>).NODE_ENV = 'production'
+  it('rejects absolute URL to a dev host when NEXT_PUBLIC_DEV_HOSTS is unset', () => {
     const result = redirectToApp(
-      buildCtx('http://tailscale-mbp-siyang:4200/journeys/abc')
+      buildCtx(
+        'http://tailscale-dev-siyang.taila2a609.ts.net:4200/journeys/abc'
+      )
     )
     expect(result.redirect.destination).toBe('/')
   })

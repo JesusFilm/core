@@ -18,7 +18,7 @@ import {
   QrCodeCreateVariables
 } from '../../../../../../../__generated__/QrCodeCreate'
 import { QrCodeFields as QrCode } from '../../../../../../../__generated__/QrCodeFields'
-import { TAILSCALE_HOST_PATTERN } from '../../../../../../libs/tailscaleHostPattern'
+import { isDevHost } from '../../../../../../libs/devHosts'
 
 import { CodeActionButton } from './CodeActionButton'
 import { CodeCanvas } from './CodeCanvas'
@@ -139,17 +139,17 @@ export function QrCodeDialog({
     const pathname = qrCode.shortLink.pathname
     const isLocal = shortLinkHostname === 'localhost'
 
-    // In dev, when the admin is being loaded over a Tailscale MagicDNS host
-    // (`tailscale-*`), generate the QR code against that same host so the
-    // phone scanning the QR can actually reach it. Same env-override →
-    // window-derived → localhost-fallback pattern as the Apollo gateway.
-    // See docs/development/tailscale-dev-access.md.
+    // In dev, when the admin is being loaded over a hostname listed in
+    // `NEXT_PUBLIC_DEV_HOSTS` (Doppler dev config), generate the QR code
+    // against that same host so the phone scanning the QR can actually
+    // reach it. The secret is only set in dev's Doppler config, so
+    // `isDevHost` returns false everywhere else — absence of the secret
+    // IS the gate. See docs/development/tailscale-dev-access.md.
     let devHostname = shortLinkHostname
     if (
       isLocal &&
-      process.env.NODE_ENV !== 'production' &&
       typeof window !== 'undefined' &&
-      TAILSCALE_HOST_PATTERN.test(window.location.hostname)
+      isDevHost(window.location.hostname)
     ) {
       devHostname = window.location.hostname
     }
