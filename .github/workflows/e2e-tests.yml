@@ -81,9 +81,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-node-22-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node-24-playwright-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-node-22-playwright-
+            ${{ runner.os }}-node-24-playwright-
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:

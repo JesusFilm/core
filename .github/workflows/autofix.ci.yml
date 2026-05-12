@@ -91,10 +91,10 @@ jobs:
         with:
           commit-message: 'fix: lint issues'
 
-  # Required-check wrapper. Resolves `lint (22)` to SUCCESS when lint-work
+  # Required-check wrapper. Resolves `lint (24)` to SUCCESS when lint-work
   # succeeded OR was skipped (e.g. /sync-ce PRs), and FAILURE otherwise.
   # Matrix `node-version: [24]` mirrors the original `lint` job so the
-  # check name reported to the ruleset stays `lint (22)`.
+  # check name reported to the ruleset stays `lint (24)`.
   lint:
     needs: lint-work
     if: always()
