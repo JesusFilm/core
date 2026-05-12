@@ -22,8 +22,9 @@ import { createClient } from 'graphql-sse'
 import { useMemo } from 'react'
 import { Observable } from 'zen-observable-ts'
 
+import { isDevHost } from '@core/shared/dev-hosts'
+
 import { logout } from '../auth/firebase'
-import { isDevHost } from '../devHosts'
 
 import { cache } from './cache'
 

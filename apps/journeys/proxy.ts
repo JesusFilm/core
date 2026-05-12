@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { isDevHost } from './src/libs/devHosts'
+import { isDevHost } from '@core/shared/dev-hosts'
 
 export const config = {
   matcher: [

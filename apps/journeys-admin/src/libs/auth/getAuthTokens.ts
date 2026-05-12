@@ -2,8 +2,7 @@ import { GetServerSidePropsContext } from 'next'
 import { Tokens, getTokensFromObject } from 'next-firebase-auth-edge'
 
 import { allowedHost } from '@core/journeys/ui/allowedHost'
-
-import { isDevHost } from '../devHosts'
+import { isDevHost } from '@core/shared/dev-hosts'
 
 import { User } from './authContext'
 import { authConfig } from './config'

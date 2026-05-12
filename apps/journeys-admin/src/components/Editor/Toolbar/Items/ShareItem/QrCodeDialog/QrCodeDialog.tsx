@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { isDevHost } from '@core/shared/dev-hosts'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../../__generated__/GetJourneyForSharing'
@@ -18,7 +19,6 @@ import {
   QrCodeCreateVariables
 } from '../../../../../../../__generated__/QrCodeCreate'
 import { QrCodeFields as QrCode } from '../../../../../../../__generated__/QrCodeFields'
-import { isDevHost } from '../../../../../../libs/devHosts'
 
 import { CodeActionButton } from './CodeActionButton'
 import { CodeCanvas } from './CodeCanvas'
