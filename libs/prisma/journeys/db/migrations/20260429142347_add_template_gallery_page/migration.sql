@@ -10,7 +10,8 @@ CREATE TABLE "TemplateGalleryPage" (
     "slug" TEXT NOT NULL,
     "status" "TemplateGalleryPageStatus" NOT NULL DEFAULT 'draft',
     "creatorName" TEXT NOT NULL,
-    "creatorImageBlockId" TEXT,
+    "creatorImageSrc" TEXT,
+    "creatorImageAlt" TEXT,
     "mediaUrl" TEXT,
     "publishedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -43,9 +44,6 @@ CREATE UNIQUE INDEX "TemplateGalleryPageTemplate_templateGalleryPageId_order_key
 
 -- AddForeignKey
 ALTER TABLE "TemplateGalleryPage" ADD CONSTRAINT "TemplateGalleryPage_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TemplateGalleryPage" ADD CONSTRAINT "TemplateGalleryPage_creatorImageBlockId_fkey" FOREIGN KEY ("creatorImageBlockId") REFERENCES "Block"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TemplateGalleryPageTemplate" ADD CONSTRAINT "TemplateGalleryPageTemplate_templateGalleryPageId_fkey" FOREIGN KEY ("templateGalleryPageId") REFERENCES "TemplateGalleryPage"("id") ON DELETE CASCADE ON UPDATE CASCADE;

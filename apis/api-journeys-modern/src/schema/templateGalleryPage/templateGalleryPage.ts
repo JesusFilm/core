@@ -1,7 +1,7 @@
 import { builder } from '../builder'
-import { JourneyRef } from '../journey/journey'
 
 import { TemplateGalleryPageStatus } from './enums'
+import { TemplateGalleryItemRef } from './templateGalleryItem'
 
 // `shareable` is intentionally omitted: TemplateGalleryPage is owned
 // exclusively by api-journeys-modern and is not federated with the legacy
@@ -83,18 +83,24 @@ export const TemplateGalleryPageRef = builder.prismaObject(
       // - The in-memory filter enforces parent.teamId equality (Pothos does
       //   not let `select.where` reference the parent).
       //
+      // Type is `[TemplateGalleryItemRef]` — a narrow public DTO over the
+      // Journey row — NOT `[JourneyRef]`. This caps the PublicContext
+      // anonymous-reachable surface to the fields the public renderer
+      // actually consumes; see templateGalleryItem.ts for the rationale.
+      //
       // We deliberately use `include: { journey: true }` rather than
       // `nestedSelection(true)`. nestedSelection only selects Pothos-exposed
       // scalars + client-requested fields, and Journey.teamId is not exposed
-      // on JourneyRef. With nestedSelection the in-memory filter would
-      // compare `undefined === <string>` and silently drop every template
-      // (CodeRabbit caught this in PR #9119). Fetching all Journey scalars
-      // is a minor over-fetch; correctness wins.
+      // on the public TemplateGalleryItem type. With nestedSelection the
+      // in-memory filter would compare `undefined === <string>` and silently
+      // drop every template (CodeRabbit caught this in PR #9119 against the
+      // older JourneyRef path). Fetching all Journey scalars is a minor
+      // over-fetch; correctness wins.
       templates: t.field({
-        type: [JourneyRef],
+        type: [TemplateGalleryItemRef],
         nullable: false,
         description:
-          'Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list.',
+          'Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.',
         select: {
           teamId: true,
           templates: {

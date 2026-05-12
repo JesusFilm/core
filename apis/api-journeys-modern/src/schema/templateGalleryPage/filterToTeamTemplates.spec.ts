@@ -9,7 +9,7 @@ describe('filterToTeamTemplates', () => {
 
   it('returns empty result for empty input without querying', async () => {
     const result = await filterToTeamTemplates(prismaMock as any, 'team-1', [])
-    expect(result).toEqual({ validIds: [], droppedCount: 0 })
+    expect(result).toEqual({ validIds: [] })
     expect(prismaMock.journey.findMany).not.toHaveBeenCalled()
   })
 
@@ -19,7 +19,7 @@ describe('filterToTeamTemplates', () => {
       'j1',
       'j2-cross-team'
     ])
-    expect(result).toEqual({ validIds: ['j1'], droppedCount: 1 })
+    expect(result).toEqual({ validIds: ['j1'] })
   })
 
   it('preserves input ordering of valid IDs', async () => {

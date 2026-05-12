@@ -4,7 +4,7 @@ import {
 } from '../../../__generated__/GetTemplateGalleryPage'
 
 export const mockTemplate: GalleryTemplate = {
-  __typename: 'Journey',
+  __typename: 'TemplateGalleryItem',
   id: 'template-1',
   title: 'Sample Template',
   description: 'A sample template for testing',

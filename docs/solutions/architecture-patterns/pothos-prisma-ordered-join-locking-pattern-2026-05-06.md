@@ -1,6 +1,7 @@
 ---
 title: 'Pothos + Prisma ordered-join-table locking and contiguous-renumber pattern'
 date: 2026-05-06
+last_updated: 2026-05-11
 category: architecture-patterns
 module: apis/api-journeys-modern
 ticket: NES-1547
@@ -16,6 +17,7 @@ applies_when:
   - 'Concurrent writes are realistic — multiple admins, browser tabs, React Strict Mode double-mounts, or any path that submits the mutation twice in close succession'
   - 'A frontend reorder UI sends a 0-based display index that must hold even when stored `order` values have grown gappy from earlier assign/unassign churn'
   - 'List-replacement mutations (`Update.journeyIds = [...]` style) must uphold a single-membership invariant — a child row may belong to exactly one parent at a time'
+  - 'A public-anonymous resolver returns federated/shareable types whose nested relations would otherwise expose data not intended for anonymous traffic'
 tags:
   - pothos
   - prisma
@@ -27,6 +29,8 @@ tags:
   - reorder
   - concurrency
   - unique-constraint
+  - public-dto
+  - federation
   - api-journeys-modern
 ---
 
@@ -150,6 +154,55 @@ if (input.journeyIds.length > 0) {
 
 The `NOT` clause keeps the mutation idempotent for re-assigning rows already on the parent being updated.
 
+### 7. Narrow the public-anonymous return type with a dedicated DTO
+
+(Added during Mike's PR review, 2026-05-11 — turned into the seventh load-bearing rule alongside the six concurrency rules above.)
+
+Pothos `prismaObject` types declared as `shareable: true` are anonymously reachable through any public-anonymous resolver that returns them, **and** through every `t.relation` they expose — recursively. In a federated subgraph this is doubly dangerous: when the query plan stays within one subgraph (which Apollo prefers, to minimise hops), the local Pothos `t.relation` auto-resolvers serve the field without any auth scope, even if a sibling subgraph guards the same field with an `optional ability` returning `[]`.
+
+The concrete failure mode on NES-1547: `templateGalleryPageBySlug.templates: [JourneyRef]` made `JourneyRef.userJourneys`, `JourneyRef.team.userTeams`, `Team.integrations.accessSecretPart`, etc. anonymously reachable. The legacy `api-journeys` public query through `journeys(template:true)` had been guarding `userJourneys` / `userTeams` via `@ResolveField + optional ability → []`. The new modern subgraph's unguarded `t.relation` auto-resolvers exposed real rows for the same fields. **Anonymous traffic newly reaching `userTeams` / `userJourneys` is a regression**, not a pre-existing leak.
+
+The fix: return a **dedicated public DTO Pothos type**, not the federated `*Ref`. The DTO is a separate GraphQL type backed by the same Prisma model via Pothos `variant`, exposing only the fields the public renderer consumes.
+
+```ts
+// apis/api-journeys-modern/src/schema/templateGalleryPage/templateGalleryItem.ts
+export const TemplateGalleryItemRef = builder.prismaObject('Journey', {
+  variant: 'TemplateGalleryItem',
+  description: 'Narrow public DTO over Journey — the fields the gallery renderer consumes.',
+  fields: (t) => ({
+    id: t.exposeID('id', { nullable: false }),
+    title: t.exposeString('title', { nullable: false }),
+    description: t.exposeString('description', { nullable: true }),
+    slug: t.exposeString('slug', { nullable: false }),
+    createdAt: t.expose('createdAt', { type: 'DateTime', nullable: false }),
+    template: t.exposeBoolean('template', { nullable: true }),
+    customizable: t.exposeBoolean('customizable', { nullable: true }),
+    website: t.exposeBoolean('website', { nullable: true }),
+    language: t.field({
+      type: Language,
+      nullable: false,
+      resolve: (journey) => ({ id: journey.languageId ?? '529' })
+    }),
+    primaryImageBlock: t.relation('primaryImageBlock', {
+      nullable: true,
+      type: ImageBlock
+    })
+  })
+})
+```
+
+Why `variant: 'TemplateGalleryItem'`: Pothos lets you register multiple GraphQL types backed by the same Prisma model, distinguished by `variant`. Prisma's relation resolution still works (no resolver boilerplate), but the SDL surface is independent — the DTO can omit fields the parent `*Ref` exposes. The supergraph composition shows `type TemplateGalleryItem @join__type(graph: API_JOURNEYS_MODERN)` — single-subgraph ownership, no federation re-exposure.
+
+The audit before merging:
+
+1. **Identify every public-anonymous resolver in your subgraph.** Anything without `t.withAuth(...)`.
+2. **For each, walk the type graph** from the return type. List every reachable field, including transitive `t.relation` chains.
+3. **Cross-reference with the FE's actual selection set.** Anything the FE doesn't use is a candidate for removal from the public surface.
+4. **For `shareable: true` types**, assume the local subgraph's Pothos resolver will serve any field declared on it — not the federation peer's guarded version. The "the other subgraph has an ability check" argument is unreliable.
+5. **Default to narrow public DTOs** for any field that returns a federated entity. The cost is one tiny type file per DTO; the win is a bounded, audit-friendly anonymous surface.
+
+Coordinate field names with the FE: as long as the DTO exposes the same field names with the same types as the original `*Ref` for everything the FE selects, the FE GraphQL document does NOT need changes — only the SDL type changes from `[Journey!]` to `[TemplateGalleryItem!]`. The FE selection set is type-agnostic at the selection level.
+
 ## Why This Matters
 
 The failure modes here aren't theoretical — they were reproduced live on the journeys DB. Without the lock, concurrent reorders die with `duplicate key value violates unique constraint "TemplateGalleryPageTemplate_templateGalleryPageId_order_key"` and the user sees a 500. Without contiguous renumbering, gaps accumulate over weeks of editorial activity and the reorder UI silently no-ops in ways that look like flaky frontend code. Without the single-membership guard, a journey can end up on two pages simultaneously and the assign mutation's "single membership" comment becomes a lie.
@@ -178,11 +231,19 @@ Reference implementation in this PR (commit `297e1c3ee` reorder rewrite, `bc0143
 
 These are tangential to the core pattern but worth banking for next time the same module is touched:
 
-- **Generated SDL files are a recurring rebase conflict.** `apis/api-gateway/schema.graphql` (the federation supergraph) and `libs/prisma/journeys/src/__generated__/pothos-types.ts` conflict on every multi-commit rebase that includes schema work. Set `merge=ours` in `.git/info/attributes` for both before rebasing, then regenerate from source after the rebase completes. Saves dozens of manual conflict resolutions.
+- **Generated SDL files are a recurring rebase conflict.** `apis/api-gateway/schema.graphql` (the federation supergraph), `libs/prisma/journeys/src/__generated__/pothos-types.ts`, `apis/api-journeys/src/__generated__/graphql.ts`, and `libs/shared/gql/src/__generated__/graphql-env.d.ts` all conflict on every multi-commit rebase that includes schema work. Set `merge=ours` in `.git/info/attributes` for all four before rebasing, then regenerate from source after the rebase completes. Saves dozens of manual conflict resolutions.
 - **`include: { journey: true }` beats `nestedSelection(true)` when an in-memory filter needs a non-exposed scalar.** The Pothos plugin's `nestedSelection(true)` only selects scalars the GraphQL client requested + `t.expose*` fields. If a `resolve` callback compares against a column not exposed on the related type (e.g. `journey.teamId` for a team-isolation filter), `nestedSelection` silently drops it and the filter compares `undefined === <string>` → empty result. `include: { journey: true }` over-fetches but is correct. CodeRabbit caught this at `templateGalleryPage.ts`.
 - **Don't add resolved fields for URLs the frontend can build from env.** A `publicUrl: String` resolved field was proposed for agent introspection, then withdrawn because the frontend already had `JOURNEYS_URL`/`NEXT_PUBLIC_*` and could compose `${envBase}/collections/${slug}` locally. Adding the server-side field would have leaked deployment topology into the GraphQL contract.
 - **SDL docstring passes are high-leverage.** Adding `description:` to every `t.field`, `t.arg`, and input field across the module took one focused commit and turned the SDL into a self-documenting contract (display-index semantics, slug rules, idempotency, error catalogues with `code` + `field`). An introspecting agent or CodeRabbit pass now sees the protocol, not just the type signatures.
 - **Description-only commits are safe to stack on top of correctness fixes.** Keep them as separate commits in the PR — easier to review, easier to revert if needed, and they don't entangle behaviour with documentation in the same diff.
+- **Cache the public branch with a finite TTL, not the default `Infinity`.** Yoga's `useResponseCache` invalidates by entity ID. A `null` response (unknown slug, draft, malformed) has no entity ID, so the publish mutation cannot evict it — an attacker can pre-poison popular slugs so legitimate later publishes appear 404 for the cache's lifetime. The admin-side fix lands at TTL 0 (NES-1648, separate doc); the public-side fix is a finite 60 s TTL bounded by the cache-poisoning impact you can tolerate. Both go in `apis/api-journeys-modern/src/yoga.ts:ttlPerSchemaCoordinate`.
+- **P2002 on a `String @unique` column survives validation-outside-the-transaction.** When validation runs against `prisma` (not `tx`) before `prisma.$transaction(...)`, two concurrent callers can both pass the slug-uniqueness check, then both attempt the write, then the loser trips the DB unique constraint at commit and surfaces as an unwrapped 500. Catch `Prisma.PrismaClientKnownRequestError` with `code === 'P2002' && error.meta.target.includes('slug')` inside the tx's `update`, re-throw as the same `SlugTakenError` the validation path uses, so the client error shape is consistent regardless of which layer detected the conflict. Defensive: only convert P2002 when the target is the slug column — other P2002s (join-table races) must propagate untouched so the caller sees the real failure.
+- **Cheap-fetch-then-auth on read-by-id resolvers.** A by-id GraphQL resolver that spreads the client `query` directly into a `findUnique` pays the full nested template/journey/team walk for callers who'll receive FORBIDDEN. Fix: do a `findUnique({ select: { id: true, teamId: true } })` for the auth check first, then a `findUniqueOrThrow({ ...query })` for the canonical client-selection fetch only after `isInTeam` passes. Mirrors what the Delete mutation already did; should be the standard pattern for any in-team-only resolver.
+- **Keep publish-state semantics uniform across mutations.** Reorder originally threw CONFLICT on published pages while Update + AssignJourney accepted them — internally inconsistent. Pick one: either ALL structural mutations gate on `status: 'draft'`, or NONE do. We picked "none — backend accepts unconditionally; FE handles the UX". The asymmetry is the bug, not either side individually.
+- **`prisma.$transaction` wraps for intent clarity even when the predicate-protected `updateMany` is already concurrency-safe.** Publish/Unpublish guard concurrent transitions via `where: { id, status: 'draft' | 'published' }`, so the writes are atomic without an explicit transaction. But wrapping the `updateMany + findUniqueOrThrow` re-read in a single tx makes the "atomic transition + canonical re-read" intent obvious in the code rather than relying on the reader spotting the predicate.
+- **Squash add-then-drop migrations in the same PR.** Two migrations that compose to "create X, then drop X, add Y" should be one migration "create Y" before merge. Saves a transient FK that never matters in production, and makes the migration history readable as "what did this PR add to schema" rather than "what did this PR add then take away".
+- **Curate the reserved-slug list with the full set of framework + product paths.** First slug-reservation list in this repo (verified via `rg -l RESERVED_SLUGS apis/ libs/` — no other model has one). Beyond service routes (`admin`, `api`, `graphql`), include Next.js conventions (`_next`, `_app`, `_document`, `_error`, `favicon-ico`, `robots-txt`, `sitemap-xml`), HTTP error pages (`404`, `500`), and likely-future auth flows (`login`, `signin`, `signup`, `account`, `settings`, `me`). Squat-prevention is cheap; backfilling after a customer claims `/me` is not.
+- **Drop dead return-state from helpers that nobody consumes.** `filterToTeamTemplates` returned `{ validIds, droppedCount }` for a hypothetical "we removed N journeys you don't have access to" toast that never shipped. Both callsites only destructured `validIds`. Dead state survives multiple iterations because it's harmless-looking; only an explicit "is this consumed?" pass catches it.
 
 ## Related
 

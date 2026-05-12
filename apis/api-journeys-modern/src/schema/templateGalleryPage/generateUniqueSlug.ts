@@ -10,21 +10,50 @@ import { prisma } from '@core/prisma/journeys/client'
 const slugSuffix = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 6)
 
 export const RESERVED_SLUGS: ReadonlySet<string> = new Set([
+  // Service / infra
   'admin',
   'api',
   'app',
   'auth',
   'graphql',
   'health',
+  'public',
+  'static',
+  'webhook',
+  'webhooks',
+  // Product paths
   'journey',
   'journeys',
-  'public',
+  'templates',
+  'collections',
+  // Auth / account flows (current + likely future)
+  'login',
+  'logout',
+  'signin',
+  'signup',
   'sign-in',
   'sign-up',
-  'static',
-  'templates',
-  'webhook',
-  'webhooks'
+  'register',
+  'account',
+  'settings',
+  'profile',
+  'me',
+  // Next.js & framework conventions
+  '_next',
+  '_app',
+  '_document',
+  '_error',
+  'assets',
+  'favicon-ico',
+  'robots-txt',
+  'sitemap-xml',
+  // HTTP error pages
+  '404',
+  '500',
+  // Marketing / convention-grabby paths
+  'dashboard',
+  'home',
+  'index'
 ])
 
 export const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/
