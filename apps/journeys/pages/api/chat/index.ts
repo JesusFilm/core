@@ -9,6 +9,7 @@ import {
 } from 'ai'
 import { Langfuse, TextPromptClient } from 'langfuse'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { z } from 'zod'
 
 import { getFlags } from '../../../src/libs/getFlags'
 import {
@@ -16,6 +17,58 @@ import {
   getActivePromptLabel,
   getLangfuse
 } from '../../../src/libs/langfuse/client'
+
+// Request bounds (NES-1579). Hard ceilings so a single chat request can't be
+// arbitrarily expensive or arbitrarily shaped.
+const MAX_MESSAGES = 50
+const MAX_MESSAGE_CHARS = 4000
+// ~2000 input-token budget at ~4 chars/token. Cheap proxy for a real tokenizer.
+const MAX_TOTAL_CHARS = 8000
+const MAX_OUTPUT_TOKENS = 512
+
+export const config = {
+  api: {
+    // Anything larger is rejected by Next.js with 413 before the handler runs.
+    bodyParser: { sizeLimit: '16kb' }
+  }
+}
+
+const messagePartSchema = z
+  .object({
+    type: z.string().min(1).optional(),
+    text: z.string().max(MAX_MESSAGE_CHARS).optional()
+  })
+  .passthrough()
+
+const messageSchema = z
+  .object({
+    role: z.string().min(1),
+    content: z.string().max(MAX_MESSAGE_CHARS).optional(),
+    parts: z.array(messagePartSchema).max(MAX_MESSAGES).optional()
+  })
+  .passthrough()
+
+const chatRequestSchema = z.object({
+  messages: z.array(messageSchema).max(MAX_MESSAGES),
+  language: z.string().max(64).optional(),
+  sessionId: z.string().max(128).optional(),
+  journeyId: z.string().max(128).optional()
+})
+
+type ParsedChatMessage = z.infer<typeof messageSchema>
+
+function totalMessageChars(messages: ParsedChatMessage[]): number {
+  let total = 0
+  for (const m of messages) {
+    if (typeof m.content === 'string') total += m.content.length
+    if (Array.isArray(m.parts)) {
+      for (const p of m.parts) {
+        if (typeof p.text === 'string') total += p.text.length
+      }
+    }
+  }
+  return total
+}
 
 type ChatProvider = 'apologist' | 'gemini' | 'openai' | 'openrouter'
 
@@ -94,13 +147,6 @@ function resolveChatModel():
   }
 }
 
-interface ChatRequestBody {
-  messages: UIMessage[]
-  language?: string
-  sessionId?: string
-  journeyId?: string
-}
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -117,11 +163,20 @@ export default async function handler(
     return
   }
 
-  const { messages, language, sessionId, journeyId } =
-    req.body as ChatRequestBody
+  const parsed = chatRequestSchema.safeParse(req.body)
+  if (!parsed.success) {
+    res.status(400).json({ error: 'invalid request' })
+    return
+  }
+  const { messages, language, sessionId, journeyId } = parsed.data
 
-  if (!messages || messages.length === 0) {
+  if (messages.length === 0) {
     res.status(400).json({ error: 'messages are required' })
+    return
+  }
+
+  if (totalMessageChars(messages) > MAX_TOTAL_CHARS) {
+    res.status(400).json({ error: 'request too large' })
     return
   }
 
@@ -136,7 +191,9 @@ export default async function handler(
     language,
     langfuse
   })
-  const modelMessages = await convertToModelMessages(messages)
+  const modelMessages = await convertToModelMessages(
+    messages as unknown as UIMessage[]
+  )
 
   const { provider, modelId } = modelResult.resolved
   const ipCountry = req.headers['x-vercel-ip-country'] as string | undefined
@@ -167,6 +224,7 @@ export default async function handler(
       model: modelResult.resolved.model,
       system,
       messages: modelMessages,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
       onError: async ({ error }) => {
         const err = error as Error
         // TODO(NES-1615): swap console for structured pino + dd-trace logger

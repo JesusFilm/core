@@ -760,4 +760,138 @@ describe('/api/chat handler', () => {
       errorSpy.mockRestore()
     })
   })
+
+  describe('request bounds (NES-1579)', () => {
+    beforeEach(() => {
+      mockGetFlags.mockResolvedValue({ apologistChat: true })
+    })
+
+    function postReq(body: unknown): NextApiRequest {
+      return {
+        method: 'POST',
+        body,
+        headers: {}
+      } as unknown as NextApiRequest
+    }
+
+    it('rejects a non-object body with 400 invalid request', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(postReq('not-an-object'), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects when messages is missing from the body', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(postReq({}), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects when a message is missing role', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(postReq({ messages: [{ content: 'hi' }] }), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects when a single message exceeds the per-message char cap', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({
+          messages: [{ role: 'user', content: 'x'.repeat(4001) }]
+        }),
+        res
+      )
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects when the messages array exceeds the count cap', async () => {
+      const messages = Array.from({ length: 51 }, () => ({
+        role: 'user',
+        content: 'hi'
+      }))
+      const { res, status, json } = makeRes()
+
+      await handler(postReq({ messages }), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects when the cumulative input chars exceed the total cap', async () => {
+      // 3 messages * 3000 chars = 9000 > 8000 cap, each within per-message cap.
+      const messages = Array.from({ length: 3 }, () => ({
+        role: 'user',
+        content: 'x'.repeat(3000)
+      }))
+      const { res, status, json } = makeRes()
+
+      await handler(postReq({ messages }), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'request too large' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('counts parts[].text toward the per-message and total caps', async () => {
+      const messages = [
+        {
+          role: 'user',
+          parts: [{ type: 'text', text: 'x'.repeat(4001) }]
+        }
+      ]
+      const { res, status, json } = makeRes()
+
+      await handler(postReq({ messages }), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('forwards maxOutputTokens=512 to streamText on the happy path', async () => {
+      mockGetLangfuse.mockReturnValue(null)
+
+      await handler(
+        postReq({ messages: [{ role: 'user', content: 'hi' }] }),
+        makeRes().res
+      )
+
+      expect(mockStreamText).toHaveBeenCalledTimes(1)
+      expect(mockStreamText.mock.calls[0][0]).toMatchObject({
+        maxOutputTokens: 512
+      })
+    })
+
+    it('accepts a request right at the per-message char cap', async () => {
+      mockGetLangfuse.mockReturnValue(null)
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({
+          messages: [{ role: 'user', content: 'x'.repeat(4000) }]
+        }),
+        res
+      )
+
+      expect(status).not.toHaveBeenCalledWith(400)
+      expect(json).not.toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).toHaveBeenCalledTimes(1)
+    })
+  })
 })
