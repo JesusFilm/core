@@ -34,6 +34,18 @@ export default async function proxy(
     hostname = process.env.NEXT_PUBLIC_ROOT_DOMAIN
   }
 
+  // dev-only: treat any `tailscale-*` MagicDNS hostname as the root domain
+  // so cross-device testing over Tailscale resolves to `/home` instead of
+  // the catch-all `/[hostname]/[slug]` route. Strictly gated on NODE_ENV.
+  // See docs/development/tailscale-dev-access.md for setup.
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    hostname.toLowerCase().startsWith('tailscale-') &&
+    process.env.NEXT_PUBLIC_ROOT_DOMAIN != null
+  ) {
+    hostname = process.env.NEXT_PUBLIC_ROOT_DOMAIN
+  }
+
   const searchParams = req.nextUrl.searchParams.toString()
   // Get the pathname of the request (e.g. /, /about, /blog/first-post)
   const path = `${url.pathname}${
