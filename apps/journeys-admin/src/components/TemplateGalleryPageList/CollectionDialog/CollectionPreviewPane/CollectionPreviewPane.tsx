@@ -293,11 +293,7 @@ function CollectionPreviewPaneImpl({
                         card. They're decorative here — render as Box
                         so they're not keyboard-focusable and assistive
                         tech doesn't announce them as actionable. */}
-                    <Stack
-                      direction="row"
-                      spacing={0.75}
-                      aria-hidden="true"
-                    >
+                    <Stack direction="row" spacing={0.75} aria-hidden="true">
                       <Box
                         sx={{
                           flex: '0 0 auto',
