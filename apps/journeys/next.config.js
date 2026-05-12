@@ -12,9 +12,14 @@ const nextConfig = {
   // Permit the developer hostnames listed in `NEXT_PUBLIC_DEV_HOSTS`
   // (Doppler dev config) to load the dev server. Absence of the secret
   // yields `[]` (no relaxation); dev-only by Next.js semantics — no
-  // NODE_ENV gate needed. The helper is duplicated inline because
-  // next.config.js is JS and importing the TS helper would require
-  // additional build wiring.
+  // NODE_ENV gate needed.
+  //
+  // Kept aligned with `@core/shared/dev-hosts` (libs/shared/dev-hosts) —
+  // identical fail-closed semantics. We don't `require()` the TS helper
+  // here because next.config.js is plain CJS executed at Node startup
+  // before any TS transpile is wired up, and no other next.config.js in
+  // this repo currently pulls from libs/. Update both sites in lockstep
+  // if the parsing rules change.
   // https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
   allowedDevOrigins: (() => {
     try {
