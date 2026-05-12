@@ -10,6 +10,7 @@ import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } f
 import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
 import { getTemplateGalleryPageAssignJourneyMock } from '../../../libs/useTemplateGalleryPageAssignJourneyMutation/useTemplateGalleryPageAssignJourneyMutation.mock'
 import { getTemplateGalleryPageReorderTemplateMock } from '../../../libs/useTemplateGalleryPageReorderTemplateMutation/useTemplateGalleryPageReorderTemplateMutation.mock'
+import { GET_TEMPLATE_GALLERY_PAGES } from '../../../libs/useTemplateGalleryPagesQuery'
 import { encodeDropZoneId } from '../Droppables'
 
 import { useDragEndHandler } from './useDragEndHandler'
@@ -74,11 +75,12 @@ function buildIndexes({ collections, journeys }: Harness): {
 }
 
 function wrapperWithMocks(
-  mocks: ReadonlyArray<MockedResponse>
+  mocks: ReadonlyArray<MockedResponse>,
+  cache: InMemoryCache = new InMemoryCache()
 ): ({ children }: { children: ReactNode }) => JSX.Element {
   return function Wrapper({ children }) {
     return (
-      <MockedProvider cache={new InMemoryCache()} mocks={mocks}>
+      <MockedProvider cache={cache} mocks={mocks}>
         <SnackbarProvider>{children as JSX.Element}</SnackbarProvider>
       </MockedProvider>
     )
@@ -391,5 +393,67 @@ describe('useDragEndHandler', () => {
     // The guard MUST short-circuit before setDragInFlight(true) too — if
     // a mutation had started, setDragInFlight would have been toggled.
     expect(setDragInFlight).not.toHaveBeenCalledWith(true)
+  })
+
+  it('does not trim the source cache when the server silently rejects the move', async () => {
+    // The mutation can succeed at the GraphQL layer but return a target
+    // page that does NOT include the journey we asked it to add — e.g.
+    // when the journey's team mismatches the page's team. Apollo merges
+    // the response over the optimistic write, so without a guard the
+    // source-page cache.modify would still run on the real-response pass
+    // and permanently drop the moving journey from the source page until
+    // the next refetch. This test seeds the source page with the journey,
+    // wires an assign mock that returns the target with empty templates,
+    // and asserts the source's cached templates still hold the journey.
+    const j1 = journey('j1', 'A')
+    const source = makeCollection('page-A', [j1])
+    const target = makeCollection('page-B', [])
+    const indexes = buildIndexes({
+      collections: [source, target],
+      journeys: [j1]
+    })
+
+    const cache = new InMemoryCache()
+    cache.writeQuery({
+      query: GET_TEMPLATE_GALLERY_PAGES,
+      variables: { teamId: 'team-1' },
+      data: { templateGalleryPages: [source, target] }
+    })
+
+    // Silent rejection: returned target page does not include j1.
+    const assignMock = getTemplateGalleryPageAssignJourneyMock(
+      { journeyId: 'j1', pageId: 'page-B' },
+      { id: 'page-B', templates: [] }
+    )
+
+    const { result } = renderHook(
+      () =>
+        useDragEndHandler({
+          ...indexes,
+          dragInFlight: false,
+          setDragInFlight: jest.fn(),
+          setActiveDragId: jest.fn()
+        }),
+      { wrapper: wrapperWithMocks([assignMock], cache) }
+    )
+
+    await act(async () => {
+      await result.current(
+        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
+      )
+    })
+
+    expect(assignMock.result).toHaveBeenCalledTimes(1)
+
+    const cached = cache.readQuery<{
+      templateGalleryPages: TemplateGalleryPage[]
+    }>({
+      query: GET_TEMPLATE_GALLERY_PAGES,
+      variables: { teamId: 'team-1' }
+    })
+    const sourceAfter = cached?.templateGalleryPages.find(
+      (p) => p.id === 'page-A'
+    )
+    expect(sourceAfter?.templates.map((t) => t.id)).toEqual(['j1'])
   })
 })

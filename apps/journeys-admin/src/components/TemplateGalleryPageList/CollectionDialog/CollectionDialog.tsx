@@ -220,6 +220,12 @@ export function CollectionDialog({
                         availableJourneys={availableJourneys}
                         journeyIds={values.journeyIds}
                         disabled={isPublished}
+                        // `void` discards the Promise that setFieldValue
+                        // returns — Formik resolves it after the next
+                        // render with the validation result, which we
+                        // don't await here because validation runs on
+                        // submit and the picker callback is fire-and-
+                        // forget. Same pattern below for setFieldTouched.
                         onChange={(next) => {
                           void setFieldValue('journeyIds', next)
                         }}

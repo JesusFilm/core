@@ -260,6 +260,48 @@ describe('useCollectionForm', () => {
       ).resolves.toBeTruthy()
     })
 
+    it('rejects mediaUrl values with whitespace or trailing junk that bypass a loose prefix match', async () => {
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'create',
+            teamId: 'team-1',
+            onClose: jest.fn()
+          }),
+        { wrapper: wrapperWithMocks([]) }
+      )
+
+      // Whitespace anywhere — would be invalid as an iframe src.
+      await expect(
+        result.current.schema.validate(
+          defaultValues({
+            mediaUrl: 'https://www.canva.com/design/DAH JBsAPHB4/view'
+          })
+        )
+      ).rejects.toThrow(/canva or google slides/i)
+
+      // Non-canva host smuggled past a non-anchored regex via newline.
+      await expect(
+        result.current.schema.validate(
+          defaultValues({
+            mediaUrl:
+              'https://www.canva.com/design/x\nhttps://attacker.example/exploit'
+          })
+        )
+      ).rejects.toThrow(/canva or google slides/i)
+
+      // Trailing fragment / query is fine when it stays in the allowed char
+      // set; junk that includes a quote or angle bracket is rejected.
+      await expect(
+        result.current.schema.validate(
+          defaultValues({
+            mediaUrl:
+              'https://www.canva.com/design/DAHJBsAPHB4/view"><script>alert(1)</script>'
+          })
+        )
+      ).rejects.toThrow(/canva or google slides/i)
+    })
+
     it('rejects slugs with uppercase or invalid characters', async () => {
       const { result } = renderHook(
         () =>

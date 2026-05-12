@@ -194,7 +194,7 @@ export function useDragEndHandler(
                     }
                   }
                 : undefined,
-          update: (cache) => {
+          update: (cache, { data }) => {
             // Trim the moving template out of the SOURCE page's cached
             // templates list. Cross-collection moves return only the
             // target; without this the source page keeps the moving
@@ -204,6 +204,26 @@ export function useDragEndHandler(
               sourceCollection.id === targetCollectionId
             ) {
               return
+            }
+            // Gate the trim on the response actually confirming the
+            // move. Apollo runs `update` twice when an optimistic
+            // response is set: once with the optimistic data (where
+            // the target already includes the journey, so accepted is
+            // true and the trim runs on the optimistic layer for an
+            // instant UI update), and once with the real server
+            // response. On a silent rejection (success-shaped response
+            // whose page doesn't include the journey), accepted is
+            // false on the real pass — we skip the trim, and Apollo
+            // rolls back the prior optimistic trim, restoring the
+            // source. Without this gate the real-pass trim would run
+            // unconditionally and leave the source permanently missing
+            // the moved template.
+            if (targetCollectionId != null) {
+              const returned = data?.templateGalleryPageAssignJourney
+              const accepted =
+                returned?.templates.some((tpl) => tpl.id === templateId) ??
+                false
+              if (!accepted) return
             }
             const sourceCacheId = cache.identify({
               __typename: 'TemplateGalleryPage',

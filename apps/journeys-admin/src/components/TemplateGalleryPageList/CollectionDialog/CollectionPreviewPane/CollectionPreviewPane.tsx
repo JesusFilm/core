@@ -142,6 +142,14 @@ function CollectionPreviewPaneImpl({
         </Tooltip>
       </Stack>
       <Box
+        // The mobile-shaped preview card is a visual mirror of the
+        // public gallery page rendered from the same values the form
+        // fields below already announce (title, description, creator,
+        // template carousel, strategy embed). aria-hidden keeps screen
+        // readers from traversing the duplicate. The URL row above
+        // stays announced because it's the only way to copy / open the
+        // public link from inside the edit dialog.
+        aria-hidden="true"
         sx={{
           bgcolor: 'white',
           borderRadius: 1,

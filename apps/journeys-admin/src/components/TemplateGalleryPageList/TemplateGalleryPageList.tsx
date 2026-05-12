@@ -124,6 +124,11 @@ export function TemplateGalleryPageList({
   // is already fetching, and `collectionsQuery` runs on first mount too.
   // Without this guard, every team-switch and tab-activation issued a
   // duplicate initial fetch.
+  //
+  // Strict Mode safety: the dev double-invocation unmounts then remounts the
+  // component, which creates a fresh ref (initial value true) on the second
+  // mount. The "skip initial mount" branch fires on both, so neither pass
+  // dispatches a refetch — only a later visible/teamId change does.
   const initialMountRef = useRef(true)
   useEffect(() => {
     if (!visible || teamId == null) return

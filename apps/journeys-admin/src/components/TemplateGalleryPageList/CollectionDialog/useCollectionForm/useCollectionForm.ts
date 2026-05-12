@@ -91,9 +91,21 @@ function buildSchema(t: TFunction): ObjectSchema<CollectionFormValues> {
           // (`StrategySection` in libs/journeys/ui) only knows how to
           // embed these two — anything else iframes the raw URL and
           // fails with "refused to connect" (NES-1649).
+          //
+          // Both patterns are fully anchored and restrict the path /
+          // query / fragment to a known character set so a value that
+          // matches can't smuggle whitespace, control bytes, or other
+          // unexpected characters into the iframe src. The host segment
+          // is locked to canva.com or docs.google.com — `..` inside the
+          // path can't escape the host (URL normalisation collapses it
+          // within the path), so the iframe is always loaded from one
+          // of the two trusted embed origins.
+          if (/\s/.test(value)) return false
           return (
-            /^https:\/\/(www\.)?canva\.com\/design\/[^\s]+/i.test(value) ||
-            /^https:\/\/docs\.google\.com\/presentation\/d\/e\/[^/]+\/pub(\?|$|#)/i.test(
+            /^https:\/\/(www\.)?canva\.com\/design\/[A-Za-z0-9_-]+(\/[A-Za-z0-9._~\-/]*)?(\?[A-Za-z0-9._~\-=&%+]*)?(#[A-Za-z0-9._~\-=&%+]*)?$/i.test(
+              value
+            ) ||
+            /^https:\/\/docs\.google\.com\/presentation\/d\/e\/[A-Za-z0-9_-]+\/pub(\?[A-Za-z0-9._~\-=&%+]*)?(#[A-Za-z0-9._~\-=&%+]*)?$/i.test(
               value
             )
           )
