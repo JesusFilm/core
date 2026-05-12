@@ -55,15 +55,6 @@ interface AlgoliaRow {
   published: boolean
 }
 
-const SEARCHABLE_ATTRIBUTES = [
-  'mediaComponentId',
-  'objectID',
-  'title',
-  'titles.value',
-  'description',
-  'descriptions.value'
-]
-
 function getAlgoliaSearchClient() {
   const appId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? ''
   const apiKey = process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
@@ -314,7 +305,6 @@ export function AlgoliaVideoList(): ReactElement {
     <InstantSearch searchClient={searchClient} indexName={indexName}>
       <Configure
         hitsPerPage={50}
-        restrictSearchableAttributes={SEARCHABLE_ATTRIBUTES}
         attributesToRetrieve={[
           'objectID',
           'mediaComponentId',
