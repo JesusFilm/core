@@ -38,7 +38,7 @@ import {
 
 import { ActivityIndicator } from './components/ActivityIndicator'
 import { CardPicker } from './components/CardPicker'
-import { Input } from './components/Input'
+import { Input, usePromptHistory } from './components/Input'
 import { JourneyPicker } from './components/JourneyPicker'
 import { ModelPicker } from './components/ModelPicker'
 import { StatusBar } from './components/StatusBar'
@@ -78,6 +78,9 @@ function nextEntryId(prefix: string): string {
 
 export function App({ initialSession, model }: AppProps): ReactElement {
   const { exit } = useApp()
+  // Owned at the App level so prompt history survives whenever the Input
+  // unmounts (e.g. while a slash command opens a picker).
+  const promptHistory = usePromptHistory()
   const [state, setState] = useState<ReplState>(() => ({
     session: initialSession,
     model: model ?? null,
@@ -948,6 +951,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
             placeholder="Ask the agent, or type / for commands"
             onSubmit={handleSubmit}
             commandContext={commandContext}
+            history={promptHistory}
           />
         </>
       )}
