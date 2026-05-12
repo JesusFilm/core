@@ -102,6 +102,36 @@
       "options": {
         "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json apis/api-languages/src/scripts/wess-languages-import.ts"
       }
+    },
+    "wess-countries-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json apis/api-languages/src/scripts/wess-countries-import.ts"
+      }
+    },
+    "wess-country-languages-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json apis/api-languages/src/scripts/wess-country-languages-import.ts"
+      }
+    },
+    "_wess-inspect": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json tmp/wess-inspect.ts"
+      }
+    },
+    "_wess-find-unmatched-geo": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json tmp/wess-find-unmatched-geo.ts"
+      }
+    },
+    "_wess-check-155-dups": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json tmp/wess-check-155-dups.ts"
+      }
     }
   }
 }
