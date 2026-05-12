@@ -90,7 +90,7 @@ your phone and you're in.
 
 ### Step 5a — Workaround before the PR merges
 
-If you need this working *today* before this PR ships, set both env vars
+If you need this working _today_ before this PR ships, set both env vars
 in `.env.local` for each app:
 
 ```sh

@@ -23,7 +23,7 @@ This is **two deliverables in one PR**: a setup doc (workaround anyone can use t
 Today a developer can run `nx serve journeys`, `nx serve journeys-admin`, and `nx serve api-gateway` on their workstation, but the moment they try to load `http://tailscale-mbp-siyang:4100` from a phone / iPad / co-worker's machine over Tailscale MagicDNS, three things break:
 
 1. **`apps/journeys/middleware.ts`** uses `req.headers.get('host')` and rewrites every non-`NEXT_PUBLIC_ROOT_DOMAIN` host into `/[hostname]/[slug]` — so a Tailscale hostname falls through to "treat this as a custom-journey-domain" instead of the dev root.
-2. **`apps/journeys-admin/src/libs/apolloClient/apolloClient.ts`** defaults the gateway URL to `http://localhost:4000` — the *phone* doesn't have a localhost at port 4000, so every GraphQL request fails the second the bundle ships to a non-host device.
+2. **`apps/journeys-admin/src/libs/apolloClient/apolloClient.ts`** defaults the gateway URL to `http://localhost:4000` — the _phone_ doesn't have a localhost at port 4000, so every GraphQL request fails the second the bundle ships to a non-host device.
 3. **`allowedDevOrigins`** doesn't exist in either `next.config.js`. On Next.js 15.5 this is currently a warning ("blocked in a future major version"); on 16.x it's a hard block. We are on 15.5.10 today but will upgrade — fix it now to avoid the regression.
 4. **`apis/api-gateway/gateway.prod.config.ts`** CORS regex only allows `http://localhost:\d+` for dev origins — a request from `http://tailscale-mbp-siyang:4100` is rejected.
 
@@ -90,40 +90,51 @@ The Linear ticket URL is in frontmatter. Linear MCP is **not** connected in this
 These are concrete hits from the codebase audit. Filename:line.
 
 ### A. `apps/journeys/middleware.ts`
+
 - L24-26: `let hostname = req.headers.get('host') ?? ''` — comment explicitly enumerates "your.nextstep.is, localhost:4100, example.com" as known shapes. **Target of code change U1.**
 
 ### B. `apps/journeys/next.config.js`
+
 - L14: `{ protocol: 'http', hostname: 'localhost' }` in `images.remotePatterns`. **Safe** — only restricts `next/image` optimizer source domains, doesn't affect dev origin check.
 - No `allowedDevOrigins` key. **Target of code change U3.**
 
 ### C. `apps/journeys-admin/next.config.js`
+
 - L14: same `images.remotePatterns` localhost entry. **Safe.**
 - No `allowedDevOrigins` key. **Target of code change U3.**
 
 ### D. `apps/journeys-admin/src/libs/apolloClient/apolloClient.ts`
-- L113: `process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:4000'`. **Note:** spec called this "hardcoded to a specific dev URL"; the actual code reads an env var with a localhost *fallback*. The defect under Tailscale is: when `NEXT_PUBLIC_GATEWAY_URL` is *unset* (most dev setups), the phone receives a bundle pointing at `http://localhost:4000` which doesn't resolve on the phone. **Target of code change U2.**
+
+- L113: `process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:4000'`. **Note:** spec called this "hardcoded to a specific dev URL"; the actual code reads an env var with a localhost _fallback_. The defect under Tailscale is: when `NEXT_PUBLIC_GATEWAY_URL` is _unset_ (most dev setups), the phone receives a bundle pointing at `http://localhost:4000` which doesn't resolve on the phone. **Target of code change U2.**
 
 ### E. `apps/journeys-admin/src/libs/auth/getAuthTokens.ts`
+
 - L47: `new URL(ctx.resolvedUrl, 'https://admin.nextstep.is')` — fallback base for relative paths. **Safe** — base only used when `ctx.resolvedUrl` is already relative; doesn't matter for Tailscale routing.
 - L59-63: `ALLOWED_REDIRECT_HOSTS = ['localhost:4200', 'admin.nextstep.is', 'admin-stage.nextstep.is']`. **Target of code change U4** — Tailscale hostname must be allowed in dev for the sign-in redirect flow, otherwise users on the phone bounce to a 400 "invalid redirect host".
 
 ### F. `apis/api-gateway/src/common.config.ts`
+
 - L14: `port: 4000`. **Safe** — port is fine; no `host` set, defaults to `0.0.0.0` on macOS/Linux per Hive Gateway source. **The spec's concern about `127.0.0.1`-only binding is wrong on this repo**; no change needed. Flag as Open Question Q4 closed.
 
 ### G. `apis/api-gateway/gateway.prod.config.ts`
+
 - L50: `/^http:\/\/localhost:\d+$/` in the CORS allow-list. **Target of code change U5** — add a Tailscale dev regex sibling, dev-mode-gated.
 - L18: `'http://0.0.0.0:4317'` is the OTLP exporter URL, unrelated.
 
 ### H. `apps/journeys-admin/src/libs/apolloClient/apolloClient.test.ts`
+
 - L68, L113, L150: `new SSELink('http://localhost:4000')`. **Safe** — these are test fixtures, not runtime. No change needed unless U2 changes the SSELink constructor signature (it won't).
 
 ### I. `apps/journeys-admin/src/components/Editor/Toolbar/Items/ShareItem/QrCodeDialog/QrCodeDialog.tsx`
+
 - L142: `const port = isLocal ? ':4100' : ''`. Audited but **out of scope** — flagged as Deferred (see Scope Boundaries). The QR code is for a published-journey URL given to end users; cross-device dev testing of the QR code itself is a different concern.
 
 ### J. Other apps (`watch`, `videos-admin`, `arclight`, `resources`, `short-links`, `cms`)
+
 - All consume `process.env.NEXT_PUBLIC_GATEWAY_URL` directly with **no localhost fallback** (audit grep results: `apps/videos-admin/src/libs/apollo/makeClient.ts:15`, `apps/short-links/src/lib/apolloClient/apolloClient.ts:8`, etc.). **Safe** — these fail-closed when the env var is unset, so a developer running them under Tailscale just needs to set `NEXT_PUBLIC_GATEWAY_URL`. Document in Part 1.
 
 ### K. `apps/journeys/pages/.../[hostname]/...` — your.nextstep.is references
+
 - 14 occurrences of `process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'`. **Safe** — these are fallback display strings (oEmbed canonical URLs, share dialogs). Don't affect dev routing.
 
 **Audit total**: 4 files require code changes (D, E, G, plus middleware A), 2 files require new keys (B, C). 1 file is a scope-addition candidate (I). No surprise additions beyond what the spec already named.
@@ -149,7 +160,7 @@ These are concrete hits from the codebase audit. Filename:line.
   **Answer**: Wildcards yes (`*.local-origin.dev`), regex no. Verified from Next.js v16.2.6 docs (`https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins`, lastUpdated 2026-05-07) which show `allowedDevOrigins: ['local-origin.dev', '*.local-origin.dev']` as the only documented entry forms. Same syntax shown in v15.5.18 docs. Use `'tailscale-*'` as the dev origin entry.
 
 - **Q2. Does `NEXT_PUBLIC_GATEWAY_URL` already exist as an env var elsewhere?**
-  **Answer**: Yes, widely. Audited usage spans `apps/videos-admin/src/libs/environment.ts`, `apps/short-links/src/lib/apolloClient/apolloClient.ts`, `apps/arclight/src/lib/apolloClient/apolloClient.ts`, `apps/resources/src/libs/apolloClient/apolloClient.ts`, `apps/journeys-admin/pages/_app.tsx:94`. **Decision**: do not introduce a new env var name; keep `NEXT_PUBLIC_GATEWAY_URL` as the override and only derive from `window.location` when it's unset *and* the host is `tailscale-*`. This matches the principle of least surprise.
+  **Answer**: Yes, widely. Audited usage spans `apps/videos-admin/src/libs/environment.ts`, `apps/short-links/src/lib/apolloClient/apolloClient.ts`, `apps/arclight/src/lib/apolloClient/apolloClient.ts`, `apps/resources/src/libs/apolloClient/apolloClient.ts`, `apps/journeys-admin/pages/_app.tsx:94`. **Decision**: do not introduce a new env var name; keep `NEXT_PUBLIC_GATEWAY_URL` as the override and only derive from `window.location` when it's unset _and_ the host is `tailscale-*`. This matches the principle of least surprise.
 
 - **Q3. Is the `host.startsWith('tailscale-')` check robust to port suffixes?**
   **Answer**: `req.headers.get('host')` in Next middleware includes the port (e.g. `tailscale-mbp-siyang:4100`). `startsWith` is unaffected. `window.location.hostname` returns the bare hostname (no port). Both check forms work.
@@ -196,7 +207,7 @@ sequenceDiagram
     GW-->>Apollo: 200 GraphQL
 ```
 
-*This illustrates the intended approach and is directional guidance for review, not implementation specification.*
+_This illustrates the intended approach and is directional guidance for review, not implementation specification._
 
 ---
 
@@ -219,9 +230,9 @@ sequenceDiagram
   - Section outline:
     1. **Why this exists** — one paragraph: cross-device testing without ngrok, no prod cert needed.
     2. **Prerequisites** — Tailscale account joined to the JFP tailnet, admin invite confirmed, Tailscale macOS/Linux client installed (link to tailscale.com/download).
-    3. **Step 1 — Install Tailscale and join the tailnet** — `brew install --cask tailscale`, sign-in flow, accept invite. *(Screenshot TBD)*.
-    4. **Step 2 — Rename your device to `tailscale-<initials>-<machine>`** — Tailscale admin console → Machines → rename. *(Screenshot TBD)*.
-    5. **Step 3 — Enable MagicDNS** — Tailscale admin console → DNS → Enable MagicDNS. *(Screenshot TBD)*.
+    3. **Step 1 — Install Tailscale and join the tailnet** — `brew install --cask tailscale`, sign-in flow, accept invite. _(Screenshot TBD)_.
+    4. **Step 2 — Rename your device to `tailscale-<initials>-<machine>`** — Tailscale admin console → Machines → rename. _(Screenshot TBD)_.
+    5. **Step 3 — Enable MagicDNS** — Tailscale admin console → DNS → Enable MagicDNS. _(Screenshot TBD)_.
     6. **Step 4 — Verify connectivity** — from a second device on the tailnet, `ping tailscale-<your-name>`.
     7. **Step 5 — Run the stack** — `nx serve api-gateway journeys journeys-admin` as usual. Note: no env var changes required after the code in this PR lands.
     8. **Step 5a — For pre-PR workaround** — set `NEXT_PUBLIC_GATEWAY_URL=http://<tailscale-host>:4000` and skip the middleware host check (paste this as the manual workaround for anyone testing before the PR merges).
@@ -253,7 +264,7 @@ sequenceDiagram
 
   **Files:**
   - Modify: `apps/journeys/middleware.ts`
-  - Test: `apps/journeys/middleware.spec.ts` *(create — does not exist today)*
+  - Test: `apps/journeys/middleware.spec.ts` _(create — does not exist today)_
 
   **Approach:**
   - After the existing Vercel preview-deployment check (around line 35), add a dev-mode branch:
@@ -300,19 +311,19 @@ sequenceDiagram
     - Else if `typeof window !== 'undefined'` and `process.env.NODE_ENV !== 'production'` and `window.location.hostname.toLowerCase().startsWith('tailscale-')` → return `\`${window.location.protocol}//${window.location.hostname}:4000\``.
     - Else → fall back to `'http://localhost:4000'` (today's behavior, preserves SSR + non-Tailscale dev).
   - **Important:** SSE link `new SSELink(gatewayUrl)` and HTTP link `new HttpLink({ uri: gatewayUrl })` must share the same computed URL. The current code reuses the constant — preserve that.
-  - SSR consideration: on the server, `window` is undefined → falls back to env var or localhost (server *can* reach localhost:4000 directly even when the request came over Tailscale, because the gateway runs on the same host machine). This is correct.
+  - SSR consideration: on the server, `window` is undefined → falls back to env var or localhost (server _can_ reach localhost:4000 directly even when the request came over Tailscale, because the gateway runs on the same host machine). This is correct.
 
   **Patterns to follow:**
   - The pattern of "env-var-override with computed fallback" already exists in `apps/journeys-admin/src/libs/auth/getAuthTokens.ts` for the host allow-list.
 
   **Test scenarios:**
-  - Happy path (env override): `NEXT_PUBLIC_GATEWAY_URL='https://stage-gw.example.com'`, `window.location.hostname='tailscale-mbp'` → uses env value. *(Verify env always wins.)*
+  - Happy path (env override): `NEXT_PUBLIC_GATEWAY_URL='https://stage-gw.example.com'`, `window.location.hostname='tailscale-mbp'` → uses env value. _(Verify env always wins.)_
   - Happy path (Tailscale derivation): env unset, `window.location.hostname='tailscale-mbp-siyang'`, `protocol='http:'`, `NODE_ENV='development'` → `http://tailscale-mbp-siyang:4000`.
   - Happy path (localhost preserved): env unset, `window.location.hostname='localhost'` → `http://localhost:4000`.
-  - Edge case (HTTPS): `protocol='https:'`, hostname is `tailscale-*` → `https://tailscale-mbp:4000`. *(Supports Tailscale Funnel.)*
+  - Edge case (HTTPS): `protocol='https:'`, hostname is `tailscale-*` → `https://tailscale-mbp:4000`. _(Supports Tailscale Funnel.)_
   - Edge case (SSR): `typeof window === 'undefined'` (Jest jsdom test forcing this) → falls back to localhost.
   - Edge case (production gate): env unset, hostname is `tailscale-mbp`, `NODE_ENV='production'` → uses localhost fallback (never derives in prod).
-  - Integration: the SSE link and HTTP link receive the same URL string. *(Critical — they share connections via cookies for auth.)*
+  - Integration: the SSE link and HTTP link receive the same URL string. _(Critical — they share connections via cookies for auth.)_
 
   **Verification:**
   - On a phone loading `http://tailscale-mbp-siyang:4200/`, the Network panel (or `chrome://inspect`) shows GraphQL POSTs going to `http://tailscale-mbp-siyang:4000/`, not `localhost:4000`.
@@ -363,7 +374,7 @@ sequenceDiagram
 
   **Files:**
   - Modify: `apps/journeys-admin/src/libs/auth/getAuthTokens.ts`
-  - Test: `apps/journeys-admin/src/libs/auth/getAuthTokens.spec.ts` *(file already exists per repo convention; add cases)*
+  - Test: `apps/journeys-admin/src/libs/auth/getAuthTokens.spec.ts` _(file already exists per repo convention; add cases)_
 
   **Approach:**
   - Inside `redirectToApp` where `allowedHost(new URL(redirectUrl).host, ALLOWED_REDIRECT_HOSTS)` is called, augment the allow-check to additionally pass when:
@@ -414,7 +425,7 @@ sequenceDiagram
   **Test scenarios:**
   - Happy path: origin `http://tailscale-mbp-siyang:4200` in dev (or stage with regex enabled) → matched, CORS allowed.
   - Edge case: `https://tailscale-mbp:4200` (Funnel HTTPS) → does **not** match the proposed regex (HTTP-only). Document the gap; widen regex in implementation if Funnel testing is needed (Open Question Q5).
-  - Error path: production `NODE_ENV` → regex absent from allow-list; `http://tailscale-mbp:4200` is rejected. *(Critical — confirms the dev gate.)*
+  - Error path: production `NODE_ENV` → regex absent from allow-list; `http://tailscale-mbp:4200` is rejected. _(Critical — confirms the dev gate.)_
 
   **Verification:**
   - From the phone, GraphQL POSTs from `tailscale-mbp:4200` to `tailscale-mbp:4000` succeed (no CORS error in console).
@@ -462,14 +473,14 @@ graph LR
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| Developer names a non-dev machine `tailscale-*` and exposes it publicly | Tailscale tailnet machines are never public-facing by default. Funnel opt-in is explicit and out-of-band. Risk is accepted. |
-| `host.startsWith('tailscale-')` is fooled by a malicious Host header in prod | Dev gate (`NODE_ENV !== 'production'`) prevents any prod path. Defense in depth: ALB / Vercel rejects unrecognized hosts before middleware runs. |
-| Next.js 16 upgrade later changes `allowedDevOrigins` semantics | Spec verified against both 15.5.18 and 16.2.6 docs; same wildcard syntax. Low risk. |
-| Hive Gateway changes default `host` in a future version | Pin via explicit `host: '0.0.0.0'` in `common.config.ts`? **Decision: no**, to avoid coupling. If Hive ever changes this, the doc's troubleshooting section flags the fix. |
-| `tailscale-*` wildcard in `allowedDevOrigins` is too permissive for shared dev environments (e.g. shared Codespaces) | Only matters in dev. Real risk is zero; warning suppression is the entire goal. |
-| Linear ticket (B1) contains additional acceptance criteria not in the spec | User to confirm; plan iterates if so. |
+| Risk                                                                                                                 | Mitigation                                                                                                                                                                 |
+| -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Developer names a non-dev machine `tailscale-*` and exposes it publicly                                              | Tailscale tailnet machines are never public-facing by default. Funnel opt-in is explicit and out-of-band. Risk is accepted.                                                |
+| `host.startsWith('tailscale-')` is fooled by a malicious Host header in prod                                         | Dev gate (`NODE_ENV !== 'production'`) prevents any prod path. Defense in depth: ALB / Vercel rejects unrecognized hosts before middleware runs.                           |
+| Next.js 16 upgrade later changes `allowedDevOrigins` semantics                                                       | Spec verified against both 15.5.18 and 16.2.6 docs; same wildcard syntax. Low risk.                                                                                        |
+| Hive Gateway changes default `host` in a future version                                                              | Pin via explicit `host: '0.0.0.0'` in `common.config.ts`? **Decision: no**, to avoid coupling. If Hive ever changes this, the doc's troubleshooting section flags the fix. |
+| `tailscale-*` wildcard in `allowedDevOrigins` is too permissive for shared dev environments (e.g. shared Codespaces) | Only matters in dev. Real risk is zero; warning suppression is the entire goal.                                                                                            |
+| Linear ticket (B1) contains additional acceptance criteria not in the spec                                           | User to confirm; plan iterates if so.                                                                                                                                      |
 
 ---
 
@@ -502,20 +513,20 @@ npx jest --config apps/journeys-admin/jest.config.ts --no-coverage apps/journeys
 
 ### Manual verification matrix
 
-| Scenario | Expectation |
-|----------|-------------|
-| `nx serve` all three, load `http://localhost:4100/` on host machine | Unchanged — home page renders, GraphQL works. |
-| `nx serve` all three, load `http://localhost:4200/` on host machine | Unchanged — admin renders, sign-in works. |
-| `nx serve` all three, load `http://tailscale-<name>:4100/` on phone over tailnet | Home page renders; no `Blocked cross-origin request` warning in dev stdout. |
-| `nx serve` all three, load `http://tailscale-<name>:4200/` on phone, sign in | Sign-in flow completes; lands on requested page; GraphQL requests in Network panel target `tailscale-<name>:4000`. |
-| Stage smoke (post-deploy) | All existing CORS-allowed origins still work; `tailscale-*` is rejected in stage (NODE_ENV=production). |
-| Prod-build smoke (`nx build journeys && nx start journeys`) | Tailscale code path never activates — set NODE_ENV=production and confirm a `tailscale-*` host falls through to `/[hostname]` rewrite as today. |
+| Scenario                                                                         | Expectation                                                                                                                                     |
+| -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `nx serve` all three, load `http://localhost:4100/` on host machine              | Unchanged — home page renders, GraphQL works.                                                                                                   |
+| `nx serve` all three, load `http://localhost:4200/` on host machine              | Unchanged — admin renders, sign-in works.                                                                                                       |
+| `nx serve` all three, load `http://tailscale-<name>:4100/` on phone over tailnet | Home page renders; no `Blocked cross-origin request` warning in dev stdout.                                                                     |
+| `nx serve` all three, load `http://tailscale-<name>:4200/` on phone, sign in     | Sign-in flow completes; lands on requested page; GraphQL requests in Network panel target `tailscale-<name>:4000`.                              |
+| Stage smoke (post-deploy)                                                        | All existing CORS-allowed origins still work; `tailscale-*` is rejected in stage (NODE_ENV=production).                                         |
+| Prod-build smoke (`nx build journeys && nx start journeys`)                      | Tailscale code path never activates — set NODE_ENV=production and confirm a `tailscale-*` host falls through to `/[hostname]` rewrite as today. |
 
 ---
 
 ## Sources & References
 
-- **Linear ticket:** https://linear.app/jesus-film-project/issue/NES-1659 *(body not read — Linear MCP not connected; Blocker B1)*
+- **Linear ticket:** https://linear.app/jesus-film-project/issue/NES-1659 _(body not read — Linear MCP not connected; Blocker B1)_
 - **Next.js 16 allowedDevOrigins:** https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
 - **Next.js 15 allowedDevOrigins:** https://nextjs.org/docs/15/app/api-reference/config/next-config-js/allowedDevOrigins
 - **Hive Gateway config:** https://the-guild.dev/graphql/hive/docs/api-reference/gateway-config

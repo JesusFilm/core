@@ -62,9 +62,7 @@ describe('journeys proxy', () => {
     })
 
     it('rewrites tailscale-* host to /home in dev', async () => {
-      const result = await proxy(
-        buildRequest('tailscale-mbp-siyang:4100', '/')
-      )
+      const result = await proxy(buildRequest('tailscale-mbp-siyang:4100', '/'))
 
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
         'http://tailscale-mbp-siyang:4100/home'
@@ -72,9 +70,7 @@ describe('journeys proxy', () => {
     })
 
     it('rewrites uppercase tailscale-* host to /home (case-insensitive)', async () => {
-      const result = await proxy(
-        buildRequest('TAILSCALE-MBP-SIYANG:4100', '/')
-      )
+      const result = await proxy(buildRequest('TAILSCALE-MBP-SIYANG:4100', '/'))
 
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
         'http://tailscale-mbp-siyang:4100/home'
@@ -92,9 +88,7 @@ describe('journeys proxy', () => {
     })
 
     it('does NOT short-circuit non-tailscale hosts', async () => {
-      const result = await proxy(
-        buildRequest('tailscaleother.com', '/foo')
-      )
+      const result = await proxy(buildRequest('tailscaleother.com', '/foo'))
 
       // No trailing hyphen → falls through to /[hostname][path]
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
@@ -107,9 +101,7 @@ describe('journeys proxy', () => {
     it('does NOT short-circuit tailscale-* in production', async () => {
       ;(process.env as Record<string, string>).NODE_ENV = 'production'
       process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
-      const result = await proxy(
-        buildRequest('tailscale-mbp-siyang:4100', '/')
-      )
+      const result = await proxy(buildRequest('tailscale-mbp-siyang:4100', '/'))
 
       // Falls through to /[hostname][path] — no Tailscale shortcut in prod
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
