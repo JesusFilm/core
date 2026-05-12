@@ -46,7 +46,7 @@ describe('revalidate-template-gallery', () => {
     mockFetch.mockReset()
     mockGetApiRequestTokens.mockReset()
     mockGetApiRequestTokens.mockResolvedValue({ token: 'firebase-token' })
-    consoleError = jest.spyOn(console, 'error').mockImplementation(() => {})
+    consoleError = jest.spyOn(console, 'error').mockImplementation(jest.fn())
   })
 
   afterEach(() => {

@@ -12,7 +12,7 @@ describe('useRevalidateTemplateGallery', () => {
     global.fetch = jest.fn(
       async () => new Response('{}', { status: 200 })
     ) as unknown as typeof fetch
-    consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    consoleWarn = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
   })
 
   afterEach(() => {
