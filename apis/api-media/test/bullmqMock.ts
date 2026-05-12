@@ -1,12 +1,14 @@
-jest.mock('bullmq', () => {
-  const Queue = jest.fn().mockImplementation(() => ({
-    add: jest.fn().mockResolvedValue({ id: 'test-job-id' }),
-    getJob: jest
+import { vi } from 'vitest'
+
+vi.mock('bullmq', () => {
+  const Queue = vi.fn().mockImplementation(() => ({
+    add: vi.fn().mockResolvedValue({ id: 'test-job-id' }),
+    getJob: vi
       .fn()
       .mockResolvedValue({ id: 'test-job-id', progress: 0, data: {} })
   }))
-  const QueueEvents = jest.fn().mockImplementation(() => ({
-    on: jest.fn()
+  const QueueEvents = vi.fn().mockImplementation(() => ({
+    on: vi.fn()
   }))
   return { Queue, QueueEvents }
 })

@@ -4,7 +4,6 @@
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "types": [
-      "jest",
       "node",
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"
@@ -15,7 +14,7 @@
   "exclude": [
     "**/*.spec.ts",
     "**/*.spec.tsx",
-    "jest.config.ts",
+    "vitest.config.mts",
     "**/__mocks/*.ts",
     "**/test/*.ts"
   ],
