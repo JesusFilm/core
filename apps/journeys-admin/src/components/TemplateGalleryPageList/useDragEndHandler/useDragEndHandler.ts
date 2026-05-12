@@ -58,6 +58,10 @@ export function useDragEndHandler(
     useTemplateGalleryPageAssignJourneyMutation()
   const [templateGalleryPageReorderTemplate] =
     useTemplateGalleryPageReorderTemplateMutation()
+  // Drag-end is hard-blocked when either side is published (see the
+  // status checks below), so revalidate would never fire — the public
+  // page never changed. The other mutation surfaces (Publish, Unpublish,
+  // Update, Delete) handle revalidate where it actually matters.
 
   return async function handleDragEnd(event: DragEndEvent): Promise<void> {
     setActiveDragId(null)

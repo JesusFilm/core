@@ -12,6 +12,7 @@ import {
   TemplateGalleryPageStatus,
   TemplateGalleryPageUpdateInput
 } from '../../../../../__generated__/globalTypes'
+import { useRevalidateTemplateGallery } from '../../../../libs/useRevalidateTemplateGallery'
 import { useTemplateGalleryPageCreateMutation } from '../../../../libs/useTemplateGalleryPageCreateMutation'
 import { useTemplateGalleryPageUpdateMutation } from '../../../../libs/useTemplateGalleryPageUpdateMutation'
 
@@ -142,6 +143,7 @@ export function useCollectionForm({
 
   const [templateGalleryPageCreate] = useTemplateGalleryPageCreateMutation()
   const [templateGalleryPageUpdate] = useTemplateGalleryPageUpdateMutation()
+  const revalidate = useRevalidateTemplateGallery()
 
   // Memoize so identity is stable across re-renders. Formik uses
   // initialValues identity to compute `dirty`; a fresh literal each
@@ -232,9 +234,20 @@ export function useCollectionForm({
         if (initialIds !== nextIds) {
           input.journeyIds = values.journeyIds
         }
-        await templateGalleryPageUpdate({
+        const updateResult = await templateGalleryPageUpdate({
           variables: { id: collection.id, input }
         })
+        // Revalidate only when the collection has a live public page —
+        // edits to a draft have nothing to bust. When published, fire for
+        // both the old slug (caller-known) and the new slug from the
+        // server response so slug-rename moves don't leave the previous
+        // URL serving a cached page.
+        if (collection.status === TemplateGalleryPageStatus.published) {
+          void revalidate([
+            collection.slug,
+            updateResult.data?.templateGalleryPageUpdate.slug
+          ])
+        }
         enqueueSnackbar(t('Collection updated'), {
           variant: 'success',
           preventDuplicate: true

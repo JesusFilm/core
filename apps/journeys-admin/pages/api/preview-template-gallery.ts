@@ -1,24 +1,24 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getApiRequestTokens } from 'next-firebase-auth-edge'
-import fetch from 'node-fetch'
 
 import { authConfig } from '../../src/libs/auth/config'
 
-async function sleep(ms: number | undefined): Promise<void> {
-  return await new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
-
+// Authenticated jump-link to the public template gallery page. The admin
+// UI hits this proxy so we can gate Preview behind the same auth as the
+// rest of the admin app, then redirect to the canonical public URL.
+//
+// Revalidation lives elsewhere now (see `revalidate-template-gallery.ts`
+// + `useRevalidateTemplateGallery`) — the mutating flows (save / publish /
+// unpublish / assign / reorder / delete) trigger it directly. Preview is
+// purely a read path: it should never write, and it should never wait for
+// a revalidate roundtrip.
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  if (
-    process.env.JOURNEYS_URL == null ||
-    process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN == null
-  )
+  if (process.env.JOURNEYS_URL == null) {
     return res.status(500).json({ error: 'Missing Environment Variables' })
+  }
 
   try {
     const tokens = await getApiRequestTokens(req, authConfig)
@@ -30,30 +30,7 @@ export default async function handler(
   }
 
   const slug = req.query.slug?.toString()
-
   if (slug == null) return res.status(400).json({ error: 'Missing Slug' })
-
-  const params: { accessToken: string; slug: string } = {
-    accessToken: process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN,
-    slug
-  }
-
-  try {
-    const response = await fetch(
-      `${
-        process.env.JOURNEYS_URL
-      }/api/revalidate-template-gallery?${new URLSearchParams(
-        params
-      ).toString()}`
-    )
-    if (!response.ok)
-      return res.status(response.status).json(await response.text())
-  } catch (e) {
-    return res.status(500).json({ error: 'Error revalidating' })
-  }
-
-  // 300ms required to invalidate edge caches
-  await sleep(300)
 
   res.redirect(307, `${process.env.JOURNEYS_URL}/template-gallery/${slug}`)
 }

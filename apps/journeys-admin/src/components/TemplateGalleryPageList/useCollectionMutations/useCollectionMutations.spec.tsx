@@ -28,6 +28,11 @@ jest.mock('notistack', () => {
   }
 })
 
+const mockRevalidate = jest.fn(async () => undefined)
+jest.mock('../../../libs/useRevalidateTemplateGallery', () => ({
+  useRevalidateTemplateGallery: () => mockRevalidate
+}))
+
 function wrapperWithMocks(
   mocks: ReadonlyArray<MockedResponse>
 ): ({ children }: { children: ReactNode }) => JSX.Element {
@@ -65,6 +70,7 @@ function makeCollection(
 describe('useCollectionMutations', () => {
   beforeEach(() => {
     mockEnqueueSnackbar.mockClear()
+    mockRevalidate.mockClear()
   })
 
   describe('publish', () => {
@@ -93,6 +99,10 @@ describe('useCollectionMutations', () => {
       // No success snackbar — the parent opens a success dialog instead.
       expect(mockEnqueueSnackbar).not.toHaveBeenCalled()
       expect(result.current.busyId).toBe(null)
+      // Revalidate is fired with both the pre-publish slug (caller's input)
+      // and the post-publish slug (server response) so any change is covered.
+      expect(mockRevalidate).toHaveBeenCalledTimes(1)
+      expect(mockRevalidate).toHaveBeenCalledWith(['old-slug', 'collection'])
     })
 
     it('sets busyId to the collection id while in flight and clears on success', async () => {
@@ -156,8 +166,11 @@ describe('useCollectionMutations', () => {
   })
 
   describe('unpublish', () => {
-    it('shows a success snackbar and clears busyId', async () => {
-      const collection = makeCollection({ id: 'page-7' })
+    it('revalidates and shows a success snackbar when unpublishing a published collection', async () => {
+      const collection = makeCollection({
+        id: 'page-7',
+        status: TemplateGalleryPageStatus.published
+      })
       const unpublishMock = getTemplateGalleryPageUnpublishMock({
         id: 'page-7'
       })
@@ -176,6 +189,33 @@ describe('useCollectionMutations', () => {
         expect.objectContaining({ variant: 'success' })
       )
       expect(result.current.busyId).toBe(null)
+      // Revalidate so the now-unpublished public URL stops serving the
+      // cached page and falls through to 404.
+      expect(mockRevalidate).toHaveBeenCalledTimes(1)
+      expect(mockRevalidate).toHaveBeenCalledWith(['old-slug'])
+    })
+
+    it('skips revalidate when the collection was already a draft', async () => {
+      const collection = makeCollection({
+        id: 'page-7',
+        status: TemplateGalleryPageStatus.draft
+      })
+      const unpublishMock = getTemplateGalleryPageUnpublishMock({
+        id: 'page-7'
+      })
+
+      const { result } = renderHook(() => useCollectionMutations(), {
+        wrapper: wrapperWithMocks([unpublishMock])
+      })
+
+      await act(async () => {
+        await result.current.unpublish(collection)
+      })
+
+      // The mutation still runs — the server is idempotent — but there is
+      // no public page to bust, so we don't burn a revalidate roundtrip.
+      expect(unpublishMock.result).toHaveBeenCalledTimes(1)
+      expect(mockRevalidate).not.toHaveBeenCalled()
     })
 
     it('shows an error snackbar when the mutation fails', async () => {
@@ -203,12 +243,16 @@ describe('useCollectionMutations', () => {
         expect.objectContaining({ variant: 'error' })
       )
       expect(result.current.busyId).toBe(null)
+      expect(mockRevalidate).not.toHaveBeenCalled()
     })
   })
 
   describe('ungroup', () => {
-    it('shows a "Collection removed" snackbar on success', async () => {
-      const collection = makeCollection({ id: 'page-7' })
+    it('revalidates and shows a success snackbar when deleting a published collection', async () => {
+      const collection = makeCollection({
+        id: 'page-7',
+        status: TemplateGalleryPageStatus.published
+      })
       const deleteMock = getTemplateGalleryPageDeleteMock({ id: 'page-7' })
 
       const { result } = renderHook(() => useCollectionMutations(), {
@@ -225,6 +269,29 @@ describe('useCollectionMutations', () => {
         expect.objectContaining({ variant: 'success' })
       )
       expect(result.current.busyId).toBe(null)
+      // Revalidate so the now-deleted public URL stops serving the cached
+      // page.
+      expect(mockRevalidate).toHaveBeenCalledTimes(1)
+      expect(mockRevalidate).toHaveBeenCalledWith(['old-slug'])
+    })
+
+    it('skips revalidate when the deleted collection was only a draft', async () => {
+      const collection = makeCollection({
+        id: 'page-7',
+        status: TemplateGalleryPageStatus.draft
+      })
+      const deleteMock = getTemplateGalleryPageDeleteMock({ id: 'page-7' })
+
+      const { result } = renderHook(() => useCollectionMutations(), {
+        wrapper: wrapperWithMocks([deleteMock])
+      })
+
+      await act(async () => {
+        await result.current.ungroup(collection)
+      })
+
+      expect(deleteMock.result).toHaveBeenCalledTimes(1)
+      expect(mockRevalidate).not.toHaveBeenCalled()
     })
 
     it('shows an error snackbar with the server message on failure', async () => {
@@ -252,6 +319,7 @@ describe('useCollectionMutations', () => {
         expect.objectContaining({ variant: 'error' })
       )
       expect(result.current.busyId).toBe(null)
+      expect(mockRevalidate).not.toHaveBeenCalled()
     })
   })
 })

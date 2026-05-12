@@ -3,6 +3,8 @@ import { useSnackbar } from 'notistack'
 import { useEffect, useRef, useState } from 'react'
 
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
+import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
+import { useRevalidateTemplateGallery } from '../../../libs/useRevalidateTemplateGallery'
 import { useTemplateGalleryPageDeleteMutation } from '../../../libs/useTemplateGalleryPageDeleteMutation'
 import { useTemplateGalleryPagePublishMutation } from '../../../libs/useTemplateGalleryPagePublishMutation'
 import { useTemplateGalleryPageUnpublishMutation } from '../../../libs/useTemplateGalleryPageUnpublishMutation'
@@ -35,18 +37,25 @@ export function useCollectionMutations(): CollectionMutations {
   // Each mutation's `setBusyId(null)` lands after an await — if the
   // consumer unmounts mid-flight we'd be writing to dead state and React
   // would warn. Gate the post-await setState on this ref.
+  //
+  // Setup MUST flip `mountedRef.current = true`. Under React StrictMode
+  // (Next.js dev) effects run setup → cleanup → setup. A body-less setup
+  // would leave the ref stuck at `false` after the second setup, breaking
+  // every later `setBusyId(null)` in finally — which is exactly the bug
+  // that left the 3-dot menu permanently disabled after an unpublish.
   const mountedRef = useRef(true)
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
       mountedRef.current = false
-    },
-    []
-  )
+    }
+  }, [])
 
   const [templateGalleryPagePublish] = useTemplateGalleryPagePublishMutation()
   const [templateGalleryPageUnpublish] =
     useTemplateGalleryPageUnpublishMutation()
   const [templateGalleryPageDelete] = useTemplateGalleryPageDeleteMutation()
+  const revalidate = useRevalidateTemplateGallery()
 
   function showError(error: unknown, fallback: string): void {
     enqueueSnackbar(error instanceof Error ? error.message : fallback, {
@@ -65,6 +74,11 @@ export function useCollectionMutations(): CollectionMutations {
       })
       const result = data?.templateGalleryPagePublish
       if (result == null) return null
+      // Revalidate both the old and new slug paths. Publish doesn't change
+      // the slug today, but the server returns it authoritatively — pass
+      // both into the deduper so we're correct even if that invariant
+      // shifts in future.
+      void revalidate([collection.slug, result.slug])
       // Merge server-set fields (status, publishedAt, updatedAt, slug)
       // into the input collection so the caller can open the success
       // dialog with the live public URL — and so any later read sees
@@ -88,6 +102,13 @@ export function useCollectionMutations(): CollectionMutations {
     setBusyId(collection.id)
     try {
       await templateGalleryPageUnpublish({ variables: { id: collection.id } })
+      // Revalidate only when the collection actually had a public page to
+      // clear (i.e. was previously published). An unpublish on a draft is
+      // an idempotent no-op — no cached page to bust, no revalidate
+      // needed.
+      if (collection.status === TemplateGalleryPageStatus.published) {
+        void revalidate([collection.slug])
+      }
       enqueueSnackbar(t('Collection unpublished'), {
         variant: 'success',
         preventDuplicate: true
@@ -103,6 +124,11 @@ export function useCollectionMutations(): CollectionMutations {
     setBusyId(collection.id)
     try {
       await templateGalleryPageDelete({ variables: { id: collection.id } })
+      // Revalidate only when the collection had a public page to clear.
+      // Deleting a draft leaves no orphaned cache entry behind.
+      if (collection.status === TemplateGalleryPageStatus.published) {
+        void revalidate([collection.slug])
+      }
       enqueueSnackbar(t('Collection removed'), {
         variant: 'success',
         preventDuplicate: true

@@ -26,6 +26,11 @@ jest.mock('notistack', () => {
   }
 })
 
+const mockRevalidate = jest.fn(async () => undefined)
+jest.mock('../../../../libs/useRevalidateTemplateGallery', () => ({
+  useRevalidateTemplateGallery: () => mockRevalidate
+}))
+
 function wrapperWithMocks(
   mocks: ReadonlyArray<MockedResponse>
 ): ({ children }: { children: ReactNode }) => JSX.Element {
@@ -96,6 +101,7 @@ function makeCollection(
 describe('useCollectionForm', () => {
   beforeEach(() => {
     mockEnqueueSnackbar.mockClear()
+    mockRevalidate.mockClear()
   })
 
   describe('initialValues', () => {
@@ -393,6 +399,7 @@ describe('useCollectionForm', () => {
         description: 'Old desc',
         slug: 'old-slug',
         creatorName: 'Old',
+        status: TemplateGalleryPageStatus.published,
         templates: [
           {
             __typename: 'Journey',
@@ -446,6 +453,13 @@ describe('useCollectionForm', () => {
         'Collection updated',
         expect.objectContaining({ variant: 'success' })
       )
+      // Revalidate the pre-update slug (caller-known) and the post-update
+      // slug from the server response. Hook dedupes inside.
+      expect(mockRevalidate).toHaveBeenCalledTimes(1)
+      expect(mockRevalidate).toHaveBeenCalledWith([
+        'old-slug',
+        'my-collection'
+      ])
     })
 
     it('omits journeyIds when membership is unchanged', async () => {
@@ -503,6 +517,9 @@ describe('useCollectionForm', () => {
 
       expect(updateMock.result).toHaveBeenCalledTimes(1)
       expect(onClose).toHaveBeenCalled()
+      // Default makeCollection status is `draft` — edits to a draft have
+      // no live public page to bust, so revalidate should not fire.
+      expect(mockRevalidate).not.toHaveBeenCalled()
     })
   })
 
