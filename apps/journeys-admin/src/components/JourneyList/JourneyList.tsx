@@ -2,10 +2,13 @@ import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
 import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { User } from '../../libs/auth/authContext'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { usePageWrapperStyles } from '../PageWrapper/utils/usePageWrapperStyles'
+import { TemplateGalleryPageList } from '../TemplateGalleryPageList'
 
 import { AddJourneyFab } from './AddJourneyFab'
 import { JourneyListContent } from './JourneyListContent'
@@ -36,6 +39,9 @@ export function JourneyList({
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const router = useRouter()
   const [event, setEvent] = useState<JourneyListEvent>()
+  // When the flag is on, the Team Templates tab renders the Collections
+  // panel (TemplateGalleryPageList) in place of the original list.
+  const { teamTemplateCollection } = useFlags()
   const { refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
     useLastActiveTeamId: true
@@ -87,7 +93,7 @@ export function JourneyList({
         ? 'trashed'
         : 'active')
 
-  // Side panel is only visible for journeys tab, so expand width for templates
+  // Side panel is only visible for journeys tab, so expand width for templates and collections
   const currentContentType = (router?.query?.type as ContentType) ?? 'journeys'
   const sidePanelVisible = currentContentType === 'journeys'
 
@@ -96,6 +102,14 @@ export function JourneyList({
     contentType: ContentType,
     status: JourneyStatusFilter
   ): ReactElement => {
+    if (contentType === 'templates' && teamTemplateCollection === true) {
+      return (
+        <TemplateGalleryPageList
+          visible={contentType === currentContentType}
+          status={status}
+        />
+      )
+    }
     // Only pass event to the currently active content type to prevent duplicate actions
     const eventForThisContentType =
       contentType === currentContentType ? event : undefined
