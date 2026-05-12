@@ -62,6 +62,21 @@ const ALLOWED_REDIRECT_HOSTS = [
   'admin-stage.nextstep.is'
 ]
 
+/**
+ * In dev, Tailscale MagicDNS hostnames (`tailscale-*`) need to round-trip
+ * through the sign-in redirect flow. The prefix is the dev-only opt-in
+ * marker — see docs/development/tailscale-dev-access.md.
+ */
+export function isAllowedRedirectHost(host: string): boolean {
+  if (allowedHost(host, ALLOWED_REDIRECT_HOSTS)) return true
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    host.toLowerCase().startsWith('tailscale-')
+  )
+    return true
+  return false
+}
+
 export function redirectToApp(ctx: GetServerSidePropsContext): {
   redirect: { permanent: false; destination: string }
 } {
@@ -76,7 +91,7 @@ export function redirectToApp(ctx: GetServerSidePropsContext): {
           redirect: { permanent: false, destination: redirectUrl }
         }
       }
-      if (allowedHost(new URL(redirectUrl).host, ALLOWED_REDIRECT_HOSTS)) {
+      if (isAllowedRedirectHost(new URL(redirectUrl).host)) {
         return {
           redirect: { permanent: false, destination: redirectUrl }
         }
