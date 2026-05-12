@@ -73,7 +73,6 @@ describe('AlgoliaVideoList', () => {
     } as any)
     mockUseInstantSearch.mockReturnValue({
       status: 'idle',
-      results: { nbHits: 0 },
       error: null
     } as any)
     mockUsePagination.mockReturnValue({
@@ -143,7 +142,6 @@ describe('AlgoliaVideoList', () => {
     } as any)
     mockUseInstantSearch.mockReturnValue({
       status: 'idle',
-      results: { nbHits: 2 },
       error: null
     } as any)
 

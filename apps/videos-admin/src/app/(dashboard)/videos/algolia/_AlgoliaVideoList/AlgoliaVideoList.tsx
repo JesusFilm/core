@@ -157,7 +157,7 @@ function AlgoliaInstantSearchResults(): ReactElement {
   const router = useRouter()
   const { query, refine } = useSearchBox()
   const { items } = useHits<AlgoliaVideoRecord>()
-  const { status, results, error } = useInstantSearch()
+  const { status, error } = useInstantSearch()
   const { currentRefinement, nbPages, refine: refinePage } = usePagination()
 
   const rows: GridRowsProp<AlgoliaRow> = items.map(mapAlgoliaHitToRow)
@@ -201,12 +201,7 @@ function AlgoliaInstantSearchResults(): ReactElement {
       }}
       gap={2}
     >
-      <Stack direction="row" alignItems="center" justifyContent="space-between">
-        <Typography variant="h4">Algolia Video Library</Typography>
-        <Typography variant="body2" color="text.secondary">
-          Results: {results?.nbHits ?? 0}
-        </Typography>
-      </Stack>
+      <Typography variant="h4">Algolia Video Library</Typography>
       <Stack direction="row" spacing={1} alignItems="center">
         <TextField
           label="Search Algolia"
