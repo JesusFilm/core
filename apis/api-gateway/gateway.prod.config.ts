@@ -28,31 +28,41 @@ export const gatewayConfig = defineConfig({
       maxAge: 86400
     }
 
+    const isDev = process.env.NODE_ENV !== 'production'
+
+    const matchers: Array<string | RegExp> = [
+      // gateway
+      'https://api-gateway.central.jesusfilm.org',
+      'https://api-gateway.stage.central.jesusfilm.org',
+      // apollo studio
+      'https://studio.apollographql.com',
+      // graphql hive
+      'https://app.graphql-hive.com',
+      // journeys-admin
+      'https://admin.nextstep.is',
+      'https://admin-stage.nextstep.is',
+      // journeys
+      'https://your.nextstep.is',
+      'https://your-stage.nextstep.is',
+      // nexus-admin
+      'https://nexus.jesusfilm.org',
+      'https://nexus-stage.jesusfilm.org',
+      // any localhost
+      /^http:\/\/localhost:\d+$/,
+      // any project deployed on the jesusfilm vercel account
+      /^https:\/\/([a-z0-9-]+)-jesusfilm[.]vercel[.]app$/,
+      // any project deployed on the jesusfilm.org domain (used primarily for watch)
+      /^https:\/\/([a-z0-9-]+)[.]jesusfilm[.]org$/,
+      // dev-only: Tailscale MagicDNS hostnames so cross-device dev testing
+      // works without per-developer env-var fiddling. HTTP-only (Tailnet
+      // traffic is unencrypted by default; Funnel HTTPS is a separate
+      // opt-in we don't widen for here). See
+      // docs/development/tailscale-dev-access.md.
+      ...(isDev ? [/^http:\/\/tailscale-[a-z0-9-]+(:\d+)?$/] : [])
+    ]
+
     if (
-      [
-        // gateway
-        'https://api-gateway.central.jesusfilm.org',
-        'https://api-gateway.stage.central.jesusfilm.org',
-        // apollo studio
-        'https://studio.apollographql.com',
-        // graphql hive
-        'https://app.graphql-hive.com',
-        // journeys-admin
-        'https://admin.nextstep.is',
-        'https://admin-stage.nextstep.is',
-        // journeys
-        'https://your.nextstep.is',
-        'https://your-stage.nextstep.is',
-        // nexus-admin
-        'https://nexus.jesusfilm.org',
-        'https://nexus-stage.jesusfilm.org',
-        // any localhost
-        /^http:\/\/localhost:\d+$/,
-        // any project deployed on the jesusfilm vercel account
-        /^https:\/\/([a-z0-9-]+)-jesusfilm[.]vercel[.]app$/,
-        // any project deployed on the jesusfilm.org domain (used primarily for watch)
-        /^https:\/\/([a-z0-9-]+)[.]jesusfilm[.]org$/
-      ].some((matcher) =>
+      matchers.some((matcher) =>
         typeof matcher === 'string' ? matcher === origin : matcher.test(origin)
       )
     )
