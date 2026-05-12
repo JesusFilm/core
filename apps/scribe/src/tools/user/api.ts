@@ -74,12 +74,7 @@ export async function exchangeCustomTokenForIdToken(
   session: ActiveSession,
   customToken: string
 ): Promise<FirebaseSignInResult> {
-  const apiKey = resolveFirebaseApiKey(session.environment)
-  if (apiKey == null) {
-    throw new Error(
-      `Firebase API key for ${session.environment.id} is not configured. Set SCRIBE_FIREBASE_API_KEY_${session.environment.id.toUpperCase()} in your shell, or fill in firebaseApiKey in apps/scribe/src/config/environments.ts.`
-    )
-  }
+  const apiKey = await resolveFirebaseApiKey(session.environment)
   const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${apiKey}`
   const response = await fetch(url, {
     method: 'POST',

@@ -636,7 +636,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     // The agent always operates with the effective session — under
     // impersonation, tool calls are authenticated as the impersonated user.
     const session = getEffectiveSession(state)
-    const tools = buildJourneyTools(session)
+    const tools = buildJourneyTools(session, state.activeTeam)
     const allowedTools = tools.map(
       (tool) => `mcp__${SERVER_NAME}__${tool.name}`
     )

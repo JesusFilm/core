@@ -3,9 +3,11 @@ import { z } from 'zod'
 
 import type { ActiveSession } from '../../auth/login'
 import { GraphQLRequestError } from '../../graphql/client'
+import type { TeamSelection } from '../../repl/state/types'
 
 import {
   applyJourneySimpleUpdate,
+  createJourney,
   fetchJourneySimple,
   resolveJourneyByIdOrSlug
 } from './api'
@@ -47,8 +49,54 @@ function errorResult(message: string): {
   }
 }
 
-export function buildJourneyTools(session: ActiveSession) {
+export function buildJourneyTools(
+  session: ActiveSession,
+  activeTeam: TeamSelection | null
+) {
   return [
+    tool(
+      'create_journey',
+      'Create a new, empty journey shell in the active team via journeyCreate. Returns the new journey id, title, and slug. Use this BEFORE update_journey when scaffolding a journey from scratch. Requires an active team (the user must have run /team and selected a real team — the "Shared with me" pseudo-team is not a valid target).',
+      {
+        title: z
+          .string()
+          .min(1)
+          .describe('Title for the new journey. Must not be empty.'),
+        description: z
+          .string()
+          .optional()
+          .describe(
+            'Optional internal description (audience, topic, traffic source). Only editors see this.'
+          ),
+        themeMode: z
+          .enum(['light', 'dark'])
+          .optional()
+          .describe('Theme mode. Defaults to `dark`.')
+      },
+      async ({ title, description, themeMode }) => {
+        if (activeTeam == null) {
+          return errorResult(
+            'No active team is set. Ask the user to run /team and pick a team before creating a journey.'
+          )
+        }
+        if (activeTeam.kind !== 'team') {
+          return errorResult(
+            'The active selection is "Shared with me", which is not a real team. Ask the user to /team and pick a real team before creating a journey.'
+          )
+        }
+        try {
+          const result = await createJourney(session, {
+            title,
+            description,
+            themeMode,
+            teamId: activeTeam.team.id
+          })
+          return jsonResult(result)
+        } catch (error) {
+          return errorResult(formatGraphqlError(error))
+        }
+      }
+    ),
     tool(
       'resolve_journey',
       'Resolve a journey by id (UUID) or slug. Returns the journey id, title, and slug. Use this first when the user provides a slug rather than an id.',

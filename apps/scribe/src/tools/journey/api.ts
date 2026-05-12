@@ -27,6 +27,42 @@ const ADMIN_JOURNEY_RESOLVE_ID = graphql(`
   }
 `)
 
+const JOURNEY_CREATE = graphql(`
+  mutation ScribeJourneyCreate($input: JourneyCreateInput!, $teamId: ID!) {
+    journeyCreate(input: $input, teamId: $teamId) {
+      id
+      title
+      slug
+    }
+  }
+`)
+
+export interface CreateJourneyOptions {
+  title: string
+  teamId: string
+  description?: string
+  /** BCP-47 language id used by Crowdin. Defaults to English (`"529"`). */
+  languageId?: string
+  /** `light` or `dark`. Defaults to `dark` to match journeys-admin. */
+  themeMode?: 'light' | 'dark'
+}
+
+export async function createJourney(
+  session: ActiveSession,
+  options: CreateJourneyOptions
+): Promise<{ id: string; title: string; slug: string }> {
+  const data = await graphqlRequest(session, JOURNEY_CREATE, {
+    input: {
+      title: options.title,
+      description: options.description,
+      languageId: options.languageId ?? '529',
+      themeMode: options.themeMode ?? 'dark'
+    },
+    teamId: options.teamId
+  })
+  return data.journeyCreate
+}
+
 export type JourneyListItemStatus =
   | 'draft'
   | 'published'
