@@ -11,7 +11,7 @@ import type {
 } from './types'
 
 interface OpenAICompatConfig {
-  id: Extract<ProviderId, 'openrouter' | 'hermes' | 'lm-studio'>
+  id: Extract<ProviderId, 'openrouter' | 'hermes' | 'lm-studio' | 'ollama'>
   label: string
   apiKey: string
   baseUrl: string

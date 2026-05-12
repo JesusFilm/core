@@ -12,13 +12,18 @@ import { env } from '../env'
 
 /**
  * Identifier for an agent backend. `claude-code` rides on Claude Code's own
- * credentials and therefore stores nothing here. `openrouter`, `hermes`, and
- * `lm-studio` all speak the OpenAI chat-completions protocol. OpenRouter and
- * Hermes need an API key (and, for Hermes, an endpoint base URL). LM Studio
- * runs locally and accepts any auth value — only its base URL is stored,
- * defaulting to `http://localhost:1234/v1`.
+ * credentials and therefore stores nothing here. `openrouter`, `hermes`,
+ * `lm-studio`, and `ollama` all speak the OpenAI chat-completions protocol.
+ * OpenRouter and Hermes need an API key (and, for Hermes, an endpoint base
+ * URL). LM Studio and Ollama run locally and accept any auth value — only
+ * their base URL is stored, defaulting to the standard local ports.
  */
-export type ProviderId = 'claude-code' | 'openrouter' | 'hermes' | 'lm-studio'
+export type ProviderId =
+  | 'claude-code'
+  | 'openrouter'
+  | 'hermes'
+  | 'lm-studio'
+  | 'ollama'
 
 export type ApiProviderId = Exclude<ProviderId, 'claude-code'>
 

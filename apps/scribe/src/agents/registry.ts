@@ -10,6 +10,7 @@ import type { AgentProvider, ProviderMeta } from './types'
 
 const OPENROUTER_DEFAULT_BASE_URL = 'https://openrouter.ai/api/v1'
 const LM_STUDIO_DEFAULT_BASE_URL = 'http://localhost:1234/v1'
+const OLLAMA_DEFAULT_BASE_URL = 'http://localhost:11434/v1'
 
 export const PROVIDER_METAS: ProviderMeta[] = [
   {
@@ -49,6 +50,16 @@ export const PROVIDER_METAS: ProviderMeta[] = [
     needsApiKey: false,
     needsBaseUrl: true,
     defaultBaseUrl: LM_STUDIO_DEFAULT_BASE_URL
+  },
+  {
+    id: 'ollama',
+    label: 'Ollama',
+    description:
+      'Local Ollama server via its OpenAI-compatible endpoint (default http://localhost:11434/v1). No API key required.',
+    needsCredential: true,
+    needsApiKey: false,
+    needsBaseUrl: true,
+    defaultBaseUrl: OLLAMA_DEFAULT_BASE_URL
   }
 ]
 

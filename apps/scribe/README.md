@@ -9,8 +9,8 @@ with a tightly-scoped tool set. The first built-in skill is the
 journeys via the existing GraphQL gateway operations.
 
 Multiple agent backends are supported — Claude Code (default), OpenRouter,
-any OpenAI-compatible Hermes endpoint, and a local LM Studio server. See
-[Providers](#providers).
+any OpenAI-compatible Hermes endpoint, a local LM Studio server, and a
+local Ollama server. See [Providers](#providers).
 
 ## Status
 
@@ -129,35 +129,41 @@ across runs. Switch in the REPL with `/provider`, or pin one at launch with
 | `openrouter`  | OpenAI-compatible chat completions against OpenRouter.        | API key (stored locally). Base URL defaults to `https://openrouter.ai/api/v1`.                               |
 | `hermes`      | OpenAI-compatible chat completions against a Hermes endpoint. | API key **and** base URL (both stored locally). The URL is the endpoint root, without `/chat/completions`.    |
 | `lm-studio`   | Local OpenAI-compatible server (LM Studio).                   | API key is optional (leave blank for the default no-auth setup; set one when running LM Studio behind a proxy or with auth enabled). Base URL defaults to `http://localhost:1234/v1` — override it for a remote LM Studio. |
+| `ollama`      | Local Ollama server via its OpenAI-compatible endpoint.       | API key is optional (Ollama is unauthenticated out of the box). Base URL defaults to `http://localhost:11434/v1` — override it for a remote Ollama host or a non-default port. |
 
-The first time you select `openrouter`, `hermes`, or `lm-studio` via
-`/provider`, scribe walks through base URL and API key prompts and writes
-the result to `~/.config/scribe/providers.json` (mode 0600). For `lm-studio`
-both fields have sensible defaults — confirm the URL with Enter, and leave
-the API key blank to run without auth (or set one if your LM Studio is
-behind a proxy or has auth enabled). To forget a stored credential:
+The first time you select `openrouter`, `hermes`, `lm-studio`, or `ollama`
+via `/provider`, scribe walks through base URL and API key prompts and
+writes the result to `~/.config/scribe/providers.json` (mode 0600). For
+local backends (`lm-studio`, `ollama`) both fields have sensible defaults —
+confirm the URL with Enter, and leave the API key blank to run without auth
+(or set one if your local server sits behind a proxy or has auth enabled).
+To forget a stored credential:
 
 ```bash
 pnpm exec nx serve scribe -- logout --provider openrouter
 ```
 
-Things to know when using OpenRouter, Hermes, or LM Studio:
+Things to know when using OpenRouter, Hermes, LM Studio, or Ollama:
 
 - The journey tools are translated to OpenAI tool-call schemas on the fly via
   Zod's built-in JSON Schema generator. Tool-call quality depends on the
-  model — Anthropic and OpenAI flagship models are the most reliable; on
-  LM Studio, pick a model with native function-calling support (e.g. recent
-  Llama, Qwen, or Mistral instruct variants).
+  model — Anthropic and OpenAI flagship models are the most reliable. On
+  LM Studio and Ollama, pick a model with native function-calling support
+  (e.g. recent Llama 3.x, Qwen 2.5, or Mistral instruct variants).
 - Aliases like `opus`/`sonnet`/`haiku` are Claude-specific. Use full model
   ids on OpenRouter (e.g. `anthropic/claude-sonnet-4`,
-  `openai/gpt-4o-mini`), on Hermes, and on LM Studio (the model id LM Studio
-  shows for the loaded model).
+  `openai/gpt-4o-mini`), on Hermes, and on local backends (the id LM Studio
+  or `ollama list` reports for the loaded/pulled model).
 - Token usage on non-Claude providers fills `in`/`out` only; cache columns
   show 0 because the OpenAI chat-completions response has no cache fields.
 - LM Studio must be running with a model loaded before scribe can talk to
-  it. Start the LM Studio server (defaults to port 1234), load a tool-capable
-  model, then `/provider lm-studio` in scribe and set `--model` to the id
-  shown in LM Studio.
+  it. Start the LM Studio server (defaults to port 1234), load a
+  tool-capable model, then `/provider lm-studio` in scribe and set `--model`
+  to the id shown in LM Studio.
+- For Ollama, start the `ollama serve` daemon (defaults to port 11434) and
+  pull a tool-capable model (e.g. `ollama pull llama3.1`). Then
+  `/provider ollama` in scribe and `/model` to pick the model from the
+  list — scribe queries `/v1/models` for the catalog.
 
 ## Auth notes
 
