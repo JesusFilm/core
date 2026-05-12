@@ -3,6 +3,7 @@ import {
   isEnvironmentId,
   listEnvironments
 } from '../../config/environments'
+import { collectBlocks, findBlockByQuery } from '../components/BlockPicker'
 import { findCardByQuery } from '../components/CardPicker'
 import { findJourneyByQuery } from '../components/JourneyPicker'
 import { findSelectionByName } from '../components/TeamPicker'
@@ -270,6 +271,44 @@ const cardCommand: SlashCommand = {
   }
 }
 
+const blockCommand: SlashCommand = {
+  name: 'block',
+  argHint: '[heading|text|button|poll|image|backgroundImage|video]',
+  description:
+    'Focus on a specific content block within the active card (heading, text, button, etc.).',
+  isAvailable(ctx) {
+    return ctx.activeCard != null
+  },
+  run(args, ctx) {
+    if (ctx.activeCard == null) {
+      ctx.appendSystemMessage(
+        'No active card. Pick one with /card before selecting a block.',
+        'info'
+      )
+      return
+    }
+    if (args.length === 0) {
+      ctx.openBlockPicker()
+      return
+    }
+    const phrase = args.join(' ')
+    const match = findBlockByQuery(ctx.activeCard, phrase)
+    if (match == null) {
+      const available = collectBlocks(ctx.activeCard)
+        .map((entry) => entry.kind)
+        .join(', ')
+      ctx.appendSystemMessage(
+        available.length === 0
+          ? `Card ${ctx.activeCard.id} has no content blocks to pick.`
+          : `No block matched "${phrase}". Available on this card: ${available}.`,
+        'error'
+      )
+      return
+    }
+    ctx.setActiveBlock(match)
+  }
+}
+
 const translateCommand: SlashCommand = {
   name: 'translate',
   argHint: '[id|slug|title]',
@@ -383,6 +422,7 @@ export const COMMANDS: SlashCommand[] = [
   teamCommand,
   journeyCommand,
   cardCommand,
+  blockCommand,
   translateCommand,
   modelCommand,
   impersonateCommand,

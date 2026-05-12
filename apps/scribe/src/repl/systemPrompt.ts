@@ -2,7 +2,11 @@ import type { ActiveSession } from '../auth/login'
 import type { JourneyListItem } from '../tools/journey/api'
 import type { JourneySimpleCard } from '../tools/journey/types'
 
-import type { ImpersonationSession, TeamSelection } from './state/types'
+import type {
+  BlockKind,
+  ImpersonationSession,
+  TeamSelection
+} from './state/types'
 
 interface SystemPromptInput {
   /** The session your tool calls actually authenticate as (effective). */
@@ -10,6 +14,7 @@ interface SystemPromptInput {
   activeTeam: TeamSelection | null
   activeJourney: JourneyListItem | null
   activeCard: JourneySimpleCard | null
+  activeBlock: BlockKind | null
   /** Email of the real operator behind the keyboard, even mid-impersonation. */
   operatorEmail: string | null
   impersonating: ImpersonationSession | null
@@ -20,6 +25,7 @@ export function buildSystemPrompt({
   activeTeam,
   activeJourney,
   activeCard,
+  activeBlock,
   operatorEmail,
   impersonating
 }: SystemPromptInput): string {
@@ -28,10 +34,11 @@ export function buildSystemPrompt({
   const teamLine = describeActiveTeam(activeTeam)
   const journeyLine = describeActiveJourney(activeJourney)
   const cardLine = describeActiveCard(activeCard)
+  const blockLine = describeActiveBlock(activeCard, activeBlock)
   const impersonationLine = describeImpersonation(operatorEmail, impersonating)
   return `You are scribe, an interactive assistant for operating on the Core platform from the command line.
 
-You are signed in to the **${session.environment.label}** environment as ${who}. ${teamLine} ${journeyLine} ${cardLine} ${impersonationLine} Every API call is authenticated as this user. Be careful: changes you make on staging or production are real.
+You are signed in to the **${session.environment.label}** environment as ${who}. ${teamLine} ${journeyLine} ${cardLine} ${blockLine} ${impersonationLine} Every API call is authenticated as this user. Be careful: changes you make on staging or production are real.
 
 # Your tools
 
@@ -124,6 +131,45 @@ function describeActiveCard(active: JourneySimpleCard | null): string {
   }
   const label = active.heading ?? active.text ?? '(no heading)'
   return `Active card: \`${active.id}\` — "${label}". When the user says "this card" or "the card", assume they mean this one; use its id directly with the journey tools.`
+}
+
+function describeActiveBlock(
+  card: JourneySimpleCard | null,
+  block: BlockKind | null
+): string {
+  if (card == null || block == null) {
+    return 'No specific block is focused — the user can pick one with /block once a card is active.'
+  }
+  const snippet = describeBlockSnippet(card, block)
+  return `Active block: **${block}** on card \`${card.id}\`${
+    snippet != null ? ` — ${snippet}` : ''
+  }. When the user says "this block" or "the block", assume they mean this field; scope edits to the matching property on that card.`
+}
+
+function describeBlockSnippet(
+  card: JourneySimpleCard,
+  block: BlockKind
+): string | null {
+  switch (block) {
+    case 'heading':
+      return card.heading != null ? `"${card.heading}"` : null
+    case 'text':
+      return card.text != null ? `"${card.text}"` : null
+    case 'button':
+      return card.button != null ? `"${card.button.text}"` : null
+    case 'poll':
+      return card.poll != null
+        ? `${card.poll.length} option${card.poll.length === 1 ? '' : 's'}`
+        : null
+    case 'image':
+      return card.image != null ? `alt "${card.image.alt}"` : null
+    case 'backgroundImage':
+      return card.backgroundImage != null
+        ? `alt "${card.backgroundImage.alt}"`
+        : null
+    case 'video':
+      return card.video != null ? `url ${card.video.url}` : null
+  }
 }
 
 function describeImpersonation(

@@ -60,6 +60,21 @@ export type CardsLoadState =
   | { status: 'loaded'; cards: JourneySimpleCard[] }
   | { status: 'error'; message: string }
 
+/**
+ * One of the content fields that can live on a JourneySimple card. These are
+ * the things journeys-admin calls "blocks" at the GraphQL level (Typography,
+ * Button, RadioOption, Image, Video). Stored as a kind string so picker UX
+ * and the system prompt can talk about them uniformly.
+ */
+export type BlockKind =
+  | 'heading'
+  | 'text'
+  | 'button'
+  | 'poll'
+  | 'image'
+  | 'backgroundImage'
+  | 'video'
+
 export interface UsageTotals {
   inputTokens: number
   outputTokens: number
@@ -126,6 +141,13 @@ export interface ReplState {
   cards: CardsLoadState
   activeCard: JourneySimpleCard | null
   cardPickerOpen: boolean
+  /**
+   * Which content field of the active card the user is focused on. Always
+   * `null` whenever no card is active; reset whenever the active card or
+   * its underlying journey changes.
+   */
+  activeBlock: BlockKind | null
+  blockPickerOpen: boolean
   modelPickerOpen: boolean
   /**
    * Profile of the operator who actually signed in (never the impersonated

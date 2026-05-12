@@ -24,6 +24,8 @@ import {
   listJourneys
 } from '../tools/journey/api'
 import type { JourneySimpleCard } from '../tools/journey/types'
+
+import { BlockPicker } from './components/BlockPicker'
 import {
   fetchTeamsAndActiveTeam,
   persistLastActiveTeamId
@@ -47,6 +49,7 @@ import type { CommandContext } from './commands/types'
 import { buildSystemPrompt } from './systemPrompt'
 import {
   getEffectiveSession,
+  type BlockKind,
   type ReplState,
   type TeamSelection,
   type TranscriptEntry,
@@ -102,6 +105,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
     cards: { status: 'idle' },
     activeCard: null,
     cardPickerOpen: false,
+    activeBlock: null,
+    blockPickerOpen: false,
     modelPickerOpen: false,
     me: null,
     impersonating: null
@@ -185,6 +190,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       cards: { status: 'idle' },
       activeCard: null,
       cardPickerOpen: false,
+      activeBlock: null,
+      blockPickerOpen: false,
       modelPickerOpen: false
     }))
     setTeamsEpoch((n) => n + 1)
@@ -298,9 +305,11 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         activeJourney: journey,
         journeyPickerOpen: false,
         // Cards are scoped to a journey — drop them so they refetch for the
-        // new selection. Any previously selected card is no longer valid.
+        // new selection. Any previously selected card (and block within it)
+        // is no longer valid.
         cards: { status: 'idle' },
         activeCard: null,
+        activeBlock: null,
         // Restart the agent loop so the next turn sees the updated journey
         // context in the system prompt.
         agentEpoch: prev.agentEpoch + 1
@@ -333,6 +342,9 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         ...prev,
         activeCard: card,
         cardPickerOpen: false,
+        // Block selection is scoped to a card — drop any previous pick when
+        // the card changes.
+        activeBlock: null,
         // Restart the agent loop so the next turn sees the updated card
         // context in the system prompt.
         agentEpoch: prev.agentEpoch + 1
@@ -341,6 +353,27 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         `Active card set to ${card.id}${card.heading != null ? ` — "${card.heading}"` : ''}.`,
         'info'
       )
+    },
+    [appendSystemMessage]
+  )
+
+  const openBlockPicker = useCallback(() => {
+    setState((prev) => ({ ...prev, blockPickerOpen: true }))
+  }, [])
+
+  const closeBlockPicker = useCallback(() => {
+    setState((prev) => ({ ...prev, blockPickerOpen: false }))
+  }, [])
+
+  const setActiveBlock = useCallback(
+    (block: BlockKind) => {
+      setState((prev) => ({
+        ...prev,
+        activeBlock: block,
+        blockPickerOpen: false,
+        agentEpoch: prev.agentEpoch + 1
+      }))
+      appendSystemMessage(`Active block set to ${block}.`, 'info')
     },
     [appendSystemMessage]
   )
@@ -393,7 +426,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
           journeys: { status: 'idle' },
           activeJourney: null,
           cards: { status: 'idle' },
-          activeCard: null
+          activeCard: null,
+          activeBlock: null
         }))
         setTeamsEpoch((n) => n + 1)
         setJourneysEpoch((n) => n + 1)
@@ -462,7 +496,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         journeys: { status: 'idle' },
         activeJourney: null,
         cards: { status: 'idle' },
-        activeCard: null
+        activeCard: null,
+        activeBlock: null
       }
     })
     setTeamsEpoch((n) => n + 1)
@@ -491,6 +526,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       activeJourney: state.activeJourney,
       cards: state.cards,
       activeCard: state.activeCard,
+      activeBlock: state.activeBlock,
       me: state.me,
       impersonating: state.impersonating,
       appendSystemMessage,
@@ -508,6 +544,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       openCardPicker,
       setActiveCard,
       refreshCards,
+      openBlockPicker,
+      setActiveBlock,
       startImpersonation,
       stopImpersonation,
       setModel,
@@ -523,6 +561,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       state.activeJourney,
       state.cards,
       state.activeCard,
+      state.activeBlock,
       state.me,
       state.impersonating,
       appendSystemMessage,
@@ -540,6 +579,8 @@ export function App({ initialSession, model }: AppProps): ReactElement {
       openCardPicker,
       setActiveCard,
       refreshCards,
+      openBlockPicker,
+      setActiveBlock,
       startImpersonation,
       stopImpersonation,
       setModel,
@@ -774,6 +815,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
           activeTeam: state.activeTeam,
           activeJourney: state.activeJourney,
           activeCard: state.activeCard,
+          activeBlock: state.activeBlock,
           operatorEmail: state.session.email ?? null,
           impersonating: state.impersonating
         }),
@@ -881,6 +923,13 @@ export function App({ initialSession, model }: AppProps): ReactElement {
           onSelect={setActiveCard}
           onCancel={closeCardPicker}
         />
+      ) : state.blockPickerOpen ? (
+        <BlockPicker
+          card={state.activeCard}
+          activeBlock={state.activeBlock}
+          onSelect={setActiveBlock}
+          onCancel={closeBlockPicker}
+        />
       ) : state.modelPickerOpen ? (
         <ModelPicker
           activeModel={state.model}
@@ -911,6 +960,7 @@ export function App({ initialSession, model }: AppProps): ReactElement {
         journeys={state.journeys}
         activeJourney={state.activeJourney}
         activeCard={state.activeCard}
+        activeBlock={state.activeBlock}
         impersonating={state.impersonating}
         model={state.model}
       />

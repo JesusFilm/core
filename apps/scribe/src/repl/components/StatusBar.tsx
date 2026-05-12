@@ -5,6 +5,7 @@ import type { ActiveSession } from '../../auth/login'
 import type { JourneyListItem } from '../../tools/journey/api'
 import type { JourneySimpleCard } from '../../tools/journey/types'
 import type {
+  BlockKind,
   ImpersonationSession,
   JourneysLoadState,
   ReplState,
@@ -24,6 +25,7 @@ interface StatusBarProps {
   journeys: JourneysLoadState
   activeJourney: JourneyListItem | null
   activeCard: JourneySimpleCard | null
+  activeBlock: BlockKind | null
   impersonating: ImpersonationSession | null
   model: string | null
 }
@@ -43,6 +45,7 @@ export function StatusBar({
   journeys,
   activeJourney,
   activeCard,
+  activeBlock,
   impersonating,
   model
 }: StatusBarProps): ReactElement {
@@ -122,6 +125,12 @@ export function StatusBar({
               <>
                 <Text color="gray"> › </Text>
                 <Text color="cyan">{cardLabel}</Text>
+              </>
+            ) : null}
+            {activeBlock != null ? (
+              <>
+                <Text color="gray"> › </Text>
+                <Text color="cyan">{activeBlock}</Text>
               </>
             ) : null}
             {model != null ? (

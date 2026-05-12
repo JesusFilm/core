@@ -4,6 +4,7 @@ import type { JourneyListItem } from '../../tools/journey/api'
 import type { JourneySimpleCard } from '../../tools/journey/types'
 import type { MeUser } from '../../tools/user/api'
 import type {
+  BlockKind,
   CardsLoadState,
   ImpersonationSession,
   JourneysLoadState,
@@ -20,6 +21,7 @@ export interface CommandContext {
   activeJourney: JourneyListItem | null
   cards: CardsLoadState
   activeCard: JourneySimpleCard | null
+  activeBlock: BlockKind | null
   me: MeUser | null
   impersonating: ImpersonationSession | null
   appendSystemMessage: (text: string, tone?: 'info' | 'warn' | 'error') => void
@@ -42,6 +44,8 @@ export interface CommandContext {
   openCardPicker: () => void
   setActiveCard: (card: JourneySimpleCard) => void
   refreshCards: () => void
+  openBlockPicker: () => void
+  setActiveBlock: (block: BlockKind) => void
   startImpersonation: (email: string) => Promise<void>
   stopImpersonation: () => void
   setModel: (model: string | null) => void
