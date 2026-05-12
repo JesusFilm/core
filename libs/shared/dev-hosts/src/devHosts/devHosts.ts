@@ -37,9 +37,7 @@ export function getDevHosts(): string[] {
       return [...LOCAL_DEV_HOSTS]
     return [
       ...LOCAL_DEV_HOSTS,
-      ...Object.values(parsed).filter(
-        (v): v is string => typeof v === 'string'
-      )
+      ...Object.values(parsed).filter((v): v is string => typeof v === 'string')
     ]
   } catch {
     return [...LOCAL_DEV_HOSTS]
