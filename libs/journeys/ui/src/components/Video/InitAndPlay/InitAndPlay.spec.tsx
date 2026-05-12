@@ -221,7 +221,9 @@ describe('InitAndPlay', () => {
               id: 'blockId',
               parentOrder: 0
             }
-          ]
+          ],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     } as unknown as TreeBlock<StepBlock>

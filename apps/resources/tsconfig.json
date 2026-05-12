@@ -12,15 +12,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "tsBuildInfoFile": "../../.cache/resources/tsc/.tsbuildinfo"
+    "tsBuildInfoFile": "../../.cache/resources/tsc/.tsbuildinfo",
+    "module": "esnext",
+    "moduleResolution": "bundler"
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "**/*.jsx",
-    "**/*.mjs",
-    "next-env.d.ts"
-  ],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.mjs"],
   "exclude": ["node_modules", "jest.config.ts"]
 }

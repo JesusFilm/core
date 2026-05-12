@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import { DataGrid } from '@mui/x-data-grid'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import {

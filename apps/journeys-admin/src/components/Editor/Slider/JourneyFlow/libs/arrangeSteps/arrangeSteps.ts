@@ -1,6 +1,6 @@
+import { XYPosition } from '@xyflow/react'
 import findIndex from 'lodash/findIndex'
 import reduce from 'lodash/reduce'
-import { XYPosition } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'

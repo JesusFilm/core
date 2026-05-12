@@ -1,5 +1,5 @@
 import Grid from '@mui/material/GridLegacy'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import type { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'

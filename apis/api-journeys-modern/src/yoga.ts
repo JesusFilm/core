@@ -86,6 +86,8 @@ export const yoga = createYoga<
             'Journey.blockTypenames': 0,
             'Query.adminJourney': 0,
             'Query.adminJourneys': 0,
+            'Query.customDomain': 0,
+            'Query.customDomains': 0,
             // Private per-user data — must not be served from a global shared
             // cache (session: () => null). TTL 0 disables caching entirely for
             // this field, preventing cross-user profile contamination that caused
@@ -93,6 +95,23 @@ export const yoga = createYoga<
             'Query.getJourneyProfile': 0,
             'Query.getUserRole': 0,
             'Query.googleSheetsSyncs': 0,
+            // Team-scoped admin reads. The default TTL of Infinity caches the
+            // first response indefinitely, keyed only on (query, teamId). When
+            // a fresh user's first read returns an empty list, the cached
+            // entry has no TemplateGalleryPage entity IDs in it — so
+            // mutation-based invalidation cannot match it, and subsequent
+            // creates appear to "disappear" until the cache is manually
+            // flushed (NES-1648).
+            'Query.templateGalleryPage': 0,
+            'Query.templateGalleryPages': 0,
+            // Public renderer. Finite TTL caps cache-poisoning impact: a `null`
+            // response (unknown slug / draft / malformed) caches with no entity
+            // ID, so the publish mutation's entity-ID invalidation cannot evict
+            // it. Without a finite TTL the null branch would persist for the
+            // lifetime of the cache, letting an attacker pre-poison popular
+            // slugs so legitimate later publishes appear 404. 60 s gives the
+            // renderer reasonable cache hit-rate while bounding poisoning impact.
+            'Query.templateGalleryPageBySlug': 60_000,
             'Query.journeysPlausibleStatsAggregate': 5000,
             'Query.journeysPlausibleStatsBreakdown': 5000,
             'Query.journeysPlausibleStatsRealtimeVisitors': 5000,
