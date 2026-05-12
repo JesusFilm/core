@@ -134,14 +134,29 @@ export function QrCodeDialog({
   function getShortLink(qrCode?: QrCode): string | undefined {
     if (qrCode == null) return undefined
 
-    const hostname = qrCode.shortLink.domain.hostname
+    const shortLinkHostname = qrCode.shortLink.domain.hostname
     const pathname = qrCode.shortLink.pathname
-    const isLocal = hostname === 'localhost'
+    const isLocal = shortLinkHostname === 'localhost'
+
+    // In dev, when the admin is being loaded over a Tailscale MagicDNS host
+    // (`tailscale-*`), generate the QR code against that same host so the
+    // phone scanning the QR can actually reach it. Same env-override →
+    // window-derived → localhost-fallback pattern as the Apollo gateway.
+    // See docs/development/tailscale-dev-access.md.
+    let devHostname = shortLinkHostname
+    if (
+      isLocal &&
+      process.env.NODE_ENV !== 'production' &&
+      typeof window !== 'undefined' &&
+      window.location.hostname.toLowerCase().startsWith('tailscale-')
+    ) {
+      devHostname = window.location.hostname
+    }
 
     const protocol = isLocal ? 'http:' : 'https:'
     const port = isLocal ? ':4100' : ''
 
-    return `${protocol}//${hostname}${port}/${pathname}`
+    return `${protocol}//${devHostname}${port}/${pathname}`
   }
 
   return (
