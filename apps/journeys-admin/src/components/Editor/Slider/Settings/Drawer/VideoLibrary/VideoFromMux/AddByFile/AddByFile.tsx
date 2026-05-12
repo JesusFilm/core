@@ -14,6 +14,7 @@ import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 import { validateMuxLanguage } from '../../../../../../../../libs/validateMuxLanguage'
 import { useMuxVideoUpload } from '../../../../../../../MuxVideoUploadProvider'
+import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
 
 import { getVideoDuration } from './utils/getVideoDuration/getVideoDuration'
 
@@ -111,7 +112,27 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     disabled: videoBlockId == null || uploadTask != null
   })
 
-  const noBorder = error != null || uploading || errorType != null || processing
+  const hasError = error != null || errorType != null
+
+  function getStatusLabel(): string | null {
+    if (waiting) return t('Waiting in queue...')
+    if (uploading) return t('Uploading...')
+    if (processing) return t('Processing...')
+    if (hasError) return t('Upload Failed!')
+    return null
+  }
+
+  function getMobileProgressLabel(): string | null {
+    if (uploading) {
+      return t('Uploading... {{progress}}%', {
+        progress: Math.round(progress)
+      })
+    }
+    return getStatusLabel()
+  }
+
+  const statusLabel = getStatusLabel()
+  const mobileProgressLabel = getMobileProgressLabel()
 
   function getErrorMessage(errorCode: customErrorCode) {
     switch (errorCode) {
@@ -140,33 +161,11 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
       sx={{ px: 6, py: 3 }}
       data-testid="AddByFile"
     >
-      <Box
+      <UploadDropZoneShell
         data-testid="drop zone"
-        sx={{
-          mt: 3,
-          display: 'flex',
-          width: '100%',
-          minHeight: { xs: 0, sm: 162 },
-          borderWidth: { xs: 0, sm: noBorder ? 0 : 2 },
-          backgroundColor: {
-            xs: 'transparent',
-            sm:
-              isDragAccept || uploading
-                ? 'rgba(239, 239, 239, 0.9)'
-                : error != null || errorType != null
-                  ? 'rgba(197, 45, 58, 0.08)'
-                  : 'rgba(239, 239, 239, 0.35)'
-          },
-          borderColor: 'divider',
-          borderStyle: { xs: 'none', sm: noBorder ? 'none' : 'dashed' },
-          borderRadius: 2,
-          px: { xs: 0, sm: 3 },
-          py: { xs: 0, sm: 4 },
-          gap: 2,
-          justifyContent: 'center',
-          flexDirection: 'column',
-          alignItems: 'center'
-        }}
+        isDragAccept={isDragAccept}
+        isActive={uploading || processing || waiting}
+        hasError={hasError}
         {...getRootProps()}
       >
         <input {...getInputProps()} />
@@ -188,23 +187,12 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           />
         )}
         <Stack alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
-          {waiting ||
-          uploading ||
-          processing ||
-          error != null ||
-          errorType != null ? (
+          {statusLabel != null ? (
             <Typography
               variant="body1"
-              color={
-                error != null || errorType != null
-                  ? 'error.main'
-                  : 'secondary.main'
-              }
+              color={hasError ? 'error.main' : 'secondary.main'}
             >
-              {waiting && t('Waiting in queue...')}
-              {uploading && t('Uploading...')}
-              {processing && t('Processing...')}
-              {(error != null || errorType != null) && t('Upload Failed!')}
+              {statusLabel}
             </Typography>
           ) : (
             <>
@@ -235,12 +223,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
               }}
             >
               <Typography variant="body2" sx={{ color: 'background.paper' }}>
-                {waiting && t('Waiting in queue...')}
-                {uploading &&
-                  t('Uploading... {{progress}}%', {
-                    progress: Math.round(progress)
-                  })}
-                {processing && t('Processing...')}
+                {mobileProgressLabel}
               </Typography>
             </Box>
           </Box>
@@ -261,7 +244,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
               : t('Upload file')}
           </Button>
         )}
-      </Box>
+      </UploadDropZoneShell>
       <Stack
         direction="row"
         spacing={1}

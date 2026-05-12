@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -15,6 +14,7 @@ import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/useCloudflareUploadByFileMutation'
+import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
 
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
@@ -104,8 +104,7 @@ export function ImageUpload({
   })
 
   const uploadSuccess = success === true && selectedBlock?.src != null
-  const hasError = error || errorCode
-  const noBorder = loading || uploadSuccess || hasError
+  const hasError = error === true || errorCode != null
 
   function getErrorMessage(errorCode: ErrorCode | undefined) {
     switch (errorCode) {
@@ -134,33 +133,11 @@ export function ImageUpload({
       data-testid="ImageUpload"
     >
       <input {...getInputProps()} />
-      <Box
+      <UploadDropZoneShell
         data-testid="drop zone"
-        sx={{
-          mt: 3,
-          display: 'flex',
-          width: '100%',
-          minHeight: { xs: 0, sm: 162 },
-          borderWidth: { xs: 0, sm: noBorder ? 0 : 2 },
-          backgroundColor: {
-            xs: 'transparent',
-            sm:
-              isDragAccept || loading === true
-                ? 'rgba(239, 239, 239, 0.9)'
-                : hasError
-                  ? 'rgba(197, 45, 58, 0.08)'
-                  : 'rgba(239, 239, 239, 0.35)'
-          },
-          borderColor: 'divider',
-          borderStyle: { xs: 'none', sm: noBorder ? 'none' : 'dashed' },
-          borderRadius: 2,
-          px: { xs: 0, sm: 3 },
-          py: { xs: 0, sm: 4 },
-          gap: 2,
-          justifyContent: 'center',
-          flexDirection: 'column',
-          alignItems: 'center'
-        }}
+        isDragAccept={isDragAccept}
+        isActive={loading === true}
+        hasError={hasError}
       >
         {loading || (!uploadSuccess && !hasError) ? (
           <Upload1IconIcon
@@ -229,7 +206,7 @@ export function ImageUpload({
         >
           {t('Upload file')}
         </Button>
-      </Box>
+      </UploadDropZoneShell>
       <Stack
         direction="row"
         spacing={1}

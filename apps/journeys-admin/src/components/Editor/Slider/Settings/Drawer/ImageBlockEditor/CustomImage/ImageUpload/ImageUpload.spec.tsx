@@ -160,6 +160,22 @@ describe('ImageUpload', () => {
     expect(screen.getByText('Upload Successful!')).toBeInTheDocument()
   })
 
+  it('should render drop zone text in default state', () => {
+    render(
+      <MockedProvider>
+        <ImageUpload
+          onChange={jest.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    expect(screen.getByText('Drop an image here')).toBeInTheDocument()
+    expect(
+      screen.getByText('or click to browse your files')
+    ).toBeInTheDocument()
+  })
+
   it('should render loading state', () => {
     render(
       <MockedProvider>
