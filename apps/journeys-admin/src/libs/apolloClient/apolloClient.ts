@@ -34,7 +34,15 @@ const DEFAULT_DEBOUNCE_TIMEOUT = 500
 
 interface GatewayUrlLocation {
   hostname: string
-  protocol: string
+  protocol: 'http:' | 'https:'
+}
+
+function getDefaultLocation(): GatewayUrlLocation | undefined {
+  if (typeof window === 'undefined') return undefined
+  return {
+    hostname: window.location.hostname,
+    protocol: window.location.protocol as 'http:' | 'https:'
+  }
 }
 
 /**
@@ -54,9 +62,7 @@ interface GatewayUrlLocation {
  * available, otherwise `undefined` (SSR).
  */
 export function resolveGatewayUrl(
-  location: GatewayUrlLocation | undefined = typeof window !== 'undefined'
-    ? window.location
-    : undefined
+  location: GatewayUrlLocation | undefined = getDefaultLocation()
 ): string {
   if (
     process.env.NEXT_PUBLIC_GATEWAY_URL != null &&
