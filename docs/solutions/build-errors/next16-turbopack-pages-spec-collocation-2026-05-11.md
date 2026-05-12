@@ -33,7 +33,7 @@ After Next 16 (which makes Turbopack the default builder) merged into `main`, th
 ## Symptoms
 
 - Nx build error from the journeys app (Turbopack) on `pages/<route>/<route>.spec.tsx`:
-  ```
+  ```text
   Error: Turbopack build failed with 1 errors:
   ./apps/journeys/pages/home/template-gallery/[slug].spec.tsx:5:1
   Export getStaticProps doesn't exist in target module

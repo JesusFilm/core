@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { render, screen } from '@testing-library/react'
 
 import { mockTemplate } from '../galleryFixture'
@@ -12,13 +13,13 @@ vi.mock('./GalleryTemplateCard', () => ({
     template: { id: string; title: string }
     priority?: boolean
   }) => (
-    <div
+    <Box
       data-testid="GalleryTemplateCardMock"
       data-template-id={template.id}
       data-priority={priority === true ? 'true' : 'false'}
     >
       {template.title}
-    </div>
+    </Box>
   )
 }))
 
