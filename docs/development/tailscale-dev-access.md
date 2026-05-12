@@ -23,10 +23,10 @@ prod cert. This unblocks real mobile-device QA without leaving the laptop.
 
 Two Doppler env vars in the **`core` project, `dev` config** drive everything:
 
-| Env var                  | Consumer                   | Notes                                |
-| ------------------------ | -------------------------- | ------------------------------------ |
-| `NEXT_PUBLIC_DEV_HOSTS`  | Next.js apps (browser + SSR) | `NEXT_PUBLIC_` prefix so it ships to the bundle. |
-| `DEV_HOSTS`              | `api-gateway` (server only)  | No `NEXT_PUBLIC_` prefix — never reaches the browser. |
+| Env var                 | Consumer                     | Notes                                                 |
+| ----------------------- | ---------------------------- | ----------------------------------------------------- |
+| `NEXT_PUBLIC_DEV_HOSTS` | Next.js apps (browser + SSR) | `NEXT_PUBLIC_` prefix so it ships to the bundle.      |
+| `DEV_HOSTS`             | `api-gateway` (server only)  | No `NEXT_PUBLIC_` prefix — never reaches the browser. |
 
 Both hold the **same JSON** — an object whose values are the FQDNs to allow.
 Keys are arbitrary labels (we use developer initials) and exist only to make

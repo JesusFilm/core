@@ -42,10 +42,7 @@ export default async function proxy(
   // catch-all `/[hostname]/[slug]` route. The secret is only set in dev's
   // Doppler config, so `isDevHost` returns false everywhere else — absence
   // of the secret IS the gate. See docs/development/tailscale-dev-access.md.
-  if (
-    isDevHost(hostname) &&
-    process.env.NEXT_PUBLIC_ROOT_DOMAIN != null
-  ) {
+  if (isDevHost(hostname) && process.env.NEXT_PUBLIC_ROOT_DOMAIN != null) {
     hostname = process.env.NEXT_PUBLIC_ROOT_DOMAIN
   }
 
