@@ -88,9 +88,7 @@ describe('CollectionPublishSuccessDialog', () => {
 
   it('opens the proxy URL (with slug) in a new tab and closes the dialog when "View the page" is clicked', async () => {
     const { onClose } = renderDialog({ slug: 'my-collection' })
-    await userEvent.click(
-      screen.getByRole('button', { name: 'View the page' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
     expect(window.open).toHaveBeenCalledWith(
       '/api/preview-template-gallery?slug=my-collection',
       '_blank',
@@ -101,9 +99,7 @@ describe('CollectionPublishSuccessDialog', () => {
 
   it('falls back to the raw public URL when slug is not provided', async () => {
     const { onClose } = renderDialog({ slug: null })
-    await userEvent.click(
-      screen.getByRole('button', { name: 'View the page' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
     expect(window.open).toHaveBeenCalledWith(
       'https://example.com/p/my-collection',
       '_blank',
@@ -126,9 +122,7 @@ describe('CollectionPublishSuccessDialog', () => {
       publishBlockedReason: 'gate copy'
     })
     expect(screen.getByText('gate copy')).toBeInTheDocument()
-    await userEvent.click(
-      screen.getByRole('button', { name: 'View the page' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
     expect(window.open).not.toHaveBeenCalled()
     expect(onClose).not.toHaveBeenCalled()
   })

@@ -119,14 +119,14 @@ affordances. Exported via `apps/journeys-admin/src/libs/useCanPublishCollection/
 
 ## Part E — Tests
 
-| File                                                                                                         | What                                                                          |
-| ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
-| `apps/journeys/pages/api/revalidate-template-gallery.spec.ts`                                                | 401 on missing/wrong token, 200 + `revalidate('/home/template-gallery/foo')`, 500 on revalidate throw. |
-| `apps/journeys-admin/pages/api/preview-template-gallery.spec.ts`                                             | 500 on missing env, 403 on missing/invalid token, 400 on missing slug, 307 to `${JOURNEYS_URL}/template-gallery/<slug>`, 500 when proxy fails. |
-| `apps/journeys-admin/src/libs/useCanPublishCollection/useCanPublishCollection.spec.tsx`                      | `canPublish: true` on no domains / no flag / null teamId. `canPublish: false` + reason copy when any domain has `routeAllTeamJourneys`. |
-| `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionCard/CollectionCard.spec.tsx`          | Adds: tooltip + disabled Publish/Preview when `canPublish === false`. Preview menu item appears + opens the proxy URL when published. |
-| `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionDialog/CollectionPreviewPane/CollectionPreviewPane.spec.tsx` (new file) | Open button uses the proxy URL; disabled when canPublish is false. |
-| `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionPublishSuccessDialog/CollectionPublishSuccessDialog.spec.tsx` | Adds: View opens proxy URL; disabled+tooltip when canPublish is false. |
+| File                                                                                                                                          | What                                                                                                                                           |
+| --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/journeys/pages/api/revalidate-template-gallery.spec.ts`                                                                                 | 401 on missing/wrong token, 200 + `revalidate('/home/template-gallery/foo')`, 500 on revalidate throw.                                         |
+| `apps/journeys-admin/pages/api/preview-template-gallery.spec.ts`                                                                              | 500 on missing env, 403 on missing/invalid token, 400 on missing slug, 307 to `${JOURNEYS_URL}/template-gallery/<slug>`, 500 when proxy fails. |
+| `apps/journeys-admin/src/libs/useCanPublishCollection/useCanPublishCollection.spec.tsx`                                                       | `canPublish: true` on no domains / no flag / null teamId. `canPublish: false` + reason copy when any domain has `routeAllTeamJourneys`.        |
+| `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionCard/CollectionCard.spec.tsx`                                           | Adds: tooltip + disabled Publish/Preview when `canPublish === false`. Preview menu item appears + opens the proxy URL when published.          |
+| `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionDialog/CollectionPreviewPane/CollectionPreviewPane.spec.tsx` (new file) | Open button uses the proxy URL; disabled when canPublish is false.                                                                             |
+| `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionPublishSuccessDialog/CollectionPublishSuccessDialog.spec.tsx`           | Adds: View opens proxy URL; disabled+tooltip when canPublish is false.                                                                         |
 
 ## Open questions / assumptions
 

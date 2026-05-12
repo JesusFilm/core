@@ -62,7 +62,9 @@ describe('revalidate-template-gallery', () => {
 
     await handler(req, res)
 
-    expect(revalidate).toHaveBeenCalledWith('/home/template-gallery/my-collection')
+    expect(revalidate).toHaveBeenCalledWith(
+      '/home/template-gallery/my-collection'
+    )
     expect(status).toHaveBeenCalledWith(200)
     expect(json).toHaveBeenCalledWith({ revalidated: true })
   })
