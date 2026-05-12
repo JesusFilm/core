@@ -154,9 +154,7 @@ function PublishedFilter(): ReactElement {
         value={selectedPublishedFilter}
         onChange={handlePublishedChange}
       >
-        <MenuItem value="both">
-          Both ({publishedCount + draftCount})
-        </MenuItem>
+        <MenuItem value="both">Both ({publishedCount + draftCount})</MenuItem>
         <MenuItem value="published">Published ({publishedCount})</MenuItem>
         <MenuItem value="draft">Draft ({draftCount})</MenuItem>
       </Select>
