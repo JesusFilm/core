@@ -1,4 +1,4 @@
-import { getDevHosts, isDevHost } from './index'
+import { getDevHosts, isDevHost } from './devHosts'
 
 describe('getDevHosts', () => {
   const originalEnv = process.env
