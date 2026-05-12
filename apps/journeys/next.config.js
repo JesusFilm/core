@@ -9,11 +9,27 @@ const { i18n } = require('./next-i18next.config')
 const nextConfig = {
   nx: {},
   i18n,
-  // Permit Tailscale MagicDNS hosts (e.g. `tailscale-mbp-siyang`) to load
-  // the dev server. Wildcards (not regex) per Next.js docs:
+  // Permit the developer hostnames listed in `NEXT_PUBLIC_DEV_HOSTS`
+  // (Doppler dev config) to load the dev server. Absence of the secret
+  // yields `[]` (no relaxation); dev-only by Next.js semantics — no
+  // NODE_ENV gate needed. The helper is duplicated inline because
+  // next.config.js is JS and importing the TS helper would require
+  // additional build wiring.
   // https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
-  // Dev-only by Next.js semantics — no NODE_ENV gate needed.
-  allowedDevOrigins: ['tailscale-*'],
+  allowedDevOrigins: (() => {
+    try {
+      const raw = process.env.NEXT_PUBLIC_DEV_HOSTS ?? ''
+      if (raw === '') return []
+      /** @type {unknown} */
+      const parsed = JSON.parse(raw)
+      if (parsed === null || typeof parsed !== 'object') return []
+      return Object.values(
+        /** @type {Record<string, unknown>} */ (parsed)
+      ).filter((v) => typeof v === 'string')
+    } catch {
+      return []
+    }
+  })(),
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
