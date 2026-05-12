@@ -349,6 +349,7 @@ const Video = builder.prismaObject('Video', {
         }
 
         // Prefer per-block language set by resolveReference over the legacy batch lookup
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- `_requestedLanguageId` is set dynamically via resolveReference; not typed on the Prisma row
         const requestedLanguageId = (video as any)._requestedLanguageId as
           | string
           | undefined

@@ -5,6 +5,7 @@ import {
   type SlackBotChannelConfig,
   getMediaDataLangSlackConfig
 } from '../slack/config'
+
 import { type ReportRow } from './videoSlackReport'
 /**
  * Slack `section` mrkdwn text must stay under 3000 chars, so large reports

@@ -121,7 +121,9 @@ jest.mock('../../logger', () => ({
 describe('videoSlack', () => {
   const mockFetch = fetch as jest.MockedFunction<typeof fetch>
   const mockLanguagesPrisma =
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- jest.mock factory return is inferred as the prisma client type; cast is needed for .mockResolvedValue
     languagesPrisma as DeepMockProxy<LanguagesPrismaClient>
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- jest.mock factory return is inferred as the prisma client type; cast is needed for .mockResolvedValue
   const mockMediaPrisma = prisma as DeepMockProxy<MediaPrismaClient>
   const mockLoggerWarn = jest.mocked(logger.warn)
   const mockLoggerInfo = jest.mocked(logger.info)
