@@ -275,9 +275,7 @@ describe('TrashJourneyDialog', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Delete' }))
-    await waitFor(() =>
-      expect(getByText('Network down')).toBeInTheDocument()
-    )
+    await waitFor(() => expect(getByText('Network down')).toBeInTheDocument())
     expect(onTrashSuccess).not.toHaveBeenCalled()
   })
 })

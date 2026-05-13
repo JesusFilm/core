@@ -327,9 +327,7 @@ describe('TemplateGalleryPageList', () => {
 
     it('fires revalidate with the published collection slug when its journey is trashed', async () => {
       renderList()
-      const card = await screen.findByTestId(
-        `mock-journey-card-${PUB_JOURNEY}`
-      )
+      const card = await screen.findByTestId(`mock-journey-card-${PUB_JOURNEY}`)
       expect(card.getAttribute('data-has-trash-success')).toBe('yes')
       act(() => {
         card.click()
