@@ -1,0 +1,40 @@
+{
+  "name": "llm-evals",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/llm-evals/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/llm-evals/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsc -b libs/llm-evals/tsconfig.json"
+      }
+    },
+    "eval": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "configFile": "libs/llm-evals/vitest.evals.mts"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project journeys --config ${DOPPLER_CONFIG:-dev} | grep -E '^(LANGFUSE_PUBLIC_KEY|LANGFUSE_SECRET_KEY|LANGFUSE_BASE_URL|OPENROUTER_API_KEY|OPENROUTER_MODEL|APOLOGIST_API_URL|APOLOGIST_API_KEY|APOLOGIST_MODEL_ID|GOOGLE_GENERATIVE_AI_API_KEY)=' > libs/llm-evals/.env"
+          }
+        ]
+      }
+    }
+  }
+}

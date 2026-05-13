@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "types": ["node", "vitest/globals"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "scenarios/**/*.ts",
+    "eval.spec.ts",
+    "setupEvals.ts",
+    "vitest.evals.mts"
+  ]
+}
