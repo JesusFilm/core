@@ -5,6 +5,17 @@ import { mockTemplate } from '../galleryFixture'
 import { GalleryTemplateCard } from './GalleryTemplateCard'
 
 describe('GalleryTemplateCard', () => {
+  const originalEnv = process.env
+
+  beforeEach(() => {
+    process.env = { ...originalEnv }
+    delete process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
   it('renders title, description, language, and image', () => {
     render(<GalleryTemplateCard template={mockTemplate} />)
 
@@ -80,7 +91,44 @@ describe('GalleryTemplateCard', () => {
       />
     )
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
-    // The placeholder icon renders inside the card; assert wrapper still mounts.
+    // The placeholder icon renders inside the inner card Box; assert the
+    // outer Stack wrapper (which now also contains the Use/Preview row)
+    // still mounts.
     expect(screen.getByTestId('GalleryTemplateCard')).toBeInTheDocument()
+  })
+
+  it('uses NEXT_PUBLIC_JOURNEYS_ADMIN_URL as the Use button host when set', () => {
+    process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL = 'https://admin.staging.test'
+    render(<GalleryTemplateCard template={mockTemplate} />)
+
+    expect(screen.getByRole('link', { name: 'Use' })).toHaveAttribute(
+      'href',
+      'https://admin.staging.test/?useTemplate=template-1'
+    )
+  })
+
+  it('falls back to https://admin.nextstep.is for the Use button when NEXT_PUBLIC_JOURNEYS_ADMIN_URL is unset', () => {
+    // beforeEach already deletes the env var; assert the documented
+    // production fallback so future env wiring changes don't silently
+    // alter where the deep link points.
+    render(<GalleryTemplateCard template={mockTemplate} />)
+
+    expect(screen.getByRole('link', { name: 'Use' })).toHaveAttribute(
+      'href',
+      'https://admin.nextstep.is/?useTemplate=template-1'
+    )
+  })
+
+  it('URL-encodes special characters in template.id when building the deep link', () => {
+    render(
+      <GalleryTemplateCard
+        template={{ ...mockTemplate, id: 'tmpl/with spaces&chars' }}
+      />
+    )
+
+    expect(screen.getByRole('link', { name: 'Use' })).toHaveAttribute(
+      'href',
+      'https://admin.nextstep.is/?useTemplate=tmpl%2Fwith%20spaces%26chars'
+    )
   })
 })

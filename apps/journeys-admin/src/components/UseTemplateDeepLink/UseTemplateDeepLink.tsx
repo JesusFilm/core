@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import { ReactElement, useCallback, useRef, useState } from 'react'
 
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
@@ -26,10 +26,17 @@ interface TranslationVariables {
   userLanguageName?: string
 }
 
-function getJourneyIdParam(
+// Exported so callers like `pages/index.tsx` share the same "active"
+// predicate when reacting to the deep link (e.g. suppressing the onboarding
+// popover). Treats an array value as "first wins" and an empty string as
+// absent so `?useTemplate=` doesn't look active.
+export function getJourneyIdParam(
   value: string | string[] | undefined
 ): string | null {
-  if (Array.isArray(value)) return value[0] ?? null
+  if (Array.isArray(value)) {
+    const [first] = value
+    return first != null && first.length > 0 ? first : null
+  }
   if (typeof value === 'string' && value.length > 0) return value
   return null
 }
@@ -38,20 +45,38 @@ function getJourneyIdParam(
  * Receiver for the public template gallery's "Use" deep link
  * (`/?useTemplate=<journeyId>`).
  *
- * When the param is present, fetches the public template, opens a confirm
- * dialog defaulted to the active team, calls `journeyDuplicate` on submit,
- * routes to `/?type=journeys&refresh=true` so the new copy appears in the
- * journey list, and strips the param via shallow `router.replace` on plain
- * dismiss/error.
+ * The outer component reads the URL param and renders nothing when absent
+ * so no GET_JOURNEY / dialog state initialises on the vast majority of admin
+ * loads. The inner component is mount-gated on `journeyId` (and keyed by it)
+ * so consecutive deep-link sessions each get a fresh state slate — including
+ * `navigatedAwayRef` and the cached `journey` — instead of leaking across.
+ *
+ * NOTE: shares duplication-and-translate orchestration semantics with
+ * libs/journeys/ui/src/components/TemplateView/CreateJourneyButton/CreateJourneyButton.tsx.
+ * If you change the mutation, subscription, error handling, or wait-for-load
+ * behaviour here, consider whether the same change applies there. Hook
+ * extraction was considered (NES-1608 review 2026-05-13) and deferred to
+ * reduce shared-lib blast radius.
  */
 export function UseTemplateDeepLink(): ReactElement | null {
+  const router = useRouter()
+  const journeyId = getJourneyIdParam(router.query.useTemplate)
+  if (journeyId == null) return null
+  return <ActiveUseTemplateDeepLink key={journeyId} journeyId={journeyId} />
+}
+
+interface ActiveUseTemplateDeepLinkProps {
+  journeyId: string
+}
+
+function ActiveUseTemplateDeepLink({
+  journeyId
+}: ActiveUseTemplateDeepLinkProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
 
-  const journeyId = getJourneyIdParam(router.query.useTemplate)
-
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true)
   const [loading, setLoading] = useState(false)
   const [translationVariables, setTranslationVariables] = useState<
     TranslationVariables | undefined
@@ -61,22 +86,16 @@ export function UseTemplateDeepLink(): ReactElement | null {
   // journey list. CopyToTeamDialog calls `onClose()` after submitAction
   // resolves on the non-translation success path; without this guard,
   // handleClose would fire `stripParamFromUrl` and clobber the intentional
-  // `?type=journeys&refresh=true` destination back to bare `/`.
+  // `?type=journeys&refresh=true` destination back to bare `/`. Scoped to
+  // this component instance — remount via the outer `key` keeps it fresh
+  // across deep-link sessions.
   const navigatedAwayRef = useRef(false)
 
-  useEffect(() => {
-    if (journeyId != null) setOpen(true)
-  }, [journeyId])
-
-  const { data: journeyData } = useJourneyQuery(
-    journeyId != null
-      ? {
-          id: journeyId,
-          idType: IdType.databaseId,
-          options: { skipRoutingFilter: true }
-        }
-      : undefined
-  )
+  const { data: journeyData } = useJourneyQuery({
+    id: journeyId,
+    idType: IdType.databaseId,
+    options: { skipRoutingFilter: true }
+  })
   const journey = journeyData?.journey
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
@@ -131,19 +150,20 @@ export function UseTemplateDeepLink(): ReactElement | null {
       selectedLanguage?: JourneyLanguage,
       showTranslation?: boolean
     ): Promise<void> => {
-      if (journeyId == null) return
-
       const wantsTranslation =
         showTranslation === true && selectedLanguage != null
 
-      // Translation needs the source journey to read its current language
-      // metadata; surface a hint instead of silently swallowing the click.
+      // Translation needs the source journey's language metadata. Throwing
+      // (instead of a plain return) halts CopyToTeamDialog's submit pipeline
+      // BEFORE updateTeamState + resetForm run, so the user's selections
+      // survive the retry. The throw fires before `setLoading(true)` and
+      // outside the try block below — no "duplication failed" snackbar leaks.
       if (wantsTranslation && journey == null) {
         enqueueSnackbar(t('Loading template — please retry'), {
           variant: 'info',
           preventDuplicate: true
         })
-        return
+        throw new Error('journey not loaded')
       }
 
       setLoading(true)
@@ -212,8 +232,6 @@ export function UseTemplateDeepLink(): ReactElement | null {
     }
     stripParamFromUrl()
   }, [loading, translationVariables, stripParamFromUrl])
-
-  if (journeyId == null) return null
 
   return (
     <CopyToTeamDialog

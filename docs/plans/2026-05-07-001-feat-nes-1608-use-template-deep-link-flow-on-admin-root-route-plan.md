@@ -1,7 +1,7 @@
 ---
 title: 'feat(journeys-admin): NES-1608 Use Template deep link flow on admin root route'
 type: feat
-status: planned
+status: shipped
 date: 2026-05-07
 ticket: NES-1608
 branch: siyangcao/nes-1608-use-template-deep-link-flow-on-admin-root-route
@@ -117,6 +117,21 @@ A second spec on `pages/index.tsx`-level integration is not added — the index 
 - Re-rendering the dashboard with the journey list pre-refreshed instead of routing into the new journey (we route into the journey because that's the user's intent — they want to start using the template).
 - `/templates/<id>` route changes — the existing in-app entry point is untouched.
 - Custom-domain (`[hostname]/?useTemplate=...`) handling — public galleries are intentionally only served from the root domain.
+
+## Implementation notes (post-review revisions, 2026-05-13/14)
+
+Shipped behaviour diverged from the original plan in a few places during CE review iterations. Captured here so the doc reflects what actually ran in production.
+
+- **Post-success navigation target.** Plan §4 said route to `/journeys/<newId>` (matching `CreateJourneyButton`'s publisher path). Shipped behaviour routes to `/?type=journeys&refresh=true` — bouncing the user back to the journey list with a refresh flag so the new copy appears at the top. Rationale: the deep-link entry point is the dashboard, and dropping the user into a brand-new journey straight from the gallery felt jarring during review; the list-with-refresh affordance preserves the "I came from outside" mental model.
+- **Strip vs nav.** Plan §5 described `router.replace` stripping the `useTemplate` key on every close path. Shipped behaviour distinguishes:
+  - _Cancel / X / outside-click_ → strip param via `router.replace({ pathname, query: rest }, …, { shallow: true })`.
+  - _Success (with or without translation)_ → `navigateToJourneyList()` issues `router.replace({ pathname: '/', query: { type: 'journeys', refresh: 'true' } })` and a `navigatedAwayRef` guard prevents the subsequent `handleClose` call (fired by `CopyToTeamDialog` after `submitAction` resolves) from clobbering the journey-list destination back to bare `/`.
+- **Mount gating instead of Apollo skip.** Plan §2 described `useJourneyQuery(...)` enabled only via Apollo `skip`. Shipped behaviour uses an outer/inner split: the exported `UseTemplateDeepLink` returns `null` when the param is absent, and an inner `ActiveUseTemplateDeepLink` (keyed by `journeyId`) owns all hooks. Two benefits over `skip`: no `GET_JOURNEY` fires on admin loads without the deep link (the hook never instantiates), and consecutive deep-link sessions get a fresh state slate, eliminating `navigatedAwayRef` leakage across sessions.
+- **Shared "active" predicate.** Plan §7 set the onboarding-suppression check to `router.query.useTemplate == null`. Shipped behaviour exports `getJourneyIdParam` from `UseTemplateDeepLink.tsx` and uses it in both places, so an empty `?useTemplate=` value treats the popover as un-suppressed and is consistent with the receiver's own mount predicate.
+- **Translation-while-loading early return.** Plan §4 did not specify behaviour when a user enables translation and clicks Add before the source journey resolves. Shipped behaviour surfaces a `t('Loading template — please retry')` snackbar and **throws** from `submitAction` so `CopyToTeamDialog`'s submit pipeline halts before `updateTeamState` + `resetForm` — the user's translation toggle and language selection survive the retry.
+- **Admin URL env override on the public app.** Not covered by the original plan: `apps/journeys/.../GalleryTemplateCard.tsx` reads `process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL` inside the component body (testable via `vi.stubEnv` / `process.env` overrides) and falls back to `https://admin.nextstep.is`. `NEXT_PUBLIC_JOURNEYS_ADMIN_URL` is wired in Doppler for dev + stage; prod uses the fallback.
+- **Cross-reference comments.** `UseTemplateDeepLink.tsx` and `libs/journeys/ui/.../CreateJourneyButton.tsx` carry mutual NOTE comments pointing at each other. Hook extraction across the duplication-and-translate orchestration was considered during review and deferred to a follow-up to limit shared-lib blast radius from this PR.
+- **Follow-up filed.** Translation locks the dialog with no user-side cancel path while in flight (existing behaviour, also present in `CreateJourneyButton`). Tracked separately.
 
 ## Validation
 

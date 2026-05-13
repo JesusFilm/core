@@ -13,7 +13,10 @@ import { PageWrapper } from '../src/components/PageWrapper'
 import { SidePanelTitle } from '../src/components/SidePanelTitle/SidePanelTitle'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
-import { UseTemplateDeepLink } from '../src/components/UseTemplateDeepLink'
+import {
+  UseTemplateDeepLink,
+  getJourneyIdParam
+} from '../src/components/UseTemplateDeepLink'
 import { useAuth } from '../src/libs/auth'
 import {
   getAuthTokens,
@@ -38,7 +41,8 @@ export default function IndexPage(): ReactElement {
     (router?.query?.type as 'journeys' | 'templates' | 'collections') ??
     'journeys'
   const showSidePanel = currentContentType === 'journeys'
-  const useTemplateDeepLinkActive = router.query.useTemplate != null
+  const useTemplateDeepLinkActive =
+    getJourneyIdParam(router.query.useTemplate) != null
   const showOnboardingPopover =
     router.query.onboarding === 'true' && !useTemplateDeepLinkActive
 

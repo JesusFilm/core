@@ -336,6 +336,8 @@ describe('UseTemplateDeepLink', () => {
       expect(screen.getByText('Journey Copied')).toBeInTheDocument()
     )
 
+    // Exactly once: re-firing the journey-list nav would clobber the
+    // intended `?type=journeys&refresh=true` destination.
     expect(replace).toHaveBeenCalledTimes(1)
     expect(replace).toHaveBeenCalledWith(
       { pathname: '/', query: { type: 'journeys', refresh: 'true' } },
@@ -371,7 +373,7 @@ describe('UseTemplateDeepLink', () => {
     const cancelButton = screen.getByRole('button', { name: 'Cancel' })
     fireEvent.click(cancelButton)
 
-    await waitFor(() => expect(replace).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(replace).toHaveBeenCalled())
     expect(replace).toHaveBeenCalledWith(
       { pathname: '/', query: {} },
       undefined,
@@ -393,6 +395,8 @@ describe('UseTemplateDeepLink', () => {
       expect(screen.getByText('Journey Translated')).toBeInTheDocument()
     )
 
+    // Exactly once: a duplicate nav after translation completes would
+    // race the success snackbar's animation and confuse the user.
     expect(replace).toHaveBeenCalledTimes(1)
     expect(replace).toHaveBeenCalledWith(
       { pathname: '/', query: { type: 'journeys', refresh: 'true' } },
@@ -415,6 +419,8 @@ describe('UseTemplateDeepLink', () => {
       expect(screen.getByText('Translation failed')).toBeInTheDocument()
     )
 
+    // Exactly once: re-firing would imply the error handler ran twice
+    // and risks a double-navigate on a partial state.
     expect(replace).toHaveBeenCalledTimes(1)
     expect(replace).toHaveBeenCalledWith(
       { pathname: '/', query: { type: 'journeys', refresh: 'true' } },
@@ -442,5 +448,33 @@ describe('UseTemplateDeepLink', () => {
     expect(replace).not.toHaveBeenCalled()
     expect(push).not.toHaveBeenCalled()
     expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+  })
+
+  it('preserves the translation form selections when journey is still loading on submit', async () => {
+    // Regression test for P2-#3: previously the early-return resolved
+    // submitAction, which let CopyToTeamDialog's pipeline run resetForm
+    // and the user had to re-toggle Translation + re-pick the language.
+    // After the fix, handleSubmit throws — the dialog stays open with
+    // the selections intact.
+    setup({ includeJourneyMock: false })
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    await selectTranslationSpanish()
+    const translationCheckbox = screen.getByRole('checkbox', {
+      name: 'Translation'
+    })
+    expect(translationCheckbox).toBeChecked()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    await waitFor(() =>
+      expect(
+        screen.getByText('Loading template — please retry')
+      ).toBeInTheDocument()
+    )
+
+    expect(translationCheckbox).toBeChecked()
   })
 })

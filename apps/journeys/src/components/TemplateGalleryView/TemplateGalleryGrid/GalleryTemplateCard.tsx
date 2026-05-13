@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isValid, parseISO } from 'date-fns'
 import Image from 'next/image'
@@ -15,15 +16,12 @@ import Play3Icon from '@core/shared/ui/icons/Play3'
 import { GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate } from '../../../../__generated__/GetTemplateGalleryPage'
 
 // Mirror of `palette[900]` from
-// libs/shared/ui/src/libs/themes/journeysAdmin/tokens/colors.ts (the
-// admin "almost black" token, re-exported on the admin theme as
-// `palette.solid.main`). The public journeys app uses the website
-// theme, which doesn't expose this token, so the value is hardcoded
-// here. Keep in sync with the admin token if it ever changes.
+// libs/shared/ui/src/libs/themes/base/tokens/colors.ts:10 — the upstream
+// "almost black" base token that journeysAdmin re-exports as
+// `palette.solid.main`. The public journeys app uses the website theme,
+// which doesn't expose this token, so the value is hardcoded here. Keep
+// in sync with the base token if it ever changes.
 const ADMIN_PALETTE_900 = '#26262E'
-
-const ADMIN_URL =
-  process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? 'https://admin.nextstep.is'
 
 interface GalleryTemplateCardProps {
   template: GalleryTemplate
@@ -35,6 +33,12 @@ export function GalleryTemplateCard({
   priority = false
 }: GalleryTemplateCardProps): ReactElement {
   const { t } = useTranslation('apps-journeys')
+
+  // Read inside the component so test specs can override
+  // NEXT_PUBLIC_JOURNEYS_ADMIN_URL via vi.stubEnv / process.env without
+  // having to reset module state. Fallback matches the prod admin host.
+  const adminUrl =
+    process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? 'https://admin.nextstep.is'
 
   const localLanguage = template.language.name.find(
     ({ primary }) => !primary
@@ -59,7 +63,7 @@ export function GalleryTemplateCard({
   const imageAlt = template.primaryImageBlock?.alt ?? template.title
 
   // Deep link into the admin "Use Template" receiver (NES-1608).
-  const useTemplateHref = `${ADMIN_URL}/?useTemplate=${encodeURIComponent(template.id)}`
+  const useTemplateHref = `${adminUrl}/?useTemplate=${encodeURIComponent(template.id)}`
   // Public viewer route on the same root domain (middleware rewrites
   // `/<slug>` → `/home/<slug>`).
   const previewHref = `/${template.slug}`
@@ -186,7 +190,7 @@ export function GalleryTemplateCard({
             borderColor: ADMIN_PALETTE_900,
             '&:hover': {
               borderColor: ADMIN_PALETTE_900,
-              backgroundColor: 'rgba(38, 38, 46, 0.06)'
+              backgroundColor: alpha(ADMIN_PALETTE_900, 0.06)
             }
           }}
         >
