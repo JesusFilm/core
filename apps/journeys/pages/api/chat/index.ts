@@ -21,11 +21,15 @@ import {
 // Request bounds (NES-1579). Hard ceilings so a single chat request can't be
 // arbitrarily expensive or arbitrarily shaped.
 const MAX_MESSAGES = 20
-// Keep in sync with MAX_MESSAGE_CHARS in
+const MAX_PARTS_PER_MESSAGE = 20
+// Applied per field — once on `content` and once on each `parts[].text` —
+// so a single message can carry more than this in aggregate. The
+// MAX_TOTAL_CHARS budget below is the real per-request backstop.
+// Keep in sync with the per-message cap MAX_MESSAGE_CHARS in
 // libs/journeys/ui/src/components/PromptInput/PromptInput.tsx — the UI
-// caps typing/pasting at this length and the server rejects anything
-// longer, so the two constants must match.
-const MAX_MESSAGE_CHARS = 4000
+// caps typing/pasting at that length and the server rejects any single
+// field longer than it, so the two constants must match.
+const MAX_FIELD_CHARS = 4000
 // ~5000 input-token budget at ~4 chars/token. Buys ~8-10 turns of normal
 // conversation before the cap bites. Conversation-history management
 // (sliding window / rolling summary) is the proper fix and is tracked
@@ -45,15 +49,15 @@ export const config = {
 const messagePartSchema = z
   .object({
     type: z.string().min(1).optional(),
-    text: z.string().max(MAX_MESSAGE_CHARS).optional()
+    text: z.string().max(MAX_FIELD_CHARS).optional()
   })
   .passthrough()
 
 const messageSchema = z
   .object({
     role: z.string().min(1),
-    content: z.string().max(MAX_MESSAGE_CHARS).optional(),
-    parts: z.array(messagePartSchema).max(MAX_MESSAGES).optional()
+    content: z.string().max(MAX_FIELD_CHARS).optional(),
+    parts: z.array(messagePartSchema).max(MAX_PARTS_PER_MESSAGE).optional()
   })
   .passthrough()
 
