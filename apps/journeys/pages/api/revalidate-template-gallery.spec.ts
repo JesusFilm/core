@@ -54,6 +54,54 @@ describe('revalidate-template-gallery', () => {
     expect(json).toHaveBeenCalledWith({ message: 'Invalid access token' })
   })
 
+  // Mike #2: the compare must be constant-time. A length-mismatched
+  // string (would throw `timingSafeEqual` if passed unguarded) must be
+  // rejected gracefully without ever calling `revalidate`.
+  it('returns 401 when accessToken length differs from the env value', async () => {
+    const req = {
+      query: { accessToken: 'too-short', slug: 'my-collection' }
+    } as unknown as NextApiRequest
+    const { res, status, json, revalidate } = mockResponse()
+
+    await handler(req, res)
+
+    expect(revalidate).not.toHaveBeenCalled()
+    expect(status).toHaveBeenCalledWith(401)
+    expect(json).toHaveBeenCalledWith({ message: 'Invalid access token' })
+  })
+
+  it('returns 401 when accessToken is an array (multi-value query)', async () => {
+    const req = {
+      query: {
+        accessToken: ['valid-token', 'extra'],
+        slug: 'my-collection'
+      }
+    } as unknown as NextApiRequest
+    const { res, status, json, revalidate } = mockResponse()
+
+    await handler(req, res)
+
+    expect(revalidate).not.toHaveBeenCalled()
+    expect(status).toHaveBeenCalledWith(401)
+    expect(json).toHaveBeenCalledWith({ message: 'Invalid access token' })
+  })
+
+  it('returns 500 when the access-token env var is missing', async () => {
+    delete process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN
+    const req = {
+      query: { accessToken: 'valid-token', slug: 'my-collection' }
+    } as unknown as NextApiRequest
+    const { res, status, json, revalidate } = mockResponse()
+
+    await handler(req, res)
+
+    expect(revalidate).not.toHaveBeenCalled()
+    expect(status).toHaveBeenCalledWith(500)
+    expect(json).toHaveBeenCalledWith({
+      message: 'Missing Environment Variables'
+    })
+  })
+
   it('revalidates /home/template-gallery/<slug> and returns 200 on success', async () => {
     const req = {
       query: { accessToken: 'valid-token', slug: 'my-collection' }

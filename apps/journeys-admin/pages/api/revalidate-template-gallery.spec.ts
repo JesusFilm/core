@@ -166,11 +166,34 @@ describe('revalidate-template-gallery', () => {
     expect(json).toHaveBeenCalledWith({ revalidated: true })
   })
 
-  it('returns a generic error and logs upstream status when fetch is not ok', async () => {
+  // Mike #3: any non-2xx upstream response is normalised to 502 to avoid
+  // leaking internal topology (e.g. forwarding the upstream 401 would
+  // confirm to a CSRF attacker that their crafted token mismatched).
+  // The actual upstream status stays in server logs.
+  it('normalises a 401 upstream response to 502 (mask internal topology)', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
-      status: 502,
+      status: 401,
       text: async () => 'leaky upstream body'
+    } as never)
+    const { res, status, json } = mockResponse()
+
+    await handler(authedPostReq(), res)
+
+    expect(status).toHaveBeenCalledWith(502)
+    expect(status).not.toHaveBeenCalledWith(401)
+    expect(json).toHaveBeenCalledWith({ error: 'Error revalidating' })
+    expect(consoleError).toHaveBeenCalledWith(
+      'upstream revalidate failed',
+      expect.objectContaining({ status: 401 })
+    )
+  })
+
+  it('normalises a 500 upstream response to 502', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      text: async () => 'whatever'
     } as never)
     const { res, status, json } = mockResponse()
 
@@ -180,7 +203,7 @@ describe('revalidate-template-gallery', () => {
     expect(json).toHaveBeenCalledWith({ error: 'Error revalidating' })
     expect(consoleError).toHaveBeenCalledWith(
       'upstream revalidate failed',
-      expect.objectContaining({ status: 502 })
+      expect.objectContaining({ status: 500 })
     )
   })
 

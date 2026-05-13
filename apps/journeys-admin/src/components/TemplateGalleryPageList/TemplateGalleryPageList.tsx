@@ -32,6 +32,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { useCanPublishCollection } from '../../libs/useCanPublishCollection'
+import { useRevalidateTemplateGallery } from '../../libs/useRevalidateTemplateGallery'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
 import { JourneyCard } from '../JourneyList/JourneyCard'
 import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
@@ -156,6 +157,27 @@ export function TemplateGalleryPageList({
     unpublish: handleUnpublish,
     ungroup: handleUngroup
   } = useCollectionMutations()
+
+  // Trashing a template (journey) from inside a published collection card
+  // shrinks the public page's templates list — but the journey-trash flow
+  // (TrashJourneyDialog → JOURNEY_TRASH mutation) lives outside this
+  // surface and has no awareness of collections. We pass an `onTrashSuccess`
+  // callback down to each per-collection JourneyCard so the dialog can fire
+  // a revalidate when the parent collection is published. Drafts skip
+  // (no public page to invalidate). Unsectioned JourneyCards (rendered
+  // outside any collection) receive no callback and behave unchanged
+  // (NES-1644 / QA C).
+  const revalidateGallery = useRevalidateTemplateGallery()
+  function buildTrashSuccessHandler(
+    collection: TemplateGalleryPage
+  ): (() => void) | undefined {
+    if (collection.status !== TemplateGalleryPageStatus.published)
+      return undefined
+    const { slug } = collection
+    return () => {
+      void revalidateGallery([slug])
+    }
+  }
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
@@ -415,6 +437,7 @@ export function TemplateGalleryPageList({
                         TemplateGalleryPageStatus.published
                       }
                       dragInFlight={interactionsLocked}
+                      onTrashSuccess={buildTrashSuccessHandler(collection)}
                     />
                   </CollectionCard>
                 </DroppableCollectionWrapper>

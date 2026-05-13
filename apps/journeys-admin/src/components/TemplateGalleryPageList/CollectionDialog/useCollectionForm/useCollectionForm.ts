@@ -6,6 +6,8 @@ import { useSnackbar } from 'notistack'
 import { useMemo, useRef } from 'react'
 import { ObjectSchema, array, object, string } from 'yup'
 
+import { TEMPLATE_GALLERY_SLUG_RE } from '@core/journeys/ui/templateGallerySlug'
+
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../../__generated__/GetTemplateGalleryPages'
 import {
   TemplateGalleryPageCreateInput,
@@ -114,7 +116,7 @@ function buildSchema(t: TFunction): ObjectSchema<CollectionFormValues> {
       ),
     slug: string()
       .max(200, t('Max 200 characters'))
-      .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, {
+      .matches(TEMPLATE_GALLERY_SLUG_RE, {
         message: t('Use lowercase letters, numbers, and hyphens only'),
         // The slug field only renders in edit mode. Create mode submits
         // with slug = '' and the server generates one from the title.

@@ -1,25 +1,35 @@
+import { timingSafeEqual } from 'crypto'
+
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-// Same shape we enforce at the admin form layer. Reject anything else
-// before passing the value into `res.revalidate()` — without this, a
-// caller holding the access token (or a CSRF'd admin reaching us via
-// the admin proxy) could revalidate arbitrary ISR paths via `..`/`/`
-// segments.
-const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
+import { isValidTemplateGallerySlug } from '@core/journeys/ui/templateGallerySlug'
+
+// Shared-secret comparisons must be constant-time so a remote attacker
+// can't recover the token by measuring response latency byte-by-byte.
+// `timingSafeEqual` throws on length-mismatched buffers — guard against
+// that explicitly and reject without comparing further.
+function tokensMatch(provided: unknown, expected: string): boolean {
+  if (typeof provided !== 'string') return false
+  const a = Buffer.from(provided)
+  const b = Buffer.from(expected)
+  if (a.length !== b.length) return false
+  return timingSafeEqual(a, b)
+}
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  if (
-    req.query.accessToken == null ||
-    req.query.accessToken !== process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN
-  ) {
+  const expectedToken = process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN
+  if (expectedToken == null || expectedToken === '') {
+    return res.status(500).json({ message: 'Missing Environment Variables' })
+  }
+  if (!tokensMatch(req.query.accessToken, expectedToken)) {
     return res.status(401).json({ message: 'Invalid access token' })
   }
 
   const slug = req.query.slug
-  if (typeof slug !== 'string' || !SLUG_RE.test(slug)) {
+  if (!isValidTemplateGallerySlug(slug)) {
     return res.status(400).json({ error: 'Invalid slug' })
   }
 

@@ -27,6 +27,15 @@ export interface TrashJourneyDialogProps {
   handleClose: () => void
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
   fromTemplateId?: string | null
+  /**
+   * Optional callback fired AFTER the trash mutation succeeds and the
+   * success snackbar / refetch have run. Generic to keep this dialog
+   * free of any one consumer's concerns — e.g. NES-1644 uses it from
+   * inside published template-gallery collections to fire a public
+   * revalidate of the affected slug. Other consumers pass nothing and
+   * see the original behaviour unchanged.
+   */
+  onTrashSuccess?: () => void
 }
 
 export function TrashJourneyDialog({
@@ -34,7 +43,8 @@ export function TrashJourneyDialog({
   open,
   handleClose,
   refetch,
-  fromTemplateId
+  fromTemplateId,
+  onTrashSuccess
 }: TrashJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -72,6 +82,7 @@ export function TrashJourneyDialog({
         variant: 'success',
         preventDuplicate: true
       })
+      onTrashSuccess?.()
       handleClose()
     } catch (error) {
       if (error instanceof Error) {

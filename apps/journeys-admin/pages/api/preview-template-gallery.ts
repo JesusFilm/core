@@ -1,12 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getApiRequestTokens } from 'next-firebase-auth-edge'
 
-import { authConfig } from '../../src/libs/auth/config'
+import { isValidTemplateGallerySlug } from '@core/journeys/ui/templateGallerySlug'
 
-// Same shape we enforce at the form layer. Reject anything else so the
-// redirect can't smuggle the authed admin onto an unrelated path on
-// `${JOURNEYS_URL}` via `..`, `?`, `#`, or `/` segments.
-const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
+import { authConfig } from '../../src/libs/auth/config'
 
 // Authenticated jump-link to the public template gallery page. The admin
 // UI hits this proxy so we can gate Preview behind the same auth as the
@@ -35,7 +32,7 @@ export default async function handler(
   }
 
   const slug = req.query.slug
-  if (typeof slug !== 'string' || !SLUG_RE.test(slug)) {
+  if (!isValidTemplateGallerySlug(slug)) {
     return res.status(400).json({ error: 'Invalid slug' })
   }
 

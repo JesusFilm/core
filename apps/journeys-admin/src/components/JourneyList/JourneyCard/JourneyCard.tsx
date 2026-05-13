@@ -46,6 +46,14 @@ interface JourneyCardProps {
   duplicatedJourneyId?: string
   variant?: JourneyCardVariant
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  /**
+   * Optional callback forwarded to `JourneyCardMenu` → `TrashJourneyDialog`.
+   * Fires after a successful trash mutation. Lets contextual consumers
+   * react when one of their journeys is trashed — e.g. NES-1644 uses it
+   * inside published template-gallery collection cards to revalidate
+   * the public ISR cache for that collection's slug.
+   */
+  onTrashSuccess?: () => void
 }
 
 /**
@@ -64,7 +72,8 @@ export function JourneyCard({
   journey,
   duplicatedJourneyId,
   variant = JourneyCardVariant.default,
-  refetch
+  refetch,
+  onTrashSuccess
 }: JourneyCardProps): ReactElement {
   const theme = useTheme()
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
@@ -141,6 +150,7 @@ export function JourneyCard({
             onMenuClose={() => updateHoverState(false)}
             template={journey.template ?? false}
             setHasOpenDialog={setHasOpenDialog}
+            onTrashSuccess={onTrashSuccess}
           />
         </Box>
         <CardActionArea

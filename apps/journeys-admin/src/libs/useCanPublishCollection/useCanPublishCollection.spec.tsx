@@ -46,25 +46,32 @@ function wrapWith(mocks: MockedResponse[]) {
 }
 
 describe('useCanPublishCollection', () => {
-  it('returns canPublish: false (no team) and loading: false when teamId is null', () => {
+  // Mike's review #1: when teamId is null/undefined the hook can't tell
+  // "no team selected" apart from "TeamProvider hasn't resolved yet", so
+  // it fails open. The publish CTA stays enabled by default and the
+  // caller can read `loading: true` if it wants to render a spinner.
+  it('returns canPublish: true and loading: true when teamId is null (fail-open)', () => {
     const { result } = renderHook(
       () => useCanPublishCollection({ teamId: null }),
       { wrapper: wrapWith([]) }
     )
     expect(result.current).toEqual({
-      canPublish: false,
+      canPublish: true,
       reason: null,
-      loading: false
+      loading: true
     })
   })
 
-  it('returns canPublish: false (no team) when teamId is undefined', () => {
+  it('returns canPublish: true and loading: true when teamId is undefined (fail-open)', () => {
     const { result } = renderHook(
       () => useCanPublishCollection({ teamId: undefined }),
       { wrapper: wrapWith([]) }
     )
-    expect(result.current.canPublish).toBe(false)
-    expect(result.current.reason).toBeNull()
+    expect(result.current).toEqual({
+      canPublish: true,
+      reason: null,
+      loading: true
+    })
   })
 
   it('returns canPublish: true when the team has no custom domains', async () => {

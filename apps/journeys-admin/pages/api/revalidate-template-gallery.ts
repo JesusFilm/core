@@ -2,12 +2,9 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { getApiRequestTokens } from 'next-firebase-auth-edge'
 import fetch from 'node-fetch'
 
-import { authConfig } from '../../src/libs/auth/config'
+import { isValidTemplateGallerySlug } from '@core/journeys/ui/templateGallerySlug'
 
-// Same shape we enforce at the form layer. Reject anything else before
-// forwarding to the public app — defense-in-depth alongside the upstream
-// endpoint's identical check.
-const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
+import { authConfig } from '../../src/libs/auth/config'
 
 // Authenticated proxy that asks the public journeys app to revalidate a
 // template-gallery page. Fire-and-forget from the admin client after a
@@ -49,7 +46,7 @@ export default async function handler(
   }
 
   const slug = req.query.slug
-  if (typeof slug !== 'string' || !SLUG_RE.test(slug)) {
+  if (!isValidTemplateGallerySlug(slug)) {
     return res.status(400).json({ error: 'Invalid slug' })
   }
 
@@ -65,14 +62,17 @@ export default async function handler(
       }/api/revalidate-template-gallery?${params.toString()}`
     )
     if (!response.ok) {
-      // Log the upstream text server-side for debug; never forward it to
-      // the client (the body could leak failing-URL fragments including
-      // the access-token query param if a future upstream change starts
-      // surfacing them).
+      // Log the upstream status server-side for debug; never forward it
+      // to the client. Forwarding leaks internal topology — a 401 here
+      // tells a CSRF attacker the upstream token mismatched (vs auth /
+      // env / network), and the upstream body could surface failing-URL
+      // fragments including the access-token query param if a future
+      // upstream change starts including them. Normalise every non-2xx
+      // upstream response to a generic 502.
       console.error('upstream revalidate failed', {
         status: response.status
       })
-      return res.status(response.status).json({ error: 'Error revalidating' })
+      return res.status(502).json({ error: 'Error revalidating' })
     }
   } catch (e) {
     return res.status(500).json({ error: 'Error revalidating' })

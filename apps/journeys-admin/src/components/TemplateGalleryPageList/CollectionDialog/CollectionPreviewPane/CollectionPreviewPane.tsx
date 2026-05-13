@@ -158,7 +158,11 @@ function CollectionPreviewPaneImpl({
             )
           }}
         />
-        <Tooltip title={viewTooltip}>
+        <Tooltip
+          title={viewTooltip}
+          disableHoverListener={!viewDisabled}
+          disableFocusListener={!viewDisabled}
+        >
           <span>
             <IconButton
               aria-label={t('Open in new tab')}
