@@ -1,5 +1,6 @@
 import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { Job } from 'bullmq'
+import { vi } from 'vitest'
 
 import {
   Event,
@@ -19,12 +20,24 @@ import { prismaMock } from '../../../../test/prismaMock'
 import { JourneyWithTeamAndUserJourney } from './prisma.types'
 import { service } from './service'
 
-jest.mock('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const actual =
+    await vi.importActual<typeof import('@apollo/client')>('@apollo/client')
+  class MockApolloClient {
+    query(..._args: unknown[]): unknown {
+      return undefined
+    }
+    mutate(..._args: unknown[]): unknown {
+      return undefined
+    }
+  }
+  return { ...actual, ApolloClient: MockApolloClient }
+})
 
 let args = {}
-jest.mock('@core/yoga/email', () => ({
+vi.mock('@core/yoga/email', () => ({
   __esModule: true,
-  sendEmail: jest.fn().mockImplementation(async (callArgs) => {
+  sendEmail: vi.fn().mockImplementation(async (callArgs) => {
     args = callArgs
     await Promise.resolve()
   })
@@ -237,12 +250,12 @@ const job: Job<EventsNotificationJob, unknown, string> = {
 
 describe('EmailEventsConsumer', () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('visitorEventEmails', () => {
     it('should send events notification email successfully', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
+      vi.spyOn(ApolloClient.prototype, 'query').mockImplementation(
         async () =>
           await Promise.resolve({
             data: {

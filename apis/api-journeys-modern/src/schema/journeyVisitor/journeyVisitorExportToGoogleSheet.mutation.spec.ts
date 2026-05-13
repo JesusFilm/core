@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
@@ -9,40 +10,40 @@ import { getIntegrationGoogleAccessToken } from '../../lib/google/googleAuth'
 import { createSpreadsheet, ensureSheet } from '../../lib/google/sheets'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-jest.mock('../../lib/auth/ability', () => ({
+vi.mock('../../lib/auth/ability', () => ({
   Action: {
     Export: 'export'
   },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../lib/google/googleAuth', () => ({
-  getIntegrationGoogleAccessToken: jest.fn()
+vi.mock('../../lib/google/googleAuth', () => ({
+  getIntegrationGoogleAccessToken: vi.fn()
 }))
 
-jest.mock('../../lib/google/sheets', () => ({
-  createSpreadsheet: jest.fn(),
-  ensureSheet: jest.fn()
+vi.mock('../../lib/google/sheets', () => ({
+  createSpreadsheet: vi.fn(),
+  ensureSheet: vi.fn()
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
-const mockAbility = ability as jest.MockedFunction<typeof ability>
+const mockAbility = ability as MockedFunction<typeof ability>
 const mockGetIntegrationGoogleAccessToken =
-  getIntegrationGoogleAccessToken as jest.MockedFunction<
+  getIntegrationGoogleAccessToken as MockedFunction<
     typeof getIntegrationGoogleAccessToken
   >
-const mockCreateSpreadsheet = createSpreadsheet as jest.MockedFunction<
+const mockCreateSpreadsheet = createSpreadsheet as MockedFunction<
   typeof createSpreadsheet
 >
-const mockEnsureSheet = ensureSheet as jest.MockedFunction<typeof ensureSheet>
+const mockEnsureSheet = ensureSheet as MockedFunction<typeof ensureSheet>
 
 describe('journeyVisitorExportToGoogleSheet', () => {
   const mockUser = {
@@ -101,7 +102,7 @@ describe('journeyVisitorExportToGoogleSheet', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockAbility.mockReturnValue(true)
     mockGetUserFromPayload.mockReturnValue(mockUser)
     prismaMock.userRole.findUnique.mockResolvedValue({

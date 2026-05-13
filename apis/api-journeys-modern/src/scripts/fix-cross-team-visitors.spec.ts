@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { prismaMock } from '../../test/prismaMock'
 
 import {
@@ -8,7 +10,7 @@ import {
 
 describe('fix-cross-team-visitors', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const makeMismatchedRecord = (overrides = {}) => ({
@@ -279,7 +281,7 @@ describe('fix-cross-team-visitors', () => {
       prismaMock.$queryRaw.mockResolvedValue(records)
       prismaMock.visitor.findFirst.mockResolvedValue(null)
 
-      const consoleSpy = jest.spyOn(console, 'log')
+      const consoleSpy = vi.spyOn(console, 'log')
 
       const results = await fixCrossTeamVisitors(prismaMock, true)
 
