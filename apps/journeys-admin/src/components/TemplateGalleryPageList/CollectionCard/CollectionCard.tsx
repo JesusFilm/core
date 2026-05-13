@@ -62,9 +62,12 @@ function CollectionCardImpl({
   const isPublished = collection.status === TemplateGalleryPageStatus.published
   const isEmpty = collection.templates.length === 0
 
-  // Preview (a) only makes sense once the page is publicly reachable, and
-  // (b) is also gated by custom-domain teams — same constraint as Publish.
-  const previewDisabled = !isPublished || !canPublish
+  // Preview (a) only makes sense once the page is publicly reachable, (b) is
+  // also gated by custom-domain teams — same constraint as Publish, and (c)
+  // needs a slug to build a valid proxy URL. The server's SLUG_RE rejects
+  // empty slugs with 400; this keeps the menu item disabled so a click can't
+  // open a tab onto the error page.
+  const previewDisabled = !isPublished || !canPublish || !collection.slug
   const previewHref = `/api/preview-template-gallery?slug=${encodeURIComponent(collection.slug)}`
   const previewTooltip = !canPublish
     ? (publishBlockedReason ?? '')

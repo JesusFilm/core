@@ -259,10 +259,12 @@ describe('CollectionCard', () => {
       screen.getByRole('button', { name: 'Collection actions' })
     )
     // Published collections show Unpublish + Preview (no Publish item).
-    expect(screen.getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
+    const previewItem = screen.getByRole('menuitem', { name: 'Preview' })
+    expect(previewItem).toHaveAttribute('aria-disabled', 'true')
+    // MUI wraps disabled menu items in a <span> so the Tooltip can listen for
+    // hover (the disabled <li> itself has pointer-events: none).
+    await userEvent.hover(previewItem.parentElement as HTMLElement)
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(reason)
   })
 
   it('disables Publish (and shows the gate reason) when canPublish is false on a draft', async () => {
@@ -277,10 +279,12 @@ describe('CollectionCard', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Collection actions' })
     )
-    expect(screen.getByRole('menuitem', { name: 'Publish' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
+    const publishItem = screen.getByRole('menuitem', { name: 'Publish' })
+    expect(publishItem).toHaveAttribute('aria-disabled', 'true')
+    // MUI wraps disabled menu items in a <span> so the Tooltip can listen for
+    // hover (the disabled <li> itself has pointer-events: none).
+    await userEvent.hover(publishItem.parentElement as HTMLElement)
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(reason)
   })
 
   it('renders empty-state caption when there are no templates and children otherwise', () => {
