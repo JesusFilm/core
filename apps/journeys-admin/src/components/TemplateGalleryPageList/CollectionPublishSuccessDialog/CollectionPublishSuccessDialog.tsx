@@ -20,10 +20,14 @@ export interface CollectionPublishSuccessDialogProps {
   publicUrl: string | null
   /**
    * The slug of the just-published collection. When set, "View the page"
-   * routes through `/api/preview-template-gallery?slug=<slug>` so the
-   * journeys app revalidates its ISR cache before redirecting — the user
-   * sees the freshly-published content instead of stale cache.
-   * Null when not yet known (e.g. closed dialog).
+   * routes through `/api/preview-template-gallery?slug=<slug>`, which
+   * awaits a revalidate of the journeys ISR cache before issuing the
+   * 307 redirect. That await is the safety net for the unpublish → edit →
+   * publish → click-View race: the publish mutation's own fire-and-forget
+   * revalidate is still in flight when the user clicks, so without this
+   * proxy-side wait the public URL would serve the stale state cached
+   * from the prior unpublish. Null when not yet known (e.g. closed
+   * dialog).
    */
   slug?: string | null
   /**
