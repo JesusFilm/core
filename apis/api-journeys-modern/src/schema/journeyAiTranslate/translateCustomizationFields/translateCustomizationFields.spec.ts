@@ -1,26 +1,27 @@
 import { generateText } from 'ai'
+import { type MockedFunction, vi } from 'vitest'
 
 import { translateCustomizationFields } from './translateCustomizationFields'
 
-jest.mock('@openrouter/ai-sdk-provider', () => ({
+vi.mock('@openrouter/ai-sdk-provider', () => ({
   openrouter: {
-    chat: jest.fn(() => 'mocked-openrouter-model')
+    chat: vi.fn(() => 'mocked-openrouter-model')
   }
 }))
 
-jest.mock('ai', () => ({
-  Output: { object: jest.fn(({ schema }) => ({ schema })) },
-  generateText: jest.fn()
+vi.mock('ai', () => ({
+  Output: { object: vi.fn(({ schema }) => ({ schema })) },
+  generateText: vi.fn()
 }))
 
-jest.mock('@core/shared/ai/openrouterModel', () => ({
-  withOpenrouterFallback: jest.fn(async (operation) => {
+vi.mock('@core/shared/ai/openrouterModel', () => ({
+  withOpenrouterFallback: vi.fn(async (operation) => {
     return operation('mocked-model')
   })
 }))
 
-jest.mock('@core/shared/ai/prompts', () => ({
-  hardenPrompt: jest.fn((text) => `<hardened>${text}</hardened>`),
+vi.mock('@core/shared/ai/prompts', () => ({
+  hardenPrompt: vi.fn((text) => `<hardened>${text}</hardened>`),
   preSystemPrompt: 'mocked system prompt'
 }))
 
@@ -35,9 +36,7 @@ const baseMockResponse = {
 }
 
 describe('translateCustomizationFields', () => {
-  const mockGenerateText = generateText as jest.MockedFunction<
-    typeof generateText
-  >
+  const mockGenerateText = generateText as MockedFunction<typeof generateText>
 
   const mockJourneyCustomizationFields = [
     {
@@ -70,7 +69,7 @@ describe('translateCustomizationFields', () => {
   ]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should translate customization fields and description', async () => {

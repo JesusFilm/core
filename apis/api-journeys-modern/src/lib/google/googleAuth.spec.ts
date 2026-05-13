@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { type Mocked, type MockedFunction, vi } from 'vitest'
 
 import { decryptSymmetric } from '@core/yoga/crypto'
 
@@ -9,19 +10,19 @@ import {
   getTeamGoogleAccessToken
 } from './googleAuth'
 
-jest.mock('axios')
-jest.mock('@core/yoga/crypto', () => ({
-  decryptSymmetric: jest.fn()
+vi.mock('axios')
+vi.mock('@core/yoga/crypto', () => ({
+  decryptSymmetric: vi.fn()
 }))
 
-const mockAxios = axios as jest.Mocked<typeof axios>
-const mockDecryptSymmetric = decryptSymmetric as jest.MockedFunction<
+const mockAxios = axios as Mocked<typeof axios>
+const mockDecryptSymmetric = decryptSymmetric as MockedFunction<
   typeof decryptSymmetric
 >
 
 describe('googleAuth', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('getTeamGoogleAccessToken', () => {
