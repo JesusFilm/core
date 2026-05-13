@@ -34,7 +34,9 @@ describe('transformer', () => {
           parentOrder: 0,
           themeMode: null,
           themeName: null,
-          eventLabel: null
+          eventLabel: null,
+          showAssistant: null,
+          expandChatByDefault: null
         },
         {
           __typename: 'RadioQuestionBlock',

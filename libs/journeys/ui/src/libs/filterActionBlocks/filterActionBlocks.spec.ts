@@ -100,7 +100,9 @@ const card: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: [image, button, radioQuestionBlock]
+  children: [image, button, radioQuestionBlock],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 const step: TreeBlock<StepBlock> = {

@@ -1,3 +1,4 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -13,8 +14,12 @@ import {
 } from '../../../../../../../../../../__generated__/ImageBlockUpdate'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
-import { createCloudflareUploadByUrlMock } from '../../../../../Drawer/ImageBlockEditor/CustomImage/CustomUrl/data'
-import { listUnsplashCollectionPhotosMock } from '../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
+import {
+  listUnsplashCollectionPhotosMock,
+  toImageBlockUpdateInput,
+  triggerUnsplashDownloadMock,
+  unsplashImageInput
+} from '../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
 
 import { IMAGE_BLOCK_UPDATE } from './ImageOptions'
 
@@ -26,19 +31,8 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('ImageOptions', () => {
-  let originalEnv
-
   beforeEach(() => {
     ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
-    originalEnv = process.env
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
-    }
-  })
-
-  afterEach(() => {
-    process.env = originalEnv
   })
 
   const selectedBlock: TreeBlock<ImageBlock> = {
@@ -90,58 +84,69 @@ describe('ImageOptions', () => {
     }
   }
 
-  it('updates image block', async () => {
+  it('updates image block from gallery selection', async () => {
+    const undoInput = toImageBlockUpdateInput(selectedBlock)
     const updateResult = jest.fn(() => ({
-      data: response
+      data: {
+        imageBlockUpdate: {
+          ...selectedBlock,
+          ...unsplashImageInput
+        }
+      }
     }))
     const undoResult = jest.fn(() => ({
-      data: response
+      data: {
+        imageBlockUpdate: {
+          ...selectedBlock,
+          ...undoInput
+        }
+      }
     }))
-    const redoResult = jest.fn(() => ({
-      data: response
-    }))
+    const updateMock: MockedResponse<
+      ImageBlockUpdate,
+      ImageBlockUpdateVariables
+    > = {
+      request: {
+        query: IMAGE_BLOCK_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          input: unsplashImageInput
+        }
+      },
+      result: updateResult
+    }
+    const undoMock: MockedResponse<
+      ImageBlockUpdate,
+      ImageBlockUpdateVariables
+    > = {
+      request: {
+        query: IMAGE_BLOCK_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          input: undoInput
+        }
+      },
+      result: undoResult
+    }
+
+    const cache = new InMemoryCache()
+    cache.restore({
+      [`ImageBlock:${selectedBlock.id}`]: { ...selectedBlock }
+    })
+
     render(
       <MockedProvider
+        cache={cache}
         mocks={[
           listUnsplashCollectionPhotosMock,
-          // Unsplash may be queried multiple times when opening the dialog
-          listUnsplashCollectionPhotosMock,
-          createCloudflareUploadByUrlMock,
-          {
-            ...imageBlockUpdateMock,
-            result: updateResult
-          },
-          {
-            ...imageBlockUpdateMock,
-            request: {
-              ...imageBlockUpdateMock.request,
-              variables: {
-                ...imageBlockUpdateMock.request.variables,
-                input: {
-                  ...imageBlockUpdateMock.request.variables?.input,
-                  src: 'https://example.com/old.jpg',
-                  alt: 'prior-alt'
-                }
-              }
-            },
-            result: undoResult
-          },
-          {
-            ...imageBlockUpdateMock,
-            result: redoResult
-          }
+          triggerUnsplashDownloadMock,
+          updateMock,
+          undoMock,
+          updateMock
         ]}
       >
         <CommandProvider>
-          <EditorProvider
-            initialState={{
-              selectedBlock: {
-                ...selectedBlock,
-                src: 'https://example.com/old.jpg',
-                alt: 'prior-alt'
-              }
-            }}
-          >
+          <EditorProvider initialState={{ selectedBlock }}>
             <ImageOptions />
             <CommandUndoItem variant="button" />
             <CommandRedoItem variant="button" />
@@ -149,29 +154,33 @@ describe('ImageOptions', () => {
         </CommandProvider>
       </MockedProvider>
     )
+
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'prior-alt Selected Image 1920 x 1080 pixels'
+        name: 'public Selected Image 1920 x 1080 pixels'
       })
     )
     await waitFor(() =>
-      fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+      expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
     )
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'white dome building during daytime' })
     )
-    const textBox = screen.getByRole('textbox')
-    fireEvent.change(textBox, {
-      target: {
-        value: 'https://example.com/image.jpg'
-      }
-    })
-    fireEvent.blur(textBox)
+
     await waitFor(() => expect(updateResult).toHaveBeenCalled())
+    expect(cache.extract()[`ImageBlock:${selectedBlock.id}`]?.src).toEqual(
+      unsplashImageInput.src
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(undoResult).toHaveBeenCalled())
+    expect(cache.extract()[`ImageBlock:${selectedBlock.id}`]?.src).toEqual(
+      selectedBlock.src
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() => expect(redoResult).toHaveBeenCalled())
+    await waitFor(() => expect(updateResult).toHaveBeenCalledTimes(2))
+    expect(cache.extract()[`ImageBlock:${selectedBlock.id}`]?.src).toEqual(
+      unsplashImageInput.src
+    )
   })
 
   it('fake delete image block', async () => {

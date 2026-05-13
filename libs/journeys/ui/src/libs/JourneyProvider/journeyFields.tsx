@@ -121,6 +121,8 @@ export const JOURNEY_FIELDS = gql`
     }
     fromTemplateId
     customizable
+    # Deprecated. No longer consulted at runtime — chat affordance is
+    # card-level only. Field removal is tracked in NES-1624.
     showAssistant
   }
 `

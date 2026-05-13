@@ -37,8 +37,12 @@ import {
 } from '../../../../../../../../../../__generated__/RadioOptionImageUpdate'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
-import { createCloudflareUploadByUrlMock } from '../../../../../Drawer/ImageBlockEditor/CustomImage/CustomUrl/data'
-import { listUnsplashCollectionPhotosMock } from '../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
+import {
+  listUnsplashCollectionPhotosMock,
+  toImageBlockUpdateInput,
+  triggerUnsplashDownloadMock,
+  unsplashImageInput
+} from '../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
 
 import {
   RADIO_OPTION_IMAGE_CREATE,
@@ -155,64 +159,9 @@ const image: TreeBlock<ImageBlock> = {
 }
 
 describe('RadioOptionImage', () => {
-  let originalEnv
-
   beforeEach(() => {
     ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
-    originalEnv = process.env
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
-    }
   })
-
-  afterEach(() => {
-    process.env = originalEnv
-  })
-
-  const radioOptionImageCreateMock: MockedResponse<
-    RadioOptionImageCreate,
-    RadioOptionImageCreateVariables
-  > = {
-    request: {
-      query: RADIO_OPTION_IMAGE_CREATE,
-      variables: {
-        id: image.id,
-        radioOptionBlockId: radioOption.id,
-        input: {
-          journeyId: journey.id,
-          id: image.id,
-          parentBlockId: radioOption.id,
-          src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
-          alt: 'public'
-        }
-      }
-    },
-    result: {
-      data: {
-        imageBlockCreate: {
-          id: image.id,
-          src: image.src,
-          alt: image.alt,
-          __typename: 'ImageBlock',
-          parentBlockId: radioOption.id,
-          width: image.width,
-          height: image.height,
-          parentOrder: image.parentOrder,
-          blurhash: image.blurhash,
-          scale: null,
-          focalLeft: 50,
-          focalTop: 50,
-          customizable: null
-        },
-        radioOptionBlockUpdate: {
-          id: radioOption.id,
-          pollOptionImageBlockId: image.id,
-          __typename: 'RadioOptionBlock'
-        }
-      }
-    }
-  }
 
   const radioOptionImageDeleteMock: MockedResponse<
     RadioOptionImageDelete,
@@ -266,199 +215,112 @@ describe('RadioOptionImage', () => {
     }
   }
 
-  describe('Creating a new image', () => {
-    it('creates a new image for radio option', async () => {
-      mockUuidv4.mockReturnValueOnce(image.id)
-      const cache = new InMemoryCache()
-      cache.restore({
-        [`Journey:${journey.id}`]: {
-          blocks: [{ __ref: `RadioOptionBlock:${radioOption.id}` }],
-          id: journey.id,
-          __typename: 'Journey'
-        },
-        [`RadioOptionBlock:${radioOption.id}`]: { ...radioOption }
-      })
-      render(
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            createCloudflareUploadByUrlMock,
-            radioOptionImageCreateMock,
-            radioOptionImageDeleteMock,
-            radioOptionImageRestoreMock
-          ]}
-        >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <SnackbarProvider>
-              <CommandProvider>
-                <RadioOptionImage radioOptionBlock={radioOption} />
-                <CommandUndoItem variant="button" />
-                <CommandRedoItem variant="button" />
-              </CommandProvider>
-            </SnackbarProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
-      await waitFor(() =>
-        fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-      )
-      await waitFor(() =>
-        fireEvent.click(
-          screen.getByRole('button', { name: 'Add image by URL' })
-        )
-      )
-      const textBox = await screen.getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: { value: 'https://example.com/image.jpg' }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() =>
-        expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-          { __ref: `RadioOptionBlock:${radioOption.id}` },
-          { __ref: `ImageBlock:${image.id}` }
-        ])
-      )
-      expect(
-        cache.extract()[`RadioOptionBlock:${radioOption.id}`]
-          ?.pollOptionImageBlockId
-      ).toEqual(image.id)
+  it('creates a new image for radio option from gallery selection', async () => {
+    mockUuidv4.mockReturnValueOnce(image.id)
+    const cache = new InMemoryCache()
+    cache.restore({
+      [`Journey:${journey.id}`]: {
+        blocks: [{ __ref: `RadioOptionBlock:${radioOption.id}` }],
+        id: journey.id,
+        __typename: 'Journey'
+      },
+      [`RadioOptionBlock:${radioOption.id}`]: { ...radioOption }
     })
+    const response: RadioOptionImageCreate = {
+      imageBlockCreate: {
+        ...image,
+        ...unsplashImageInput
+      },
+      radioOptionBlockUpdate: {
+        id: radioOption.id,
+        pollOptionImageBlockId: image.id,
+        __typename: 'RadioOptionBlock'
+      }
+    }
+    const createResult = jest.fn(() => ({
+      data: response
+    }))
+    const radioOptionImageCreateMock: MockedResponse<
+      RadioOptionImageCreate,
+      RadioOptionImageCreateVariables
+    > = {
+      request: {
+        query: RADIO_OPTION_IMAGE_CREATE,
+        variables: {
+          id: image.id,
+          radioOptionBlockId: radioOption.id,
+          input: {
+            journeyId: journey.id,
+            id: image.id,
+            ...unsplashImageInput,
+            parentBlockId: radioOption.id
+          }
+        }
+      },
+      result: createResult
+    }
 
-    it('undo creating a new image', async () => {
-      mockUuidv4.mockReturnValueOnce(image.id)
-      const cache = new InMemoryCache()
-      cache.restore({
-        [`Journey:${journey.id}`]: {
-          blocks: [{ __ref: `RadioOptionBlock:${radioOption.id}` }],
-          id: journey.id,
-          __typename: 'Journey'
-        },
-        [`RadioOptionBlock:${radioOption.id}`]: { ...radioOption }
-      })
-      render(
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            createCloudflareUploadByUrlMock,
-            radioOptionImageCreateMock,
-            radioOptionImageDeleteMock,
-            radioOptionImageRestoreMock
-          ]}
-        >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <SnackbarProvider>
-              <CommandProvider>
-                <RadioOptionImage radioOptionBlock={radioOption} />
-                <CommandUndoItem variant="button" />
-                <CommandRedoItem variant="button" />
-              </CommandProvider>
-            </SnackbarProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
-      await waitFor(() =>
-        fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-      )
-      await waitFor(() =>
-        fireEvent.click(
-          screen.getByRole('button', { name: 'Add image by URL' })
-        )
-      )
-      const textBox = await screen.getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: { value: 'https://example.com/image.jpg' }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() =>
-        expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-          { __ref: `RadioOptionBlock:${radioOption.id}` },
-          { __ref: `ImageBlock:${image.id}` }
-        ])
-      )
-      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-      await waitFor(() =>
-        expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-          { __ref: `RadioOptionBlock:${radioOption.id}` }
-        ])
-      )
-      expect(
-        cache.extract()[`RadioOptionBlock:${radioOption.id}`]
-          ?.pollOptionImageBlockId
-      ).toBeNull()
-    })
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          listUnsplashCollectionPhotosMock,
+          triggerUnsplashDownloadMock,
+          radioOptionImageCreateMock,
+          radioOptionImageDeleteMock,
+          radioOptionImageRestoreMock
+        ]}
+      >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <SnackbarProvider>
+            <CommandProvider>
+              <RadioOptionImage radioOptionBlock={radioOption} />
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+            </CommandProvider>
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
 
-    it('restore creating a new image', async () => {
-      mockUuidv4.mockReturnValueOnce(image.id)
-      const cache = new InMemoryCache()
-      cache.restore({
-        [`Journey:${journey.id}`]: {
-          blocks: [{ __ref: `RadioOptionBlock:${radioOption.id}` }],
-          id: journey.id,
-          __typename: 'Journey'
-        },
-        [`RadioOptionBlock:${radioOption.id}`]: { ...radioOption }
-      })
-      render(
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            createCloudflareUploadByUrlMock,
-            radioOptionImageCreateMock,
-            radioOptionImageDeleteMock,
-            radioOptionImageRestoreMock
-          ]}
-        >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <SnackbarProvider>
-              <CommandProvider>
-                <RadioOptionImage radioOptionBlock={radioOption} />
-                <CommandUndoItem variant="button" />
-                <CommandRedoItem variant="button" />
-              </CommandProvider>
-            </SnackbarProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
-      await waitFor(() =>
-        fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-      )
-      await waitFor(() =>
-        fireEvent.click(
-          screen.getByRole('button', { name: 'Add image by URL' })
-        )
-      )
-      const textBox = await screen.getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: { value: 'https://example.com/image.jpg' }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() =>
-        expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-          { __ref: `RadioOptionBlock:${radioOption.id}` },
-          { __ref: `ImageBlock:${image.id}` }
-        ])
-      )
-      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-      await waitFor(() =>
-        expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-          { __ref: `RadioOptionBlock:${radioOption.id}` }
-        ])
-      )
-      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-      await waitFor(() =>
-        expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-          { __ref: `RadioOptionBlock:${radioOption.id}` },
-          { __ref: `ImageBlock:${image.id}` }
-        ])
-      )
-      expect(
-        cache.extract()[`RadioOptionBlock:${radioOption.id}`]
-          ?.pollOptionImageBlockId
-      ).toEqual(image.id)
-    })
+    fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
+    await waitFor(() =>
+      expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'white dome building during daytime' })
+    )
+
+    await waitFor(() => expect(createResult).toHaveBeenCalled())
+    expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+      { __ref: `RadioOptionBlock:${radioOption.id}` },
+      { __ref: `ImageBlock:${image.id}` }
+    ])
+    expect(
+      cache.extract()[`RadioOptionBlock:${radioOption.id}`]
+        ?.pollOptionImageBlockId
+    ).toEqual(image.id)
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `RadioOptionBlock:${radioOption.id}` }
+      ])
+    )
+    expect(
+      cache.extract()[`RadioOptionBlock:${radioOption.id}`]
+        ?.pollOptionImageBlockId
+    ).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `RadioOptionBlock:${radioOption.id}` },
+        { __ref: `ImageBlock:${image.id}` }
+      ])
+    )
+    expect(
+      cache.extract()[`RadioOptionBlock:${radioOption.id}`]
+        ?.pollOptionImageBlockId
+    ).toEqual(image.id)
   })
 
   describe('Existing image for radio option', () => {
@@ -474,212 +336,26 @@ describe('RadioOptionImage', () => {
       ]
     }
 
-    it('updates image for radio option', async () => {
-      const response: RadioOptionImageUpdate = {
-        imageBlockUpdate: {
-          id: image.id,
-          src: image.src,
-          alt: image.alt,
-          __typename: 'ImageBlock',
-          parentBlockId: radioOption.id,
-          width: image.width,
-          height: image.height,
-          parentOrder: image.parentOrder,
-          blurhash: image.blurhash,
-          scale: null,
-          focalLeft: 50,
-          focalTop: 50,
-          customizable: null
-        }
-      }
-      const radioOptionImageUpdateMock: MockedResponse<
-        RadioOptionImageUpdate,
-        RadioOptionImageUpdateVariables
-      > = {
-        request: {
-          query: RADIO_OPTION_IMAGE_UPDATE,
-          variables: {
-            id: image.id,
-            input: {
-              src: image.src,
-              alt: image.alt
-            }
-          }
-        },
-        result: {
-          data: response
-        }
-      }
+    it('updates image for radio option from gallery selection', async () => {
+      const priorImage = existingImageRadioOption
+        .children[0] as TreeBlock<ImageBlock>
+      const undoInput = toImageBlockUpdateInput(priorImage)
       const updateResult = jest.fn(() => ({
-        data: response
-      }))
-      render(
-        <MockedProvider
-          mocks={[
-            listUnsplashCollectionPhotosMock,
-            // The Unsplash collection query is triggered multiple times during interactions
-            listUnsplashCollectionPhotosMock,
-            createCloudflareUploadByUrlMock,
-            {
-              ...radioOptionImageUpdateMock,
-              result: updateResult
-            }
-          ]}
-        >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <SnackbarProvider>
-              <CommandProvider>
-                <RadioOptionImage radioOptionBlock={existingImageRadioOption} />
-                <CommandUndoItem variant="button" />
-                <CommandRedoItem variant="button" />
-              </CommandProvider>
-            </SnackbarProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      fireEvent.click(
-        screen.getByRole('button', {
-          name: 'prior-alt Selected Image 1920 x 1080 pixels'
-        })
-      )
-      await waitFor(() =>
-        fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-      )
-      await waitFor(() =>
-        fireEvent.click(
-          screen.getByRole('button', { name: 'Add image by URL' })
-        )
-      )
-      const textBox = await screen.getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: { value: 'https://example.com/image.jpg' }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() => expect(updateResult).toHaveBeenCalled())
-    })
-
-    it('undo updating an image', async () => {
-      const response: RadioOptionImageUpdate = {
-        imageBlockUpdate: {
-          id: image.id,
-          src: image.src,
-          alt: image.alt,
-          __typename: 'ImageBlock',
-          parentBlockId: radioOption.id,
-          width: image.width,
-          height: image.height,
-          parentOrder: image.parentOrder,
-          blurhash: image.blurhash,
-          scale: null,
-          focalLeft: 50,
-          focalTop: 50,
-          customizable: null
-        }
-      }
-      const radioOptionImageUpdateMock: MockedResponse<
-        RadioOptionImageUpdate,
-        RadioOptionImageUpdateVariables
-      > = {
-        request: {
-          query: RADIO_OPTION_IMAGE_UPDATE,
-          variables: {
-            id: image.id,
-            input: {
-              src: image.src,
-              alt: image.alt
-            }
+        data: {
+          imageBlockUpdate: {
+            ...image,
+            ...unsplashImageInput
           }
-        },
-        result: {
-          data: response
         }
-      }
-      const updateResult = jest.fn(() => ({
-        data: response
       }))
       const undoResult = jest.fn(() => ({
-        data: response
-      }))
-      render(
-        <MockedProvider
-          mocks={[
-            listUnsplashCollectionPhotosMock,
-            // Provide an extra mock as the query may fire twice
-            listUnsplashCollectionPhotosMock,
-            createCloudflareUploadByUrlMock,
-            {
-              ...radioOptionImageUpdateMock,
-              result: updateResult
-            },
-            {
-              ...radioOptionImageUpdateMock,
-              request: {
-                ...radioOptionImageUpdateMock.request,
-                variables: {
-                  ...radioOptionImageUpdateMock.request.variables,
-                  input: {
-                    ...radioOptionImageUpdateMock.request.variables?.input,
-                    src: 'https://example.com/old.jpg',
-                    alt: 'prior-alt'
-                  }
-                }
-              },
-              result: undoResult
-            }
-          ]}
-        >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <SnackbarProvider>
-              <CommandProvider>
-                <RadioOptionImage radioOptionBlock={existingImageRadioOption} />
-                <CommandUndoItem variant="button" />
-                <CommandRedoItem variant="button" />
-              </CommandProvider>
-            </SnackbarProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      fireEvent.click(
-        screen.getByRole('button', {
-          name: 'prior-alt Selected Image 1920 x 1080 pixels'
-        })
-      )
-      await waitFor(() =>
-        fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-      )
-      await waitFor(() =>
-        fireEvent.click(
-          screen.getByRole('button', { name: 'Add image by URL' })
-        )
-      )
-      const textBox = await screen.getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: { value: 'https://example.com/image.jpg' }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() => expect(updateResult).toHaveBeenCalled())
-      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-      await waitFor(() => expect(undoResult).toHaveBeenCalled())
-    })
-
-    it('redo updating an image', async () => {
-      const response: RadioOptionImageUpdate = {
-        imageBlockUpdate: {
-          id: image.id,
-          src: image.src,
-          alt: image.alt,
-          __typename: 'ImageBlock',
-          parentBlockId: radioOption.id,
-          width: image.width,
-          height: image.height,
-          parentOrder: image.parentOrder,
-          blurhash: image.blurhash,
-          scale: null,
-          focalLeft: 50,
-          focalTop: 50,
-          customizable: null
+        data: {
+          imageBlockUpdate: {
+            ...image,
+            ...undoInput
+          }
         }
-      }
+      }))
       const radioOptionImageUpdateMock: MockedResponse<
         RadioOptionImageUpdate,
         RadioOptionImageUpdateVariables
@@ -688,55 +364,39 @@ describe('RadioOptionImage', () => {
           query: RADIO_OPTION_IMAGE_UPDATE,
           variables: {
             id: image.id,
-            input: {
-              src: image.src,
-              alt: image.alt
-            }
+            input: unsplashImageInput
           }
         },
-        result: {
-          data: response
-        }
+        result: updateResult
       }
-      const updateResult = jest.fn(() => ({
-        data: response
-      }))
-      const undoResult = jest.fn(() => ({
-        data: response
-      }))
-      const redoResult = jest.fn(() => ({
-        data: response
-      }))
+      const radioOptionImageUpdateUndoMock: MockedResponse<
+        RadioOptionImageUpdate,
+        RadioOptionImageUpdateVariables
+      > = {
+        request: {
+          query: RADIO_OPTION_IMAGE_UPDATE,
+          variables: {
+            id: image.id,
+            input: undoInput
+          }
+        },
+        result: undoResult
+      }
+
+      const cache = new InMemoryCache()
+      cache.restore({
+        [`ImageBlock:${priorImage.id}`]: { ...priorImage }
+      })
+
       render(
         <MockedProvider
+          cache={cache}
           mocks={[
             listUnsplashCollectionPhotosMock,
-            // Provide an extra mock as the query may fire multiple times
-            listUnsplashCollectionPhotosMock,
-            createCloudflareUploadByUrlMock,
-            {
-              ...radioOptionImageUpdateMock,
-              result: updateResult
-            },
-            {
-              ...radioOptionImageUpdateMock,
-              request: {
-                ...radioOptionImageUpdateMock.request,
-                variables: {
-                  ...radioOptionImageUpdateMock.request.variables,
-                  input: {
-                    ...radioOptionImageUpdateMock.request.variables?.input,
-                    src: 'https://example.com/old.jpg',
-                    alt: 'prior-alt'
-                  }
-                }
-              },
-              result: undoResult
-            },
-            {
-              ...radioOptionImageUpdateMock,
-              result: redoResult
-            }
+            triggerUnsplashDownloadMock,
+            radioOptionImageUpdateMock,
+            radioOptionImageUpdateUndoMock,
+            radioOptionImageUpdateMock
           ]}
         >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -750,29 +410,35 @@ describe('RadioOptionImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+
       fireEvent.click(
         screen.getByRole('button', {
           name: 'prior-alt Selected Image 1920 x 1080 pixels'
         })
       )
       await waitFor(() =>
-        fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+        expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
       )
-      await waitFor(() =>
-        fireEvent.click(
-          screen.getByRole('button', { name: 'Add image by URL' })
-        )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'white dome building during daytime'
+        })
       )
-      const textBox = await screen.getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: { value: 'https://example.com/image.jpg' }
-      })
-      fireEvent.blur(textBox)
+
       await waitFor(() => expect(updateResult).toHaveBeenCalled())
+      expect(cache.extract()[`ImageBlock:${priorImage.id}`]?.src).toEqual(
+        unsplashImageInput.src
+      )
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
       await waitFor(() => expect(undoResult).toHaveBeenCalled())
+      expect(cache.extract()[`ImageBlock:${priorImage.id}`]?.src).toEqual(
+        priorImage.src
+      )
       fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-      await waitFor(() => expect(redoResult).toHaveBeenCalled())
+      await waitFor(() => expect(updateResult).toHaveBeenCalledTimes(2))
+      expect(cache.extract()[`ImageBlock:${priorImage.id}`]?.src).toEqual(
+        unsplashImageInput.src
+      )
     })
 
     it('deletes an image block', async () => {

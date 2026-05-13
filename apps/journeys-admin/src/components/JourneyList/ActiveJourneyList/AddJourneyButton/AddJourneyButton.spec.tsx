@@ -81,7 +81,9 @@ describe('AddJourneyButton', () => {
     },
     cardBlockCreate: {
       id: variables.cardId,
-      __typename: 'CardBlock'
+      __typename: 'CardBlock',
+      showAssistant: null,
+      expandChatByDefault: null
     },
     imageBlockCreate: {
       id: variables.imageId,
