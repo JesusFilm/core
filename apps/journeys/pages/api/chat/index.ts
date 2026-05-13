@@ -55,14 +55,17 @@ const messagePartSchema = z
 
 const messageSchema = z
   .object({
-    role: z.string().min(1),
+    role: z.enum(['user', 'assistant', 'system']),
     content: z.string().max(MAX_FIELD_CHARS).optional(),
     parts: z.array(messagePartSchema).max(MAX_PARTS_PER_MESSAGE).optional()
   })
   .passthrough()
+  .refine((m) => m.content != null || (m.parts?.length ?? 0) > 0, {
+    message: 'message requires content or parts'
+  })
 
 const chatRequestSchema = z.object({
-  messages: z.array(messageSchema).max(MAX_MESSAGES),
+  messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
   language: z.string().max(64).optional(),
   sessionId: z.string().max(128).optional(),
   journeyId: z.string().max(128).optional()
@@ -183,11 +186,6 @@ export default async function handler(
   }
   const { messages, language, sessionId, journeyId } = parsed.data
 
-  if (messages.length === 0) {
-    res.status(400).json({ error: 'messages are required' })
-    return
-  }
-
   if (totalMessageChars(messages) > MAX_TOTAL_CHARS) {
     res.status(400).json({ error: 'request too large' })
     return
@@ -204,9 +202,25 @@ export default async function handler(
     language,
     langfuse
   })
-  const modelMessages = await convertToModelMessages(
-    messages as unknown as UIMessage[]
-  )
+  // Defence-in-depth: the schema rejects most malformed inputs, but the
+  // AI SDK can still throw on shapes that pass `.passthrough()` (e.g.
+  // unsupported part `type`). Map that to a 400 so a malformed-request
+  // failure isn't misattributed as an upstream LLM 500. Runs before the
+  // trace/generation are created, so there's no dangling Langfuse span.
+  let modelMessages: Awaited<ReturnType<typeof convertToModelMessages>>
+  try {
+    modelMessages = await convertToModelMessages(
+      messages as unknown as UIMessage[]
+    )
+  } catch (error) {
+    const err = error as Error
+    console.error('[chat] convertToModelMessages failed', {
+      name: err?.name,
+      message: err?.message
+    })
+    res.status(400).json({ error: 'invalid request' })
+    return
+  }
 
   const { provider, modelId } = modelResult.resolved
   const ipCountry = req.headers['x-vercel-ip-country'] as string | undefined

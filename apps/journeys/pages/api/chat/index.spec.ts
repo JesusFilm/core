@@ -1,5 +1,5 @@
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
-import { streamText } from 'ai'
+import { convertToModelMessages, streamText } from 'ai'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { type Mock, type MockedFunction } from 'vitest'
 
@@ -45,6 +45,7 @@ const mockGetLangfuse = getLangfuse as unknown as MockedFunction<
 const mockGetActivePromptLabel =
   getActivePromptLabel as unknown as MockedFunction<typeof getActivePromptLabel>
 const mockStreamText = streamText as unknown as Mock
+const mockConvertToModelMessages = convertToModelMessages as unknown as Mock
 const mockCreateOpenAICompatible =
   createOpenAICompatible as unknown as MockedFunction<
     typeof createOpenAICompatible
@@ -237,7 +238,7 @@ describe('/api/chat handler', () => {
       await handler(req, res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'messages are required' })
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
     })
   })
 
@@ -802,6 +803,51 @@ describe('/api/chat handler', () => {
       expect(status).toHaveBeenCalledWith(400)
       expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
       expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects when a message role is outside the user/assistant/system enum', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({ messages: [{ role: 'banana', content: 'hi' }] }),
+        res
+      )
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects a message that has neither content nor parts', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(postReq({ messages: [{ role: 'user' }] }), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects with 400 when convertToModelMessages throws', async () => {
+      mockGetLangfuse.mockReturnValue(null)
+      mockConvertToModelMessages.mockImplementationOnce(() => {
+        throw new Error('unsupported part shape')
+      })
+      const errorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
+
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({ messages: [{ role: 'user', content: 'hi' }] }),
+        res
+      )
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+      errorSpy.mockRestore()
     })
 
     it('rejects when a single message exceeds the per-message char cap', async () => {

@@ -75,7 +75,7 @@ export function PromptInput({
   variant = 'inline'
 }: PromptInputProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const formRef = useRef<HTMLDivElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
 
   const triggerShake = useCallback(() => {
     const el = formRef.current
