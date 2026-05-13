@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { sendGTMEvent } from '@next/third-parties/google'
 import fetch, { Response } from 'node-fetch'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
@@ -16,7 +17,14 @@ jest.mock('node-fetch', () => {
   }
 })
 
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
+}))
+
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
+const mockSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+  typeof sendGTMEvent
+>
 
 describe('ImageUpload', () => {
   let originalEnv
@@ -31,6 +39,7 @@ describe('ImageUpload', () => {
 
   afterEach(() => {
     process.env = originalEnv
+    mockSendGTMEvent.mockClear()
   })
 
   const imageBlock: ImageBlock = {
@@ -494,5 +503,138 @@ describe('ImageUpload', () => {
       focalLeft: 50,
       focalTop: 50
     })
+  })
+
+  it('should send image_upload_success GTM event on successful upload', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfResponse)
+    } as unknown as Response)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: { query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <ImageUpload
+          onChange={jest.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    const inputEl = screen.getByTestId('drop zone')
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([new Blob(['file'])], 'testFile.png', { type: 'image/png' })
+      ]
+    })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() =>
+      expect(mockSendGTMEvent).toHaveBeenCalledWith({
+        event: 'image_upload_success',
+        fileName: 'testFile.png',
+        fileSize: expect.any(Number),
+        fileType: 'image/png'
+      })
+    )
+  })
+
+  it('should send image_upload_failure GTM event on rejected file', async () => {
+    render(
+      <MockedProvider>
+        <ImageUpload
+          onChange={jest.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    const inputEl = screen.getByTestId('drop zone')
+    const largeFile = new File([new ArrayBuffer(11000000)], 'large.png', {
+      type: 'image/png'
+    })
+    Object.defineProperty(inputEl, 'files', { value: [largeFile] })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() =>
+      expect(mockSendGTMEvent).toHaveBeenCalledWith({
+        event: 'image_upload_failure',
+        fileName: 'large.png',
+        fileSize: 11000000,
+        fileType: 'image/png',
+        errorCode: 'file-too-large'
+      })
+    )
+  })
+
+  it('should send image_upload_failure GTM event on Cloudflare error', async () => {
+    const cfErrorResponse = {
+      result: { id: 'uploadId' },
+      errors: [{ code: 5000, message: 'Upload failed' }],
+      messages: [],
+      success: false
+    }
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfErrorResponse)
+    } as unknown as Response)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: { query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <ImageUpload
+          onChange={jest.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    const inputEl = screen.getByTestId('drop zone')
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([new Blob(['file'])], 'testFile.png', { type: 'image/png' })
+      ]
+    })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() =>
+      expect(mockSendGTMEvent).toHaveBeenCalledWith({
+        event: 'image_upload_failure',
+        fileName: 'testFile.png',
+        fileSize: expect.any(Number),
+        fileType: 'image/png',
+        errorCode: '5000'
+      })
+    )
   })
 })
