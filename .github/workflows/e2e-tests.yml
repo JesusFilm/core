@@ -201,7 +201,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -210,9 +210,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-node-${{ matrix.node-version }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node-22-playwright-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.node-version }}-playwright-
+            ${{ runner.os }}-node-22-playwright-
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
       - name: Set deployment URL for single test run
