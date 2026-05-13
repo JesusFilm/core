@@ -1,3 +1,5 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { UserTeamRole } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
@@ -5,16 +7,18 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+import { deleteVercelDomain, updateTeamShortLinks } from './customDomain.service'
+
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-jest.mock('./customDomain.service', () => ({
-  deleteVercelDomain: jest.fn().mockResolvedValue(true),
-  updateTeamShortLinks: jest.fn().mockResolvedValue(undefined)
+vi.mock('./customDomain.service', () => ({
+  deleteVercelDomain: vi.fn().mockResolvedValue(true),
+  updateTeamShortLinks: vi.fn().mockResolvedValue(undefined)
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
@@ -59,13 +63,8 @@ describe('customDomainDelete', () => {
     }
   }
 
-  const {
-    deleteVercelDomain,
-    updateTeamShortLinks
-  } = require('./customDomain.service')
-
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser as any)
     prismaMock.userRole.findUnique.mockResolvedValue({
       userId: mockUser.id,

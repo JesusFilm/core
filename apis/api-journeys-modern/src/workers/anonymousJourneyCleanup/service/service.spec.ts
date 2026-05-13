@@ -1,5 +1,6 @@
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
+import { type MockedFunction, vi } from 'vitest'
 
 import { UserJourneyRole } from '@core/prisma/journeys/client'
 
@@ -8,26 +9,26 @@ import { prismaMock } from '../../../../test/prismaMock'
 import { collectMediaFromJourneys, deleteUnusedMedia } from './mediaCleanup'
 import { service } from './service'
 
-jest.mock('@core/prisma/users/client', () => ({
+vi.mock('@core/prisma/users/client', () => ({
   prisma: {
     user: {
-      findMany: jest.fn(),
-      delete: jest.fn()
+      findMany: vi.fn(),
+      delete: vi.fn()
     }
   }
 }))
 
-jest.mock('./mediaCleanup')
+vi.mock('./mediaCleanup')
 
 const mockCollectMediaFromJourneys =
-  collectMediaFromJourneys as jest.MockedFunction<
+  collectMediaFromJourneys as MockedFunction<
     typeof collectMediaFromJourneys
   >
-const mockDeleteUnusedMedia = deleteUnusedMedia as jest.MockedFunction<
+const mockDeleteUnusedMedia = deleteUnusedMedia as MockedFunction<
   typeof deleteUnusedMedia
 >
 
-const { prisma: mockPrismaUsers } = jest.requireMock(
+const { prisma: mockPrismaUsers } = await vi.importMock<any>(
   '@core/prisma/users/client'
 )
 
@@ -36,14 +37,14 @@ describe('anonymousJourneyCleanup service', () => {
   const mockJob = {} as Job
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date('2025-01-10T00:00:00Z'))
+    vi.clearAllMocks()
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2025-01-10T00:00:00Z'))
     mockLogger = {
-      info: jest.fn(),
-      debug: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn()
+      info: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn()
     } as any
 
     mockCollectMediaFromJourneys.mockResolvedValue({
@@ -57,7 +58,7 @@ describe('anonymousJourneyCleanup service', () => {
   })
 
   afterEach(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('should return early when no anonymous users exist', async () => {

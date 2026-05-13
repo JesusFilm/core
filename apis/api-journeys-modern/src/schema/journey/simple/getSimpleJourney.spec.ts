@@ -1,14 +1,15 @@
+import { vi } from 'vitest'
+
 import { journeySimpleSchema } from '@core/shared/ai/journeySimpleTypes'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
 import { getSimpleJourney } from './getSimpleJourney'
+import { simplifyJourney } from './simplifyJourney'
 
-jest.mock('./simplifyJourney', () => ({
-  simplifyJourney: jest.fn()
+vi.mock('./simplifyJourney', () => ({
+  simplifyJourney: vi.fn()
 }))
-
-const { simplifyJourney } = require('./simplifyJourney')
 
 describe('getSimpleJourney', () => {
   const validJourney = {
@@ -20,12 +21,12 @@ describe('getSimpleJourney', () => {
   const validSimple = { title: 'Journey', description: 'desc', cards: [] }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns a valid simplified journey for a valid journeyId', async () => {
     prismaMock.journey.findUnique.mockResolvedValue(validJourney as any)
-    simplifyJourney.mockReturnValue(validSimple)
+    ;(simplifyJourney as any).mockReturnValue(validSimple)
     const result = await getSimpleJourney('jid')
     expect(prismaMock.journey.findUnique).toHaveBeenCalledWith({
       where: { id: 'jid' },
@@ -45,7 +46,7 @@ describe('getSimpleJourney', () => {
 
   it('throws error if transformation result is invalid', async () => {
     prismaMock.journey.findUnique.mockResolvedValue(validJourney as any)
-    simplifyJourney.mockReturnValue({ foo: 'bar' })
+    ;(simplifyJourney as any).mockReturnValue({ foo: 'bar' })
     await expect(getSimpleJourney('jid')).rejects.toThrow(
       'Transformed journey data is invalid. Please contact support.'
     )

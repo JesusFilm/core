@@ -1,4 +1,5 @@
 import { Output, generateText, streamText } from 'ai'
+import { type MockedFunction, vi } from 'vitest'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -9,40 +10,40 @@ import { getCardBlocksContent } from './getCardBlocksContent'
 import { translateCustomizationFields } from './translateCustomizationFields/translateCustomizationFields'
 
 // Mock all external dependencies
-jest.mock('@ai-sdk/google', () => ({
-  google: jest.fn(() => 'mocked-google-model')
+vi.mock('@ai-sdk/google', () => ({
+  google: vi.fn(() => 'mocked-google-model')
 }))
 
-jest.mock('ai', () => ({
+vi.mock('ai', () => ({
   Output: {
-    object: jest.fn((config) => ({ type: 'object', ...config })),
-    array: jest.fn((config) => ({ type: 'array', ...config }))
+    object: vi.fn((config) => ({ type: 'object', ...config })),
+    array: vi.fn((config) => ({ type: 'array', ...config }))
   },
-  generateText: jest.fn(),
-  streamText: jest.fn()
+  generateText: vi.fn(),
+  streamText: vi.fn()
 }))
 
-jest.mock('@core/shared/ai/prompts', () => ({
-  hardenPrompt: jest.fn((text) => `<hardened>${text}</hardened>`),
+vi.mock('@core/shared/ai/prompts', () => ({
+  hardenPrompt: vi.fn((text) => `<hardened>${text}</hardened>`),
   preSystemPrompt: 'mocked system prompt'
 }))
 
-jest.mock('../../lib/auth/ability', () => ({
+vi.mock('../../lib/auth/ability', () => ({
   Action: {
     Update: 'update'
   },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('./getCardBlocksContent', () => ({
-  getCardBlocksContent: jest.fn()
+vi.mock('./getCardBlocksContent', () => ({
+  getCardBlocksContent: vi.fn()
 }))
 
-jest.mock(
+vi.mock(
   './translateCustomizationFields/translateCustomizationFields',
   () => ({
-    translateCustomizationFields: jest.fn()
+    translateCustomizationFields: vi.fn()
   })
 )
 
@@ -64,22 +65,22 @@ function createMockAsyncIterator<T>(items: T[]): AsyncIterable<T> {
 }
 
 describe('journeyAiTranslateCreate mutation', () => {
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
-  const mockGenerateText = generateText as jest.MockedFunction<
+  const mockAbility = ability as MockedFunction<typeof ability>
+  const mockGenerateText = generateText as MockedFunction<
     typeof generateText
   >
-  const mockStreamText = streamText as jest.MockedFunction<typeof streamText>
-  const mockOutputObject = Output.object as jest.MockedFunction<
+  const mockStreamText = streamText as MockedFunction<typeof streamText>
+  const mockOutputObject = Output.object as MockedFunction<
     typeof Output.object
   >
-  const mockOutputArray = Output.array as jest.MockedFunction<
+  const mockOutputArray = Output.array as MockedFunction<
     typeof Output.array
   >
-  const mockGetCardBlocksContent = getCardBlocksContent as jest.MockedFunction<
+  const mockGetCardBlocksContent = getCardBlocksContent as MockedFunction<
     typeof getCardBlocksContent
   >
   const mockTranslateCustomizationFields =
-    translateCustomizationFields as jest.MockedFunction<
+    translateCustomizationFields as MockedFunction<
       typeof translateCustomizationFields
     >
 
@@ -220,7 +221,7 @@ describe('journeyAiTranslateCreate mutation', () => {
   `)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Set up prismaMock
     prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
@@ -735,16 +736,16 @@ describe('journeyAiTranslateCreate mutation', () => {
 })
 
 describe('journeyAiTranslateCreateSubscription', () => {
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
-  const mockGenerateText = generateText as jest.MockedFunction<
+  const mockAbility = ability as MockedFunction<typeof ability>
+  const mockGenerateText = generateText as MockedFunction<
     typeof generateText
   >
-  const mockStreamText = streamText as jest.MockedFunction<typeof streamText>
-  const mockGetCardBlocksContent = getCardBlocksContent as jest.MockedFunction<
+  const mockStreamText = streamText as MockedFunction<typeof streamText>
+  const mockGetCardBlocksContent = getCardBlocksContent as MockedFunction<
     typeof getCardBlocksContent
   >
   const mockTranslateCustomizationFields =
-    translateCustomizationFields as jest.MockedFunction<
+    translateCustomizationFields as MockedFunction<
       typeof translateCustomizationFields
     >
 
@@ -840,7 +841,7 @@ describe('journeyAiTranslateCreateSubscription', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Set up prismaMock
     prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)

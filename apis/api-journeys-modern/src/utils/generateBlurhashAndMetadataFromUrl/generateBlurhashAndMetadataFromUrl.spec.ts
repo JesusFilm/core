@@ -1,38 +1,39 @@
 import fetch, { Response } from 'node-fetch'
+import mockSharp from 'sharp'
+import { type MockedFunction, vi } from 'vitest'
 
 import { generateBlurhashAndMetadataFromUrl } from './generateBlurhashAndMetadataFromUrl'
 
-jest.mock('node-fetch', () => {
-  const originalModule = jest.requireActual('node-fetch')
+vi.mock('node-fetch', async () => {
+  const originalModule = (await vi.importActual('node-fetch'))
   return {
     __esModule: true,
     ...originalModule,
-    default: jest.fn()
+    default: vi.fn()
   }
 })
 
-jest.mock('sharp', () =>
-  jest.fn(() => ({
+vi.mock('sharp', () => ({
+  default: vi.fn(() => ({
     raw: () => ({
       ensureAlpha: () => ({
         toBuffer: () => new Uint8ClampedArray([])
       })
     }),
-    metadata: jest.fn(() => ({
+    metadata: vi.fn(() => ({
       width: 640,
       height: 425
     }))
   }))
-)
+}))
 
-jest.mock('blurhash', () => {
+vi.mock('blurhash', () => {
   return {
-    encode: jest.fn(() => 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ')
+    encode: vi.fn(() => 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ')
   }
 })
 
-const mockFetch = fetch as jest.MockedFunction<typeof fetch>
-const mockSharp = require('sharp')
+const mockFetch = fetch as MockedFunction<typeof fetch>
 
 describe('generateBlurhashAndMetadataFromUrl', () => {
   beforeEach(() => {
@@ -45,13 +46,13 @@ describe('generateBlurhashAndMetadataFromUrl', () => {
     } as unknown as Response)
 
     // Reset sharp mock to default behavior
-    mockSharp.mockImplementation(() => ({
+    ;(mockSharp as any).mockImplementation(() => ({
       raw: () => ({
         ensureAlpha: () => ({
           toBuffer: () => new Uint8ClampedArray([])
         })
       }),
-      metadata: jest.fn(() => ({
+      metadata: vi.fn(() => ({
         width: 640,
         height: 425
       }))
@@ -82,7 +83,7 @@ describe('generateBlurhashAndMetadataFromUrl', () => {
   })
 
   it('returns default values when sharp processing fails', async () => {
-    mockSharp.mockImplementation(() => {
+    ;(mockSharp as any).mockImplementation(() => {
       throw new Error('sharp error')
     })
 

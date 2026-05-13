@@ -1,3 +1,5 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
@@ -5,22 +7,22 @@ import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-jest.mock(
+vi.mock(
   '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable',
   () => ({
-    recalculateJourneyCustomizable: jest.fn()
+    recalculateJourneyCustomizable: vi.fn()
   })
 )
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
-const mockRecalculate = recalculateJourneyCustomizable as jest.MockedFunction<
+const mockRecalculate = recalculateJourneyCustomizable as MockedFunction<
   typeof recalculateJourneyCustomizable
 >
 
@@ -47,7 +49,7 @@ describe('chatButtonRemove', () => {
   `)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
     prismaMock.userRole.findUnique.mockResolvedValue({
       id: 'userRoleId',

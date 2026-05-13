@@ -1,4 +1,5 @@
 import { ExecutionResult } from 'graphql'
+import { type MockedFunction, vi } from 'vitest'
 
 import { CustomDomain, Prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
@@ -13,27 +14,27 @@ import {
   updateTeamShortLinks
 } from './service'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-jest.mock('./service', () => ({
-  isDomainValid: jest.fn(),
-  createVercelDomain: jest.fn(),
-  updateTeamShortLinks: jest.fn()
+vi.mock('./service', () => ({
+  isDomainValid: vi.fn(),
+  createVercelDomain: vi.fn(),
+  updateTeamShortLinks: vi.fn()
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
-const mockIsDomainValid = isDomainValid as jest.MockedFunction<
+const mockIsDomainValid = isDomainValid as MockedFunction<
   typeof isDomainValid
 >
-const mockCreateVercelDomain = createVercelDomain as jest.MockedFunction<
+const mockCreateVercelDomain = createVercelDomain as MockedFunction<
   typeof createVercelDomain
 >
-const mockUpdateTeamShortLinks = updateTeamShortLinks as jest.MockedFunction<
+const mockUpdateTeamShortLinks = updateTeamShortLinks as MockedFunction<
   typeof updateTeamShortLinks
 >
 
@@ -74,7 +75,7 @@ describe('customDomainCreate', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
     prismaMock.userRole.findUnique.mockResolvedValue({
       id: 'userRoleId',
