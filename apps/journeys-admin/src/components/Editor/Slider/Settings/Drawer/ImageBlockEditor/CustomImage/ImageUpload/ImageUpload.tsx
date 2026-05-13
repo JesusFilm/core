@@ -136,8 +136,9 @@ export function ImageUpload({
       <UploadDropZoneShell
         data-testid="drop zone"
         isDragAccept={isDragAccept}
-        isActive={loading === true || uploadSuccess}
+        isActive={loading === true}
         hasError={hasError}
+        noBorder={loading === true || uploadSuccess || hasError}
       >
         {loading || (!uploadSuccess && !hasError) ? (
           <Upload1IconIcon
