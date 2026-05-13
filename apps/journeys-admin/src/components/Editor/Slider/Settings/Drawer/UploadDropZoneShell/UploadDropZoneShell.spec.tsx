@@ -67,7 +67,7 @@ describe('UploadDropZoneShell', () => {
     )
 
     const box = screen.getByTestId('drop zone')
-    // shell default flex layout still applies
     expect(box).toHaveStyle({ display: 'flex' })
+    expect(box).toHaveStyle({ marginTop: '80px' })
   })
 })

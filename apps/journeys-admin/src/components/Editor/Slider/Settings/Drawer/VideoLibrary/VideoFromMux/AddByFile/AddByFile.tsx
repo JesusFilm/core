@@ -169,7 +169,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         {...getRootProps()}
       >
         <input {...getInputProps()} />
-        {error != null || errorType != null ? (
+        {hasError ? (
           <AlertTriangleIcon
             sx={{
               display: { xs: 'none', sm: 'flex' },
@@ -248,15 +248,13 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
       <Stack
         direction="row"
         spacing={1}
-        color={
-          error != null || errorType != null ? 'error.main' : 'secondary.light'
-        }
+        color={hasError ? 'error.main' : 'secondary.light'}
         sx={{ mt: 1, alignItems: 'flex-start' }}
       >
         <AlertTriangleIcon
           fontSize="small"
           sx={{
-            display: error != null || errorType != null ? 'flex' : 'none'
+            display: hasError ? 'flex' : 'none'
           }}
         />
         {error != null ? (

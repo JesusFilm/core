@@ -1,11 +1,10 @@
 import Box, { BoxProps } from '@mui/material/Box'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement } from 'react'
 
 interface UploadDropZoneShellProps extends BoxProps {
   isDragAccept: boolean
   isActive: boolean
   hasError: boolean
-  children: ReactNode
 }
 
 export function UploadDropZoneShell({
