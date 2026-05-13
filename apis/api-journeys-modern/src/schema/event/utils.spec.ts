@@ -364,6 +364,22 @@ describe('event utils', () => {
         getByUserIdAndJourneyId('user-id', 'journey-id')
       ).rejects.toThrow('boom')
     })
+
+    it('should give up after the max retry limit and rethrow', async () => {
+      const uniqueErr = new Prisma.PrismaClientKnownRequestError('Unique', {
+        code: 'P2002',
+        clientVersion: '7.0.0'
+      })
+      prismaMock.journey.findUnique.mockResolvedValue({
+        teamId: 'team-id'
+      } as any)
+      prismaMock.visitor.upsert.mockRejectedValue(uniqueErr)
+
+      await expect(
+        getByUserIdAndJourneyId('user-id', 'journey-id')
+      ).rejects.toBe(uniqueErr)
+      expect(prismaMock.visitor.upsert).toHaveBeenCalledTimes(3)
+    })
   })
 
   describe('getEventContext', () => {

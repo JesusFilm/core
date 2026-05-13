@@ -11,6 +11,7 @@ import {
 import { logger } from '../logger'
 
 const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
+const VISITOR_UPSERT_MAX_RETRIES = 3
 
 // Queue for visitor interaction emails
 let emailQueue: any
@@ -165,7 +166,7 @@ export async function getByUserIdAndJourneyId(
     return null
   }
 
-  while (true) {
+  for (let attempt = 1; attempt <= VISITOR_UPSERT_MAX_RETRIES; attempt++) {
     try {
       const visitor = await prisma.visitor.upsert({
         where: {
@@ -202,8 +203,17 @@ export async function getByUserIdAndJourneyId(
       ) {
         throw err
       }
+      logger.warn(
+        { userId, journeyId, attempt },
+        'Retrying visitor/journeyVisitor upsert after unique constraint race'
+      )
+      if (attempt === VISITOR_UPSERT_MAX_RETRIES) {
+        throw err
+      }
     }
   }
+
+  throw new Error('unreachable: upsert retry loop exited without return')
 }
 
 // Helper function to get visitor and journey IDs
