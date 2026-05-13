@@ -456,10 +456,7 @@ describe('useCollectionForm', () => {
       // Revalidate the pre-update slug (caller-known) and the post-update
       // slug from the server response. Hook dedupes inside.
       expect(mockRevalidate).toHaveBeenCalledTimes(1)
-      expect(mockRevalidate).toHaveBeenCalledWith([
-        'old-slug',
-        'my-collection'
-      ])
+      expect(mockRevalidate).toHaveBeenCalledWith(['old-slug', 'my-collection'])
     })
 
     it('omits journeyIds when membership is unchanged', async () => {
@@ -569,10 +566,7 @@ describe('useCollectionForm', () => {
       })
 
       expect(mockRevalidate).toHaveBeenCalledTimes(1)
-      expect(mockRevalidate).toHaveBeenCalledWith([
-        'old-slug',
-        'my-collection'
-      ])
+      expect(mockRevalidate).toHaveBeenCalledWith(['old-slug', 'my-collection'])
     })
   })
 

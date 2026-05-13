@@ -95,20 +95,21 @@ describe('preview-template-gallery', () => {
     [''],
     ['Foo'],
     ['foo bar']
-  ])('returns 400 and does not redirect for malformed slug %j', async (
-    badSlug
-  ) => {
-    const req = {
-      query: { slug: badSlug }
-    } as unknown as NextApiRequest
-    const { res, status, json, redirect } = mockResponse()
+  ])(
+    'returns 400 and does not redirect for malformed slug %j',
+    async (badSlug) => {
+      const req = {
+        query: { slug: badSlug }
+      } as unknown as NextApiRequest
+      const { res, status, json, redirect } = mockResponse()
 
-    await handler(req, res)
+      await handler(req, res)
 
-    expect(redirect).not.toHaveBeenCalled()
-    expect(status).toHaveBeenCalledWith(400)
-    expect(json).toHaveBeenCalledWith({ error: 'Invalid slug' })
-  })
+      expect(redirect).not.toHaveBeenCalled()
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'Invalid slug' })
+    }
+  )
 
   it('redirects to /template-gallery/<slug> on the canonical domain', async () => {
     const req = {

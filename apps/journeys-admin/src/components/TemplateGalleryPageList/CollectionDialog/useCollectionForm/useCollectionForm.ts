@@ -243,8 +243,7 @@ export function useCollectionForm({
         // and submit, the cached status is still draft but the public
         // page is live — without the server-side check we'd skip
         // revalidate and leave the URL serving stale content.
-        const serverStatus =
-          updateResult.data?.templateGalleryPageUpdate.status
+        const serverStatus = updateResult.data?.templateGalleryPageUpdate.status
         if (
           collection.status === TemplateGalleryPageStatus.published ||
           serverStatus === TemplateGalleryPageStatus.published

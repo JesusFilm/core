@@ -127,21 +127,18 @@ describe('revalidate-template-gallery', () => {
     expect(json).toHaveBeenCalledWith({ error: 'Not authorized' })
   })
 
-  it.each([
-    ['../privacy-policy'],
-    ['foo/bar'],
-    [''],
-    ['Foo'],
-    ['foo bar']
-  ])('returns 400 for malformed slug %j', async (badSlug) => {
-    const { res, status, json } = mockResponse()
+  it.each([['../privacy-policy'], ['foo/bar'], [''], ['Foo'], ['foo bar']])(
+    'returns 400 for malformed slug %j',
+    async (badSlug) => {
+      const { res, status, json } = mockResponse()
 
-    await handler(authedPostReq({ slug: badSlug }), res)
+      await handler(authedPostReq({ slug: badSlug }), res)
 
-    expect(mockFetch).not.toHaveBeenCalled()
-    expect(status).toHaveBeenCalledWith(400)
-    expect(json).toHaveBeenCalledWith({ error: 'Invalid slug' })
-  })
+      expect(mockFetch).not.toHaveBeenCalled()
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'Invalid slug' })
+    }
+  )
 
   it('returns 400 when slug is omitted entirely', async () => {
     const { res, status, json } = mockResponse()

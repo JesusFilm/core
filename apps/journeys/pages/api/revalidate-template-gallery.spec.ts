@@ -69,24 +69,21 @@ describe('revalidate-template-gallery', () => {
     expect(json).toHaveBeenCalledWith({ revalidated: true })
   })
 
-  it.each([
-    ['../privacy-policy'],
-    ['foo/bar'],
-    [''],
-    ['Foo'],
-    ['foo bar']
-  ])('returns 400 for malformed slug %j', async (badSlug) => {
-    const req = {
-      query: { accessToken: 'valid-token', slug: badSlug }
-    } as unknown as NextApiRequest
-    const { res, status, json, revalidate } = mockResponse()
+  it.each([['../privacy-policy'], ['foo/bar'], [''], ['Foo'], ['foo bar']])(
+    'returns 400 for malformed slug %j',
+    async (badSlug) => {
+      const req = {
+        query: { accessToken: 'valid-token', slug: badSlug }
+      } as unknown as NextApiRequest
+      const { res, status, json, revalidate } = mockResponse()
 
-    await handler(req, res)
+      await handler(req, res)
 
-    expect(revalidate).not.toHaveBeenCalled()
-    expect(status).toHaveBeenCalledWith(400)
-    expect(json).toHaveBeenCalledWith({ error: 'Invalid slug' })
-  })
+      expect(revalidate).not.toHaveBeenCalled()
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'Invalid slug' })
+    }
+  )
 
   it('returns 400 when slug is an array (multi-value query)', async () => {
     const req = {
