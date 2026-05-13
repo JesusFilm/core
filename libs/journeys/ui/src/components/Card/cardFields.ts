@@ -12,5 +12,7 @@ export const CARD_FIELDS = gql`
     themeName
     fullscreen
     eventLabel
+    showAssistant
+    expandChatByDefault
   }
 `

@@ -582,6 +582,8 @@
   "RTL languages will change the journey flow": "ภาษาที่เขียนจากขวาไปซ้าย จะเปลี่ยนการไหลของเส้นทาง",
   "Featured": "แนะนำ",
   "Invalid embed link": "ลิงก์ฝังไม่ถูกต้อง",
+  "Template details saved": "รายละเอียดแม่แบบถูกบันทึกแล้ว",
+  "Template Details": "รายละเอียดแม่แบบ",
   "Template settings have been saved": "ตั้งค่าเทมเพลตได้ถูกบันทึก",
   "Template Settings": "การตั้งค่าเทมเพลต",
   "Metadata": "เมตาดาต้า",

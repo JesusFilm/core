@@ -1,0 +1,246 @@
+---
+title: 'Pothos public/unauthenticated query pattern in api-journeys-modern'
+category: integration-issues
+date: 2026-04-29
+last_updated: 2026-05-11
+severity: medium
+module: apis/api-journeys-modern
+ticket: NES-1547
+tags:
+  - pothos
+  - graphql
+  - scope-auth
+  - federation
+  - public-query
+  - anonymous
+  - api-journeys-modern
+  - withAuth
+  - response-cache
+  - public-dto
+related_issues:
+  - NES-1547
+related_docs:
+  - docs/solutions/integration-issues/federation-subgraph-scalar-registration-hidden-prerequisites.md
+  - docs/solutions/integration-issues/pothos-prisma-datetimefilter-null-type-mismatch.md
+  - docs/solutions/logic-errors/pothos-query-parameter-ignored-nested-resolution-failure.md
+  - docs/solutions/security-issues/google-sync-missing-integration-ownership-guard.md
+  - docs/solutions/security-issues/journey-acl-read-authorization-bypass-invite-requested-role.md
+---
+
+# Pothos public/unauthenticated query pattern in `api-journeys-modern`
+
+## Problem
+
+`api-journeys-modern` is a federated Pothos subgraph where **every existing root resolver uses `t.withAuth(...)`** — there is no precedent for serving truly anonymous (no-token) traffic. Adding the first such resolver (`templateGalleryPageBySlug` for NES-1547, the public Template Gallery Page) surfaced two non-obvious facts that cost real time during planning, deepening, and review:
+
+1. The seemingly idiomatic `t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })` (used by `chatButton`, `stepBlock`, `adminJourney`) **rejects PublicContext requests**. It only allows authenticated users — the `isAnonymous` scope is "authenticated user without a verified email," not "no token at all."
+2. Pothos `skipTypeScopes: true` looked like the right opt-out. It is not — it skips type-level scopes, of which `TemplateGalleryPage` has none. The flag is a no-op that misleadingly implies a protection is being lifted.
+
+Symptoms during implementation:
+
+```text
+expect(received).toEqual(expected)
+- Expected
++ Received
+
+  Object {
+    "data": Object { "templateGalleryPageBySlug": null },
++   "errors": Array [
++     [GraphQLError: Not authorized to resolve Query.templateGalleryPageBySlug],
++   ],
+  }
+```
+
+The unauthenticated test client (no `Authorization` header) receives a scope-auth `Not authorized` error from a query the plan declared as public. Switching to `t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })` does not help — the same error appears.
+
+## Root cause
+
+Look at `apis/api-journeys-modern/src/schema/authScopes.ts:94-124`:
+
+```typescript
+export async function authScopes(context: Context) {
+  const defaultScopes = {
+    isAuthenticated: false,
+    isAnonymous: false,
+    isPublisher: false,
+    isValidInterop: false,
+    isSuperAdmin: false
+  }
+  switch (context.type) {
+    case 'authenticated': {
+      return {
+        ...defaultScopes,
+        isAuthenticated: context.user?.email != null,
+        isAnonymous: context.user != null && context.user.email == null
+        // ...
+      }
+    }
+    case 'interop':
+      return { ...defaultScopes, isValidInterop: true }
+    default:
+      return defaultScopes // PublicContext lands here — every scope is false
+  }
+}
+```
+
+Three `Context` variants are defined:
+
+- `'public'` — no `Authorization` header at all (truly anonymous internet visitor)
+- `'authenticated'` — token attached; `user.email` may or may not be set
+- `'interop'` — internal service-to-service
+
+The scopes `isAuthenticated` and `isAnonymous` are **only computed for `'authenticated'` context**. When the context is `'public'`, every named scope returns `false`. So:
+
+- `t.withAuth({ isAuthenticated: true })` → blocks PublicContext (correct)
+- `t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })` → **also blocks PublicContext** (because both are `false` for `'public'`)
+- Omitting `withAuth` entirely → field has no scope requirement, runs on PublicContext → correct
+
+`skipTypeScopes: true` is independently irrelevant here. It opts out of scopes declared on the **type** (e.g., `prismaObject('TemplateGalleryPage', { authScopes: { ... } })`). Since the new type declares no `authScopes` block, there is nothing to skip — the flag becomes documentation noise that hides the real reason the field is reachable (no `withAuth` was called).
+
+## Solution
+
+For a truly public, unauthenticated GraphQL field in `api-journeys-modern`:
+
+1. **Do not call `t.withAuth(...)`.** Define the field directly via `t.prismaField` or `t.field`. The absence of any scope check is what makes it public.
+2. **Do not add `skipTypeScopes: true`** unless the parent type actually has a type-level scope you need to bypass.
+3. **Add a comment.** Future readers will reach for `withAuth` reflexively; explain why it's omitted.
+4. **Push gatekeeping into the `where` clause.** Filter to `status: 'published'` (or whatever the public-eligible state is) inside the resolver. Drafts must never leak.
+5. **Validate input shape before the DB query.** Public traffic is enumerable; reject malformed slugs with a regex before hitting Postgres.
+
+Working pattern from [apis/api-journeys-modern/src/schema/templateGalleryPage/templateGalleryPageBySlug.query.ts](apis/api-journeys-modern/src/schema/templateGalleryPage/templateGalleryPageBySlug.query.ts):
+
+```typescript
+import { prisma } from '@core/prisma/journeys/client'
+import { builder } from '../builder'
+import { SLUG_MAX_LENGTH, SLUG_PATTERN } from './generateUniqueSlug'
+import { TemplateGalleryPageRef } from './templateGalleryPage'
+
+// Public, unauthenticated query. This is the first resolver in
+// api-journeys-modern that serves PublicContext requests — there is no
+// `withAuth` block and no type-level scope on TemplateGalleryPage to opt
+// out of. The `where: { status: 'published' }` filter is the actual
+// gatekeeper: drafts and unknown slugs return null (frontend interprets
+// as 404).
+builder.queryField('templateGalleryPageBySlug', (t) =>
+  t.prismaField({
+    type: TemplateGalleryPageRef,
+    nullable: true,
+    args: { slug: t.arg.string({ required: true }) },
+    resolve: async (query, _parent, args) => {
+      const { slug } = args
+      // Reject malformed slugs before hitting the DB — bounds enumeration
+      // and probing cost for anonymous traffic.
+      if (!SLUG_PATTERN.test(slug) || slug.length > SLUG_MAX_LENGTH) {
+        return null
+      }
+      return await prisma.templateGalleryPage.findFirst({
+        ...query,
+        where: { slug, status: 'published' }
+      })
+    }
+  })
+)
+```
+
+### Spec the public path explicitly
+
+The matching spec uses `getClient()` with no `headers.authorization` to exercise the PublicContext path:
+
+```typescript
+// apis/api-journeys-modern/src/schema/templateGalleryPage/templateGalleryPageBySlug.query.spec.ts
+const publicClient = getClient() // no auth header → PublicContext
+
+it('returns a published page to an unauthenticated visitor', async () => {
+  prismaMock.templateGalleryPage.findFirst.mockResolvedValue({
+    id: 'p1',
+    title: 'Hello',
+    slug: 'hello',
+    status: 'published'
+  } as any)
+  const result = await publicClient({
+    /* ... */
+  })
+  expect(result.data.templateGalleryPageBySlug).toEqual({
+    /* ... */
+  })
+})
+```
+
+This guards against a future contributor "fixing" the resolver by adding a `withAuth` block — the public spec will start failing immediately.
+
+### Defense-in-depth for nested public reads
+
+A public root resolver can still leak through nested fields if the child types declare `withAuth` or rely on team membership. Confirm what the public consumer asks for:
+
+- `TemplateGalleryPageRef.team` — `t.relation('team', { nullable: false })` — `Team` is `shareable: true` with no field-level `withAuth` on the modern subgraph. Verified safe but **note**: anything the modern `TeamRef` exposes (`userTeams`, `customDomains`, `integrations`, `qrCodes`) becomes anonymously reachable via this path. Audit that surface every time you add a public root that reaches `Team`.
+- `TemplateGalleryPageRef.templates` — resolves to `[TemplateGalleryItem!]!`, NOT `[Journey!]`. The `TemplateGalleryItem` is a **narrow public DTO** (Pothos `prismaObject('Journey', { variant: 'TemplateGalleryItem', ... })`) exposing only the eight scalars + `language` + `primaryImageBlock` the public renderer consumes. Returning the full `JourneyRef` would have made `Journey.userJourneys`, `Journey.team.userTeams`, etc. anonymously reachable through the modern subgraph's unguarded Pothos `t.relation` auto-resolvers — see the [ordered-join-table doc](../architecture-patterns/pothos-prisma-ordered-join-locking-pattern-2026-05-06.md#7-narrow-the-public-anonymous-return-type-with-a-dedicated-dto) for the full pattern rationale. The `select.where` filter at read time scopes to `{ template: true, status: 'published', deletedAt: null }`, and the in-memory `resolve` enforces `journey.teamId === page.teamId`.
+- Creator avatar — stored as plain scalars (`creatorImageSrc` / `creatorImageAlt`), not a Block FK, so no transitive Block surface to audit. The earlier `creatorImageBlock` relation was withdrawn for exactly this reason — see PR #9119 commit history.
+
+## Why the existing `$any: { isAuthenticated, isAnonymous }` precedent does not apply
+
+`adminJourney`, `chatButton`, `stepBlock`, etc. use `t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })` to allow both authenticated team members AND post-signup-pre-email-verification users. Both branches require an attached Firebase token — the `'authenticated'` Context. Anonymous internet visitors with no token at all are out of scope for those endpoints and correctly rejected.
+
+If you are adding a resolver where the consumer **always has a token** (e.g., a journey editor interaction before email verification), use the `$any` pattern. If you are adding a resolver where the consumer **may have no token at all** (a public landing page, a slug-addressable share URL, a marketing page), omit `withAuth`.
+
+## Prevention
+
+1. **When designing a new resolver, ask: can this be hit before the user logs in?** If yes, the resolver is public and must omit `withAuth`. If no, choose between `isAuthenticated`, `isInTeam`, `isAnonymous`, etc. as appropriate.
+2. **Add a comment near every public resolver explaining the deliberate `withAuth` omission.** Without it, the next contributor will reflexively add one to "match the pattern" and silently break public traffic.
+3. **Always include a public-context spec** — instantiate `getClient()` with no `Authorization` header and assert the resolver returns data, not a `Not authorized` error. This is the only fast feedback that prevents regression.
+4. **Avoid `skipTypeScopes: true` as a "make it public" lever.** Reach for it only when you actually have a type-level scope to bypass.
+5. **Read [authScopes.ts](apis/api-journeys-modern/src/schema/authScopes.ts) before designing auth on a new resolver.** The `Context` discriminated union and the `default → defaultScopes` fallthrough is the source of truth; intuition from sibling resolvers can mislead.
+
+### Response-cache TTL on the public branch
+
+Yoga's `useResponseCache` (configured in `apis/api-journeys-modern/src/yoga.ts`) defaults to TTL `Infinity` per operation. The cache invalidates by entity ID: a successful mutation returning a `TemplateGalleryPage` evicts every cached query whose response embedded that entity ID. **A `null` response embeds no entity ID at all** — for `templateGalleryPageBySlug` that's the unknown-slug, malformed-slug, and draft-slug branches.
+
+Without a finite TTL on this query, an anonymous attacker can pre-poison popular slugs by hitting them while the page doesn't yet exist (or is still a draft). The `null` response caches forever, with no entity ID for any subsequent `templateGalleryPagePublish` mutation to invalidate against. A legitimate publish later "succeeds" but the public renderer keeps serving 404 until the cache is manually flushed.
+
+The fix (added to `yoga.ts` after Mike's PR review for NES-1547):
+
+```ts
+ttlPerSchemaCoordinate: {
+  // ... admin queries at TTL 0 (NES-1648) ...
+
+  // Public renderer. Finite TTL caps cache-poisoning impact: a `null`
+  // response (unknown slug / draft / malformed) caches with no entity
+  // ID, so the publish mutation's entity-ID invalidation cannot evict
+  // it. Without a finite TTL the null branch would persist for the
+  // lifetime of the cache, letting an attacker pre-poison popular
+  // slugs so legitimate later publishes appear 404. 60 s gives the
+  // renderer reasonable cache hit-rate while bounding poisoning impact.
+  'Query.templateGalleryPageBySlug': 60_000
+}
+```
+
+**The TTL choice is a deliberate trade-off:** higher = better cache hit rate for hot anonymous traffic, longer poisoning window; lower = poorer hit rate, shorter window. 60 s is the sweet spot for slug-addressable pages where a publish-then-share workflow is the common case — 60 s is short enough that a publisher hitting "share" right after publish gets the real response, long enough that a typical renderer-hit workload sees meaningful cache reuse.
+
+**See also the admin-side cache fix at TTL 0** for `Query.templateGalleryPage` and `Query.templateGalleryPages` (NES-1648). The admin queries get TTL 0 because their cached empty-list response would similarly defeat mutation invalidation — but for admin queries we accept the cache-bypass cost since traffic volume is low. The public query keeps a finite TTL because traffic volume there matters.
+
+## Pre-merge checklist for any new public resolver in `api-journeys-modern`
+
+- [ ] No `withAuth` call on the field
+- [ ] No `skipTypeScopes` flag (or a comment explaining why it's needed)
+- [ ] `where` clause filters to the public-eligible state (e.g., `status: 'published'`)
+- [ ] Input args validated with regex/length/charset before the DB query
+- [ ] Spec uses `getClient()` with no `Authorization` header and asserts a successful response
+- [ ] Nested fields on the returned type were checked — none reach for team auth
+- [ ] **If the return type is a federated/`shareable` entity, narrow it with a dedicated public DTO** (Pothos `variant`) instead of returning the full `*Ref`. The federated `*Ref` makes every `t.relation` it exposes anonymously reachable through the local subgraph's unguarded resolvers, regardless of guards on federation peers.
+- [ ] **Add a finite TTL to `ttlPerSchemaCoordinate`** in `yoga.ts` for the new operation. The default `Infinity` lets the `null` branch cache forever and become a poisoning vector. 60 s is a sensible default; pick higher only if cache poisoning is uninteresting for your operation.
+- [ ] PR description flags this as a new public surface for federation reviewers
+
+## Related findings (NES-1547 implementation + Mike's review hardening)
+
+These came up alongside the public-resolver pattern and are worth knowing:
+
+- **Test mockUser shape gotcha.** `isAuthenticated` requires `context.user.email != null`. Test mocks that omit `email` (e.g., `{ id, firstName, emailVerified }`) will be classified as `isAnonymous`, not `isAuthenticated`. Use the `customDomain.query.spec.ts:18-26` shape: `{ id, email, emailVerified, firstName, lastName, imageUrl, roles }`.
+- **TOCTOU on validation outside transactions.** When fetching a row, validating ownership of a foreign-key id, then writing — keep the validation inside `prisma.$transaction(async tx => ...)` and pass `tx` to the validator. Validating against the live `prisma` client opens a window where the validated resource can be transferred to another team between SELECT and UPDATE.
+- **`nanoid` default alphabet leaks `_` into slugs.** If a slug-generation fallback uses `nanoid(6)`, characters like `_` will fail the public-query regex (`[a-z0-9-]`). Use `customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 6)` to constrain the alphabet.
+- **`prisma migrate diff` for drifted local DBs.** When `prisma migrate dev` rejects due to unrelated drift on the local Postgres instance, generate the migration SQL via `prisma migrate diff --from-schema=<old> --to-schema=<new> --script -o <migration.sql>` instead. The output is identical to what `migrate dev` would have produced and can be committed safely; CI/devcontainer applies it cleanly.
+- **Public DTO replaces shareable-type re-exposure.** Initially the `templates` field returned `[JourneyRef]` — the full federated Journey type — making `Journey.userJourneys` and `Journey.team.userTeams` anonymously reachable via the modern subgraph's unguarded `t.relation` resolvers, a regression vs the legacy `api-journeys` public path. Mike's PR review (2026-05-11) caught this; the fix was a narrow `TemplateGalleryItem` Pothos DTO exposing only the 10 fields the public renderer queries. **The FE GraphQL document didn't need to change** — field names match. The supergraph confirms `type TemplateGalleryItem @join__type(graph: API_JOURNEYS_MODERN)` (single-subgraph ownership, no federation re-exposure).
+- **Cache-TTL fixes are symmetric across admin + public surfaces.** NES-1648 fixed the admin-side cache-bypass (empty-list responses had no entity ID to invalidate against, so freshly-created collections appeared not-yet-saved). Mike's review surfaced the symmetric public-side issue: `null` responses on `templateGalleryPageBySlug` similarly can't be invalidated, opening a cache-poisoning vector. **Always add both** when shipping a new entity type with mutation/query pairs.
+- **P2002 retry-on-Update for slug-changing mutations.** The Create resolver had a P2002-catch-and-retry for slug uniqueness collisions; Update did not. Two concurrent Updates with the same slug both pass `validateUserSuppliedSlug` (which runs outside the tx), then one wins, the other surfaces an unwrapped Prisma 500. Mirror Create's retry: `try { tx.update(...) } catch (e) { if e.code === 'P2002' && e.meta?.target.includes('slug') throw SlugTakenError } throw e`. Defensive: only convert when target is the slug column; other P2002 targets must propagate untouched.
+- **Cheap-fetch-then-auth on by-id resolvers.** The original `templateGalleryPage(id)` resolver did one big `findUnique({ ...query })` (spreading the client's selection) then ran `isInTeam`. Callers who'd receive FORBIDDEN still paid for the full nested template/journey/team walk. Refactor: first `findUnique({ select: { id: true, teamId: true } })` for the auth check, then `findUniqueOrThrow({ ...query })` only after auth passes. Mirrors the Delete mutation's existing pattern. Cheap; should be standard for all in-team-only by-id resolvers.
+- **Squash add-then-drop migrations in the same PR.** The original NES-1547 work shipped `creatorImageBlockId` as an FK in migration #1, then dropped it in migration #2 in favour of plain scalar `creatorImageSrc/Alt`. Both ship in the same PR. Squashed to one additive migration during Mike's review pass — saves a transient FK that never matters in production, and makes `git log -p libs/prisma/journeys/db/migrations/` readable as "what this PR adds to schema" rather than "what it adds then takes away".
+- **Curate the reserved-slug list before merge.** `RESERVED_SLUGS` started with 15 entries; Mike's review expanded to ~45 covering Next.js conventions (`_next`, `_app`, `favicon-ico`, etc.), HTTP error pages (`404`, `500`), and likely-future auth flows (`login`, `signin`, `account`, `me`). First slug-reservation list in this repo — verified no precedent via `rg -l RESERVED_SLUGS apis/ libs/`. Squat-prevention is cheap; backfilling after a customer claims `/me` is not.
+- **Publish-state guard symmetry across mutations.** Reorder originally threw CONFLICT on published pages while Update + AssignJourney accepted them — internal asymmetry that looks like a bug. Pick one rule: either ALL structural mutations gate on `status: 'draft'`, or NONE do. We picked "none — backend accepts unconditionally; FE handles the UX". The asymmetry is the actual bug, not either rule individually.

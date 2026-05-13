@@ -29,10 +29,10 @@ describe('EditEditionPage', () => {
 
   const setup = () => {
     // Mock implementation for the component
-    ;(EditEditionPage as jest.Mock).mockImplementation(({ params }) => (
+    ;(EditEditionPage as jest.Mock).mockImplementation(() => (
       <div data-testid="edit-edition-page">
-        <div data-testid="video-id">{params.videoId}</div>
-        <div data-testid="edition-id">{params.editionId}</div>
+        <div data-testid="video-id">{mockVideoId}</div>
+        <div data-testid="edition-id">{mockEditionId}</div>
         <form data-testid="EditionForm">
           <input data-testid="name-field" />
           <button data-testid="save-button" type="submit">
@@ -52,7 +52,10 @@ describe('EditEditionPage', () => {
     return render(
       <MockedProvider mocks={[]}>
         <EditEditionPage
-          params={{ videoId: mockVideoId, editionId: mockEditionId }}
+          params={Promise.resolve({
+            videoId: mockVideoId,
+            editionId: mockEditionId
+          })}
         />
       </MockedProvider>
     )

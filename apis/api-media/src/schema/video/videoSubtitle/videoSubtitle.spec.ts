@@ -14,6 +14,106 @@ describe('videoSubtitle', () => {
     }
   })
 
+  describe('queries', () => {
+    describe('videoSubtitles', () => {
+      const VIDEO_SUBTITLES_QUERY = graphql(`
+        query VideoSubtitles {
+          videoSubtitles {
+            id
+            videoId
+            languageId
+            primary
+            edition
+          }
+        }
+      `)
+
+      it('should return video subtitles', async () => {
+        prismaMock.videoSubtitle.findMany.mockResolvedValue([
+          {
+            id: 'subtitleId',
+            videoId: 'videoId',
+            languageId: '529',
+            primary: true,
+            edition: 'base',
+            vttSrc: null,
+            srtSrc: null,
+            vttAssetId: null,
+            vttVersion: 1,
+            srtAssetId: null,
+            srtVersion: 1,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        ])
+        const result = await client({ document: VIDEO_SUBTITLES_QUERY })
+        expect(prismaMock.videoSubtitle.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: {
+              updatedAt: undefined,
+              videoId: undefined,
+              languageId: undefined,
+              edition: undefined,
+              primary: undefined
+            },
+            skip: 0,
+            take: 100,
+            orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }]
+          })
+        )
+        expect(result).toHaveProperty('data.videoSubtitles', [
+          {
+            id: 'subtitleId',
+            videoId: 'videoId',
+            languageId: '529',
+            primary: true,
+            edition: 'base'
+          }
+        ])
+      })
+
+      it('should filter by videoId', async () => {
+        const FILTERED_QUERY = graphql(`
+          query VideoSubtitlesFiltered {
+            videoSubtitles(where: { videoId: "specificVideoId" }) {
+              id
+            }
+          }
+        `)
+        prismaMock.videoSubtitle.findMany.mockResolvedValue([])
+        await client({ document: FILTERED_QUERY })
+        expect(prismaMock.videoSubtitle.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: expect.objectContaining({ videoId: 'specificVideoId' })
+          })
+        )
+      })
+    })
+
+    describe('videoSubtitlesCount', () => {
+      const VIDEO_SUBTITLES_COUNT_QUERY = graphql(`
+        query VideoSubtitlesCount {
+          videoSubtitlesCount
+        }
+      `)
+
+      it('should return video subtitles count', async () => {
+        prismaMock.videoSubtitle.count.mockResolvedValue(3)
+        const result = await client({ document: VIDEO_SUBTITLES_COUNT_QUERY })
+        expect(prismaMock.videoSubtitle.count).toHaveBeenCalledWith({
+          where: {
+            updatedAt: undefined,
+            videoId: undefined,
+            languageId: undefined,
+            edition: undefined,
+            primary: undefined
+          }
+        })
+        expect(result).toHaveProperty('data.videoSubtitlesCount', 3)
+      })
+    })
+  })
+
   describe('mutations', () => {
     describe('videoSubtitleCreate', () => {
       const CREATE_VIDEO_SUBTITLE_MUTATION = graphql(`

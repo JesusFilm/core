@@ -50,9 +50,36 @@ describe('TemplateCardPreview', () => {
   it('renders correct number of cards', async () => {
     ;(useMediaQuery as unknown as jest.Mock).mockReturnValue(false)
     const steps = [
-      { id: '1', children: [{ __typename: 'CardBlock' }] },
-      { id: '2', children: [{ __typename: 'CardBlock' }] },
-      { id: '3', children: [{ __typename: 'CardBlock' }] }
+      {
+        id: '1',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      },
+      {
+        id: '2',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      },
+      {
+        id: '3',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      }
     ] as Array<TreeBlock<StepBlock>>
 
     render(
@@ -69,16 +96,106 @@ describe('TemplateCardPreview', () => {
 
   it('renders use template slide if more than 7 cards in journey', async () => {
     const steps = [
-      { id: '1', children: [{ __typename: 'CardBlock' }] },
-      { id: '2', children: [{ __typename: 'CardBlock' }] },
-      { id: '3', children: [{ __typename: 'CardBlock' }] },
-      { id: '4', children: [{ __typename: 'CardBlock' }] },
-      { id: '5', children: [{ __typename: 'CardBlock' }] },
-      { id: '6', children: [{ __typename: 'CardBlock' }] },
-      { id: '7', children: [{ __typename: 'CardBlock' }] },
-      { id: '8', children: [{ __typename: 'CardBlock' }] },
-      { id: '9', children: [{ __typename: 'CardBlock' }] },
-      { id: '10', children: [{ __typename: 'CardBlock' }] }
+      {
+        id: '1',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      },
+      {
+        id: '2',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      },
+      {
+        id: '3',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      },
+      {
+        id: '4',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      },
+      {
+        id: '5',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      },
+      {
+        id: '6',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      },
+      {
+        id: '7',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      },
+      {
+        id: '8',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      },
+      {
+        id: '9',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      },
+      {
+        id: '10',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      }
     ] as Array<TreeBlock<StepBlock>>
 
     render(
@@ -100,9 +217,36 @@ describe('TemplateCardPreview', () => {
   it('renders correct number of cards on small breakpoints', async () => {
     ;(useMediaQuery as unknown as jest.Mock).mockReturnValue(true)
     const steps = [
-      { id: '1', children: [{ __typename: 'CardBlock' }] },
-      { id: '2', children: [{ __typename: 'CardBlock' }] },
-      { id: '3', children: [{ __typename: 'CardBlock' }] }
+      {
+        id: '1',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      },
+      {
+        id: '2',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      },
+      {
+        id: '3',
+        children: [
+          {
+            __typename: 'CardBlock',
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      }
     ] as Array<TreeBlock<StepBlock>>
 
     render(
@@ -135,16 +279,106 @@ describe('TemplateCardPreview', () => {
   describe('media variant', () => {
     it('should render all steps and not show more cards slide', async () => {
       const steps = [
-        { id: '1', children: [{ __typename: 'CardBlock' }] },
-        { id: '2', children: [{ __typename: 'CardBlock' }] },
-        { id: '3', children: [{ __typename: 'CardBlock' }] },
-        { id: '4', children: [{ __typename: 'CardBlock' }] },
-        { id: '5', children: [{ __typename: 'CardBlock' }] },
-        { id: '6', children: [{ __typename: 'CardBlock' }] },
-        { id: '7', children: [{ __typename: 'CardBlock' }] },
-        { id: '8', children: [{ __typename: 'CardBlock' }] },
-        { id: '9', children: [{ __typename: 'CardBlock' }] },
-        { id: '10', children: [{ __typename: 'CardBlock' }] }
+        {
+          id: '1',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '2',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '3',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '4',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '5',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '6',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '7',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '8',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '9',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '10',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        }
       ] as Array<TreeBlock<StepBlock>>
 
       render(
@@ -167,9 +401,36 @@ describe('TemplateCardPreview', () => {
 
     it('should slide to selected step', async () => {
       const steps = [
-        { id: '1', children: [{ __typename: 'CardBlock' }] },
-        { id: '2', children: [{ __typename: 'CardBlock' }] },
-        { id: '3', children: [{ __typename: 'CardBlock' }] }
+        {
+          id: '1',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '2',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '3',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        }
       ] as Array<TreeBlock<StepBlock>>
 
       render(
@@ -190,16 +451,106 @@ describe('TemplateCardPreview', () => {
   describe('guestPreview variant', () => {
     it('should render all steps and not show more cards slide', async () => {
       const steps = [
-        { id: '1', children: [{ __typename: 'CardBlock' }] },
-        { id: '2', children: [{ __typename: 'CardBlock' }] },
-        { id: '3', children: [{ __typename: 'CardBlock' }] },
-        { id: '4', children: [{ __typename: 'CardBlock' }] },
-        { id: '5', children: [{ __typename: 'CardBlock' }] },
-        { id: '6', children: [{ __typename: 'CardBlock' }] },
-        { id: '7', children: [{ __typename: 'CardBlock' }] },
-        { id: '8', children: [{ __typename: 'CardBlock' }] },
-        { id: '9', children: [{ __typename: 'CardBlock' }] },
-        { id: '10', children: [{ __typename: 'CardBlock' }] }
+        {
+          id: '1',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '2',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '3',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '4',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '5',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '6',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '7',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '8',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '9',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '10',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        }
       ] as Array<TreeBlock<StepBlock>>
 
       render(
@@ -221,9 +572,36 @@ describe('TemplateCardPreview', () => {
 
     it('should accept initialStepId and render without error', async () => {
       const steps = [
-        { id: 'step-1', children: [{ __typename: 'CardBlock' }] },
-        { id: 'step-2', children: [{ __typename: 'CardBlock' }] },
-        { id: 'step-3', children: [{ __typename: 'CardBlock' }] }
+        {
+          id: 'step-1',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: 'step-2',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: 'step-3',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        }
       ] as Array<TreeBlock<StepBlock>>
 
       render(

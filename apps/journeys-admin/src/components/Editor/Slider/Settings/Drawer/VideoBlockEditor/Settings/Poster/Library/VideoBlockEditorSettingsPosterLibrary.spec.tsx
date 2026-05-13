@@ -38,7 +38,12 @@ import {
 } from '../../../../../../../../../../__generated__/PosterImageBlockUpdate'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
-import { createCloudflareUploadByUrlMock } from '../../../../ImageBlockEditor/CustomImage/CustomUrl/data'
+import {
+  listUnsplashCollectionPhotosMock,
+  toImageBlockUpdateInput,
+  triggerUnsplashDownloadMock,
+  unsplashImageInput
+} from '../../../../ImageBlockEditor/UnsplashGallery/data'
 
 import {
   POSTER_IMAGE_BLOCK_CREATE,
@@ -49,17 +54,17 @@ import {
 
 import { VideoBlockEditorSettingsPosterLibrary } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
 }))
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
-
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: jest.fn()
-}))
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -165,9 +170,9 @@ const video: TreeBlock<VideoBlock> = {
   posterBlockId: null,
   eventLabel: null,
   endEventLabel: null,
+  children: [],
   customizable: null,
-  notes: null,
-  children: []
+  notes: null
 }
 
 const image: ImageBlock = {
@@ -189,71 +194,9 @@ const image: ImageBlock = {
 const onClose = jest.fn()
 
 describe('VideoBlockEditorSettingsPosterLibrary', () => {
-  let originalEnv
-
   beforeEach(() => {
     ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
-    originalEnv = process.env
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
-    }
   })
-
-  afterEach(() => {
-    process.env = originalEnv
-  })
-
-  const posterImageBlockCreateMock: MockedResponse<
-    PosterImageBlockCreate,
-    PosterImageBlockCreateVariables
-  > = {
-    request: {
-      query: POSTER_IMAGE_BLOCK_CREATE,
-      variables: {
-        id: image.id,
-        parentBlockId: video.id,
-        input: {
-          journeyId: journey.id,
-          id: 'image1.id',
-          parentBlockId: 'video1.id',
-          src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
-          alt: 'public',
-          width: 0,
-          height: 0,
-          blurhash: '',
-          scale: null,
-          focalLeft: 50,
-          focalTop: 50,
-          customizable: null
-        }
-      }
-    },
-    result: {
-      data: {
-        imageBlockCreate: {
-          id: image.id,
-          src: image.src,
-          alt: image.alt,
-          __typename: 'ImageBlock',
-          parentBlockId: video.id,
-          width: image.width,
-          height: image.height,
-          parentOrder: image.parentOrder,
-          blurhash: image.blurhash,
-          scale: null,
-          focalLeft: 50,
-          focalTop: 50,
-          customizable: null
-        },
-        videoBlockUpdate: {
-          id: video.id,
-          posterBlockId: image.id,
-          __typename: 'VideoBlock'
-        }
-      }
-    }
-  }
 
   const posterImageBlockDeleteMock: MockedResponse<
     PosterImageBlockDelete,
@@ -307,105 +250,133 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
     }
   }
 
-  describe('No existing Image', () => {
-    it('creates a new image poster block', async () => {
-      mockUuidv4.mockReturnValueOnce(image.id)
-      const cache = new InMemoryCache()
-      cache.restore({
-        [`Journey:${journey.id}`]: {
-          blocks: [{ __ref: `VideoBlock:${video.id}` }],
-          id: journey.id,
-          __typename: 'Journey'
-        }
-      })
-      render(
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            createCloudflareUploadByUrlMock,
-            posterImageBlockCreateMock,
-            posterImageBlockDeleteMock,
-            posterImageBlockRestoreMock
-          ]}
-        >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <SnackbarProvider>
-              <CommandProvider>
-                <VideoBlockEditorSettingsPosterLibrary
-                  selectedBlock={null}
-                  parentBlockId={video.id}
-                  onClose={onClose}
-                  open
-                />
-                <CommandUndoItem variant="button" />
-                <CommandRedoItem variant="button" />
-              </CommandProvider>
-            </SnackbarProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      await waitFor(() =>
-        fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-      )
-      await waitFor(() =>
-        fireEvent.click(
-          screen.getByRole('button', { name: 'Add image by URL' })
-        )
-      )
-      const textBox = screen.getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: {
-          value: 'https://example.com/image.jpg'
-        }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() =>
-        expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-          { __ref: `VideoBlock:${video.id}` },
-          { __ref: `ImageBlock:${image.id}` }
-        ])
-      )
-      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-      await waitFor(() =>
-        expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-          { __ref: `VideoBlock:${video.id}` }
-        ])
-      )
-      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-      await waitFor(() =>
-        expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-          { __ref: `VideoBlock:${video.id}` },
-          { __ref: `ImageBlock:${image.id}` }
-        ])
-      )
+  it('creates a new image poster block from gallery selection', async () => {
+    mockUuidv4.mockReturnValueOnce(image.id)
+    const cache = new InMemoryCache()
+    cache.restore({
+      [`Journey:${journey.id}`]: {
+        blocks: [{ __ref: `VideoBlock:${video.id}` }],
+        id: journey.id,
+        __typename: 'Journey'
+      },
+      [`VideoBlock:${video.id}`]: { ...video }
     })
+    const response: PosterImageBlockCreate = {
+      imageBlockCreate: {
+        ...image,
+        ...unsplashImageInput
+      },
+      videoBlockUpdate: {
+        id: video.id,
+        posterBlockId: image.id,
+        __typename: 'VideoBlock'
+      }
+    }
+    const createResult = jest.fn(() => ({
+      data: response
+    }))
+    const posterImageBlockCreateMock: MockedResponse<
+      PosterImageBlockCreate,
+      PosterImageBlockCreateVariables
+    > = {
+      request: {
+        query: POSTER_IMAGE_BLOCK_CREATE,
+        variables: {
+          id: image.id,
+          parentBlockId: video.id,
+          input: {
+            journeyId: journey.id,
+            id: image.id,
+            parentBlockId: video.id,
+            ...unsplashImageInput,
+            scale: null
+          }
+        }
+      },
+      result: createResult
+    }
+
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          listUnsplashCollectionPhotosMock,
+          triggerUnsplashDownloadMock,
+          posterImageBlockCreateMock,
+          posterImageBlockDeleteMock,
+          posterImageBlockRestoreMock
+        ]}
+      >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <SnackbarProvider>
+            <CommandProvider>
+              <VideoBlockEditorSettingsPosterLibrary
+                selectedBlock={null}
+                parentBlockId={video.id}
+                onClose={onClose}
+                open
+              />
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+            </CommandProvider>
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'white dome building during daytime' })
+    )
+
+    await waitFor(() => expect(createResult).toHaveBeenCalled())
+    expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+      { __ref: `VideoBlock:${video.id}` },
+      { __ref: `ImageBlock:${image.id}` }
+    ])
+    expect(cache.extract()[`VideoBlock:${video.id}`]?.posterBlockId).toEqual(
+      image.id
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `VideoBlock:${video.id}` }
+      ])
+    )
+    expect(cache.extract()[`VideoBlock:${video.id}`]?.posterBlockId).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `VideoBlock:${video.id}` },
+        { __ref: `ImageBlock:${image.id}` }
+      ])
+    )
+    expect(cache.extract()[`VideoBlock:${video.id}`]?.posterBlockId).toEqual(
+      image.id
+    )
   })
 
   describe('Existing image poster', () => {
-    const existingImageBlock: ImageBlock = {
-      ...image,
-      src: 'https://example.com/image2.jpg',
-      alt: 'https://example.com/image2.jpg'
-    }
-
-    it('updates image cover block', async () => {
-      const response: PosterImageBlockUpdate = {
-        imageBlockUpdate: {
-          id: image.id,
-          src: image.src,
-          alt: image.alt,
-          __typename: 'ImageBlock',
-          parentBlockId: video.id,
-          width: image.width,
-          height: image.height,
-          parentOrder: image.parentOrder,
-          blurhash: image.blurhash,
-          scale: null,
-          focalLeft: 50,
-          focalTop: 50,
-          customizable: null
+    it('updates image poster block from gallery selection', async () => {
+      const undoInput = toImageBlockUpdateInput(image)
+      const updateResult = jest.fn(() => ({
+        data: {
+          imageBlockUpdate: {
+            ...image,
+            ...unsplashImageInput
+          }
         }
-      }
+      }))
+      const undoResult = jest.fn(() => ({
+        data: {
+          imageBlockUpdate: {
+            ...image,
+            ...undoInput
+          }
+        }
+      }))
       const posterImageBlockUpdateMock: MockedResponse<
         PosterImageBlockUpdate,
         PosterImageBlockUpdateVariables
@@ -414,64 +385,46 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           query: POSTER_IMAGE_BLOCK_UPDATE,
           variables: {
             id: image.id,
-            input: {
-              src: image.src,
-              alt: image.alt
-            }
+            input: unsplashImageInput
           }
         },
-        result: {
-          data: response
-        }
+        result: updateResult
       }
-      const updateResult = jest.fn(() => ({
-        data: response
-      }))
-      const undoResult = jest.fn(() => ({
-        data: response
-      }))
-      const redoResult = jest.fn(() => ({
-        data: response
-      }))
+      const posterImageBlockUpdateUndoMock: MockedResponse<
+        PosterImageBlockUpdate,
+        PosterImageBlockUpdateVariables
+      > = {
+        request: {
+          query: POSTER_IMAGE_BLOCK_UPDATE,
+          variables: {
+            id: image.id,
+            input: undoInput
+          }
+        },
+        result: undoResult
+      }
+
+      const cache = new InMemoryCache()
+      cache.restore({
+        [`ImageBlock:${image.id}`]: { ...image }
+      })
 
       render(
         <MockedProvider
+          cache={cache}
           mocks={[
-            createCloudflareUploadByUrlMock,
-            {
-              ...posterImageBlockUpdateMock,
-              result: updateResult
-            },
-            {
-              ...posterImageBlockUpdateMock,
-              request: {
-                ...posterImageBlockUpdateMock.request,
-                variables: {
-                  ...posterImageBlockUpdateMock.request.variables,
-                  input: {
-                    ...posterImageBlockUpdateMock.request.variables?.input,
-                    src: 'https://example.com/old.jpg',
-                    alt: 'prior-alt'
-                  }
-                }
-              },
-              result: undoResult
-            },
-            {
-              ...posterImageBlockUpdateMock,
-              result: redoResult
-            }
+            listUnsplashCollectionPhotosMock,
+            triggerUnsplashDownloadMock,
+            posterImageBlockUpdateMock,
+            posterImageBlockUpdateUndoMock,
+            posterImageBlockUpdateMock
           ]}
         >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
               <CommandProvider>
                 <VideoBlockEditorSettingsPosterLibrary
-                  selectedBlock={{
-                    ...existingImageBlock,
-                    src: 'https://example.com/old.jpg',
-                    alt: 'prior-alt'
-                  }}
+                  selectedBlock={image}
                   parentBlockId={video.id}
                   onClose={onClose}
                   open
@@ -483,24 +436,28 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+
       await waitFor(() =>
-        fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+        expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
       )
-      await waitFor(() =>
-        fireEvent.click(
-          screen.getByRole('button', { name: 'Add image by URL' })
-        )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'white dome building during daytime'
+        })
       )
-      const textBox = screen.getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: { value: 'https://example.com/image.jpg' }
-      })
-      fireEvent.blur(textBox)
+
       await waitFor(() => expect(updateResult).toHaveBeenCalled())
+      expect(cache.extract()[`ImageBlock:${image.id}`]?.src).toEqual(
+        unsplashImageInput.src
+      )
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
       await waitFor(() => expect(undoResult).toHaveBeenCalled())
+      expect(cache.extract()[`ImageBlock:${image.id}`]?.src).toEqual(image.src)
       fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-      await waitFor(() => expect(redoResult).toHaveBeenCalled())
+      await waitFor(() => expect(updateResult).toHaveBeenCalledTimes(2))
+      expect(cache.extract()[`ImageBlock:${image.id}`]?.src).toEqual(
+        unsplashImageInput.src
+      )
     })
 
     it('deletes an image block', async () => {

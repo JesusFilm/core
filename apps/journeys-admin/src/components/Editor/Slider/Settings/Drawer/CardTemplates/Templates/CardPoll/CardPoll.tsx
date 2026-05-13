@@ -337,7 +337,9 @@ export function CardPoll(): ReactElement {
       fullscreen: true,
       backdropBlur: null,
       eventLabel: null,
-      __typename: 'CardBlock'
+      __typename: 'CardBlock',
+      showAssistant: null,
+      expandChatByDefault: null
     } satisfies CardBlock
 
     const createdBlocks = [

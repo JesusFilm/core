@@ -11,6 +11,8 @@ type MockBlock = {
   // Add other optional fields that might be needed
   min?: number | null
   max?: number | null
+  showAssistant?: boolean | null
+  expandChatByDefault?: boolean | null
 }
 
 // Helper to cast the simplified mock blocks to TreeBlock
@@ -23,7 +25,9 @@ describe('getFormInitialValues', () => {
       {
         id: 'card1',
         __typename: 'CardBlock',
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       },
       {
         id: 'text1',
@@ -55,7 +59,9 @@ describe('getFormInitialValues', () => {
       {
         id: 'card1',
         __typename: 'CardBlock',
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       },
       {
         id: 'button1',
@@ -74,7 +80,9 @@ describe('getFormInitialValues', () => {
       {
         id: 'card1',
         __typename: 'CardBlock',
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       },
       {
         id: 'multi1',

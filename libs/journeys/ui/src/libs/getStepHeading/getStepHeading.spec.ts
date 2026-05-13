@@ -126,7 +126,9 @@ describe('getStepHeading', () => {
               color: null
             }
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
 

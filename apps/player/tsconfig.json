@@ -63,7 +63,6 @@
     "**/*.js",
     "**/*.jsx",
     "**/*.mjs",
-    "next-env.d.ts",
     ".next/types/**/*.ts",
     "../../dist/apps/player/.next/types/**/*.ts",
     "src/app/.well-known/**/*.ts",

@@ -174,7 +174,9 @@ const card: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
-  children: [image, typography, button1, radioQuestionBlock]
+  children: [image, typography, button1, radioQuestionBlock],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 describe('getCardMetadata', () => {

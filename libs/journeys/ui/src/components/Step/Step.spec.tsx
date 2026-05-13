@@ -263,7 +263,9 @@ describe('Step', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: BlockEventLabel.custom1,
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     }
