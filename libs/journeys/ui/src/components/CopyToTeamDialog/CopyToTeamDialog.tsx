@@ -38,8 +38,6 @@ interface CopyToTeamDialogProps {
     message: string
   }
   isTranslating?: boolean
-  journeyIsTemplate?: boolean
-  journeyFromTemplateId?: string | null
   // When true, the team dropdown defaults to the user's active team.
   defaultToActiveTeam?: boolean
 }
@@ -86,8 +84,6 @@ export function CopyToTeamDialog({
   submitAction,
   translationProgress,
   isTranslating = false,
-  journeyIsTemplate,
-  journeyFromTemplateId,
   defaultToActiveTeam = false
 }: CopyToTeamDialogProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
