@@ -161,7 +161,9 @@ describe('journeyAiTranslateCreate mutation', () => {
     analysis:
       'This journey is about example content. Cultural adaptations include...',
     title: 'Título del Viaje Traducido',
-    description: 'Descripción del viaje traducida'
+    description: 'Descripción del viaje traducida',
+    seoTitle: '',
+    seoDescription: ''
   }
 
   const mockTranslatedBlocks = [
