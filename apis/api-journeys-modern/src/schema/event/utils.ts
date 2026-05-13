@@ -3,11 +3,14 @@ import { GraphQLError } from 'graphql'
 import {
   Block,
   JourneyVisitor,
+  Prisma,
   Visitor,
   prisma
 } from '@core/prisma/journeys/client'
 
 import { logger } from '../logger'
+
+const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
 // Queue for visitor interaction emails
 let emailQueue: any
@@ -162,28 +165,45 @@ export async function getByUserIdAndJourneyId(
     return null
   }
 
-  const visitor = await prisma.visitor.findFirst({
-    where: { userId, teamId: journey.teamId }
-  })
+  while (true) {
+    try {
+      const visitor = await prisma.visitor.upsert({
+        where: {
+          teamId_userId: {
+            teamId: journey.teamId,
+            userId
+          }
+        },
+        create: {
+          teamId: journey.teamId,
+          userId
+        },
+        update: {}
+      })
+      const journeyVisitor = await prisma.journeyVisitor.upsert({
+        where: {
+          journeyId_visitorId: {
+            journeyId,
+            visitorId: visitor.id
+          }
+        },
+        create: {
+          journeyId,
+          visitorId: visitor.id
+        },
+        update: {}
+      })
 
-  if (visitor == null) {
-    return null
-  }
-
-  const journeyVisitor = await prisma.journeyVisitor.findUnique({
-    where: {
-      journeyId_visitorId: {
-        journeyId,
-        visitorId: visitor.id
+      return { visitor, journeyVisitor }
+    } catch (err) {
+      if (
+        !(err instanceof Prisma.PrismaClientKnownRequestError) ||
+        err.code !== ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
+      ) {
+        throw err
       }
     }
-  })
-
-  if (journeyVisitor == null) {
-    return null
   }
-
-  return { visitor, journeyVisitor }
 }
 
 // Helper function to get visitor and journey IDs
