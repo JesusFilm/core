@@ -174,143 +174,92 @@ export function PromptInput({
       : counterMutedColor
 
   return (
-    <Box sx={{ position: 'relative', width: '100%' }}>
-      <Box
-        component="form"
-        ref={formRef}
-        onSubmit={handleFormSubmit}
-        onAnimationEnd={handleAnimationEnd}
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          pl: 0.75,
-          pr: 1.5,
-          py: 0.75,
-          bgcolor: isFloating ? OVERLAY_INPUT_BG : PANEL_INPUT_BG,
-          backdropFilter: 'blur(20px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-          borderRadius: 9999,
-          border: '1px solid',
-          borderColor: isFloating ? OVERLAY_INPUT_BORDER : PANEL_INPUT_BORDER,
-          boxShadow: isFloating ? OVERLAY_INPUT_SHADOW : PANEL_INPUT_SHADOW,
+    <Box
+      component="form"
+      ref={formRef}
+      onSubmit={handleFormSubmit}
+      onAnimationEnd={handleAnimationEnd}
+      sx={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        gap: 1,
+        width: '100%',
+        pl: 0.75,
+        pr: 1.5,
+        py: 0.75,
+        bgcolor: isFloating ? OVERLAY_INPUT_BG : PANEL_INPUT_BG,
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        borderRadius: 9999,
+        border: '1px solid',
+        borderColor: isFloating ? OVERLAY_INPUT_BORDER : PANEL_INPUT_BORDER,
+        boxShadow: isFloating ? OVERLAY_INPUT_SHADOW : PANEL_INPUT_SHADOW,
+        [`&.${SHAKE_CLASS}`]: {
+          animation: `${shake} ${SHAKE_DURATION_MS}ms ease-in-out`
+        },
+        '@media (prefers-reduced-motion: reduce)': {
           [`&.${SHAKE_CLASS}`]: {
-            animation: `${shake} ${SHAKE_DURATION_MS}ms ease-in-out`
-          },
-          '@media (prefers-reduced-motion: reduce)': {
-            [`&.${SHAKE_CLASS}`]: {
-              animation: 'none'
-            }
+            animation: 'none'
           }
+        }
+      }}
+    >
+      <InputBase
+        multiline
+        // Allow modest growth (1–2 rows) so wrapped text stays readable
+        // on narrow mobile widths, then scroll internally past 2 rows.
+        // A higher cap (we tried 6) lets a near-cap paste dominate the
+        // viewport; rows={1} alone made the visible area too cramped
+        // on mobile where the sheet is narrow.
+        maxRows={2}
+        value={input}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        onPaste={handlePaste}
+        placeholder={t('Ask anything…')}
+        disabled={isLoading}
+        inputProps={{
+          'aria-label': t('Chat message input'),
+          maxLength: MAX_MESSAGE_CHARS
         }}
-      >
-        <InputBase
-          multiline
-          // Fixed single-row height — pasting or Shift+Enter scrolls the
-          // textarea internally rather than letting the capsule expand
-          // vertically (which can push the conversation off-screen and
-          // overlap chrome). `rows` opts out of MUI's TextareaAutosize.
-          rows={1}
-          value={input}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          onPaste={handlePaste}
-          placeholder={t('Ask anything…')}
-          disabled={isLoading}
-          inputProps={{
-            'aria-label': t('Chat message input'),
-            maxLength: MAX_MESSAGE_CHARS
-          }}
-          sx={{
-            flex: 1,
-            minWidth: 0,
-            px: '14px',
-            py: '9px',
-            color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
-            // font-size >= 16px keeps iOS Safari from auto-zooming on focus
-            // (regression guard from the M1 fix).
+        sx={{
+          flex: 1,
+          minWidth: 0,
+          px: '14px',
+          py: '9px',
+          color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
+          // font-size >= 16px keeps iOS Safari from auto-zooming on focus
+          // (regression guard from the M1 fix).
+          fontSize: 16,
+          lineHeight: 1.375,
+          fontFamily: 'inherit',
+          '& .MuiInputBase-input': {
+            p: 0,
             fontSize: 16,
             lineHeight: 1.375,
             fontFamily: 'inherit',
-            '& .MuiInputBase-input': {
-              p: 0,
-              fontSize: 16,
-              lineHeight: 1.375,
-              fontFamily: 'inherit',
-              color: 'inherit',
-              '&::placeholder': {
-                color: isFloating ? OVERLAY_FG_MUTED : TEXT_SECONDARY,
-                opacity: 1
-              }
-            },
-            '&.Mui-disabled, & .MuiInputBase-input.Mui-disabled': {
-              color: TEXT_SECONDARY,
-              WebkitTextFillColor: TEXT_SECONDARY
+            color: 'inherit',
+            '&::placeholder': {
+              color: isFloating ? OVERLAY_FG_MUTED : TEXT_SECONDARY,
+              opacity: 1
             }
-          }}
-        />
-        {isLoading ? (
-          <IconButton
-            type="button"
-            onClick={onStop}
-            aria-label={t('Stop generating')}
-            sx={{
-              width: 32,
-              height: 32,
-              flexShrink: 0,
-              p: 0,
-              bgcolor: PRIMARY,
-              color: PRIMARY_ON,
-              '&:hover': { bgcolor: PRIMARY }
-            }}
-          >
-            <StopRoundedIcon fontSize="small" />
-          </IconButton>
-        ) : (
-          <IconButton
-            type="submit"
-            disabled={!canSubmit}
-            aria-label={t('Send message')}
-            sx={{
-              width: 32,
-              height: 32,
-              flexShrink: 0,
-              p: 0,
-              bgcolor: canSubmit
-                ? PRIMARY
-                : isFloating
-                  ? OVERLAY_FILL_LOW
-                  : DIVIDER,
-              color: canSubmit
-                ? PRIMARY_ON
-                : isFloating
-                  ? OVERLAY_FG_MUTED
-                  : TEXT_SECONDARY,
-              '&:hover': {
-                bgcolor: canSubmit
-                  ? PRIMARY
-                  : isFloating
-                    ? OVERLAY_FILL_LOW
-                    : DIVIDER
-              },
-              '&.Mui-disabled': {
-                bgcolor: isFloating ? OVERLAY_FILL_LOW : DIVIDER,
-                color: isFloating ? OVERLAY_FG_MUTED : TEXT_SECONDARY
-              }
-            }}
-          >
-            <SendRoundedIcon fontSize="small" />
-          </IconButton>
-        )}
-      </Box>
+          },
+          '&.Mui-disabled, & .MuiInputBase-input.Mui-disabled': {
+            color: TEXT_SECONDARY,
+            WebkitTextFillColor: TEXT_SECONDARY
+          }
+        }}
+      />
       {showCounter && (
         <Typography
           aria-live="polite"
           data-testid="prompt-input-counter"
           sx={{
-            position: 'absolute',
-            right: 14,
-            bottom: -14,
+            flexShrink: 0,
+            alignSelf: 'flex-end',
+            // Match the textarea's vertical padding so the counter sits
+            // on the same baseline as the last line of input.
+            pb: '11px',
             fontSize: 10,
             lineHeight: 1,
             fontFamily: 'inherit',
@@ -323,6 +272,59 @@ export function PromptInput({
         >
           {input.length}/{MAX_MESSAGE_CHARS}
         </Typography>
+      )}
+      {isLoading ? (
+        <IconButton
+          type="button"
+          onClick={onStop}
+          aria-label={t('Stop generating')}
+          sx={{
+            width: 32,
+            height: 32,
+            flexShrink: 0,
+            p: 0,
+            bgcolor: PRIMARY,
+            color: PRIMARY_ON,
+            '&:hover': { bgcolor: PRIMARY }
+          }}
+        >
+          <StopRoundedIcon fontSize="small" />
+        </IconButton>
+      ) : (
+        <IconButton
+          type="submit"
+          disabled={!canSubmit}
+          aria-label={t('Send message')}
+          sx={{
+            width: 32,
+            height: 32,
+            flexShrink: 0,
+            p: 0,
+            bgcolor: canSubmit
+              ? PRIMARY
+              : isFloating
+                ? OVERLAY_FILL_LOW
+                : DIVIDER,
+            color: canSubmit
+              ? PRIMARY_ON
+              : isFloating
+                ? OVERLAY_FG_MUTED
+                : TEXT_SECONDARY,
+            '&:hover': {
+              bgcolor: canSubmit
+                ? PRIMARY
+                : isFloating
+                  ? OVERLAY_FILL_LOW
+                  : DIVIDER
+            },
+            '&.Mui-disabled': {
+              bgcolor: isFloating ? OVERLAY_FILL_LOW : DIVIDER,
+              color: isFloating ? OVERLAY_FG_MUTED : TEXT_SECONDARY
+            }
+          }}
+        >
+          <SendRoundedIcon fontSize="small" />
+        </IconButton>
       )}
     </Box>
   )
