@@ -1,4 +1,5 @@
 import { Job } from 'bullmq'
+import { vi } from 'vitest'
 
 import {
   Team,
@@ -20,23 +21,23 @@ import {
 } from './prisma.types'
 import { service } from './service'
 
-jest.mock('@core/prisma/users/client', () => ({
+vi.mock('@core/prisma/users/client', () => ({
   prisma: {
     user: {
-      findUnique: jest.fn(),
-      findMany: jest.fn()
+      findUnique: vi.fn(),
+      findMany: vi.fn()
     }
   }
 }))
 
-const { prisma: mockPrismaUsers } = jest.requireMock(
+const { prisma: mockPrismaUsers } = await vi.importMock<any>(
   '@core/prisma/users/client'
 )
 
 let args = {}
-jest.mock('@core/yoga/email', () => ({
+vi.mock('@core/yoga/email', () => ({
   __esModule: true,
-  sendEmail: jest.fn().mockImplementation(async (callArgs) => {
+  sendEmail: vi.fn().mockImplementation(async (callArgs) => {
     args = callArgs
     await Promise.resolve()
   })
@@ -187,7 +188,7 @@ const journeyEditJob: Job<JourneyEditInviteJob, unknown, string> = {
 
 describe('EmailConsumer', () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('teamRemovedEmail', () => {

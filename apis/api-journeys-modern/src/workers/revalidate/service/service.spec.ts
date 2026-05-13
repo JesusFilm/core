@@ -2,23 +2,24 @@ import { Job } from 'bullmq'
 import FormData from 'form-data'
 import fetch from 'node-fetch'
 import { Logger } from 'pino'
+import { type MockedFunction, vi } from 'vitest'
 
 import { generateFacebookAppAccessToken, revalidate, service } from './service'
 
-jest.mock('node-fetch')
+vi.mock('node-fetch')
 
-const mockFetch = fetch as jest.MockedFunction<typeof fetch>
+const mockFetch = fetch as MockedFunction<typeof fetch>
 const mockLogger = {
-  error: jest.fn()
+  error: vi.fn()
 }
 
 describe('RevalidateService', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   afterEach(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   describe('service', () => {

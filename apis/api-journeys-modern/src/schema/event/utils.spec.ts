@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { Prisma } from '@core/prisma/journeys/client'
 
 import { prismaMock } from '../../../test/prismaMock'
@@ -16,57 +18,52 @@ import {
 } from './utils'
 
 const mockEmailQueue = {
-  getJob: jest.fn(),
-  remove: jest.fn(),
-  add: jest.fn()
+  getJob: vi.fn(),
+  remove: vi.fn(),
+  add: vi.fn()
 }
 
 const mockGoogleSheetsSyncQueue = {
-  add: jest.fn()
+  add: vi.fn()
 }
 
-jest.mock('../../workers/emailEvents/queue', () => ({
+vi.mock('../../workers/emailEvents/queue', () => ({
   queue: mockEmailQueue
 }))
 
-jest.mock('../../workers/googleSheetsSync/queue', () => ({
+vi.mock('../../workers/googleSheetsSync/queue', () => ({
   queue: mockGoogleSheetsSyncQueue
 }))
 
 const mockLogger = {
-  warn: jest.fn(),
-  error: jest.fn(),
-  info: jest.fn(),
-  debug: jest.fn()
+  warn: vi.fn(),
+  error: vi.fn(),
+  info: vi.fn(),
+  debug: vi.fn()
 }
 
-jest.mock('../logger', () => ({
+vi.mock('../logger', () => ({
   get logger() {
     return mockLogger
   }
 }))
 
 describe('event utils', () => {
+  const originalNodeEnv = process.env.NODE_ENV
+
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     // Set up queue mocks before tests run
     __setEmailQueueForTests(mockEmailQueue)
     __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueue)
     // Clear NODE_ENV to allow queue to work
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: undefined,
-      writable: true,
-      configurable: true
-    })
+    delete (process.env as Record<string, string | undefined>).NODE_ENV
   })
 
   afterEach(() => {
     // Restore test environment
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: 'test',
-      writable: true,
-      configurable: true
-    })
+    ;(process.env as Record<string, string | undefined>).NODE_ENV =
+      originalNodeEnv
   })
 
   describe('validateBlockEvent', () => {
@@ -433,11 +430,7 @@ describe('event utils', () => {
   describe('sendEventsEmail', () => {
     beforeEach(() => {
       __setEmailQueueForTests(mockEmailQueue)
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: undefined,
-        writable: true,
-        configurable: true
-      })
+      delete (process.env as Record<string, string | undefined>).NODE_ENV
     })
 
     it('should add email job to queue', async () => {
@@ -484,16 +477,12 @@ describe('event utils', () => {
   describe('resetEventsEmailDelay', () => {
     beforeEach(() => {
       __setEmailQueueForTests(mockEmailQueue)
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: undefined,
-        writable: true,
-        configurable: true
-      })
+      delete (process.env as Record<string, string | undefined>).NODE_ENV
     })
 
     it('should change delay of existing job', async () => {
       const existingJob = {
-        changeDelay: jest.fn().mockResolvedValue(undefined)
+        changeDelay: vi.fn().mockResolvedValue(undefined)
       }
       mockEmailQueue.getJob.mockResolvedValue(existingJob as any)
 
@@ -504,7 +493,7 @@ describe('event utils', () => {
 
     it('should use minimum delay of 2 minutes', async () => {
       const existingJob = {
-        changeDelay: jest.fn().mockResolvedValue(undefined)
+        changeDelay: vi.fn().mockResolvedValue(undefined)
       }
       mockEmailQueue.getJob.mockResolvedValue(existingJob as any)
 
@@ -537,21 +526,17 @@ describe('event utils', () => {
 
   describe('appendEventToGoogleSheets', () => {
     beforeEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueue)
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: undefined,
-        writable: true,
-        configurable: true
-      })
+      delete (process.env as Record<string, string | undefined>).NODE_ENV
       mockLogger.warn.mockClear()
       // Pin clock to a known mid-minute time so delay calculations are deterministic
-      jest.useFakeTimers()
-      jest.setSystemTime(new Date('2024-01-01T00:00:30.000Z'))
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2024-01-01T00:00:30.000Z'))
     })
 
     afterEach(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('should return early when no sync config exists', async () => {
