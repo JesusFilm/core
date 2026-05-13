@@ -76,6 +76,21 @@ describe('journeys proxy', () => {
       )
     })
 
+    it('rewrites a port-bearing dev host to /home (browsers send Host: <fqdn>:<port>)', async () => {
+      // The Host header from a real browser includes the port the dev server
+      // listens on (4100). The Doppler `DEV_HOSTS` list stores bare FQDNs.
+      // proxy.ts must strip the port before consulting `isDevHost`, otherwise
+      // the lookup misses and the request falls through to the catch-all
+      // `/[hostname]/[slug]` route — the bug Ed flagged on r3231489594.
+      const result = await proxy(
+        buildRequest('tailscale-dev-siyang.taila2a609.ts.net:4100', '/')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://tailscale-dev-siyang.taila2a609.ts.net:4100/home'
+      )
+    })
+
     it('preserves path and query when rewriting to /home', async () => {
       const result = await proxy(
         buildRequest(

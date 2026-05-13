@@ -42,7 +42,15 @@ export default async function proxy(
   // catch-all `/[hostname]/[slug]` route. The secret is only set in dev's
   // Doppler config, so `isDevHost` returns false everywhere else — absence
   // of the secret IS the gate. See docs/development/tailscale-dev-access.md.
-  if (isDevHost(hostname) && process.env.NEXT_PUBLIC_ROOT_DOMAIN != null) {
+  //
+  // Strip the port before matching: browsers send `Host: tailscale-dev-x:4100`
+  // but Doppler `DEV_HOSTS` stores bare FQDNs (matching the other call sites
+  // — apolloClient/QrCodeDialog read `window.location.hostname`, which has
+  // no port; getAuthTokens does the same `.split(':')[0]`).
+  if (
+    isDevHost(hostname.split(':')[0]) &&
+    process.env.NEXT_PUBLIC_ROOT_DOMAIN != null
+  ) {
     hostname = process.env.NEXT_PUBLIC_ROOT_DOMAIN
   }
 
