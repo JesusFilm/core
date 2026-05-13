@@ -121,7 +121,10 @@ describe('blockOrderUpdate', () => {
   })
 
   it('returns empty array when block has no parentOrder', async () => {
-    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({ ...block, parentOrder: null })
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
+      ...block,
+      parentOrder: null
+    })
     mockAbility.mockReturnValue(true)
 
     const tx = {

@@ -5,7 +5,7 @@ import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
 vi.mock('../utils', async () => {
-  const actual = (await vi.importActual('../utils'))
+  const actual = await vi.importActual('../utils')
   return {
     ...actual,
     getEventContext: vi.fn().mockResolvedValue({

@@ -23,10 +23,9 @@ vi.mock('@core/prisma/users/client', () => ({
 
 vi.mock('../../../lib/mediaCleanup/mediaCleanup')
 
-const mockCollectMediaFromJourneys =
-  collectMediaFromJourneys as MockedFunction<
-    typeof collectMediaFromJourneys
-  >
+const mockCollectMediaFromJourneys = collectMediaFromJourneys as MockedFunction<
+  typeof collectMediaFromJourneys
+>
 const mockDeleteUnusedMedia = deleteUnusedMedia as MockedFunction<
   typeof deleteUnusedMedia
 >

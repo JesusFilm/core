@@ -7,7 +7,10 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-import { deleteVercelDomain, updateTeamShortLinks } from './customDomain.service'
+import {
+  deleteVercelDomain,
+  updateTeamShortLinks
+} from './customDomain.service'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()

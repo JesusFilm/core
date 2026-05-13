@@ -29,13 +29,10 @@ vi.mock('../../lib/auth/ability', () => ({
   subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-vi.mock(
-  './translateCustomizationFields/translateCustomizationFields',
-  () => ({
-    translateCustomizationFields: vi.fn(),
-    translateCustomizationDescription: vi.fn()
-  })
-)
+vi.mock('./translateCustomizationFields/translateCustomizationFields', () => ({
+  translateCustomizationFields: vi.fn(),
+  translateCustomizationDescription: vi.fn()
+}))
 
 const JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE = graphql(`
   mutation JourneyCustomizationDescriptionTranslate(

@@ -397,7 +397,6 @@ describe('templateFamilyStatsBreakdown', () => {
         userJourneys: []
       }
     ] as unknown as JourneyWithAcl[])
-
     ;(prismaMock.journeyVisitor.groupBy as any).mockResolvedValue([
       {
         journeyId: 'journey-1',
@@ -744,7 +743,8 @@ describe('templateFamilyStatsBreakdown', () => {
       ] as unknown as JourneyWithAcl[])
 
     // Responses exist (journeyVisitor with lastTextResponse not null)
-    ;(prismaMock.journeyVisitor.groupBy as any).mockResolvedValueOnce([
+    ;(prismaMock.journeyVisitor.groupBy as any)
+      .mockResolvedValueOnce([
         {
           journeyId: 'journey-1',
           _count: { journeyId: 7 }

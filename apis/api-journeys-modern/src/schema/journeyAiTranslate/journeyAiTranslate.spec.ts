@@ -40,12 +40,9 @@ vi.mock('./getCardBlocksContent', () => ({
   getCardBlocksContent: vi.fn()
 }))
 
-vi.mock(
-  './translateCustomizationFields/translateCustomizationFields',
-  () => ({
-    translateCustomizationFields: vi.fn()
-  })
-)
+vi.mock('./translateCustomizationFields/translateCustomizationFields', () => ({
+  translateCustomizationFields: vi.fn()
+}))
 
 // Mock utility to create AsyncIterator for testing
 function createMockAsyncIterator<T>(items: T[]): AsyncIterable<T> {
@@ -66,16 +63,10 @@ function createMockAsyncIterator<T>(items: T[]): AsyncIterable<T> {
 
 describe('journeyAiTranslateCreate mutation', () => {
   const mockAbility = ability as MockedFunction<typeof ability>
-  const mockGenerateText = generateText as MockedFunction<
-    typeof generateText
-  >
+  const mockGenerateText = generateText as MockedFunction<typeof generateText>
   const mockStreamText = streamText as MockedFunction<typeof streamText>
-  const mockOutputObject = Output.object as MockedFunction<
-    typeof Output.object
-  >
-  const mockOutputArray = Output.array as MockedFunction<
-    typeof Output.array
-  >
+  const mockOutputObject = Output.object as MockedFunction<typeof Output.object>
+  const mockOutputArray = Output.array as MockedFunction<typeof Output.array>
   const mockGetCardBlocksContent = getCardBlocksContent as MockedFunction<
     typeof getCardBlocksContent
   >
@@ -737,9 +728,7 @@ describe('journeyAiTranslateCreate mutation', () => {
 
 describe('journeyAiTranslateCreateSubscription', () => {
   const mockAbility = ability as MockedFunction<typeof ability>
-  const mockGenerateText = generateText as MockedFunction<
-    typeof generateText
-  >
+  const mockGenerateText = generateText as MockedFunction<typeof generateText>
   const mockStreamText = streamText as MockedFunction<typeof streamText>
   const mockGetCardBlocksContent = getCardBlocksContent as MockedFunction<
     typeof getCardBlocksContent

@@ -19,7 +19,7 @@ vi.mock('../../../lib/google/googleAuth', () => ({
 }))
 
 vi.mock('../../../lib/google/sheets', async () => {
-  const actual = (await vi.importActual('../../../lib/google/sheets'))
+  const actual = await vi.importActual('../../../lib/google/sheets')
   return {
     ...actual,
     clearSheet: vi.fn(),

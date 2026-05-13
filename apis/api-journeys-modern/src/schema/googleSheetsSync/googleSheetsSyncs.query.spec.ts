@@ -118,8 +118,8 @@ describe('googleSheetsSyncs', () => {
 
       // prismaField spreads query parameter
       expect(prismaMock.googleSheetsSync.findMany).toHaveBeenCalled()
-      const findManyCall = (prismaMock.googleSheetsSync.findMany as Mock)
-        .mock.calls[0][0]
+      const findManyCall = (prismaMock.googleSheetsSync.findMany as Mock).mock
+        .calls[0][0]
       expect(findManyCall).toMatchObject({
         where: { journeyId: 'journey-id' },
         orderBy: [{ deletedAt: 'asc' }, { createdAt: 'desc' }]
@@ -252,8 +252,8 @@ describe('googleSheetsSyncs', () => {
 
       // prismaField spreads query parameter
       expect(prismaMock.googleSheetsSync.findMany).toHaveBeenCalled()
-      const findManyCall = (prismaMock.googleSheetsSync.findMany as Mock)
-        .mock.calls[0][0]
+      const findManyCall = (prismaMock.googleSheetsSync.findMany as Mock).mock
+        .calls[0][0]
       expect(findManyCall).toMatchObject({
         where: { integrationId: 'integration-id' },
         orderBy: [{ deletedAt: 'asc' }, { createdAt: 'desc' }]
@@ -436,8 +436,8 @@ describe('googleSheetsSyncs', () => {
     })
 
     expect(prismaMock.googleSheetsSync.findMany).toHaveBeenCalled()
-    const findManyCall = (prismaMock.googleSheetsSync.findMany as Mock)
-      .mock.calls[0][0]
+    const findManyCall = (prismaMock.googleSheetsSync.findMany as Mock).mock
+      .calls[0][0]
     expect(findManyCall).toMatchObject({
       where: { journeyId: 'journey-id', integrationId: 'integration-id' },
       orderBy: [{ deletedAt: 'asc' }, { createdAt: 'desc' }]

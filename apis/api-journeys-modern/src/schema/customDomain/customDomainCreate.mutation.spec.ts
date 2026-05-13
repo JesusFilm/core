@@ -28,9 +28,7 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
-const mockIsDomainValid = isDomainValid as MockedFunction<
-  typeof isDomainValid
->
+const mockIsDomainValid = isDomainValid as MockedFunction<typeof isDomainValid>
 const mockCreateVercelDomain = createVercelDomain as MockedFunction<
   typeof createVercelDomain
 >

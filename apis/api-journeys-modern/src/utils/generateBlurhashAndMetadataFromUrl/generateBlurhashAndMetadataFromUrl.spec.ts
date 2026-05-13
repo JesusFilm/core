@@ -5,7 +5,7 @@ import { type MockedFunction, vi } from 'vitest'
 import { generateBlurhashAndMetadataFromUrl } from './generateBlurhashAndMetadataFromUrl'
 
 vi.mock('node-fetch', async () => {
-  const originalModule = (await vi.importActual('node-fetch'))
+  const originalModule = await vi.importActual('node-fetch')
   return {
     __esModule: true,
     ...originalModule,

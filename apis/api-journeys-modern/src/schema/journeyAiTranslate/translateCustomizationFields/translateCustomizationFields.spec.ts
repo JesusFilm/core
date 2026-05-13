@@ -28,9 +28,7 @@ const baseMockResponse = {
 }
 
 describe('translateCustomizationFields', () => {
-  const mockGenerateText = generateText as MockedFunction<
-    typeof generateText
-  >
+  const mockGenerateText = generateText as MockedFunction<typeof generateText>
 
   const mockJourneyCustomizationFields = [
     {
