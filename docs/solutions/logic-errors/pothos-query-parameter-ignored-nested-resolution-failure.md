@@ -2,6 +2,7 @@
 title: 'adminJourney resolver ignores Pothos query parameter causing empty Manage Editors dialog'
 category: logic-errors
 date: 2026-03-23
+last_updated: 2026-05-10
 tags:
   - graphql
   - pothos
@@ -99,7 +100,12 @@ resolve: async (query, _parent, args, context) => {
 
 ### Response cache fix in `yoga.ts`
 
-Added `'Query.adminJourney': 0` to `ttlPerSchemaCoordinate`. With `session: () => null` (shared cache across all users), any authenticated query without TTL 0 risks serving one user's ACL-gated data to another user.
+Added `'Query.adminJourney': 0` to `ttlPerSchemaCoordinate`. With `session: () => null` (shared cache across all users), any authenticated query without TTL 0 has **two failure modes** stemming from the same config gap:
+
+1. **ACL data leakage** (this incident) — one user's ACL-gated payload is served to another user keyed on the same `(query, variables)`.
+2. **Empty-list invalidation staleness** — if the first cached read for a key is empty (`[]`), Yoga's entity-id-based invalidation cannot match it on subsequent mutations because there are no entity ids in the cached payload. The cached `[]` is served indefinitely. See [response-cache-empty-list-invalidation-2026-05-10.md](./response-cache-empty-list-invalidation-2026-05-10.md) for the NES-1648 incident.
+
+The audit rule is the same for both: any query whose first response can be empty AND whose mutations populate it MUST have an explicit entry in `ttlPerSchemaCoordinate`, even if just `0`.
 
 ## Prevention
 
@@ -133,6 +139,7 @@ Added `'Query.adminJourney': 0` to `ttlPerSchemaCoordinate`. With `session: () =
 
 - [NES-1480](https://linear.app/jesus-film-project/issue/NES-1480) — this bug
 - [NES-1481](https://linear.app/jesus-film-project/issue/NES-1481) — related ACL fix for inviteRequested role bypass
+- [NES-1648](https://linear.app/jesus-film-project/issue/NES-1648) — sibling cache-config bug (different failure mode of the same `ttlPerSchemaCoordinate` gap); see [response-cache-empty-list-invalidation-2026-05-10.md](./response-cache-empty-list-invalidation-2026-05-10.md)
 - `adminJourneys.query.ts:80` — reference pattern (correctly spreads `...query`)
 - `journeyAiTranslate.ts:599` — same `_query` ignore pattern, tech debt for separate ticket
 - [Pothos Prisma plugin docs](https://pothos-graphql.dev/docs/plugins/prisma) — `prismaField` query parameter contract
