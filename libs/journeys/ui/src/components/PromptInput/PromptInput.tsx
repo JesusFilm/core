@@ -181,7 +181,7 @@ export function PromptInput({
       onAnimationEnd={handleAnimationEnd}
       sx={{
         display: 'flex',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         gap: 1,
         width: '100%',
         pl: 0.75,
@@ -256,10 +256,6 @@ export function PromptInput({
           data-testid="prompt-input-counter"
           sx={{
             flexShrink: 0,
-            alignSelf: 'flex-end',
-            // Match the textarea's vertical padding so the counter sits
-            // on the same baseline as the last line of input.
-            pb: '11px',
             fontSize: 10,
             lineHeight: 1,
             fontFamily: 'inherit',
