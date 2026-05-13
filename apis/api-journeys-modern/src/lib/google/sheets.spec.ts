@@ -1,3 +1,5 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import {
   columnIndexToA1,
   createSpreadsheet,
@@ -9,9 +11,9 @@ import {
 } from './sheets'
 
 // Mock fetch globally
-global.fetch = jest.fn()
+global.fetch = vi.fn()
 
-const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
+const mockFetch = global.fetch as MockedFunction<typeof fetch>
 
 describe('sheets', () => {
   const mockAccessToken = 'test-access-token'
@@ -20,7 +22,7 @@ describe('sheets', () => {
     'https://docs.google.com/spreadsheets/d/spreadsheet-123'
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('createSpreadsheet', () => {
