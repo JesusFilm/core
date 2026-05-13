@@ -19,9 +19,6 @@ jobs:
       ${{ !contains(github.head_ref, '-chore-ce-sync-') &&
           !contains(github.event.merge_group.head_commit.message, 'sync compound-engineering skills and agents') }}
     runs-on: blacksmith-2vcpu-ubuntu-2204
-    strategy:
-      matrix:
-        node-version: [22]
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       NODE_OPTIONS: '--max-old-space-size=8192'
@@ -38,7 +35,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
@@ -66,9 +63,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./.cache
-          key: ${{ runner.os }}-node-${{ matrix.node-version }}-lint-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node-22-lint-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.node-version }}-lint-
+            ${{ runner.os }}-node-22-lint-
       - name: Run ESLint
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -91,18 +88,13 @@ jobs:
         with:
           commit-message: 'fix: lint issues'
 
-  # Required-check wrapper. Resolves `lint (22)` to SUCCESS when lint-work
+  # Required-check wrapper. Resolves `lint` to SUCCESS when lint-work
   # succeeded OR was skipped (e.g. /sync-ce PRs), and FAILURE otherwise.
-  # Matrix `node-version: [22]` mirrors the original `lint` job so the
-  # check name reported to the ruleset stays `lint (22)`.
   lint:
     needs: lint-work
     if: always()
     runs-on: ubuntu-latest
     permissions: {}
-    strategy:
-      matrix:
-        node-version: [22]
     steps:
       - name: Resolve lint-work result
         run: |

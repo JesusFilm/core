@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { isDevHost } from '@core/shared/dev-hosts'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../../__generated__/GetJourneyForSharing'
@@ -134,14 +135,29 @@ export function QrCodeDialog({
   function getShortLink(qrCode?: QrCode): string | undefined {
     if (qrCode == null) return undefined
 
-    const hostname = qrCode.shortLink.domain.hostname
+    const shortLinkHostname = qrCode.shortLink.domain.hostname
     const pathname = qrCode.shortLink.pathname
-    const isLocal = hostname === 'localhost'
+    const isLocal = shortLinkHostname === 'localhost'
+
+    // In dev, when the admin is being loaded over a hostname listed in
+    // `NEXT_PUBLIC_DEV_HOSTS` (Doppler dev config), generate the QR code
+    // against that same host so the phone scanning the QR can actually
+    // reach it. The secret is only set in dev's Doppler config, so
+    // `isDevHost` returns false everywhere else — absence of the secret
+    // IS the gate. See docs/development/tailscale-dev-access.md.
+    let devHostname = shortLinkHostname
+    if (
+      isLocal &&
+      typeof window !== 'undefined' &&
+      isDevHost(window.location.hostname)
+    ) {
+      devHostname = window.location.hostname
+    }
 
     const protocol = isLocal ? 'http:' : 'https:'
     const port = isLocal ? ':4100' : ''
 
-    return `${protocol}//${hostname}${port}/${pathname}`
+    return `${protocol}//${devHostname}${port}/${pathname}`
   }
 
   return (

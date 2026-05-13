@@ -19,8 +19,13 @@ for arg in "$@"; do
       echo ""
       echo "Options:"
       echo "  --apply      Actually reset and rebuild the stage branch (destructive)"
-      echo "  --no-slack   Skip Slack notifications"
+      echo "  --no-slack   Hard opt-out: never post to Slack, even on conflicts"
       echo "  --help, -h   Show this help"
+      echo ""
+      echo "Slack behaviour:"
+      echo "  Dry runs are always silent. Apply runs post to Slack only when"
+      echo "  there are conflicts (auto-resolved > 0 or failed > 0). Clean"
+      echo "  apply runs stay silent."
       exit 0
       ;;
     *)          echo "Unknown flag: $arg (try --help)"; exit 1 ;;
@@ -260,7 +265,9 @@ if $DRY_RUN; then
   echo "  This was a dry run. No changes were made."
   echo ""
   echo "  To perform the actual stage reset:  ./tools/scripts/reset-stage.sh --apply"
-  echo "  To skip Slack notification:         ./tools/scripts/reset-stage.sh --apply --no-slack"
+  echo "  Slack is silent on dry runs and on clean apply runs — it only"
+  echo "  posts when --apply produces conflicts. Pass --no-slack to"
+  echo "  hard-opt-out even when conflicts occur."
 else
   echo "  Stage branch has been reset and pushed."
   echo "  Stage deploy workflows will trigger automatically."
@@ -268,8 +275,17 @@ fi
 echo ""
 
 # ── Slack notification ────────────────────────────────────────────────
+#
+# Gate: only post when an --apply run produced conflicts. Dry runs are
+# always silent; clean apply runs are silent; --no-slack is a hard
+# opt-out even when conflicts occur. See ENG-3679.
 
-if ! $NO_SLACK; then
+HAS_CONFLICTS=false
+if [ "$AUTORESOLVED_COUNT" -gt 0 ] || [ "$FAILED_COUNT" -gt 0 ]; then
+  HAS_CONFLICTS=true
+fi
+
+if ! $DRY_RUN && ! $NO_SLACK && $HAS_CONFLICTS; then
 
   SLACK_API="https://slack.com/api/chat.postMessage"
 
@@ -293,18 +309,12 @@ if ! $NO_SLACK; then
     warn "Add them via: doppler secrets set STAGE_RESET_SLACK_BOT_TOKEN SLACK_ENGINEERING_CHANNEL_ID --project core --config dev"
   else
 
-  if $DRY_RUN; then
-    HEADER_TEXT="Stage Reset Preview (no changes made)  —  $(date '+%Y-%m-%d')"
-    SUMMARY_TEXT="If stage were reset now: *${MERGED_COUNT}* clean  •  *${AUTORESOLVED_COUNT}* auto-resolved  •  *${FAILED_COUNT}* failed  •  *${MISSING_COUNT}* missing"
-    FOOTER_TEXT="This was a dry run — stage has NOT been reset."
+  HEADER_TEXT="Stage Reset — conflicts detected  —  $(date '+%Y-%m-%d')"
+  SUMMARY_TEXT="*${ALL_MERGED}* PRs merged (*${MERGED_COUNT}* clean, *${AUTORESOLVED_COUNT}* auto-resolved)  •  *${FAILED_COUNT}* failed  •  *${MISSING_COUNT}* missing"
+  if [ "$FAILED_COUNT" -gt 0 ]; then
+    FOOTER_TEXT="*${FAILED_COUNT}* PR(s) could not be auto-resolved — authors should investigate. If your PR is listed, your on-stage branch may need a rebase."
   else
-    HEADER_TEXT="Stage Reset Complete  —  $(date '+%Y-%m-%d')"
-    SUMMARY_TEXT="*${ALL_MERGED}* PRs merged (*${MERGED_COUNT}* clean, *${AUTORESOLVED_COUNT}* auto-resolved)  •  *${FAILED_COUNT}* failed  •  *${MISSING_COUNT}* missing"
-    if [ "$FAILED_COUNT" -gt 0 ]; then
-      FOOTER_TEXT="*${FAILED_COUNT}* PR(s) could not be auto-resolved — authors should investigate."
-    else
-      FOOTER_TEXT="All PRs merged successfully. Stage deploy will trigger automatically."
-    fi
+    FOOTER_TEXT="Conflicts were auto-resolved against your on-stage PR(s). If your PR is listed below, double-check stage matches your intent."
   fi
 
   # ── Post 1: top-level summary ──

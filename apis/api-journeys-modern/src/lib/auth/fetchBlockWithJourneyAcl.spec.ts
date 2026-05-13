@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { prismaMock } from '../../../test/prismaMock'
 
 import { fetchBlockWithJourneyAcl } from './fetchBlockWithJourneyAcl'
@@ -6,7 +8,7 @@ describe('fetchBlockWithJourneyAcl', () => {
   const blockId = 'blockId'
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns block with journey includes when found', async () => {
