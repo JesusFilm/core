@@ -1,10 +1,10 @@
+import { keyframes } from '@emotion/react'
 import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import StopRoundedIcon from '@mui/icons-material/StopRounded'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import InputBase from '@mui/material/InputBase'
 import Typography from '@mui/material/Typography'
-import { keyframes } from '@mui/system'
 import { useTranslation } from 'next-i18next/pages'
 import {
   ChangeEvent,
