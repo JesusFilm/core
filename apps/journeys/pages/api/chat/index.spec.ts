@@ -834,8 +834,9 @@ describe('/api/chat handler', () => {
     })
 
     it('rejects when the cumulative input chars exceed the total cap', async () => {
-      // 3 messages * 3000 chars = 9000 > 8000 cap, each within per-message cap.
-      const messages = Array.from({ length: 3 }, () => ({
+      // 7 messages * 3000 chars = 21000 > 20000 cap, each within per-message
+      // and message-count caps.
+      const messages = Array.from({ length: 7 }, () => ({
         role: 'user',
         content: 'x'.repeat(3000)
       }))

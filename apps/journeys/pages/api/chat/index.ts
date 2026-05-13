@@ -26,14 +26,19 @@ const MAX_MESSAGES = 20
 // caps typing/pasting at this length and the server rejects anything
 // longer, so the two constants must match.
 const MAX_MESSAGE_CHARS = 4000
-// ~2000 input-token budget at ~4 chars/token. Cheap proxy for a real tokenizer.
-const MAX_TOTAL_CHARS = 8000
+// ~5000 input-token budget at ~4 chars/token. Buys ~8-10 turns of normal
+// conversation before the cap bites. Conversation-history management
+// (sliding window / rolling summary) is the proper fix and is tracked
+// separately under Cleanup & Tech Debt.
+const MAX_TOTAL_CHARS = 20000
 const MAX_OUTPUT_TOKENS = 512
 
 export const config = {
   api: {
-    // Anything larger is rejected by Next.js with 413 before the handler runs.
-    bodyParser: { sizeLimit: '16kb' }
+    // Sized for the MAX_TOTAL_CHARS budget with 4-byte-per-char UTF-8 worst
+    // case (international users) + JSON wrapping. Oversized bodies are
+    // rejected by Next.js with 413 before the handler runs.
+    bodyParser: { sizeLimit: '128kb' }
   }
 }
 
