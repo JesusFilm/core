@@ -66,10 +66,6 @@ const shake = keyframes`
   80% { transform: translateX(3px); }
 `
 
-// Cap auto-grow at 6 rows so the floating capsule can't push the
-// conversation off-screen — past this the textarea scrolls internally.
-const MAX_INPUT_ROWS = 6
-
 export function PromptInput({
   input,
   onInputChange,
@@ -210,7 +206,11 @@ export function PromptInput({
       >
         <InputBase
           multiline
-          maxRows={MAX_INPUT_ROWS}
+          // Fixed single-row height — pasting or Shift+Enter scrolls the
+          // textarea internally rather than letting the capsule expand
+          // vertically (which can push the conversation off-screen and
+          // overlap chrome). `rows` opts out of MUI's TextareaAutosize.
+          rows={1}
           value={input}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
