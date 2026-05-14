@@ -1,4 +1,5 @@
 import axios, { isAxiosError } from 'axios'
+import { type Mocked, type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
@@ -7,26 +8,26 @@ import { prismaMock } from '../../../test/prismaMock'
 import { ability } from '../../lib/auth/ability'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-jest.mock('axios')
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('axios')
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
-jest.mock('../../lib/auth/ability', () => ({
+vi.mock('../../lib/auth/ability', () => ({
   Action: {
     Update: 'update'
   },
-  ability: jest.fn(),
-  subject: jest.fn((_type, object) => ({ subject: _type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((_type, object) => ({ subject: _type, object }))
 }))
 
-const mockAxios = axios as jest.Mocked<typeof axios>
-const mockIsAxiosError = isAxiosError as jest.MockedFunction<
+const mockAxios = axios as Mocked<typeof axios>
+const mockIsAxiosError = isAxiosError as unknown as MockedFunction<
   typeof isAxiosError
 >
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
-const mockAbility = ability as jest.MockedFunction<typeof ability>
+const mockAbility = ability as MockedFunction<typeof ability>
 
 describe('journeysPlausibleStatsTimeseries', () => {
   const originalEnv = process.env
@@ -63,7 +64,7 @@ describe('journeysPlausibleStatsTimeseries', () => {
   `)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = {
       ...originalEnv,
       PLAUSIBLE_URL: 'https://plausible.example',
