@@ -139,7 +139,7 @@ export function VideoInformation({
   const [hasValidationErrors, setHasValidationErrors] = useState(false)
 
   const validationSchema = object().shape({
-    title: string().trim().required('Title is required'),
+    title: string().trim().required('Title is required').max(60, 'Title must be 60 characters or less'),
     published: string().required('Published is required'),
     label: string().required('Label is required')
   })
@@ -479,9 +479,9 @@ export function VideoInformation({
                 variant="outlined"
                 error={Boolean(errors.title)}
                 onChange={handleChange}
-                helperText={errors.title as string}
+                inputProps={{ maxLength: 60 }}
+                helperText={errors.title ? (errors.title as string) : `${values.title.length}/60`}
                 sx={{ flexGrow: 1 }}
-                placeholder="Please enter a title, up to 60 characters."
               />
               <TextField
                 id="url"

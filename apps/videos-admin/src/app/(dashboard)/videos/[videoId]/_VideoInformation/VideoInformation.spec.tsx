@@ -362,4 +362,52 @@ describe('VideoInformation', () => {
       expect(saveButton).not.toBeDisabled()
     })
   })
+  it('should display character count for title field', async () => {
+    render(
+      <MockedProvider mocks={[keywordsMock]}>
+        <VideoInformation videoId={mockVideoId} />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Title')).toBeInTheDocument()
+    })
+
+    // Initial title is 'Test Video Title' (16 chars)
+    expect(screen.getByText('16/60')).toBeInTheDocument()
+
+    // Type a new title and verify counter updates
+    const titleInput = screen.getByLabelText('Title')
+    fireEvent.change(titleInput, { target: { value: 'Short' } })
+
+    await waitFor(() => {
+      expect(screen.getByText('5/60')).toBeInTheDocument()
+    })
+  })
+
+  it('should show validation error when title exceeds 60 characters', async () => {
+    render(
+      <MockedProvider mocks={[keywordsMock]}>
+        <VideoInformation videoId={mockVideoId} />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Title')).toBeInTheDocument()
+    })
+
+    const titleInput = screen.getByLabelText('Title')
+    const longTitle = 'A'.repeat(61)
+    fireEvent.change(titleInput, { target: { value: longTitle } })
+    fireEvent.blur(titleInput)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Title must be 60 characters or less')
+      ).toBeInTheDocument()
+      // Counter should NOT be shown when there is an error
+      expect(screen.queryByText('61/60')).not.toBeInTheDocument()
+    })
+  })
+
 })
