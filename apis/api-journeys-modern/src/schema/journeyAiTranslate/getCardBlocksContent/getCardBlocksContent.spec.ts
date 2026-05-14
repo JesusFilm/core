@@ -1,14 +1,16 @@
+import { type Mock, vi } from 'vitest'
+
 import { Block } from '@core/prisma/journeys/client'
 
 import { getBlockContent } from './getBlockContent'
 import { getCardBlocksContent } from './getCardBlocksContent'
 import { getCoverBlockContent } from './getCoverBlockContent'
 
-jest.mock('./getBlockContent', () => ({
-  getBlockContent: jest.fn()
+vi.mock('./getBlockContent', () => ({
+  getBlockContent: vi.fn()
 }))
-jest.mock('./getCoverBlockContent', () => ({
-  getCoverBlockContent: jest.fn()
+vi.mock('./getCoverBlockContent', () => ({
+  getCoverBlockContent: vi.fn()
 }))
 
 describe('getCardBlocksContent', () => {
@@ -42,11 +44,11 @@ describe('getCardBlocksContent', () => {
   ]
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    ;(getBlockContent as jest.Mock).mockImplementation(
+    vi.clearAllMocks()
+    ;(getBlockContent as Mock).mockImplementation(
       async ({ block }) => `block:${block.id}`
     )
-    ;(getCoverBlockContent as jest.Mock).mockResolvedValue('cover-content\n')
+    ;(getCoverBlockContent as Mock).mockResolvedValue('cover-content\n')
   })
 
   it('returns card content with cover and children, ordered by parentOrder', async () => {

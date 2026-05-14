@@ -1,5 +1,6 @@
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
+import { type MockedFunction, vi } from 'vitest'
 
 import { prismaMock } from '../../../../test/prismaMock'
 import { getIntegrationGoogleAccessToken } from '../../../lib/google/googleAuth'
@@ -13,29 +14,29 @@ import { GoogleSheetsSyncBackfillJobData } from '../queue'
 
 import { backfillService } from './backfill'
 
-jest.mock('../../../lib/google/googleAuth', () => ({
-  getIntegrationGoogleAccessToken: jest.fn()
+vi.mock('../../../lib/google/googleAuth', () => ({
+  getIntegrationGoogleAccessToken: vi.fn()
 }))
 
-jest.mock('../../../lib/google/sheets', () => {
-  const actual = jest.requireActual('../../../lib/google/sheets')
+vi.mock('../../../lib/google/sheets', async () => {
+  const actual = await vi.importActual('../../../lib/google/sheets')
   return {
     ...actual,
-    clearSheet: jest.fn(),
-    ensureSheet: jest.fn(),
-    readValues: jest.fn(),
-    writeValues: jest.fn()
+    clearSheet: vi.fn(),
+    ensureSheet: vi.fn(),
+    readValues: vi.fn(),
+    writeValues: vi.fn()
   }
 })
 
 const mockGetIntegrationGoogleAccessToken =
-  getIntegrationGoogleAccessToken as jest.MockedFunction<
+  getIntegrationGoogleAccessToken as MockedFunction<
     typeof getIntegrationGoogleAccessToken
   >
-const mockEnsureSheet = ensureSheet as jest.MockedFunction<typeof ensureSheet>
-const mockReadValues = readValues as jest.MockedFunction<typeof readValues>
-const mockClearSheet = clearSheet as jest.MockedFunction<typeof clearSheet>
-const mockWriteValues = writeValues as jest.MockedFunction<typeof writeValues>
+const mockEnsureSheet = ensureSheet as MockedFunction<typeof ensureSheet>
+const mockReadValues = readValues as MockedFunction<typeof readValues>
+const mockClearSheet = clearSheet as MockedFunction<typeof clearSheet>
+const mockWriteValues = writeValues as MockedFunction<typeof writeValues>
 
 const backfillJob: Job<GoogleSheetsSyncBackfillJobData> = {
   name: 'google-sheets-sync-backfill',
@@ -55,11 +56,11 @@ describe('backfillService', () => {
   let logger: Logger
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     logger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn()
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn()
     } as unknown as Logger
 
     prismaMock.googleSheetsSync.findFirst.mockResolvedValue({

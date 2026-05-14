@@ -1,3 +1,5 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
@@ -5,22 +7,22 @@ import { prismaMock } from '../../../test/prismaMock'
 import { Action, ability } from '../../lib/auth/ability'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-jest.mock('../../lib/auth/ability', () => ({
+vi.mock('../../lib/auth/ability', () => ({
   Action: {
     Export: 'export'
   },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
-const mockAbility = ability as jest.MockedFunction<typeof ability>
+const mockAbility = ability as MockedFunction<typeof ability>
 
 describe('googleSheetsSyncCreate', () => {
   const mockUser = { id: 'userId', email: 'test@example.com' }
@@ -41,7 +43,7 @@ describe('googleSheetsSyncCreate', () => {
   `)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser as any)
     mockAbility.mockReturnValue(true)
     prismaMock.userRole.findUnique.mockResolvedValue({

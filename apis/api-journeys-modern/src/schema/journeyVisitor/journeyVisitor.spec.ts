@@ -1,3 +1,5 @@
+import { type Mock, vi } from 'vitest'
+
 import type { Prisma } from '@core/prisma/journeys/client'
 import { graphql } from '@core/shared/gql'
 
@@ -37,12 +39,12 @@ describe('journeyVisitorExport', () => {
     context: { currentUser: mockUser }
   })
   // Cast needed because Prisma findUnique has generics that hide jest mock helpers in TS
-  const jf = prismaMock.journey.findUnique as unknown as jest.Mock
-  const evFM = prismaMock.event.findMany as unknown as jest.Mock
-  const jvFM = prismaMock.journeyVisitor.findMany as unknown as jest.Mock
+  const jf = prismaMock.journey.findUnique as unknown as Mock
+  const evFM = prismaMock.event.findMany as unknown as Mock
+  const jvFM = prismaMock.journeyVisitor.findMany as unknown as Mock
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should return CSV formatted string with single header row and visitor data', async () => {

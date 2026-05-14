@@ -49,11 +49,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/apis/api-journeys-modern"],
       "options": {
-        "jestConfig": "apis/api-journeys-modern/jest.config.ts",
-        "runInBand": true
+        "configFile": "apis/api-journeys-modern/vitest.config.mts"
       }
     },
     "generate-graphql": {
