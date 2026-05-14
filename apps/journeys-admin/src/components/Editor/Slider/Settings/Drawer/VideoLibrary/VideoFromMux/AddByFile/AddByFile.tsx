@@ -195,14 +195,9 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
               {statusLabel}
             </Typography>
           ) : (
-            <>
-              <Typography variant="body1" color="secondary.main">
-                {t('Drop a video here')}
-              </Typography>
-              <Typography variant="caption" color="secondary.main">
-                {t('or click to browse your files')}
-              </Typography>
-            </>
+            <Typography variant="body1" color="secondary.main">
+              {t('Drop a video here')}
+            </Typography>
           )}
         </Stack>
         {waiting || uploading || processing ? (
