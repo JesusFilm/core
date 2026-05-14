@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
@@ -139,5 +139,42 @@ describe('TemplateGalleryPageList', () => {
     )
     expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
     expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+  })
+
+  // NES-1666: cursor interactions inside CollectionDialog were affecting the
+  // gallery behind. NES-1653 already locks the sensors via `interactionsLocked`;
+  // this asserts the additional DOM-level `inert` on the DnD subtree toggles
+  // with `dialogOpen`. The portaled dialog itself is outside the inert subtree
+  // so it stays fully interactive.
+  it('marks the DnD subtree inert while CollectionDialog is open (NES-1666)', async () => {
+    const { getByTestId } = render(
+      <MockedProvider
+        mocks={[getLastActiveTeamIdAndTeamsMock, collectionsMock, journeysMock]}
+      >
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TemplateGalleryPageList />
+            </TeamProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+    )
+
+    const dndScope = getByTestId('TemplateGalleryDndScope')
+    // Default state: no dialog open, subtree is interactive.
+    expect(dndScope).not.toHaveAttribute('inert')
+
+    // Open the create-collection dialog and confirm the DnD subtree
+    // flips to inert. The CollectionDialog renders in a portal so it
+    // is unaffected.
+    fireEvent.click(getByTestId('CreateCollectionButton'))
+    await waitFor(() =>
+      expect(getByTestId('TemplateGalleryDndScope')).toHaveAttribute('inert')
+    )
   })
 })

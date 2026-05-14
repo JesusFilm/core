@@ -362,12 +362,27 @@ export function TemplateGalleryPageList({
         </Stack>
       )}
 
-      <DndContext
-        collisionDetection={closestCenter}
-        sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
+      {/* NES-1666: layer a DOM-level `inert` over the existing sensor-level
+          NES-1653 lock. `interactionsLocked` already blocks drag-start and
+          disables droppables, but cursor movement over droppables behind the
+          dialog can still surface hover affordances and (per the QA repro
+          on NES-1666) drive subtle re-renders that look like the template
+          "moves" behind the dialog. `inert` on the DnD subtree makes the
+          whole tree non-interactive at the DOM level — pointer / focus /
+          keyboard — while leaving the portaled CollectionDialog (rendered
+          outside this subtree) fully interactive. Tagged via data-testid so
+          the spec can assert the attribute toggles correctly. */}
+      <Box
+        data-testid="TemplateGalleryDndScope"
+        inert={dialogOpen}
+        sx={{ display: 'contents' }}
       >
+        <DndContext
+          collisionDetection={closestCenter}
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
         {showCollections &&
           (collections.length === 0 ? (
             <Alert severity="info" sx={{ mb: 3 }}>
@@ -443,7 +458,8 @@ export function TemplateGalleryPageList({
             </Box>
           ) : null}
         </DragOverlay>
-      </DndContext>
+        </DndContext>
+      </Box>
 
       {createDialogOpen && (
         <CollectionDialog
