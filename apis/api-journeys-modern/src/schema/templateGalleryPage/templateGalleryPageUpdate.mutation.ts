@@ -54,7 +54,7 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
           ? await validateUserSuppliedSlug(input.slug, id)
           : undefined
 
-      return await prisma.$transaction(async (tx) => {
+      const result = await prisma.$transaction(async (tx) => {
         // Page-level lock must run before any write to the templates join
         // table so concurrent reorder/assign mutations on the same page
         // serialize against this Update. Without it, an interleaved
@@ -156,6 +156,13 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
           throw error
         }
       })
+      // Evict any cached `templateGalleryPageBySlug` entries. Update can
+      // change every cacheable field (title, description, slug, creator,
+      // mediaUrl, templates list) — any of which alters what viewers see.
+      // Also catches the slug-rename case where the OLD slug's cached
+      // entry is now orphaned.
+      await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
+      return result
     }
   })
 )

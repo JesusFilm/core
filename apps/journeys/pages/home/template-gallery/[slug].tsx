@@ -99,7 +99,7 @@ export const getStaticProps: GetStaticProps<
   }
 
   const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<
+  const { data, errors } = await apolloClient.query<
     GetTemplateGalleryPage,
     GetTemplateGalleryPageVariables
   >({
@@ -110,6 +110,18 @@ export const getStaticProps: GetStaticProps<
 
   const gallery = data?.templateGalleryPageBySlug
   if (gallery == null) {
+    // Surface GraphQL errors when getStaticProps lands on the null branch
+    // alongside an `errors` payload — `errorPolicy: 'all'` swallows errors
+    // into the result by design, but a silent notFound paired with errors
+    // is exactly the failure shape that hid the NES-1644 cache bug for an
+    // entire debugging session. A single structured warn surfaces it next
+    // time. No log on the legitimate not-found path (errors is undefined).
+    if (errors != null && errors.length > 0) {
+      console.warn('[template-gallery getStaticProps] gql errors', {
+        slug,
+        errors
+      })
+    }
     return {
       props: { ...translations },
       notFound: true,
