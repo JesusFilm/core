@@ -1,10 +1,6 @@
 import fetch from 'node-fetch'
 import { type MockedFunction, vi } from 'vitest'
-import {
-  type DeepMockProxy,
-  mockDeep,
-  mockReset
-} from 'vitest-mock-extended'
+import { type DeepMockProxy, mockDeep, mockReset } from 'vitest-mock-extended'
 
 import type {
   Language,
@@ -440,9 +436,7 @@ describe('videoSlack', () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
-      json: vi
-        .fn()
-        .mockResolvedValue({ ok: false, error: 'channel_not_found' })
+      json: vi.fn().mockResolvedValue({ ok: false, error: 'channel_not_found' })
     } as any)
 
     await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
