@@ -143,7 +143,7 @@ describe('PromptInput', () => {
         />
       )
       const form = container.querySelector('form')
-      const textarea = screen.getByRole('textbox', {
+      const textarea = screen.getByRole<HTMLTextAreaElement>('textbox', {
         name: 'Chat message input'
       })
       textarea.setSelectionRange(0, 5)
