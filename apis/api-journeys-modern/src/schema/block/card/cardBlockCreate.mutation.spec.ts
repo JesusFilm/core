@@ -1,16 +1,19 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { ability } from '../../../lib/auth/ability'
+import { fetchJourneyWithAclIncludes } from '../../../lib/auth/fetchJourneyWithAclIncludes'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
-jest.mock('../../../lib/auth/ability', () => ({
+vi.mock('../../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../../lib/auth/fetchJourneyWithAclIncludes', () => ({
-  fetchJourneyWithAclIncludes: jest.fn()
+vi.mock('../../../lib/auth/fetchJourneyWithAclIncludes', () => ({
+  fetchJourneyWithAclIncludes: vi.fn()
 }))
 
 describe('cardBlockCreate', () => {
@@ -32,11 +35,7 @@ describe('cardBlockCreate', () => {
       }
     }
   `)
-
-  const {
-    fetchJourneyWithAclIncludes
-  } = require('../../../lib/auth/fetchJourneyWithAclIncludes')
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockAbility = ability as MockedFunction<typeof ability>
 
   const input = {
     journeyId: 'journeyId',
@@ -44,8 +43,8 @@ describe('cardBlockCreate', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
+    vi.clearAllMocks()
+    ;(fetchJourneyWithAclIncludes as any).mockResolvedValue({ id: 'journeyId' })
     mockAbility.mockReturnValue(true)
     prismaMock.block.findMany.mockResolvedValue([] as any)
     prismaMock.block.findFirst.mockResolvedValue({
@@ -66,7 +65,7 @@ describe('cardBlockCreate', () => {
   it('creates card block when authorized', async () => {
     const tx = {
       block: {
-        create: jest.fn().mockResolvedValue({
+        create: vi.fn().mockResolvedValue({
           id: 'blockId',
           typename: 'CardBlock',
           parentOrder: 0,
@@ -76,9 +75,9 @@ describe('cardBlockCreate', () => {
           fullscreen: false,
           journey: { id: 'journeyId' }
         }),
-        findMany: jest.fn().mockResolvedValue([])
+        findMany: vi.fn().mockResolvedValue([])
       },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -113,7 +112,7 @@ describe('cardBlockCreate', () => {
   it('creates card block with all optional fields', async () => {
     const tx = {
       block: {
-        create: jest.fn().mockResolvedValue({
+        create: vi.fn().mockResolvedValue({
           id: 'customId',
           typename: 'CardBlock',
           parentOrder: 2,
@@ -126,9 +125,9 @@ describe('cardBlockCreate', () => {
           themeName: 'base',
           journey: { id: 'journeyId' }
         }),
-        findMany: jest.fn().mockResolvedValue([{}, {}])
+        findMany: vi.fn().mockResolvedValue([{}, {}])
       },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 

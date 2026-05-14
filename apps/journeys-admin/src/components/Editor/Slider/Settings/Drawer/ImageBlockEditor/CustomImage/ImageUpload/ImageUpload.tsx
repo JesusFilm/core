@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -15,6 +14,7 @@ import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/useCloudflareUploadByFileMutation'
+import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
 
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
@@ -104,8 +104,7 @@ export function ImageUpload({
   })
 
   const uploadSuccess = success === true && selectedBlock?.src != null
-  const hasError = error || errorCode
-  const noBorder = loading || uploadSuccess || hasError
+  const hasError = error === true || errorCode != null
 
   function getErrorMessage(errorCode: ErrorCode | undefined) {
     switch (errorCode) {
@@ -134,67 +133,86 @@ export function ImageUpload({
       data-testid="ImageUpload"
     >
       <input {...getInputProps()} />
-      <Box
+      <UploadDropZoneShell
         data-testid="drop zone"
-        sx={{
-          mt: 3,
-          display: 'flex',
-          width: '100%',
-          height: 162,
-          borderWidth: noBorder ? undefined : 2,
-          backgroundColor:
-            isDragAccept || loading === true
-              ? 'rgba(239, 239, 239, 0.9)'
-              : hasError
-                ? 'rgba(197, 45, 58, 0.08)'
-                : 'rgba(239, 239, 239, 0.35)',
-          borderColor: 'divider',
-          borderStyle: noBorder ? undefined : 'dashed',
-          borderRadius: 2,
-          justifyContent: 'center',
-          flexDirection: 'column',
-          alignItems: 'center'
-        }}
+        isDragAccept={isDragAccept}
+        isActive={loading === true}
+        hasError={hasError}
+        noBorder={loading === true || uploadSuccess || hasError}
       >
         {loading || (!uploadSuccess && !hasError) ? (
           <Upload1IconIcon
-            sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }}
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+              fontSize: 30,
+              color: 'secondary.light'
+            }}
           />
         ) : uploadSuccess ? (
           <CheckBrokenIcon
-            sx={{ fontSize: 48, color: 'success.main', mb: 1 }}
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+              fontSize: 30,
+              color: 'success.main'
+            }}
           />
         ) : (
           <AlertTriangleIcon
-            sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+              fontSize: 30,
+              color: 'primary.main'
+            }}
           />
         )}
-        <Typography
-          variant="body1"
-          color={
-            loading
-              ? 'secondary.main'
-              : uploadSuccess
-                ? 'success.main'
-                : hasError
-                  ? 'error.main'
-                  : 'secondary.main'
-          }
-          sx={{ pb: 4 }}
+        <Stack alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+          {loading || uploadSuccess || hasError ? (
+            <Typography
+              variant="body1"
+              color={
+                loading
+                  ? 'secondary.main'
+                  : uploadSuccess
+                    ? 'success.main'
+                    : 'error.main'
+              }
+            >
+              {loading
+                ? t('Uploading...')
+                : uploadSuccess
+                  ? t('Upload Successful!')
+                  : t('Upload Failed!')}
+            </Typography>
+          ) : (
+            <>
+              <Typography variant="body1" color="secondary.main">
+                {t('Drop an image here')}
+              </Typography>
+              <Typography variant="caption" color="secondary.main">
+                {t('or click to browse your files')}
+              </Typography>
+            </>
+          )}
+        </Stack>
+        <Button
+          variant="blockOutlined"
+          color="solid"
+          size="small"
+          disabled={loading === true}
+          onClick={open}
+          sx={{
+            width: { xs: '100%', sm: 'auto' },
+            minWidth: { sm: 160 }
+          }}
         >
-          {loading
-            ? t('Uploading...')
-            : uploadSuccess
-              ? t('Upload Successful!')
-              : hasError
-                ? t('Upload Failed!')
-                : t('Drop an image here')}
-        </Typography>
-      </Box>
+          {t('Upload file')}
+        </Button>
+      </UploadDropZoneShell>
       <Stack
         direction="row"
         spacing={1}
         color={hasError ? 'error.main' : 'secondary.light'}
+        sx={{ mt: 1, alignItems: 'flex-start' }}
       >
         <AlertTriangleIcon
           fontSize="small"
@@ -210,19 +228,6 @@ export function ImageUpload({
               )}
         </Typography>
       </Stack>
-      <Button
-        variant="blockOutlined"
-        color="solid"
-        size="small"
-        disabled={loading === true}
-        onClick={open}
-        sx={{
-          mt: 4,
-          width: '100%'
-        }}
-      >
-        {t('Upload file')}
-      </Button>
     </Stack>
   )
 }

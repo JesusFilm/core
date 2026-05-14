@@ -1,10 +1,12 @@
+import { type Mock, vi } from 'vitest'
+
 import { journeyAcl } from '../../schema/journey/journey.acl'
 
 import { Action, Subject, ability, subject } from './ability'
 
 // Mock journeyAcl
-jest.mock('../../schema/journey/journey.acl', () => ({
-  journeyAcl: jest.fn()
+vi.mock('../../schema/journey/journey.acl', () => ({
+  journeyAcl: vi.fn()
 }))
 
 describe('ability', () => {
@@ -12,11 +14,11 @@ describe('ability', () => {
   const mockJourney = { id: 'journey1' } as any
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should return true if journeyAcl returns true', () => {
-    ;(journeyAcl as jest.Mock).mockReturnValue(true)
+    ;(journeyAcl as Mock).mockReturnValue(true)
     const result = ability(
       Action.Update,
       subject(Subject.Journey, mockJourney),
@@ -31,7 +33,7 @@ describe('ability', () => {
   })
 
   it('should return false if journeyAcl returns false', () => {
-    ;(journeyAcl as jest.Mock).mockReturnValue(false)
+    ;(journeyAcl as Mock).mockReturnValue(false)
     const result = ability(
       Action.Update,
       subject(Subject.Journey, mockJourney),
