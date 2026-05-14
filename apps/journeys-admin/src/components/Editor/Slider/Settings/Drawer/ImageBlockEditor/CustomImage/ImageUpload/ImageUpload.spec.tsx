@@ -547,7 +547,6 @@ describe('ImageUpload', () => {
     await waitFor(() =>
       expect(mockSendGTMEvent).toHaveBeenCalledWith({
         event: 'image_upload_success',
-        fileName: 'testFile.png',
         fileSize: expect.any(Number),
         fileType: 'image/png'
       })
@@ -574,7 +573,6 @@ describe('ImageUpload', () => {
     await waitFor(() =>
       expect(mockSendGTMEvent).toHaveBeenCalledWith({
         event: 'image_upload_failure',
-        fileName: 'large.png',
         fileSize: 11000000,
         fileType: 'image/png',
         errorCode: 'file-too-large'
@@ -630,10 +628,55 @@ describe('ImageUpload', () => {
     await waitFor(() =>
       expect(mockSendGTMEvent).toHaveBeenCalledWith({
         event: 'image_upload_failure',
-        fileName: 'testFile.png',
         fileSize: expect.any(Number),
         fileType: 'image/png',
         errorCode: '5000'
+      })
+    )
+  })
+
+  it('should send image_upload_failure GTM event with upload-exception when fetch throws', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('network'))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: { query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <ImageUpload
+          onChange={jest.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    const inputEl = screen.getByTestId('drop zone')
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([new Blob(['file'])], 'testFile.png', { type: 'image/png' })
+      ]
+    })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() =>
+      expect(mockSendGTMEvent).toHaveBeenCalledWith({
+        event: 'image_upload_failure',
+        fileSize: expect.any(Number),
+        fileType: 'image/png',
+        errorCode: 'upload-exception'
       })
     )
   })

@@ -55,7 +55,6 @@ export function ImageUpload({
       setUploading?.(false)
       setSuccess(false)
       sendImageUploadFailureEvent({
-        fileName: rejection.file.name,
         fileSize: rejection.file.size,
         fileType: rejection.file.type,
         errorCode: rejectionCode
@@ -88,7 +87,6 @@ export function ImageUpload({
           setUploading?.(false)
           setErrorCode(cloudflareError as ErrorCode)
           sendImageUploadFailureEvent({
-            fileName: file.name,
             fileSize: file.size,
             fileType: file.type,
             errorCode: String(cloudflareError)
@@ -103,16 +101,15 @@ export function ImageUpload({
         setTimeout(() => setSuccess(undefined), 4000)
         setUploading?.(undefined)
         sendImageUploadSuccessEvent({
-          fileName: file.name,
           fileSize: file.size,
           fileType: file.type
         })
       } catch {
         setSuccess(false)
         sendImageUploadFailureEvent({
-          fileName: file.name,
           fileSize: file.size,
-          fileType: file.type
+          fileType: file.type,
+          errorCode: 'upload-exception'
         })
       }
     }
