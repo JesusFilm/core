@@ -17,11 +17,8 @@ export interface TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTe
 }
 
 export interface TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTemplate_templates {
-  __typename: "Journey";
+  __typename: "TemplateGalleryItem";
   id: string;
-  /**
-   * private title for creators
-   */
   title: string;
   primaryImageBlock: TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTemplate_templates_primaryImageBlock | null;
 }
@@ -71,14 +68,14 @@ export interface TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTe
   createdAt: any;
   updatedAt: any;
   /**
-   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list.
+   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
    */
   templates: TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTemplate_templates[];
 }
 
 export interface TemplateGalleryPageReorderTemplate {
   /**
-   * Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range.
+   * Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney`).
    * 
    * Idempotent: when the journey is already at the requested display index, the call is a no-op.
    * 
@@ -87,7 +84,6 @@ export interface TemplateGalleryPageReorderTemplate {
    * Errors:
    * - NOT_FOUND: `pageId` does not resolve.
    * - FORBIDDEN: caller is not in the page's team.
-   * - CONFLICT (field: `status`): the page is currently `published` — reorder is blocked on published pages; unpublish first to reorder.
    * - BAD_USER_INPUT (field: `journeyId`): journey is not currently a member of the page.
    * - BAD_USER_INPUT (field: `order`): order is out of range; must satisfy `0 <= order < count(templates in page)`.
    */

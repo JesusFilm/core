@@ -5749,6 +5749,8 @@ export type Video = {
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
   publishedAt?: Maybe<Scalars['Date']['output']>;
+  /** When true, automated systems must not add dubbed audio variants or subtitle tracks to this video without express permission. Metadata translations (title, description, study questions) are unaffected. */
+  restrictAutoTranslations: Scalars['Boolean']['output'];
   restrictDownloadPlatforms: Array<Platform>;
   restrictViewPlatforms: Array<Platform>;
   /** slug is a permanent link to the video. */
@@ -6486,6 +6488,7 @@ export type VideoUpdateInput = {
   noIndex?: InputMaybe<Scalars['Boolean']['input']>;
   primaryLanguageId?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
+  restrictAutoTranslations?: InputMaybe<Scalars['Boolean']['input']>;
   restrictDownloadPlatforms?: InputMaybe<Array<Platform>>;
   restrictViewPlatforms?: InputMaybe<Array<Platform>>;
   slug?: InputMaybe<Scalars['String']['input']>;

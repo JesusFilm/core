@@ -17,11 +17,8 @@ export interface TemplateGalleryPageUpdate_templateGalleryPageUpdate_templates_p
 }
 
 export interface TemplateGalleryPageUpdate_templateGalleryPageUpdate_templates {
-  __typename: "Journey";
+  __typename: "TemplateGalleryItem";
   id: string;
-  /**
-   * private title for creators
-   */
   title: string;
   primaryImageBlock: TemplateGalleryPageUpdate_templateGalleryPageUpdate_templates_primaryImageBlock | null;
 }
@@ -71,7 +68,7 @@ export interface TemplateGalleryPageUpdate_templateGalleryPageUpdate {
   createdAt: any;
   updatedAt: any;
   /**
-   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list.
+   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
    */
   templates: TemplateGalleryPageUpdate_templateGalleryPageUpdate_templates[];
 }
@@ -85,7 +82,7 @@ export interface TemplateGalleryPageUpdate {
    * Errors:
    * - NOT_FOUND: id does not resolve.
    * - FORBIDDEN: caller is not in the page's team.
-   * - BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks.
+   * - BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks — including the concurrent-Update race where two callers pass the same slug and the second one trips the DB unique constraint at commit time.
    * - BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.
    * - CONFLICT (field: `journeyIds`; extension `journeyId` carries the offending id): one of the supplied journeys is already a member of another TemplateGalleryPage.
    */

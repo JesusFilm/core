@@ -1119,6 +1119,11 @@ type Video
   id: ID!
   label: VideoLabel!
   locked: Boolean!
+
+  """
+  When true, automated systems must not add dubbed audio variants or subtitle tracks to this video without express permission. Metadata translations (title, description, study questions) are unaffected.
+  """
+  restrictAutoTranslations: Boolean!
   primaryLanguageId: ID!
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
@@ -1397,6 +1402,7 @@ input VideoUpdateInput {
   keywordIds: [String!]
   restrictDownloadPlatforms: [Platform!]
   restrictViewPlatforms: [Platform!]
+  restrictAutoTranslations: Boolean
 }
 
 type VideoVariant {

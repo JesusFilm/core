@@ -119,6 +119,11 @@ const Video = builder.prismaObject('Video', {
     id: t.exposeID('id', { nullable: false }),
     label: t.expose('label', { type: VideoLabel, nullable: false }),
     locked: t.exposeBoolean('locked', { nullable: false }),
+    restrictAutoTranslations: t.exposeBoolean('restrictAutoTranslations', {
+      nullable: false,
+      description:
+        'When true, automated systems must not add dubbed audio variants or subtitle tracks to this video without express permission. Metadata translations (title, description, study questions) are unaffected.'
+    }),
     primaryLanguageId: t.exposeID('primaryLanguageId', { nullable: false }),
     published: t.exposeBoolean('published', { nullable: false }),
     cloudflareAssets: t.relation('cloudflareAssets', { nullable: false }),
@@ -794,6 +799,7 @@ builder.mutationFields((t) => ({
           publishedAt: publishedAtUpdate,
           slug: input.slug ?? undefined,
           noIndex: input.noIndex ?? undefined,
+          restrictAutoTranslations: input.restrictAutoTranslations ?? undefined,
           childIds: input.childIds ?? undefined,
           restrictDownloadPlatforms:
             input.restrictDownloadPlatforms ?? undefined,

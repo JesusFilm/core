@@ -16,6 +16,7 @@ export const VideoUpdateInput = builder.inputType('VideoUpdateInput', {
     childIds: t.field({ type: ['String'], required: false }),
     keywordIds: t.stringList({ required: false }),
     restrictDownloadPlatforms: t.field({ type: [Platform], required: false }),
-    restrictViewPlatforms: t.field({ type: [Platform], required: false })
+    restrictViewPlatforms: t.field({ type: [Platform], required: false }),
+    restrictAutoTranslations: t.boolean({ required: false })
   })
 })
