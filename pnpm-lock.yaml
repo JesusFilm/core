@@ -380,8 +380,8 @@ importers:
         specifier: ^5.25.0
         version: 5.36.0
       dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
+        specifier: ^16.3.1
+        version: 16.5.0
       express:
         specifier: 4.21.2
         version: 4.21.2
@@ -1173,8 +1173,8 @@ importers:
         specifier: ^7.0.0
         version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3))(typescript@5.9.3)
       dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
+        specifier: ^16.3.1
+        version: 16.6.1
       prisma:
         specifier: ^7.0.0
         version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3)
@@ -1188,8 +1188,8 @@ importers:
         specifier: ^7.0.0
         version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3))(typescript@5.9.3)
       dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
+        specifier: ^16.3.1
+        version: 16.6.1
       prisma:
         specifier: ^7.0.0
         version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3)
@@ -1203,8 +1203,8 @@ importers:
         specifier: ^7.0.0
         version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3))(typescript@5.9.3)
       dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
+        specifier: ^16.3.1
+        version: 16.6.1
       prisma:
         specifier: ^7.0.0
         version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3)
@@ -1218,8 +1218,8 @@ importers:
         specifier: ^7.0.0
         version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3))(typescript@5.9.3)
       dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
+        specifier: ^16.3.1
+        version: 16.6.1
       prisma:
         specifier: ^7.0.0
         version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3)
@@ -1233,8 +1233,8 @@ importers:
         specifier: ^7.0.0
         version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3))(typescript@5.9.3)
       dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
+        specifier: ^16.3.1
+        version: 16.6.1
       prisma:
         specifier: ^7.0.0
         version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3)
@@ -14935,12 +14935,16 @@ packages:
     resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
     engines: {node: '>=12'}
 
+  dotenv@16.5.0:
+    resolution: {integrity: sha512-m/C+AwOAr9/W1UOIZUo232ejMNnJAJtYQjUbHoNTBNTJSvqzzDh7vnrei3o3r3m9blf6ZoDkvcw0VmozNRFJxg==}
+    engines: {node: '>=12'}
+
   dotenv@16.6.1:
     resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
     engines: {node: '>=12'}
 
-  dotenv@17.4.2:
-    resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
+  dotenv@17.2.3:
+    resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
     engines: {node: '>=12'}
 
   dotenv@8.6.0:
@@ -24957,7 +24961,7 @@ snapshots:
     dependencies:
       '@babel/generator': 7.29.1
       '@babel/parser': 7.29.2
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       chalk: 4.1.2
       fb-watchman: 2.0.2
       graphql: 16.10.0
@@ -31133,7 +31137,7 @@ snapshots:
       '@graphql-tools/utils': 10.10.3(graphql@16.10.0)
       '@graphql-yoga/render-graphiql': 5.16.2(graphql-yoga@5.15.1(graphql@16.10.0))
       commander: 13.1.0
-      dotenv: 17.4.2
+      dotenv: 17.2.3
       graphql: 16.10.0
       graphql-ws: 6.0.6(graphql@16.10.0)(ws@8.18.3)
       graphql-yoga: 5.15.1(graphql@16.10.0)
@@ -33859,7 +33863,7 @@ snapshots:
       '@nx/workspace': 21.4.1(@swc-node/register@1.11.1(@emnapi/core@1.6.0)(@emnapi/runtime@1.9.2)(@swc/core@1.15.8(@swc/helpers@0.5.21))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.21))
       '@svgr/webpack': 8.1.0(typescript@5.9.3)
       copy-webpack-plugin: 12.0.2(webpack@5.104.1(@swc/core@1.15.8(@swc/helpers@0.5.21))(esbuild@0.19.12))
-      dotenv: 16.6.1
+      dotenv: 16.5.0
       fs-extra: 11.3.2
       next: 14.2.35(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.59.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.85.1)
       nx: 21.4.1(@swc-node/register@1.11.1(@emnapi/core@1.6.0)(@emnapi/runtime@1.9.2)(@swc/core@1.15.8(@swc/helpers@0.5.21))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.21))
@@ -36775,7 +36779,7 @@ snapshots:
 
   '@slorber/react-helmet-async@1.3.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       invariant: 2.2.4
       prop-types: 15.8.1
       react: 19.2.0
@@ -39564,7 +39568,7 @@ snapshots:
 
   '@videojs/http-streaming@3.17.0(video.js@8.21.0)':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       '@videojs/vhs-utils': 4.1.1
       aes-decrypter: 4.0.2
       global: 4.4.0
@@ -39575,12 +39579,12 @@ snapshots:
 
   '@videojs/vhs-utils@4.1.1':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       global: 4.4.0
 
   '@videojs/xhr@2.7.0':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       global: 4.4.0
       is-function: 1.0.2
 
@@ -40080,7 +40084,7 @@ snapshots:
 
   aes-decrypter@4.0.2:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       '@videojs/vhs-utils': 4.1.1
       global: 4.4.0
       pkcs7: 1.0.4
@@ -41184,7 +41188,7 @@ snapshots:
       chalk: 4.1.2
       ci-info: 4.3.0
       conf: 10.2.0
-      dotenv: 16.6.1
+      dotenv: 16.5.0
       execa: 9.6.0
       git-repo-info: 2.1.1
       glob: 10.4.5
@@ -42619,7 +42623,7 @@ snapshots:
 
   dom-helpers@5.2.1:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       csstype: 3.2.3
 
   dom-serializer@1.4.1:
@@ -42691,9 +42695,11 @@ snapshots:
 
   dotenv@16.4.7: {}
 
+  dotenv@16.5.0: {}
+
   dotenv@16.6.1: {}
 
-  dotenv@17.4.2: {}
+  dotenv@17.2.3: {}
 
   dotenv@8.6.0: {}
 
@@ -43948,7 +43954,7 @@ snapshots:
 
   fast-unique-numbers@8.0.13:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       tslib: 2.8.1
 
   fast-uri@2.4.0: {}
@@ -45030,7 +45036,7 @@ snapshots:
 
   history@4.10.1:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       loose-envify: 1.4.0
       resolve-pathname: 3.0.0
       tiny-invariant: 1.3.3
@@ -45489,7 +45495,7 @@ snapshots:
 
   instantsearch-ui-components@0.11.2:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
 
   instantsearch.js@4.79.2(algoliasearch@5.21.0):
     dependencies:
@@ -47183,7 +47189,7 @@ snapshots:
 
   m3u8-parser@7.2.0:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       '@videojs/vhs-utils': 4.1.1
       global: 4.4.0
 
@@ -48033,7 +48039,7 @@ snapshots:
 
   mpd-parser@1.3.1:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       '@videojs/vhs-utils': 4.1.1
       '@xmldom/xmldom': 0.8.6
       global: 4.4.0
@@ -48159,7 +48165,7 @@ snapshots:
 
   mux.js@7.1.0:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       global: 4.4.0
 
   mysql2@3.15.3:
@@ -49337,7 +49343,7 @@ snapshots:
 
   pkcs7@1.0.4:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
 
   pkg-dir@4.2.0:
     dependencies:
@@ -50674,7 +50680,7 @@ snapshots:
 
   react-instantsearch-core@7.16.2(algoliasearch@5.21.0)(react@19.2.0):
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       algoliasearch: 5.21.0
       algoliasearch-helper: 3.26.0(algoliasearch@5.21.0)
       instantsearch.js: 4.79.2(algoliasearch@5.21.0)
@@ -51049,7 +51055,7 @@ snapshots:
 
   relay-runtime@12.0.0(encoding@0.1.13):
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       fbjs: 3.0.5(encoding@0.1.13)
       invariant: 2.2.4
     transitivePeerDependencies:
@@ -54077,19 +54083,19 @@ snapshots:
 
   worker-timers-broker@6.1.8:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       fast-unique-numbers: 8.0.13
       tslib: 2.8.1
       worker-timers-worker: 7.0.71
 
   worker-timers-worker@7.0.71:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       tslib: 2.8.1
 
   worker-timers@7.1.8:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.28.4
       tslib: 2.8.1
       worker-timers-broker: 6.1.8
       worker-timers-worker: 7.0.71

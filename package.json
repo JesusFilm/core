@@ -157,7 +157,7 @@
     "dataloader": "^2.2.2",
     "date-fns": "^4.0.0",
     "dd-trace": "^5.25.0",
-    "dotenv": "^17.4.2",
+    "dotenv": "^16.3.1",
     "express": "4.21.2",
     "firebase": "^10.0.0",
     "firebase-admin": "^11.11.1",
