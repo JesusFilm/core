@@ -218,14 +218,9 @@ export function ImageUpload({
                   : t('Upload Failed!')}
             </Typography>
           ) : (
-            <>
-              <Typography variant="body1" color="secondary.main">
-                {t('Drop an image here')}
-              </Typography>
-              <Typography variant="caption" color="secondary.main">
-                {t('or click to browse your files')}
-              </Typography>
-            </>
+            <Typography variant="body1" color="secondary.main">
+              {t('Drop an image here')}
+            </Typography>
           )}
         </Stack>
         <Button
