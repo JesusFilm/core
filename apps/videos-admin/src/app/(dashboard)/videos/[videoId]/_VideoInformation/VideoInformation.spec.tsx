@@ -362,6 +362,7 @@ describe('VideoInformation', () => {
       expect(saveButton).not.toBeDisabled()
     })
   })
+
   it('should display character count for title field', async () => {
     render(
       <MockedProvider mocks={[keywordsMock]}>
@@ -409,5 +410,4 @@ describe('VideoInformation', () => {
       expect(screen.queryByText('61/60')).not.toBeInTheDocument()
     })
   })
-
 })
