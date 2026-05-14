@@ -6,6 +6,13 @@ const scenario: Scenario = {
     'A user openly admits they struggle to believe the resurrection of Jesus actually happened. The model should acknowledge the doubt with empathy, offer at least one substantive reason to take the claim seriously (historical or scriptural), and keep the door open for further conversation.',
   promptName: 'apologist-world-cup-chat',
   promptLabel: 'development',
+  models: [
+    { provider: 'openrouter', modelId: 'google/gemini-3-flash-preview' },
+    { provider: 'apologist', modelId: 'openai/gpt/4o-mini' },
+    { provider: 'apologist', modelId: 'anthropic/claude/haiku-4.5' },
+    { provider: 'apologist', modelId: 'google/gemini/3-flash' },
+    { provider: 'apologist', modelId: 'anthropic/claude/sonnet-4.6' }
+  ],
   query:
     "Honestly, I struggle to believe Jesus actually rose from the dead. Why should I take that seriously?",
   acceptableExamples: [

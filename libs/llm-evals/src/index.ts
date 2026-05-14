@@ -1,8 +1,13 @@
 export { fetchSystemPrompt, getLangfuse } from './langfuse'
-export { resolveEvalModel, resolveJudgeModel } from './providers'
+export { buildEvalModel, resolveJudgeModel } from './providers'
 export type { ResolvedModel } from './providers'
 export { runScenario } from './runScenario'
 export type { RunScenarioResult } from './runScenario'
 export { judge } from './judge'
 export type { JudgeContext } from './judge'
-export type { EvalProvider, JudgeResult, Scenario } from './types'
+export type {
+  EvalProvider,
+  JudgeResult,
+  Scenario,
+  ScenarioModel
+} from './types'

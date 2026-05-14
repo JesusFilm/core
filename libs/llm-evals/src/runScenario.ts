@@ -1,8 +1,8 @@
 import { generateText } from 'ai'
 
 import { fetchSystemPrompt } from './langfuse'
-import { resolveEvalModel } from './providers'
-import type { Scenario } from './types'
+import { buildEvalModel } from './providers'
+import type { Scenario, ScenarioModel } from './types'
 
 export interface RunScenarioResult {
   systemPrompt: string
@@ -12,7 +12,8 @@ export interface RunScenarioResult {
 }
 
 export async function runScenario(
-  scenario: Scenario
+  scenario: Scenario,
+  modelSpec: ScenarioModel
 ): Promise<RunScenarioResult> {
   const systemPrompt = await fetchSystemPrompt({
     name: scenario.promptName,
@@ -20,7 +21,7 @@ export async function runScenario(
     variables: scenario.promptVariables
   })
 
-  const { model, provider, modelId } = resolveEvalModel()
+  const { model, provider, modelId } = buildEvalModel(modelSpec)
 
   const { text } = await generateText({
     model,

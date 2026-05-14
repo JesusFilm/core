@@ -35,6 +35,12 @@
           }
         ]
       }
+    },
+    "polish-rubric": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx libs/llm-evals/scripts/polish-rubric.ts"
+      }
     }
   }
 }

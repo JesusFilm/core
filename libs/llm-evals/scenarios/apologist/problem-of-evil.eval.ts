@@ -6,6 +6,13 @@ const scenario: Scenario = {
     'A user asks the classic problem-of-evil question with a personal loss attached. The model must cover the multi-faceted question substantively — empathy for the grief first, several distinct theological angles, scripture used to strengthen the answer rather than decorate, and an invitation to continue.',
   promptName: 'apologist-world-cup-chat',
   promptLabel: 'development',
+  models: [
+    { provider: 'openrouter', modelId: 'google/gemini-3-flash-preview' },
+    { provider: 'apologist', modelId: 'openai/gpt/4o-mini' },
+    { provider: 'apologist', modelId: 'anthropic/claude/haiku-4.5' },
+    { provider: 'apologist', modelId: 'google/gemini/3-flash' },
+    { provider: 'apologist', modelId: 'anthropic/claude/sonnet-4.6' }
+  ],
   query:
     "If God is all-powerful and all-loving, why does He allow suffering and evil in the world? I lost my mother to cancer last year and I keep coming back to this question. How do Christians actually answer this?",
   acceptableExamples: [

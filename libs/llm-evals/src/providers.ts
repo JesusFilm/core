@@ -2,7 +2,7 @@ import { google } from '@ai-sdk/google'
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import type { LanguageModel } from 'ai'
 
-import type { EvalProvider } from './types'
+import type { EvalProvider, ScenarioModel } from './types'
 
 export interface ResolvedModel {
   model: LanguageModel
@@ -17,64 +17,59 @@ function readEnvProvider(envName: string): EvalProvider | null {
   return null
 }
 
-export function resolveEvalModel(provider?: EvalProvider): ResolvedModel {
-  const chosen: EvalProvider =
-    provider ?? readEnvProvider('EVAL_PROVIDER') ?? 'openrouter'
-
-  if (chosen === 'gemini') {
-    const modelId = process.env.EVAL_GEMINI_MODEL ?? 'gemini-2.0-flash'
-    return { model: google(modelId), provider: 'gemini', modelId }
+export function buildEvalModel({
+  provider,
+  modelId
+}: ScenarioModel): ResolvedModel {
+  if (provider === 'gemini') {
+    return { model: google(modelId), provider, modelId }
   }
 
-  if (chosen === 'apologist') {
+  if (provider === 'apologist') {
     const baseURL = process.env.APOLOGIST_API_URL ?? ''
     const apiKey = process.env.APOLOGIST_API_KEY ?? ''
     if (baseURL === '' || apiKey === '') {
       throw new Error(
-        'EVAL_PROVIDER=apologist requires APOLOGIST_API_URL and APOLOGIST_API_KEY'
+        'apologist provider requires APOLOGIST_API_URL and APOLOGIST_API_KEY'
       )
     }
-    console.warn(
-      '[llm-evals] EVAL_PROVIDER=apologist — using cost-billed apologist gateway'
-    )
     const apologist = createOpenAICompatible({
       name: 'apologist',
       baseURL,
       apiKey
     })
-    const modelId = process.env.APOLOGIST_MODEL_ID ?? 'openai/gpt/4o-mini'
-    return {
-      model: apologist.chatModel(modelId),
-      provider: 'apologist',
-      modelId
-    }
+    return { model: apologist.chatModel(modelId), provider, modelId }
   }
 
   const apiKey = process.env.OPENROUTER_API_KEY ?? ''
   if (apiKey === '') {
-    throw new Error(
-      'EVAL_PROVIDER=openrouter (default) requires OPENROUTER_API_KEY'
-    )
+    throw new Error('openrouter provider requires OPENROUTER_API_KEY')
   }
   const openrouter = createOpenAICompatible({
     name: 'openrouter',
     baseURL: 'https://openrouter.ai/api/v1',
     apiKey
   })
-  // Default mirrors apps/journeys/pages/api/chat/index.ts so evals exercise
-  // the same model the production /api/chat route serves.
-  const modelId =
-    process.env.OPENROUTER_MODEL ?? 'google/gemini-3-flash-preview'
-  return {
-    model: openrouter.chatModel(modelId),
-    provider: 'openrouter',
-    modelId
-  }
+  return { model: openrouter.chatModel(modelId), provider, modelId }
 }
 
 export function resolveJudgeModel(): ResolvedModel {
-  // Judge always reads EVAL_JUDGE_PROVIDER independently of EVAL_PROVIDER so
-  // running the eval-under-test on apologist doesn't drag the judge onto it.
-  const explicit = readEnvProvider('EVAL_JUDGE_PROVIDER')
-  return resolveEvalModel(explicit ?? 'openrouter')
+  // Judge resolution stays env-driven and independent of the eval-under-test
+  // — so swapping the model under test never drags the cost-sensitive
+  // apologist gateway into judging by default.
+  const provider = readEnvProvider('EVAL_JUDGE_PROVIDER') ?? 'openrouter'
+
+  if (provider === 'gemini') {
+    const modelId = process.env.EVAL_JUDGE_MODEL ?? 'gemini-2.0-flash'
+    return buildEvalModel({ provider, modelId })
+  }
+
+  if (provider === 'apologist') {
+    const modelId = process.env.EVAL_JUDGE_MODEL ?? 'openai/gpt/4o-mini'
+    return buildEvalModel({ provider, modelId })
+  }
+
+  const modelId =
+    process.env.EVAL_JUDGE_MODEL ?? 'google/gemini-3-flash-preview'
+  return buildEvalModel({ provider, modelId })
 }
