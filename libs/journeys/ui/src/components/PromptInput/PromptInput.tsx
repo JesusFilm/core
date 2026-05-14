@@ -47,7 +47,7 @@ interface PromptInputProps {
   variant?: 'inline' | 'floating'
 }
 
-// Mirror of MAX_MESSAGE_CHARS in apps/journeys/pages/api/chat/index.ts.
+// Mirror of MAX_FIELD_CHARS in apps/journeys/pages/api/chat/index.ts.
 // Keep both in sync — the server rejects messages that exceed this length.
 export const MAX_MESSAGE_CHARS = 4000
 
