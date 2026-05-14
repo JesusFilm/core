@@ -18,12 +18,12 @@ _Last run: 2026-05-14T00:50:42.123Z_
 
 ## Output
 
-> The Bible discusses speaking in tongues primarily in the New Testament, particularly in the book of Acts and Paul's letters, especially 1 Corinthians. 
+> The Bible discusses speaking in tongues primarily in the New Testament, particularly in the book of Acts and Paul's letters, especially 1 Corinthians.
 >
 > 1. **Acts 2**: On the Day of Pentecost, the Holy Spirit enabled the apostles to speak in various languages, allowing them to proclaim the gospel to people from different nations.
 > 2. **1 Corinthians 12-14**: Paul addresses the spiritual gift of tongues, emphasizing that it is one of many gifts given by the Holy Spirit. He encourages orderly worship and suggests that tongues should be interpreted for the edification of the church.
 >
-> As for whether speaking in tongues is still happening today, opinions vary among Christians. Some believe that the gift of tongues continues as a valid expression of the Holy Spirit's work, while others argue that it was specific to the early church and has ceased. This is often referred to as "cessationism" versus "continuationism." 
+> As for whether speaking in tongues is still happening today, opinions vary among Christians. Some believe that the gift of tongues continues as a valid expression of the Holy Spirit's work, while others argue that it was specific to the early church and has ceased. This is often referred to as "cessationism" versus "continuationism."
 >
 > Ultimately, the experience of speaking in tongues can be found in some contemporary Christian communities, particularly within Pentecostal and Charismatic movements. Would you like to explore more about the implications of this gift?
 

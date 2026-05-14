@@ -22,9 +22,9 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > Yes, the Bible does permit divorce on the grounds of sexual infidelity. Jesus himself said in Matthew 19:9, "I tell you that anyone who divorces his wife, except for sexual immorality, and marries another woman commits adultery." This means infidelity is recognized as a legitimate reason for divorce — you are not sinning if you choose to end the marriage.
 >
-> That said, being *permitted* to divorce is not the same as being *required* to divorce. The Bible also values reconciliation and restoration when possible. Some marriages have survived infidelity through genuine repentance, counseling, and the slow work of rebuilding trust. Others cannot and should not be salvaged.
+> That said, being _permitted_ to divorce is not the same as being _required_ to divorce. The Bible also values reconciliation and restoration when possible. Some marriages have survived infidelity through genuine repentance, counseling, and the slow work of rebuilding trust. Others cannot and should not be salvaged.
 >
-> What matters now is what *you* need and what is wise for your situation. Consider:
+> What matters now is what _you_ need and what is wise for your situation. Consider:
 >
 > - Has your husband shown genuine repentance, or is he defensive or unrepentant?
 > - Do you want to attempt reconciliation, or has this broken something in you that cannot be repaired?

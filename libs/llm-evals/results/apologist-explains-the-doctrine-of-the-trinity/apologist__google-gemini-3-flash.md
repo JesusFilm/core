@@ -23,15 +23,19 @@ _Last run: 2026-05-14T00:50:42.123Z_
 > # The Nature of the Trinity
 >
 > ## One Essence
+>
 > God is one in His "being" or "substance." There is only one divine nature, and there is no other God besides Him (Isaiah 45:5). This refers to the "what" of God.
 >
 > ## Three Persons
+>
 > Within the one being of God, there are three distinct "Persons": the Father, the Son, and the Holy Spirit. This refers to the "who" of God.
+>
 > - **The Father** is fully God.
 > - **The Son** is fully God (John 1:1).
 > - **The Holy Spirit** is fully God (Acts 5:3-4).
 >
 > ## Distinct but Inseparable
+>
 > The three Persons are distinct in their relations to one another but are never divided in their essence. They work together in perfect unity. For example, at the baptism of Jesus, the Son is in the water, the Father speaks from heaven, and the Spirit descends like a dove (Matthew 3:16-17). We see this unity in the command to baptize in the "name" (singular) of the Father, Son, and Holy Spirit (Matthew 28:19).
 >
 > Would you like to know more about the specific roles each Person of the Trinity plays in our salvation?

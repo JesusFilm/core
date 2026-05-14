@@ -20,7 +20,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 
 > ## What the Bible Says About Speaking in Tongues
 >
-> **In the New Testament**, speaking in tongues (*glossolalia*) appears primarily in Acts and 1 Corinthians:
+> **In the New Testament**, speaking in tongues (_glossolalia_) appears primarily in Acts and 1 Corinthians:
 >
 > - **Acts 2:4–11** (Pentecost): The Spirit-filled disciples spoke in languages they had not learned, and foreigners heard the gospel in their own languages.
 > - **Acts 10:46, 19:6**: Tongues accompanied the Spirit's filling in other contexts.
@@ -35,7 +35,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 > - **Cessationists** argue that tongues were a sign gift for the apostolic era (to authenticate the gospel to Jews and Gentiles) and ceased when the New Testament was completed.
 > - **Continuationists** hold that the Spirit still grants tongues today as He distributes gifts as He wills (1 Corinthians 12:11).
 >
-> Both positions have thoughtful defenders. The Bible does not explicitly state when or whether tongues would cease. What Scripture *does* make clear is that tongues, if genuine, must serve the church's edification (1 Corinthians 14:12) and never contradict the gospel or Scripture.
+> Both positions have thoughtful defenders. The Bible does not explicitly state when or whether tongues would cease. What Scripture _does_ make clear is that tongues, if genuine, must serve the church's edification (1 Corinthians 14:12) and never contradict the gospel or Scripture.
 >
 > Would you like to explore the cessationist or continuationist case more closely?
 

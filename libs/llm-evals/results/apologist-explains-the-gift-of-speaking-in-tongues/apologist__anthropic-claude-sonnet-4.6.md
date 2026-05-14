@@ -25,9 +25,11 @@ _Last run: 2026-05-14T00:50:42.123Z_
 > Tongues appear in two distinct contexts in the New Testament, and it's important to keep them separate.
 >
 > ### 1. Tongues as Known Languages (Acts 2)
+>
 > At Pentecost, the disciples spoke in **real human languages** they had never learned, and foreign visitors heard them in their own native tongues (Acts 2:6–8). The purpose was clear: proclaiming the gospel across language barriers and signalling the arrival of the Holy Spirit.
 >
 > ### 2. Tongues as a Spiritual Gift (1 Corinthians 12–14)
+>
 > Paul addresses a gift of tongues operating in the Corinthian church. Key points he makes:
 >
 > - It is one gift among many — not the greatest (1 Cor. 12:28–30)
@@ -42,16 +44,19 @@ _Last run: 2026-05-14T00:50:42.123Z_
 > This is one of the most genuinely contested questions among orthodox Christians, and both sides hold their position sincerely.
 >
 > **Cessationists** (Reformed, many Baptists) argue:
+>
 > - Sign gifts authenticated the apostles and the early church during the foundational period
 > - 1 Corinthians 13:8 suggests tongues will "cease"
 > - The completed canon of Scripture fulfils the revelatory role these gifts served
 >
 > **Continuationists** (Pentecostals, Charismatics) argue:
+>
 > - There is no explicit biblical statement that these gifts ended with the apostles
 > - The Spirit distributes gifts "as He wills" (1 Cor. 12:11), with no stated expiry
 > - Many believers worldwide report genuine experiences
 >
 > **What can be said with confidence:**
+>
 > - Whatever is claimed as tongues today must conform to Paul's strict guidelines — ordered, interpreted, and edifying
 > - Much of what passes for tongues in some settings bears little resemblance to either Acts 2 or 1 Corinthians 14
 > - No spiritual experience overrides or adds to Scripture (Rev. 22:18–19)

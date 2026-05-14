@@ -22,11 +22,11 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > Christian theology addresses the problem of evil and suffering through several key frameworks:
 >
-> *   **The Fall and Sin:** Scripture teaches that suffering and death were not part of God’s original "very good" creation but entered the world through human rebellion (Genesis 3). We live in a broken world where natural evils like cancer are a consequence of this systemic fall.
-> *   **The Gift of Free Will:** For love to be genuine, God granted humanity the freedom to choose. This freedom allows for the possibility of rejecting God’s design, resulting in moral evil and a world in which suffering exists.
-> *   **The Suffering of God:** Christians believe God is not indifferent to our pain. In Jesus Christ, God entered human suffering personally. He is "a man of sorrows, and acquainted with grief" (Isaiah 53:3), meaning He meets us in our loss rather than watching from a distance.
-> *   **Redemptive Purpose:** While God does not cause evil, He is sovereign enough to use it for a greater good that we may not yet see. Romans 8:28 promises that God works all things together for the good of those who love Him, even when the "things" themselves are tragic.
-> *   **The Hope of Restoration:** The ultimate Christian answer is that suffering is temporary. The Gospel promises a future where God "will wipe away every tear from their eyes," and death and pain will be no more (Revelation 21:4).
+> - **The Fall and Sin:** Scripture teaches that suffering and death were not part of God’s original "very good" creation but entered the world through human rebellion (Genesis 3). We live in a broken world where natural evils like cancer are a consequence of this systemic fall.
+> - **The Gift of Free Will:** For love to be genuine, God granted humanity the freedom to choose. This freedom allows for the possibility of rejecting God’s design, resulting in moral evil and a world in which suffering exists.
+> - **The Suffering of God:** Christians believe God is not indifferent to our pain. In Jesus Christ, God entered human suffering personally. He is "a man of sorrows, and acquainted with grief" (Isaiah 53:3), meaning He meets us in our loss rather than watching from a distance.
+> - **Redemptive Purpose:** While God does not cause evil, He is sovereign enough to use it for a greater good that we may not yet see. Romans 8:28 promises that God works all things together for the good of those who love Him, even when the "things" themselves are tragic.
+> - **The Hope of Restoration:** The ultimate Christian answer is that suffering is temporary. The Gospel promises a future where God "will wipe away every tear from their eyes," and death and pain will be no more (Revelation 21:4).
 >
 > Would you like to explore more about what the Bible says regarding the hope of the resurrection?
 

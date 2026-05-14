@@ -22,10 +22,10 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > Christians generally answer the problem of suffering through these biblical perspectives:
 >
-> *   **The Fall:** God created a perfect world, but human rebellion (sin) introduced a curse upon the earth. This brought about the "bondage to corruption," which includes disease, decay, and death (Romans 8:21).
-> *   **Free Will:** For love to be genuine, God gave humans the freedom to choose. This freedom allows for the rejection of God's goodness, resulting in a world where evil and suffering can occur.
-> *   **Redemption through Suffering:** Christianity teaches that God is not distant from our pain. In Jesus Christ, God entered into human suffering, enduring the cross to defeat the power of sin and death.
-> *   **Future Hope:** The Bible promises that current sufferings are temporary and will be eclipsed by the glory of a restored creation where "death shall be no more, neither shall there be mourning, nor crying, nor pain" (Revelation 21:4).
+> - **The Fall:** God created a perfect world, but human rebellion (sin) introduced a curse upon the earth. This brought about the "bondage to corruption," which includes disease, decay, and death (Romans 8:21).
+> - **Free Will:** For love to be genuine, God gave humans the freedom to choose. This freedom allows for the rejection of God's goodness, resulting in a world where evil and suffering can occur.
+> - **Redemption through Suffering:** Christianity teaches that God is not distant from our pain. In Jesus Christ, God entered into human suffering, enduring the cross to defeat the power of sin and death.
+> - **Future Hope:** The Bible promises that current sufferings are temporary and will be eclipsed by the glory of a restored creation where "death shall be no more, neither shall there be mourning, nor crying, nor pain" (Revelation 21:4).
 >
 > While we may not understand the specific reason for every tragedy, Christians trust that God’s justice will eventually make all things right and that His grace is offered to all who seek Him in their brokenness.
 >

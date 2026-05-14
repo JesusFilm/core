@@ -22,7 +22,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > Scripture shows Jesus drinking wine (John 2:1–11, where he turned water into wine at a wedding), and Paul instructed Timothy to "use a little wine for the sake of your stomach and your frequent ailments" (1 Timothy 5:23). Wine was a normal part of daily life in biblical times.
 >
-> What the Bible *does* forbid is **drunkenness**. Ephesians 5:18 says, "Do not get drunk on wine, which leads to debauchery. Instead, be filled with the Spirit." The sin is loss of self-control and the misuse of alcohol—not the drink itself.
+> What the Bible _does_ forbid is **drunkenness**. Ephesians 5:18 says, "Do not get drunk on wine, which leads to debauchery. Instead, be filled with the Spirit." The sin is loss of self-control and the misuse of alcohol—not the drink itself.
 >
 > A glass of wine with dinner is well within the bounds of Christian freedom. What matters is that you drink responsibly, remain in control of yourself, and do not let alcohol become a stumbling block for you or others (Romans 14:21).
 >

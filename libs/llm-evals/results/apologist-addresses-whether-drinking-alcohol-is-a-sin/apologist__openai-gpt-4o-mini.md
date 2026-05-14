@@ -18,7 +18,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 
 ## Output
 
-> Drinking alcohol is not inherently a sin for Christians. The Bible does not prohibit alcohol but warns against excessive drinking and drunkenness. For example, Ephesians 5:18 advises against getting drunk, while 1 Timothy 5:23 suggests moderate use of wine for health reasons. 
+> Drinking alcohol is not inherently a sin for Christians. The Bible does not prohibit alcohol but warns against excessive drinking and drunkenness. For example, Ephesians 5:18 advises against getting drunk, while 1 Timothy 5:23 suggests moderate use of wine for health reasons.
 >
 > If your drinking leads to negative consequences or causes others to stumble in their faith, it may be wise to reconsider. Ultimately, it's about moderation and being mindful of your actions. If you have specific concerns or feel convicted, it might be helpful to reflect on those feelings or discuss them with a trusted spiritual advisor.
 

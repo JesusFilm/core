@@ -22,7 +22,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > There is one direct reference to tattooing in scripture:
 >
-> > *"You shall not make any cuts on your body for the dead or tattoo yourselves: I am the Lord."* — Leviticus 19:28
+> > _"You shall not make any cuts on your body for the dead or tattoo yourselves: I am the Lord."_ — Leviticus 19:28
 >
 > That's the verse your church members are likely citing. Here's the context that matters:
 >
@@ -36,9 +36,9 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > While the specific prohibition doesn't carry over, a genuine principle does:
 >
-> > *"Do you not know that your body is a temple of the Holy Spirit within you?"* — 1 Corinthians 6:19
+> > _"Do you not know that your body is a temple of the Holy Spirit within you?"_ — 1 Corinthians 6:19
 >
-> This verse is about **sexual immorality** in context, but the broader principle — that we should honour God with our bodies — is fair to apply. The question worth asking is: *Is my motivation honouring to God?*
+> This verse is about **sexual immorality** in context, but the broader principle — that we should honour God with our bodies — is fair to apply. The question worth asking is: _Is my motivation honouring to God?_
 >
 > ## The Honest Bottom Line
 >

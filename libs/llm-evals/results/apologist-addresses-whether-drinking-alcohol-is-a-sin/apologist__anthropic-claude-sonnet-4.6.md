@@ -22,14 +22,14 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > **Drinking alcohol is not sinful in itself.** Jesus turned water into wine (John 2:1–11), and Paul advised Timothy to drink a little wine for his stomach (1 Timothy 5:23). The Bible nowhere commands total abstinence for all believers.
 >
-> **What the Bible does condemn is drunkenness.** Ephesians 5:18 says, *"Do not get drunk on wine, which leads to debauchery, but be filled with the Spirit."* Losing self-control through alcohol is clearly sinful.
+> **What the Bible does condemn is drunkenness.** Ephesians 5:18 says, _"Do not get drunk on wine, which leads to debauchery, but be filled with the Spirit."_ Losing self-control through alcohol is clearly sinful.
 >
 > **Two other principles are worth holding alongside that:**
 >
 > - **Conscience** — If drinking troubles your own conscience, abstaining is the wiser path (Romans 14:23).
 > - **Witness** — If your drinking would cause a weaker brother or sister to stumble, love may call you to set it aside in certain contexts (Romans 14:21).
 >
-> A glass of wine with dinner falls well within what Scripture permits. You don't need to stop on grounds of sin. Whether you *choose* to is a matter of personal conscience and wisdom — both are honourable positions.
+> A glass of wine with dinner falls well within what Scripture permits. You don't need to stop on grounds of sin. Whether you _choose_ to is a matter of personal conscience and wisdom — both are honourable positions.
 
 ## Reason
 

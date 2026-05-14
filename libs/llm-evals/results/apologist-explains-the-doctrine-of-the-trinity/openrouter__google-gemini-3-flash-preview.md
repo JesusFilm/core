@@ -22,7 +22,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > To understand how God is both one and three, it is helpful to distinguish between **essence** and **person**:
 >
-> - **One in Essence (Being):** There is only one divine "What." God is one in nature, power, and will. Scripturally, this is anchored in the *Shema*: "Hear, O Israel: The Lord our God, the Lord is one" (Deuteronomy 6:4).
+> - **One in Essence (Being):** There is only one divine "What." God is one in nature, power, and will. Scripturally, this is anchored in the _Shema_: "Hear, O Israel: The Lord our God, the Lord is one" (Deuteronomy 6:4).
 > - **Three in Person:** There are three distinct "Whos." The Father is not the Son, the Son is not the Spirit, and the Spirit is not the Father. Each Person is fully God, yet they are distinct in their relations to one another.
 >
 > We see this most clearly at the baptism of Jesus (Matthew 3:16–17), where the Son is in the water, the Spirit descends like a dove, and the Father speaks from heaven. While human logic often struggles with this because we are used to one "person" being one "being," God’s nature is unique. He is a single, undivided Being composed of three eternal, co-equal Persons in perfect communion.

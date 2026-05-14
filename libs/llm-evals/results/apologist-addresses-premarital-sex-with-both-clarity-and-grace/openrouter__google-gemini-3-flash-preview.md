@@ -20,7 +20,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 
 > I hear the depth of your commitment to one another and your desire to honor that bond through marriage next year.
 >
-> In the Christian faith, however, sexual intimacy is designed by God to be the physical seal of the covenant of marriage. Because marriage is a public and spiritual union recognized by God and the community, commitment alone does not replace the formal covenant. 
+> In the Christian faith, however, sexual intimacy is designed by God to be the physical seal of the covenant of marriage. Because marriage is a public and spiritual union recognized by God and the community, commitment alone does not replace the formal covenant.
 >
 > The Bible teaches that sexual activity outside of the marriage bond is "porneia" (sexual immorality), which stems from a heart that seeks the blessings of marriage without yet being in the covenant of marriage. Hebrews 13:4 states, "Let marriage be held in honor among all, and let the marriage bed be undefiled, for God will judge the sexually immoral and adulterous."
 >

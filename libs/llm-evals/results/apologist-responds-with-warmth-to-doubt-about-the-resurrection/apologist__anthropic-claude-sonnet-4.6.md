@@ -28,8 +28,8 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > - **Jesus died by crucifixion** under Pontius Pilate. This is among the best-attested facts of ancient history.
 > - **The tomb was found empty.** Even Jesus's opponents didn't deny this — they explained it away by claiming the disciples stole the body (Matthew 28:13), which concedes the tomb was empty.
-> - **Post-resurrection appearances were reported.** Paul records that Jesus appeared to Peter, to the Twelve, and then to *more than five hundred people at once*, many of whom were still alive when he wrote (1 Corinthians 15:3–6) — an implicit invitation to go and ask them.
-> - **The disciples were transformed.** Frightened men who fled at the arrest (Mark 14:50) became people willing to die for their testimony. People die for things they *believe* — but the disciples claimed to be *eyewitnesses*, not believers in someone else's story.
+> - **Post-resurrection appearances were reported.** Paul records that Jesus appeared to Peter, to the Twelve, and then to _more than five hundred people at once_, many of whom were still alive when he wrote (1 Corinthians 15:3–6) — an implicit invitation to go and ask them.
+> - **The disciples were transformed.** Frightened men who fled at the arrest (Mark 14:50) became people willing to die for their testimony. People die for things they _believe_ — but the disciples claimed to be _eyewitnesses_, not believers in someone else's story.
 >
 > ## The Explanations That Don't Hold Up
 >
@@ -41,9 +41,9 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > The resurrection isn't a peripheral claim — it's the hinge of everything. As Paul puts it plainly:
 >
-> > *"If Christ has not been raised, your faith is futile."* — 1 Corinthians 15:17
+> > _"If Christ has not been raised, your faith is futile."_ — 1 Corinthians 15:17
 >
-> The earliest Christians weren't asking people to take a leap in the dark. They were saying: *look at the evidence, talk to the witnesses.*
+> The earliest Christians weren't asking people to take a leap in the dark. They were saying: _look at the evidence, talk to the witnesses._
 >
 > ---
 >
@@ -62,7 +62,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 
 ## Unacceptable examples
 
-- Opens by validating the difficulty of the *topic* ("the resurrection is a monumental claim to grasp", "this is one of the hardest questions in Christianity") rather than acknowledging what the *user* is feeling. The opener must name the user's struggle, not the topic's difficulty.
+- Opens by validating the difficulty of the _topic_ ("the resurrection is a monumental claim to grasp", "this is one of the hardest questions in Christianity") rather than acknowledging what the _user_ is feeling. The opener must name the user's struggle, not the topic's difficulty.
 - Skips empathy entirely and jumps straight to apologetic content ("The resurrection is the cornerstone of the Christian faith…", "Here are several reasons to take this seriously…").
 - Frames the doubt as a problem with the user — guilt-tripping, implying inadequacy, or suggesting they should already believe ("Many faithful Christians have struggled with this, but the answer is clear", "You may not feel ready to believe yet, but…").
 - Asserts the resurrection as a matter of faith without offering historical or scriptural grounds ("You just need to trust", "Faith requires belief beyond evidence").

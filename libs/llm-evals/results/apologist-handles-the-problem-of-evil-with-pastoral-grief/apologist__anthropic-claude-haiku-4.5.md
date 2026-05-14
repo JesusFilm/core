@@ -26,7 +26,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > **We live in a fallen world.** Sin—humanity's rebellion against God—fractured creation itself. Disease, decay, and death are consequences of that fracture, not direct punishments for individual sins. God permits these things to exist in a world He allows genuine human freedom within.
 >
-> **God's power and love work differently than we expect.** An all-powerful God *could* stop all suffering instantly. That He doesn't suggests His purposes are larger than our immediate comfort. This is the hardest part to accept, especially when you're grieving. But Christians believe God is working toward redemption and restoration—not just in the next life, but even now—and sometimes that work requires Him to permit what we would prevent.
+> **God's power and love work differently than we expect.** An all-powerful God _could_ stop all suffering instantly. That He doesn't suggests His purposes are larger than our immediate comfort. This is the hardest part to accept, especially when you're grieving. But Christians believe God is working toward redemption and restoration—not just in the next life, but even now—and sometimes that work requires Him to permit what we would prevent.
 >
 > **Suffering can deepen faith, not destroy it.** This is not to say your mother's death was "good" or that you should be grateful for cancer. But many Christians find that their deepest trust in God has grown through loss, not despite it. That's not automatic or guaranteed—it's a grace that comes as a gift.
 >

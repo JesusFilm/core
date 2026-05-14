@@ -24,9 +24,9 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > Jesus says in Matthew 19:9:
 >
-> > *"And I say to you: whoever divorces his wife, except for sexual immorality, and marries another, commits adultery."*
+> > _"And I say to you: whoever divorces his wife, except for sexual immorality, and marries another, commits adultery."_
 >
-> The exception He makes — **sexual immorality** (Greek: *porneia*) — is precisely what you are facing. This is often called the "Matthean exception," and it has been the mainstream understanding across Christian tradition: adultery breaks the marriage covenant, and the innocent spouse is not obligated to remain in it.
+> The exception He makes — **sexual immorality** (Greek: _porneia_) — is precisely what you are facing. This is often called the "Matthean exception," and it has been the mainstream understanding across Christian tradition: adultery breaks the marriage covenant, and the innocent spouse is not obligated to remain in it.
 >
 > A few things worth holding together:
 >

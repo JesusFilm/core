@@ -22,9 +22,9 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > The Bible does address this specific situation. While God's ideal for marriage is a lifelong union, Jesus provides an exception in cases of sexual unfaithfulness.
 >
-> *   **The Exception Clause:** In Matthew 19:9, Jesus says, "And I say to you: whoever divorces his wife, except for sexual immorality, and marries another, commits adultery." The Greek word for "sexual immorality" used here (*porneia*) includes extramarital affairs.
-> *   **The Option for Reconciliation:** While divorce is permitted in this circumstance, the New Testament also encourages forgiveness and restoration where possible. If a spouse is truly repentant, many Christians view reconciliation as the first path to explore, though the Bible does not command you to stay in an unfaithful covenant.
-> *   **The Need for Peace:** 1 Corinthians 7:15 notes that God has called us to peace. Your safety and spiritual well-being are significant considerations as you weigh whether the marriage can be rebuilt.
+> - **The Exception Clause:** In Matthew 19:9, Jesus says, "And I say to you: whoever divorces his wife, except for sexual immorality, and marries another, commits adultery." The Greek word for "sexual immorality" used here (_porneia_) includes extramarital affairs.
+> - **The Option for Reconciliation:** While divorce is permitted in this circumstance, the New Testament also encourages forgiveness and restoration where possible. If a spouse is truly repentant, many Christians view reconciliation as the first path to explore, though the Bible does not command you to stay in an unfaithful covenant.
+> - **The Need for Peace:** 1 Corinthians 7:15 notes that God has called us to peace. Your safety and spiritual well-being are significant considerations as you weigh whether the marriage can be rebuilt.
 >
 > Deciding whether to pursue divorce or seek reconciliation after such a betrayal is a heavy burden.
 >

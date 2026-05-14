@@ -26,7 +26,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > ## The Question Has a Name
 >
-> Theologians call this the *problem of evil*. It is not a new doubt — it runs through the Psalms, through Job, through Lamentations. The people closest to God in scripture asked versions of exactly your question.
+> Theologians call this the _problem of evil_. It is not a new doubt — it runs through the Psalms, through Job, through Lamentations. The people closest to God in scripture asked versions of exactly your question.
 >
 > ---
 >
@@ -36,23 +36,23 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > ### 1. God gave creation genuine freedom — and that has a cost
 >
-> God did not make a puppet world. He made a real world with real causes and effects, real biology, real entropy. A world where cancer is *impossible* would require God to constantly override the physical order He created. That kind of world would also be one where human freedom and genuine moral choice are impossible.
+> God did not make a puppet world. He made a real world with real causes and effects, real biology, real entropy. A world where cancer is _impossible_ would require God to constantly override the physical order He created. That kind of world would also be one where human freedom and genuine moral choice are impossible.
 >
 > ### 2. Suffering is not evidence that God is absent
 >
-> Job suffered catastrophically. God did not explain Himself to Job — He showed up. The Christian claim is not that God prevents all suffering, but that He *enters* it. The incarnation — God becoming human in Jesus — means God knows grief, pain, and death from the inside (John 11:35; Isaiah 53:3).
+> Job suffered catastrophically. God did not explain Himself to Job — He showed up. The Christian claim is not that God prevents all suffering, but that He _enters_ it. The incarnation — God becoming human in Jesus — means God knows grief, pain, and death from the inside (John 11:35; Isaiah 53:3).
 >
 > ### 3. Evil and suffering are not God's final word
 >
 > The resurrection is Christianity's answer to death. Not an explanation of why death happens, but a declaration that death does not win. Paul writes:
 >
-> > *"I consider that our present sufferings are not worth comparing with the glory that will be revealed in us."* — Romans 8:18
+> > _"I consider that our present sufferings are not worth comparing with the glory that will be revealed in us."_ — Romans 8:18
 >
 > That is not a dismissal of your pain. It is a claim about where the story ends.
 >
 > ### 4. The question itself assumes something important
 >
-> When we say suffering *shouldn't* exist, we are appealing to a standard of how things *ought* to be. That moral intuition — that cancer taking your mother is *wrong* — actually points toward a moral lawgiver. A purely material universe has no "ought." Your grief is, in a strange way, evidence that you were made for something better than this.
+> When we say suffering _shouldn't_ exist, we are appealing to a standard of how things _ought_ to be. That moral intuition — that cancer taking your mother is _wrong_ — actually points toward a moral lawgiver. A purely material universe has no "ought." Your grief is, in a strange way, evidence that you were made for something better than this.
 >
 > ---
 >
@@ -64,7 +64,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > Your question is not a sign of weak faith. It may be the beginning of a deeper one.
 >
-> Is there a specific part of this you'd like to press further — the problem of *natural* evil like disease specifically, or what the resurrection actually claims to do about death?
+> Is there a specific part of this you'd like to press further — the problem of _natural_ evil like disease specifically, or what the resurrection actually claims to do about death?
 
 ## Reason
 

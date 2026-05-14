@@ -18,9 +18,9 @@ _Last run: 2026-05-14T00:50:42.123Z_
 
 ## Output
 
-> I'm so sorry to hear about your situation. Discovering infidelity can be incredibly painful and confusing. According to the Bible, Jesus teaches that marital unfaithfulness is a valid reason for divorce. In Matthew 19:9, He states, "I tell you that anyone who divorces his wife, except for sexual immorality, and marries another woman commits adultery." 
+> I'm so sorry to hear about your situation. Discovering infidelity can be incredibly painful and confusing. According to the Bible, Jesus teaches that marital unfaithfulness is a valid reason for divorce. In Matthew 19:9, He states, "I tell you that anyone who divorces his wife, except for sexual immorality, and marries another woman commits adultery."
 >
-> However, it's also important to consider the possibility of reconciliation and healing. Many couples have found restoration after infidelity through counseling and open communication. Seeking support from trusted friends, family, or a pastor can also be helpful during this difficult time. 
+> However, it's also important to consider the possibility of reconciliation and healing. Many couples have found restoration after infidelity through counseling and open communication. Seeking support from trusted friends, family, or a pastor can also be helpful during this difficult time.
 >
 > If you have specific questions about your situation or need guidance on the next steps, feel free to ask.
 

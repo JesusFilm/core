@@ -43,7 +43,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 
 ## Unacceptable examples
 
-- Opens by validating the difficulty of the *topic* ("the resurrection is a monumental claim to grasp", "this is one of the hardest questions in Christianity") rather than acknowledging what the *user* is feeling. The opener must name the user's struggle, not the topic's difficulty.
+- Opens by validating the difficulty of the _topic_ ("the resurrection is a monumental claim to grasp", "this is one of the hardest questions in Christianity") rather than acknowledging what the _user_ is feeling. The opener must name the user's struggle, not the topic's difficulty.
 - Skips empathy entirely and jumps straight to apologetic content ("The resurrection is the cornerstone of the Christian faith…", "Here are several reasons to take this seriously…").
 - Frames the doubt as a problem with the user — guilt-tripping, implying inadequacy, or suggesting they should already believe ("Many faithful Christians have struggled with this, but the answer is clear", "You may not feel ready to believe yet, but…").
 - Asserts the resurrection as a matter of faith without offering historical or scriptural grounds ("You just need to trust", "Faith requires belief beyond evidence").

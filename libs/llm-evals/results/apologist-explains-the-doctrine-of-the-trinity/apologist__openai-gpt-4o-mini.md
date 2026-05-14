@@ -21,7 +21,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 > The Trinity is a central doctrine in Christianity that describes God as one being in three persons: the Father, the Son (Jesus Christ), and the Holy Spirit. Here’s a simple breakdown:
 >
 > - **One Essence:** God is one in essence or nature. This means that there is only one God, not three separate gods.
-> - **Three Persons:** Within this one essence, there are three distinct persons. Each person is fully God, sharing the same divine nature, yet they are not the same person. 
+> - **Three Persons:** Within this one essence, there are three distinct persons. Each person is fully God, sharing the same divine nature, yet they are not the same person.
 >   - **The Father** is the creator and sustainer.
 >   - **The Son** is the incarnate Word, who became human for our salvation.
 >   - **The Holy Spirit** is the active presence of God in the world, guiding and empowering believers.

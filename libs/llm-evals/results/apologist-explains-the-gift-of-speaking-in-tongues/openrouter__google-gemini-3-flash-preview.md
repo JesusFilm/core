@@ -21,18 +21,24 @@ _Last run: 2026-05-14T00:50:42.123Z_
 > The Bible describes speaking in tongues (glossolalia) as a supernatural gift of the Holy Spirit used for prayer and the edification of the church.
 >
 > ### Biblical Foundation
+>
 > The New Testament identifies two primary forms of this gift:
+>
 > - **Known Languages:** In Acts 2, the apostles spoke in existing earthly languages they had never learned, allowing foreign visitors to hear the gospel in their own native tongues.
 > - **Prayer Language:** In 1 Corinthians 14, Paul describes a private or ecstatic utterance used for personal edification or, when an interpreter is present, for the public encouragement of the church.
 >
 > ### Regulations for Use
+>
 > In 1 Corinthians 14, the Apostle Paul provides specific instructions to ensure order:
+>
 > - No more than two or three people should speak in a service.
 > - It must be done one at a time.
 > - If there is no interpreter, the speaker should remain silent in the church and speak only to themselves and God.
 >
 > ### Is it happening today?
+>
 > Within the Christian tradition, there are two primary views regarding whether this gift continues:
+>
 > - **Continuationism:** This view holds that all spiritual gifts, including tongues, remain active and available to the church today as a means of empowerment and grace.
 > - **Cessationism:** This view argues that "sign gifts" like tongues and prophecy were intended only for the apostolic age to authenticate the early message of the Gospel and ceased once the New Testament was completed.
 >

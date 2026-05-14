@@ -22,9 +22,9 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > To understand how this applies today, theologians generally look at three factors:
 >
-> *   **Historical Context:** In the ancient Near East, cutting the skin and marking the body were often pagan mourning rituals or signs of devotion to false gods. The prohibition was intended to set Israel apart from these idolatrous practices.
-> *   **The Ceremonial Law:** Many Christians believe that the specific prohibitions in Leviticus regarding appearances (such as not trimming the edges of your beard or wearing mixed fabrics) were ceremonial laws fulfilled in Christ and are not binding on the New Covenant believer.
-> *   **The Heart and the Body:** In the New Testament, the focus shifts to the principle that your body is a "temple of the Holy Spirit" (1 Corinthians 6:19). This encourages believers to consider whether their choices glorify God or cause others to stumble.
+> - **Historical Context:** In the ancient Near East, cutting the skin and marking the body were often pagan mourning rituals or signs of devotion to false gods. The prohibition was intended to set Israel apart from these idolatrous practices.
+> - **The Ceremonial Law:** Many Christians believe that the specific prohibitions in Leviticus regarding appearances (such as not trimming the edges of your beard or wearing mixed fabrics) were ceremonial laws fulfilled in Christ and are not binding on the New Covenant believer.
+> - **The Heart and the Body:** In the New Testament, the focus shifts to the principle that your body is a "temple of the Holy Spirit" (1 Corinthians 6:19). This encourages believers to consider whether their choices glorify God or cause others to stumble.
 >
 > Ultimately, the Bible does not explicitly forbid or permit tattoos for Christians today in a moral sense; rather, it becomes a matter of Christian liberty and conscience.
 >

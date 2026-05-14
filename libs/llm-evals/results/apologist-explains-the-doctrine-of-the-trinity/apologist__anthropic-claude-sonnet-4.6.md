@@ -24,10 +24,10 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > ## The Core Claim
 >
-> Christianity does not teach that God is one *person* and three *persons* at the same time — that would be a contradiction. The claim is more precise:
+> Christianity does not teach that God is one _person_ and three _persons_ at the same time — that would be a contradiction. The claim is more precise:
 >
-> - God is **one in essence** (one *what*)
-> - God is **three in person** (three *whos*)
+> - God is **one in essence** (one _what_)
+> - God is **three in person** (three _whos_)
 >
 > These are different categories, so there is no logical contradiction.
 >
@@ -36,12 +36,14 @@ _Last run: 2026-05-14T00:50:42.123Z_
 > The Bible holds both truths in tension without apology.
 >
 > **God is one:**
-> > *"Hear, O Israel: The Lord our God, the Lord is one."* — Deuteronomy 6:4
+>
+> > _"Hear, O Israel: The Lord our God, the Lord is one."_ — Deuteronomy 6:4
 >
 > **Yet three distinct persons are present:**
-> > *"Go therefore and make disciples of all nations, baptising them in the name of the Father and of the Son and of the Holy Spirit."* — Matthew 28:19
 >
-> Note: *name* is singular, yet three persons are named — a striking grammatical signal of unity within plurality.
+> > _"Go therefore and make disciples of all nations, baptising them in the name of the Father and of the Son and of the Holy Spirit."_ — Matthew 28:19
+>
+> Note: _name_ is singular, yet three persons are named — a striking grammatical signal of unity within plurality.
 >
 > **All three appear at once at Jesus' baptism** (Matthew 3:16–17) — the Son in the water, the Spirit descending, the Father speaking.
 >
@@ -57,15 +59,15 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > Every popular analogy breaks down:
 >
-> - **Water (ice/liquid/steam):** one substance in three *states* — but God is all three persons simultaneously, not sequentially. This is the heresy of *modalism*.
-> - **A man who is father, son, and husband:** one *person* wearing three roles — same problem.
+> - **Water (ice/liquid/steam):** one substance in three _states_ — but God is all three persons simultaneously, not sequentially. This is the heresy of _modalism_.
+> - **A man who is father, son, and husband:** one _person_ wearing three roles — same problem.
 > - **The sun, its light, and its warmth:** closer, but still imperfect.
 >
 > The Trinity is not a puzzle with a tidy human illustration. It is a revealed truth that exceeds our categories — which is exactly what you would expect if God is genuinely greater than the human mind.
 >
 > ## The Honest Bottom Line
 >
-> The Trinity is *above* reason, but not *against* it. The doctrine is not "one equals three" — it is "one essence, three persons," which is coherent even if it is mysterious. We know it because God revealed it, not because we could have reasoned our way to it.
+> The Trinity is _above_ reason, but not _against_ it. The doctrine is not "one equals three" — it is "one essence, three persons," which is coherent even if it is mysterious. We know it because God revealed it, not because we could have reasoned our way to it.
 >
 > ---
 >

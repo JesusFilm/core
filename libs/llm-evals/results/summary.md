@@ -10,13 +10,13 @@ _Last updated: 2026-05-14T03:09:32.761Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__google-gemini-3-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__openai-gpt-4o-mini.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__google-gemini-3-flash-preview.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                           |
+| ---------------------------------------- | ----: | :--: | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__google-gemini-3-flash.md)          |
+| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__openai-gpt-4o-mini.md)             |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -46,13 +46,13 @@ _Last updated: 2026-05-14T03:09:32.761Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 0.60 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 0.60 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__google-gemini-3-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__openai-gpt-4o-mini.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__google-gemini-3-flash-preview.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                  |
+| ---------------------------------------- | ----: | :--: | ------------------- | ------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  0.60 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  0.60 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__google-gemini-3-flash.md)          |
+| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__openai-gpt-4o-mini.md)             |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -82,13 +82,13 @@ _Last updated: 2026-05-14T03:09:32.761Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__google-gemini-3-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.90 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__openai-gpt-4o-mini.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__google-gemini-3-flash-preview.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                  |
+| ---------------------------------------- | ----: | :--: | ------------------- | ------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__google-gemini-3-flash.md)          |
+| apologist:openai/gpt/4o-mini             |  0.90 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__openai-gpt-4o-mini.md)             |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -118,13 +118,13 @@ _Last updated: 2026-05-14T03:09:32.761Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 0.90 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__google-gemini-3-flash.md) |
-| apologist:openai/gpt/4o-mini | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__openai-gpt-4o-mini.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 03:09:32 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__google-gemini-3-flash-preview.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                   |
+| ---------------------------------------- | ----: | :--: | ------------------- | -------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  0.90 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__google-gemini-3-flash.md)          |
+| apologist:openai/gpt/4o-mini             |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__openai-gpt-4o-mini.md)             |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 03:09:32 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -154,13 +154,13 @@ _Last updated: 2026-05-14T03:09:32.761Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__google-gemini-3-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.20 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__openai-gpt-4o-mini.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__google-gemini-3-flash-preview.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                           |
+| ---------------------------------------- | ----: | :--: | ------------------- | ------------------------------------------------------------------------------------------------ |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__google-gemini-3-flash.md)          |
+| apologist:openai/gpt/4o-mini             |  0.20 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__openai-gpt-4o-mini.md)             |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -190,13 +190,13 @@ _Last updated: 2026-05-14T03:09:32.761Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 0.40 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__google-gemini-3-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.40 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__openai-gpt-4o-mini.md) |
-| openrouter:google/gemini-3-flash-preview | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__google-gemini-3-flash-preview.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                               |
+| ---------------------------------------- | ----: | :--: | ------------------- | ---------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  0.40 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__google-gemini-3-flash.md)          |
+| apologist:openai/gpt/4o-mini             |  0.40 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__openai-gpt-4o-mini.md)             |
+| openrouter:google/gemini-3-flash-preview |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -226,13 +226,13 @@ _Last updated: 2026-05-14T03:09:32.761Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__google-gemini-3-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__openai-gpt-4o-mini.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__google-gemini-3-flash-preview.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                |
+| ---------------------------------------- | ----: | :--: | ------------------- | ----------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__google-gemini-3-flash.md)          |
+| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__openai-gpt-4o-mini.md)             |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -262,13 +262,13 @@ _Last updated: 2026-05-14T03:09:32.761Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__google-gemini-3-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__openai-gpt-4o-mini.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__google-gemini-3-flash-preview.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                      |
+| ---------------------------------------- | ----: | :--: | ------------------- | ----------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__google-gemini-3-flash.md)          |
+| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__openai-gpt-4o-mini.md)             |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -298,13 +298,13 @@ _Last updated: 2026-05-14T03:09:32.761Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__google-gemini-3-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__openai-gpt-4o-mini.md) |
-| openrouter:google/gemini-3-flash-preview | 0.90 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__google-gemini-3-flash-preview.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                           |
+| ---------------------------------------- | ----: | :--: | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__google-gemini-3-flash.md)          |
+| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__openai-gpt-4o-mini.md)             |
+| openrouter:google/gemini-3-flash-preview |  0.90 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 

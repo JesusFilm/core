@@ -18,16 +18,13 @@ _Last run: 2026-05-14T00:50:42.123Z_
 
 ## Output
 
-> It's understandable to struggle with the belief in the resurrection of Jesus; it's a profound claim that has significant implications. The resurrection is central to Christian faith, as it affirms Jesus as the Son of God and the promise of eternal life for believers. 
+> It's understandable to struggle with the belief in the resurrection of Jesus; it's a profound claim that has significant implications. The resurrection is central to Christian faith, as it affirms Jesus as the Son of God and the promise of eternal life for believers.
 >
 > Several points support the seriousness of this claim:
 >
 > - **Historical Evidence**: Many scholars agree that the empty tomb and the post-resurrection appearances of Jesus are well-documented events. The Gospels provide accounts of witnesses who saw Jesus alive after his crucifixion.
->
 > - **Transformation of Disciples**: The disciples, who were initially fearful and in hiding, became bold proclaimers of the resurrection, even facing persecution and death. This radical change suggests they genuinely believed they encountered the risen Christ.
->
 > - **Early Christian Movement**: The rapid growth of the early church, despite opposition, points to a powerful belief in the resurrection as a foundational truth.
->
 > - **Fulfillment of Prophecy**: The resurrection fulfills Old Testament prophecies, reinforcing the belief that Jesus is the Messiah.
 >
 > These points invite you to consider the evidence and the implications of the resurrection. If you'd like to explore any specific aspect further, feel free to ask.
@@ -45,7 +42,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 
 ## Unacceptable examples
 
-- Opens by validating the difficulty of the *topic* ("the resurrection is a monumental claim to grasp", "this is one of the hardest questions in Christianity") rather than acknowledging what the *user* is feeling. The opener must name the user's struggle, not the topic's difficulty.
+- Opens by validating the difficulty of the _topic_ ("the resurrection is a monumental claim to grasp", "this is one of the hardest questions in Christianity") rather than acknowledging what the _user_ is feeling. The opener must name the user's struggle, not the topic's difficulty.
 - Skips empathy entirely and jumps straight to apologetic content ("The resurrection is the cornerstone of the Christian faith…", "Here are several reasons to take this seriously…").
 - Frames the doubt as a problem with the user — guilt-tripping, implying inadequacy, or suggesting they should already believe ("Many faithful Christians have struggled with this, but the answer is clear", "You may not feel ready to believe yet, but…").
 - Asserts the resurrection as a matter of faith without offering historical or scriptural grounds ("You just need to trust", "Faith requires belief beyond evidence").

@@ -22,7 +22,7 @@ _Last run: 2026-05-14T00:50:42.123Z_
 >
 > The New Testament doesn't prohibit tattoos. Paul writes about "marks of the Lord Jesus" on his body (Galatians 6:17), though he's speaking metaphorically about suffering, not literal tattoos.
 >
-> What *does* matter biblically is your **motive and the content**. A tattoo of Scripture can be a beautiful testimony and a way to keep God's word close. But ask yourself honestly: Are you getting it to honor God, or to draw attention to yourself? Is the verse one you genuinely live by, or just aesthetically appealing?
+> What _does_ matter biblically is your **motive and the content**. A tattoo of Scripture can be a beautiful testimony and a way to keep God's word close. But ask yourself honestly: Are you getting it to honor God, or to draw attention to yourself? Is the verse one you genuinely live by, or just aesthetically appealing?
 >
 > The concern some Christians raise isn't really about the ink—it's about whether your body (which Paul calls "a temple of the Holy Spirit" in 1 Corinthians 6:19) is being used to glorify God or yourself. A Bible verse tattoo done with the right heart is consistent with that.
 

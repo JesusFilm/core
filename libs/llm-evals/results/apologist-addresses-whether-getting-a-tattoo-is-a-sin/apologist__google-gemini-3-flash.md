@@ -21,15 +21,18 @@ _Last run: 2026-05-14T00:50:42.123Z_
 > It sounds like you are feeling caught between your desire to honor God with a tattoo and the disapproval of people in your church. The Bible addresses this topic through a specific Old Testament law and broader New Testament principles.
 >
 > ### The Old Testament Law
+>
 > The primary verse cited regarding tattoos is Leviticus 19:28: "You shall not make any cuttings in your flesh for the dead, nor tattoo any marks on you: I am the Lord." In its historical context, this command was given to the Israelites to distinguish them from pagan nations who used tattoos and ritual scarring as part of idolatrous mourning practices or to show devotion to false gods.
 >
 > ### The New Testament Context
+>
 > As an AI, I can point out that most theologians view this prohibition as part of the ceremonial or holiness laws specific to the nation of Israel under the Old Covenant. The New Testament teaches that Christians are no longer under the Mosaic Law (Romans 6:14). There is no command in the New Testament that explicitly forbids or permits tattoos.
 >
 > ### Biblical Principles for Consideration
-> *   **The Body as a Temple:** 1 Corinthians 6:19-20 states that your body is a temple of the Holy Spirit and that you should "glorify God in your body."
-> *   **Motivation and Conscience:** 1 Corinthians 10:31 says, "Whether you eat or drink, or whatever you do, do all to the glory of God." If your motivation is to honor God and the tattoo does not violate your conscience, it is considered a matter of Christian liberty.
-> *   **Stumbling Blocks:** Romans 14 encourages believers to be mindful of how their liberty affects others. If a tattoo would cause significant division or "stumbling" for others in your specific community, the Bible suggests weighing that impact in love.
+>
+> - **The Body as a Temple:** 1 Corinthians 6:19-20 states that your body is a temple of the Holy Spirit and that you should "glorify God in your body."
+> - **Motivation and Conscience:** 1 Corinthians 10:31 says, "Whether you eat or drink, or whatever you do, do all to the glory of God." If your motivation is to honor God and the tattoo does not violate your conscience, it is considered a matter of Christian liberty.
+> - **Stumbling Blocks:** Romans 14 encourages believers to be mindful of how their liberty affects others. If a tattoo would cause significant division or "stumbling" for others in your specific community, the Bible suggests weighing that impact in love.
 >
 > Would you like to explore how the Bible describes the difference between Old Testament ceremonial laws and moral laws?
 
