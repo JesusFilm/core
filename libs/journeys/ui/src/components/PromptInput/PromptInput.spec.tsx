@@ -132,5 +132,25 @@ describe('PromptInput', () => {
 
       expect(form?.className).toMatch(/prompt-input-shake/)
     })
+
+    it('does not shake when text is selected at the cap', () => {
+      const { container } = render(
+        <PromptInput
+          input={'x'.repeat(MAX_MESSAGE_CHARS)}
+          onInputChange={noop}
+          onSubmit={noop}
+          isLoading={false}
+        />
+      )
+      const form = container.querySelector('form')
+      const textarea = screen.getByRole('textbox', {
+        name: 'Chat message input'
+      }) as HTMLTextAreaElement
+      textarea.setSelectionRange(0, 5)
+
+      fireEvent.keyDown(textarea, { key: 'a' })
+
+      expect(form?.className).not.toMatch(/prompt-input-shake/)
+    })
   })
 })

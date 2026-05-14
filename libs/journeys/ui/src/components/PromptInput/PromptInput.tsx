@@ -104,7 +104,9 @@ export function PromptInput({
       }
       // Already at the cap and the user pressed a printable key — the
       // native maxLength drops the input silently, which feels broken.
-      // Shake the capsule so the limit is visible.
+      // Shake the capsule so the limit is visible. Skip the shake when
+      // text is selected: that keystroke replaces the selection and
+      // won't grow past the cap.
       if (
         input.length >= MAX_MESSAGE_CHARS &&
         e.key.length === 1 &&
@@ -112,7 +114,12 @@ export function PromptInput({
         !e.ctrlKey &&
         !e.altKey
       ) {
-        triggerShake()
+        const target = e.currentTarget
+        const start = target.selectionStart ?? input.length
+        const end = target.selectionEnd ?? input.length
+        if (end === start) {
+          triggerShake()
+        }
       }
     },
     [input, isLoading, onSubmit, triggerShake]
