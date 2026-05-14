@@ -1,4 +1,5 @@
-import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { transformer } from '@core/journeys/ui/transformer'
@@ -19,6 +20,11 @@ import { Conductor } from '../src/components/Conductor'
 
 export function Custom404(): ReactElement {
   const { t } = useTranslation('apps-journeys')
+  const router = useRouter()
+  const isTemplateGallery = router.asPath.startsWith('/template-gallery/')
+  const message = isTemplateGallery
+    ? t('This template gallery is not available.')
+    : t('This Journey is not available.')
   const blocks: Block[] = [
     {
       __typename: 'StepBlock',
@@ -40,7 +46,9 @@ export function Custom404(): ReactElement {
       parentOrder: 0,
       themeMode: null,
       themeName: null,
-      eventLabel: null
+      eventLabel: null,
+      showAssistant: null,
+      expandChatByDefault: null
     },
     {
       __typename: 'ImageBlock',
@@ -75,7 +83,7 @@ export function Custom404(): ReactElement {
       __typename: 'TypographyBlock',
       align: TypographyAlign.center,
       color: null,
-      content: t('This Journey is not available.'),
+      content: message,
       id: 'typog2-id',
       parentBlockId: '404-cardBlock-id',
       parentOrder: 1,

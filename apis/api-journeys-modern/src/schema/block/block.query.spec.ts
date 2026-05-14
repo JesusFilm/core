@@ -1,15 +1,19 @@
+import { GraphQLError } from 'graphql'
+import { type MockedFunction, vi } from 'vitest'
+
 import { getClient } from '../../../test/client'
 import { Action, ability } from '../../lib/auth/ability'
+import { fetchBlockWithJourneyAcl } from '../../lib/auth/fetchBlockWithJourneyAcl'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-jest.mock('../../lib/auth/ability', () => ({
+vi.mock('../../lib/auth/ability', () => ({
   Action: { Read: 'read' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../lib/auth/fetchBlockWithJourneyAcl', () => ({
-  fetchBlockWithJourneyAcl: jest.fn()
+vi.mock('../../lib/auth/fetchBlockWithJourneyAcl', () => ({
+  fetchBlockWithJourneyAcl: vi.fn()
 }))
 
 describe('block', () => {
@@ -29,11 +33,7 @@ describe('block', () => {
       }
     }
   `)
-
-  const {
-    fetchBlockWithJourneyAcl
-  } = require('../../lib/auth/fetchBlockWithJourneyAcl')
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockAbility = ability as MockedFunction<typeof ability>
 
   const id = 'blockId'
   const journey = { id: 'journeyId' }
@@ -48,11 +48,11 @@ describe('block', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns the block when authorized', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue(block)
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue(block)
     mockAbility.mockReturnValue(true)
 
     const result = await authClient({
@@ -79,7 +79,7 @@ describe('block', () => {
   })
 
   it('returns FORBIDDEN when unauthorized', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue(block)
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue(block)
     mockAbility.mockReturnValue(false)
 
     const result = await authClient({
@@ -98,8 +98,7 @@ describe('block', () => {
   })
 
   it('returns NOT_FOUND when block does not exist', async () => {
-    const { GraphQLError } = require('graphql')
-    fetchBlockWithJourneyAcl.mockRejectedValue(
+    ;(fetchBlockWithJourneyAcl as any).mockRejectedValue(
       new GraphQLError('block not found', {
         extensions: { code: 'NOT_FOUND' }
       })

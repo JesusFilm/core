@@ -1,5 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps, ReactElement, useState } from 'react'
 
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'

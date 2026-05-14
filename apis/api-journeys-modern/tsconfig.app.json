@@ -12,7 +12,7 @@
   "exclude": [
     "**/*.spec.ts",
     "**/*.spec.tsx",
-    "jest.config.ts",
+    "vitest.config.mts",
     "test/**/*.ts"
   ],
   "include": ["**/*.ts", "**/*.tsx"]

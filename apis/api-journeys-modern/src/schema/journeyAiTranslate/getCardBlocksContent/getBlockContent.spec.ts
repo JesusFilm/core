@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { Block } from '@core/prisma/journeys/client'
 
 import { getBlockContent } from './getBlockContent'
@@ -7,24 +9,24 @@ import { getRadioQuestionBlockContent } from './getRadioQuestionBlockContent'
 import { getVideoBlockContent } from './getVideoBlockContent'
 
 // Mock all helper imports
-jest.mock('./getButtonBlockContent', () => ({
-  getButtonBlockContent: jest.fn(() => 'button-content')
+vi.mock('./getButtonBlockContent', () => ({
+  getButtonBlockContent: vi.fn(() => 'button-content')
 }))
-jest.mock('./getImageBlockContent', () => ({
-  getImageBlockContent: jest.fn(() => Promise.resolve('image-content'))
+vi.mock('./getImageBlockContent', () => ({
+  getImageBlockContent: vi.fn(() => Promise.resolve('image-content'))
 }))
-jest.mock('./getRadioQuestionBlockContent', () => ({
-  getRadioQuestionBlockContent: jest.fn(() => 'radio-question-content')
+vi.mock('./getRadioQuestionBlockContent', () => ({
+  getRadioQuestionBlockContent: vi.fn(() => 'radio-question-content')
 }))
-jest.mock('./getVideoBlockContent', () => ({
-  getVideoBlockContent: jest.fn(() => Promise.resolve('video-content'))
+vi.mock('./getVideoBlockContent', () => ({
+  getVideoBlockContent: vi.fn(() => Promise.resolve('video-content'))
 }))
 
 describe('getBlockContent', () => {
   const blocks: Block[] = []
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns image content for ImageBlock', async () => {

@@ -3,9 +3,11 @@ name: reset-stage
 description: >-
   Reset the stage branch from main and re-merge all "on stage" PRs.
   Auto-resolves merge conflicts by accepting incoming changes (-X theirs).
-  Reports results to Slack with threaded details.
+  Posts a Slack notification only when an --apply run produced conflicts.
   Use when stage has conflicts, drift, or needs a clean rebuild.
 ---
+
+<!-- sync: simplified subset of .claude/commands/reset-stage.md (canonical). Keep the summary comment step aligned. -->
 
 # Reset Stage
 
@@ -26,13 +28,14 @@ Automates the stage branch reset process documented in
 2. Run the script. Default is dry-run (safe, no changes):
 
    ```bash
-   # Dry run — default, safe, no changes
+   # Dry run — default, safe, no changes (never posts to Slack)
    ./tools/scripts/reset-stage.sh
 
-   # Actual reset (destructive, prompts for confirmation)
+   # Actual reset (destructive, prompts for confirmation).
+   # Posts to Slack only if the run produced conflicts.
    ./tools/scripts/reset-stage.sh --apply
 
-   # Actual reset, skip Slack notification
+   # Hard opt-out: never post to Slack, even if conflicts occur.
    ./tools/scripts/reset-stage.sh --apply --no-slack
    ```
 
@@ -40,7 +43,10 @@ Automates the stage branch reset process documented in
 
 4. If `--apply` was used, remind the user:
    - Stage deploy workflows will trigger automatically on push
-   - The Slack channel has been notified with a full breakdown
+   - Slack was notified **only if** the run had auto-resolved or failed
+     conflicts. Clean apply runs and dry runs stay silent — this is by
+     design (ENG-3679) so the channel only fires when someone's on-stage
+     PR may have actually been touched.
    - Any truly unresolvable PRs (very rare) need their authors to investigate
 
 ## Trigger phrases

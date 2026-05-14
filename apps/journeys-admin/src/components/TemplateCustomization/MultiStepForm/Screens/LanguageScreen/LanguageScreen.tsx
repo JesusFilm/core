@@ -10,7 +10,7 @@ import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import uniqBy from 'lodash/uniqBy'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
@@ -31,7 +31,7 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Translate from '@core/shared/ui/icons/Translate'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { LOCALE_LANGUAGES } from '../../../../../../middleware'
+import { LOCALE_LANGUAGES } from '../../../../../../proxy'
 import { useAuth } from '../../../../../libs/auth'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
@@ -382,7 +382,7 @@ export function LanguageScreen({
 
       if (duplicatedJourneyId == null) return
 
-      if (needsTranslation && isSignedIn) {
+      if (needsTranslation && (isSignedIn || isGuestFlowEnabled)) {
         const sourceLanguageName =
           journey.language.name.find((name) => !name.primary)?.value ?? ''
         const targetLanguageName =

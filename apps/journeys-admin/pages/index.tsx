@@ -1,7 +1,7 @@
 import Stack from '@mui/material/Stack'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 
@@ -34,7 +34,8 @@ export default function IndexPage(): ReactElement {
   }, [user?.id, query, activeTeam, refetch])
 
   const currentContentType =
-    (router?.query?.type as 'journeys' | 'templates') ?? 'journeys'
+    (router?.query?.type as 'journeys' | 'templates' | 'collections') ??
+    'journeys'
   const showSidePanel = currentContentType === 'journeys'
 
   const userInfo = {

@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import { Formik, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 import { boolean, object, string } from 'yup'
 
@@ -41,6 +41,8 @@ interface CopyToTeamDialogProps {
   isTranslating?: boolean
   journeyIsTemplate?: boolean
   journeyFromTemplateId?: string | null
+  // When true, the team dropdown defaults to the user's active team.
+  defaultToActiveTeam?: boolean
 }
 
 interface JourneyLanguage {
@@ -86,10 +88,11 @@ export function CopyToTeamDialog({
   translationProgress,
   isTranslating = false,
   journeyIsTemplate,
-  journeyFromTemplateId
+  journeyFromTemplateId,
+  defaultToActiveTeam = false
 }: CopyToTeamDialogProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const { query, setActiveTeam } = useTeam()
+  const { query, setActiveTeam, activeTeam } = useTeam()
   const teams = query?.data?.teams ?? []
   const [updateLastActiveTeamId, { client }] =
     useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
@@ -170,7 +173,9 @@ export function CopyToTeamDialog({
   return (
     <Formik<FormValues>
       initialValues={{
-        teamSelect: teams.length === 1 ? teams[0].id : '',
+        teamSelect:
+          (defaultToActiveTeam ? activeTeam?.id : undefined) ??
+          (teams.length === 1 ? teams[0].id : ''),
         languageSelect: undefined,
         showTranslation: false
       }}

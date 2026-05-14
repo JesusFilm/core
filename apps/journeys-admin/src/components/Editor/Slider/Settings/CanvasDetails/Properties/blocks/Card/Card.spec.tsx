@@ -37,6 +37,8 @@ const createCard = (
   backdropBlur: null,
   eventLabel: null,
   children: [],
+  showAssistant: null,
+  expandChatByDefault: null,
   ...overrides
 })
 

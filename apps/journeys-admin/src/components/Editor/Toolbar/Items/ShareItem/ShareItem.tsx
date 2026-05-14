@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack'
 import { SxProps, Theme } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ComponentProps, MouseEvent, ReactElement, useState } from 'react'
 
