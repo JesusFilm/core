@@ -59,9 +59,6 @@ jobs:
       IMAGE_TAG: ${{ github.sha }}
       DOPPLER_CONFIG: ${{ inputs.env == 'prod' && 'prd' || 'stg' }}
     runs-on: blacksmith-2vcpu-ubuntu-2204
-    strategy:
-      matrix:
-        node-version: [24]
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
@@ -74,7 +71,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 24
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
