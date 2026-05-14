@@ -99,14 +99,7 @@ libs/llm-evals/results/
 - **`summary.md`** — single aggregate report. Includes the full matrix (every known cell with its score, pass/fail, last-run timestamp, link to the per-cell report) and a reasoning section grouping the judge's `reason` text by scenario. This is the one file to scan to see the full landscape.
 - **`<scenario-slug>/<provider>__<modelId>.md`** — the canonical artefact for one cell. Contains the prompt label, model, score (with threshold), scenario description, query, actual output, judge's reason, and both positive + negative criteria. Starts with a hidden `<!-- llm-eval-meta {...} -->` JSON block that the runner reads on subsequent invocations to populate the summary even for cells that didn't run this time.
 
-The whole `results/` directory is gitignored. To commit a specific cell or scenario as a baseline:
-
-```bash
-git add -f libs/llm-evals/results/summary.md
-git add -f libs/llm-evals/results/<scenario-slug>/<provider>__<modelId>.md
-# or commit a whole scenario folder
-git add -f libs/llm-evals/results/<scenario-slug>/
-```
+The `results/` directory **is tracked**, so the current matrix state and per-cell artefacts are visible alongside the harness. Re-running the suite produces overwriting diffs that can be committed to surface new state or left uncommitted if they are just noise. Only `.env` and `.env.local` (secrets) are excluded from version control.
 
 #### Selective re-runs
 
@@ -166,7 +159,7 @@ Once a scenario has had a few real runs, you can ask a stronger model — by def
 - Reads the scenario's current rubric and the system prompt under evaluation from Langfuse.
 - Reads up to N most recent per-cell artifacts from `results/<scenario-slug>/` so its suggestions are anchored in real model behaviour, not theoretical failure modes.
 - Returns sharper positives (each one observable — a reader can point at a sentence and say "yes, this meets the criterion") and sharper negatives (each one a specific failure mode, ideally one the current rubric does not catch).
-- **Never modifies your scenario files.** It writes a sidecar at `libs/llm-evals/proposed-prompts/<scenario-slug>.rubric.md` containing the rationale, what changed, and a ready-to-paste TypeScript snippet. You read it, decide what to apply, and edit the `.eval.ts` file manually.
+- **Never modifies your scenario files.** It writes a proposal file at `libs/llm-evals/proposed-prompts/<scenario-slug>.rubric.md` containing the rationale, what changed, and a ready-to-paste TypeScript snippet. You read it, decide what to apply, and edit the `.eval.ts` file manually.
 
 ```bash
 # Polish one scenario, default polisher (apologist:anthropic/claude/sonnet-4.6)
@@ -188,7 +181,7 @@ pnpm exec nx run llm-evals:polish-rubric --scenario=<slug> --no-runs
 
 1. Run the eval suite at least once so `results/<scenario-slug>/` exists with observed outputs.
 2. Run `polish-rubric` for that scenario.
-3. Open the sidecar in `proposed-prompts/` and read the rationale + change summary.
+3. Open the proposal file in `proposed-prompts/` and read the rationale + change summary.
 4. If you accept the proposal, copy the snippet into the `.eval.ts` file.
 5. Re-run the eval to confirm the new rubric scores cells the way you expect.
 
@@ -285,7 +278,8 @@ libs/llm-evals/
 │   ├── judge.ts                       LLM-as-judge → { pass, score, reason }
 │   └── index.ts
 ├── scenarios/<group>/*.eval.ts        scenario definitions (discovered automatically)
-├── results/                           one folder per scenario, one .md per model cell + summary.md (gitignored)
+├── results/                           one folder per scenario, one .md per model cell + summary.md (tracked)
+├── proposed-prompts/                  rubric drafts produced by polish-rubric (tracked)
 ├── .env.example                       documents every variable the suite reads
 └── .env / .env.local                  written by fetch-secrets / manual overrides (gitignored)
 ```

@@ -1,8 +1,3 @@
-# Per-run eval reports. Gitignored by default to keep `git status` clean.
-# To commit a specific report (e.g. a baseline you want to diff against
-# later), force-add it: `git add -f libs/llm-evals/results/<file>.md`.
-results/
-
-# Local prompt drafts staged for copy-paste into Langfuse. The prompt is
-# not meant to live in this open-source repo — drafts here are scratch.
-proposed-prompts/
+# Local Doppler-managed secrets. Never commit.
+.env
+.env.local
