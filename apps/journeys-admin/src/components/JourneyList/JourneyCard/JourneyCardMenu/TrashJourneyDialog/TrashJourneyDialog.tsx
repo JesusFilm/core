@@ -27,6 +27,14 @@ export interface TrashJourneyDialogProps {
   handleClose: () => void
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
   fromTemplateId?: string | null
+  /**
+   * When true, render the template-flavoured copy ("Trash Template?",
+   * "Template trashed", etc.). The underlying mutation is unchanged —
+   * templates are journeys with `template: true` on the server, so
+   * `journeysTrash` handles both. Plumbed from `JourneyCardMenu` so the
+   * trash flow on the template gallery says the right thing (NES-1669).
+   */
+  template?: boolean
 }
 
 export function TrashJourneyDialog({
@@ -34,7 +42,8 @@ export function TrashJourneyDialog({
   open,
   handleClose,
   refetch,
-  fromTemplateId
+  fromTemplateId,
+  template
 }: TrashJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -68,10 +77,13 @@ export function TrashJourneyDialog({
       }
 
       await refetch?.()
-      enqueueSnackbar(t('Journey trashed'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
+      enqueueSnackbar(
+        template === true ? t('Template trashed') : t('Journey trashed'),
+        {
+          variant: 'success',
+          preventDuplicate: true
+        }
+      )
       handleClose()
     } catch (error) {
       if (error instanceof Error) {
@@ -89,7 +101,11 @@ export function TrashJourneyDialog({
     <Dialog
       open={open}
       onClose={handleClose}
-      dialogTitle={{ title: t('Trash Journey?'), closeButton: true }}
+      dialogTitle={{
+        title:
+          template === true ? t('Trash Template?') : t('Trash Journey?'),
+        closeButton: true
+      }}
       loading={loading}
       dialogAction={{
         onSubmit: handleTrash,
@@ -99,11 +115,17 @@ export function TrashJourneyDialog({
       testId="TrashJourneyDialog"
     >
       <Typography>
-        {t(
-          'By selecting “delete”, this journey will be moved to the trash. It will ' +
-            'remain there for 40 days, before being automatically and permanently ' +
-            'deleted.'
-        )}
+        {template === true
+          ? t(
+              'By selecting “delete”, this template will be moved to the trash. It will ' +
+                'remain there for 40 days, before being automatically and permanently ' +
+                'deleted.'
+            )
+          : t(
+              'By selecting “delete”, this journey will be moved to the trash. It will ' +
+                'remain there for 40 days, before being automatically and permanently ' +
+                'deleted.'
+            )}
       </Typography>
     </Dialog>
   )

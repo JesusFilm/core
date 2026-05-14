@@ -201,4 +201,61 @@ describe('TrashJourneyDialog', () => {
     expect(handleClose).toHaveBeenCalled()
     expect(getByText('Journey trashed')).toBeInTheDocument()
   })
+
+  // NES-1669: TrashJourneyDialog is shared between regular journeys and
+  // templates. When the parent passes `template`, the dialog title, body,
+  // and success snackbar all switch to template-flavoured copy. The
+  // underlying mutation is unchanged — `journeysTrash` handles both.
+  it('shows template-flavoured copy and snackbar when template is true (NES-1669)', async () => {
+    const handleClose = jest.fn()
+    const result = jest.fn(() => ({
+      data: {
+        journeysTrash: [
+          {
+            id: 'journey-id',
+            __typename: 'Journey',
+            status: JourneyStatus.trashed,
+            fromTemplateId: null
+          }
+        ]
+      }
+    }))
+
+    const { getByRole, getByText, queryByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_TRASH,
+              variables: {
+                ids: ['journey-id']
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <TrashJourneyDialog
+            id="journey-id"
+            open
+            handleClose={handleClose}
+            template
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(getByText('Trash Template?')).toBeInTheDocument()
+    expect(queryByText('Trash Journey?')).not.toBeInTheDocument()
+    expect(
+      getByText(/this template will be moved to the trash/i)
+    ).toBeInTheDocument()
+
+    fireEvent.click(getByRole('button', { name: 'Delete' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(handleClose).toHaveBeenCalled()
+    expect(getByText('Template trashed')).toBeInTheDocument()
+    expect(queryByText('Journey trashed')).not.toBeInTheDocument()
+  })
 })
