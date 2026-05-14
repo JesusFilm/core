@@ -1,4 +1,10 @@
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  writeFileSync
+} from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -79,7 +85,12 @@ async function executeCell(cell: MatrixCell): Promise<CellRun> {
       systemPrompt: run.systemPrompt,
       output
     })
-    return { scenario: cell.scenario, modelSpec: cell.modelSpec, output, verdict }
+    return {
+      scenario: cell.scenario,
+      modelSpec: cell.modelSpec,
+      output,
+      verdict
+    }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     return {
@@ -197,7 +208,9 @@ function buildCellMarkdown(run: CellRun, meta: CellMeta): string {
   lines.push('')
   lines.push(`_Last run: ${meta.lastRun}_`)
   lines.push('')
-  lines.push(`- **Prompt:** \`${run.scenario.promptName}@${run.scenario.promptLabel}\``)
+  lines.push(
+    `- **Prompt:** \`${run.scenario.promptName}@${run.scenario.promptLabel}\``
+  )
   lines.push(`- **Model:** ${meta.provider}:${meta.modelId}`)
   lines.push(
     `- **Score:** ${run.verdict.score.toFixed(2)} (pass=${run.verdict.pass}, threshold=${threshold})`
@@ -385,7 +398,11 @@ function modelKey(spec: ScenarioModel): string {
   return `${spec.provider}:${spec.modelId}`
 }
 
-function cellKey(meta: { scenarioSlug: string; provider: string; modelId: string }): string {
+function cellKey(meta: {
+  scenarioSlug: string
+  provider: string
+  modelId: string
+}): string {
   return `${meta.scenarioSlug}|${meta.provider}:${meta.modelId}`
 }
 

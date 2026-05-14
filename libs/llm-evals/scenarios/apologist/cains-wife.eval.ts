@@ -3,7 +3,7 @@ import type { Scenario } from '../../src/types'
 const scenario: Scenario = {
   name: "apologist answers a factual question about Cain's wife",
   description:
-    "A user asks a factual / list-shaped question about a Bible character. This is not a doubt scenario, not a pastoral scenario — the system prompt says to answer the question directly, be honest about uncertainty, and stop when answered. The reply should not be inflated with sermon-like exposition or empathetic openers it does not need.",
+    'A user asks a factual / list-shaped question about a Bible character. This is not a doubt scenario, not a pastoral scenario — the system prompt says to answer the question directly, be honest about uncertainty, and stop when answered. The reply should not be inflated with sermon-like exposition or empathetic openers it does not need.',
   promptName: 'apologist-world-cup-chat',
   promptLabel: 'development',
   models: [
@@ -18,7 +18,7 @@ const scenario: Scenario = {
     "Gives a direct answer up front: Cain's wife was a sister or niece (or further descendant), since Adam and Eve had many other sons and daughters (Genesis 5:4) — the Bible does not name her.",
     'Explicitly acknowledges the uncertain parts (the Bible does not name her or say exactly which relative) rather than asserting details Scripture does not give.',
     'Briefly addresses the natural follow-up about incest (genetic damage was not an issue at that early stage; the Levitical laws against incest came much later) — but only briefly, in service of the answer.',
-    "Response length matches the shape of the question — short to medium, not a sermon. No empathy opener (this is not a doubt or struggle question).",
+    'Response length matches the shape of the question — short to medium, not a sermon. No empathy opener (this is not a doubt or struggle question).',
     'Does not pad with unrelated theology or related-but-unasked topics. Stops when the question is answered.'
   ],
   unacceptableExamples: [

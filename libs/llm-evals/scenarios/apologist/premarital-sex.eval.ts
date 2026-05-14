@@ -3,7 +3,7 @@ import type { Scenario } from '../../src/types'
 const scenario: Scenario = {
   name: 'apologist addresses premarital sex with both clarity and grace',
   description:
-    'A user honestly asks whether premarital sex is wrong if the couple is committed and planning marriage. The reply must hold the biblical position (sexual union is reserved for marriage) without softening it for politeness, deliver the truth with grace rather than shame, and engage the user\'s actual argument (commitment, planned marriage) rather than ignoring it.',
+    "A user honestly asks whether premarital sex is wrong if the couple is committed and planning marriage. The reply must hold the biblical position (sexual union is reserved for marriage) without softening it for politeness, deliver the truth with grace rather than shame, and engage the user's actual argument (commitment, planned marriage) rather than ignoring it.",
   promptName: 'apologist-world-cup-chat',
   promptLabel: 'development',
   models: [

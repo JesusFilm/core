@@ -51,7 +51,8 @@ async function main(): Promise<void> {
   try {
     const { text, usage, finishReason } = await generateText({
       model,
-      prompt: "Reply with one short word so we can confirm routing. Don't elaborate."
+      prompt:
+        "Reply with one short word so we can confirm routing. Don't elaborate."
     })
     console.log(`HTTP        = succeeded in ${Date.now() - t0}ms`)
     console.log(`finishReason = ${finishReason}`)

@@ -112,10 +112,10 @@ git add -f libs/llm-evals/results/<scenario-slug>/
 
 By default, every scenario × model cell runs. Two env vars narrow the matrix:
 
-| Env var          | Effect                                                                          |
-| ---------------- | ------------------------------------------------------------------------------- |
-| `EVAL_SCENARIO`  | Slug of a single scenario (lowercase, dash-separated form of `scenario.name`).  |
-| `EVAL_MODEL`     | Single cell within that scenario, in `provider:modelId` form.                   |
+| Env var         | Effect                                                                         |
+| --------------- | ------------------------------------------------------------------------------ |
+| `EVAL_SCENARIO` | Slug of a single scenario (lowercase, dash-separated form of `scenario.name`). |
+| `EVAL_MODEL`    | Single cell within that scenario, in `provider:modelId` form.                  |
 
 ```bash
 # Just one scenario, all its models
@@ -147,14 +147,8 @@ const scenario: Scenario = {
     { provider: 'apologist', modelId: 'openai/gpt/4o-mini' }
   ],
   query: 'The user message to send to the chat.',
-  acceptableExamples: [
-    'A description of what an acceptable response covers / does.',
-    'Another positive criterion the output must meet.'
-  ],
-  unacceptableExamples: [
-    'A specific anti-pattern the output must NOT exhibit.',
-    'Another concrete failure mode — e.g. uses platitudes, opens with intellectual rather than emotional empathy, ends with an exhortation instead of an invitation.'
-  ],
+  acceptableExamples: ['A description of what an acceptable response covers / does.', 'Another positive criterion the output must meet.'],
+  unacceptableExamples: ['A specific anti-pattern the output must NOT exhibit.', 'Another concrete failure mode — e.g. uses platitudes, opens with intellectual rather than emotional empathy, ends with an exhortation instead of an invitation.'],
   passingScore: 0.7 // optional; default 0.7
 }
 
@@ -163,7 +157,7 @@ export default scenario
 
 The runner discovers new files automatically — no registration step.
 
-**Why both `acceptableExamples` and `unacceptableExamples`?** Positive criteria alone let the judge accept *"technically meets the spirit"* interpretations — e.g. a cool intellectual opener can satisfy *"acknowledges the doubt"* even when it never names what the user is feeling. Concrete anti-patterns force the judge to penalise specific failure modes even when the positive criteria appear met. Treat the two lists as a pair: every positive criterion you care about should have a corresponding anti-pattern that catches the most plausible way a model fakes its way through. `unacceptableExamples` is optional, but most scenarios benefit from at least three.
+**Why both `acceptableExamples` and `unacceptableExamples`?** Positive criteria alone let the judge accept _"technically meets the spirit"_ interpretations — e.g. a cool intellectual opener can satisfy _"acknowledges the doubt"_ even when it never names what the user is feeling. Concrete anti-patterns force the judge to penalise specific failure modes even when the positive criteria appear met. Treat the two lists as a pair: every positive criterion you care about should have a corresponding anti-pattern that catches the most plausible way a model fakes its way through. `unacceptableExamples` is optional, but most scenarios benefit from at least three.
 
 ### Refining a rubric with a stronger model (`polish-rubric`)
 
@@ -224,16 +218,16 @@ Each scenario declares its own `models[]`. To add a model to a scenario, append 
 ```ts
 models: [
   { provider: 'openrouter', modelId: 'google/gemini-3-flash-preview' },
-  { provider: 'apologist',  modelId: 'openai/gpt/4o-mini' },
-  { provider: 'apologist',  modelId: 'anthropic/claude/sonnet-4.6' }
+  { provider: 'apologist', modelId: 'openai/gpt/4o-mini' },
+  { provider: 'apologist', modelId: 'anthropic/claude/sonnet-4.6' }
 ]
 ```
 
-| Provider     | Required env vars                                 | modelId format                              |
-| ------------ | ------------------------------------------------- | ------------------------------------------- |
-| `openrouter` | `OPENROUTER_API_KEY`                              | OpenRouter slug, e.g. `google/gemini-3-flash-preview` |
-| `gemini`     | `GOOGLE_GENERATIVE_AI_API_KEY`                    | Google model id, e.g. `gemini-2.0-flash`    |
-| `apologist`  | `APOLOGIST_API_URL`, `APOLOGIST_API_KEY`          | Gateway slug, see slug pattern below        |
+| Provider     | Required env vars                        | modelId format                                        |
+| ------------ | ---------------------------------------- | ----------------------------------------------------- |
+| `openrouter` | `OPENROUTER_API_KEY`                     | OpenRouter slug, e.g. `google/gemini-3-flash-preview` |
+| `gemini`     | `GOOGLE_GENERATIVE_AI_API_KEY`           | Google model id, e.g. `gemini-2.0-flash`              |
+| `apologist`  | `APOLOGIST_API_URL`, `APOLOGIST_API_KEY` | Gateway slug, see slug pattern below                  |
 
 ### Apologist gateway slug pattern
 
@@ -245,12 +239,12 @@ The Apologist gateway is not openly documented, but the slug follows a consisten
 4. **Preserve internal punctuation** — dots in version numbers (`4.5`, `4.6`) stay as dots.
 5. Use `/` between segments: `<vendor>/<family>/<rest>`.
 
-| Display name on pricing page | Slug                                  |
-| ---------------------------- | ------------------------------------- |
-| OpenAI GPT-4o mini           | `openai/gpt/4o-mini`                  |
-| Google Gemini 3 Flash        | `google/gemini/3-flash`               |
-| Anthropic Claude Haiku 4.5   | `anthropic/claude/haiku-4.5`          |
-| Anthropic Claude Sonnet 4.6  | `anthropic/claude/sonnet-4.6`         |
+| Display name on pricing page | Slug                          |
+| ---------------------------- | ----------------------------- |
+| OpenAI GPT-4o mini           | `openai/gpt/4o-mini`          |
+| Google Gemini 3 Flash        | `google/gemini/3-flash`       |
+| Anthropic Claude Haiku 4.5   | `anthropic/claude/haiku-4.5`  |
+| Anthropic Claude Sonnet 4.6  | `anthropic/claude/sonnet-4.6` |
 
 A wrong slug returns `Unprocessable Entity` from the gateway and the eval cell captures that error in its report file — fail-loud, easy to spot.
 
@@ -258,20 +252,20 @@ A wrong slug returns `Unprocessable Entity` from the gateway and the eval cell c
 
 Each existing apologist scenario lists the same matrix so cross-scenario behaviour can be compared on the same axis:
 
-| Model id                                              | Tier                         | Notes                                              |
-| ----------------------------------------------------- | ---------------------------- | -------------------------------------------------- |
-| `openrouter:google/gemini-3-flash-preview`            | OpenRouter baseline          | Mirrors `apps/journeys/pages/api/chat/index.ts`    |
-| `apologist:openai/gpt/4o-mini`                        | Apologist Limited (1 credit) | Original gateway default; consistently underperforms on doubt scenarios. |
-| `apologist:google/gemini/3-flash`                     | Apologist Limited (2 credits)| Closest apples-to-apples comparison vs OpenRouter. |
-| `apologist:anthropic/claude/haiku-4.5`                | Apologist Limited (2 credits)| Cheap Anthropic option.                            |
-| `apologist:anthropic/claude/sonnet-4.6`               | Apologist Premium (7 credits)| Highest-performing on the doubt / pastoral scenarios so far. |
+| Model id                                   | Tier                          | Notes                                                                    |
+| ------------------------------------------ | ----------------------------- | ------------------------------------------------------------------------ |
+| `openrouter:google/gemini-3-flash-preview` | OpenRouter baseline           | Mirrors `apps/journeys/pages/api/chat/index.ts`                          |
+| `apologist:openai/gpt/4o-mini`             | Apologist Limited (1 credit)  | Original gateway default; consistently underperforms on doubt scenarios. |
+| `apologist:google/gemini/3-flash`          | Apologist Limited (2 credits) | Closest apples-to-apples comparison vs OpenRouter.                       |
+| `apologist:anthropic/claude/haiku-4.5`     | Apologist Limited (2 credits) | Cheap Anthropic option.                                                  |
+| `apologist:anthropic/claude/sonnet-4.6`    | Apologist Premium (7 credits) | Highest-performing on the doubt / pastoral scenarios so far.             |
 
 **The judge is independent** of any of these — it stays on OpenRouter by default so that running a scenario against the cost-billed apologist gateway does not double-bill it for judging. Override the judge only when you explicitly want apples-to-apples scoring against the same model:
 
-| Env var                 | Effect                                                                         | Default                       |
-| ----------------------- | ------------------------------------------------------------------------------ | ----------------------------- |
-| `EVAL_JUDGE_PROVIDER`   | `openrouter` \| `gemini` \| `apologist`                                        | `openrouter`                  |
-| `EVAL_JUDGE_MODEL`      | model id within that provider                                                  | `google/gemini-3-flash-preview` (openrouter) / `gemini-2.0-flash` (gemini) / `openai/gpt/4o-mini` (apologist) |
+| Env var               | Effect                                  | Default                                                                                                       |
+| --------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `EVAL_JUDGE_PROVIDER` | `openrouter` \| `gemini` \| `apologist` | `openrouter`                                                                                                  |
+| `EVAL_JUDGE_MODEL`    | model id within that provider           | `google/gemini-3-flash-preview` (openrouter) / `gemini-2.0-flash` (gemini) / `openai/gpt/4o-mini` (apologist) |
 
 For one-off env overrides without re-fetching from Doppler, drop the key in `libs/llm-evals/.env.local` (gitignored, takes precedence over `.env`).
 

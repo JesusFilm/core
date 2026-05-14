@@ -5,10 +5,6 @@
     "types": ["node"]
   },
   "files": [],
-  "exclude": [
-    "**/*.spec.ts",
-    "**/*.eval.ts",
-    "vitest.evals.mts"
-  ],
+  "exclude": ["**/*.spec.ts", "**/*.eval.ts", "vitest.evals.mts"],
   "include": ["src/**/*.ts", "scripts/**/*.ts"]
 }

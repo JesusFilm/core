@@ -14,7 +14,7 @@ const scenario: Scenario = {
     { provider: 'apologist', modelId: 'anthropic/claude/sonnet-4.6' }
   ],
   query:
-    "If God is all-powerful and all-loving, why does He allow suffering and evil in the world? I lost my mother to cancer last year and I keep coming back to this question. How do Christians actually answer this?",
+    'If God is all-powerful and all-loving, why does He allow suffering and evil in the world? I lost my mother to cancer last year and I keep coming back to this question. How do Christians actually answer this?',
   acceptableExamples: [
     'Opens with warm, person-directed empathy that names the loss specifically ("I am so sorry about your mother", "Losing someone to cancer is devastating"). The user, not the topic, is the subject of the empathy.',
     'Covers at least two of the major Christian responses to the problem of evil: the free-will defence, soul-making / character formation, the suffering of Christ as God-with-us, eschatological hope (e.g. Revelation 21:4, Romans 8), or the book of Job and the limits of human understanding.',

@@ -64,11 +64,14 @@ async function main(): Promise<void> {
 
   const scenarioFiles = findScenarioFiles(scenariosRoot)
   if (scenarioFiles.length === 0) {
-    console.error(`No scenario files found under ${relative(repoRoot, scenariosRoot)}`)
+    console.error(
+      `No scenario files found under ${relative(repoRoot, scenariosRoot)}`
+    )
     process.exit(1)
   }
 
-  const allLoaded: Array<{ file: string; scenario: Scenario; slug: string }> = []
+  const allLoaded: Array<{ file: string; scenario: Scenario; slug: string }> =
+    []
   for (const file of scenarioFiles) {
     const scenario = await loadScenario(file)
     allLoaded.push({ file, scenario, slug: slugify(scenario.name) })
@@ -141,7 +144,11 @@ async function polish({
     'You reply with strict JSON and no surrounding text or code fences.'
   ].join('\n')
 
-  const polisherPrompt = buildPolisherPrompt({ scenario, systemPrompt, runData })
+  const polisherPrompt = buildPolisherPrompt({
+    scenario,
+    systemPrompt,
+    runData
+  })
 
   const { text } = await generateText({
     model,
@@ -168,7 +175,9 @@ function buildPolisherPrompt({
   lines.push(
     'We run an evaluation suite that tests an LLM-driven chat model. For each scenario we maintain a rubric:'
   )
-  lines.push('- `acceptableExamples` — positive criteria a good response should meet.')
+  lines.push(
+    '- `acceptableExamples` — positive criteria a good response should meet.'
+  )
   lines.push(
     '- `unacceptableExamples` — anti-patterns a response must NOT exhibit.'
   )
@@ -268,17 +277,19 @@ function buildPolisherPrompt({
     'Reply with a single JSON object — no surrounding text, no code fences:'
   )
   lines.push('')
-  lines.push(
-    '```'
-  )
+  lines.push('```')
   lines.push('{')
   lines.push('  "acceptableExamples": ["...", "..."],')
   lines.push('  "unacceptableExamples": ["...", "..."],')
   lines.push('  "changes": {')
-  lines.push('    "rationale": "one paragraph explaining the overall shape of your edits",')
+  lines.push(
+    '    "rationale": "one paragraph explaining the overall shape of your edits",'
+  )
   lines.push('    "added": ["each new criterion you introduced"],')
   lines.push('    "removed": ["each criterion you dropped (paraphrased)"],')
-  lines.push('    "refined": ["each criterion you reworded for sharper observability"]')
+  lines.push(
+    '    "refined": ["each criterion you reworded for sharper observability"]'
+  )
   lines.push('  }')
   lines.push('}')
   lines.push('```')
@@ -333,7 +344,10 @@ function buildSidecar({
   )
   lines.push('')
 
-  if (proposed.changes?.rationale != null && proposed.changes.rationale !== '') {
+  if (
+    proposed.changes?.rationale != null &&
+    proposed.changes.rationale !== ''
+  ) {
     lines.push('## Rationale')
     lines.push('')
     lines.push(proposed.changes.rationale)
@@ -394,7 +408,9 @@ function parseCellArtifact(filePath: string): CellArtifact | null {
   if (metaStart === -1) return null
   const metaEnd = content.indexOf('-->', metaStart)
   if (metaEnd === -1) return null
-  const metaJson = content.slice(metaStart + '<!-- llm-eval-meta'.length, metaEnd).trim()
+  const metaJson = content
+    .slice(metaStart + '<!-- llm-eval-meta'.length, metaEnd)
+    .trim()
   let meta: {
     provider?: unknown
     modelId?: unknown
@@ -460,9 +476,9 @@ function findScenarioFiles(root: string): string[] {
 }
 
 async function loadScenario(file: string): Promise<Scenario> {
-  const mod = (await import(
-    /* webpackChunkName: "scenario" */ file
-  )) as { default: Scenario }
+  const mod = (await import(/* webpackChunkName: "scenario" */ file)) as {
+    default: Scenario
+  }
   return mod.default
 }
 
@@ -477,12 +493,14 @@ function slugify(text: string): string {
 function parseModelSpec(raw: string): ScenarioModel {
   const idx = raw.indexOf(':')
   if (idx === -1)
-    throw new Error(
-      `--polisher must be "<provider>:<modelId>" — got "${raw}"`
-    )
+    throw new Error(`--polisher must be "<provider>:<modelId>" — got "${raw}"`)
   const provider = raw.slice(0, idx)
   const modelId = raw.slice(idx + 1)
-  if (provider !== 'openrouter' && provider !== 'gemini' && provider !== 'apologist')
+  if (
+    provider !== 'openrouter' &&
+    provider !== 'gemini' &&
+    provider !== 'apologist'
+  )
     throw new Error(
       `--polisher provider must be openrouter | gemini | apologist — got "${provider}"`
     )
@@ -500,7 +518,8 @@ function parseArgs(argv: string[]): CliArgs {
   for (const arg of argv) {
     if (arg === '--all') all = true
     else if (arg === '--no-runs') withRuns = false
-    else if (arg.startsWith('--scenario=')) scenario = arg.slice('--scenario='.length)
+    else if (arg.startsWith('--scenario='))
+      scenario = arg.slice('--scenario='.length)
     else if (arg.startsWith('--polisher='))
       polisher = parseModelSpec(arg.slice('--polisher='.length))
     else {

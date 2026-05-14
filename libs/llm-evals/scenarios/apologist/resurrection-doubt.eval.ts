@@ -14,7 +14,7 @@ const scenario: Scenario = {
     { provider: 'apologist', modelId: 'anthropic/claude/sonnet-4.6' }
   ],
   query:
-    "Honestly, I struggle to believe Jesus actually rose from the dead. Why should I take that seriously?",
+    'Honestly, I struggle to believe Jesus actually rose from the dead. Why should I take that seriously?',
   acceptableExamples: [
     'Opens with warm, person-directed empathy that names what the user is feeling or experiencing ("I hear that you\'re wrestling with this", "It makes sense that this is hard for you") — not just acknowledgement that the topic is intellectually difficult.',
     'Provides at least one concrete reason — historical (empty tomb, multiple eyewitnesses, willingness of disciples to die for the claim) or scriptural (e.g. 1 Corinthians 15) — rather than asserting faith without grounds.',

@@ -19,8 +19,8 @@ const scenario: Scenario = {
     'States clearly that moderate alcohol consumption is not in itself a sin — distinguishes consumption from drunkenness, which Scripture does forbid (Ephesians 5:18, Proverbs 23:29—35).',
     'Notes that Jesus drank wine (e.g. John 2:1—11, Matthew 26:29) and that Scripture sometimes speaks of wine positively (Psalm 104:15, Ecclesiastes 9:7), grounding the answer in actual texts rather than just generalities.',
     "Engages the user's specific case (a glass with dinner) directly — does not only answer the abstract question.",
-    "Addresses the relevant principles: drunkenness, addiction risk (1 Corinthians 6:12), and not causing a weaker brother to stumble (Romans 14, 1 Corinthians 8:9—13) — without sermonising on them.",
-    'Ends with a specific follow-up question tied to the user\'s situation (e.g. about whether they are concerned about a particular conscience issue, or about how alcohol affects others around them).'
+    'Addresses the relevant principles: drunkenness, addiction risk (1 Corinthians 6:12), and not causing a weaker brother to stumble (Romans 14, 1 Corinthians 8:9—13) — without sermonising on them.',
+    "Ends with a specific follow-up question tied to the user's situation (e.g. about whether they are concerned about a particular conscience issue, or about how alcohol affects others around them)."
   ],
   unacceptableExamples: [
     'Declares all alcohol consumption sinful, treating the user as if they had asked about drunkenness. Legalistic position not supported by Scripture.',
