@@ -53,5 +53,11 @@ RUN curl https://raw.githubusercontent.com/nektos/act/master/install.sh | bash
 RUN mv bin/act /usr/bin/
 RUN rm -rf bin
 
+# install OpenTofu (replaces terraform — see infrastructure/*.tf)
+RUN curl -fsSL https://get.opentofu.org/install-opentofu.sh -o /tmp/install-opentofu.sh \
+    && chmod +x /tmp/install-opentofu.sh \
+    && /tmp/install-opentofu.sh --install-method standalone \
+    && rm /tmp/install-opentofu.sh
+
 RUN mkdir /home/node/.doppler \
     && chown -R node /home/node/.doppler
