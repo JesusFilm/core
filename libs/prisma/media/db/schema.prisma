@@ -145,6 +145,7 @@ model Video {
   noIndex                   Boolean?
   childIds                  String[] // needed for child sort order
   locked                    Boolean              @default(false)
+  restrictAutoTranslations  Boolean              @default(false)
   subtitles                 VideoSubtitle[]
   children                  Video[]              @relation("ParentChild")
   parents                   Video[]              @relation("ParentChild")
