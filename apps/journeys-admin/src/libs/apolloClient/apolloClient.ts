@@ -22,6 +22,8 @@ import { createClient } from 'graphql-sse'
 import { useMemo } from 'react'
 import { Observable } from 'zen-observable-ts'
 
+import { isDevHost } from '@core/shared/dev-hosts'
+
 import { logout } from '../auth/firebase'
 
 import { cache } from './cache'
@@ -30,6 +32,53 @@ const ssrMode = typeof window === 'undefined'
 let apolloClient: ApolloClient<NormalizedCacheObject>
 
 const DEFAULT_DEBOUNCE_TIMEOUT = 500
+
+interface GatewayUrlLocation {
+  hostname: string
+  protocol: 'http:' | 'https:'
+}
+
+function getDefaultLocation(): GatewayUrlLocation | undefined {
+  if (typeof window === 'undefined') return undefined
+  return {
+    hostname: window.location.hostname,
+    protocol: window.location.protocol as 'http:' | 'https:'
+  }
+}
+
+/**
+ * Resolves the api-gateway URL for the Apollo HTTP + SSE links.
+ *
+ * 1. Explicit override: `NEXT_PUBLIC_GATEWAY_URL` always wins.
+ * 2. Browser dev with a hostname listed in `NEXT_PUBLIC_DEV_HOSTS`
+ *    (Doppler dev config): derive the gateway URL from the current
+ *    window so a phone / tablet loading the bundle over the tailnet
+ *    hits the dev machine's gateway port (4000) at the same hostname,
+ *    not `localhost`. The secret is only set in dev's Doppler config,
+ *    so `isDevHost` returns false everywhere else — absence of the
+ *    secret IS the gate.
+ * 3. Fallback: `http://localhost:4000` (today's behavior — preserves
+ *    SSR and non-dev hosts).
+ *
+ * See docs/development/tailscale-dev-access.md.
+ *
+ * `location` is injectable for tests; defaults to `window.location` when
+ * available, otherwise `undefined` (SSR).
+ */
+export function resolveGatewayUrl(
+  location: GatewayUrlLocation | undefined = getDefaultLocation()
+): string {
+  if (
+    process.env.NEXT_PUBLIC_GATEWAY_URL != null &&
+    process.env.NEXT_PUBLIC_GATEWAY_URL !== ''
+  )
+    return process.env.NEXT_PUBLIC_GATEWAY_URL
+
+  if (location != null && isDevHost(location.hostname))
+    return `${location.protocol}//${location.hostname}:4000`
+
+  return 'http://localhost:4000'
+}
 
 // Custom Apollo Link for Server-Sent Events using graphql-sse.
 // A new graphql-sse Client is created per request so each subscription
@@ -109,8 +158,7 @@ export function createErrorLink(): ApolloLink {
 export function createApolloClient(
   token?: string
 ): ApolloClient<NormalizedCacheObject> {
-  const gatewayUrl =
-    process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:4000'
+  const gatewayUrl = resolveGatewayUrl()
 
   // Create HTTP link for queries and mutations
   const httpLink = new HttpLink({

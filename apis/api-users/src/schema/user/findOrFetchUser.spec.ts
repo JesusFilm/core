@@ -1,13 +1,17 @@
+import { Mock, vi } from 'vitest'
+
+import { auth } from '@core/yoga/firebaseClient'
+
 import { prismaMock } from '../../../test/prismaMock'
 
 import { findOrFetchUser } from './findOrFetchUser'
 import { user } from './user.mock'
 import { verifyUser } from './verifyUser'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  ...jest.requireActual('@core/yoga/firebaseClient'),
+vi.mock('@core/yoga/firebaseClient', async () => ({
+  ...(await vi.importActual('@core/yoga/firebaseClient')),
   auth: {
-    getUser: jest.fn().mockReturnValue({
+    getUser: vi.fn().mockReturnValue({
       id: '1',
       userId: '1',
       createdAt: new Date('2021-01-01T00:00:00.000Z'),
@@ -19,8 +23,8 @@ jest.mock('@core/yoga/firebaseClient', () => ({
   }
 }))
 
-jest.mock('./verifyUser', () => ({
-  verifyUser: jest.fn()
+vi.mock('./verifyUser', () => ({
+  verifyUser: vi.fn()
 }))
 
 describe('findOrFetchUser', () => {
@@ -34,8 +38,7 @@ describe('findOrFetchUser', () => {
   })
 
   it('should sync emailVerified from Firebase when DB says false but Firebase says true', async () => {
-    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
-    auth.getUser.mockReturnValueOnce({
+    ;(auth.getUser as Mock).mockReturnValueOnce({
       emailVerified: true
     })
 
@@ -52,8 +55,7 @@ describe('findOrFetchUser', () => {
   })
 
   it('should update profile fields when emailVerified transitions to true', async () => {
-    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
-    auth.getUser.mockReturnValueOnce({
+    ;(auth.getUser as Mock).mockReturnValueOnce({
       emailVerified: true,
       displayName: 'John Doe',
       email: 'john@example.com',
@@ -86,8 +88,7 @@ describe('findOrFetchUser', () => {
   })
 
   it('should fall back to providerData when top-level displayName/photoURL are null', async () => {
-    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
-    auth.getUser.mockReturnValueOnce({
+    ;(auth.getUser as Mock).mockReturnValueOnce({
       emailVerified: true,
       displayName: null,
       email: 'jane@example.com',
@@ -127,8 +128,7 @@ describe('findOrFetchUser', () => {
   })
 
   it('should accept non-whitelisted providers via providerData', async () => {
-    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
-    auth.getUser.mockReturnValueOnce({
+    ;(auth.getUser as Mock).mockReturnValueOnce({
       emailVerified: true,
       displayName: null,
       email: 'user@icloud.com',
@@ -164,8 +164,7 @@ describe('findOrFetchUser', () => {
   })
 
   it('should reject non-https photoURL during conversion', async () => {
-    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
-    auth.getUser.mockReturnValueOnce({
+    ;(auth.getUser as Mock).mockReturnValueOnce({
       emailVerified: true,
       displayName: 'Evil User',
       email: 'evil@example.com',
@@ -181,8 +180,7 @@ describe('findOrFetchUser', () => {
   })
 
   it('should strip control characters from displayName during conversion', async () => {
-    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
-    auth.getUser.mockReturnValueOnce({
+    ;(auth.getUser as Mock).mockReturnValueOnce({
       emailVerified: true,
       displayName: 'John‮Doe',
       email: 'john@example.com',
@@ -202,8 +200,7 @@ describe('findOrFetchUser', () => {
   })
 
   it('should preserve existing firstName/lastName when provider yields no displayName', async () => {
-    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
-    auth.getUser.mockReturnValueOnce({
+    ;(auth.getUser as Mock).mockReturnValueOnce({
       emailVerified: true,
       displayName: null,
       email: null,
@@ -261,8 +258,7 @@ describe('findOrFetchUser', () => {
   })
 
   it('should create anonymous user with null email', async () => {
-    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
-    auth.getUser.mockReturnValueOnce({
+    ;(auth.getUser as Mock).mockReturnValueOnce({
       id: '1',
       userId: '1',
       createdAt: new Date('2021-01-01T00:00:00.000Z'),
@@ -271,7 +267,7 @@ describe('findOrFetchUser', () => {
       photoURL: 'https://bit.ly/3Gth4',
       emailVerified: false
     })
-    jest.mocked(verifyUser).mockClear()
+    vi.mocked(verifyUser).mockClear()
 
     const anonymousUser = {
       ...user,

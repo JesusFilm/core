@@ -1,3 +1,5 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../../test/client'
@@ -5,20 +7,20 @@ import { prismaMock } from '../../../../test/prismaMock'
 import { getIntegrationGoogleAccessToken } from '../../../lib/google/googleAuth'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-jest.mock('../../../lib/google/googleAuth', () => ({
-  getIntegrationGoogleAccessToken: jest.fn()
+vi.mock('../../../lib/google/googleAuth', () => ({
+  getIntegrationGoogleAccessToken: vi.fn()
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
 const mockGetIntegrationGoogleAccessToken =
-  getIntegrationGoogleAccessToken as jest.MockedFunction<
+  getIntegrationGoogleAccessToken as MockedFunction<
     typeof getIntegrationGoogleAccessToken
   >
 
@@ -36,7 +38,7 @@ describe('integrationGooglePickerToken', () => {
   `)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser as any)
     prismaMock.userRole.findUnique.mockResolvedValue({
       userId: mockUser.id,

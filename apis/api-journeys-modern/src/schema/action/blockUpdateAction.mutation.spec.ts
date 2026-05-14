@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
@@ -5,7 +7,7 @@ import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCust
 
 import { ACTION_UPDATE_RESET } from './blockUpdateAction.mutation'
 
-jest.mock(
+vi.mock(
   '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 )
 
@@ -63,7 +65,7 @@ describe('blockUpdateAction mutation', () => {
   } as any
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('success cases', () => {

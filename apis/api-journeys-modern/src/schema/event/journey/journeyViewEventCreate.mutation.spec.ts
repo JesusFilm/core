@@ -28,11 +28,11 @@ describe('journeyViewEventCreate', () => {
   })
 
   it('creates a JourneyViewEvent when no recent event exists', async () => {
-    prismaMock.visitor.findFirst.mockResolvedValue({
+    prismaMock.visitor.upsert.mockResolvedValue({
       id: 'visitorId',
       userAgent: 'existing-agent'
     } as any)
-    prismaMock.journeyVisitor.findUnique.mockResolvedValue({
+    prismaMock.journeyVisitor.upsert.mockResolvedValue({
       journeyId: 'journeyId',
       visitorId: 'visitorId'
     } as any)
@@ -94,11 +94,11 @@ describe('journeyViewEventCreate', () => {
   })
 
   it('returns null when a recent JourneyViewEvent already exists', async () => {
-    prismaMock.visitor.findFirst.mockResolvedValue({
+    prismaMock.visitor.upsert.mockResolvedValue({
       id: 'visitorId',
       userAgent: 'existing-agent'
     } as any)
-    prismaMock.journeyVisitor.findUnique.mockResolvedValue({
+    prismaMock.journeyVisitor.upsert.mockResolvedValue({
       journeyId: 'journeyId',
       visitorId: 'visitorId'
     } as any)
@@ -142,28 +142,12 @@ describe('journeyViewEventCreate', () => {
     expect(result.errors?.[0]?.message).toBe('Journey does not exist')
   })
 
-  it('throws NOT_FOUND when visitor does not exist', async () => {
-    prismaMock.visitor.findFirst.mockResolvedValue(null)
-
-    const result = (await authClient({
-      document: JOURNEY_VIEW_EVENT_CREATE,
-      variables: {
-        input: {
-          journeyId: 'journeyId'
-        }
-      }
-    })) as any
-
-    expect(result.errors).toBeDefined()
-    expect(result.errors?.[0]?.message).toBe('Visitor does not exist')
-  })
-
   it('updates visitor userAgent when it is null', async () => {
-    prismaMock.visitor.findFirst.mockResolvedValue({
+    prismaMock.visitor.upsert.mockResolvedValue({
       id: 'visitorId',
       userAgent: null
     } as any)
-    prismaMock.journeyVisitor.findUnique.mockResolvedValue({
+    prismaMock.journeyVisitor.upsert.mockResolvedValue({
       journeyId: 'journeyId',
       visitorId: 'visitorId'
     } as any)
@@ -201,14 +185,31 @@ describe('journeyViewEventCreate', () => {
       where: { id: 'visitorId' },
       data: { userAgent: 'TestAgent/1.0' }
     })
+    expect(prismaMock.visitor.upsert).toHaveBeenCalledWith({
+      where: {
+        teamId_userId: { teamId: 'teamId', userId: 'testUserId' }
+      },
+      create: { teamId: 'teamId', userId: 'testUserId' },
+      update: {}
+    })
+    expect(prismaMock.journeyVisitor.upsert).toHaveBeenCalledWith({
+      where: {
+        journeyId_visitorId: {
+          journeyId: 'journeyId',
+          visitorId: 'visitorId'
+        }
+      },
+      create: { journeyId: 'journeyId', visitorId: 'visitorId' },
+      update: {}
+    })
   })
 
   it('handles optional fields (id, label, value)', async () => {
-    prismaMock.visitor.findFirst.mockResolvedValue({
+    prismaMock.visitor.upsert.mockResolvedValue({
       id: 'visitorId',
       userAgent: 'existing-agent'
     } as any)
-    prismaMock.journeyVisitor.findUnique.mockResolvedValue({
+    prismaMock.journeyVisitor.upsert.mockResolvedValue({
       journeyId: 'journeyId',
       visitorId: 'visitorId'
     } as any)

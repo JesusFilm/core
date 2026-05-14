@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { prismaMock } from '../../../test/prismaMock'
 
 import { getNextParentOrder } from './getNextParentOrder'
@@ -7,7 +9,7 @@ describe('getNextParentOrder', () => {
   const parentBlockId = 'pid'
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns 0 when there are no siblings', async () => {
