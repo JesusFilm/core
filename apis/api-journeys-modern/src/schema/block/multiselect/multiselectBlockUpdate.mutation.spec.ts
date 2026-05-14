@@ -1,21 +1,24 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
+import { fetchBlockWithJourneyAcl } from '../../../lib/auth/fetchBlockWithJourneyAcl'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { recalculateJourneyCustomizable } from '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 
-jest.mock(
+vi.mock(
   '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 )
 
-jest.mock('../../../lib/auth/ability', () => ({
+vi.mock('../../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../../lib/auth/fetchBlockWithJourneyAcl', () => ({
-  fetchBlockWithJourneyAcl: jest.fn()
+vi.mock('../../../lib/auth/fetchBlockWithJourneyAcl', () => ({
+  fetchBlockWithJourneyAcl: vi.fn()
 }))
 
 describe('multiselectBlockUpdate', () => {
@@ -40,11 +43,7 @@ describe('multiselectBlockUpdate', () => {
       }
     }
   `)
-
-  const {
-    fetchBlockWithJourneyAcl
-  } = require('../../../lib/auth/fetchBlockWithJourneyAcl')
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockAbility = ability as MockedFunction<typeof ability>
 
   const id = 'blockId'
   const input = {
@@ -54,7 +53,7 @@ describe('multiselectBlockUpdate', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     prismaMock.block.findMany.mockResolvedValue([] as any)
     prismaMock.block.findUnique.mockResolvedValue({
       id,
@@ -67,7 +66,7 @@ describe('multiselectBlockUpdate', () => {
   })
 
   it('updates multiselect block when authorized', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       journey: { id: 'journeyId' }
@@ -76,7 +75,7 @@ describe('multiselectBlockUpdate', () => {
 
     const tx = {
       block: {
-        update: jest.fn().mockResolvedValue({
+        update: vi.fn().mockResolvedValue({
           id,
           typename: 'MultiselectBlock',
           journeyId: 'journeyId',
@@ -85,7 +84,7 @@ describe('multiselectBlockUpdate', () => {
           max: input.max
         })
       },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -121,7 +120,7 @@ describe('multiselectBlockUpdate', () => {
   })
 
   it('returns FORBIDDEN if unauthorized', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       journey: { id: 'journeyId' }
@@ -145,7 +144,7 @@ describe('multiselectBlockUpdate', () => {
 
   it('fails when min is negative', async () => {
     // authorize so validation runs
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       journey: { id: 'journeyId' }
@@ -169,7 +168,7 @@ describe('multiselectBlockUpdate', () => {
 
   it('fails when max is negative', async () => {
     // authorize so validation runs
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       journey: { id: 'journeyId' }
@@ -193,7 +192,7 @@ describe('multiselectBlockUpdate', () => {
 
   it('fails when min is greater than max', async () => {
     // authorize so validation runs
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       journey: { id: 'journeyId' }
@@ -216,10 +215,7 @@ describe('multiselectBlockUpdate', () => {
   })
 
   it('preserves existing max when omitted in input', async () => {
-    const {
-      fetchBlockWithJourneyAcl
-    } = require('../../../lib/auth/fetchBlockWithJourneyAcl')
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       journey: { id: 'journeyId' }
@@ -228,7 +224,7 @@ describe('multiselectBlockUpdate', () => {
 
     const tx = {
       block: {
-        update: jest.fn().mockImplementation(async (args) => ({
+        update: vi.fn().mockImplementation(async (args) => ({
           id,
           typename: 'MultiselectBlock',
           journeyId: 'journeyId',
@@ -238,7 +234,7 @@ describe('multiselectBlockUpdate', () => {
           max: 5
         }))
       },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -261,10 +257,7 @@ describe('multiselectBlockUpdate', () => {
   })
 
   it('preserves min/max when equal to child count on update', async () => {
-    const {
-      fetchBlockWithJourneyAcl
-    } = require('../../../lib/auth/fetchBlockWithJourneyAcl')
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       journey: { id: 'journeyId' }
@@ -273,7 +266,7 @@ describe('multiselectBlockUpdate', () => {
 
     const tx = {
       block: {
-        update: jest.fn().mockResolvedValue({
+        update: vi.fn().mockResolvedValue({
           id,
           typename: 'MultiselectBlock',
           journeyId: 'journeyId',
@@ -282,7 +275,7 @@ describe('multiselectBlockUpdate', () => {
           max: 4
         })
       },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 

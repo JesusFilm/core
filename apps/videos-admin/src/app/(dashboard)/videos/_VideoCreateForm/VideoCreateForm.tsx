@@ -94,7 +94,30 @@ export function VideoCreateForm({
 
   const validationSchema = object().shape({
     id: string().trim().required('ID is required'),
-    slug: string().trim().required('Slug is required'),
+    slug: string()
+      .trim()
+      .required('Slug is required')
+      .test('lowercase-no-spaces', function lowercaseNoSpaces(value) {
+        if (value == null || value === '') return true
+        const hasUppercase = /[A-Z]/.test(value)
+        const hasSpaces = /\s/.test(value)
+        if (hasUppercase && hasSpaces) {
+          return this.createError({
+            message: 'Slug must be all lowercase and cannot contain spaces'
+          })
+        }
+        if (hasUppercase) {
+          return this.createError({
+            message: 'Slug must be all lowercase'
+          })
+        }
+        if (hasSpaces) {
+          return this.createError({
+            message: 'Slug cannot contain spaces'
+          })
+        }
+        return true
+      }),
     label: mixed<VideoLabel>()
       .oneOf(Object.values(VideoLabel))
       .required('Label is required'),
