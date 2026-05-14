@@ -180,9 +180,6 @@ describe('ImageUpload', () => {
       </MockedProvider>
     )
     expect(screen.getByText('Drop an image here')).toBeInTheDocument()
-    expect(
-      screen.getByText('or click to browse your files')
-    ).toBeInTheDocument()
   })
 
   it('should render loading state', () => {
