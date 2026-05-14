@@ -418,5 +418,11 @@ function blockquote(text: string): string {
 }
 
 function escapeCell(text: string): string {
-  return text.replace(/\|/g, '\\|')
+  // Escape backslashes first, then pipes, then newlines — order matters.
+  // Without escaping backslashes first, a literal "\" in input would
+  // collide with the "\|" escape sequence we add for pipes.
+  return text
+    .replace(/\\/g, '\\\\')
+    .replace(/\|/g, '\\|')
+    .replace(/\r?\n/g, ' ')
 }
