@@ -56,8 +56,8 @@ export function VideoCard({
             <div className="absolute top-0 right-0 bottom-0 left-0 overflow-hidden rounded-lg">
               <Image
                 fill
-                src={video.images[0].mobileCinematicHigh ?? ''}
-                alt={video.imageAlt[0].value}
+                src={video.images[0]?.mobileCinematicHigh ?? ''}
+                alt={video.imageAlt[0]?.value ?? ''}
                 style={{
                   width: '100%',
                   objectFit: 'cover',
