@@ -1,8 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { ThemeProvider } from '../ThemeProvider'
@@ -335,5 +337,141 @@ describe('JourneyList', () => {
       expect(sortButton).toHaveTextContent('Sort By: Name')
     })
     expect(sessionStorage.getItem('journeyListSortBy')).toBe(SortOrder.TITLE)
+  })
+
+  describe('Template Info side panel (NES-1538)', () => {
+    function renderWithFlags(flags: {
+      teamTemplateCollection?: boolean
+      templateInfoSidePanel?: boolean
+    }) {
+      return render(
+        <SnackbarProvider>
+          <MockedProvider>
+            <ThemeProvider>
+              <FlagsProvider flags={flags}>
+                <JourneyList />
+              </FlagsProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+    }
+
+    it('renders the desktop panel and mobile trigger when the flag is on and the templates tab is active', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'templates' },
+        events: { on: jest.fn(), off: jest.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({
+        teamTemplateCollection: true,
+        templateInfoSidePanel: true
+      })
+
+      expect(screen.getByTestId('TemplateInfoPanelDesktop')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('TemplateInfoPanelMobileTrigger')
+      ).toBeInTheDocument()
+    })
+
+    it('renders nothing when the templateInfoSidePanel flag is off, even on templates tab', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'templates' },
+        events: { on: jest.fn(), off: jest.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({
+        teamTemplateCollection: true,
+        templateInfoSidePanel: false
+      })
+
+      expect(
+        screen.queryByTestId('TemplateInfoPanelDesktop')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('TemplateInfoPanelMobileTrigger')
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders nothing on the journeys tab even with the flag on', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'journeys' },
+        events: { on: jest.fn(), off: jest.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({
+        teamTemplateCollection: true,
+        templateInfoSidePanel: true
+      })
+
+      expect(
+        screen.queryByTestId('TemplateInfoPanelDesktop')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('TemplateInfoPanelMobileTrigger')
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders nothing when teamTemplateCollection is off (local template surface unavailable)', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'templates' },
+        events: { on: jest.fn(), off: jest.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({
+        teamTemplateCollection: false,
+        templateInfoSidePanel: true
+      })
+
+      expect(
+        screen.queryByTestId('TemplateInfoPanelDesktop')
+      ).not.toBeInTheDocument()
+    })
+
+    it('opens the mobile drawer (presentation role) when the trigger button is clicked', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'templates' },
+        events: { on: jest.fn(), off: jest.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({
+        teamTemplateCollection: true,
+        templateInfoSidePanel: true
+      })
+
+      // MUI SwipeableDrawer renders its modal `role="presentation"` wrapper
+      // only when `open=true`; before clicking the trigger no such role
+      // exists for the mobile drawer.
+      expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
+
+      fireEvent.click(screen.getByTestId('TemplateInfoPanelMobileTrigger'))
+
+      expect(screen.getByRole('presentation')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Close template info' })
+      ).toBeInTheDocument()
+    })
+
+    it('closes the mobile drawer when the X button is clicked', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'templates' },
+        events: { on: jest.fn(), off: jest.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({
+        teamTemplateCollection: true,
+        templateInfoSidePanel: true
+      })
+
+      fireEvent.click(screen.getByTestId('TemplateInfoPanelMobileTrigger'))
+      expect(screen.getByRole('presentation')).toBeInTheDocument()
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Close template info' })
+      )
+
+      // After closing, the MUI modal wrapper unmounts.
+      expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
+    })
   })
 })
