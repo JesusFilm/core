@@ -1,13 +1,15 @@
+import { vi } from 'vitest'
+
 import { queue } from '../../workers/email/queue'
 
 import { verifyUser } from './verifyUser'
 
-const removeJob = jest.fn()
-jest.mock('../../workers/email/queue', () => ({
+const removeJob = vi.fn()
+vi.mock('../../workers/email/queue', () => ({
   __esModule: true,
   queue: {
-    add: jest.fn(),
-    getJob: jest
+    add: vi.fn(),
+    getJob: vi
       .fn()
       .mockImplementation((jobId: string) =>
         jobId === 'userId'
@@ -18,8 +20,11 @@ jest.mock('../../workers/email/queue', () => ({
 }))
 
 describe('verifyUser', () => {
+  const originalExampleEmailToken = process.env.EXAMPLE_EMAIL_TOKEN
+
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
+    process.env.EXAMPLE_EMAIL_TOKEN = originalExampleEmailToken
   })
 
   it('should send an email with the correct subject and body', async () => {

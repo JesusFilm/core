@@ -2,6 +2,7 @@ import { GetServerSidePropsContext } from 'next'
 import { Tokens, getTokensFromObject } from 'next-firebase-auth-edge'
 
 import { allowedHost } from '@core/journeys/ui/allowedHost'
+import { isDevHost } from '@core/shared/dev-hosts'
 
 import { User } from './authContext'
 import { authConfig } from './config'
@@ -62,6 +63,21 @@ const ALLOWED_REDIRECT_HOSTS = [
   'admin-stage.nextstep.is'
 ]
 
+/**
+ * In dev, developer hostnames listed in `NEXT_PUBLIC_DEV_HOSTS` (Doppler
+ * dev config) need to round-trip through the sign-in redirect flow. The
+ * secret is only set in dev's Doppler config, so `isDevHost` returns false
+ * everywhere else — absence of the secret IS the gate. The host may carry
+ * an optional `:port` suffix.
+ * See docs/development/tailscale-dev-access.md.
+ */
+export function isAllowedRedirectHost(host: string): boolean {
+  if (allowedHost(host, ALLOWED_REDIRECT_HOSTS)) return true
+  const hostWithoutPort = host.split(':')[0]
+  if (isDevHost(hostWithoutPort)) return true
+  return false
+}
+
 export function redirectToApp(ctx: GetServerSidePropsContext): {
   redirect: { permanent: false; destination: string }
 } {
@@ -76,7 +92,7 @@ export function redirectToApp(ctx: GetServerSidePropsContext): {
           redirect: { permanent: false, destination: redirectUrl }
         }
       }
-      if (allowedHost(new URL(redirectUrl).host, ALLOWED_REDIRECT_HOSTS)) {
+      if (isAllowedRedirectHost(new URL(redirectUrl).host)) {
         return {
           redirect: { permanent: false, destination: redirectUrl }
         }

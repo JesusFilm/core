@@ -1,3 +1,6 @@
+import { vi } from 'vitest'
+
+import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
@@ -14,7 +17,6 @@ prismaMock.$transaction.mockImplementation((arg: any) => {
 
 describe.skip('multiselectSubmissionEventCreate', () => {
   const mockUser = { id: 'userId' }
-  const { getClient } = require('../../../../test/client')
   const authClient = getClient({
     headers: { authorization: 'token' },
     context: { currentUser: mockUser }
@@ -43,7 +45,7 @@ describe.skip('multiselectSubmissionEventCreate', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     prismaMock.$transaction.mockImplementation(
       async (cb: any) => await cb(prismaMock as any)
     )

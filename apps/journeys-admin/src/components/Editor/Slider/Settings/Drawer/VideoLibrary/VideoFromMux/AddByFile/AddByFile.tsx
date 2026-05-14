@@ -14,6 +14,7 @@ import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 import { validateMuxLanguage } from '../../../../../../../../libs/validateMuxLanguage'
 import { useMuxVideoUpload } from '../../../../../../../MuxVideoUploadProvider'
+import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
 
 import { getVideoDuration } from './utils/getVideoDuration/getVideoDuration'
 
@@ -111,7 +112,27 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     disabled: videoBlockId == null || uploadTask != null
   })
 
-  const noBorder = error != null || uploading || errorType != null || processing
+  const hasError = error != null || errorType != null
+
+  function getStatusLabel(): string | null {
+    if (waiting) return t('Waiting in queue...')
+    if (uploading) return t('Uploading...')
+    if (processing) return t('Processing...')
+    if (hasError) return t('Upload Failed!')
+    return null
+  }
+
+  function getMobileProgressLabel(): string | null {
+    if (uploading) {
+      return t('Uploading... {{progress}}%', {
+        progress: Math.round(progress)
+      })
+    }
+    return getStatusLabel()
+  }
+
+  const statusLabel = getStatusLabel()
+  const mobileProgressLabel = getMobileProgressLabel()
 
   function getErrorMessage(errorCode: customErrorCode) {
     switch (errorCode) {
@@ -140,68 +161,100 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
       sx={{ px: 6, py: 3 }}
       data-testid="AddByFile"
     >
-      <Box
+      <UploadDropZoneShell
         data-testid="drop zone"
-        sx={{
-          mt: 3,
-          display: 'flex',
-          width: '100%',
-          height: 162,
-          borderWidth: noBorder ? undefined : 2,
-          backgroundColor:
-            isDragAccept || uploading
-              ? 'rgba(239, 239, 239, 0.9)'
-              : error != null || errorType != null
-                ? 'rgba(197, 45, 58, 0.08)'
-                : 'rgba(239, 239, 239, 0.35)',
-          borderColor: 'divider',
-          borderStyle: noBorder ? undefined : 'dashed',
-          borderRadius: 2,
-          justifyContent: 'center',
-          flexDirection: 'column',
-          alignItems: 'center'
-        }}
+        isDragAccept={isDragAccept}
+        isActive={uploading || processing || waiting}
+        hasError={hasError}
         {...getRootProps()}
       >
         <input {...getInputProps()} />
-        {error != null || errorType != null ? (
+        {hasError ? (
           <AlertTriangleIcon
-            sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+              fontSize: 30,
+              color: 'primary.main'
+            }}
           />
         ) : (
-          <Upload1Icon sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
+          <Upload1Icon
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+              fontSize: 30,
+              color: 'secondary.light'
+            }}
+          />
         )}
-        <Typography
-          variant="body1"
-          color={
-            error != null || errorType != null ? 'error.main' : 'secondary.main'
-          }
-          sx={{ pb: 4 }}
-        >
-          {waiting && t('Waiting in queue...')}
-          {uploading && t('Uploading...')}
-          {processing && t('Processing...')}
-          {(error != null || errorType != null) && t('Upload Failed!')}
-          {!waiting &&
-            !uploading &&
-            !processing &&
-            !errorType &&
-            error == null &&
-            t('Drop a video here')}
-        </Typography>
-      </Box>
+        <Stack alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+          {statusLabel != null ? (
+            <Typography
+              variant="body1"
+              color={hasError ? 'error.main' : 'secondary.main'}
+            >
+              {statusLabel}
+            </Typography>
+          ) : (
+            <>
+              <Typography variant="body1" color="secondary.main">
+                {t('Drop a video here')}
+              </Typography>
+              <Typography variant="caption" color="secondary.main">
+                {t('or click to browse your files')}
+              </Typography>
+            </>
+          )}
+        </Stack>
+        {waiting || uploading || processing ? (
+          <Box sx={{ position: 'relative', width: '100%' }}>
+            <LinearProgress
+              variant={processing || waiting ? 'indeterminate' : 'determinate'}
+              value={progress}
+              sx={{ height: 32, borderRadius: 2 }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                display: { xs: 'flex', sm: 'none' },
+                alignItems: 'center',
+                justifyContent: 'center',
+                pointerEvents: 'none'
+              }}
+            >
+              <Typography variant="body2" sx={{ color: 'background.paper' }}>
+                {mobileProgressLabel}
+              </Typography>
+            </Box>
+          </Box>
+        ) : (
+          <Button
+            variant="blockOutlined"
+            color="solid"
+            size="small"
+            onClick={open}
+            disabled={videoBlockId == null || uploadTask != null}
+            sx={{
+              width: { xs: '100%', sm: 'auto' },
+              minWidth: { sm: 160 }
+            }}
+          >
+            {videoBlockId == null
+              ? t('Select a video block first')
+              : t('Upload file')}
+          </Button>
+        )}
+      </UploadDropZoneShell>
       <Stack
         direction="row"
         spacing={1}
-        color={
-          error != null || errorType != null ? 'error.main' : 'secondary.light'
-        }
-        sx={{ justifyContent: 'center', alignItems: 'center' }}
+        color={hasError ? 'error.main' : 'secondary.light'}
+        sx={{ mt: 1, alignItems: 'flex-start' }}
       >
         <AlertTriangleIcon
           fontSize="small"
           sx={{
-            display: error != null || errorType != null ? 'flex' : 'none'
+            display: hasError ? 'flex' : 'none'
           }}
         />
         {error != null ? (
@@ -220,32 +273,6 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           </Typography>
         )}
       </Stack>
-
-      {waiting || uploading || processing ? (
-        <Box sx={{ width: '100%', mt: 4 }}>
-          <LinearProgress
-            variant={processing || waiting ? 'indeterminate' : 'determinate'}
-            value={progress}
-            sx={{ height: 32, borderRadius: 2 }}
-          />
-        </Box>
-      ) : (
-        <Button
-          variant="blockOutlined"
-          color="solid"
-          size="small"
-          onClick={open}
-          disabled={videoBlockId == null || uploadTask != null}
-          sx={{
-            mt: 4,
-            width: '100%'
-          }}
-        >
-          {videoBlockId == null
-            ? t('Select a video block first')
-            : t('Upload file')}
-        </Button>
-      )}
     </Stack>
   )
 }

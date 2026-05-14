@@ -1,3 +1,5 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { UserTeamRole } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
@@ -5,16 +7,18 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+import { checkVercelDomain } from './service'
+
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-jest.mock('./service', () => ({
-  ...jest.requireActual('./service'),
-  checkVercelDomain: jest.fn()
+vi.mock('./service', async () => ({
+  ...(await vi.importActual('./service')),
+  checkVercelDomain: vi.fn()
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
@@ -67,10 +71,8 @@ describe('customDomainCheck', () => {
     }
   }
 
-  const { checkVercelDomain } = require('./service')
-
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser as any)
     prismaMock.userRole.findUnique.mockResolvedValue({
       userId: mockUser.id,
@@ -82,7 +84,7 @@ describe('customDomainCheck', () => {
     prismaMock.customDomain.findUnique.mockResolvedValue(
       mockCustomDomain as any
     )
-    checkVercelDomain.mockResolvedValue({
+    ;(checkVercelDomain as any).mockResolvedValue({
       configured: true,
       verified: true
     })
@@ -110,7 +112,7 @@ describe('customDomainCheck', () => {
     prismaMock.customDomain.findUnique.mockResolvedValue(
       mockCustomDomain as any
     )
-    checkVercelDomain.mockResolvedValue({
+    ;(checkVercelDomain as any).mockResolvedValue({
       configured: false,
       verified: false,
       verification: [

@@ -1,4 +1,6 @@
 import { ApolloClient } from '@apollo/client'
+import fetch from 'node-fetch'
+import { type MockedFunction, vi } from 'vitest'
 
 import type { JourneySimpleUpdate } from '@core/shared/ai/journeySimpleTypes'
 
@@ -6,8 +8,8 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { updateSimpleJourney } from './updateSimpleJourney'
 
-jest.mock('../../../utils/generateBlurhashAndMetadataFromUrl', () => ({
-  generateBlurhashAndMetadataFromUrl: jest.fn().mockResolvedValue({
+vi.mock('../../../utils/generateBlurhashAndMetadataFromUrl', () => ({
+  generateBlurhashAndMetadataFromUrl: vi.fn().mockResolvedValue({
     blurhash: 'mocked-blurhash',
     width: 100,
     height: 100
@@ -18,20 +20,29 @@ jest.mock('../../../utils/generateBlurhashAndMetadataFromUrl', () => ({
 const originalEnv = process.env
 
 // Mock ApolloClient
-jest.mock('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const actual =
+    await vi.importActual<typeof import('@apollo/client')>('@apollo/client')
+  class MockApolloClient {
+    mutate(..._args: unknown[]): unknown {
+      return undefined
+    }
+  }
+  return { ...actual, ApolloClient: MockApolloClient }
+})
 
 // Mock node-fetch
-jest.mock('node-fetch')
-const mockFetch = require('node-fetch') as jest.MockedFunction<typeof fetch>
+vi.mock('node-fetch', () => ({ default: vi.fn() }))
+const mockFetch = fetch as MockedFunction<typeof fetch>
 
 const txMock = {
   block: {
-    create: jest.fn(),
-    update: jest.fn(),
-    updateMany: jest.fn()
+    create: vi.fn(),
+    update: vi.fn(),
+    updateMany: vi.fn()
   },
   journey: {
-    update: jest.fn()
+    update: vi.fn()
   }
 }
 
@@ -86,7 +97,7 @@ describe('updateSimpleJourney', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     txMock.block.create.mockResolvedValue({ id: 'mock-block-id' } as any)
     prismaMock.$transaction.mockImplementation(
       async (callback: any) => await callback(txMock as any)
@@ -131,10 +142,10 @@ describe('updateSimpleJourney', () => {
     await updateSimpleJourney(journeyId, simple)
     // Should create 3 StepBlocks and 3 CardBlocks
     const stepCalls = txMock.block.create.mock.calls.filter(
-      ([data]: [any]) => data.data.typename === 'StepBlock'
+      ([data]: any[]) => data.data.typename === 'StepBlock'
     )
     const cardCalls = txMock.block.create.mock.calls.filter(
-      ([data]: [any]) => data.data.typename === 'CardBlock'
+      ([data]: any[]) => data.data.typename === 'CardBlock'
     )
     expect(stepCalls.length).toBe(3)
     expect(cardCalls.length).toBe(3)
@@ -144,7 +155,7 @@ describe('updateSimpleJourney', () => {
     await updateSimpleJourney(journeyId, simple)
     // Check for TypographyBlock, ImageBlock, RadioQuestionBlock, RadioOptionBlock, ButtonBlock
     const types = txMock.block.create.mock.calls.map(
-      ([data]: [any]) => data.data.typename
+      ([data]: any[]) => data.data.typename
     )
     expect(types).toContain('TypographyBlock')
     expect(types).toContain('ImageBlock')
@@ -181,7 +192,7 @@ describe('updateSimpleJourney', () => {
     await updateSimpleJourney(journeyId, videoJourney)
 
     const videoCalls = txMock.block.create.mock.calls.filter(
-      ([data]: [any]) => data.data.typename === 'VideoBlock'
+      ([data]: any[]) => data.data.typename === 'VideoBlock'
     )
     expect(videoCalls.length).toBe(1)
 
@@ -224,7 +235,7 @@ describe('updateSimpleJourney', () => {
     )
 
     const videoCalls = txMock.block.create.mock.calls.filter(
-      ([data]: [any]) => data.data.typename === 'VideoBlock'
+      ([data]: any[]) => data.data.typename === 'VideoBlock'
     )
     const videoBlockData = videoCalls[0][0].data
     expect(videoBlockData.startAt).toBe(0) // Default startAt
@@ -261,13 +272,13 @@ describe('updateSimpleJourney', () => {
         ]
       }
 
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       txMock.block.create.mockResolvedValue({ id: 'mock-block-id' } as any)
 
       await updateSimpleJourney(journeyId, videoJourney)
 
       const videoCalls = txMock.block.create.mock.calls.filter(
-        ([data]: [any]) => data.data.typename === 'VideoBlock'
+        ([data]: any[]) => data.data.typename === 'VideoBlock'
       )
       expect(videoCalls.length).toBe(1)
       expect(videoCalls[0][0].data.videoId).toBe('dQw4w9WgXcQ')
@@ -365,7 +376,7 @@ describe('updateSimpleJourney', () => {
     await updateSimpleJourney(journeyId, videoJourney)
 
     const videoCalls = txMock.block.create.mock.calls.filter(
-      ([data]: [any]) => data.data.typename === 'VideoBlock'
+      ([data]: any[]) => data.data.typename === 'VideoBlock'
     )
     const videoBlockData = videoCalls[0][0].data
     expect(videoBlockData.action).toBeDefined()
@@ -398,7 +409,7 @@ describe('updateSimpleJourney', () => {
     await updateSimpleJourney(journeyId, videoJourney)
 
     const allCalls = txMock.block.create.mock.calls
-    const contentTypes = allCalls.map(([data]: [any]) => data.data.typename)
+    const contentTypes = allCalls.map(([data]: any[]) => data.data.typename)
 
     // Should have StepBlocks, CardBlocks, VideoBlock, and ButtonBlock
     // Should NOT have TypographyBlock, ImageBlock, etc. for the video card
@@ -456,13 +467,13 @@ describe('updateSimpleJourney', () => {
         ]
       }
 
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       txMock.block.create.mockResolvedValue({ id: 'mock-id' } as any)
 
       await updateSimpleJourney(journeyId, videoJourney)
 
       const videoCalls = txMock.block.create.mock.calls.filter(
-        ([data]: [any]) => data.data.typename === 'VideoBlock'
+        ([data]: any[]) => data.data.typename === 'VideoBlock'
       )
       expect(videoCalls[0][0].data.endAt).toBe(expected)
     }
@@ -489,7 +500,7 @@ describe('updateSimpleJourney', () => {
     it('uploads invalid image URLs to Cloudflare and uses the returned URL', async () => {
       // Mock Apollo mutation to return a specific image ID
       const mockImageId = 'test-cloudflare-image-id'
-      jest.spyOn(ApolloClient.prototype, 'mutate').mockImplementation(
+      vi.spyOn(ApolloClient.prototype, 'mutate').mockImplementation(
         async () =>
           await Promise.resolve({
             data: {
@@ -531,7 +542,7 @@ describe('updateSimpleJourney', () => {
 
       // Verify the correct Cloudflare URLs were used in block creation
       const imageBlockCalls = txMock.block.create.mock.calls.filter(
-        ([data]: [any]) => data.data.typename === 'ImageBlock'
+        ([data]: any[]) => data.data.typename === 'ImageBlock'
       )
 
       expect(imageBlockCalls).toHaveLength(2)
@@ -551,7 +562,7 @@ describe('updateSimpleJourney', () => {
 
     it('uses valid image URLs as-is without uploading to Cloudflare', async () => {
       // Mock Apollo mutation to not be called
-      jest.spyOn(ApolloClient.prototype, 'mutate').mockImplementationOnce(
+      vi.spyOn(ApolloClient.prototype, 'mutate').mockImplementationOnce(
         async () =>
           await Promise.resolve({
             data: {
@@ -593,7 +604,7 @@ describe('updateSimpleJourney', () => {
 
       // Verify the original URLs were used in block creation
       const imageBlockCalls = txMock.block.create.mock.calls.filter(
-        ([data]: [any]) => data.data.typename === 'ImageBlock'
+        ([data]: any[]) => data.data.typename === 'ImageBlock'
       )
 
       expect(imageBlockCalls).toHaveLength(2)

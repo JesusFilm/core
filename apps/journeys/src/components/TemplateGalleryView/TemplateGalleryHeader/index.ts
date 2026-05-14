@@ -1,0 +1,1 @@
+export { TemplateGalleryHeader } from './TemplateGalleryHeader'
