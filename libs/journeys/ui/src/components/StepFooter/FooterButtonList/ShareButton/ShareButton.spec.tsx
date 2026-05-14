@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { TreeBlock, blockHistoryVar } from '../../../../libs/block'
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
@@ -10,17 +11,17 @@ import { StepFields } from '../../../Step/__generated__/StepFields'
 
 import { ShareButton } from './ShareButton'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('next-plausible', () => ({
+vi.mock('next-plausible', () => ({
   __esModule: true,
-  usePlausible: jest.fn()
+  usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.MockedFunction<
+const mockUsePlausible = usePlausible as MockedFunction<
   typeof usePlausible
 >
 
@@ -32,13 +33,13 @@ describe('ShareButton', () => {
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     Object.assign(navigator, originalNavigator)
   })
 
   it('should open native share dialog on mobile', () => {
-    mockUsePlausible.mockReturnValue(jest.fn())
-    const navigatorMock = jest.fn()
+    mockUsePlausible.mockReturnValue(vi.fn())
+    const navigatorMock = vi.fn()
 
     Object.assign(navigator, {
       share: navigatorMock
@@ -61,7 +62,7 @@ describe('ShareButton', () => {
   })
 
   it('should open share dialog on desktop', () => {
-    mockUsePlausible.mockReturnValue(jest.fn())
+    mockUsePlausible.mockReturnValue(vi.fn())
     const { getByRole } = render(
       <SnackbarProvider>
         <JourneyProvider
@@ -105,9 +106,9 @@ describe('ShareButton', () => {
       slug: 'slug'
     } as unknown as Journey
     blockHistoryVar([block])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
-    const navigatorMock = jest.fn()
+    const navigatorMock = vi.fn()
 
     Object.assign(navigator, {
       share: navigatorMock

@@ -1,3 +1,5 @@
+import { type Mock } from 'vitest'
+
 import VideoJsPlayer from '../videoJsTypes'
 
 import { removeAllRemoteTextTracks } from './removeAllRemoteTextTracks'
@@ -6,12 +8,12 @@ describe('removeAllRemoteTextTracks', () => {
   let mockPlayer: VideoJsPlayer
   let mockRemoteTextTracks: TextTrackList
   let mockTracks: TextTrack[]
-  let mockRemoveRemoteTextTrack: jest.Mock
+  let mockRemoveRemoteTextTrack: Mock
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
-    mockRemoveRemoteTextTrack = jest.fn()
+    mockRemoveRemoteTextTrack = vi.fn()
     mockTracks = [
       {
         id: 'track1',
@@ -43,7 +45,7 @@ describe('removeAllRemoteTextTracks', () => {
     mockRemoteTextTracks = mockTracks as unknown as TextTrackList
 
     mockPlayer = {
-      remoteTextTracks: jest.fn(() => mockRemoteTextTracks),
+      remoteTextTracks: vi.fn(() => mockRemoteTextTracks),
       removeRemoteTextTrack: mockRemoveRemoteTextTrack
     } as unknown as VideoJsPlayer
   })
@@ -86,7 +88,7 @@ describe('removeAllRemoteTextTracks', () => {
 
     const remoteTextTracksWithNullIds =
       tracksWithNullIds as unknown as TextTrackList
-    mockPlayer.remoteTextTracks = jest.fn(() => remoteTextTracksWithNullIds)
+    mockPlayer.remoteTextTracks = vi.fn(() => remoteTextTracksWithNullIds)
 
     removeAllRemoteTextTracks(mockPlayer)
 
@@ -97,7 +99,7 @@ describe('removeAllRemoteTextTracks', () => {
 
   it('should handle empty remote text tracks', () => {
     const emptyRemoteTextTracks = [] as unknown as TextTrackList
-    mockPlayer.remoteTextTracks = jest.fn(() => emptyRemoteTextTracks)
+    mockPlayer.remoteTextTracks = vi.fn(() => emptyRemoteTextTracks)
 
     removeAllRemoteTextTracks(mockPlayer)
 
@@ -106,7 +108,7 @@ describe('removeAllRemoteTextTracks', () => {
   })
 
   it('should handle null remoteTextTracks', () => {
-    mockPlayer.remoteTextTracks = jest.fn(
+    mockPlayer.remoteTextTracks = vi.fn(
       () => null as unknown as TextTrackList
     )
 
@@ -117,7 +119,7 @@ describe('removeAllRemoteTextTracks', () => {
   })
 
   it('should handle undefined remoteTextTracks', () => {
-    mockPlayer.remoteTextTracks = jest.fn(
+    mockPlayer.remoteTextTracks = vi.fn(
       () => undefined as unknown as TextTrackList
     )
 
@@ -151,7 +153,7 @@ describe('removeAllRemoteTextTracks', () => {
 
     const remoteTextTracksWithNulls =
       tracksWithNulls as unknown as TextTrackList
-    mockPlayer.remoteTextTracks = jest.fn(() => remoteTextTracksWithNulls)
+    mockPlayer.remoteTextTracks = vi.fn(() => remoteTextTracksWithNulls)
 
     removeAllRemoteTextTracks(mockPlayer)
 
@@ -173,7 +175,7 @@ describe('removeAllRemoteTextTracks', () => {
     ]
 
     const mixedRemoteTextTracks = mixedTracks as unknown as TextTrackList
-    mockPlayer.remoteTextTracks = jest.fn(() => mixedRemoteTextTracks)
+    mockPlayer.remoteTextTracks = vi.fn(() => mixedRemoteTextTracks)
 
     removeAllRemoteTextTracks(mockPlayer)
 
@@ -190,7 +192,7 @@ describe('removeAllRemoteTextTracks', () => {
     ]
 
     const singleRemoteTextTracks = singleTrack as unknown as TextTrackList
-    mockPlayer.remoteTextTracks = jest.fn(() => singleRemoteTextTracks)
+    mockPlayer.remoteTextTracks = vi.fn(() => singleRemoteTextTracks)
 
     removeAllRemoteTextTracks(mockPlayer)
 

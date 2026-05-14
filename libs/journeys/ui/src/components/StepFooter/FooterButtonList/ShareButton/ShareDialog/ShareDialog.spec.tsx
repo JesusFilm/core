@@ -7,14 +7,14 @@ import { ShareDialog } from './ShareDialog'
 describe('ShareDialog', () => {
   it('should copy link', () => {
     const mockPromise = Promise.resolve()
-    const writeTextMock = jest.fn().mockReturnValue(mockPromise)
+    const writeTextMock = vi.fn().mockReturnValue(mockPromise)
 
     Object.assign(navigator, {
       clipboard: {
         writeText: writeTextMock
       }
     })
-    jest.spyOn(mockPromise, 'then').mockImplementation(writeTextMock)
+    vi.spyOn(mockPromise, 'then').mockImplementation(writeTextMock)
 
     const { getByTestId } = render(
       <SnackbarProvider>

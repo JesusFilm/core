@@ -21,7 +21,7 @@ import { defaultJourney } from './data'
 import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -233,7 +233,7 @@ describe('TemplateView', () => {
       tags: [tag]
     }
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeys: [
           defaultJourney,

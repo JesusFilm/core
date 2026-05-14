@@ -9,6 +9,7 @@ import {
   useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
+import { type MockedFunction } from 'vitest'
 
 import {
   SearchBarProvider,
@@ -20,22 +21,22 @@ import { languageRefinements } from '../data'
 
 import { SearchbarDropdown } from './SearchbarDropdown'
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<
   typeof useSearchBox
 >
 
-const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
+const mockUseClearRefinements = useClearRefinements as MockedFunction<
   typeof useClearRefinements
 >
 
-const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
 
 describe('SearchbarDropdown', () => {
-  const refine = jest.fn()
+  const refine = vi.fn()
 
   const refinements = {
     items: languageRefinements,
@@ -49,11 +50,11 @@ describe('SearchbarDropdown', () => {
 
   const emptyRefinements = {
     items: [],
-    refine: jest.fn()
+    refine: vi.fn()
   } as unknown as RefinementListRenderState
 
   const clearRefinements = {
-    refine: jest.fn(),
+    refine: vi.fn(),
     canRefine: false
   } as unknown as ClearRefinementsRenderState
 
@@ -66,7 +67,7 @@ describe('SearchbarDropdown', () => {
     mockUseSearchBox.mockReturnValue(searchBox)
     mockUseClearRefinements.mockReturnValue(clearRefinements)
     mockUseRefinementList.mockReturnValue(refinements)
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should default to dropdown closed', async () => {

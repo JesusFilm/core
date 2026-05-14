@@ -6,7 +6,7 @@ import { getCountryMock } from './useCountryQuery.mock'
 
 describe('useCountryQuery', () => {
   it('should get country based on countryId', async () => {
-    const result = jest.fn().mockReturnValue(getCountryMock.result)
+    const result = vi.fn().mockReturnValue(getCountryMock.result)
 
     renderHook(() => useCountryQuery({ countryId: 'US' }), {
       wrapper: ({ children }) => (

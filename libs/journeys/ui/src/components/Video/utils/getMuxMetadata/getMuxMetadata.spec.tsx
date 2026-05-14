@@ -19,7 +19,7 @@ describe('getMuxMetadata', () => {
 
   afterEach(() => {
     process.env = originalEnv
-    jest.resetModules()
+    vi.resetModules()
   })
 
   const defaultProps: GetMuxMetadataProps = {

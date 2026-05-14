@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import {
   TextResponseType,
@@ -48,19 +49,19 @@ import {
 
 import { Card } from '.'
 
-jest.mock('../../libs/blurImage', () => ({
+vi.mock('../../libs/blurImage', () => ({
   __esModule: true,
-  blurImage: jest.fn()
+  blurImage: vi.fn()
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-jest.mock('next/legacy/image', () => ({
+vi.mock('next/legacy/image', () => ({
   __esModule: true,
-  default: jest.fn(
+  default: vi.fn(
     ({ priority, blurDataURL, objectFit, objectPosition, ...props }) => {
       // eslint-disable-next-line @next/next/no-img-element
       return <img {...props} />
@@ -68,28 +69,28 @@ jest.mock('next/legacy/image', () => ({
   )
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-jest.mock('next-plausible', () => ({
+vi.mock('next-plausible', () => ({
   __esModule: true,
-  usePlausible: jest.fn()
+  usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.MockedFunction<
+const mockUsePlausible = usePlausible as MockedFunction<
   typeof usePlausible
 >
 
 describe('CardBlock', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     treeBlocksVar([])
     blockHistoryVar([])
     mockUuidv4.mockReturnValue('uuid')
-    const blurImageMock = blurImage as jest.Mock
+    const blurImageMock = blurImage as Mock
     blurImageMock.mockReturnValue(
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAJCAYAAAA7KqwyAAAABmJLR0QA/wD/AP+gvaeTAAABA0lEQVQokV2RMY4cQQwDi5S69x7hwP9/ngMfPDstOpiFAwcVECAqIPXz60fUxq9F7UWtRlUgmBzuuXnfF3+ui+/r4tcVcgumQIUFiHyA/7OTB0IRXgwk/2h7kEwBxVNWHpMIEMIQDskNOSjFdwQR3Q0YymCLspCFFAJYIAVxkN/IN9JCMr8R7W1k4/WhC7uQgIhocAq30Qh6gMNkCEPr1ciFeuG18VrUR6A55AhrEAdyCHBKdERJNHuBC9ZGe6NeqJoSaAZuM3pGJcNI1ARjpKKzFlTBWrAX6o26EcJzwEKEZPAcDDiDgNh0usFFqqEb1kJVjyB+XjgL1xvXwjMoNxKMzF9Ukn10nay9yQAAAABJRU5ErkJggg=='
     )
@@ -236,7 +237,7 @@ describe('CardBlock', () => {
   })
 
   it('should handle formik submission', async () => {
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     const textResponseCard: TreeBlock<CardBlock> = {
@@ -279,7 +280,7 @@ describe('CardBlock', () => {
   })
 
   it('should handle empty formik submission', async () => {
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     const textResponseStep: TreeBlock<StepBlock> = {
@@ -325,7 +326,7 @@ describe('CardBlock', () => {
   })
 
   it('should validate required fields in forms', async () => {
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     const textResponseCard: TreeBlock<CardBlock> = {
@@ -453,7 +454,7 @@ describe('CardBlock', () => {
   }, 15000)
 
   it('should validate required email field in forms', async () => {
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     const requiredTextResponseBlock = {
@@ -566,7 +567,7 @@ describe('CardBlock', () => {
   })
 
   it('should handle multiselect submission', async () => {
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     const multiselectBlock: TreeBlock<MultiselectBlock> = {

@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
+import { type MockedFunction } from 'vitest'
 
 import { TreeBlock, blockHistoryVar } from '../../../../libs/block'
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
@@ -9,17 +10,17 @@ import { StepFields } from '../../../Step/__generated__/StepFields'
 
 import { ReactionButton } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('next-plausible', () => ({
+vi.mock('next-plausible', () => ({
   __esModule: true,
-  usePlausible: jest.fn()
+  usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.MockedFunction<
+const mockUsePlausible = usePlausible as MockedFunction<
   typeof usePlausible
 >
 
@@ -44,7 +45,7 @@ describe('ReactionButton', () => {
   })
 
   it('should add event to plausible', async () => {
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     blockHistoryVar([block])
     mockUsePlausible.mockReturnValue(mockPlausible)
 

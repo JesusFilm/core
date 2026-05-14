@@ -1,8 +1,9 @@
 import { act, fireEvent, render } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { Conversation } from './Conversation'
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
@@ -12,9 +13,9 @@ class ResizeObserverMock {
   constructor(cb: ResizeObserverCallback) {
     observers.push(cb)
   }
-  observe = jest.fn()
-  unobserve = jest.fn()
-  disconnect = jest.fn()
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
 }
 
 function mockScrollMetrics({
@@ -26,13 +27,13 @@ function mockScrollMetrics({
   scrollTop: number
   clientHeight: number
 }): void {
-  jest
+  vi
     .spyOn(HTMLElement.prototype, 'scrollHeight', 'get')
     .mockReturnValue(scrollHeight)
-  jest
+  vi
     .spyOn(HTMLElement.prototype, 'scrollTop', 'get')
     .mockReturnValue(scrollTop)
-  jest
+  vi
     .spyOn(HTMLElement.prototype, 'clientHeight', 'get')
     .mockReturnValue(clientHeight)
 }
@@ -53,7 +54,7 @@ function getScrollContainer(container: HTMLElement): HTMLElement {
 }
 
 describe('Conversation', () => {
-  let scrollToSpy: jest.Mock
+  let scrollToSpy: Mock
   let originalScrollTo: typeof Element.prototype.scrollTo | undefined
   let originalResizeObserver: typeof window.ResizeObserver | undefined
 
@@ -63,17 +64,17 @@ describe('Conversation', () => {
     window.ResizeObserver =
       ResizeObserverMock as unknown as typeof ResizeObserver
     // jsdom does not implement Element.prototype.scrollTo, so we install
-    // a fresh jest.fn() each test instead of spying on a missing prop.
+    // a fresh vi.fn() each test instead of spying on a missing prop.
     originalScrollTo = (
       Element.prototype as { scrollTo?: typeof Element.prototype.scrollTo }
     ).scrollTo
-    scrollToSpy = jest.fn()
+    scrollToSpy = vi.fn()
     Element.prototype.scrollTo =
       scrollToSpy as unknown as typeof Element.prototype.scrollTo
   })
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
     if (originalResizeObserver == null) {
       delete (window as Window & { ResizeObserver?: typeof ResizeObserver })
         .ResizeObserver

@@ -8,7 +8,7 @@ describe('hideAllSubtitles', () => {
   let mockTracks: TextTrack[]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     mockTracks = [
       {
@@ -41,7 +41,7 @@ describe('hideAllSubtitles', () => {
     mockTextTracks = mockTracks as unknown as TextTrackList
 
     mockPlayer = {
-      textTracks: jest.fn(() => mockTextTracks)
+      textTracks: vi.fn(() => mockTextTracks)
     } as unknown as VideoJsPlayer
   })
 
@@ -71,7 +71,7 @@ describe('hideAllSubtitles', () => {
   it('should handle empty text tracks', () => {
     const emptyTextTracks = [] as unknown as TextTrackList
 
-    mockPlayer.textTracks = jest.fn(() => emptyTextTracks)
+    mockPlayer.textTracks = vi.fn(() => emptyTextTracks)
 
     hideAllSubtitles(mockPlayer)
 
@@ -82,7 +82,7 @@ describe('hideAllSubtitles', () => {
   it('should handle null textTracks by creating new TextTrackList', () => {
     const emptyTextTracks = [] as unknown as TextTrackList
 
-    mockPlayer.textTracks = jest.fn(() => emptyTextTracks)
+    mockPlayer.textTracks = vi.fn(() => emptyTextTracks)
 
     hideAllSubtitles(mockPlayer)
 
@@ -93,7 +93,7 @@ describe('hideAllSubtitles', () => {
   it('should handle undefined textTracks by creating new TextTrackList', () => {
     const emptyTextTracks = [] as unknown as TextTrackList
 
-    mockPlayer.textTracks = jest.fn(() => emptyTextTracks)
+    mockPlayer.textTracks = vi.fn(() => emptyTextTracks)
 
     hideAllSubtitles(mockPlayer)
 
@@ -142,7 +142,7 @@ describe('hideAllSubtitles', () => {
 
     const mixedTextTracks = mixedTracks as unknown as TextTrackList
 
-    mockPlayer.textTracks = jest.fn(() => mixedTextTracks)
+    mockPlayer.textTracks = vi.fn(() => mixedTextTracks)
 
     hideAllSubtitles(mockPlayer)
 
@@ -170,7 +170,7 @@ describe('hideAllSubtitles', () => {
 
     const textTracksWithNulls = tracksWithNulls as unknown as TextTrackList
 
-    mockPlayer.textTracks = jest.fn(() => textTracksWithNulls)
+    mockPlayer.textTracks = vi.fn(() => textTracksWithNulls)
 
     hideAllSubtitles(mockPlayer)
 

@@ -7,7 +7,7 @@ import { GridVariant } from './GridVariant'
 
 describe('GridVariant', () => {
   it('should show label', () => {
-    render(<GridVariant label="label" handleClick={jest.fn()} children={[]} />)
+    render(<GridVariant label="label" handleClick={vi.fn()} children={[]} />)
 
     expect(screen.getByText('label')).toBeInTheDocument()
   })
@@ -17,7 +17,7 @@ describe('GridVariant', () => {
       <GridVariant
         label="label"
         editableLabel={<span>editableLabel</span>}
-        handleClick={jest.fn()}
+        handleClick={vi.fn()}
         children={[]}
       />
     )
@@ -26,7 +26,7 @@ describe('GridVariant', () => {
   })
 
   it('should handleClick', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
 
     render(
       <GridVariant label="label" handleClick={handleClick} children={[]} />
@@ -38,7 +38,7 @@ describe('GridVariant', () => {
   })
 
   it('should show default image', () => {
-    render(<GridVariant label="label" handleClick={jest.fn()} children={[]} />)
+    render(<GridVariant label="label" handleClick={vi.fn()} children={[]} />)
 
     expect(screen.getByTestId('LogoGrayscaleIcon')).toBeInTheDocument()
   })
@@ -53,7 +53,7 @@ describe('GridVariant', () => {
     render(
       <GridVariant
         label="label"
-        handleClick={jest.fn()}
+        handleClick={vi.fn()}
         children={[imageBlock]}
         pollOptionImageBlockId="123"
       />

@@ -2,19 +2,20 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useSearchBox } from 'react-instantsearch'
+import { type MockedFunction } from 'vitest'
 
 import { languageRefinements } from '../../data'
 
 import { Suggestions } from './Suggestions'
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<
   typeof useSearchBox
 >
 
 describe('Suggestions', () => {
-  const refine = jest.fn()
+  const refine = vi.fn()
 
   const refinements = {
     items: languageRefinements,
@@ -27,7 +28,7 @@ describe('Suggestions', () => {
 
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue(searchBox)
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should display suggestion in english', () => {

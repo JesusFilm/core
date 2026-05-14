@@ -4,13 +4,13 @@ import { SettingsButton } from '.'
 
 describe('SettingsButton', () => {
   it('renders the settings button', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     render(<SettingsButton onClick={handleClick} open={false} />)
     expect(screen.getByLabelText('video settings')).toBeInTheDocument()
   })
 
   it('calls onClick when clicked', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     render(<SettingsButton onClick={handleClick} open={false} />)
 
     fireEvent.click(screen.getByLabelText('video settings'))
@@ -18,7 +18,7 @@ describe('SettingsButton', () => {
   })
 
   it('sets correct aria attributes when open is false', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     render(<SettingsButton onClick={handleClick} open={false} />)
 
     const button = screen.getByLabelText('video settings')
@@ -28,7 +28,7 @@ describe('SettingsButton', () => {
   })
 
   it('sets correct aria attributes when open is true', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     render(<SettingsButton onClick={handleClick} open />)
 
     const button = screen.getByLabelText('video settings')
@@ -38,7 +38,7 @@ describe('SettingsButton', () => {
   })
 
   it('contains the settings icon', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     render(<SettingsButton onClick={handleClick} open={false} />)
 
     const button = screen.getByLabelText('video settings')

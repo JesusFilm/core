@@ -6,6 +6,7 @@ import {
   useInfiniteHits,
   useInstantSearch
 } from 'react-instantsearch'
+import { type MockedFunction } from 'vitest'
 
 import { algoliaVideos, customTransformedItems, transformedItems } from './data'
 import {
@@ -14,12 +15,12 @@ import {
   useAlgoliaVideos
 } from './useAlgoliaVideos'
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >
-const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+const mockUseInfiniteHits = useInfiniteHits as MockedFunction<
   typeof useInfiniteHits
 >
 
@@ -29,7 +30,7 @@ describe('useAlgoliaVideos', () => {
   beforeEach(() => {
     mockUseInfiniteHits.mockReturnValue({
       items,
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)
 
@@ -56,7 +57,7 @@ describe('useAlgoliaVideos', () => {
     })
 
     it('should pass locale to transform function', () => {
-      const mockTransform = jest.fn()
+      const mockTransform = vi.fn()
       renderHook(() =>
         useAlgoliaVideos({
           transformItems: mockTransform,

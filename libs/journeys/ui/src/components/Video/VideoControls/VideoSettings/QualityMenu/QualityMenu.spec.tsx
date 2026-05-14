@@ -5,40 +5,40 @@ import { QualityMenu, QualityMenuItem } from '.'
 
 describe('QualityMenu', () => {
   const mockPlayer = {
-    qualityLevels: jest.fn().mockReturnValue({
-      on: jest.fn(),
-      off: jest.fn(),
+    qualityLevels: vi.fn().mockReturnValue({
+      on: vi.fn(),
+      off: vi.fn(),
       selectedIndex: 0,
       length: 3,
       0: { enabled: true, height: 720 },
       1: { enabled: true, height: 480 },
       2: { enabled: true, height: 360 }
     }),
-    tech: jest.fn().mockReturnValue({
+    tech: vi.fn().mockReturnValue({
       name_: 'Html5',
       vhs: {
         mediaSource: {
           activeSourceBuffers: []
         },
         playlistController_: {
-          fastQualityChange_: jest.fn()
+          fastQualityChange_: vi.fn()
         }
       }
     }),
-    currentTime: jest.fn().mockReturnValue(0),
-    duration: jest.fn().mockReturnValue(100),
-    paused: jest.fn().mockReturnValue(false),
-    pause: jest.fn(),
-    play: jest.fn().mockResolvedValue(undefined)
+    currentTime: vi.fn().mockReturnValue(0),
+    duration: vi.fn().mockReturnValue(100),
+    paused: vi.fn().mockReturnValue(false),
+    pause: vi.fn(),
+    play: vi.fn().mockResolvedValue(undefined)
   }
 
   const anchorEl = document.createElement('button')
-  const handleClose = jest.fn()
-  const handleBack = jest.fn()
-  const handleQualityChanged = jest.fn()
+  const handleClose = vi.fn()
+  const handleBack = vi.fn()
+  const handleQualityChanged = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders the quality menu when open', () => {
@@ -96,7 +96,7 @@ describe('QualityMenu', () => {
   })
 
   it('calls handleQualityChange when a quality option is clicked', async () => {
-    jest
+    vi
       .spyOn(React, 'useState')
       .mockImplementationOnce(() => [
         [
@@ -109,9 +109,9 @@ describe('QualityMenu', () => {
           { resolution: '480p', qualityLevel: 1, height: 480 },
           { resolution: '360p', qualityLevel: 2, height: 360 }
         ] as QualityMenuItem[],
-        jest.fn()
+        vi.fn()
       ])
-      .mockImplementationOnce(() => [-1, jest.fn()])
+      .mockImplementationOnce(() => [-1, vi.fn()])
 
     act(() => {
       render(
@@ -139,7 +139,7 @@ describe('QualityMenu', () => {
   })
 
   it('selects Auto quality when quality level -1 is selected', () => {
-    jest
+    vi
       .spyOn(React, 'useState')
       .mockImplementationOnce(() => [
         [
@@ -150,9 +150,9 @@ describe('QualityMenu', () => {
           },
           { resolution: '720p', qualityLevel: 0, height: 720 }
         ] as QualityMenuItem[],
-        jest.fn()
+        vi.fn()
       ])
-      .mockImplementationOnce(() => [-1, jest.fn()])
+      .mockImplementationOnce(() => [-1, vi.fn()])
 
     act(() => {
       render(

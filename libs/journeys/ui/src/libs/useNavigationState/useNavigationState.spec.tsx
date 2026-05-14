@@ -1,24 +1,25 @@
 import { renderHook } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { useNavigationState } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('useNavigationState', () => {
   beforeEach(() => {
     mockUseRouter.mockReturnValue({
       events: {
-        on: jest.fn(),
-        off: jest.fn()
+        on: vi.fn(),
+        off: vi.fn()
       }
     } as unknown as NextRouter)
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should return false by default', () => {
@@ -29,12 +30,12 @@ describe('useNavigationState', () => {
   it('should set isNavigating to true on routeChangeStart', () => {
     mockUseRouter.mockReturnValue({
       events: {
-        on: jest.fn().mockImplementation((event, routeChangeStartCallback) => {
+        on: vi.fn().mockImplementation((event, routeChangeStartCallback) => {
           if (event === 'routeChangeStart') {
             routeChangeStartCallback()
           }
         }),
-        off: jest.fn()
+        off: vi.fn()
       }
     } as unknown as NextRouter)
 
@@ -45,14 +46,14 @@ describe('useNavigationState', () => {
   it('should set isNavigating to false on routeChangeComplete', () => {
     mockUseRouter.mockReturnValue({
       events: {
-        on: jest
+        on: vi
           .fn()
           .mockImplementation((event, routeChangeCompleteCallback) => {
             if (event === 'routeChangeComplete') {
               routeChangeCompleteCallback()
             }
           }),
-        off: jest.fn()
+        off: vi.fn()
       }
     } as unknown as NextRouter)
 
@@ -63,12 +64,12 @@ describe('useNavigationState', () => {
   it('should set isNavigating to false on routeChangeError', () => {
     mockUseRouter.mockReturnValue({
       events: {
-        on: jest.fn().mockImplementation((event, routeChangeErrorCallback) => {
+        on: vi.fn().mockImplementation((event, routeChangeErrorCallback) => {
           if (event === 'routeChangeError') {
             routeChangeErrorCallback()
           }
         }),
-        off: jest.fn()
+        off: vi.fn()
       }
     } as unknown as NextRouter)
 
@@ -77,8 +78,8 @@ describe('useNavigationState', () => {
   })
 
   it('should remove event listeners on unmount', () => {
-    const onEvent = jest.fn()
-    const offEvent = jest.fn()
+    const onEvent = vi.fn()
+    const offEvent = vi.fn()
 
     mockUseRouter.mockReturnValue({
       events: {

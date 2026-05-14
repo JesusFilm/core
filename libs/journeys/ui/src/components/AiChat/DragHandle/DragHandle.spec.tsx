@@ -1,18 +1,19 @@
 import { fireEvent, render } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { DragHandle } from './DragHandle'
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
 function renderHandle(props: {
   collapsed?: boolean
-  onCollapse?: jest.Mock
-  onExpand?: jest.Mock
+  onCollapse?: Mock
+  onExpand?: Mock
 }) {
-  const onCollapse = props.onCollapse ?? jest.fn()
-  const onExpand = props.onExpand ?? jest.fn()
+  const onCollapse = props.onCollapse ?? vi.fn()
+  const onExpand = props.onExpand ?? vi.fn()
   const utils = render(
     <DragHandle
       collapsed={props.collapsed ?? false}

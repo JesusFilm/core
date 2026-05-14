@@ -4,7 +4,7 @@ import { PreviewTemplateButton } from './PreviewTemplateButton'
 
 describe('PreviewTemplateButton', () => {
   const originalEnv = process.env
-  jest.resetModules()
+  vi.resetModules()
   process.env = {
     ...originalEnv,
     NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'

@@ -22,10 +22,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/libs/journeys/ui"],
       "options": {
-        "jestConfig": "libs/journeys/ui/jest.config.ts"
+        "configFile": "libs/journeys/ui/vitest.config.mts"
       }
     },
     "demo": {

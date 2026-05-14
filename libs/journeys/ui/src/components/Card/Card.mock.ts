@@ -1,3 +1,4 @@
+import { type FetchResult } from '@apollo/client'
 import { MockedResponse } from '@apollo/client/testing'
 
 import {
@@ -302,14 +303,16 @@ export const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreate
         }
       }
     },
-    result: jest.fn(() => ({
-      data: {
-        stepPreviousEventCreate: {
-          id: 'uuid',
-          __typename: 'StepPreviousEvent'
+    result: vi.fn(
+      (): FetchResult<StepPreviousEventCreate> => ({
+        data: {
+          stepPreviousEventCreate: {
+            id: 'uuid',
+            __typename: 'StepPreviousEvent'
+          }
         }
-      }
-    }))
+      })
+    )
   }
 
 export const mockStepNextEventCreate: MockedResponse<StepNextEventCreate> = {
@@ -325,14 +328,16 @@ export const mockStepNextEventCreate: MockedResponse<StepNextEventCreate> = {
       }
     }
   },
-  result: jest.fn(() => ({
-    data: {
-      stepNextEventCreate: {
-        id: 'uuid',
-        __typename: 'StepNextEvent'
+  result: vi.fn(
+    (): FetchResult<StepNextEventCreate> => ({
+      data: {
+        stepNextEventCreate: {
+          id: 'uuid',
+          __typename: 'StepNextEvent'
+        }
       }
-    }
-  }))
+    })
+  )
 }
 
 export const mockTextResponseSubmissionEventCreate = {
@@ -348,7 +353,7 @@ export const mockTextResponseSubmissionEventCreate = {
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       textResponseSubmissionEventCreate: {
         id: 'mocked-submission-id'
@@ -370,7 +375,7 @@ export const mockTextResponse1SubmissionEventCreate = {
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       textResponseSubmissionEventCreate: {
         id: 'mocked-submission-id'
@@ -392,7 +397,7 @@ export const mockTextResponse2SubmissionEventCreate = {
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       textResponseSubmissionEventCreate: {
         id: 'mocked-submission-id'
@@ -414,7 +419,7 @@ export const mockTextResponseEmailSubmissionEventCreate = {
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       textResponseSubmissionEventCreate: {
         id: 'mocked-submission-id'
@@ -470,7 +475,7 @@ export const createMockButtonClickEvent = (
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       buttonClickEventCreate: {
         id: 'uuid',
@@ -494,12 +499,14 @@ export const mockMultiselectSubmissionEventCreate: MockedResponse<MultiselectSub
         }
       }
     },
-    result: jest.fn(() => ({
-      data: {
-        multiselectSubmissionEventCreate: {
-          id: 'uuid',
-          __typename: 'MultiselectSubmissionEvent'
+    result: vi.fn(
+      (): FetchResult<MultiselectSubmissionEventCreate> => ({
+        data: {
+          multiselectSubmissionEventCreate: {
+            id: 'uuid',
+            __typename: 'MultiselectSubmissionEvent'
+          }
         }
-      }
-    }))
+      })
+    )
   }

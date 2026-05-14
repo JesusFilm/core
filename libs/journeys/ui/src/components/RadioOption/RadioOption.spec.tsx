@@ -9,16 +9,19 @@ import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
 import { RadioOption } from '.'
 
-jest.mock('../../libs/action', () => {
-  const originalModule = jest.requireActual('../../libs/action')
+vi.mock('../../libs/action', async () => {
+  const originalModule =
+    await vi.importActual<typeof import('../../libs/action')>(
+      '../../libs/action'
+    )
   return {
     __esModule: true,
     ...originalModule,
-    handleAction: jest.fn()
+    handleAction: vi.fn()
   }
 })
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   useRouter() {
     return {
       push: () => null
@@ -46,7 +49,7 @@ const block: TreeBlock<RadioOptionFields> = {
 describe('RadioOption', () => {
   describe('list variant', () => {
     it('should handle onClick', () => {
-      const handleClick = jest.fn()
+      const handleClick = vi.fn()
 
       render(<RadioOption {...block} onClick={handleClick} />)
 
@@ -126,7 +129,7 @@ describe('RadioOption', () => {
 
   describe('grid variant', () => {
     it('should handle onClick', () => {
-      const handleClick = jest.fn()
+      const handleClick = vi.fn()
 
       render(<RadioOption {...block} onClick={handleClick} gridView />)
 

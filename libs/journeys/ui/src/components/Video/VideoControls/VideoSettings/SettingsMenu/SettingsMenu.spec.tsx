@@ -4,13 +4,13 @@ import { SettingsMenu } from '.'
 
 describe('SettingsMenu', () => {
   const anchorEl = document.createElement('button')
-  const handleClose = jest.fn()
-  const handleQualityClick = jest.fn()
-  const handleToggleStats = jest.fn()
+  const handleClose = vi.fn()
+  const handleQualityClick = vi.fn()
+  const handleToggleStats = vi.fn()
   const currentQuality = 'Auto'
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders the settings menu when open', () => {

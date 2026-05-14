@@ -19,7 +19,9 @@ import VideoJsPlayer from '../utils/videoJsTypes'
 
 import { VideoControls } from './VideoControls'
 
-jest.mock('@mui/material/useMediaQuery', () => jest.fn().mockReturnValue(false))
+vi.mock('@mui/material/useMediaQuery', () => ({
+  default: vi.fn().mockReturnValue(false)
+}))
 
 describe('VideoControls', () => {
   let player: VideoJsPlayer
@@ -48,15 +50,15 @@ describe('VideoControls', () => {
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     cleanup()
   })
 
   it('plays the video via video region click', async () => {
-    const playStub = jest
+    const playStub = vi
       .spyOn(player, 'play')
       .mockImplementationOnce(async () => {
-        void jest.fn()
+        void vi.fn()
       })
 
     const { getByRole } = render(
@@ -80,10 +82,10 @@ describe('VideoControls', () => {
   })
 
   it('plays the video via control bar play button', async () => {
-    const playStub = jest
+    const playStub = vi
       .spyOn(player, 'play')
       .mockImplementationOnce(async () => {
-        void jest.fn()
+        void vi.fn()
       })
 
     const { getByRole } = render(
@@ -107,11 +109,11 @@ describe('VideoControls', () => {
   })
 
   it('pauses the video via video region click', async () => {
-    jest.spyOn(player, 'on').mockImplementation((type, fn) => {
+    vi.spyOn(player, 'on').mockImplementation((type, fn) => {
       if (type === 'play') fn()
     })
 
-    const pauseStub = jest
+    const pauseStub = vi
       .spyOn(player, 'pause')
       .mockImplementationOnce(() => player)
 
@@ -136,11 +138,11 @@ describe('VideoControls', () => {
   })
 
   it('pauses the video via control bar pause button', async () => {
-    jest.spyOn(player, 'on').mockImplementation((type, fn) => {
+    vi.spyOn(player, 'on').mockImplementation((type, fn) => {
       if (type === 'play') fn()
     })
 
-    const pauseStub = jest
+    const pauseStub = vi
       .spyOn(player, 'pause')
       .mockImplementationOnce(() => player)
     const { getByRole } = render(
@@ -164,7 +166,7 @@ describe('VideoControls', () => {
   })
 
   it('mutes and unmutes the video via control bar mute button', async () => {
-    const muteStub = jest
+    const muteStub = vi
       .spyOn(player, 'muted')
       .mockImplementationOnce(() => !(player.muted() ?? false))
 
@@ -188,10 +190,10 @@ describe('VideoControls', () => {
   })
 
   it('should show unmute when playing muted videos for mobile', async () => {
-    const playStub = jest
+    const playStub = vi
       .spyOn(player, 'play')
       .mockImplementationOnce(async () => {
-        void jest.fn()
+        void vi.fn()
       })
 
     const { getByRole } = render(
@@ -220,7 +222,7 @@ describe('VideoControls', () => {
   })
 
   it('should show pause after unmuting via region click', async () => {
-    const muteStub = jest.spyOn(player, 'muted')
+    const muteStub = vi.spyOn(player, 'muted')
 
     render(
       <MockedProvider>
@@ -277,7 +279,7 @@ describe('VideoControls', () => {
 
   describe('fullscreen video', () => {
     it('maximises the video on video region double tap', async () => {
-      const fullscreenStub = jest
+      const fullscreenStub = vi
         .spyOn(player, 'requestFullscreen')
         .mockImplementationOnce(async () => player)
 
@@ -302,8 +304,8 @@ describe('VideoControls', () => {
     })
 
     it('minimises the video on video region double tap', async () => {
-      jest.spyOn(player, 'isFullscreen').mockImplementation(() => true)
-      const fullscreenStub = jest
+      vi.spyOn(player, 'isFullscreen').mockImplementation(() => true)
+      const fullscreenStub = vi
         .spyOn(player, 'exitFullscreen')
         .mockImplementationOnce(async () => player)
 
@@ -328,8 +330,8 @@ describe('VideoControls', () => {
     })
 
     it('maximises the video on fullscreen icon click', async () => {
-      jest.spyOn(navigator, 'userAgent', 'get').mockReturnValue('iPhone')
-      const fullscreenStub = jest
+      vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('iPhone')
+      const fullscreenStub = vi
         .spyOn(player, 'requestFullscreen')
         .mockImplementationOnce(async () => player)
 
@@ -353,9 +355,9 @@ describe('VideoControls', () => {
     })
 
     it('minimises the video on fullscreen icon click', async () => {
-      jest.spyOn(navigator, 'userAgent', 'get').mockReturnValue('iPhone')
-      jest.spyOn(player, 'isFullscreen').mockImplementation(() => true)
-      const fullscreenStub = jest
+      vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('iPhone')
+      vi.spyOn(player, 'isFullscreen').mockImplementation(() => true)
+      const fullscreenStub = vi
         .spyOn(player, 'exitFullscreen')
         .mockImplementationOnce(async () => player)
 
@@ -400,12 +402,12 @@ describe('VideoControls', () => {
 
   describe('fullscreen card', () => {
     beforeEach(() => {
-      jest
+      vi
         .spyOn(fscreen, 'fullscreenEnabled', 'get')
         .mockImplementation(() => true)
-      jest
+      vi
         .spyOn(fscreen, 'requestFullscreen')
-        .mockImplementation(() => jest.fn())
+        .mockImplementation(() => vi.fn())
     })
 
     it('maximises the entire card on fullscreen icon click', async () => {
@@ -434,12 +436,12 @@ describe('VideoControls', () => {
     })
 
     it('minimises the entire card on fullscreen icon click', async () => {
-      jest.spyOn(player, 'isFullscreen').mockImplementation(() => true)
-      const exitMock = jest
+      vi.spyOn(player, 'isFullscreen').mockImplementation(() => true)
+      const exitMock = vi
         // @ts-expect-error: jest mock type conflicts with fscreen type
         .spyOn(fscreen, 'exitFullscreen', 'get')
         // @ts-expect-error: jest mock type conflicts with fscreen type
-        .mockImplementation(() => jest.fn())
+        .mockImplementation(() => vi.fn())
 
       render(
         <MockedProvider>

@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react'
-// eslint-disable-next-line import/no-namespace
-import * as videojs from 'video.js'
+import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
@@ -8,6 +7,14 @@ import { TreeBlock } from '../../../../libs/block'
 import { VideoFields } from '../../../Video/__generated__/VideoFields'
 
 import { BackgroundVideo } from './BackgroundVideo'
+
+vi.mock('video.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('video.js')>()
+  return {
+    ...actual,
+    default: vi.fn()
+  }
+})
 
 const video: TreeBlock<VideoFields> = {
   id: 'videoId',
@@ -61,19 +68,28 @@ const video: TreeBlock<VideoFields> = {
   children: []
 }
 
-const playerRefMock = { current: null }
+const playerRefMock = {
+  current: null,
+  on: vi.fn(),
+  ready: vi.fn(),
+  currentTime: vi.fn(),
+  play: vi.fn(),
+  pause: vi.fn(),
+  src: vi.fn(),
+  dispose: vi.fn()
+}
 
 describe('BackgroundVideo', () => {
   describe('BackgroundVideo', () => {
     beforeEach(() => {
-      jest
-        .spyOn(videojs, 'default')
+      vi
+        .mocked(videojs)
         .mockReturnValue(playerRefMock as unknown as Player)
     })
 
     it('should set container to 16:9', () => {
       const { getByTestId } = render(
-        <BackgroundVideo setLoading={jest.fn()} cardColor="black" {...video} />
+        <BackgroundVideo setLoading={vi.fn()} cardColor="black" {...video} />
       )
 
       // Expect container to have 16:9 aspect ratio

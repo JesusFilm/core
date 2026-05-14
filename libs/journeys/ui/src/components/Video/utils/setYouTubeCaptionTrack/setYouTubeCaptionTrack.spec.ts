@@ -1,17 +1,19 @@
+import { type Mock } from 'vitest'
+
 import { YoutubeTech } from '../videoJsTypes/YoutubeTech'
 
 import { setYouTubeCaptionTrack } from './setYouTubeCaptionTrack'
 
 describe('setYouTubeCaptionTrack', () => {
   let mockYtPlayer: YoutubeTech['ytPlayer']
-  let mockLoadModule: jest.Mock
-  let mockSetOption: jest.Mock
+  let mockLoadModule: Mock
+  let mockSetOption: Mock
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
-    mockLoadModule = jest.fn()
-    mockSetOption = jest.fn()
+    mockLoadModule = vi.fn()
+    mockSetOption = vi.fn()
 
     mockYtPlayer = {
       loadModule: mockLoadModule,

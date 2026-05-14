@@ -16,7 +16,7 @@ describe('FeltNeedsButton', () => {
 
   it('should render a felt needs button', () => {
     const { getByRole, queryByTestId } = render(
-      <FeltNeedsButton item={tag} onClick={jest.fn()} />
+      <FeltNeedsButton item={tag} onClick={vi.fn()} />
     )
 
     expect(
@@ -27,7 +27,7 @@ describe('FeltNeedsButton', () => {
 
   it('should render loading skeleton if no tag is passed', () => {
     const { getByTestId } = render(
-      <FeltNeedsButton item={undefined} onClick={jest.fn()} />
+      <FeltNeedsButton item={undefined} onClick={vi.fn()} />
     )
     expect(getByTestId('felt-needs-button-loading')).toBeInTheDocument()
   })
@@ -45,7 +45,7 @@ describe('FeltNeedsButton', () => {
             }
           ]
         }}
-        onClick={jest.fn()}
+        onClick={vi.fn()}
       />
     )
     expect(
@@ -55,7 +55,7 @@ describe('FeltNeedsButton', () => {
   })
 
   it('should call onClick on button click', () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     const { getByRole } = render(
       <FeltNeedsButton item={tag} onClick={onClick} />
     )

@@ -10,10 +10,10 @@ import { JourneyProvider } from '../../libs/JourneyProvider'
 import { TextResponseFields } from './__generated__/TextResponseFields'
 import { TextResponse } from './TextResponse'
 
-jest.mock('formik', () => ({
-  ...jest.requireActual('formik'),
-  useField: jest.fn().mockReturnValue([
-    { value: 'test', onChange: jest.fn(), onBlur: jest.fn() },
+vi.mock('formik', async () => ({
+  ...(await vi.importActual<typeof import('formik')>('formik')),
+  useField: vi.fn().mockReturnValue([
+    { value: 'test', onChange: vi.fn(), onBlur: vi.fn() },
     { error: 'test', touched: true }
   ])
 }))

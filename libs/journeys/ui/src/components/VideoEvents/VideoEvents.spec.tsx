@@ -4,6 +4,7 @@ import { act, cleanup, render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { v4 as uuidv4 } from 'uuid'
 import videojs from 'video.js'
+import { type MockedFunction } from 'vitest'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -31,27 +32,27 @@ import {
 
 import { VideoEvents } from '.'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 mockUuidv4.mockReturnValue('uuid')
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+const mockedSendGTMEvent = sendGTMEvent as MockedFunction<
   typeof sendGTMEvent
 >
 
-jest.mock('next-plausible', () => ({
+vi.mock('next-plausible', () => ({
   __esModule: true,
-  usePlausible: jest.fn()
+  usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.MockedFunction<
+const mockUsePlausible = usePlausible as MockedFunction<
   typeof usePlausible
 >
 
@@ -115,10 +116,10 @@ describe('VideoEvents', () => {
 
   it('should create start event', async () => {
     blockHistoryVar([activeBlock])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         videoStartEventCreate: {
           id: 'uuid',
@@ -186,10 +187,10 @@ describe('VideoEvents', () => {
 
   it('should call plausible with eventLabel for videoStart events', async () => {
     blockHistoryVar([activeBlock])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         videoStartEventCreate: {
           id: 'uuid',
@@ -304,9 +305,9 @@ describe('VideoEvents', () => {
 
   it('should create play event', async () => {
     blockHistoryVar([activeBlock])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         videoPlayEventCreate: {
           id: 'uuid',
@@ -418,9 +419,9 @@ describe('VideoEvents', () => {
 
   it('should create pause event', async () => {
     blockHistoryVar([activeBlock])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         videoPauseEventCreate: {
           id: 'uuid',
@@ -532,9 +533,9 @@ describe('VideoEvents', () => {
 
   it('should create expand event', async () => {
     blockHistoryVar([activeBlock])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         videoExpandEventCreate: {
           id: 'uuid',
@@ -646,9 +647,9 @@ describe('VideoEvents', () => {
 
   it('should create collapse event', async () => {
     blockHistoryVar([activeBlock])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         videoCollapseEventCreate: {
           id: 'uuid',
@@ -800,9 +801,9 @@ describe('VideoEvents', () => {
 
   it('should create progress event and complete event', async () => {
     blockHistoryVar([activeBlock])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
-    const resultStart = jest.fn(() => ({
+    const resultStart = vi.fn(() => ({
       data: {
         videoStartEventCreate: {
           id: 'uuid',
@@ -811,7 +812,7 @@ describe('VideoEvents', () => {
       }
     }))
 
-    const resultOne = jest.fn(() => ({
+    const resultOne = vi.fn(() => ({
       data: {
         videoProgressEventCreate: {
           id: 'uuid',
@@ -820,7 +821,7 @@ describe('VideoEvents', () => {
       }
     }))
 
-    const resultTwo = jest.fn(() => ({
+    const resultTwo = vi.fn(() => ({
       data: {
         videoProgressEventCreate: {
           id: 'uuid',
@@ -829,7 +830,7 @@ describe('VideoEvents', () => {
       }
     }))
 
-    const resultThree = jest.fn(() => ({
+    const resultThree = vi.fn(() => ({
       data: {
         videoProgressEventCreate: {
           id: 'uuid',
@@ -838,7 +839,7 @@ describe('VideoEvents', () => {
       }
     }))
 
-    const resultComplete = jest.fn(() => ({
+    const resultComplete = vi.fn(() => ({
       data: {
         videoCompleteEventCreate: {
           id: 'uuid',
@@ -1259,10 +1260,10 @@ describe('VideoEvents', () => {
 
   it('should call plausible with endEventLabel for videoComplete events', async () => {
     blockHistoryVar([activeBlock])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
-    const resultStart = jest.fn(() => ({
+    const resultStart = vi.fn(() => ({
       data: {
         videoStartEventCreate: {
           id: 'uuid',
@@ -1271,7 +1272,7 @@ describe('VideoEvents', () => {
       }
     }))
 
-    const resultComplete = jest.fn(() => ({
+    const resultComplete = vi.fn(() => ({
       data: {
         videoCompleteEventCreate: {
           id: 'uuid',
@@ -1313,7 +1314,7 @@ describe('VideoEvents', () => {
                 }
               }
             },
-            result: jest.fn(() => ({
+            result: vi.fn(() => ({
               data: {
                 videoProgressEventCreate: {
                   id: 'uuid',
@@ -1333,7 +1334,7 @@ describe('VideoEvents', () => {
                 }
               }
             },
-            result: jest.fn(() => ({
+            result: vi.fn(() => ({
               data: {
                 videoProgressEventCreate: {
                   id: 'uuid',
@@ -1353,7 +1354,7 @@ describe('VideoEvents', () => {
                 }
               }
             },
-            result: jest.fn(() => ({
+            result: vi.fn(() => ({
               data: {
                 videoProgressEventCreate: {
                   id: 'uuid',

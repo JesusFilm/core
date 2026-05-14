@@ -1,3 +1,5 @@
+import { type Mock, type MockedFunction } from 'vitest'
+
 import { VideoFields_subtitleLanguage as SubtitleLanguage } from '../../__generated__/VideoFields'
 import { getYouTubePlayer } from '../getYouTubePlayer'
 import { removeAllRemoteTextTracks } from '../removeAllRemoteTextTracks'
@@ -8,43 +10,43 @@ import { YoutubeCaptionLanguages } from '../videoJsTypes/YoutubeTech'
 
 import { extractYouTubeCaptionsAndAddTextTracks } from './extractYouTubeCaptionsAndAddTextTracks'
 
-jest.mock('../getYouTubePlayer')
-jest.mock('../removeAllRemoteTextTracks')
-jest.mock('../setYouTubeCaptionTrack')
-jest.mock('../unloadYouTubeCaptions')
+vi.mock('../getYouTubePlayer')
+vi.mock('../removeAllRemoteTextTracks')
+vi.mock('../setYouTubeCaptionTrack')
+vi.mock('../unloadYouTubeCaptions')
 
-const mockGetYouTubePlayer = getYouTubePlayer as jest.MockedFunction<
+const mockGetYouTubePlayer = getYouTubePlayer as MockedFunction<
   typeof getYouTubePlayer
 >
 const mockRemoveAllRemoteTextTracks =
-  removeAllRemoteTextTracks as jest.MockedFunction<
+  removeAllRemoteTextTracks as MockedFunction<
     typeof removeAllRemoteTextTracks
   >
 const mockSetYouTubeCaptionTrack =
-  setYouTubeCaptionTrack as jest.MockedFunction<typeof setYouTubeCaptionTrack>
-const mockUnloadYouTubeCaptions = unloadYouTubeCaptions as jest.MockedFunction<
+  setYouTubeCaptionTrack as MockedFunction<typeof setYouTubeCaptionTrack>
+const mockUnloadYouTubeCaptions = unloadYouTubeCaptions as MockedFunction<
   typeof unloadYouTubeCaptions
 >
 
 describe('extractYouTubeCaptionsAndAddTextTracks', () => {
   let mockPlayer: VideoJsPlayer
   let mockYtPlayer: any
-  let mockAddRemoteTextTrack: jest.Mock
+  let mockAddRemoteTextTrack: Mock
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
-    mockAddRemoteTextTrack = jest.fn()
+    mockAddRemoteTextTrack = vi.fn()
     mockPlayer = {
       addRemoteTextTrack: mockAddRemoteTextTrack,
-      remoteTextTracks: jest.fn(() => []),
-      removeRemoteTextTrack: jest.fn()
+      remoteTextTracks: vi.fn(() => []),
+      removeRemoteTextTrack: vi.fn()
     } as unknown as VideoJsPlayer
 
     mockYtPlayer = {
-      getOption: jest.fn(),
-      loadModule: jest.fn(),
-      setOption: jest.fn()
+      getOption: vi.fn(),
+      loadModule: vi.fn(),
+      setOption: vi.fn()
     }
 
     mockGetYouTubePlayer.mockReturnValue(mockYtPlayer)

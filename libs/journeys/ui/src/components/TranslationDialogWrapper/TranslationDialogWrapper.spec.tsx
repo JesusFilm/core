@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { TranslationDialogWrapper } from './TranslationDialogWrapper'
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   __esModule: true,
   useTranslation: () => {
     return {
@@ -13,11 +13,11 @@ jest.mock('next-i18next/pages', () => ({
 }))
 
 describe('TranslationDialogWrapper', () => {
-  const onClose = jest.fn()
-  const onTranslate = jest.fn()
+  const onClose = vi.fn()
+  const onTranslate = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('rendering', () => {

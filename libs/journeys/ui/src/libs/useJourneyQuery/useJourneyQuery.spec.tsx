@@ -89,7 +89,7 @@ describe('useJourneyQuery', () => {
       showAssistant: null
     }
 
-    const result = jest.fn(() => ({ data: { journey } }))
+    const result = vi.fn(() => ({ data: { journey } }))
 
     renderHook(
       () =>

@@ -15,7 +15,7 @@
     "../**/*.spec.js",
     "../**/*.spec.tsx",
     "../**/*.spec.jsx",
-    "jest.config.ts"
+    "vitest.config.mts"
   ],
   "include": [
     "../src/**/*.stories.ts",

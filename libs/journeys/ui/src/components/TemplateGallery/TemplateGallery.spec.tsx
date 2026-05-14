@@ -1,6 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
+
+import '../../../test/i18n'
 
 import {
   getJourneyTemplateLanguageIdsMock,
@@ -13,33 +16,32 @@ import {
 } from './data'
 
 import { TemplateGallery } from '.'
-import '../../../test/i18n'
 
-jest.mock('@core/journeys/ui/useNavigationState', () => ({
-  useNavigationState: jest.fn(() => false)
+vi.mock('@core/journeys/ui/useNavigationState', () => ({
+  useNavigationState: vi.fn(() => false)
 }))
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({
+  useRouter: vi.fn(() => ({
     pathname: '/templates',
     query: { tab: 'active' }
   }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('TemplateGallery', () => {
   it('should render TemplateGallery', async () => {
     mockedUseRouter.mockReturnValue({
       isReady: true,
       pathname: '/templates',
-      push: jest.fn(),
+      push: vi.fn(),
       query: { tagIds: ['acceptanceTagId'], languageIds: ['529'] }
     } as unknown as NextRouter)
     render(
@@ -74,7 +76,7 @@ describe('TemplateGallery', () => {
   })
 
   it('should render templates with multiple filtered tags', async () => {
-    const push = jest.fn()
+    const push = vi.fn()
     mockedUseRouter.mockReturnValue({
       push,
       pathname: '/templates',
@@ -123,8 +125,8 @@ describe('TemplateGallery', () => {
   })
 
   it('should render templates filtered via language ids', async () => {
-    const push = jest.fn()
-    const on = jest.fn()
+    const push = vi.fn()
+    const on = vi.fn()
     mockedUseRouter.mockReturnValue({
       isReady: true,
       push,
@@ -173,7 +175,7 @@ describe('TemplateGallery', () => {
   }, 15000)
 
   it('should render templates with a felt needs tags selected', async () => {
-    const push = jest.fn()
+    const push = vi.fn()
     mockedUseRouter.mockReturnValue({
       push,
       pathname: '/templates',

@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { JourneyFields_journeyCustomizationFields as JourneyCustomizationField } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
@@ -10,12 +11,12 @@ import { journey } from '../../TemplateFooter/data'
 
 import { TemplateActionButton } from './TemplateActionButton'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 const customizableJourney = { ...journey, customizable: true }
 const nonCustomizableJourney = { ...journey, customizable: false }
@@ -37,12 +38,12 @@ describe('TemplateActionButton', () => {
   const signedOut = false
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseRouter.mockReturnValue({
       query: {},
-      push: jest.fn(),
-      prefetch: jest.fn(),
-      replace: jest.fn(),
+      push: vi.fn(),
+      prefetch: vi.fn(),
+      replace: vi.fn(),
       pathname: '/templates/journeyId'
     } as unknown as NextRouter)
   })

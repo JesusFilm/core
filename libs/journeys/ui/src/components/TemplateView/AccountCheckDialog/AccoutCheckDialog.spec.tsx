@@ -3,8 +3,8 @@ import { fireEvent, render } from '@testing-library/react'
 import { AccountCheckDialog } from './AccountCheckDialog'
 
 describe('AccountCheckDialog', () => {
-  const onClose = jest.fn()
-  const handleSignIn = jest.fn()
+  const onClose = vi.fn()
+  const handleSignIn = vi.fn()
 
   beforeEach(() => {
     handleSignIn.mockClear()

@@ -8,7 +8,7 @@ describe('getCaptionsAndSubtitleTracks', () => {
   let mockTracks: TextTrack[]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     mockTracks = [
       {
@@ -52,7 +52,7 @@ describe('getCaptionsAndSubtitleTracks', () => {
     mockTextTracks = mockTracks as unknown as TextTrackList
 
     mockPlayer = {
-      textTracks: jest.fn(() => mockTextTracks)
+      textTracks: vi.fn(() => mockTextTracks)
     } as unknown as VideoJsPlayer
   })
 
@@ -85,7 +85,7 @@ describe('getCaptionsAndSubtitleTracks', () => {
 
   it('should handle empty text tracks', () => {
     const emptyTextTracks = [] as unknown as TextTrackList
-    mockPlayer.textTracks = jest.fn(() => emptyTextTracks)
+    mockPlayer.textTracks = vi.fn(() => emptyTextTracks)
 
     const result = getCaptionsAndSubtitleTracks(mockPlayer)
 
@@ -95,7 +95,7 @@ describe('getCaptionsAndSubtitleTracks', () => {
 
   it('should handle null textTracks by creating new TextTrackList', () => {
     const emptyTextTracks = [] as unknown as TextTrackList
-    mockPlayer.textTracks = jest.fn(() => emptyTextTracks)
+    mockPlayer.textTracks = vi.fn(() => emptyTextTracks)
 
     const result = getCaptionsAndSubtitleTracks(mockPlayer)
 
@@ -105,7 +105,7 @@ describe('getCaptionsAndSubtitleTracks', () => {
 
   it('should handle undefined textTracks by creating new TextTrackList', () => {
     const emptyTextTracks = [] as unknown as TextTrackList
-    mockPlayer.textTracks = jest.fn(() => emptyTextTracks)
+    mockPlayer.textTracks = vi.fn(() => emptyTextTracks)
 
     const result = getCaptionsAndSubtitleTracks(mockPlayer)
 
@@ -133,7 +133,7 @@ describe('getCaptionsAndSubtitleTracks', () => {
 
     const subtitlesOnlyTextTracks =
       subtitlesOnlyTracks as unknown as TextTrackList
-    mockPlayer.textTracks = jest.fn(() => subtitlesOnlyTextTracks)
+    mockPlayer.textTracks = vi.fn(() => subtitlesOnlyTextTracks)
 
     const result = getCaptionsAndSubtitleTracks(mockPlayer)
 
@@ -161,7 +161,7 @@ describe('getCaptionsAndSubtitleTracks', () => {
 
     const captionsOnlyTextTracks =
       captionsOnlyTracks as unknown as TextTrackList
-    mockPlayer.textTracks = jest.fn(() => captionsOnlyTextTracks)
+    mockPlayer.textTracks = vi.fn(() => captionsOnlyTextTracks)
 
     const result = getCaptionsAndSubtitleTracks(mockPlayer)
 
@@ -209,7 +209,7 @@ describe('getCaptionsAndSubtitleTracks', () => {
     ]
 
     const multipleTextTracks = multipleTracks as unknown as TextTrackList
-    mockPlayer.textTracks = jest.fn(() => multipleTextTracks)
+    mockPlayer.textTracks = vi.fn(() => multipleTextTracks)
 
     const result = getCaptionsAndSubtitleTracks(mockPlayer)
 
@@ -247,7 +247,7 @@ describe('getCaptionsAndSubtitleTracks', () => {
 
     const tracksWithDifferentModesTextTracks =
       tracksWithDifferentModes as unknown as TextTrackList
-    mockPlayer.textTracks = jest.fn(() => tracksWithDifferentModesTextTracks)
+    mockPlayer.textTracks = vi.fn(() => tracksWithDifferentModesTextTracks)
 
     const result = getCaptionsAndSubtitleTracks(mockPlayer)
 
@@ -283,7 +283,7 @@ describe('getCaptionsAndSubtitleTracks', () => {
     ]
 
     const textTracksWithNulls = tracksWithNulls as unknown as TextTrackList
-    mockPlayer.textTracks = jest.fn(() => textTracksWithNulls)
+    mockPlayer.textTracks = vi.fn(() => textTracksWithNulls)
 
     const result = getCaptionsAndSubtitleTracks(mockPlayer)
 
@@ -320,7 +320,7 @@ describe('getCaptionsAndSubtitleTracks', () => {
 
     const tracksWithMixedCaseTextTracks =
       tracksWithMixedCase as unknown as TextTrackList
-    mockPlayer.textTracks = jest.fn(() => tracksWithMixedCaseTextTracks)
+    mockPlayer.textTracks = vi.fn(() => tracksWithMixedCaseTextTracks)
 
     const result = getCaptionsAndSubtitleTracks(mockPlayer)
 
@@ -369,7 +369,7 @@ describe('getCaptionsAndSubtitleTracks', () => {
     ]
 
     const orderedTextTracks = orderedTracks as unknown as TextTrackList
-    mockPlayer.textTracks = jest.fn(() => orderedTextTracks)
+    mockPlayer.textTracks = vi.fn(() => orderedTextTracks)
 
     const result = getCaptionsAndSubtitleTracks(mockPlayer)
 
@@ -384,7 +384,7 @@ describe('getCaptionsAndSubtitleTracks', () => {
 
     // Mock TextTrackList constructor for this test
     const originalTextTrackList = global.TextTrackList
-    global.TextTrackList = jest.fn(() => []) as any
+    global.TextTrackList = vi.fn(() => []) as any
 
     const result = getCaptionsAndSubtitleTracks(playerWithoutTextTracks)
 

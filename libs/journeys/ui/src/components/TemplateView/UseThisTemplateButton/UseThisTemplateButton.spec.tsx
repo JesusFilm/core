@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
@@ -8,12 +9,12 @@ import { journey as mockJourney } from '../../../libs/JourneyProvider/JourneyPro
 
 import { UseThisTemplateButton } from './UseThisTemplateButton'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 const journey: Journey = {
   ...mockJourney,
@@ -41,12 +42,12 @@ const journey: Journey = {
 }
 
 describe('UseThisTemplateButton', () => {
-  const prefetch = jest.fn()
-  const push = jest.fn().mockResolvedValue('')
+  const prefetch = vi.fn()
+  const push = vi.fn().mockResolvedValue('')
   const originalEnv = process.env
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe.each([
@@ -195,7 +196,7 @@ describe('UseThisTemplateButton', () => {
       })
 
       afterEach(() => {
-        jest.resetAllMocks()
+        vi.resetAllMocks()
       })
 
       it('should prefetch sign in page on mount', async () => {

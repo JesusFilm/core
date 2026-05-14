@@ -1,9 +1,10 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { SubtitleMenu } from './SubtitleMenu'
 
 // Mock the translation function
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string) => key
   })
@@ -12,15 +13,15 @@ jest.mock('next-i18next/pages', () => ({
 describe('SubtitleMenu', () => {
   let mockCaptionTracks: TextTrack[]
   let mockActiveTrack: TextTrack | undefined
-  let mockOnChange: jest.Mock
-  let mockOnClose: jest.Mock
+  let mockOnChange: Mock
+  let mockOnClose: Mock
   let mockAnchorEl: HTMLElement
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
-    mockOnChange = jest.fn()
-    mockOnClose = jest.fn()
+    mockOnChange = vi.fn()
+    mockOnClose = vi.fn()
     mockAnchorEl = document.createElement('div')
 
     mockCaptionTracks = [

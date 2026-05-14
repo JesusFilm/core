@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useRefinementList } from 'react-instantsearch'
+import { type MockedFunction } from 'vitest'
 
 import { SearchBarProvider } from '../../../libs/algolia/SearchBarProvider'
 import { getLanguagesContinentsMock } from '../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
@@ -9,16 +10,16 @@ import { languageRefinements } from '../data'
 
 import { LanguageButtons } from './LanguageButtons'
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
 
 describe('LanguageButtons', () => {
   const refinements = {
     items: languageRefinements,
-    refine: jest.fn()
+    refine: vi.fn()
   } as unknown as RefinementListRenderState
 
   const refinementsWithRefinedValue = {
@@ -29,19 +30,19 @@ describe('LanguageButtons', () => {
       },
       ...languageRefinements
     ],
-    refine: jest.fn()
+    refine: vi.fn()
   } as unknown as RefinementListRenderState
 
   beforeEach(() => {
     mockUseRefinementList.mockReturnValue(refinements)
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render the language button with default text', () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBarProvider>
-          <LanguageButtons onClick={jest.fn()} refinements={refinements} />
+          <LanguageButtons onClick={vi.fn()} refinements={refinements} />
         </SearchBarProvider>
       </MockedProvider>
     )
@@ -51,7 +52,7 @@ describe('LanguageButtons', () => {
   })
 
   it('should call onClick on language button click', () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
 
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
@@ -71,7 +72,7 @@ describe('LanguageButtons', () => {
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBarProvider>
           <LanguageButtons
-            onClick={jest.fn()}
+            onClick={vi.fn()}
             refinements={refinementsWithRefinedValue}
           />
         </SearchBarProvider>
@@ -100,14 +101,14 @@ describe('LanguageButtons', () => {
         },
         ...languageRefinements
       ],
-      refine: jest.fn()
+      refine: vi.fn()
     } as unknown as RefinementListRenderState
 
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBarProvider>
           <LanguageButtons
-            onClick={jest.fn()}
+            onClick={vi.fn()}
             refinements={selectedRefinements}
           />
         </SearchBarProvider>

@@ -54,7 +54,7 @@ describe('useLanguagesQuery', () => {
   ]
 
   it('should get languages', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         languages
       }
@@ -92,7 +92,7 @@ describe('useLanguagesQuery', () => {
   })
 
   it('should return languages filtered by ids', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         languages: [languages[0], languages[1]]
       }

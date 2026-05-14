@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useFormikContext } from 'formik'
 import { usePlausible } from 'next-plausible'
 import { v4 as uuidv4 } from 'uuid'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import {
   BlockEventLabel,
@@ -38,31 +39,34 @@ import { GoalType } from './utils/getLinkActionGoal'
 
 import { Button } from '.'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+const mockedSendGTMEvent = sendGTMEvent as MockedFunction<
   typeof sendGTMEvent
 >
 
-jest.mock('../../libs/action', () => {
-  const originalModule = jest.requireActual('../../libs/action')
+vi.mock('../../libs/action', async () => {
+  const originalModule =
+    await vi.importActual<typeof import('../../libs/action')>(
+      '../../libs/action'
+    )
   return {
     __esModule: true,
     ...originalModule,
-    handleAction: jest.fn()
+    handleAction: vi.fn()
   }
 })
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   useRouter() {
     return {
       push: () => null
@@ -70,16 +74,16 @@ jest.mock('next/router', () => ({
   }
 }))
 
-jest.mock('next-plausible', () => ({
+vi.mock('next-plausible', () => ({
   __esModule: true,
-  usePlausible: jest.fn()
+  usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.MockedFunction<
+const mockUsePlausible = usePlausible as MockedFunction<
   typeof usePlausible
 >
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   __esModule: true,
   useTranslation: () => {
     return {
@@ -88,9 +92,9 @@ jest.mock('next-i18next/pages', () => ({
   }
 }))
 
-jest.mock('formik', () => ({
+vi.mock('formik', () => ({
   __esModule: true,
-  useFormikContext: jest.fn()
+  useFormikContext: vi.fn()
 }))
 
 const block: TreeBlock<ButtonFields> = {
@@ -172,7 +176,7 @@ const journey = {
 describe('Button', () => {
   describe('form validation handling', () => {
     beforeEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
     })
 
     const submitButtonMock = {
@@ -196,7 +200,7 @@ describe('Button', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           buttonClickEventCreate: {
             id: 'uuid',
@@ -210,10 +214,10 @@ describe('Button', () => {
 
     it('should prevent handleAction when validaton fails', async () => {
       mockUuidv4.mockReturnValueOnce('uuid')
-      const validateFormMock = jest.fn().mockResolvedValue({
+      const validateFormMock = vi.fn().mockResolvedValue({
         field1: 'Error'
       })
-      const submitFormMock = jest.fn().mockResolvedValue(undefined)
+      const submitFormMock = vi.fn().mockResolvedValue(undefined)
 
       blockHistoryVar([activeBlock])
       treeBlocksVar([activeBlock])
@@ -224,7 +228,7 @@ describe('Button', () => {
         submitForm: submitFormMock
       }
 
-      const useFormikContextMock = useFormikContext as jest.Mock
+      const useFormikContextMock = useFormikContext as Mock
       useFormikContextMock.mockReturnValue(formikContextMock)
 
       render(
@@ -247,8 +251,8 @@ describe('Button', () => {
 
     it('should create button click event if form is valid and not empty', async () => {
       mockUuidv4.mockReturnValueOnce('uuid')
-      const validateFormMock = jest.fn().mockResolvedValue({})
-      const submitFormMock = jest.fn().mockResolvedValue(undefined)
+      const validateFormMock = vi.fn().mockResolvedValue({})
+      const submitFormMock = vi.fn().mockResolvedValue(undefined)
 
       blockHistoryVar([activeBlock])
       treeBlocksVar([activeBlock])
@@ -259,7 +263,7 @@ describe('Button', () => {
         submitForm: submitFormMock
       }
 
-      const useFormikContextMock = useFormikContext as jest.Mock
+      const useFormikContextMock = useFormikContext as Mock
       useFormikContextMock.mockReturnValue(formikContextMock)
 
       render(
@@ -284,7 +288,7 @@ describe('Button', () => {
 
   it('should create a buttonClickEvent onClick', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
@@ -303,7 +307,7 @@ describe('Button', () => {
       action
     }
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         buttonClickEventCreate: {
           __typename: 'ButtonClickEvent',
@@ -378,7 +382,7 @@ describe('Button', () => {
 
   it('should create a buttonClickEvent for NavigateToBlockAction (not chat event)', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
@@ -395,7 +399,7 @@ describe('Button', () => {
       action
     }
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         buttonClickEventCreate: {
           __typename: 'ButtonClickEvent',
@@ -621,7 +625,7 @@ describe('Button', () => {
 
   it('should create a chatOpenEvent onClick for link action', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
     const action: ButtonFields_action = {
       __typename: 'LinkAction',
@@ -640,7 +644,7 @@ describe('Button', () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         chatOpenEventCreate: {
           __typename: 'ChatOpenEvent',
@@ -706,7 +710,7 @@ describe('Button', () => {
 
   it('should create a chatOpenEvent for ChatAction', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
     const action: ButtonFields_action = {
       __typename: 'ChatAction',
@@ -725,7 +729,7 @@ describe('Button', () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         chatOpenEventCreate: {
           __typename: 'ChatOpenEvent',
@@ -791,7 +795,7 @@ describe('Button', () => {
 
   it('should create a chatOpenEvent onClick for phone action', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
     const action: ButtonFields_action = {
       __typename: 'PhoneAction',
@@ -812,7 +816,7 @@ describe('Button', () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         chatOpenEventCreate: {
           __typename: 'ChatOpenEvent',
@@ -878,7 +882,7 @@ describe('Button', () => {
 
   it('should call plausible with eventLabel for buttonClick events', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     const buttonBlock = {
@@ -889,7 +893,7 @@ describe('Button', () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         buttonClickEventCreate: {
           __typename: 'ButtonClickEvent',
@@ -969,7 +973,7 @@ describe('Button', () => {
 
   it('should call plausible with eventLabel for chatButtonClick events', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     const action: ButtonFields_action = {
@@ -990,7 +994,7 @@ describe('Button', () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         chatOpenEventCreate: {
           __typename: 'ChatOpenEvent',
@@ -1350,7 +1354,7 @@ describe('Button', () => {
     })
   })
 
-  xit('should not show red outline when editableLabel is not provided', () => {
+  it.skip('should not show red outline when editableLabel is not provided', () => {
     // disabled due to Jest v30 compatibility issues
     render(
       <MockedProvider>
@@ -1563,7 +1567,7 @@ describe('Button', () => {
   })
 
   it('should trigger form submission when clicked in a form context', async () => {
-    const handleSubmit = jest.fn((e) => e?.preventDefault?.())
+    const handleSubmit = vi.fn((e) => e?.preventDefault?.())
     const submitButtonMock = {
       ...block,
       label: 'Submit Form',
@@ -1571,9 +1575,9 @@ describe('Button', () => {
     }
 
     // Provide a minimal Formik context; we won't rely on Apollo mutations in this test
-    const useFormikContextMock = useFormikContext as jest.Mock
-    const submitFormMock = jest.fn().mockResolvedValue(undefined)
-    const validateFormMock = jest.fn().mockResolvedValue({})
+    const useFormikContextMock = useFormikContext as Mock
+    const submitFormMock = vi.fn().mockResolvedValue(undefined)
+    const validateFormMock = vi.fn().mockResolvedValue({})
     useFormikContextMock.mockReturnValue({
       values: { field1: 'x' },
       validateForm: validateFormMock,

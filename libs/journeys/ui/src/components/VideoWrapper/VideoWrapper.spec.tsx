@@ -6,9 +6,9 @@ import { Video } from '../Video'
 
 import { VideoWrapper } from '.'
 
-jest.mock('@core/journeys/ui/Video', () => ({
+vi.mock('@core/journeys/ui/Video', () => ({
   __esModule: true,
-  Video: jest.fn(() => <></>)
+  Video: vi.fn(() => <></>)
 }))
 
 describe('VideoWrapper', () => {

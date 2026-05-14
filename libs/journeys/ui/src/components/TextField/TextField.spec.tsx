@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { useFormikContext } from 'formik'
 import { ComponentProps } from 'react'
+import { type Mock } from 'vitest'
 
 import { TextField } from './TextField'
 
@@ -14,18 +15,18 @@ const formikContextMock = {
   values: { name: '' },
   errors: {},
   touched: {},
-  handleChange: jest.fn(),
-  handleBlur: jest.fn()
+  handleChange: vi.fn(),
+  handleBlur: vi.fn()
 }
 
-jest.mock('formik', () => ({
+vi.mock('formik', () => ({
   __esModule: true,
-  useFormikContext: jest.fn()
+  useFormikContext: vi.fn()
 }))
 
 describe('TextField', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should show error', () => {
@@ -35,7 +36,7 @@ describe('TextField', () => {
       touched: { name: true }
     }
 
-    const useFormikContextMock = useFormikContext as jest.Mock
+    const useFormikContextMock = useFormikContext as Mock
     useFormikContextMock.mockReturnValue(errorContextMock)
 
     render(<TextField {...props} />)
@@ -45,7 +46,7 @@ describe('TextField', () => {
   })
 
   it('should show helper text', () => {
-    const useFormikContextMock = useFormikContext as jest.Mock
+    const useFormikContextMock = useFormikContext as Mock
     useFormikContextMock.mockReturnValue(formikContextMock)
 
     render(<TextField {...props} helperText="Please enter your full name" />)
@@ -55,7 +56,7 @@ describe('TextField', () => {
   })
 
   it('should work without Formik context', () => {
-    const useFormikContextMock = useFormikContext as jest.Mock
+    const useFormikContextMock = useFormikContext as Mock
     useFormikContextMock.mockReturnValue(undefined)
 
     render(<TextField {...props} helperText="Helper text" />)

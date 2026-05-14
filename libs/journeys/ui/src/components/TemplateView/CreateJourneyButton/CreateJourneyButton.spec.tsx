@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import {
   JourneyStatus,
@@ -22,15 +23,15 @@ import {
 
 import { CreateJourneyButton, JourneyForTemplate } from './CreateJourneyButton'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
 const journey: Journey = {
@@ -95,7 +96,7 @@ const journey: Journey = {
   showAssistant: null
 }
 
-const teamResult = jest.fn(() => ({
+const teamResult = vi.fn(() => ({
   data: {
     teams: [
       {
@@ -225,12 +226,12 @@ const createJourneyButton = (journeyProps?: JourneyForTemplate | undefined) => (
 )
 
 describe('CreateJourneyButton', () => {
-  const prefetch = jest.fn()
-  const push = jest.fn().mockResolvedValue('')
+  const prefetch = vi.fn()
+  const push = vi.fn().mockResolvedValue('')
   const originalEnv = process.env
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     teamResult.mockClear()
     // Reset teamResult implementation to ensure it returns data
     teamResult.mockImplementation(() => ({
@@ -438,7 +439,7 @@ describe('CreateJourneyButton', () => {
       mockUseRouter.mockReturnValue({
         query: { createNew: false },
         push,
-        replace: jest.fn(),
+        replace: vi.fn(),
         pathname: '/templates/journeyId'
       } as unknown as NextRouter)
 
@@ -494,7 +495,7 @@ describe('CreateJourneyButton', () => {
       })
 
       afterEach(() => {
-        jest.resetAllMocks()
+        vi.resetAllMocks()
       })
 
       it('should pre-render sign in page', async () => {
@@ -733,7 +734,7 @@ describe('CreateJourneyButton', () => {
     })
 
     it('should call refetchTemplateStats with journey id when duplicating from a template', async () => {
-      const refetchTemplateStats = jest.fn()
+      const refetchTemplateStats = vi.fn()
       const journeyDuplicateMockWithFromTemplateId = {
         request: {
           query: JOURNEY_DUPLICATE,
@@ -743,7 +744,7 @@ describe('CreateJourneyButton', () => {
             forceNonTemplate: true
           }
         },
-        result: jest.fn(() => ({
+        result: vi.fn(() => ({
           data: {
             journeyDuplicate: {
               id: 'duplicatedJourneyId',
@@ -757,7 +758,7 @@ describe('CreateJourneyButton', () => {
       mockUseRouter.mockReturnValue({
         query: { createNew: false },
         push,
-        replace: jest.fn(),
+        replace: vi.fn(),
         pathname: '/templates/journeyId'
       } as unknown as NextRouter)
 
@@ -808,7 +809,7 @@ describe('CreateJourneyButton', () => {
     })
 
     it('should call refetchTemplateStats with fromTemplateId when duplicating from a non-template journey', async () => {
-      const refetchTemplateStats = jest.fn()
+      const refetchTemplateStats = vi.fn()
       const nonTemplateJourney: Journey = {
         ...journey,
         template: false,
@@ -823,7 +824,7 @@ describe('CreateJourneyButton', () => {
             forceNonTemplate: true
           }
         },
-        result: jest.fn(() => ({
+        result: vi.fn(() => ({
           data: {
             journeyDuplicate: {
               id: 'duplicatedJourneyId',
@@ -837,7 +838,7 @@ describe('CreateJourneyButton', () => {
       mockUseRouter.mockReturnValue({
         query: { createNew: false },
         push,
-        replace: jest.fn(),
+        replace: vi.fn(),
         pathname: '/templates/journeyId'
       } as unknown as NextRouter)
 
@@ -890,7 +891,7 @@ describe('CreateJourneyButton', () => {
       mockUseRouter.mockReturnValue({
         query: { createNew: false },
         push,
-        replace: jest.fn(),
+        replace: vi.fn(),
         pathname: '/templates/journeyId'
       } as unknown as NextRouter)
 
@@ -961,7 +962,7 @@ describe('CreateJourneyButton', () => {
       mockUseRouter.mockReturnValue({
         query: { createNew: false },
         push,
-        replace: jest.fn(),
+        replace: vi.fn(),
         pathname: '/publisher'
       } as unknown as NextRouter)
 

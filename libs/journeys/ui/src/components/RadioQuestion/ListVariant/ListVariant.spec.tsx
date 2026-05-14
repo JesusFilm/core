@@ -5,7 +5,7 @@ import { ListVariant as RadioOptionListVariant } from '../../RadioOption/ListVar
 import { ListVariant } from './ListVariant'
 
 describe('ListVariant', () => {
-  const mockHandleClick = jest.fn()
+  const mockHandleClick = vi.fn()
   const options = [
     <RadioOptionListVariant
       key="option1"
@@ -32,7 +32,7 @@ describe('ListVariant', () => {
   })
 
   it('should display add option button', () => {
-    const addOption = jest.fn()
+    const addOption = vi.fn()
 
     render(
       <ListVariant options={options} blockId="123" addOption={addOption} />

@@ -5,11 +5,11 @@ import { LanguagesFilterPopper } from './LanguagesFilterPopper'
 
 describe('LanguagesFilterPopper', () => {
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should call on Submit on change', async () => {
-    const onSubmit = jest.fn()
+    const onSubmit = vi.fn()
     const sortedLanguages = [
       { id: '529', localName: undefined, nativeName: 'English' },
       { id: '496', localName: 'French', nativeName: 'Français' },

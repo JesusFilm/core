@@ -72,7 +72,7 @@ describe('TemplateCardPreviewItem', () => {
   })
 
   it('should call onClick with step when clicked', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const { getByTestId } = renderWithProviders(
       <TemplateCardPreviewItem
         step={step}
@@ -167,7 +167,7 @@ describe('TemplateCardPreviewItem', () => {
     })
 
     it('should disable focusable elements inside iframe for guestPreview', () => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
 
       const { container } = renderWithProviders(
         <TemplateCardPreviewItem step={step} variant="guestPreview" />
@@ -180,18 +180,18 @@ describe('TemplateCardPreviewItem', () => {
         iframe.contentDocument.body.appendChild(button)
 
         act(() => {
-          jest.advanceTimersByTime(100)
+          vi.advanceTimersByTime(100)
         })
 
         expect(button.getAttribute('tabindex')).toBe('-1')
       }
 
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('should clean up interval and observer on unmount', () => {
-      jest.useFakeTimers()
-      const clearIntervalSpy = jest.spyOn(global, 'clearInterval')
+      vi.useFakeTimers()
+      const clearIntervalSpy = vi.spyOn(global, 'clearInterval')
 
       const { unmount } = renderWithProviders(
         <TemplateCardPreviewItem step={step} variant="guestPreview" />
@@ -201,7 +201,7 @@ describe('TemplateCardPreviewItem', () => {
       expect(clearIntervalSpy).toHaveBeenCalled()
 
       clearIntervalSpy.mockRestore()
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
   })
 })

@@ -4,7 +4,7 @@ import { ListVariant } from './ListVariant'
 
 describe('ListVariant', () => {
   it('should show label', () => {
-    render(<ListVariant label="label" handleClick={jest.fn()} />)
+    render(<ListVariant label="label" handleClick={vi.fn()} />)
 
     expect(screen.getByText('label')).toBeInTheDocument()
   })
@@ -14,7 +14,7 @@ describe('ListVariant', () => {
       <ListVariant
         label="label"
         editableLabel={<span>editableLabel</span>}
-        handleClick={jest.fn()}
+        handleClick={vi.fn()}
       />
     )
 
@@ -22,7 +22,7 @@ describe('ListVariant', () => {
   })
 
   it('should handleClick', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
 
     render(<ListVariant label="label" handleClick={handleClick} />)
 

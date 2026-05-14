@@ -13,7 +13,7 @@ import { GET_JOURNEYS, useJourneysQuery } from './useJourneysQuery'
 
 describe('useJourneysQuery', () => {
   it('should get journeys', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeys: [
           {

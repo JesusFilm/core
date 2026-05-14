@@ -7,9 +7,9 @@ import { Card } from '../Card'
 
 import { CardWrapper } from '.'
 
-jest.mock('@core/journeys/ui/Card', () => ({
+vi.mock('@core/journeys/ui/Card', () => ({
   __esModule: true,
-  Card: jest.fn(() => <></>)
+  Card: vi.fn(() => <></>)
 }))
 
 describe('CardWrapper', () => {

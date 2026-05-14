@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { LanguageFilterDialog } from './LanguageFilterDialog'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -56,12 +56,12 @@ describe('LanguageFilterDialog', () => {
   ]
 
   it('submits the form with the selected language', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <MockedProvider>
         <LanguageFilterDialog
           open
-          onClose={jest.fn()}
+          onClose={vi.fn()}
           onChange={onChange}
           languages={languages}
           value={[]}
@@ -79,13 +79,13 @@ describe('LanguageFilterDialog', () => {
   }, 15000)
 
   it('closes the form on cancel click', () => {
-    const onClose = jest.fn()
+    const onClose = vi.fn()
     const { getByRole } = render(
       <MockedProvider>
         <LanguageFilterDialog
           open
           onClose={onClose}
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           languages={languages}
           value={[]}
           loading={false}

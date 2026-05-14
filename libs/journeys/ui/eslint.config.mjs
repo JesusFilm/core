@@ -4,8 +4,8 @@ export default [
   ...nextConfig,
   {
     ignores: [
-      'libs/journeys/ui/jest.config.ts',
-      'libs/journeys/ui/postcss.config.mjs'
+      'libs/journeys/ui/postcss.config.mjs',
+      'libs/journeys/ui/vitest.config.mts'
     ]
   },
   {

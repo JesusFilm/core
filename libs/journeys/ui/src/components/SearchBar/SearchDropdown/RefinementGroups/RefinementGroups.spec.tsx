@@ -8,6 +8,7 @@ import {
   useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
+import { type MockedFunction } from 'vitest'
 
 import {
   SearchBarProvider,
@@ -19,34 +20,34 @@ import { languageRefinements } from '../../data'
 
 import { RefinementGroups } from './RefinementGroups'
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
+const mockUseClearRefinements = useClearRefinements as MockedFunction<
   typeof useClearRefinements
 >
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<
   typeof useSearchBox
 >
 
-const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
 
 describe('RefinementGroups', () => {
   const refinements = {
     items: languageRefinements,
-    refine: jest.fn()
+    refine: vi.fn()
   } as unknown as RefinementListRenderState
 
   const clearRefinements = {
-    refine: jest.fn(),
+    refine: vi.fn(),
     canRefine: false
   } as unknown as ClearRefinementsRenderState
 
   const useSearchBox = {
     query: 'Hello World!',
-    refine: jest.fn()
+    refine: vi.fn()
   } as unknown as SearchBoxRenderState
 
   const searchBarInitialState: SearchBarState = {
@@ -95,7 +96,7 @@ describe('RefinementGroups', () => {
           refinements={
             {
               items: [],
-              refine: jest.fn()
+              refine: vi.fn()
             } as unknown as RefinementListRenderState
           }
         />
@@ -145,7 +146,7 @@ describe('RefinementGroups', () => {
 
   it('should show clear all button when one can clear refinements', () => {
     const clearRefinements = {
-      refine: jest.fn(),
+      refine: vi.fn(),
       canRefine: true
     } as unknown as ClearRefinementsRenderState
     mockUseClearRefinements.mockReturnValue(clearRefinements)
@@ -163,7 +164,7 @@ describe('RefinementGroups', () => {
   })
 
   it('should clear refinements when clear all button clicked', () => {
-    const refine = jest.fn()
+    const refine = vi.fn()
     const clearRefinements = {
       refine,
       canRefine: true

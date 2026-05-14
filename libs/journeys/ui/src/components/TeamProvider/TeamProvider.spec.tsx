@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
+import { type MockedFunction } from 'vitest'
 
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 
@@ -13,11 +14,11 @@ import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
 
 import { TeamProvider, useTeam } from '.'
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+const mockedSendGTMEvent = sendGTMEvent as MockedFunction<
   typeof sendGTMEvent
 >
 
@@ -179,7 +180,7 @@ describe('TeamProvider', () => {
   })
 
   it('should refetch', async () => {
-    const result = jest.fn(() => ({ ...getTeamsMock.result }))
+    const result = vi.fn(() => ({ ...getTeamsMock.result }))
     const refetchMock = {
       ...getTeamsMock,
       result
@@ -367,7 +368,7 @@ describe('TeamProvider', () => {
   it('should clean activeTeam param from URL after consumption', async () => {
     setUrlParam('activeTeam', 'teamId1')
     setUrlParam('type', 'templates')
-    const replaceStateSpy = jest.spyOn(window.history, 'replaceState')
+    const replaceStateSpy = vi.spyOn(window.history, 'replaceState')
 
     const updateLastActiveTeamIdMock: MockedResponse = {
       request: {
@@ -407,7 +408,7 @@ describe('TeamProvider', () => {
 
   it('should clean activeTeam param from URL even when team is not found', async () => {
     setUrlParam('activeTeam', 'nonExistentTeamId')
-    const replaceStateSpy = jest.spyOn(window.history, 'replaceState')
+    const replaceStateSpy = vi.spyOn(window.history, 'replaceState')
 
     render(
       <MockedProvider mocks={[getTeamsMock]}>

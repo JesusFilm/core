@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../../dist/out-tsc",
-    "types": ["jest", "@jest/globals", "node"]
+    "types": ["vitest/globals", "node"]
   },
   "files": [
     "index.d.ts",
@@ -16,7 +16,6 @@
     "**/*.spec.js",
     "**/*.spec.jsx",
     "**/*.d.ts",
-    "setupTests.ts",
-    "jest.config.ts"
+    "setupTests.ts"
   ]
 }
