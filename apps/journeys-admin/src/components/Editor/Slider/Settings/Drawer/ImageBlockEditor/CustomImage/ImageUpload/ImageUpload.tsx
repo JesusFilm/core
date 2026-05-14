@@ -13,6 +13,10 @@ import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
+import {
+  sendImageUploadFailureEvent,
+  sendImageUploadSuccessEvent
+} from '../../../../../../../../libs/sendImageUploadEvent'
 import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/useCloudflareUploadByFileMutation'
 import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
 
@@ -45,9 +49,16 @@ export function ImageUpload({
     rejectedFiles: FileRejection[]
   ): Promise<void> => {
     if (rejectedFiles.length > 0) {
-      setErrorCode(rejectedFiles[0].errors[0].code as ErrorCode)
+      const rejection = rejectedFiles[0]
+      const rejectionCode = rejection.errors[0].code as ErrorCode
+      setErrorCode(rejectionCode)
       setUploading?.(false)
       setSuccess(false)
+      sendImageUploadFailureEvent({
+        fileSize: rejection.file.size,
+        fileType: rejection.file.type,
+        errorCode: rejectionCode
+      })
       return
     }
     const { data } = await createCloudflareUploadByFile({})
@@ -75,6 +86,11 @@ export function ImageUpload({
           setSuccess(false)
           setUploading?.(false)
           setErrorCode(cloudflareError as ErrorCode)
+          sendImageUploadFailureEvent({
+            fileSize: file.size,
+            fileType: file.type,
+            errorCode: String(cloudflareError)
+          })
           return
         }
 
@@ -84,8 +100,17 @@ export function ImageUpload({
         onChange({ src, scale: 100, focalLeft: 50, focalTop: 50 })
         setTimeout(() => setSuccess(undefined), 4000)
         setUploading?.(undefined)
+        sendImageUploadSuccessEvent({
+          fileSize: file.size,
+          fileType: file.type
+        })
       } catch {
         setSuccess(false)
+        sendImageUploadFailureEvent({
+          fileSize: file.size,
+          fileType: file.type,
+          errorCode: 'upload-exception'
+        })
       }
     }
   }
