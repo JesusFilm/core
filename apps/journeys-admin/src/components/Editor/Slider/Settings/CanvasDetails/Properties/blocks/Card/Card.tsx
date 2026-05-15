@@ -11,9 +11,11 @@ import {
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ActivityIcon from '@core/shared/ui/icons/Activity'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
+import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 import SunIcon2 from '@core/shared/ui/icons/Sun2'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
@@ -55,6 +57,14 @@ const CardStyling = dynamic(
   { ssr: false }
 )
 
+const ChatAssistant = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/ChatAssistant/ChatAssistant" */ './ChatAssistant'
+    ).then((mod) => mod.ChatAssistant),
+  { ssr: false }
+)
+
 const EventLabel = dynamic(
   async () =>
     await import(
@@ -71,7 +81,9 @@ export function Card({
   themeMode,
   coverBlockId,
   children,
-  eventLabel
+  eventLabel,
+  showAssistant,
+  expandChatByDefault
 }: TreeBlock<CardBlock>): ReactElement {
   const { journey } = useJourney()
   const {
@@ -79,6 +91,7 @@ export function Card({
   } = useEditor()
   const { rtl, locale } = getJourneyRTL(journey)
   const { t } = useTranslation('apps-journeys-admin')
+  const { apologistChat } = useFlags()
 
   const coverBlock = children.find((block) => block.id === coverBlockId)
 
@@ -132,6 +145,13 @@ export function Card({
 
   const selectedEventLabel = getEventLabelOption(t, eventLabel).label
 
+  const chatAssistantValue =
+    showAssistant === true
+      ? expandChatByDefault === true
+        ? t('On, auto-open')
+        : t('On')
+      : t('Off')
+
   return (
     <Box data-testid="CardProperties">
       {journey?.template && (
@@ -152,6 +172,16 @@ export function Card({
       >
         <CardLayout disableExpanded={disableExpanded} />
       </Accordion>
+      {apologistChat === true && (
+        <Accordion
+          icon={<MessageChat1Icon />}
+          id={`${id}-chat-assistant`}
+          name={t('AI chat')}
+          value={chatAssistantValue}
+        >
+          <ChatAssistant />
+        </Accordion>
+      )}
       <Accordion
         icon={<SunIcon2 />}
         id={`${id}-theme-mode`}
