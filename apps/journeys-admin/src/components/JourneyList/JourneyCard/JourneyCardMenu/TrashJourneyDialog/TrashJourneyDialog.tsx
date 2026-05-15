@@ -102,8 +102,7 @@ export function TrashJourneyDialog({
       open={open}
       onClose={handleClose}
       dialogTitle={{
-        title:
-          template === true ? t('Trash Template?') : t('Trash Journey?'),
+        title: template === true ? t('Trash Template?') : t('Trash Journey?'),
         closeButton: true
       }}
       loading={loading}

@@ -383,81 +383,82 @@ export function TemplateGalleryPageList({
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-        {showCollections &&
-          (collections.length === 0 ? (
-            <Alert severity="info" sx={{ mb: 3 }}>
-              {t(
-                "You don't have any collections yet. Create your first collection to start grouping templates."
-              )}
-            </Alert>
-          ) : (
-            <Stack spacing={2} sx={{ mb: 4 }}>
-              {collections.map((collection) => (
-                <DroppableCollectionWrapper
-                  key={collection.id}
-                  id={collection.id}
-                  disabled={
-                    collection.status === TemplateGalleryPageStatus.published ||
-                    interactionsLocked ||
-                    busyId === collection.id
-                  }
-                >
-                  <CollectionCard
-                    collection={collection}
-                    onEdit={handleEdit}
-                    onPublish={handlePublish}
-                    onUnpublish={handleUnpublish}
-                    onUngroup={handleUngroup}
-                    busy={busyId === collection.id || dragInFlight}
-                  >
-                    <DraggableJourneysGrid
-                      journeys={journeysByCollection.get(collection.id) ?? []}
-                      publishedLock={
-                        collection.status ===
-                        TemplateGalleryPageStatus.published
-                      }
-                      dragInFlight={interactionsLocked}
-                    />
-                  </CollectionCard>
-                </DroppableCollectionWrapper>
-              ))}
-            </Stack>
-          ))}
-
-        <Box>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            {t('All Templates')}
-          </Typography>
-          <UnsectionedDroppable disabled={interactionsLocked}>
-            {unsectioned.length === 0 ? (
-              <Box sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}>
-                <Typography variant="caption">
-                  {allTemplates.length === 0
-                    ? t('No team templates yet.')
-                    : t('All templates are in collections.')}
-                </Typography>
-              </Box>
+          {showCollections &&
+            (collections.length === 0 ? (
+              <Alert severity="info" sx={{ mb: 3 }}>
+                {t(
+                  "You don't have any collections yet. Create your first collection to start grouping templates."
+                )}
+              </Alert>
             ) : (
-              <DraggableJourneysGrid
-                journeys={unsectioned}
-                publishedLock={false}
-                dragInFlight={interactionsLocked}
-              />
-            )}
-          </UnsectionedDroppable>
-        </Box>
+              <Stack spacing={2} sx={{ mb: 4 }}>
+                {collections.map((collection) => (
+                  <DroppableCollectionWrapper
+                    key={collection.id}
+                    id={collection.id}
+                    disabled={
+                      collection.status ===
+                        TemplateGalleryPageStatus.published ||
+                      interactionsLocked ||
+                      busyId === collection.id
+                    }
+                  >
+                    <CollectionCard
+                      collection={collection}
+                      onEdit={handleEdit}
+                      onPublish={handlePublish}
+                      onUnpublish={handleUnpublish}
+                      onUngroup={handleUngroup}
+                      busy={busyId === collection.id || dragInFlight}
+                    >
+                      <DraggableJourneysGrid
+                        journeys={journeysByCollection.get(collection.id) ?? []}
+                        publishedLock={
+                          collection.status ===
+                          TemplateGalleryPageStatus.published
+                        }
+                        dragInFlight={interactionsLocked}
+                      />
+                    </CollectionCard>
+                  </DroppableCollectionWrapper>
+                ))}
+              </Stack>
+            ))}
 
-        {/* Default dropAnimation snaps the card back to its origin when a
+          <Box>
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              {t('All Templates')}
+            </Typography>
+            <UnsectionedDroppable disabled={interactionsLocked}>
+              {unsectioned.length === 0 ? (
+                <Box sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}>
+                  <Typography variant="caption">
+                    {allTemplates.length === 0
+                      ? t('No team templates yet.')
+                      : t('All templates are in collections.')}
+                  </Typography>
+                </Box>
+              ) : (
+                <DraggableJourneysGrid
+                  journeys={unsectioned}
+                  publishedLock={false}
+                  dragInFlight={interactionsLocked}
+                />
+              )}
+            </UnsectionedDroppable>
+          </Box>
+
+          {/* Default dropAnimation snaps the card back to its origin when a
             drop is rejected (published, no-op, etc.) and runs the standard
             "settle" animation when accepted — gives the user visual
             feedback either way. */}
-        <DragOverlay>
-          {activeDragJourney != null ? (
-            <Box sx={{ width: 280, cursor: 'grabbing', opacity: 0.95 }}>
-              <JourneyCard journey={activeDragJourney} />
-            </Box>
-          ) : null}
-        </DragOverlay>
+          <DragOverlay>
+            {activeDragJourney != null ? (
+              <Box sx={{ width: 280, cursor: 'grabbing', opacity: 0.95 }}>
+                <JourneyCard journey={activeDragJourney} />
+              </Box>
+            ) : null}
+          </DragOverlay>
         </DndContext>
       </Box>
 
