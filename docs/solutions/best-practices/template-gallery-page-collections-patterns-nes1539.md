@@ -478,7 +478,7 @@ unauthenticated invocations. Two non-obvious rules:
    window where two auth paths could be live simultaneously.
 
 2. **Compare in constant time.** Use `crypto.timingSafeEqual(buf,
-   buf)` after a length-check guard (the function throws on length
+buf)` after a length-check guard (the function throws on length
    mismatch, so the guard is load-bearing — see Mike's review of
    NES-1644 #2). Naive `===` is exploitable via response-latency
    side channels for high-volume attackers.

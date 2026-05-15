@@ -18,10 +18,7 @@ function mockResponse(): CapturedRes {
   return { res, status, json, revalidate }
 }
 
-function bearerReq(
-  token: string | undefined,
-  slug: unknown
-): NextApiRequest {
+function bearerReq(token: string | undefined, slug: unknown): NextApiRequest {
   return {
     headers: token != null ? { authorization: `Bearer ${token}` } : {},
     query: { slug }
@@ -90,8 +87,7 @@ describe('revalidate-template-gallery', () => {
     expect(revalidate).not.toHaveBeenCalled()
     expect(status).toHaveBeenCalledWith(401)
     expect(json).toHaveBeenCalledWith({
-      message:
-        'Access token must be supplied via Authorization: Bearer header'
+      message: 'Access token must be supplied via Authorization: Bearer header'
     })
   })
 

@@ -136,6 +136,7 @@ describe('useCanPublishCollection', () => {
     beforeEach(() => {
       consoleWarn = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
     })
+
     afterEach(() => {
       consoleWarn.mockRestore()
     })
@@ -147,7 +148,9 @@ describe('useCanPublishCollection', () => {
       )
       await waitFor(() => expect(result.current.loading).toBe(false))
       expect(result.current.canPublish).toBe(false)
-      expect(result.current.reason).toBe(CUSTOM_DOMAIN_PUBLISH_BLOCKED_BY_ERROR_COPY)
+      expect(result.current.reason).toBe(
+        CUSTOM_DOMAIN_PUBLISH_BLOCKED_BY_ERROR_COPY
+      )
     })
 
     it('logs the error for operator visibility', async () => {

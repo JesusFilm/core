@@ -40,7 +40,10 @@ export default async function handler(
   // Reject the legacy `?accessToken=` form outright so the two-path window
   // during migration is closed — clients that haven't updated to the
   // header form get an immediate 401 and operators see the regression.
-  if (typeof req.query.accessToken === 'string' && req.query.accessToken !== '') {
+  if (
+    typeof req.query.accessToken === 'string' &&
+    req.query.accessToken !== ''
+  ) {
     return res.status(401).json({
       message: 'Access token must be supplied via Authorization: Bearer header'
     })

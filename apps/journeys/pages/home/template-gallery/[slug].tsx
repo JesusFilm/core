@@ -120,14 +120,11 @@ export const getStaticProps: GetStaticProps<
       // can carry server-side stack traces and Prisma context — pull
       // out the GraphQL `code` field but drop everything else so the
       // log stays bounded and side-channel-free.
-      const safeErrors = errors
-        .slice(0, MAX_LOGGED_ERRORS)
-        .map((e) => ({
-          message: e.message,
-          path: e.path,
-          code:
-            typeof e.extensions?.code === 'string' ? e.extensions.code : null
-        }))
+      const safeErrors = errors.slice(0, MAX_LOGGED_ERRORS).map((e) => ({
+        message: e.message,
+        path: e.path,
+        code: typeof e.extensions?.code === 'string' ? e.extensions.code : null
+      }))
       console.warn('[template-gallery getStaticProps] null branch', {
         slug,
         errorCount: errors.length,
