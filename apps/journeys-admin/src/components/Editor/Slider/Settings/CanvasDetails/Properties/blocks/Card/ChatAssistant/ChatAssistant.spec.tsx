@@ -8,9 +8,14 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
-import { CARD_BLOCK_CHAT_ASSISTANT_UPDATE, ChatAssistant } from './ChatAssistant'
+import {
+  CARD_BLOCK_CHAT_ASSISTANT_UPDATE,
+  ChatAssistant
+} from './ChatAssistant'
 
-function makeCard(overrides: Partial<TreeBlock<CardBlock>> = {}): TreeBlock<CardBlock> {
+function makeCard(
+  overrides: Partial<TreeBlock<CardBlock>> = {}
+): TreeBlock<CardBlock> {
   return {
     id: 'card1.id',
     __typename: 'CardBlock',
@@ -65,7 +70,9 @@ describe('ChatAssistant', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    expect(screen.queryByLabelText('Open chat automatically')).not.toBeInTheDocument()
+    expect(
+      screen.queryByLabelText('Open chat automatically')
+    ).not.toBeInTheDocument()
   })
 
   it('toggling Show AI chat on calls cardBlockUpdate with showAssistant true', async () => {
