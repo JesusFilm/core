@@ -146,9 +146,11 @@ describe('templateGalleryPagePublish', () => {
         }
       }
     })
-    expect(invalidateSpy).toHaveBeenCalledWith([
-      { typename: 'TemplateGalleryPage' }
-    ])
+    // Race-lost: updateMany matched zero rows, so this caller did NOT
+    // transition state. The winning caller (whichever replica handled it)
+    // owns the invalidate; this caller skips it to avoid amplifying
+    // typename-level evictions on every losing race entry.
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('is idempotent — preserves publishedAt when already published', async () => {
@@ -180,10 +182,10 @@ describe('templateGalleryPagePublish', () => {
       }
     })
     expect(prismaMock.templateGalleryPage.updateMany).not.toHaveBeenCalled()
-    // Even idempotent re-publishes invalidate — a no-op transition still
-    // signals "this slug's cache may be stale for unrelated reasons" and
-    // the cost of an extra invalidation is negligible.
-    expect(invalidateSpy).toHaveBeenCalledTimes(1)
+    // Idempotent re-publish: no state changed, no cache eviction. Keeping
+    // invalidate behind a `didMutate` gate prevents authenticated insiders
+    // from spamming the mutation to flush the global response cache.
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('throws NOT_FOUND when page does not exist', async () => {

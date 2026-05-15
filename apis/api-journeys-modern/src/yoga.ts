@@ -116,18 +116,30 @@ export const yoga = createYoga<
             // slugs so legitimate later publishes appear 404. 60 s gives the
             // renderer reasonable cache hit-rate while bounding poisoning impact.
             //
-            // The legitimate-workflow stale-null gap (NES-1644: publish →
-            // unpublish → publish → cached null persists for up to 60 s, public
-            // page renders 404) is closed by explicit
-            // `cache.invalidate([{ typename: 'TemplateGalleryPage' }])` calls in
-            // every TemplateGalleryPage mutation (publish, unpublish, delete,
-            // assignJourney, reorderTemplate, update). Typename-level
-            // invalidation walks the cache by recorded typename presence, so
-            // it reaches null entries that have no entity ID. See the
-            // `responseCacheLifecycle.spec.ts` canary for proof. The 60 s TTL
-            // therefore now exists primarily to bound the (much smaller)
-            // attacker-controlled poisoning window — workflow correctness no
-            // longer depends on it.
+            // NES-1644 stale-null gap is mitigated by typename-level
+            // `cache.invalidate([{ typename: 'TemplateGalleryPage' }])` in every
+            // TemplateGalleryPage mutation (publish, unpublish, delete,
+            // assignJourney, reorderTemplate, update). Typename invalidation
+            // walks the cache by recorded typename presence, so it reaches null
+            // entries that lack an entity ID. See `responseCacheLifecycle.spec.ts`.
+            //
+            // SCOPE OF THE FIX (NES-1677):
+            //   • Single-replica deploys: stale-null gap is fully closed.
+            //   • Multi-replica deploys (current prod `auto_scaling.max_capacity = 4`):
+            //     fix is PARTIAL. `createInMemoryCache()` is process-local, so a
+            //     mutation only evicts the replica that handled it. Reads
+            //     round-robined to a non-mutating replica continue to serve the
+            //     pre-mutation cached entry for up to 60 s (the TTL bounds the
+            //     stale window across all replicas). Shared-cache backend is the
+            //     proper fix — tracked separately for follow-up (Redis-backed
+            //     `Cache` adapter is already supported by
+            //     `@graphql-yoga/plugin-response-cache`; see PR #9217 description
+            //     for the follow-up ticket reference).
+            //   • Reader-in-flight race: a public read whose Prisma query starts
+            //     BEFORE a mutation commits can write the pre-mutation snapshot
+            //     into the cache AFTER the mutation's invalidate runs. The stale
+            //     entry then lives until the next mutation or the 60 s TTL —
+            //     read-side coordination is out of scope; bounded by TTL.
             'Query.templateGalleryPageBySlug': 60_000,
             'Query.journeysPlausibleStatsAggregate': 5000,
             'Query.journeysPlausibleStatsBreakdown': 5000,

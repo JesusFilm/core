@@ -49,26 +49,22 @@ builder.mutationField('templateGalleryPageUnpublish', (t) =>
       //
       // Idempotent re-unpublish: when status is already 'draft' we skip
       // updateMany and just re-read.
-      try {
-        const result = await prisma.$transaction(async (tx) => {
-          if (page.status === 'published') {
+      const { result, didMutate } = await prisma.$transaction(async (tx) => {
+        let count = 0
+        if (page.status === 'published') {
+          const { count: updated } =
             await tx.templateGalleryPage.updateMany({
               where: { id, status: 'published' },
               data: { status: 'draft' }
             })
-          }
-          return await tx.templateGalleryPage.findUniqueOrThrow({
-            ...query,
-            where: { id }
-          })
+          count = updated
+        }
+        const row = await tx.templateGalleryPage.findUniqueOrThrow({
+          ...query,
+          where: { id }
         })
-        // Evict any cached `templateGalleryPageBySlug` entries — including
-        // the just-cached published entity. The next read will repopulate
-        // from DB as `null` (page is now draft), and that null entry stays
-        // until the next typename-level invalidation (the republish call).
-        await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
-        return result
-      } catch (error) {
+        return { result: row, didMutate: count > 0 }
+      }).catch((error) => {
         // Edge case: the page was deleted between auth-fetch and re-read.
         // Surface as NOT_FOUND GraphQLError instead of leaking Prisma P2025.
         if (
@@ -80,7 +76,15 @@ builder.mutationField('templateGalleryPageUnpublish', (t) =>
           })
         }
         throw error
+      })
+
+      // Skip eviction on idempotent no-ops / race-loss (updateMany count=0).
+      // Mirrors the publish-mutation guard — only the replica that actually
+      // transitioned the row owns the cache eviction.
+      if (didMutate) {
+        await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
       }
+      return result
     }
   })
 )

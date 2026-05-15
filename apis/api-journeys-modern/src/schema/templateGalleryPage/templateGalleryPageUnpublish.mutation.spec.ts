@@ -140,8 +140,10 @@ describe('templateGalleryPageUnpublish', () => {
       }
     })
     expect(prismaMock.templateGalleryPage.updateMany).not.toHaveBeenCalled()
-    // Idempotent re-unpublish still invalidates — same rationale as publish.
-    expect(invalidateSpy).toHaveBeenCalledTimes(1)
+    // Idempotent re-unpublish: no state changed, no cache eviction.
+    // Mirrors the publish-mutation gate — only the replica that actually
+    // transitions the row owns the invalidate.
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('throws NOT_FOUND when page does not exist', async () => {

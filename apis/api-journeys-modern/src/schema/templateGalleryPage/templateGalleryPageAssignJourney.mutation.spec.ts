@@ -324,6 +324,11 @@ describe('templateGalleryPageAssignJourney', () => {
       data: { templateGalleryPageAssignJourney: null }
     })
     expect(prismaMock.templateGalleryPageTemplate.delete).not.toHaveBeenCalled()
+    // No-op unassign: no state changed, no cache eviction. Without this
+    // gate any authenticated user could spam the mutation with an
+    // unassigned journey id to flush the global response cache (no
+    // team-membership check on this branch).
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('throws BAD_USER_INPUT when journey is not a template', async () => {

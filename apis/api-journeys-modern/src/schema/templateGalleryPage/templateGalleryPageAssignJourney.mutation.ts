@@ -185,11 +185,21 @@ builder.mutationField('templateGalleryPageAssignJourney', (t) =>
       })
       // Evict cached `templateGalleryPageBySlug` entries. Assign/unassign
       // changes the `templates` array on at most two pages (source + target
-      // on cross-page move, or single page on add/remove/no-op). Typename
-      // -level invalidation evicts entries for ALL TemplateGalleryPage rows,
-      // which over-invalidates beyond the affected pair but keeps the
-      // pattern uniform across the mutation surface.
-      await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
+      // on cross-page move, or single page on add/remove). Typename-level
+      // invalidation evicts entries for ALL TemplateGalleryPage rows, which
+      // over-invalidates beyond the affected pair but keeps the pattern
+      // uniform.
+      //
+      // Skip the eviction on the idempotent no-op unassign (the tx returns
+      // null when `pageId === null` and the journey was not in any
+      // collection — nothing changed, so no cache state can be stale).
+      // Without this gate, any authenticated user could spam the mutation
+      // with `pageId: null, journeyId: <any-unassigned-template>` to flush
+      // the global response cache without ever passing a team-membership
+      // check.
+      if (result != null) {
+        await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
+      }
       return result
     }
   })
