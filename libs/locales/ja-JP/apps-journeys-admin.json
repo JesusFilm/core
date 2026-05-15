@@ -434,6 +434,8 @@
   "Upload Successful!": "アップロード成功！",
   "Upload Failed!": "アップロードに失敗しました！",
   "Drop an image here": "ここに画像をドロップする",
+  "or click to browse your files": "またはクリックしてファイルをブラウズする",
+  "Uploading... {{progress}}%": "アップロード中... {{progress}}%.",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "画像（PNG、JPG、GIF、SVG、HEIC）をアップロードしてください。最大ファイルサイズ：10MB",
   "Upload file": "ファイルのアップロード",
   "Gallery": "ギャラリー",
