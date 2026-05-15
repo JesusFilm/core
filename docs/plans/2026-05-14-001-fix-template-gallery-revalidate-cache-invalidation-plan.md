@@ -107,7 +107,7 @@ Until this is fixed, the click-immediately race fix in NES-1644 is unverifiable 
 
 - Q: Exact pattern for plumbing `cache` into Pothos context — whether to extend the existing `Context` union type in `apis/api-journeys-modern/src/schema/authScopes.ts` or add cache as a separate optional field. Implementation discovery; not a planning-time blocker.
 - Q: Should `cache.invalidate(…)` calls log at debug level for prod observability? Likely yes, but the log format and where to put it (resolver-level vs plugin-level) is an implementation detail.
-- Q: Does the reorder mutation (`templateGalleryPageReorderTemplate`) need cache invalidation? It affects the `templates` array ORDER inside `templateGalleryPageBySlug` responses — a published reorder DOES change what viewers see. Implementation should verify and likely include it for safety. Plan covers all five candidate mutations but the reorder case is the least intuitive.
+- Q: Does the reorder mutation (`templateGalleryPageReorderTemplate`) need cache invalidation? It affects the `templates` array ORDER inside `templateGalleryPageBySlug` responses — a published reorder DOES change what viewers see. Implementation should verify and likely include it for safety. Plan covers all six candidate mutations but the reorder case is the least intuitive.
 
 ---
 
@@ -181,7 +181,7 @@ Until this is fixed, the click-immediately race fix in NES-1644 is unverifiable 
 
 ---
 
-- U3. **Add `cache.invalidate([{ typename: 'TemplateGalleryPage' }])` to all five mutation success paths**
+- U3. **Add `cache.invalidate([{ typename: 'TemplateGalleryPage' }])` to all six mutation success paths**
 
 **Goal:** Evict any cached `templateGalleryPageBySlug` entries — including null-branch entries — when a mutation lands that could change the public-page rendered state.
 
@@ -219,7 +219,7 @@ Until this is fixed, the click-immediately race fix in NES-1644 is unverifiable 
 - Integration (publish flow): assert that the invalidation call happens AFTER the Prisma transaction completes (test setup: spy on both `prisma.$transaction` and `cache.invalidate`, assert call order).
 
 **Verification:**
-- All five mutation specs pass with the new assertions.
+- All six mutation specs pass with the new assertions.
 - Existing assertions in each spec (transaction shape, auth, error mapping) all still pass — invalidation is additive.
 
 ---

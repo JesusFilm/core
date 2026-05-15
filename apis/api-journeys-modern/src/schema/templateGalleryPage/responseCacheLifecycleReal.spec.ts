@@ -21,7 +21,17 @@
 //   with a no-op plugin so unsigned curl-style requests pass through.
 // - `@core/yoga/firebaseClient.getUserFromPayload` is mocked to always
 //   return a test user, so authed mutations don't need a real JWT.
+// vitest's `vi.mock` is hoisted by the plugin to fire BEFORE any import,
+// regardless of source order. Keep the imports at the top of the file
+// (satisfies the `import/first` lint rule) and place the vi.hoisted /
+// vi.mock blocks after them — they still take effect first at runtime.
+import { buildHTTPExecutor } from '@graphql-tools/executor-http'
 import { type MockedFunction, vi } from 'vitest'
+
+import { getUserFromPayload } from '@core/yoga/firebaseClient'
+
+import { prismaMock } from '../../../test/prismaMock'
+import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 vi.hoisted(() => {
   // process.env.NODE_ENV is typed as readonly in node:process — use
@@ -52,13 +62,6 @@ vi.mock('@core/yoga/firebaseClient', async () => {
     getUserFromPayload: vi.fn()
   }
 })
-
-import { getUserFromPayload } from '@core/yoga/firebaseClient'
-
-import { prismaMock } from '../../../test/prismaMock'
-import { graphql } from '../../lib/graphql/subgraphGraphql'
-
-import { buildHTTPExecutor } from '@graphql-tools/executor-http'
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
@@ -104,7 +107,7 @@ describe('NES-1677 real-schema cache lifecycle', () => {
   let executor: ReturnType<typeof buildHTTPExecutor>
 
   beforeAll(async () => {
-    const yogaModule = await import('../../yoga')
+    const yogaModule = await import(/* webpackChunkName: "yoga" */ '../../yoga')
     yoga = yogaModule.yoga
     cache = yogaModule.cache
     executor = buildHTTPExecutor({ fetch: yoga.fetch.bind({}) })
@@ -248,7 +251,7 @@ describe('NES-1677 real-schema cache lifecycle', () => {
       makePage('published')
     )
     prismaMock.templateGalleryPage.delete.mockResolvedValueOnce(
-      makePage('published') as any
+      makePage('published')
     )
   }
 
@@ -269,7 +272,7 @@ describe('NES-1677 real-schema cache lifecycle', () => {
     // renumberPage's findMany inside the source-page branch
     prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValueOnce([])
     prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValueOnce(
-      makePage('published') as any
+      makePage('published')
     )
   }
 

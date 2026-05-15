@@ -157,6 +157,7 @@ describe('templateGalleryPageUpdate', () => {
         })
       ]
     })
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('replaces journeyIds via deleteMany + createMany when provided', async () => {

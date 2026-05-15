@@ -456,6 +456,7 @@ describe('templateGalleryPageAssignJourney', () => {
         })
       ]
     })
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('throws FORBIDDEN on unassign when caller is not in the source page team', async () => {
@@ -483,5 +484,6 @@ describe('templateGalleryPageAssignJourney', () => {
       ]
     })
     expect(prismaMock.templateGalleryPageTemplate.delete).not.toHaveBeenCalled()
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 })

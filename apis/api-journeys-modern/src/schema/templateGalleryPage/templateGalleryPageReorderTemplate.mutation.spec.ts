@@ -196,6 +196,7 @@ describe('templateGalleryPageReorderTemplate', () => {
       expect(
         finalOrdersAssignedTo(['tpt-A', 'tpt-D', 'tpt-B', 'tpt-C', 'tpt-E'])
       ).toEqual([0, 1, 2, 3, 4])
+      expect(invalidateSpy).toHaveBeenCalledTimes(1)
     })
 
     // Live-DB scenario: gappy orders [0,2,4,5] (4 rows in display order
@@ -219,6 +220,7 @@ describe('templateGalleryPageReorderTemplate', () => {
       expect(
         finalOrdersAssignedTo(['tpt-A', 'tpt-C', 'tpt-D', 'tpt-B'])
       ).toEqual([0, 1, 2, 3])
+      expect(invalidateSpy).toHaveBeenCalledTimes(1)
     })
 
     // Live-DB scenario: gappy [0,2,4,5], move D (display index 3) all
@@ -239,6 +241,7 @@ describe('templateGalleryPageReorderTemplate', () => {
       expect(
         finalOrdersAssignedTo(['tpt-D', 'tpt-A', 'tpt-B', 'tpt-C'])
       ).toEqual([0, 1, 2, 3])
+      expect(invalidateSpy).toHaveBeenCalledTimes(1)
     })
 
     it('is a no-op when sourceIndex === newIndex (no writes beyond the canonical re-read)', async () => {
@@ -262,6 +265,10 @@ describe('templateGalleryPageReorderTemplate', () => {
         prismaMock.templateGalleryPageTemplate.update
       ).not.toHaveBeenCalled()
       expect(prismaMock.$executeRaw).not.toHaveBeenCalled()
+      // No-op reorder: nothing changed, no cache eviction. Mirrors the
+      // publish/unpublish/assignJourney guards — only the replica that
+      // actually mutates owns the invalidation.
+      expect(invalidateSpy).not.toHaveBeenCalled()
     })
   })
 

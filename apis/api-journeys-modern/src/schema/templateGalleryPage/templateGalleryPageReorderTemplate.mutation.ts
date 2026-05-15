@@ -41,7 +41,7 @@ builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
       const journeyId = String(args.journeyId)
       const newIndex = args.order
 
-      const result = await prisma.$transaction(async (tx) => {
+      const { result, didMutate } = await prisma.$transaction(async (tx) => {
         await lockPage(tx, pageId)
 
         const page = await tx.templateGalleryPage.findUnique({
@@ -81,10 +81,11 @@ builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
           })
         }
         if (sourceIndex === newIndex) {
-          return await tx.templateGalleryPage.findUniqueOrThrow({
+          const row = await tx.templateGalleryPage.findUniqueOrThrow({
             ...query,
             where: { id: pageId }
           })
+          return { result: row, didMutate: false }
         }
 
         const reordered = [...rows]
@@ -93,15 +94,21 @@ builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
 
         await applyContiguousOrder(tx, pageId, reordered)
 
-        return await tx.templateGalleryPage.findUniqueOrThrow({
+        const row = await tx.templateGalleryPage.findUniqueOrThrow({
           ...query,
           where: { id: pageId }
         })
+        return { result: row, didMutate: true }
       })
       // Evict cached `templateGalleryPageBySlug` entries. Reorder changes
       // the ORDER of the `templates` array on the page — the cached
-      // response carries the old order until evicted.
-      await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
+      // response carries the old order until evicted. Skip the eviction
+      // on the no-op `sourceIndex === newIndex` branch so authenticated
+      // users with reorder access can't spam the mutation to flush the
+      // global response cache.
+      if (didMutate) {
+        await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
+      }
       return result
     }
   })
