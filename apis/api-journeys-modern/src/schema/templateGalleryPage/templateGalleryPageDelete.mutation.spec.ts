@@ -15,9 +15,7 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
-const invalidateSpy = vi
-  .spyOn(cache, 'invalidate')
-  .mockResolvedValue(undefined)
+const invalidateSpy = vi.spyOn(cache, 'invalidate').mockResolvedValue(undefined)
 
 describe('templateGalleryPageDelete', () => {
   const mockUser = {

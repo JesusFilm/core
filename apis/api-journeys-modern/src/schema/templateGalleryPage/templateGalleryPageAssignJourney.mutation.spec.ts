@@ -15,9 +15,7 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
-const invalidateSpy = vi
-  .spyOn(cache, 'invalidate')
-  .mockResolvedValue(undefined)
+const invalidateSpy = vi.spyOn(cache, 'invalidate').mockResolvedValue(undefined)
 
 describe('templateGalleryPageAssignJourney', () => {
   const mockUser = {
@@ -112,9 +110,9 @@ describe('templateGalleryPageAssignJourney', () => {
       { typename: 'TemplateGalleryPage' }
     ])
     // Ordering invariant: invalidate runs AFTER prisma.$transaction.
-    expect(
-      prismaMock.$transaction.mock.invocationCallOrder[0]
-    ).toBeLessThan(invalidateSpy.mock.invocationCallOrder[0])
+    expect(prismaMock.$transaction.mock.invocationCallOrder[0]).toBeLessThan(
+      invalidateSpy.mock.invocationCallOrder[0]
+    )
   })
 
   it('appends to the end of an existing collection (next order = max + 1)', async () => {

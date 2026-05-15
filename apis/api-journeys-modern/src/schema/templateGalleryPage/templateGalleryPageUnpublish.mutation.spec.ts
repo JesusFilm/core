@@ -18,9 +18,7 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
 
 // Spy on the response-cache invalidate call so we can assert it fires on
 // the success path and stays silent on auth/not-found rejections.
-const invalidateSpy = vi
-  .spyOn(cache, 'invalidate')
-  .mockResolvedValue(undefined)
+const invalidateSpy = vi.spyOn(cache, 'invalidate').mockResolvedValue(undefined)
 
 describe('templateGalleryPageUnpublish', () => {
   const mockUser = {
@@ -113,9 +111,9 @@ describe('templateGalleryPageUnpublish', () => {
     // Ordering invariant: invalidate must run AFTER prisma.$transaction
     // resolves, otherwise a concurrent reader could repopulate the cache
     // from pre-commit state.
-    expect(
-      prismaMock.$transaction.mock.invocationCallOrder[0]
-    ).toBeLessThan(invalidateSpy.mock.invocationCallOrder[0])
+    expect(prismaMock.$transaction.mock.invocationCallOrder[0]).toBeLessThan(
+      invalidateSpy.mock.invocationCallOrder[0]
+    )
   })
 
   it('is idempotent — when already draft, skips updateMany and returns the canonical row', async () => {

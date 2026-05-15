@@ -40,10 +40,9 @@ vi.hoisted(() => {
 })
 
 vi.mock('@graphql-hive/gateway', async () => {
-  const actual =
-    await vi.importActual<typeof import('@graphql-hive/gateway')>(
-      '@graphql-hive/gateway'
-    )
+  const actual = await vi.importActual<typeof import('@graphql-hive/gateway')>(
+    '@graphql-hive/gateway'
+  )
   return {
     ...actual,
     // Bypass HMAC validation: prod uses this to reject un-signed requests
@@ -180,10 +179,7 @@ describe('NES-1677 real-schema cache lifecycle', () => {
 
   const ASSIGN_JOURNEY = graphql(`
     mutation Assign($journeyId: ID!, $pageId: ID) {
-      templateGalleryPageAssignJourney(
-        journeyId: $journeyId
-        pageId: $pageId
-      ) {
+      templateGalleryPageAssignJourney(journeyId: $journeyId, pageId: $pageId) {
         id
       }
     }

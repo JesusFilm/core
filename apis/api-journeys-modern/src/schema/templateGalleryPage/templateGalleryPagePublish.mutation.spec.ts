@@ -20,9 +20,7 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
 // intercepts the call without touching the real in-memory cache (which is
 // inert in test mode — `useResponseCache` plugin isn't installed when
 // NODE_ENV === 'test', see `yoga.ts:82`).
-const invalidateSpy = vi
-  .spyOn(cache, 'invalidate')
-  .mockResolvedValue(undefined)
+const invalidateSpy = vi.spyOn(cache, 'invalidate').mockResolvedValue(undefined)
 
 describe('templateGalleryPagePublish', () => {
   const mockUser = {
@@ -115,9 +113,9 @@ describe('templateGalleryPagePublish', () => {
     // resolves, otherwise a concurrent reader could repopulate the cache
     // from pre-commit state. A regression that moved invalidate inside the
     // transaction callback would fail here.
-    expect(
-      prismaMock.$transaction.mock.invocationCallOrder[0]
-    ).toBeLessThan(invalidateSpy.mock.invocationCallOrder[0])
+    expect(prismaMock.$transaction.mock.invocationCallOrder[0]).toBeLessThan(
+      invalidateSpy.mock.invocationCallOrder[0]
+    )
   })
 
   it('returns the canonical row when the publish race is lost (updateMany count=0)', async () => {

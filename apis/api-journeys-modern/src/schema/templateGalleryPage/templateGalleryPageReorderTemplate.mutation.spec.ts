@@ -15,9 +15,7 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
-const invalidateSpy = vi
-  .spyOn(cache, 'invalidate')
-  .mockResolvedValue(undefined)
+const invalidateSpy = vi.spyOn(cache, 'invalidate').mockResolvedValue(undefined)
 
 describe('templateGalleryPageReorderTemplate', () => {
   const mockUser = {
@@ -172,9 +170,9 @@ describe('templateGalleryPageReorderTemplate', () => {
         { typename: 'TemplateGalleryPage' }
       ])
       // Ordering invariant: invalidate runs AFTER prisma.$transaction.
-      expect(
-        prismaMock.$transaction.mock.invocationCallOrder[0]
-      ).toBeLessThan(invalidateSpy.mock.invocationCallOrder[0])
+      expect(prismaMock.$transaction.mock.invocationCallOrder[0]).toBeLessThan(
+        invalidateSpy.mock.invocationCallOrder[0]
+      )
     })
 
     // Live-DB scenario: contiguous orders [0,1,2,3,4], move row at 3 to
