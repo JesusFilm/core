@@ -1,10 +1,12 @@
+import { vi } from 'vitest'
+
 import { prismaMock } from '../../../test/prismaMock'
 
 import { filterToTeamTemplates } from './filterToTeamTemplates'
 
 describe('filterToTeamTemplates', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns empty result for empty input without querying', async () => {
