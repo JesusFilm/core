@@ -110,18 +110,22 @@ export const getStaticProps: GetStaticProps<
 
   const gallery = data?.templateGalleryPageBySlug
   if (gallery == null) {
-    // Surface GraphQL errors when getStaticProps lands on the null branch
-    // alongside an `errors` payload — `errorPolicy: 'all'` swallows errors
-    // into the result by design, but a silent notFound paired with errors
-    // is exactly the failure shape that hid the NES-1644 cache bug for an
-    // entire debugging session. A single structured warn surfaces it next
-    // time. No log on the legitimate not-found path (errors is undefined).
-    if (errors != null && errors.length > 0) {
-      console.warn('[template-gallery getStaticProps] gql errors', {
-        slug,
-        errors
-      })
-    }
+    // Surface BOTH the GraphQL errors AND the null-branch entry so we
+    // can distinguish "legitimate not-found / draft" from "Apollo error
+    // returned null silently". Without this, the silent notFound that
+    // ISR caches looks identical to a real not-found and the cause
+    // hides behind the 60s revalidate window.
+    console.warn('[template-gallery getStaticProps] null branch', {
+      slug,
+      hasErrors: errors != null && errors.length > 0,
+      errorCount: errors?.length ?? 0,
+      errors:
+        errors?.map((e) => ({
+          message: e.message,
+          path: e.path,
+          extensions: e.extensions
+        })) ?? null
+    })
     return {
       props: { ...translations },
       notFound: true,
