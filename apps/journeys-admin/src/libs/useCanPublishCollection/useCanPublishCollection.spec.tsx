@@ -1,9 +1,11 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
+import { GraphQLError } from 'graphql'
 
 import { GET_CUSTOM_DOMAINS } from '../useCustomDomainsQuery/useCustomDomainsQuery'
 
 import {
+  CUSTOM_DOMAIN_PUBLISH_BLOCKED_BY_ERROR_COPY,
   CUSTOM_DOMAIN_PUBLISH_BLOCKED_COPY,
   useCanPublishCollection
 } from './useCanPublishCollection'
@@ -117,5 +119,47 @@ describe('useCanPublishCollection', () => {
     expect(CUSTOM_DOMAIN_PUBLISH_BLOCKED_COPY).toBe(
       "Teams with custom domains can't publish template galleries. Contact support if you need this."
     )
+  })
+
+  // P1-E regression guard: when the customDomains query fails, we
+  // can't tell whether the team has a routeAll domain. Block publish
+  // (fail-closed) and surface a distinct "couldn't check" reason so
+  // a custom-domain team doesn't slip through and publish a page that
+  // won't route from their domain.
+  describe('error path', () => {
+    const errorMock: MockedResponse = {
+      request: { query: GET_CUSTOM_DOMAINS, variables: { teamId: 'teamId' } },
+      result: { errors: [new GraphQLError('Backend exploded')] }
+    }
+    let consoleWarn: jest.SpyInstance
+
+    beforeEach(() => {
+      consoleWarn = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
+    })
+    afterEach(() => {
+      consoleWarn.mockRestore()
+    })
+
+    it('returns canPublish: false + the distinct error reason when the customDomains query fails', async () => {
+      const { result } = renderHook(
+        () => useCanPublishCollection({ teamId: 'teamId' }),
+        { wrapper: wrapWith([errorMock]) }
+      )
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      expect(result.current.canPublish).toBe(false)
+      expect(result.current.reason).toBe(CUSTOM_DOMAIN_PUBLISH_BLOCKED_BY_ERROR_COPY)
+    })
+
+    it('logs the error for operator visibility', async () => {
+      const { result } = renderHook(
+        () => useCanPublishCollection({ teamId: 'teamId' }),
+        { wrapper: wrapWith([errorMock]) }
+      )
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      expect(consoleWarn).toHaveBeenCalledWith(
+        '[useCanPublishCollection] customDomains query failed',
+        expect.objectContaining({ teamId: 'teamId' })
+      )
+    })
   })
 })

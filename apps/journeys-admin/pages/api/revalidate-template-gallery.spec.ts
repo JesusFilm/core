@@ -156,14 +156,32 @@ describe('revalidate-template-gallery', () => {
     await handler(authedPostReq(), res)
 
     expect(mockFetch).toHaveBeenCalledTimes(1)
-    const fetchUrl = mockFetch.mock.calls[0][0] as string
+    const [fetchUrl] = mockFetch.mock.calls[0] as [string]
     expect(fetchUrl).toContain(
       'https://your.nextstep.is/api/revalidate-template-gallery'
     )
-    expect(fetchUrl).toContain('accessToken=valid-token')
     expect(fetchUrl).toContain('slug=my-collection')
     expect(status).toHaveBeenCalledWith(200)
     expect(json).toHaveBeenCalledWith({ revalidated: true })
+  })
+
+  // P1-A regression guard: the upstream token MUST ride in the
+  // Authorization header, never as a query-string accessToken (which
+  // would leak into reverse-proxy / CDN / APM access logs).
+  it('sends the access token in the Authorization header and never in the URL', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true } as never)
+    const { res } = mockResponse()
+
+    await handler(authedPostReq(), res)
+
+    const [fetchUrl, fetchInit] = mockFetch.mock.calls[0] as [
+      string,
+      { headers?: Record<string, string> }
+    ]
+    expect(fetchUrl).not.toContain('accessToken')
+    expect(fetchInit.headers).toEqual({
+      Authorization: 'Bearer valid-token'
+    })
   })
 
   // Mike #3: any non-2xx upstream response is normalised to 502 to avoid

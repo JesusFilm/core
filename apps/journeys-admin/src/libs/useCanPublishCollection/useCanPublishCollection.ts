@@ -26,6 +26,17 @@ export interface CanPublishCollectionResult {
 export const CUSTOM_DOMAIN_PUBLISH_BLOCKED_COPY =
   "Teams with custom domains can't publish template galleries. Contact support if you need this."
 
+/**
+ * Shown when the domains query failed (network blip, 500, etc.). We
+ * can't tell whether the team has a custom domain in that state, so we
+ * fail-closed — better to block a legitimate publish until the user
+ * retries than to let a custom-domain team publish a page that won't
+ * route. Distinct from the success-but-blocked copy so a frustrated
+ * user can tell the two apart.
+ */
+export const CUSTOM_DOMAIN_PUBLISH_BLOCKED_BY_ERROR_COPY =
+  "Couldn't check whether your team can publish. Refresh and try again."
+
 interface UseCanPublishCollectionArgs {
   /**
    * Active team id. Pass null/undefined when no team is selected OR
@@ -42,16 +53,22 @@ interface UseCanPublishCollectionArgs {
  * Returns whether the active team is allowed to publish a template
  * gallery collection (NES-1644 / NES-1637 reuse target).
  *
- * Fail-open contract: while `teamId` is null or the domains query is
+ * Loading contract: while `teamId` is null or the domains query is
  * still loading, returns `canPublish: true` so the publish CTA stays
  * enabled by default. The server is the source of truth either way;
  * this hook is a UX guardrail. Only `routeAllTeamJourneys === true`
  * on a loaded team's customDomains flips canPublish to `false`.
+ *
+ * Error contract: if the domains query fails (network, 500, etc.) we
+ * fail CLOSED — `canPublish: false` with a distinct "couldn't check"
+ * reason. Failing open on error lets a custom-domain team publish a
+ * page that won't route from the user's domain; blocking is the safer
+ * default. The error is logged so operators can see silent failures.
  */
 export function useCanPublishCollection({
   teamId
 }: UseCanPublishCollectionArgs): CanPublishCollectionResult {
-  const { data, loading } = useCustomDomainsQuery({
+  const { data, loading, error } = useCustomDomainsQuery({
     variables: { teamId: teamId ?? '' },
     skip: teamId == null
   })
@@ -62,6 +79,20 @@ export function useCanPublishCollection({
     // distinguish those two cases from inside this hook, so fail open and
     // surface `loading: true` to callers that want to render a spinner.
     return { canPublish: true, reason: null, loading: true }
+  }
+
+  if (error != null) {
+    // Log so an operator monitoring prod sees the silent failure. The
+    // user gets a non-blocking message via the tooltip copy.
+    console.warn('[useCanPublishCollection] customDomains query failed', {
+      teamId,
+      message: error.message
+    })
+    return {
+      canPublish: false,
+      reason: CUSTOM_DOMAIN_PUBLISH_BLOCKED_BY_ERROR_COPY,
+      loading: false
+    }
   }
 
   const hasRouteAllDomain =

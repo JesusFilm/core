@@ -230,7 +230,15 @@ export function useCollectionForm({
         if (values.mediaUrl !== (collection.mediaUrl ?? '')) {
           input.mediaUrl = values.mediaUrl === '' ? null : values.mediaUrl
         }
-        if (values.slug !== collection.slug) input.slug = values.slug
+        // Skip the slug field when the user cleared it. yup's
+        // `excludeEmptyString` lets an empty value pass validation (so
+        // create mode's empty default doesn't error), but sending
+        // `input.slug = ''` would rename the published page's slug to
+        // empty and break every external link. Empty in edit mode means
+        // "leave the slug alone" — same effect as an unchanged field.
+        if (values.slug !== collection.slug && values.slug !== '') {
+          input.slug = values.slug
+        }
         const initialIds = collection.templates.map((tpl) => tpl.id).join(',')
         const nextIds = values.journeyIds.join(',')
         if (initialIds !== nextIds) {

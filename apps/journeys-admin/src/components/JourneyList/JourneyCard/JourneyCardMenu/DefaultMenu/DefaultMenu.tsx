@@ -119,7 +119,7 @@ export function DefaultMenu({
   const { activeTeam } = useTeam()
   const { data: userRoleData } = useUserRoleQuery()
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
-  const { hostname } = useCustomDomainsQuery({
+  const { primaryHostname: hostname } = useCustomDomainsQuery({
     variables: { teamId: activeTeam?.id ?? '' },
     skip: activeTeam?.id == null
   })

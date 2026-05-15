@@ -32,7 +32,7 @@ describe('useCustomDomainsQuery', () => {
 
     const { result } = renderHook(
       () => {
-        const { hostname } = useCustomDomainsQuery({
+        const { primaryHostname: hostname } = useCustomDomainsQuery({
           variables: { teamId: 'teamId' }
         })
 
@@ -72,7 +72,7 @@ describe('useCustomDomainsQuery', () => {
 
     const { result } = renderHook(
       () => {
-        const { hostname } = useCustomDomainsQuery({
+        const { primaryHostname: hostname } = useCustomDomainsQuery({
           variables: { teamId: 'teamId' }
         })
 

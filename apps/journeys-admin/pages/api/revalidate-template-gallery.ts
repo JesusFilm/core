@@ -50,25 +50,28 @@ export default async function handler(
     return res.status(400).json({ error: 'Invalid slug' })
   }
 
-  const params = new URLSearchParams({
-    accessToken: process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN,
-    slug
-  })
+  // Slug is the only param the upstream needs in the URL. The access
+  // token rides in the `Authorization: Bearer` header so it never lands
+  // in reverse-proxy / CDN / APM access logs that capture URLs.
+  const params = new URLSearchParams({ slug })
 
   try {
     const response = await fetch(
       `${
         process.env.JOURNEYS_URL
-      }/api/revalidate-template-gallery?${params.toString()}`
+      }/api/revalidate-template-gallery?${params.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN}`
+        }
+      }
     )
     if (!response.ok) {
       // Log the upstream status server-side for debug; never forward it
       // to the client. Forwarding leaks internal topology — a 401 here
       // tells a CSRF attacker the upstream token mismatched (vs auth /
-      // env / network), and the upstream body could surface failing-URL
-      // fragments including the access-token query param if a future
-      // upstream change starts including them. Normalise every non-2xx
-      // upstream response to a generic 502.
+      // env / network). Normalise every non-2xx upstream response to a
+      // generic 502.
       console.error('upstream revalidate failed', {
         status: response.status
       })

@@ -16,6 +16,19 @@ function tokensMatch(provided: unknown, expected: string): boolean {
   return timingSafeEqual(a, b)
 }
 
+// Extract a Bearer token from the `Authorization` header. The header form
+// keeps the token out of URLs (and therefore out of reverse-proxy access
+// logs, CDN logs, browser history, Referer headers, and APM traces that
+// capture full URLs by default). Returns null when the header is missing
+// or malformed; callers compare with `tokensMatch` for the constant-time
+// check.
+function readBearerToken(req: NextApiRequest): string | null {
+  const raw = req.headers.authorization
+  if (typeof raw !== 'string') return null
+  const match = /^Bearer (.+)$/.exec(raw)
+  return match?.[1] ?? null
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -24,7 +37,15 @@ export default async function handler(
   if (expectedToken == null || expectedToken === '') {
     return res.status(500).json({ message: 'Missing Environment Variables' })
   }
-  if (!tokensMatch(req.query.accessToken, expectedToken)) {
+  // Reject the legacy `?accessToken=` form outright so the two-path window
+  // during migration is closed — clients that haven't updated to the
+  // header form get an immediate 401 and operators see the regression.
+  if (typeof req.query.accessToken === 'string' && req.query.accessToken !== '') {
+    return res.status(401).json({
+      message: 'Access token must be supplied via Authorization: Bearer header'
+    })
+  }
+  if (!tokensMatch(readBearerToken(req), expectedToken)) {
     return res.status(401).json({ message: 'Invalid access token' })
   }
 

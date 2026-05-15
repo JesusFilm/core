@@ -110,22 +110,31 @@ export const getStaticProps: GetStaticProps<
 
   const gallery = data?.templateGalleryPageBySlug
   if (gallery == null) {
-    // Surface BOTH the GraphQL errors AND the null-branch entry so we
-    // can distinguish "legitimate not-found / draft" from "Apollo error
-    // returned null silently". Without this, the silent notFound that
-    // ISR caches looks identical to a real not-found and the cause
-    // hides behind the 60s revalidate window.
-    console.warn('[template-gallery getStaticProps] null branch', {
-      slug,
-      hasErrors: errors != null && errors.length > 0,
-      errorCount: errors?.length ?? 0,
-      errors:
-        errors?.map((e) => ({
+    // Only log when there are actual errors. A legitimate not-found
+    // (draft / unknown slug) is a noisy public path — every probe
+    // would otherwise add a log line. The signal we care about is the
+    // error-but-null shape that hid the NES-1644 cache bug.
+    if (errors != null && errors.length > 0) {
+      const MAX_LOGGED_ERRORS = 5
+      // Only keep the fields we know are safe to log. `extensions`
+      // can carry server-side stack traces and Prisma context — pull
+      // out the GraphQL `code` field but drop everything else so the
+      // log stays bounded and side-channel-free.
+      const safeErrors = errors
+        .slice(0, MAX_LOGGED_ERRORS)
+        .map((e) => ({
           message: e.message,
           path: e.path,
-          extensions: e.extensions
-        })) ?? null
-    })
+          code:
+            typeof e.extensions?.code === 'string' ? e.extensions.code : null
+        }))
+      console.warn('[template-gallery getStaticProps] null branch', {
+        slug,
+        errorCount: errors.length,
+        errors: safeErrors,
+        truncated: errors.length > MAX_LOGGED_ERRORS
+      })
+    }
     return {
       props: { ...translations },
       notFound: true,

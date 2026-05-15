@@ -51,6 +51,15 @@ export function useCollectionMutations(): CollectionMutations {
     }
   }, [])
 
+  // Synchronous double-mutation guard. `busyId` is React state, so its
+  // read inside the guard reflects the value from the closure's render
+  // — two synchronous clicks (different rows, same render snapshot)
+  // both see `busyId === null` and both proceed past the check. A ref
+  // flips inside the same JS tick that fires the mutation, so the
+  // second invocation sees `true` and returns immediately. Mirrors the
+  // same pattern in `useCollectionForm.handleSubmit`.
+  const submittingRef = useRef(false)
+
   const [templateGalleryPagePublish] = useTemplateGalleryPagePublishMutation()
   const [templateGalleryPageUnpublish] =
     useTemplateGalleryPageUnpublishMutation()
@@ -72,15 +81,27 @@ export function useCollectionMutations(): CollectionMutations {
   ): Promise<TemplateGalleryPage | null> {
     // Entry-guard: a second concurrent click on a different row would
     // overwrite busyId mid-flight and de-disable the first row's menu
-    // before its mutation resolved.
-    if (busyId != null) return null
+    // before its mutation resolved. `busyId` (state) can't gate this
+    // synchronously because React batches the setBusyId call; the ref
+    // does — see the submittingRef comment near the hook top.
+    if (submittingRef.current) return null
+    submittingRef.current = true
     setBusyId(collection.id)
     try {
       const { data } = await templateGalleryPagePublish({
         variables: { id: collection.id }
       })
       const result = data?.templateGalleryPagePublish
-      if (result == null) return null
+      if (result == null) {
+        // Apollo can resolve a mutation without throwing even when `data`
+        // is null — e.g. a partial GraphQL error reaches `errorPolicy:
+        // 'all'` consumers as `{ data: null, errors: [...] }`. Silently
+        // returning null here leaves the user staring at a no-op button,
+        // identical to the failure mode the catch branch protects
+        // against. Surface a snackbar so the user gets the same signal.
+        showError(null, t("Couldn't publish collection"))
+        return null
+      }
       // Revalidate both the old and new slug paths. Publish doesn't change
       // the slug today, but the server returns it authoritatively — pass
       // both into the deduper so we're correct even if that invariant
@@ -101,15 +122,28 @@ export function useCollectionMutations(): CollectionMutations {
       showError(error, t("Couldn't publish collection"))
       return null
     } finally {
+      submittingRef.current = false
       if (mountedRef.current) setBusyId(null)
     }
   }
 
   async function unpublish(collection: TemplateGalleryPage): Promise<void> {
-    if (busyId != null) return
+    if (submittingRef.current) return
+    submittingRef.current = true
     setBusyId(collection.id)
     try {
-      await templateGalleryPageUnpublish({ variables: { id: collection.id } })
+      const { data } = await templateGalleryPageUnpublish({
+        variables: { id: collection.id }
+      })
+      if (data?.templateGalleryPageUnpublish == null) {
+        // Mutation resolved with `null` data (partial GraphQL error,
+        // `errorPolicy: 'all'`, etc.). Surface a snackbar so the user
+        // gets the same signal as the catch branch — without this they
+        // see a silent 3-dot-menu re-enable and assume the unpublish
+        // worked.
+        showError(null, t("Couldn't unpublish collection"))
+        return
+      }
       // Revalidate only when the collection actually had a public page to
       // clear (i.e. was previously published). An unpublish on a draft is
       // an idempotent no-op — no cached page to bust, no revalidate
@@ -126,15 +160,24 @@ export function useCollectionMutations(): CollectionMutations {
     } catch (error) {
       showError(error, t("Couldn't unpublish collection"))
     } finally {
+      submittingRef.current = false
       if (mountedRef.current) setBusyId(null)
     }
   }
 
   async function ungroup(collection: TemplateGalleryPage): Promise<void> {
-    if (busyId != null) return
+    if (submittingRef.current) return
+    submittingRef.current = true
     setBusyId(collection.id)
     try {
-      await templateGalleryPageDelete({ variables: { id: collection.id } })
+      const { data } = await templateGalleryPageDelete({
+        variables: { id: collection.id }
+      })
+      if (data?.templateGalleryPageDelete == null) {
+        // Same null-result trap as publish/unpublish above.
+        showError(null, t("Couldn't remove collection"))
+        return
+      }
       // Revalidate only when the collection had a public page to clear.
       // Deleting a draft leaves no orphaned cache entry behind.
       if (collection.status === TemplateGalleryPageStatus.published) {
@@ -149,6 +192,7 @@ export function useCollectionMutations(): CollectionMutations {
     } catch (error) {
       showError(error, t("Couldn't remove collection"))
     } finally {
+      submittingRef.current = false
       if (mountedRef.current) setBusyId(null)
     }
   }

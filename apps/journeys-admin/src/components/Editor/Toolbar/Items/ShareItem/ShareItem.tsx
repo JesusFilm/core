@@ -78,7 +78,7 @@ export function ShareItem({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
 
-  const { hostname } = useCustomDomainsQuery({
+  const { primaryHostname: hostname } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id ?? '' },
     skip: journey?.team?.id == null
   })

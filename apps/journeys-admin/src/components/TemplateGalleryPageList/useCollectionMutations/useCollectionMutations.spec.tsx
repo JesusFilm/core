@@ -163,6 +163,41 @@ describe('useCollectionMutations', () => {
       )
       expect(result.current.busyId).toBe(null)
     })
+
+    // P0-B regression guard: Apollo can resolve a mutation with
+    // `{ data: null }` (no thrown error) when a partial GraphQL error
+    // is swallowed by errorPolicy: 'all'. Without an explicit guard the
+    // user sees a silent no-op and no snackbar. The hook must surface
+    // a fallback error message identical to the catch branch.
+    it('returns null and shows a fallback error snackbar when the mutation resolves with null data', async () => {
+      const collection = makeCollection({ id: 'page-7' })
+      const nullDataMock: MockedResponse = {
+        request: {
+          query: TEMPLATE_GALLERY_PAGE_PUBLISH,
+          variables: { id: 'page-7' }
+        },
+        result: {
+          data: { templateGalleryPagePublish: null }
+        }
+      }
+
+      const { result } = renderHook(() => useCollectionMutations(), {
+        wrapper: wrapperWithMocks([nullDataMock])
+      })
+
+      let resolved: TemplateGalleryPage | null = collection
+      await act(async () => {
+        resolved = await result.current.publish(collection)
+      })
+
+      expect(resolved).toBe(null)
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        "Couldn't publish collection",
+        expect.objectContaining({ variant: 'error' })
+      )
+      // No revalidate fires on the null-result path.
+      expect(mockRevalidate).not.toHaveBeenCalled()
+    })
   })
 
   describe('unpublish', () => {
@@ -245,6 +280,40 @@ describe('useCollectionMutations', () => {
       expect(result.current.busyId).toBe(null)
       expect(mockRevalidate).not.toHaveBeenCalled()
     })
+
+    // P0-B regression guard: see publish() spec above. Same null-result
+    // trap surfaces here whenever Apollo swallows a partial GraphQL
+    // error into `{ data: null }` instead of throwing.
+    it('shows a fallback error snackbar when the mutation resolves with null data', async () => {
+      const collection = makeCollection({
+        id: 'page-7',
+        status: TemplateGalleryPageStatus.published
+      })
+      const nullDataMock: MockedResponse = {
+        request: {
+          query: TEMPLATE_GALLERY_PAGE_UNPUBLISH,
+          variables: { id: 'page-7' }
+        },
+        result: {
+          data: { templateGalleryPageUnpublish: null }
+        }
+      }
+
+      const { result } = renderHook(() => useCollectionMutations(), {
+        wrapper: wrapperWithMocks([nullDataMock])
+      })
+
+      await act(async () => {
+        await result.current.unpublish(collection)
+      })
+
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        "Couldn't unpublish collection",
+        expect.objectContaining({ variant: 'error' })
+      )
+      // No revalidate on the null-result path.
+      expect(mockRevalidate).not.toHaveBeenCalled()
+    })
   })
 
   describe('ungroup', () => {
@@ -319,6 +388,37 @@ describe('useCollectionMutations', () => {
         expect.objectContaining({ variant: 'error' })
       )
       expect(result.current.busyId).toBe(null)
+      expect(mockRevalidate).not.toHaveBeenCalled()
+    })
+
+    // P0-B regression guard: see publish() spec above.
+    it('shows a fallback error snackbar when the mutation resolves with null data', async () => {
+      const collection = makeCollection({
+        id: 'page-7',
+        status: TemplateGalleryPageStatus.published
+      })
+      const nullDataMock: MockedResponse = {
+        request: {
+          query: TEMPLATE_GALLERY_PAGE_DELETE,
+          variables: { id: 'page-7' }
+        },
+        result: {
+          data: { templateGalleryPageDelete: null }
+        }
+      }
+
+      const { result } = renderHook(() => useCollectionMutations(), {
+        wrapper: wrapperWithMocks([nullDataMock])
+      })
+
+      await act(async () => {
+        await result.current.ungroup(collection)
+      })
+
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        "Couldn't remove collection",
+        expect.objectContaining({ variant: 'error' })
+      )
       expect(mockRevalidate).not.toHaveBeenCalled()
     })
   })

@@ -568,6 +568,59 @@ describe('useCollectionForm', () => {
       expect(mockRevalidate).toHaveBeenCalledTimes(1)
       expect(mockRevalidate).toHaveBeenCalledWith(['old-slug', 'my-collection'])
     })
+
+    it('skips slug from the update input when the user cleared the field (does not rename to empty)', async () => {
+      // P0-A regression guard. yup's `excludeEmptyString` lets an empty
+      // slug pass validation (so create-mode's empty default doesn't
+      // error), but we MUST NOT send `input.slug = ''` to the server —
+      // it would rename the published page to an empty slug and break
+      // every external link. The submit diff must drop the field when
+      // the user cleared it.
+      const onClose = jest.fn()
+      const collection = makeCollection({
+        id: 'page-7',
+        title: 'Old',
+        slug: 'old-slug',
+        status: TemplateGalleryPageStatus.published
+      })
+      // The mock matches ONLY when the input contains title and no slug.
+      // If the empty slug leaks through into the input, MockedProvider
+      // will not find a matching mock and the spec fails.
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-7',
+        input: { title: 'New title' }
+      })
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: 'New title',
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            mediaUrl: '',
+            slug: '',
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalled()
+    })
   })
 
   describe('handleSubmit — error mapping', () => {

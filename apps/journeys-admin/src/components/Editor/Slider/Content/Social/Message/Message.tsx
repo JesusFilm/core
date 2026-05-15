@@ -80,7 +80,7 @@ export function MessageBubble({
 }
 export function Message(): ReactElement {
   const { journey } = useJourney()
-  const { hostname } = useCustomDomainsQuery({
+  const { primaryHostname: hostname } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id ?? '' },
     skip: journey?.team?.id == null
   })

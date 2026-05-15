@@ -29,6 +29,27 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
+  // Top-level navigation (admin clicks Preview → window.open). Reject
+  // anything else so a hostile site can't fire side-effecting revalidates
+  // via `<img>` / `<script>` / `fetch` with a stolen-cookie victim.
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' })
+  }
+  // `Sec-Fetch-Site` is set automatically by browsers on every request
+  // and cannot be spoofed from JavaScript. `same-origin` covers our
+  // admin → admin navigation; `none` covers direct address-bar entry
+  // (legitimate for an admin pasting the URL). Anything else (most
+  // notably `cross-site`) is rejected — that closes off third-party
+  // links/embeds even when the admin's cookie is SameSite=Lax.
+  const fetchSite = req.headers['sec-fetch-site']
+  if (
+    typeof fetchSite === 'string' &&
+    fetchSite !== 'same-origin' &&
+    fetchSite !== 'none'
+  ) {
+    return res.status(403).json({ error: 'Forbidden' })
+  }
+
   const journeysUrl = process.env.JOURNEYS_URL
   const accessToken = process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN
   if (journeysUrl == null || accessToken == null) {
@@ -51,13 +72,15 @@ export default async function handler(
 
   // Await the revalidate so the public URL is fresh by the time the
   // browser follows our 307. Non-2xx or thrown — log + fall through.
-  const revalidateParams = new URLSearchParams({
-    accessToken,
-    slug
-  })
+  // Token is carried in the `Authorization: Bearer` header (not in the
+  // URL) so it never lands in reverse-proxy / CDN / APM access logs.
+  const revalidateParams = new URLSearchParams({ slug })
   try {
     const response = await fetch(
-      `${journeysUrl}/api/revalidate-template-gallery?${revalidateParams.toString()}`
+      `${journeysUrl}/api/revalidate-template-gallery?${revalidateParams.toString()}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      }
     )
     if (!response.ok) {
       console.warn(

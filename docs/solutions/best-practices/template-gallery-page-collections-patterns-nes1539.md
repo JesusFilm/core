@@ -417,6 +417,115 @@ WHERE t.id = sub.id;
 COMMIT;
 ```
 
+### 14. Revalidate-on-mutation chain for ISR-backed public pages (NES-1644)
+
+The public template-gallery page is statically generated with
+`revalidate: 60` ISR. Without an active refresh signal, the published
+page would lag the admin's mutation by up to 60 s. We close that gap
+with a three-layer chain:
+
+1. **Admin mutation success path** fires a fire-and-forget call to
+   `useRevalidateTemplateGallery([slug])`. Lives in
+   `apps/journeys-admin/src/components/TemplateGalleryPageList/useCollectionMutations/useCollectionMutations.ts`
+   (publish/unpublish/ungroup),
+   `.../useCollectionForm/useCollectionForm.ts` (save), and
+   `TemplateGalleryPageList.tsx` (trash-success callback, prop-drilled
+   into the existing `TrashJourneyDialog`).
+2. **Admin's `/api/revalidate-template-gallery`** is a Firebase-auth +
+   CSRF-gated proxy that forwards to the journeys-side endpoint with
+   the shared-secret token in an `Authorization: Bearer` header (NEVER
+   a query param — see Pattern 15).
+3. **Journeys-side `/api/revalidate-template-gallery`** validates the
+   Bearer token in constant time and calls `res.revalidate(path)` to
+   refresh the ISR cache for the specific slug.
+
+Belt-and-braces: the admin's `/api/preview-template-gallery` proxy
+runs an AWAITED revalidate before issuing its 307 redirect to the
+public URL. The fire-and-forget mutation revalidate is the primary
+signal; the awaited preview revalidate is a safety net for the
+"click View immediately after publish" race.
+
+`useRevalidateTemplateGallery` accepts an array of slugs (to cover
+slug renames where both the old and new path need eviction) and
+dedupes via `new Set` before `Promise.all`. Network failures are
+swallowed by design — the mutation already succeeded; the public
+page will catch up on the next ISR revalidation interval.
+
+**Non-obvious invariant:** the mutation handler should NOT `await`
+the revalidate. We tried that (`await revalidateGallery(...)`) once
+to "fix" a hypothetical race; Siyang's 60s-wait reproduction
+falsified the hypothesis and showed the real bug was elsewhere (a
+dead backend at the moment of test). Awaiting just adds 200-400 ms
+of latency per user-visible mutation for no correctness gain. See
+the residual write-after-invalidate race noted in NES-1677's
+backend cache work.
+
+### 15. Shared-secret API auth: `Authorization: Bearer` + `timingSafeEqual`, never the URL (NES-1644)
+
+A shared secret protects the journeys-side revalidate endpoint from
+unauthenticated invocations. Two non-obvious rules:
+
+1. **Never put the token in the URL.** Query-string tokens land in
+   reverse-proxy / CDN / APM access logs, browser history, and HTTP
+   Referer headers on outbound clicks. Token-in-header isolates the
+   secret to the request body / connection layer where logging is
+   typically off-by-default for credentials.
+
+   `apps/journeys/pages/api/revalidate-template-gallery.ts` reads
+   the token from `req.headers.authorization` (`Bearer <token>`) and
+   actively REJECTS the legacy `?accessToken=...` query form with a
+   distinct 401. Rejecting the legacy form closes the migration
+   window where two auth paths could be live simultaneously.
+
+2. **Compare in constant time.** Use `crypto.timingSafeEqual(buf,
+   buf)` after a length-check guard (the function throws on length
+   mismatch, so the guard is load-bearing — see Mike's review of
+   NES-1644 #2). Naive `===` is exploitable via response-latency
+   side channels for high-volume attackers.
+
+CSRF posture on the admin-side proxies: POST + `X-Requested-With:
+XMLHttpRequest` for the revalidate proxy (consumed by
+`useRevalidateTemplateGallery` via `fetch` + headers); GET +
+`Sec-Fetch-Site === 'same-origin' | 'none'` for the preview proxy
+(consumed by `window.open`). `Sec-Fetch-Site` is set automatically
+by browsers on every request and cannot be spoofed from JavaScript,
+so it's a sound CSRF defence for navigation-shaped endpoints where
+`X-Requested-With` doesn't fit.
+
+### 16. Custom-domain publish gate: client-side `useCanPublishCollection` over `useCustomDomainsQuery` (NES-1644)
+
+Template-gallery collections are routed off `your.nextstep.is`
+only. Teams with a `customDomain.routeAllTeamJourneys === true`
+domain have no public path that resolves to a gallery page, so the
+Publish CTA is gated.
+
+`useCanPublishCollection(teamId)` returns
+`{ canPublish, reason, loading }`. Two contracts worth keeping:
+
+- **Loading: fail-open.** While the customDomains query is in
+  flight (or `teamId` hasn't resolved yet), `canPublish: true`.
+  Failing closed during the loading flicker disables the CTA on
+  every page render until the query lands — a UX papercut for the
+  common case (most teams don't have custom domains).
+- **Error: fail-closed.** If the query errors (network, 500), we
+  cannot determine whether the team has a routeAll domain.
+  `canPublish: false` with a distinct "couldn't check" reason. The
+  alternative (fail-open on error) would let a custom-domain team
+  publish a page that won't route from their domain. The hook also
+  `console.warn`s on this branch so operators see silent prod
+  failures.
+
+The server is authoritative — the backend publish resolver will
+reject the same condition independently. This hook is a UX
+guardrail; never the security boundary.
+
+Don't conflate the gate's routeAll semantics with the existing
+`useCustomDomainsQuery().primaryHostname` accessor, which returns
+`customDomains[0]?.name` for share-link / preview / QR display.
+The two answer different questions for teams with multiple custom
+domains. The hook's JSDoc surfaces the warning at the API
+boundary.
+
 ## Prevention
 
 - Default to `cache.updateQuery` for list mutations. Reserve `cache.modify`
@@ -441,6 +550,20 @@ COMMIT;
   ship the copy-event fallback for the focus-trap edge case.
 - Keep components under ~600 lines. Extract sibling components and hooks
   before they pass that bar.
+- Shared-secret API endpoints: token rides in `Authorization: Bearer`,
+  compared with `timingSafeEqual` after a length-check guard. Never in
+  the URL.
+- Side-effecting API endpoints behind cookie auth need a CSRF gate.
+  POST + `X-Requested-With` for fetch-shaped consumers; GET +
+  `Sec-Fetch-Site` for navigation-shaped consumers.
+- ISR-backed public pages with `revalidate: N` need a mutation-driven
+  revalidate signal AND a navigation-time safety-net revalidate. Don't
+  rely on ISR's interval alone.
+- Custom-domain feature gates: fail-open while loading, fail-CLOSED on
+  query error with a distinct reason copy. Log the error.
+- `getStaticProps` null-branch logging: log only when `errors !== null`;
+  cap error count; whitelist extension fields (never log raw
+  `extensions` — can leak stack traces / Prisma context).
 
 ## Cross-references
 
@@ -458,6 +581,23 @@ COMMIT;
 - `apis/api-journeys-modern/src/schema/templateGalleryPage/applyContiguousOrder.ts`
   — `lockPage` + `applyContiguousOrder` helpers shared between the
   reorder and assign resolvers.
+- `apps/journeys-admin/src/libs/useRevalidateTemplateGallery/` —
+  fire-and-forget revalidate hook (Pattern 14).
+- `apps/journeys-admin/pages/api/preview-template-gallery.ts` +
+  `apps/journeys-admin/pages/api/revalidate-template-gallery.ts` +
+  `apps/journeys/pages/api/revalidate-template-gallery.ts` —
+  three-layer revalidate chain (Patterns 14 + 15).
+- `apps/journeys-admin/src/libs/useCanPublishCollection/` +
+  `apps/journeys-admin/src/libs/useCustomDomainsQuery/` — custom-
+  domain publish gate (Pattern 16).
+- `apps/journeys/pages/home/template-gallery/[slug].tsx` —
+  null-branch `getStaticProps` diagnostic log (NES-1644 enrichment).
+- NES-1677 backend cache-invalidation (PR #9217) — the typename-
+  level `cache.invalidate` calls in api-journeys-modern mutations
+  that close the publish→unpublish→republish stale-null gap. The
+  frontend revalidate chain (Pattern 14) and the backend cache
+  invalidation (NES-1677) are complementary: the backend evicts the
+  GraphQL response cache, the frontend evicts the Next ISR cache.
 
 ## Related work split out
 
