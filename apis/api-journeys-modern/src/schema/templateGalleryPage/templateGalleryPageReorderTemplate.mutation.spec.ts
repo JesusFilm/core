@@ -5,7 +5,6 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
-import { cache } from '../../yoga'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -14,10 +13,6 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
-
-const invalidateSpy = vi
-  .spyOn(cache, 'invalidate')
-  .mockResolvedValue(undefined)
 
 describe('templateGalleryPageReorderTemplate', () => {
   const mockUser = {
@@ -166,11 +161,6 @@ describe('templateGalleryPageReorderTemplate', () => {
         prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]
       ).join(' ')
       expect(stageSql).toContain('-("order") - 1000000')
-      // Reorder changes the cached `templates` array order — invalidate.
-      expect(invalidateSpy).toHaveBeenCalledTimes(1)
-      expect(invalidateSpy).toHaveBeenCalledWith([
-        { typename: 'TemplateGalleryPage' }
-      ])
     })
 
     // Live-DB scenario: contiguous orders [0,1,2,3,4], move row at 3 to
@@ -344,7 +334,6 @@ describe('templateGalleryPageReorderTemplate', () => {
       expect(
         prismaMock.templateGalleryPageTemplate.findMany
       ).not.toHaveBeenCalled()
-      expect(invalidateSpy).not.toHaveBeenCalled()
     })
 
     it('allows reorder on a published page (no publish-state gating on the backend)', async () => {
@@ -398,7 +387,6 @@ describe('templateGalleryPageReorderTemplate', () => {
       expect(
         prismaMock.templateGalleryPageTemplate.findMany
       ).not.toHaveBeenCalled()
-      expect(invalidateSpy).not.toHaveBeenCalled()
     })
 
     it('throws Not authorized when caller is not authenticated', async () => {

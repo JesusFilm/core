@@ -6,7 +6,6 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
-import { cache } from '../../yoga'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -15,12 +14,6 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
-
-// Spy on the response-cache invalidate call so we can assert it fires on
-// the success path and stays silent on auth/not-found rejections.
-const invalidateSpy = vi
-  .spyOn(cache, 'invalidate')
-  .mockResolvedValue(undefined)
 
 describe('templateGalleryPageUnpublish', () => {
   const mockUser = {
@@ -106,10 +99,6 @@ describe('templateGalleryPageUnpublish', () => {
     const updateCall = prismaMock.templateGalleryPage.updateMany.mock
       .calls[0][0] as any
     expect(updateCall.data).not.toHaveProperty('publishedAt')
-    expect(invalidateSpy).toHaveBeenCalledTimes(1)
-    expect(invalidateSpy).toHaveBeenCalledWith([
-      { typename: 'TemplateGalleryPage' }
-    ])
   })
 
   it('is idempotent — when already draft, skips updateMany and returns the canonical row', async () => {
@@ -140,8 +129,6 @@ describe('templateGalleryPageUnpublish', () => {
       }
     })
     expect(prismaMock.templateGalleryPage.updateMany).not.toHaveBeenCalled()
-    // Idempotent re-unpublish still invalidates — same rationale as publish.
-    expect(invalidateSpy).toHaveBeenCalledTimes(1)
   })
 
   it('throws NOT_FOUND when page does not exist', async () => {
@@ -161,7 +148,6 @@ describe('templateGalleryPageUnpublish', () => {
       ]
     })
     expect(prismaMock.templateGalleryPage.updateMany).not.toHaveBeenCalled()
-    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('throws FORBIDDEN when caller is not in the page team', async () => {
@@ -186,7 +172,6 @@ describe('templateGalleryPageUnpublish', () => {
       ]
     })
     expect(prismaMock.templateGalleryPage.updateMany).not.toHaveBeenCalled()
-    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('rewraps Prisma P2025 (page deleted between fetch and re-read) as NOT_FOUND', async () => {
@@ -218,6 +203,5 @@ describe('templateGalleryPageUnpublish', () => {
         })
       ]
     })
-    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 })

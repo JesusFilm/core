@@ -47,8 +47,7 @@ export const yoga = createYoga<
         ...initContextCache(),
         type: 'authenticated',
         user: { ...user, roles: currentRoles },
-        currentRoles,
-        cache
+        currentRoles
       }
     }
     const interopToken = request.headers.get('interop-token')
@@ -58,14 +57,12 @@ export const yoga = createYoga<
       return {
         ...initContextCache(),
         type: 'interop',
-        ...interopContext,
-        cache
+        ...interopContext
       }
 
     return {
       ...initContextCache(),
-      type: 'public',
-      cache
+      type: 'public'
     }
   },
   plugins: [
@@ -110,24 +107,11 @@ export const yoga = createYoga<
             'Query.templateGalleryPages': 0,
             // Public renderer. Finite TTL caps cache-poisoning impact: a `null`
             // response (unknown slug / draft / malformed) caches with no entity
-            // ID, so the plugin's automatic entity-ID invalidation cannot evict
+            // ID, so the publish mutation's entity-ID invalidation cannot evict
             // it. Without a finite TTL the null branch would persist for the
             // lifetime of the cache, letting an attacker pre-poison popular
             // slugs so legitimate later publishes appear 404. 60 s gives the
             // renderer reasonable cache hit-rate while bounding poisoning impact.
-            //
-            // The legitimate-workflow stale-null gap (NES-1644: publish →
-            // unpublish → publish → cached null persists for up to 60 s, public
-            // page renders 404) is closed by explicit
-            // `cache.invalidate([{ typename: 'TemplateGalleryPage' }])` calls in
-            // every TemplateGalleryPage mutation (publish, unpublish, delete,
-            // assignJourney, reorderTemplate, update). Typename-level
-            // invalidation walks the cache by recorded typename presence, so
-            // it reaches null entries that have no entity ID. See the
-            // `responseCacheLifecycle.spec.ts` canary for proof. The 60 s TTL
-            // therefore now exists primarily to bound the (much smaller)
-            // attacker-controlled poisoning window — workflow correctness no
-            // longer depends on it.
             'Query.templateGalleryPageBySlug': 60_000,
             'Query.journeysPlausibleStatsAggregate': 5000,
             'Query.journeysPlausibleStatsBreakdown': 5000,

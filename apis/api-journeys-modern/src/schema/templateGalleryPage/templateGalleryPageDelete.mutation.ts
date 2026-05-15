@@ -40,16 +40,10 @@ builder.mutationField('templateGalleryPageDelete', (t) =>
       }
 
       // Cascade deletes TemplateGalleryPageTemplate join rows automatically.
-      const result = await prisma.templateGalleryPage.delete({
+      return await prisma.templateGalleryPage.delete({
         ...query,
         where: { id }
       })
-      // Evict any cached `templateGalleryPageBySlug` entries. After delete
-      // the row is gone and the next read returns null, but the prior
-      // cached entry (entity-ID-tagged) needs explicit eviction so the
-      // next read sees the post-delete state.
-      await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
-      return result
     }
   })
 )

@@ -50,7 +50,7 @@ builder.mutationField('templateGalleryPageUnpublish', (t) =>
       // Idempotent re-unpublish: when status is already 'draft' we skip
       // updateMany and just re-read.
       try {
-        const result = await prisma.$transaction(async (tx) => {
+        return await prisma.$transaction(async (tx) => {
           if (page.status === 'published') {
             await tx.templateGalleryPage.updateMany({
               where: { id, status: 'published' },
@@ -62,12 +62,6 @@ builder.mutationField('templateGalleryPageUnpublish', (t) =>
             where: { id }
           })
         })
-        // Evict any cached `templateGalleryPageBySlug` entries — including
-        // the just-cached published entity. The next read will repopulate
-        // from DB as `null` (page is now draft), and that null entry stays
-        // until the next typename-level invalidation (the republish call).
-        await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
-        return result
       } catch (error) {
         // Edge case: the page was deleted between auth-fetch and re-read.
         // Surface as NOT_FOUND GraphQLError instead of leaking Prisma P2025.

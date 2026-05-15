@@ -6,7 +6,6 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
-import { cache } from '../../yoga'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -15,14 +14,6 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
-
-// Mutation-success path invalidates the response cache by typename. Spy
-// intercepts the call without touching the real in-memory cache (which is
-// inert in test mode — `useResponseCache` plugin isn't installed when
-// NODE_ENV === 'test', see `yoga.ts:82`).
-const invalidateSpy = vi
-  .spyOn(cache, 'invalidate')
-  .mockResolvedValue(undefined)
 
 describe('templateGalleryPagePublish', () => {
   const mockUser = {
@@ -106,11 +97,6 @@ describe('templateGalleryPagePublish', () => {
         publishedAt: expect.any(Date)
       })
     })
-    // Response cache is invalidated on the success path.
-    expect(invalidateSpy).toHaveBeenCalledTimes(1)
-    expect(invalidateSpy).toHaveBeenCalledWith([
-      { typename: 'TemplateGalleryPage' }
-    ])
   })
 
   it('returns the canonical row when the publish race is lost (updateMany count=0)', async () => {
@@ -146,9 +132,6 @@ describe('templateGalleryPagePublish', () => {
         }
       }
     })
-    expect(invalidateSpy).toHaveBeenCalledWith([
-      { typename: 'TemplateGalleryPage' }
-    ])
   })
 
   it('is idempotent — preserves publishedAt when already published', async () => {
@@ -180,10 +163,6 @@ describe('templateGalleryPagePublish', () => {
       }
     })
     expect(prismaMock.templateGalleryPage.updateMany).not.toHaveBeenCalled()
-    // Even idempotent re-publishes invalidate — a no-op transition still
-    // signals "this slug's cache may be stale for unrelated reasons" and
-    // the cost of an extra invalidation is negligible.
-    expect(invalidateSpy).toHaveBeenCalledTimes(1)
   })
 
   it('throws NOT_FOUND when page does not exist', async () => {
@@ -202,8 +181,6 @@ describe('templateGalleryPagePublish', () => {
         })
       ]
     })
-    // Cache must NOT be invalidated on the not-found error path.
-    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('rewraps Prisma P2025 (page deleted between fetch and re-read) as NOT_FOUND GraphQL error', async () => {
@@ -236,8 +213,6 @@ describe('templateGalleryPagePublish', () => {
         })
       ]
     })
-    // P2025 race-loss path is also a failure path — must NOT invalidate.
-    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('throws FORBIDDEN when caller is not in the page team', async () => {
@@ -262,7 +237,5 @@ describe('templateGalleryPagePublish', () => {
         })
       ]
     })
-    // FORBIDDEN path must NOT invalidate.
-    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 })
