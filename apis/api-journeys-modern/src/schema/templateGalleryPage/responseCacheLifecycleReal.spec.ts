@@ -1,18 +1,22 @@
-// Real-schema integration repro for NES-1644: drive the actual yoga
-// instance (with `useResponseCache` installed) through the publish →
-// query → unpublish → query → publish → query lifecycle and assert the
-// final read returns the freshly republished entity, not the cached
-// `null` from the draft window.
+// Real-schema integration repro for NES-1644 / NES-1677: drive the actual
+// yoga instance (with `useResponseCache` installed) through the production
+// Pothos schema and assert that each mutation evicts the cached
+// `templateGalleryPageBySlug` entry.
 //
-// The existing `responseCacheLifecycle.spec.ts` proved the *library*
-// contract on a stub schema. This spec exercises the *production*
-// schema (Pothos + federation + prisma plugin) to confirm the fix
-// holds under the real type graph that ships in api-journeys-modern.
+// The companion `responseCacheLifecycle.spec.ts` proves the *library*
+// contract on a stub schema. This spec exercises the *production* schema
+// (Pothos + federation + prisma plugin) for the six mutations that should
+// invalidate the response cache: publish, unpublish, delete,
+// assignJourney, reorderTemplate, update.
 //
 // Hard wiring:
-// - `vi.hoisted` flips `NODE_ENV` to `development` BEFORE any imports,
-//   so yoga.ts installs `useResponseCache` (gated `!== 'test'` at line
-//   85) and `useHmacSignatureValidation` (gated at line 74).
+// - `vi.hoisted` flips `NODE_ENV` to `production` BEFORE any imports, so
+//   yoga.ts installs `useResponseCache` (gated `!== 'test'` at line 85)
+//   and `useHmacSignatureValidation` (gated at line 74).
+//   `production` (not `development`) is required because schema/index.ts's
+//   `generate()` side-effect fires for any value other than `production`
+//   or `test` and crashes on the dual-graphql-module load path under
+//   vitest.
 // - `@graphql-hive/gateway`'s `useHmacSignatureValidation` is replaced
 //   with a no-op plugin so unsigned curl-style requests pass through.
 // - `@core/yoga/firebaseClient.getUserFromPayload` is mocked to always
@@ -20,13 +24,9 @@
 import { type MockedFunction, vi } from 'vitest'
 
 vi.hoisted(() => {
-  // Must run before any import that reads NODE_ENV. yoga.ts:74/85
-  // gate `useHmacSignatureValidation` and `useResponseCache` on
-  // `NODE_ENV !== 'test'`. We use 'production' (not 'development')
-  // because schema/index.ts's `generate()` side-effect fires for any
-  // value other than 'production' or 'test' and crashes on the dual-
-  // graphql-module load path under vitest.
-  process.env.NODE_ENV = 'production'
+  // process.env.NODE_ENV is typed as readonly in node:process — use
+  // Object.assign to mutate it without a `// @ts-expect-error` dance.
+  Object.assign(process.env, { NODE_ENV: 'production' })
 })
 
 vi.mock('@graphql-hive/gateway', async () => {
@@ -36,9 +36,9 @@ vi.mock('@graphql-hive/gateway', async () => {
     )
   return {
     ...actual,
-    // Bypass HMAC validation: prod uses this to reject un-signed
-    // requests from clients that are not the gateway. Test fixtures
-    // can't sign requests so we replace the plugin with a no-op.
+    // Bypass HMAC validation: prod uses this to reject un-signed requests
+    // from clients that are not the gateway. Test fixtures can't sign
+    // requests so we replace the plugin with a no-op.
     useHmacSignatureValidation: () => ({})
   }
 })
@@ -78,7 +78,7 @@ const PAGE_ID = 'gallery-page-id-1'
 const TEAM_ID = 'team-1'
 const SLUG = 'test1'
 
-function makePage(status: 'draft' | 'published') {
+function makePage(status: 'draft' | 'published'): any {
   return {
     id: PAGE_ID,
     title: 'Test Page',
@@ -93,26 +93,31 @@ function makePage(status: 'draft' | 'published') {
     teamId: TEAM_ID,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01')
-  } as any
+  }
 }
 
-describe('NES-1644 real-schema lifecycle', () => {
+describe('NES-1677 real-schema cache lifecycle', () => {
   // Lazily import yoga AFTER hoisted env mutation, so the plugin gates
-  // see NODE_ENV='development' and install `useResponseCache`.
+  // see NODE_ENV='production' and install `useResponseCache`.
   let yoga: typeof import('../../yoga').yoga
+  let cache: typeof import('../../yoga').cache
   let executor: ReturnType<typeof buildHTTPExecutor>
 
   beforeAll(async () => {
     const yogaModule = await import('../../yoga')
     yoga = yogaModule.yoga
+    cache = yogaModule.cache
     executor = buildHTTPExecutor({ fetch: yoga.fetch.bind({}) })
   })
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
+    // The response-cache is a module-level singleton — entries from a prior
+    // test would leak into the next one. Flush any TemplateGalleryPage
+    // entries before each test so cache-hit/miss assertions are
+    // deterministic regardless of test ordering.
+    await cache.invalidate([{ typename: 'TemplateGalleryPage' }])
     mockGetUserFromPayload.mockReturnValue(mockUser)
-    // userRole.findUnique is called per-request in yoga context to
-    // populate currentRoles; default to no roles.
     prismaMock.userRole.findUnique.mockResolvedValue({
       id: 'userRoleId',
       userId: mockUser.id,
@@ -127,9 +132,13 @@ describe('NES-1644 real-schema lifecycle', () => {
     prismaMock.$transaction.mockImplementation(
       async (callback: any) => await callback(prismaMock)
     )
+    // lockPage helper uses $queryRaw `SELECT 1 ... FOR UPDATE` — return
+    // a benign empty result so the lock call resolves cleanly.
+    prismaMock.$queryRaw.mockResolvedValue([] as any)
+    prismaMock.$executeRaw.mockResolvedValue(0 as any)
   })
 
-  // --- Query (public) ---------------------------------------------------
+  // --- Documents -------------------------------------------------------
   const PAGE_BY_SLUG = graphql(`
     query PageBySlug($slug: String!) {
       templateGalleryPageBySlug(slug: $slug) {
@@ -140,7 +149,6 @@ describe('NES-1644 real-schema lifecycle', () => {
     }
   `)
 
-  // --- Mutations (authenticated) ----------------------------------------
   const PUBLISH = graphql(`
     mutation Publish($id: ID!) {
       templateGalleryPagePublish(id: $id) {
@@ -159,6 +167,47 @@ describe('NES-1644 real-schema lifecycle', () => {
     }
   `)
 
+  const DELETE = graphql(`
+    mutation Delete($id: ID!) {
+      templateGalleryPageDelete(id: $id) {
+        id
+      }
+    }
+  `)
+
+  const ASSIGN_JOURNEY = graphql(`
+    mutation Assign($journeyId: ID!, $pageId: ID) {
+      templateGalleryPageAssignJourney(
+        journeyId: $journeyId
+        pageId: $pageId
+      ) {
+        id
+      }
+    }
+  `)
+
+  const REORDER = graphql(`
+    mutation Reorder($pageId: ID!, $journeyId: ID!, $order: Int!) {
+      templateGalleryPageReorderTemplate(
+        pageId: $pageId
+        journeyId: $journeyId
+        order: $order
+      ) {
+        id
+      }
+    }
+  `)
+
+  const UPDATE = graphql(`
+    mutation Update($id: ID!, $input: TemplateGalleryPageUpdateInput!) {
+      templateGalleryPageUpdate(id: $id, input: $input) {
+        id
+      }
+    }
+  `)
+
+  // --- Helpers ---------------------------------------------------------
+
   async function queryPublic() {
     const res = (await executor({
       document: PAGE_BY_SLUG,
@@ -167,44 +216,118 @@ describe('NES-1644 real-schema lifecycle', () => {
     return res.data?.templateGalleryPageBySlug ?? null
   }
 
-  async function publishAs(status: 'draft' | 'published') {
-    // Mirror the publish mutation's prisma sequence:
-    //  1. findUnique to authorize + read current status
-    //  2. (conditional) updateMany draft → published
-    //  3. findUniqueOrThrow for canonical re-read
+  // Each mutation's mocks for a "happy-path success that should invalidate".
+  // Mocked once-per-call so each test sets them up independently and the
+  // queue is exhausted by the end of the test.
+  function setupPublishHappy() {
     prismaMock.templateGalleryPage.findUnique.mockResolvedValueOnce(
-      makePage(status)
+      makePage('draft')
     )
     prismaMock.templateGalleryPage.updateMany.mockResolvedValueOnce({
-      count: status === 'draft' ? 1 : 0
+      count: 1
     } as any)
     prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValueOnce(
       makePage('published')
     )
-    return await executor({
-      document: PUBLISH,
-      variables: { id: PAGE_ID },
-      extensions: { jwt: { payload: { id: mockUser.id } } }
-    })
   }
 
-  async function unpublishAs(status: 'draft' | 'published') {
+  function setupUnpublishHappy() {
     prismaMock.templateGalleryPage.findUnique.mockResolvedValueOnce(
-      makePage(status)
+      makePage('published')
     )
     prismaMock.templateGalleryPage.updateMany.mockResolvedValueOnce({
-      count: status === 'published' ? 1 : 0
+      count: 1
     } as any)
     prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValueOnce(
       makePage('draft')
     )
-    return await executor({
-      document: UNPUBLISH,
-      variables: { id: PAGE_ID },
-      extensions: { jwt: { payload: { id: mockUser.id } } }
-    })
   }
 
+  function setupDeleteHappy() {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValueOnce(
+      makePage('published')
+    )
+    prismaMock.templateGalleryPage.delete.mockResolvedValueOnce(
+      makePage('published') as any
+    )
+  }
+
+  // Assign branch: existing membership found (so the no-op short-circuit
+  // does NOT fire — we want the path that actually invalidates).
+  function setupAssignHappy() {
+    prismaMock.templateGalleryPageTemplate.findFirst.mockResolvedValueOnce({
+      id: 'tpl-row-1',
+      templateGalleryPageId: 'source-page'
+    } as any)
+    prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValueOnce({
+      id: 'source-page',
+      teamId: TEAM_ID
+    } as any)
+    prismaMock.templateGalleryPageTemplate.delete.mockResolvedValueOnce({
+      id: 'tpl-row-1'
+    } as any)
+    // renumberPage's findMany inside the source-page branch
+    prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValueOnce([])
+    prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValueOnce(
+      makePage('published') as any
+    )
+  }
+
+  function setupReorderHappy() {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValueOnce({
+      id: PAGE_ID,
+      teamId: TEAM_ID
+    } as any)
+    prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValueOnce([
+      { id: 'row-1', journeyId: 'j1' },
+      { id: 'row-2', journeyId: 'j2' }
+    ] as any)
+    prismaMock.templateGalleryPageTemplate.update.mockResolvedValue({
+      id: 'row-1'
+    } as any)
+    prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValueOnce(
+      makePage('published')
+    )
+  }
+
+  function setupUpdateHappy() {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValueOnce({
+      id: PAGE_ID,
+      teamId: TEAM_ID
+    } as any)
+    prismaMock.templateGalleryPage.update.mockResolvedValueOnce(
+      makePage('published')
+    )
+  }
+
+  // --- #8 Plugin-installed sanity test ---------------------------------
+  //
+  // If `useResponseCache` isn't installed for any reason (NODE_ENV race,
+  // future vitest config change, plugin gating regression), the cache plugin
+  // is silently absent and every read hits Prisma. Without this assertion,
+  // the lifecycle tests below pass for the wrong reason (Prisma is mocked,
+  // returns fresh data every time, post-mutation reads appear correct).
+  //
+  // Strategy: prime the cache with a single mockResolvedValueOnce. Issue
+  // two identical reads. If the plugin is installed, the second is a cache
+  // hit — Prisma is called exactly once. If the plugin is NOT installed,
+  // the second findFirst has no queued value and findFirst is called twice.
+  it('useResponseCache plugin is installed (second identical read is a cache hit)', async () => {
+    prismaMock.templateGalleryPage.findFirst.mockResolvedValueOnce(
+      makePage('published')
+    )
+
+    const first = await queryPublic()
+    expect(first).toMatchObject({ id: PAGE_ID, status: 'published' })
+    expect(prismaMock.templateGalleryPage.findFirst).toHaveBeenCalledTimes(1)
+
+    const second = await queryPublic()
+    expect(second).toMatchObject({ id: PAGE_ID, status: 'published' })
+    // Cache hit: the plugin served the second read without touching Prisma.
+    expect(prismaMock.templateGalleryPage.findFirst).toHaveBeenCalledTimes(1)
+  })
+
+  // --- The canonical NES-1644 lifecycle ---------------------------------
   it('post-republish public read returns fresh published, not stale null', async () => {
     // 1. Initial state: page is published. Prime the cache.
     prismaMock.templateGalleryPage.findFirst.mockResolvedValueOnce(
@@ -214,7 +337,8 @@ describe('NES-1644 real-schema lifecycle', () => {
     expect(initial).toMatchObject({ id: PAGE_ID, status: 'published' })
 
     // 2. Unpublish.
-    await unpublishAs('published')
+    setupUnpublishHappy()
+    await executor({ document: UNPUBLISH, variables: { id: PAGE_ID } })
 
     // 3. Public query during draft window → null (filter rejects).
     prismaMock.templateGalleryPage.findFirst.mockResolvedValueOnce(null)
@@ -222,7 +346,8 @@ describe('NES-1644 real-schema lifecycle', () => {
     expect(draft).toBeNull()
 
     // 4. Republish.
-    await publishAs('draft')
+    setupPublishHappy()
+    await executor({ document: PUBLISH, variables: { id: PAGE_ID } })
 
     // 5. THE CRITICAL ASSERTION: post-republish must return the freshly
     //    published entity. If the cache served the stale-null from step 3
@@ -233,5 +358,107 @@ describe('NES-1644 real-schema lifecycle', () => {
     )
     const republished = await queryPublic()
     expect(republished).toMatchObject({ id: PAGE_ID, status: 'published' })
+  })
+
+  // --- #3 Parametrized per-mutation eviction tests ----------------------
+  describe.each([
+    {
+      name: 'publish',
+      setup: setupPublishHappy,
+      document: PUBLISH,
+      variables: { id: PAGE_ID }
+    },
+    {
+      name: 'unpublish',
+      setup: setupUnpublishHappy,
+      document: UNPUBLISH,
+      variables: { id: PAGE_ID }
+    },
+    {
+      name: 'delete',
+      setup: setupDeleteHappy,
+      document: DELETE,
+      variables: { id: PAGE_ID }
+    },
+    {
+      name: 'assignJourney (unassign with existing membership)',
+      setup: setupAssignHappy,
+      document: ASSIGN_JOURNEY,
+      variables: { journeyId: 'j1', pageId: null }
+    },
+    {
+      name: 'reorderTemplate',
+      setup: setupReorderHappy,
+      document: REORDER,
+      variables: { pageId: PAGE_ID, journeyId: 'j1', order: 1 }
+    },
+    {
+      name: 'update',
+      setup: setupUpdateHappy,
+      document: UPDATE,
+      variables: { id: PAGE_ID, input: { title: 'New Title' } }
+    }
+  ])('$name', ({ setup, document, variables }) => {
+    it('evicts the cached templateGalleryPageBySlug entry after a successful mutation', async () => {
+      // Prime the cache and confirm the second read is a hit.
+      prismaMock.templateGalleryPage.findFirst.mockResolvedValueOnce(
+        makePage('published')
+      )
+      await queryPublic()
+      expect(prismaMock.templateGalleryPage.findFirst).toHaveBeenCalledTimes(1)
+      await queryPublic()
+      expect(prismaMock.templateGalleryPage.findFirst).toHaveBeenCalledTimes(1)
+
+      // Run the mutation — it should evict the cached entry.
+      setup()
+      await executor({
+        document,
+        variables: variables as any
+      })
+
+      // The next public read MUST hit Prisma again. If it doesn't, the
+      // mutation didn't invalidate (regression).
+      prismaMock.templateGalleryPage.findFirst.mockResolvedValueOnce(
+        makePage('published')
+      )
+      await queryPublic()
+      expect(prismaMock.templateGalleryPage.findFirst).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  // --- #9 cache.invalidate rejection: fail-loudly post-commit contract --
+  it('surfaces a cache.invalidate rejection to the client AFTER the Prisma transaction commits', async () => {
+    // Set up the publish success path so the TX itself commits.
+    setupPublishHappy()
+
+    // Inject a one-shot cache.invalidate failure.
+    const invalidateError = new Error('cache backend down')
+    const invalidateSpy = vi
+      .spyOn(cache, 'invalidate')
+      .mockRejectedValueOnce(invalidateError)
+
+    const res = (await executor({
+      document: PUBLISH,
+      variables: { id: PAGE_ID }
+    })) as { data?: any; errors?: unknown[] }
+
+    // DB transaction DID commit: updateMany was called with count=1 path.
+    expect(prismaMock.templateGalleryPage.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: PAGE_ID, status: 'draft' }
+      })
+    )
+    // At least one invalidate call — the resolver's explicit one. The
+    // useResponseCache plugin also calls `invalidate(...)` on its own to
+    // process the mutation's entity-ID set, so the count may be > 1; we
+    // only need to confirm the rejection path surfaced an error.
+    expect(invalidateSpy.mock.calls.length).toBeGreaterThanOrEqual(1)
+
+    // The GraphQL response surfaces the error rather than silently
+    // succeeding with stale-cache risk. Pothos masks the error message in
+    // production NODE_ENV, but the `errors` array is populated — the
+    // "fail loudly" contract from the plan.
+    expect(res.errors).toBeDefined()
+    expect((res.errors ?? []).length).toBeGreaterThan(0)
   })
 })

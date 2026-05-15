@@ -79,6 +79,12 @@ describe('templateGalleryPageDelete', () => {
     expect(invalidateSpy).toHaveBeenCalledWith([
       { typename: 'TemplateGalleryPage' }
     ])
+    // Ordering invariant: invalidate runs AFTER prisma.delete completes
+    // (delete is a single statement, no $transaction here — the delete
+    // promise is the commit boundary).
+    expect(
+      prismaMock.templateGalleryPage.delete.mock.invocationCallOrder[0]
+    ).toBeLessThan(invalidateSpy.mock.invocationCallOrder[0])
   })
 
   it('throws NOT_FOUND when page does not exist', async () => {

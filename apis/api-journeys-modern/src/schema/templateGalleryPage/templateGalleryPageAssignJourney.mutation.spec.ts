@@ -111,6 +111,10 @@ describe('templateGalleryPageAssignJourney', () => {
     expect(invalidateSpy).toHaveBeenCalledWith([
       { typename: 'TemplateGalleryPage' }
     ])
+    // Ordering invariant: invalidate runs AFTER prisma.$transaction.
+    expect(
+      prismaMock.$transaction.mock.invocationCallOrder[0]
+    ).toBeLessThan(invalidateSpy.mock.invocationCallOrder[0])
   })
 
   it('appends to the end of an existing collection (next order = max + 1)', async () => {

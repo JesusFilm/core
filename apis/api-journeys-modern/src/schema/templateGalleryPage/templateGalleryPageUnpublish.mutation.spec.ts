@@ -110,6 +110,12 @@ describe('templateGalleryPageUnpublish', () => {
     expect(invalidateSpy).toHaveBeenCalledWith([
       { typename: 'TemplateGalleryPage' }
     ])
+    // Ordering invariant: invalidate must run AFTER prisma.$transaction
+    // resolves, otherwise a concurrent reader could repopulate the cache
+    // from pre-commit state.
+    expect(
+      prismaMock.$transaction.mock.invocationCallOrder[0]
+    ).toBeLessThan(invalidateSpy.mock.invocationCallOrder[0])
   })
 
   it('is idempotent — when already draft, skips updateMany and returns the canonical row', async () => {

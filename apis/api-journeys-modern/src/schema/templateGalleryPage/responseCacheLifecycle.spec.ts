@@ -5,7 +5,6 @@ import {
 } from '@graphql-yoga/plugin-response-cache'
 import { parse } from 'graphql'
 import { createSchema, createYoga } from 'graphql-yoga'
-import { describe, expect, it } from 'vitest'
 
 // Canary spec for the NES-1644 cache fix. Exercises the real
 // `useResponseCache` plugin against the real `createInMemoryCache()` —
@@ -54,6 +53,12 @@ describe('useResponseCache lifecycle (NES-1644 canary)', () => {
       slug: 'test-slug',
       status: 'published'
     }
+    // Resolver-call counter. Each `pageBySlug(slug)` invocation that
+    // actually reaches the resolver (i.e. cache miss) increments this.
+    // Lets each test distinguish "cache served the response" from "the
+    // resolver was re-invoked" — without this, tests that read steady-
+    // state values can pass even when invalidate is a no-op.
+    let pageBySlugCalls = 0
 
     const schema = createSchema({
       typeDefs: /* GraphQL */ `
@@ -73,6 +78,7 @@ describe('useResponseCache lifecycle (NES-1644 canary)', () => {
       resolvers: {
         Query: {
           pageBySlug: (_parent, args: { slug: string }) => {
+            pageBySlugCalls++
             if (args.slug !== state.slug) return null
             if (state.status !== 'published') return null
             return state
@@ -158,7 +164,13 @@ describe('useResponseCache lifecycle (NES-1644 canary)', () => {
       await exec({ document: publishDoc })
     }
 
-    return { state, pageBySlug, unpublish, publish }
+    return {
+      state,
+      pageBySlug,
+      unpublish,
+      publish,
+      getPageBySlugCallCount: () => pageBySlugCalls
+    }
   }
 
   it('publish → query → unpublish → query → republish → query returns fresh data, not stale null', async () => {
@@ -208,18 +220,24 @@ describe('useResponseCache lifecycle (NES-1644 canary)', () => {
   it('back-to-back unpublish → publish (no intervening read) leaves cache clean', async () => {
     const harness = buildHarness()
 
-    // Warm the cache with the published entity.
+    // Warm the cache with the published entity (resolver call #1).
     await harness.pageBySlug('test-slug')
+    expect(harness.getPageBySlugCallCount()).toBe(1)
 
     // Rapid toggle with no intervening reads — the null entry never
-    // gets a chance to populate. Invalidate calls should still leave
-    // the cache in a consistent state.
+    // gets a chance to populate. Both invalidate calls evict the
+    // current warmed entry.
     await harness.unpublish()
     await harness.publish()
     expect(harness.state.status).toBe('published')
 
+    // Final read MUST re-invoke the resolver. If invalidate were a
+    // no-op the cache hit would return the warmed entry and the call
+    // count would stay at 1 — proving the test catches a regression
+    // where invalidation never fires.
     const read = await harness.pageBySlug('test-slug')
     expect(read).toMatchObject({ status: 'published' })
+    expect(harness.getPageBySlugCallCount()).toBe(2)
   })
 
   it('typename invalidation also evicts entries from other slugs (over-invalidation trade-off)', async () => {
@@ -229,27 +247,37 @@ describe('useResponseCache lifecycle (NES-1644 canary)', () => {
     // null-branch invalidation gap. The deferred follow-up
     // (`buildResponseCacheKey` with slug-keyed invalidation) would
     // provide finer-grained eviction; until then, the next read
-    // simply rehydrates the cache from the DB.
+    // simply rehydrates the cache from "DB".
     const harness = buildHarness()
 
-    // Read a slug that doesn't exist — caches null with no entity ID.
+    // Warm the cache with both a null entry (unknown slug) and the
+    // published entity (known slug). Two resolver calls so far.
     const unknown1 = await harness.pageBySlug('some-other-slug')
     expect(unknown1).toBeNull()
-
-    // Read our slug — caches the published entity.
     const known1 = await harness.pageBySlug('test-slug')
     expect(known1).toMatchObject({ status: 'published' })
+    expect(harness.getPageBySlugCallCount()).toBe(2)
 
-    // Mutation invalidates by typename — affects BOTH entries above.
+    // Confirm both entries are CACHED — re-reading either does not
+    // re-invoke the resolver. If they weren't cached, the over-
+    // invalidation assertion below would be vacuous.
+    await harness.pageBySlug('some-other-slug')
+    await harness.pageBySlug('test-slug')
+    expect(harness.getPageBySlugCallCount()).toBe(2)
+
+    // Mutation invalidates by typename — must evict BOTH entries
+    // above, including the null entry that has no entity ID.
     await harness.unpublish()
     await harness.publish()
 
-    // Both reads still resolve correctly post-invalidation (the cache
-    // rehydrated from "DB"). The cost is one extra fetch each, not
-    // serving stale data.
+    // Both reads MUST re-invoke the resolver. Two more calls = 4
+    // total. If typename-only invalidation didn't reach the null
+    // entry, the unknown-slug read would be a cache hit and the count
+    // would only climb to 3.
     const known2 = await harness.pageBySlug('test-slug')
     expect(known2).toMatchObject({ status: 'published' })
     const unknown2 = await harness.pageBySlug('some-other-slug')
     expect(unknown2).toBeNull()
+    expect(harness.getPageBySlugCallCount()).toBe(4)
   })
 })
