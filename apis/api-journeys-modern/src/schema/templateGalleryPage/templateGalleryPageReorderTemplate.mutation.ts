@@ -41,7 +41,7 @@ builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
       const journeyId = String(args.journeyId)
       const newIndex = args.order
 
-      return await prisma.$transaction(async (tx) => {
+      const result = await prisma.$transaction(async (tx) => {
         await lockPage(tx, pageId)
 
         const page = await tx.templateGalleryPage.findUnique({
@@ -98,6 +98,11 @@ builder.mutationField('templateGalleryPageReorderTemplate', (t) =>
           where: { id: pageId }
         })
       })
+      // Evict cached `templateGalleryPageBySlug` entries. Reorder changes
+      // the ORDER of the `templates` array on the page — the cached
+      // response carries the old order until evicted.
+      await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
+      return result
     }
   })
 )

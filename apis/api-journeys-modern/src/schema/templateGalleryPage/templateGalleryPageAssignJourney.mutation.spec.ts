@@ -5,6 +5,7 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { cache } from '../../yoga'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -13,6 +14,10 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
+
+const invalidateSpy = vi
+  .spyOn(cache, 'invalidate')
+  .mockResolvedValue(undefined)
 
 describe('templateGalleryPageAssignJourney', () => {
   const mockUser = {
@@ -101,6 +106,11 @@ describe('templateGalleryPageAssignJourney', () => {
       }
     })
     expect(prismaMock.templateGalleryPageTemplate.delete).not.toHaveBeenCalled()
+    // Assign changes the cached `templates` array on the target page — invalidate.
+    expect(invalidateSpy).toHaveBeenCalledTimes(1)
+    expect(invalidateSpy).toHaveBeenCalledWith([
+      { typename: 'TemplateGalleryPage' }
+    ])
   })
 
   it('appends to the end of an existing collection (next order = max + 1)', async () => {
@@ -404,6 +414,7 @@ describe('templateGalleryPageAssignJourney', () => {
       document: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
       variables: { journeyId: 'journey-1', pageId: 'missing-page' }
     })
+    expect(invalidateSpy).not.toHaveBeenCalled()
 
     expect(result).toEqual({
       data: { templateGalleryPageAssignJourney: null },

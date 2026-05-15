@@ -1,3 +1,4 @@
+import { Cache } from '@graphql-yoga/plugin-response-cache'
 import { GraphQLError } from 'graphql'
 
 import { Role, prisma } from '@core/prisma/journeys/client'
@@ -7,6 +8,18 @@ import { InteropContext } from '@core/yoga/interop'
 
 interface BaseContext {
   type: string
+  /**
+   * Yoga response-cache handle. Same instance as the `cache` passed into
+   * `useResponseCache({ cache })` in `yoga.ts`. Mutation resolvers call
+   * `cache.invalidate([{ typename: 'X' }])` after a successful Prisma
+   * transaction to evict cached query responses — critical for the public
+   * `templateGalleryPageBySlug` flow because the plugin's automatic
+   * entity-ID-based invalidation cannot evict cached `null` responses
+   * (they have no entity ID to match on). See `yoga.ts:108-115` for the
+   * trade-off rationale and `templateGalleryPagePublish` etc. for the
+   * canonical caller.
+   */
+  cache: Cache
 }
 
 interface PublicContext extends BaseContext {

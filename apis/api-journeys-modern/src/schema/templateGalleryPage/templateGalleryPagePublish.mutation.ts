@@ -48,7 +48,7 @@ builder.mutationField('templateGalleryPagePublish', (t) =>
       // Idempotent re-publish: when status is already 'published' we skip
       // updateMany entirely and just re-read.
       try {
-        return await prisma.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx) => {
           if (page.status !== 'published') {
             await tx.templateGalleryPage.updateMany({
               where: { id, status: 'draft' },
@@ -63,6 +63,14 @@ builder.mutationField('templateGalleryPagePublish', (t) =>
             where: { id }
           })
         })
+        // Evict any cached `templateGalleryPageBySlug` entries — including
+        // `null` entries that the plugin's entity-ID auto-invalidation
+        // cannot match. Typename-level invalidation closes the
+        // unpublish→republish stale-null gap (NES-1644 follow-up). Runs
+        // after commit so concurrent readers can't repopulate the cache
+        // from pre-commit state.
+        await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
+        return result
       } catch (error) {
         // Edge case: the page was deleted between our auth-fetch and the
         // re-read. Surface as the same NOT_FOUND GraphQLError the earlier
