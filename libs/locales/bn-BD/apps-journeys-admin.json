@@ -434,6 +434,8 @@
   "Upload Successful!": "Upload Successful!",
   "Upload Failed!": "Upload Failed!",
   "Drop an image here": "Drop an image here",
+  "or click to browse your files": "অথবা আপনার ফাইলগুলো ব্রাউজ করতে ক্লিক করুন",
+  "Uploading... {{progress}}%": "লোড হচ্ছে... {{progress}}%",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB",
   "Upload file": "Upload file",
   "Gallery": "Gallery",

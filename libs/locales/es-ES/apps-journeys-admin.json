@@ -434,6 +434,8 @@
   "Upload Successful!": "¡Carga correcta!",
   "Upload Failed!": "¡Carga fallida!",
   "Drop an image here": "Suelta una imagen aquí",
+  "or click to browse your files": "o haz clic para examinar tus archivos",
+  "Uploading... {{progress}}%": "Cargando... {{progress}}%",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "Sube una imagen (PNG, JPG, GIF, SVG o HEIC). Tamaño máximo del archivo: 10 MB",
   "Upload file": "Subir archivo",
   "Gallery": "Galería",

@@ -434,6 +434,8 @@
   "Upload Successful!": "تم الرفع بنجاح!",
   "Upload Failed!": "فشل التحميل!",
   "Drop an image here": "ضع صورة هنا",
+  "or click to browse your files": "أو انقر لتصفح ملفاتك",
+  "Uploading... {{progress}}%": "تحميل ... {{progress}}%",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "قم بتحميل صورة (PNG أو JPG أو GIF أو SVG أو HEIC). الحد الأقصى لحجم الملف: 10 ميغابايت",
   "Upload file": "تحميل الملف",
   "Gallery": "معرض الصور",
