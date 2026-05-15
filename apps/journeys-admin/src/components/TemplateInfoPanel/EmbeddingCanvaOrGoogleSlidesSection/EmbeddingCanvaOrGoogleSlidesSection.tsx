@@ -67,6 +67,101 @@ export function EmbeddingCanvaOrGoogleSlidesSection(): ReactElement {
 
       <Stack gap={1}>
         <Typography sx={subHeadingSx}>{t('Canva')}</Typography>
+        <Box
+          data-testid="CanvaUrlShapesCheatSheet"
+          sx={{
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 1,
+            p: 1.5,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1
+          }}
+        >
+          <Typography sx={{ ...bodySx, fontWeight: 600 }}>
+            {t('URL shapes you might see in Canva:')}
+          </Typography>
+          <Stack
+            direction="row"
+            gap={1}
+            alignItems="flex-start"
+            data-testid="CanvaUrlShape-shortLink"
+          >
+            <Box
+              component="span"
+              aria-label={t('Will not embed')}
+              sx={{ flexShrink: 0, lineHeight: '24px' }}
+            >
+              ❌
+            </Box>
+            <Box sx={{ minWidth: 0, flex: 1 }}>
+              {/* eslint-disable-next-line i18next/no-literal-string */}
+              <Box component="code" sx={inlineCodeSx}>
+                canva.link/&lt;shortcode&gt;
+              </Box>{' '}
+              <Typography component="span" sx={bodySx}>
+                <Trans
+                  t={t}
+                  i18nKey="— what Canva's <0>Copy link</0> button gives you. Redirects server-side to /edit and drops the embed parameter."
+                  components={[<strong key="copy-link" />]}
+                />
+              </Typography>
+            </Box>
+          </Stack>
+          <Stack
+            direction="row"
+            gap={1}
+            alignItems="flex-start"
+            data-testid="CanvaUrlShape-edit"
+          >
+            <Box
+              component="span"
+              aria-label={t('Will not embed')}
+              sx={{ flexShrink: 0, lineHeight: '24px' }}
+            >
+              ❌
+            </Box>
+            <Box sx={{ minWidth: 0, flex: 1 }}>
+              {/* eslint-disable-next-line i18next/no-literal-string */}
+              <Box component="code" sx={inlineCodeSx}>
+                canva.com/design/&lt;id&gt;/edit
+              </Box>{' '}
+              <Typography component="span" sx={bodySx}>
+                {t(
+                  '— the URL in your address bar while editing. Canva blocks /edit URLs from rendering in an iframe.'
+                )}
+              </Typography>
+            </Box>
+          </Stack>
+          <Stack
+            direction="row"
+            gap={1}
+            alignItems="flex-start"
+            data-testid="CanvaUrlShape-view"
+          >
+            <Box
+              component="span"
+              aria-label={t('Embeds correctly')}
+              sx={{ flexShrink: 0, lineHeight: '24px' }}
+            >
+              ✅
+            </Box>
+            <Box sx={{ minWidth: 0, flex: 1 }}>
+              {/* eslint-disable-next-line i18next/no-literal-string */}
+              <Box component="code" sx={inlineCodeSx}>
+                canva.com/design/&lt;id&gt;/&lt;token&gt;/view
+              </Box>{' '}
+              <Typography component="span" sx={bodySx}>
+                <Trans
+                  t={t}
+                  i18nKey="— what <0>Share → view-only link</0> (or Present mode) gives you. This is the shape the embed accepts."
+                  components={[<strong key="share-view" />]}
+                />
+              </Typography>
+            </Box>
+          </Stack>
+        </Box>
         <Box component="ol" sx={numberedListSx}>
           <li>
             {t(
@@ -124,10 +219,11 @@ export function EmbeddingCanvaOrGoogleSlidesSection(): ReactElement {
         >
           <Trans
             t={t}
-            i18nKey='<0>Don&apos;t use Canva short links</0> (<1>canva.link/…</1>). They redirect to /edit URLs and drop our embed parameter through the redirect — the preview shows "refused to connect."'
+            i18nKey='<0>Two URL shapes that look right but won&apos;t embed:</0> <1>canva.link/…</1> short links (redirect server-side and drop the embed parameter) and <2>/edit</2> URLs from the address bar (Canva blocks them in iframes). Both surface as "refused to connect."'
             components={[
               <strong key="warning" />,
-              <Box component="code" key="link" sx={inlineCodeSx} />
+              <Box component="code" key="short-link" sx={inlineCodeSx} />,
+              <Box component="code" key="edit-url" sx={inlineCodeSx} />
             ]}
           />
         </Alert>

@@ -1,14 +1,17 @@
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import RemoveIcon from '@mui/icons-material/Remove'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import ButtonBase from '@mui/material/ButtonBase'
 import Collapse from '@mui/material/Collapse'
+import IconButton from '@mui/material/IconButton'
+import Popover from '@mui/material/Popover'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useMemo, useState } from 'react'
+import { MouseEvent, ReactElement, useMemo, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -16,6 +19,7 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
+import { EmbeddingCanvaOrGoogleSlidesSection } from '../../TemplateInfoPanel/EmbeddingCanvaOrGoogleSlidesSection'
 
 import { CollectionPreviewPane } from './CollectionPreviewPane'
 import { CreatorImagePickerDrawer } from './CreatorImagePickerDrawer'
@@ -76,6 +80,18 @@ export function CollectionDialog({
   // closed (and the dialog stays open) on Cancel, closed + onClose() on
   // Discard.
   const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false)
+  // Anchors the URL-help Popover (NES-1660). The Popover reuses the
+  // TemplateInfoPanel's Section 5 component so this dialog and the global
+  // info panel share a single source of truth for "how do I get the right
+  // Canva / Google Slides URL?". Null when closed.
+  const [urlHelpAnchor, setUrlHelpAnchor] = useState<HTMLElement | null>(null)
+
+  function handleOpenUrlHelp(event: MouseEvent<HTMLElement>): void {
+    setUrlHelpAnchor(event.currentTarget)
+  }
+  function handleCloseUrlHelp(): void {
+    setUrlHelpAnchor(null)
+  }
 
   return (
     <Formik
@@ -386,9 +402,28 @@ export function CollectionDialog({
                             </Stack>
 
                             <Stack spacing={1}>
-                              <Typography sx={SECTION_HEADER}>
-                                {t('Add PDF/Video with instructions')}
-                              </Typography>
+                              <Stack
+                                direction="row"
+                                alignItems="center"
+                                gap={0.5}
+                              >
+                                <Typography sx={SECTION_HEADER}>
+                                  {t('Add PDF/Video with instructions')}
+                                </Typography>
+                                <IconButton
+                                  size="small"
+                                  aria-label={t(
+                                    'How do I get the right Canva or Google Slides link?'
+                                  )}
+                                  aria-haspopup="dialog"
+                                  aria-expanded={urlHelpAnchor !== null}
+                                  onClick={handleOpenUrlHelp}
+                                  data-testid="CollectionDialogUrlHelpTrigger"
+                                  sx={{ color: 'text.secondary' }}
+                                >
+                                  <InfoOutlinedIcon fontSize="small" />
+                                </IconButton>
+                              </Stack>
                               <TextField
                                 id="mediaUrl"
                                 name="mediaUrl"
@@ -414,6 +449,33 @@ export function CollectionDialog({
                                   t('Paste a Canva or Google Slides link')
                                 }
                               />
+                              <Popover
+                                open={urlHelpAnchor !== null}
+                                anchorEl={urlHelpAnchor}
+                                onClose={handleCloseUrlHelp}
+                                anchorOrigin={{
+                                  vertical: 'bottom',
+                                  horizontal: 'left'
+                                }}
+                                transformOrigin={{
+                                  vertical: 'top',
+                                  horizontal: 'left'
+                                }}
+                                slotProps={{
+                                  paper: {
+                                    sx: {
+                                      maxWidth: 420,
+                                      maxHeight: '70vh',
+                                      overflowY: 'auto',
+                                      p: 2.5
+                                    }
+                                  }
+                                }}
+                              >
+                                <Box data-testid="CollectionDialogUrlHelpPopover">
+                                  <EmbeddingCanvaOrGoogleSlidesSection />
+                                </Box>
+                              </Popover>
                             </Stack>
 
                             {mode === 'edit' && (

@@ -45,12 +45,31 @@ describe('EmbeddingCanvaOrGoogleSlidesSection', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders the warning alert about Canva short links', () => {
+  it('renders the warning alert calling out both short-link and /edit failure modes', () => {
     render(<EmbeddingCanvaOrGoogleSlidesSection />)
 
     const alert = screen.getByRole('alert')
-    expect(alert).toHaveTextContent("Don't use Canva short links")
+    expect(alert).toHaveTextContent(
+      "Two URL shapes that look right but won't embed"
+    )
     expect(alert).toHaveTextContent('canva.link/…')
+    expect(alert).toHaveTextContent('/edit')
+    expect(alert).toHaveTextContent('refused to connect')
+  })
+
+  it('renders a "URL shapes" cheat-sheet enumerating the three Canva URL patterns', () => {
+    render(<EmbeddingCanvaOrGoogleSlidesSection />)
+
+    expect(screen.getByTestId('CanvaUrlShapesCheatSheet')).toBeInTheDocument()
+    expect(screen.getByTestId('CanvaUrlShape-shortLink')).toHaveTextContent(
+      'canva.link/<shortcode>'
+    )
+    expect(screen.getByTestId('CanvaUrlShape-edit')).toHaveTextContent(
+      'canva.com/design/<id>/edit'
+    )
+    expect(screen.getByTestId('CanvaUrlShape-view')).toHaveTextContent(
+      'canva.com/design/<id>/<token>/view'
+    )
   })
 
   it('renders inline code samples for /view, /edit, /pub, and ?utm_content=… in troubleshooting', () => {
