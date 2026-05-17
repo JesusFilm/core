@@ -11,9 +11,9 @@ interface BaseContext {
   /**
    * Yoga response-cache handle. Lives on `BaseContext` so the context shape
    * stays uniform across `public`/`authenticated`/`interop` variants — but
-   * only authenticated mutation resolvers actually invoke it today. See
-   * `yoga.ts` (`Query.templateGalleryPageBySlug` block) for the
-   * single-vs-multi-replica scope and rationale.
+   * only authenticated mutation resolvers actually invoke it today (to evict
+   * cached `templateGalleryPageBySlug` responses post-commit). See
+   * `yoga.ts` (`Query.templateGalleryPageBySlug` block) for the rationale.
    */
   cache: Cache
 }

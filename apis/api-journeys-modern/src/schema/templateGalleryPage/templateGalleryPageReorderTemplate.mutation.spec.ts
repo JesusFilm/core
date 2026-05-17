@@ -264,8 +264,8 @@ describe('templateGalleryPageReorderTemplate', () => {
       ).not.toHaveBeenCalled()
       expect(prismaMock.$executeRaw).not.toHaveBeenCalled()
       // No-op reorder: nothing changed, no cache eviction. Mirrors the
-      // publish/unpublish/assignJourney guards — only the replica that
-      // actually mutates owns the invalidation.
+      // publish/unpublish/assignJourney guards — only callers that actually
+      // mutate state evict the cache.
       expect(invalidateSpy).not.toHaveBeenCalled()
     })
   })

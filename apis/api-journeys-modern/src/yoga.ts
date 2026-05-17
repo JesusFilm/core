@@ -108,38 +108,25 @@ export const yoga = createYoga<
             // flushed (NES-1648).
             'Query.templateGalleryPage': 0,
             'Query.templateGalleryPages': 0,
-            // Public renderer. Finite TTL caps cache-poisoning impact: a `null`
-            // response (unknown slug / draft / malformed) caches with no entity
-            // ID, so the plugin's automatic entity-ID invalidation cannot evict
-            // it. Without a finite TTL the null branch would persist for the
-            // lifetime of the cache, letting an attacker pre-poison popular
-            // slugs so legitimate later publishes appear 404. 60 s gives the
-            // renderer reasonable cache hit-rate while bounding poisoning impact.
+            // Public renderer. Finite TTL bounds cache-poisoning impact: a
+            // `null` response (unknown slug / draft / malformed) caches with no
+            // entity ID, so the plugin's automatic entity-ID invalidation
+            // cannot evict it. Without a finite TTL the null branch would
+            // persist for the lifetime of the cache, letting an attacker
+            // pre-poison popular slugs so legitimate later publishes appear
+            // 404. 60 s gives the renderer reasonable cache hit-rate while
+            // keeping the poisoning window short.
             //
-            // NES-1644 stale-null gap is mitigated by typename-level
-            // `cache.invalidate([{ typename: 'TemplateGalleryPage' }])` in every
-            // TemplateGalleryPage mutation (publish, unpublish, delete,
-            // assignJourney, reorderTemplate, update). Typename invalidation
-            // walks the cache by recorded typename presence, so it reaches null
-            // entries that lack an entity ID. See `responseCacheLifecycle.spec.ts`.
-            //
-            // SCOPE OF THE FIX (NES-1677):
-            //   • Single-replica deploys: stale-null gap is fully closed.
-            //   • Multi-replica deploys (current prod `auto_scaling.max_capacity = 4`):
-            //     fix is PARTIAL. `createInMemoryCache()` is process-local, so a
-            //     mutation only evicts the replica that handled it. Reads
-            //     round-robined to a non-mutating replica continue to serve the
-            //     pre-mutation cached entry for up to 60 s (the TTL bounds the
-            //     stale window across all replicas). Shared-cache backend is the
-            //     proper fix — tracked separately for follow-up (Redis-backed
-            //     `Cache` adapter is already supported by
-            //     `@graphql-yoga/plugin-response-cache`; see PR #9217 description
-            //     for the follow-up ticket reference).
-            //   • Reader-in-flight race: a public read whose Prisma query starts
-            //     BEFORE a mutation commits can write the pre-mutation snapshot
-            //     into the cache AFTER the mutation's invalidate runs. The stale
-            //     entry then lives until the next mutation or the 60 s TTL —
-            //     read-side coordination is out of scope; bounded by TTL.
+            // NES-1644 unpublish→republish stale-null gap is closed by
+            // typename-level `cache.invalidate([{ typename: 'TemplateGalleryPage' }])`
+            // in every TemplateGalleryPage mutation (publish, unpublish,
+            // delete, assignJourney, reorderTemplate, update). Typename
+            // invalidation walks the cache by recorded typename presence so it
+            // reaches null entries that lack an entity ID. The 60 s TTL stays
+            // as defense-in-depth against the poisoning case above. See
+            // `responseCacheLifecycle.spec.ts` for the library-contract proof
+            // and `responseCacheLifecycleReal.spec.ts` for the per-mutation
+            // production-schema eviction tests.
             'Query.templateGalleryPageBySlug': 60_000,
             'Query.journeysPlausibleStatsAggregate': 5000,
             'Query.journeysPlausibleStatsBreakdown': 5000,

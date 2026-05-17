@@ -152,9 +152,9 @@ describe('templateGalleryPagePublish', () => {
       }
     })
     // Race-lost: updateMany matched zero rows, so this caller did NOT
-    // transition state. The winning caller (whichever replica handled it)
-    // owns the invalidate; this caller skips it to avoid amplifying
-    // typename-level evictions on every losing race entry.
+    // transition state. The winning caller owns the invalidate; this caller
+    // skips it to avoid amplifying typename-level evictions on every losing
+    // race entry.
     expect(invalidateSpy).not.toHaveBeenCalled()
   })
 

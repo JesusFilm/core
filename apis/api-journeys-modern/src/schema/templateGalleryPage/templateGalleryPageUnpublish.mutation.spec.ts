@@ -145,8 +145,8 @@ describe('templateGalleryPageUnpublish', () => {
     })
     expect(prismaMock.templateGalleryPage.updateMany).not.toHaveBeenCalled()
     // Idempotent re-unpublish: no state changed, no cache eviction.
-    // Mirrors the publish-mutation gate — only the replica that actually
-    // transitions the row owns the invalidate.
+    // Mirrors the publish-mutation gate — only callers that actually
+    // transition the row invalidate the cache.
     expect(invalidateSpy).not.toHaveBeenCalled()
   })
 

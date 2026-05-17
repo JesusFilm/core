@@ -80,8 +80,8 @@ builder.mutationField('templateGalleryPageUnpublish', (t) =>
         })
 
       // Skip eviction on idempotent no-ops / race-loss (updateMany count=0).
-      // Mirrors the publish-mutation guard — only the replica that actually
-      // transitioned the row owns the cache eviction.
+      // Mirrors the publish-mutation guard — only callers that actually
+      // transition the row evict the cache.
       if (didMutate) {
         await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
       }

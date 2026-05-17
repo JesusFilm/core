@@ -84,11 +84,10 @@ builder.mutationField('templateGalleryPagePublish', (t) =>
 
       // Only invalidate when this caller actually transitioned the row.
       // Idempotent re-publishes and race-lost callers (updateMany count=0)
-      // skip the eviction so authenticated insiders can't spam the mutation
-      // to flush the global response cache. The replica that DID transition
-      // the row owns the invalidation. Typename-level eviction reaches null
-      // entries that the plugin's entity-ID auto-invalidation cannot match,
-      // closing the NES-1644 stale-null gap on the handling replica.
+      // skip the eviction so authenticated callers can't spam the mutation
+      // to flush the global response cache. Typename-level eviction reaches
+      // null entries that the plugin's entity-ID auto-invalidation cannot
+      // match, closing the NES-1644 stale-null gap.
       if (didMutate) {
         await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
       }
