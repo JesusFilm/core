@@ -1,10 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  fireEvent,
-  render,
-  waitFor,
-  within
-} from '@testing-library/react'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
