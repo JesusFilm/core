@@ -55,9 +55,8 @@ export function EmbeddingCanvaOrGoogleSlidesSection(): ReactElement {
       <Typography sx={bodySx}>
         <Trans
           t={t}
-          i18nKey="Two places in the admin accept an embed URL: <0>Template Settings → Strategy</0> (case study preview) and <1>New Collection → Add PDF/Video with instructions</1>. Only <2>Canva</2> and <3>Google Slides</3> links can render. The link must be the canonical view URL, not a share-shortened URL."
+          i18nKey="The <0>New Collection → Add PDF/Video with instructions</0> field accepts an embed URL. Only <1>Canva</1> and <2>Google Slides</2> links can render. The link must be the canonical view URL, not a share-shortened URL."
           components={[
-            <strong key="strategy" />,
             <strong key="collection" />,
             <strong key="canva" />,
             <strong key="slides" />
