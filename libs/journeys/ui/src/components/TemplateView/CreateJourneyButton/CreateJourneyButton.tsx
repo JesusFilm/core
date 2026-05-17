@@ -358,8 +358,6 @@ export function CreateJourneyButton({
               : undefined
           }
           isTranslating={translationVariables != null}
-          journeyIsTemplate={journeyDataToUse?.template ?? false}
-          journeyFromTemplateId={journeyDataToUse?.fromTemplateId}
           defaultToActiveTeam={
             journeyDataToUse?.team != null &&
             journeyDataToUse.team.id !== 'jfp-team'

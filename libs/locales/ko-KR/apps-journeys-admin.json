@@ -434,6 +434,8 @@
   "Upload Successful!": "업로드 성공!",
   "Upload Failed!": "업로드에 실패했습니다!",
   "Drop an image here": "여기에 이미지 드롭",
+  "or click to browse your files": "를 클릭하거나 클릭하여 파일을 찾아보세요.",
+  "Uploading... {{progress}}%": "업로드 중... {{progress}}%",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "이미지(PNG, JPG, GIF, SVG 또는 HEIC)를 업로드합니다. 최대 파일 크기: 10MB",
   "Upload file": "파일 업로드",
   "Gallery": "갤러리",

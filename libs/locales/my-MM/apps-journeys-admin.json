@@ -434,6 +434,8 @@
   "Upload Successful!": "Upload Successful!",
   "Upload Failed!": "Upload Failed!",
   "Drop an image here": "Drop an image here",
+  "or click to browse your files": "သို့မဟုတ် ဖိုင်များကို ကြည့်ရှုရန် နှိပ်ပါ။",
+  "Uploading... {{progress}}%": "တင်နေဆဲ... {{progress}}%",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB",
   "Upload file": "Upload file",
   "Gallery": "Gallery",

@@ -434,6 +434,8 @@
   "Upload Successful!": "อัปโหลดสำเร็จ!",
   "Upload Failed!": "อัพโหลดล้มเหลว!",
   "Drop an image here": "วางรูปภาพที่นี่",
+  "or click to browse your files": "หรือคลิกเพื่อเรียกดูไฟล์ของคุณ",
+  "Uploading... {{progress}}%": "กำลังอัปโหลด... {{progress}}%",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "อัปโหลดรูปภาพ (PNG, JPG, GIF, SVG หรือ HEIC) ขนาดไฟล์สูงสุด: 10 MB",
   "Upload file": "อัพโหลดไฟล์",
   "Gallery": "แกลเลอรี่",
