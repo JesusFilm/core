@@ -17,12 +17,12 @@ import { useJourneyAiTranslateSubscription } from '../../../libs/useJourneyAiTra
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
 
-// NOTE: shares duplication-and-translate orchestration semantics with
+// TODO(NES-1680): extract the shared duplicate-and-translate orchestration
+// into a hook so this file and UseTemplateDeepLink stop drifting. Until
+// that ticket lands, if you change the mutation, subscription, error
+// handling, or wait-for-load behaviour here, also edit
 // apps/journeys-admin/src/components/UseTemplateDeepLink/UseTemplateDeepLink.tsx.
-// If you change the mutation, subscription, error handling, or wait-for-load
-// behaviour here, consider whether the same change applies there. Hook
-// extraction was considered (NES-1608 review 2026-05-13) and deferred to
-// reduce shared-lib blast radius.
+// https://linear.app/jesus-film-project/issue/NES-1680
 
 export interface JourneyForTemplate {
   id: string

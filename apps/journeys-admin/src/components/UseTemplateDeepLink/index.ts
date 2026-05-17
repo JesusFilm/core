@@ -1,1 +1,5 @@
-export { UseTemplateDeepLink, getJourneyIdParam } from './UseTemplateDeepLink'
+export { UseTemplateDeepLink } from './UseTemplateDeepLink'
+export {
+  useTemplateDeepLinkActive,
+  useTemplateDeepLinkJourneyId
+} from './useTemplateDeepLinkActive'

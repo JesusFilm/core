@@ -10,6 +10,8 @@ import { useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 
 import { IdType } from '../../../__generated__/globalTypes'
 
+import { useTemplateDeepLinkJourneyId } from './useTemplateDeepLinkActive'
+
 interface JourneyLanguage {
   id: string
   localName?: string
@@ -26,41 +28,27 @@ interface TranslationVariables {
   userLanguageName?: string
 }
 
-// Exported so callers like `pages/index.tsx` share the same "active"
-// predicate when reacting to the deep link (e.g. suppressing the onboarding
-// popover). Treats an array value as "first wins" and an empty string as
-// absent so `?useTemplate=` doesn't look active.
-export function getJourneyIdParam(
-  value: string | string[] | undefined
-): string | null {
-  if (Array.isArray(value)) {
-    const [first] = value
-    return first != null && first.length > 0 ? first : null
-  }
-  if (typeof value === 'string' && value.length > 0) return value
-  return null
-}
-
 /**
  * Receiver for the public template gallery's "Use" deep link
  * (`/?useTemplate=<journeyId>`).
  *
- * The outer component reads the URL param and renders nothing when absent
- * so no GET_JOURNEY / dialog state initialises on the vast majority of admin
- * loads. The inner component is mount-gated on `journeyId` (and keyed by it)
- * so consecutive deep-link sessions each get a fresh state slate — including
- * `navigatedAwayRef` and the cached `journey` — instead of leaking across.
+ * The outer component reads the URL param via `useTemplateDeepLinkJourneyId`
+ * (the activation rule lives in one place — see that hook) and renders
+ * nothing when absent so no GET_JOURNEY / dialog state initialises on the
+ * vast majority of admin loads. The inner component is mount-gated on
+ * `journeyId` (and keyed by it) so consecutive deep-link sessions each get a
+ * fresh state slate — including `navigatedAwayRef` and the cached
+ * `journey` — instead of leaking across.
  *
- * NOTE: shares duplication-and-translate orchestration semantics with
+ * TODO(NES-1680): extract the shared duplicate-and-translate orchestration
+ * into a hook so this file and CreateJourneyButton stop drifting. Until
+ * that ticket lands, if you change the mutation, subscription, error
+ * handling, or wait-for-load behaviour here, also edit
  * libs/journeys/ui/src/components/TemplateView/CreateJourneyButton/CreateJourneyButton.tsx.
- * If you change the mutation, subscription, error handling, or wait-for-load
- * behaviour here, consider whether the same change applies there. Hook
- * extraction was considered (NES-1608 review 2026-05-13) and deferred to
- * reduce shared-lib blast radius.
+ * https://linear.app/jesus-film-project/issue/NES-1680
  */
 export function UseTemplateDeepLink(): ReactElement | null {
-  const router = useRouter()
-  const journeyId = getJourneyIdParam(router.query.useTemplate)
+  const journeyId = useTemplateDeepLinkJourneyId()
   if (journeyId == null) return null
   return <ActiveUseTemplateDeepLink key={journeyId} journeyId={journeyId} />
 }

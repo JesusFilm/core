@@ -15,7 +15,7 @@ import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import {
   UseTemplateDeepLink,
-  getJourneyIdParam
+  useTemplateDeepLinkActive
 } from '../src/components/UseTemplateDeepLink'
 import { useAuth } from '../src/libs/auth'
 import {
@@ -41,10 +41,9 @@ export default function IndexPage(): ReactElement {
     (router?.query?.type as 'journeys' | 'templates' | 'collections') ??
     'journeys'
   const showSidePanel = currentContentType === 'journeys'
-  const useTemplateDeepLinkActive =
-    getJourneyIdParam(router.query.useTemplate) != null
+  const deepLinkActive = useTemplateDeepLinkActive()
   const showOnboardingPopover =
-    router.query.onboarding === 'true' && !useTemplateDeepLinkActive
+    router.query.onboarding === 'true' && !deepLinkActive
 
   const userInfo = {
     name: user?.displayName ?? '',
