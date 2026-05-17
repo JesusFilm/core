@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import {
   fireEvent,
-  getByTestId,
   render,
   waitFor,
   within
@@ -35,10 +34,14 @@ describe('TemplateSettingsDialog', () => {
   beforeEach(() => jest.clearAllMocks())
 
   it('should update field data and close dialog on submit', async () => {
+    // NES-1678: strategy section UI removed. The form still carries
+    // `strategySlug` from `journey.strategySlug` through to the mutation
+    // input (round-trip), so the mock here mirrors the journey's empty
+    // initial value rather than asserting on a user-edited Canva URL.
     const updatedJourney = {
       title: 'New Title',
       description: 'New Description',
-      strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view',
+      strategySlug: '',
       creatorDescription: null,
       languageId: '529'
     }
@@ -126,7 +129,7 @@ describe('TemplateSettingsDialog', () => {
       }
     }))
 
-    const { getByRole, getAllByRole, getByTestId } = render(
+    const { getByRole, getAllByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -237,17 +240,6 @@ describe('TemplateSettingsDialog', () => {
       target: { value: 'New Description' }
     })
     fireEvent.click(getByRole('checkbox'))
-
-    fireEvent.click(getByRole('tab', { name: 'About' }))
-
-    fireEvent.change(
-      getByTestId('StrategySlugEdit')?.querySelector(
-        'input'
-      ) as HTMLInputElement,
-      {
-        target: { value: 'https://www.canva.com/design/DAFvDBw1z1A/view' }
-      }
-    )
 
     fireEvent.click(getByRole('tab', { name: 'Categories' }))
 
@@ -418,185 +410,11 @@ describe('TemplateSettingsDialog', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('should update case study to a google slides embed link', async () => {
-    const updatedJourney = {
-      title: defaultJourney.title,
-      description: defaultJourney.description,
-      strategySlug:
-        'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000',
-      tagIds: [],
-      creatorDescription: null,
-      languageId: '529'
-    }
-
-    const result = jest.fn(() => ({
-      data: {
-        journeyUpdate: {
-          ...defaultJourney,
-          __typename: 'Journey',
-          id: defaultJourney.id,
-          ...updatedJourney,
-          language: defaultJourney.language,
-          tags: defaultJourney.tags,
-          website: null,
-          showShareButton: null,
-          showLikeButton: null,
-          showDislikeButton: null,
-          displayTitle: null,
-          menuButtonIcon: null,
-          menuStepBlock: null
-        }
-      }
-    }))
-
-    const result2 = jest.fn(() => ({
-      data: {
-        journeyCustomizationDescriptionUpdate: {
-          id: defaultJourney.id,
-          __typename: 'Journey',
-          journeyCustomizationDescription: ''
-        }
-      }
-    }))
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_LANGUAGES,
-              variables: { languageId: '529' }
-            },
-            result: {
-              data: {
-                languages: [
-                  {
-                    __typename: 'Language',
-                    id: '529',
-                    slug: 'en',
-                    name: [
-                      {
-                        __typename: 'LanguageName',
-                        value: 'English',
-                        primary: true
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          },
-          {
-            request: { query: GET_TAGS },
-            result: { data: { tags: [] } }
-          },
-          {
-            request: {
-              query: JOURNEY_SETTINGS_UPDATE,
-              variables: {
-                id: defaultJourney.id,
-                input: updatedJourney
-              }
-            },
-            result
-          },
-          {
-            request: {
-              query: JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE,
-              variables: {
-                journeyId: defaultJourney.id,
-                string: ''
-              }
-            },
-            result: result2
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: defaultJourney,
-              variant: 'admin'
-            }}
-          >
-            <TemplateSettingsDialog open onClose={onClose} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByRole('tab', { name: 'About' }))
-
-    fireEvent.change(getByRole('textbox', { name: 'Paste URL here' }), {
-      target: {
-        value:
-          'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000'
-      }
-    })
-
-    fireEvent.click(getByRole('button', { name: 'Save' }))
-
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-    })
-    expect(onClose).toHaveBeenCalled()
-  })
-
-  it('should validate on invalid embed url', async () => {
-    const { getByRole, getByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: { query: GET_LANGUAGES, variables: { languageId: '529' } },
-            result: {
-              data: {
-                languages: [
-                  {
-                    __typename: 'Language',
-                    id: '529',
-                    slug: 'en',
-                    name: [
-                      {
-                        __typename: 'LanguageName',
-                        value: 'English',
-                        primary: true
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                ...defaultJourney,
-                creatorDescription: '',
-                strategySlug: ''
-              },
-              variant: 'admin'
-            }}
-          >
-            <TemplateSettingsDialog open onClose={onClose} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByRole('tab', { name: 'About' }))
-    const textField = getByRole('textbox', { name: 'Paste URL here' })
-    fireEvent.change(textField, {
-      target: { value: 'www.canva.com/123' }
-    })
-    fireEvent.submit(getByRole('textbox', { name: 'Paste URL here' }))
-
-    await waitFor(() =>
-      expect(getByText('Invalid embed link')).toBeInTheDocument()
-    )
-  })
+  // NES-1678: the previous `should update case study to a google slides
+  // embed link` and `should validate on invalid embed url` tests were
+  // removed alongside the strategy section UI. The form still carries
+  // `strategySlug` through to the mutation input, but there's no editing
+  // surface left and no validation rule to assert against.
 
   it('shows error alert when any field fails to update', async () => {
     const { getByRole, getByText, getAllByRole } = render(
