@@ -431,7 +431,7 @@ describe('NES-1677 real-schema cache lifecycle', () => {
     setupPublishHappy()
 
     // Inject a one-shot cache.invalidate failure.
-    const invalidateError = new Error('cache backend down')
+    const invalidateError = new Error('cache layer unavailable')
     const invalidateSpy = vi
       .spyOn(cache, 'invalidate')
       .mockRejectedValueOnce(invalidateError)

@@ -244,10 +244,8 @@ describe('useResponseCache lifecycle (NES-1644 canary)', () => {
     // This documents the deliberate trade-off: typename-only
     // invalidation clears cached entries for ALL Page entities, not
     // just the one being mutated. We accept this cost to close the
-    // null-branch invalidation gap. The deferred follow-up
-    // (`buildResponseCacheKey` with slug-keyed invalidation) would
-    // provide finer-grained eviction; until then, the next read
-    // simply rehydrates the cache from "DB".
+    // null-branch invalidation gap. The next read simply rehydrates
+    // the cache from "DB".
     const harness = buildHarness()
 
     // Warm the cache with both a null entry (unknown slug) and the

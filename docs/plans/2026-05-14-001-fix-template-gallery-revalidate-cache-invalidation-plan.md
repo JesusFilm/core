@@ -38,17 +38,10 @@ Until this is fixed, the click-immediately race fix in NES-1644 is unverifiable 
 ## Scope Boundaries
 
 - Not changing the 60s TTL itself — the trade-off documented in `yoga.ts:108-115` stands.
-- Not changing the cache backend (in-memory remains).
 - Not touching `apis/api-gateway/` — gateway has no response-cache plugin and is not part of the failure.
 - Not changing `getStaticProps` semantics — same query, same `errorPolicy: 'all'`, same `notFound: true` branch.
 - Not adding retry logic to `getStaticProps` (would mask legitimate 404s, amplify load on degraded gateway, risk unbounded latency under ISR rendering timeouts).
 - Not adding `Cache-Control: no-cache` to the server-side Apollo client (loses cache benefit on every public render; addressed in Alternatives Considered below).
-
-### Deferred to Follow-Up Work
-
-- Custom cache-key builder via `buildResponseCacheKey` that makes slug a first-class key part: the deeper fix, but invasive enough to warrant its own ticket once the surgical invalidation lands and stabilises.
-- Cache observability — Prometheus / Datadog metrics for `response-cache hit / miss / invalidate` counts on the templateGalleryPage query family. Useful for prod-side confirmation that this fix works without firing too aggressively.
-- An end-to-end stage-level integration test that exercises the publish→unpublish→publish→View flow against a real gateway. Out of unit-test scope; lives in QA territory.
 
 ---
 
@@ -78,7 +71,6 @@ Until this is fixed, the click-immediately race fix in NES-1644 is unverifiable 
 ### External References
 
 - `@graphql-yoga/plugin-response-cache` README — `invalidate` API surface: `cache.invalidate([{ typename: 'Foo' }, { typename: 'Foo', id: '123' }])`. Supports typename-only and typename+id invalidation. Synchronous in-memory call.
-- `@graphql-yoga/plugin-response-cache` — `buildResponseCacheKey` allows custom key composition including argument values. Deferred to follow-up work.
 
 ---
 
@@ -86,7 +78,7 @@ Until this is fixed, the click-immediately race fix in NES-1644 is unverifiable 
 
 - **Use typename-level `cache.invalidate([{ typename: 'TemplateGalleryPage' }])` in mutations, not typename+id**. Typename-only is the only form that evicts the null entries (which have no entity ID). Over-invalidation cost is minimal: typename-level eviction clears entries that referenced any `TemplateGalleryPage` entity AND any null-branch entries, which is exactly the scope we need. The next legitimate query repopulates the cache.
 - **Invalidate AFTER the Prisma transaction commits, not inside it**. Order: transaction → response object materialised → `cache.invalidate(…)` → return to caller. This prevents a concurrent read from re-populating the cache from pre-commit state. (Pattern: invalidation is the last side-effect on the success path.)
-- **Plumb the cache reference into the Pothos context object** rather than importing it directly. The yoga.ts `cache` export is technically importable, but injecting it via context (a) makes it mockable in mutation specs, (b) follows the established pattern (`prisma` is already in context via the same builder, and (c) gives one stable seam if the cache backend changes later (e.g., Redis for multi-process invalidation in prod).
+- **Plumb the cache reference into the Pothos context object** rather than importing it directly. The yoga.ts `cache` export is technically importable, but injecting it via context (a) makes it mockable in mutation specs and (b) follows the established pattern (`prisma` is already in context via the same builder).
 - **Add diagnostic logging in `getStaticProps`** at the null-result branch — gated on the presence of `errors[]` from Apollo. Cheap (no log spam on the happy path), valuable when this code path fails for a future reason that isn't the cache.
 - **Do NOT add `Cache-Control: no-cache` to the server-side Apollo client**. Costs the 60s cache benefit on every public render (the dominant traffic shape) to mitigate a corner case that explicit invalidation handles surgically. The wrong place to spend the perf budget.
 - **Do NOT reduce TTL to 1s** (the user's option D). Doesn't actually fix the race — within 1s of a re-publish, the cache can still hold null. And destroys public cache hit-rate.
@@ -106,7 +98,6 @@ Until this is fixed, the click-immediately race fix in NES-1644 is unverifiable 
 ### Deferred to Implementation
 
 - Q: Exact pattern for plumbing `cache` into Pothos context — whether to extend the existing `Context` union type in `apis/api-journeys-modern/src/schema/authScopes.ts` or add cache as a separate optional field. Implementation discovery; not a planning-time blocker.
-- Q: Should `cache.invalidate(…)` calls log at debug level for prod observability? Likely yes, but the log format and where to put it (resolver-level vs plugin-level) is an implementation detail.
 - Q: Does the reorder mutation (`templateGalleryPageReorderTemplate`) need cache invalidation? It affects the `templates` array ORDER inside `templateGalleryPageBySlug` responses — a published reorder DOES change what viewers see. Implementation should verify and likely include it for safety. Plan covers all six candidate mutations but the reorder case is the least intuitive.
 
 ---
@@ -328,14 +319,14 @@ Until this is fixed, the click-immediately race fix in NES-1644 is unverifiable 
 
 | Risk                                                                                                                                                          | Mitigation                                                                                                                                                                                                                                                                     |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Typename-only invalidation in `useResponseCache` doesn't actually evict null entries (library behaviour differs from docs)                                    | U4's lifecycle spec exercises this directly against the real plugin. Run against `main` to confirm it fails pre-fix, run against the fix branch to confirm it passes. If the library doesn't behave this way, fall back to U5 deferred fix (custom `buildResponseCacheKey`).   |
-| Over-invalidation: typename-level eviction clears entries for unrelated `TemplateGalleryPage` IDs that are still valid                                        | Acceptable cost: in current traffic (one or two slugs per team), the over-invalidation cost is dominated by the next-read DB query (~ms). If high-traffic cardinality becomes a concern, the `buildResponseCacheKey` follow-up provides finer-grained slug-keyed invalidation. |
+| Typename-only invalidation in `useResponseCache` doesn't actually evict null entries (library behaviour differs from docs)                                    | U4's lifecycle spec exercises this directly against the real plugin. Run against `main` to confirm it fails pre-fix, run against the fix branch to confirm it passes.                                                                                                          |
+| Over-invalidation: typename-level eviction clears entries for unrelated `TemplateGalleryPage` IDs that are still valid                                        | Acceptable cost: in current traffic (one or two slugs per team), the over-invalidation cost is dominated by the next-read DB query (~ms). Revisit if high-traffic cardinality changes the picture.                                                                             |
 | Cache reference plumbed into context might collide with future Pothos schema generation in unexpected ways                                                    | U2 explicitly compiles the schema build + lint as verification. Type-level breakage would surface there. The pattern follows the existing `prisma` injection so the risk is precedented.                                                                                       |
 | Pre-existing mutation specs may use a context shape that doesn't have `cache`, breaking on TypeScript strict checks                                           | U2's verification step runs the full mutation spec suite. If specs need to add `cache` to their test context, that's part of U3's work — it's not surprise scope but it is real grunt work. Each spec gets a one-line `cache: createInMemoryCache()` addition in test setup.   |
 | Diagnostic log in `getStaticProps` (U1) might be noisy under a real upstream incident, swamping the log channel                                               | Log level is `warn`, not `error`. Vercel and stage log dashboards default-filter `info`/`debug` but show `warn` and `error`. Acceptable trade-off — when the channel is "swamped" by warnings, it's because something is wrong and we want to know.                            |
 | Scope creep: cache fix lands in NES-1644 instead of a separate ticket, expanding the PR's review surface and CI surface                                       | Plan recommends splitting: only U1 (diagnostic logging, pure frontend) joins NES-1644 as a small sibling improvement. U2-U5 file as a new ticket. The user has explicit authority to override and bundle if review-surface cost is acceptable.                                 |
 | The `nf start` restart workaround the user has been relying on stops working after deploy because no one will know it's the fix                               | The follow-up ticket should include a comment somewhere visible (likely `yoga.ts`'s updated comment in U5) noting that `nf restart` was the pre-fix workaround. Future debuggers grep for that.                                                                                |
-| Vercel preview deploys serve the fix immediately upon merge; if the cache logic regresses in some other resolver pattern, we might think it's our fix's fault | U4's lifecycle spec is the canary. If U4 passes in CI, the regression is downstream. Monitoring (deferred to follow-up) would help.                                                                                                                                            |
+| Vercel preview deploys serve the fix immediately upon merge; if the cache logic regresses in some other resolver pattern, we might think it's our fix's fault | U4's lifecycle spec is the canary. If U4 passes in CI, the regression is downstream.                                                                                                                                                                                           |
 
 ---
 
@@ -345,7 +336,7 @@ Until this is fixed, the click-immediately race fix in NES-1644 is unverifiable 
   - This plan: `docs/plans/2026-05-14-001-fix-template-gallery-revalidate-cache-invalidation-plan.md`
   - NES-1644's PR #9174 as the surfacing ticket
   - NES-1547 as the ticket that introduced the cache config being fixed
-- The PR for the cache fix should call out the trade-off in its description: typename-level invalidation accepts over-eviction in exchange for null-branch correctness. The `buildResponseCacheKey` follow-up provides a path to slug-keyed invalidation if traffic patterns ever demand it.
+- The PR for the cache fix should call out the trade-off in its description: typename-level invalidation accepts over-eviction in exchange for null-branch correctness.
 - After merge: Sharon's QA should re-run the publish → unpublish → publish → View flow on stage. The fix should make that flow return 200 within seconds, not 60+ seconds. Add to QA requirements for NES-1644 stage verification.
 
 ---
