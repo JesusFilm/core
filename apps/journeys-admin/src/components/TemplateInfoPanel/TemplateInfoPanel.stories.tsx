@@ -44,12 +44,4 @@ export const SharingAndPublishingExpanded: StoryObj<typeof TemplateInfoPanel> =
     render: () => <TemplateInfoPanel defaultExpanded="sharingAndPublishing" />
   }
 
-export const EmbeddingCanvaOrGoogleSlidesExpanded: StoryObj<
-  typeof TemplateInfoPanel
-> = {
-  render: () => (
-    <TemplateInfoPanel defaultExpanded="embeddingCanvaOrGoogleSlides" />
-  )
-}
-
 export default TemplateInfoPanelStory

@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
-import { EmbeddingCanvaOrGoogleSlidesSection } from './EmbeddingCanvaOrGoogleSlidesSection'
 import { HowToCreateSection } from './HowToCreateSection'
 import { SharingAndPublishingSection } from './SharingAndPublishingSection'
 import { TemplateInfoAccordion } from './TemplateInfoAccordion'
@@ -22,7 +21,6 @@ export type TemplateInfoSectionId =
   | 'howToCreate'
   | 'trackingAndAnalytics'
   | 'sharingAndPublishing'
-  | 'embeddingCanvaOrGoogleSlides'
 
 export interface TemplateInfoPanelProps {
   /**
@@ -141,17 +139,9 @@ export function TemplateInfoPanel({
           title={t('Sharing and Publishing')}
           expanded={expanded === 'sharingAndPublishing'}
           onChange={makeHandleChange('sharingAndPublishing')}
-        >
-          <SharingAndPublishingSection />
-        </TemplateInfoAccordion>
-        <TemplateInfoAccordion
-          id="embeddingCanvaOrGoogleSlides"
-          title={t('Embedding Canva or Google Slides')}
-          expanded={expanded === 'embeddingCanvaOrGoogleSlides'}
-          onChange={makeHandleChange('embeddingCanvaOrGoogleSlides')}
           isLast
         >
-          <EmbeddingCanvaOrGoogleSlidesSection />
+          <SharingAndPublishingSection />
         </TemplateInfoAccordion>
       </Box>
     </Box>

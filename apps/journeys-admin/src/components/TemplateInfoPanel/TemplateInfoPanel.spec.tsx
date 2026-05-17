@@ -14,7 +14,7 @@ describe('TemplateInfoPanel', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders all five accordion section titles in the canonical order', () => {
+  it('renders all four accordion section titles in the canonical order', () => {
     render(<TemplateInfoPanel />)
 
     const titles = screen.getAllByRole('button').map((b) => b.textContent)
@@ -23,8 +23,7 @@ describe('TemplateInfoPanel', () => {
       'Template Types',
       'How to create',
       'Tracking and Analytics',
-      'Sharing and Publishing',
-      'Embedding Canva or Google Slides'
+      'Sharing and Publishing'
     ])
   })
 
