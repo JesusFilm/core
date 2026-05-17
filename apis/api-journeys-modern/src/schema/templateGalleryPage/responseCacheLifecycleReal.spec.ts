@@ -33,10 +33,17 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-vi.hoisted(() => {
+// Capture the original NODE_ENV before the hoisted mutation so an
+// afterAll can restore it. Without restoration, a shared vitest worker
+// would carry `NODE_ENV='production'` into any sibling spec that runs
+// after this file — silently changing what the next file sees from
+// `process.env`. The afterAll restoration is below in the describe block.
+const originalNodeEnv = vi.hoisted((): string | undefined => {
+  const original = process.env.NODE_ENV
   // process.env.NODE_ENV is typed as readonly in node:process — use
   // Object.assign to mutate it without a `// @ts-expect-error` dance.
   Object.assign(process.env, { NODE_ENV: 'production' })
+  return original
 })
 
 vi.mock('@graphql-hive/gateway', async () => {
@@ -110,6 +117,16 @@ describe('NES-1677 real-schema cache lifecycle', () => {
     yoga = yogaModule.yoga
     cache = yogaModule.cache
     executor = buildHTTPExecutor({ fetch: yoga.fetch.bind({}) })
+  })
+
+  afterAll(() => {
+    // Restore NODE_ENV so a shared vitest worker doesn't carry
+    // `production` into any sibling spec that runs after this file.
+    if (originalNodeEnv === undefined) {
+      delete process.env.NODE_ENV
+    } else {
+      Object.assign(process.env, { NODE_ENV: originalNodeEnv })
+    }
   })
 
   beforeEach(async () => {

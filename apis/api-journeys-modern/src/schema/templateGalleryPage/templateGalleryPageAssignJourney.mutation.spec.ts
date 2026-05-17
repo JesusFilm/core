@@ -421,7 +421,6 @@ describe('templateGalleryPageAssignJourney', () => {
       document: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
       variables: { journeyId: 'journey-1', pageId: 'missing-page' }
     })
-    expect(invalidateSpy).not.toHaveBeenCalled()
 
     expect(result).toEqual({
       data: { templateGalleryPageAssignJourney: null },
@@ -431,6 +430,7 @@ describe('templateGalleryPageAssignJourney', () => {
         })
       ]
     })
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('throws FORBIDDEN when caller is not in the target page team', async () => {
