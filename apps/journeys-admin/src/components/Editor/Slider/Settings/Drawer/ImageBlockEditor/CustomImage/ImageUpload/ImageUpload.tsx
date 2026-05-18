@@ -44,7 +44,9 @@ export function ImageUpload({
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
   const [errorCode, setErrorCode] = useState<ErrorCode>()
-  const successResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const successResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
 
   useEffect(() => {
     setErrorCode(undefined)
@@ -118,7 +120,12 @@ export function ImageUpload({
           false
         )
         onUploaded?.()
-        onChange({ src: `${url}/public`, scale: 100, focalLeft: 50, focalTop: 50 })
+        onChange({
+          src: `${url}/public`,
+          scale: 100,
+          focalLeft: 50,
+          focalTop: 50
+        })
         if (successResetTimerRef.current != null) {
           clearTimeout(successResetTimerRef.current)
         }

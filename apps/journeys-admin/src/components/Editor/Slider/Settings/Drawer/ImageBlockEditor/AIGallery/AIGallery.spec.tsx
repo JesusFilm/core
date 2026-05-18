@@ -116,9 +116,7 @@ describe('AIGallery', () => {
       </MockedProvider>
     )
     expect(screen.queryByText('Generations')).not.toBeInTheDocument()
-    expect(
-      screen.queryByTestId('MediaLibrary')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId('MediaLibrary')).not.toBeInTheDocument()
   })
 
   it('should render the generations grid when mediaLibrary flag is on', async () => {
@@ -183,14 +181,18 @@ describe('AIGallery', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(screen.getByTestId('media-library-image-existing')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('media-library-image-existing')
+      ).toBeInTheDocument()
     )
     fireEvent.change(screen.getByRole('textbox', { name: 'Prompt' }), {
       target: { value: 'an image of the New Jerusalem' }
     })
     fireEvent.click(screen.getByRole('button', { name: 'Prompt' }))
     await waitFor(() =>
-      expect(screen.getByTestId('media-library-image-imageId')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('media-library-image-imageId')
+      ).toBeInTheDocument()
     )
   })
 

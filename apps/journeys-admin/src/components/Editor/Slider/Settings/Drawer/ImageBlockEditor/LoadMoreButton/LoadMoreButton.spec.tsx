@@ -44,9 +44,7 @@ describe('LoadMoreButton', () => {
   })
 
   it('should render "Loading..." when loading is true even if hasMore is false', () => {
-    render(
-      <LoadMoreButton hasMore={false} loading onClick={jest.fn()} />
-    )
+    render(<LoadMoreButton hasMore={false} loading onClick={jest.fn()} />)
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 

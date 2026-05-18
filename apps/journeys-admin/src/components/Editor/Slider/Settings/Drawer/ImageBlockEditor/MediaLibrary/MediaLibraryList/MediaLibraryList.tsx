@@ -58,8 +58,7 @@ export function MediaLibraryList({
               background: (theme) => theme.palette.divider,
               outline: '2px solid',
               outlineOffset: 2,
-              transition: (theme) =>
-                theme.transitions.create('outline-color'),
+              transition: (theme) => theme.transitions.create('outline-color'),
               outlineColor: (theme) =>
                 selected ? theme.palette.primary.main : 'transparent'
             }}

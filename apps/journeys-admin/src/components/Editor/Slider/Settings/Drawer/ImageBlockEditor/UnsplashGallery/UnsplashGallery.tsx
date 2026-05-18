@@ -183,11 +183,7 @@ export function UnsplashGallery({
         gallery={gallery}
         onChange={onChange}
       />
-      <LoadMoreButton
-        hasMore
-        loading={loading}
-        onClick={handleFetchMore}
-      />
+      <LoadMoreButton hasMore loading={loading} onClick={handleFetchMore} />
     </Stack>
   )
 }
