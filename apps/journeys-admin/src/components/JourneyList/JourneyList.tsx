@@ -1,6 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
+import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
@@ -189,26 +190,37 @@ export function JourneyList({
       )}
       {showTemplateInfoPanel && (
         <>
-          {/* Desktop (md+): static right-anchored column matching the
-              journeys-tab SidePanel chrome — same width (`sidePanel.width`),
-              same top offset (`mt: 15.5` = 124px past the page header), same
-              right gutter (`mr: 5` = 40px), and stretches to the viewport
-              bottom with top-only rounded corners (the inner TemplateInfo-
-              Panel chrome supplies those). */}
-          <Box
+          {/* Desktop (md+): permanent MUI Drawer mirroring the journeys-tab
+              SidePanel's desktopStyle so positioning, width, border, and
+              rounded-top chrome all match the existing journeys panel without
+              any custom maths. Stripping TemplateInfoPanel's outer chrome
+              (border/bg/radius) lets the Drawer Paper own the visual frame. */}
+          <Drawer
+            elevation={1}
+            anchor="right"
+            variant="permanent"
+            hideBackdrop
             data-testid="TemplateInfoPanelDesktop"
             sx={{
-              display: { xs: 'none', md: 'block' },
-              position: 'fixed',
-              right: 40,
-              top: 124,
-              bottom: 0,
+              display: { xs: 'none', md: 'flex' },
               width: sidePanel.width,
-              overflowY: 'auto'
+              flexShrink: 1,
+              '& .MuiDrawer-paper': {
+                overflowX: 'hidden',
+                boxSizing: 'border-box',
+                width: sidePanel.width,
+                height: 'calc(100% - 68px)',
+                mt: 15.5,
+                mr: 5,
+                borderTopLeftRadius: { xs: 0, sm: 12 },
+                borderTopRightRadius: { xs: 0, sm: 12 },
+                border: '1px solid',
+                borderColor: 'divider'
+              }
             }}
           >
             <TemplateInfoPanel />
-          </Box>
+          </Drawer>
           {/* Mobile (xs/sm): floating Info button + bottom SwipeableDrawer */}
           <Box
             sx={{

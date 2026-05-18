@@ -66,17 +66,7 @@ export function TemplateInfoPanel({
     <Box
       className={className}
       data-testid="TemplateInfoPanel"
-      sx={{
-        width: '100%',
-        bgcolor: 'background.paper',
-        border: '1px solid',
-        borderColor: 'divider',
-        borderTopLeftRadius: 4,
-        borderTopRightRadius: 4,
-        borderBottomLeftRadius: 0,
-        borderBottomRightRadius: 0,
-        overflow: 'hidden'
-      }}
+      sx={{ width: '100%' }}
     >
       <Stack
         sx={{
