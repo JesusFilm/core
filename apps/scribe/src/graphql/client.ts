@@ -3,6 +3,7 @@ import { print } from 'graphql'
 import { type TadaDocumentNode } from '@core/shared/gql'
 
 import type { ActiveSession } from '../auth/login'
+import type { EnvironmentConfig } from '../config/environments'
 
 export interface GraphQLErrorEntry {
   message: string
@@ -51,17 +52,60 @@ export async function graphqlRequest<TResult, TVariables>(
   document: TadaDocumentNode<TResult, TVariables>,
   variables?: TVariables
 ): Promise<TResult> {
-  const response = await fetch(session.environment.gatewayUrl, {
+  return await postGraphql({
+    gatewayUrl: session.environment.gatewayUrl,
+    token: session.token,
+    document,
+    variables
+  })
+}
+
+export async function graphqlRequestUnauthenticated<TResult>(
+  env: EnvironmentConfig,
+  document: TadaDocumentNode<TResult, Record<string, never>>
+): Promise<TResult>
+export async function graphqlRequestUnauthenticated<TResult, TVariables>(
+  env: EnvironmentConfig,
+  document: TadaDocumentNode<TResult, TVariables>,
+  variables: TVariables
+): Promise<TResult>
+export async function graphqlRequestUnauthenticated<TResult, TVariables>(
+  env: EnvironmentConfig,
+  document: TadaDocumentNode<TResult, TVariables>,
+  variables?: TVariables
+): Promise<TResult> {
+  return await postGraphql({
+    gatewayUrl: env.gatewayUrl,
+    token: null,
+    document,
+    variables
+  })
+}
+
+interface PostGraphqlOptions<TResult, TVariables> {
+  gatewayUrl: string
+  token: string | null
+  document: TadaDocumentNode<TResult, TVariables>
+  variables: TVariables | undefined
+}
+
+async function postGraphql<TResult, TVariables>(
+  options: PostGraphqlOptions<TResult, TVariables>
+): Promise<TResult> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'x-graphql-client-name': 'scribe'
+  }
+  if (options.token != null) {
+    headers.Authorization = `JWT ${options.token}`
+  }
+  const response = await fetch(options.gatewayUrl, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-graphql-client-name': 'scribe',
-      Authorization: `JWT ${session.token}`
-    },
+    headers,
     body: JSON.stringify({
-      query: print(document),
-      variables,
-      operationName: getOperationName(document)
+      query: print(options.document),
+      variables: options.variables,
+      operationName: getOperationName(options.document)
     })
   })
 

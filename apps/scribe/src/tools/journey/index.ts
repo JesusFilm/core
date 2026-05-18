@@ -2,8 +2,10 @@ import { tool } from '@anthropic-ai/claude-agent-sdk'
 import { z } from 'zod'
 
 import type { ActiveSession } from '../../auth/login'
+import { type EnvironmentId } from '../../config/environments'
 import { GraphQLRequestError } from '../../graphql/client'
 import type { TeamSelection } from '../../repl/state/types'
+import { fetchTeamsAndActiveTeam } from '../team/api'
 
 import {
   aiTranslateJourney,
@@ -14,6 +16,10 @@ import {
   fetchLanguagesByIds,
   resolveJourneyByIdOrSlug
 } from './api'
+import {
+  copyJourneyAcrossEnvironments,
+  resolveCachedSession
+} from './copyJourney'
 import { diffJourney } from './diffJourney'
 import { SUPPORTED_LANGUAGE_IDS } from './supportedLanguages'
 import type { JourneySimple } from './types'
@@ -225,6 +231,110 @@ export function buildJourneyTools(
             id,
             teamId: activeTeam.team.id,
             duplicateAsDraft
+          })
+          return jsonResult(result)
+        } catch (error) {
+          return errorResult(formatGraphqlError(error))
+        }
+      }
+    ),
+    tool(
+      'list_teams_in_env',
+      'List teams visible to your cached scribe credential in another environment. Use this when picking a destination team for copy_journey — pass the env id (`dev`, `stage`, or `prod`) you want to copy INTO. Requires that you have previously signed in to that env via `/env <id>`. If the env matches the active scribe session, this returns the live teams instead.',
+      {
+        envId: z
+          .enum(['dev', 'stage', 'prod'])
+          .describe('Environment to list teams from.')
+      },
+      async ({ envId }) => {
+        const envSession =
+          envId === session.environment.id
+            ? session
+            : resolveCachedSession(envId)
+        if (envSession == null) {
+          return errorResult(
+            `No cached scribe credential for "${envId}". Ask the user to run \`/env ${envId}\` to sign in there, then \`/env ${session.environment.id}\` to switch back, then retry.`
+          )
+        }
+        try {
+          const result = await fetchTeamsAndActiveTeam(envSession)
+          return jsonResult({
+            environment: envId,
+            teams: result.teams,
+            lastActiveTeamId: result.lastActiveTeamId
+          })
+        } catch (error) {
+          return errorResult(formatGraphqlError(error))
+        }
+      }
+    ),
+    tool(
+      'copy_journey',
+      "Copy a journey (regular blocks, not JourneySimple) from one environment into a team in another environment. Always lands as a draft. The source env must be different from the destination env — use `duplicate_journey` for in-env copies. **Source credentials are NOT required**: the source journey is fetched anonymously via the public `journey()` query, so the user does not need to be signed in to the source env. Only the destination needs cached scribe credentials. The destination is the active scribe session unless overridden via `destEnvId`. The destination team defaults to the active team, but can be overridden with `destTeamId` — for cross-env copies, fetch candidate teams via `list_teams_in_env` first and ASK THE USER which team to use. Image URLs are copied as-is — the user must verify them in the destination if Cloudflare delivery URLs differ across environments. Returns the new journey id, slug, admin URL, block count, and any warnings about content that could not be copied (chat buttons, host, tags, primary/creator/logo image blocks, menu step block, journey theme).",
+      {
+        sourceEnvId: z
+          .enum(['dev', 'stage', 'prod'])
+          .describe('Environment to copy FROM.'),
+        sourceIdOrSlug: z
+          .string()
+          .min(1)
+          .describe('Journey UUID or slug in the source environment.'),
+        destEnvId: z
+          .enum(['dev', 'stage', 'prod'])
+          .optional()
+          .describe(
+            'Environment to copy INTO. Defaults to the active scribe session.'
+          ),
+        destTeamId: z
+          .string()
+          .min(1)
+          .optional()
+          .describe(
+            'Destination team id. Defaults to the active team. Required when copying into a different environment than the active session, OR when the active selection is "Shared with me".'
+          )
+      },
+      async ({ sourceEnvId, sourceIdOrSlug, destEnvId, destTeamId }) => {
+        const targetEnvId: EnvironmentId =
+          destEnvId ?? session.environment.id
+        if (sourceEnvId === targetEnvId) {
+          return errorResult(
+            'sourceEnvId and destEnvId are the same. Use `duplicate_journey` to copy within an environment.'
+          )
+        }
+        const destSession =
+          targetEnvId === session.environment.id
+            ? session
+            : resolveCachedSession(targetEnvId)
+        if (destSession == null) {
+          return errorResult(
+            `No cached scribe credential for the destination environment "${targetEnvId}". Ask the user to run \`/env ${targetEnvId}\` to sign in there, then \`/env ${session.environment.id}\` to switch back, then retry.`
+          )
+        }
+        let resolvedDestTeamId = destTeamId
+        if (resolvedDestTeamId == null) {
+          if (targetEnvId !== session.environment.id) {
+            return errorResult(
+              `destTeamId is required when copying into a different environment (${targetEnvId}). Run \`list_teams_in_env\` with envId=${targetEnvId}, ask the user which team to use, then pass its id as destTeamId.`
+            )
+          }
+          if (activeTeam == null) {
+            return errorResult(
+              'No active team and no destTeamId provided. Ask the user to run /team and pick a team in the destination environment, or pass destTeamId explicitly.'
+            )
+          }
+          if (activeTeam.kind !== 'team') {
+            return errorResult(
+              'The active selection is "Shared with me", which is not a real team. Pass destTeamId explicitly or ask the user to pick a real team via /team.'
+            )
+          }
+          resolvedDestTeamId = activeTeam.team.id
+        }
+        try {
+          const result = await copyJourneyAcrossEnvironments({
+            sourceEnvId,
+            sourceIdOrSlug,
+            destSession,
+            destTeamId: resolvedDestTeamId
           })
           return jsonResult(result)
         } catch (error) {

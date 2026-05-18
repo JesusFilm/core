@@ -178,7 +178,7 @@ Things to know when using OpenRouter, Hermes, LM Studio, or Ollama:
 
 ## How the journey troubleshooter works
 
-The CLI registers five MCP tools backed by GraphQL and in-process logic:
+The CLI registers MCP tools backed by GraphQL and in-process logic:
 
 - `resolve_journey` — turn a slug into an id (`adminJourney` query).
 - `fetch_journey` — `journeySimpleGet` query.
@@ -187,12 +187,104 @@ The CLI registers five MCP tools backed by GraphQL and in-process logic:
 - `diff_journey` — pure-function structural diff between two JourneySimple
   documents.
 - `update_journey` — `journeySimpleUpdate` mutation.
+- `create_journey` / `duplicate_journey` / `translate_journey` —
+  scaffolding, in-environment duplication, and AI translation.
+- `list_teams_in_env` — list teams visible to your cached credential in
+  another environment (used by `copy_journey`).
+- `copy_journey` — copy a journey (regular blocks, not JourneySimple)
+  from one environment into a team in another environment. See
+  [Cross-environment journey copy](#cross-environment-journey-copy).
 
 The agent receives a system prompt
 ([src/repl/systemPrompt.ts](src/repl/systemPrompt.ts)) that teaches it the
 fetch → lint → analyze → propose → diff → re-lint → apply → verify workflow,
 including hard rules ("never call update without explicit user approval after
 showing a diff", "never retry on FORBIDDEN").
+
+## Cross-environment journey copy
+
+`copy_journey` pulls a journey (with regular blocks — not JourneySimple)
+from one environment and recreates it in a team in another environment.
+The new journey **always lands as a draft**, regardless of source status.
+
+There is no server-side "import journey" mutation, so scribe walks the
+source block tree and replays per-type create + update + action mutations
+against the destination. Expect dozens of GraphQL round-trips on a
+moderately sized journey.
+
+### Setup
+
+`copy_journey` reads the source journey **anonymously** via the public
+`journey()` GraphQL query — no source credentials are required, and the
+user never has to sign in to the source environment. The destination is
+the active scribe session (or another env you have a cached token for).
+In practice this means a typical copy is a one-step operation: be signed
+in to the destination, then ask the agent to pull from any other env.
+
+### Asking the agent
+
+The agent will ask for the destination team interactively. A typical
+exchange:
+
+```
+> copy journey easter-2024 from prod into stage
+…
+agent: Available teams in stage:
+  1. Acceptance Team (id team_abc…)
+  2. QA Team       (id team_xyz…)
+Which team should I copy into?
+> 1
+agent: Copying "Easter 2024" (id …) from prod to team
+       Acceptance Team in stage as a draft. Proceed?
+> yes
+…
+agent: Done. New draft: https://admin-stage.nextstep.is/journeys/…
+       Warnings:
+         - Source has chat buttons — not copied by scribe in this version.
+         - Source has tags — not copied by scribe in this version.
+```
+
+### What is and is not copied
+
+**Copied:**
+
+- Journey scalars: title, description, language, themes, SEO fields,
+  display title, social node coordinates, header/footer/menu toggles,
+  `creatorDescription`.
+- Every `StepBlock`, `CardBlock`, `TypographyBlock`, `ButtonBlock`,
+  `IconBlock`, `ImageBlock`, `VideoBlock`, `VideoTriggerBlock`,
+  `RadioQuestionBlock`, `RadioOptionBlock`, `MultiselectBlock`,
+  `MultiselectOptionBlock`, `SignUpBlock`, `SpacerBlock`, and
+  `TextResponseBlock`.
+- Sibling order within each parent (preserved by creating in
+  `parentOrder` sequence — the server auto-assigns `parentOrder` as the
+  sibling count).
+- `Step.nextBlockId` and `Step.slug`.
+- `Card.coverBlockId`, `Card.showAssistant`, `Card.expandChatByDefault`.
+- `Button.startIconId`, `Button.endIconId`, `SignUp.submitIconId`,
+  `Video.posterBlockId`, `RadioOption.pollOptionImageBlockId`.
+- `Multiselect.min/max` and the full `TextResponse` field set.
+- `NavigateToBlockAction` (with id remapping), `LinkAction`,
+  `EmailAction`, `ChatAction`, `PhoneAction`.
+- `ImageBlock.src` URLs are copied **as-is**. Cloudflare delivery URLs
+  often work cross-environment, but if your destination Cloudflare account
+  cannot serve the source URL, the image will render broken — re-upload
+  manually in journeys-admin.
+
+**Not copied (returned as warnings):**
+
+- Chat buttons (per-journey link/platform pairs)
+- Host (per-team author profile)
+- Tags
+- Journey-level image blocks: `primaryImageBlock` (social/share preview),
+  `creatorImageBlock`, `logoImageBlock`
+- `menuStepBlock`
+- `journeyCustomizationFields`
+- Custom `journeyTheme` (fonts)
+- `RadioQuestionBlock.gridView` (not exposed by create/update mutations)
+
+The copy is non-atomic. If a mutation fails mid-flight, a partial draft is
+left in the destination — delete it in journeys-admin and retry.
 
 ## Layout
 
@@ -235,7 +327,8 @@ apps/scribe/
     │       └── types.ts           # ReplState, TranscriptEntry, UsageTotals
     └── tools/
         └── journey/
-            ├── api.ts             # GraphQL operations
+            ├── api.ts             # GraphQL operations (single-env)
+            ├── copyJourney.ts     # cross-env copy: fetch + replay all blocks
             ├── diffJourney.ts     # structural diff
             ├── index.ts           # MCP tool registration
             ├── types.ts           # JourneySimple TS types + issue codes

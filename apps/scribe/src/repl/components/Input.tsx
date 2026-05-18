@@ -50,8 +50,14 @@ export function Input({
   history
 }: InputProps): ReactElement {
   const [value, setValue] = useState('')
+  const [cursorPos, setCursorPos] = useState(0)
   const [cursorVisible, setCursorVisible] = useState(true)
   const [menuIndex, setMenuIndex] = useState(0)
+
+  const replaceValue = (next: string): void => {
+    setValue(next)
+    setCursorPos(next.length)
+  }
 
   useEffect(() => {
     if (!enabled) return
@@ -86,7 +92,7 @@ export function Input({
             ? applyMenuSelection(value, slashMatches[menuIndex])
             : trimmed
         history.push(submitted)
-        setValue('')
+        replaceValue('')
         setMenuIndex(0)
         onSubmit(submitted)
         return
@@ -94,7 +100,7 @@ export function Input({
 
       if (key.tab && showMenu && slashMatches != null) {
         const completed = applyMenuSelection(value, slashMatches[menuIndex])
-        setValue(completed)
+        replaceValue(completed)
         return
       }
 
@@ -111,7 +117,7 @@ export function Input({
       // Up arrow with no slash menu — recall the previous prompt from history.
       if (key.upArrow) {
         const recalled = history.recallPrev(value)
-        if (recalled != null) setValue(recalled)
+        if (recalled != null) replaceValue(recalled)
         return
       }
 
@@ -119,19 +125,32 @@ export function Input({
       // back to the original draft when past the newest entry.
       if (key.downArrow) {
         const recalled = history.recallNext()
-        if (recalled != null) setValue(recalled)
+        if (recalled != null) replaceValue(recalled)
+        return
+      }
+
+      if (key.leftArrow) {
+        setCursorPos((c) => Math.max(0, c - 1))
+        return
+      }
+
+      if (key.rightArrow) {
+        setCursorPos((c) => Math.min(value.length, c + 1))
         return
       }
 
       if (key.escape) {
-        setValue('')
+        replaceValue('')
         setMenuIndex(0)
         history.reset()
         return
       }
 
       if (key.backspace || key.delete) {
-        setValue((v) => v.slice(0, -1))
+        if (cursorPos === 0) return
+        const next = value.slice(0, cursorPos - 1) + value.slice(cursorPos)
+        setValue(next)
+        setCursorPos(cursorPos - 1)
         return
       }
 
@@ -140,12 +159,12 @@ export function Input({
       // Filter out other non-printable keys.
       if (input.length === 0) return
 
-      setValue((v) => v + input)
+      const next = value.slice(0, cursorPos) + input + value.slice(cursorPos)
+      setValue(next)
+      setCursorPos(cursorPos + input.length)
     },
     { isActive: enabled }
   )
-
-  const cursor = enabled && cursorVisible ? '█' : ' '
 
   return (
     <Box flexDirection="column">
@@ -154,16 +173,69 @@ export function Input({
       ) : null}
       <Box>
         <Text color="cyan">› </Text>
-        <Text>
-          {value.length === 0 ? (
-            <Text color="gray">{placeholder}</Text>
-          ) : (
-            value
-          )}
-        </Text>
-        <Text>{cursor}</Text>
+        <InputLine
+          value={value}
+          cursorPos={cursorPos}
+          cursorVisible={enabled && cursorVisible}
+          placeholder={placeholder}
+        />
       </Box>
     </Box>
+  )
+}
+
+interface InputLineProps {
+  value: string
+  cursorPos: number
+  cursorVisible: boolean
+  placeholder: string
+}
+
+function InputLine({
+  value,
+  cursorPos,
+  cursorVisible,
+  placeholder
+}: InputLineProps): ReactElement {
+  if (value.length === 0) {
+    return (
+      <Text>
+        <Text color="gray">{placeholder}</Text>
+        <Cursor visible={cursorVisible}> </Cursor>
+      </Text>
+    )
+  }
+  const before = value.slice(0, cursorPos)
+  const atCursor = value.slice(cursorPos, cursorPos + 1)
+  const after = value.slice(cursorPos + 1)
+  if (atCursor.length === 0) {
+    return (
+      <Text>
+        <Text>{before}</Text>
+        <Cursor visible={cursorVisible}> </Cursor>
+      </Text>
+    )
+  }
+  return (
+    <Text>
+      <Text>{before}</Text>
+      <Cursor visible={cursorVisible}>{atCursor}</Cursor>
+      <Text>{after}</Text>
+    </Text>
+  )
+}
+
+interface CursorProps {
+  visible: boolean
+  children: string
+}
+
+function Cursor({ visible, children }: CursorProps): ReactElement {
+  if (!visible) return <Text>{children}</Text>
+  return (
+    <Text backgroundColor="white" color="black">
+      {children}
+    </Text>
   )
 }
 
