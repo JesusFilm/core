@@ -47,24 +47,21 @@ builder.mutationField('templateGalleryPagePublish', (t) =>
       //
       // Idempotent re-publish: when status is already 'published' we skip
       // updateMany entirely and just re-read.
-      const { result, didMutate } = await prisma
+      return await prisma
         .$transaction(async (tx) => {
-          let count = 0
           if (page.status !== 'published') {
-            const { count: updated } = await tx.templateGalleryPage.updateMany({
+            await tx.templateGalleryPage.updateMany({
               where: { id, status: 'draft' },
               data: {
                 status: 'published',
                 publishedAt: new Date()
               }
             })
-            count = updated
           }
-          const row = await tx.templateGalleryPage.findUniqueOrThrow({
+          return await tx.templateGalleryPage.findUniqueOrThrow({
             ...query,
             where: { id }
           })
-          return { result: row, didMutate: count > 0 }
         })
         .catch((error) => {
           // Edge case: the page was deleted between our auth-fetch and the
@@ -81,17 +78,6 @@ builder.mutationField('templateGalleryPagePublish', (t) =>
           }
           throw error
         })
-
-      // Only invalidate when this caller actually transitioned the row.
-      // Idempotent re-publishes and race-lost callers (updateMany count=0)
-      // skip the eviction so authenticated callers can't spam the mutation
-      // to flush the global response cache. Typename-level eviction reaches
-      // null entries that the plugin's entity-ID auto-invalidation cannot
-      // match, closing the NES-1644 stale-null gap.
-      if (didMutate) {
-        await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
-      }
-      return result
     }
   })
 )

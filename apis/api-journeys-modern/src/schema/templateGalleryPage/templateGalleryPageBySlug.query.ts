@@ -26,15 +26,27 @@ builder.queryField('templateGalleryPageBySlug', (t) =>
     },
     resolve: async (query, _parent, args) => {
       const { slug } = args
-      // Reject malformed slugs before hitting the DB — bounds enumeration
-      // and probing cost for anonymous traffic.
+      console.info('[bySlug.resolve] called', { slug })
       if (!SLUG_PATTERN.test(slug) || slug.length > SLUG_MAX_LENGTH) {
+        console.info('[bySlug.resolve] rejected malformed', { slug })
         return null
       }
-      return await prisma.templateGalleryPage.findFirst({
+      const result = await prisma.templateGalleryPage.findFirst({
         ...query,
         where: { slug, status: 'published' }
       })
+      const any = await prisma.templateGalleryPage.findFirst({
+        where: { slug },
+        select: { id: true, status: true, publishedAt: true }
+      })
+      console.info('[bySlug.resolve] returning', {
+        slug,
+        resultIsNull: result == null,
+        dbAnyRowExists: any != null,
+        dbAnyRowStatus: any?.status,
+        dbAnyRowPublishedAt: any?.publishedAt?.toISOString()
+      })
+      return result
     }
   })
 )

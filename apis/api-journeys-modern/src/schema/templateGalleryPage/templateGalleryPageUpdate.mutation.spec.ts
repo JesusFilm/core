@@ -6,7 +6,6 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
-import { cache } from '../../yoga'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -15,8 +14,6 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
-
-const invalidateSpy = vi.spyOn(cache, 'invalidate').mockResolvedValue(undefined)
 
 describe('templateGalleryPageUpdate', () => {
   const mockUser = {
@@ -98,16 +95,6 @@ describe('templateGalleryPageUpdate', () => {
         data: expect.objectContaining({ title: 'New Title' })
       })
     )
-    // Update can change any cacheable field (title here, but also slug,
-    // description, templates list, etc.) — must invalidate.
-    expect(invalidateSpy).toHaveBeenCalledTimes(1)
-    expect(invalidateSpy).toHaveBeenCalledWith([
-      { typename: 'TemplateGalleryPage' }
-    ])
-    // Ordering invariant: invalidate runs AFTER prisma.$transaction.
-    expect(prismaMock.$transaction.mock.invocationCallOrder[0]).toBeLessThan(
-      invalidateSpy.mock.invocationCallOrder[0]
-    )
   })
 
   it('throws NOT_FOUND when page does not exist', async () => {
@@ -129,7 +116,6 @@ describe('templateGalleryPageUpdate', () => {
         })
       ]
     })
-    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('throws FORBIDDEN when caller is not in the page team', async () => {
@@ -155,7 +141,6 @@ describe('templateGalleryPageUpdate', () => {
         })
       ]
     })
-    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('replaces journeyIds via deleteMany + createMany when provided', async () => {

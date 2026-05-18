@@ -57,21 +57,9 @@ export default async function handler(
     return res.status(400).json({ error: 'Invalid slug' })
   }
 
-  try {
-    // Public template-gallery page lives at /home/template-gallery/<slug>
-    // (Next rewrite maps your.nextstep.is/template-gallery/<slug> → here).
-    // Custom domains can't host gallery pages (NES-1644), so no hostname branch.
-    const path = `/home/template-gallery/${slug}`
-    await res.revalidate(path)
-
-    return res.status(200).json({
-      revalidated: true
-    })
-  } catch (err) {
-    // If there was an error, Next.js will continue
-    // to show the last successfully generated page
-    return res.status(500).json({
-      error: 'Error revalidating'
-    })
-  }
+  // The public template-gallery page now uses getServerSideProps (no ISR
+  // cache), so this endpoint has no cache to invalidate. Kept on the URL
+  // so callers (admin proxy / FE hook) don't need to change. Returns 200
+  // unconditionally — SSR renders fresh data on the next request.
+  return res.status(200).json({ revalidated: true, mode: 'ssr-noop' })
 }

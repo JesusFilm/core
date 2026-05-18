@@ -1,4 +1,4 @@
-import { GetStaticPaths, GetStaticProps } from 'next'
+import { GetServerSideProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -80,9 +80,25 @@ function TemplateGalleryPageRoute({
   )
 }
 
-export const getStaticProps: GetStaticProps<
+// SSR (not ISR) by design. Template-gallery pages are admin-managed and
+// support unpublish→republish cycles; ISR's cached `notFound` state was
+// observed to stick across mutation-driven revalidates on Next 16 Pages
+// Router, leaving "View the page" 404-ing for ~60s after a republish.
+// SSR sidesteps that entirely — every request hits the API, which already
+// runs at TTL 0 for `templateGalleryPageBySlug`. Load is one indexed slug
+// lookup per request; trivial.
+export const getServerSideProps: GetServerSideProps<
   TemplateGalleryPageRouteProps
 > = async (context) => {
+  // Prevent any browser/intermediate cache from holding a 404 across the
+  // unpublish→republish cycle. Without this, a browser that hit the page
+  // while it was draft (404) would re-serve that cached 404 from its own
+  // HTTP cache, even after the page is republished and SSR would return
+  // the row fresh. `no-store` is the strongest directive — never cache,
+  // never reuse. Trivial perf cost: each request rerenders, which is
+  // already what SSR does anyway.
+  context.res.setHeader('Cache-Control', 'no-store, max-age=0')
+
   const slug = context.params?.slug?.toString() ?? ''
   const translations = await serverSideTranslations(
     context.locale ?? 'en',
@@ -91,11 +107,7 @@ export const getStaticProps: GetStaticProps<
   )
 
   if (!isValidGallerySlug(slug)) {
-    return {
-      props: { ...translations },
-      notFound: true,
-      revalidate: 60
-    }
+    return { props: { ...translations }, notFound: true }
   }
 
   const apolloClient = createApolloClient()
@@ -116,27 +128,19 @@ export const getStaticProps: GetStaticProps<
     // error-but-null shape that hid the NES-1644 cache bug.
     if (errors != null && errors.length > 0) {
       const MAX_LOGGED_ERRORS = 5
-      // Only keep the fields we know are safe to log. `extensions`
-      // can carry server-side stack traces and Prisma context — pull
-      // out the GraphQL `code` field but drop everything else so the
-      // log stays bounded and side-channel-free.
       const safeErrors = errors.slice(0, MAX_LOGGED_ERRORS).map((e) => ({
         message: e.message,
         path: e.path,
         code: typeof e.extensions?.code === 'string' ? e.extensions.code : null
       }))
-      console.warn('[template-gallery getStaticProps] null branch', {
+      console.warn('[template-gallery getServerSideProps] null branch', {
         slug,
         errorCount: errors.length,
         errors: safeErrors,
         truncated: errors.length > MAX_LOGGED_ERRORS
       })
     }
-    return {
-      props: { ...translations },
-      notFound: true,
-      revalidate: 60
-    }
+    return { props: { ...translations }, notFound: true }
   }
 
   return {
@@ -144,14 +148,8 @@ export const getStaticProps: GetStaticProps<
       flags: await getFlags(),
       ...translations,
       gallery
-    },
-    revalidate: 60
+    }
   }
 }
-
-export const getStaticPaths: GetStaticPaths = async () => ({
-  paths: [],
-  fallback: 'blocking'
-})
 
 export default TemplateGalleryPageRoute

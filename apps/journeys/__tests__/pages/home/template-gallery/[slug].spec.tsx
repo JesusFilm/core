@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
-import { GetStaticPropsContext } from 'next'
+import { GetServerSidePropsContext } from 'next'
 
 import TemplateGalleryPageRoute, {
-  getStaticProps
+  getServerSideProps
 } from '../../../../pages/home/template-gallery/[slug]'
 import { makeGallery } from '../../../../src/components/TemplateGalleryView/galleryFixture'
 import { GET_TEMPLATE_GALLERY_PAGE } from '../../../../src/libs/getTemplateGalleryPage'
@@ -58,21 +58,22 @@ vi.mock('../../../../src/components/TemplateGalleryView', () => ({
 
 const baseContext = {
   locale: 'en'
-} as unknown as GetStaticPropsContext
+} as unknown as GetServerSidePropsContext
 
-describe('template-gallery [slug] getStaticProps', () => {
+describe('template-gallery [slug] getServerSideProps', () => {
   beforeEach(() => {
     mockQuery.mockReset()
   })
 
   it('returns notFound for a malformed slug without calling the gateway', async () => {
-    const result = await getStaticProps({
+    const result = await getServerSideProps({
       ...baseContext,
       params: { slug: 'BAD_SLUG!!' }
     })
 
     expect(mockQuery).not.toHaveBeenCalled()
-    expect(result).toMatchObject({ notFound: true, revalidate: 60 })
+    expect(result).toMatchObject({ notFound: true })
+    expect(result).not.toHaveProperty('revalidate')
   })
 
   it('returns notFound when the resolver returns null', async () => {
@@ -80,7 +81,7 @@ describe('template-gallery [slug] getStaticProps', () => {
       data: { templateGalleryPageBySlug: null }
     })
 
-    const result = await getStaticProps({
+    const result = await getServerSideProps({
       ...baseContext,
       params: { slug: 'unknown-gallery' }
     })
@@ -92,7 +93,7 @@ describe('template-gallery [slug] getStaticProps', () => {
         errorPolicy: 'all'
       })
     )
-    expect(result).toMatchObject({ notFound: true, revalidate: 60 })
+    expect(result).toMatchObject({ notFound: true })
   })
 
   it('returns gallery props when the resolver returns data', async () => {
@@ -113,15 +114,15 @@ describe('template-gallery [slug] getStaticProps', () => {
       data: { templateGalleryPageBySlug: gallery }
     })
 
-    const result = await getStaticProps({
+    const result = await getServerSideProps({
       ...baseContext,
       params: { slug: 'easter-2026' }
     })
 
     expect(result).toMatchObject({
-      props: { gallery },
-      revalidate: 60
+      props: { gallery }
     })
+    expect(result).not.toHaveProperty('revalidate')
   })
 })
 

@@ -49,21 +49,18 @@ builder.mutationField('templateGalleryPageUnpublish', (t) =>
       //
       // Idempotent re-unpublish: when status is already 'draft' we skip
       // updateMany and just re-read.
-      const { result, didMutate } = await prisma
+      return await prisma
         .$transaction(async (tx) => {
-          let count = 0
           if (page.status === 'published') {
-            const { count: updated } = await tx.templateGalleryPage.updateMany({
+            await tx.templateGalleryPage.updateMany({
               where: { id, status: 'published' },
               data: { status: 'draft' }
             })
-            count = updated
           }
-          const row = await tx.templateGalleryPage.findUniqueOrThrow({
+          return await tx.templateGalleryPage.findUniqueOrThrow({
             ...query,
             where: { id }
           })
-          return { result: row, didMutate: count > 0 }
         })
         .catch((error) => {
           // Edge case: the page was deleted between auth-fetch and re-read.
@@ -78,14 +75,6 @@ builder.mutationField('templateGalleryPageUnpublish', (t) =>
           }
           throw error
         })
-
-      // Skip eviction on idempotent no-ops / race-loss (updateMany count=0).
-      // Mirrors the publish-mutation guard — only callers that actually
-      // transition the row evict the cache.
-      if (didMutate) {
-        await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
-      }
-      return result
     }
   })
 )

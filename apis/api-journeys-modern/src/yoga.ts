@@ -5,10 +5,6 @@ import {
   useForwardedJWT,
   useHmacSignatureValidation
 } from '@graphql-hive/gateway'
-import {
-  createInMemoryCache,
-  useResponseCache
-} from '@graphql-yoga/plugin-response-cache'
 import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
@@ -21,8 +17,6 @@ import { env } from './env'
 import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/authScopes'
-
-export const cache = createInMemoryCache()
 
 export const yoga = createYoga<
   Record<string, unknown>,
@@ -47,8 +41,7 @@ export const yoga = createYoga<
         ...initContextCache(),
         type: 'authenticated',
         user: { ...user, roles: currentRoles },
-        currentRoles,
-        cache
+        currentRoles
       }
     }
     const interopToken = request.headers.get('interop-token')
@@ -58,14 +51,12 @@ export const yoga = createYoga<
       return {
         ...initContextCache(),
         type: 'interop',
-        ...interopContext,
-        cache
+        ...interopContext
       }
 
     return {
       ...initContextCache(),
-      type: 'public',
-      cache
+      type: 'public'
     }
   },
   plugins: [
@@ -81,61 +72,14 @@ export const yoga = createYoga<
       check: async () => {
         await prisma.$queryRaw`SELECT 1`
       }
-    }),
-    process.env.NODE_ENV !== 'test'
-      ? useResponseCache({
-          session: () => null,
-          cache,
-          ttlPerSchemaCoordinate: {
-            'Journey.blockTypenames': 0,
-            'Query.adminJourney': 0,
-            'Query.adminJourneys': 0,
-            'Query.customDomain': 0,
-            'Query.customDomains': 0,
-            // Private per-user data — must not be served from a global shared
-            // cache (session: () => null). TTL 0 disables caching entirely for
-            // this field, preventing cross-user profile contamination that caused
-            // the terms-and-conditions redirect to be skipped for new users.
-            'Query.getJourneyProfile': 0,
-            'Query.getUserRole': 0,
-            'Query.googleSheetsSyncs': 0,
-            // Team-scoped admin reads. The default TTL of Infinity caches the
-            // first response indefinitely, keyed only on (query, teamId). When
-            // a fresh user's first read returns an empty list, the cached
-            // entry has no TemplateGalleryPage entity IDs in it — so
-            // mutation-based invalidation cannot match it, and subsequent
-            // creates appear to "disappear" until the cache is manually
-            // flushed (NES-1648).
-            'Query.templateGalleryPage': 0,
-            'Query.templateGalleryPages': 0,
-            // Public renderer. Finite TTL bounds cache-poisoning impact: a
-            // `null` response (unknown slug / draft / malformed) caches with no
-            // entity ID, so the plugin's automatic entity-ID invalidation
-            // cannot evict it. Without a finite TTL the null branch would
-            // persist for the lifetime of the cache, letting an attacker
-            // pre-poison popular slugs so legitimate later publishes appear
-            // 404. 60 s gives the renderer reasonable cache hit-rate while
-            // keeping the poisoning window short.
-            //
-            // NES-1644 unpublish→republish stale-null gap is closed by
-            // typename-level `cache.invalidate([{ typename: 'TemplateGalleryPage' }])`
-            // in every TemplateGalleryPage mutation (publish, unpublish,
-            // delete, assignJourney, reorderTemplate, update). Typename
-            // invalidation walks the cache by recorded typename presence so it
-            // reaches null entries that lack an entity ID. The 60 s TTL stays
-            // as defense-in-depth against the poisoning case above. See
-            // `responseCacheLifecycle.spec.ts` for the library-contract proof
-            // and `responseCacheLifecycleReal.spec.ts` for the per-mutation
-            // production-schema eviction tests.
-            'Query.templateGalleryPageBySlug': 60_000,
-            'Query.journeysPlausibleStatsAggregate': 5000,
-            'Query.journeysPlausibleStatsBreakdown': 5000,
-            'Query.journeysPlausibleStatsRealtimeVisitors': 5000,
-            'Query.journeysPlausibleStatsTimeseries': 5000,
-            'Query.templateFamilyStatsAggregate': 5000,
-            'Query.templateFamilyStatsBreakdown': 5000
-          }
-        })
-      : {}
+    })
+    // Response caching deliberately disabled. Was the source of stale-null
+    // states across publish/unpublish/republish cycles for
+    // `templateGalleryPageBySlug` — null responses had no entity ID to
+    // track, so the plugin's entity-based invalidation couldn't reach them.
+    // Setting `ttlPerSchemaCoordinate` to 0 should have prevented caching
+    // but didn't fully resolve observed behavior in this codebase, so the
+    // plugin is removed entirely. Each query now hits the resolver fresh;
+    // load impact is trivial for indexed reads.
   ]
 })
