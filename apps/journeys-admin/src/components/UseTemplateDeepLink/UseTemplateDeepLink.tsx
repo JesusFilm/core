@@ -157,7 +157,7 @@ function ActiveUseTemplateDeepLink({
           throw new Error('Journey duplication failed')
         }
 
-        if (!wantsTranslation || journey == null) {
+        if (!wantsTranslation) {
           setLoading(false)
           enqueueSnackbar(t('Journey Copied'), {
             variant: 'success',
@@ -168,6 +168,15 @@ function ActiveUseTemplateDeepLink({
           // resolves; navigatedAwayRef tells handleClose to skip stripping
           // the param so the journey-list nav above isn't clobbered.
           return
+        }
+
+        // The early guard at the top of this function throws when
+        // `wantsTranslation && journey == null`, so reaching here implies
+        // `journey != null`. TypeScript's control-flow narrower can't carry
+        // that transitive invariant across branches, so re-assert it locally —
+        // the throw is unreachable at runtime.
+        if (journey == null) {
+          throw new Error('unreachable: translation path requires journey')
         }
 
         const currentLanguageName =
