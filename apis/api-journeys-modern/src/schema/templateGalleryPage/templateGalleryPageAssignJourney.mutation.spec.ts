@@ -5,6 +5,7 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { cache } from '../../yoga'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -13,6 +14,8 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
+
+const invalidateSpy = vi.spyOn(cache, 'invalidate').mockResolvedValue(undefined)
 
 describe('templateGalleryPageAssignJourney', () => {
   const mockUser = {
@@ -101,6 +104,15 @@ describe('templateGalleryPageAssignJourney', () => {
       }
     })
     expect(prismaMock.templateGalleryPageTemplate.delete).not.toHaveBeenCalled()
+    // Assign changes the cached `templates` array on the target page — invalidate.
+    expect(invalidateSpy).toHaveBeenCalledTimes(1)
+    expect(invalidateSpy).toHaveBeenCalledWith([
+      { typename: 'TemplateGalleryPage' }
+    ])
+    // Ordering invariant: invalidate runs AFTER prisma.$transaction.
+    expect(prismaMock.$transaction.mock.invocationCallOrder[0]).toBeLessThan(
+      invalidateSpy.mock.invocationCallOrder[0]
+    )
   })
 
   it('appends to the end of an existing collection (next order = max + 1)', async () => {
@@ -314,6 +326,11 @@ describe('templateGalleryPageAssignJourney', () => {
       data: { templateGalleryPageAssignJourney: null }
     })
     expect(prismaMock.templateGalleryPageTemplate.delete).not.toHaveBeenCalled()
+    // No-op unassign: no state changed, no cache eviction. Without this
+    // gate any authenticated user could spam the mutation with an
+    // unassigned journey id to flush the global response cache (no
+    // team-membership check on this branch).
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('throws BAD_USER_INPUT when journey is not a template', async () => {
@@ -413,6 +430,7 @@ describe('templateGalleryPageAssignJourney', () => {
         })
       ]
     })
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('throws FORBIDDEN when caller is not in the target page team', async () => {
@@ -436,6 +454,7 @@ describe('templateGalleryPageAssignJourney', () => {
         })
       ]
     })
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('throws FORBIDDEN on unassign when caller is not in the source page team', async () => {
@@ -463,5 +482,6 @@ describe('templateGalleryPageAssignJourney', () => {
       ]
     })
     expect(prismaMock.templateGalleryPageTemplate.delete).not.toHaveBeenCalled()
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 })

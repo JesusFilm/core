@@ -5,6 +5,7 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { cache } from '../../yoga'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -13,6 +14,8 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
+
+const invalidateSpy = vi.spyOn(cache, 'invalidate').mockResolvedValue(undefined)
 
 describe('templateGalleryPageDelete', () => {
   const mockUser = {
@@ -70,6 +73,16 @@ describe('templateGalleryPageDelete', () => {
     expect(prismaMock.templateGalleryPage.delete).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: 'p1' } })
     )
+    expect(invalidateSpy).toHaveBeenCalledTimes(1)
+    expect(invalidateSpy).toHaveBeenCalledWith([
+      { typename: 'TemplateGalleryPage' }
+    ])
+    // Ordering invariant: invalidate runs AFTER prisma.delete completes
+    // (delete is a single statement, no $transaction here — the delete
+    // promise is the commit boundary).
+    expect(
+      prismaMock.templateGalleryPage.delete.mock.invocationCallOrder[0]
+    ).toBeLessThan(invalidateSpy.mock.invocationCallOrder[0])
   })
 
   it('throws NOT_FOUND when page does not exist', async () => {
@@ -89,6 +102,7 @@ describe('templateGalleryPageDelete', () => {
       ]
     })
     expect(prismaMock.templateGalleryPage.delete).not.toHaveBeenCalled()
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 
   it('throws FORBIDDEN when caller is not in the page team', async () => {
@@ -112,5 +126,6 @@ describe('templateGalleryPageDelete', () => {
       ]
     })
     expect(prismaMock.templateGalleryPage.delete).not.toHaveBeenCalled()
+    expect(invalidateSpy).not.toHaveBeenCalled()
   })
 })

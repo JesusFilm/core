@@ -49,32 +49,43 @@ builder.mutationField('templateGalleryPageUnpublish', (t) =>
       //
       // Idempotent re-unpublish: when status is already 'draft' we skip
       // updateMany and just re-read.
-      try {
-        return await prisma.$transaction(async (tx) => {
+      const { result, didMutate } = await prisma
+        .$transaction(async (tx) => {
+          let count = 0
           if (page.status === 'published') {
-            await tx.templateGalleryPage.updateMany({
+            const { count: updated } = await tx.templateGalleryPage.updateMany({
               where: { id, status: 'published' },
               data: { status: 'draft' }
             })
+            count = updated
           }
-          return await tx.templateGalleryPage.findUniqueOrThrow({
+          const row = await tx.templateGalleryPage.findUniqueOrThrow({
             ...query,
             where: { id }
           })
+          return { result: row, didMutate: count > 0 }
         })
-      } catch (error) {
-        // Edge case: the page was deleted between auth-fetch and re-read.
-        // Surface as NOT_FOUND GraphQLError instead of leaking Prisma P2025.
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === 'P2025'
-        ) {
-          throw new GraphQLError('template gallery page not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
-        }
-        throw error
+        .catch((error) => {
+          // Edge case: the page was deleted between auth-fetch and re-read.
+          // Surface as NOT_FOUND GraphQLError instead of leaking Prisma P2025.
+          if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === 'P2025'
+          ) {
+            throw new GraphQLError('template gallery page not found', {
+              extensions: { code: 'NOT_FOUND' }
+            })
+          }
+          throw error
+        })
+
+      // Skip eviction on idempotent no-ops / race-loss (updateMany count=0).
+      // Mirrors the publish-mutation guard — only callers that actually
+      // transition the row evict the cache.
+      if (didMutate) {
+        await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
       }
+      return result
     }
   })
 )

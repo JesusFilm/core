@@ -49,7 +49,7 @@ builder.mutationField('templateGalleryPageAssignJourney', (t) =>
       const journeyId = String(args.journeyId)
       const pageId = args.pageId != null ? String(args.pageId) : null
 
-      return await prisma.$transaction(async (tx) => {
+      const result = await prisma.$transaction(async (tx) => {
         // Single-membership invariant: a journey may belong to at most one
         // TemplateGalleryPage. We always look up the existing assignment
         // first so that both assign-when-in-other-collection and unassign
@@ -183,6 +183,24 @@ builder.mutationField('templateGalleryPageAssignJourney', (t) =>
           where: { id: pageId }
         })
       })
+      // Evict cached `templateGalleryPageBySlug` entries. Assign/unassign
+      // changes the `templates` array on at most two pages (source + target
+      // on cross-page move, or single page on add/remove). Typename-level
+      // invalidation evicts entries for ALL TemplateGalleryPage rows, which
+      // over-invalidates beyond the affected pair but keeps the pattern
+      // uniform.
+      //
+      // Skip the eviction on the idempotent no-op unassign (the tx returns
+      // null when `pageId === null` and the journey was not in any
+      // collection — nothing changed, so no cache state can be stale).
+      // Without this gate, any authenticated user could spam the mutation
+      // with `pageId: null, journeyId: <any-unassigned-template>` to flush
+      // the global response cache without ever passing a team-membership
+      // check.
+      if (result != null) {
+        await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
+      }
+      return result
     }
   })
 )

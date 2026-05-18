@@ -1,3 +1,4 @@
+import { Cache } from '@graphql-yoga/plugin-response-cache'
 import { GraphQLError } from 'graphql'
 
 import { Role, prisma } from '@core/prisma/journeys/client'
@@ -7,6 +8,14 @@ import { InteropContext } from '@core/yoga/interop'
 
 interface BaseContext {
   type: string
+  /**
+   * Yoga response-cache handle. Lives on `BaseContext` so the context shape
+   * stays uniform across `public`/`authenticated`/`interop` variants — but
+   * only authenticated mutation resolvers actually invoke it today (to evict
+   * cached `templateGalleryPageBySlug` responses post-commit). See
+   * `yoga.ts` (`Query.templateGalleryPageBySlug` block) for the rationale.
+   */
+  cache: Cache
 }
 
 interface PublicContext extends BaseContext {

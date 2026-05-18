@@ -47,37 +47,51 @@ builder.mutationField('templateGalleryPagePublish', (t) =>
       //
       // Idempotent re-publish: when status is already 'published' we skip
       // updateMany entirely and just re-read.
-      try {
-        return await prisma.$transaction(async (tx) => {
+      const { result, didMutate } = await prisma
+        .$transaction(async (tx) => {
+          let count = 0
           if (page.status !== 'published') {
-            await tx.templateGalleryPage.updateMany({
+            const { count: updated } = await tx.templateGalleryPage.updateMany({
               where: { id, status: 'draft' },
               data: {
                 status: 'published',
                 publishedAt: new Date()
               }
             })
+            count = updated
           }
-          return await tx.templateGalleryPage.findUniqueOrThrow({
+          const row = await tx.templateGalleryPage.findUniqueOrThrow({
             ...query,
             where: { id }
           })
+          return { result: row, didMutate: count > 0 }
         })
-      } catch (error) {
-        // Edge case: the page was deleted between our auth-fetch and the
-        // re-read. Surface as the same NOT_FOUND GraphQLError the earlier
-        // existence check would have thrown — keep the client error shape
-        // consistent instead of leaking a Prisma P2025 as an unwrapped 500.
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === 'P2025'
-        ) {
-          throw new GraphQLError('template gallery page not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
-        }
-        throw error
+        .catch((error) => {
+          // Edge case: the page was deleted between our auth-fetch and the
+          // re-read. Surface as the same NOT_FOUND GraphQLError the earlier
+          // existence check would have thrown — keep the client error shape
+          // consistent instead of leaking a Prisma P2025 as an unwrapped 500.
+          if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === 'P2025'
+          ) {
+            throw new GraphQLError('template gallery page not found', {
+              extensions: { code: 'NOT_FOUND' }
+            })
+          }
+          throw error
+        })
+
+      // Only invalidate when this caller actually transitioned the row.
+      // Idempotent re-publishes and race-lost callers (updateMany count=0)
+      // skip the eviction so authenticated callers can't spam the mutation
+      // to flush the global response cache. Typename-level eviction reaches
+      // null entries that the plugin's entity-ID auto-invalidation cannot
+      // match, closing the NES-1644 stale-null gap.
+      if (didMutate) {
+        await context.cache.invalidate([{ typename: 'TemplateGalleryPage' }])
       }
+      return result
     }
   })
 )

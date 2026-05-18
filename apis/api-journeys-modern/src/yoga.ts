@@ -47,7 +47,8 @@ export const yoga = createYoga<
         ...initContextCache(),
         type: 'authenticated',
         user: { ...user, roles: currentRoles },
-        currentRoles
+        currentRoles,
+        cache
       }
     }
     const interopToken = request.headers.get('interop-token')
@@ -57,12 +58,14 @@ export const yoga = createYoga<
       return {
         ...initContextCache(),
         type: 'interop',
-        ...interopContext
+        ...interopContext,
+        cache
       }
 
     return {
       ...initContextCache(),
-      type: 'public'
+      type: 'public',
+      cache
     }
   },
   plugins: [
@@ -105,13 +108,25 @@ export const yoga = createYoga<
             // flushed (NES-1648).
             'Query.templateGalleryPage': 0,
             'Query.templateGalleryPages': 0,
-            // Public renderer. Finite TTL caps cache-poisoning impact: a `null`
-            // response (unknown slug / draft / malformed) caches with no entity
-            // ID, so the publish mutation's entity-ID invalidation cannot evict
-            // it. Without a finite TTL the null branch would persist for the
-            // lifetime of the cache, letting an attacker pre-poison popular
-            // slugs so legitimate later publishes appear 404. 60 s gives the
-            // renderer reasonable cache hit-rate while bounding poisoning impact.
+            // Public renderer. Finite TTL bounds cache-poisoning impact: a
+            // `null` response (unknown slug / draft / malformed) caches with no
+            // entity ID, so the plugin's automatic entity-ID invalidation
+            // cannot evict it. Without a finite TTL the null branch would
+            // persist for the lifetime of the cache, letting an attacker
+            // pre-poison popular slugs so legitimate later publishes appear
+            // 404. 60 s gives the renderer reasonable cache hit-rate while
+            // keeping the poisoning window short.
+            //
+            // NES-1644 unpublish→republish stale-null gap is closed by
+            // typename-level `cache.invalidate([{ typename: 'TemplateGalleryPage' }])`
+            // in every TemplateGalleryPage mutation (publish, unpublish,
+            // delete, assignJourney, reorderTemplate, update). Typename
+            // invalidation walks the cache by recorded typename presence so it
+            // reaches null entries that lack an entity ID. The 60 s TTL stays
+            // as defense-in-depth against the poisoning case above. See
+            // `responseCacheLifecycle.spec.ts` for the library-contract proof
+            // and `responseCacheLifecycleReal.spec.ts` for the per-mutation
+            // production-schema eviction tests.
             'Query.templateGalleryPageBySlug': 60_000,
             'Query.journeysPlausibleStatsAggregate': 5000,
             'Query.journeysPlausibleStatsBreakdown': 5000,

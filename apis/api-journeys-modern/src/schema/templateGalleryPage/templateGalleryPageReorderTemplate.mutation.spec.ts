@@ -5,6 +5,7 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { cache } from '../../yoga'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -13,6 +14,8 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
+
+const invalidateSpy = vi.spyOn(cache, 'invalidate').mockResolvedValue(undefined)
 
 describe('templateGalleryPageReorderTemplate', () => {
   const mockUser = {
@@ -161,6 +164,15 @@ describe('templateGalleryPageReorderTemplate', () => {
         prismaMock.$executeRaw.mock.calls[0][0] as readonly string[]
       ).join(' ')
       expect(stageSql).toContain('-("order") - 1000000')
+      // Reorder changes the cached `templates` array order — invalidate.
+      expect(invalidateSpy).toHaveBeenCalledTimes(1)
+      expect(invalidateSpy).toHaveBeenCalledWith([
+        { typename: 'TemplateGalleryPage' }
+      ])
+      // Ordering invariant: invalidate runs AFTER prisma.$transaction.
+      expect(prismaMock.$transaction.mock.invocationCallOrder[0]).toBeLessThan(
+        invalidateSpy.mock.invocationCallOrder[0]
+      )
     })
 
     // Live-DB scenario: contiguous orders [0,1,2,3,4], move row at 3 to
@@ -182,6 +194,7 @@ describe('templateGalleryPageReorderTemplate', () => {
       expect(
         finalOrdersAssignedTo(['tpt-A', 'tpt-D', 'tpt-B', 'tpt-C', 'tpt-E'])
       ).toEqual([0, 1, 2, 3, 4])
+      expect(invalidateSpy).toHaveBeenCalledTimes(1)
     })
 
     // Live-DB scenario: gappy orders [0,2,4,5] (4 rows in display order
@@ -205,6 +218,7 @@ describe('templateGalleryPageReorderTemplate', () => {
       expect(
         finalOrdersAssignedTo(['tpt-A', 'tpt-C', 'tpt-D', 'tpt-B'])
       ).toEqual([0, 1, 2, 3])
+      expect(invalidateSpy).toHaveBeenCalledTimes(1)
     })
 
     // Live-DB scenario: gappy [0,2,4,5], move D (display index 3) all
@@ -225,6 +239,7 @@ describe('templateGalleryPageReorderTemplate', () => {
       expect(
         finalOrdersAssignedTo(['tpt-D', 'tpt-A', 'tpt-B', 'tpt-C'])
       ).toEqual([0, 1, 2, 3])
+      expect(invalidateSpy).toHaveBeenCalledTimes(1)
     })
 
     it('is a no-op when sourceIndex === newIndex (no writes beyond the canonical re-read)', async () => {
@@ -248,6 +263,10 @@ describe('templateGalleryPageReorderTemplate', () => {
         prismaMock.templateGalleryPageTemplate.update
       ).not.toHaveBeenCalled()
       expect(prismaMock.$executeRaw).not.toHaveBeenCalled()
+      // No-op reorder: nothing changed, no cache eviction. Mirrors the
+      // publish/unpublish/assignJourney guards — only callers that actually
+      // mutate state evict the cache.
+      expect(invalidateSpy).not.toHaveBeenCalled()
     })
   })
 
@@ -334,6 +353,7 @@ describe('templateGalleryPageReorderTemplate', () => {
       expect(
         prismaMock.templateGalleryPageTemplate.findMany
       ).not.toHaveBeenCalled()
+      expect(invalidateSpy).not.toHaveBeenCalled()
     })
 
     it('allows reorder on a published page (no publish-state gating on the backend)', async () => {
@@ -387,6 +407,7 @@ describe('templateGalleryPageReorderTemplate', () => {
       expect(
         prismaMock.templateGalleryPageTemplate.findMany
       ).not.toHaveBeenCalled()
+      expect(invalidateSpy).not.toHaveBeenCalled()
     })
 
     it('throws Not authorized when caller is not authenticated', async () => {
