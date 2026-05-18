@@ -42,6 +42,9 @@ on:
         required: true
         default: '/'
 
+permissions:
+  contents: read
+
 # TODO(NES-1581 owner): once a GitHub `production` environment with required
 # reviewers is configured for this repo, gate the production path by adding
 # `environment: ${{ inputs.target_env == 'production' && 'production' || '' }}`
@@ -67,6 +70,7 @@ jobs:
           TARGET_ENV: ${{ inputs.target_env }}
           PROBE_COUNT: ${{ inputs.probe_count }}
           PROBE_RPS: ${{ inputs.probe_rps }}
+          SENTINEL_PATH: ${{ inputs.sentinel_path }}
         run: |
           set -euo pipefail
           # Host literals come from the repo (e.g. apps/journeys/proxy.ts,
@@ -99,7 +103,7 @@ jobs:
             echo "| host | \`${host}\` |"
             echo "| probe_count | ${count} |"
             echo "| probe_rps | ${rps} |"
-            echo "| sentinel_path | \`${{ inputs.sentinel_path }}\` |"
+            echo "| sentinel_path | \`${SENTINEL_PATH}\` |"
             echo "| sentinel duration | ~${duration}s |"
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -107,6 +111,7 @@ jobs:
     name: Probe /api/chat
     needs: prepare
     runs-on: blacksmith-2vcpu-ubuntu-2204
+    timeout-minutes: 15
     steps:
       - name: Send probe requests
         env:
@@ -201,6 +206,7 @@ jobs:
     name: Sentinel — legit traffic survives
     needs: prepare
     runs-on: blacksmith-2vcpu-ubuntu-2204
+    timeout-minutes: 15
     steps:
       - name: GET sentinel path at ~1 req/sec
         env:
