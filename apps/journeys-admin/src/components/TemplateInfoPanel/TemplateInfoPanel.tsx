@@ -67,11 +67,14 @@ export function TemplateInfoPanel({
       className={className}
       data-testid="TemplateInfoPanel"
       sx={{
-        width: { xs: '100%', md: 375 },
+        width: '100%',
         bgcolor: 'background.paper',
         border: '1px solid',
         borderColor: 'divider',
-        borderRadius: 4,
+        borderTopLeftRadius: 4,
+        borderTopRightRadius: 4,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
         overflow: 'hidden'
       }}
     >

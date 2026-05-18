@@ -23,13 +23,6 @@ import { JourneyListView } from './JourneyListView'
 import type { ContentType, JourneyStatusFilter } from './JourneyListView'
 import { SortOrder } from './JourneySort'
 
-/**
- * Width of the Template Info side panel (NES-1538) on `md+` viewports.
- * Matches Figma layout reference `39640-65061` where the panel sits at
- * 375px-wide inside the templates content area.
- */
-const TEMPLATE_INFO_PANEL_WIDTH = 375
-
 export interface JourneyListProps {
   sortOrder?: SortOrder
   event?: JourneyListEvent
@@ -175,10 +168,9 @@ export function JourneyList({
           mt: { xs: 0, sm: -5 },
           width: {
             sm: '100%',
-            md: sidePanelVisible
-              ? `calc(100vw - ${sidePanel.width} - ${navbar.width} - 80px)`
-              : showTemplateInfoPanel
-                ? `calc(100vw - ${TEMPLATE_INFO_PANEL_WIDTH}px - ${navbar.width} - 80px)`
+            md:
+              sidePanelVisible || showTemplateInfoPanel
+                ? `calc(100vw - ${sidePanel.width} - ${navbar.width} - 80px)`
                 : `calc(100vw - ${navbar.width} - 80px)`
           }
         }}
@@ -197,18 +189,21 @@ export function JourneyList({
       )}
       {showTemplateInfoPanel && (
         <>
-          {/* Desktop (md+): static right-anchored column. `top` aligns the
-              panel top with the tab/toolbar row; `right` keeps a compact
-              gutter to the viewport edge. */}
+          {/* Desktop (md+): static right-anchored column matching the
+              journeys-tab SidePanel chrome — same width (`sidePanel.width`),
+              same top offset (`mt: 15.5` = 124px past the page header), same
+              right gutter (`mr: 5` = 40px), and stretches to the viewport
+              bottom with top-only rounded corners (the inner TemplateInfo-
+              Panel chrome supplies those). */}
           <Box
             data-testid="TemplateInfoPanelDesktop"
             sx={{
               display: { xs: 'none', md: 'block' },
               position: 'fixed',
-              right: 20,
-              top: 24,
-              bottom: 24,
-              width: TEMPLATE_INFO_PANEL_WIDTH,
+              right: 40,
+              top: 124,
+              bottom: 0,
+              width: sidePanel.width,
               overflowY: 'auto'
             }}
           >
