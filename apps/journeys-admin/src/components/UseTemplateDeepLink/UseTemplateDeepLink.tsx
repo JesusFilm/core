@@ -242,8 +242,6 @@ function ActiveUseTemplateDeepLink({
           : undefined
       }
       isTranslating={translationVariables != null}
-      journeyIsTemplate={journey?.template ?? true}
-      journeyFromTemplateId={journey?.fromTemplateId}
       defaultToActiveTeam
     />
   )
