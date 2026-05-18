@@ -340,10 +340,7 @@ describe('JourneyList', () => {
   })
 
   describe('Template Info side panel (NES-1538)', () => {
-    function renderWithFlags(flags: {
-      teamTemplateCollection?: boolean
-      templateInfoSidePanel?: boolean
-    }) {
+    function renderWithFlags(flags: { teamTemplateCollection?: boolean }) {
       return render(
         <SnackbarProvider>
           <MockedProvider>
@@ -357,40 +354,18 @@ describe('JourneyList', () => {
       )
     }
 
-    it('renders the desktop panel and mobile trigger when the flag is on and the templates tab is active', () => {
+    it('renders the desktop panel and mobile trigger when teamTemplateCollection is on and the templates tab is active', () => {
       mockedUseRouter.mockReturnValue({
         query: { status: 'active', type: 'templates' },
         events: { on: jest.fn(), off: jest.fn() }
       } as unknown as NextRouter)
 
-      renderWithFlags({
-        teamTemplateCollection: true,
-        templateInfoSidePanel: true
-      })
+      renderWithFlags({ teamTemplateCollection: true })
 
       expect(screen.getByTestId('TemplateInfoPanelDesktop')).toBeInTheDocument()
       expect(
         screen.getByTestId('TemplateInfoPanelMobileTrigger')
       ).toBeInTheDocument()
-    })
-
-    it('renders nothing when the templateInfoSidePanel flag is off, even on templates tab', () => {
-      mockedUseRouter.mockReturnValue({
-        query: { status: 'active', type: 'templates' },
-        events: { on: jest.fn(), off: jest.fn() }
-      } as unknown as NextRouter)
-
-      renderWithFlags({
-        teamTemplateCollection: true,
-        templateInfoSidePanel: false
-      })
-
-      expect(
-        screen.queryByTestId('TemplateInfoPanelDesktop')
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByTestId('TemplateInfoPanelMobileTrigger')
-      ).not.toBeInTheDocument()
     })
 
     it('renders nothing on the journeys tab even with the flag on', () => {
@@ -399,10 +374,7 @@ describe('JourneyList', () => {
         events: { on: jest.fn(), off: jest.fn() }
       } as unknown as NextRouter)
 
-      renderWithFlags({
-        teamTemplateCollection: true,
-        templateInfoSidePanel: true
-      })
+      renderWithFlags({ teamTemplateCollection: true })
 
       expect(
         screen.queryByTestId('TemplateInfoPanelDesktop')
@@ -418,13 +390,13 @@ describe('JourneyList', () => {
         events: { on: jest.fn(), off: jest.fn() }
       } as unknown as NextRouter)
 
-      renderWithFlags({
-        teamTemplateCollection: false,
-        templateInfoSidePanel: true
-      })
+      renderWithFlags({ teamTemplateCollection: false })
 
       expect(
         screen.queryByTestId('TemplateInfoPanelDesktop')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('TemplateInfoPanelMobileTrigger')
       ).not.toBeInTheDocument()
     })
 
@@ -434,10 +406,7 @@ describe('JourneyList', () => {
         events: { on: jest.fn(), off: jest.fn() }
       } as unknown as NextRouter)
 
-      renderWithFlags({
-        teamTemplateCollection: true,
-        templateInfoSidePanel: true
-      })
+      renderWithFlags({ teamTemplateCollection: true })
 
       // MUI SwipeableDrawer renders its modal `role="presentation"` wrapper
       // only when `open=true`; before clicking the trigger no such role
@@ -458,10 +427,7 @@ describe('JourneyList', () => {
         events: { on: jest.fn(), off: jest.fn() }
       } as unknown as NextRouter)
 
-      renderWithFlags({
-        teamTemplateCollection: true,
-        templateInfoSidePanel: true
-      })
+      renderWithFlags({ teamTemplateCollection: true })
 
       fireEvent.click(screen.getByTestId('TemplateInfoPanelMobileTrigger'))
       expect(screen.getByRole('presentation')).toBeInTheDocument()

@@ -59,11 +59,10 @@ export function JourneyList({
   // When the flag is on, the Team Templates tab renders the Collections
   // panel (TemplateGalleryPageList) in place of the original list.
   //
-  // `templateInfoSidePanel` (NES-1538) gates the educational side panel that
-  // sits beside the templates list. The flag itself is created in the
-  // LaunchDarkly dashboard, not here — `useFlags` returns `undefined` for
-  // unknown keys, so the `=== true` check keeps the panel hidden by default.
-  const { teamTemplateCollection, templateInfoSidePanel } = useFlags()
+  // The NES-1538 educational side panel rides on the same gate — no separate
+  // flag — because the panel only makes sense on the local-template surface
+  // that this flag already controls.
+  const { teamTemplateCollection } = useFlags()
   const { refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
     useLastActiveTeamId: true
@@ -120,13 +119,11 @@ export function JourneyList({
   const sidePanelVisible = currentContentType === 'journeys'
 
   // The Template Info side panel (NES-1538) mounts beside the templates grid
-  // when its LaunchDarkly flag is on and the user is viewing the Team
-  // Templates tab. It piggy-backs on the existing `teamTemplateCollection`
-  // gate because the local-template surface itself depends on that flag.
+  // when the Team Templates tab is active. It shares the
+  // `teamTemplateCollection` gate with the Collections panel since the
+  // educational panel only makes sense alongside that surface.
   const showTemplateInfoPanel =
-    templateInfoSidePanel === true &&
-    teamTemplateCollection === true &&
-    currentContentType === 'templates'
+    teamTemplateCollection === true && currentContentType === 'templates'
 
   // Close the mobile drawer if the user navigates away from the templates tab
   // or the flag flips off — prevents a stale-open drawer rendering on the
