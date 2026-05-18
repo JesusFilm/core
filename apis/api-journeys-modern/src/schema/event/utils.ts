@@ -93,7 +93,8 @@ export async function validateBlockEvent(
   // otherwise be the only path that creates the visitor record.
   const visitorAndJourneyVisitor = await getByUserIdAndJourneyId(
     userId,
-    journeyId
+    journeyId,
+    journey.teamId
   )
 
   if (visitorAndJourneyVisitor == null) {
@@ -136,18 +137,23 @@ export async function validateBlock(
 
 export async function getByUserIdAndJourneyId(
   userId: string,
-  journeyId: string
+  journeyId: string,
+  teamId?: string
 ): Promise<{
   visitor: Visitor
   journeyVisitor: JourneyVisitor
 } | null> {
-  const journey = await prisma.journey.findUnique({
-    where: { id: journeyId },
-    select: { teamId: true }
-  })
+  let resolvedTeamId = teamId
+  if (resolvedTeamId == null) {
+    const journey = await prisma.journey.findUnique({
+      where: { id: journeyId },
+      select: { teamId: true }
+    })
 
-  if (journey == null) {
-    return null
+    if (journey == null) {
+      return null
+    }
+    resolvedTeamId = journey.teamId
   }
 
   for (let attempt = 1; attempt <= VISITOR_UPSERT_MAX_RETRIES; attempt++) {
@@ -155,12 +161,12 @@ export async function getByUserIdAndJourneyId(
       const visitor = await prisma.visitor.upsert({
         where: {
           teamId_userId: {
-            teamId: journey.teamId,
+            teamId: resolvedTeamId,
             userId
           }
         },
         create: {
-          teamId: journey.teamId,
+          teamId: resolvedTeamId,
           userId
         },
         update: {}
