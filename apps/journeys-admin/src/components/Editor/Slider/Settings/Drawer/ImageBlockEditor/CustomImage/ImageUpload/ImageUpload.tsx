@@ -1,11 +1,10 @@
-import { useApolloClient } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import type FormDataType from 'form-data'
 import { useTranslation } from 'next-i18next/pages'
 import fetch from 'node-fetch'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { ErrorCode, FileRejection, useDropzone } from 'react-dropzone'
 
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
@@ -20,11 +19,12 @@ import {
 } from '../../../../../../../../libs/sendImageUploadEvent'
 import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/useCloudflareUploadByFileMutation'
 import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
-import { prependCloudflareImageToCache } from '../../libs/prependCloudflareImageToCache'
+import { MediaLibraryListImage } from '../../MediaLibrary/MediaLibraryList'
 
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
   setUploading?: (uploading?: boolean) => void
+  onImageUploaded?: (image: MediaLibraryListImage) => void
   selectedBlock?: ImageBlock | null
   loading?: boolean
   error?: boolean
@@ -34,20 +34,29 @@ export function ImageUpload({
   onChange,
   selectedBlock,
   setUploading,
+  onImageUploaded,
   loading,
   error
 }: ImageUploadProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
-  const apolloClient = useApolloClient()
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
   const [errorCode, setErrorCode] = useState<ErrorCode>()
+  const successResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     setErrorCode(undefined)
   }, [selectedBlock])
 
-  async function onDrop(
+  useEffect(() => {
+    return () => {
+      if (successResetTimerRef.current != null) {
+        clearTimeout(successResetTimerRef.current)
+      }
+    }
+  }, [])
+
+  async function handleDrop(
     acceptedFiles: File[],
     rejectedFiles: FileRejection[]
   ): Promise<void> {
@@ -101,13 +110,19 @@ export function ImageUpload({
         const url = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
         }/${cloudflareId}`
-        prependCloudflareImageToCache(apolloClient.cache, {
-          cloudflareId,
-          url,
-          isAi: false
+        onImageUploaded?.({
+          id: cloudflareId,
+          src: `${url}/public`,
+          blurhash: null
         })
         onChange({ src: `${url}/public`, scale: 100, focalLeft: 50, focalTop: 50 })
-        setTimeout(() => setSuccess(undefined), 4000)
+        if (successResetTimerRef.current != null) {
+          clearTimeout(successResetTimerRef.current)
+        }
+        successResetTimerRef.current = setTimeout(
+          () => setSuccess(undefined),
+          4000
+        )
         setUploading?.(undefined)
         sendImageUploadSuccessEvent({
           fileSize: file.size,
@@ -125,7 +140,7 @@ export function ImageUpload({
   }
 
   const { getRootProps, open, getInputProps, isDragAccept } = useDropzone({
-    onDrop,
+    onDrop: handleDrop,
     noClick: true,
     maxSize: 10485760,
     accept: {

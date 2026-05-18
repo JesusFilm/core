@@ -1,12 +1,13 @@
-import Stack from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import { MediaLibrary } from '../MediaLibrary'
+import { MediaLibraryListImage } from '../MediaLibrary/MediaLibraryList'
 
 import { ImageUpload } from './ImageUpload'
 
@@ -27,6 +28,13 @@ export function CustomImage({
 }: CustomImageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { mediaLibrary } = useFlags()
+  const [localUploads, setLocalUploads] = useState<MediaLibraryListImage[]>([])
+
+  function handleImageUploaded(image: MediaLibraryListImage): void {
+    setLocalUploads((prev) =>
+      prev.some((existing) => existing.id === image.id) ? prev : [image, ...prev]
+    )
+  }
 
   return (
     <Stack
@@ -42,18 +50,20 @@ export function CustomImage({
       <ImageUpload
         onChange={onChange}
         setUploading={setUploading}
+        onImageUploaded={handleImageUploaded}
         loading={loading}
         selectedBlock={selectedBlock}
         error={error}
       />
       {mediaLibrary === true && (
-          <MediaLibrary
-            title={t('Uploads')}
-            selectedSrc={selectedBlock?.src}
-            onSelect={onChange}
-            isAi={false}
-            uploading={loading}
-          />
+        <MediaLibrary
+          title={t('Uploads')}
+          selectedSrc={selectedBlock?.src}
+          onSelect={onChange}
+          isAi={false}
+          localImages={localUploads}
+          uploading={loading}
+        />
       )}
     </Stack>
   )

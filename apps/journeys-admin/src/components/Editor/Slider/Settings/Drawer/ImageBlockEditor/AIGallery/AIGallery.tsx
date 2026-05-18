@@ -1,8 +1,8 @@
-import { gql, useApolloClient, useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
@@ -13,7 +13,7 @@ import {
   SegmindModel
 } from '../../../../../../../../__generated__/globalTypes'
 import { MediaLibrary } from '../MediaLibrary'
-import { prependCloudflareImageToCache } from '../libs/prependCloudflareImageToCache'
+import { MediaLibraryListImage } from '../MediaLibrary/MediaLibraryList'
 
 import { AIPrompt } from './AIPrompt'
 
@@ -41,10 +41,10 @@ export function AIGallery({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { mediaLibrary } = useFlags()
-  const apolloClient = useApolloClient()
   const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
+  const [localImages, setLocalImages] = useState<MediaLibraryListImage[]>([])
 
-  async function handleSubmit({ prompt }): Promise<void> {
+  async function handleSubmit({ prompt }: { prompt: string }): Promise<void> {
     setUploading?.(true)
     try {
       const { data } = await createAiImage({
@@ -59,11 +59,14 @@ export function AIGallery({
         const url = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
         }/${cloudflareId}`
-        prependCloudflareImageToCache(apolloClient.cache, {
-          cloudflareId,
-          url,
-          isAi: true
-        })
+        setLocalImages((prev) =>
+          prev.some((image) => image.id === cloudflareId)
+            ? prev
+            : [
+                { id: cloudflareId, src: `${url}/public`, blurhash: null },
+                ...prev
+              ]
+        )
         await onChange({
           src: `${url}/public`,
           alt: `Prompt: ${prompt}`,
@@ -110,6 +113,7 @@ export function AIGallery({
           selectedSrc={selectedBlock?.src}
           onSelect={onChange}
           isAi={true}
+          localImages={localImages}
           uploading={loading}
         />
       )}

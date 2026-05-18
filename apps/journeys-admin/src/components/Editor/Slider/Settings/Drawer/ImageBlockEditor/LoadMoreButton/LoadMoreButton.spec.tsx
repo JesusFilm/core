@@ -43,6 +43,13 @@ describe('LoadMoreButton', () => {
     expect(screen.getByRole('button', { name: 'Load More' })).toBeEnabled()
   })
 
+  it('should render "Loading..." when loading is true even if hasMore is false', () => {
+    render(
+      <LoadMoreButton hasMore={false} loading onClick={jest.fn()} />
+    )
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
+  })
+
   it('should call onClick when the button is clicked', () => {
     const handleClick = jest.fn()
     render(<LoadMoreButton hasMore loading={false} onClick={handleClick} />)

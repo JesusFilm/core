@@ -27,10 +27,10 @@ export function LoadMoreButton({
       size="medium"
       fullWidth
     >
-      {!hasMore
-        ? t('No more to load')
-        : loading
-          ? t('Loading...')
+      {loading
+        ? t('Loading...')
+        : !hasMore
+          ? t('No more to load')
           : t('Load More')}
     </Button>
   )

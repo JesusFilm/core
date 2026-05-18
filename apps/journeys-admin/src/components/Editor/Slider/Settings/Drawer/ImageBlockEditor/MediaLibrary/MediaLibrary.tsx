@@ -1,17 +1,17 @@
 import { NetworkStatus, gql, useQuery } from '@apollo/client'
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import {
   GetMyCloudflareImages,
   GetMyCloudflareImagesVariables,
-  GetMyCloudflareImages_getMyCloudflareImages as CloudFlareImage
+  GetMyCloudflareImages_getMyCloudflareImages as CloudflareImage
 } from '../../../../../../../../__generated__/GetMyCloudflareImages'
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import { LoadMoreButton } from '../LoadMoreButton'
+
 import { MediaLibraryList, MediaLibraryListImage } from './MediaLibraryList'
 
 export const GET_MY_CLOUDFLARE_IMAGES = gql`
@@ -28,7 +28,8 @@ interface MediaLibraryProps {
   title: string
   selectedSrc?: string | null
   onSelect: (input: ImageBlockUpdateInput) => void
-  isAi?: boolean
+  isAi: boolean
+  localImages?: MediaLibraryListImage[]
   uploading?: boolean
 }
 
@@ -36,10 +37,10 @@ const PAGE_SIZE = 10
 const PEEK_LIMIT = PAGE_SIZE + 1
 
 function toRenderedImages(
-  images: readonly CloudFlareImage[]
+  images: readonly CloudflareImage[]
 ): MediaLibraryListImage[] {
   return images.flatMap((image) =>
-    image?.url == null
+    image.url == null
       ? []
       : [
           {
@@ -56,18 +57,12 @@ export function MediaLibrary({
   selectedSrc,
   onSelect,
   isAi,
+  localImages,
   uploading
 }: MediaLibraryProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
-  const [displayCount, setDisplayCount] = useState<number | null>(null)
-  const wasUploadingRef = useRef(false)
-
-  useEffect(() => {
-    if (wasUploadingRef.current && uploading !== true) {
-      setDisplayCount((current) => (current ?? PAGE_SIZE) + 1)
-    }
-    wasUploadingRef.current = uploading === true
-  }, [uploading])
+  const [pagesFetched, setPagesFetched] = useState(1)
+  const [serverHasMore, setServerHasMore] = useState<boolean | null>(null)
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<
     GetMyCloudflareImages,
@@ -77,16 +72,23 @@ export function MediaLibrary({
     notifyOnNetworkStatusChange: true
   })
 
+  useEffect(() => {
+    if (data == null || serverHasMore !== null) return
+    setServerHasMore(data.getMyCloudflareImages.length === PEEK_LIMIT)
+  }, [data, serverHasMore])
+
   const isFetchingMore = networkStatus === NetworkStatus.fetchMore
 
-  const allImages = toRenderedImages(data?.getMyCloudflareImages ?? [])
+  const serverImages = toRenderedImages(data?.getMyCloudflareImages ?? [])
+  const localIds = new Set((localImages ?? []).map((image) => image.id))
+  const dedupedServer = serverImages.filter((image) => !localIds.has(image.id))
+  const visibleServer = dedupedServer.slice(0, pagesFetched * PAGE_SIZE)
+  const images = [...(localImages ?? []), ...visibleServer]
 
-  const effectiveDisplayCount =
-    displayCount ?? Math.min(allImages.length, PAGE_SIZE)
-  const images = allImages.slice(0, effectiveDisplayCount)
-  const hasMore = allImages.length > effectiveDisplayCount
+  const hasMore = serverHasMore === true
 
-  const isEmpty = !loading && error == null && !uploading && images.length === 0
+  const isEmpty =
+    !loading && error == null && uploading !== true && images.length === 0
   if (isEmpty) return null
 
   function handleSelect(img: MediaLibraryListImage): void {
@@ -102,20 +104,19 @@ export function MediaLibrary({
 
   async function handleLoadMore(): Promise<void> {
     const result = await fetchMore({
-      variables: { offset: effectiveDisplayCount, limit: PEEK_LIMIT, isAi }
+      variables: {
+        offset: pagesFetched * PAGE_SIZE,
+        limit: PEEK_LIMIT,
+        isAi
+      }
     })
-    const newItems = (result.data?.getMyCloudflareImages ?? []).length
-    setDisplayCount(effectiveDisplayCount + Math.min(newItems, PAGE_SIZE))
+    const fetched = result.data?.getMyCloudflareImages.length ?? 0
+    setPagesFetched((prev) => prev + 1)
+    setServerHasMore(fetched === PEEK_LIMIT)
   }
 
   return (
-    <Stack
-      sx={{
-        p: 6,
-        gap: 2
-      }}
-      data-testid="MediaLibrary"
-    >
+    <Stack sx={{ p: 6, gap: 2 }} data-testid="MediaLibrary">
       <Typography variant="overline">{title}</Typography>
       {error != null && (
         <Typography color="error" variant="body2" sx={{ pb: 1 }}>
@@ -127,17 +128,12 @@ export function MediaLibrary({
         selectedSrc={selectedSrc}
         handleSelect={handleSelect}
         uploading={uploading}
-        hasMore={hasMore}
-        loadingMore={isFetchingMore}
-        onLoadMore={() => void handleLoadMore()}
       />
-      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-        <LoadMoreButton
-          hasMore={hasMore}
-          loading={isFetchingMore}
-          onClick={() => void handleLoadMore()}
-        />
-      </Box>
+      <LoadMoreButton
+        hasMore={hasMore}
+        loading={loading || isFetchingMore}
+        onClick={() => void handleLoadMore()}
+      />
     </Stack>
   )
 }

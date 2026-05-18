@@ -206,41 +206,86 @@ describe('MediaLibrary', () => {
     ).toBeDisabled()
   })
 
-  it('should page via the mobile sentinel intersecting', async () => {
-    const callbacks: IntersectionObserverCallback[] = []
-    ;(globalThis as any).IntersectionObserver = class {
-      constructor(cb: IntersectionObserverCallback) {
-        callbacks.push(cb)
-      }
-      observe(): void {}
-      disconnect(): void {}
-      unobserve(): void {}
-      takeRecords(): IntersectionObserverEntry[] {
-        return []
-      }
-    }
+  it('should show the Load More button in a loading state while the initial query is in flight', () => {
+    render(
+      <MockedProvider mocks={[firstFullPageMock]}>
+        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+      </MockedProvider>
+    )
+    const button = screen.getByRole('button', { name: 'Loading...' })
+    expect(button).toBeInTheDocument()
+    expect(button).toBeDisabled()
+  })
 
+  it('should prepend localImages above server images and dedupe by id', async () => {
+    render(
+      <MockedProvider mocks={[firstFullPageMock]}>
+        <MediaLibrary
+          title="Your uploads"
+          onSelect={jest.fn()}
+          isAi={false}
+          localImages={[
+            {
+              id: 'local-1',
+              src: 'https://imagedelivery.net/key/local-1/public',
+              blurhash: null
+            },
+            {
+              id: 'img-0',
+              src: 'https://imagedelivery.net/key/img-0/public',
+              blurhash: null
+            }
+          ]}
+        />
+      </MockedProvider>
+    )
+    await screen.findByTestId('media-library-image-img-1')
+    const tiles = screen.getAllByTestId(/^media-library-image-/)
+    expect(tiles[0].getAttribute('data-testid')).toBe(
+      'media-library-image-local-1'
+    )
+    expect(tiles[1].getAttribute('data-testid')).toBe(
+      'media-library-image-img-0'
+    )
+    expect(screen.getAllByTestId('media-library-image-img-0')).toHaveLength(1)
+  })
+
+  it('should keep server pagination offset aligned regardless of localImages count', async () => {
     render(
       <MockedProvider
         mocks={[firstFullPageMock, secondShortPageMock]}
         cache={paginatedCache()}
       >
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary
+          title="Your uploads"
+          onSelect={jest.fn()}
+          isAi={false}
+          localImages={[
+            {
+              id: 'local-1',
+              src: 'https://imagedelivery.net/key/local-1/public',
+              blurhash: null
+            },
+            {
+              id: 'local-2',
+              src: 'https://imagedelivery.net/key/local-2/public',
+              blurhash: null
+            }
+          ]}
+        />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
-    await waitFor(() => expect(callbacks.length).toBeGreaterThan(0))
 
-    callbacks[callbacks.length - 1](
-      [{ isIntersecting: true } as IntersectionObserverEntry],
-      {} as IntersectionObserver
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Load More' }))
 
     await waitFor(() => {
       expect(
         screen.getByTestId('media-library-image-img-11')
       ).toBeInTheDocument()
     })
+    expect(screen.getByTestId('media-library-image-local-1')).toBeInTheDocument()
+    expect(screen.getByTestId('media-library-image-local-2')).toBeInTheDocument()
   })
 
   it('should forward isAi=true to the query variables', async () => {
