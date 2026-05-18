@@ -90,6 +90,9 @@ jobs:
           if ! [[ "${rps}" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
             echo "probe_rps must be a positive number (got: ${rps})" >&2; exit 1
           fi
+          if awk -v r="${rps}" 'BEGIN { exit !(r <= 0) }'; then
+            echo "probe_rps must be greater than zero (got: ${rps})" >&2; exit 1
+          fi
           # duration = ceil(count / rps) + 15s buffer, used to bound the sentinel.
           duration=$(awk -v c="${count}" -v r="${rps}" 'BEGIN { d=c/r; if (d != int(d)) d=int(d)+1; printf "%d", d+15 }')
           echo "host=${host}" >> "$GITHUB_OUTPUT"
