@@ -434,6 +434,8 @@
   "Upload Successful!": "Tải lên thành công!",
   "Upload Failed!": "Upload Failed!",
   "Drop an image here": "Drop an image here",
+  "or click to browse your files": "hoặc nhấp vào đây để duyệt các tệp của bạn",
+  "Uploading... {{progress}}%": "Đang tải lên... {{progress}}%",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "Tải lên hình ảnh (PNG, JPG, GIF, SVG hoặc HEIC). Kích thước tệp tối đa: 10 MB.",
   "Upload file": "Upload file",
   "Gallery": "Gallery",
