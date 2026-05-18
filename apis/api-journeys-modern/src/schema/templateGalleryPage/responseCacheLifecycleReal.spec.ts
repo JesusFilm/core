@@ -122,8 +122,11 @@ describe('NES-1677 real-schema cache lifecycle', () => {
   afterAll(() => {
     // Restore NODE_ENV so a shared vitest worker doesn't carry
     // `production` into any sibling spec that runs after this file.
+    // process.env.NODE_ENV is readonly in @types/node — cast through a
+    // mutable record so the `delete` is type-legal (mirrors the
+    // Object.assign workaround used for the set case in vi.hoisted).
     if (originalNodeEnv === undefined) {
-      delete process.env.NODE_ENV
+      delete (process.env as Record<string, string | undefined>).NODE_ENV
     } else {
       Object.assign(process.env, { NODE_ENV: originalNodeEnv })
     }
