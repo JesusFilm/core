@@ -34,9 +34,6 @@ export function GalleryTemplateCard({
 }: GalleryTemplateCardProps): ReactElement {
   const { t } = useTranslation('apps-journeys')
 
-  // Read inside the component so test specs can override
-  // NEXT_PUBLIC_JOURNEYS_ADMIN_URL via vi.stubEnv / process.env without
-  // having to reset module state. Fallback matches the prod admin host.
   const adminUrl =
     process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? 'https://admin.nextstep.is'
 

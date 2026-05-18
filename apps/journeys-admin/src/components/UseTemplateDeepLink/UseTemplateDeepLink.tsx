@@ -83,7 +83,7 @@ function ActiveUseTemplateDeepLink({
 
   const stripParamFromUrl = useCallback((): void => {
     const { useTemplate, ...rest } = router.query
-    void router.replace({ pathname: router.pathname, query: rest }, undefined, {
+    void router.replace({ pathname: '/', query: rest }, undefined, {
       shallow: true
     })
   }, [router])
