@@ -28,6 +28,13 @@ export interface JourneyListViewProps {
   setActiveEvent: (event: JourneyListEvent) => void
   setSortOrder: Dispatch<SetStateAction<SortOrder | undefined>>
   sortOrder?: SortOrder
+  /**
+   * True when the NES-1538 Template Info side panel is mounted alongside
+   * this view (templates tab + teamTemplateCollection on). Forwarded to
+   * TeamMode so the 3-dots overflow menu's overhang can shrink and not
+   * collide with the panel's left edge.
+   */
+  infoPanelActive?: boolean
 }
 
 // Re-export ContentTypeOption for external use
@@ -49,7 +56,8 @@ export function JourneyListView({
   renderList,
   setActiveEvent,
   setSortOrder,
-  sortOrder
+  sortOrder,
+  infoPanelActive = false
 }: JourneyListViewProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
@@ -203,6 +211,7 @@ export function JourneyListView({
       setActiveEvent={setActiveEvent}
       router={router}
       renderList={renderList}
+      infoPanelActive={infoPanelActive}
     />
   )
 }

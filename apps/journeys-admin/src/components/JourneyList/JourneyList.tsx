@@ -189,6 +189,7 @@ export function JourneyList({
           setActiveEvent={handleClick}
           setSortOrder={handleSetSortOrder}
           sortOrder={sortOrder}
+          infoPanelActive={showTemplateInfoPanel}
         />
       </Box>
       {activeTab === 'active' && currentContentType === 'journeys' && (
@@ -196,14 +197,16 @@ export function JourneyList({
       )}
       {showTemplateInfoPanel && (
         <>
-          {/* Desktop (md+): static right-anchored column */}
+          {/* Desktop (md+): static right-anchored column. `top` aligns the
+              panel top with the tab/toolbar row; `right` keeps a compact
+              gutter to the viewport edge. */}
           <Box
             data-testid="TemplateInfoPanelDesktop"
             sx={{
               display: { xs: 'none', md: 'block' },
               position: 'fixed',
-              right: 40,
-              top: 96,
+              right: 20,
+              top: 24,
               bottom: 24,
               width: TEMPLATE_INFO_PANEL_WIDTH,
               overflowY: 'auto'
