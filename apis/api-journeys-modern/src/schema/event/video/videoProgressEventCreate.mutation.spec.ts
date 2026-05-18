@@ -19,9 +19,7 @@ describe('videoProgressEventCreate', () => {
   })
 
   const VIDEO_PROGRESS_EVENT_CREATE = graphql(`
-    mutation VideoProgressEventCreate(
-      $input: VideoProgressEventCreateInput!
-    ) {
+    mutation VideoProgressEventCreate($input: VideoProgressEventCreateInput!) {
       videoProgressEventCreate(input: $input) {
         id
         journeyId
