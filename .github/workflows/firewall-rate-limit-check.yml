@@ -1,0 +1,295 @@
+name: Firewall Rate-Limit Check (NES-1581)
+
+# Manual detection check that verifies the Vercel Firewall rule on `/api/chat*`
+# actually fires under load — without putting the owner's home IP at risk.
+# Runs from GitHub-Actions-owned IPs only. This is NOT a load test.
+#
+# Pairs with the rollout plan in NES-1581:
+#   Log → Challenge → Deny. Workflow expectations per stage:
+#     - Log mode:       probe completes; all responses are 2xx; firewall logs
+#                       show rule hits server-side.
+#     - Challenge/Deny: probe is expected to start seeing 429s past the
+#                       configured threshold. The probe job DOES NOT fail on
+#                       429 — 429 is the success signal once past Log mode.
+#
+# The companion `sentinel` job answers "does legit traffic survive while the
+# probe is hammering /api/chat?" by hitting a normal page in parallel.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: 'Target environment. WARNING: choosing `production` runs the probe against your.nextstep.is — only do this after the rule has settled in stage and the owner IP is allowlisted.'
+        type: choice
+        required: true
+        default: stage
+        options:
+          - stage
+          - production
+      probe_count:
+        description: 'Total number of POSTs the probe sends to /api/chat.'
+        type: string
+        required: true
+        default: '100'
+      probe_rps:
+        description: 'Approximate probe requests per second. Keep gentle — this is a detection check, not a load test.'
+        type: string
+        required: true
+        default: '2'
+      sentinel_path:
+        description: 'Path the sentinel GETs to verify legit traffic still works. Defaults to `/` because journey URLs are slug-dependent and the root is the most stable target seeded across both stage and production.'
+        type: string
+        required: true
+        default: '/'
+
+# TODO(NES-1581 owner): once a GitHub `production` environment with required
+# reviewers is configured for this repo, gate the production path by adding
+# `environment: ${{ inputs.target_env == 'production' && 'production' || '' }}`
+# to the probe + sentinel jobs. No environment config is present in this repo
+# today (.github has no environments file), so we rely on the input default
+# (`stage`) plus the explicit choice prompt to keep production opt-in.
+
+concurrency:
+  group: firewall-rate-limit-check-${{ inputs.target_env }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Resolve host
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    outputs:
+      host: ${{ steps.host.outputs.host }}
+      duration_seconds: ${{ steps.host.outputs.duration_seconds }}
+    steps:
+      - id: host
+        name: Resolve target host + probe duration
+        env:
+          TARGET_ENV: ${{ inputs.target_env }}
+          PROBE_COUNT: ${{ inputs.probe_count }}
+          PROBE_RPS: ${{ inputs.probe_rps }}
+        run: |
+          set -euo pipefail
+          # Host literals come from the repo (e.g. apps/journeys/proxy.ts,
+          # apis/api-gateway/gateway.prod.config.ts, libs/locales/.../*).
+          # If a `vars.JOURNEYS_STAGE_HOST` / `vars.JOURNEYS_PROD_HOST` is added
+          # later, swap these literals for `${{ vars.* }}`.
+          case "${TARGET_ENV}" in
+            stage)      host="your-stage.nextstep.is" ;;
+            production) host="your.nextstep.is" ;;
+            *) echo "Unknown target_env: ${TARGET_ENV}" >&2; exit 1 ;;
+          esac
+          count="${PROBE_COUNT}"
+          rps="${PROBE_RPS}"
+          if ! [[ "${count}" =~ ^[0-9]+$ ]] || [ "${count}" -le 0 ]; then
+            echo "probe_count must be a positive integer (got: ${count})" >&2; exit 1
+          fi
+          if ! [[ "${rps}" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+            echo "probe_rps must be a positive number (got: ${rps})" >&2; exit 1
+          fi
+          # duration = ceil(count / rps) + 15s buffer, used to bound the sentinel.
+          duration=$(awk -v c="${count}" -v r="${rps}" 'BEGIN { d=c/r; if (d != int(d)) d=int(d)+1; printf "%d", d+15 }')
+          echo "host=${host}" >> "$GITHUB_OUTPUT"
+          echo "duration_seconds=${duration}" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Run configuration"
+            echo ""
+            echo "| Setting | Value |"
+            echo "| --- | --- |"
+            echo "| target_env | \`${TARGET_ENV}\` |"
+            echo "| host | \`${host}\` |"
+            echo "| probe_count | ${count} |"
+            echo "| probe_rps | ${rps} |"
+            echo "| sentinel_path | \`${{ inputs.sentinel_path }}\` |"
+            echo "| sentinel duration | ~${duration}s |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  probe:
+    name: Probe /api/chat
+    needs: prepare
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    steps:
+      - name: Send probe requests
+        env:
+          HOST: ${{ needs.prepare.outputs.host }}
+          PROBE_COUNT: ${{ inputs.probe_count }}
+          PROBE_RPS: ${{ inputs.probe_rps }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          url="https://${HOST}/api/chat"
+          # Minimal, plausibly valid body. The firewall sits in front of the
+          # function, so the body only matters insofar as the request is a
+          # real POST against /api/chat*. The function would 400 on this
+          # eventually; that is fine for a detection check (still counts as
+          # 4xx, distinct from 429).
+          body_template='{"messages":[{"role":"user","content":"firewall probe"}],"sessionId":"firewall-probe-RUN"}'
+          body="${body_template/RUN/${RUN_ID}}"
+          sleep_s=$(awk -v r="${PROBE_RPS}" 'BEGIN { printf "%.6f", 1.0/r }')
+
+          tmp="$(mktemp -d)"
+          : > "${tmp}/codes.txt"
+          : > "${tmp}/errors.txt"
+
+          echo "Probing ${url} — ${PROBE_COUNT} requests at ~${PROBE_RPS} rps (sleep ${sleep_s}s)"
+          for i in $(seq 1 "${PROBE_COUNT}"); do
+            code=$(curl -sS -o /dev/null \
+              -w "%{http_code}" \
+              --max-time 10 \
+              -X POST "${url}" \
+              -H "Content-Type: application/json" \
+              -H "User-Agent: nes-1581-firewall-probe/1.0 (gha; run=${RUN_ID})" \
+              --data "${body}" 2>>"${tmp}/errors.txt" || echo "ERR")
+            echo "${code}" >> "${tmp}/codes.txt"
+            # Light progress every 10 requests.
+            if [ $((i % 10)) -eq 0 ]; then
+              echo "  sent ${i}/${PROBE_COUNT}"
+            fi
+            sleep "${sleep_s}"
+          done
+
+          total=$(wc -l < "${tmp}/codes.txt" | tr -d ' ')
+          count_2xx=$(awk '/^2[0-9][0-9]$/' "${tmp}/codes.txt" | wc -l | tr -d ' ')
+          count_429=$(awk '/^429$/'         "${tmp}/codes.txt" | wc -l | tr -d ' ')
+          count_4xx=$(awk '/^4[0-9][0-9]$/' "${tmp}/codes.txt" | wc -l | tr -d ' ')
+          count_5xx=$(awk '/^5[0-9][0-9]$/' "${tmp}/codes.txt" | wc -l | tr -d ' ')
+          count_err=$(awk '/^ERR$/'         "${tmp}/codes.txt" | wc -l | tr -d ' ')
+
+          # Distribution of distinct codes for the summary.
+          dist=$(sort "${tmp}/codes.txt" | uniq -c | awk '{printf "%s=%s ", $2, $1}')
+
+          {
+            echo ""
+            echo "## Probe results"
+            echo ""
+            echo "| Bucket | Count |"
+            echo "| --- | --- |"
+            echo "| Total sent | ${total} |"
+            echo "| 2xx | ${count_2xx} |"
+            echo "| 429 (rate-limited — success signal post-Log) | ${count_429} |"
+            echo "| Other 4xx | $((count_4xx - count_429)) |"
+            echo "| 5xx | ${count_5xx} |"
+            echo "| curl errors | ${count_err} |"
+            echo ""
+            echo "Status distribution: \`${dist}\`"
+            echo ""
+            echo "_Note: a 429 count of 0 in **Log** mode is expected. Past Log mode, 429s above the configured threshold are the pass signal._"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Failure policy: a 429 is a SUCCESS signal once the rule is past
+          # Log mode, so never fail on 429. Only fail on broken plumbing:
+          #   - curl errors (DNS/conn refused/timeout) on more than 10% of probes
+          #   - 5xx storms above 50% (origin or function is melting)
+          fail=0
+          if [ "${count_err}" -gt 0 ]; then
+            err_pct=$(awk -v e="${count_err}" -v t="${total}" 'BEGIN { printf "%.2f", (e*100)/t }')
+            if awk -v p="${err_pct}" 'BEGIN { exit !(p > 10.0) }'; then
+              echo "::error::curl error rate ${err_pct}% (> 10%) — see errors.txt"
+              cat "${tmp}/errors.txt" >&2 || true
+              fail=1
+            fi
+          fi
+          if [ "${count_5xx}" -gt 0 ]; then
+            err5_pct=$(awk -v e="${count_5xx}" -v t="${total}" 'BEGIN { printf "%.2f", (e*100)/t }')
+            if awk -v p="${err5_pct}" 'BEGIN { exit !(p > 50.0) }'; then
+              echo "::error::5xx rate ${err5_pct}% (> 50%) — origin under stress"
+              fail=1
+            fi
+          fi
+          exit "${fail}"
+
+  sentinel:
+    name: Sentinel — legit traffic survives
+    needs: prepare
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    steps:
+      - name: GET sentinel path at ~1 req/sec
+        env:
+          HOST: ${{ needs.prepare.outputs.host }}
+          DURATION_SECONDS: ${{ needs.prepare.outputs.duration_seconds }}
+          SENTINEL_PATH: ${{ inputs.sentinel_path }}
+        run: |
+          set -euo pipefail
+          # Normalise the path: ensure exactly one leading slash.
+          path="${SENTINEL_PATH#/}"
+          url="https://${HOST}/${path}"
+          duration="${DURATION_SECONDS}"
+
+          tmp="$(mktemp -d)"
+          : > "${tmp}/codes.txt"
+          : > "${tmp}/times.txt"
+          : > "${tmp}/errors.txt"
+
+          echo "Sentinel: GET ${url} for ~${duration}s at ~1 req/sec"
+          end=$(( $(date +%s) + duration ))
+          i=0
+          while [ "$(date +%s)" -lt "${end}" ]; do
+            i=$((i + 1))
+            line=$(curl -sS -o /dev/null \
+              -w "%{http_code} %{time_total}" \
+              --max-time 15 \
+              -H "User-Agent: nes-1581-firewall-sentinel/1.0 (gha)" \
+              "${url}" 2>>"${tmp}/errors.txt" || echo "ERR 0")
+            code="${line%% *}"
+            t="${line##* }"
+            echo "${code}" >> "${tmp}/codes.txt"
+            echo "${t}"    >> "${tmp}/times.txt"
+            if [ $((i % 15)) -eq 0 ]; then
+              echo "  sentinel sent ${i} requests"
+            fi
+            sleep 1
+          done
+
+          total=$(wc -l < "${tmp}/codes.txt" | tr -d ' ')
+          if [ "${total}" -eq 0 ]; then
+            echo "::error::Sentinel sent 0 requests — duration too short or curl always failed"
+            exit 1
+          fi
+          count_2xx=$(awk '/^2[0-9][0-9]$/' "${tmp}/codes.txt" | wc -l | tr -d ' ')
+          count_err=$(awk '/^ERR$/'         "${tmp}/codes.txt" | wc -l | tr -d ' ')
+          success_pct=$(awk -v s="${count_2xx}" -v t="${total}" 'BEGIN { printf "%.2f", (s*100)/t }')
+
+          # Percentile latency from times.txt. Drop rows where curl errored
+          # (time=0) so they don't make p95 look artificially good.
+          percentiles=$(awk '$1 > 0' "${tmp}/times.txt" | sort -g | awk '
+            { v[NR]=$1 }
+            END {
+              if (NR == 0) { print "0.000 0.000"; exit }
+              p50_i = int((NR-1) * 0.50) + 1
+              p95_i = int((NR-1) * 0.95) + 1
+              if (p50_i > NR) p50_i = NR
+              if (p95_i > NR) p95_i = NR
+              printf "%.3f %.3f\n", v[p50_i], v[p95_i]
+            }')
+          p50="${percentiles% *}"
+          p95="${percentiles##* }"
+
+          dist=$(sort "${tmp}/codes.txt" | uniq -c | awk '{printf "%s=%s ", $2, $1}')
+
+          {
+            echo ""
+            echo "## Sentinel results"
+            echo ""
+            echo "| Metric | Value |"
+            echo "| --- | --- |"
+            echo "| URL | \`${url}\` |"
+            echo "| Total requests | ${total} |"
+            echo "| 2xx | ${count_2xx} |"
+            echo "| curl errors | ${count_err} |"
+            echo "| Success rate | ${success_pct}% |"
+            echo "| p50 latency (s) | ${p50} |"
+            echo "| p95 latency (s) | ${p95} |"
+            echo ""
+            echo "Status distribution: \`${dist}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Pass criteria: 100% 2xx AND p95 < 3.0s.
+          fail=0
+          if [ "${count_2xx}" -ne "${total}" ]; then
+            echo "::error::Sentinel saw non-2xx responses (${count_2xx}/${total} were 2xx). Legit traffic is being affected."
+            fail=1
+          fi
+          if awk -v p="${p95}" 'BEGIN { exit !(p >= 3.0) }'; then
+            echo "::error::Sentinel p95 latency ${p95}s >= 3.0s threshold"
+            fail=1
+          fi
+          exit "${fail}"
