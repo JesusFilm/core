@@ -31,9 +31,7 @@ export function CustomImage({
   const [localUploads, setLocalUploads] = useState<MediaLibraryListImage[]>([])
 
   function handleImageUploaded(image: MediaLibraryListImage): void {
-    setLocalUploads((prev) =>
-      prev.some((existing) => existing.id === image.id) ? prev : [image, ...prev]
-    )
+    setLocalUploads((prev) => [image, ...prev])
   }
 
   return (

@@ -59,14 +59,10 @@ export function AIGallery({
         const url = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
         }/${cloudflareId}`
-        setLocalImages((prev) =>
-          prev.some((image) => image.id === cloudflareId)
-            ? prev
-            : [
-                { id: cloudflareId, src: `${url}/public`, blurhash: null },
-                ...prev
-              ]
-        )
+        setLocalImages((prev) => [
+          { id: cloudflareId, src: `${url}/public`, blurhash: null },
+          ...prev
+        ])
         await onChange({
           src: `${url}/public`,
           alt: `Prompt: ${prompt}`,
