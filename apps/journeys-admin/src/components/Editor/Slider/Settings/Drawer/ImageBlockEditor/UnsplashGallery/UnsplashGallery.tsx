@@ -14,7 +14,6 @@ import {
   SearchUnsplashPhotos,
   SearchUnsplashPhotosVariables
 } from '../../../../../../../../__generated__/SearchUnsplashPhotos'
-
 import { LoadMoreButton } from '../LoadMoreButton'
 
 import { UnsplashCollections } from './UnsplashCollections'
@@ -187,7 +186,7 @@ export function UnsplashGallery({
       <LoadMoreButton
         hasMore
         loading={loading}
-        onClick={() => void handleFetchMore()}
+        onClick={handleFetchMore}
       />
     </Stack>
   )

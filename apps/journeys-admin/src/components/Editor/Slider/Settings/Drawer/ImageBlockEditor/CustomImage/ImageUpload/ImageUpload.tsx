@@ -1,3 +1,4 @@
+import { useApolloClient } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -19,12 +20,12 @@ import {
 } from '../../../../../../../../libs/sendImageUploadEvent'
 import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/useCloudflareUploadByFileMutation'
 import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
-import { MediaLibraryListImage } from '../../MediaLibrary/MediaLibraryList'
+import { prependCloudflareImage } from '../../MediaLibrary'
 
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
   setUploading?: (uploading?: boolean) => void
-  onImageUploaded?: (image: MediaLibraryListImage) => void
+  onUploaded?: () => void
   selectedBlock?: ImageBlock | null
   loading?: boolean
   error?: boolean
@@ -34,11 +35,12 @@ export function ImageUpload({
   onChange,
   selectedBlock,
   setUploading,
-  onImageUploaded,
+  onUploaded,
   loading,
   error
 }: ImageUploadProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { cache } = useApolloClient()
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
   const [errorCode, setErrorCode] = useState<ErrorCode>()
@@ -110,11 +112,12 @@ export function ImageUpload({
         const url = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
         }/${cloudflareId}`
-        onImageUploaded?.({
-          id: cloudflareId,
-          src: `${url}/public`,
-          blurhash: null
-        })
+        prependCloudflareImage(
+          cache,
+          { id: cloudflareId, url, blurhash: null },
+          false
+        )
+        onUploaded?.()
         onChange({ src: `${url}/public`, scale: 100, focalLeft: 50, focalTop: 50 })
         if (successResetTimerRef.current != null) {
           clearTimeout(successResetTimerRef.current)
@@ -130,6 +133,7 @@ export function ImageUpload({
         })
       } catch {
         setSuccess(false)
+        setUploading?.(false)
         sendImageUploadFailureEvent({
           fileSize: file.size,
           fileType: file.type,

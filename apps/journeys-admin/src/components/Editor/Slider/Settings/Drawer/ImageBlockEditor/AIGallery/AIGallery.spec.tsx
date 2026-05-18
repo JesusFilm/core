@@ -1,4 +1,6 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { offsetLimitPagination } from '@apollo/client/utilities'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -190,6 +192,61 @@ describe('AIGallery', () => {
     await waitFor(() =>
       expect(screen.getByTestId('media-library-image-imageId')).toBeInTheDocument()
     )
+  })
+
+  it('should reset gallery pagination after a successful generation', async () => {
+    const makeAiImages = (count: number, offset = 0) =>
+      Array.from({ length: count }, (_, i) => ({
+        __typename: 'CloudflareImage' as const,
+        id: `ai-${offset + i}`,
+        url: `https://imagedelivery.net/cloudflare-key/ai-${offset + i}`,
+        blurhash: null
+      }))
+    const firstPage: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 11, isAi: true }
+      },
+      result: { data: { getMyCloudflareImages: makeAiImages(11) } }
+    }
+    const secondPage: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 10, limit: 11, isAi: true }
+      },
+      result: { data: { getMyCloudflareImages: makeAiImages(11, 10) } }
+    }
+    const paginatedCache = new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: { getMyCloudflareImages: offsetLimitPagination(['isAi']) }
+        }
+      }
+    })
+    render(
+      <MockedProvider
+        mocks={[firstPage, secondPage, getAIImage]}
+        cache={paginatedCache}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ mediaLibrary: true }}>
+            <AIGallery onChange={jest.fn()} />
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await screen.findByTestId('media-library-image-ai-0')
+    fireEvent.click(screen.getByRole('button', { name: 'Load More' }))
+    await screen.findByTestId('media-library-image-ai-11')
+    expect(screen.getAllByTestId(/^media-library-image-/)).toHaveLength(20)
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Prompt' }), {
+      target: { value: 'an image of the New Jerusalem' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Prompt' }))
+
+    await screen.findByTestId('media-library-image-imageId')
+    expect(screen.getAllByTestId(/^media-library-image-/)).toHaveLength(10)
   })
 
   it('should show error snackbar on request failure', async () => {

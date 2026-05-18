@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
@@ -12,8 +12,7 @@ import {
   ImageBlockUpdateInput,
   SegmindModel
 } from '../../../../../../../../__generated__/globalTypes'
-import { MediaLibrary } from '../MediaLibrary'
-import { MediaLibraryListImage } from '../MediaLibrary/MediaLibraryList'
+import { MediaLibrary, prependCloudflareImage } from '../MediaLibrary'
 
 import { AIPrompt } from './AIPrompt'
 
@@ -41,8 +40,9 @@ export function AIGallery({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { mediaLibrary } = useFlags()
+  const { cache } = useApolloClient()
   const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
-  const [localImages, setLocalImages] = useState<MediaLibraryListImage[]>([])
+  const [galleryKey, setGalleryKey] = useState(0)
 
   async function handleSubmit({ prompt }: { prompt: string }): Promise<void> {
     setUploading?.(true)
@@ -59,10 +59,12 @@ export function AIGallery({
         const url = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
         }/${cloudflareId}`
-        setLocalImages((prev) => [
-          { id: cloudflareId, src: `${url}/public`, blurhash: null },
-          ...prev
-        ])
+        prependCloudflareImage(
+          cache,
+          { id: cloudflareId, url, blurhash: null },
+          true
+        )
+        setGalleryKey((k) => k + 1)
         await onChange({
           src: `${url}/public`,
           alt: `Prompt: ${prompt}`,
@@ -105,11 +107,11 @@ export function AIGallery({
       />
       {mediaLibrary === true && (
         <MediaLibrary
+          key={galleryKey}
           title={t('Generations')}
           selectedSrc={selectedBlock?.src}
           onSelect={onChange}
           isAi={true}
-          localImages={localImages}
           uploading={loading}
         />
       )}

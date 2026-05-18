@@ -7,7 +7,6 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import { MediaLibrary } from '../MediaLibrary'
-import { MediaLibraryListImage } from '../MediaLibrary/MediaLibraryList'
 
 import { ImageUpload } from './ImageUpload'
 
@@ -28,11 +27,7 @@ export function CustomImage({
 }: CustomImageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { mediaLibrary } = useFlags()
-  const [localUploads, setLocalUploads] = useState<MediaLibraryListImage[]>([])
-
-  function handleImageUploaded(image: MediaLibraryListImage): void {
-    setLocalUploads((prev) => [image, ...prev])
-  }
+  const [galleryKey, setGalleryKey] = useState(0)
 
   return (
     <Stack
@@ -48,18 +43,18 @@ export function CustomImage({
       <ImageUpload
         onChange={onChange}
         setUploading={setUploading}
-        onImageUploaded={handleImageUploaded}
+        onUploaded={() => setGalleryKey((k) => k + 1)}
         loading={loading}
         selectedBlock={selectedBlock}
         error={error}
       />
       {mediaLibrary === true && (
         <MediaLibrary
+          key={galleryKey}
           title={t('Uploads')}
           selectedSrc={selectedBlock?.src}
           onSelect={onChange}
           isAi={false}
-          localImages={localUploads}
           uploading={loading}
         />
       )}

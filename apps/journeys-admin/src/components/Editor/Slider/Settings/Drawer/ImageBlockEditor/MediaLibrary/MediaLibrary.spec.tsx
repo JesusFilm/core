@@ -1,9 +1,13 @@
 import { InMemoryCache } from '@apollo/client'
-import { offsetLimitPagination } from '@apollo/client/utilities'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { offsetLimitPagination } from '@apollo/client/utilities'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { GET_MY_CLOUDFLARE_IMAGES, MediaLibrary } from './MediaLibrary'
+import {
+  GET_MY_CLOUDFLARE_IMAGES,
+  MediaLibrary,
+  prependCloudflareImage
+} from './MediaLibrary'
 
 function makeImages(
   count: number,
@@ -217,62 +221,20 @@ describe('MediaLibrary', () => {
     expect(button).toBeDisabled()
   })
 
-  it('should prepend localImages above server images and dedupe by id', async () => {
-    render(
-      <MockedProvider mocks={[firstFullPageMock]}>
-        <MediaLibrary
-          title="Your uploads"
-          onSelect={jest.fn()}
-          isAi={false}
-          localImages={[
-            {
-              id: 'local-1',
-              src: 'https://imagedelivery.net/key/local-1/public',
-              blurhash: null
-            },
-            {
-              id: 'img-0',
-              src: 'https://imagedelivery.net/key/img-0/public',
-              blurhash: null
-            }
-          ]}
-        />
-      </MockedProvider>
-    )
-    await screen.findByTestId('media-library-image-img-1')
-    const tiles = screen.getAllByTestId(/^media-library-image-/)
-    expect(tiles[0].getAttribute('data-testid')).toBe(
-      'media-library-image-local-1'
-    )
-    expect(tiles[1].getAttribute('data-testid')).toBe(
-      'media-library-image-img-0'
-    )
-    expect(screen.getAllByTestId('media-library-image-img-0')).toHaveLength(1)
-  })
-
-  it('should keep server pagination offset aligned regardless of localImages count', async () => {
+  it('should keep the existing page when fetchMore rejects', async () => {
+    const failingSecondPage: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 10, limit: 11, isAi: false }
+      },
+      error: new Error('Network failure')
+    }
     render(
       <MockedProvider
-        mocks={[firstFullPageMock, secondShortPageMock]}
+        mocks={[firstFullPageMock, failingSecondPage]}
         cache={paginatedCache()}
       >
-        <MediaLibrary
-          title="Your uploads"
-          onSelect={jest.fn()}
-          isAi={false}
-          localImages={[
-            {
-              id: 'local-1',
-              src: 'https://imagedelivery.net/key/local-1/public',
-              blurhash: null
-            },
-            {
-              id: 'local-2',
-              src: 'https://imagedelivery.net/key/local-2/public',
-              blurhash: null
-            }
-          ]}
-        />
+        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
@@ -281,11 +243,35 @@ describe('MediaLibrary', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId('media-library-image-img-11')
-      ).toBeInTheDocument()
+        screen.getByRole('button', { name: 'Load More' })
+      ).not.toBeDisabled()
     })
-    expect(screen.getByTestId('media-library-image-local-1')).toBeInTheDocument()
-    expect(screen.getByTestId('media-library-image-local-2')).toBeInTheDocument()
+    expect(screen.getAllByTestId(/^media-library-image-/)).toHaveLength(10)
+  })
+
+  it('should show images prepended to the cache above server images', async () => {
+    const cache = paginatedCache()
+    render(
+      <MockedProvider mocks={[firstFullPageMock]} cache={cache}>
+        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+      </MockedProvider>
+    )
+    await screen.findByTestId('media-library-image-img-0')
+    prependCloudflareImage(
+      cache,
+      {
+        id: 'local-1',
+        url: 'https://imagedelivery.net/key/local-1',
+        blurhash: null
+      },
+      false
+    )
+    await waitFor(() => {
+      const tiles = screen.getAllByTestId(/^media-library-image-/)
+      expect(tiles[0].getAttribute('data-testid')).toBe(
+        'media-library-image-local-1'
+      )
+    })
   })
 
   it('should forward isAi=true to the query variables', async () => {

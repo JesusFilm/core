@@ -7,7 +7,7 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 interface LoadMoreButtonProps {
   hasMore: boolean
   loading: boolean
-  onClick: () => void
+  onClick: () => Promise<void>
 }
 
 export function LoadMoreButton({

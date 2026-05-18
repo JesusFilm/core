@@ -1,13 +1,19 @@
-import { NetworkStatus, gql, useQuery } from '@apollo/client'
+import {
+  ApolloCache,
+  NetworkStatus,
+  Reference,
+  gql,
+  useQuery
+} from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import {
+  GetMyCloudflareImages_getMyCloudflareImages as CloudflareImage,
   GetMyCloudflareImages,
-  GetMyCloudflareImagesVariables,
-  GetMyCloudflareImages_getMyCloudflareImages as CloudflareImage
+  GetMyCloudflareImagesVariables
 } from '../../../../../../../../__generated__/GetMyCloudflareImages'
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import { LoadMoreButton } from '../LoadMoreButton'
@@ -24,12 +30,40 @@ export const GET_MY_CLOUDFLARE_IMAGES = gql`
   }
 `
 
+const NEW_CLOUDFLARE_IMAGE_FRAGMENT = gql`
+  fragment NewCloudflareImage on CloudflareImage {
+    id
+    url
+    blurhash
+  }
+`
+
+export function prependCloudflareImage(
+  cache: ApolloCache<unknown>,
+  image: { id: string; url: string; blurhash: string | null },
+  isAi: boolean
+): void {
+  const ref = cache.writeFragment({
+    data: { __typename: 'CloudflareImage', ...image },
+    fragment: NEW_CLOUDFLARE_IMAGE_FRAGMENT
+  })
+  if (ref == null) return
+  cache.modify({
+    fields: {
+      getMyCloudflareImages(existing, { storeFieldName }) {
+        if (!storeFieldName.includes(`"isAi":${isAi}`)) return existing
+        const list = Array.isArray(existing) ? (existing as Reference[]) : []
+        return [ref, ...list]
+      }
+    }
+  })
+}
+
 interface MediaLibraryProps {
   title: string
   selectedSrc?: string | null
   onSelect: (input: ImageBlockUpdateInput) => void
   isAi: boolean
-  localImages?: MediaLibraryListImage[]
   uploading?: boolean
 }
 
@@ -57,12 +91,10 @@ export function MediaLibrary({
   selectedSrc,
   onSelect,
   isAi,
-  localImages,
   uploading
 }: MediaLibraryProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const [pagesFetched, setPagesFetched] = useState(1)
-  const [serverHasMore, setServerHasMore] = useState<boolean | null>(null)
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<
     GetMyCloudflareImages,
@@ -72,20 +104,12 @@ export function MediaLibrary({
     notifyOnNetworkStatusChange: true
   })
 
-  useEffect(() => {
-    if (data == null || serverHasMore !== null) return
-    setServerHasMore(data.getMyCloudflareImages.length === PEEK_LIMIT)
-  }, [data, serverHasMore])
-
   const isFetchingMore = networkStatus === NetworkStatus.fetchMore
 
-  const serverImages = toRenderedImages(data?.getMyCloudflareImages ?? [])
-  const localIds = new Set((localImages ?? []).map((image) => image.id))
-  const dedupedServer = serverImages.filter((image) => !localIds.has(image.id))
-  const visibleServer = dedupedServer.slice(0, pagesFetched * PAGE_SIZE)
-  const images = [...(localImages ?? []), ...visibleServer]
+  const allImages = toRenderedImages(data?.getMyCloudflareImages ?? [])
+  const images = allImages.slice(0, pagesFetched * PAGE_SIZE)
 
-  const hasMore = serverHasMore === true
+  const hasMore = allImages.length > pagesFetched * PAGE_SIZE
 
   const isEmpty =
     !loading && error == null && uploading !== true && images.length === 0
@@ -109,10 +133,9 @@ export function MediaLibrary({
         limit: PEEK_LIMIT,
         isAi
       }
-    })
-    const fetched = result.data?.getMyCloudflareImages.length ?? 0
+    }).catch(() => null)
+    if (result == null) return
     setPagesFetched((prev) => prev + 1)
-    setServerHasMore(fetched === PEEK_LIMIT)
   }
 
   return (
@@ -132,7 +155,7 @@ export function MediaLibrary({
       <LoadMoreButton
         hasMore={hasMore}
         loading={loading || isFetchingMore}
-        onClick={() => void handleLoadMore()}
+        onClick={handleLoadMore}
       />
     </Stack>
   )
