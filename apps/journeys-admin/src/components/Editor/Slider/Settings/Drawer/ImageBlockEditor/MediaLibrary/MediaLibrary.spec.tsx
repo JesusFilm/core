@@ -3,11 +3,8 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { offsetLimitPagination } from '@apollo/client/utilities'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import {
-  GET_MY_CLOUDFLARE_IMAGES,
-  MediaLibrary,
-  prependCloudflareImage
-} from './MediaLibrary'
+import { GET_MY_CLOUDFLARE_IMAGES, MediaLibrary } from './MediaLibrary'
+import { prependCloudflareImage } from './prependCloudflareImage'
 
 function makeImages(
   count: number,
@@ -271,6 +268,32 @@ describe('MediaLibrary', () => {
       expect(tiles[0].getAttribute('data-testid')).toBe(
         'media-library-image-local-1'
       )
+    })
+  })
+
+  it('should dedupe by id when prepending an image already in the cache', async () => {
+    const cache = paginatedCache()
+    render(
+      <MockedProvider mocks={[firstFullPageMock]} cache={cache}>
+        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+      </MockedProvider>
+    )
+    await screen.findByTestId('media-library-image-img-0')
+
+    prependCloudflareImage(
+      cache,
+      {
+        id: 'img-0',
+        url: 'https://imagedelivery.net/key/img-0',
+        blurhash: null
+      },
+      false
+    )
+
+    await waitFor(() => {
+      const tiles = screen.getAllByTestId(/^media-library-image-/)
+      const ids = tiles.map((tile) => tile.getAttribute('data-testid'))
+      expect(ids.filter((id) => id === 'media-library-image-img-0')).toHaveLength(1)
     })
   })
 

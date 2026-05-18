@@ -1,1 +1,1 @@
-export { MediaLibrary, prependCloudflareImage } from './MediaLibrary'
+export { MediaLibrary } from './MediaLibrary'

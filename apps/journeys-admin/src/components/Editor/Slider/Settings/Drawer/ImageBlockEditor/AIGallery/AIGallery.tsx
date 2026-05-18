@@ -12,7 +12,8 @@ import {
   ImageBlockUpdateInput,
   SegmindModel
 } from '../../../../../../../../__generated__/globalTypes'
-import { MediaLibrary, prependCloudflareImage } from '../MediaLibrary'
+import { MediaLibrary } from '../MediaLibrary'
+import { prependCloudflareImage } from '../MediaLibrary/prependCloudflareImage'
 
 import { AIPrompt } from './AIPrompt'
 
@@ -54,11 +55,11 @@ export function AIGallery({
         }
       })
 
-      if (data?.createImageBySegmindPrompt?.id != null) {
-        const cloudflareId = data.createImageBySegmindPrompt.id
-        const url = `https://imagedelivery.net/${
-          process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
-        }/${cloudflareId}`
+      const cloudflareId = data?.createImageBySegmindPrompt?.id
+      const cloudflareUploadKey =
+        process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY
+      if (cloudflareId != null && cloudflareUploadKey != null && cloudflareUploadKey !== '') {
+        const url = `https://imagedelivery.net/${cloudflareUploadKey}/${cloudflareId}`
         prependCloudflareImage(
           cache,
           { id: cloudflareId, url, blurhash: null },

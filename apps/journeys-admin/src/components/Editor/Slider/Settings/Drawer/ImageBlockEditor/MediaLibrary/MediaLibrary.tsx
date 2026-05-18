@@ -1,10 +1,4 @@
-import {
-  ApolloCache,
-  NetworkStatus,
-  Reference,
-  gql,
-  useQuery
-} from '@apollo/client'
+import { NetworkStatus, gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
@@ -29,35 +23,6 @@ export const GET_MY_CLOUDFLARE_IMAGES = gql`
     }
   }
 `
-
-const NEW_CLOUDFLARE_IMAGE_FRAGMENT = gql`
-  fragment NewCloudflareImage on CloudflareImage {
-    id
-    url
-    blurhash
-  }
-`
-
-export function prependCloudflareImage(
-  cache: ApolloCache<unknown>,
-  image: { id: string; url: string; blurhash: string | null },
-  isAi: boolean
-): void {
-  const ref = cache.writeFragment({
-    data: { __typename: 'CloudflareImage', ...image },
-    fragment: NEW_CLOUDFLARE_IMAGE_FRAGMENT
-  })
-  if (ref == null) return
-  cache.modify({
-    fields: {
-      getMyCloudflareImages(existing, { storeFieldName }) {
-        if (!storeFieldName.includes(`"isAi":${isAi}`)) return existing
-        const list = Array.isArray(existing) ? (existing as Reference[]) : []
-        return [ref, ...list]
-      }
-    }
-  })
-}
 
 interface MediaLibraryProps {
   title: string

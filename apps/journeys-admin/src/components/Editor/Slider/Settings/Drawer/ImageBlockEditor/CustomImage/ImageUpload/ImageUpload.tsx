@@ -20,7 +20,7 @@ import {
 } from '../../../../../../../../libs/sendImageUploadEvent'
 import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/useCloudflareUploadByFileMutation'
 import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
-import { prependCloudflareImage } from '../../MediaLibrary'
+import { prependCloudflareImage } from '../../MediaLibrary/prependCloudflareImage'
 
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
@@ -110,10 +110,24 @@ export function ImageUpload({
           return
         }
 
-        const cloudflareId = response.result.id as string
-        const url = `https://imagedelivery.net/${
-          process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
-        }/${cloudflareId}`
+        const cloudflareId = response?.result?.id
+        const cloudflareUploadKey =
+          process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY
+        if (
+          cloudflareId == null ||
+          cloudflareUploadKey == null ||
+          cloudflareUploadKey === ''
+        ) {
+          setSuccess(false)
+          setUploading?.(false)
+          sendImageUploadFailureEvent({
+            fileSize: file.size,
+            fileType: file.type,
+            errorCode: 'upload-invalid-response'
+          })
+          return
+        }
+        const url = `https://imagedelivery.net/${cloudflareUploadKey}/${cloudflareId}`
         prependCloudflareImage(
           cache,
           { id: cloudflareId, url, blurhash: null },
