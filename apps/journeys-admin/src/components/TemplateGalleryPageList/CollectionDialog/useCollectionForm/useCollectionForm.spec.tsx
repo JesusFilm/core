@@ -194,7 +194,12 @@ describe('useCollectionForm', () => {
       ).resolves.toBeTruthy()
     })
 
-    it('only accepts Canva and Google Slides URLs for mediaUrl (NES-1649)', async () => {
+    // NES-1682: the Canva / Google Slides URL validation for mediaUrl
+    // was removed alongside the embed textbox UI in CollectionDialog.
+    // The field still rides through the form values for existing-data
+    // round-trip, but there is no editing surface and no per-value
+    // validation rule left to assert against. Length cap stays.
+    it('caps mediaUrl length but does not enforce URL shape (NES-1682)', async () => {
       const { result } = renderHook(
         () =>
           useCollectionForm({
@@ -205,26 +210,18 @@ describe('useCollectionForm', () => {
         { wrapper: wrapperWithMocks([]) }
       )
 
-      // Reject anything else, even valid https URLs — the render layer
-      // only knows how to embed Canva and Google Slides.
+      // Any shape passes — no Canva / Slides regex left.
       await expect(
         result.current.schema.validate(
           defaultValues({ mediaUrl: 'http://insecure.example' })
         )
-      ).rejects.toThrow(/canva or google slides/i)
+      ).resolves.toBeTruthy()
       await expect(
         result.current.schema.validate(
           defaultValues({ mediaUrl: 'https://www.youtube.com/watch?v=abc' })
         )
-      ).rejects.toThrow(/canva or google slides/i)
-      await expect(
-        result.current.schema.validate(
-          defaultValues({ mediaUrl: 'https://www.loom.com/share/abc' })
-        )
-      ).rejects.toThrow(/canva or google slides/i)
-
-      // Accept real-world Canva share URLs with utm tags / extra params —
-      // intentionally more permissive than the Strategy section's regex.
+      ).resolves.toBeTruthy()
+      // Existing Canva / Slides values still pass (round-trip on save).
       await expect(
         result.current.schema.validate(
           defaultValues({
@@ -232,74 +229,13 @@ describe('useCollectionForm', () => {
           })
         )
       ).resolves.toBeTruthy()
-      await expect(
-        result.current.schema.validate(
-          defaultValues({
-            mediaUrl:
-              'https://www.canva.com/design/DAHJBsAPHB4/view?utm_content=DAHJBsAPHB4&utm_campaign=designshare'
-          })
-        )
-      ).resolves.toBeTruthy()
 
-      // Accept Google Slides /pub URLs regardless of query-param order.
+      // Length cap at 2048 still applies as a defensive bound.
       await expect(
         result.current.schema.validate(
-          defaultValues({
-            mediaUrl:
-              'https://docs.google.com/presentation/d/e/2PACX-1vS/pub?start=true&loop=false&delayms=3000'
-          })
+          defaultValues({ mediaUrl: 'a'.repeat(2049) })
         )
-      ).resolves.toBeTruthy()
-      await expect(
-        result.current.schema.validate(
-          defaultValues({
-            mediaUrl:
-              'https://docs.google.com/presentation/d/e/2PACX-1vS/pub?delayms=3000&loop=true&start=false'
-          })
-        )
-      ).resolves.toBeTruthy()
-    })
-
-    it('rejects mediaUrl values with whitespace or trailing junk that bypass a loose prefix match', async () => {
-      const { result } = renderHook(
-        () =>
-          useCollectionForm({
-            mode: 'create',
-            teamId: 'team-1',
-            onClose: jest.fn()
-          }),
-        { wrapper: wrapperWithMocks([]) }
-      )
-
-      // Whitespace anywhere — would be invalid as an iframe src.
-      await expect(
-        result.current.schema.validate(
-          defaultValues({
-            mediaUrl: 'https://www.canva.com/design/DAH JBsAPHB4/view'
-          })
-        )
-      ).rejects.toThrow(/canva or google slides/i)
-
-      // Non-canva host smuggled past a non-anchored regex via newline.
-      await expect(
-        result.current.schema.validate(
-          defaultValues({
-            mediaUrl:
-              'https://www.canva.com/design/x\nhttps://attacker.example/exploit'
-          })
-        )
-      ).rejects.toThrow(/canva or google slides/i)
-
-      // Trailing fragment / query is fine when it stays in the allowed char
-      // set; junk that includes a quote or angle bracket is rejected.
-      await expect(
-        result.current.schema.validate(
-          defaultValues({
-            mediaUrl:
-              'https://www.canva.com/design/DAHJBsAPHB4/view"><script>alert(1)</script>'
-          })
-        )
-      ).rejects.toThrow(/canva or google slides/i)
+      ).rejects.toThrow(/url too long/i)
     })
 
     it('rejects slugs with uppercase or invalid characters', async () => {
