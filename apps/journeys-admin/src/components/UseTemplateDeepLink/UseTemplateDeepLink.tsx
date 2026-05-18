@@ -39,13 +39,6 @@ interface TranslationVariables {
  * `journeyId` (and keyed by it) so consecutive deep-link sessions each get a
  * fresh state slate — including `navigatedAwayRef` and the cached
  * `journey` — instead of leaking across.
- *
- * TODO(NES-1680): extract the shared duplicate-and-translate orchestration
- * into a hook so this file and CreateJourneyButton stop drifting. Until
- * that ticket lands, if you change the mutation, subscription, error
- * handling, or wait-for-load behaviour here, also edit
- * libs/journeys/ui/src/components/TemplateView/CreateJourneyButton/CreateJourneyButton.tsx.
- * https://linear.app/jesus-film-project/issue/NES-1680
  */
 export function UseTemplateDeepLink(): ReactElement | null {
   const journeyId = useTemplateDeepLinkJourneyId()
