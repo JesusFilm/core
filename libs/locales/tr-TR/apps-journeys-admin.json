@@ -434,6 +434,8 @@
   "Upload Successful!": "Yükleme Başarılı!",
   "Upload Failed!": "Yükleme Başarısız!",
   "Drop an image here": "Buraya bir resim bırakın",
+  "or click to browse your files": "veya dosyalarınıza göz atmak için tıklayın",
+  "Uploading... {{progress}}%": "Yükleniyor... {{progress}}%",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "Bir resim yükleyin (PNG, JPG, GIF, SVG veya HEIC). Maksimum dosya boyutu: 10 MB",
   "Upload file": "Dosya yükle",
   "Gallery": "Galeri",
