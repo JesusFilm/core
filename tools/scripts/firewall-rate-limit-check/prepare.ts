@@ -61,7 +61,10 @@ function computeDurationSeconds(count: number, rps: number): number {
   return Math.ceil(count / rps) + 15
 }
 
-async function writeOutput(host: string, durationSeconds: number): Promise<void> {
+async function writeOutput(
+  host: string,
+  durationSeconds: number
+): Promise<void> {
   const githubOutput = process.env.GITHUB_OUTPUT
   if (githubOutput == null || githubOutput === '') return
   await appendFile(
