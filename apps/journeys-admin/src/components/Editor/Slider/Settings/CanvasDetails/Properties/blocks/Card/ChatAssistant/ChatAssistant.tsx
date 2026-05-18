@@ -9,7 +9,11 @@ import { ChangeEvent, ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -62,7 +66,12 @@ export function ChatAssistant(): ReactElement | null {
 
   function applyUpdate(values: ChatAssistantValues): void {
     if (cardBlock == null) return
-    dispatch({ type: 'SetEditorFocusAction', selectedStep })
+    dispatch({
+      type: 'SetEditorFocusAction',
+      activeSlide: ActiveSlide.Content,
+      selectedStep,
+      activeContent: ActiveContent.Canvas
+    })
     void cardBlockUpdate({
       variables: {
         id: cardBlock.id,
@@ -131,7 +140,6 @@ export function ChatAssistant(): ReactElement | null {
             <Switch
               checked={currentShowAssistant}
               onChange={handleShowAssistantChange}
-              inputProps={{ 'aria-label': t('Show AI chat') }}
             />
           }
           label={t('Show AI chat')}
@@ -143,7 +151,6 @@ export function ChatAssistant(): ReactElement | null {
                 <Switch
                   checked={currentExpandChatByDefault}
                   onChange={handleExpandChatByDefaultChange}
-                  inputProps={{ 'aria-label': t('Open chat automatically') }}
                 />
               }
               label={t('Open chat automatically')}
