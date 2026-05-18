@@ -19,7 +19,9 @@ const durationSeconds = Number.parseInt(env('DURATION_SECONDS'), 10)
 const sentinelPath = '/' + env('SENTINEL_PATH').replace(/^\/+/, '')
 
 if (!Number.isFinite(durationSeconds) || durationSeconds <= 0)
-  throw new Error(`DURATION_SECONDS must be a positive integer (got: ${durationSeconds})`)
+  throw new Error(
+    `DURATION_SECONDS must be a positive integer (got: ${durationSeconds})`
+  )
 
 const url = `https://${host}${sentinelPath}`
 console.log(`Sentinel: GET ${url} for ~${durationSeconds}s at ~1 req/sec`)
@@ -61,20 +63,29 @@ const successPct = (count2xx * 100) / total
 
 // p50 / p95 over successful requests only (numpy "lower" interpolation),
 // matching the original awk: index = floor((N-1) * fraction) + 1, clamped to N.
-const sortedMs = results.filter((r) => r.ms > 0).map((r) => r.ms).sort((a, b) => a - b)
+const sortedMs = results
+  .filter((r) => r.ms > 0)
+  .map((r) => r.ms)
+  .sort((a, b) => a - b)
 const percentile = (fraction: number): number => {
   if (sortedMs.length === 0) return 0
-  const index = Math.min(Math.floor((sortedMs.length - 1) * fraction), sortedMs.length - 1)
+  const index = Math.min(
+    Math.floor((sortedMs.length - 1) * fraction),
+    sortedMs.length - 1
+  )
   return sortedMs[index]
 }
 const p50Seconds = percentile(0.5) / 1000
 const p95Seconds = percentile(0.95) / 1000
 
-const distribution = results.reduce<Record<string, number>>((accumulator, result) => {
-  const key = result.status?.toString() ?? 'ERR'
-  accumulator[key] = (accumulator[key] ?? 0) + 1
-  return accumulator
-}, {})
+const distribution = results.reduce<Record<string, number>>(
+  (accumulator, result) => {
+    const key = result.status?.toString() ?? 'ERR'
+    accumulator[key] = (accumulator[key] ?? 0) + 1
+    return accumulator
+  },
+  {}
+)
 const distributionString = Object.entries(distribution)
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([key, value]) => `${key}=${value}`)
@@ -107,7 +118,9 @@ if (count2xx !== total) {
   exitCode = 1
 }
 if (p95Seconds >= 3.0) {
-  console.error(`::error::Sentinel p95 latency ${p95Seconds.toFixed(3)}s >= 3.0s threshold`)
+  console.error(
+    `::error::Sentinel p95 latency ${p95Seconds.toFixed(3)}s >= 3.0s threshold`
+  )
   exitCode = 1
 }
 process.exit(exitCode)

@@ -28,7 +28,10 @@ if (!Number.isFinite(probeRps) || probeRps <= 0)
 // Bound the sentinel: probe duration plus a 15s buffer.
 const durationSeconds = Math.ceil(probeCount / probeRps) + 15
 
-await appendFile(env('GITHUB_OUTPUT'), `host=${host}\nduration_seconds=${durationSeconds}\n`)
+await appendFile(
+  env('GITHUB_OUTPUT'),
+  `host=${host}\nduration_seconds=${durationSeconds}\n`
+)
 await appendFile(
   env('GITHUB_STEP_SUMMARY'),
   `## Run configuration

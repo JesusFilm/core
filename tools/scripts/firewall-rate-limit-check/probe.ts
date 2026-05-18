@@ -53,17 +53,21 @@ for (let i = 1; i <= probeCount; i++) {
 
 const total = results.length
 const inRange = (lo: number, hi: number): number =>
-  results.filter((r) => r.status != null && r.status >= lo && r.status <= hi).length
+  results.filter((r) => r.status != null && r.status >= lo && r.status <= hi)
+    .length
 const count2xx = inRange(200, 299)
 const count4xx = inRange(400, 499)
 const count429 = results.filter((r) => r.status === 429).length
 const count5xx = inRange(500, 599)
 const countError = results.filter((r) => r.status == null).length
-const distribution = results.reduce<Record<string, number>>((accumulator, result) => {
-  const key = result.status?.toString() ?? 'ERR'
-  accumulator[key] = (accumulator[key] ?? 0) + 1
-  return accumulator
-}, {})
+const distribution = results.reduce<Record<string, number>>(
+  (accumulator, result) => {
+    const key = result.status?.toString() ?? 'ERR'
+    accumulator[key] = (accumulator[key] ?? 0) + 1
+    return accumulator
+  },
+  {}
+)
 const distributionString = Object.entries(distribution)
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([key, value]) => `${key}=${value}`)
@@ -98,7 +102,9 @@ if (errorPct > 10) {
   exitCode = 1
 }
 if (fiveXxPct > 50) {
-  console.error(`::error::5xx rate ${fiveXxPct.toFixed(2)}% (> 50%) — origin under stress`)
+  console.error(
+    `::error::5xx rate ${fiveXxPct.toFixed(2)}% (> 50%) — origin under stress`
+  )
   exitCode = 1
 }
 process.exit(exitCode)

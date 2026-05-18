@@ -8,10 +8,10 @@ Verifies the Vercel Firewall rule on paths starting with `/api/chat` (configured
 
 Each is invoked from the workflow via `pnpm -s exec tsx tools/scripts/firewall-rate-limit-check/<script>.ts`. Configuration comes from env vars set in the workflow.
 
-| Script | What it does |
-| --- | --- |
-| `prepare.ts` | Maps `target_env` → host, validates `probe_count` / `probe_rps`, computes sentinel duration, writes both to `GITHUB_OUTPUT`. |
-| `probe.ts` | Loops `probe_count` POSTs to `/api/chat` at `probe_rps`, collects status codes into an array, tallies buckets, writes a markdown summary. |
+| Script        | What it does                                                                                                                                  |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prepare.ts`  | Maps `target_env` → host, validates `probe_count` / `probe_rps`, computes sentinel duration, writes both to `GITHUB_OUTPUT`.                  |
+| `probe.ts`    | Loops `probe_count` POSTs to `/api/chat` at `probe_rps`, collects status codes into an array, tallies buckets, writes a markdown summary.     |
 | `sentinel.ts` | Loops GETs to `sentinel_path` at ~1 req/sec for `duration_seconds`, collects status + latency, computes p50 / p95, writes a markdown summary. |
 
 ## Pass / fail
