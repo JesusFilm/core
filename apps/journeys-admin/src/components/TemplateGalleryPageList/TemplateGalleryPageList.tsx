@@ -16,7 +16,14 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
@@ -43,6 +50,10 @@ import {
   DroppableCollectionWrapper,
   UnsectionedDroppable
 } from './Droppables'
+import {
+  GalleryDialogLockContext,
+  GalleryDialogLockContextValue
+} from './GalleryDialogLockContext'
 import { useCollectionMutations } from './useCollectionMutations'
 import { useDragEndHandler } from './useDragEndHandler'
 
@@ -160,6 +171,31 @@ export function TemplateGalleryPageList({
   const [publishSuccessCollection, setPublishSuccessCollection] =
     useState<TemplateGalleryPage | null>(null)
 
+  // NES-1666 v2: track per-card dialogs (Edit Template Details, access,
+  // restore, delete, trash, translate, breakdown analytics) so the
+  // top-level `dialogOpen` boolean also flips when any of them are open.
+  // v1 only handled CollectionDialog; Sharon's repro showed the per-card
+  // template-details dialog still let drags through.
+  const [openDialogCardIds, setOpenDialogCardIds] = useState<
+    ReadonlySet<string>
+  >(() => new Set())
+  const handleCardDialogOpenChange = useCallback(
+    (cardId: string, open: boolean): void => {
+      setOpenDialogCardIds((prev) => {
+        if (open === prev.has(cardId)) return prev
+        const next = new Set(prev)
+        if (open) next.add(cardId)
+        else next.delete(cardId)
+        return next
+      })
+    },
+    []
+  )
+  const galleryDialogLockValue = useMemo<GalleryDialogLockContextValue>(
+    () => ({ onDialogOpenChange: handleCardDialogOpenChange }),
+    [handleCardDialogOpenChange]
+  )
+
   // True when any modal is open. While modal is open, page-level draggables
   // and droppables are disabled and any in-flight drag state is cleared
   // (NES-1653): cursor moves inside the dialog were continuing to drive
@@ -167,7 +203,10 @@ export function TemplateGalleryPageList({
   // dialog because the DragOverlay (z-index 999) tracks cursor position
   // beneath the dialog (z-index 1300) even while hidden.
   const dialogOpen =
-    createDialogOpen || editTargetId != null || publishSuccessCollection != null
+    createDialogOpen ||
+    editTargetId != null ||
+    publishSuccessCollection != null ||
+    openDialogCardIds.size > 0
   const interactionsLocked = dragInFlight || dialogOpen
 
   useEffect(() => {
@@ -332,6 +371,7 @@ export function TemplateGalleryPageList({
     activeDragId != null ? (journeyById.get(activeDragId) ?? null) : null
 
   return (
+    <GalleryDialogLockContext.Provider value={galleryDialogLockValue}>
     <Box sx={{ p: 4 }} data-testid="TemplateGalleryPageList">
       {showCollections && (
         <Stack
@@ -494,5 +534,6 @@ export function TemplateGalleryPageList({
         onClose={handleClosePublishSuccess}
       />
     </Box>
+    </GalleryDialogLockContext.Provider>
   )
 }

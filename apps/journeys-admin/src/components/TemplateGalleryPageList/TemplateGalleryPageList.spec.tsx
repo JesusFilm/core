@@ -141,11 +141,49 @@ describe('TemplateGalleryPageList', () => {
     expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
   })
 
-  // NES-1666: cursor interactions inside CollectionDialog were affecting the
-  // gallery behind. NES-1653 already locks the sensors via `interactionsLocked`;
-  // this asserts the additional DOM-level `inert` on the DnD subtree toggles
-  // with `dialogOpen`. The portaled dialog itself is outside the inert subtree
-  // so it stays fully interactive.
+  // NES-1666 v2: per Sharon's repro, the original fix only covered
+  // CollectionDialog, not per-card dialogs ("Edit Template Details" etc.).
+  // This asserts that when a JourneyCard's own dialog (here, the template
+  // breakdown analytics dialog) opens, the gallery's DnD subtree also
+  // flips to inert via the GalleryDialogLockContext signal.
+  it('marks the DnD subtree inert when a JourneyCard opens a dialog (NES-1666 v2)', async () => {
+    const { getByTestId, getByLabelText } = render(
+      <MockedProvider
+        mocks={[getLastActiveTeamIdAndTeamsMock, collectionsMock, journeysMock]}
+      >
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TemplateGalleryPageList />
+            </TeamProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    // The template card mounts inside the gallery.
+    await waitFor(() =>
+      expect(getByTestId('JourneyCard-journey-1')).toBeInTheDocument()
+    )
+
+    // Default: no dialog open, subtree is interactive.
+    expect(getByTestId('TemplateGalleryDndScope')).not.toHaveAttribute('inert')
+
+    // Open the breakdown analytics dialog rendered by the JourneyCard
+    // itself (this fires the same useEffect path that menu dialogs do —
+    // `hasOpenDialog || breakdownDialogOpen` → context → gallery state).
+    fireEvent.click(getByLabelText('journey breakdown analytics'))
+
+    // The gallery's DnD subtree should now be inert. The dialog renders
+    // via MUI portal so it sits outside the inert subtree and stays
+    // fully interactive.
+    await waitFor(() =>
+      expect(getByTestId('TemplateGalleryDndScope')).toHaveAttribute('inert')
+    )
+  })
+
+  // NES-1666: original CollectionDialog case — kept to guard against
+  // regressions in the v1 wiring after the v2 context plumbing landed.
   it('marks the DnD subtree inert while CollectionDialog is open (NES-1666)', async () => {
     const { getByTestId } = render(
       <MockedProvider
