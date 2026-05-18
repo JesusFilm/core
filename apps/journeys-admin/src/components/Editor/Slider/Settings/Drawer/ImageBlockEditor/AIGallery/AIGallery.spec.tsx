@@ -9,7 +9,7 @@ import {
   CreateAiImageVariables
 } from '../../../../../../../../__generated__/CreateAiImage'
 import { SegmindModel } from '../../../../../../../../__generated__/globalTypes'
-import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibrary'
+import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibrary/MediaLibrary'
 
 import { CREATE_AI_IMAGE } from './AIGallery'
 

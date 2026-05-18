@@ -5,7 +5,7 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 
-import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibrary'
+import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibrary/MediaLibrary'
 
 import { CustomImage } from '.'
 
