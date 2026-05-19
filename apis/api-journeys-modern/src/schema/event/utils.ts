@@ -88,37 +88,22 @@ export async function validateBlockEvent(
     })
   }
 
-  // Get visitor by userId scoped to the journey's team to avoid
-  // returning a visitor from a different team (e.g. jfp-team)
-  const visitor = await prisma.visitor.findFirst({
-    where: { userId, teamId: journey.teamId }
-  })
+  // Upsert visitor + journeyVisitor so block events (e.g. stepViewEventCreate)
+  // can succeed even if they race ahead of journeyViewEventCreate, which would
+  // otherwise be the only path that creates the visitor record.
+  const visitorAndJourneyVisitor = await getByUserIdAndJourneyId(
+    userId,
+    journeyId,
+    journey.teamId
+  )
 
-  if (visitor == null) {
-    throw new GraphQLError('Visitor does not exist', {
+  if (visitorAndJourneyVisitor == null) {
+    throw new GraphQLError('Journey does not exist', {
       extensions: { code: 'NOT_FOUND' }
     })
   }
 
-  // Get or create journey visitor
-  let journeyVisitor = await prisma.journeyVisitor.findUnique({
-    where: {
-      journeyId_visitorId: {
-        journeyId,
-        visitorId: visitor.id
-      }
-    }
-  })
-
-  if (journeyVisitor == null) {
-    // Create journey visitor if it doesn't exist
-    journeyVisitor = await prisma.journeyVisitor.create({
-      data: {
-        journeyId,
-        visitorId: visitor.id
-      }
-    })
-  }
+  const { visitor, journeyVisitor } = visitorAndJourneyVisitor
 
   // Validate step if provided
   if (stepId != null) {
@@ -152,18 +137,23 @@ export async function validateBlock(
 
 export async function getByUserIdAndJourneyId(
   userId: string,
-  journeyId: string
+  journeyId: string,
+  teamId?: string
 ): Promise<{
   visitor: Visitor
   journeyVisitor: JourneyVisitor
 } | null> {
-  const journey = await prisma.journey.findUnique({
-    where: { id: journeyId },
-    select: { teamId: true }
-  })
+  let resolvedTeamId = teamId
+  if (resolvedTeamId == null) {
+    const journey = await prisma.journey.findUnique({
+      where: { id: journeyId },
+      select: { teamId: true }
+    })
 
-  if (journey == null) {
-    return null
+    if (journey == null) {
+      return null
+    }
+    resolvedTeamId = journey.teamId
   }
 
   for (let attempt = 1; attempt <= VISITOR_UPSERT_MAX_RETRIES; attempt++) {
@@ -171,12 +161,12 @@ export async function getByUserIdAndJourneyId(
       const visitor = await prisma.visitor.upsert({
         where: {
           teamId_userId: {
-            teamId: journey.teamId,
+            teamId: resolvedTeamId,
             userId
           }
         },
         create: {
-          teamId: journey.teamId,
+          teamId: resolvedTeamId,
           userId
         },
         update: {}
