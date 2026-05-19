@@ -91,14 +91,16 @@ The original direction (TTL 60s with auto-invalidation via Yoga's entity-ID trac
 
 A `shouldCacheResult` predicate that drops nulls fixes (1) but not (2). Because both gaps exist on the same query, the simplest correct answer is no Yoga cache at this coordinate. The DB query is one indexed lookup; the perf cost is negligible compared to the staleness debugging cost.
 
-### Apollo Client (admin) cache also needs a manual fix on journey trash
+### Apollo Client (admin) cache also needs a manual fix on journey trash/archive
 
-The same `TemplateGalleryItem` / `Journey` typename mismatch breaks Apollo's normalized cache on the admin side too. The `journeysTrash` mutation returns `Journey:<id>` and updates that entity in cache, but the `TemplateGalleryPage.templates` field references `TemplateGalleryItem:<id>` — a separate cache entry — so the trashed journey continues to appear in collection cards until a manual refresh. Fix is an `update` callback on the trash mutation that evicts both entities and runs `cache.gc()` to prune dangling refs from any `templates` lists:
+The same `TemplateGalleryItem` / `Journey` typename mismatch breaks Apollo's normalized cache on the admin side too. `journeysTrash` and `journeysArchive` both return `Journey:<id>` and update that entity, but `TemplateGalleryPage.templates` references `TemplateGalleryItem:<id>` — a separate normalized entry — so the trashed/archived journey continues to render in collection cards until a manual refresh.
+
+**First attempt: `cache.evict` + `cache.gc()`.** Worked locally, failed on stage:
 
 ```ts
+// Original approach — replaced because dangling-ref filtering was unreliable.
 update(cache, { data }) {
   data?.journeysTrash?.forEach((journey) => {
-    if (journey == null) return
     cache.evict({ id: cache.identify({ __typename: 'Journey', id: journey.id }) })
     cache.evict({ id: cache.identify({ __typename: 'TemplateGalleryItem', id: journey.id }) })
   })
@@ -106,7 +108,73 @@ update(cache, { data }) {
 }
 ```
 
-This lives in `apps/journeys-admin/.../TrashJourneyDialog.tsx` alongside the existing `optimisticResponse`.
+Apollo's documented behavior is that after `evict`, references to that entity in array fields are "automatically cleaned up on the next cache read." In practice this is timing-sensitive — on stage the trashed journey kept appearing in collection cards until the user refreshed. The cached `__ref` in the parent's `templates` array survives across the eviction window.
+
+**Shipped approach: explicit `cache.modify` that filters the parent list.**
+
+```ts
+update(cache, { data }) {
+  if (data?.journeysTrash == null) return
+  const trashedJourneys = data.journeysTrash.filter((j) => j != null)
+  if (trashedJourneys.length === 0) return
+
+  const trashedTemplateRefs = new Set<string>()
+  for (const journey of trashedJourneys) {
+    const ref = cache.identify({ __typename: 'TemplateGalleryItem', id: journey.id })
+    if (ref != null) trashedTemplateRefs.add(ref)
+  }
+
+  // `cache.modify` without `id` only targets ROOT_QUERY; we need every
+  // cached TemplateGalleryPage. `cache.extract()` is the only API-level
+  // way to enumerate entities by type without coupling to a specific
+  // query variables tuple.
+  const snapshot = cache.extract()
+  for (const cacheId of Object.keys(snapshot)) {
+    if (!cacheId.startsWith('TemplateGalleryPage:')) continue
+    cache.modify({
+      id: cacheId,
+      fields: {
+        templates(existing) {
+          if (!Array.isArray(existing)) return existing
+          return reject(existing, (ref) => trashedTemplateRefs.has(ref.__ref))
+        }
+      }
+    })
+  }
+
+  for (const journey of trashedJourneys) {
+    cache.evict({ id: cache.identify({ __typename: 'Journey', id: journey.id }) })
+    cache.evict({ id: cache.identify({ __typename: 'TemplateGalleryItem', id: journey.id }) })
+  }
+}
+```
+
+Lives in `apps/journeys-admin/.../TrashJourneyDialog.tsx` and the parallel `ArchiveJourney.tsx` (archive preserves the `Journey` entity itself because archived journeys still render in the archived list — only the `TemplateGalleryItem` variant is evicted there). Mirrors the `libs/blockDeleteUpdate` pattern for parent-list filtering.
+
+### Pair the mutation with `templateGalleryPageAssignJourney({ pageId: null })`
+
+The cache update keeps the **client view** consistent. The **server-side join row** still exists after trash/archive — only `journey.status` flips. The resolver hides it (status: published only), but a later restore brings the journey back to its old collection slot, which surprised users.
+
+Shipped fix: after `journeysTrash` / `journeysArchive` resolves, fire a best-effort `templateGalleryPageAssignJourney({ journeyId, pageId: null })`. The server resolver is idempotent — `pageId: null` removes the join row when present, returns `null` when the journey wasn't in any collection. Wrapped in its own try/catch so a failure doesn't contradict the primary mutation's success snackbar (trash/archive is the user's intent; the unassign is a cleanup step).
+
+Net effect: a journey that's trashed or archived disappears from its collection cleanly, and a later restore returns it to the flat template list.
+
+### Filter cached query results by status client-side
+
+A subtler leak: Apollo's normalized cache stores the journey entity once and the active-view query result (`adminJourneys(status: [draft, published])`) holds a ref to it. When a mutation flips `status: published → archived`, the ref stays in the cached list. The UI reads the list, dereferences each ref, and the archived journey renders in the active view until refetch.
+
+Fix is one line in the parent component — re-apply the same status predicate the server applies:
+
+```ts
+const allTemplates = useMemo<readonly Journey[]>(() => {
+  const allowedStatuses = STATUS_FILTER_TO_JOURNEY_STATUSES[status]
+  return (journeysQuery.data?.journeys ?? []).filter((j) =>
+    allowedStatuses.includes(j.status)
+  )
+}, [journeysQuery.data, status])
+```
+
+The client mirrors the server contract — the cached entity status drives the list, not the cached list shape.
 
 ## Why `cache.invalidate([{ typename }])` does not work for cached nulls
 
@@ -174,8 +242,10 @@ When a cache-staleness bug pattern matches the symptoms above (specific time-win
 ## Files
 
 - `apis/api-journeys-modern/src/yoga.ts` — `'Query.templateGalleryPageBySlug': 0` in the response-cache `ttlPerSchemaCoordinate`.
-- `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TrashJourneyDialog/TrashJourneyDialog.tsx` — Apollo Client `update` callback evicting `Journey:<id>` + `TemplateGalleryItem:<id>` on trash, then `cache.gc()`.
-- `apps/journeys/pages/home/template-gallery/[slug].tsx` — SSR with `Cache-Control: no-store`.
-- `apps/journeys/proxy.ts` — `/template-gallery/*` short-circuit.
-- `apps/journeys-admin/pages/api/preview-template-gallery.ts` — auth + 307 redirect (no revalidate).
+- `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TrashJourneyDialog/TrashJourneyDialog.tsx` — Apollo `update` callback with explicit `cache.modify` filtering of `TemplateGalleryPage.templates` lists; best-effort `templateGalleryPageAssignJourney({ pageId: null })` after trash; optimistic response uses `JourneyStatus.trashed`.
+- `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/DefaultMenu/ArchiveJourney/ArchiveJourney.tsx` — parallel implementation for the archive flow.
+- `apps/journeys-admin/src/components/TemplateGalleryPageList/TemplateGalleryPageList.tsx` — client-side status filter on `allTemplates`, mirroring the server's status predicate to defend against post-mutation cache leaks.
+- `apps/journeys/pages/home/template-gallery/[slug].tsx` — SSR with `Cache-Control: no-store, max-age=0` and a redacted diagnostic log on the null-with-errors branch.
+- `apps/journeys/proxy.ts` — `/template-gallery/*` short-circuit (rewrites to `/home/template-gallery/*` regardless of hostname).
+- `apps/journeys-admin/pages/api/preview-template-gallery.ts` — auth + slug-validated 307 redirect (no revalidate).
 - `docs/plans/2026-05-14-001-fix-template-gallery-revalidate-cache-invalidation-plan.md` — the original plan, preserved with an Outcome section explaining why it didn't ship as written.

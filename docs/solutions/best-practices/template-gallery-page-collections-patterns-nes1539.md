@@ -520,6 +520,53 @@ The two answer different questions for teams with multiple custom
 domains. The hook's JSDoc surfaces the warning at the API
 boundary.
 
+### 17. Sever join rows on lifecycle transitions; don't rely on read-time filters alone (NES-1644)
+
+`journeysTrash` and `journeysArchive` only flip `journey.status`. The `TemplateGalleryPage.templates` resolver filters by `status: 'published'`, so trashed/archived journeys visually disappear from collections — but the underlying `TemplateGalleryPageTemplate` join rows survive. A later restore returns `status` to `published`, and the journey reappears in its prior collection slot, which surprised users.
+
+Two ways to enforce "trashed/archived = severed":
+
+- **Backend:** delete the join rows transactionally inside the trash/archive mutation. Architecturally cleanest, but `journeysTrash` lives in `api-journeys` (NestJS, legacy subgraph) while the join row lives in the `prisma-journeys` schema. Both services share the same Prisma client, so a within-domain transactional delete would work — but the cleanest implementation also wants to migrate `journeysTrash` to api-journeys-modern (Pothos) following Mike Allison's `chore: *modern` PR pattern, which adds scope. Tracked as a follow-up.
+- **Frontend (shipped):** fire a best-effort `templateGalleryPageAssignJourney({ journeyId, pageId: null })` after the trash/archive mutation succeeds. The server resolver is idempotent — `pageId: null` removes the join row when present, returns `null` when not. Wrapped in its own try/catch so failure logs a `console.warn` and doesn't contradict the primary mutation's success snackbar (trash/archive is the user's intent; the unassign is cleanup).
+
+```ts
+onCompleted: async () => {
+  try {
+    await unassignFromCollection({
+      variables: { journeyId: id, pageId: null }
+    })
+  } catch (unassignError) {
+    console.warn(
+      '[ArchiveJourney] failed to unassign archived journey from its collection',
+      { journeyId: id, error: unassignError }
+    )
+  }
+  enqueueSnackbar(t('Journey Archived'), { variant: 'success' })
+  await refetch?.()
+}
+```
+
+The frontend approach is correct in 99% of cases (single tab, normal network). The 1% failure mode (network blip between the two mutations) is strictly no worse than the prior buggy behavior — the join row stays, restore returns the journey to its old slot for that one row. Acceptable as a frontend-only fix until the backend migration lands.
+
+### 18. Re-apply the server's status predicate on the client when the cache merges entities by ref (NES-1644)
+
+Apollo's normalized cache stores each `Journey` as a single entity. The active-view query result (`adminJourneys(status: [draft, published])`) holds an array of refs to those entities. When a mutation flips `status: published → trashed/archived` on the same entity, the ref stays in the cached list — the journey now reads as `{ status: 'trashed' }` but the list array is unchanged. The UI dereferences the list, gets the (now wrong-status) entity, and renders it in the wrong view until refetch.
+
+The fix is one line in the parent component:
+
+```ts
+const allTemplates = useMemo<readonly Journey[]>(() => {
+  const allowedStatuses = STATUS_FILTER_TO_JOURNEY_STATUSES[status]
+  return (journeysQuery.data?.journeys ?? []).filter((j) =>
+    allowedStatuses.includes(j.status)
+  )
+}, [journeysQuery.data, status])
+```
+
+Pattern: when a query is keyed by a field that mutations can mutate (status, archived flag, soft-delete timestamp), re-apply the server-side predicate on the client so the entity status drives the view, not the cached list shape. Without this, every status-changing mutation (trash, archive, delete) needs its own bespoke cache update to surgically remove the ref from the right query result — and any one missed mutation leaks. The status-filter approach defends all of them automatically.
+
+This sits alongside the explicit `cache.modify` in the mutation's `update` callback (which keeps the `TemplateGalleryPage.templates` lists clean across the typename boundary). The two patterns are complementary: `cache.modify` for parent-list refs Apollo can't reach, status filtering for query-result refs that go stale when the entity changes.
+
 ## Prevention
 
 - Default to `cache.updateQuery` for list mutations. Reserve `cache.modify`
@@ -559,6 +606,15 @@ boundary.
 - `getStaticProps` null-branch logging: log only when `errors !== null`;
   cap error count; whitelist extension fields (never log raw
   `extensions` — can leak stack traces / Prisma context).
+- Soft-delete-style status flips (trash, archive) should sever join
+  rows, not just hide via read-time filters. Until backend support
+  lands, pair the lifecycle mutation with a best-effort `…assignJourney
+  ({ pageId: null })` on the client.
+- When a query is keyed by a mutable field (status, archived flag,
+  soft-delete timestamp), re-apply that predicate on the client when
+  reading the cached list. Apollo's normalized cache stores entities
+  once; a mutation that flips the field leaves the ref in the wrong
+  query result until refetch.
 
 ## Cross-references
 
@@ -588,9 +644,18 @@ boundary.
   domain publish gate (Pattern 16).
 - `apps/journeys/pages/home/template-gallery/[slug].tsx` —
   null-branch SSR diagnostic log (NES-1644 enrichment).
+- `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TrashJourneyDialog/TrashJourneyDialog.tsx`
+  + `.../DefaultMenu/ArchiveJourney/ArchiveJourney.tsx` — explicit
+  `cache.modify` filtering of `TemplateGalleryPage.templates` lists
+  on lifecycle transitions, plus best-effort
+  `templateGalleryPageAssignJourney({ pageId: null })` (Pattern 17).
+- `apps/journeys-admin/src/components/TemplateGalleryPageList/TemplateGalleryPageList.tsx`
+  — client-side status predicate on `allTemplates` (Pattern 18).
 - `docs/solutions/runtime-errors/yoga-response-cache-null-stickiness-and-zombie-process-debugging-nes1644.md`
   — full investigation history that motivated Pattern 14's
-  simplification.
+  simplification, plus the Apollo cache evolution from
+  `evict + gc` (worked locally, failed on stage) to explicit
+  `cache.modify`.
 
 ## Related work split out
 
