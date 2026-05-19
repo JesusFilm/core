@@ -1,4 +1,9 @@
 {
+  "AI chat": "Bate-papo com IA",
+  "Show AI chat": "Mostrar bate-papo com IA",
+  "Open chat automatically": "Abra o bate-papo automaticamente",
+  "On": "Em",
+  "On, auto-open": "Ligado, abertura automática",
   "%s | Next Steps": "%s | Próximas etapas",
   "Admin | Next Steps": "Admin | Próximas etapas",
   "Email Preferences Updated.": "Preferências de e-mail atualizadas.",
