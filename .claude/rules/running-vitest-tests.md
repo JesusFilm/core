@@ -11,6 +11,7 @@ Workspaces that use Vitest (have a `vitest.config.mts` at the workspace root):
 | `apis/api-analytics`     | `apis/api-analytics/vitest.config.mts`     |
 | `apis/api-media`         | `apis/api-media/vitest.config.mts`         |
 | `libs/shared/ui-dynamic` | `libs/shared/ui-dynamic/vitest.config.mts` |
+| `libs/yoga`              | `libs/yoga/vitest.config.mts`              |
 
 For workspaces with a `jest.config.ts` (e.g. `apps/journeys-admin`, `apps/cms`, `apps/watch`), see `running-jest-tests.md`.
 
