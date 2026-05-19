@@ -19,9 +19,7 @@ const probeRps = Number.parseFloat(env('PROBE_RPS'))
 const runId = env('RUN_ID')
 
 if (!Number.isInteger(probeCount) || probeCount <= 0)
-  throw new Error(
-    `PROBE_COUNT must be a positive integer (got: ${probeCount})`
-  )
+  throw new Error(`PROBE_COUNT must be a positive integer (got: ${probeCount})`)
 if (!Number.isFinite(probeRps) || probeRps <= 0)
   throw new Error(`PROBE_RPS must be a positive number (got: ${probeRps})`)
 
