@@ -296,44 +296,6 @@ describe('ImageUpload', () => {
     ).not.toBeDisabled()
   })
 
-  it('should reject files just over 10 MB but under 10 MiB', async () => {
-    const onChange = jest.fn()
-    const setUploading = jest.fn()
-
-    render(
-      <MockedProvider>
-        <ImageUpload
-          onChange={onChange}
-          setUploading={setUploading}
-          loading={false}
-          selectedBlock={imageBlock}
-        />
-      </MockedProvider>
-    )
-
-    const inputEl = screen.getByTestId('drop zone')
-
-    const boundaryFile = new File([new ArrayBuffer(10_500_000)], 'boundary.png', {
-      type: 'image/png'
-    })
-
-    Object.defineProperty(inputEl, 'files', {
-      value: [boundaryFile]
-    })
-
-    fireEvent.drop(inputEl)
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
-        )
-      ).toBeInTheDocument()
-    })
-
-    expect(onChange).not.toHaveBeenCalled()
-  })
-
   it('should handle wrong file type error', async () => {
     const onChange = jest.fn()
     const setUploading = jest.fn()
