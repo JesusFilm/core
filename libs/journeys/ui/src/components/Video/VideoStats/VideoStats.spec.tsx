@@ -9,7 +9,7 @@ import VideoJsPlayer from '../utils/videoJsTypes'
 import { VideoStats } from './VideoStats'
 
 // Mock the translation function
-jest.mock('next-i18next', () => ({
+jest.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string) => key
   })

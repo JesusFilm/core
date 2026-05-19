@@ -109,7 +109,9 @@ const cardBlock: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: [videoBlock, imageBlock, buttonBlock]
+  children: [videoBlock, imageBlock, buttonBlock],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 const stepBlock: TreeBlock<StepBlock> = {

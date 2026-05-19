@@ -23,23 +23,9 @@ export interface CheckCustomDomain_customDomainCheck_verificationResponse {
 
 export interface CheckCustomDomain_customDomainCheck {
   __typename: "CustomDomainCheck";
-  /**
-   * Is the domain correctly configured in the DNS?
-   * If false, A Record and CNAME Record should be added by the user.
-   */
   configured: boolean;
-  /**
-   * Does the domain belong to the team?
-   * If false, verification and verificationResponse will be populated.
-   */
   verified: boolean;
-  /**
-   * Verification records to be added to the DNS to confirm ownership.
-   */
   verification: CheckCustomDomain_customDomainCheck_verification[] | null;
-  /**
-   * Reasoning as to why verification is required.
-   */
   verificationResponse: CheckCustomDomain_customDomainCheck_verificationResponse | null;
 }
 

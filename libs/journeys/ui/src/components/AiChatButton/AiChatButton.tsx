@@ -2,24 +2,25 @@
 
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
 import IconButton from '@mui/material/IconButton'
-import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useState } from 'react'
+import { useTranslation } from 'next-i18next/pages'
+import { ReactElement, useCallback } from 'react'
 
+import { useChatOverlay } from '../../libs/ChatOverlayProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { ChatOverlay } from '../ChatOverlay'
 
 export function AiChatButton(): ReactElement | null {
   const { t } = useTranslation('libs-journeys-ui')
   const { variant } = useJourney()
-  const [overlayOpen, setOverlayOpen] = useState(false)
+  const { open, setOpen } = useChatOverlay()
 
   const handleClick = useCallback(() => {
-    setOverlayOpen(true)
-  }, [])
+    setOpen(true)
+  }, [setOpen])
 
   const handleClose = useCallback(() => {
-    setOverlayOpen(false)
-  }, [])
+    setOpen(false)
+  }, [setOpen])
 
   if (variant === 'admin' || variant === 'embed') {
     return null
@@ -49,7 +50,7 @@ export function AiChatButton(): ReactElement | null {
       >
         <AutoAwesomeRoundedIcon sx={{ fontSize: 20 }} />
       </IconButton>
-      <ChatOverlay open={overlayOpen} onClose={handleClose} />
+      <ChatOverlay open={open} onClose={handleClose} />
     </>
   )
 }

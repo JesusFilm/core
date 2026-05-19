@@ -1,5 +1,8 @@
 import { SimplePaletteColorOptions, ThemeOptions } from '@mui/material/styles'
 
+/** Jesus Film Project brand red. */
+export const brandRed = '#C52D3A'
+
 const errorLight = '#FF6B58'
 const errorDark = '#B62D1C'
 

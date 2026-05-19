@@ -1,25 +1,38 @@
 import { ApolloClient } from '@apollo/client'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
+import { vi } from 'vitest'
 
 import { prismaMock } from '../../../test/prismaMock'
 
 import { service } from './service'
 
-jest.mock('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const actual =
+    await vi.importActual<typeof import('@apollo/client')>('@apollo/client')
+  class MockApolloClient {
+    mutate(..._args: unknown[]): unknown {
+      return undefined
+    }
+  }
+  return {
+    ...actual,
+    ApolloClient: MockApolloClient
+  }
+})
 
 describe('plausible worker service', () => {
   let logger: Logger
 
   beforeEach(() => {
     logger = {
-      info: jest.fn(),
-      warn: jest.fn()
+      info: vi.fn(),
+      warn: vi.fn()
     } as unknown as Logger
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('plausibleCreateJourneySite', () => {
@@ -40,7 +53,7 @@ describe('plausible worker service', () => {
     >
 
     it('updates journey with plausible token when site creation succeeds', async () => {
-      const mutateSpy = jest
+      const mutateSpy = vi
         .spyOn(ApolloClient.prototype, 'mutate')
         .mockResolvedValueOnce({
           data: {
@@ -51,7 +64,7 @@ describe('plausible worker service', () => {
               }
             }
           }
-        } as unknown as ReturnType<ApolloClient<unknown>['mutate']>)
+        } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
 
       await service(journeyJob, logger)
 
@@ -68,14 +81,14 @@ describe('plausible worker service', () => {
     })
 
     it('logs warning when site creation fails', async () => {
-      jest.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValueOnce({
+      vi.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValueOnce({
         data: {
           siteCreate: {
             __typename: 'Error',
             message: 'failed'
           }
         }
-      } as unknown as ReturnType<ApolloClient<unknown>['mutate']>)
+      } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
 
       await service(journeyJob, logger)
 
@@ -105,7 +118,7 @@ describe('plausible worker service', () => {
     >
 
     it('updates team with plausible token when site creation succeeds', async () => {
-      const mutateSpy = jest
+      const mutateSpy = vi
         .spyOn(ApolloClient.prototype, 'mutate')
         .mockResolvedValueOnce({
           data: {
@@ -116,7 +129,7 @@ describe('plausible worker service', () => {
               }
             }
           }
-        } as unknown as ReturnType<ApolloClient<unknown>['mutate']>)
+        } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
 
       await service(teamJob, logger)
 
@@ -133,14 +146,14 @@ describe('plausible worker service', () => {
     })
 
     it('logs warning when site creation fails', async () => {
-      jest.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValueOnce({
+      vi.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValueOnce({
         data: {
           siteCreate: {
             __typename: 'Error',
             message: 'failed'
           }
         }
-      } as unknown as ReturnType<ApolloClient<unknown>['mutate']>)
+      } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
 
       await service(teamJob, logger)
 
@@ -174,7 +187,7 @@ describe('plausible worker service', () => {
         id: 'template-id'
       } as unknown as Awaited<ReturnType<typeof prismaMock.journey.findFirst>>)
 
-      const mutateSpy = jest
+      const mutateSpy = vi
         .spyOn(ApolloClient.prototype, 'mutate')
         .mockResolvedValueOnce({
           data: {
@@ -183,7 +196,7 @@ describe('plausible worker service', () => {
               data: {}
             }
           }
-        } as unknown as ReturnType<ApolloClient<unknown>['mutate']>)
+        } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
 
       await service(templateJob, logger)
 
@@ -222,14 +235,14 @@ describe('plausible worker service', () => {
         id: 'template-id'
       } as unknown as Awaited<ReturnType<typeof prismaMock.journey.findFirst>>)
 
-      jest.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValueOnce({
+      vi.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValueOnce({
         data: {
           siteCreate: {
             __typename: 'Error',
             message: 'failed'
           }
         }
-      } as unknown as ReturnType<ApolloClient<unknown>['mutate']>)
+      } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
 
       await service(templateJob, logger)
 
@@ -254,7 +267,7 @@ describe('plausible worker service', () => {
     } as unknown as Job<{ __typename: 'plausibleCreateSites' }, unknown, string>
 
     it('creates sites for teams and journeys without plausible tokens', async () => {
-      jest.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValue({
+      vi.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValue({
         data: {
           siteCreate: {
             __typename: 'MutationSiteCreateSuccess',
@@ -263,7 +276,7 @@ describe('plausible worker service', () => {
             }
           }
         }
-      } as unknown as ReturnType<ApolloClient<unknown>['mutate']>)
+      } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
 
       prismaMock.team.findMany.mockResolvedValueOnce([
         {
@@ -307,14 +320,14 @@ describe('plausible worker service', () => {
     })
 
     it('creates template sites for templates without a site', async () => {
-      jest.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValue({
+      vi.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValue({
         data: {
           siteCreate: {
             __typename: 'MutationSiteCreateSuccess',
             data: {}
           }
         }
-      } as unknown as ReturnType<ApolloClient<unknown>['mutate']>)
+      } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
 
       prismaMock.team.findMany.mockResolvedValueOnce(
         [] as unknown as Awaited<ReturnType<typeof prismaMock.team.findMany>>

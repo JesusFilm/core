@@ -43,7 +43,9 @@ describe('TemplateCardPreviewItem', () => {
         themeName: ThemeName.base,
         fullscreen: false,
         eventLabel: null,
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   } as TreeBlock<StepBlock>

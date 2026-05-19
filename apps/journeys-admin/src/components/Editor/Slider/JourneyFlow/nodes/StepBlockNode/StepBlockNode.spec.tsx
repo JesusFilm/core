@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NodeProps, ReactFlowProvider } from 'reactflow'
+import { NodeProps, ReactFlowProvider } from '@xyflow/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -28,8 +28,8 @@ describe('StepBlockNode', () => {
   it('should render step with default action', () => {
     const props = {
       id: 'step.id',
-      xPos: 0,
-      yPos: 0,
+      positionAbsoluteX: 0,
+      positionAbsoluteY: 0,
       dragging: false
     } as unknown as NodeProps
 
@@ -67,8 +67,8 @@ describe('StepBlockNode', () => {
   it('should render step without default action in website mode', () => {
     const props = {
       id: 'step.id',
-      xPos: 0,
-      yPos: 0,
+      positionAbsoluteX: 0,
+      positionAbsoluteY: 0,
       dragging: false
     } as unknown as NodeProps
 
@@ -179,14 +179,16 @@ describe('StepBlockNode', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: null,
-          children: [button, radioQuestion, signUp, video, textResponse]
+          children: [button, radioQuestion, signUp, video, textResponse],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     }
     const props = {
       id: 'step.id',
-      xPos: 0,
-      yPos: 0,
+      positionAbsoluteX: 0,
+      positionAbsoluteY: 0,
       dragging: false
     } as unknown as NodeProps
 
@@ -230,8 +232,8 @@ describe('StepBlockNode', () => {
 
     const props = {
       id: 'step.id',
-      xPos: 0,
-      yPos: 0,
+      positionAbsoluteX: 0,
+      positionAbsoluteY: 0,
       dragging: false
     } as unknown as NodeProps
 
@@ -278,8 +280,8 @@ describe('StepBlockNode', () => {
 
     const props = {
       id: 'step2.id',
-      xPos: 0,
-      yPos: 0,
+      positionAbsoluteX: 0,
+      positionAbsoluteY: 0,
       dragging: false
     } as unknown as NodeProps
 
@@ -320,8 +322,8 @@ describe('StepBlockNode', () => {
 
     const props = {
       id: 'step.id',
-      xPos: 0,
-      yPos: 0,
+      positionAbsoluteX: 0,
+      positionAbsoluteY: 0,
       dragging: false
     } as unknown as NodeProps
 
@@ -377,8 +379,8 @@ describe('StepBlockNode', () => {
 
     const props = {
       id: 'step.id',
-      xPos: 0,
-      yPos: 0,
+      positionAbsoluteX: 0,
+      positionAbsoluteY: 0,
       dragging: false
     } as unknown as NodeProps
 
@@ -429,8 +431,8 @@ describe('StepBlockNode', () => {
   it('should display step slug', () => {
     const props = {
       id: 'step.id',
-      xPos: 0,
-      yPos: 0,
+      positionAbsoluteX: 0,
+      positionAbsoluteY: 0,
       dragging: false
     } as unknown as NodeProps
 

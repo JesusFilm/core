@@ -42,7 +42,7 @@ describe('LanguageAutocomplete', () => {
   ]
 
   it('should sort language options alphabetically', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole, queryAllByRole } = render(
       <MultipleLanguageAutocomplete
         onChange={handleChange}
@@ -61,7 +61,7 @@ describe('LanguageAutocomplete', () => {
   })
 
   it('should enable multiple language select via option click', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole } = render(
       <MultipleLanguageAutocomplete
         onChange={handleChange}
@@ -83,7 +83,7 @@ describe('LanguageAutocomplete', () => {
   })
 
   it('should enable users to enter custom text and get related options', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole, queryByRole } = render(
       <MultipleLanguageAutocomplete
         onChange={handleChange}
@@ -125,10 +125,51 @@ describe('LanguageAutocomplete', () => {
     ])
   })
 
+  it('should handle languages where all names have primary: true', async () => {
+    const allPrimaryLanguages: Language[] = [
+      {
+        id: '496',
+        name: [
+          { value: 'Français', primary: true },
+          { value: 'French', primary: true }
+        ]
+      },
+      {
+        id: '529',
+        name: [{ value: 'English', primary: true }]
+      },
+      {
+        id: '1106',
+        name: [
+          { value: 'Deutsch', primary: true },
+          { value: 'German, Standard', primary: true }
+        ]
+      }
+    ]
+
+    const handleChange = vi.fn()
+    const { getByRole, queryAllByRole } = render(
+      <MultipleLanguageAutocomplete
+        onChange={handleChange}
+        values={[]}
+        languages={allPrimaryLanguages}
+        loading={false}
+      />
+    )
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+
+    const options = queryAllByRole('option')
+    expect(options).toHaveLength(3)
+    expect(options[0]).toHaveTextContent('English')
+    expect(options[1]).toHaveTextContent('FrenchFrançais')
+    expect(options[2]).toHaveTextContent('German, StandardDeutsch')
+  })
+
   it('should show loading animation if loading', async () => {
     const { getByRole } = render(
       <MultipleLanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         values={[{ id: '529', localName: undefined, nativeName: 'English' }]}
         languages={languages}
         loading
@@ -138,10 +179,10 @@ describe('LanguageAutocomplete', () => {
   })
 
   it('should call onBlur on blur', async () => {
-    const onBlur = jest.fn()
+    const onBlur = vi.fn()
     const { getByRole } = render(
       <MultipleLanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         onBlur={onBlur}
         values={[{ id: '529', localName: undefined, nativeName: 'English' }]}
         languages={languages}

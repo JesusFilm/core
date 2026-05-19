@@ -1,5 +1,6 @@
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
+import { type MockedFunction, vi } from 'vitest'
 
 import { CloudflareImage } from '@core/prisma/media/client'
 
@@ -8,12 +9,12 @@ import { generateBlurhash } from '../utils/generateBlurhash'
 
 import { service } from './service'
 
-const mockGenerateBlurhash = generateBlurhash as jest.MockedFunction<
+const mockGenerateBlurhash = generateBlurhash as MockedFunction<
   typeof generateBlurhash
 >
 
-jest.mock('../utils/generateBlurhash', () => ({
-  generateBlurhash: jest.fn()
+vi.mock('../utils/generateBlurhash', () => ({
+  generateBlurhash: vi.fn()
 }))
 
 describe('processImageBlurhash service', () => {
@@ -21,15 +22,15 @@ describe('processImageBlurhash service', () => {
   let mockJob: Job
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockLogger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      child: jest.fn().mockReturnValue({
-        info: jest.fn(),
-        warn: jest.fn(),
-        error: jest.fn()
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      child: vi.fn().mockReturnValue({
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn()
       })
     }
 

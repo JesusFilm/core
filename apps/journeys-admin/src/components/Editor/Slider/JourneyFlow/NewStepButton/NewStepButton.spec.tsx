@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { ReactFlowProvider } from 'reactflow'
+import { ReactFlowProvider } from '@xyflow/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'

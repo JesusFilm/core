@@ -1,8 +1,8 @@
 import { prisma } from '@core/prisma/media/client'
 
-import { builder } from '../builder'
+import { builder, toPrismaDateTimeFilter } from '../builder'
 
-import { VideoEditionUpdateInput } from './inputs'
+import { VideoEditionUpdateInput, VideoEditionsFilter } from './inputs'
 import { VideoEditionCreateInput } from './inputs/videoEditionCreate'
 
 builder.prismaObject('VideoEdition', {
@@ -19,9 +19,29 @@ builder.queryFields((t) => ({
   videoEditions: t.prismaField({
     type: ['VideoEdition'],
     nullable: false,
-    resolve: async (query) => {
+    args: {
+      where: t.arg({ type: VideoEditionsFilter, required: false }),
+      offset: t.arg.int({ required: false }),
+      limit: t.arg.int({ required: false })
+    },
+    resolve: async (query, _parent, { where, offset, limit }) => {
       return await prisma.videoEdition.findMany({
-        ...query
+        ...query,
+        where: { updatedAt: toPrismaDateTimeFilter(where?.updatedAt) },
+        skip: offset ?? 0,
+        take: limit ?? undefined,
+        orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }]
+      })
+    }
+  }),
+  videoEditionsCount: t.int({
+    nullable: false,
+    args: {
+      where: t.arg({ type: VideoEditionsFilter, required: false })
+    },
+    resolve: async (_parent, { where }) => {
+      return await prisma.videoEdition.count({
+        where: { updatedAt: toPrismaDateTimeFilter(where?.updatedAt) }
       })
     }
   }),

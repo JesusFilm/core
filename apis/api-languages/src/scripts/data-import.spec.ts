@@ -2,55 +2,65 @@ import { spawn } from 'child_process'
 import { promises as fsPromises } from 'fs'
 import { createGunzip } from 'zlib'
 
+import { Mock, vi } from 'vitest'
+
 import main from './data-import'
 
 // Mock fs functions
-jest.mock('fs', () => ({
-  createReadStream: jest.fn().mockReturnValue({
-    pipe: jest.fn().mockReturnThis()
-  }),
-  createWriteStream: jest.fn().mockReturnValue({
-    write: jest.fn(),
-    end: jest.fn()
-  }),
-  promises: {
-    mkdir: jest.fn().mockResolvedValue(undefined),
-    unlink: jest.fn().mockResolvedValue(undefined),
-    access: jest.fn().mockResolvedValue(undefined),
-    stat: jest.fn().mockResolvedValue({ size: 1000 }),
-    readFile: jest
+vi.mock('fs', () => {
+  const createReadStream = vi.fn().mockReturnValue({
+    pipe: vi.fn().mockReturnThis()
+  })
+  const createWriteStream = vi.fn().mockReturnValue({
+    write: vi.fn(),
+    end: vi.fn()
+  })
+  const promises = {
+    mkdir: vi.fn().mockResolvedValue(undefined),
+    unlink: vi.fn().mockResolvedValue(undefined),
+    access: vi.fn().mockResolvedValue(undefined),
+    stat: vi.fn().mockResolvedValue({ size: 1000 }),
+    readFile: vi
       .fn()
       .mockResolvedValue('CREATE PUBLICATION bq_publication FOR ALL TABLES;'),
-    writeFile: jest.fn().mockResolvedValue(undefined)
+    writeFile: vi.fn().mockResolvedValue(undefined)
   }
-}))
+  return {
+    default: { createReadStream, createWriteStream, promises },
+    createReadStream,
+    createWriteStream,
+    promises
+  }
+})
 
 // Mock zlib
-jest.mock('zlib', () => ({
-  createGunzip: jest.fn().mockReturnValue({
-    pipe: jest.fn().mockReturnThis()
+vi.mock('zlib', () => ({
+  createGunzip: vi.fn().mockReturnValue({
+    pipe: vi.fn().mockReturnThis()
   })
 }))
 
 // Mock stream/promises
-jest.mock('stream/promises', () => ({
-  pipeline: jest.fn().mockResolvedValue(undefined)
+vi.mock('stream/promises', () => ({
+  pipeline: vi.fn().mockResolvedValue(undefined)
 }))
 
 // Mock child_process
-jest.mock('child_process', () => ({
-  spawn: jest.fn().mockImplementation(() => {
+vi.mock('child_process', () => ({
+  spawn: vi.fn().mockImplementation(() => {
     const mockProcess = {
-      stdout: { on: jest.fn() },
-      stderr: { on: jest.fn() },
-      on: jest.fn()
+      stdout: { on: vi.fn() },
+      stderr: { on: vi.fn() },
+      on: vi.fn()
     }
 
     // Simulate successful completion
     setTimeout(() => {
       const closeHandler = mockProcess.on.mock.calls.find(
         (call) => call[0] === 'close'
-      )[1]
+      )?.[1]
+      if (closeHandler == null)
+        throw new Error('close handler was not registered')
       closeHandler(0) // Call with exit code 0 (success)
     }, 10)
 
@@ -59,8 +69,8 @@ jest.mock('child_process', () => ({
 }))
 
 // Mock prisma client
-jest.mock('../../../../libs/prisma/languages/src/client', () => {
-  const upsert = jest.fn().mockResolvedValue({ id: 1 })
+vi.mock('../../../../libs/prisma/languages/src/client', () => {
+  const upsert = vi.fn().mockResolvedValue({ id: 1 })
   return {
     prisma: {
       importTimes: { upsert }
@@ -69,26 +79,26 @@ jest.mock('../../../../libs/prisma/languages/src/client', () => {
 })
 
 // Mock fetch
-global.fetch = jest.fn().mockResolvedValue({
+global.fetch = vi.fn().mockResolvedValue({
   ok: true,
   body: {
-    getReader: jest.fn()
+    getReader: vi.fn()
   }
 })
 
 // Mock console and process.exit
-jest.spyOn(console, 'log').mockImplementation(() => undefined)
-jest.spyOn(console, 'error').mockImplementation(() => undefined)
-jest.spyOn(console, 'warn').mockImplementation(() => undefined)
-jest
-  .spyOn(process, 'exit')
-  .mockImplementation(((code?: number | string | null) => undefined) as any)
+vi.spyOn(console, 'log').mockImplementation(() => undefined)
+vi.spyOn(console, 'error').mockImplementation(() => undefined)
+vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+vi.spyOn(process, 'exit').mockImplementation(
+  ((code?: number | string | null) => undefined) as any
+)
 
 // Mock stream
-jest.mock('stream', () => ({
+vi.mock('stream', () => ({
   Readable: {
-    fromWeb: jest.fn().mockReturnValue({
-      pipe: jest.fn().mockReturnThis()
+    fromWeb: vi.fn().mockReturnValue({
+      pipe: vi.fn().mockReturnThis()
     })
   }
 }))
@@ -97,7 +107,7 @@ describe('data-import script', () => {
   const originalEnv = process.env
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = {
       ...originalEnv,
       DB_SEED_PATH: 'https://example.com/backups',
@@ -173,11 +183,11 @@ describe('data-import script', () => {
   })
 
   it('should handle download errors', async () => {
-    ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+    ;(global.fetch as Mock).mockResolvedValueOnce({
       ok: false,
       status: 404,
       statusText: 'Not Found',
-      text: jest.fn().mockResolvedValueOnce('File not found')
+      text: vi.fn().mockResolvedValueOnce('File not found')
     })
 
     await main()
@@ -187,18 +197,20 @@ describe('data-import script', () => {
   })
 
   it('should handle psql process errors', async () => {
-    ;(spawn as jest.Mock).mockImplementationOnce(() => {
+    ;(spawn as Mock).mockImplementationOnce(() => {
       const mockProcess = {
-        stdout: { on: jest.fn() },
-        stderr: { on: jest.fn() },
-        on: jest.fn()
+        stdout: { on: vi.fn() },
+        stderr: { on: vi.fn() },
+        on: vi.fn()
       }
 
       // Simulate failure
       setTimeout(() => {
         const closeHandler = mockProcess.on.mock.calls.find(
           (call) => call[0] === 'close'
-        )[1]
+        )?.[1]
+        if (closeHandler == null)
+          throw new Error('close handler was not registered')
         closeHandler(1) // Call with exit code 1 (failure)
       }, 10)
 

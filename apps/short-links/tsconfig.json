@@ -26,8 +26,6 @@
     "**/*.jsx",
     ".next/types/**/*.ts",
     "../../dist/apps/short-links/.next/types/**/*.ts",
-    "next-env.d.ts",
-    ".next/types/**/*.ts",
     "eslint.config.mjs"
   ],
   "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts"]
