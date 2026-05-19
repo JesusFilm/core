@@ -280,7 +280,9 @@ describe.skip('Admin Video', () => {
               fullscreen: false,
               backdropBlur: null,
               eventLabel: null,
-              children: [block]
+              children: [block],
+              showAssistant: null,
+              expandChatByDefault: null
             }
           }}
         >

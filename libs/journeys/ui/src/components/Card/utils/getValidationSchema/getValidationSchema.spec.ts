@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 
 import { TextResponseType } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
@@ -87,7 +87,9 @@ describe('getValidationSchema', () => {
       {
         id: 'card1',
         __typename: 'CardBlock',
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       },
       {
         id: 'button1',

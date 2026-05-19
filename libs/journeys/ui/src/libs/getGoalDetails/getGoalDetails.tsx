@@ -1,5 +1,5 @@
 import { SxProps, Theme } from '@mui/material/styles'
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 import { ReactNode } from 'react'
 
 import BibleIcon from '@core/shared/ui/icons/Bible'

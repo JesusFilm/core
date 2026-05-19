@@ -1,0 +1,1 @@
+export { VideosTabs } from './VideosTabs'

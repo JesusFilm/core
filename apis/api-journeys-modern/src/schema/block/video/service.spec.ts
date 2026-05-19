@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import {
   fetchFieldsFromMux,
   fetchFieldsFromYouTube,
@@ -7,18 +9,18 @@ import {
 } from './service'
 
 // Mock @apollo/client used by fetchFieldsFromMux
-const mockQuery = jest.fn()
-jest.mock('@apollo/client', () => {
+const mockQuery = vi.fn()
+vi.mock('@apollo/client', () => {
   return {
-    ApolloClient: jest.fn().mockImplementation(() => ({ query: mockQuery })),
-    InMemoryCache: jest.fn(),
-    createHttpLink: jest.fn()
+    ApolloClient: vi.fn().mockImplementation(() => ({ query: mockQuery })),
+    InMemoryCache: vi.fn(),
+    createHttpLink: vi.fn()
   }
 })
 
 describe('video service', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('schemas', () => {
@@ -97,7 +99,7 @@ describe('video service', () => {
     const globalAny: any = global
 
     beforeEach(() => {
-      globalAny.fetch = jest.fn()
+      globalAny.fetch = vi.fn()
     })
 
     afterEach(() => {

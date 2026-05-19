@@ -124,6 +124,14 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_IconBlock {

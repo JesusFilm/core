@@ -59,7 +59,9 @@ describe('CardCta', () => {
     fullscreen: false,
     backdropBlur: null,
     eventLabel: null,
-    children: []
+    children: [],
+    showAssistant: null,
+    expandChatByDefault: null
   }
   const step: TreeBlock = {
     id: 'stepId',
@@ -412,7 +414,9 @@ describe('CardCta', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: null,
-          __typename: 'CardBlock'
+          __typename: 'CardBlock',
+          showAssistant: null,
+          expandChatByDefault: null
         }
       }
     }

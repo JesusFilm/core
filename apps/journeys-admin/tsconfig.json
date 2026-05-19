@@ -12,15 +12,29 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "tsBuildInfoFile": "../../.cache/journeys-admin/tsc/.tsbuildinfo"
+    "tsBuildInfoFile": "../../.cache/journeys-admin/tsc/.tsbuildinfo",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
     "**/*.js",
     "**/*.jsx",
-    "next-env.d.ts",
-    "eslint.config.mjs"
+    "**/*.ts",
+    "**/*.tsx",
+    "eslint.config.mjs",
+    "../../dist/apps/journeys-admin/.next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "jest.config.ts"]
+  "exclude": [
+    "node_modules",
+    "jest.config.ts",
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
+    "**/*.stories.js",
+    "**/*.stories.jsx"
+  ]
 }

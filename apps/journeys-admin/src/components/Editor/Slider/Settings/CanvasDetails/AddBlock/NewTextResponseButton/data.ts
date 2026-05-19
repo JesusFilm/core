@@ -49,7 +49,9 @@ export const stepWithSubmitButton: TreeBlock<StepBlock> = {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: [submitButton]
+      children: [submitButton],
+      showAssistant: null,
+      expandChatByDefault: null
     }
   ]
 }
@@ -75,7 +77,9 @@ export const stepWithoutSubmitButton: TreeBlock<StepBlock> = {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
   ]
 }

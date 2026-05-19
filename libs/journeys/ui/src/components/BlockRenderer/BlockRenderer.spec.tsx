@@ -146,7 +146,9 @@ describe('BlockRenderer', () => {
             color: null
           }
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
@@ -187,7 +189,9 @@ describe('BlockRenderer', () => {
             color: null
           }
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const { getByTestId, getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>

@@ -105,7 +105,9 @@ describe('useStepAndCardBlockCreateMutation', () => {
         parentOrder: 0,
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
-        eventLabel: null
+        eventLabel: null,
+        showAssistant: null,
+        expandChatByDefault: null
       })
     })
   })

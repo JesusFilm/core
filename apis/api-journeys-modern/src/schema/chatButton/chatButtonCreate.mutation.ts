@@ -13,7 +13,6 @@ builder.mutationField('chatButtonCreate', (t) =>
     .prismaField({
       type: ChatButtonRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         journeyId: t.arg({ type: 'ID', required: true }),
         input: t.arg({ type: ChatButtonCreateInput, required: false })

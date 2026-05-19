@@ -6,10 +6,7 @@ const { composePlugins, withNx } = require('@nx/next')
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  nx: {},
-  eslint: {
-    ignoreDuringBuilds: process.env.CI === 'true'
-  }
+  nx: {}
 }
 
 const plugins = [

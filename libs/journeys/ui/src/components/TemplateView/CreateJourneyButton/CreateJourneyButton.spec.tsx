@@ -1014,4 +1014,106 @@ describe('CreateJourneyButton', () => {
       })
     })
   })
+
+  describe('defaultToActiveTeam wiring', () => {
+    function renderWithJourney(journeyForTemplate: JourneyForTemplate) {
+      mockUseRouter.mockReturnValue({
+        query: { createNew: false },
+        push,
+        prefetch
+      } as unknown as NextRouter)
+      const multiTeamMock = {
+        request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+        result: {
+          data: {
+            teams: [
+              {
+                id: 'team-a',
+                title: 'Team A',
+                __typename: 'Team',
+                publicTitle: 'Team A',
+                userTeams: [],
+                customDomains: []
+              },
+              {
+                id: 'team-b',
+                title: 'Team B',
+                __typename: 'Team',
+                publicTitle: 'Team B',
+                userTeams: [],
+                customDomains: []
+              }
+            ],
+            getJourneyProfile: {
+              id: 'profileId',
+              __typename: 'JourneyProfile',
+              lastActiveTeamId: 'team-b'
+            }
+          }
+        }
+      }
+      return render(
+        <MockedProvider mocks={[multiTeamMock, getLanguagesMock]}>
+          <SnackbarProvider>
+            <TeamProvider>
+              <JourneyProvider value={{ journey }}>
+                <CreateJourneyButton
+                  signedIn
+                  journeyData={journeyForTemplate}
+                />
+              </JourneyProvider>
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+    }
+
+    it('pre-fills the team dropdown with the active team when the source is a team template', async () => {
+      renderWithJourney({
+        ...journey,
+        team: { id: 'team-a' }
+      } as unknown as JourneyForTemplate)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+      await waitFor(() =>
+        expect(
+          screen.getByRole('combobox', { name: 'Select Team' })
+        ).toHaveTextContent('Team B')
+      )
+    })
+
+    it('leaves the team dropdown empty when the source is a global JFP template', async () => {
+      renderWithJourney({
+        ...journey,
+        team: { id: 'jfp-team' }
+      } as unknown as JourneyForTemplate)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+      await waitFor(() =>
+        expect(
+          screen.getByRole('combobox', { name: 'Select Team' })
+        ).toBeInTheDocument()
+      )
+      const teamSelect = screen.getByRole('combobox', { name: 'Select Team' })
+      expect(teamSelect).not.toHaveTextContent('Team A')
+      expect(teamSelect).not.toHaveTextContent('Team B')
+    })
+
+    it('leaves the team dropdown empty when the source has no team set', async () => {
+      renderWithJourney({
+        ...journey,
+        team: null
+      } as unknown as JourneyForTemplate)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+      await waitFor(() =>
+        expect(
+          screen.getByRole('combobox', { name: 'Select Team' })
+        ).toBeInTheDocument()
+      )
+      const teamSelect = screen.getByRole('combobox', { name: 'Select Team' })
+      expect(teamSelect).not.toHaveTextContent('Team A')
+      expect(teamSelect).not.toHaveTextContent('Team B')
+    })
+  })
 })

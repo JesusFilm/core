@@ -1,16 +1,19 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
+import { fetchBlockWithJourneyAcl } from '../../../lib/auth/fetchBlockWithJourneyAcl'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
-jest.mock('../../../lib/auth/ability', () => ({
+vi.mock('../../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../../lib/auth/fetchBlockWithJourneyAcl', () => ({
-  fetchBlockWithJourneyAcl: jest.fn()
+vi.mock('../../../lib/auth/fetchBlockWithJourneyAcl', () => ({
+  fetchBlockWithJourneyAcl: vi.fn()
 }))
 
 describe('cardBlockUpdate', () => {
@@ -29,14 +32,12 @@ describe('cardBlockUpdate', () => {
         parentOrder
         backgroundColor
         fullscreen
+        showAssistant
+        expandChatByDefault
       }
     }
   `)
-
-  const {
-    fetchBlockWithJourneyAcl
-  } = require('../../../lib/auth/fetchBlockWithJourneyAcl')
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockAbility = ability as MockedFunction<typeof ability>
 
   const id = 'blockId'
   const input = {
@@ -44,7 +45,7 @@ describe('cardBlockUpdate', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     prismaMock.block.findMany.mockResolvedValue([] as any)
     prismaMock.block.findFirst.mockResolvedValue({
       id,
@@ -58,7 +59,7 @@ describe('cardBlockUpdate', () => {
   })
 
   it('updates card block when authorized', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       journey: { id: 'journeyId' }
@@ -67,7 +68,7 @@ describe('cardBlockUpdate', () => {
 
     const tx = {
       block: {
-        update: jest.fn().mockResolvedValue({
+        update: vi.fn().mockResolvedValue({
           id,
           typename: 'CardBlock',
           journeyId: 'journeyId',
@@ -77,8 +78,8 @@ describe('cardBlockUpdate', () => {
           fullscreen: false
         })
       },
-      action: { upsert: jest.fn(), delete: jest.fn() },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      action: { upsert: vi.fn(), delete: vi.fn() },
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -116,7 +117,7 @@ describe('cardBlockUpdate', () => {
   })
 
   it('returns FORBIDDEN if unauthorized', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       journey: { id: 'journeyId' }
@@ -139,7 +140,7 @@ describe('cardBlockUpdate', () => {
   })
 
   it('updates card block with all optional fields', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       journey: { id: 'journeyId' }
@@ -148,7 +149,7 @@ describe('cardBlockUpdate', () => {
 
     const tx = {
       block: {
-        update: jest.fn().mockResolvedValue({
+        update: vi.fn().mockResolvedValue({
           id,
           typename: 'CardBlock',
           journeyId: 'journeyId',
@@ -159,11 +160,13 @@ describe('cardBlockUpdate', () => {
           coverBlockId: 'coverId',
           fullscreen: true,
           themeMode: 'dark',
-          themeName: 'base'
+          themeName: 'base',
+          showAssistant: true,
+          expandChatByDefault: true
         })
       },
-      action: { upsert: jest.fn(), delete: jest.fn() },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      action: { upsert: vi.fn(), delete: vi.fn() },
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
     prismaMock.block.findFirst.mockResolvedValue({
@@ -178,7 +181,9 @@ describe('cardBlockUpdate', () => {
       backdropBlur: 10,
       fullscreen: true,
       themeMode: 'dark' as const,
-      themeName: 'base' as const
+      themeName: 'base' as const,
+      showAssistant: true,
+      expandChatByDefault: true
     }
 
     const result = await authClient({
@@ -194,7 +199,9 @@ describe('cardBlockUpdate', () => {
           coverBlockId: 'coverId',
           fullscreen: true,
           themeMode: 'dark',
-          themeName: 'base'
+          themeName: 'base',
+          showAssistant: true,
+          expandChatByDefault: true
         })
       })
     )
@@ -205,7 +212,62 @@ describe('cardBlockUpdate', () => {
           id,
           journeyId: 'journeyId',
           backgroundColor: '#00FF00',
-          fullscreen: true
+          fullscreen: true,
+          showAssistant: true,
+          expandChatByDefault: true
+        })
+      }
+    })
+  })
+
+  it('persists expandChatByDefault even when showAssistant is false (frontend owns the no-op semantics)', async () => {
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
+      id,
+      journeyId: 'journeyId',
+      journey: { id: 'journeyId' }
+    })
+    mockAbility.mockReturnValue(true)
+
+    const tx = {
+      block: {
+        update: vi.fn().mockResolvedValue({
+          id,
+          typename: 'CardBlock',
+          journeyId: 'journeyId',
+          parentBlockId: 'parentId',
+          parentOrder: 0,
+          backgroundColor: '#FF0000',
+          fullscreen: false,
+          showAssistant: false,
+          expandChatByDefault: true
+        })
+      },
+      action: { upsert: vi.fn(), delete: vi.fn() },
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
+    }
+    prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
+
+    const result = await authClient({
+      document: CARD_BLOCK_UPDATE,
+      variables: {
+        id,
+        input: { showAssistant: false, expandChatByDefault: true }
+      }
+    })
+
+    expect(tx.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          showAssistant: false,
+          expandChatByDefault: true
+        })
+      })
+    )
+    expect(result).toEqual({
+      data: {
+        cardBlockUpdate: expect.objectContaining({
+          showAssistant: false,
+          expandChatByDefault: true
         })
       }
     })
