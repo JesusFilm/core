@@ -536,10 +536,7 @@ onCompleted: async () => {
       variables: { journeyId: id, pageId: null }
     })
   } catch (unassignError) {
-    console.warn(
-      '[ArchiveJourney] failed to unassign archived journey from its collection',
-      { journeyId: id, error: unassignError }
-    )
+    console.warn('[ArchiveJourney] failed to unassign archived journey from its collection', { journeyId: id, error: unassignError })
   }
   enqueueSnackbar(t('Journey Archived'), { variant: 'success' })
   await refetch?.()
@@ -557,9 +554,7 @@ The fix is one line in the parent component:
 ```ts
 const allTemplates = useMemo<readonly Journey[]>(() => {
   const allowedStatuses = STATUS_FILTER_TO_JOURNEY_STATUSES[status]
-  return (journeysQuery.data?.journeys ?? []).filter((j) =>
-    allowedStatuses.includes(j.status)
-  )
+  return (journeysQuery.data?.journeys ?? []).filter((j) => allowedStatuses.includes(j.status))
 }, [journeysQuery.data, status])
 ```
 
@@ -609,7 +604,7 @@ This sits alongside the explicit `cache.modify` in the mutation's `update` callb
 - Soft-delete-style status flips (trash, archive) should sever join
   rows, not just hide via read-time filters. Until backend support
   lands, pair the lifecycle mutation with a best-effort `…assignJourney
-  ({ pageId: null })` on the client.
+({ pageId: null })` on the client.
 - When a query is keyed by a mutable field (status, archived flag,
   soft-delete timestamp), re-apply that predicate on the client when
   reading the cached list. Apollo's normalized cache stores entities
@@ -645,10 +640,10 @@ This sits alongside the explicit `cache.modify` in the mutation's `update` callb
 - `apps/journeys/pages/home/template-gallery/[slug].tsx` —
   null-branch SSR diagnostic log (NES-1644 enrichment).
 - `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TrashJourneyDialog/TrashJourneyDialog.tsx`
-  + `.../DefaultMenu/ArchiveJourney/ArchiveJourney.tsx` — explicit
-  `cache.modify` filtering of `TemplateGalleryPage.templates` lists
-  on lifecycle transitions, plus best-effort
-  `templateGalleryPageAssignJourney({ pageId: null })` (Pattern 17).
+  - `.../DefaultMenu/ArchiveJourney/ArchiveJourney.tsx` — explicit
+    `cache.modify` filtering of `TemplateGalleryPage.templates` lists
+    on lifecycle transitions, plus best-effort
+    `templateGalleryPageAssignJourney({ pageId: null })` (Pattern 17).
 - `apps/journeys-admin/src/components/TemplateGalleryPageList/TemplateGalleryPageList.tsx`
   — client-side status predicate on `allTemplates` (Pattern 18).
 - `docs/solutions/runtime-errors/yoga-response-cache-null-stickiness-and-zombie-process-debugging-nes1644.md`

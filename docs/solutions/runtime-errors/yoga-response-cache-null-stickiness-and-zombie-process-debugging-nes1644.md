@@ -168,9 +168,7 @@ Fix is one line in the parent component — re-apply the same status predicate t
 ```ts
 const allTemplates = useMemo<readonly Journey[]>(() => {
   const allowedStatuses = STATUS_FILTER_TO_JOURNEY_STATUSES[status]
-  return (journeysQuery.data?.journeys ?? []).filter((j) =>
-    allowedStatuses.includes(j.status)
-  )
+  return (journeysQuery.data?.journeys ?? []).filter((j) => allowedStatuses.includes(j.status))
 }, [journeysQuery.data, status])
 ```
 
