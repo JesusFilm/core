@@ -1,17 +1,14 @@
 import { GraphQLError } from 'graphql'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   Block,
   JourneyVisitor,
-  Prisma,
   Visitor,
   prisma
 } from '@core/prisma/journeys/client'
 
 import { logger } from '../logger'
-
-const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
-const VISITOR_UPSERT_MAX_RETRIES = 3
 
 // Queue for visitor interaction emails
 let emailQueue: any
@@ -135,75 +132,34 @@ export async function validateBlock(
   return block != null ? block[type] === value : false
 }
 
+// Atomic Postgres upsert. `INSERT ... ON CONFLICT DO UPDATE ... RETURNING *`
+// executes as a single row-locked statement, so two concurrent calls cannot
+// both reach the insert step and race — Postgres serializes them on the
+// unique-key tuple. No retries needed, and both rows are guaranteed in the
+// result set. Caller must supply `teamId` (resolved from a prior journey
+// lookup), so the helper never has to verify the journey itself.
 export async function getByUserIdAndJourneyId(
   userId: string,
   journeyId: string,
-  teamId?: string
-): Promise<{
-  visitor: Visitor
-  journeyVisitor: JourneyVisitor
-} | null> {
-  let resolvedTeamId = teamId
-  if (resolvedTeamId == null) {
-    const journey = await prisma.journey.findUnique({
-      where: { id: journeyId },
-      select: { teamId: true }
-    })
+  teamId: string
+): Promise<{ visitor: Visitor; journeyVisitor: JourneyVisitor }> {
+  const [visitor] = await prisma.$queryRaw<Visitor[]>`
+    INSERT INTO "Visitor" ("id", "teamId", "userId", "createdAt", "updatedAt")
+    VALUES (${uuidv4()}, ${teamId}, ${userId}, NOW(), NOW())
+    ON CONFLICT ("teamId", "userId") DO UPDATE
+      SET "updatedAt" = NOW()
+    RETURNING *
+  `
 
-    if (journey == null) {
-      return null
-    }
-    resolvedTeamId = journey.teamId
-  }
+  const [journeyVisitor] = await prisma.$queryRaw<JourneyVisitor[]>`
+    INSERT INTO "JourneyVisitor" ("id", "journeyId", "visitorId", "createdAt", "updatedAt")
+    VALUES (${uuidv4()}, ${journeyId}, ${visitor.id}, NOW(), NOW())
+    ON CONFLICT ("journeyId", "visitorId") DO UPDATE
+      SET "updatedAt" = NOW()
+    RETURNING *
+  `
 
-  for (let attempt = 1; attempt <= VISITOR_UPSERT_MAX_RETRIES; attempt++) {
-    try {
-      const visitor = await prisma.visitor.upsert({
-        where: {
-          teamId_userId: {
-            teamId: resolvedTeamId,
-            userId
-          }
-        },
-        create: {
-          teamId: resolvedTeamId,
-          userId
-        },
-        update: {}
-      })
-      const journeyVisitor = await prisma.journeyVisitor.upsert({
-        where: {
-          journeyId_visitorId: {
-            journeyId,
-            visitorId: visitor.id
-          }
-        },
-        create: {
-          journeyId,
-          visitorId: visitor.id
-        },
-        update: {}
-      })
-
-      return { visitor, journeyVisitor }
-    } catch (err) {
-      if (
-        !(err instanceof Prisma.PrismaClientKnownRequestError) ||
-        err.code !== ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
-      ) {
-        throw err
-      }
-      logger.warn(
-        { userId, journeyId, attempt },
-        'Retrying visitor/journeyVisitor upsert after unique constraint race'
-      )
-      if (attempt === VISITOR_UPSERT_MAX_RETRIES) {
-        throw err
-      }
-    }
-  }
-
-  throw new Error('unreachable: upsert retry loop exited without return')
+  return { visitor, journeyVisitor }
 }
 
 // Helper function to get visitor and journey IDs
