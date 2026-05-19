@@ -21,7 +21,8 @@ builder.mutationField('journeyViewEventCreate', (t) =>
       const userId = context.user?.id
 
       const journey = await prisma.journey.findUnique({
-        where: { id: input.journeyId, deletedAt: null }
+        where: { id: input.journeyId, deletedAt: null },
+        select: { id: true, teamId: true }
       })
 
       if (journey == null) {
@@ -30,18 +31,14 @@ builder.mutationField('journeyViewEventCreate', (t) =>
         })
       }
 
-      const visitorAndJourneyVisitor = await getByUserIdAndJourneyId(
+      // Pass teamId so the helper skips a redundant journey lookup. With
+      // teamId supplied, getByUserIdAndJourneyId cannot return null —
+      // the atomic upsert is guaranteed to return both rows.
+      const { visitor } = await getByUserIdAndJourneyId(
         userId,
-        input.journeyId
+        input.journeyId,
+        journey.teamId
       )
-
-      if (visitorAndJourneyVisitor == null) {
-        throw new GraphQLError('Visitor does not exist', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      }
-
-      const { visitor } = visitorAndJourneyVisitor
 
       const existingEvent = await prisma.event.findFirst({
         where: {

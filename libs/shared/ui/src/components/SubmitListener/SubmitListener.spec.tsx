@@ -5,7 +5,7 @@ import { SubmitListener } from '.'
 
 describe('SubmitListener', () => {
   it('automatically submits when updated', async () => {
-    const handleSubmit = jest.fn()
+    const handleSubmit = vi.fn()
     const { getByRole } = render(
       <Formik initialValues={{ name: '' }} onSubmit={handleSubmit}>
         {({ values, handleChange }) => (
@@ -25,7 +25,6 @@ describe('SubmitListener', () => {
     fireEvent.change(getByRole('textbox', { name: 'name' }), {
       target: { value: 'wow' }
     })
-    jest.runAllTimers()
     await waitFor(() =>
       expect(handleSubmit).toHaveBeenCalledWith(
         { name: 'wow' },

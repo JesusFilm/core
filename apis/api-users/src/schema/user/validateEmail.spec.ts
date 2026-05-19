@@ -1,14 +1,15 @@
 import { getAuth } from 'firebase-admin/auth'
+import { Mock, vi } from 'vitest'
 
 import { prismaMock } from '../../../test/prismaMock'
 
 import { validateEmail } from './validateEmail'
 
-jest.mock('bullmq', () => ({
+vi.mock('bullmq', () => ({
   __esModule: true,
-  Queue: jest.fn().mockImplementation(() => ({
-    add: jest.fn(),
-    getJob: jest
+  Queue: vi.fn().mockImplementation(() => ({
+    add: vi.fn(),
+    getJob: vi
       .fn()
       .mockImplementation((jobId: string) =>
         jobId === 'userId' ? { data: { token: 'token' } } : null
@@ -16,9 +17,9 @@ jest.mock('bullmq', () => ({
   }))
 }))
 
-jest.mock('firebase-admin/auth', () => ({
+vi.mock('firebase-admin/auth', () => ({
   __esModule: true,
-  getAuth: jest.fn().mockReturnValue({
+  getAuth: vi.fn().mockReturnValue({
     id: '1',
     userId: '1',
     createdAt: new Date('2021-01-01T00:00:00.000Z'),
@@ -27,7 +28,7 @@ jest.mock('firebase-admin/auth', () => ({
     email: 'amin@email.com',
     imageUrl: 'https://bit.ly/3Gth4',
     emailVerified: false,
-    updateUser: jest.fn()
+    updateUser: vi.fn()
   })
 }))
 
@@ -35,7 +36,7 @@ describe('validateEmail', () => {
   const originalEnv = { ...process.env }
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = { ...originalEnv }
   })
 
@@ -88,8 +89,8 @@ describe('validateEmail', () => {
     const result = await validateEmail(userId, userEmail, token)
     expect(result).toBe(true)
 
-    const updateUserMock = (getAuth as jest.Mock).mock.results[0].value
-      .updateUser as jest.Mock
+    const updateUserMock = (getAuth as Mock).mock.results[0].value
+      .updateUser as Mock
 
     expect(updateUserMock).toHaveBeenCalledWith('bypassUser', {
       emailVerified: true

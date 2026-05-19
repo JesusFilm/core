@@ -12,9 +12,6 @@ concurrency:
 jobs:
   affected:
     runs-on: blacksmith-2vcpu-ubuntu-2204
-    strategy:
-      matrix:
-        node-version: [22]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -27,7 +24,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -55,7 +52,6 @@ jobs:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
         github-event-name: ['${{ github.event_name }}']
-        node-version: [22]
         exclude:
           # handled by production job below
           - app: journeys
@@ -63,10 +59,6 @@ jobs:
             github-event-name: push
           # handled by production job below
           - app: short-links
-            github-ref-name: stage
-            github-event-name: push
-          # handled by ecs-frontend-deploy-stage
-          - app: journeys-admin
             github-ref-name: stage
             github-event-name: push
     runs-on: blacksmith-2vcpu-ubuntu-2204
@@ -94,7 +86,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -245,7 +237,6 @@ jobs:
       fail-fast: false
       matrix:
         app: ${{ fromJson(needs.build-e2e-matrix.outputs.apps) }}
-        node-version: [22]
         include: ${{ fromJson(needs.build-e2e-matrix.outputs.include) }}
     steps:
       - uses: actions/checkout@v4
@@ -255,7 +246,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -264,9 +255,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-node-${{ matrix.node-version }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node-22-playwright-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.node-version }}-playwright-
+            ${{ runner.os }}-node-22-playwright-
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
@@ -307,10 +298,7 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
-        node-version: [22]
         exclude:
-          # handled by ecs-frontend-deploy-prod
-          - app: journeys-admin
           # handled by deploy-preview job above
           - github-ref-name: stage
         include:
@@ -340,7 +328,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
           cache: 'pnpm'
 
       - name: Install dependencies
