@@ -118,7 +118,7 @@ export function ImageUpload({
   const { getRootProps, open, getInputProps, isDragAccept } = useDropzone({
     onDrop,
     noClick: true,
-    maxSize: 10485760,
+    maxSize: 10000000,
     accept: {
       'image/png': [],
       'image/jpeg': [],
