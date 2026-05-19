@@ -1,4 +1,9 @@
 {
+  "AI chat": "AI စကားပြော",
+  "Show AI chat": "AI စကားပြောပြရန်",
+  "Open chat automatically": "ချက်ချင်း စကားပြောခန်းကို အလိုအလျောက် ဖွင့်ပါ။",
+  "On": "အွန်",
+  "On, auto-open": "ဖွင့်၊ အလိုအလျောက်ဖွင့်",
   "%s | Next Steps": "%s | Next Steps",
   "Admin | Next Steps": "Admin | Next Steps",
   "Email Preferences Updated.": "Email Preferences Updated.",
