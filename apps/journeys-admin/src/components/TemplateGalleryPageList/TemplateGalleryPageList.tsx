@@ -215,10 +215,21 @@ export function TemplateGalleryPageList({
     () => collectionsQuery.data?.templateGalleryPages ?? [],
     [collectionsQuery.data]
   )
-  const allTemplates = useMemo<readonly Journey[]>(
-    () => journeysQuery.data?.journeys ?? [],
-    [journeysQuery.data]
-  )
+  // Filter the cached journeys list to the statuses this view allows.
+  // The server-side query is already keyed on `status:
+  // STATUS_FILTER_TO_JOURNEY_STATUSES[status]`, but Apollo's normalized
+  // cache stores each Journey as a normalized entity — when a mutation
+  // flips an in-list journey's status (archive, trash, delete), the
+  // cached list still holds the ref, so the journey leaks into the
+  // wrong view until a refetch. Apply the same status predicate the
+  // server applies so the client view stays consistent with the
+  // entity's current status across optimistic updates.
+  const allTemplates = useMemo<readonly Journey[]>(() => {
+    const allowedStatuses = STATUS_FILTER_TO_JOURNEY_STATUSES[status]
+    return (journeysQuery.data?.journeys ?? []).filter((j) =>
+      allowedStatuses.includes(j.status)
+    )
+  }, [journeysQuery.data, status])
 
   const journeyById = useMemo(() => {
     const map = new Map<string, Journey>()
