@@ -68,11 +68,11 @@ describe('buttonClickEventCreate', () => {
       }
     )
 
-    prismaMock.visitor.upsert.mockResolvedValue({ id: 'visitorId' } as any)
-    prismaMock.journeyVisitor.upsert.mockResolvedValue({
-      journeyId: 'journeyId',
-      visitorId: 'visitorId'
-    } as any)
+    prismaMock.$queryRaw
+      .mockResolvedValueOnce([{ id: 'visitorId' }] as any)
+      .mockResolvedValueOnce([
+        { journeyId: 'journeyId', visitorId: 'visitorId' }
+      ] as any)
   })
 
   it('creates ButtonClickEvent', async () => {
