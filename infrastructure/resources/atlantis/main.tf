@@ -23,6 +23,15 @@ module "atlantis" {
       name : "ATLANTIS_REPO_CONFIG_JSON",
       value : jsonencode(yamldecode(file("${path.module}/server-atlantis.yaml"))),
       }, {
+      # Default all repos/projects to OpenTofu. Avoids the HashiCorp
+      # release-signing GPG key (expired 2026-04-18), which breaks Terraform
+      # binary downloads with "openpgp: key expired". OpenTofu downloads via
+      # tofudl using its own signing key. The repo config has no distribution
+      # field, so this server flag is the correct place to set the default.
+      # See https://github.com/runatlantis/atlantis/issues/6405.
+      name : "ATLANTIS_DEFAULT_TF_DISTRIBUTION"
+      value : "opentofu"
+      }, {
       name : "AWS_ACCESS_KEY_ID"
       value : resource.aws_iam_access_key.jfp_terraform_user_access_key.id
       }, {

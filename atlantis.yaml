@@ -3,6 +3,7 @@ automerge: true
 delete_source_branch_on_merge: true
 projects:
   - dir: 'infrastructure'
+    terraform_distribution: opentofu
     autoplan:
       when_modified:
         [
@@ -15,5 +16,8 @@ projects:
           './.terraform.lock.hcl'
         ]
   - dir: 'infrastructure/resources/atlantis'
+    terraform_distribution: opentofu
   - dir: 'infrastructure/resources/doppler'
+    terraform_distribution: opentofu
   - dir: 'infrastructure/resources/terraform'
+    terraform_distribution: opentofu
