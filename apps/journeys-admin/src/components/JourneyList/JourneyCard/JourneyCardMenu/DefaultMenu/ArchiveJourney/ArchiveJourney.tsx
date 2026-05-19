@@ -1,5 +1,6 @@
-import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
+import { ApolloQueryResult, Reference, gql, useMutation } from '@apollo/client'
 import CircularProgress from '@mui/material/CircularProgress'
+import reject from 'lodash/reject'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
@@ -12,6 +13,7 @@ import { GetAdminJourneys } from '../../../../../../../__generated__/GetAdminJou
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { JourneyArchive } from '../../../../../../../__generated__/JourneyArchive'
 import { JourneyUnarchive } from '../../../../../../../__generated__/JourneyUnarchive'
+import { useTemplateGalleryPageAssignJourneyMutation } from '../../../../../../libs/useTemplateGalleryPageAssignJourneyMutation'
 import { MenuItem } from '../../../../../MenuItem'
 
 export const JOURNEY_ARCHIVE = gql`
@@ -67,8 +69,62 @@ export function ArchiveJourney({
           __typename: 'Journey'
         }
       ]
+    },
+    // Mirrors the TrashJourneyDialog cleanup: archived journeys are
+    // filtered out of `TemplateGalleryPage.templates` by the resolver
+    // (status: published only), so the cached templates lists must
+    // also drop the ref. Apollo's dangling-ref broadcast leaves stale
+    // refs in lists on stage; the explicit list-filter is deterministic.
+    update(cache, { data }) {
+      if (data?.journeysArchive == null) return
+      const archivedJourneys = data.journeysArchive.filter(
+        (j): j is NonNullable<typeof j> => j != null
+      )
+      if (archivedJourneys.length === 0) return
+
+      const archivedTemplateRefs = new Set<string>()
+      for (const journey of archivedJourneys) {
+        const ref = cache.identify({
+          __typename: 'TemplateGalleryItem',
+          id: journey.id
+        })
+        if (ref != null) archivedTemplateRefs.add(ref)
+      }
+
+      const snapshot = cache.extract()
+      for (const cacheId of Object.keys(snapshot)) {
+        if (!cacheId.startsWith('TemplateGalleryPage:')) continue
+        cache.modify({
+          id: cacheId,
+          fields: {
+            templates(existing) {
+              if (!Array.isArray(existing)) return existing
+              return reject(existing as Reference[], (ref) =>
+                archivedTemplateRefs.has(ref.__ref)
+              )
+            }
+          }
+        })
+      }
+
+      for (const journey of archivedJourneys) {
+        // Evict the TemplateGalleryItem variant — the Journey entity
+        // itself is preserved (status: archived is still a valid live
+        // entity in the archived list).
+        cache.evict({
+          id: cache.identify({
+            __typename: 'TemplateGalleryItem',
+            id: journey.id
+          })
+        })
+      }
     }
   })
+
+  // Best-effort unassign so that unarchiving returns the journey to the
+  // flat template list rather than its prior collection slot. Idempotent
+  // no-op server-side when the journey isn't in any collection.
+  const [unassignFromCollection] = useTemplateGalleryPageAssignJourneyMutation()
   const [unarchiveJourney] = useMutation<JourneyUnarchive>(JOURNEY_UNARCHIVE, {
     variables: {
       ids: [id]
@@ -97,6 +153,20 @@ export function ArchiveJourney({
         setLoading(false)
       },
       onCompleted: async () => {
+        // Sever any TemplateGalleryPage join row so that unarchiving
+        // returns the journey to the flat template list. Failure here
+        // is logged but doesn't contradict the archive success — same
+        // best-effort pairing as TrashJourneyDialog.
+        try {
+          await unassignFromCollection({
+            variables: { journeyId: id, pageId: null }
+          })
+        } catch (unassignError) {
+          console.warn(
+            '[ArchiveJourney] failed to unassign archived journey from its collection',
+            { journeyId: id, error: unassignError }
+          )
+        }
         enqueueSnackbar(t('Journey Archived'), {
           variant: 'success',
           preventDuplicate: true
