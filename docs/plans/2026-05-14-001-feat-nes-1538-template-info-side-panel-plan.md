@@ -147,17 +147,17 @@ The Linear ticket plus Siyang's five canonical Figma frames specify the panel ch
 
 The seven required assets must exist at the listed paths before the panel renders cleanly. The two optional Section 5 GIFs ship later if/when produced.
 
-| # | Type | Section | Path | Dimensions (W × H per Figma) | Source |
-|---|---|---|---|---|---|
-| 1 | Screenshot/GIF | Template Types — Quick-Start | `apps/journeys-admin/public/assets/template-info/template-types-quick-start.png` | 333 × 185 | To be produced |
-| 2 | Screenshot | Template Types — Regular | `apps/journeys-admin/public/assets/template-info/template-types-regular.png` | 333 × 185 | To be produced |
-| 3 | GIF | How to create — three-dots → Make Template | `apps/journeys-admin/public/assets/template-info/make-template-flow.gif` | 333 × 160 | To be produced |
-| 4 | GIF | How to create — text variable workflow | `apps/journeys-admin/public/assets/template-info/text-variable-flow.gif` | 333 × 160 | To be produced |
-| 5 | Screenshot | Tracking and Analytics — Button Properties | `apps/journeys-admin/public/assets/template-info/tracking-button-properties.png` | 333 × 227 | To be produced |
-| 6 | Screenshot | Tracking and Analytics — analytics table | `apps/journeys-admin/public/assets/template-info/tracking-analytics-table.png` | 333 × 203 | To be produced |
-| 7 | GIF | Sharing and Publishing — publish/use-in-team | `apps/journeys-admin/public/assets/template-info/publish-and-share-flow.gif` | 333 × 160 | To be produced |
-| 8 *(opt)* | GIF | Section 5 — Canva canonical-URL flow | `apps/journeys-admin/public/assets/template-info/canva-canonical-url-flow.gif` | 333 × 160 | Optional |
-| 9 *(opt)* | GIF | Section 5 — Google Slides Publish-to-web | `apps/journeys-admin/public/assets/template-info/google-slides-publish-to-web-flow.gif` | 333 × 160 | Optional |
+| #         | Type           | Section                                      | Path                                                                                    | Dimensions (W × H per Figma) | Source         |
+| --------- | -------------- | -------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------- | -------------- |
+| 1         | Screenshot/GIF | Template Types — Quick-Start                 | `apps/journeys-admin/public/assets/template-info/template-types-quick-start.png`        | 333 × 185                    | To be produced |
+| 2         | Screenshot     | Template Types — Regular                     | `apps/journeys-admin/public/assets/template-info/template-types-regular.png`            | 333 × 185                    | To be produced |
+| 3         | GIF            | How to create — three-dots → Make Template   | `apps/journeys-admin/public/assets/template-info/make-template-flow.gif`                | 333 × 160                    | To be produced |
+| 4         | GIF            | How to create — text variable workflow       | `apps/journeys-admin/public/assets/template-info/text-variable-flow.gif`                | 333 × 160                    | To be produced |
+| 5         | Screenshot     | Tracking and Analytics — Button Properties   | `apps/journeys-admin/public/assets/template-info/tracking-button-properties.png`        | 333 × 227                    | To be produced |
+| 6         | Screenshot     | Tracking and Analytics — analytics table     | `apps/journeys-admin/public/assets/template-info/tracking-analytics-table.png`          | 333 × 203                    | To be produced |
+| 7         | GIF            | Sharing and Publishing — publish/use-in-team | `apps/journeys-admin/public/assets/template-info/publish-and-share-flow.gif`            | 333 × 160                    | To be produced |
+| 8 _(opt)_ | GIF            | Section 5 — Canva canonical-URL flow         | `apps/journeys-admin/public/assets/template-info/canva-canonical-url-flow.gif`          | 333 × 160                    | Optional       |
+| 9 _(opt)_ | GIF            | Section 5 — Google Slides Publish-to-web     | `apps/journeys-admin/public/assets/template-info/google-slides-publish-to-web-flow.gif` | 333 × 160                    | Optional       |
 
 Each component references its asset with a plain `<img src="/assets/template-info/<file>" alt={t('...')} loading="lazy" />` (Next.js public folder convention).
 
@@ -213,7 +213,7 @@ The directory tree is a scope declaration; the implementer may collapse small se
 
 ## High-Level Technical Design
 
-> *This illustrates the intended approach and is directional guidance for review, not implementation specification.*
+> _This illustrates the intended approach and is directional guidance for review, not implementation specification._
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -260,6 +260,7 @@ Gating: currentContentType === 'templates'
 **Dependencies:** None.
 
 **Files:**
+
 - Create: `apps/journeys-admin/public/assets/template-info/template-types-quick-start.png` (333×185)
 - Create: `apps/journeys-admin/public/assets/template-info/template-types-regular.png` (333×185)
 - Create: `apps/journeys-admin/public/assets/template-info/make-template-flow.gif` (333×160 — produced as a PNG with `.gif`-ish appearance; an animated GIF isn't required for a placeholder, but the filename uses `.gif` so the component reference matches the final asset)
@@ -269,6 +270,7 @@ Gating: currentContentType === 'templates'
 - Create: `apps/journeys-admin/public/assets/template-info/publish-and-share-flow.gif` (333×160)
 
 **Approach:**
+
 - Use ImageMagick (`convert`) — available on macOS via Homebrew (`brew install imagemagick`). If unavailable in the worktree, fall back to a Node one-liner using `sharp` or `canvas`.
 - Each placeholder: light-grey (`#EFEFEF`) background, dark-grey (`#6D6D7D`) "PLACEHOLDER" label + slot description text, 1px border `#DEDFE0`. Example:
   ```
@@ -282,9 +284,11 @@ Gating: currentContentType === 'templates'
 - Verify each file exists at the listed path with the listed dimensions.
 
 **Test scenarios:**
+
 - Test expectation: none — these are static assets. Verification is "files exist with correct dimensions".
 
 **Verification:**
+
 - `ls -l apps/journeys-admin/public/assets/template-info/` shows all 7 files.
 - `file apps/journeys-admin/public/assets/template-info/template-types-quick-start.png` reports `333 x 185`.
 
@@ -299,21 +303,25 @@ Gating: currentContentType === 'templates'
 **Dependencies:** None. Assumes Siyang has created the LD flag by merge time.
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/JourneyList/JourneyList.tsx`
 - Test: `apps/journeys-admin/src/components/JourneyList/JourneyList.spec.tsx`
 
 **Approach:**
+
 - Extend the existing `const { teamTemplateCollection } = useFlags()` destructure to also pull `templateInfoSidePanel`.
 - Compute `const showTemplateInfoPanel = templateInfoSidePanel === true && teamTemplateCollection === true && currentContentType === 'templates'`.
 - Use defensive `=== true` because `useFlags()` returns `undefined` for unknown keys.
 
 **Test scenarios:**
+
 - Happy path: flag on + templates tab + collections on → `showTemplateInfoPanel = true`.
 - Edge case: flag undefined (LD not loaded yet) → `showTemplateInfoPanel = false` (panel hidden, no layout shift per R10).
 - Edge case: flag on but journeys tab active → `showTemplateInfoPanel = false`.
 - Edge case: flag on but `teamTemplateCollection` off → `showTemplateInfoPanel = false`.
 
 **Verification:**
+
 - Existing `JourneyList.spec.tsx` cases pass; new flag-state cases added.
 
 ---
@@ -327,6 +335,7 @@ Gating: currentContentType === 'templates'
 **Dependencies:** None.
 
 **Files:**
+
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/TemplateInfoPanel.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/TemplateInfoPanel.spec.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/TemplateInfoPanel.stories.tsx`
@@ -337,6 +346,7 @@ Gating: currentContentType === 'templates'
 - Modify: `libs/locales/en/apps-journeys-admin.json` (header keys: `templateInfoPanel.header.title`, `templateInfoPanel.header.body`; section title keys for all 5 sections).
 
 **Approach:**
+
 - `TemplateInfoPanel`: outer MUI `Box` with `sx={{ width: { xs: '100%', md: 375 }, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: 4 /* 16px */, overflow: 'hidden', pt: 3 /* 24px */, pb: 2.5 /* 20px */ }}`. Inside: a `Stack` with the header at top and the accordion list below.
 - Header: `Box sx={{ px: 2.5 /* 20px */, pb: 2.5, gap: 1 }}`. Title rendered as `Typography variant="h5"` (Montserrat SemiBold 22/27). Body rendered as `Typography variant="body1"` (Open Sans Regular 16/24). If the MUI theme's `h5`/`body1` don't match the Figma tokens exactly, fall back to inline `sx`.
 - 1px horizontal divider between header and accordion list.
@@ -347,10 +357,12 @@ Gating: currentContentType === 'templates'
 - Single-expand state lives in `TemplateInfoPanel`: `const [expanded, setExpanded] = useState<SectionId | null>(defaultExpanded ?? null)`. Click handler: `(id) => setExpanded((cur) => cur === id ? null : id)`. Toggling a section to its own id collapses (sets `null`); toggling to a different id swaps.
 
 **Patterns to follow:**
+
 - MUI Accordion usage in `EmbedJourneyDialog.tsx` / `GoogleSheetsSyncDialog.tsx`.
 - The Editor `Drawer`'s border/radius styling (`Editor/Slider/Settings/Drawer/Drawer.tsx`) for visual reference only — do not import.
 
 **Test scenarios:**
+
 - Happy path: renders header title + body text from i18n.
 - Happy path: renders 5 accordion rows (with mocked section children).
 - Happy path: clicking row 2 expands it; clicking row 3 collapses row 2 and expands row 3 (single-expand).
@@ -360,6 +372,7 @@ Gating: currentContentType === 'templates'
 - Accessibility: each summary has `aria-controls`, `aria-expanded`, `id`, and the panel uses `aria-labelledby`.
 
 **Verification:**
+
 - Storybook story shows the shell with placeholder section children.
 - `npx jest --config apps/journeys-admin/jest.config.ts --no-coverage 'apps/journeys-admin/src/components/TemplateInfoPanel/TemplateInfoPanel.spec.tsx'` passes.
 
@@ -374,12 +387,14 @@ Gating: currentContentType === 'templates'
 **Dependencies:** U2.
 
 **Files:**
+
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/TemplateTypesSection/TemplateTypesSection.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/TemplateTypesSection/TemplateTypesSection.spec.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/TemplateTypesSection/index.ts`
 - Modify: `libs/locales/en/apps-journeys-admin.json` (sub-keys for Quick-Start title, Regular title, all bullets, badge label).
 
 **Approach:**
+
 - `<Stack gap={3 /* 12px */}>`:
   - **Quick-Start sub-block** (first):
     - Header row: `<Stack direction="row" gap={1 /* 8px */} alignItems="center">` with `<Typography sx={{ fontFamily: 'Open Sans', fontWeight: 700, fontSize: 16, lineHeight: '24px', color: '#6D6D7D' }}>{t('templateInfoPanel.section.templateTypes.quickStart.title')}</Typography>` then a MUI `<Chip label={t('templateInfoPanel.section.templateTypes.quickStart.badge') /* "RECOMMENDED" */} size="small" sx={{ bgcolor: '#DEDFE0', color: '#444451', borderRadius: 1, height: 'auto', fontFamily: 'Open Sans', fontWeight: 600, fontSize: 14, lineHeight: '20px', px: 1, py: 0.5 }} />`.
@@ -398,15 +413,18 @@ Gating: currentContentType === 'templates'
 - Use MUI components only per `.claude/rules/frontend/apps.md`. Native `<ul>`/`<li>` are allowed semantically; style with `sx`.
 
 **Patterns to follow:**
+
 - The `TEMPLATE` chip styling at the existing template badge in `JourneyCard` (Figma `39662:67871`) for the RECOMMENDED badge.
 
 **Test scenarios:**
+
 - Happy path: renders Quick-Start heading FIRST and Regular heading SECOND.
 - Happy path: renders RECOMMENDED chip next to Quick-Start title.
 - Happy path: each block renders an `<img>` with the expected `src` and non-empty `alt`.
 - Happy path: each block renders exactly 3 bullets.
 
 **Verification:**
+
 - Visual story matches Figma `39657-66822`.
 
 ---
@@ -420,16 +438,18 @@ Gating: currentContentType === 'templates'
 **Dependencies:** U2.
 
 **Files:**
+
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/HowToCreateSection/HowToCreateSection.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/HowToCreateSection/HowToCreateSection.spec.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/HowToCreateSection/index.ts`
 - Modify: `libs/locales/en/apps-journeys-admin.json`
 
 **Approach:**
+
 - Block A — Top-level intro:
   - `<Box component="ol">` with 2 numbered items: `Click on the three dots on your project card.`, `Select the Make Template option`.
   - 333×160px image at `/assets/template-info/make-template-flow.gif`.
-  - Callout `<Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 1 }}>` containing `<Typography variant="body1">{t('...calloutQuickStart')}</Typography>` = `If you want to have Quick-Start template, you need to prepare it.` *(corrected from Figma typo "your need")*.
+  - Callout `<Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 1 }}>` containing `<Typography variant="body1">{t('...calloutQuickStart')}</Typography>` = `If you want to have Quick-Start template, you need to prepare it.` _(corrected from Figma typo "your need")_.
 - Block B — "Links, Images, Video" sub-section:
   - Bold sub-heading `<Typography sx={{ fontFamily: 'Open Sans', fontWeight: 700, fontSize: 16, lineHeight: '24px', color: '#6D6D7D' }}>{t('...linksTitle')}</Typography>` = `Links, Images, Video`.
   - `<Box component="ol">` with 3 items, but item 2 contains a bolded inline span: `Turn on **Make Customisable**` (use `<Trans>` from `next-i18next` for the inline `<strong>`).
@@ -445,12 +465,14 @@ Gating: currentContentType === 'templates'
   - `If you have repeated text on different cards you can reuse the same variable. When the adapter customizes it, it will be changed on each card.`
 
 **Test scenarios:**
+
 - Happy path: renders both GIFs with correct `src`.
 - Happy path: renders 3 blocks with their headings (top-level, Links/Images/Video, Text).
 - Happy path: code samples `{{date}}` and `{{date: May, 8}}` render verbatim and in italic.
 - Happy path: "Make Customisable" appears in bold.
 
 **Verification:**
+
 - Section renders inside the panel story matching Figma `39653-66495`.
 
 ---
@@ -464,12 +486,14 @@ Gating: currentContentType === 'templates'
 **Dependencies:** U2.
 
 **Files:**
+
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/TrackingAndAnalyticsSection/TrackingAndAnalyticsSection.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/TrackingAndAnalyticsSection/TrackingAndAnalyticsSection.spec.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/TrackingAndAnalyticsSection/index.ts`
 - Modify: `libs/locales/en/apps-journeys-admin.json`
 
 **Approach:**
+
 - Opening paragraph: `Track more than just views and responses. To track specific button clicks, video views, or card visits, you must tag those elements as "trackable."`.
 - `<Box component="ol">` with 2 items:
   - `Select blocks or cards you want to track`
@@ -479,11 +503,13 @@ Gating: currentContentType === 'templates'
 - 333×203px screenshot at `/assets/template-info/tracking-analytics-table.png`.
 
 **Test scenarios:**
+
 - Happy path: renders opening + closing paragraphs and both screenshots.
 - Happy path: step 2 renders an inline icon followed by the bolded word "Tracking".
 - Edge case: image paths match the Asset Inventory.
 
 **Verification:**
+
 - Section renders inside the panel story matching Figma `39657-66677`.
 
 ---
@@ -497,26 +523,30 @@ Gating: currentContentType === 'templates'
 **Dependencies:** U2.
 
 **Files:**
+
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/SharingAndPublishingSection/SharingAndPublishingSection.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/SharingAndPublishingSection/SharingAndPublishingSection.spec.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/SharingAndPublishingSection/index.ts`
 - Modify: `libs/locales/en/apps-journeys-admin.json`
 
 **Approach:**
+
 - `<Stack gap={1}>` of 4 paragraphs:
   - `When your template is ready (you set trackable and customizable items) you can publish it.`
-  - `Select **Publish** in three dots menu to get a link to share. Anyone with the link can use your project as template, and you can track its impact.` *(corrected from Figma typo "there dots menu")*
+  - `Select **Publish** in three dots menu to get a link to share. Anyone with the link can use your project as template, and you can track its impact.` _(corrected from Figma typo "there dots menu")_
   - `You can add as many templates as you want!`
-  - `You also can use your template with any team you have access to. No publishing needed in this case. Select **Use in a team** in three dots menu.` *(corrected)*
+  - `You also can use your template with any team you have access to. No publishing needed in this case. Select **Use in a team** in three dots menu.` _(corrected)_
 - Use `<Trans>` for the two paragraphs with inline `<strong>` (Publish, Use in a team).
 - 333×160px image at `/assets/template-info/publish-and-share-flow.gif`.
 
 **Test scenarios:**
+
 - Happy path: renders four paragraphs and the GIF.
 - Happy path: "Publish" and "Use in a team" render as bold.
 - Edge case: ensure "three dots menu" (not "there dots menu") is the rendered text.
 
 **Verification:**
+
 - Section renders inside the panel story matching Figma `39657-66751`.
 
 ---
@@ -530,12 +560,14 @@ Gating: currentContentType === 'templates'
 **Dependencies:** U2.
 
 **Files:**
+
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/EmbeddingCanvaOrGoogleSlidesSection/EmbeddingCanvaOrGoogleSlidesSection.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/EmbeddingCanvaOrGoogleSlidesSection/EmbeddingCanvaOrGoogleSlidesSection.spec.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateInfoPanel/EmbeddingCanvaOrGoogleSlidesSection/index.ts`
 - Modify: `libs/locales/en/apps-journeys-admin.json`
 
 **Approach:**
+
 - Section accordion title: `Embedding Canva or Google Slides`.
 - Header copy (inside the accordion body, above the sub-blocks): `Two places in the admin accept an embed URL: **Template Settings → Strategy** (case study preview) and **New Collection → Add PDF/Video with instructions**. Only **Canva** and **Google Slides** links can render. The link must be the canonical view URL, not a share-shortened URL.` (Bold markers via `<Trans>`; "canonical view URL" italic via `<em>`.)
 - **Sub-section 5a — Canva**:
@@ -557,6 +589,7 @@ Gating: currentContentType === 'templates'
     - `Strip any ?utm_content=… or other query params after /view.`
 
 **Test scenarios:**
+
 - Happy path: renders 3 sub-blocks (Canva, Google Slides, Troubleshooting).
 - Happy path: example URL code blocks render verbatim including the ellipsis characters.
 - Happy path: the orange warning callout renders with the "Don't use Canva short links" text.
@@ -564,6 +597,7 @@ Gating: currentContentType === 'templates'
 - Edge case: when assets #8 / #9 are absent, the GIF placeholders render as text-only boxes (no broken images).
 
 **Verification:**
+
 - Visual story matches the comment's prose.
 
 ---
@@ -577,6 +611,7 @@ Gating: currentContentType === 'templates'
 **Dependencies:** U1, U2, U3, U4, U5, U6, U7.
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/JourneyList/JourneyList.tsx`
 - Modify: `apps/journeys-admin/src/components/JourneyList/JourneyListView/JourneyListView.tsx` (add a mobile-only "Info" trigger button to the toolbar row — confirm exact placement during implementation; the existing toolbar is where Active / Sort-By pills live).
 - Test: `apps/journeys-admin/src/components/JourneyList/JourneyList.spec.tsx`
@@ -584,6 +619,7 @@ Gating: currentContentType === 'templates'
 **Approach:**
 
 **Desktop (`md+`):**
+
 - Import `TemplateInfoPanel`. Render `{showTemplateInfoPanel && <Box sx={{ display: { xs: 'none', md: 'block' }, ... }}><TemplateInfoPanel /></Box>` beside the templates grid.
 - Constant: `const TEMPLATE_INFO_PANEL_WIDTH = 375` at top of `JourneyList.tsx`.
 - Extend the width `calc(...)` on the main wrapper `Box`:
@@ -592,6 +628,7 @@ Gating: currentContentType === 'templates'
 - Positioning: `<Box sx={{ display: { xs: 'none', md: 'block' }, position: 'fixed', right: 40, top: <header offset tuned in dev>, width: TEMPLATE_INFO_PANEL_WIDTH }}>`. Implementer can pivot to a flex parent if positioning is awkward.
 
 **Mobile (`xs`/`sm`):**
+
 - Hidden by default — desktop column does NOT render (`display: { xs: 'none', md: 'block' }`).
 - Add a mobile-only trigger button in `JourneyListView.tsx`'s toolbar row (the row that holds Active / Sort-By pills). Render only when `showTemplateInfoPanel` is true AND viewport is `xs`/`sm`. Use a MUI `IconButton` with `<InfoOutlinedIcon />` (matching the editor's info-button pattern from Figma `39631-61135`) and `aria-label={t('templateInfoPanel.mobile.openButtonLabel')}` = `Open template info`.
 - Trigger state lives in `JourneyList.tsx` as `const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)`. Pass `onOpenInfoPanel` callback down to `JourneyListView` (optional prop; only forwarded when `showTemplateInfoPanel` is true and on xs/sm).
@@ -605,6 +642,7 @@ Gating: currentContentType === 'templates'
 - Auto-height: by default, MUI `SwipeableDrawer` paper grows to its content; the `maxHeight: 80vh` cap prevents overflow. Children scroll inside `overflowY: 'auto'`.
 
 **Test scenarios:**
+
 - Happy path (desktop, `md+`): flag on + templates tab + collections on → panel renders as a right column, main `Box` width includes the narrowing `calc`. No mobile trigger button rendered.
 - Happy path (mobile, `xs`/`sm`): flag on + templates tab + collections on → no desktop column. Mobile trigger button visible in the toolbar. Clicking it opens the `SwipeableDrawer`; panel content visible; can close via X or swipe down.
 - Edge case: flag off → no desktop column, no mobile trigger, no `SwipeableDrawer` in DOM.
@@ -615,6 +653,7 @@ Gating: currentContentType === 'templates'
 - Accessibility: trigger button has `aria-label`; drawer paper has `role="dialog"` and `aria-labelledby` pointing at the drawer header text.
 
 **Verification:**
+
 - Visual check at viewports 1280, 1440, 1920, 768 (sm), 375 (xs).
 - Swipe down on the drawer dismisses it on a touch device (verify via dev tools touch emulation).
 - `npx jest --config apps/journeys-admin/jest.config.ts --no-coverage 'apps/journeys-admin/src/components/JourneyList/JourneyList.spec.tsx'` passes.
@@ -630,18 +669,22 @@ Gating: currentContentType === 'templates'
 **Dependencies:** U2–U7.
 
 **Files:**
+
 - Modify: `libs/locales/en/apps-journeys-admin.json`
 - Verify (not modify) existing translation pipeline for other locales — non-English files inherit English by fallback per `next-i18next` config; per-language translation is a follow-up task.
 
 **Approach:**
+
 - All copy lives under one nested key: `templateInfoPanel.header.title`, `templateInfoPanel.header.body`, `templateInfoPanel.section.<sectionId>.title`, `templateInfoPanel.section.<sectionId>.<sub-key>`, etc. Nested keys keep the JSON readable; `next-i18next` supports dotted paths.
 - Storybook story matrix: `AllCollapsed` (matches Figma `39653-66422`), `TemplateTypesExpanded` (`39657-66822`), `HowToCreateExpanded` (`39653-66495`), `TrackingAndAnalyticsExpanded` (`39657-66677`), `SharingAndPublishingExpanded` (`39657-66751`), `EmbeddingCanvaOrGoogleSlidesExpanded`, `FlagOff` (sanity), `Mobile` (viewport at 375px).
 
 **Test scenarios:**
+
 - Test expectation: i18n keys exist (covered indirectly by U3–U7 specs that render `t()` and assert visible strings).
 - Test expectation: stories build without error.
 
 **Verification:**
+
 - `npx jest --config apps/journeys-admin/jest.config.ts --no-coverage 'apps/journeys-admin/src/components/TemplateInfoPanel'` passes.
 - Local dev server returns 200 for all asset paths listed in Asset Inventory items 1–7.
 
@@ -664,15 +707,15 @@ Gating: currentContentType === 'templates'
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| The seven required image/GIF assets are not yet produced; merging without them ships a panel with broken images | Asset Inventory listed in plan with exact paths and dimensions. Plan blocks merge on asset availability or asks Siyang for placeholders. |
-| LaunchDarkly flag `templateInfoSidePanel` must be created in the LD dashboard before this PR is useful | Documented in U1 and in the ticket. Acceptable: merging dark and enabling later is the intent. |
-| Mobile behaviour not in Figma — stacking below the grid may degrade UX on small screens with long-form content | Open Question 2 (R9). Default stack, with `maxHeight` if needed during dev. |
-| NES-1642 will consume `TemplateInfoPanel` later; today's component shape might miss a constraint NES-1642 needs | Component is designed with zero side effects, only presentational props, no admin-context coupling (R5). NES-1642's PR owns its mount-point translation. |
-| GIF assets may be large; loading on every templates-tab render could slow page load | All `<img>` use `loading="lazy"`; only the expanded section's images are needed eagerly. Single-expand UX means at most one section's media is visible at a time, naturally throttling network. |
-| Tracking icon (U5 step 2) — the exact icon used in the editor's right-rail Tracking tab needs to be located in `@core/shared/ui/icons/` | U5 verifies during implementation; falls back to MUI `EqualizerIcon` if not found. Low risk. |
-| Figma `39653-66495` shows the "If you want to have Quick-Start template" callout AFTER the make-template GIF; the ticket body lists it before the Links/Images/Video sub-section. Plan follows Figma | Documented in U4 approach. |
+| Risk                                                                                                                                                                                                 | Mitigation                                                                                                                                                                                      |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The seven required image/GIF assets are not yet produced; merging without them ships a panel with broken images                                                                                      | Asset Inventory listed in plan with exact paths and dimensions. Plan blocks merge on asset availability or asks Siyang for placeholders.                                                        |
+| LaunchDarkly flag `templateInfoSidePanel` must be created in the LD dashboard before this PR is useful                                                                                               | Documented in U1 and in the ticket. Acceptable: merging dark and enabling later is the intent.                                                                                                  |
+| Mobile behaviour not in Figma — stacking below the grid may degrade UX on small screens with long-form content                                                                                       | Open Question 2 (R9). Default stack, with `maxHeight` if needed during dev.                                                                                                                     |
+| NES-1642 will consume `TemplateInfoPanel` later; today's component shape might miss a constraint NES-1642 needs                                                                                      | Component is designed with zero side effects, only presentational props, no admin-context coupling (R5). NES-1642's PR owns its mount-point translation.                                        |
+| GIF assets may be large; loading on every templates-tab render could slow page load                                                                                                                  | All `<img>` use `loading="lazy"`; only the expanded section's images are needed eagerly. Single-expand UX means at most one section's media is visible at a time, naturally throttling network. |
+| Tracking icon (U5 step 2) — the exact icon used in the editor's right-rail Tracking tab needs to be located in `@core/shared/ui/icons/`                                                              | U5 verifies during implementation; falls back to MUI `EqualizerIcon` if not found. Low risk.                                                                                                    |
+| Figma `39653-66495` shows the "If you want to have Quick-Start template" callout AFTER the make-template GIF; the ticket body lists it before the Links/Images/Video sub-section. Plan follows Figma | Documented in U4 approach.                                                                                                                                                                      |
 
 ---
 
