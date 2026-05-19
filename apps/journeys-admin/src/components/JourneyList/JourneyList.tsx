@@ -1,5 +1,4 @@
 import CloseIcon from '@mui/icons-material/Close'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -145,6 +144,9 @@ export function JourneyList({
         <TemplateGalleryPageList
           visible={contentType === currentContentType}
           status={status}
+          onOpenInfo={
+            showTemplateInfoPanel ? handleOpenTemplateInfoDrawer : undefined
+          }
         />
       )
     }
@@ -221,31 +223,10 @@ export function JourneyList({
           >
             <TemplateInfoPanel />
           </Drawer>
-          {/* Mobile (xs/sm): floating Info button + bottom SwipeableDrawer */}
-          <Box
-            sx={{
-              display: { xs: 'block', md: 'none' },
-              position: 'fixed',
-              top: 12,
-              right: 12,
-              zIndex: (theme) => theme.zIndex.appBar
-            }}
-          >
-            <IconButton
-              data-testid="TemplateInfoPanelMobileTrigger"
-              aria-label={t('Open template info')}
-              onClick={handleOpenTemplateInfoDrawer}
-              sx={{
-                bgcolor: 'background.paper',
-                border: '1px solid',
-                borderColor: 'divider',
-                boxShadow: 1,
-                '&:hover': { bgcolor: 'background.paper' }
-              }}
-            >
-              <InfoOutlinedIcon />
-            </IconButton>
-          </Box>
+          {/* Mobile (xs/sm) trigger lives inline next to the Collections
+              header inside TemplateGalleryPageList (NES-1686). The bottom
+              SwipeableDrawer that the trigger opens stays here, owned by the
+              same component that owns its open/close state. */}
           <SwipeableDrawer
             anchor="bottom"
             open={templateInfoDrawerOpen}

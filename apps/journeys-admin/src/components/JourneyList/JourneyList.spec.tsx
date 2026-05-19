@@ -35,6 +35,25 @@ jest.mock('../../libs/useAdminJourneysQuery', () => ({
   useAdminJourneysQuery: jest.fn()
 }))
 
+// TemplateGalleryPageList is exercised by its own spec. Here we stub it to
+// surface only the inline mobile info trigger (NES-1686) when the parent
+// passes `onOpenInfo`, so JourneyList tests can verify the trigger wiring
+// without standing up the gallery's Apollo queries.
+jest.mock('../TemplateGalleryPageList', () => ({
+  __esModule: true,
+  TemplateGalleryPageList: ({ onOpenInfo }: { onOpenInfo?: () => void }) =>
+    onOpenInfo != null ? (
+      <button
+        type="button"
+        data-testid="TemplateInfoPanelMobileTrigger"
+        aria-label="Open template info"
+        onClick={onOpenInfo}
+      >
+        Open template info
+      </button>
+    ) : null
+}))
+
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const mockedUseAdminJourneysQuery =
   useAdminJourneysQuery as jest.MockedFunction<typeof useAdminJourneysQuery>

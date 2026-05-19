@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
@@ -139,5 +139,63 @@ describe('TemplateGalleryPageList', () => {
     )
     expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
     expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+  })
+
+  describe('Template Info mobile trigger (NES-1686)', () => {
+    it('renders the inline info trigger next to the Collections heading when onOpenInfo is provided and calls it on click', async () => {
+      const handleOpenInfo = jest.fn()
+      const { getByTestId } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList onOpenInfo={handleOpenInfo} />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      const trigger = await waitFor(() =>
+        getByTestId('TemplateInfoPanelMobileTrigger')
+      )
+      expect(trigger).toHaveAttribute('aria-label', 'Open template info')
+
+      fireEvent.click(trigger)
+      expect(handleOpenInfo).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not render the inline info trigger when onOpenInfo is not provided', async () => {
+      const { queryByTestId, getByTestId } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      // Wait for Collections to render so absence is meaningful (the trigger
+      // would have rendered alongside it).
+      await waitFor(() =>
+        expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+      )
+      expect(queryByTestId('TemplateInfoPanelMobileTrigger')).toBeNull()
+    })
   })
 })

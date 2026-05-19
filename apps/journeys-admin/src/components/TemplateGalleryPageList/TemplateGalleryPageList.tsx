@@ -8,10 +8,12 @@ import {
   useSensor,
   useSensors
 } from '@dnd-kit/core'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
@@ -85,11 +87,20 @@ export interface TemplateGalleryPageListProps {
    * hidden when status !== 'active'.
    */
   status?: JourneyStatusFilter
+  /**
+   * Opens the Template Info side panel's mobile drawer. When provided, an
+   * inline info IconButton renders next to the Collections heading on xs/sm
+   * viewports (NES-1686 — replaces the prior floating top-right button).
+   * Undefined when the info panel feature is gated off, suppressing the
+   * trigger.
+   */
+  onOpenInfo?: () => void
 }
 
 export function TemplateGalleryPageList({
   visible = true,
-  status = 'active'
+  status = 'active',
+  onOpenInfo
 }: TemplateGalleryPageListProps = {}): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -345,7 +356,24 @@ export function TemplateGalleryPageList({
               row instead of pushing into the button on narrow viewports
               (NES-1652). */}
           <Stack sx={{ minWidth: 0, flex: 1 }}>
-            <Typography variant="h4">{t('Collections')}</Typography>
+            <Stack direction="row" alignItems="center" spacing={0.5}>
+              <Typography variant="h4">{t('Collections')}</Typography>
+              {onOpenInfo != null && (
+                <IconButton
+                  data-testid="TemplateInfoPanelMobileTrigger"
+                  aria-label={t('Open template info')}
+                  onClick={onOpenInfo}
+                  size="small"
+                  sx={{
+                    display: { xs: 'inline-flex', md: 'none' },
+                    color: (theme) => theme.palette.divider,
+                    p: 0.5
+                  }}
+                >
+                  <InfoOutlinedIcon fontSize="small" />
+                </IconButton>
+              )}
+            </Stack>
             <Typography variant="body2" color="text.secondary">
               {t('Group your team templates into a public gallery page.')}
             </Typography>
