@@ -68,13 +68,7 @@ export default async function proxy(
   // [journeySlug]` catch-all and 404, since that route is for journeys on
   // custom domains, not template-gallery slugs.
   if (url.pathname.startsWith('/template-gallery/')) {
-    const target = new URL(`/home${path}`, req.url)
-    console.info('[proxy] template-gallery rewrite', {
-      hostname,
-      originalPath: url.pathname,
-      targetPath: target.pathname
-    })
-    return NextResponse.rewrite(target)
+    return NextResponse.rewrite(new URL(`/home${path}`, req.url))
   }
 
   // rewrite root application to `/home` folder

@@ -5,6 +5,10 @@ import {
   useForwardedJWT,
   useHmacSignatureValidation
 } from '@graphql-hive/gateway'
+import {
+  createInMemoryCache,
+  useResponseCache
+} from '@graphql-yoga/plugin-response-cache'
 import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
@@ -17,6 +21,8 @@ import { env } from './env'
 import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/authScopes'
+
+export const cache = createInMemoryCache()
 
 export const yoga = createYoga<
   Record<string, unknown>,
@@ -72,14 +78,71 @@ export const yoga = createYoga<
       check: async () => {
         await prisma.$queryRaw`SELECT 1`
       }
-    })
-    // Response caching deliberately disabled. Was the source of stale-null
-    // states across publish/unpublish/republish cycles for
-    // `templateGalleryPageBySlug` — null responses had no entity ID to
-    // track, so the plugin's entity-based invalidation couldn't reach them.
-    // Setting `ttlPerSchemaCoordinate` to 0 should have prevented caching
-    // but didn't fully resolve observed behavior in this codebase, so the
-    // plugin is removed entirely. Each query now hits the resolver fresh;
-    // load impact is trivial for indexed reads.
+    }),
+    process.env.NODE_ENV !== 'test'
+      ? useResponseCache({
+          session: () => null,
+          cache,
+          // Don't cache null `templateGalleryPageBySlug` responses. Yoga's
+          // entity-ID invalidation cannot reach cached null entries (no
+          // entity to track), which leaves them stuck across unpublish→
+          // republish cycles — the next read after republish would serve
+          // the stale cached null. Skipping caching on the null branch
+          // means publishing a previously-draft slug immediately serves
+          // fresh data on the next read, while published rows still cache
+          // for the configured TTL and auto-invalidate via entity-ID when
+          // mutations touch them.
+          shouldCacheResult: ({ result }) => {
+            if (Array.isArray(result.errors) && result.errors.length > 0) {
+              return false
+            }
+            const data = result.data as Record<string, unknown> | null | undefined
+            if (
+              data != null &&
+              'templateGalleryPageBySlug' in data &&
+              data.templateGalleryPageBySlug == null
+            ) {
+              return false
+            }
+            return true
+          },
+          ttlPerSchemaCoordinate: {
+            'Journey.blockTypenames': 0,
+            'Query.adminJourney': 0,
+            'Query.adminJourneys': 0,
+            'Query.customDomain': 0,
+            'Query.customDomains': 0,
+            // Private per-user data — must not be served from a global shared
+            // cache (session: () => null). TTL 0 disables caching entirely for
+            // this field, preventing cross-user profile contamination that caused
+            // the terms-and-conditions redirect to be skipped for new users.
+            'Query.getJourneyProfile': 0,
+            'Query.getUserRole': 0,
+            'Query.googleSheetsSyncs': 0,
+            // Team-scoped admin reads. The default TTL of Infinity caches the
+            // first response indefinitely, keyed only on (query, teamId). When
+            // a fresh user's first read returns an empty list, the cached
+            // entry has no TemplateGalleryPage entity IDs in it — so
+            // mutation-based invalidation cannot match it, and subsequent
+            // creates appear to "disappear" until the cache is manually
+            // flushed (NES-1648).
+            'Query.templateGalleryPage': 0,
+            'Query.templateGalleryPages': 0,
+            // Public renderer. Finite TTL caps cache-poisoning impact for any
+            // null edge case that slips past `shouldCacheResult`, and bounds
+            // the staleness window for non-mutation-driven content drift.
+            // Mutations that return the entity (publish, unpublish, edit,
+            // delete) auto-invalidate cached entries via entity-ID tracking,
+            // so the TTL is the floor on freshness, not the typical wait.
+            'Query.templateGalleryPageBySlug': 60_000,
+            'Query.journeysPlausibleStatsAggregate': 5000,
+            'Query.journeysPlausibleStatsBreakdown': 5000,
+            'Query.journeysPlausibleStatsRealtimeVisitors': 5000,
+            'Query.journeysPlausibleStatsTimeseries': 5000,
+            'Query.templateFamilyStatsAggregate': 5000,
+            'Query.templateFamilyStatsBreakdown': 5000
+          }
+        })
+      : {}
   ]
 })

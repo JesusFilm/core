@@ -57,7 +57,8 @@ vi.mock('../../../../src/components/TemplateGalleryView', () => ({
 }))
 
 const baseContext = {
-  locale: 'en'
+  locale: 'en',
+  res: { setHeader: vi.fn() }
 } as unknown as GetServerSidePropsContext
 
 describe('template-gallery [slug] getServerSideProps', () => {

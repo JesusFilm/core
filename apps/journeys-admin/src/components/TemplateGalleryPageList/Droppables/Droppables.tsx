@@ -70,20 +70,12 @@ interface DraggableJourneysGridProps {
   journeys: readonly Journey[]
   publishedLock: boolean
   dragInFlight: boolean
-  /**
-   * Optional callback forwarded to each `JourneyCard`'s trash flow.
-   * Used by the parent collection card to fire a revalidate when one
-   * of its templates is trashed from inside a published collection
-   * (NES-1644 / QA C). Opaque pass-through.
-   */
-  onTrashSuccess?: () => void
 }
 
 function DraggableJourneysGridImpl({
   journeys,
   publishedLock,
-  dragInFlight,
-  onTrashSuccess
+  dragInFlight
 }: DraggableJourneysGridProps): ReactElement | null {
   if (journeys.length === 0) return null
   // SortableContext gives intra-collection ordering: each item is both a
@@ -105,7 +97,6 @@ function DraggableJourneysGridImpl({
               <DraggableJourney
                 journey={journey}
                 disabled={publishedLock || dragInFlight}
-                onTrashSuccess={onTrashSuccess}
               />
             </Grid>
           ))}
@@ -151,14 +142,11 @@ export function UnsectionedDroppable({
 interface DraggableJourneyProps {
   journey: Journey
   disabled?: boolean
-  /** Forwarded to the inner `JourneyCard`. See DraggableJourneysGrid. */
-  onTrashSuccess?: () => void
 }
 
 export function DraggableJourney({
   journey,
-  disabled,
-  onTrashSuccess
+  disabled
 }: DraggableJourneyProps): ReactElement {
   // useSortable plays the role useDraggable did before AND registers this
   // node as a drop target with its index inside the SortableContext, so
@@ -181,7 +169,7 @@ export function DraggableJourney({
         cursor: disabled === true ? 'default' : isDragging ? 'grabbing' : 'grab'
       }}
     >
-      <JourneyCard journey={journey} onTrashSuccess={onTrashSuccess} />
+      <JourneyCard journey={journey} />
     </Box>
   )
 }

@@ -24,7 +24,7 @@ const journey = (id: string, title: string): Journey =>
   }) as unknown as Journey
 
 const templateRef = (j: Journey): TemplateGalleryPage['templates'][number] => ({
-  __typename: 'Journey',
+  __typename: 'TemplateGalleryItem',
   id: j.id,
   title: j.title,
   primaryImageBlock: null

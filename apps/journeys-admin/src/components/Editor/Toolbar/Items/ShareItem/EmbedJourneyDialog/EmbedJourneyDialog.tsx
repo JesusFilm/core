@@ -34,7 +34,7 @@ export function EmbedJourneyDialog({
 }: EmbedJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { primaryHostname: hostname } = useCustomDomainsQuery({
+  const { hostname } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id ?? '' },
     skip: journey?.team?.id == null
   })

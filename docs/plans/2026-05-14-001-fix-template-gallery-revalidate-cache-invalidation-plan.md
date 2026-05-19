@@ -1,11 +1,40 @@
 ---
 title: Fix template-gallery revalidate — response-cache stale-null gap
 type: fix
-status: active
+status: completed
 date: 2026-05-14
+linear: NES-1644
 ---
 
 # Fix template-gallery revalidate — response-cache stale-null gap
+
+## Outcome
+
+**Actual root cause:** The diagnosis in the plan below was correct on the *mechanism* — `useResponseCache` cannot reach cached-null entries via entity-ID invalidation, leaving them stuck for the full 60s TTL across an unpublish→republish cycle. The plan's *fix* (typename-level `cache.invalidate([{ typename: 'TemplateGalleryPage' }])` in mutations) is also unable to reach cached-null entries, because null responses record no typename in the cache entry's identifier set. The original PR implementing the plan therefore did not fix the bug.
+
+**Bug compounded by environment:** Most of the debugging time during implementation was lost to an orphaned `api-journeys-modern` process holding port 4004 across `nf start` sessions, serving stale compiled code with the original `60_000` TTL and no fix applied. Full devcontainer rebuild was required to clear it. This obscured every prior code-level fix attempt — including the plan's typename-invalidation approach — so the team kept moving the fix while the actual served binary never changed.
+
+**Actual fix that shipped:** A `shouldCacheResult` predicate on the `useResponseCache` plugin in `apis/api-journeys-modern/src/yoga.ts` that returns `false` whenever `result.data.templateGalleryPageBySlug` is `null`. Null responses are never cached. Published responses still cache for 60s and auto-invalidate via entity-ID when any TemplateGalleryPage mutation runs. No mutation-side invalidation calls, no FE revalidate plumbing, no admin revalidate proxy, no Next ISR cache.
+
+**What wasn't needed:**
+- `cache.invalidate([{ typename }])` calls in any TemplateGalleryPage mutation resolver.
+- `cache: Cache` field threaded through the Pothos context.
+- The `useRevalidateTemplateGallery` FE hook + `revalidateGallery(...)` calls in publish/unpublish/edit/delete handlers.
+- `/api/revalidate-template-gallery` endpoints on both admin and journeys.
+- `res.revalidate(path)` in the admin preview proxy.
+- ISR (`revalidate: 60` / `getStaticProps` / `getStaticPaths`) on the public page — switched to `getServerSideProps`; Yoga's 60s cache covers the perf benefit.
+- Per-mutation `responseCacheLifecycle*.spec.ts` lifecycle proofs.
+
+**What was kept beyond the boiled-down fix:**
+- `Cache-Control: no-store` on the public page response — defensive against the browser holding a 404 across the unpublish window.
+- `proxy.ts` short-circuit for `/template-gallery/*` → `/home/template-gallery/*` regardless of hostname (NES-1644 invariant: gallery is root-domain-only; without the short-circuit, dev hosts that don't match `NEXT_PUBLIC_ROOT_DOMAIN` fall through to the journey catch-all and 404).
+- Admin `/api/preview-template-gallery` proxy: kept for auth gate + Sec-Fetch-Site CSRF guard + 307 redirect to the canonical public URL. No awaited revalidate.
+
+**Authoritative reference for the cache-hunt learnings:** [`docs/solutions/runtime-errors/yoga-response-cache-null-stickiness-and-zombie-process-debugging-nes1644.md`](../solutions/runtime-errors/yoga-response-cache-null-stickiness-and-zombie-process-debugging-nes1644.md).
+
+The plan below is preserved as-is for historical context — the analysis is useful to read alongside the learning doc to understand why the typename-invalidation path looked reasonable on paper but doesn't work in practice.
+
+---
 
 ## Summary
 

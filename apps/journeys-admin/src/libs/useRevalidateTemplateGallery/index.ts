@@ -1,1 +1,0 @@
-export { useRevalidateTemplateGallery } from './useRevalidateTemplateGallery'

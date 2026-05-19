@@ -3,8 +3,6 @@ import { useSnackbar } from 'notistack'
 import { useEffect, useRef, useState } from 'react'
 
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
-import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
-import { useRevalidateTemplateGallery } from '../../../libs/useRevalidateTemplateGallery'
 import { useTemplateGalleryPageDeleteMutation } from '../../../libs/useTemplateGalleryPageDeleteMutation'
 import { useTemplateGalleryPagePublishMutation } from '../../../libs/useTemplateGalleryPagePublishMutation'
 import { useTemplateGalleryPageUnpublishMutation } from '../../../libs/useTemplateGalleryPageUnpublishMutation'
@@ -64,7 +62,6 @@ export function useCollectionMutations(): CollectionMutations {
   const [templateGalleryPageUnpublish] =
     useTemplateGalleryPageUnpublishMutation()
   const [templateGalleryPageDelete] = useTemplateGalleryPageDeleteMutation()
-  const revalidateGallery = useRevalidateTemplateGallery()
 
   function showError(error: unknown, fallback: string): void {
     // Guarded so a mutation that rejects after the consumer unmounted
@@ -102,11 +99,6 @@ export function useCollectionMutations(): CollectionMutations {
         showError(null, t("Couldn't publish collection"))
         return null
       }
-      // Revalidate both the old and new slug paths. Publish doesn't change
-      // the slug today, but the server returns it authoritatively — pass
-      // both into the deduper so we're correct even if that invariant
-      // shifts in future.
-      void revalidateGallery([collection.slug, result.slug])
       // Merge server-set fields (status, publishedAt, updatedAt, slug)
       // into the input collection so the caller can open the success
       // dialog with the live public URL — and so any later read sees
@@ -144,13 +136,6 @@ export function useCollectionMutations(): CollectionMutations {
         showError(null, t("Couldn't unpublish collection"))
         return
       }
-      // Revalidate only when the collection actually had a public page to
-      // clear (i.e. was previously published). An unpublish on a draft is
-      // an idempotent no-op — no cached page to bust, no revalidate
-      // needed.
-      if (collection.status === TemplateGalleryPageStatus.published) {
-        void revalidateGallery([collection.slug])
-      }
       if (mountedRef.current) {
         enqueueSnackbar(t('Collection unpublished'), {
           variant: 'success',
@@ -177,11 +162,6 @@ export function useCollectionMutations(): CollectionMutations {
         // Same null-result trap as publish/unpublish above.
         showError(null, t("Couldn't remove collection"))
         return
-      }
-      // Revalidate only when the collection had a public page to clear.
-      // Deleting a draft leaves no orphaned cache entry behind.
-      if (collection.status === TemplateGalleryPageStatus.published) {
-        void revalidateGallery([collection.slug])
       }
       if (mountedRef.current) {
         enqueueSnackbar(t('Collection removed'), {

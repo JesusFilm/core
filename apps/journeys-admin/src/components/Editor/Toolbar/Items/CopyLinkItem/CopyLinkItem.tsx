@@ -20,7 +20,7 @@ export function CopyLinkItem({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
-  const { primaryHostname: hostname } = useCustomDomainsQuery({
+  const { hostname } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id ?? '' },
     skip: journey?.team?.id == null
   })

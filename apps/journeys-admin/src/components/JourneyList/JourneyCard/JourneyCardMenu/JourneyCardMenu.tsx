@@ -88,14 +88,6 @@ export interface JourneyCardMenuProps {
   hovered?: boolean
   onMenuClose?: () => void
   setHasOpenDialog?: (hasOpenDialog: boolean) => void
-  /**
-   * Optional callback forwarded to `TrashJourneyDialog`. Fires after a
-   * successful trash mutation so callers rendered inside a contextual
-   * surface (e.g. NES-1644: a published template-gallery collection)
-   * can react — typically by revalidating an external cache. Opaque to
-   * this menu; we just pass it through.
-   */
-  onTrashSuccess?: () => void
 }
 
 /**
@@ -126,8 +118,7 @@ export function JourneyCardMenu({
   journey,
   hovered,
   onMenuClose,
-  setHasOpenDialog,
-  onTrashSuccess
+  setHasOpenDialog
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [open, setOpen] = useState<boolean | null>(null)
@@ -297,7 +288,6 @@ export function JourneyCardMenu({
           }}
           refetch={refetch}
           fromTemplateId={journey?.fromTemplateId}
-          onTrashSuccess={onTrashSuccess}
         />
       )}
       {openRestoreDialog != null && (

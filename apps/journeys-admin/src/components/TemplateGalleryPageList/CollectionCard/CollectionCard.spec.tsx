@@ -31,7 +31,7 @@ function makeCollection(
 }
 
 const journeyRef = (id: string): TemplateGalleryPage['templates'][number] => ({
-  __typename: 'Journey',
+  __typename: 'TemplateGalleryItem',
   id,
   title: id,
   primaryImageBlock: null

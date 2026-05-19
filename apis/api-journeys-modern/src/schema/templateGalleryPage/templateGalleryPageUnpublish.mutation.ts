@@ -49,8 +49,8 @@ builder.mutationField('templateGalleryPageUnpublish', (t) =>
       //
       // Idempotent re-unpublish: when status is already 'draft' we skip
       // updateMany and just re-read.
-      return await prisma
-        .$transaction(async (tx) => {
+      try {
+        return await prisma.$transaction(async (tx) => {
           if (page.status === 'published') {
             await tx.templateGalleryPage.updateMany({
               where: { id, status: 'published' },
@@ -62,19 +62,19 @@ builder.mutationField('templateGalleryPageUnpublish', (t) =>
             where: { id }
           })
         })
-        .catch((error) => {
-          // Edge case: the page was deleted between auth-fetch and re-read.
-          // Surface as NOT_FOUND GraphQLError instead of leaking Prisma P2025.
-          if (
-            error instanceof Prisma.PrismaClientKnownRequestError &&
-            error.code === 'P2025'
-          ) {
-            throw new GraphQLError('template gallery page not found', {
-              extensions: { code: 'NOT_FOUND' }
-            })
-          }
-          throw error
-        })
+      } catch (error) {
+        // Edge case: the page was deleted between auth-fetch and re-read.
+        // Surface as NOT_FOUND GraphQLError instead of leaking Prisma P2025.
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === 'P2025'
+        ) {
+          throw new GraphQLError('template gallery page not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        }
+        throw error
+      }
     }
   })
 )
