@@ -10,13 +10,14 @@ linear: NES-1644
 
 ## Outcome
 
-**Actual root cause:** The diagnosis in the plan below was correct on the *mechanism* — `useResponseCache` cannot reach cached-null entries via entity-ID invalidation, leaving them stuck for the full 60s TTL across an unpublish→republish cycle. The plan's *fix* (typename-level `cache.invalidate([{ typename: 'TemplateGalleryPage' }])` in mutations) is also unable to reach cached-null entries, because null responses record no typename in the cache entry's identifier set. The original PR implementing the plan therefore did not fix the bug.
+**Actual root cause:** The diagnosis in the plan below was correct on the _mechanism_ — `useResponseCache` cannot reach cached-null entries via entity-ID invalidation, leaving them stuck for the full 60s TTL across an unpublish→republish cycle. The plan's _fix_ (typename-level `cache.invalidate([{ typename: 'TemplateGalleryPage' }])` in mutations) is also unable to reach cached-null entries, because null responses record no typename in the cache entry's identifier set. The original PR implementing the plan therefore did not fix the bug.
 
 **Bug compounded by environment:** Most of the debugging time during implementation was lost to an orphaned `api-journeys-modern` process holding port 4004 across `nf start` sessions, serving stale compiled code with the original `60_000` TTL and no fix applied. Full devcontainer rebuild was required to clear it. This obscured every prior code-level fix attempt — including the plan's typename-invalidation approach — so the team kept moving the fix while the actual served binary never changed.
 
 **Actual fix that shipped:** A `shouldCacheResult` predicate on the `useResponseCache` plugin in `apis/api-journeys-modern/src/yoga.ts` that returns `false` whenever `result.data.templateGalleryPageBySlug` is `null`. Null responses are never cached. Published responses still cache for 60s and auto-invalidate via entity-ID when any TemplateGalleryPage mutation runs. No mutation-side invalidation calls, no FE revalidate plumbing, no admin revalidate proxy, no Next ISR cache.
 
 **What wasn't needed:**
+
 - `cache.invalidate([{ typename }])` calls in any TemplateGalleryPage mutation resolver.
 - `cache: Cache` field threaded through the Pothos context.
 - The `useRevalidateTemplateGallery` FE hook + `revalidateGallery(...)` calls in publish/unpublish/edit/delete handlers.
@@ -26,6 +27,7 @@ linear: NES-1644
 - Per-mutation `responseCacheLifecycle*.spec.ts` lifecycle proofs.
 
 **What was kept beyond the boiled-down fix:**
+
 - `Cache-Control: no-store` on the public page response — defensive against the browser holding a 404 across the unpublish window.
 - `proxy.ts` short-circuit for `/template-gallery/*` → `/home/template-gallery/*` regardless of hostname (NES-1644 invariant: gallery is root-domain-only; without the short-circuit, dev hosts that don't match `NEXT_PUBLIC_ROOT_DOMAIN` fall through to the journey catch-all and 404).
 - Admin `/api/preview-template-gallery` proxy: kept for auth gate + Sec-Fetch-Site CSRF guard + 307 redirect to the canonical public URL. No awaited revalidate.

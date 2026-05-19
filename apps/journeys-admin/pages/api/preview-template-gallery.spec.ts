@@ -124,7 +124,9 @@ describe('preview-template-gallery', () => {
     const { res, status, json } = mockResponse()
     await handler(previewReq(), res)
     expect(status).toHaveBeenCalledWith(500)
-    expect(json).toHaveBeenCalledWith({ error: 'Missing Environment Variables' })
+    expect(json).toHaveBeenCalledWith({
+      error: 'Missing Environment Variables'
+    })
   })
 
   it('returns 403 when getApiRequestTokens resolves null', async () => {

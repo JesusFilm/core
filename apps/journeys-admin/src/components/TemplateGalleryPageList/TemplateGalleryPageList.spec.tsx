@@ -140,5 +140,4 @@ describe('TemplateGalleryPageList', () => {
     expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
     expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
   })
-
 })

@@ -71,18 +71,14 @@ useResponseCache({
       return false
     }
     const data = result.data as Record<string, unknown> | null | undefined
-    if (
-      data != null &&
-      'templateGalleryPageBySlug' in data &&
-      data.templateGalleryPageBySlug == null
-    ) {
+    if (data != null && 'templateGalleryPageBySlug' in data && data.templateGalleryPageBySlug == null) {
       return false
     }
     return true
   },
   ttlPerSchemaCoordinate: {
     // ...
-    'Query.templateGalleryPageBySlug': 60_000,
+    'Query.templateGalleryPageBySlug': 60_000
     // ...
   }
 })

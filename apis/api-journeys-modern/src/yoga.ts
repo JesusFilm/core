@@ -96,7 +96,10 @@ export const yoga = createYoga<
             if (Array.isArray(result.errors) && result.errors.length > 0) {
               return false
             }
-            const data = result.data as Record<string, unknown> | null | undefined
+            const data = result.data as
+              | Record<string, unknown>
+              | null
+              | undefined
             if (
               data != null &&
               'templateGalleryPageBySlug' in data &&
