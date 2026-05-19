@@ -54,18 +54,25 @@ describe.skip('multiselectSubmissionEventCreate', () => {
       id: 'blockId',
       journeyId: 'journeyId'
     } as any)
+    prismaMock.journey.findUnique.mockResolvedValue({
+      id: 'journeyId',
+      teamId: 'teamId'
+    } as any)
     // validateBlock(stepId, journeyId)
     prismaMock.block.findFirst.mockResolvedValue({
       id: 'stepId',
       journeyId: 'journeyId',
       deletedAt: null
     } as any)
-    prismaMock.visitor.findFirst.mockResolvedValue({ id: 'visitorId' } as any)
-    prismaMock.journeyVisitor.findUnique.mockResolvedValue({
-      journeyId: 'journeyId',
-      visitorId: 'visitorId',
-      activityCount: 0
-    } as any)
+    prismaMock.$queryRaw
+      .mockResolvedValueOnce([{ id: 'visitorId' }] as any)
+      .mockResolvedValueOnce([
+        {
+          journeyId: 'journeyId',
+          visitorId: 'visitorId',
+          activityCount: 0
+        }
+      ] as any)
   })
 
   it('creates MultiselectSubmissionEvent', async () => {
