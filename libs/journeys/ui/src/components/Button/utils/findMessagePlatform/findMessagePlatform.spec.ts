@@ -212,4 +212,13 @@ describe('findMessagePlatform', () => {
   it('should return undefined', () => {
     expect(findMessagePlatform(defaultAction)).toBeUndefined()
   })
+
+  it('should return undefined when url is null', () => {
+    const action = {
+      ...defaultAction,
+      url: null
+    } as unknown as ButtonFields_action
+
+    expect(findMessagePlatform(action)).toBeUndefined()
+  })
 })
