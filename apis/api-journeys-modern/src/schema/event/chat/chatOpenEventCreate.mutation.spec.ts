@@ -28,7 +28,8 @@ describe('chatOpenEventCreate', () => {
       journeyId: 'journeyId'
     } as any)
     prismaMock.journey.findUnique.mockResolvedValue({
-      id: 'journeyId'
+      id: 'journeyId',
+      teamId: 'teamId'
     } as any)
 
     prismaMock.block.findFirst.mockResolvedValue({
@@ -57,7 +58,7 @@ describe('chatOpenEventCreate', () => {
         return Promise.resolve(null as any)
       }
     )
-    prismaMock.visitor.findFirst.mockResolvedValue({ id: 'visitorId' } as any)
+    prismaMock.visitor.upsert.mockResolvedValue({ id: 'visitorId' } as any)
     prismaMock.journeyVisitor.upsert.mockResolvedValue({
       journeyId: 'journeyId',
       visitorId: 'visitorId',
