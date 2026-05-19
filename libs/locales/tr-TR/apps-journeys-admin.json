@@ -1,4 +1,9 @@
 {
+  "AI chat": "Yapay zeka sohbeti",
+  "Show AI chat": "Yapay zeka sohbetini göster",
+  "Open chat automatically": "Sohbeti otomatik olarak aç",
+  "On": "Açık",
+  "On, auto-open": "Açık, otomatik açık",
   "%s | Next Steps": "%s | Sonraki Adımlar",
   "Admin | Next Steps": "Yönetici | Sonraki Adımlar",
   "Email Preferences Updated.": "E-posta Tercihleri Güncellendi.",
