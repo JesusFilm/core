@@ -471,8 +471,7 @@ Two non-obvious rules:
    cannot spoof it. The handler accepts only `same-origin` (admin →
    admin navigation) and `none` (direct address-bar entry). Any
    `cross-site` request — including `<img>` / `<script>` /
-   third-party `fetch` carrying a stolen cookie — is rejected with
-   403. This is the right CSRF shape for a `window.open`-shaped
+   third-party `fetch` carrying a stolen cookie — is rejected with 403. This is the right CSRF shape for a `window.open`-shaped
    endpoint where `X-Requested-With` doesn't fit.
 
 2. **Slug validation before redirect.** The handler runs the slug

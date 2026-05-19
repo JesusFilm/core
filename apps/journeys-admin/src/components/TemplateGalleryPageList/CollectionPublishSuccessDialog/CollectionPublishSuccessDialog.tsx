@@ -44,7 +44,8 @@ export function CollectionPublishSuccessDialog({
   publishBlockedReason = null,
   onClose
 }: CollectionPublishSuccessDialogProps): ReactElement {
-  const viewDisabled = publicUrl == null || slug == null || slug === '' || !canPublish
+  const viewDisabled =
+    publicUrl == null || slug == null || slug === '' || !canPublish
 
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()

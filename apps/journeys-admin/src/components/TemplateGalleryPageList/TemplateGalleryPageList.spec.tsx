@@ -134,7 +134,8 @@ const journeysMockWithArchivedJourney: MockedResponse<GetAdminJourneys> = {
     data: {
       journeys: [
         {
-          ...(journeysMock.result as { data: GetAdminJourneys }).data.journeys[0],
+          ...(journeysMock.result as { data: GetAdminJourneys }).data
+            .journeys[0],
           status: JourneyStatus.archived
         }
       ]
@@ -191,7 +192,9 @@ describe('TemplateGalleryPageList', () => {
       </MockedProvider>
     )
 
-    await waitFor(() => expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
+    )
     // The archived journey should NOT appear in the unsectioned list.
     expect(queryByText('Welcome Tour')).not.toBeInTheDocument()
   })
