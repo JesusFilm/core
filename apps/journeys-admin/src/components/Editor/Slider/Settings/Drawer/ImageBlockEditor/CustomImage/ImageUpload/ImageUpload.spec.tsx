@@ -313,9 +313,13 @@ describe('ImageUpload', () => {
 
     const inputEl = screen.getByTestId('drop zone')
 
-    const boundaryFile = new File([new ArrayBuffer(10_500_000)], 'boundary.png', {
-      type: 'image/png'
-    })
+    const boundaryFile = new File(
+      [new ArrayBuffer(10_500_000)],
+      'boundary.png',
+      {
+        type: 'image/png'
+      }
+    )
 
     Object.defineProperty(inputEl, 'files', {
       value: [boundaryFile]
