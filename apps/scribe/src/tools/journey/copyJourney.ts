@@ -37,8 +37,12 @@ export function resolveCachedSession(
 // ---------------------------------------------------------------------------
 
 const JOURNEY_FOR_COPY = graphql(`
-  query ScribeJourneyForCopy($id: ID!, $idType: IdType) {
-    journey(id: $id, idType: $idType) {
+  query ScribeJourneyForCopy(
+    $id: ID!
+    $idType: IdType
+    $options: JourneysQueryOptions
+  ) {
+    journey(id: $id, idType: $idType, options: $options) {
       id
       title
       description
@@ -663,19 +667,28 @@ export async function copyJourneyAcrossEnvironments(
   const sourceEnv = getEnvironment(options.sourceEnvId)
 
   const warnings: string[] = []
-  const idType = isUuid(options.sourceIdOrSlug) ? 'databaseId' : 'slug'
+  const parsed = parseSourceReference(options.sourceIdOrSlug)
+  const idType = isUuid(parsed.idOrSlug) ? 'databaseId' : 'slug'
   // The source `journey()` query and its `blocks` resolver are public — no
   // auth is required to read a journey by id/slug. We deliberately skip
   // sending a source-env token so the user never has to sign in to the
-  // source environment to perform a copy.
+  // source environment to perform a copy. We also pass
+  // `skipRoutingFilter: true` so journeys served from custom domains are
+  // returned by id/slug without the caller having to know the hostname.
   const fetched = await graphqlRequestUnauthenticated(
     sourceEnv,
     JOURNEY_FOR_COPY,
     {
-      id: options.sourceIdOrSlug,
-      idType
+      id: parsed.idOrSlug,
+      idType,
+      options: { skipRoutingFilter: true }
     }
   )
+  if (parsed.hostname != null) {
+    warnings.push(
+      `Source journey appears to live on custom domain "${parsed.hostname}". The journey was fetched via skipRoutingFilter and re-created in the destination team without any custom-domain routing — the copy will live at the destination's default URL.`
+    )
+  }
   const source = fetched.journey
   const sourceBlocks = (source.blocks ?? []) as unknown as SourceBlock[]
 
@@ -1412,4 +1425,39 @@ function isUuid(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
     value
   )
+}
+
+interface ParsedSourceReference {
+  /** A bare UUID or slug, ready to pass to journey(id, idType). */
+  idOrSlug: string
+  /** Set when the input was a URL; the hostname the journey is served from. */
+  hostname: string | null
+}
+
+/**
+ * Accept a UUID, a slug, or a full URL (including custom-domain URLs) and
+ * extract the identifier scribe should query by. For URLs, the last
+ * non-empty path segment is treated as the slug and the hostname is
+ * captured so we can warn the user when the source lives on a custom
+ * domain.
+ */
+function parseSourceReference(value: string): ParsedSourceReference {
+  const trimmed = value.trim()
+  if (!/^https?:\/\//i.test(trimmed)) {
+    return { idOrSlug: trimmed, hostname: null }
+  }
+  let url: URL
+  try {
+    url = new URL(trimmed)
+  } catch {
+    return { idOrSlug: trimmed, hostname: null }
+  }
+  const segments = url.pathname.split('/').filter((s) => s.length > 0)
+  const last = segments[segments.length - 1] ?? ''
+  if (last.length === 0) {
+    throw new Error(
+      `Could not extract a journey slug from URL "${trimmed}" — no path segment.`
+    )
+  }
+  return { idOrSlug: last, hostname: url.hostname }
 }

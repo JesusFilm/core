@@ -271,8 +271,17 @@ agent: Done. New draft: https://admin-stage.nextstep.is/journeys/…
   cannot serve the source URL, the image will render broken — re-upload
   manually in journeys-admin.
 
+`sourceIdOrSlug` accepts a UUID, a slug, or a **full URL** (including
+custom-domain URLs like `https://customer.example.com/some-slug`). When a
+URL is passed, scribe uses the last path segment as the slug. The source
+fetch always passes `skipRoutingFilter: true`, so journeys served from
+custom domains are found by id/slug without needing the hostname.
+
 **Not copied (returned as warnings):**
 
+- Custom-domain routing — the copy lives at the destination's default
+  admin URL. Wire up a new `CustomDomain` against the destination team in
+  journeys-admin if you need the copy to inherit the same hostname.
 - Chat buttons (per-journey link/platform pairs)
 - Host (per-team author profile)
 - Tags

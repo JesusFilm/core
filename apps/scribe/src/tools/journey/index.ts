@@ -270,7 +270,7 @@ export function buildJourneyTools(
     ),
     tool(
       'copy_journey',
-      "Copy a journey (regular blocks, not JourneySimple) from one environment into a team in another environment. Always lands as a draft. The source env must be different from the destination env — use `duplicate_journey` for in-env copies. **Source credentials are NOT required**: the source journey is fetched anonymously via the public `journey()` query, so the user does not need to be signed in to the source env. Only the destination needs cached scribe credentials. The destination is the active scribe session unless overridden via `destEnvId`. The destination team defaults to the active team, but can be overridden with `destTeamId` — for cross-env copies, fetch candidate teams via `list_teams_in_env` first and ASK THE USER which team to use. Image URLs are copied as-is — the user must verify them in the destination if Cloudflare delivery URLs differ across environments. Returns the new journey id, slug, admin URL, block count, and any warnings about content that could not be copied (chat buttons, host, tags, primary/creator/logo image blocks, menu step block, journey theme).",
+      "Copy a journey (regular blocks, not JourneySimple) from one environment into a team in another environment. Always lands as a draft. The source env must be different from the destination env — use `duplicate_journey` for in-env copies. **Source credentials are NOT required**: the source journey is fetched anonymously via the public `journey()` query with `skipRoutingFilter: true`, so it works for journeys served from custom domains as well as the default admin domain. The destination is the active scribe session unless overridden via `destEnvId`. The destination team defaults to the active team, but can be overridden with `destTeamId` — for cross-env copies, fetch candidate teams via `list_teams_in_env` first and ASK THE USER which team to use. `sourceIdOrSlug` accepts a UUID, a slug, or a full URL (including custom-domain URLs like `https://customer.example.com/some-slug`) — when a URL is provided, the last path segment is used as the slug. Image URLs are copied as-is — the user must verify them in the destination if Cloudflare delivery URLs differ across environments. Returns the new journey id, slug, admin URL, block count, and any warnings about content that could not be copied (custom domain routing, chat buttons, host, tags, primary/creator/logo image blocks, menu step block, journey theme).",
       {
         sourceEnvId: z
           .enum(['dev', 'stage', 'prod'])
@@ -278,7 +278,9 @@ export function buildJourneyTools(
         sourceIdOrSlug: z
           .string()
           .min(1)
-          .describe('Journey UUID or slug in the source environment.'),
+          .describe(
+            'Journey UUID, slug, or full URL in the source environment. Full URLs (including custom-domain URLs) are accepted — the last path segment is treated as the slug.'
+          ),
         destEnvId: z
           .enum(['dev', 'stage', 'prod'])
           .optional()
