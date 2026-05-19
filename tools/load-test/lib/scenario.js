@@ -25,7 +25,8 @@ const LATENCY = new Trend('request_latency_ms', true)
 
 const requiredEnv = (key) => {
   const value = __ENV[key]
-  if (value == null || value === '') throw new Error(`Missing required env: ${key}`)
+  if (value == null || value === '')
+    throw new Error(`Missing required env: ${key}`)
   return value
 }
 
@@ -59,8 +60,7 @@ const recordStatus = (status) => {
   STATUS_OTHER.add(1)
 }
 
-const count = (metrics, name) =>
-  Math.round(metrics[name]?.values?.count ?? 0)
+const count = (metrics, name) => Math.round(metrics[name]?.values?.count ?? 0)
 
 const trend = (metrics, name, stat) =>
   Math.round(metrics[name]?.values?.[stat] ?? 0)
@@ -81,7 +81,10 @@ const buildStatusBreakdown = (metrics) => {
 }
 
 const sumCodes = (metrics, codes) =>
-  codes.reduce((accumulator, code) => accumulator + count(metrics, `status_${code}`), 0)
+  codes.reduce(
+    (accumulator, code) => accumulator + count(metrics, `status_${code}`),
+    0
+  )
 
 const buildSummaryBuckets = (metrics) => ({
   success_2xx: sumCodes(metrics, TRACKED_2XX),
@@ -96,7 +99,10 @@ const buildSummaryBuckets = (metrics) => ({
 })
 
 const totalRequests = (breakdown) =>
-  Object.values(breakdown).reduce((accumulator, value) => accumulator + value, 0)
+  Object.values(breakdown).reduce(
+    (accumulator, value) => accumulator + value,
+    0
+  )
 
 const renderHumanSummary = (config, metrics, breakdown, buckets) => {
   const total = totalRequests(breakdown)
@@ -182,7 +188,10 @@ export const buildScenario = ({ name, buildRequest }) => {
 
   const rate = rps > 0 ? rps : rpm
   const timeUnit = rps > 0 ? '1s' : '1m'
-  const vus = intEnv('VUS', Math.max(5, Math.ceil(rate / (rpm > 0 ? 60 : 1)) * 2))
+  const vus = intEnv(
+    'VUS',
+    Math.max(5, Math.ceil(rate / (rpm > 0 ? 60 : 1)) * 2)
+  )
   const maxVus = intEnv('MAX_VUS', Math.max(vus * 2, 20))
   const duration = stringEnv('DURATION', '30s')
   const maxIterations = intEnv('MAX_ITERATIONS', 0)

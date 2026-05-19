@@ -138,7 +138,10 @@ const loadScenario = (yamlPath: string): ScenarioConfig => {
 
 const ensureK6Installed = (): void => {
   const result = spawnSync('k6', ['version'], { stdio: 'ignore' })
-  if (result.error != null && (result.error as NodeJS.ErrnoException).code === 'ENOENT')
+  if (
+    result.error != null &&
+    (result.error as NodeJS.ErrnoException).code === 'ENOENT'
+  )
     throw new Error('k6 is not installed. Run: brew install k6')
   if (result.status !== 0 && result.error == null)
     throw new Error(`k6 version check exited with status ${result.status}`)
@@ -167,7 +170,9 @@ const isoTimestampForFilename = (): string => {
 const main = (): void => {
   const args = process.argv.slice(2)
   if (args.length !== 1) {
-    console.error('Usage: pnpm exec tsx tools/load-test/run-chat.ts <path-to-scenario.yaml>')
+    console.error(
+      'Usage: pnpm exec tsx tools/load-test/run-chat.ts <path-to-scenario.yaml>'
+    )
     const available = listAvailableScenarios()
     if (available.length > 0) {
       console.error('')
@@ -182,13 +187,15 @@ const main = (): void => {
   ensureK6Installed()
 
   const scenarioName = basename(yamlPath).replace(/\.(yaml|yml)$/, '')
-  const runId = scenario.run_id ?? `${scenarioName}-${isoTimestampForFilename()}`
+  const runId =
+    scenario.run_id ?? `${scenarioName}-${isoTimestampForFilename()}`
 
   const finalEnv: Record<string, string> = { RUN_ID: runId }
   for (const key of SCENARIO_KEYS) {
     if (key === 'run_id') continue
     const value = scenario[key]
-    if (value != null && value !== '') finalEnv[ENV_KEY_BY_YAML_KEY[key]] = value
+    if (value != null && value !== '')
+      finalEnv[ENV_KEY_BY_YAML_KEY[key]] = value
   }
   finalEnv.RUN_ID = runId
 
@@ -222,6 +229,8 @@ const main = (): void => {
 try {
   main()
 } catch (error) {
-  console.error(`error: ${error instanceof Error ? error.message : String(error)}`)
+  console.error(
+    `error: ${error instanceof Error ? error.message : String(error)}`
+  )
   process.exit(1)
 }
