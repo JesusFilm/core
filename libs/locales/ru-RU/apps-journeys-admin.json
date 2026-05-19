@@ -1,4 +1,9 @@
 {
+  "AI chat": "Чат с искусственным интеллектом",
+  "Show AI chat": "Показать чат искусственного интеллекта",
+  "Open chat automatically": "Открывай чат автоматически",
+  "On": "На сайте",
+  "On, auto-open": "Включено, автооткрытие",
   "%s | Next Steps": "%s | Next Steps",
   "Admin | Next Steps": "Админ | Next Steps",
   "Email Preferences Updated.": "Настройки e-mail уведомлений обновлены.",
