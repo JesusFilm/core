@@ -6,6 +6,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+import { TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY } from '../../../../../libs/useTemplateGalleryPageAssignJourneyMutation'
 
 import { JOURNEY_TRASH } from './TrashJourneyDialog'
 
@@ -22,6 +23,27 @@ const mockedUseTemplateFamilyStatsAggregateLazyQuery =
   useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
     typeof useTemplateFamilyStatsAggregateLazyQuery
   >
+
+// After trashJourney resolves, the dialog issues a best-effort
+// templateGalleryPageAssignJourney({ pageId: null }) to sever any
+// collection membership. Every success-path test needs this mock or
+// MockedProvider logs a no-match error.
+function unassignMock(
+  journeyId = 'journey-id',
+  result: Record<string, unknown> | null = null
+) {
+  return {
+    request: {
+      query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
+      variables: { journeyId, pageId: null }
+    },
+    result: {
+      data: {
+        templateGalleryPageAssignJourney: result
+      }
+    }
+  }
+}
 
 describe('TrashJourneyDialog', () => {
   const refetchTemplateStats = jest.fn()
@@ -67,7 +89,8 @@ describe('TrashJourneyDialog', () => {
               }
             },
             result
-          }
+          },
+          unassignMock()
         ]}
       >
         <SnackbarProvider>
@@ -133,7 +156,8 @@ describe('TrashJourneyDialog', () => {
               }
             },
             result
-          }
+          },
+          unassignMock()
         ]}
       >
         <SnackbarProvider>
@@ -213,7 +237,8 @@ describe('TrashJourneyDialog', () => {
               variables: { ids: ['journey-id'] }
             },
             result
-          }
+          },
+          unassignMock()
         ]}
       >
         <SnackbarProvider>
@@ -267,7 +292,8 @@ describe('TrashJourneyDialog', () => {
               }
             },
             result
-          }
+          },
+          unassignMock()
         ]}
       >
         <SnackbarProvider>
@@ -286,5 +312,105 @@ describe('TrashJourneyDialog', () => {
     expect(refetchTemplateStats).not.toHaveBeenCalled()
     expect(handleClose).toHaveBeenCalled()
     expect(getByText('Journey trashed')).toBeInTheDocument()
+  })
+
+  it('unassigns the journey from its collection after trashing', async () => {
+    const trashMock = jest.fn(() => ({
+      data: {
+        journeysTrash: [
+          {
+            id: 'journey-id',
+            __typename: 'Journey',
+            status: JourneyStatus.trashed,
+            fromTemplateId: null
+          }
+        ]
+      }
+    }))
+    const unassignResult = jest.fn(() => ({
+      data: { templateGalleryPageAssignJourney: null }
+    }))
+
+    const { getByRole, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_TRASH,
+              variables: { ids: ['journey-id'] }
+            },
+            result: trashMock
+          },
+          {
+            request: {
+              query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
+              variables: { journeyId: 'journey-id', pageId: null }
+            },
+            result: unassignResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <TrashJourneyDialog id="journey-id" open handleClose={jest.fn()} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Delete' }))
+    await waitFor(() => expect(trashMock).toHaveBeenCalled())
+    await waitFor(() => expect(unassignResult).toHaveBeenCalled())
+    expect(getByText('Journey trashed')).toBeInTheDocument()
+  })
+
+  it('still surfaces success when the unassign mutation fails (best-effort)', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    const trashMock = jest.fn(() => ({
+      data: {
+        journeysTrash: [
+          {
+            id: 'journey-id',
+            __typename: 'Journey',
+            status: JourneyStatus.trashed,
+            fromTemplateId: null
+          }
+        ]
+      }
+    }))
+
+    const { getByRole, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_TRASH,
+              variables: { ids: ['journey-id'] }
+            },
+            result: trashMock
+          },
+          {
+            request: {
+              query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
+              variables: { journeyId: 'journey-id', pageId: null }
+            },
+            error: new Error('unassign exploded')
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <TrashJourneyDialog id="journey-id" open handleClose={jest.fn()} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Delete' }))
+    await waitFor(() => expect(trashMock).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(getByText('Journey trashed')).toBeInTheDocument()
+    )
+    expect(warn).toHaveBeenCalledWith(
+      '[TrashJourneyDialog] failed to unassign trashed journey from its collection',
+      expect.objectContaining({ journeyId: 'journey-id' })
+    )
+    warn.mockRestore()
   })
 })
