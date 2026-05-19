@@ -7,7 +7,7 @@ import { ReactElement } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
-import { TreeBlock } from '../../libs/block'
+import { TreeBlock, getCardChild } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
@@ -49,15 +49,17 @@ export function StepFooter({
   const selectedStep =
     selectedStepProp !== undefined ? selectedStepProp : editorSelectedStep
 
+  const card = getCardChild(selectedStep)
+
   const flags = useFlags()
   const hostAvatar = hasHostAvatar({ journey, variant })
   const hostDetails = hasHostDetails({ journey })
   const chat = hasChatWidget({ journey, variant })
   const aiChat =
-    hasAiChatButton({ journey, variant }) && flags.apologistChat === true
+    hasAiChatButton({ journey, variant, card }) && flags.apologistChat === true
   const title = getTitle({ journey })
 
-  const footerMobileHeight = getFooterMobileHeight({ journey, variant })
+  const footerMobileHeight = getFooterMobileHeight({ journey, variant, card })
   const combinedFooter = hasCombinedFooter({ journey, variant })
 
   const { menuButtonIcon } = journey ?? {}

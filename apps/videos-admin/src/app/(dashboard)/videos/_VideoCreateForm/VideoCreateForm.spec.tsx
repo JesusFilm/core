@@ -161,6 +161,44 @@ describe('VideoCreateForm', () => {
       })
     })
 
+    it('warns when slug contains uppercase letters', async () => {
+      const user = userEvent.setup()
+      await user.type(screen.getByLabelText(/Slug/i), 'Jesus-walks')
+      fireEvent.click(screen.getByText('Create'))
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Slug must be all lowercase')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('warns when slug contains spaces', async () => {
+      const user = userEvent.setup()
+      await user.type(screen.getByLabelText(/Slug/i), 'jesus walks')
+      fireEvent.click(screen.getByText('Create'))
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Slug cannot contain spaces')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('warns when slug contains both uppercase letters and spaces', async () => {
+      const user = userEvent.setup()
+      await user.type(screen.getByLabelText(/Slug/i), 'Jesus Walks')
+      fireEvent.click(screen.getByText('Create'))
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            'Slug must be all lowercase and cannot contain spaces'
+          )
+        ).toBeInTheDocument()
+      })
+    })
+
     it('navigates to videos list when Cancel button is clicked', () => {
       fireEvent.click(screen.getByText('Cancel'))
       expect(mockRouterPush).toHaveBeenCalledWith('/videos')

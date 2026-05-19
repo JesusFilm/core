@@ -1,5 +1,8 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { prismaMock } from '../../../test/prismaMock'
 import { ability } from '../../lib/auth/ability'
+import { fetchJourneyWithAclIncludes } from '../../lib/auth/fetchJourneyWithAclIncludes'
 
 import {
   authorizeBlockCreate,
@@ -7,29 +10,24 @@ import {
   validateParentBlock
 } from './service'
 
-jest.mock('../../lib/auth/ability', () => ({
+vi.mock('../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../lib/auth/fetchJourneyWithAclIncludes', () => ({
-  fetchJourneyWithAclIncludes: jest.fn()
+vi.mock('../../lib/auth/fetchJourneyWithAclIncludes', () => ({
+  fetchJourneyWithAclIncludes: vi.fn()
 }))
-
-const {
-  fetchJourneyWithAclIncludes
-} = require('../../lib/auth/fetchJourneyWithAclIncludes')
-
-const mockAbility = ability as jest.MockedFunction<typeof ability>
+const mockAbility = ability as MockedFunction<typeof ability>
 
 describe('authorizeBlockCreate', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('resolves when user is authorized', async () => {
-    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
+    ;(fetchJourneyWithAclIncludes as any).mockResolvedValue({ id: 'journeyId' })
     mockAbility.mockReturnValue(true)
 
     await expect(
@@ -45,7 +43,7 @@ describe('authorizeBlockCreate', () => {
   })
 
   it('throws FORBIDDEN when user is not authorized', async () => {
-    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
+    ;(fetchJourneyWithAclIncludes as any).mockResolvedValue({ id: 'journeyId' })
     mockAbility.mockReturnValue(false)
 
     await expect(
@@ -56,7 +54,7 @@ describe('authorizeBlockCreate', () => {
 
 describe('validateParentBlock', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('resolves when parent block exists in journey', async () => {
@@ -114,7 +112,7 @@ describe('reorderBlock', () => {
   } as any
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns empty array when block has no parentOrder', async () => {

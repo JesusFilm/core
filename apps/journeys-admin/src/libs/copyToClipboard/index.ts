@@ -1,0 +1,1 @@
+export { copyToClipboard } from './copyToClipboard'

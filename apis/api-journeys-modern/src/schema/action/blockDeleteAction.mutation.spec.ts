@@ -1,9 +1,11 @@
+import { vi } from 'vitest'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 
-jest.mock(
+vi.mock(
   '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 )
 
@@ -39,7 +41,7 @@ describe('blockDeleteAction mutation', () => {
   } as any
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('success', () => {

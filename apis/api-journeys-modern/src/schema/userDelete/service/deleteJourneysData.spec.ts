@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { prismaMock } from '../../../../test/prismaMock'
 
 import { deleteJourneysData } from './deleteJourneysData'
@@ -7,34 +9,34 @@ import { deleteJourneysData } from './deleteJourneysData'
 function buildTxMock() {
   return {
     userJourney: {
-      findMany: jest.fn().mockResolvedValue([]),
-      updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-      deleteMany: jest.fn().mockResolvedValue({ count: 0 })
+      findMany: vi.fn().mockResolvedValue([]),
+      updateMany: vi.fn().mockResolvedValue({ count: 0 }),
+      deleteMany: vi.fn().mockResolvedValue({ count: 0 })
     },
     userTeam: {
-      findMany: jest.fn().mockResolvedValue([]),
-      updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-      deleteMany: jest.fn().mockResolvedValue({ count: 0 })
+      findMany: vi.fn().mockResolvedValue([]),
+      updateMany: vi.fn().mockResolvedValue({ count: 0 }),
+      deleteMany: vi.fn().mockResolvedValue({ count: 0 })
     },
-    event: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
-    journeyVisitor: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
-    action: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
-    block: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
-    journey: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
-    team: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    event: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
+    journeyVisitor: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
+    action: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
+    block: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
+    journey: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
+    team: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
     journeyNotification: {
-      deleteMany: jest.fn().mockResolvedValue({ count: 0 })
+      deleteMany: vi.fn().mockResolvedValue({ count: 0 })
     },
-    userTeamInvite: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
-    userInvite: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    userTeamInvite: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
+    userInvite: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
     journeyEventsExportLog: {
-      deleteMany: jest.fn().mockResolvedValue({ count: 0 })
+      deleteMany: vi.fn().mockResolvedValue({ count: 0 })
     },
-    journeyTheme: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
-    journeyProfile: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
-    integration: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
-    userRole: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
-    visitor: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) }
+    journeyTheme: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
+    journeyProfile: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
+    integration: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
+    userRole: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
+    visitor: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) }
   }
 }
 
@@ -42,7 +44,7 @@ describe('deleteJourneysData', () => {
   let txMock: ReturnType<typeof buildTxMock>
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     txMock = buildTxMock()
     prismaMock.$transaction.mockImplementation(async (fn: any, _opts?: any) =>
       fn(txMock)

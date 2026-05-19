@@ -434,6 +434,8 @@
   "Upload Successful!": "Upload Successful!",
   "Upload Failed!": "Nabigo ang pag-upload!",
   "Drop an image here": "Drop an image here",
+  "or click to browse your files": "o i-click para mag-browse ng iyong mga file",
+  "Uploading... {{progress}}%": "Ina-upload... {{progress}}%",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB",
   "Upload file": "Mag-upload ng file",
   "Gallery": "Gallery",

@@ -101,45 +101,46 @@ const baseJourney: Journey = {
   showAssistant: null
 }
 
-const lastStepOnly: TreeBlock[] = [
-  {
-    id: 'step1.id',
-    __typename: 'StepBlock',
-    parentBlockId: null,
-    parentOrder: 0,
-    locked: false,
-    nextBlockId: null,
-    slug: null,
-    children: [
-      {
-        id: 'card1.id',
-        __typename: 'CardBlock',
-        parentBlockId: 'step1.id',
-        parentOrder: 0,
-        coverBlockId: null,
-        backgroundColor: null,
-        backdropBlur: null,
-        themeMode: null,
-        themeName: null,
-        fullscreen: false,
-        eventLabel: null,
-        children: [],
-        showAssistant: null,
-        expandChatByDefault: null
-      }
-    ]
-  }
-]
+function buildBlocks(cardShowAssistant: boolean | null): TreeBlock[] {
+  return [
+    {
+      id: 'step1.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: null,
+      children: [
+        {
+          id: 'card1.id',
+          __typename: 'CardBlock',
+          parentBlockId: 'step1.id',
+          parentOrder: 0,
+          coverBlockId: null,
+          backgroundColor: null,
+          backdropBlur: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          eventLabel: null,
+          children: [],
+          showAssistant: cardShowAssistant,
+          expandChatByDefault: null
+        }
+      ]
+    }
+  ]
+}
+
+// Card opted into chat — flag-gating tests use this so they exercise the
+// flag gate (and not silently pass because the card is null).
+const blocksWithAssistantCard = buildBlocks(true)
 
 describe('Conductor apologistChat flag gating', () => {
   afterAll(() => {
     global.fetch = originalFetch
   })
-
-  const journeyWithAssistant: Journey = {
-    ...baseJourney,
-    showAssistant: true
-  }
 
   it('does not render PinnedChatBar when apologistChat flag is off', () => {
     const { queryByTestId } = render(
@@ -147,9 +148,9 @@ describe('Conductor apologistChat flag gating', () => {
         <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: journeyWithAssistant, variant: 'customize' }}
+              value={{ journey: baseJourney, variant: 'customize' }}
             >
-              <Conductor blocks={lastStepOnly} />
+              <Conductor blocks={blocksWithAssistantCard} />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -163,9 +164,9 @@ describe('Conductor apologistChat flag gating', () => {
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <JourneyProvider
-            value={{ journey: journeyWithAssistant, variant: 'customize' }}
+            value={{ journey: baseJourney, variant: 'customize' }}
           >
-            <Conductor blocks={lastStepOnly} />
+            <Conductor blocks={blocksWithAssistantCard} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -173,18 +174,15 @@ describe('Conductor apologistChat flag gating', () => {
     expect(queryByTestId('PinnedChatBar')).not.toBeInTheDocument()
   })
 
-  it('does not render PinnedChatBar when flag is on but showAssistant is false', () => {
+  it('does not render PinnedChatBar when flag is on but card.showAssistant is false', () => {
     const { queryByTestId } = render(
       <FlagsProvider flags={{ apologistChat: true }}>
         <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{
-                journey: { ...baseJourney, showAssistant: false },
-                variant: 'customize'
-              }}
+              value={{ journey: baseJourney, variant: 'customize' }}
             >
-              <Conductor blocks={lastStepOnly} />
+              <Conductor blocks={buildBlocks(false)} />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -193,15 +191,15 @@ describe('Conductor apologistChat flag gating', () => {
     expect(queryByTestId('PinnedChatBar')).not.toBeInTheDocument()
   })
 
-  it('renders PinnedChatBar when flag is on and showAssistant is true', async () => {
+  it('renders PinnedChatBar when flag is on and card.showAssistant is true', async () => {
     const { findByTestId } = render(
       <FlagsProvider flags={{ apologistChat: true }}>
         <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: journeyWithAssistant, variant: 'customize' }}
+              value={{ journey: baseJourney, variant: 'customize' }}
             >
-              <Conductor blocks={lastStepOnly} />
+              <Conductor blocks={blocksWithAssistantCard} />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>

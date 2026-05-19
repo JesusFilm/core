@@ -84,15 +84,15 @@ const StyledForm = styled(Form)(() => ({}))
  *
  * @returns {ReactElement} The rendered Card component
  */
-export function Card({
-  id,
-  children,
-  backgroundColor,
-  backdropBlur,
-  coverBlockId,
-  fullscreen,
-  wrappers
-}: CardProps): ReactElement {
+export function Card({ wrappers, ...cardForFooter }: CardProps): ReactElement {
+  const {
+    id,
+    children,
+    backgroundColor,
+    backdropBlur,
+    coverBlockId,
+    fullscreen
+  } = cardForFooter
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { enqueueSnackbar } = useSnackbar()
 
@@ -356,6 +356,7 @@ export function Card({
                 videoBlock={videoBlock}
                 imageBlock={imageBlock}
                 hasFullscreenVideo={hasFullscreenVideo}
+                card={cardForFooter}
               >
                 {renderedChildren}
               </WebsiteCover>
@@ -366,6 +367,7 @@ export function Card({
                 videoBlock={videoBlock}
                 imageBlock={imageBlock}
                 hasFullscreenVideo={hasFullscreenVideo}
+                card={cardForFooter}
               >
                 {renderedChildren}
               </ContainedCover>
@@ -376,6 +378,7 @@ export function Card({
                 backdropBlur={backdropBlur ?? 20}
                 imageBlock={imageBlock}
                 hasFullscreenVideo={hasFullscreenVideo}
+                card={cardForFooter}
               >
                 {renderedChildren}
               </ExpandedCover>
