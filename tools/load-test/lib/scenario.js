@@ -1,16 +1,25 @@
 // Reusable load-test scenario runner for k6.
 //
-// Each scenario file (e.g. scenarios/chat.js) provides a request builder and
+// Each scenario file (e.g. targets/chat.js) provides a request builder and
 // calls `buildScenario()` to get k6 options + the default function + a
 // handleSummary that writes a JSON result file under tools/load-test/results/.
 
 import http from 'k6/http'
 import { Counter, Trend } from 'k6/metrics'
 
-const STATUS_2XX = new Counter('status_2xx')
-const STATUS_4XX_OTHER = new Counter('status_4xx_other')
-const STATUS_429 = new Counter('status_429')
-const STATUS_5XX = new Counter('status_5xx')
+// k6 cannot declare counters dynamically per-status at request time — they
+// must be allocated in the init context. Pre-declare the codes we expect to
+// see for HTTP APIs. Anything outside this list lands in `status_other` and
+// gets a console.warn so the operator notices in the run output.
+const TRACKED_2XX = [200, 201, 202, 204]
+const TRACKED_4XX = [400, 401, 403, 404, 405, 408, 409, 413, 415, 422, 429]
+const TRACKED_5XX = [500, 502, 503, 504]
+const TRACKED_CODES = [...TRACKED_2XX, ...TRACKED_4XX, ...TRACKED_5XX]
+
+const STATUS_COUNTERS = Object.fromEntries(
+  TRACKED_CODES.map((code) => [code, new Counter(`status_${code}`)])
+)
+const STATUS_OTHER = new Counter('status_other')
 const STATUS_ERROR = new Counter('status_error')
 const LATENCY = new Trend('request_latency_ms', true)
 
@@ -39,26 +48,15 @@ const isoNowSafe = () => new Date().toISOString().replace(/[:.]/g, '-')
 const recordStatus = (status) => {
   if (status === 0) {
     STATUS_ERROR.add(1)
-    return 'error'
+    return
   }
-  if (status >= 200 && status < 300) {
-    STATUS_2XX.add(1)
-    return '2xx'
+  const counter = STATUS_COUNTERS[status]
+  if (counter != null) {
+    counter.add(1)
+    return
   }
-  if (status === 429) {
-    STATUS_429.add(1)
-    return '429'
-  }
-  if (status >= 400 && status < 500) {
-    STATUS_4XX_OTHER.add(1)
-    return '4xx'
-  }
-  if (status >= 500) {
-    STATUS_5XX.add(1)
-    return '5xx'
-  }
-  STATUS_ERROR.add(1)
-  return 'error'
+  console.warn(`unexpected status code: ${status}`)
+  STATUS_OTHER.add(1)
 }
 
 const count = (metrics, name) =>
@@ -67,13 +65,47 @@ const count = (metrics, name) =>
 const trend = (metrics, name, stat) =>
   Math.round(metrics[name]?.values?.[stat] ?? 0)
 
-const renderHumanSummary = (config, metrics) => {
-  const total =
-    count(metrics, 'status_2xx') +
-    count(metrics, 'status_4xx_other') +
-    count(metrics, 'status_429') +
-    count(metrics, 'status_5xx') +
-    count(metrics, 'status_error')
+// Build a {code: count} map for every status with a non-zero observation.
+// Includes 'other' and 'error' buckets when relevant.
+const buildStatusBreakdown = (metrics) => {
+  const breakdown = {}
+  for (const code of TRACKED_CODES) {
+    const value = count(metrics, `status_${code}`)
+    if (value > 0) breakdown[String(code)] = value
+  }
+  const otherCount = count(metrics, 'status_other')
+  if (otherCount > 0) breakdown.other = otherCount
+  const errorCount = count(metrics, 'status_error')
+  if (errorCount > 0) breakdown.error = errorCount
+  return breakdown
+}
+
+const sumCodes = (metrics, codes) =>
+  codes.reduce((accumulator, code) => accumulator + count(metrics, `status_${code}`), 0)
+
+const buildSummaryBuckets = (metrics) => ({
+  success_2xx: sumCodes(metrics, TRACKED_2XX),
+  rate_limited_429: count(metrics, 'status_429'),
+  client_errors_4xx_excluding_429: sumCodes(
+    metrics,
+    TRACKED_4XX.filter((code) => code !== 429)
+  ),
+  server_errors_5xx: sumCodes(metrics, TRACKED_5XX),
+  network_errors: count(metrics, 'status_error'),
+  unexpected: count(metrics, 'status_other')
+})
+
+const totalRequests = (breakdown) =>
+  Object.values(breakdown).reduce((accumulator, value) => accumulator + value, 0)
+
+const renderHumanSummary = (config, metrics, breakdown, buckets) => {
+  const total = totalRequests(breakdown)
+  const breakdownLines =
+    Object.keys(breakdown).length === 0
+      ? ['  (no responses recorded)']
+      : Object.entries(breakdown)
+          .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+          .map(([code, value]) => `  ${code.padStart(5)}: ${value}`)
   const lines = [
     '',
     `=== ${config.scenario} load-test summary ===`,
@@ -84,14 +116,21 @@ const renderHumanSummary = (config, metrics) => {
     `Duration:  ${config.duration}${config.maxIterations ? `  (cap ${config.maxIterations} reqs)` : ''}`,
     `Started:   ${config.startedAt}`,
     `Finished:  ${config.finishedAt}`,
+    `Elapsed:   ${(config.durationMs / 1000).toFixed(2)}s`,
     `Result:    tools/load-test/results/${config.runId}.json`,
     '',
     `Total sent:    ${total}`,
-    `  2xx:         ${count(metrics, 'status_2xx')}`,
-    `  429:         ${count(metrics, 'status_429')}   <- rate-limited (firewall success signal post-Log)`,
-    `  Other 4xx:   ${count(metrics, 'status_4xx_other')}`,
-    `  5xx:         ${count(metrics, 'status_5xx')}`,
-    `  errors:      ${count(metrics, 'status_error')}`,
+    '',
+    'By status:',
+    ...breakdownLines,
+    '',
+    'Buckets:',
+    `  2xx successes:           ${buckets.success_2xx}`,
+    `  429 rate-limited:        ${buckets.rate_limited_429}   <- firewall success signal post-Log`,
+    `  4xx other (client err):  ${buckets.client_errors_4xx_excluding_429}`,
+    `  5xx (server err):        ${buckets.server_errors_5xx}`,
+    `  network errors:          ${buckets.network_errors}`,
+    `  unexpected codes:        ${buckets.unexpected}`,
     '',
     `Latency (ms):  p50=${trend(metrics, 'request_latency_ms', 'med')}  p95=${trend(metrics, 'request_latency_ms', 'p(95)')}  p99=${trend(metrics, 'request_latency_ms', 'p(99)')}  max=${trend(metrics, 'request_latency_ms', 'max')}`,
     ''
@@ -99,33 +138,22 @@ const renderHumanSummary = (config, metrics) => {
   return lines.join('\n')
 }
 
-const renderJsonSummary = (config, metrics) => {
-  const total =
-    count(metrics, 'status_2xx') +
-    count(metrics, 'status_4xx_other') +
-    count(metrics, 'status_429') +
-    count(metrics, 'status_5xx') +
-    count(metrics, 'status_error')
-  return {
-    scenario: config.scenario,
-    config,
-    totals: {
-      sent: total,
-      status_2xx: count(metrics, 'status_2xx'),
-      status_429: count(metrics, 'status_429'),
-      status_4xx_other: count(metrics, 'status_4xx_other'),
-      status_5xx: count(metrics, 'status_5xx'),
-      errors: count(metrics, 'status_error')
-    },
-    latency_ms: {
-      p50: trend(metrics, 'request_latency_ms', 'med'),
-      p95: trend(metrics, 'request_latency_ms', 'p(95)'),
-      p99: trend(metrics, 'request_latency_ms', 'p(99)'),
-      max: trend(metrics, 'request_latency_ms', 'max'),
-      avg: trend(metrics, 'request_latency_ms', 'avg')
-    }
+const renderJsonSummary = (config, metrics, breakdown, buckets) => ({
+  scenario: config.scenario,
+  config,
+  totals: {
+    sent: totalRequests(breakdown),
+    by_status: breakdown,
+    buckets
+  },
+  latency_ms: {
+    p50: trend(metrics, 'request_latency_ms', 'med'),
+    p95: trend(metrics, 'request_latency_ms', 'p(95)'),
+    p99: trend(metrics, 'request_latency_ms', 'p(99)'),
+    max: trend(metrics, 'request_latency_ms', 'max'),
+    avg: trend(metrics, 'request_latency_ms', 'avg')
   }
-}
+})
 
 // Public: build the k6 module exports for a scenario.
 //
@@ -159,7 +187,6 @@ export const buildScenario = ({ name, buildRequest }) => {
   const duration = stringEnv('DURATION', '30s')
   const maxIterations = intEnv('MAX_ITERATIONS', 0)
 
-  const startedAt = new Date().toISOString()
   const runId = stringEnv('RUN_ID', `${name}-${isoNowSafe()}`)
   const config = {
     scenario: name,
@@ -172,8 +199,9 @@ export const buildScenario = ({ name, buildRequest }) => {
     maxVus,
     duration,
     maxIterations: maxIterations || null,
-    startedAt,
-    finishedAt: null
+    startedAt: null,
+    finishedAt: null,
+    durationMs: 0
   }
 
   const options = {
@@ -210,9 +238,20 @@ export const buildScenario = ({ name, buildRequest }) => {
   }
 
   const handleSummary = (data) => {
-    config.finishedAt = new Date().toISOString()
-    const human = renderHumanSummary(config, data.metrics)
-    const json = renderJsonSummary(config, data.metrics)
+    // k6 re-evaluates the init context when calling handleSummary, so any
+    // wall-clock captured at init time is *not* the test start. Derive both
+    // timestamps from data.state.testRunDurationMs, which is the authoritative
+    // duration of the run.
+    const finishedAtMs = Date.now()
+    const durationMs = data.state?.testRunDurationMs ?? 0
+    config.durationMs = Math.round(durationMs)
+    config.startedAt = new Date(finishedAtMs - durationMs).toISOString()
+    config.finishedAt = new Date(finishedAtMs).toISOString()
+
+    const breakdown = buildStatusBreakdown(data.metrics)
+    const buckets = buildSummaryBuckets(data.metrics)
+    const human = renderHumanSummary(config, data.metrics, breakdown, buckets)
+    const json = renderJsonSummary(config, data.metrics, breakdown, buckets)
     const filename = `tools/load-test/results/${runId}.json`
     return {
       stdout: human,

@@ -60,16 +60,29 @@ message: "load probe" # target-specific (chat): content of the user message.
 
 ### Bundled scenarios
 
-| File                          | Profile                              | Purpose                                                       |
-| ----------------------------- | ------------------------------------ | ------------------------------------------------------------- |
-| `scenarios/smoke.yaml`        | 1 RPS, 5s, 1 VU (≈5 reqs)            | Sanity-check the tool. Below any rate-limit threshold.        |
-| `scenarios/firewall-trip.yaml`| 200 RPM, 2m, 5 VUs (≈400 reqs)       | Drive the Vercel Firewall rule on `/api/chat`. Expect 429s.   |
+| File                              | Profile                              | Purpose                                                                                |
+| --------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------- |
+| `scenarios/smoke.yaml`            | 1 RPS, 5s, 1 VU (≈5 reqs)            | Sanity-check the tool. Below any rate-limit threshold.                                 |
+| `scenarios/sustained-single.yaml` | 1 RPS, 60s, 1 VU (≈60 reqs)          | One sustained session. Steady single-client perf check.                                |
+| `scenarios/concurrent-clients.yaml` | 5 RPS, 30s, 5 VUs (≈150 reqs)      | Five concurrent sessions sharing this machine's IP. Tests concurrency & trace splits.  |
+| `scenarios/firewall-trip.yaml`    | 200 RPM, 2m, 5 VUs (≈400 reqs)       | Drive the Vercel Firewall rule on `/api/chat`. Expect 429s.                            |
+
+## Identity model
+
+`/api/chat` does **not** authenticate today — no token, cookie, or header is checked. The Vercel Firewall rule (NES-1581) sits in front of the endpoint and keys on **source IP**, not on any application identity.
+
+Implications for this tool, all running from a single machine:
+
+- **`sessionId`** is set to `<runId>-vu-<__VU>` — stable across a VU's iterations, distinct between VUs. This splits Langfuse traces by VU so you can inspect them separately. It is **not** seen by the firewall and does not change rate-limit behaviour.
+- **All VUs share one source IP** (yours). Adding more VUs cannot simulate "more IPs" against the firewall. Use it for concurrency, queuing, and per-conversation trace shape only.
+- **True multi-IP load** requires distributed runners — GitHub Actions matrix jobs, multiple machines, or `k6 cloud`. Out of scope for this tool today.
+- **Firebase / per-uid limits** are not in this code path. The per-uid gate (NES-1580 → NES-1584) lives on `api-journeys` (NestJS), not on `apps/journeys`'s `/api/chat`. Add a token-sending scenario only when that gate lands.
 
 ## Output
 
 Every run produces two artefacts:
 
-1. **Stdout summary** — human-readable totals (2xx / 429 / other 4xx / 5xx / errors) + latency p50/p95/p99/max.
+1. **Stdout summary** — human-readable per-status breakdown + categorical buckets + latency p50/p95/p99/max.
 2. **JSON result file** — written to `tools/load-test/results/<run_id>.json` (gitignored). Filename derives from `run_id` in the YAML, or `<scenario-name>-<iso-timestamp>` if not set.
 
 The JSON shape is stable and report-friendly:
@@ -81,22 +94,31 @@ The JSON shape is stable and report-friendly:
     "scenario": "chat",
     "runId": "firewall-trip-20260520T103045",
     "url": "https://your-stage.nextstep.is/api/chat",
+    "method": "POST",
     "rate": 200, "timeUnit": "1m",
     "vus": 5, "maxVus": 20,
     "duration": "2m", "maxIterations": null,
-    "startedAt": "2026-05-20T10:30:45.000Z",
-    "finishedAt": "2026-05-20T10:32:46.000Z"
+    "startedAt": "2026-05-20T10:30:45.123Z",
+    "finishedAt": "2026-05-20T10:32:45.876Z",
+    "durationMs": 120753
   },
   "totals": {
     "sent": 400,
-    "status_2xx": 290, "status_429": 105,
-    "status_4xx_other": 2, "status_5xx": 0, "errors": 3
+    "by_status": { "200": 290, "401": 2, "429": 105, "error": 3 },
+    "buckets": {
+      "success_2xx": 290,
+      "rate_limited_429": 105,
+      "client_errors_4xx_excluding_429": 2,
+      "server_errors_5xx": 0,
+      "network_errors": 3,
+      "unexpected": 0
+    }
   },
   "latency_ms": { "p50": 420, "p95": 1820, "p99": 2310, "max": 2987, "avg": 580 }
 }
 ```
 
-Share by attaching the file or pasting the `totals` + `latency_ms` blocks. 429s aren't failures here — once the firewall rule is past Log mode, a non-zero 429 count is the success signal.
+`by_status` gives the exact code distribution (only non-zero codes appear), and `buckets` gives the categorical roll-up. Anything outside the tracked code list (see `TRACKED_CODES` in `lib/scenario.js`) lands in `by_status.other` with a `console.warn` during the run. 429s aren't failures here — once the firewall rule is past Log mode, a non-zero 429 count is the success signal.
 
 ## Add a new scenario (same target)
 

@@ -1,0 +1,12 @@
+# Sustained load from a single user session.
+#
+# 1 VU at 1 RPS for 60 seconds (~60 total requests). Models one browser tab
+# making steady calls. Below any realistic firewall rate threshold — safe to
+# repeat. Useful for confirming a single client's perf is stable and the
+# endpoint isn't rejecting well-formed traffic.
+
+url: https://your-stage.nextstep.is/api/chat
+rps: 1
+duration: 60s
+vus: 1
+message: load test sustained single session
