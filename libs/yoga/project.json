@@ -10,10 +10,10 @@
       "outputs": ["{options.outputFile}"]
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/libs/yoga"],
       "options": {
-        "jestConfig": "libs/yoga/jest.config.ts"
+        "configFile": "libs/yoga/vitest.config.mts"
       }
     },
     "codecov": {

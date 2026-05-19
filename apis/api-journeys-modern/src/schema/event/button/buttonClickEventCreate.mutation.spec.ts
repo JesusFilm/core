@@ -41,7 +41,8 @@ describe('buttonClickEventCreate', () => {
       journeyId: 'journeyId'
     } as any)
     prismaMock.journey.findUnique.mockResolvedValue({
-      id: 'journeyId'
+      id: 'journeyId',
+      teamId: 'teamId'
     } as any)
 
     // validateBlock uses findFirst; branch on id for child and step
@@ -67,11 +68,11 @@ describe('buttonClickEventCreate', () => {
       }
     )
 
-    prismaMock.visitor.findFirst.mockResolvedValue({ id: 'visitorId' } as any)
-    prismaMock.journeyVisitor.findUnique.mockResolvedValue({
-      journeyId: 'journeyId',
-      visitorId: 'visitorId'
-    } as any)
+    prismaMock.$queryRaw
+      .mockResolvedValueOnce([{ id: 'visitorId' }] as any)
+      .mockResolvedValueOnce([
+        { journeyId: 'journeyId', visitorId: 'visitorId' }
+      ] as any)
   })
 
   it('creates ButtonClickEvent', async () => {
