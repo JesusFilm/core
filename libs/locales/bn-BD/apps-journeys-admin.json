@@ -1,4 +1,9 @@
 {
+  "AI chat": "এআই চ্যাট",
+  "Show AI chat": "এআই চ্যাট দেখান",
+  "Open chat automatically": "চ্যাট স্বয়ংক্রিয়ভাবে খুলুন",
+  "On": "অন",
+  "On, auto-open": "চালু, স্বয়ংক্রিয়ভাবে খোলা",
   "%s | Next Steps": "%s | Next Steps",
   "Admin | Next Steps": "Admin | Next Steps",
   "Email Preferences Updated.": "Email Preferences Updated.",
