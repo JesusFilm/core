@@ -11,7 +11,12 @@ import { createClient } from 'graphql-sse'
 
 import { logout } from '../auth/firebase'
 
-import { SSELink, createApolloClient, createErrorLink } from './apolloClient'
+import {
+  SSELink,
+  createApolloClient,
+  createErrorLink,
+  resolveGatewayUrl
+} from './apolloClient'
 
 jest.mock('graphql-sse', () => ({
   createClient: jest.fn()
@@ -172,6 +177,114 @@ describe('SSELink', () => {
           done()
         }
       })
+  })
+})
+
+describe('resolveGatewayUrl', () => {
+  const originalEnv = process.env
+  const DEV_HOSTS_JSON = JSON.stringify({
+    siyang: 'tailscale-dev-siyang.taila2a609.ts.net',
+    mike: 'tailscale-dev-mike.taila2a609.ts.net'
+  })
+
+  beforeEach(() => {
+    process.env = { ...originalEnv }
+    delete process.env.NEXT_PUBLIC_GATEWAY_URL
+    delete process.env.NEXT_PUBLIC_DEV_HOSTS
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
+  it('uses NEXT_PUBLIC_GATEWAY_URL when set, regardless of hostname', () => {
+    process.env.NEXT_PUBLIC_GATEWAY_URL = 'https://stage-gw.example.com'
+    process.env.NEXT_PUBLIC_DEV_HOSTS = DEV_HOSTS_JSON
+
+    expect(
+      resolveGatewayUrl({
+        hostname: 'tailscale-dev-siyang.taila2a609.ts.net',
+        protocol: 'http:'
+      })
+    ).toBe('https://stage-gw.example.com')
+  })
+
+  it('derives gateway URL from location for a host listed in NEXT_PUBLIC_DEV_HOSTS', () => {
+    process.env.NEXT_PUBLIC_DEV_HOSTS = DEV_HOSTS_JSON
+
+    expect(
+      resolveGatewayUrl({
+        hostname: 'tailscale-dev-siyang.taila2a609.ts.net',
+        protocol: 'http:'
+      })
+    ).toBe('http://tailscale-dev-siyang.taila2a609.ts.net:4000')
+  })
+
+  it('preserves protocol when deriving (https for Tailscale Funnel)', () => {
+    process.env.NEXT_PUBLIC_DEV_HOSTS = DEV_HOSTS_JSON
+
+    expect(
+      resolveGatewayUrl({
+        hostname: 'tailscale-dev-siyang.taila2a609.ts.net',
+        protocol: 'https:'
+      })
+    ).toBe('https://tailscale-dev-siyang.taila2a609.ts.net:4000')
+  })
+
+  it('falls back to localhost for a host not in NEXT_PUBLIC_DEV_HOSTS', () => {
+    process.env.NEXT_PUBLIC_DEV_HOSTS = DEV_HOSTS_JSON
+
+    expect(
+      resolveGatewayUrl({ hostname: 'localhost', protocol: 'http:' })
+    ).toBe('http://localhost:4000')
+  })
+
+  it('falls back to localhost on the server (no location)', () => {
+    process.env.NEXT_PUBLIC_DEV_HOSTS = DEV_HOSTS_JSON
+
+    expect(resolveGatewayUrl(undefined)).toBe('http://localhost:4000')
+  })
+
+  it('falls back to localhost when NEXT_PUBLIC_DEV_HOSTS is unset (no dev relaxation)', () => {
+    expect(
+      resolveGatewayUrl({
+        hostname: 'tailscale-dev-siyang.taila2a609.ts.net',
+        protocol: 'http:'
+      })
+    ).toBe('http://localhost:4000')
+  })
+
+  it('falls back to localhost when NEXT_PUBLIC_DEV_HOSTS is an empty string', () => {
+    process.env.NEXT_PUBLIC_DEV_HOSTS = ''
+
+    expect(
+      resolveGatewayUrl({
+        hostname: 'tailscale-dev-siyang.taila2a609.ts.net',
+        protocol: 'http:'
+      })
+    ).toBe('http://localhost:4000')
+  })
+
+  it('falls back to localhost when NEXT_PUBLIC_DEV_HOSTS is malformed JSON', () => {
+    process.env.NEXT_PUBLIC_DEV_HOSTS = '{not valid json'
+
+    expect(
+      resolveGatewayUrl({
+        hostname: 'tailscale-dev-siyang.taila2a609.ts.net',
+        protocol: 'http:'
+      })
+    ).toBe('http://localhost:4000')
+  })
+
+  it('falls back to localhost for a spoofed host not in NEXT_PUBLIC_DEV_HOSTS', () => {
+    process.env.NEXT_PUBLIC_DEV_HOSTS = DEV_HOSTS_JSON
+
+    expect(
+      resolveGatewayUrl({
+        hostname: 'tailscale-evil.attacker.com',
+        protocol: 'http:'
+      })
+    ).toBe('http://localhost:4000')
   })
 })
 

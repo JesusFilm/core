@@ -434,6 +434,8 @@
   "Upload Successful!": "Загрузка прошла успешно!",
   "Upload Failed!": "Загрузка не удалась!",
   "Drop an image here": "Перетащите изображение сюда",
+  "or click to browse your files": "или нажмите, чтобы просмотреть свои файлы",
+  "Uploading... {{progress}}%": "Загрузка... {{progress}}%",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "Загрузи изображение (PNG, JPG, GIF, SVG или HEIC). Максимальный размер файла: 10 Мб",
   "Upload file": "Загрузить файл",
   "Gallery": "Галерея",

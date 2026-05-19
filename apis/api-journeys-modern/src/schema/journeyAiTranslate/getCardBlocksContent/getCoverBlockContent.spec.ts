@@ -1,14 +1,16 @@
+import { type Mock, vi } from 'vitest'
+
 import { Block } from '@core/prisma/journeys/client'
 import { getImageDescription } from '@core/shared/ai/getImageDescription'
 
 import { getCoverBlockContent } from './getCoverBlockContent'
 import { getImageBlockContent } from './getImageBlockContent'
 
-jest.mock('@core/shared/ai/getImageDescription', () => ({
-  getImageDescription: jest.fn()
+vi.mock('@core/shared/ai/getImageDescription', () => ({
+  getImageDescription: vi.fn()
 }))
-jest.mock('./getImageBlockContent', () => ({
-  getImageBlockContent: jest.fn()
+vi.mock('./getImageBlockContent', () => ({
+  getImageBlockContent: vi.fn()
 }))
 
 describe('getCoverBlockContent', () => {
@@ -34,11 +36,11 @@ describe('getCoverBlockContent', () => {
   ]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('delegates to getImageBlockContent for image cover block with src', async () => {
-    ;(getImageBlockContent as jest.Mock).mockResolvedValue('image-content')
+    ;(getImageBlockContent as Mock).mockResolvedValue('image-content')
     const result = await getCoverBlockContent({
       blocks,
       coverBlock: imageBlock as Block
@@ -51,7 +53,7 @@ describe('getCoverBlockContent', () => {
   })
 
   it('returns background video description if poster block has src and getImageDescription returns value', async () => {
-    ;(getImageDescription as jest.Mock).mockResolvedValue('poster-desc')
+    ;(getImageDescription as Mock).mockResolvedValue('poster-desc')
     const result = await getCoverBlockContent({
       blocks,
       coverBlock: videoBlock as Block
@@ -62,7 +64,7 @@ describe('getCoverBlockContent', () => {
   })
 
   it('returns "No description given" if getImageDescription returns falsy', async () => {
-    ;(getImageDescription as jest.Mock).mockResolvedValue('')
+    ;(getImageDescription as Mock).mockResolvedValue('')
     const result = await getCoverBlockContent({
       blocks,
       coverBlock: videoBlock as Block
@@ -72,7 +74,7 @@ describe('getCoverBlockContent', () => {
   })
 
   it('returns "No description given" if getImageDescription throws', async () => {
-    ;(getImageDescription as jest.Mock).mockRejectedValue(new Error('fail'))
+    ;(getImageDescription as Mock).mockRejectedValue(new Error('fail'))
     const result = await getCoverBlockContent({
       blocks,
       coverBlock: videoBlock as Block

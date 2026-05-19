@@ -42,7 +42,7 @@ describe('LanguageAutocomplete', () => {
   ]
 
   it('should sort language options alphabetically', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole, queryAllByRole } = render(
       <MultipleLanguageAutocomplete
         onChange={handleChange}
@@ -61,7 +61,7 @@ describe('LanguageAutocomplete', () => {
   })
 
   it('should enable multiple language select via option click', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole } = render(
       <MultipleLanguageAutocomplete
         onChange={handleChange}
@@ -83,7 +83,7 @@ describe('LanguageAutocomplete', () => {
   })
 
   it('should enable users to enter custom text and get related options', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole, queryByRole } = render(
       <MultipleLanguageAutocomplete
         onChange={handleChange}
@@ -147,7 +147,7 @@ describe('LanguageAutocomplete', () => {
       }
     ]
 
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole, queryAllByRole } = render(
       <MultipleLanguageAutocomplete
         onChange={handleChange}
@@ -169,7 +169,7 @@ describe('LanguageAutocomplete', () => {
   it('should show loading animation if loading', async () => {
     const { getByRole } = render(
       <MultipleLanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         values={[{ id: '529', localName: undefined, nativeName: 'English' }]}
         languages={languages}
         loading
@@ -179,10 +179,10 @@ describe('LanguageAutocomplete', () => {
   })
 
   it('should call onBlur on blur', async () => {
-    const onBlur = jest.fn()
+    const onBlur = vi.fn()
     const { getByRole } = render(
       <MultipleLanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         onBlur={onBlur}
         values={[{ id: '529', localName: undefined, nativeName: 'English' }]}
         languages={languages}

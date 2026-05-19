@@ -1,4 +1,5 @@
 import { Logger } from 'pino'
+import { vi } from 'vitest'
 
 import { VideoBlockSource } from '@core/prisma/journeys/client'
 
@@ -13,38 +14,38 @@ import {
   extractCloudflareImageId
 } from './mediaCleanup'
 
-jest.mock('@core/prisma/media/client', () => ({
+vi.mock('@core/prisma/media/client', () => ({
   prisma: {
     muxVideo: {
-      findUnique: jest.fn(),
-      delete: jest.fn()
+      findUnique: vi.fn(),
+      delete: vi.fn()
     },
     cloudflareImage: {
-      findUnique: jest.fn(),
-      delete: jest.fn()
+      findUnique: vi.fn(),
+      delete: vi.fn()
     }
   }
 }))
 
-const { prisma: mockPrismaMedia } = jest.requireMock(
+const { prisma: mockPrismaMedia } = await vi.importMock<any>(
   '@core/prisma/media/client'
 )
 
-const mockMuxAssetsDelete = jest.fn()
-jest.mock('@mux/mux-node', () => {
-  return jest.fn().mockImplementation(() => ({
+const mockMuxAssetsDelete = vi.fn()
+vi.mock('@mux/mux-node', () => ({
+  default: vi.fn().mockImplementation(() => ({
     video: { assets: { delete: mockMuxAssetsDelete } }
   }))
-})
+}))
 
-const mockCloudflareImagesDelete = jest.fn()
-jest.mock('cloudflare', () => {
-  return jest.fn().mockImplementation(() => ({
+const mockCloudflareImagesDelete = vi.fn()
+vi.mock('cloudflare', () => ({
+  default: vi.fn().mockImplementation(() => ({
     images: { v1: { delete: mockCloudflareImagesDelete } }
   }))
-})
+}))
 
-jest.mock('../../env', () => ({
+vi.mock('../../env', () => ({
   env: {
     MUX_UGC_ACCESS_TOKEN_ID: 'token-id',
     MUX_UGC_SECRET_KEY: 'secret-key',
@@ -57,12 +58,12 @@ describe('mediaCleanup', () => {
   let mockLogger: Logger
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockLogger = {
-      info: jest.fn(),
-      debug: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn()
+      info: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn()
     } as any
   })
 
