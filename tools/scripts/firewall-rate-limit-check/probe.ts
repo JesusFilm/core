@@ -18,6 +18,13 @@ const probeCount = Number.parseInt(env('PROBE_COUNT'), 10)
 const probeRps = Number.parseFloat(env('PROBE_RPS'))
 const runId = env('RUN_ID')
 
+if (!Number.isInteger(probeCount) || probeCount <= 0)
+  throw new Error(
+    `PROBE_COUNT must be a positive integer (got: ${probeCount})`
+  )
+if (!Number.isFinite(probeRps) || probeRps <= 0)
+  throw new Error(`PROBE_RPS must be a positive number (got: ${probeRps})`)
+
 const url = `https://${host}/api/chat`
 const body = JSON.stringify({
   messages: [{ role: 'user', content: 'firewall probe' }],
@@ -49,6 +56,11 @@ for (let i = 1; i <= probeCount; i++) {
   }
   if (i % 10 === 0) console.log(`  sent ${i}/${probeCount}`)
   if (i < probeCount) await sleep(sleepMs)
+}
+
+if (results.length === 0) {
+  console.error('::error::Probe sent 0 requests')
+  process.exit(1)
 }
 
 const total = results.length
@@ -93,8 +105,8 @@ _Note: a 429 count of 0 in **Log** mode is expected. Past Log mode, 429s above t
 `
 )
 
-const errorPct = total === 0 ? 0 : (countError * 100) / total
-const fiveXxPct = total === 0 ? 0 : (count5xx * 100) / total
+const errorPct = (countError * 100) / total
+const fiveXxPct = (count5xx * 100) / total
 let exitCode = 0
 if (errorPct > 10) {
   console.error(`::error::curl error rate ${errorPct.toFixed(2)}% (> 10%)`)
