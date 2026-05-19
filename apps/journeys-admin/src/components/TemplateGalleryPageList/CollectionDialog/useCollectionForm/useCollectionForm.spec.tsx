@@ -384,6 +384,52 @@ describe('useCollectionForm', () => {
       )
     })
 
+    it('sends description as empty string when the user clears a non-empty description', async () => {
+      const onClose = jest.fn()
+      const collection = makeCollection({
+        id: 'page-8',
+        title: 'Title',
+        description: 'Old desc',
+        slug: 'slug',
+        creatorName: 'Creator'
+      })
+
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-8',
+        input: { description: '' }
+      })
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: collection.title,
+            description: '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            mediaUrl: '',
+            slug: collection.slug,
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+
     it('omits journeyIds when membership is unchanged', async () => {
       const onClose = jest.fn()
       const collection = makeCollection({

@@ -179,8 +179,7 @@ export function useCollectionForm({
         const input: TemplateGalleryPageUpdateInput = {}
         if (values.title !== collection.title) input.title = values.title
         if (values.description !== (collection.description ?? '')) {
-          input.description =
-            values.description === '' ? null : values.description
+          input.description = values.description
         }
         if (values.creatorName !== collection.creatorName) {
           input.creatorName = values.creatorName
