@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { isDevHost } from '@core/shared/dev-hosts'
+
 export const config = {
   matcher: [
     /*
@@ -30,6 +32,24 @@ export default async function proxy(
     process.env.NEXT_PUBLIC_VERCEL_DEPLOYMENT_SUFFIX != null &&
     process.env.NEXT_PUBLIC_ROOT_DOMAIN != null &&
     hostname.endsWith(process.env.NEXT_PUBLIC_VERCEL_DEPLOYMENT_SUFFIX)
+  ) {
+    hostname = process.env.NEXT_PUBLIC_ROOT_DOMAIN
+  }
+
+  // dev-only: when the request hits one of the developer hostnames listed
+  // in `NEXT_PUBLIC_DEV_HOSTS` (Doppler dev config), treat it as the root
+  // domain so cross-device testing resolves to `/home` instead of the
+  // catch-all `/[hostname]/[slug]` route. The secret is only set in dev's
+  // Doppler config, so `isDevHost` returns false everywhere else — absence
+  // of the secret IS the gate. See docs/development/tailscale-dev-access.md.
+  //
+  // Strip the port before matching: browsers send `Host: tailscale-dev-x:4100`
+  // but Doppler `DEV_HOSTS` stores bare FQDNs (matching the other call sites
+  // — apolloClient/QrCodeDialog read `window.location.hostname`, which has
+  // no port; getAuthTokens does the same `.split(':')[0]`).
+  if (
+    isDevHost(hostname.split(':')[0]) &&
+    process.env.NEXT_PUBLIC_ROOT_DOMAIN != null
   ) {
     hostname = process.env.NEXT_PUBLIC_ROOT_DOMAIN
   }

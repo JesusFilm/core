@@ -1,6 +1,8 @@
+import { vi } from 'vitest'
+
 import { buildJourneyUrl } from './buildJourneyUrls'
 
-jest.mock('../../../../env', () => ({
+vi.mock('../../../../env', () => ({
   env: {
     get JOURNEYS_URL(): string | undefined {
       return process.env.JOURNEYS_URL
@@ -12,7 +14,7 @@ describe('buildJourneyUrl', () => {
   const originalEnv = process.env
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = { ...originalEnv }
   })
 

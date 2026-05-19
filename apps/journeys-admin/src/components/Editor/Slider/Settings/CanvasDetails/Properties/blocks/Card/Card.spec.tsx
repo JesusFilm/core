@@ -5,6 +5,7 @@ import { SnackbarProvider } from 'notistack'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -61,20 +62,29 @@ const renderWithProviders = (
   component: React.ReactElement,
   {
     journey = {},
-    selectedBlock = null
-  }: { journey?: any; selectedBlock?: TreeBlock<CardBlock> | null } = {}
+    selectedBlock = null,
+    flags = {}
+  }: {
+    journey?: any
+    selectedBlock?: TreeBlock<CardBlock> | null
+    flags?: { [key: string]: boolean }
+  } = {}
 ) => {
   const defaultJourney = createJourney(journey)
   return render(
     <MockedProvider>
       <SnackbarProvider>
-        <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
-          <EditorProvider
-            initialState={{ selectedBlock: selectedBlock ?? undefined }}
+        <FlagsProvider flags={flags}>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
           >
-            <MuxVideoUploadProvider>{component}</MuxVideoUploadProvider>
-          </EditorProvider>
-        </JourneyProvider>
+            <EditorProvider
+              initialState={{ selectedBlock: selectedBlock ?? undefined }}
+            >
+              <MuxVideoUploadProvider>{component}</MuxVideoUploadProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </FlagsProvider>
       </SnackbarProvider>
     </MockedProvider>
   )
@@ -586,6 +596,59 @@ describe('Card', () => {
       renderWithProviders(<Card {...card} />)
 
       expect(screen.getByTestId('CardProperties')).toBeInTheDocument()
+    })
+  })
+
+  describe('ChatAssistant Section', () => {
+    it('does not render the AI chat accordion when apologistChat flag is off', () => {
+      const card = createCard()
+      renderWithProviders(<Card {...card} />)
+
+      expect(
+        screen.queryByTestId('Accordion-card1.id-chat-assistant')
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders the AI chat accordion when apologistChat flag is on', () => {
+      const card = createCard()
+      renderWithProviders(<Card {...card} />, {
+        flags: { apologistChat: true }
+      })
+
+      expect(
+        screen.getByTestId('Accordion-card1.id-chat-assistant')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'AI chat Off' })
+      ).toBeInTheDocument()
+    })
+
+    it('shows On when showAssistant is true and expandChatByDefault is false', () => {
+      const card = createCard({
+        showAssistant: true,
+        expandChatByDefault: false
+      })
+      renderWithProviders(<Card {...card} />, {
+        flags: { apologistChat: true }
+      })
+
+      expect(
+        screen.getByRole('button', { name: 'AI chat On' })
+      ).toBeInTheDocument()
+    })
+
+    it('shows "On, auto-open" when showAssistant and expandChatByDefault are both true', () => {
+      const card = createCard({
+        showAssistant: true,
+        expandChatByDefault: true
+      })
+      renderWithProviders(<Card {...card} />, {
+        flags: { apologistChat: true }
+      })
+
+      expect(
+        screen.getByRole('button', { name: 'AI chat On, auto-open' })
+      ).toBeInTheDocument()
     })
   })
 

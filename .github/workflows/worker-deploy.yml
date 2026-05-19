@@ -11,9 +11,6 @@ concurrency:
 jobs:
   affected:
     runs-on: blacksmith-2vcpu-ubuntu-2204
-    strategy:
-      matrix:
-        node-version: [22]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -26,7 +23,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -50,7 +47,6 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
-        node-version: [22]
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
@@ -62,7 +58,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -85,7 +81,6 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
-        node-version: [22]
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
@@ -97,7 +92,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

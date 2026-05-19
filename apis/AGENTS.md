@@ -38,9 +38,9 @@ GraphQL API layer for the NextSteps platform. Three services share the Prisma jo
 
 ### Testing
 
-- Jest + `jest-mock-extended` for Prisma mocking.
+- `api-journeys`: Jest + `jest-mock-extended` for Prisma mocking.
+- `api-journeys-modern`: Vitest + `vitest-mock-extended` for Prisma mocking.
 - `mockDeep<PrismaClient>()` or `mockDeep<PrismaService>()` for deep mocks.
-- Tests run with `runInBand` in api-journeys-modern (sequential, no parallelization).
 
 ---
 

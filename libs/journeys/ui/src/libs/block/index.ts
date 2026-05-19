@@ -7,3 +7,4 @@ export {
   treeBlocksVar,
   blockHistoryVar
 } from './block'
+export { getCardChild } from './getCardChild'

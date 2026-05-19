@@ -45,9 +45,6 @@ jobs:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       SKIP_ENV_VALIDATION: 1
     runs-on: blacksmith-2vcpu-ubuntu-2204
-    strategy:
-      matrix:
-        node-version: [22]
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
@@ -61,7 +58,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

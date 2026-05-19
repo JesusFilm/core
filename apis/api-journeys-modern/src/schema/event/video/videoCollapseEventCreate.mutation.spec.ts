@@ -1,0 +1,166 @@
+import { GraphQLError } from 'graphql'
+import { vi } from 'vitest'
+
+import { getClient } from '../../../../test/client'
+import { prismaMock } from '../../../../test/prismaMock'
+import { graphql } from '../../../lib/graphql/subgraphGraphql'
+import { validateBlockEvent } from '../utils'
+
+vi.mock('../utils', async () => ({
+  ...(await vi.importActual('../utils')),
+  validateBlockEvent: vi.fn()
+}))
+
+describe('videoCollapseEventCreate', () => {
+  const mockUser = { id: 'userId' }
+  const authClient = getClient({
+    headers: { authorization: 'token' },
+    context: { currentUser: mockUser }
+  })
+
+  const VIDEO_COLLAPSE_EVENT_CREATE = graphql(`
+    mutation VideoCollapseEventCreate($input: VideoCollapseEventCreateInput!) {
+      videoCollapseEventCreate(input: $input) {
+        id
+        journeyId
+      }
+    }
+  `)
+
+  const mockVisitor = {
+    id: 'visitorId',
+    createdAt: new Date('2024-01-01T00:00:00Z'),
+    userId: 'userId',
+    teamId: 'teamId'
+  }
+
+  beforeEach(() => {
+    ;(validateBlockEvent as any).mockResolvedValue({
+      visitor: mockVisitor,
+      journeyVisitor: {
+        journeyId: 'journeyId',
+        visitorId: 'visitorId'
+      },
+      journeyId: 'journeyId',
+      teamId: 'teamId',
+      block: { id: 'blockId', journeyId: 'journeyId' }
+    })
+  })
+
+  it('creates a VideoCollapseEvent when authorized', async () => {
+    const createdEvent = {
+      id: 'eventId',
+      typename: 'VideoCollapseEvent',
+      journeyId: 'journeyId',
+      visitorId: 'visitorId',
+      createdAt: new Date(),
+      position: null,
+      source: null
+    } as any
+
+    prismaMock.event.create.mockResolvedValue(createdEvent)
+    prismaMock.event.findMany.mockResolvedValue([createdEvent])
+    prismaMock.event.findUnique.mockResolvedValue(createdEvent)
+    ;(prismaMock.event as any).findUniqueOrThrow?.mockResolvedValue?.(
+      createdEvent
+    )
+
+    const result = await authClient({
+      document: VIDEO_COLLAPSE_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'eventId',
+          blockId: 'blockId',
+          stepId: 'stepId'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: {
+        videoCollapseEventCreate: expect.objectContaining({
+          id: 'eventId',
+          journeyId: 'journeyId'
+        })
+      }
+    })
+
+    expect(prismaMock.event.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          id: 'eventId',
+          typename: 'VideoCollapseEvent',
+          blockId: 'blockId',
+          visitor: { connect: { id: 'visitorId' } },
+          journey: { connect: { id: 'journeyId' } },
+          stepId: 'stepId'
+        })
+      })
+    )
+  })
+
+  it('returns error when block does not exist', async () => {
+    ;(validateBlockEvent as any).mockRejectedValue(
+      new GraphQLError('Block does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    )
+
+    const result = (await authClient({
+      document: VIDEO_COLLAPSE_EVENT_CREATE,
+      variables: {
+        input: {
+          blockId: 'nonExistentBlock'
+        }
+      }
+    })) as any
+
+    expect(result.errors).toBeDefined()
+    expect(result.errors?.[0]?.message).toBe('Block does not exist')
+  })
+
+  it('creates event without optional fields', async () => {
+    const createdEvent = {
+      id: 'auto-id',
+      typename: 'VideoCollapseEvent',
+      journeyId: 'journeyId',
+      visitorId: 'visitorId',
+      createdAt: new Date()
+    } as any
+
+    prismaMock.event.create.mockResolvedValue(createdEvent)
+    prismaMock.event.findMany.mockResolvedValue([createdEvent])
+    prismaMock.event.findUnique.mockResolvedValue(createdEvent)
+    ;(prismaMock.event as any).findUniqueOrThrow?.mockResolvedValue?.(
+      createdEvent
+    )
+
+    const result = await authClient({
+      document: VIDEO_COLLAPSE_EVENT_CREATE,
+      variables: {
+        input: {
+          blockId: 'blockId'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: {
+        videoCollapseEventCreate: expect.objectContaining({
+          id: 'auto-id',
+          journeyId: 'journeyId'
+        })
+      }
+    })
+
+    expect(prismaMock.event.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          typename: 'VideoCollapseEvent',
+          visitor: { connect: { id: 'visitorId' } },
+          journey: { connect: { id: 'journeyId' } }
+        })
+      })
+    )
+  })
+})
