@@ -1,6 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import noop from 'lodash/noop'
 import { useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
@@ -236,7 +237,7 @@ describe('ArchiveJourney', () => {
     })
 
     it('still surfaces success when the unassign mutation fails (best-effort)', async () => {
-      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {})
+      const warn = jest.spyOn(console, 'warn').mockImplementation(noop)
       const archiveResult = jest.fn(() => ({
         data: {
           journeysArchive: [

@@ -363,7 +363,7 @@ describe('TrashJourneyDialog', () => {
   })
 
   it('still surfaces success when the unassign mutation fails (best-effort)', async () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    const warn = jest.spyOn(console, 'warn').mockImplementation(noop)
     const trashMock = jest.fn(() => ({
       data: {
         journeysTrash: [

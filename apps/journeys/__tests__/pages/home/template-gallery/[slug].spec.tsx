@@ -130,7 +130,7 @@ describe('template-gallery [slug] getServerSideProps', () => {
   })
 
   it('does NOT log when the null branch has no errors (legitimate not-found)', async () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     mockQuery.mockResolvedValueOnce({
       data: { templateGalleryPageBySlug: null }
     })
@@ -145,7 +145,7 @@ describe('template-gallery [slug] getServerSideProps', () => {
   })
 
   it('logs a redacted error summary when the null branch carries errors', async () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     mockQuery.mockResolvedValueOnce({
       data: { templateGalleryPageBySlug: null },
       errors: [
@@ -181,7 +181,7 @@ describe('template-gallery [slug] getServerSideProps', () => {
   })
 
   it('caps logged errors at 5 and reports truncation', async () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     const errors = Array.from({ length: 7 }, (_, i) => ({
       message: `err-${i}`,
       path: ['templateGalleryPageBySlug'],
