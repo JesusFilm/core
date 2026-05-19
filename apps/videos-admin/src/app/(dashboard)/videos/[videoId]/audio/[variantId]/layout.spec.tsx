@@ -2,6 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { resolvedParams } from '../../../../../../test/utils/resolvedParams'
+
 // Import the component under test
 import VariantDialog from './layout'
 
@@ -303,7 +305,10 @@ describe('VariantDialog', () => {
       <MockedProvider>
         <SnackbarProvider>
           <VariantDialog
-            params={{ variantId: mockVariantId, videoId: mockVideoId }}
+            params={resolvedParams({
+              variantId: mockVariantId,
+              videoId: mockVideoId
+            })}
           >
             <div>Child content</div>
           </VariantDialog>

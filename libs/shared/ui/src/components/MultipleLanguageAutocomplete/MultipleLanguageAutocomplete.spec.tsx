@@ -125,6 +125,47 @@ describe('LanguageAutocomplete', () => {
     ])
   })
 
+  it('should handle languages where all names have primary: true', async () => {
+    const allPrimaryLanguages: Language[] = [
+      {
+        id: '496',
+        name: [
+          { value: 'Français', primary: true },
+          { value: 'French', primary: true }
+        ]
+      },
+      {
+        id: '529',
+        name: [{ value: 'English', primary: true }]
+      },
+      {
+        id: '1106',
+        name: [
+          { value: 'Deutsch', primary: true },
+          { value: 'German, Standard', primary: true }
+        ]
+      }
+    ]
+
+    const handleChange = jest.fn()
+    const { getByRole, queryAllByRole } = render(
+      <MultipleLanguageAutocomplete
+        onChange={handleChange}
+        values={[]}
+        languages={allPrimaryLanguages}
+        loading={false}
+      />
+    )
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+
+    const options = queryAllByRole('option')
+    expect(options).toHaveLength(3)
+    expect(options[0]).toHaveTextContent('English')
+    expect(options[1]).toHaveTextContent('FrenchFrançais')
+    expect(options[2]).toHaveTextContent('German, StandardDeutsch')
+  })
+
   it('should show loading animation if loading', async () => {
     const { getByRole } = render(
       <MultipleLanguageAutocomplete

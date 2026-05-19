@@ -28,9 +28,7 @@ const fallbackLng = {
   zh: 'zh-Hans-CN'
 }
 
-/**
- * @type {import('next-i18next').UserConfig}
- **/
+/** @type {import('next-i18next/pages').UserConfig} */
 const i18nConfig = {
   i18n: {
     defaultLocale: 'en',

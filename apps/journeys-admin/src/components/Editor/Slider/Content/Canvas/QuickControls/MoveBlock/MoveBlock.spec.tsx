@@ -82,7 +82,9 @@ describe('MoveBlockButton', () => {
     fullscreen: false,
     backdropBlur: null,
     eventLabel: null,
-    children: [block1, block2]
+    children: [block1, block2],
+    showAssistant: null,
+    expandChatByDefault: null
   }
 
   const step: TreeBlock = {
@@ -295,7 +297,9 @@ describe('MoveBlockButton', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: [block1]
+      children: [block1],
+      showAssistant: null,
+      expandChatByDefault: null
     }
 
     const stepWithOneBlock = { ...step, children: [card] }

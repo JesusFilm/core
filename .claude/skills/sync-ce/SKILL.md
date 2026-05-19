@@ -124,6 +124,8 @@ Where:
 
 > **Branch format is load-bearing.** `.github/workflows/autofix.ci.yml` matches `-chore-ce-sync-` to skip lint on sync PRs.
 > If you change this format, update the workflow's `if:` condition in lockstep.
+>
+> **Commit message is also load-bearing.** The same workflow matches the substring `sync compound-engineering skills and agents` against the queued head commit message on `merge_group` events (where the original branch name is no longer visible). Step 12's `git commit -m "chore: sync compound-engineering skills and agents"` and step 13's PR title must keep that exact substring intact, or the merge queue will re-run lint and fail.
 
 Create a git worktree for this branch:
 

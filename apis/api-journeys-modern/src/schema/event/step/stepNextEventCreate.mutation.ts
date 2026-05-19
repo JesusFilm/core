@@ -18,14 +18,10 @@ builder.mutationField('stepNextEventCreate', (t) =>
       const { input } = args
       const userId = context.user?.id
 
-      if (userId == null) {
-        throw new Error('User not authenticated')
-      }
-
       const { visitor, journeyId } = await validateBlockEvent(
         userId,
         input.blockId,
-        input.blockId
+        input.nextStepId
       )
 
       const stepNextEvent = await prisma.event.create({

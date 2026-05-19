@@ -1,5 +1,6 @@
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
+import { type MockedFunction, vi } from 'vitest'
 
 import { UserJourneyRole } from '@core/prisma/journeys/client'
 
@@ -11,26 +12,25 @@ import {
 
 import { service } from './service'
 
-jest.mock('@core/prisma/users/client', () => ({
+vi.mock('@core/prisma/users/client', () => ({
   prisma: {
     user: {
-      findMany: jest.fn(),
-      delete: jest.fn()
+      findMany: vi.fn(),
+      delete: vi.fn()
     }
   }
 }))
 
-jest.mock('../../../lib/mediaCleanup/mediaCleanup')
+vi.mock('../../../lib/mediaCleanup/mediaCleanup')
 
-const mockCollectMediaFromJourneys =
-  collectMediaFromJourneys as jest.MockedFunction<
-    typeof collectMediaFromJourneys
-  >
-const mockDeleteUnusedMedia = deleteUnusedMedia as jest.MockedFunction<
+const mockCollectMediaFromJourneys = collectMediaFromJourneys as MockedFunction<
+  typeof collectMediaFromJourneys
+>
+const mockDeleteUnusedMedia = deleteUnusedMedia as MockedFunction<
   typeof deleteUnusedMedia
 >
 
-const { prisma: mockPrismaUsers } = jest.requireMock(
+const { prisma: mockPrismaUsers } = await vi.importMock<any>(
   '@core/prisma/users/client'
 )
 
@@ -38,12 +38,12 @@ describe('E2E Cleanup Service', () => {
   let mockLogger: Logger
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockLogger = {
-      info: jest.fn(),
-      debug: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn()
+      info: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn()
     } as any
 
     mockCollectMediaFromJourneys.mockResolvedValue({

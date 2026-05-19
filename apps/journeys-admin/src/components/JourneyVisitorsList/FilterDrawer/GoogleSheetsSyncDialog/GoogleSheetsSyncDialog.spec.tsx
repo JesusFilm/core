@@ -11,7 +11,7 @@ jest.mock('../../../../libs/auth', () => ({
 
 const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>
 
-jest.mock('next-i18next', () => ({
+jest.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (value: string) => value
   })

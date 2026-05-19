@@ -1,3 +1,5 @@
+import { type Mock } from 'vitest'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
@@ -34,7 +36,7 @@ describe('chatOpenEventCreate', () => {
       journeyId: 'journeyId',
       deletedAt: null
     } as any)
-    ;(prismaMock.block.findFirst as unknown as jest.Mock).mockImplementation(
+    ;(prismaMock.block.findFirst as unknown as Mock).mockImplementation(
       (args: any) => {
         const queriedId = args?.where?.id
         if (queriedId === 'blockId') {
@@ -99,7 +101,7 @@ describe('chatOpenEventCreate', () => {
     })
 
     expect(prismaMock.event.create).toHaveBeenCalled()
-    const createArgs = (prismaMock.event.create as unknown as jest.Mock).mock
+    const createArgs = (prismaMock.event.create as unknown as Mock).mock
       .calls[0][0]
     expect(createArgs).toEqual(
       expect.objectContaining({

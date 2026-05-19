@@ -1,4 +1,4 @@
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, SVGProps } from 'react'
 
 import Bible from '@core/shared/ui/icons/Bible'

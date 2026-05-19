@@ -1,12 +1,14 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
-jest.mock('../../../lib/auth/ability', () => ({
+vi.mock('../../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
 describe('stepBlockPositionUpdate', () => {
@@ -29,7 +31,7 @@ describe('stepBlockPositionUpdate', () => {
     }
   `)
 
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockAbility = ability as MockedFunction<typeof ability>
 
   const journey = { id: 'journeyId' }
   const block1 = {
@@ -54,7 +56,7 @@ describe('stepBlockPositionUpdate', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns empty array when input is empty', async () => {
@@ -75,9 +77,9 @@ describe('stepBlockPositionUpdate', () => {
     prismaMock.block.findMany.mockResolvedValue([block1, block2] as any)
 
     const tx = {
-      journey: { update: jest.fn().mockResolvedValue(journey) },
+      journey: { update: vi.fn().mockResolvedValue(journey) },
       block: {
-        update: jest
+        update: vi
           .fn()
           .mockResolvedValueOnce({
             ...block1,

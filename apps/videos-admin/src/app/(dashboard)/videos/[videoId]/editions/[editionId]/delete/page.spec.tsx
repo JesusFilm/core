@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
+import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
+
 import DeleteEditionPage from './page'
 
 // Mock the Apollo Client hooks
@@ -41,7 +43,10 @@ describe('DeleteEditionPage', () => {
     render(
       <SnackbarProvider>
         <DeleteEditionPage
-          params={{ videoId: 'video-123', editionId: 'edition-123' }}
+          params={resolvedParams({
+            videoId: 'video-123',
+            editionId: 'edition-123'
+          })}
         />
       </SnackbarProvider>
     )
@@ -80,7 +85,10 @@ describe('DeleteEditionPage', () => {
     render(
       <SnackbarProvider>
         <DeleteEditionPage
-          params={{ videoId: 'video-123', editionId: 'edition-123' }}
+          params={resolvedParams({
+            videoId: 'video-123',
+            editionId: 'edition-123'
+          })}
         />
       </SnackbarProvider>
     )
@@ -110,7 +118,10 @@ describe('DeleteEditionPage', () => {
     render(
       <SnackbarProvider>
         <DeleteEditionPage
-          params={{ videoId: 'video-123', editionId: 'edition-123' }}
+          params={resolvedParams({
+            videoId: 'video-123',
+            editionId: 'edition-123'
+          })}
         />
       </SnackbarProvider>
     )

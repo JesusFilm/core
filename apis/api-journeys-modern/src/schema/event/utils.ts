@@ -3,11 +3,15 @@ import { GraphQLError } from 'graphql'
 import {
   Block,
   JourneyVisitor,
+  Prisma,
   Visitor,
   prisma
 } from '@core/prisma/journeys/client'
 
 import { logger } from '../logger'
+
+const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
+const VISITOR_UPSERT_MAX_RETRIES = 3
 
 // Queue for visitor interaction emails
 let emailQueue: any
@@ -162,28 +166,54 @@ export async function getByUserIdAndJourneyId(
     return null
   }
 
-  const visitor = await prisma.visitor.findFirst({
-    where: { userId, teamId: journey.teamId }
-  })
+  for (let attempt = 1; attempt <= VISITOR_UPSERT_MAX_RETRIES; attempt++) {
+    try {
+      const visitor = await prisma.visitor.upsert({
+        where: {
+          teamId_userId: {
+            teamId: journey.teamId,
+            userId
+          }
+        },
+        create: {
+          teamId: journey.teamId,
+          userId
+        },
+        update: {}
+      })
+      const journeyVisitor = await prisma.journeyVisitor.upsert({
+        where: {
+          journeyId_visitorId: {
+            journeyId,
+            visitorId: visitor.id
+          }
+        },
+        create: {
+          journeyId,
+          visitorId: visitor.id
+        },
+        update: {}
+      })
 
-  if (visitor == null) {
-    return null
-  }
-
-  const journeyVisitor = await prisma.journeyVisitor.findUnique({
-    where: {
-      journeyId_visitorId: {
-        journeyId,
-        visitorId: visitor.id
+      return { visitor, journeyVisitor }
+    } catch (err) {
+      if (
+        !(err instanceof Prisma.PrismaClientKnownRequestError) ||
+        err.code !== ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
+      ) {
+        throw err
+      }
+      logger.warn(
+        { userId, journeyId, attempt },
+        'Retrying visitor/journeyVisitor upsert after unique constraint race'
+      )
+      if (attempt === VISITOR_UPSERT_MAX_RETRIES) {
+        throw err
       }
     }
-  })
-
-  if (journeyVisitor == null) {
-    return null
   }
 
-  return { visitor, journeyVisitor }
+  throw new Error('unreachable: upsert retry loop exited without return')
 }
 
 // Helper function to get visitor and journey IDs

@@ -3,7 +3,7 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { Formik } from 'formik'
 import noop from 'lodash/noop'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'

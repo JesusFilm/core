@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
@@ -21,7 +21,7 @@ jest.mock('next/router', () => ({
   })
 }))
 
-jest.mock('next-i18next', () => ({
+jest.mock('next-i18next/pages', () => ({
   useTranslation: jest.fn(() => ({
     t: (key: string) => key
   }))
@@ -35,9 +35,7 @@ jest.mock('@core/journeys/ui/TeamProvider', () => ({
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const mockedUseTranslation = useTranslation as jest.MockedFunction<
-  typeof useTranslation
->
+const mockedUseTranslation = jest.mocked(useTranslation)
 const mockedUseTeam = useTeam as jest.MockedFunction<typeof useTeam>
 
 const mockRenderList = jest.fn(() => (

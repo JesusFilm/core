@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import flatmap from 'lodash/flatMap'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useCallback, useEffect, useMemo } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'

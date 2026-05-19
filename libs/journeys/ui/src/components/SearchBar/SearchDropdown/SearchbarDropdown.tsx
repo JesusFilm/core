@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { Dispatch, ReactElement, SetStateAction, SyntheticEvent } from 'react'
 
 import Globe1 from '@core/shared/ui/icons/Globe1'

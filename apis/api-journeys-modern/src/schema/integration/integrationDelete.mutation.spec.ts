@@ -1,14 +1,16 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
@@ -29,7 +31,7 @@ describe('integrationDelete', () => {
   `)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser as any)
     prismaMock.userRole.findUnique.mockResolvedValue({
       userId: mockUser.id,
@@ -48,10 +50,10 @@ describe('integrationDelete', () => {
 
     const tx = {
       googleSheetsSync: {
-        updateMany: jest.fn().mockResolvedValue({ count: 1 })
+        updateMany: vi.fn().mockResolvedValue({ count: 1 })
       },
       integration: {
-        delete: jest.fn().mockResolvedValue({
+        delete: vi.fn().mockResolvedValue({
           id: integrationId,
           type: 'google'
         })
@@ -102,10 +104,10 @@ describe('integrationDelete', () => {
 
     const tx = {
       googleSheetsSync: {
-        updateMany: jest.fn().mockResolvedValue({ count: 1 })
+        updateMany: vi.fn().mockResolvedValue({ count: 1 })
       },
       integration: {
-        delete: jest.fn().mockResolvedValue({
+        delete: vi.fn().mockResolvedValue({
           id: integrationId,
           type: 'growthSpaces'
         })

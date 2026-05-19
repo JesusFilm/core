@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { screen, userEvent } from 'storybook/test'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'

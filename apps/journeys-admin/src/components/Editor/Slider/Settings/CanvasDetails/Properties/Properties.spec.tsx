@@ -33,7 +33,9 @@ describe('Properties', () => {
     const block = {
       __typename: 'CardBlock',
       id: 'block.id',
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     } as unknown as TreeBlock
     const state = {
       selectedBlock: null,
@@ -63,7 +65,9 @@ describe('Properties', () => {
       id: 'block.id',
       fullscreen: false,
       backdropBlur: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const selectedStep = {}
     const state = {
@@ -93,7 +97,9 @@ describe('Properties', () => {
     const block = {
       __typename: 'CardBlock',
       id: 'block.id',
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     } as unknown as TreeBlock
 
     render(
@@ -119,7 +125,9 @@ describe('Properties', () => {
         {
           __typename: 'CardBlock',
           id: 'card.id',
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     } as unknown as TreeBlock
@@ -355,7 +363,9 @@ describe('Properties', () => {
       id: 'block.id',
       fullscreen: false,
       backdropBlur: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const selectedStep = {}
 
@@ -405,7 +415,9 @@ describe('Properties', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
 
     const step: TreeBlock<StepBlock> = {
@@ -466,7 +478,9 @@ describe('Properties', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
 
     const step: TreeBlock<StepBlock> = {

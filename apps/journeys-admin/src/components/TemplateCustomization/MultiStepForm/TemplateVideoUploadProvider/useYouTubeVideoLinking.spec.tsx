@@ -14,7 +14,7 @@ import { VIDEO_BLOCK_UPDATE } from '../../../Editor/Slider/Settings/CanvasDetail
 import { useUploadTaskMap } from './useUploadTaskMap'
 import { useYouTubeVideoLinking } from './useYouTubeVideoLinking'
 
-jest.mock('next-i18next', () => ({
+jest.mock('next-i18next/pages', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 

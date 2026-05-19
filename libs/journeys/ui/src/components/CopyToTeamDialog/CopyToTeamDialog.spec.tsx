@@ -826,4 +826,99 @@ describe('CopyToTeamDialog', () => {
       expect(getByRole('button', { name: 'Copy' })).toBeDisabled()
     })
   })
+
+  describe('defaultToActiveTeam prop', () => {
+    // Distinct team IDs ('team-a'/'team-b') vs the rest of this file ('teamId').
+    // Without this, an earlier test's setActiveTeam('teamId') leaks into
+    // TeamProvider via sessionStorage and the null-active-team case below
+    // resolves to a real team instead of null.
+    beforeEach(() => {
+      window.sessionStorage.clear()
+    })
+
+    function renderWithDefaultToActiveTeam({
+      defaultToActiveTeam,
+      lastActiveTeamId
+    }: {
+      defaultToActiveTeam?: boolean
+      lastActiveTeamId: string | null
+    }): ReturnType<typeof render> & { queryResult: jest.Mock } {
+      const queryResult = jest.fn(() => ({
+        data: {
+          teams: [
+            { id: 'team-a', title: 'Team A', __typename: 'Team' },
+            { id: 'team-b', title: 'Team B', __typename: 'Team' }
+          ],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            lastActiveTeamId
+          }
+        }
+      }))
+      const utils = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+              result: queryResult
+            }
+          ]}
+        >
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { id: 'journeyId' } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <TeamProvider>
+                <CopyToTeamDialog
+                  open
+                  title="Copy To Journey"
+                  onClose={handleCloseMenuMock}
+                  submitAction={handleSubmitActionMock}
+                  defaultToActiveTeam={defaultToActiveTeam}
+                />
+              </TeamProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      return { ...utils, queryResult }
+    }
+
+    it('defaults the team dropdown to the active team when the flag is on and the user has multiple teams', async () => {
+      const { getByRole, queryResult } = renderWithDefaultToActiveTeam({
+        defaultToActiveTeam: true,
+        lastActiveTeamId: 'team-b'
+      })
+      await waitFor(() => expect(queryResult).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(
+          getByRole('combobox', { name: 'Select Team' })
+        ).toHaveTextContent('Team B')
+      )
+    })
+
+    it('leaves the team dropdown empty when the flag is on but the user has no active team', async () => {
+      const { getByRole, queryResult } = renderWithDefaultToActiveTeam({
+        defaultToActiveTeam: true,
+        lastActiveTeamId: null
+      })
+      await waitFor(() => expect(queryResult).toHaveBeenCalled())
+      const teamSelect = getByRole('combobox', { name: 'Select Team' })
+      expect(teamSelect).not.toHaveTextContent('Team A')
+      expect(teamSelect).not.toHaveTextContent('Team B')
+    })
+
+    it('leaves the team dropdown empty when the flag is off, even if an active team is resolved', async () => {
+      const { getByRole, queryResult } = renderWithDefaultToActiveTeam({
+        lastActiveTeamId: 'team-b'
+      })
+      await waitFor(() => expect(queryResult).toHaveBeenCalled())
+      const teamSelect = getByRole('combobox', { name: 'Select Team' })
+      expect(teamSelect).not.toHaveTextContent('Team A')
+      expect(teamSelect).not.toHaveTextContent('Team B')
+    })
+  })
 })

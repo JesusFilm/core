@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
+import { resolvedParams } from '../../../../../../test/utils/resolvedParams'
 import { ImageAspectRatio } from '../../../constants'
 
 import VideoImage from './page'
@@ -90,10 +91,10 @@ describe('VideoImage', () => {
     render(
       <SnackbarProvider>
         <VideoImage
-          params={{
+          params={resolvedParams({
             videoId: mockVideoId,
             aspectRatio: mockAspectRatio
-          }}
+          })}
         />
       </SnackbarProvider>
     )

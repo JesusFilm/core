@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { StoryObj } from '@storybook/nextjs'
+import { StoryObj } from '@storybook/nextjs-vite'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'

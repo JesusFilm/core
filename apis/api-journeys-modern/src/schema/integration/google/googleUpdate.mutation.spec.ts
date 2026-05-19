@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { type Mocked, type MockedFunction, vi } from 'vitest'
 
 import { encryptSymmetric } from '@core/yoga/crypto'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
@@ -7,20 +8,20 @@ import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
-jest.mock('axios')
-jest.mock('@core/yoga/crypto', () => ({
-  encryptSymmetric: jest.fn()
+vi.mock('axios')
+vi.mock('@core/yoga/crypto', () => ({
+  encryptSymmetric: vi.fn()
 }))
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
-const mockAxios = axios as jest.Mocked<typeof axios>
-const mockEncryptSymmetric = encryptSymmetric as jest.MockedFunction<
+const mockAxios = axios as Mocked<typeof axios>
+const mockEncryptSymmetric = encryptSymmetric as MockedFunction<
   typeof encryptSymmetric
 >
 
@@ -52,7 +53,7 @@ describe('integrationGoogleUpdate', () => {
   `)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
     prismaMock.userRole.findUnique.mockResolvedValue({
       userId: mockUser.id,

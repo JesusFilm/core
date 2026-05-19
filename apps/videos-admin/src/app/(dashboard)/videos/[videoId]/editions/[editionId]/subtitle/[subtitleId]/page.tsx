@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { useEffect, useRef, useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 
 import { VariablesOf, graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -83,16 +83,15 @@ const UPDATE_VIDEO_SUBTITLE = graphql(`
 `)
 
 interface SubtitlePageProps {
-  params: {
+  params: Promise<{
     videoId: string
     editionId: string
     subtitleId: string
-  }
+  }>
 }
 
-export default function SubtitlePage({
-  params: { videoId, editionId, subtitleId }
-}: SubtitlePageProps) {
+export default function SubtitlePage({ params }: SubtitlePageProps) {
+  const { videoId, editionId, subtitleId } = use(params)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)

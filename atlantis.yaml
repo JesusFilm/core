@@ -1,8 +1,13 @@
 version: 3
 automerge: true
 delete_source_branch_on_merge: true
+# terraform_version pinned to last stable before HashiCorp's release-signing
+# GPG key expired on 2026-04-18. Lifts the "openpgp: key expired" download
+# failure by reusing the Atlantis EFS-cached binary instead of re-downloading.
+# Remove once the Atlantis image is bumped to one shipping the renewed key.
 projects:
   - dir: 'infrastructure'
+    terraform_version: '1.14.8'
     autoplan:
       when_modified:
         [
@@ -15,5 +20,8 @@ projects:
           './.terraform.lock.hcl'
         ]
   - dir: 'infrastructure/resources/atlantis'
+    terraform_version: '1.14.8'
   - dir: 'infrastructure/resources/doppler'
+    terraform_version: '1.14.8'
   - dir: 'infrastructure/resources/terraform'
+    terraform_version: '1.14.8'

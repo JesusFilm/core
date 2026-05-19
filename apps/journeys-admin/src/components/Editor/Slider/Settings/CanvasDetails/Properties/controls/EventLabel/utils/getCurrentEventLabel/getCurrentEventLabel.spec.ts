@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -38,7 +38,9 @@ describe('getCurrentEventLabel', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
 
     const result = getCurrentEventLabel(t, cardBlock)

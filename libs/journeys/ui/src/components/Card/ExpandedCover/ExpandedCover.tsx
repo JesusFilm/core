@@ -6,6 +6,7 @@ import { NextImage } from '@core/shared/ui/NextImage'
 import type { TreeBlock } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
+import { CardFields } from '../__generated__/CardFields'
 import { OverlayContent } from '../OverlayContent'
 import { applyDefaultAlpha } from '../utils/colorOpacityUtils'
 
@@ -16,6 +17,7 @@ interface ExpandedCoverProps {
   backgroundBlur?: string
   backdropBlur?: number
   hasFullscreenVideo?: boolean
+  card?: TreeBlock<CardFields> | null
 }
 
 export function ExpandedCover({
@@ -24,7 +26,8 @@ export function ExpandedCover({
   backgroundColor,
   backgroundBlur,
   backdropBlur,
-  hasFullscreenVideo = false
+  hasFullscreenVideo = false,
+  card
 }: ExpandedCoverProps): ReactElement {
   const { journey, variant } = useJourney()
   const enableVerticalScroll = {
@@ -87,6 +90,7 @@ export function ExpandedCover({
         >
           <OverlayContent
             hasFullscreenVideo={hasFullscreenVideo}
+            card={card}
             sx={{
               mx: 'auto',
               width: {

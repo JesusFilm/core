@@ -50,7 +50,9 @@ const subtitleTypography = {
 const card = {
   __typename: 'CardBlock',
   id: 'card.id',
-  children: [titleTypography, subtitleTypography]
+  children: [titleTypography, subtitleTypography],
+  showAssistant: null,
+  expandChatByDefault: null
 } as unknown as TreeBlock<CardBlock>
 
 const step = {

@@ -7,6 +7,7 @@ import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../libs/block'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
+import { CardFields } from '../__generated__/CardFields'
 import { BackgroundVideo } from '../ContainedCover/BackgroundVideo'
 import { OverlayContent } from '../OverlayContent'
 import { stripAlphaFromHex } from '../utils/colorOpacityUtils'
@@ -28,6 +29,7 @@ interface WebsiteCoverProps {
   videoBlock?: TreeBlock<VideoFields>
   imageBlock?: TreeBlock<ImageFields>
   hasFullscreenVideo?: boolean
+  card?: TreeBlock<CardFields> | null
 }
 
 /** Responsive minimum heights for media areas to ensure a visible cover region. */
@@ -49,7 +51,8 @@ export function WebsiteCover({
   backgroundBlur,
   videoBlock,
   imageBlock,
-  hasFullscreenVideo = false
+  hasFullscreenVideo = false,
+  card
 }: WebsiteCoverProps): ReactElement {
   const [loading, setLoading] = useState(true)
   const baseBackgroundColor = stripAlphaFromHex(backgroundColor)
@@ -163,6 +166,7 @@ export function WebsiteCover({
       <Box data-testid="website-cover-content">
         <OverlayContent
           hasFullscreenVideo={hasFullscreenVideo}
+          card={card}
           sx={{
             mx: 'auto',
             width: {
