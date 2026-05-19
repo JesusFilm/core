@@ -24,14 +24,27 @@ if [ -z "$OWNER" ] || [ -z "$REPO" ]; then
     exit 1
 fi
 
-# Fetch review threads, regular PR comments, and review bodies in one query.
 # Output is a JSON object with four keys:
-#   review_threads   - unresolved, non-outdated inline code review threads
-#   pr_comments      - top-level PR conversation comments (excludes PR author and known review bots)
-#   review_bodies    - review submissions with non-empty body text (excludes PR author and known review bots)
+#   review_threads   - unresolved inline review threads, edge-wrapped as
+#                      [{ node: { id, isResolved, isOutdated, path, line, ...,
+#                                 comments: { nodes: [...] } } }]
+#   pr_comments      - top-level PR conversation comments (excludes PR author
+#                      and known CI/status bots)
+#   review_bodies    - review submissions with non-empty body text (same
+#                      filtering as pr_comments)
 #   cross_invocation - cross-invocation awareness envelope:
 #     signal: true when both resolved and unresolved threads exist (multi-round review)
-#     resolved_threads: last N resolved threads by recency, for cluster analysis input
+#     resolved_threads: last 10 resolved threads by recency, for cluster analysis input
+#
+# Pagination (issue #798): each top-level connection -- reviewThreads,
+# comments, reviews -- is fetched in its own paginated query because
+# `gh api graphql --paginate` only follows the outermost pageInfo per
+# response. Combining them into one query (as this script previously did)
+# silently dropped everything past page 1 on long-lived PRs and made the
+# skill report "0 of 0 resolved" while real findings sat unanswered.
+# Per-thread inline `comments` are fetched up to 100 per thread without
+# follow-up pagination; threads that exceed 100 comments are rare and out of
+# scope for this fix.
 #
 # Bot filtering: only CI/status bots (codecov, etc.) are filtered at the source.
 # Their output is structurally never actionable -- coverage numbers, build
@@ -45,84 +58,110 @@ fi
 # has a content-aware actionability check and Silent Drop rule that handles
 # wrappers correctly, so we trust that layer instead. Add new logins to the CI
 # list only if their output is structurally non-actionable like codecov's.
-gh api graphql -f owner="$OWNER" -f repo="$REPO" -F pr="$PR_NUMBER" -f query='
-query FetchPRFeedback($owner: String!, $repo: String!, $pr: Int!) {
+
+threads_pages=$(gh api graphql --paginate --slurp \
+  -f owner="$OWNER" -f repo="$REPO" -F pr="$PR_NUMBER" \
+  -f query='
+query Threads($owner: String!, $repo: String!, $pr: Int!, $endCursor: String) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $pr) {
       author { login }
-      reviewThreads(first: 50) {
-        edges {
-          node {
-            id
-            isResolved
-            isOutdated
-            path
-            line
-            originalLine
-            startLine
-            originalStartLine
-            comments(first: 10) {
-              nodes {
-                id
-                author { login }
-                body
-                createdAt
-                url
-              }
+      reviewThreads(first: 100, after: $endCursor) {
+        nodes {
+          id
+          isResolved
+          isOutdated
+          path
+          line
+          originalLine
+          startLine
+          originalStartLine
+          comments(first: 100) {
+            nodes {
+              id
+              author { login }
+              body
+              createdAt
+              url
             }
           }
         }
+        pageInfo { hasNextPage endCursor }
       }
-      comments(first: 100) {
+    }
+  }
+}')
+
+comments_pages=$(gh api graphql --paginate --slurp \
+  -f owner="$OWNER" -f repo="$REPO" -F pr="$PR_NUMBER" \
+  -f query='
+query Comments($owner: String!, $repo: String!, $pr: Int!, $endCursor: String) {
+  repository(owner: $owner, name: $repo) {
+    pullRequest(number: $pr) {
+      comments(first: 100, after: $endCursor) {
         nodes {
           id
           author { login }
           body
         }
+        pageInfo { hasNextPage endCursor }
       }
-      reviews(first: 50) {
+    }
+  }
+}')
+
+reviews_pages=$(gh api graphql --paginate --slurp \
+  -f owner="$OWNER" -f repo="$REPO" -F pr="$PR_NUMBER" \
+  -f query='
+query Reviews($owner: String!, $repo: String!, $pr: Int!, $endCursor: String) {
+  repository(owner: $owner, name: $repo) {
+    pullRequest(number: $pr) {
+      reviews(first: 100, after: $endCursor) {
         nodes {
           id
           author { login }
           body
           state
         }
+        pageInfo { hasNextPage endCursor }
       }
     }
   }
-}' | jq '.data.repository.pullRequest as $pr |
-  # Structurally non-actionable bot output; always dropped.
+}')
+
+# Resolution semantics: `isOutdated` means the diff hunk around the comment
+# has shifted since the thread was opened -- not that the reviewer concern
+# was addressed. Resolution state is the only authoritative signal; outdated
+# threads are still surfaced (with their isOutdated flag intact) so the
+# resolver can factor in that the referenced line may have moved.
+jq -n \
+  --argjson threads "$threads_pages" \
+  --argjson comments "$comments_pages" \
+  --argjson reviews "$reviews_pages" '
+  ($threads[0].data.repository.pullRequest.author) as $author |
+  [$threads[].data.repository.pullRequest.reviewThreads.nodes[]] as $all_threads |
+  [$comments[].data.repository.pullRequest.comments.nodes[]] as $all_comments |
+  [$reviews[].data.repository.pullRequest.reviews.nodes[]] as $all_reviews |
   ["codecov"] as $ci_bot_logins |
-  # Unresolved threads. `isOutdated` means the diff hunk around the comment
-  # has shifted since the thread was opened -- not that the reviewer concern
-  # was addressed. Resolution state is the only authoritative signal; outdated
-  # threads are still surfaced (with their isOutdated flag intact) so the
-  # resolver can factor in that the referenced line may have moved.
-  [$pr.reviewThreads.edges[]
-    | select(.node.isResolved == false)] as $unresolved |
-  # Resolved threads for cross-invocation awareness (last 10 by most recent comment)
-  [$pr.reviewThreads.edges[]
-    | select(.node.isResolved == true)
-    | { thread_id: .node.id, path: .node.path, line: .node.line,
-        first_comment_body: .node.comments.nodes[0].body,
-        last_comment_at: ([.node.comments.nodes[].createdAt] | sort | last) }]
-    | sort_by(.last_comment_at) | .[-10:] | reverse as $resolved |
-{
-  review_threads: $unresolved,
-  pr_comments: [$pr.comments.nodes[]
-    | select(.author.login != $pr.author.login)
-    | select(
-        .author.login as $l | $ci_bot_logins | index($l) | not
-      )
-    | select(.body | test("^\\s*$") | not)],
-  review_bodies: [$pr.reviews.nodes[]
-    | select(.body != null and .body != "")
-    | select(.author.login != $pr.author.login)
-    | select(
-        .author.login as $l | $ci_bot_logins | index($l) | not
-      )],
-  cross_invocation: {
-    signal: (($resolved | length) > 0 and ($unresolved | length) > 0),
-    resolved_threads: $resolved
-  }
-}'
+  [$all_threads[] | select(.isResolved == false)] as $unresolved |
+  ([$all_threads[]
+    | select(.isResolved == true)
+    | { thread_id: .id, path: .path, line: .line,
+        first_comment_body: .comments.nodes[0].body,
+        last_comment_at: ([.comments.nodes[].createdAt] | sort | last) }]
+    | sort_by(.last_comment_at) | .[-10:] | reverse) as $resolved |
+  {
+    review_threads: [$unresolved[] | { node: . }],
+    pr_comments: [$all_comments[]
+      | select(.author.login != $author.login)
+      | select(.author.login as $l | $ci_bot_logins | index($l) | not)
+      | select(.body | test("^\\s*$") | not)],
+    review_bodies: [$all_reviews[]
+      | select(.body != null and .body != "")
+      | select(.author.login != $author.login)
+      | select(.author.login as $l | $ci_bot_logins | index($l) | not)],
+    cross_invocation: {
+      signal: (($resolved | length) > 0 and ($unresolved | length) > 0),
+      resolved_threads: $resolved
+    }
+  }'

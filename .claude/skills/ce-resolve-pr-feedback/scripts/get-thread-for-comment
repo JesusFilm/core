@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # Maps a PR review comment node ID to its parent thread.
-# Fetches thread IDs and first comment IDs to find the match,
-# then returns the matching thread with full comment details.
+# Fetches all review threads (paginated) and their comments, then returns the
+# thread whose comments contain the target ID.
 
 set -e
 
@@ -28,11 +28,17 @@ if [ -z "$OWNER" ] || [ -z "$REPO" ]; then
     exit 1
 fi
 
-gh api graphql -f owner="$OWNER" -f repo="$REPO" -F pr="$PR_NUMBER" -f query='
-query($owner: String!, $repo: String!, $pr: Int!) {
+# Pagination (issue #798): paginate the reviewThreads connection so PRs with
+# more than one page of threads can still resolve a comment to its parent
+# thread. Per-thread comments are still capped at 100 -- threads exceeding
+# that depth are not paginated here.
+threads_pages=$(gh api graphql --paginate --slurp \
+  -f owner="$OWNER" -f repo="$REPO" -F pr="$PR_NUMBER" \
+  -f query='
+query Threads($owner: String!, $repo: String!, $pr: Int!, $endCursor: String) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $pr) {
-      reviewThreads(first: 100) {
+      reviewThreads(first: 100, after: $endCursor) {
         nodes {
           id
           isResolved
@@ -52,11 +58,14 @@ query($owner: String!, $repo: String!, $pr: Int!) {
             }
           }
         }
+        pageInfo { hasNextPage endCursor }
       }
     }
   }
-}' | jq -e --arg cid "$COMMENT_NODE_ID" '
-  [.data.repository.pullRequest.reviewThreads.nodes[]
-  | select(.comments.nodes | map(.id) | index($cid))]
+}')
+
+echo "$threads_pages" | jq -e --arg cid "$COMMENT_NODE_ID" '
+  [.[].data.repository.pullRequest.reviewThreads.nodes[]
+   | select(.comments.nodes | map(.id) | index($cid))]
   | if length == 0 then error("No thread found for comment \($cid)") else .[0] end
 '
