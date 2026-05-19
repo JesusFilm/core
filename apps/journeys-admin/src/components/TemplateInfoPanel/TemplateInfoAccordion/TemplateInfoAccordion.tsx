@@ -79,7 +79,10 @@ export function TemplateInfoAccordion({
           {title}
         </Typography>
       </AccordionSummary>
-      <AccordionDetails sx={{ px: 2.5, pt: 0, pb: 2.5 }}>
+      <AccordionDetails
+        id={`template-info-accordion-content-${id}`}
+        sx={{ px: 2.5, pt: 0, pb: 2.5 }}
+      >
         {children}
       </AccordionDetails>
     </MuiAccordion>

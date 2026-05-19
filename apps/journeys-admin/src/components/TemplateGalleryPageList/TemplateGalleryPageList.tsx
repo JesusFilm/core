@@ -366,7 +366,7 @@ export function TemplateGalleryPageList({
                   size="small"
                   sx={{
                     display: { xs: 'inline-flex', md: 'none' },
-                    color: (theme) => theme.palette.divider,
+                    color: 'text.secondary',
                     p: 0.5
                   }}
                 >

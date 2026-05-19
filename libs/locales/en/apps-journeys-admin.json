@@ -1200,7 +1200,6 @@
   "Turn on <0>Make Customisable</0>.": "Turn on <0>Make Customisable</0>.",
   "For video you also can add notes for adapter to explain its purpose.": "For video you also can add notes for adapter to explain its purpose.",
   "Marked blocks will be available for editing in Step-by-step customisation.": "Marked blocks will be available for editing in Step-by-step customisation.",
-  "Text": "Text",
   "In your template, highlight the text snippet you want to make customisable. Copy the text.": "In your template, highlight the text snippet you want to make customisable. Copy the text.",
   "Instead of it type variable like date, time, event name and so on. Put this variable inside double brackets, e.g.": "Instead of it type variable like date, time, event name and so on. Put this variable inside double brackets, e.g.",
   "Click on three dots and select Template Settings. You'll see the variable you set inside the field. You need to paste the text you copied after the double dots, like this": "Click on three dots and select Template Settings. You'll see the variable you set inside the field. You need to paste the text you copied after the double dots, like this",
