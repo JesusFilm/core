@@ -36,12 +36,9 @@ interface CollectionPreviewPaneProps {
    */
   publicUrl: string | null
   /**
-   * The slug of the collection. When provided, the "Open in new tab"
-   * button routes through `/api/preview-template-gallery?slug=<slug>`
-   * — that proxy revalidates the journeys ISR cache before redirecting,
-   * so previewers see the just-saved content. Null on unsaved create
-   * dialog (we still render the public URL for display, but Open is
-   * disabled).
+   * Slug of the collection. When provided, "Open in new tab" routes
+   * through the authenticated `/api/preview-template-gallery?slug=<slug>`
+   * proxy. Null on unsaved create dialog (Open is disabled).
    */
   slug: string | null
   /**
@@ -75,9 +72,11 @@ function CollectionPreviewPaneImpl({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
 
-  // Open is disabled when (a) we have no public URL yet, or (b) the
-  // team's custom-domain gate blocks gallery publishing entirely.
-  const viewDisabled = publicUrl == null || !canPublish
+  // Open is disabled when (a) the collection isn't saved yet (no slug),
+  // (b) the URL is missing, or (c) the team's custom-domain gate blocks
+  // gallery publishing entirely.
+  const viewDisabled =
+    publicUrl == null || slug == null || slug === '' || !canPublish
   const viewTooltip = !canPublish
     ? (publishBlockedReason ?? '')
     : t('Open in new tab')
@@ -91,16 +90,12 @@ function CollectionPreviewPaneImpl({
     )
   }
   function handleView(): void {
-    if (viewDisabled) return
-    // Proxy through `/api/preview-template-gallery` so the journeys
-    // ISR cache is revalidated before redirect (NES-1644). Falls back
-    // to the raw public URL if slug is missing (defensive).
-    const target =
-      slug != null && slug !== ''
-        ? `/api/preview-template-gallery?slug=${encodeURIComponent(slug)}`
-        : publicUrl
-    if (target == null) return
-    window.open(target, '_blank', 'noopener,noreferrer')
+    if (viewDisabled || slug == null || slug === '') return
+    window.open(
+      `/api/preview-template-gallery?slug=${encodeURIComponent(slug)}`,
+      '_blank',
+      'noopener,noreferrer'
+    )
   }
   return (
     <Box

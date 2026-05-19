@@ -77,6 +77,38 @@ describe('template-gallery [slug] getServerSideProps', () => {
     expect(result).not.toHaveProperty('revalidate')
   })
 
+  it('sets Cache-Control: no-store, max-age=0 on the response', async () => {
+    const setHeader = vi.fn()
+    mockQuery.mockResolvedValueOnce({
+      data: {
+        templateGalleryPageBySlug: {
+          __typename: 'TemplateGalleryPage',
+          id: 'g1',
+          slug: 'cached',
+          title: 'T',
+          description: '',
+          creatorName: 'C',
+          mediaUrl: null,
+          publishedAt: null,
+          creatorImageSrc: null,
+          creatorImageAlt: null,
+          templates: []
+        }
+      }
+    })
+
+    await getServerSideProps({
+      ...baseContext,
+      res: { setHeader } as unknown as GetServerSidePropsContext['res'],
+      params: { slug: 'cached' }
+    })
+
+    expect(setHeader).toHaveBeenCalledWith(
+      'Cache-Control',
+      'no-store, max-age=0'
+    )
+  })
+
   it('returns notFound when the resolver returns null', async () => {
     mockQuery.mockResolvedValueOnce({
       data: { templateGalleryPageBySlug: null }
@@ -95,6 +127,85 @@ describe('template-gallery [slug] getServerSideProps', () => {
       })
     )
     expect(result).toMatchObject({ notFound: true })
+  })
+
+  it('does NOT log when the null branch has no errors (legitimate not-found)', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    mockQuery.mockResolvedValueOnce({
+      data: { templateGalleryPageBySlug: null }
+    })
+
+    await getServerSideProps({
+      ...baseContext,
+      params: { slug: 'unknown-gallery' }
+    })
+
+    expect(warn).not.toHaveBeenCalled()
+    warn.mockRestore()
+  })
+
+  it('logs a redacted error summary when the null branch carries errors', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    mockQuery.mockResolvedValueOnce({
+      data: { templateGalleryPageBySlug: null },
+      errors: [
+        {
+          message: 'something exploded',
+          path: ['templateGalleryPageBySlug'],
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        }
+      ]
+    })
+
+    await getServerSideProps({
+      ...baseContext,
+      params: { slug: 'cached' }
+    })
+
+    expect(warn).toHaveBeenCalledWith(
+      '[template-gallery getServerSideProps] null branch',
+      expect.objectContaining({
+        slug: 'cached',
+        errorCount: 1,
+        errors: [
+          {
+            message: 'something exploded',
+            path: ['templateGalleryPageBySlug'],
+            code: 'INTERNAL_SERVER_ERROR'
+          }
+        ],
+        truncated: false
+      })
+    )
+    warn.mockRestore()
+  })
+
+  it('caps logged errors at 5 and reports truncation', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const errors = Array.from({ length: 7 }, (_, i) => ({
+      message: `err-${i}`,
+      path: ['templateGalleryPageBySlug'],
+      extensions: { code: 'BAD_REQUEST' }
+    }))
+    mockQuery.mockResolvedValueOnce({
+      data: { templateGalleryPageBySlug: null },
+      errors
+    })
+
+    await getServerSideProps({
+      ...baseContext,
+      params: { slug: 'cached' }
+    })
+
+    const logArgs = warn.mock.calls[0]?.[1] as {
+      errorCount: number
+      errors: unknown[]
+      truncated: boolean
+    }
+    expect(logArgs.errorCount).toBe(7)
+    expect(logArgs.errors).toHaveLength(5)
+    expect(logArgs.truncated).toBe(true)
+    warn.mockRestore()
   })
 
   it('returns gallery props when the resolver returns data', async () => {

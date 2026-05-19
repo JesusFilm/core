@@ -19,17 +19,13 @@ export interface CollectionPublishSuccessDialogProps {
   /** The shareable public URL for the just-published page. */
   publicUrl: string | null
   /**
-   * The slug of the just-published collection. When set, "View the page"
-   * routes through `/api/preview-template-gallery?slug=<slug>`, which
-   * awaits a revalidate of the journeys ISR cache before issuing the
-   * 307 redirect. That await is the safety net for the unpublish → edit →
-   * publish → click-View race: the publish mutation's own fire-and-forget
-   * revalidate is still in flight when the user clicks, so without this
-   * proxy-side wait the public URL would serve the stale state cached
-   * from the prior unpublish. Null when not yet known (e.g. closed
-   * dialog).
+   * Slug of the just-published collection. "View the page" routes through
+   * the authenticated `/api/preview-template-gallery?slug=<slug>` proxy,
+   * which validates auth and 307-redirects to the public URL. Null when
+   * not yet known (e.g. closed dialog) — in that case "View the page"
+   * stays disabled.
    */
-  slug?: string | null
+  slug: string | null
   /**
    * Belt-and-suspenders gate: the success dialog should never open when
    * the team can't publish, but if it does, "View the page" stays
@@ -48,6 +44,8 @@ export function CollectionPublishSuccessDialog({
   publishBlockedReason = null,
   onClose
 }: CollectionPublishSuccessDialogProps): ReactElement {
+  const viewDisabled = publicUrl == null || slug == null || slug === '' || !canPublish
+
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
 
@@ -61,16 +59,12 @@ export function CollectionPublishSuccessDialog({
   }
 
   function handleView(): void {
-    if (publicUrl == null || !canPublish) return
-    // Prefer the admin proxy when we know the slug — it revalidates the
-    // journeys ISR cache before redirecting, so the user lands on a fresh
-    // page instead of a stale one. Fall back to the raw public URL for
-    // safety (e.g. mid-migration callers that don't pass slug yet).
-    const target =
-      slug != null && slug !== ''
-        ? `/api/preview-template-gallery?slug=${encodeURIComponent(slug)}`
-        : publicUrl
-    window.open(target, '_blank', 'noopener,noreferrer')
+    if (viewDisabled || slug == null) return
+    window.open(
+      `/api/preview-template-gallery?slug=${encodeURIComponent(slug)}`,
+      '_blank',
+      'noopener,noreferrer'
+    )
     onClose()
   }
 

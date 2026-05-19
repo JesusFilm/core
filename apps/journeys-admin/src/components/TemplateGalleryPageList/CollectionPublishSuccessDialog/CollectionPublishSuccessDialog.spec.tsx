@@ -40,6 +40,7 @@ describe('CollectionPublishSuccessDialog', () => {
         <CollectionPublishSuccessDialog
           open
           publicUrl="https://example.com/p/my-collection"
+          slug="my-collection"
           onClose={onClose}
           {...props}
         />
@@ -97,15 +98,11 @@ describe('CollectionPublishSuccessDialog', () => {
     expect(onClose).toHaveBeenCalledTimes(1)
   })
 
-  it('falls back to the raw public URL when slug is not provided', async () => {
+  it('does not open a new tab when slug is null', async () => {
     const { onClose } = renderDialog({ slug: null })
     await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
-    expect(window.open).toHaveBeenCalledWith(
-      'https://example.com/p/my-collection',
-      '_blank',
-      'noopener,noreferrer'
-    )
-    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(window.open).not.toHaveBeenCalled()
+    expect(onClose).not.toHaveBeenCalled()
   })
 
   it('does not open a new tab if publicUrl is null', async () => {

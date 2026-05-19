@@ -81,18 +81,17 @@ function TemplateGalleryPageRoute({
 }
 
 // SSR rather than ISR. The page is admin-managed and supports
-// unpublish→republish cycles; the perf benefit of caching at the page
-// layer is already covered by Yoga's response cache on
-// `templateGalleryPageBySlug` (60s, auto-invalidated by entity-ID on
-// mutation). SSR + Yoga cache gives us instant visibility after a
-// mutation without ISR's `notFound` stickiness.
+// unpublish→republish cycles; `notFound` stickiness in ISR previously
+// trapped the page in a 404 state across a republish, so we render
+// every request fresh. `Query.templateGalleryPageBySlug` is uncached in
+// Yoga (TTL 0) — one indexed slug lookup per request is trivial and
+// makes mutation visibility immediate (NES-1644).
 export const getServerSideProps: GetServerSideProps<
   TemplateGalleryPageRouteProps
 > = async (context) => {
-  // Prevent the browser from caching the page response, so that an
-  // unpublished→republished slug never gets served from a stale browser
-  // cache. Yoga's 60s response cache still handles server-side perf for
-  // repeat visitors.
+  // Prevent the browser (and any intermediate CDN) from caching the
+  // page response — an unpublished→republished slug must never be
+  // served from a stale browser cache.
   context.res.setHeader('Cache-Control', 'no-store, max-age=0')
 
   const slug = context.params?.slug?.toString() ?? ''

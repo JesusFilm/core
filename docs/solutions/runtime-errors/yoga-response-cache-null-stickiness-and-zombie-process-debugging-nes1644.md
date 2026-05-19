@@ -1,7 +1,15 @@
 ---
 title: 'Yoga response-cache null-stickiness and zombie-process debugging (NES-1644)'
-category: runtime-errors
 date: 2026-05-19
+category: runtime-errors
+module: api-journeys-modern
+component: response_cache
+problem_type: runtime_error
+root_cause: cache_invalidation
+resolution_type: configuration_change
+severity: high
+related_pr: 9174
+related_ticket: NES-1644
 tags:
   - yoga
   - useResponseCache
@@ -15,9 +23,6 @@ tags:
   - hive-gateway
   - next-isr
   - template-gallery
-module: api-journeys-modern
-related_pr: 9173
-related_ticket: NES-1644
 symptom: >
   After publishing a previously-draft template-gallery page, the public
   URL serves a 404 for ~60s. Subsequent reads eventually succeed when the

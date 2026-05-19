@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react'
+
 import { useCustomDomainsQuery } from '../useCustomDomainsQuery'
 
 export interface CanPublishCollectionResult {
@@ -73,6 +75,25 @@ export function useCanPublishCollection({
     skip: teamId == null
   })
 
+  // De-dupe the operator log so a persistent network failure (Apollo
+  // re-renders this hook on every retry) doesn't spam the console with
+  // identical lines. Keyed on team + error message so a different team
+  // or a different failure mode still surfaces.
+  const lastLoggedKeyRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (error == null || teamId == null) {
+      lastLoggedKeyRef.current = null
+      return
+    }
+    const key = `${teamId}::${error.message}`
+    if (lastLoggedKeyRef.current === key) return
+    lastLoggedKeyRef.current = key
+    console.warn('[useCanPublishCollection] customDomains query failed', {
+      teamId,
+      message: error.message
+    })
+  }, [error, teamId])
+
   if (teamId == null) {
     // teamId is null/undefined either because no team is selected yet or
     // because the TeamProvider hasn't resolved the active team. We can't
@@ -82,12 +103,6 @@ export function useCanPublishCollection({
   }
 
   if (error != null) {
-    // Log so an operator monitoring prod sees the silent failure. The
-    // user gets a non-blocking message via the tooltip copy.
-    console.warn('[useCanPublishCollection] customDomains query failed', {
-      teamId,
-      message: error.message
-    })
     return {
       canPublish: false,
       reason: CUSTOM_DOMAIN_PUBLISH_BLOCKED_BY_ERROR_COPY,

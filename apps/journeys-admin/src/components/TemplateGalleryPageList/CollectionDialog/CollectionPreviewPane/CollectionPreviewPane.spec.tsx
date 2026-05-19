@@ -72,18 +72,13 @@ describe('CollectionPreviewPane', () => {
     ).toBeDisabled()
   })
 
-  it('falls back to the raw public URL when slug is missing', async () => {
+  it('disables Open when slug is missing', () => {
     renderPane({
       slug: null,
       publicUrl: 'https://your.nextstep.is/template-gallery/something'
     })
-    await userEvent.click(
+    expect(
       screen.getByRole('button', { name: 'Open in new tab' })
-    )
-    expect(window.open).toHaveBeenCalledWith(
-      'https://your.nextstep.is/template-gallery/something',
-      '_blank',
-      'noopener,noreferrer'
-    )
+    ).toBeDisabled()
   })
 })

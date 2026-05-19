@@ -417,80 +417,75 @@ WHERE t.id = sub.id;
 COMMIT;
 ```
 
-### 14. Revalidate-on-mutation chain for ISR-backed public pages (NES-1644)
+### 14. SSR + Yoga-cache TTL 0 for low-traffic admin-managed public pages (NES-1644)
 
-The public template-gallery page is statically generated with
-`revalidate: 60` ISR. Without an active refresh signal, the published
-page would lag the admin's mutation by up to 60 s. We close that gap
-with a three-layer chain:
+The public template-gallery page is rendered via `getServerSideProps`
+(`apps/journeys/pages/home/template-gallery/[slug].tsx`) with
+`Cache-Control: no-store, max-age=0`. The Yoga response-cache entry
+for `Query.templateGalleryPageBySlug` is set to TTL 0 in
+`apis/api-journeys-modern/src/yoga.ts` — uncached.
 
-1. **Admin mutation success path** fires a fire-and-forget call to
-   `useRevalidateTemplateGallery([slug])`. Lives in
-   `apps/journeys-admin/src/components/TemplateGalleryPageList/useCollectionMutations/useCollectionMutations.ts`
-   (publish/unpublish/ungroup),
-   `.../useCollectionForm/useCollectionForm.ts` (save), and
-   `TemplateGalleryPageList.tsx` (trash-success callback, prop-drilled
-   into the existing `TrashJourneyDialog`).
-2. **Admin's `/api/revalidate-template-gallery`** is a Firebase-auth +
-   CSRF-gated proxy that forwards to the journeys-side endpoint with
-   the shared-secret token in an `Authorization: Bearer` header (NEVER
-   a query param — see Pattern 15).
-3. **Journeys-side `/api/revalidate-template-gallery`** validates the
-   Bearer token in constant time and calls `res.revalidate(path)` to
-   refresh the ISR cache for the specific slug.
+Why this shape, and not ISR + a revalidate chain:
 
-Belt-and-braces: the admin's `/api/preview-template-gallery` proxy
-runs an AWAITED revalidate before issuing its 307 redirect to the
-public URL. The fire-and-forget mutation revalidate is the primary
-signal; the awaited preview revalidate is a safety net for the
-"click View immediately after publish" race.
+- **Revalidate chains for ISR pages are surprisingly brittle.** The
+  earlier design relied on a three-layer chain (admin proxy →
+  journeys proxy → `res.revalidate(path)`) plus a safety-net awaited
+  revalidate on Preview. It worked but added moving parts the public
+  page didn't need: a shared-secret endpoint, a CSRF-gated proxy on
+  admin, and a 200–400 ms tax per mutation.
+- **Yoga's entity-ID auto-invalidation can't reach cached null
+  entries.** A draft page → first GET caches `null` → publish fires
+  the entity-ID invalidator → but the cached null has no entity to
+  invalidate against. The null sticks for the full TTL. With TTL 0
+  this entire class of bug disappears.
+- **Cross-service mutations don't reach this server.** Journey-side
+  mutations (trash, edit, soft-delete) live in `api-journeys`. Yoga's
+  invalidator only runs for mutations that flow through
+  `api-journeys-modern`. Caching a cross-service-dependent field
+  means accepting indefinite staleness windows.
+- **Traffic profile.** One indexed slug lookup per request is
+  trivial. The public page is admin-managed, not a hot path.
 
-`useRevalidateTemplateGallery` accepts an array of slugs (to cover
-slug renames where both the old and new path need eviction) and
-dedupes via `new Set` before `Promise.all`. Network failures are
-swallowed by design — the mutation already succeeded; the public
-page will catch up on the next ISR revalidation interval.
+Pattern: when a public page **(a)** depends on cross-service writes,
+**(b)** has a "cached null after first-miss" failure mode, or
+**(c)** isn't on a hot read path, prefer SSR + uncached resolver
+over ISR + a revalidate chain. The implementation collapses to one
+header and one schema-coordinate TTL — the rest of the chain
+disappears.
 
-**Non-obvious invariant:** the mutation handler should NOT `await`
-the revalidate. We tried that (`await revalidateGallery(...)`) once
-to "fix" a hypothetical race; Siyang's 60s-wait reproduction
-falsified the hypothesis and showed the real bug was elsewhere (a
-dead backend at the moment of test). Awaiting just adds 200-400 ms
-of latency per user-visible mutation for no correctness gain. See
-the residual write-after-invalidate race noted in NES-1677's
-backend cache work.
+`useRevalidateTemplateGallery`, the admin/journeys revalidate
+proxies, and the shared-secret Bearer-auth scheme were all removed
+in NES-1644. If a future page reintroduces ISR, the prior auth
+hardening lives in this file's git history under
+`8c39ce6c`-era revisions.
 
-### 15. Shared-secret API auth: `Authorization: Bearer` + `timingSafeEqual`, never the URL (NES-1644)
+### 15. Auth posture on the admin → journeys preview proxy (NES-1644)
 
-A shared secret protects the journeys-side revalidate endpoint from
-unauthenticated invocations. Two non-obvious rules:
+The single remaining proxy is `/api/preview-template-gallery` on the
+admin side: a GET endpoint that gates Preview behind the same
+Firebase auth as the admin app and 307-redirects to the public URL.
+Two non-obvious rules:
 
-1. **Never put the token in the URL.** Query-string tokens land in
-   reverse-proxy / CDN / APM access logs, browser history, and HTTP
-   Referer headers on outbound clicks. Token-in-header isolates the
-   secret to the request body / connection layer where logging is
-   typically off-by-default for credentials.
+1. **CSRF defence via `Sec-Fetch-Site`.** Browsers set
+   `Sec-Fetch-Site` automatically on every request and JavaScript
+   cannot spoof it. The handler accepts only `same-origin` (admin →
+   admin navigation) and `none` (direct address-bar entry). Any
+   `cross-site` request — including `<img>` / `<script>` /
+   third-party `fetch` carrying a stolen cookie — is rejected with
+   403. This is the right CSRF shape for a `window.open`-shaped
+   endpoint where `X-Requested-With` doesn't fit.
 
-   `apps/journeys/pages/api/revalidate-template-gallery.ts` reads
-   the token from `req.headers.authorization` (`Bearer <token>`) and
-   actively REJECTS the legacy `?accessToken=...` query form with a
-   distinct 401. Rejecting the legacy form closes the migration
-   window where two auth paths could be live simultaneously.
+2. **Slug validation before redirect.** The handler runs the slug
+   through `isValidTemplateGallerySlug` (shared with the server's
+   `SLUG_RE`) before interpolating it into the redirect URL. This
+   blocks open-redirect attempts that try to smuggle a foreign host
+   or path-traversal segment through the `slug` query param.
 
-2. **Compare in constant time.** Use `crypto.timingSafeEqual(buf,
-buf)` after a length-check guard (the function throws on length
-   mismatch, so the guard is load-bearing — see Mike's review of
-   NES-1644 #2). Naive `===` is exploitable via response-latency
-   side channels for high-volume attackers.
-
-CSRF posture on the admin-side proxies: POST + `X-Requested-With:
-XMLHttpRequest` for the revalidate proxy (consumed by
-`useRevalidateTemplateGallery` via `fetch` + headers); GET +
-`Sec-Fetch-Site === 'same-origin' | 'none'` for the preview proxy
-(consumed by `window.open`). `Sec-Fetch-Site` is set automatically
-by browsers on every request and cannot be spoofed from JavaScript,
-so it's a sound CSRF defence for navigation-shaped endpoints where
-`X-Requested-With` doesn't fit.
+The `timingSafeEqual` shared-secret pattern and the legacy
+`?accessToken=...` rejection from the earlier revalidate chain are
+gone with that chain. Both remain valid patterns for any future
+shared-secret endpoint — they're worth re-reading in this file's
+git history if you need to reintroduce server-to-server auth.
 
 ### 16. Custom-domain publish gate: client-side `useCanPublishCollection` over `useCustomDomainsQuery` (NES-1644)
 
@@ -556,9 +551,10 @@ boundary.
 - Side-effecting API endpoints behind cookie auth need a CSRF gate.
   POST + `X-Requested-With` for fetch-shaped consumers; GET +
   `Sec-Fetch-Site` for navigation-shaped consumers.
-- ISR-backed public pages with `revalidate: N` need a mutation-driven
-  revalidate signal AND a navigation-time safety-net revalidate. Don't
-  rely on ISR's interval alone.
+- Public pages that depend on cross-service mutations should default
+  to SSR + TTL-0 Yoga cache, not ISR + a revalidate chain. ISR's
+  cached-null stickiness and the multi-hop revalidate plumbing aren't
+  worth the read-perf gain for low-traffic admin-managed pages.
 - Custom-domain feature gates: fail-open while loading, fail-CLOSED on
   query error with a distinct reason copy. Log the error.
 - `getStaticProps` null-branch logging: log only when `errors !== null`;
@@ -581,23 +577,21 @@ boundary.
 - `apis/api-journeys-modern/src/schema/templateGalleryPage/applyContiguousOrder.ts`
   — `lockPage` + `applyContiguousOrder` helpers shared between the
   reorder and assign resolvers.
-- `apps/journeys-admin/src/libs/useRevalidateTemplateGallery/` —
-  fire-and-forget revalidate hook (Pattern 14).
-- `apps/journeys-admin/pages/api/preview-template-gallery.ts` +
-  `apps/journeys-admin/pages/api/revalidate-template-gallery.ts` +
-  `apps/journeys/pages/api/revalidate-template-gallery.ts` —
-  three-layer revalidate chain (Patterns 14 + 15).
+- `apps/journeys/pages/home/template-gallery/[slug].tsx` — SSR public
+  page with `Cache-Control: no-store` (Pattern 14).
+- `apis/api-journeys-modern/src/yoga.ts` — `Query.templateGalleryPageBySlug`
+  set to TTL 0 (Pattern 14).
+- `apps/journeys-admin/pages/api/preview-template-gallery.ts` —
+  authenticated 307 jump-link, only proxy that survived NES-1644
+  (Pattern 15).
 - `apps/journeys-admin/src/libs/useCanPublishCollection/` +
   `apps/journeys-admin/src/libs/useCustomDomainsQuery/` — custom-
   domain publish gate (Pattern 16).
 - `apps/journeys/pages/home/template-gallery/[slug].tsx` —
-  null-branch `getStaticProps` diagnostic log (NES-1644 enrichment).
-- NES-1677 backend cache-invalidation (PR #9217) — the typename-
-  level `cache.invalidate` calls in api-journeys-modern mutations
-  that close the publish→unpublish→republish stale-null gap. The
-  frontend revalidate chain (Pattern 14) and the backend cache
-  invalidation (NES-1677) are complementary: the backend evicts the
-  GraphQL response cache, the frontend evicts the Next ISR cache.
+  null-branch SSR diagnostic log (NES-1644 enrichment).
+- `docs/solutions/runtime-errors/yoga-response-cache-null-stickiness-and-zombie-process-debugging-nes1644.md`
+  — full investigation history that motivated Pattern 14's
+  simplification.
 
 ## Related work split out
 

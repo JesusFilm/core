@@ -117,7 +117,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId
         }),
@@ -155,7 +155,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId
         }),
@@ -205,7 +205,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight: jest.fn(),
           setActiveDragId: jest.fn()
         }),
@@ -256,7 +256,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId
         }),
@@ -293,7 +293,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId: jest.fn()
         }),
@@ -332,7 +332,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId: jest.fn()
         }),
@@ -369,7 +369,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId: jest.fn()
         }),
@@ -404,7 +404,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId
         }),
@@ -441,7 +441,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: true,
+          dragInFlightRef: { current: true },
           setDragInFlight,
           setActiveDragId: jest.fn()
         }),
@@ -495,7 +495,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight: jest.fn(),
           setActiveDragId: jest.fn()
         }),

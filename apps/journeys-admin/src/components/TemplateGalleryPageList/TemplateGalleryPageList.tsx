@@ -150,6 +150,19 @@ export function TemplateGalleryPageList({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, teamId])
 
+  // Mounted guard for `handlePublish`: rawPublish awaits the mutation and
+  // we then setPublishSuccessCollection. If the user navigates away mid-
+  // flight, the post-await setState would warn (and would briefly flash
+  // the dialog open on the next page if React batches the update across
+  // a route change). Mirrors the same pattern in useCollectionMutations.
+  const mountedRef = useRef(true)
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
+
   const {
     busyId,
     publish: rawPublish,
@@ -160,7 +173,12 @@ export function TemplateGalleryPageList({
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
+  // `dragInFlight` drives rendering (busy chips, droppable lock); the ref
+  // is the synchronous source of truth for gating a second drop that
+  // arrives within the same tick as a setState batch — state would read
+  // `false` in both event handlers, the ref flips immediately.
   const [dragInFlight, setDragInFlight] = useState(false)
+  const dragInFlightRef = useRef(false)
   // Holds the just-published collection so the success dialog has a stable
   // reference to it (the gallery list cache may change underneath while the
   // user is still looking at the dialog).
@@ -185,7 +203,9 @@ export function TemplateGalleryPageList({
 
   async function handlePublish(collection: TemplateGalleryPage): Promise<void> {
     const published = await rawPublish(collection)
-    if (published != null) setPublishSuccessCollection(published)
+    if (published != null && mountedRef.current) {
+      setPublishSuccessCollection(published)
+    }
   }
   function handleClosePublishSuccess(): void {
     setPublishSuccessCollection(null)
@@ -290,8 +310,8 @@ export function TemplateGalleryPageList({
     // Refuse any new drag while a dialog is open (NES-1653) or a previous
     // mutation is still in flight — handleDragEnd would silently swallow
     // the drop, leaving the user with the impression their move vanished.
-    if (interactionsLocked) {
-      if (dragInFlight) {
+    if (dialogOpen || dragInFlightRef.current) {
+      if (dragInFlightRef.current) {
         enqueueSnackbar(t('Finishing previous move…'), {
           variant: 'info',
           preventDuplicate: true
@@ -306,7 +326,7 @@ export function TemplateGalleryPageList({
     journeyById,
     templateIdToCollection,
     collectionsById,
-    dragInFlight,
+    dragInFlightRef,
     setDragInFlight,
     setActiveDragId
   })

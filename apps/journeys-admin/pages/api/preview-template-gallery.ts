@@ -7,11 +7,11 @@ import { authConfig } from '../../src/libs/auth/config'
 
 // Authenticated jump-link to the public template gallery page. The admin
 // UI hits this proxy so we can gate Preview behind the same auth as the
-// rest of the admin app, then redirect to the canonical public URL. The
-// public page is server-rendered every request (no ISR), and the Yoga
-// response cache for `templateGalleryPageBySlug` is auto-invalidated by
-// entity-ID tracking when any TemplateGalleryPage mutation runs — so no
-// explicit revalidate step is needed.
+// rest of the admin app, then redirect to the canonical public URL.
+// The public page is server-rendered every request and uses `Cache-
+// Control: no-store`; `Query.templateGalleryPageBySlug` is uncached
+// in Yoga (TTL 0), so any mutation lands immediately — no explicit
+// revalidate step is needed.
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
