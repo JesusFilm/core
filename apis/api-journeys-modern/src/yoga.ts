@@ -83,32 +83,6 @@ export const yoga = createYoga<
       ? useResponseCache({
           session: () => null,
           cache,
-          // Don't cache null `templateGalleryPageBySlug` responses. Yoga's
-          // entity-ID invalidation cannot reach cached null entries (no
-          // entity to track), which leaves them stuck across unpublish→
-          // republish cycles — the next read after republish would serve
-          // the stale cached null. Skipping caching on the null branch
-          // means publishing a previously-draft slug immediately serves
-          // fresh data on the next read, while published rows still cache
-          // for the configured TTL and auto-invalidate via entity-ID when
-          // mutations touch them.
-          shouldCacheResult: ({ result }) => {
-            if (Array.isArray(result.errors) && result.errors.length > 0) {
-              return false
-            }
-            const data = result.data as
-              | Record<string, unknown>
-              | null
-              | undefined
-            if (
-              data != null &&
-              'templateGalleryPageBySlug' in data &&
-              data.templateGalleryPageBySlug == null
-            ) {
-              return false
-            }
-            return true
-          },
           ttlPerSchemaCoordinate: {
             'Journey.blockTypenames': 0,
             'Query.adminJourney': 0,
@@ -131,13 +105,17 @@ export const yoga = createYoga<
             // flushed (NES-1648).
             'Query.templateGalleryPage': 0,
             'Query.templateGalleryPages': 0,
-            // Public renderer. Finite TTL caps cache-poisoning impact for any
-            // null edge case that slips past `shouldCacheResult`, and bounds
-            // the staleness window for non-mutation-driven content drift.
-            // Mutations that return the entity (publish, unpublish, edit,
-            // delete) auto-invalidate cached entries via entity-ID tracking,
-            // so the TTL is the floor on freshness, not the typical wait.
-            'Query.templateGalleryPageBySlug': 60_000,
+            // Public renderer. TTL 0 because the response embeds journey-side
+            // data (the `templates` list) whose underlying mutations live in
+            // the separate api-journeys service. Yoga's entity-ID auto-
+            // invalidation only runs for mutations that flow through this
+            // server, so journey-side actions (trash, edit, soft-delete)
+            // would otherwise leave a stale cached page for up to the TTL.
+            // Cached null entries also can't be reached by entity-ID
+            // invalidation (no entity to track), which previously made
+            // unpublish→republish cycles serve a stale 404. One indexed
+            // slug lookup per request is trivial.
+            'Query.templateGalleryPageBySlug': 0,
             'Query.journeysPlausibleStatsAggregate': 5000,
             'Query.journeysPlausibleStatsBreakdown': 5000,
             'Query.journeysPlausibleStatsRealtimeVisitors': 5000,

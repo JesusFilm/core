@@ -14,7 +14,11 @@ linear: NES-1644
 
 **Bug compounded by environment:** Most of the debugging time during implementation was lost to an orphaned `api-journeys-modern` process holding port 4004 across `nf start` sessions, serving stale compiled code with the original `60_000` TTL and no fix applied. Full devcontainer rebuild was required to clear it. This obscured every prior code-level fix attempt — including the plan's typename-invalidation approach — so the team kept moving the fix while the actual served binary never changed.
 
-**Actual fix that shipped:** A `shouldCacheResult` predicate on the `useResponseCache` plugin in `apis/api-journeys-modern/src/yoga.ts` that returns `false` whenever `result.data.templateGalleryPageBySlug` is `null`. Null responses are never cached. Published responses still cache for 60s and auto-invalidate via entity-ID when any TemplateGalleryPage mutation runs. No mutation-side invalidation calls, no FE revalidate plumbing, no admin revalidate proxy, no Next ISR cache.
+**Actual fix that shipped:** `'Query.templateGalleryPageBySlug': 0` in the `useResponseCache` plugin's `ttlPerSchemaCoordinate` — no Yoga response cache for this query at all. Every public read hits the resolver and runs one indexed slug lookup. A `shouldCacheResult` predicate was first considered (and would address the null-stickiness gap in isolation), but the `templates` field on the response embeds journey-side data whose mutations live in `apis/api-journeys` (NestJS), not api-journeys-modern. Those cross-service mutations can never trigger Yoga's auto-invalidation, so any non-zero TTL leaves a stale cached page after a `journeysTrash` or journey edit. TTL 0 is the simplest correct answer.
+
+Additionally, the Apollo Client cache in the admin browser has the same typename-mismatch problem on journey trash — the mutation returns `Journey:<id>` but the templates list stores `TemplateGalleryItem:<id>`, so the trashed journey lingers in the collection card until refresh. The fix is an `update` callback on the `JOURNEY_TRASH` mutation that evicts both entities and calls `cache.gc()` to prune dangling refs.
+
+No mutation-side server invalidation calls, no FE revalidate plumbing, no admin revalidate proxy, no Next ISR cache.
 
 **What wasn't needed:**
 

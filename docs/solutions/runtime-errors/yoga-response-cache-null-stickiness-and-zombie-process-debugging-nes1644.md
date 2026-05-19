@@ -60,31 +60,48 @@ The 60s was a precise match for `'Query.templateGalleryPageBySlug': 60_000` in `
 
 ## What the working solution looks like
 
-Add a `shouldCacheResult` predicate to `useResponseCache` that returns `false` whenever the response data has `templateGalleryPageBySlug === null`. Null is never written to the cache. Published responses still cache for 60s and auto-invalidate via entity-ID tracking when any TemplateGalleryPage mutation runs.
+Set `'Query.templateGalleryPageBySlug': 0` in `ttlPerSchemaCoordinate` — no Yoga response cache for this query at all. Every public read hits the resolver and runs one indexed slug lookup against Postgres.
 
 ```ts
 useResponseCache({
   session: () => null,
   cache,
-  shouldCacheResult: ({ result }) => {
-    if (Array.isArray(result.errors) && result.errors.length > 0) {
-      return false
-    }
-    const data = result.data as Record<string, unknown> | null | undefined
-    if (data != null && 'templateGalleryPageBySlug' in data && data.templateGalleryPageBySlug == null) {
-      return false
-    }
-    return true
-  },
   ttlPerSchemaCoordinate: {
     // ...
-    'Query.templateGalleryPageBySlug': 60_000
+    'Query.templateGalleryPageBySlug': 0
     // ...
   }
 })
 ```
 
-That's the whole fix. No mutation-side cache.invalidate calls, no FE revalidate plumbing, no `res.revalidate(path)`, no ISR layer on the public page.
+That's the whole server-side fix. No `shouldCacheResult` predicate, no mutation-side `cache.invalidate` calls, no FE revalidate plumbing, no `res.revalidate(path)`, no ISR layer on the public page.
+
+### Why TTL 0 rather than 60s + entity invalidation
+
+The original direction (TTL 60s with auto-invalidation via Yoga's entity-ID tracking) doesn't work for this query because of **two compounding cache-invalidation gaps**:
+
+1. **Cached nulls have no entity to track.** When `templateGalleryPageBySlug` returns `null` (slug is draft / unknown), the cached response carries no `__typename`, so neither `cache.invalidate([{ typename }])` nor entity-ID auto-invalidation can reach the entry. It expires only on the natural TTL clock — making unpublish→republish cycles serve a stale 404 for the full TTL.
+
+2. **Cross-service mutations don't invalidate.** The `templates` field on `TemplateGalleryPage` lists journey-side data. Journey mutations like `journeysTrash` live in **`apis/api-journeys`** (NestJS), not in api-journeys-modern, so they never trigger Yoga's auto-invalidation on the cache there. Additionally, the templates list stores entities as `TemplateGalleryItem:<id>` (a Pothos variant of Journey) while the journey mutations return `Journey:<id>` — even if the mutation routed through Yoga, the typename mismatch would prevent invalidation.
+
+A `shouldCacheResult` predicate that drops nulls fixes (1) but not (2). Because both gaps exist on the same query, the simplest correct answer is no Yoga cache at this coordinate. The DB query is one indexed lookup; the perf cost is negligible compared to the staleness debugging cost.
+
+### Apollo Client (admin) cache also needs a manual fix on journey trash
+
+The same `TemplateGalleryItem` / `Journey` typename mismatch breaks Apollo's normalized cache on the admin side too. The `journeysTrash` mutation returns `Journey:<id>` and updates that entity in cache, but the `TemplateGalleryPage.templates` field references `TemplateGalleryItem:<id>` — a separate cache entry — so the trashed journey continues to appear in collection cards until a manual refresh. Fix is an `update` callback on the trash mutation that evicts both entities and runs `cache.gc()` to prune dangling refs from any `templates` lists:
+
+```ts
+update(cache, { data }) {
+  data?.journeysTrash?.forEach((journey) => {
+    if (journey == null) return
+    cache.evict({ id: cache.identify({ __typename: 'Journey', id: journey.id }) })
+    cache.evict({ id: cache.identify({ __typename: 'TemplateGalleryItem', id: journey.id }) })
+  })
+  cache.gc()
+}
+```
+
+This lives in `apps/journeys-admin/.../TrashJourneyDialog.tsx` alongside the existing `optimisticResponse`.
 
 ## Why `cache.invalidate([{ typename }])` does not work for cached nulls
 
@@ -97,15 +114,17 @@ When a query returns `{ templateGalleryPageBySlug: null }`, the response carries
 
 This is by design in `@envelop/response-cache` and unlikely to change: the plugin's invalidation model is entity-driven, but the entities it knows about come from the response data, not the schema. A null response has no entities to track.
 
-## Why the `shouldCacheResult` predicate is the right fix
+## Why the cross-service invalidation gap forces TTL 0
 
-The plugin invokes `shouldCacheResult({ cacheKey, result })` before writing to the cache. Returning `false` skips the cache write entirely. The resolver still runs every request for a null result (which is fine — the slug regex guard runs first, and the published-filter DB query is a single indexed lookup), but no stale null ever enters the cache.
+A `shouldCacheResult` predicate that drops nulls would correctly handle the unpublish→republish case in isolation. But the `TemplateGalleryPage` response embeds a `templates` list whose contents come from journey-side state. Journey mutations like `journeysTrash`, journey edits, and soft-deletes all live in **`apis/api-journeys`** (NestJS), so they never trigger any auto-invalidation in api-journeys-modern's Yoga cache. Each one would leave a stale published-page cached for the full TTL.
 
-The 60s TTL on the published-branch entry remains intact:
+Three options were considered:
 
-- Public hot path (popular published slug, many readers in 60s): one DB read, then 60s of cache hits.
-- Mutation lands (publish/unpublish/edit/delete): the mutation returns the entity, the plugin auto-invalidates cache entries tracking that entity, the next read is a fresh DB query.
-- Unpublish → republish: cache entry for the published page is evicted on unpublish (entity-ID auto-invalidation); the subsequent draft-window null is never cached; the republish does not need to invalidate anything because there is nothing to invalidate.
+1. **HTTP-based cache invalidation** from api-journeys to api-journeys-modern on every relevant journey mutation. Proper fix but reintroduces the exact kind of inter-service plumbing the simplification removed.
+2. **Lower TTL** (e.g. 5s) — bounded staleness, partial cache benefit. Still surprises users when the staleness window is hit.
+3. **TTL 0** — no Yoga cache for this query. Every public read hits the resolver fresh. One indexed slug lookup per request; trivial for any realistic admin-managed traffic.
+
+Option 3 is what shipped. The cache was originally added at NES-1547 to bound a cache-poisoning concern; the relevant security trade-off can be addressed at the page/edge layer (e.g. `Cache-Control` headers or CDN config) without the Yoga staleness liability.
 
 ## The zombie-process trap
 
@@ -140,7 +159,8 @@ When a cache-staleness bug pattern matches the symptoms above (specific time-win
 ## Related work explored and dropped
 
 - `cache.invalidate([{ typename: 'TemplateGalleryPage' }])` in the publish/unpublish/delete mutations: does not reach cached null entries. Removed before merge.
-- Typename-level invalidation paired with `Query.templateGalleryPageBySlug: 0`: technically works, but caching everything else at the same coordinate with `0` defeats the purpose of having a cache. Removed before merge.
+- Typename-level invalidation paired with `Query.templateGalleryPageBySlug: 0`: equivalent to TTL 0 in net effect. Simplified to just TTL 0.
+- `shouldCacheResult` predicate that drops nulls + keep 60s TTL for hits: would fix the null-stickiness gap but leaves journey-side mutations (trash, edit) with up to 60s staleness, because those mutations don't flow through this server. Replaced with TTL 0.
 - FE `useRevalidateTemplateGallery` hook + dual revalidate of `/template-gallery/<slug>` and `/home/template-gallery/<slug>` on the journeys app: ISR-specific solution that's irrelevant once the page is SSR. Removed before merge.
 - `res.revalidate(path)` for ISR cache busting: SSR removed the ISR layer, so this is a no-op. Removed before merge.
 - `Cache-Control: no-store` on the public page response: kept. Defensive against the browser holding a 404 across the unpublish window.
@@ -148,7 +168,8 @@ When a cache-staleness bug pattern matches the symptoms above (specific time-win
 
 ## Files
 
-- `apis/api-journeys-modern/src/yoga.ts` — the `shouldCacheResult` predicate.
+- `apis/api-journeys-modern/src/yoga.ts` — `'Query.templateGalleryPageBySlug': 0` in the response-cache `ttlPerSchemaCoordinate`.
+- `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TrashJourneyDialog/TrashJourneyDialog.tsx` — Apollo Client `update` callback evicting `Journey:<id>` + `TemplateGalleryItem:<id>` on trash, then `cache.gc()`.
 - `apps/journeys/pages/home/template-gallery/[slug].tsx` — SSR with `Cache-Control: no-store`.
 - `apps/journeys/proxy.ts` — `/template-gallery/*` short-circuit.
 - `apps/journeys-admin/pages/api/preview-template-gallery.ts` — auth + 307 redirect (no revalidate).

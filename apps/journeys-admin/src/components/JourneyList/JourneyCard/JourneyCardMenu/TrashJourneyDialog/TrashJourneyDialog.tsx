@@ -54,6 +54,26 @@ export function TrashJourneyDialog({
           fromTemplateId: fromTemplateId ?? null
         }
       ]
+    },
+    // Drop the trashed journey from any cached `TemplateGalleryPage.templates`
+    // list. The mutation returns `Journey:<id>`, but the templates list stores
+    // entities as the `TemplateGalleryItem:<id>` Pothos variant (same DB row,
+    // different __typename), so Apollo's normal entity-merge can't reach it.
+    // Evict both, then `gc()` prunes any dangling references in lists.
+    update(cache, { data }) {
+      data?.journeysTrash?.forEach((journey) => {
+        if (journey == null) return
+        cache.evict({
+          id: cache.identify({ __typename: 'Journey', id: journey.id })
+        })
+        cache.evict({
+          id: cache.identify({
+            __typename: 'TemplateGalleryItem',
+            id: journey.id
+          })
+        })
+      })
+      cache.gc()
     }
   })
 
