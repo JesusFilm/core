@@ -434,6 +434,8 @@
   "Upload Successful!": "Upload Successful!",
   "Upload Failed!": "अपलोड असफल भयो!",
   "Drop an image here": "यहाँ एउटा छवि छोड्नुहोस्",
+  "or click to browse your files": "वा आफ्ना फाइलहरू ब्राउज गर्न क्लिक गर्नुहोस्",
+  "Uploading... {{progress}}%": "अपलोड हुँदैछ... {{progress}}%",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB",
   "Upload file": "फाइल अपलोड गर्नुहोस्",
   "Gallery": "ग्यालरी",

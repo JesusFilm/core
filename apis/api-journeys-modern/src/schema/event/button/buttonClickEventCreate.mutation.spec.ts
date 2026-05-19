@@ -1,12 +1,14 @@
+import { type Mock, vi } from 'vitest'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
-jest.mock('../utils', () => {
-  const actual = jest.requireActual('../utils')
+vi.mock('../utils', async () => {
+  const actual = await vi.importActual('../utils')
   return {
     ...actual,
-    getEventContext: jest.fn().mockResolvedValue({
+    getEventContext: vi.fn().mockResolvedValue({
       journey: { id: 'journeyId' }
     })
   }
@@ -39,11 +41,12 @@ describe('buttonClickEventCreate', () => {
       journeyId: 'journeyId'
     } as any)
     prismaMock.journey.findUnique.mockResolvedValue({
-      id: 'journeyId'
+      id: 'journeyId',
+      teamId: 'teamId'
     } as any)
 
     // validateBlock uses findFirst; branch on id for child and step
-    ;(prismaMock.block.findFirst as unknown as jest.Mock).mockImplementation(
+    ;(prismaMock.block.findFirst as unknown as Mock).mockImplementation(
       (args: any) => {
         const queriedId = args?.where?.id
         if (queriedId === 'blockId') {
@@ -65,8 +68,8 @@ describe('buttonClickEventCreate', () => {
       }
     )
 
-    prismaMock.visitor.findFirst.mockResolvedValue({ id: 'visitorId' } as any)
-    prismaMock.journeyVisitor.findUnique.mockResolvedValue({
+    prismaMock.visitor.upsert.mockResolvedValue({ id: 'visitorId' } as any)
+    prismaMock.journeyVisitor.upsert.mockResolvedValue({
       journeyId: 'journeyId',
       visitorId: 'visitorId'
     } as any)

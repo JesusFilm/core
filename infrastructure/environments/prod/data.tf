@@ -54,10 +54,6 @@ data "aws_ssm_parameter" "cloudflared_prod_token" {
   name = "/terraform/prd/CLOUDFLARED_PROD_TOKEN"
 }
 
-data "aws_ssm_parameter" "doppler_journeys_admin_prod_token" {
-  name = "/terraform/prd/DOPPLER_JOURNEYS_ADMIN_PROD_TOKEN"
-}
-
 data "aws_ssm_parameter" "doppler_core_prod_token" {
   name = "/terraform/prd/DOPPLER_CORE_PROD_TOKEN"
 }

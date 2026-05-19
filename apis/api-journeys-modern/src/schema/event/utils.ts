@@ -3,11 +3,15 @@ import { GraphQLError } from 'graphql'
 import {
   Block,
   JourneyVisitor,
+  Prisma,
   Visitor,
   prisma
 } from '@core/prisma/journeys/client'
 
 import { logger } from '../logger'
+
+const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
+const VISITOR_UPSERT_MAX_RETRIES = 3
 
 // Queue for visitor interaction emails
 let emailQueue: any
@@ -84,37 +88,22 @@ export async function validateBlockEvent(
     })
   }
 
-  // Get visitor by userId scoped to the journey's team to avoid
-  // returning a visitor from a different team (e.g. jfp-team)
-  const visitor = await prisma.visitor.findFirst({
-    where: { userId, teamId: journey.teamId }
-  })
+  // Upsert visitor + journeyVisitor so block events (e.g. stepViewEventCreate)
+  // can succeed even if they race ahead of journeyViewEventCreate, which would
+  // otherwise be the only path that creates the visitor record.
+  const visitorAndJourneyVisitor = await getByUserIdAndJourneyId(
+    userId,
+    journeyId,
+    journey.teamId
+  )
 
-  if (visitor == null) {
-    throw new GraphQLError('Visitor does not exist', {
+  if (visitorAndJourneyVisitor == null) {
+    throw new GraphQLError('Journey does not exist', {
       extensions: { code: 'NOT_FOUND' }
     })
   }
 
-  // Get or create journey visitor
-  let journeyVisitor = await prisma.journeyVisitor.findUnique({
-    where: {
-      journeyId_visitorId: {
-        journeyId,
-        visitorId: visitor.id
-      }
-    }
-  })
-
-  if (journeyVisitor == null) {
-    // Create journey visitor if it doesn't exist
-    journeyVisitor = await prisma.journeyVisitor.create({
-      data: {
-        journeyId,
-        visitorId: visitor.id
-      }
-    })
-  }
+  const { visitor, journeyVisitor } = visitorAndJourneyVisitor
 
   // Validate step if provided
   if (stepId != null) {
@@ -148,42 +137,73 @@ export async function validateBlock(
 
 export async function getByUserIdAndJourneyId(
   userId: string,
-  journeyId: string
+  journeyId: string,
+  teamId?: string
 ): Promise<{
   visitor: Visitor
   journeyVisitor: JourneyVisitor
 } | null> {
-  const journey = await prisma.journey.findUnique({
-    where: { id: journeyId },
-    select: { teamId: true }
-  })
+  let resolvedTeamId = teamId
+  if (resolvedTeamId == null) {
+    const journey = await prisma.journey.findUnique({
+      where: { id: journeyId },
+      select: { teamId: true }
+    })
 
-  if (journey == null) {
-    return null
+    if (journey == null) {
+      return null
+    }
+    resolvedTeamId = journey.teamId
   }
 
-  const visitor = await prisma.visitor.findFirst({
-    where: { userId, teamId: journey.teamId }
-  })
+  for (let attempt = 1; attempt <= VISITOR_UPSERT_MAX_RETRIES; attempt++) {
+    try {
+      const visitor = await prisma.visitor.upsert({
+        where: {
+          teamId_userId: {
+            teamId: resolvedTeamId,
+            userId
+          }
+        },
+        create: {
+          teamId: resolvedTeamId,
+          userId
+        },
+        update: {}
+      })
+      const journeyVisitor = await prisma.journeyVisitor.upsert({
+        where: {
+          journeyId_visitorId: {
+            journeyId,
+            visitorId: visitor.id
+          }
+        },
+        create: {
+          journeyId,
+          visitorId: visitor.id
+        },
+        update: {}
+      })
 
-  if (visitor == null) {
-    return null
-  }
-
-  const journeyVisitor = await prisma.journeyVisitor.findUnique({
-    where: {
-      journeyId_visitorId: {
-        journeyId,
-        visitorId: visitor.id
+      return { visitor, journeyVisitor }
+    } catch (err) {
+      if (
+        !(err instanceof Prisma.PrismaClientKnownRequestError) ||
+        err.code !== ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
+      ) {
+        throw err
+      }
+      logger.warn(
+        { userId, journeyId, attempt },
+        'Retrying visitor/journeyVisitor upsert after unique constraint race'
+      )
+      if (attempt === VISITOR_UPSERT_MAX_RETRIES) {
+        throw err
       }
     }
-  })
-
-  if (journeyVisitor == null) {
-    return null
   }
 
-  return { visitor, journeyVisitor }
+  throw new Error('unreachable: upsert retry loop exited without return')
 }
 
 // Helper function to get visitor and journey IDs
