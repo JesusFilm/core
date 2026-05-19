@@ -1,3 +1,4 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
@@ -153,6 +154,91 @@ describe('TrashJourneyDialog', () => {
     })
     expect(handleClose).toHaveBeenCalled()
     expect(getByText('Journey trashed')).toBeInTheDocument()
+  })
+
+  it('removes the trashed journey from every cached TemplateGalleryPage.templates list and evicts both entity flavours', async () => {
+    const cache = new InMemoryCache()
+    // Seed two collections that both reference the journey as a
+    // TemplateGalleryItem ref — the Pothos variant the public templates
+    // field stores. The trash update should filter both lists.
+    cache.restore({
+      'TemplateGalleryPage:page-A': {
+        __typename: 'TemplateGalleryPage',
+        id: 'page-A',
+        templates: [
+          { __ref: 'TemplateGalleryItem:journey-id' },
+          { __ref: 'TemplateGalleryItem:other-journey' }
+        ]
+      },
+      'TemplateGalleryPage:page-B': {
+        __typename: 'TemplateGalleryPage',
+        id: 'page-B',
+        templates: [{ __ref: 'TemplateGalleryItem:journey-id' }]
+      },
+      'TemplateGalleryItem:journey-id': {
+        __typename: 'TemplateGalleryItem',
+        id: 'journey-id'
+      },
+      'TemplateGalleryItem:other-journey': {
+        __typename: 'TemplateGalleryItem',
+        id: 'other-journey'
+      },
+      'Journey:journey-id': {
+        __typename: 'Journey',
+        id: 'journey-id',
+        status: JourneyStatus.published
+      }
+    })
+
+    const result = jest.fn(() => ({
+      data: {
+        journeysTrash: [
+          {
+            id: 'journey-id',
+            __typename: 'Journey',
+            status: JourneyStatus.trashed,
+            fromTemplateId: null
+          }
+        ]
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_TRASH,
+              variables: { ids: ['journey-id'] }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <TrashJourneyDialog id="journey-id" open handleClose={jest.fn()} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Delete' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    // Both entity flavours evicted — the Journey and the Pothos variant.
+    await waitFor(() => {
+      const snapshot = cache.extract()
+      expect(snapshot['Journey:journey-id']).toBeUndefined()
+      expect(snapshot['TemplateGalleryItem:journey-id']).toBeUndefined()
+    })
+
+    // Every cached TemplateGalleryPage.templates list is trimmed of the
+    // trashed ref, sibling refs survive.
+    const finalSnapshot = cache.extract()
+    expect(finalSnapshot['TemplateGalleryPage:page-A']?.templates).toEqual([
+      { __ref: 'TemplateGalleryItem:other-journey' }
+    ])
+    expect(finalSnapshot['TemplateGalleryPage:page-B']?.templates).toEqual([])
   })
 
   it('should not call refetchTemplateStats when trashing a journey without fromTemplateId', async () => {
