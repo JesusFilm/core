@@ -32,9 +32,9 @@ Before you can use the Video Importer binary, make sure you have the following:
 
 - The tool needs to connect to the internet to upload files and update backend records. Ensure your network/firewall allows outgoing connections to the endpoints specified in your `.env` file.
 
-### 5. Slack notifications (optional)
+### 5. Slack notifications (required)
 
-After a real run (not `--dry-run`), the importer can post a summary to Slack using a bot token and the Web API (`chat.postMessage`).
+After a real run (not `--dry-run`), the importer posts a summary to Slack using a bot token and the Web API (`chat.postMessage`). The Slack variables are required so remote runs are diagnosable even when the executable is running on someone else's machine.
 
 1. Create a Slack app for your workspace, enable **Bots**, and install it to the workspace.
 2. Under **OAuth & Permissions**, copy the **Bot User OAuth Token** (`xoxb-…`).
@@ -43,7 +43,7 @@ After a real run (not `--dry-run`), the importer can post a summary to Slack usi
    - `SLACK_BOT_TOKEN` — bot token (`xoxb-…`)
    - `SLACK_CHANNEL_ID` — channel ID (starts with `C` for public channels)
 
-Both must be set for notifications to send. Omit them if you do not want Slack. Use `--no-slack` on the command line to skip posting even when these variables are set.
+Both must be set. If they are missing, the importer exits with a configuration error before processing files. If another required `.env` value is missing but Slack is configured, the importer posts a Slack misconfiguration alert and exits. Use `--no-slack` only for local diagnostics when you intentionally do not want a Slack post.
 
 The bot needs the `chat:write` scope (and access to the chosen channel).
 
