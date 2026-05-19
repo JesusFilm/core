@@ -1,4 +1,9 @@
 {
+  "AI chat": "KI-Chat",
+  "Show AI chat": "KI-Chat anzeigen",
+  "Open chat automatically": "Chat automatisch öffnen",
+  "On": "Auf",
+  "On, auto-open": "Ein, automatisch öffnen",
   "%s | Next Steps": "%s | Nächste Schritte",
   "Admin | Next Steps": "Admin | Nächste Schritte",
   "Email Preferences Updated.": "E-Mail-Einstellungen aktualisiert.",
