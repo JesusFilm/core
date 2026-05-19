@@ -15,9 +15,27 @@ import {
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
-import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
+import {
+  MuxVideoUploadProvider,
+  useMuxVideoUpload
+} from '../../../../../../../MuxVideoUploadProvider'
 
 import { AddByFile } from '.'
+
+jest.mock('../../../../../../../MuxVideoUploadProvider', () => {
+  const actual = jest.requireActual(
+    '../../../../../../../MuxVideoUploadProvider'
+  )
+  return {
+    __esModule: true,
+    ...actual,
+    useMuxVideoUpload: jest.fn(actual.useMuxVideoUpload)
+  }
+})
+
+const mockUseMuxVideoUpload = useMuxVideoUpload as jest.MockedFunction<
+  typeof useMuxVideoUpload
+>
 
 jest.mock('@mux/upchunk', () => ({
   UpChunk: {
@@ -156,9 +174,14 @@ const TestWrapper = ({
   </MockedProvider>
 )
 
+const actualUseMuxVideoUpload: typeof useMuxVideoUpload = jest.requireActual(
+  '../../../../../../../MuxVideoUploadProvider'
+).useMuxVideoUpload
+
 describe('AddByFile', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    mockUseMuxVideoUpload.mockImplementation(actualUseMuxVideoUpload)
   })
 
   it('should render drop zone with correct text', () => {
@@ -176,6 +199,60 @@ describe('AddByFile', () => {
       )
     ).toBeInTheDocument()
   })
+
+  it.each([
+    {
+      status: 'uploading' as const,
+      progress: 42,
+      label: 'Uploading...',
+      expectedValueNow: '42'
+    },
+    {
+      status: 'waiting' as const,
+      progress: 0,
+      label: 'Waiting in queue...',
+      expectedValueNow: null
+    },
+    {
+      status: 'processing' as const,
+      progress: 0,
+      label: 'Processing...',
+      expectedValueNow: null
+    }
+  ])(
+    'should replace upload button with progress bar for each status',
+    ({ status, progress, label, expectedValueNow }) => {
+      const mockContext: ReturnType<typeof useMuxVideoUpload> = {
+        getUploadStatus: () => ({
+          videoBlockId: 'videoBlockId',
+          file: new File(['file'], 'testFile.mp4', { type: 'video/mp4' }),
+          status,
+          progress
+        }),
+        addUploadTask: jest.fn(),
+        cancelUploadForBlock: jest.fn()
+      }
+      mockUseMuxVideoUpload.mockReturnValue(mockContext)
+
+      render(
+        <TestWrapper>
+          <AddByFile onChange={jest.fn()} />
+        </TestWrapper>
+      )
+
+      expect(
+        screen.queryByRole('button', { name: /Upload file/i })
+      ).not.toBeInTheDocument()
+      const progressBar = screen.getByRole('progressbar')
+      expect(progressBar).toBeInTheDocument()
+      if (expectedValueNow != null) {
+        expect(progressBar).toHaveAttribute('aria-valuenow', expectedValueNow)
+      } else {
+        expect(progressBar).not.toHaveAttribute('aria-valuenow')
+      }
+      expect(screen.getAllByText(label).length).toBeGreaterThan(0)
+    }
+  )
 
   it('should render upload button', () => {
     render(
