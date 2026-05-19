@@ -21,7 +21,7 @@ builder.mutationField('stepNextEventCreate', (t) =>
       const { visitor, journeyId } = await validateBlockEvent(
         userId,
         input.blockId,
-        input.blockId
+        input.nextStepId
       )
 
       const stepNextEvent = await prisma.event.create({
