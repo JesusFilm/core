@@ -77,7 +77,12 @@ export function MediaLibraryList({
                 alt=""
                 loading="lazy"
                 decoding="async"
-                sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  borderRadius: 2
+                }}
               />
             </ButtonBase>
           </ImageListItem>
