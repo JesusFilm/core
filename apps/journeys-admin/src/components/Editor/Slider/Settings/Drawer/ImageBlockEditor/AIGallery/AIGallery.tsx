@@ -56,9 +56,12 @@ export function AIGallery({
       })
 
       const cloudflareId = data?.createImageBySegmindPrompt?.id
-      const cloudflareUploadKey =
-        process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY
-      if (cloudflareId != null && cloudflareUploadKey != null && cloudflareUploadKey !== '') {
+      const cloudflareUploadKey = process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY
+      if (
+        cloudflareId != null &&
+        cloudflareUploadKey != null &&
+        cloudflareUploadKey !== ''
+      ) {
         const url = `https://imagedelivery.net/${cloudflareUploadKey}/${cloudflareId}`
         prependCloudflareImage(
           cache,

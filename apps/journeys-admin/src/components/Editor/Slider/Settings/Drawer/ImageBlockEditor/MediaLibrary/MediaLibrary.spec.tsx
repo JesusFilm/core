@@ -293,7 +293,9 @@ describe('MediaLibrary', () => {
     await waitFor(() => {
       const tiles = screen.getAllByTestId(/^media-library-image-/)
       const ids = tiles.map((tile) => tile.getAttribute('data-testid'))
-      expect(ids.filter((id) => id === 'media-library-image-img-0')).toHaveLength(1)
+      expect(
+        ids.filter((id) => id === 'media-library-image-img-0')
+      ).toHaveLength(1)
     })
   })
 
