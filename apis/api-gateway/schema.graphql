@@ -1740,7 +1740,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     Returns the elements in the list that come after the specified cursor.
     """
     after: String
-  ): VisitorsConnection! @join__field(graph: API_JOURNEYS) 
+  ): VisitorsConnection! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   """
   Get a single visitor
   """
@@ -2449,7 +2449,7 @@ type Visitor @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
 """
 An edge in a connection.
 """
-type VisitorEdge @join__type(graph: API_JOURNEYS)  {
+type VisitorEdge @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   A cursor for use in pagination.
   """
@@ -2463,7 +2463,7 @@ type VisitorEdge @join__type(graph: API_JOURNEYS)  {
 """
 Information about pagination in a connection.
 """
-type PageInfo @join__type(graph: API_JOURNEYS)  @join__type(graph: API_MEDIA)  {
+type PageInfo @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  {
   """
   When paginating forwards, are there more items?
   """
@@ -2485,7 +2485,7 @@ type PageInfo @join__type(graph: API_JOURNEYS)  @join__type(graph: API_MEDIA)  {
 """
 A list of visitors connected with a team.
 """
-type VisitorsConnection @join__type(graph: API_JOURNEYS)  {
+type VisitorsConnection @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   A list of edges.
   """
