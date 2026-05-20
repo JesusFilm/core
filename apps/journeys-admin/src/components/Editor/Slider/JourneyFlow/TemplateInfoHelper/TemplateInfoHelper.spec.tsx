@@ -4,12 +4,18 @@ import userEvent from '@testing-library/user-event'
 import { TemplateInfoHelper } from './TemplateInfoHelper'
 
 describe('TemplateInfoHelper', () => {
-  it('renders the trigger button collapsed by default', () => {
+  it('renders the pill trigger with info and chevron-down icons collapsed by default', () => {
     render(<TemplateInfoHelper />)
 
     const trigger = screen.getByTestId('TemplateInfoHelperTrigger')
     expect(trigger).toHaveAttribute('aria-expanded', 'false')
     expect(trigger).toHaveAttribute('aria-label', 'Open template info')
+    expect(
+      screen.getByTestId('TemplateInfoHelperTriggerInfoIcon')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByTestId('TemplateInfoHelperTriggerChevronIcon')
+    ).toBeInTheDocument()
     expect(screen.queryByTestId('TemplateInfoPanel')).not.toBeInTheDocument()
   })
 
@@ -20,31 +26,31 @@ describe('TemplateInfoHelper', () => {
     fireEvent.click(trigger)
 
     expect(trigger).toHaveAttribute('aria-expanded', 'true')
-    expect(trigger).toHaveAttribute('aria-label', 'Close template info')
     expect(screen.getByTestId('TemplateInfoPanel')).toBeInTheDocument()
   })
 
-  it('closes the panel on a second trigger click', () => {
-    render(<TemplateInfoHelper />)
-
-    const trigger = screen.getByTestId('TemplateInfoHelperTrigger')
-    fireEvent.click(trigger)
-    fireEvent.click(trigger)
-
-    expect(trigger).toHaveAttribute('aria-expanded', 'false')
-    // Fade with `unmountOnExit` removes the panel after the transition.
-    return waitFor(() =>
-      expect(screen.queryByTestId('TemplateInfoPanel')).not.toBeInTheDocument()
-    )
-  })
-
-  it('mounts a contained `TemplateInfoPanel` when open', () => {
+  it('mounts a contained `TemplateInfoPanel` with a close button when open', () => {
     render(<TemplateInfoHelper />)
     fireEvent.click(screen.getByTestId('TemplateInfoHelperTrigger'))
 
     const panel = screen.getByTestId('TemplateInfoPanel')
     expect(panel).toHaveClass('MuiPaper-root')
     expect(panel).toHaveClass('MuiPaper-rounded')
+    expect(screen.getByTestId('TemplateInfoPanelClose')).toBeInTheDocument()
+  })
+
+  it('closes the panel when the bottom close button is clicked and returns focus to the trigger', () => {
+    render(<TemplateInfoHelper />)
+    const trigger = screen.getByTestId('TemplateInfoHelperTrigger')
+    fireEvent.click(trigger)
+
+    fireEvent.click(screen.getByTestId('TemplateInfoPanelClose'))
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(trigger).toHaveFocus()
+    return waitFor(() =>
+      expect(screen.queryByTestId('TemplateInfoPanel')).not.toBeInTheDocument()
+    )
   })
 
   it('closes when Escape is pressed and returns focus to the trigger', () => {
@@ -99,7 +105,7 @@ describe('TemplateInfoHelper', () => {
     await user.click(howToCreate)
     expect(howToCreate).toHaveAttribute('aria-expanded', 'true')
 
-    // Close
+    // Close via Escape
     fireEvent.keyDown(document, { key: 'Escape' })
     await waitFor(() =>
       expect(screen.queryByTestId('TemplateInfoPanel')).not.toBeInTheDocument()

@@ -1,10 +1,13 @@
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
+
+import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
 import { HowToCreateSection } from './HowToCreateSection'
 import { SharingAndPublishingSection } from './SharingAndPublishingSection'
@@ -36,11 +39,19 @@ export interface TemplateInfoPanelProps {
    *   the Team Templates tab where a parent `Drawer`/`SwipeableDrawer`
    *   supplies the chrome (NES-1538).
    * - `true` — self-contained `Paper` with rounded corners on all sides,
-   *   soft elevation, and a fixed width. Used by the editor canvas floating
-   *   helper, where the panel floats free rather than docking to a drawer
-   *   (NES-1642, Figma `39662-67865`).
+   *   soft elevation, a fixed width, and a capped height with internal
+   *   scrolling for the accordion content. Used by the editor canvas
+   *   floating helper, where the panel floats free rather than docking to a
+   *   drawer (NES-1642, Figma `39662-67865`).
    */
   contained?: boolean
+  /**
+   * Optional close handler. When supplied, the panel renders a bottom row
+   * with a chevron-up button that fires this callback — used by the
+   * editor canvas floating helper (NES-1642) to dismiss the floating
+   * panel. Only meaningful under `contained={true}`; ignored otherwise.
+   */
+  onClose?: () => void
   className?: string
 }
 
@@ -63,6 +74,7 @@ export interface TemplateInfoPanelProps {
 export function TemplateInfoPanel({
   defaultExpanded,
   contained = false,
+  onClose,
   className
 }: TemplateInfoPanelProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -76,78 +88,78 @@ export function TemplateInfoPanel({
     }
   }
 
-  const innerContent = (
-    <>
-      <Stack
+  const header = (
+    <Stack
+      sx={{
+        px: 2.5,
+        pt: 3,
+        pb: 2.5,
+        gap: 1,
+        color: 'text.primary'
+      }}
+    >
+      <Typography
+        component="h2"
         sx={{
-          px: 2.5,
-          pt: 3,
-          pb: 2.5,
-          gap: 1,
-          color: 'text.primary'
+          fontFamily: 'Montserrat, sans-serif',
+          fontWeight: 600,
+          fontSize: 22,
+          lineHeight: '27px'
         }}
       >
-        <Typography
-          component="h2"
-          sx={{
-            fontFamily: 'Montserrat, sans-serif',
-            fontWeight: 600,
-            fontSize: 22,
-            lineHeight: '27px'
-          }}
-        >
-          {t('What templates are about:')}
-        </Typography>
-        <Typography
-          sx={{
-            fontFamily: 'Open Sans, sans-serif',
-            fontWeight: 400,
-            fontSize: 16,
-            lineHeight: '24px'
-          }}
-        >
-          {t(
-            'You can share projects created on our platform with others. This allows you to track the performance of every project generated from your template.'
-          )}
-        </Typography>
-      </Stack>
-      <Divider />
-      <Box>
-        <TemplateInfoAccordion
-          id="templateTypes"
-          title={t('Template Types')}
-          expanded={expanded === 'templateTypes'}
-          onChange={makeHandleChange('templateTypes')}
-        >
-          <TemplateTypesSection />
-        </TemplateInfoAccordion>
-        <TemplateInfoAccordion
-          id="howToCreate"
-          title={t('How to create')}
-          expanded={expanded === 'howToCreate'}
-          onChange={makeHandleChange('howToCreate')}
-        >
-          <HowToCreateSection />
-        </TemplateInfoAccordion>
-        <TemplateInfoAccordion
-          id="trackingAndAnalytics"
-          title={t('Tracking and Analytics')}
-          expanded={expanded === 'trackingAndAnalytics'}
-          onChange={makeHandleChange('trackingAndAnalytics')}
-        >
-          <TrackingAndAnalyticsSection />
-        </TemplateInfoAccordion>
-        <TemplateInfoAccordion
-          id="sharingAndPublishing"
-          title={t('Sharing and Publishing')}
-          expanded={expanded === 'sharingAndPublishing'}
-          onChange={makeHandleChange('sharingAndPublishing')}
-          isLast
-        >
-          <SharingAndPublishingSection />
-        </TemplateInfoAccordion>
-      </Box>
-    </>
+        {t('What templates are about:')}
+      </Typography>
+      <Typography
+        sx={{
+          fontFamily: 'Open Sans, sans-serif',
+          fontWeight: 400,
+          fontSize: 16,
+          lineHeight: '24px'
+        }}
+      >
+        {t(
+          'You can share projects created on our platform with others. This allows you to track the performance of every project generated from your template.'
+        )}
+      </Typography>
+    </Stack>
+  )
+
+  const accordions = (
+    <Box>
+      <TemplateInfoAccordion
+        id="templateTypes"
+        title={t('Template Types')}
+        expanded={expanded === 'templateTypes'}
+        onChange={makeHandleChange('templateTypes')}
+      >
+        <TemplateTypesSection />
+      </TemplateInfoAccordion>
+      <TemplateInfoAccordion
+        id="howToCreate"
+        title={t('How to create')}
+        expanded={expanded === 'howToCreate'}
+        onChange={makeHandleChange('howToCreate')}
+      >
+        <HowToCreateSection />
+      </TemplateInfoAccordion>
+      <TemplateInfoAccordion
+        id="trackingAndAnalytics"
+        title={t('Tracking and Analytics')}
+        expanded={expanded === 'trackingAndAnalytics'}
+        onChange={makeHandleChange('trackingAndAnalytics')}
+      >
+        <TrackingAndAnalyticsSection />
+      </TemplateInfoAccordion>
+      <TemplateInfoAccordion
+        id="sharingAndPublishing"
+        title={t('Sharing and Publishing')}
+        expanded={expanded === 'sharingAndPublishing'}
+        onChange={makeHandleChange('sharingAndPublishing')}
+        isLast
+      >
+        <SharingAndPublishingSection />
+      </TemplateInfoAccordion>
+    </Box>
   )
 
   if (contained) {
@@ -158,12 +170,42 @@ export function TemplateInfoPanel({
         data-testid="TemplateInfoPanel"
         sx={{
           width: 320,
+          maxHeight: 472,
           borderRadius: 3,
           overflow: 'hidden',
-          bgcolor: 'background.paper'
+          bgcolor: 'background.paper',
+          display: 'flex',
+          flexDirection: 'column'
         }}
       >
-        {innerContent}
+        <Box sx={{ flex: '0 0 auto' }}>{header}</Box>
+        <Box
+          data-testid="TemplateInfoPanelScrollArea"
+          sx={{ flex: '1 1 auto', minHeight: 0, overflowY: 'auto' }}
+        >
+          <Divider />
+          {accordions}
+        </Box>
+        {onClose != null && (
+          <Box sx={{ flex: '0 0 auto' }}>
+            <Divider />
+            <Stack
+              direction="row"
+              justifyContent="flex-end"
+              alignItems="center"
+              sx={{ px: 1, py: 0.5 }}
+            >
+              <IconButton
+                data-testid="TemplateInfoPanelClose"
+                aria-label={t('Close template info')}
+                onClick={onClose}
+                size="small"
+              >
+                <ChevronUpIcon />
+              </IconButton>
+            </Stack>
+          </Box>
+        )}
       </Paper>
     )
   }
@@ -174,7 +216,9 @@ export function TemplateInfoPanel({
       data-testid="TemplateInfoPanel"
       sx={{ width: '100%' }}
     >
-      {innerContent}
+      {header}
+      <Divider />
+      {accordions}
     </Box>
   )
 }

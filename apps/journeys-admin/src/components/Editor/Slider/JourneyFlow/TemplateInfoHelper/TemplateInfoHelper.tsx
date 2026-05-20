@@ -1,11 +1,13 @@
 import Box from '@mui/material/Box'
+import ButtonBase from '@mui/material/ButtonBase'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 import Fade from '@mui/material/Fade'
-import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
 import Unstable_TrapFocus from '@mui/material/Unstable_TrapFocus'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { TemplateInfoPanel } from '../../../../TemplateInfoPanel'
@@ -15,12 +17,14 @@ const PANEL_ID = 'TemplateInfoHelperPanel'
 /**
  * TemplateInfoHelper — the floating ℹ️ entry point that lives in the top-left
  * `Panel` slot of `JourneyFlow` when the journey being edited is a template
- * (NES-1642). Clicking the trigger reveals a self-contained `TemplateInfoPanel`
- * floating against the canvas; closing returns focus to the trigger.
+ * (NES-1642). Clicking the trigger pill reveals a self-contained
+ * `TemplateInfoPanel` that visually covers the trigger; the panel carries its
+ * own chevron-up close affordance at the bottom that mirrors the trigger's
+ * chevron-down when collapsed.
  *
- * Close paths: re-click trigger, click outside the floating wrapper, press
- * Escape. Focus moves into the panel on open (trapped while open) and returns
- * to the trigger button on close.
+ * Close paths: click the panel's bottom chevron-up button, click outside the
+ * floating wrapper, or press Escape. Focus moves into the panel on open
+ * (trapped while open) and returns to the trigger button on close.
  *
  * Animation mirrors the sibling `JourneyAnalyticsCard` slot (`Fade`) so the
  * two top-left affordances feel motion-symmetric.
@@ -57,38 +61,49 @@ export function TemplateInfoHelper(): ReactElement {
 
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
-      <Box sx={{ position: 'relative' }}>
-        <IconButton
+      <Box sx={{ position: 'relative', width: 'fit-content' }}>
+        <ButtonBase
           ref={triggerRef}
           data-testid="TemplateInfoHelperTrigger"
-          aria-label={open ? t('Close template info') : t('Open template info')}
+          aria-label={t('Open template info')}
           aria-expanded={open}
           aria-controls={PANEL_ID}
           onClick={handleToggle}
           sx={{
             bgcolor: 'background.paper',
             color: 'text.primary',
+            borderRadius: 6,
             boxShadow: 2,
+            px: 1.5,
+            py: 1,
             '&:hover': {
-              bgcolor: 'background.paper'
+              bgcolor: 'background.paper',
+              boxShadow: 3
+            },
+            '&:focus-visible': {
+              outline: (theme) => `2px solid ${theme.palette.primary.main}`,
+              outlineOffset: 2
             }
           }}
         >
-          <InformationCircleContainedIcon />
-        </IconButton>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <InformationCircleContainedIcon data-testid="TemplateInfoHelperTriggerInfoIcon" />
+            <ChevronDownIcon data-testid="TemplateInfoHelperTriggerChevronIcon" />
+          </Stack>
+        </ButtonBase>
         <Fade in={open} unmountOnExit>
           <Box
             id={PANEL_ID}
             sx={{
               position: 'absolute',
-              top: 'calc(100% + 8px)',
+              top: 0,
               left: 0,
               zIndex: (theme) => theme.zIndex.fab
             }}
           >
             <Unstable_TrapFocus open={open} disableAutoFocus={false}>
               <Box tabIndex={-1}>
-                <TemplateInfoPanel contained />
+                <TemplateInfoPanel contained onClose={handleClose} />
               </Box>
             </Unstable_TrapFocus>
           </Box>

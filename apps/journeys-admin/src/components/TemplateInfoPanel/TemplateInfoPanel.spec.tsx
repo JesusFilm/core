@@ -145,5 +145,55 @@ describe('TemplateInfoPanel', () => {
         screen.getByRole('button', { name: 'Sharing and Publishing' })
       ).toHaveAttribute('aria-expanded', 'true')
     })
+
+    it('wraps the accordions in a dedicated scroll area under contained chrome', () => {
+      render(<TemplateInfoPanel contained />)
+
+      const scrollArea = screen.getByTestId('TemplateInfoPanelScrollArea')
+      expect(scrollArea).toBeInTheDocument()
+      // The four accordion summaries live inside the scroll area, not in the
+      // sticky header above it.
+      expect(
+        screen.getByRole('button', { name: 'Template Types' })
+      ).toBeInstanceOf(HTMLElement)
+      expect(scrollArea).toContainElement(
+        screen.getByRole('button', { name: 'Template Types' })
+      )
+    })
+  })
+
+  describe('onClose close affordance', () => {
+    it('does not render a close button when onClose is omitted', () => {
+      render(<TemplateInfoPanel contained />)
+
+      expect(
+        screen.queryByTestId('TemplateInfoPanelClose')
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders a close button when onClose is provided under contained chrome', () => {
+      render(<TemplateInfoPanel contained onClose={() => undefined} />)
+
+      const closeButton = screen.getByTestId('TemplateInfoPanelClose')
+      expect(closeButton).toBeInTheDocument()
+      expect(closeButton).toHaveAttribute('aria-label', 'Close template info')
+    })
+
+    it('invokes onClose when the close button is clicked', () => {
+      const handleClose = jest.fn()
+      render(<TemplateInfoPanel contained onClose={handleClose} />)
+
+      fireEvent.click(screen.getByTestId('TemplateInfoPanelClose'))
+
+      expect(handleClose).toHaveBeenCalledTimes(1)
+    })
+
+    it('ignores onClose when contained is false', () => {
+      render(<TemplateInfoPanel onClose={() => undefined} />)
+
+      expect(
+        screen.queryByTestId('TemplateInfoPanelClose')
+      ).not.toBeInTheDocument()
+    })
   })
 })
