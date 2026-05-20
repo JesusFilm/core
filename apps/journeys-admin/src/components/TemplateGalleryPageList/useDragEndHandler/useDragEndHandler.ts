@@ -151,7 +151,7 @@ export function useDragEndHandler(
           movingFromSource ??
           (movingFromUnsectioned != null
             ? {
-                __typename: 'Journey' as const,
+                __typename: 'TemplateGalleryItem' as const,
                 id: movingFromUnsectioned.id,
                 title: movingFromUnsectioned.title,
                 primaryImageBlock:
@@ -245,7 +245,7 @@ export function useDragEndHandler(
               id: sourceCollection.id
             })
             const movedRef = cache.identify({
-              __typename: 'Journey',
+              __typename: 'TemplateGalleryItem',
               id: templateId
             })
             if (sourceCacheId == null || movedRef == null) return

@@ -135,13 +135,13 @@ describe('useCollectionForm', () => {
         status: TemplateGalleryPageStatus.published,
         templates: [
           {
-            __typename: 'Journey',
+            __typename: 'TemplateGalleryItem',
             id: 'j1',
             title: 'A',
             primaryImageBlock: null
           },
           {
-            __typename: 'Journey',
+            __typename: 'TemplateGalleryItem',
             id: 'j2',
             title: 'B',
             primaryImageBlock: null
@@ -331,7 +331,7 @@ describe('useCollectionForm', () => {
         creatorName: 'Old',
         templates: [
           {
-            __typename: 'Journey',
+            __typename: 'TemplateGalleryItem',
             id: 'j1',
             title: 'A',
             primaryImageBlock: null
@@ -437,13 +437,13 @@ describe('useCollectionForm', () => {
         title: 'Old',
         templates: [
           {
-            __typename: 'Journey',
+            __typename: 'TemplateGalleryItem',
             id: 'j1',
             title: 'A',
             primaryImageBlock: null
           },
           {
-            __typename: 'Journey',
+            __typename: 'TemplateGalleryItem',
             id: 'j2',
             title: 'B',
             primaryImageBlock: null

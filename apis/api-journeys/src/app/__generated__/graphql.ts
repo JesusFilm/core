@@ -320,99 +320,6 @@ export class TypographyBlockSettingsInput {
     color?: Nullable<string>;
 }
 
-export class JourneyViewEventCreateInput {
-    id?: Nullable<string>;
-    journeyId: string;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-}
-
-export class StepViewEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    value?: Nullable<string>;
-}
-
-export class StepNextEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    nextStepId: string;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-}
-
-export class StepPreviousEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    previousStepId: string;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-}
-
-export class VideoStartEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    position?: Nullable<number>;
-    label?: Nullable<string>;
-    value?: Nullable<VideoBlockSource>;
-}
-
-export class VideoPlayEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    position?: Nullable<number>;
-    label?: Nullable<string>;
-    value?: Nullable<VideoBlockSource>;
-}
-
-export class VideoPauseEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    position?: Nullable<number>;
-    label?: Nullable<string>;
-    value?: Nullable<VideoBlockSource>;
-}
-
-export class VideoCompleteEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    position?: Nullable<number>;
-    label?: Nullable<string>;
-    value?: Nullable<VideoBlockSource>;
-}
-
-export class VideoExpandEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    position?: Nullable<number>;
-    label?: Nullable<string>;
-    value?: Nullable<VideoBlockSource>;
-}
-
-export class VideoCollapseEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    position?: Nullable<number>;
-    label?: Nullable<string>;
-    value?: Nullable<VideoBlockSource>;
-}
-
-export class VideoProgressEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    position?: Nullable<number>;
-    progress: number;
-    label?: Nullable<string>;
-    value?: Nullable<VideoBlockSource>;
-}
-
 export class HostUpdateInput {
     title?: Nullable<string>;
     location?: Nullable<string>;
@@ -760,28 +667,6 @@ export abstract class IMutation {
     __typename?: 'IMutation';
 
     abstract blockRestore(id: string): Block[] | Promise<Block[]>;
-
-    abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): Nullable<JourneyViewEvent> | Promise<Nullable<JourneyViewEvent>>;
-
-    abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
-
-    abstract stepNextEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
-
-    abstract stepPreviousEventCreate(input: StepPreviousEventCreateInput): StepPreviousEvent | Promise<StepPreviousEvent>;
-
-    abstract videoStartEventCreate(input: VideoStartEventCreateInput): VideoStartEvent | Promise<VideoStartEvent>;
-
-    abstract videoPlayEventCreate(input: VideoPlayEventCreateInput): VideoPlayEvent | Promise<VideoPlayEvent>;
-
-    abstract videoPauseEventCreate(input: VideoPauseEventCreateInput): VideoPauseEvent | Promise<VideoPauseEvent>;
-
-    abstract videoCompleteEventCreate(input: VideoCompleteEventCreateInput): VideoCompleteEvent | Promise<VideoCompleteEvent>;
-
-    abstract videoExpandEventCreate(input: VideoExpandEventCreateInput): VideoExpandEvent | Promise<VideoExpandEvent>;
-
-    abstract videoCollapseEventCreate(input: VideoCollapseEventCreateInput): VideoCollapseEvent | Promise<VideoCollapseEvent>;
-
-    abstract videoProgressEventCreate(input: VideoProgressEventCreateInput): VideoProgressEvent | Promise<VideoProgressEvent>;
 
     abstract hostCreate(teamId: string, input: HostCreateInput): Host | Promise<Host>;
 
