@@ -107,7 +107,9 @@ export function useDragEndHandler(
         return
     }
 
-    dragInFlightRef.current = true
+    // `setDragInFlight` in the parent is a wrapper that flips both the
+    // state and the ref together — call it once, never set the ref
+    // directly here (Mike review, NES-1644).
     setDragInFlight(true)
     try {
       const sameCollection =
@@ -279,7 +281,6 @@ export function useDragEndHandler(
         { variant: 'error', preventDuplicate: true }
       )
     } finally {
-      dragInFlightRef.current = false
       setDragInFlight(false)
     }
   }

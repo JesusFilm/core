@@ -170,6 +170,14 @@ describe('preview-template-gallery', () => {
     }
   )
 
+  it('rejects a malformed slug WITHOUT spending a Firebase token round-trip', async () => {
+    // Slug validation must run before getApiRequestTokens so obviously
+    // bad input doesn't burn an auth call (Mike review, NES-1644).
+    const { res } = mockResponse()
+    await handler(previewReq({ slug: '../evil' }), res)
+    expect(mockGetApiRequestTokens).not.toHaveBeenCalled()
+  })
+
   it('redirects with 307 to the public template-gallery URL on success', async () => {
     const { res, redirect } = mockResponse()
     await handler(previewReq(), res)

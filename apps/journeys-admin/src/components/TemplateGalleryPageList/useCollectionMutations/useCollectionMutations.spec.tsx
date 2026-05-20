@@ -454,8 +454,12 @@ describe('useCollectionMutations', () => {
         wrapper: wrapperWithMocks([slowMock])
       })
 
+      // Capture the in-flight promise so we can await its actual
+      // resolution rather than a fixed timeout — brittle under CI load
+      // (Mike review, NES-1644).
+      let unpublishPromise: Promise<void> | undefined
       act(() => {
-        void result.current.unpublish(collection)
+        unpublishPromise = result.current.unpublish(collection)
       })
       await waitFor(() => {
         expect(result.current.busyId).toBe('page-7')
@@ -465,8 +469,10 @@ describe('useCollectionMutations', () => {
       // code must observe `mountedRef.current === false` and skip.
       unmount()
 
-      // Let Apollo deliver the mock response after the delay.
-      await new Promise((resolve) => setTimeout(resolve, 200))
+      // Deterministically wait for the mutation to actually settle —
+      // not a fixed delay. Apollo's mock `delay: 80` still drives real
+      // time, but we await the exact promise instead of guessing.
+      await unpublishPromise
 
       expect(mockEnqueueSnackbar).not.toHaveBeenCalled()
     })

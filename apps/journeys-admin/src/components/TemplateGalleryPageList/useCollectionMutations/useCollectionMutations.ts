@@ -73,6 +73,18 @@ export function useCollectionMutations(): CollectionMutations {
     })
   }
 
+  // Surface a visible info toast when a second mutation is dropped by
+  // the synchronous submit guard — without it, the user clicks
+  // something and nothing happens, with no signal explaining why
+  // (Mike review, NES-1644).
+  function showBusy(): void {
+    if (!mountedRef.current) return
+    enqueueSnackbar(t('Please wait for the current action to finish.'), {
+      variant: 'info',
+      preventDuplicate: true
+    })
+  }
+
   async function publish(
     collection: TemplateGalleryPage
   ): Promise<TemplateGalleryPage | null> {
@@ -81,7 +93,10 @@ export function useCollectionMutations(): CollectionMutations {
     // before its mutation resolved. `busyId` (state) can't gate this
     // synchronously because React batches the setBusyId call; the ref
     // does — see the submittingRef comment near the hook top.
-    if (submittingRef.current) return null
+    if (submittingRef.current) {
+      showBusy()
+      return null
+    }
     submittingRef.current = true
     setBusyId(collection.id)
     try {
@@ -120,7 +135,10 @@ export function useCollectionMutations(): CollectionMutations {
   }
 
   async function unpublish(collection: TemplateGalleryPage): Promise<void> {
-    if (submittingRef.current) return
+    if (submittingRef.current) {
+      showBusy()
+      return
+    }
     submittingRef.current = true
     setBusyId(collection.id)
     try {
@@ -151,7 +169,10 @@ export function useCollectionMutations(): CollectionMutations {
   }
 
   async function ungroup(collection: TemplateGalleryPage): Promise<void> {
-    if (submittingRef.current) return
+    if (submittingRef.current) {
+      showBusy()
+      return
+    }
     submittingRef.current = true
     setBusyId(collection.id)
     try {

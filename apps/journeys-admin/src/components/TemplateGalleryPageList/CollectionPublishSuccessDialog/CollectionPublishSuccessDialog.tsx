@@ -60,6 +60,9 @@ export function CollectionPublishSuccessDialog({
   }
 
   function handleView(): void {
+    // `viewDisabled` already gates at runtime, but TypeScript can't
+    // narrow `slug` through a boolean — the explicit `slug == null`
+    // here is the type-narrowing pair, not a redundant safety check.
     if (viewDisabled || slug == null) return
     window.open(
       `/api/preview-template-gallery?slug=${encodeURIComponent(slug)}`,

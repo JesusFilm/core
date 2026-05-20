@@ -236,6 +236,70 @@ describe('ArchiveJourney', () => {
       await waitFor(() => expect(unassignResult).toHaveBeenCalled())
     })
 
+    it('fires the success snackbar BEFORE the unassign mutation resolves (does not block UX)', async () => {
+      // Mike review (NES-1644): waitFor doesn't assert ordering. Hold
+      // the unassign mock indefinitely; the snackbar must still appear.
+      const archiveResult = jest.fn(() => ({
+        data: {
+          journeysArchive: [
+            {
+              id: 'journey-id',
+              __typename: 'Journey',
+              status: JourneyStatus.archived
+            }
+          ]
+        }
+      }))
+      let unassignCalled = false
+      const unassignNeverResolves = new Promise<{
+        data: { templateGalleryPageAssignJourney: null }
+      }>(() => {
+        // Intentionally never resolves.
+      })
+
+      const { getByRole, getByText } = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: JOURNEY_ARCHIVE,
+                variables: { ids: ['journey-id'] }
+              },
+              result: archiveResult
+            },
+            {
+              request: {
+                query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
+                variables: { journeyId: 'journey-id', pageId: null }
+              },
+              result: () => {
+                unassignCalled = true
+                return unassignNeverResolves as unknown as {
+                  data: { templateGalleryPageAssignJourney: null }
+                }
+              }
+            }
+          ]}
+        >
+          <SnackbarProvider>
+            <ArchiveJourney
+              status={JourneyStatus.draft}
+              id="journey-id"
+              published={false}
+              handleClose={handeClose}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(getByRole('menuitem', { name: 'Archive' }))
+      await waitFor(() => expect(archiveResult).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Journey Archived')).toBeInTheDocument()
+      )
+      expect(unassignCalled).toBe(true)
+    })
+
     it('still surfaces success when the unassign mutation fails (best-effort)', async () => {
       const warn = jest.spyOn(console, 'warn').mockImplementation(noop)
       const archiveResult = jest.fn(() => ({

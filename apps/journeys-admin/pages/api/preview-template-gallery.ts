@@ -42,6 +42,15 @@ export default async function handler(
     return res.status(500).json({ error: 'Missing Environment Variables' })
   }
 
+  // Validate slug shape BEFORE Firebase token verification — the regex
+  // check is microseconds; the token round-trip is hundreds of ms.
+  // A malformed slug should 400 immediately without spending an auth
+  // call on it (Mike review, NES-1644).
+  const slug = req.query.slug
+  if (!isValidTemplateGallerySlug(slug)) {
+    return res.status(400).json({ error: 'Invalid slug' })
+  }
+
   try {
     const tokens = await getApiRequestTokens(req, authConfig)
     if (tokens == null) {
@@ -49,11 +58,6 @@ export default async function handler(
     }
   } catch (e) {
     return res.status(403).json({ error: 'Not authorized' })
-  }
-
-  const slug = req.query.slug
-  if (!isValidTemplateGallerySlug(slug)) {
-    return res.status(400).json({ error: 'Invalid slug' })
   }
 
   res.redirect(307, `${journeysUrl}/template-gallery/${slug}`)

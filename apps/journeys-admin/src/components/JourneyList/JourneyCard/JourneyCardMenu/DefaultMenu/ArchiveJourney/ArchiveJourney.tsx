@@ -1,6 +1,5 @@
-import { ApolloQueryResult, Reference, gql, useMutation } from '@apollo/client'
+import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import CircularProgress from '@mui/material/CircularProgress'
-import reject from 'lodash/reject'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
@@ -13,6 +12,7 @@ import { GetAdminJourneys } from '../../../../../../../__generated__/GetAdminJou
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { JourneyArchive } from '../../../../../../../__generated__/JourneyArchive'
 import { JourneyUnarchive } from '../../../../../../../__generated__/JourneyUnarchive'
+import { evictFromTemplateGalleryPages } from '../../../../../../libs/evictFromTemplateGalleryPages'
 import { useTemplateGalleryPageAssignJourneyMutation } from '../../../../../../libs/useTemplateGalleryPageAssignJourneyMutation'
 import { MenuItem } from '../../../../../MenuItem'
 
@@ -70,54 +70,18 @@ export function ArchiveJourney({
         }
       ]
     },
-    // Mirrors the TrashJourneyDialog cleanup: archived journeys are
-    // filtered out of `TemplateGalleryPage.templates` by the resolver
-    // (status: published only), so the cached templates lists must
-    // also drop the ref. Apollo's dangling-ref broadcast leaves stale
-    // refs in lists on stage; the explicit list-filter is deterministic.
+    // Filter the archived journey out of every cached
+    // `TemplateGalleryPage.templates` list, then evict only the
+    // `TemplateGalleryItem` variant — the `Journey` entity itself stays
+    // live (it still surfaces in the archived list).
     update(cache, { data }) {
-      if (data?.journeysArchive == null) return
-      const archivedJourneys = data.journeysArchive.filter(
-        (j): j is NonNullable<typeof j> => j != null
-      )
-      if (archivedJourneys.length === 0) return
-
-      const archivedTemplateRefs = new Set<string>()
-      for (const journey of archivedJourneys) {
-        const ref = cache.identify({
-          __typename: 'TemplateGalleryItem',
-          id: journey.id
-        })
-        if (ref != null) archivedTemplateRefs.add(ref)
-      }
-
-      const snapshot = cache.extract()
-      for (const cacheId of Object.keys(snapshot)) {
-        if (!cacheId.startsWith('TemplateGalleryPage:')) continue
-        cache.modify({
-          id: cacheId,
-          fields: {
-            templates(existing) {
-              if (!Array.isArray(existing)) return existing
-              return reject(existing as Reference[], (ref) =>
-                archivedTemplateRefs.has(ref.__ref)
-              )
-            }
-          }
-        })
-      }
-
-      for (const journey of archivedJourneys) {
-        // Evict the TemplateGalleryItem variant — the Journey entity
-        // itself is preserved (status: archived is still a valid live
-        // entity in the archived list).
-        cache.evict({
-          id: cache.identify({
-            __typename: 'TemplateGalleryItem',
-            id: journey.id
-          })
-        })
-      }
+      const archivedIds =
+        data?.journeysArchive
+          ?.filter((j): j is NonNullable<typeof j> => j != null)
+          .map((j) => j.id) ?? []
+      evictFromTemplateGalleryPages(cache, archivedIds, {
+        evictJourneyEntity: false
+      })
     }
   })
 
@@ -152,26 +116,27 @@ export function ArchiveJourney({
         })
         setLoading(false)
       },
-      onCompleted: async () => {
-        // Sever any TemplateGalleryPage join row so that unarchiving
-        // returns the journey to the flat template list. Failure here
-        // is logged but doesn't contradict the archive success — same
-        // best-effort pairing as TrashJourneyDialog.
-        try {
-          await unassignFromCollection({
-            variables: { journeyId: id, pageId: null }
-          })
-        } catch (unassignError) {
+      onCompleted: () => {
+        // Snackbar fires on this tick — do NOT await secondary work.
+        // The unassign is fire-and-forget cleanup so unarchiving later
+        // returns the journey to the flat template list rather than its
+        // prior collection slot. Awaiting it would block the snackbar
+        // on a ~1s round-trip the user doesn't care about (Mike review,
+        // NES-1644). Failure mode is identical to pre-fix: stale join
+        // row server-side, surfaces only on restore.
+        void unassignFromCollection({
+          variables: { journeyId: id, pageId: null }
+        }).catch((unassignError) => {
           console.warn(
             '[ArchiveJourney] failed to unassign archived journey from its collection',
             { journeyId: id, error: unassignError }
           )
-        }
+        })
         enqueueSnackbar(t('Journey Archived'), {
           variant: 'success',
           preventDuplicate: true
         })
-        await refetch?.()
+        void refetch?.()
         handleClose()
         setLoading(false)
       }

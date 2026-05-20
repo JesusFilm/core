@@ -16,7 +16,14 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
@@ -177,8 +184,16 @@ export function TemplateGalleryPageList({
   // is the synchronous source of truth for gating a second drop that
   // arrives within the same tick as a setState batch — state would read
   // `false` in both event handlers, the ref flips immediately.
-  const [dragInFlight, setDragInFlight] = useState(false)
+  //
+  // The two are deliberately wired together via a single `setDragInFlight`
+  // wrapper so a future caller can't update one without the other
+  // (Mike review, NES-1644). Always flip both through this setter.
+  const [dragInFlight, setDragInFlightState] = useState(false)
   const dragInFlightRef = useRef(false)
+  const setDragInFlight = useCallback((next: boolean) => {
+    dragInFlightRef.current = next
+    setDragInFlightState(next)
+  }, [])
   // Holds the just-published collection so the success dialog has a stable
   // reference to it (the gallery list cache may change underneath while the
   // user is still looking at the dialog).

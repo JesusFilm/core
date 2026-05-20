@@ -14,7 +14,13 @@ export interface CanPublishCollectionResult {
   canPublish: boolean
   /**
    * User-facing tooltip copy explaining why publish is blocked, or null
-   * when publish is allowed. Always wrap in `t(...)` at the call site.
+   * when publish is allowed.
+   *
+   * **Callers MUST wrap in `t(reason)` before rendering.** The hook
+   * returns the raw English copy because the translation key registry
+   * lives at the call site (next-i18next loads per-page namespaces),
+   * not in this shared lib. Failing to wrap leaves the literal English
+   * in production for non-English locales.
    */
   reason: string | null
   /** Mirrors the underlying query's loading state. */
