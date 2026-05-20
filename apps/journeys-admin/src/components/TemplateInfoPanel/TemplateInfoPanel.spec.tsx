@@ -164,9 +164,7 @@ describe('TemplateInfoPanel', () => {
         'Tracking and Analytics',
         'Sharing and Publishing'
       ]) {
-        expect(panel).toContainElement(
-          screen.getByRole('button', { name })
-        )
+        expect(panel).toContainElement(screen.getByRole('button', { name }))
       }
     })
   })
