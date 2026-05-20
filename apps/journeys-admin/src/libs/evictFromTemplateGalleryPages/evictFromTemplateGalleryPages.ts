@@ -48,7 +48,9 @@ export function evictFromTemplateGalleryPages<TCache>(
     if (ref != null) templateRefsToDrop.add(ref)
   }
 
-  const snapshot = cache.extract()
+  // `cache.extract()` returns the cache's TSerialized type — generic at
+  // this layer, so cast to a string-keyed record to enumerate cache ids.
+  const snapshot = cache.extract() as Record<string, unknown>
   for (const cacheId of Object.keys(snapshot)) {
     if (!cacheId.startsWith('TemplateGalleryPage:')) continue
     cache.modify({
