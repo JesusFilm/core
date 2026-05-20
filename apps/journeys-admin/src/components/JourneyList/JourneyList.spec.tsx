@@ -1,8 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { ThemeProvider } from '../ThemeProvider'
@@ -31,6 +33,25 @@ jest.mock('next/router', () => ({
 jest.mock('../../libs/useAdminJourneysQuery', () => ({
   __esModule: true,
   useAdminJourneysQuery: jest.fn()
+}))
+
+// TemplateGalleryPageList is exercised by its own spec. Here we stub it to
+// surface only the inline mobile info trigger (NES-1686) when the parent
+// passes `onOpenInfo`, so JourneyList tests can verify the trigger wiring
+// without standing up the gallery's Apollo queries.
+jest.mock('../TemplateGalleryPageList', () => ({
+  __esModule: true,
+  TemplateGalleryPageList: ({ onOpenInfo }: { onOpenInfo?: () => void }) =>
+    onOpenInfo != null ? (
+      <button
+        type="button"
+        data-testid="TemplateInfoPanelMobileTrigger"
+        aria-label="Open template info"
+        onClick={onOpenInfo}
+      >
+        Open template info
+      </button>
+    ) : null
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
@@ -335,5 +356,109 @@ describe('JourneyList', () => {
       expect(sortButton).toHaveTextContent('Sort By: Name')
     })
     expect(sessionStorage.getItem('journeyListSortBy')).toBe(SortOrder.TITLE)
+  })
+
+  describe('Template Info side panel (NES-1538)', () => {
+    function renderWithFlags(flags: { teamTemplateCollection?: boolean }) {
+      return render(
+        <SnackbarProvider>
+          <MockedProvider>
+            <ThemeProvider>
+              <FlagsProvider flags={flags}>
+                <JourneyList />
+              </FlagsProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+    }
+
+    it('renders the desktop panel and mobile trigger when teamTemplateCollection is on and the templates tab is active', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'templates' },
+        events: { on: jest.fn(), off: jest.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({ teamTemplateCollection: true })
+
+      expect(screen.getByTestId('TemplateInfoPanelDesktop')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('TemplateInfoPanelMobileTrigger')
+      ).toBeInTheDocument()
+    })
+
+    it('renders nothing on the journeys tab even with the flag on', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'journeys' },
+        events: { on: jest.fn(), off: jest.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({ teamTemplateCollection: true })
+
+      expect(
+        screen.queryByTestId('TemplateInfoPanelDesktop')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('TemplateInfoPanelMobileTrigger')
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders nothing when teamTemplateCollection is off (local template surface unavailable)', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'templates' },
+        events: { on: jest.fn(), off: jest.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({ teamTemplateCollection: false })
+
+      expect(
+        screen.queryByTestId('TemplateInfoPanelDesktop')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('TemplateInfoPanelMobileTrigger')
+      ).not.toBeInTheDocument()
+    })
+
+    // MUI's `SwipeableDrawer` keeps the drawer Stack mounted even with
+    // `disableSwipeToOpen`, so its `data-testid` cannot signal open/close.
+    // The *Modal portal wrapper* (with `role="presentation"`) is the only
+    // attribute that mounts and unmounts with the drawer's open state — and
+    // because this spec stubs `TemplateGalleryPageList` to a plain button,
+    // no other `presentation`-role element exists in the render tree.
+    it('mounts the mobile drawer modal when the trigger button is clicked', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'templates' },
+        events: { on: jest.fn(), off: jest.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({ teamTemplateCollection: true })
+
+      expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
+
+      fireEvent.click(screen.getByTestId('TemplateInfoPanelMobileTrigger'))
+
+      expect(screen.getByRole('presentation')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Close template info' })
+      ).toBeInTheDocument()
+    })
+
+    it('unmounts the mobile drawer modal when the X button is clicked', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'templates' },
+        events: { on: jest.fn(), off: jest.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({ teamTemplateCollection: true })
+
+      fireEvent.click(screen.getByTestId('TemplateInfoPanelMobileTrigger'))
+      expect(screen.getByRole('presentation')).toBeInTheDocument()
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Close template info' })
+      )
+
+      expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
+    })
   })
 })

@@ -5,21 +5,20 @@ import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import { StrategySection } from '@core/journeys/ui/StrategySection'
-import LinkAngled from '@core/shared/ui/icons/LinkAngled'
-
 import { ImageEdit } from '../../../../../Slider/Settings/Drawer/ImageEdit/ImageEdit'
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
 import { CustomizeTemplate } from './CustomizeTemplate'
 
-interface AboutTabPanelProps {
-  showStrategySection?: boolean
-}
-
-export function AboutTabPanel({
-  showStrategySection = false
-}: AboutTabPanelProps): ReactElement {
+// NES-1678: the strategy section (Canva / Google Slides embed for global
+// templates) was removed per QA's call — the helper-text approach in
+// NES-1660 was rejected, and the team chose to remove the editing surface
+// entirely. The `strategySlug` field is still carried through the form
+// (via `TemplateSettingsFormValues` → `JourneyUpdateInput`) so existing
+// values round-trip on save and stay intact, but there is no UI to create
+// or edit one. The shared `StrategySection` component still exists and is
+// reused by the LTL collection media preview.
+export function AboutTabPanel(): ReactElement {
   const { values, handleChange, errors } = useTemplateSettingsForm()
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -51,33 +50,6 @@ export function AboutTabPanel({
       </Stack>
       <Divider />
       <CustomizeTemplate />
-      {showStrategySection && (
-        <>
-          <TextField
-            data-testid="StrategySlugEdit"
-            id="strategySlug"
-            name="strategySlug"
-            value={values.strategySlug}
-            error={Boolean(errors?.strategySlug)}
-            variant="filled"
-            helperText={
-              errors?.strategySlug != null
-                ? errors?.strategySlug
-                : t('Embed web link from Google Slides or Canva')
-            }
-            onChange={handleChange}
-            label={t('Paste URL here')}
-            InputProps={{
-              endAdornment: <LinkAngled sx={{ color: 'secondary.light' }} />
-            }}
-          />
-          <StrategySection
-            strategySlug={values.strategySlug}
-            variant="placeholder"
-            isError={Boolean(errors?.strategySlug)}
-          />
-        </>
-      )}
     </>
   )
 }

@@ -64,12 +64,15 @@ describe.skip('multiselectSubmissionEventCreate', () => {
       journeyId: 'journeyId',
       deletedAt: null
     } as any)
-    prismaMock.visitor.upsert.mockResolvedValue({ id: 'visitorId' } as any)
-    prismaMock.journeyVisitor.upsert.mockResolvedValue({
-      journeyId: 'journeyId',
-      visitorId: 'visitorId',
-      activityCount: 0
-    } as any)
+    prismaMock.$queryRaw
+      .mockResolvedValueOnce([{ id: 'visitorId' }] as any)
+      .mockResolvedValueOnce([
+        {
+          journeyId: 'journeyId',
+          visitorId: 'visitorId',
+          activityCount: 0
+        }
+      ] as any)
   })
 
   it('creates MultiselectSubmissionEvent', async () => {

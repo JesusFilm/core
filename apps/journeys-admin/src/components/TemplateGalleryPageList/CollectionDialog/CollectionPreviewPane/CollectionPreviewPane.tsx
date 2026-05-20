@@ -10,7 +10,6 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, memo } from 'react'
 
-import { StrategySection } from '@core/journeys/ui/StrategySection'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
@@ -341,36 +340,14 @@ function CollectionPreviewPaneImpl({
                 ))}
           </Stack>
         </Box>
-        {/* Embedded PDF/video — same component the editor's About tab
-            uses for strategy embeds. Renders an iframe for Canva /
-            Google Slides URLs and a "Case Study Preview" placeholder
-            otherwise. */}
-        <Box sx={{ mt: 2.5 }}>
-          <Typography
-            sx={{
-              fontFamily: 'Montserrat, sans-serif',
-              fontWeight: 600,
-              fontSize: 16,
-              lineHeight: 1.2,
-              color: '#444451',
-              mb: 1.5
-            }}
-          >
-            {t('Strategy')}
-          </Typography>
-          <Box
-            sx={{
-              // Strip StrategySection's xs/sm bottom padding so it sits
-              // flush within the preview card layout.
-              '& > .MuiStack-root': { pb: 0 }
-            }}
-          >
-            <StrategySection
-              strategySlug={values.mediaUrl !== '' ? values.mediaUrl : null}
-              variant="placeholder"
-            />
-          </Box>
-        </Box>
+        {/* NES-1682: the Strategy section (StrategySection rendered with
+            mediaUrl) was removed from the preview alongside the embed
+            textbox in CollectionDialog. The `mediaUrl` field still rides
+            through the form so existing values round-trip on save, and
+            the shared StrategySection component itself is untouched (it
+            remains in use for other surfaces). The previous label
+            "Strategy" + the iframe/placeholder preview no longer appear
+            here. */}
       </Box>
     </Box>
   )

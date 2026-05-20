@@ -1,0 +1,1 @@
+export { TemplateInfoAccordion } from './TemplateInfoAccordion'
