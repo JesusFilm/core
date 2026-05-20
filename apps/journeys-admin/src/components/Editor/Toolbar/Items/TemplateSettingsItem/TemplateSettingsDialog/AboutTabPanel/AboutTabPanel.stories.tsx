@@ -21,11 +21,13 @@ const AboutTabPanelStory: Meta<typeof AboutTabPanel> = {
   }
 }
 
+// NES-1678: the WithCanvaEmbed / WithGoogleEmbed / Error variants were
+// removed alongside the strategy section UI. The Default story remains
+// because it exercises the creator-info field + CustomizeTemplate block.
 const Template: StoryObj<
   ComponentProps<typeof AboutTabPanel> & {
-    creatorDescription
-    strategySlug: string
-    errors: { strategySlug: string; creatorDetails: string }
+    creatorDescription: string
+    errors: { creatorDescription?: string }
     journey: Journey
   }
 > = {
@@ -35,8 +37,7 @@ const Template: StoryObj<
         value={
           {
             values: {
-              creatorDescription: args.creatorDescription,
-              strategySlug: args.strategySlug
+              creatorDescription: args.creatorDescription
             },
             errors: args.errors
           } as unknown as FormikContextType<TemplateSettingsFormValues>
@@ -52,34 +53,7 @@ export const Default = {
   ...Template,
   args: {
     journey: defaultJourney,
-    errors: {},
-    strategySlug: ''
-  }
-}
-
-export const WithCanvaEmbed = {
-  ...Template,
-  args: {
-    ...Default.args,
-    strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view'
-  }
-}
-
-export const WithGoogleEmbed = {
-  ...Template,
-  args: {
-    ...Default.args,
-    strategySlug:
-      'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000'
-  }
-}
-
-export const Error = {
-  ...Template,
-  args: {
-    ...Default.args,
-    strategySlug: 'www.example.com',
-    errors: { strategySlug: 'Invalid embed link' }
+    errors: {}
   }
 }
 
