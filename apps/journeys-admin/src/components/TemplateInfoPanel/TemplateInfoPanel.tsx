@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
+import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
@@ -28,6 +29,18 @@ export interface TemplateInfoPanelProps {
    * on first mount (matches Figma `39653-66422`).
    */
   defaultExpanded?: TemplateInfoSectionId
+  /**
+   * Controls the outer chrome of the panel.
+   *
+   * - `false` (default) — chrome-less `Box` that fills its parent. Used on
+   *   the Team Templates tab where a parent `Drawer`/`SwipeableDrawer`
+   *   supplies the chrome (NES-1538).
+   * - `true` — self-contained `Paper` with rounded corners on all sides,
+   *   soft elevation, and a fixed width. Used by the editor canvas floating
+   *   helper, where the panel floats free rather than docking to a drawer
+   *   (NES-1642, Figma `39662-67865`).
+   */
+  contained?: boolean
   className?: string
 }
 
@@ -49,6 +62,7 @@ export interface TemplateInfoPanelProps {
  */
 export function TemplateInfoPanel({
   defaultExpanded,
+  contained = false,
   className
 }: TemplateInfoPanelProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -62,12 +76,8 @@ export function TemplateInfoPanel({
     }
   }
 
-  return (
-    <Box
-      className={className}
-      data-testid="TemplateInfoPanel"
-      sx={{ width: '100%' }}
-    >
+  const innerContent = (
+    <>
       <Stack
         sx={{
           px: 2.5,
@@ -137,6 +147,34 @@ export function TemplateInfoPanel({
           <SharingAndPublishingSection />
         </TemplateInfoAccordion>
       </Box>
+    </>
+  )
+
+  if (contained) {
+    return (
+      <Paper
+        elevation={3}
+        className={className}
+        data-testid="TemplateInfoPanel"
+        sx={{
+          width: 320,
+          borderRadius: 3,
+          overflow: 'hidden',
+          bgcolor: 'background.paper'
+        }}
+      >
+        {innerContent}
+      </Paper>
+    )
+  }
+
+  return (
+    <Box
+      className={className}
+      data-testid="TemplateInfoPanel"
+      sx={{ width: '100%' }}
+    >
+      {innerContent}
     </Box>
   )
 }

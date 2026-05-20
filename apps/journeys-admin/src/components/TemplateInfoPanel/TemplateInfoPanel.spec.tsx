@@ -87,4 +87,63 @@ describe('TemplateInfoPanel', () => {
       screen.getByRole('button', { name: 'Sharing and Publishing' })
     ).toHaveAttribute('aria-expanded', 'true')
   })
+
+  describe('outer chrome', () => {
+    it('renders a chrome-less wrapper by default (templates-tab behaviour)', () => {
+      render(<TemplateInfoPanel />)
+
+      const panel = screen.getByTestId('TemplateInfoPanel')
+      expect(panel).not.toHaveClass('MuiPaper-root')
+    })
+
+    it('renders a Paper wrapper with rounded chrome when `contained` is true', () => {
+      render(<TemplateInfoPanel contained />)
+
+      const panel = screen.getByTestId('TemplateInfoPanel')
+      expect(panel).toHaveClass('MuiPaper-root')
+      expect(panel).toHaveClass('MuiPaper-rounded')
+    })
+
+    it('forwards `className` through both chrome modes', () => {
+      const { rerender } = render(
+        <TemplateInfoPanel className="my-custom-chrome" />
+      )
+      expect(screen.getByTestId('TemplateInfoPanel')).toHaveClass(
+        'my-custom-chrome'
+      )
+
+      rerender(<TemplateInfoPanel contained className="my-custom-chrome" />)
+      expect(screen.getByTestId('TemplateInfoPanel')).toHaveClass(
+        'my-custom-chrome'
+      )
+    })
+
+    it('preserves single-expand accordion behaviour under contained chrome', () => {
+      render(<TemplateInfoPanel contained />)
+
+      const templateTypes = screen.getByRole('button', {
+        name: 'Template Types'
+      })
+      const tracking = screen.getByRole('button', {
+        name: 'Tracking and Analytics'
+      })
+
+      fireEvent.click(templateTypes)
+      expect(templateTypes).toHaveAttribute('aria-expanded', 'true')
+
+      fireEvent.click(tracking)
+      expect(templateTypes).toHaveAttribute('aria-expanded', 'false')
+      expect(tracking).toHaveAttribute('aria-expanded', 'true')
+    })
+
+    it('honours `defaultExpanded` under contained chrome', () => {
+      render(
+        <TemplateInfoPanel contained defaultExpanded="sharingAndPublishing" />
+      )
+
+      expect(
+        screen.getByRole('button', { name: 'Sharing and Publishing' })
+      ).toHaveAttribute('aria-expanded', 'true')
+    })
+  })
 })
