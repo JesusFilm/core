@@ -116,6 +116,33 @@ const journeysMock: MockedResponse<GetAdminJourneys> = {
   }
 }
 
+// Variant of the journeys mock where the only journey is archived. The
+// server-side resolver wouldn't return this row for the active view
+// (status filter at the API), but Apollo's normalized cache merges
+// post-mutation status flips into the same entity ref — so we simulate
+// that here by serving the archived row from the published-status query.
+const journeysMockWithArchivedJourney: MockedResponse<GetAdminJourneys> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      template: true,
+      teamId: TEAM_ID,
+      status: [JourneyStatus.draft, JourneyStatus.published]
+    }
+  },
+  result: {
+    data: {
+      journeys: [
+        {
+          ...(journeysMock.result as { data: GetAdminJourneys }).data
+            .journeys[0],
+          status: JourneyStatus.archived
+        }
+      ]
+    }
+  }
+}
+
 describe('TemplateGalleryPageList', () => {
   it('renders the Collections heading and the existing collection card', async () => {
     const { getByText, getByTestId } = render(
@@ -139,6 +166,37 @@ describe('TemplateGalleryPageList', () => {
     )
     expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
     expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+  })
+
+  it('excludes archived journeys from the active view (defends against post-mutation cache leak)', async () => {
+    // Regression: archive flips a journey's status to `archived` in the
+    // normalized Apollo cache, but the cached query result for
+    // `status: [draft, published]` still holds the ref. The list must
+    // re-filter by status client-side or the archived journey leaks
+    // into the "All Templates" section of the active view.
+    const { queryByText, getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          getLastActiveTeamIdAndTeamsMock,
+          collectionsMock,
+          journeysMockWithArchivedJourney
+        ]}
+      >
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TemplateGalleryPageList />
+            </TeamProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
+    )
+    // The archived journey should NOT appear in the unsectioned list.
+    expect(queryByText('Welcome Tour')).not.toBeInTheDocument()
   })
 
   describe('Template Info mobile trigger (NES-1686)', () => {

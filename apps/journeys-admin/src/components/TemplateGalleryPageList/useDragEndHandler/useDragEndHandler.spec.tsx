@@ -117,7 +117,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId
         }),
@@ -155,7 +155,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId
         }),
@@ -170,6 +170,71 @@ describe('useDragEndHandler', () => {
     })
 
     expect(assignMock.result).toHaveBeenCalledTimes(1)
+  })
+
+  // NES-1668 repro: drag a template from one draft collection to another and
+  // verify the source page's cached templates array no longer contains the
+  // moved journey. The mock returns the target page with j1 present so the
+  // post-mutation `accepted` check passes and the source-side cache.modify
+  // can run on the real-data pass. Pre-fix: source.templates still contains
+  // the moved ref, which is what Sharon QA'd. Post-fix: source.templates is
+  // empty.
+  it('NES-1668: cross-collection move trims the moving journey from the source page', async () => {
+    const j1 = journey('j1', 'A')
+    const source = makeCollection('page-A', [j1])
+    const target = makeCollection('page-B', [])
+    const indexes = buildIndexes({
+      collections: [source, target],
+      journeys: [j1]
+    })
+
+    const cache = new InMemoryCache()
+    cache.writeQuery({
+      query: GET_TEMPLATE_GALLERY_PAGES,
+      variables: { teamId: 'team-1' },
+      data: { templateGalleryPages: [source, target] }
+    })
+
+    // Realistic server response: target page now contains the moved journey.
+    const assignMock = getTemplateGalleryPageAssignJourneyMock(
+      { journeyId: 'j1', pageId: 'page-B' },
+      { id: 'page-B', templates: [templateRef(j1)] }
+    )
+
+    const { result } = renderHook(
+      () =>
+        useDragEndHandler({
+          ...indexes,
+          dragInFlightRef: { current: false },
+          setDragInFlight: jest.fn(),
+          setActiveDragId: jest.fn()
+        }),
+      { wrapper: wrapperWithMocks([assignMock], cache) }
+    )
+
+    await act(async () => {
+      await result.current(
+        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
+      )
+    })
+
+    expect(assignMock.result).toHaveBeenCalledTimes(1)
+
+    const cached = cache.readQuery<{
+      templateGalleryPages: TemplateGalleryPage[]
+    }>({
+      query: GET_TEMPLATE_GALLERY_PAGES,
+      variables: { teamId: 'team-1' }
+    })
+    const sourceAfter = cached?.templateGalleryPages.find(
+      (p) => p.id === 'page-A'
+    )
+    const targetAfter = cached?.templateGalleryPages.find(
+      (p) => p.id === 'page-B'
+    )
+    // Source must no longer reference the moved journey. Target gains it.
+    expect(sourceAfter?.templates.map((t) => t.id)).toEqual([])
+    expect(targetAfter?.templates.map((t) => t.id)).toEqual(['j1'])
   })
 
   it('drop on unsectioned fires assignJourney with pageId: null', async () => {
@@ -191,7 +256,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId
         }),
@@ -228,7 +293,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId: jest.fn()
         }),
@@ -267,7 +332,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId: jest.fn()
         }),
@@ -304,7 +369,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId: jest.fn()
         }),
@@ -339,7 +404,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight,
           setActiveDragId
         }),
@@ -376,7 +441,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: true,
+          dragInFlightRef: { current: true },
           setDragInFlight,
           setActiveDragId: jest.fn()
         }),
@@ -430,7 +495,7 @@ describe('useDragEndHandler', () => {
       () =>
         useDragEndHandler({
           ...indexes,
-          dragInFlight: false,
+          dragInFlightRef: { current: false },
           setDragInFlight: jest.fn(),
           setActiveDragId: jest.fn()
         }),

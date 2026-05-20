@@ -40,6 +40,7 @@ import {
   TemplateGalleryPageStatus
 } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
+import { useCanPublishCollection } from '../../libs/useCanPublishCollection'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
 import { JourneyCard } from '../JourneyList/JourneyCard'
 import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
@@ -124,6 +125,12 @@ export function TemplateGalleryPageList({
   // public gallery pages.
   const showCollections = status === 'active'
 
+  // Custom-domain teams can't publish gallery pages — gate Publish + Preview
+  // on every Collection surface (NES-1644).
+  const { canPublish, reason: publishBlockedReason } = useCanPublishCollection({
+    teamId
+  })
+
   const collectionsQuery = useTemplateGalleryPagesQuery(
     teamId != null ? { teamId } : undefined,
     { skip: teamId == null || !showCollections }
@@ -165,6 +172,19 @@ export function TemplateGalleryPageList({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, teamId])
 
+  // Mounted guard for `handlePublish`: rawPublish awaits the mutation and
+  // we then setPublishSuccessCollection. If the user navigates away mid-
+  // flight, the post-await setState would warn (and would briefly flash
+  // the dialog open on the next page if React batches the update across
+  // a route change). Mirrors the same pattern in useCollectionMutations.
+  const mountedRef = useRef(true)
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
+
   const {
     busyId,
     publish: rawPublish,
@@ -175,7 +195,20 @@ export function TemplateGalleryPageList({
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
-  const [dragInFlight, setDragInFlight] = useState(false)
+  // `dragInFlight` drives rendering (busy chips, droppable lock); the ref
+  // is the synchronous source of truth for gating a second drop that
+  // arrives within the same tick as a setState batch — state would read
+  // `false` in both event handlers, the ref flips immediately.
+  //
+  // The two are deliberately wired together via a single `setDragInFlight`
+  // wrapper so a future caller can't update one without the other
+  // (Mike review, NES-1644). Always flip both through this setter.
+  const [dragInFlight, setDragInFlightState] = useState(false)
+  const dragInFlightRef = useRef(false)
+  const setDragInFlight = useCallback((next: boolean) => {
+    dragInFlightRef.current = next
+    setDragInFlightState(next)
+  }, [])
   // Holds the just-published collection so the success dialog has a stable
   // reference to it (the gallery list cache may change underneath while the
   // user is still looking at the dialog).
@@ -228,7 +261,9 @@ export function TemplateGalleryPageList({
 
   async function handlePublish(collection: TemplateGalleryPage): Promise<void> {
     const published = await rawPublish(collection)
-    if (published != null) setPublishSuccessCollection(published)
+    if (published != null && mountedRef.current) {
+      setPublishSuccessCollection(published)
+    }
   }
   function handleClosePublishSuccess(): void {
     setPublishSuccessCollection(null)
@@ -238,10 +273,21 @@ export function TemplateGalleryPageList({
     () => collectionsQuery.data?.templateGalleryPages ?? [],
     [collectionsQuery.data]
   )
-  const allTemplates = useMemo<readonly Journey[]>(
-    () => journeysQuery.data?.journeys ?? [],
-    [journeysQuery.data]
-  )
+  // Filter the cached journeys list to the statuses this view allows.
+  // The server-side query is already keyed on `status:
+  // STATUS_FILTER_TO_JOURNEY_STATUSES[status]`, but Apollo's normalized
+  // cache stores each Journey as a normalized entity — when a mutation
+  // flips an in-list journey's status (archive, trash, delete), the
+  // cached list still holds the ref, so the journey leaks into the
+  // wrong view until a refetch. Apply the same status predicate the
+  // server applies so the client view stays consistent with the
+  // entity's current status across optimistic updates.
+  const allTemplates = useMemo<readonly Journey[]>(() => {
+    const allowedStatuses = STATUS_FILTER_TO_JOURNEY_STATUSES[status]
+    return (journeysQuery.data?.journeys ?? []).filter((j) =>
+      allowedStatuses.includes(j.status)
+    )
+  }, [journeysQuery.data, status])
 
   const journeyById = useMemo(() => {
     const map = new Map<string, Journey>()
@@ -333,8 +379,8 @@ export function TemplateGalleryPageList({
     // Refuse any new drag while a dialog is open (NES-1653) or a previous
     // mutation is still in flight — handleDragEnd would silently swallow
     // the drop, leaving the user with the impression their move vanished.
-    if (interactionsLocked) {
-      if (dragInFlight) {
+    if (dialogOpen || dragInFlightRef.current) {
+      if (dragInFlightRef.current) {
         enqueueSnackbar(t('Finishing previous move…'), {
           variant: 'info',
           preventDuplicate: true
@@ -349,7 +395,7 @@ export function TemplateGalleryPageList({
     journeyById,
     templateIdToCollection,
     collectionsById,
-    dragInFlight,
+    dragInFlightRef,
     setDragInFlight,
     setActiveDragId
   })
@@ -478,6 +524,12 @@ export function TemplateGalleryPageList({
                         onUnpublish={handleUnpublish}
                         onUngroup={handleUngroup}
                         busy={busyId === collection.id || dragInFlight}
+                        canPublish={canPublish}
+                        publishBlockedReason={
+                          publishBlockedReason != null
+                            ? t(publishBlockedReason)
+                            : null
+                        }
                       >
                         <DraggableJourneysGrid
                           journeys={
@@ -541,6 +593,10 @@ export function TemplateGalleryPageList({
             teamId={teamId}
             availableJourneys={unsectioned}
             parentBusy={dragInFlight}
+            canPublish={canPublish}
+            publishBlockedReason={
+              publishBlockedReason != null ? t(publishBlockedReason) : null
+            }
             onClose={handleCloseCreate}
           />
         )}
@@ -553,6 +609,10 @@ export function TemplateGalleryPageList({
             collection={editTarget}
             availableJourneys={editAvailableJourneys}
             parentBusy={dragInFlight}
+            canPublish={canPublish}
+            publishBlockedReason={
+              publishBlockedReason != null ? t(publishBlockedReason) : null
+            }
             onClose={handleCloseEdit}
           />
         )}
@@ -562,6 +622,11 @@ export function TemplateGalleryPageList({
             publishSuccessCollection != null
               ? buildCollectionPublicUrl(publishSuccessCollection.slug)
               : null
+          }
+          slug={publishSuccessCollection?.slug ?? null}
+          canPublish={canPublish}
+          publishBlockedReason={
+            publishBlockedReason != null ? t(publishBlockedReason) : null
           }
           onClose={handleClosePublishSuccess}
         />

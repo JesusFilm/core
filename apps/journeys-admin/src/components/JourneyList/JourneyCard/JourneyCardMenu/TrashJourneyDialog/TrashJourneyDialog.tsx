@@ -9,7 +9,9 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { JourneyTrash } from '../../../../../../__generated__/JourneyTrash'
+import { evictFromTemplateGalleryPages } from '../../../../../libs/evictFromTemplateGalleryPages'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+import { useTemplateGalleryPageAssignJourneyMutation } from '../../../../../libs/useTemplateGalleryPageAssignJourneyMutation'
 
 export const JOURNEY_TRASH = gql`
   mutation JourneyTrash($ids: [ID!]!) {
@@ -50,6 +52,16 @@ export function TrashJourneyDialog({
   const [loading, setLoading] = useState(false)
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
+  // Unassigns the journey from whatever TemplateGalleryPage it belongs
+  // to. Idempotent no-op when the journey isn't in any collection (the
+  // server resolver returns null). Called after the trash mutation so
+  // that trashing implicitly severs collection membership — without
+  // this, restoring a trashed journey would put it back in its prior
+  // collection slot. Until journeysTrash is migrated to api-journeys-
+  // modern and can delete the join row in the same transaction, this
+  // pairing is the frontend-only way to honor the desired behavior.
+  const [unassignFromCollection] = useTemplateGalleryPageAssignJourneyMutation()
+
   const [trashJourney] = useMutation<JourneyTrash>(JOURNEY_TRASH, {
     variables: {
       ids: [id]
@@ -58,11 +70,22 @@ export function TrashJourneyDialog({
       journeysTrash: [
         {
           id,
-          status: JourneyStatus.deleted,
+          status: JourneyStatus.trashed,
           __typename: 'Journey',
           fromTemplateId: fromTemplateId ?? null
         }
       ]
+    },
+    // Drop the trashed journey from every cached
+    // `TemplateGalleryPage.templates` list, then evict the Journey and
+    // TemplateGalleryItem entities. See evictFromTemplateGalleryPages
+    // for the cross-typename-boundary rationale (NES-1644).
+    update(cache, { data }) {
+      const trashedIds =
+        data?.journeysTrash
+          ?.filter((j): j is NonNullable<typeof j> => j != null)
+          .map((j) => j.id) ?? []
+      evictFromTemplateGalleryPages(cache, trashedIds)
     }
   })
 
@@ -76,7 +99,21 @@ export function TrashJourneyDialog({
         void refetchTemplateStats([templateIdToRefetch])
       }
 
-      await refetch?.()
+      // Fire-and-forget: remove the journey's TemplateGalleryPage join row
+      // so restoring later returns it to the flat template list rather
+      // than its prior collection slot. The trash mutation already
+      // succeeded (user's primary intent); do NOT await — the success
+      // snackbar should fire on this tick. Failure leaves a stale join
+      // row server-side (same as pre-fix behavior); log only.
+      void unassignFromCollection({
+        variables: { journeyId: id, pageId: null }
+      }).catch((unassignError) => {
+        console.warn(
+          '[TrashJourneyDialog] failed to unassign trashed journey from its collection',
+          { journeyId: id, error: unassignError }
+        )
+      })
+
       enqueueSnackbar(
         template === true ? t('Template trashed') : t('Journey trashed'),
         {
@@ -85,6 +122,7 @@ export function TrashJourneyDialog({
         }
       )
       handleClose()
+      void refetch?.()
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
