@@ -146,19 +146,28 @@ describe('TemplateInfoPanel', () => {
       ).toHaveAttribute('aria-expanded', 'true')
     })
 
-    it('wraps the accordions in a dedicated scroll area under contained chrome', () => {
+    it('keeps every accordion summary inside the panel chrome (no outer scroll wrapper)', () => {
+      // Regression guard: an earlier shape wrapped the accordion list in a
+      // dedicated scroll area, which hid summary headers when the expanded
+      // body was long. The new structure keeps summaries inside the panel
+      // directly so they remain reachable.
       render(<TemplateInfoPanel contained />)
 
-      const scrollArea = screen.getByTestId('TemplateInfoPanelScrollArea')
-      expect(scrollArea).toBeInTheDocument()
-      // The four accordion summaries live inside the scroll area, not in the
-      // sticky header above it.
       expect(
-        screen.getByRole('button', { name: 'Template Types' })
-      ).toBeInstanceOf(HTMLElement)
-      expect(scrollArea).toContainElement(
-        screen.getByRole('button', { name: 'Template Types' })
-      )
+        screen.queryByTestId('TemplateInfoPanelScrollArea')
+      ).not.toBeInTheDocument()
+
+      const panel = screen.getByTestId('TemplateInfoPanel')
+      for (const name of [
+        'Template Types',
+        'How to create',
+        'Tracking and Analytics',
+        'Sharing and Publishing'
+      ]) {
+        expect(panel).toContainElement(
+          screen.getByRole('button', { name })
+        )
+      }
     })
   })
 

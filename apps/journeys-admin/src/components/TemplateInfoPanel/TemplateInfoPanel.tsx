@@ -1,3 +1,4 @@
+import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
@@ -6,8 +7,6 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
-
-import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
 import { HowToCreateSection } from './HowToCreateSection'
 import { SharingAndPublishingSection } from './SharingAndPublishingSection'
@@ -169,8 +168,11 @@ export function TemplateInfoPanel({
         className={className}
         data-testid="TemplateInfoPanel"
         sx={{
-          width: 320,
-          maxHeight: 472,
+          width: 360,
+          // Dynamic vertical bound: stretches with the viewport so larger
+          // screens get more reading room. 160px reserves space for the
+          // editor's top toolbar/nav chrome plus bottom breathing room.
+          maxHeight: 'calc(100vh - 160px)',
           borderRadius: 3,
           overflow: 'hidden',
           bgcolor: 'background.paper',
@@ -178,16 +180,58 @@ export function TemplateInfoPanel({
           flexDirection: 'column'
         }}
       >
-        <Box sx={{ flex: '0 0 auto' }}>{header}</Box>
+        <Box sx={{ flexShrink: 0 }}>{header}</Box>
+        <Divider sx={{ flexShrink: 0 }} />
+        {/*
+         * Accordion list. The list itself does NOT scroll — its summaries
+         * stay visible at all times so the user can always reach the close
+         * affordance and switch sections. Instead, the currently-expanded
+         * AccordionDetails absorbs the remaining vertical space and scrolls
+         * its own body when content exceeds that space.
+         */}
         <Box
-          data-testid="TemplateInfoPanelScrollArea"
-          sx={{ flex: '1 1 auto', minHeight: 0, overflowY: 'auto' }}
+          sx={{
+            flex: '1 1 auto',
+            minHeight: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            '& > .MuiAccordion-root': { flexShrink: 0 },
+            '& > .MuiAccordion-root.Mui-expanded': {
+              flex: '1 1 auto',
+              minHeight: 0,
+              display: 'flex',
+              flexDirection: 'column'
+            },
+            '& > .MuiAccordion-root.Mui-expanded > .MuiCollapse-root': {
+              flex: '1 1 auto',
+              minHeight: 0,
+              display: 'flex',
+              flexDirection: 'column'
+            },
+            '& > .MuiAccordion-root.Mui-expanded > .MuiCollapse-root > .MuiCollapse-wrapper':
+              {
+                flex: '1 1 auto',
+                minHeight: 0,
+                display: 'flex',
+                flexDirection: 'column'
+              },
+            '& > .MuiAccordion-root.Mui-expanded .MuiCollapse-wrapperInner': {
+              flex: '1 1 auto',
+              minHeight: 0,
+              display: 'flex',
+              flexDirection: 'column'
+            },
+            '& > .MuiAccordion-root.Mui-expanded .MuiAccordionDetails-root': {
+              flex: '1 1 auto',
+              minHeight: 0,
+              overflowY: 'auto'
+            }
+          }}
         >
-          <Divider />
           {accordions}
         </Box>
         {onClose != null && (
-          <Box sx={{ flex: '0 0 auto' }}>
+          <Box sx={{ flexShrink: 0 }}>
             <Divider />
             <Stack
               direction="row"
@@ -201,7 +245,7 @@ export function TemplateInfoPanel({
                 onClick={onClose}
                 size="small"
               >
-                <ChevronUpIcon />
+                <ArrowOutwardIcon />
               </IconButton>
             </Stack>
           </Box>

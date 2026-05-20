@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { TemplateInfoHelper } from './TemplateInfoHelper'
 
 describe('TemplateInfoHelper', () => {
-  it('renders the pill trigger with info and chevron-down icons collapsed by default', () => {
+  it('renders the pill trigger with info and arrow icons collapsed by default', () => {
     render(<TemplateInfoHelper />)
 
     const trigger = screen.getByTestId('TemplateInfoHelperTrigger')
@@ -14,7 +14,7 @@ describe('TemplateInfoHelper', () => {
       screen.getByTestId('TemplateInfoHelperTriggerInfoIcon')
     ).toBeInTheDocument()
     expect(
-      screen.getByTestId('TemplateInfoHelperTriggerChevronIcon')
+      screen.getByTestId('TemplateInfoHelperTriggerArrowIcon')
     ).toBeInTheDocument()
     expect(screen.queryByTestId('TemplateInfoPanel')).not.toBeInTheDocument()
   })
