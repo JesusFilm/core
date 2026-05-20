@@ -1,0 +1,15 @@
+# Concurrent independent client sessions (multiple users in parallel).
+#
+# 5 VUs sharing an aggregate of 5 RPS for 30 seconds (~150 total requests).
+# Each VU sends ~1 RPS and carries its own stable sessionId, so Langfuse
+# traces split into five distinct conversations.
+#
+# NOTE: all VUs share this machine's source IP. The Vercel Firewall rule
+# keys on IP, so this scenario is NOT a substitute for true multi-IP load —
+# it stresses concurrency and trace separation, not per-IP isolation.
+
+url: https://your-stage.nextstep.is/api/chat
+rps: 5
+duration: 30s
+vus: 5
+message: load test concurrent client
