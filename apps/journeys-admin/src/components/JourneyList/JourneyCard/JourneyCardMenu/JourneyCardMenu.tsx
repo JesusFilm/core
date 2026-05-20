@@ -288,6 +288,7 @@ export function JourneyCardMenu({
           }}
           refetch={refetch}
           fromTemplateId={journey?.fromTemplateId}
+          template={template}
         />
       )}
       {openRestoreDialog != null && (
