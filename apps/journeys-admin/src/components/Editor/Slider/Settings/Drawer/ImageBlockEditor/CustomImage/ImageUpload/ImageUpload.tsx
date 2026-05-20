@@ -18,6 +18,7 @@ import {
   sendImageUploadSuccessEvent
 } from '../../../../../../../../libs/sendImageUploadEvent'
 import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/useCloudflareUploadByFileMutation'
+import { MAX_IMAGE_UPLOAD_BYTES } from '../../../../../../../../libs/useImageUpload'
 import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
 
 interface ImageUploadProps {
@@ -118,7 +119,7 @@ export function ImageUpload({
   const { getRootProps, open, getInputProps, isDragAccept } = useDropzone({
     onDrop,
     noClick: true,
-    maxSize: 10000000,
+    maxSize: MAX_IMAGE_UPLOAD_BYTES,
     accept: {
       'image/png': [],
       'image/jpeg': [],
