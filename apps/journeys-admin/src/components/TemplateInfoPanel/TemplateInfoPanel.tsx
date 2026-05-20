@@ -227,8 +227,7 @@ export function TemplateInfoPanel({
                   bgcolor: 'action.hover'
                 },
                 '&:focus-visible': {
-                  outline: (theme) =>
-                    `2px solid ${theme.palette.primary.main}`,
+                  outline: (theme) => `2px solid ${theme.palette.primary.main}`,
                   outlineOffset: -2
                 }
               }}
