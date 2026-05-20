@@ -171,6 +171,21 @@ export function useDragEndHandler(
             : null
         const assignResult = await templateGalleryPageAssignJourney({
           variables: { journeyId: templateId, pageId: targetCollectionId },
+          // NES-1668: in production the source-page `cache.modify` below
+          // wasn't reliably trimming the moved template — QA observed the
+          // card showing in both source and target until a manual refresh.
+          // The historical concern in `useTemplateGalleryPageAssignJourneyMutation.ts`
+          // (NES-1539 todo 021) was that a `refetchQueries` on the mutation
+          // hook itself races with the optimisticResponse for rapid
+          // back-to-back drops and produces a one-frame ghost-card flash.
+          // We accept that minor edge-case flash as the cost of an always-
+          // consistent gallery — the user-visible "stays in both until I
+          // hit refresh" bug is strictly worse. Keep the optimisticResponse
+          // + cache.modify for instant feedback; the refetch is the
+          // belt-and-suspenders that papers over whatever the modify
+          // misses (likely the `accepted` gate misfiring on certain
+          // server response shapes).
+          refetchQueries: ['GetTemplateGalleryPages'],
           // Optimistic + cache.modify so both the target page (gain) and
           // the source page (loss) update in the same tick as the drop.
           // The server response replaces the optimistic write for the
