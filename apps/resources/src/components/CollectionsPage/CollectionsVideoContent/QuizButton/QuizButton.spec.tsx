@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { QuizButton } from './QuizButton'
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', async () => ({
   __esModule: true,
   useTranslation: () => {
     return {
@@ -11,13 +11,13 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', async () => ({
+  sendGTMEvent: vi.fn()
 }))
 
 describe('QuizButton', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders the quiz button correctly', () => {
