@@ -82,7 +82,7 @@ describe('VideosPage', async () => {
     } as unknown as HitsRenderState)
 
     mockUseSearchBox.mockReturnValue({
-      refine: vi.fn
+      refine: vi.fn()
     } as unknown as SearchBoxRenderState)
 
     mockUseMenu.mockReturnValue({
