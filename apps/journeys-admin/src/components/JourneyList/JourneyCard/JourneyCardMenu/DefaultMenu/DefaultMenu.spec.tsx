@@ -9,6 +9,7 @@ import {
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
   JourneyStatus,
@@ -18,6 +19,7 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { InCollectionContext } from '../../../../TemplateGalleryPageList/InCollectionContext'
 
 import { GET_JOURNEY_WITH_USER_ROLES } from './DefaultMenu'
 
@@ -1088,5 +1090,107 @@ describe('DefaultMenu', () => {
     })
     expect(setOpenTranslateDialog).toHaveBeenCalled()
     expect(handleCloseMenu).toHaveBeenCalled()
+  })
+
+  describe('Copy to collection menu item (NES-1637)', () => {
+    function renderWithFlagAndContext({
+      flag,
+      inCollection
+    }: {
+      flag: boolean
+      inCollection: boolean
+    }) {
+      return render(
+        <MockedProvider
+          mocks={[
+            teamWithManagerMock,
+            currentUserMock,
+            userRoleNonPublisherMock,
+            makeJourneyMock('journey-id')
+          ]}
+        >
+          <SnackbarProvider>
+            <FlagsProvider flags={{ teamTemplateCollection: flag }}>
+              <InCollectionContext.Provider value={inCollection}>
+                <TeamProvider>
+                  <DefaultMenu
+                    id="journey-id"
+                    slug="journey-slug"
+                    status={JourneyStatus.draft}
+                    journeyId="journey-id"
+                    published={false}
+                    setOpenAccessDialog={noop}
+                    handleCloseMenu={noop}
+                    setOpenTrashDialog={noop}
+                    setOpenDetailsDialog={noop}
+                    setOpenTranslateDialog={noop}
+                  />
+                </TeamProvider>
+              </InCollectionContext.Provider>
+            </FlagsProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+    }
+
+    it('renders "Copy to collection..." when flag is on AND inCollection is true', async () => {
+      const { getByTestId, getByRole } = renderWithFlagAndContext({
+        flag: true,
+        inCollection: true
+      })
+      await waitFor(() =>
+        expect(
+          getByTestId('JourneysAdminMenuItemCopyToCollection')
+        ).toBeInTheDocument()
+      )
+      // Existing CopyToTeamMenuItem still renders unchanged.
+      expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
+    })
+
+    it('does NOT render "Copy to collection..." when flag is off but inCollection is true', async () => {
+      const { queryByTestId, getByRole } = renderWithFlagAndContext({
+        flag: false,
+        inCollection: true
+      })
+      // Wait for the menu to settle (other async menu items resolve).
+      await waitFor(() =>
+        expect(
+          getByRole('menuitem', { name: 'Copy to ...' })
+        ).toBeInTheDocument()
+      )
+      expect(
+        queryByTestId('JourneysAdminMenuItemCopyToCollection')
+      ).not.toBeInTheDocument()
+    })
+
+    it('does NOT render "Copy to collection..." when flag is on but inCollection is false', async () => {
+      const { queryByTestId, getByRole } = renderWithFlagAndContext({
+        flag: true,
+        inCollection: false
+      })
+      await waitFor(() =>
+        expect(
+          getByRole('menuitem', { name: 'Copy to ...' })
+        ).toBeInTheDocument()
+      )
+      expect(
+        queryByTestId('JourneysAdminMenuItemCopyToCollection')
+      ).not.toBeInTheDocument()
+    })
+
+    it('does NOT render "Copy to collection..." when flag is off and inCollection is false (sanity)', async () => {
+      const { queryByTestId, getByRole } = renderWithFlagAndContext({
+        flag: false,
+        inCollection: false
+      })
+      await waitFor(() =>
+        expect(
+          getByRole('menuitem', { name: 'Copy to ...' })
+        ).toBeInTheDocument()
+      )
+      expect(
+        queryByTestId('JourneysAdminMenuItemCopyToCollection')
+      ).not.toBeInTheDocument()
+    })
   })
 })
