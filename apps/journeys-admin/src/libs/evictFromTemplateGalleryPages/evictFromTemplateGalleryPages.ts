@@ -70,6 +70,8 @@ export function evictFromTemplateGalleryPages<TCache>(
     if (evictJourneyEntity) {
       cache.evict({ id: cache.identify({ __typename: 'Journey', id }) })
     }
-    cache.evict({ id: cache.identify({ __typename: 'TemplateGalleryItem', id }) })
+    cache.evict({
+      id: cache.identify({ __typename: 'TemplateGalleryItem', id })
+    })
   }
 }
