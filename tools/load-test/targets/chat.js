@@ -18,10 +18,11 @@
 
 import { buildScenario } from '../lib/scenario.js'
 
-const runId = __ENV.RUN_ID || `local-${Date.now()}`
 const message = __ENV.MESSAGE || 'load test probe'
 
-const buildRequest = () => ({
+// runId comes from buildScenario (single source of truth for User-Agent +
+// result filename). Do not invent a second fallback here.
+const buildRequest = ({ runId }) => ({
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',

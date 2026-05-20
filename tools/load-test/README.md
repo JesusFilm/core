@@ -15,7 +15,7 @@ tools/load-test/
   targets/                # k6 entry files (endpoint payload + headers)
     chat.js
   lib/scenario.js         # shared k6 runner: options, status bucketing, handleSummary
-  results/                # per-run JSON output (gitignored)
+  results/                # per-run JSON output (committed as evidence; pruned manually — see retention rule below)
 ```
 
 ## Install dependencies
@@ -24,7 +24,7 @@ tools/load-test/
 brew install k6
 ```
 
-`tsx` is already a workspace dependency (used by other `tools/scripts/*.ts`). No YAML library is added — the scenario parser is built in (flat `key: value` only).
+`tsx` is already a workspace dependency (used by other `tools/scripts/*.ts`). The wrapper uses the `yaml` package (`^2.9.0`) to parse scenario files, then validates each key against an allowlist (`SCENARIO_KEYS` in `run-chat.ts`) and requires scalar values.
 
 ## Run a scenario
 
@@ -83,7 +83,7 @@ Implications for this tool, all running from a single machine:
 Every run produces two artefacts:
 
 1. **Stdout summary** — human-readable per-status breakdown + categorical buckets + latency p50/p95/p99/max.
-2. **JSON result file** — written to `tools/load-test/results/<run_id>.json` (gitignored). Filename derives from `run_id` in the YAML, or `<scenario-name>-<iso-timestamp>` if not set.
+2. **JSON result file** — written to `tools/load-test/results/<run_id>.json` (committed as evidence; see retention rule below). Filename derives from `run_id` in the YAML, or `<scenario-name>-<iso-timestamp>` if not set.
 
 The JSON shape is stable and report-friendly:
 

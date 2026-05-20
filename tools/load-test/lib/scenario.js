@@ -39,6 +39,18 @@ const intEnv = (key, fallback) => {
   return value
 }
 
+// MAX_ITERATIONS is the one knob where 0 is meaningful ("no cap") rather
+// than invalid. Keep `intEnv` strict for rate/concurrency knobs and parse
+// this one inline.
+const nonNegativeIntEnv = (key, fallback) => {
+  const raw = __ENV[key]
+  if (raw == null || raw === '') return fallback
+  const value = Number.parseInt(raw, 10)
+  if (!Number.isInteger(value) || value < 0)
+    throw new Error(`${key} must be a non-negative integer (got: ${raw})`)
+  return value
+}
+
 const stringEnv = (key, fallback) => {
   const raw = __ENV[key]
   return raw == null || raw === '' ? fallback : raw
@@ -165,13 +177,17 @@ const renderJsonSummary = (config, metrics, breakdown, buckets) => ({
 //
 // scenario: {
 //   name: string,                       // e.g. 'chat'
-//   buildRequest: () => {               // called per iteration
+//   buildRequest: ({ runId }) => {      // called per iteration with shared context
 //     url?: string,                     // overrides URL env if provided
 //     method?: 'POST' | 'GET' | ...,    // default POST
 //     headers?: Record<string,string>,
 //     body?: string                     // already JSON-stringified
 //   }
 // }
+//
+// `runId` is resolved once here (from RUN_ID env or a fallback derived from
+// the scenario name). It is passed into `buildRequest` so targets cannot
+// invent a second fallback that would drift from the result filename.
 export const buildScenario = ({ name, buildRequest }) => {
   if (typeof name !== 'string' || name === '')
     throw new Error('scenario.name is required')
@@ -194,7 +210,7 @@ export const buildScenario = ({ name, buildRequest }) => {
   )
   const maxVus = intEnv('MAX_VUS', Math.max(vus * 2, 20))
   const duration = stringEnv('DURATION', '30s')
-  const maxIterations = intEnv('MAX_ITERATIONS', 0)
+  const maxIterations = nonNegativeIntEnv('MAX_ITERATIONS', 0)
 
   const runId = stringEnv('RUN_ID', `${name}-${isoNowSafe()}`)
   const config = {
@@ -230,7 +246,7 @@ export const buildScenario = ({ name, buildRequest }) => {
   }
 
   const fn = () => {
-    const request = buildRequest()
+    const request = buildRequest({ runId })
     const requestUrl = request.url ?? url
     const method = request.method ?? 'POST'
     const params = {
