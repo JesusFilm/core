@@ -6,6 +6,8 @@ import { useSnackbar } from 'notistack'
 import { useMemo, useRef } from 'react'
 import { ObjectSchema, array, object, string } from 'yup'
 
+import { TEMPLATE_GALLERY_SLUG_RE } from '@core/journeys/ui/templateGallerySlug'
+
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../../__generated__/GetTemplateGalleryPages'
 import {
   TemplateGalleryPageCreateInput,
@@ -83,7 +85,7 @@ function buildSchema(t: TFunction): ObjectSchema<CollectionFormValues> {
     mediaUrl: string().max(2048, t('URL too long')).default(''),
     slug: string()
       .max(200, t('Max 200 characters'))
-      .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, {
+      .matches(TEMPLATE_GALLERY_SLUG_RE, {
         message: t('Use lowercase letters, numbers, and hyphens only'),
         // The slug field only renders in edit mode. Create mode submits
         // with slug = '' and the server generates one from the title.
@@ -195,7 +197,15 @@ export function useCollectionForm({
         if (values.mediaUrl !== (collection.mediaUrl ?? '')) {
           input.mediaUrl = values.mediaUrl === '' ? null : values.mediaUrl
         }
-        if (values.slug !== collection.slug) input.slug = values.slug
+        // Skip the slug field when the user cleared it. yup's
+        // `excludeEmptyString` lets an empty value pass validation (so
+        // create mode's empty default doesn't error), but sending
+        // `input.slug = ''` would rename the published page's slug to
+        // empty and break every external link. Empty in edit mode means
+        // "leave the slug alone" — same effect as an unchanged field.
+        if (values.slug !== collection.slug && values.slug !== '') {
+          input.slug = values.slug
+        }
         const initialIds = collection.templates.map((tpl) => tpl.id).join(',')
         const nextIds = values.journeyIds.join(',')
         if (initialIds !== nextIds) {
