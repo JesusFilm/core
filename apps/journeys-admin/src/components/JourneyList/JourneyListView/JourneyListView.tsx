@@ -31,8 +31,16 @@ export interface JourneyListViewProps {
   /**
    * True when the NES-1538 Template Info side panel is mounted alongside
    * this view (templates tab + teamTemplateCollection on). Forwarded to
-   * TeamMode so the 3-dots overflow menu's overhang can shrink and not
-   * collide with the panel's left edge.
+   * TeamMode so the 3-dots overflow menu's negative right-margin overhang
+   * (`menuMarginRight`) can shrink and not collide with the panel's left
+   * edge.
+   *
+   * Why this exists: the desktop info panel renders as a `permanent` MUI
+   * `Drawer` (`position: fixed` via Portal), not as a flex sibling of the
+   * grid. Flexbox can't reserve space for the panel's column, so the menu's
+   * negative-margin overhang has to be tuned manually whenever the panel is
+   * mounted. Removing the Drawer in favour of an in-flow column would let
+   * this prop go.
    */
   infoPanelActive?: boolean
 }

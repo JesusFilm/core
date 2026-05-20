@@ -419,7 +419,13 @@ describe('JourneyList', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('opens the mobile drawer (presentation role) when the trigger button is clicked', () => {
+    // MUI's `SwipeableDrawer` keeps the drawer Stack mounted even with
+    // `disableSwipeToOpen`, so its `data-testid` cannot signal open/close.
+    // The *Modal portal wrapper* (with `role="presentation"`) is the only
+    // attribute that mounts and unmounts with the drawer's open state — and
+    // because this spec stubs `TemplateGalleryPageList` to a plain button,
+    // no other `presentation`-role element exists in the render tree.
+    it('mounts the mobile drawer modal when the trigger button is clicked', () => {
       mockedUseRouter.mockReturnValue({
         query: { status: 'active', type: 'templates' },
         events: { on: jest.fn(), off: jest.fn() }
@@ -427,9 +433,6 @@ describe('JourneyList', () => {
 
       renderWithFlags({ teamTemplateCollection: true })
 
-      // MUI SwipeableDrawer renders its modal `role="presentation"` wrapper
-      // only when `open=true`; before clicking the trigger no such role
-      // exists for the mobile drawer.
       expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
 
       fireEvent.click(screen.getByTestId('TemplateInfoPanelMobileTrigger'))
@@ -440,7 +443,7 @@ describe('JourneyList', () => {
       ).toBeInTheDocument()
     })
 
-    it('closes the mobile drawer when the X button is clicked', () => {
+    it('unmounts the mobile drawer modal when the X button is clicked', () => {
       mockedUseRouter.mockReturnValue({
         query: { status: 'active', type: 'templates' },
         events: { on: jest.fn(), off: jest.fn() }
@@ -455,7 +458,6 @@ describe('JourneyList', () => {
         screen.getByRole('button', { name: 'Close template info' })
       )
 
-      // After closing, the MUI modal wrapper unmounts.
       expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
     })
   })

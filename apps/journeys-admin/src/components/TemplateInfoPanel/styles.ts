@@ -28,7 +28,7 @@ export const subHeadingSx: SxProps<Theme> = {
   fontWeight: 700,
   fontSize: 16,
   lineHeight: '24px',
-  color: '#6D6D7D'
+  color: 'text.secondary'
 }
 
 const listItemSx: SxProps<Theme> = {

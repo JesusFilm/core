@@ -12,22 +12,14 @@ import {
   subHeadingSx
 } from '../styles'
 
+// Visual chrome only — font/size/color come from Typography variant="body1"
+// + color="text.primary" applied on the consumer element.
 const calloutBoxSx = {
   p: 1,
   border: '1px solid',
   borderColor: 'divider',
   borderRadius: 1,
-  bgcolor: 'transparent',
-  fontFamily: 'Open Sans, sans-serif',
-  fontWeight: 400,
-  fontSize: 16,
-  lineHeight: '24px',
-  color: '#26262E'
-}
-
-const inlineCodeSx = {
-  fontFamily: 'Open Sans, sans-serif',
-  fontStyle: 'italic'
+  bgcolor: 'transparent'
 }
 
 /**
@@ -60,11 +52,11 @@ export function HowToCreateSection(): ReactElement {
         loading="lazy"
         sx={mediaSlotSx}
       />
-      <Box sx={calloutBoxSx}>
+      <Typography variant="body1" color="text.primary" sx={calloutBoxSx}>
         {t(
           'If you want to have a Quick-Start template, you need to prepare it.'
         )}
-      </Box>
+      </Typography>
 
       <Stack gap={1}>
         <Typography sx={subHeadingSx}>{t('Links, Images, Video')}</Typography>
@@ -102,17 +94,25 @@ export function HowToCreateSection(): ReactElement {
             {t(
               'Instead of it type variable like date, time, event name and so on. Put this variable inside double brackets, e.g.'
             )}{' '}
-            <Box component="code" sx={inlineCodeSx}>
+            <Typography
+              component="code"
+              variant="body1"
+              sx={{ fontStyle: 'italic' }}
+            >
               {'{{date}}'}
-            </Box>
+            </Typography>
           </li>
           <li>
             {t(
               "Click on three dots and select Template Settings. You'll see the variable you set inside the field. You need to paste the text you copied after the double dots, like this"
             )}{' '}
-            <Box component="code" sx={inlineCodeSx}>
+            <Typography
+              component="code"
+              variant="body1"
+              sx={{ fontStyle: 'italic' }}
+            >
               {'{{date: May, 8}}'}
-            </Box>
+            </Typography>
           </li>
           <li>
             {t(

@@ -14,24 +14,41 @@ describe('TemplateInfoPanel', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders all four accordion section titles in the canonical order', () => {
+  it('renders the canonical accordion section titles in order', () => {
     render(<TemplateInfoPanel />)
 
-    const titles = screen.getAllByRole('button').map((b) => b.textContent)
-
-    expect(titles).toEqual([
+    const sectionNames = [
       'Template Types',
       'How to create',
       'Tracking and Analytics',
       'Sharing and Publishing'
-    ])
+    ]
+
+    // Resolve each accordion summary by its accessible name (survives the
+    // addition of unrelated buttons in the panel), then verify the document
+    // order matches the canonical sequence by comparing positions.
+    const positions = sectionNames.map((name) => {
+      const button = screen.getByRole('button', { name })
+      return Array.from(document.querySelectorAll('[role="button"]')).indexOf(
+        button
+      )
+    })
+    expect(positions).toEqual([...positions].sort((a, b) => a - b))
   })
 
-  it('defaults to all sections collapsed', () => {
+  it('defaults all section summaries to collapsed', () => {
     render(<TemplateInfoPanel />)
 
-    for (const button of screen.getAllByRole('button')) {
-      expect(button).toHaveAttribute('aria-expanded', 'false')
+    for (const name of [
+      'Template Types',
+      'How to create',
+      'Tracking and Analytics',
+      'Sharing and Publishing'
+    ]) {
+      expect(screen.getByRole('button', { name })).toHaveAttribute(
+        'aria-expanded',
+        'false'
+      )
     }
   })
 

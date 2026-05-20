@@ -243,12 +243,11 @@ export function JourneyList({
                 overflowY: 'auto'
               }
             }}
-            PaperProps={{
-              'aria-labelledby': 'template-info-drawer-title'
-            }}
           >
             <Stack
               data-testid="TemplateInfoPanelMobileDrawer"
+              role="dialog"
+              aria-labelledby="template-info-drawer-title"
               sx={{ position: 'relative' }}
             >
               {/* Drag-handle pill (visual swipe-to-dismiss affordance) */}
