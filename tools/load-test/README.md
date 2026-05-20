@@ -6,7 +6,7 @@ Lightweight k6-based load tester for Journeys API endpoints. Built for NES-1581 
 
 ## Layout
 
-```
+```text
 tools/load-test/
   run-chat.ts             # wrapper — takes a YAML scenario, runs k6
   scenarios/              # YAML scenarios (load profiles)
@@ -129,7 +129,7 @@ Result files are committed to git as evidence (see initial verification runs und
 
 When a run produces something genuinely worth preserving beyond that (a one-off configuration like the firewall rule in Challenge/Deny that's no longer reproducible on demand), rename it descriptively so the retention rule won't sweep it up:
 
-```
+```text
 results/sustained-single-20260519T225718.json
   → results/sustained-single-challenge-deny-baseline.json
 ```

@@ -152,8 +152,13 @@ const main = (): void => {
   ensureK6Installed()
 
   const scenarioName = basename(yamlPath).replace(/\.(yaml|yml)$/, '')
+  // Treat empty / whitespace-only run_id as missing — otherwise it would
+  // produce a broken result filename like `results/.json`.
+  const explicitRunId = scenario.run_id?.trim()
   const runId =
-    scenario.run_id ?? `${scenarioName}-${isoTimestampForFilename()}`
+    explicitRunId != null && explicitRunId !== ''
+      ? explicitRunId
+      : `${scenarioName}-${isoTimestampForFilename()}`
 
   const finalEnv: Record<string, string> = { RUN_ID: runId }
   for (const key of SCENARIO_KEYS) {

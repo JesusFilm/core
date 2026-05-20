@@ -30,11 +30,17 @@ const requiredEnv = (key) => {
   return value
 }
 
+// `Number.parseInt` stops at the first non-digit ('10ms' -> 10), which would
+// silently accept a malformed env value. Require digits-only before parsing.
+const DIGITS_ONLY = /^\d+$/
+
 const intEnv = (key, fallback) => {
   const raw = __ENV[key]
   if (raw == null || raw === '') return fallback
-  const value = Number.parseInt(raw, 10)
-  if (!Number.isInteger(value) || value <= 0)
+  if (!DIGITS_ONLY.test(raw))
+    throw new Error(`${key} must be a positive integer (got: ${raw})`)
+  const value = Number(raw)
+  if (value <= 0)
     throw new Error(`${key} must be a positive integer (got: ${raw})`)
   return value
 }
@@ -45,10 +51,9 @@ const intEnv = (key, fallback) => {
 const nonNegativeIntEnv = (key, fallback) => {
   const raw = __ENV[key]
   if (raw == null || raw === '') return fallback
-  const value = Number.parseInt(raw, 10)
-  if (!Number.isInteger(value) || value < 0)
+  if (!DIGITS_ONLY.test(raw))
     throw new Error(`${key} must be a non-negative integer (got: ${raw})`)
-  return value
+  return Number(raw)
 }
 
 const stringEnv = (key, fallback) => {
