@@ -8,6 +8,7 @@ Workspaces that use Vitest (have a `vitest.config.mts` at the workspace root):
 | ------------------------ | ------------------------------------------ |
 | `apps/arclight`          | `apps/arclight/vitest.config.mts`          |
 | `apps/journeys`          | `apps/journeys/vitest.config.mts`          |
+| `apps/resources`         | `apps/resources/vitest.config.mts`         |
 | `apis/api-analytics`     | `apis/api-analytics/vitest.config.mts`     |
 | `apis/api-media`         | `apis/api-media/vitest.config.mts`         |
 | `libs/shared/ui-dynamic` | `libs/shared/ui-dynamic/vitest.config.mts` |

@@ -199,6 +199,64 @@ describe('TemplateGalleryPageList', () => {
     expect(queryByText('Welcome Tour')).not.toBeInTheDocument()
   })
 
+  describe('Template Info mobile trigger (NES-1686)', () => {
+    it('renders the inline info trigger next to the Collections heading when onOpenInfo is provided and calls it on click', async () => {
+      const handleOpenInfo = jest.fn()
+      const { getByTestId } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList onOpenInfo={handleOpenInfo} />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      const trigger = await waitFor(() =>
+        getByTestId('TemplateInfoPanelMobileTrigger')
+      )
+      expect(trigger).toHaveAttribute('aria-label', 'Open template info')
+
+      fireEvent.click(trigger)
+      expect(handleOpenInfo).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not render the inline info trigger when onOpenInfo is not provided', async () => {
+      const { queryByTestId, getByTestId } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      // Wait for Collections to render so absence is meaningful (the trigger
+      // would have rendered alongside it).
+      await waitFor(() =>
+        expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+      )
+      expect(queryByTestId('TemplateInfoPanelMobileTrigger')).toBeNull()
+    })
+  })
+
   // NES-1666 v2: per Sharon's repro, the original fix only covered
   // CollectionDialog, not per-card dialogs ("Edit Template Details" etc.).
   // This asserts that when a JourneyCard's own dialog (here, the template

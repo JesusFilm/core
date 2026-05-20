@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import useDownloader from 'react-use-downloader'
+import type { MockedFunction } from 'vitest'
 
 import {
   VideoContentFields_variant as Variant,
@@ -10,19 +11,19 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { DownloadDialog } from './DownloadDialog'
 
-jest.mock('react-use-downloader', () => ({
+vi.mock('react-use-downloader', async () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('DownloadDialog', () => {
-  const onClose = jest.fn()
-  const onDownload = jest.fn()
-  const onCancel = jest.fn()
+  const onClose = vi.fn()
+  const onDownload = vi.fn()
+  const onCancel = vi.fn()
   const video: VideoContentFields = videos[0]
 
   beforeEach(() => {
-    const useDownloaderMock = useDownloader as jest.MockedFunction<
+    const useDownloaderMock = useDownloader as MockedFunction<
       typeof useDownloader
     >
     useDownloaderMock.mockReturnValue({
