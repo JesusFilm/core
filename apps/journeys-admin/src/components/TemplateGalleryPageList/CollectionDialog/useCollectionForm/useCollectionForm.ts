@@ -76,43 +76,13 @@ function buildSchema(t: TFunction): ObjectSchema<CollectionFormValues> {
     creatorName: string().max(100, t('Max 100 characters')).default(''),
     creatorImageSrc: string().default(''),
     creatorImageAlt: string().default(''),
-    mediaUrl: string()
-      .max(2048, t('URL too long'))
-      .default('')
-      .test(
-        'canva-or-google-slides',
-        t('Only Canva or Google Slides links work here'),
-        (value) => {
-          if (value == null || value === '') return true
-          // Intentionally more permissive than the editor's Strategy
-          // section regex (which requires a trailing /view|/watch and
-          // exact Google Slides query-param ordering). Real-world share
-          // URLs include utm tags, fragments, and varying param orders;
-          // we accept them as long as the host + path identify a Canva
-          // design or a published Google Slides deck. The render layer
-          // (`StrategySection` in libs/journeys/ui) only knows how to
-          // embed these two — anything else iframes the raw URL and
-          // fails with "refused to connect" (NES-1649).
-          //
-          // Both patterns are fully anchored and restrict the path /
-          // query / fragment to a known character set so a value that
-          // matches can't smuggle whitespace, control bytes, or other
-          // unexpected characters into the iframe src. The host segment
-          // is locked to canva.com or docs.google.com — `..` inside the
-          // path can't escape the host (URL normalisation collapses it
-          // within the path), so the iframe is always loaded from one
-          // of the two trusted embed origins.
-          if (/\s/.test(value)) return false
-          return (
-            /^https:\/\/(www\.)?canva\.com\/design\/[A-Za-z0-9_-]+(\/[A-Za-z0-9._~\-/]*)?(\?[A-Za-z0-9._~\-=&%+]*)?(#[A-Za-z0-9._~\-=&%+]*)?$/i.test(
-              value
-            ) ||
-            /^https:\/\/docs\.google\.com\/presentation\/d\/e\/[A-Za-z0-9_-]+\/pub(\?[A-Za-z0-9._~\-=&%+]*)?(#[A-Za-z0-9._~\-=&%+]*)?$/i.test(
-              value
-            )
-          )
-        }
-      ),
+    // NES-1682: the Canva / Google Slides URL validation was removed
+    // alongside the embed textbox UI in CollectionDialog. The field
+    // still exists in the form so existing values round-trip on save,
+    // but there is no editing surface and no validation rule to assert
+    // against. We keep the length cap as a defensive bound for the
+    // round-tripped value.
+    mediaUrl: string().max(2048, t('URL too long')).default(''),
     slug: string()
       .max(200, t('Max 200 characters'))
       .matches(TEMPLATE_GALLERY_SLUG_RE, {
@@ -211,8 +181,7 @@ export function useCollectionForm({
         const input: TemplateGalleryPageUpdateInput = {}
         if (values.title !== collection.title) input.title = values.title
         if (values.description !== (collection.description ?? '')) {
-          input.description =
-            values.description === '' ? null : values.description
+          input.description = values.description
         }
         if (values.creatorName !== collection.creatorName) {
           input.creatorName = values.creatorName
