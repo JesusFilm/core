@@ -1,7 +1,7 @@
-import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
+import NorthWestIcon from '@mui/icons-material/NorthWest'
 import Box from '@mui/material/Box'
+import ButtonBase from '@mui/material/ButtonBase'
 import Divider from '@mui/material/Divider'
-import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -186,8 +186,14 @@ export function TemplateInfoPanel({
          * Accordion list. The list itself does NOT scroll — its summaries
          * stay visible at all times so the user can always reach the close
          * affordance and switch sections. Instead, the currently-expanded
-         * AccordionDetails absorbs the remaining vertical space and scrolls
-         * its own body when content exceeds that space.
+         * AccordionDetails has its own max-height + internal scroll, so
+         * only the long body of the expanded section scrolls; the four
+         * summary rows above it and the close bar below it stay pinned.
+         *
+         * The calc accounts for the editor chrome (160px reserved by the
+         * outer panel), header (~151px), four summary rows (~256px), the
+         * close bar (~52px), and dividers — leaving the body whatever
+         * vertical space remains.
          */}
         <Box
           sx={{
@@ -195,35 +201,8 @@ export function TemplateInfoPanel({
             minHeight: 0,
             display: 'flex',
             flexDirection: 'column',
-            '& > .MuiAccordion-root': { flexShrink: 0 },
-            '& > .MuiAccordion-root.Mui-expanded': {
-              flex: '1 1 auto',
-              minHeight: 0,
-              display: 'flex',
-              flexDirection: 'column'
-            },
-            '& > .MuiAccordion-root.Mui-expanded > .MuiCollapse-root': {
-              flex: '1 1 auto',
-              minHeight: 0,
-              display: 'flex',
-              flexDirection: 'column'
-            },
-            '& > .MuiAccordion-root.Mui-expanded > .MuiCollapse-root > .MuiCollapse-wrapper':
-              {
-                flex: '1 1 auto',
-                minHeight: 0,
-                display: 'flex',
-                flexDirection: 'column'
-              },
-            '& > .MuiAccordion-root.Mui-expanded .MuiCollapse-wrapperInner': {
-              flex: '1 1 auto',
-              minHeight: 0,
-              display: 'flex',
-              flexDirection: 'column'
-            },
-            '& > .MuiAccordion-root.Mui-expanded .MuiAccordionDetails-root': {
-              flex: '1 1 auto',
-              minHeight: 0,
+            '& .MuiAccordionDetails-root': {
+              maxHeight: 'calc(100vh - 620px)',
               overflowY: 'auto'
             }
           }}
@@ -231,24 +210,32 @@ export function TemplateInfoPanel({
           {accordions}
         </Box>
         {onClose != null && (
-          <Box sx={{ flexShrink: 0 }}>
-            <Divider />
-            <Stack
-              direction="row"
-              justifyContent="flex-end"
-              alignItems="center"
-              sx={{ px: 1, py: 0.5 }}
+          <>
+            <Divider sx={{ flexShrink: 0 }} />
+            <ButtonBase
+              data-testid="TemplateInfoPanelClose"
+              aria-label={t('Close template info')}
+              onClick={onClose}
+              sx={{
+                flexShrink: 0,
+                width: '100%',
+                justifyContent: 'flex-end',
+                px: 2.5,
+                py: 1.5,
+                color: 'text.primary',
+                '&:hover': {
+                  bgcolor: 'action.hover'
+                },
+                '&:focus-visible': {
+                  outline: (theme) =>
+                    `2px solid ${theme.palette.primary.main}`,
+                  outlineOffset: -2
+                }
+              }}
             >
-              <IconButton
-                data-testid="TemplateInfoPanelClose"
-                aria-label={t('Close template info')}
-                onClick={onClose}
-                size="small"
-              >
-                <ArrowOutwardIcon />
-              </IconButton>
-            </Stack>
-          </Box>
+              <NorthWestIcon />
+            </ButtonBase>
+          </>
         )}
       </Paper>
     )

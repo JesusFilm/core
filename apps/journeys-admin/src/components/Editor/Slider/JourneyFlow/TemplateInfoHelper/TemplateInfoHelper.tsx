@@ -1,5 +1,5 @@
-import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import SouthEastIcon from '@mui/icons-material/SouthEast'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
@@ -16,13 +16,13 @@ const PANEL_ID = 'TemplateInfoHelperPanel'
 /**
  * TemplateInfoHelper — the floating ℹ️ entry point that lives in the top-left
  * `Panel` slot of `JourneyFlow` when the journey being edited is a template
- * (NES-1642). Clicking the trigger pill (Figma frame `39631-61135` — an info
- * icon plus an arrow-up-right icon in a rectangular surface) reveals a
- * self-contained `TemplateInfoPanel` that visually covers the trigger. The
- * panel carries its own arrow-up-right close affordance at the bottom that
- * pairs with the trigger to dismiss the disclosure.
+ * (NES-1642). Clicking the trigger pill (info icon + a south-east arrow
+ * pointing into the panel that's about to expand) reveals a self-contained
+ * `TemplateInfoPanel` that visually covers the trigger. The panel carries
+ * its own full-width close bar at the bottom with a north-west arrow
+ * pointing back to where the trigger sits.
  *
- * Close paths: click the panel's bottom close button, click outside the
+ * Close paths: click the panel's bottom close bar, click outside the
  * floating wrapper, or press Escape. Focus moves into the panel on open
  * (trapped while open) and returns to the trigger button on close.
  *
@@ -74,8 +74,8 @@ export function TemplateInfoHelper(): ReactElement {
             color: 'text.primary',
             borderRadius: 1.5,
             boxShadow: 2,
-            px: 1.5,
-            py: 1,
+            px: 2.5,
+            py: 1.5,
             '&:hover': {
               bgcolor: 'background.paper',
               boxShadow: 3
@@ -86,9 +86,15 @@ export function TemplateInfoHelper(): ReactElement {
             }
           }}
         >
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <InfoOutlinedIcon data-testid="TemplateInfoHelperTriggerInfoIcon" />
-            <ArrowOutwardIcon data-testid="TemplateInfoHelperTriggerArrowIcon" />
+          <Stack direction="row" alignItems="center" spacing={1.5}>
+            <InfoOutlinedIcon
+              data-testid="TemplateInfoHelperTriggerInfoIcon"
+              sx={{ fontSize: 28 }}
+            />
+            <SouthEastIcon
+              data-testid="TemplateInfoHelperTriggerArrowIcon"
+              sx={{ fontSize: 28 }}
+            />
           </Stack>
         </ButtonBase>
         <Fade in={open} unmountOnExit>
