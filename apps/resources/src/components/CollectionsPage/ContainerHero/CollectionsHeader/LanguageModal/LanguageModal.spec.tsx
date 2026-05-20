@@ -3,11 +3,11 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { LanguageModal } from './LanguageModal'
 
 describe('LanguageModal', () => {
-  const mockOnClose = jest.fn()
+  const mockOnClose = vi.fn()
   const feedbackButtonLabel = 'Contact Support'
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders correctly when open is true', () => {

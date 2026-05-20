@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import type { MockedFunction } from 'vitest'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
@@ -12,20 +13,20 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContentPage } from '.'
 
-jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
-jest.mock('next/router', () => ({
-  useRouter: jest.fn()
+vi.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
+vi.mock('next/router', async () => ({
+  useRouter: vi.fn()
 }))
 
-const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
+const mockedUseAlgoliaVideos = useAlgoliaVideos as MockedFunction<
   typeof useAlgoliaVideos
 >
 const mockRouter: Partial<NextRouter> = {
-  replace: jest.fn(),
+  replace: vi.fn(),
   asPath: '/watch/video-slug/english.html',
   locale: 'en'
 }
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('VideoContentPage', () => {
   const transformedVideos = [
@@ -58,15 +59,15 @@ describe('VideoContentPage', () => {
   ] as unknown as CoreVideo[]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseRouter.mockReturnValue(mockRouter as NextRouter)
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
       items: transformedVideos,
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
   })
 

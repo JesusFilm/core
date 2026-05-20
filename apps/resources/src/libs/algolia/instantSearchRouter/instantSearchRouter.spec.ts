@@ -53,7 +53,7 @@ describe('instantSearchRouter', () => {
     })
 
     it('should correctly map refinements using the provided mapRefinements function', () => {
-      const mockMapRefinements = jest.fn((indexUiState) => ({
+      const mockMapRefinements = vi.fn((indexUiState) => ({
         myCustomField: indexUiState.refinementList?.myCustomField
       }))
 

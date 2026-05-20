@@ -3,15 +3,15 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { HeaderLinkAccordion } from './HeaderLinkAccordion'
 
 describe('HeaderLinkAccordion', () => {
-  const mockOnClose = jest.fn()
-  const mockOnAccordionChange = jest.fn()
+  const mockOnClose = vi.fn()
+  const mockOnAccordionChange = vi.fn()
   const defaultSubLinks = [
     { url: '/about/mission', label: 'Our Mission' },
     { url: '/about/team', label: 'Our Team' }
   ]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('Simple Link Mode', () => {
