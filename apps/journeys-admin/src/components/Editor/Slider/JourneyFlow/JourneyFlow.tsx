@@ -63,6 +63,7 @@ import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
 import { useUpdateEdge } from './libs/useUpdateEdge'
 import { NewStepButton } from './NewStepButton'
+import { TemplateInfoHelper } from './TemplateInfoHelper'
 import { ChatNode } from './nodes/ChatNode'
 import { LinkNode } from './nodes/LinkNode'
 import { PhoneNode } from './nodes/PhoneNode'
@@ -102,7 +103,7 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 
 export function JourneyFlow(): ReactElement {
   const router = useRouter()
-  const { editorAnalytics } = useFlags()
+  const { editorAnalytics, teamTemplateCollection } = useFlags()
   const theme = useTheme()
   const {
     state: { steps, activeSlide, showAnalytics, analytics },
@@ -651,20 +652,34 @@ export function JourneyFlow(): ReactElement {
                 <NewStepButton disabled={steps == null || loading} />
               )}
             </Panel>
-            {/* Hide analytics overlay switch for local templates */}
-            {!isTemplate &&
-              journey != null &&
-              /* Only show analytics panel when editorAnalytics feature flag is enabled */
-              editorAnalytics && (
+            {/*
+             * Top-left Panel slot is shared between two affordances, gated by
+             * the journey type:
+             *   - Templates → floating tutorial-info helper (NES-1642), gated
+             *     by `teamTemplateCollection` (same flag the templates-tab
+             *     side panel ships behind, NES-1538).
+             *   - Regular journeys → analytics-overlay switch + card, gated
+             *     by `editorAnalytics`.
+             * Only one branch can match at a time; the Panel itself only
+             * mounts when the active branch's flag is on, preserving the
+             * existing "no Panel when off" behaviour callers rely on.
+             */}
+            {journey != null &&
+              ((isTemplate && teamTemplateCollection === true) ||
+                (!isTemplate && editorAnalytics === true)) && (
                 <Panel position="top-left">
-                  <>
-                    <AnalyticsOverlaySwitch />
-                    <Fade in={showAnalytics} unmountOnExit>
-                      <Box>
-                        <JourneyAnalyticsCard />
-                      </Box>
-                    </Fade>
-                  </>
+                  {isTemplate ? (
+                    <TemplateInfoHelper />
+                  ) : (
+                    <>
+                      <AnalyticsOverlaySwitch />
+                      <Fade in={showAnalytics} unmountOnExit>
+                        <Box>
+                          <JourneyAnalyticsCard />
+                        </Box>
+                      </Fade>
+                    </>
+                  )}
                 </Panel>
               )}
             <Controls handleReset={allBlockPositionUpdate} />
