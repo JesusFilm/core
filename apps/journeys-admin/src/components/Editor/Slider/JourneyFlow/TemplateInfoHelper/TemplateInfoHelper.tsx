@@ -61,9 +61,7 @@ export function TemplateInfoHelper(): ReactElement {
         <IconButton
           ref={triggerRef}
           data-testid="TemplateInfoHelperTrigger"
-          aria-label={
-            open ? t('Close template info') : t('Open template info')
-          }
+          aria-label={open ? t('Close template info') : t('Open template info')}
           aria-expanded={open}
           aria-controls={PANEL_ID}
           onClick={handleToggle}

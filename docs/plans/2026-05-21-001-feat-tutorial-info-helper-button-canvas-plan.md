@@ -105,7 +105,7 @@ Template creators editing a template inside the journey editor have no in-contex
 
 ## High-Level Technical Design
 
-> *Directional guidance for review, not implementation specification. The implementing agent should treat this as context, not code to reproduce.*
+> _Directional guidance for review, not implementation specification. The implementing agent should treat this as context, not code to reproduce._
 
 Mount-site change in `JourneyFlow`:
 
@@ -158,27 +158,32 @@ contained=true  (editor canvas):              Paper{ borderRadius, elevation, wi
 **Dependencies:** None.
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/TemplateInfoPanel/TemplateInfoPanel.tsx`
 - Modify: `apps/journeys-admin/src/components/TemplateInfoPanel/TemplateInfoPanel.spec.tsx`
 - Modify: `apps/journeys-admin/src/components/TemplateInfoPanel/TemplateInfoPanel.stories.tsx` (add a contained story)
 
 **Approach:**
+
 - Extend `TemplateInfoPanelProps` with `contained?: boolean` (default `false`). Update the JSDoc note so future readers see the two modes.
 - When `contained` is `true`, render the outer element as `<Paper elevation=... sx={{ borderRadius, width, ... }}>` instead of `<Box sx={{ width: '100%' }}>`. Use design tokens already in the theme; do not invent new ones. The exact radius/elevation/width come from Figma node `39662-67865`.
 - Internal layout (`Stack` header, `Divider`, accordion list) is unchanged. The prop only affects the outermost wrapper.
 - Add a Storybook story exercising `contained={true}` so the visual delta is reviewable in isolation.
 
 **Patterns to follow:**
+
 - Existing prop typing/JSDoc style on `TemplateInfoPanelProps`.
 - Story shape from `TemplateInfoPanel.stories.tsx`.
 
 **Test scenarios:**
+
 - Happy path: renders today's chrome-less outer element when `contained` is omitted (baseline regression).
 - Happy path: renders a `Paper` wrapper with rounded corners and elevation when `contained={true}` (assert via role/test-id, not exact pixel values).
 - Edge case: accordion behavior (single-expand, defaultExpanded) is unchanged across both modes — exercise the same expand/collapse interaction under both prop values.
 - Edge case: passing `className` through still composes correctly under both modes.
 
 **Verification:**
+
 - Storybook story shows the contained card matching Figma `39662-67865` shape.
 - The existing `JourneyList` consumer (which omits the prop) is unchanged visually.
 
@@ -193,12 +198,14 @@ contained=true  (editor canvas):              Paper{ borderRadius, elevation, wi
 **Dependencies:** U1.
 
 **Files:**
+
 - Create: `apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/TemplateInfoHelper/TemplateInfoHelper.tsx`
 - Create: `apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/TemplateInfoHelper/TemplateInfoHelper.spec.tsx`
 - Create: `apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/TemplateInfoHelper/TemplateInfoHelper.stories.tsx`
 - Create: `apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/TemplateInfoHelper/index.ts`
 
 **Approach:**
+
 - Internal state: `open` boolean via `useState`; refs for the trigger and the panel root.
 - Trigger: an MUI `IconButton` (or small `Button` with an info icon) with `aria-label`, `aria-expanded={open}`, `aria-controls=<panel-id>`. Click toggles `open`.
 - Floating panel: when `open`, render `<ClickAwayListener onClickAway={handleClose}><div><Fade in unmountOnExit><FocusTrap><TemplateInfoPanel contained /></FocusTrap></Fade></div></ClickAwayListener>`. The `<div>` exists because `ClickAwayListener` requires a single ref-bearing child; mirror `CodeActionButton.tsx:133-144`.
@@ -208,11 +215,13 @@ contained=true  (editor canvas):              Paper{ borderRadius, elevation, wi
 - No Apollo, no `useJourney`, no `useEditor` — the parent mount-site already gates on those.
 
 **Patterns to follow:**
+
 - `CodeActionButton.tsx:133-144` — `ClickAwayListener` wrapping the floating content with a single child.
 - `JourneyFlow.tsx:662` — `<Fade in={...} unmountOnExit>` shape for the animation.
 - Frontend rules: `handle`-prefixed event handlers, MUI components only, early returns, accessibility on interactive elements (`tabIndex`, `aria-label`, `onClick`, `onKeyDown`).
 
 **Test scenarios:**
+
 - Happy path: trigger renders with correct `aria-label` and `aria-expanded="false"`; clicking opens the panel; clicking again closes it; `aria-expanded` reflects state.
 - Happy path: opening the helper renders `TemplateInfoPanel` with `contained={true}` (assert the chrome shape and accordion presence).
 - Edge case (Escape): pressing Escape while open closes the panel and returns focus to the trigger.
@@ -223,6 +232,7 @@ contained=true  (editor canvas):              Paper{ borderRadius, elevation, wi
 - Integration: while open, the panel mounts a `TemplateInfoPanel` (assert via the panel's `data-testid="TemplateInfoPanel"`) — confirms the wiring is real, not mocked.
 
 **Verification:**
+
 - Storybook story shows the open and closed states.
 - Spec passes under `npx jest --config apps/journeys-admin/jest.config.ts --no-coverage` (see `.claude/rules/running-jest-tests.md`).
 
@@ -237,10 +247,12 @@ contained=true  (editor canvas):              Paper{ borderRadius, elevation, wi
 **Dependencies:** U2.
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/JourneyFlow.tsx`
 - Modify: `apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/JourneyFlow.spec.tsx` (or whatever the spec is named — confirm during implementation)
 
 **Approach:**
+
 - Destructure `teamTemplateCollection` from `useFlags()` alongside the existing `editorAnalytics`.
 - The existing `isTemplate` inline expression at lines 602-603 stays unchanged and becomes the load-bearing switch.
 - Inside the existing `<Panel position="top-left">` slot, replace today's `!isTemplate && journey != null && editorAnalytics && (...)` block with a top-level branch:
@@ -250,9 +262,11 @@ contained=true  (editor canvas):              Paper{ borderRadius, elevation, wi
 - The Panel itself remains inside the `activeSlide === ActiveSlide.JourneyFlow` guard already in place.
 
 **Patterns to follow:**
+
 - Existing if-else inside the same `Panel` block — mirror the structure, do not extract a sub-component.
 
 **Test scenarios:**
+
 - Happy path: with `journey.template === true` and `teamTemplateCollection: true`, the helper trigger renders in `JourneyFlow`; analytics switch does NOT render.
 - Happy path: with `journey.team.id === 'jfp-team'` and `teamTemplateCollection: true`, helper renders (covers the global-template branch of the `isTemplate` expression).
 - Happy path: with a regular journey and `editorAnalytics: true`, analytics switch renders as today; helper does NOT render.
@@ -262,6 +276,7 @@ contained=true  (editor canvas):              Paper{ borderRadius, elevation, wi
 - Integration: open the helper from this mount-site (i.e. via `userEvent.click` on the rendered trigger) and confirm `TemplateInfoPanel` mounts — proves the wiring is end-to-end.
 
 **Verification:**
+
 - Visual check in the dev server: editing a template (e.g. `jfp-team` or `template: true` journey) shows the ℹ️ button top-left; editing a regular journey shows the analytics switch as today.
 - Spec passes under `npx jest --config apps/journeys-admin/jest.config.ts --no-coverage`.
 
@@ -280,13 +295,13 @@ contained=true  (editor canvas):              Paper{ borderRadius, elevation, wi
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| MUI `FocusTrap` primitive choice — codebase has no precedent, so introducing one risks API/UX drift. | U2's "Deferred to Implementation" item names the candidate primitives explicitly. Resolve at implementation by inspecting installed MUI version and matching the simplest fit. If no clean primitive exists, fall back to focus-on-open + focus-return-on-close without strict trap, and note the AC partial-fulfillment for QA. |
-| Z-index regressions — sitting above canvas but below modals/snackbars is a layered claim that's easy to break later. | Use a `theme.zIndex.*` slot rather than a magic number. Add a Storybook story or spec that asserts the resulting computed `z-index` falls in the expected band. |
-| Two top-left affordances in the codebase risk drifting visually over time. | Both use `Fade` and live in the same Panel slot; future visual changes naturally apply to both. Capture this pairing as a `/ce-compound` learning after merge. |
-| Flag rename history — `teamTemplateCollection` was renamed from `templateGalleryPage` during NES-1539 (see institutional learning). If LD is renamed again, the helper silently stops rendering. | Standard LD risk; mitigated by referencing the same key the shipped `JourneyList` consumer uses — they fail or succeed together. |
-| New `contained` prop adds a configuration mode that may diverge from the templates-tab usage over time. | Keep the prop strictly boolean. Document the two modes in the JSDoc on `TemplateInfoPanelProps`. Resist adding further chrome modes; if a third mode emerges, the prop should be reshaped at that point. |
+| Risk                                                                                                                                                                                             | Mitigation                                                                                                                                                                                                                                                                                                                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| MUI `FocusTrap` primitive choice — codebase has no precedent, so introducing one risks API/UX drift.                                                                                             | U2's "Deferred to Implementation" item names the candidate primitives explicitly. Resolve at implementation by inspecting installed MUI version and matching the simplest fit. If no clean primitive exists, fall back to focus-on-open + focus-return-on-close without strict trap, and note the AC partial-fulfillment for QA. |
+| Z-index regressions — sitting above canvas but below modals/snackbars is a layered claim that's easy to break later.                                                                             | Use a `theme.zIndex.*` slot rather than a magic number. Add a Storybook story or spec that asserts the resulting computed `z-index` falls in the expected band.                                                                                                                                                                  |
+| Two top-left affordances in the codebase risk drifting visually over time.                                                                                                                       | Both use `Fade` and live in the same Panel slot; future visual changes naturally apply to both. Capture this pairing as a `/ce-compound` learning after merge.                                                                                                                                                                   |
+| Flag rename history — `teamTemplateCollection` was renamed from `templateGalleryPage` during NES-1539 (see institutional learning). If LD is renamed again, the helper silently stops rendering. | Standard LD risk; mitigated by referencing the same key the shipped `JourneyList` consumer uses — they fail or succeed together.                                                                                                                                                                                                 |
+| New `contained` prop adds a configuration mode that may diverge from the templates-tab usage over time.                                                                                          | Keep the prop strictly boolean. Document the two modes in the JSDoc on `TemplateInfoPanelProps`. Resist adding further chrome modes; if a third mode emerges, the prop should be reshaped at that point.                                                                                                                         |
 
 ---
 
