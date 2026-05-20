@@ -13,6 +13,8 @@ import { spawn, spawnSync } from 'node:child_process'
 import { readFileSync, readdirSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
 
+import { YAMLParseError, parse as parseYaml } from 'yaml'
+
 type ScenarioConfig = {
   url: string
   rps?: string
@@ -55,63 +57,6 @@ const REPO_ROOT = resolve(__dirname, '..', '..')
 const SCENARIOS_DIR = 'tools/load-test/scenarios'
 const TARGET_PATH = 'tools/load-test/targets/chat.js'
 
-// Find the position of a YAML line comment marker, or -1 if none.
-// Only treats '#' as a comment when at the start of the line or preceded
-// by whitespace — keeps URLs/fragments-in-strings safe.
-const findCommentStart = (line: string): number => {
-  for (let index = 0; index < line.length; index++) {
-    if (line[index] !== '#') continue
-    if (index === 0 || /\s/.test(line[index - 1])) return index
-  }
-  return -1
-}
-
-// Minimal YAML reader: flat `key: scalar` only. Supports comments, blank
-// lines, and single/double-quoted values. Rejects nesting / lists with a
-// clear error so we fail loudly if a scenario file outgrows this format.
-const parseScenarioYaml = (
-  text: string,
-  filename: string
-): Record<string, string> => {
-  const out: Record<string, string> = {}
-  const lines = text.split(/\r?\n/)
-  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-    const lineNumber = lineIndex + 1
-    const rawLine = lines[lineIndex]
-    const commentStart = findCommentStart(rawLine)
-    const stripped =
-      commentStart >= 0 ? rawLine.slice(0, commentStart) : rawLine
-    const trimmed = stripped.trim()
-    if (trimmed === '') continue
-    if (stripped !== stripped.trimStart())
-      throw new Error(
-        `${filename}:${lineNumber}: indented lines are not supported (flat key: value only)`
-      )
-    if (trimmed.startsWith('-'))
-      throw new Error(
-        `${filename}:${lineNumber}: lists are not supported (flat key: value only)`
-      )
-    const colonIndex = trimmed.indexOf(':')
-    if (colonIndex === -1)
-      throw new Error(
-        `${filename}:${lineNumber}: expected 'key: value', got '${trimmed}'`
-      )
-    const key = trimmed.slice(0, colonIndex).trim()
-    let value = trimmed.slice(colonIndex + 1).trim()
-    if (!/^[a-z_][a-z0-9_]*$/i.test(key))
-      throw new Error(`${filename}:${lineNumber}: invalid key '${key}'`)
-    if (
-      (value.startsWith('"') && value.endsWith('"') && value.length >= 2) ||
-      (value.startsWith("'") && value.endsWith("'") && value.length >= 2)
-    ) {
-      value = value.slice(1, -1)
-    }
-    if (value === '' || value === 'null' || value === '~') continue
-    out[key] = value
-  }
-  return out
-}
-
 const loadScenario = (yamlPath: string): ScenarioConfig => {
   let text: string
   try {
@@ -120,20 +65,40 @@ const loadScenario = (yamlPath: string): ScenarioConfig => {
     const message = error instanceof Error ? error.message : String(error)
     throw new Error(`cannot read scenario file '${yamlPath}': ${message}`)
   }
-  const parsed = parseScenarioYaml(text, yamlPath)
-  for (const key of Object.keys(parsed)) {
+
+  let parsed: unknown
+  try {
+    parsed = parseYaml(text)
+  } catch (error) {
+    if (error instanceof YAMLParseError)
+      throw new Error(`${yamlPath}: ${error.message}`)
+    throw error
+  }
+
+  if (parsed == null || typeof parsed !== 'object' || Array.isArray(parsed))
+    throw new Error(`${yamlPath}: expected a YAML mapping (key: value)`)
+
+  const fields: Record<string, string> = {}
+  for (const [key, rawValue] of Object.entries(parsed)) {
     if (!SCENARIO_KEYS.includes(key as ScenarioKey))
       throw new Error(`${yamlPath}: unknown key '${key}'`)
+    if (rawValue == null) continue
+    if (typeof rawValue === 'object')
+      throw new Error(
+        `${yamlPath}: key '${key}' must be a scalar (got ${Array.isArray(rawValue) ? 'list' : 'object'})`
+      )
+    fields[key] = String(rawValue)
   }
-  if (parsed.url == null || parsed.url === '')
+
+  if (fields.url == null || fields.url === '')
     throw new Error(`${yamlPath}: 'url' is required`)
-  if ((parsed.rps == null) === (parsed.rpm == null))
+  if ((fields.rps == null) === (fields.rpm == null))
     throw new Error(
       `${yamlPath}: set exactly one of 'rps' or 'rpm' (got ${
-        parsed.rps != null && parsed.rpm != null ? 'both' : 'neither'
+        fields.rps != null && fields.rpm != null ? 'both' : 'neither'
       })`
     )
-  return parsed as ScenarioConfig
+  return fields as ScenarioConfig
 }
 
 const ensureK6Installed = (): void => {

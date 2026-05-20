@@ -153,7 +153,7 @@ done
 
 No code changes. The result file picks up the new name automatically.
 
-The YAML parser is intentionally minimal — flat `key: scalar` only (with comments). If you need lists, nesting, or multi-line strings, swap to a real YAML library (`yaml` from npm) in `run-chat.ts`.
+YAML is parsed by the `yaml` package — full YAML 1.2 support, so lists, nesting, anchors, and multi-line strings all work syntactically. The wrapper still validates against an allowlist of keys (`SCENARIO_KEYS` in `run-chat.ts`) and requires each value to be a scalar — if you need a structured value, add the key to the allowlist and extend the env mapping in the wrapper.
 
 ## Add a new target (different endpoint)
 
