@@ -43,15 +43,15 @@ NES-1538 shipped the Template Info side panel with a mix of real screenshots and
 
 ### Slot Inventory (source of truth: the generator script)
 
-| Slot file (kept verbatim)            | Used by component               | Intended W × H | Current state                                  |
-| ------------------------------------ | ------------------------------- | -------------- | ---------------------------------------------- |
-| `template-types-quick-start.png`     | `TemplateTypesSection`          | 333 × 185      | ~800KB — likely real, confirm before keeping   |
-| `template-types-regular.png`         | `TemplateTypesSection`          | 333 × 185      | ~1.5MB — likely real, confirm before keeping   |
-| `make-template-flow.gif`             | `HowToCreateSection`            | 333 × 160      | ~4KB placeholder GIF — needs real asset        |
-| `text-variable-flow.gif`             | `HowToCreateSection`            | 333 × 160      | ~4KB placeholder GIF — needs real asset        |
-| `tracking-button-properties.png`     | `TrackingAndAnalyticsSection`   | 333 × 227      | ~970KB — likely real, confirm before keeping   |
-| `tracking-analytics-table.png`       | `TrackingAndAnalyticsSection`   | 333 × 203      | ~520KB — likely real, confirm before keeping   |
-| `publish-and-share-flow.gif`         | `SharingAndPublishingSection`   | 333 × 160      | ~4KB placeholder GIF — needs real asset        |
+| Slot file (kept verbatim)        | Used by component             | Intended W × H | Current state                                |
+| -------------------------------- | ----------------------------- | -------------- | -------------------------------------------- |
+| `template-types-quick-start.png` | `TemplateTypesSection`        | 333 × 185      | ~800KB — likely real, confirm before keeping |
+| `template-types-regular.png`     | `TemplateTypesSection`        | 333 × 185      | ~1.5MB — likely real, confirm before keeping |
+| `make-template-flow.gif`         | `HowToCreateSection`          | 333 × 160      | ~4KB placeholder GIF — needs real asset      |
+| `text-variable-flow.gif`         | `HowToCreateSection`          | 333 × 160      | ~4KB placeholder GIF — needs real asset      |
+| `tracking-button-properties.png` | `TrackingAndAnalyticsSection` | 333 × 227      | ~970KB — likely real, confirm before keeping |
+| `tracking-analytics-table.png`   | `TrackingAndAnalyticsSection` | 333 × 203      | ~520KB — likely real, confirm before keeping |
+| `publish-and-share-flow.gif`     | `SharingAndPublishingSection` | 333 × 160      | ~4KB placeholder GIF — needs real asset      |
 
 ### Institutional Learnings
 
@@ -144,12 +144,12 @@ NES-1538 shipped the Template Info side panel with a mix of real screenshots and
 
 ## Risks & Dependencies
 
-| Risk                                                              | Mitigation                                                                                       |
-| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| User-supplied filenames don't map cleanly to slot filenames       | Mapping table above is the source of truth; confirm with user before overwriting any ambiguous file. |
-| One of the four `.png` slots is also a placeholder we missed      | Verify file size + visual content for every slot, not just the `.gif` slots, before declaring done.  |
-| New GIFs are large enough to regress page weight                  | Check sizes after upload; flag in PR if any single asset exceeds ~2MB and ask whether to optimize.   |
-| Real `.gif` files don't actually animate (still PNG bytes)        | `file <path>` check + spot-check in browser; the placeholder script writes PNG bytes into `.gif` files. |
+| Risk                                                         | Mitigation                                                                                              |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| User-supplied filenames don't map cleanly to slot filenames  | Mapping table above is the source of truth; confirm with user before overwriting any ambiguous file.    |
+| One of the four `.png` slots is also a placeholder we missed | Verify file size + visual content for every slot, not just the `.gif` slots, before declaring done.     |
+| New GIFs are large enough to regress page weight             | Check sizes after upload; flag in PR if any single asset exceeds ~2MB and ask whether to optimize.      |
+| Real `.gif` files don't actually animate (still PNG bytes)   | `file <path>` check + spot-check in browser; the placeholder script writes PNG bytes into `.gif` files. |
 
 ## Sources & References
 
