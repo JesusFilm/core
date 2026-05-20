@@ -1,11 +1,13 @@
+import { vi } from 'vitest'
+
 import { prismaMock } from '../../../../test/prismaMock'
 
 import { deleteFirebaseOnlyAccount } from './deleteFirebaseOnlyAccount'
 
-const mockDeleteUser = jest.fn()
-const mockGetUserByEmail = jest.fn()
+const mockDeleteUser = vi.fn()
+const mockGetUserByEmail = vi.fn()
 
-jest.mock('@core/yoga/firebaseClient', () => ({
+vi.mock('@core/yoga/firebaseClient', () => ({
   auth: {
     deleteUser: (...args: unknown[]) => mockDeleteUser(...args),
     getUserByEmail: (...args: unknown[]) => mockGetUserByEmail(...args)
@@ -23,7 +25,7 @@ const baseInput = {
 
 describe('deleteFirebaseOnlyAccount', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('self-delete guard', () => {

@@ -8,7 +8,7 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { ShareDialog } from './ShareDialog'
 
-const onClose = jest.fn()
+const onClose = vi.fn()
 const originalEnv = process.env
 
 const video: VideoContentFields = {
@@ -41,7 +41,7 @@ const video: VideoContentFields = {
 }
 
 describe('ShareDialog', () => {
-  jest.resetModules()
+  vi.resetModules()
 
   beforeEach(() => {
     process.env = {
@@ -93,7 +93,7 @@ describe('ShareDialog', () => {
   })
 
   describe('development', () => {
-    jest.resetModules()
+    vi.resetModules()
 
     beforeEach(() => {
       process.env = {
@@ -160,7 +160,7 @@ describe('ShareDialog', () => {
   })
 
   describe('production', () => {
-    jest.resetModules()
+    vi.resetModules()
 
     beforeEach(() => {
       process.env = {
@@ -228,13 +228,13 @@ describe('ShareDialog', () => {
     beforeEach(() => {
       Object.assign(navigator, {
         clipboard: {
-          writeText: jest.fn()
+          writeText: vi.fn()
         }
       })
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      vi.resetAllMocks()
       Object.assign(navigator, originalNavigator)
     })
 

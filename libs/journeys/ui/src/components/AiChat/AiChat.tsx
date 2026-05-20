@@ -64,6 +64,14 @@ interface AiChatProps {
    */
   onSheetStateChange?: (state: 'idle' | 'active' | 'collapsed') => void
   /**
+   * Seeds the internal `collapsed` state on mount. Used by per-card
+   * `expandChatByDefault: false / null` to land the user in the
+   * drag-handle-only state instead of the default idle (input visible)
+   * state. Only the initial mount value matters — subsequent changes
+   * are ignored, drag interactions own the state from there.
+   */
+  initialCollapsed?: boolean
+  /**
    * Optional close action for parent-owned overlay chrome. Rendered as a
    * sibling of the floating input so it stays discoverable without covering
    * typed text.
@@ -195,6 +203,7 @@ export function AiChat({
   collapsible = true,
   variant = 'panel',
   onSheetStateChange,
+  initialCollapsed = false,
   onClose
 }: AiChatProps): ReactElement {
   const isOverlay = variant === 'overlay'
@@ -202,7 +211,7 @@ export function AiChat({
   const { t } = useTranslation('libs-journeys-ui')
   const { journey } = useJourney()
   const [input, setInput] = useState('')
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(initialCollapsed)
   const initialMessageSent = useRef(false)
 
   const handleCollapse = useCallback(() => {

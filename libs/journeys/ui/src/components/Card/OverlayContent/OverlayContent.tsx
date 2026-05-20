@@ -4,20 +4,33 @@ import { ReactElement, ReactNode } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
+import type { TreeBlock } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
-import { getFooterMobileSpacing } from '../utils/getFooterElements'
+import { CardFields } from '../__generated__/CardFields'
+import {
+  getFooterMobileSpacing,
+  hasAiChatButton
+} from '../utils/getFooterElements'
 import { showHeader } from '../utils/getHeaderElements'
 
 interface OverlayContentProps {
   children: ReactNode
   sx: SxProps
   hasFullscreenVideo?: boolean
+  /**
+   * Active card for this overlay's footer-spacing calculation. The chat
+   * affordance is purely card-level — when omitted (or when
+   * `card.showAssistant` is null), no AI chat button or pinned bar is
+   * rendered. `Journey.showAssistant` is no longer consulted.
+   */
+  card?: TreeBlock<CardFields> | null
 }
 
 export function OverlayContent({
   children,
   sx,
-  hasFullscreenVideo = false
+  hasFullscreenVideo = false,
+  card
 }: OverlayContentProps): ReactElement {
   const { journey, variant } = useJourney()
   const enableVerticalScroll: SxProps = {
@@ -71,14 +84,11 @@ export function OverlayContent({
           pr: { xs: 4, sm: 10 }
         }
 
-  const footerMobileSpacing = getFooterMobileSpacing({ journey, variant })
+  const footerMobileSpacing = getFooterMobileSpacing({ journey, variant, card })
 
   const flags = useFlags()
   const pinnedChatActive =
-    flags.apologistChat === true &&
-    journey?.showAssistant === true &&
-    variant !== 'admin' &&
-    variant !== 'embed'
+    flags.apologistChat === true && hasAiChatButton({ journey, variant, card })
 
   // Idle PinnedChatBar is 168px tall (handle + ChatHeader + input). Add a
   // small buffer so the last interactive card element clears the sheet's
