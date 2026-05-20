@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { BaseHit, Hit } from 'instantsearch.js'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { useHits } from 'react-instantsearch'
+import type { MockedFunction } from 'vitest'
 
 import {
   StrategyItem,
@@ -10,11 +11,11 @@ import {
   useAlgoliaStrategies
 } from './useAlgoliaStrategies'
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
+const mockUseHits = useHits as MockedFunction<typeof useHits>
 
-describe('removeExcerptPTags', () => {
+describe('removeExcerptPTags', async () => {
   it('should remove p tags from excerpt', () => {
     const result = removeExcerptPTags('<p>description</p>')
     expect(result).toBe('description')
@@ -70,7 +71,7 @@ describe('useAlgoliaStrategies', () => {
     mockUseHits.mockReturnValue({
       hits: [algoliaStrategyItem]
     } as unknown as HitsRenderState)
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should transform strategy hits into strategy item', () => {

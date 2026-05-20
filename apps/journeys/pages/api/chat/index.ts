@@ -9,6 +9,7 @@ import {
 } from 'ai'
 import { Langfuse, TextPromptClient } from 'langfuse'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { z } from 'zod'
 
 import { getFlags } from '../../../src/libs/getFlags'
 import {
@@ -16,6 +17,74 @@ import {
   getActivePromptLabel,
   getLangfuse
 } from '../../../src/libs/langfuse/client'
+
+// Request bounds (NES-1579). Hard ceilings so a single chat request can't be
+// arbitrarily expensive or arbitrarily shaped.
+const MAX_MESSAGES = 20
+const MAX_PARTS_PER_MESSAGE = 20
+// Applied per field — once on `content` and once on each `parts[].text` —
+// so a single message can carry more than this in aggregate. The
+// MAX_TOTAL_CHARS budget below is the real per-request backstop.
+// Keep in sync with the per-message cap MAX_MESSAGE_CHARS in
+// libs/journeys/ui/src/components/PromptInput/PromptInput.tsx — the UI
+// caps typing/pasting at that length and the server rejects any single
+// field longer than it, so the two constants must match.
+const MAX_FIELD_CHARS = 4000
+// ~5000 input-token budget at ~4 chars/token. Buys ~8-10 turns of normal
+// conversation before the cap bites. Conversation-history management
+// (sliding window / rolling summary) is the proper fix and is tracked
+// separately under Cleanup & Tech Debt.
+const MAX_TOTAL_CHARS = 20000
+const MAX_OUTPUT_TOKENS = 512
+
+export const config = {
+  api: {
+    // Sized for the MAX_TOTAL_CHARS budget with 4-byte-per-char UTF-8 worst
+    // case (international users) + JSON wrapping. Oversized bodies are
+    // rejected by Next.js with 413 before the handler runs.
+    bodyParser: { sizeLimit: '128kb' }
+  }
+}
+
+const messagePartSchema = z
+  .object({
+    type: z.string().min(1).optional(),
+    text: z.string().max(MAX_FIELD_CHARS).optional()
+  })
+  .passthrough()
+
+const messageSchema = z
+  .object({
+    role: z.enum(['user', 'assistant', 'system']),
+    content: z.string().max(MAX_FIELD_CHARS).optional(),
+    parts: z.array(messagePartSchema).max(MAX_PARTS_PER_MESSAGE).optional()
+  })
+  .passthrough()
+  .refine((m) => m.content != null || (m.parts?.length ?? 0) > 0, {
+    message: 'message requires content or parts'
+  })
+
+const chatRequestSchema = z.object({
+  messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
+  language: z.string().max(64).optional(),
+  sessionId: z.string().max(128).optional(),
+  journeyId: z.string().max(128).optional()
+})
+
+type ParsedChatMessage = z.infer<typeof messageSchema>
+
+function totalMessageChars(messages: ParsedChatMessage[]): number {
+  let total = 0
+  for (const m of messages) {
+    if (typeof m.content === 'string') total += m.content.length
+    if (Array.isArray(m.parts)) {
+      for (const p of m.parts) {
+        if (typeof p.text === 'string') total += p.text.length
+      }
+    }
+  }
+  return total
+}
 
 type ChatProvider = 'apologist' | 'gemini' | 'openai' | 'openrouter'
 
@@ -94,13 +163,6 @@ function resolveChatModel():
   }
 }
 
-interface ChatRequestBody {
-  messages: UIMessage[]
-  language?: string
-  sessionId?: string
-  journeyId?: string
-}
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -117,11 +179,15 @@ export default async function handler(
     return
   }
 
-  const { messages, language, sessionId, journeyId } =
-    req.body as ChatRequestBody
+  const parsed = chatRequestSchema.safeParse(req.body)
+  if (!parsed.success) {
+    res.status(400).json({ error: 'invalid request' })
+    return
+  }
+  const { messages, language, sessionId, journeyId } = parsed.data
 
-  if (!messages || messages.length === 0) {
-    res.status(400).json({ error: 'messages are required' })
+  if (totalMessageChars(messages) > MAX_TOTAL_CHARS) {
+    res.status(400).json({ error: 'request too large' })
     return
   }
 
@@ -136,7 +202,25 @@ export default async function handler(
     language,
     langfuse
   })
-  const modelMessages = await convertToModelMessages(messages)
+  // Defence-in-depth: the schema rejects most malformed inputs, but the
+  // AI SDK can still throw on shapes that pass `.passthrough()` (e.g.
+  // unsupported part `type`). Map that to a 400 so a malformed-request
+  // failure isn't misattributed as an upstream LLM 500. Runs before the
+  // trace/generation are created, so there's no dangling Langfuse span.
+  let modelMessages: Awaited<ReturnType<typeof convertToModelMessages>>
+  try {
+    modelMessages = await convertToModelMessages(
+      messages as unknown as UIMessage[]
+    )
+  } catch (error) {
+    const err = error as Error
+    console.error('[chat] convertToModelMessages failed', {
+      name: err?.name,
+      message: err?.message
+    })
+    res.status(400).json({ error: 'invalid request' })
+    return
+  }
 
   const { provider, modelId } = modelResult.resolved
   const ipCountry = req.headers['x-vercel-ip-country'] as string | undefined
@@ -167,6 +251,7 @@ export default async function handler(
       model: modelResult.resolved.model,
       system,
       messages: modelMessages,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
       onError: async ({ error }) => {
         const err = error as Error
         // TODO(NES-1615): swap console for structured pino + dd-trace logger

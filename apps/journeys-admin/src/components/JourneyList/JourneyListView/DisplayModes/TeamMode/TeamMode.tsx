@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { useRouter } from 'next/router'
@@ -24,6 +23,15 @@ export interface TeamModeProps extends SharedModeProps {
   ) => void
   contentTypeOptions: ContentTypeOption[]
   router: ReturnType<typeof useRouter>
+  /**
+   * True when the NES-1538 Template Info side panel is mounted to the right
+   * of this view. The 3-dots overflow menu normally uses a generous negative
+   * marginRight to nestle against the (otherwise empty) viewport edge — but
+   * when the info panel is there, that overhang reads as the kebab icon
+   * jamming into the panel's left edge. With this flag on, the overhang
+   * shrinks so the icon stays clear of the panel.
+   */
+  infoPanelActive?: boolean
 }
 
 export const TeamMode = ({
@@ -36,7 +44,8 @@ export const TeamMode = ({
   setSortOrder,
   setActiveEvent,
   router,
-  renderList
+  renderList,
+  infoPanelActive = false
 }: TeamModeProps): ReactElement => (
   <>
     <Tabs
@@ -82,7 +91,12 @@ export const TeamMode = ({
         setActiveEvent={setActiveEvent}
         menuMarginRight={{
           xs: 1,
-          sm: router?.query?.type === 'templates' ? -12 : -8
+          sm:
+            router?.query?.type === 'templates'
+              ? infoPanelActive
+                ? -2
+                : -12
+              : -8
         }}
       />
     </Tabs>

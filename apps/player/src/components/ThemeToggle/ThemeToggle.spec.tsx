@@ -7,7 +7,7 @@ import { mockSetTheme, mockTheme } from '@/setupTests'
 
 describe('ThemeToggle', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     Object.assign(mockTheme, { theme: 'light', setTheme: mockSetTheme })
   })
 

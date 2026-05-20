@@ -140,7 +140,7 @@ describe('NewContentPage', () => {
 
   it('should open new tab when free resource button is clicked', async () => {
     const user = userEvent.setup()
-    window.open = jest.fn()
+    window.open = vi.fn()
     render(
       <MockedProvider>
         <VideoProvider value={{ content: videoWithBibleCitations }}>
