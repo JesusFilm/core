@@ -123,6 +123,28 @@ The JSON shape is stable and report-friendly:
 
 `by_status` gives the exact code distribution (only non-zero codes appear), and `buckets` gives the categorical roll-up. Anything outside the tracked code list (see `TRACKED_CODES` in `lib/scenario.js`) lands in `by_status.other` with a `console.warn` during the run. 429s aren't failures here — once the firewall rule is past Log mode, a non-zero 429 count is the success signal.
 
+### Result file retention
+
+Result files are committed to git as evidence (see initial verification runs under `results/`). To keep the history readable, **prune to the last 2 files per scenario** before pushing — the most recent one as the current baseline, the one before it for direct comparison.
+
+When a run produces something genuinely worth preserving beyond that (a one-off configuration like the firewall rule in Challenge/Deny that's no longer reproducible on demand), rename it descriptively so the retention rule won't sweep it up:
+
+```
+results/sustained-single-20260519T225718.json
+  → results/sustained-single-challenge-deny-baseline.json
+```
+
+Prune older timestamped files manually, e.g.:
+
+```sh
+# Show what would be deleted (keep newest 2 per scenario prefix)
+for prefix in smoke sustained-single concurrent-clients firewall-trip; do
+  ls -t tools/load-test/results/${prefix}-*.json 2>/dev/null | tail -n +3
+done
+
+# Then `rm` them once you're happy with the list.
+```
+
 ## Add a new scenario (same target)
 
 1. Copy any `scenarios/*.yaml` to `scenarios/<your-name>.yaml`.

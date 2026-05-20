@@ -1,0 +1,39 @@
+{
+  "scenario": "chat",
+  "config": {
+    "scenario": "chat",
+    "runId": "smoke-20260519T225645",
+    "url": "https://your-stage.nextstep.is/api/chat",
+    "method": "POST",
+    "rate": 1,
+    "timeUnit": "1s",
+    "vus": 1,
+    "maxVus": 20,
+    "duration": "5s",
+    "maxIterations": null,
+    "startedAt": "2026-05-19T22:56:45.635Z",
+    "finishedAt": "2026-05-19T22:56:50.880Z",
+    "durationMs": 5244
+  },
+  "totals": {
+    "sent": 4,
+    "by_status": {
+      "200": 4
+    },
+    "buckets": {
+      "success_2xx": 4,
+      "rate_limited_429": 0,
+      "client_errors_4xx_excluding_429": 0,
+      "server_errors_5xx": 0,
+      "network_errors": 0,
+      "unexpected": 0
+    }
+  },
+  "latency_ms": {
+    "p50": 1280,
+    "p95": 1569,
+    "p99": 1605,
+    "max": 1614,
+    "avg": 1338
+  }
+}
