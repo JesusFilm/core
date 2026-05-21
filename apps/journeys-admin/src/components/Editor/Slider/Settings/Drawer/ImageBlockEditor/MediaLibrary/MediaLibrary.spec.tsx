@@ -195,7 +195,7 @@ describe('MediaLibrary', () => {
     expect(screen.getByTestId('media-library-image-img-9')).toBeInTheDocument()
   })
 
-  it('should disable Load More with "No more to load" when a short page is returned', async () => {
+  it('should hide the Load More button when a short page is returned', async () => {
     render(
       <MockedProvider mocks={[firstShortPageMock]}>
         <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
@@ -203,8 +203,11 @@ describe('MediaLibrary', () => {
     )
     await screen.findByTestId('media-library-image-img-0')
     expect(
-      screen.getByRole('button', { name: 'No more to load' })
-    ).toBeDisabled()
+      screen.queryByRole('button', { name: 'Load More' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'No more to load' })
+    ).not.toBeInTheDocument()
   })
 
   it('should show the Load More button in a loading state while the initial query is in flight', () => {

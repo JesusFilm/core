@@ -14,24 +14,22 @@ export function LoadMoreButton({
   hasMore,
   loading,
   onClick
-}: LoadMoreButtonProps): ReactElement {
+}: LoadMoreButtonProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
+
+  if (!hasMore && !loading) return null
 
   return (
     <Button
       variant="outlined"
       onClick={onClick}
-      disabled={!hasMore || loading}
+      disabled={loading}
       loading={loading}
       startIcon={<Plus2Icon />}
       size="medium"
       fullWidth
     >
-      {loading
-        ? t('Loading...')
-        : !hasMore
-          ? t('No more to load')
-          : t('Load More')}
+      {loading ? t('Loading...') : t('Load More')}
     </Button>
   )
 }
