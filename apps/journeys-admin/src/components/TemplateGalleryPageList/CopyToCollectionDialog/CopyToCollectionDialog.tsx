@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { Formik, FormikHelpers, type FormikErrors } from 'formik'
+import { Formik, type FormikErrors, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo } from 'react'
@@ -170,15 +170,14 @@ export function CopyToCollectionDialog({
           id: string(),
           localName: string().optional(),
           nativeName: string().optional()
+        }).when('showTranslation', {
+          is: true,
+          then: (schema) =>
+            schema.required(t('Please select a language')).shape({
+              id: string().required(t('Please select a language'))
+            }),
+          otherwise: (schema) => schema.optional()
         })
-          .when('showTranslation', {
-            is: true,
-            then: (schema) =>
-              schema.required(t('Please select a language')).shape({
-                id: string().required(t('Please select a language'))
-              }),
-            otherwise: (schema) => schema.optional()
-          })
       }),
     [t]
   )
