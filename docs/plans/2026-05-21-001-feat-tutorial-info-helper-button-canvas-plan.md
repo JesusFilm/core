@@ -109,7 +109,7 @@ Template creators editing a template inside the journey editor have no in-contex
 
 Mount-site change in `JourneyFlow`:
 
-```
+```tsx
 <Panel position="top-left">
   {isTemplate && teamTemplateCollection ? (
     <TemplateInfoHelper />
@@ -130,7 +130,7 @@ The Panel itself stays gated on `journey != null` (single guard) plus `activeSli
 
 `TemplateInfoHelper` shape:
 
-```
+```text
 state: open (boolean)
 trigger: IconButton with aria-expanded, aria-controls, focus-bearing
 panel (when open): ClickAwayListener > Fade > FocusTrap > TemplateInfoPanel contained
@@ -140,7 +140,7 @@ on close: trigger.focus()
 
 `TemplateInfoPanel` chrome decision:
 
-```
+```text
 contained=false (default, today's behavior):  Box{ width: 100% }   ─ chrome from consumer Drawer
 contained=true  (editor canvas):              Paper{ borderRadius, elevation, width, ... } ─ self-chrome
 ```
