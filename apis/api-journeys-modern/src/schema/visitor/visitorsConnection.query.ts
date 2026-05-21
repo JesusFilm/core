@@ -26,17 +26,15 @@ interface VisitorsConnectionShape {
   pageInfo: PageInfoShape
 }
 
-const PageInfoRef = builder
-  .objectRef<PageInfoShape>('PageInfo')
-  .implement({
-    shareable: true,
-    fields: (t) => ({
-      hasNextPage: t.exposeBoolean('hasNextPage', { nullable: false }),
-      hasPreviousPage: t.exposeBoolean('hasPreviousPage', { nullable: false }),
-      startCursor: t.exposeString('startCursor', { nullable: true }),
-      endCursor: t.exposeString('endCursor', { nullable: true })
-    })
+const PageInfoRef = builder.objectRef<PageInfoShape>('PageInfo').implement({
+  shareable: true,
+  fields: (t) => ({
+    hasNextPage: t.exposeBoolean('hasNextPage', { nullable: false }),
+    hasPreviousPage: t.exposeBoolean('hasPreviousPage', { nullable: false }),
+    startCursor: t.exposeString('startCursor', { nullable: true }),
+    endCursor: t.exposeString('endCursor', { nullable: true })
   })
+})
 
 const VisitorEdgeRef = builder
   .objectRef<VisitorEdgeShape>('VisitorEdge')
@@ -71,62 +69,57 @@ const VisitorsConnectionRef = builder
   })
 
 builder.queryField('visitorsConnection', (t) =>
-  t
-    .withAuth({ isAuthenticated: true })
-    .field({
-      type: VisitorsConnectionRef,
-      nullable: false,
-      override: { from: 'api-journeys' },
-      args: {
-        teamId: t.arg.string({ required: false }),
-        first: t.arg.int({ required: false }),
-        after: t.arg.string({ required: false })
-      },
-      resolve: async (_parent, args, context) => {
-        const userId = context.user.id
-        const first = args.first ?? 50
-        const after = args.after ?? null
+  t.withAuth({ isAuthenticated: true }).field({
+    type: VisitorsConnectionRef,
+    nullable: false,
+    override: { from: 'api-journeys' },
+    args: {
+      teamId: t.arg.string({ required: false }),
+      first: t.arg.int({ required: false }),
+      after: t.arg.string({ required: false })
+    },
+    resolve: async (_parent, args, context) => {
+      const userId = context.user.id
+      const first = args.first ?? 50
+      const after = args.after ?? null
 
-        const where: Prisma.VisitorWhereInput = {
-          team: {
-            userTeams: {
-              some: {
-                userId,
-                role: { in: [UserTeamRole.manager, UserTeamRole.member] }
-              }
+      const where: Prisma.VisitorWhereInput = {
+        team: {
+          userTeams: {
+            some: {
+              userId,
+              role: { in: [UserTeamRole.manager, UserTeamRole.member] }
             }
           }
         }
-        if (args.teamId != null) {
-          where.teamId = args.teamId
-        }
+      }
+      if (args.teamId != null) {
+        where.teamId = args.teamId
+      }
 
-        const result = await prisma.visitor.findMany({
-          where,
-          cursor: after != null ? { id: after } : undefined,
-          orderBy: { createdAt: 'desc' },
-          skip: after == null ? 0 : 1,
-          take: first + 1
-        })
+      const result = await prisma.visitor.findMany({
+        where,
+        cursor: after != null ? { id: after } : undefined,
+        orderBy: { createdAt: 'desc' },
+        skip: after == null ? 0 : 1,
+        take: first + 1
+      })
 
-        const sendResult =
-          result.length > first ? result.slice(0, -1) : result
+      const sendResult = result.length > first ? result.slice(0, -1) : result
 
-        return {
-          edges: sendResult.map((visitor) => ({
-            node: visitor,
-            cursor: visitor.id
-          })),
-          pageInfo: {
-            hasNextPage: result.length > first,
-            hasPreviousPage: false,
-            startCursor: result.length > 0 ? result[0].id : null,
-            endCursor:
-              result.length > 0
-                ? sendResult[sendResult.length - 1].id
-                : null
-          }
+      return {
+        edges: sendResult.map((visitor) => ({
+          node: visitor,
+          cursor: visitor.id
+        })),
+        pageInfo: {
+          hasNextPage: result.length > first,
+          hasPreviousPage: false,
+          startCursor: result.length > 0 ? result[0].id : null,
+          endCursor:
+            result.length > 0 ? sendResult[sendResult.length - 1].id : null
         }
       }
-    })
+    }
+  })
 )
