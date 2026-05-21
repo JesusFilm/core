@@ -72,7 +72,10 @@ export function createLangfuseClient(env: ToolEnv): LangfuseClient {
 
 async function getJson<T>(client: LangfuseClient, path: string): Promise<T> {
   const response = await fetch(`${client.baseUrl}${path}`, {
-    headers: { Authorization: client.authHeader, 'Content-Type': 'application/json' }
+    headers: {
+      Authorization: client.authHeader,
+      'Content-Type': 'application/json'
+    }
   })
   if (!response.ok) {
     const body = await response.text()
@@ -207,7 +210,10 @@ async function fetchTrace(
   const observations = nested
     .filter((observation) => observation.type === 'GENERATION')
     // Pin traceId to the parent in case the nested record omits it.
-    .map((observation) => ({ ...mapObservation(observation), traceId: trace.id }))
+    .map((observation) => ({
+      ...mapObservation(observation),
+      traceId: trace.id
+    }))
   return { trace, observations }
 }
 
@@ -228,7 +234,10 @@ export async function fetchTraceData(
   const traces: TraceRecord[] = []
   const observations: ObservationRecord[] = []
   for (let index = 0; index < traceIds.length; index += 1) {
-    const { trace, observations: obs } = await fetchTrace(client, traceIds[index])
+    const { trace, observations: obs } = await fetchTrace(
+      client,
+      traceIds[index]
+    )
     traces.push(trace)
     observations.push(...obs)
     options.onProgress?.(`traces: ${index + 1}/${traceIds.length}`)

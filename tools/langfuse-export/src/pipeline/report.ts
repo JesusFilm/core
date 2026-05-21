@@ -35,10 +35,15 @@ function kvRows(
   record: Record<string, number>,
   formatter: (value: number) => string = (value) => String(value)
 ): string {
-  const entries = Object.entries(record).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+  const entries = Object.entries(record).sort(
+    (a, b) => b[1] - a[1] || a[0].localeCompare(b[0])
+  )
   if (entries.length === 0) return '<tr><td colspan="2"><em>none</em></td></tr>'
   return entries
-    .map(([key, value]) => `<tr><td>${escapeHtml(key)}</td><td>${escapeHtml(formatter(value))}</td></tr>`)
+    .map(
+      ([key, value]) =>
+        `<tr><td>${escapeHtml(key)}</td><td>${escapeHtml(formatter(value))}</td></tr>`
+    )
     .join('')
 }
 
@@ -56,7 +61,10 @@ function renderThemes(
     .map((theme) => {
       const excerpts = theme.sessionIds
         .map((id) => byId.get(id))
-        .filter((conversation): conversation is SanitisedConversation => conversation != null)
+        .filter(
+          (conversation): conversation is SanitisedConversation =>
+            conversation != null
+        )
         .map((conversation) => firstUserMessage(conversation))
         .filter((message) => message.length > 0)
         .slice(0, MAX_EXCERPTS_PER_THEME)
@@ -82,7 +90,10 @@ function topQuestionsRows(stats: ReportStats): string {
     return '<tr><td colspan="2"><em>none (no real-session, multi-turn conversations)</em></td></tr>'
   }
   return stats.topQuestions
-    .map((question) => `<tr><td>${escapeHtml(question.message)}</td><td>${question.count}</td></tr>`)
+    .map(
+      (question) =>
+        `<tr><td>${escapeHtml(question.message)}</td><td>${question.count}</td></tr>`
+    )
     .join('')
 }
 
@@ -92,7 +103,8 @@ export function renderReport(
   themes: ThemeSynthesis | null
 ): string {
   const byId = new Map<string, SanitisedConversation>()
-  for (const conversation of sanitised) byId.set(conversation.sessionId, conversation)
+  for (const conversation of sanitised)
+    byId.set(conversation.sessionId, conversation)
 
   const latency = stats.latencySeconds
 

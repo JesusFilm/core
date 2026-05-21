@@ -1,5 +1,9 @@
 import { regexScrub, sanitize } from './sanitize'
-import type { Conversation, ConversationTurn, SanitisedConversation } from '../types'
+import type {
+  Conversation,
+  ConversationTurn,
+  SanitisedConversation
+} from '../types'
 
 function turn(overrides: Partial<ConversationTurn> = {}): ConversationTurn {
   return {
@@ -24,7 +28,8 @@ function conversation(turns: ConversationTurn[]): Conversation {
 
 describe('regexScrub', () => {
   it('redacts email, intl phone, and url in one message', () => {
-    const input = 'reach me at jo@example.com or +44 20 7946 0958 see https://x.io/p'
+    const input =
+      'reach me at jo@example.com or +44 20 7946 0958 see https://x.io/p'
     const out = regexScrub(input)
     expect(out).toContain('[redacted-email]')
     expect(out).toContain('[redacted-phone]')
@@ -67,7 +72,9 @@ describe('regexScrub', () => {
     expect(regexScrub("I'm from Auckland originally")).toContain(
       "I'm from [redacted-location]"
     )
-    expect(regexScrub('I am from Lagos')).toContain('I am from [redacted-location]')
+    expect(regexScrub('I am from Lagos')).toContain(
+      'I am from [redacted-location]'
+    )
   })
 
   it('redacts all matches of the same type in one message', () => {
@@ -105,7 +112,9 @@ describe('sanitize', () => {
       return `${text} [llm-scrubbed]`
     }
 
-    const convs = [conversation([turn({ userMessage: 'one' }), turn({ userMessage: 'two' })])]
+    const convs = [
+      conversation([turn({ userMessage: 'one' }), turn({ userMessage: 'two' })])
+    ]
 
     const withoutLlm = await sanitize(convs)
     expect(calls).toEqual([])
@@ -122,7 +131,10 @@ describe('sanitize', () => {
       calls.push(text)
       return text
     }
-    const result = await sanitize([conversation([turn({ userMessage: '' })])], llmScrub)
+    const result = await sanitize(
+      [conversation([turn({ userMessage: '' })])],
+      llmScrub
+    )
     expect(calls).toEqual([])
     expect(result[0].turns[0].userMessage).toBe('')
   })

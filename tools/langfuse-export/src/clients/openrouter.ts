@@ -46,7 +46,10 @@ function extractJsonObject(text: string): unknown {
 // degrades to stats-only). Hallucinated ids are dropped via validIds, and
 // label-less / empty themes are filtered. Extracted from synthesizeThemes so
 // the LLM-output boundary is unit-testable without the network.
-export function parseThemes(text: string, validIds: Set<string>): ThemeSynthesis {
+export function parseThemes(
+  text: string,
+  validIds: Set<string>
+): ThemeSynthesis {
   const parsed = extractJsonObject(text) as { themes?: unknown }
   if (!Array.isArray(parsed.themes)) {
     throw new Error('model output missing themes array')
@@ -79,7 +82,9 @@ export async function synthesizeThemes(
 
   if (eligible.length === 0) return { themes: [] }
 
-  const validIds = new Set(eligible.map((conversation) => conversation.sessionId))
+  const validIds = new Set(
+    eligible.map((conversation) => conversation.sessionId)
+  )
   const list = eligible
     .map((conversation) => {
       const message = firstUserMessage(conversation).slice(0, MAX_MESSAGE_CHARS)

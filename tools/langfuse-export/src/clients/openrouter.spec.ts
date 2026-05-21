@@ -12,7 +12,8 @@ describe('parseThemes', () => {
   })
 
   it('parses bare (unfenced) JSON with surrounding prose', () => {
-    const text = 'Here are the themes: {"themes":[{"label":"Doubt","sessionIds":["c"]}]} done.'
+    const text =
+      'Here are the themes: {"themes":[{"label":"Doubt","sessionIds":["c"]}]} done.'
     expect(parseThemes(text, validIds)).toEqual({
       themes: [{ label: 'Doubt', sessionIds: ['c'] }]
     })
@@ -40,6 +41,8 @@ describe('parseThemes', () => {
   })
 
   it('throws when the themes array is missing', () => {
-    expect(() => parseThemes('{"groups":[]}', validIds)).toThrow(/missing themes/)
+    expect(() => parseThemes('{"groups":[]}', validIds)).toThrow(
+      /missing themes/
+    )
   })
 })

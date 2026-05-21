@@ -142,7 +142,11 @@ export function normalize(
   // whose trace is absent get a synthetic per-observation orphan key.
   const groups = new Map<
     string,
-    { trace: TraceRecord | undefined; synthetic: boolean; turns: ConversationTurn[] }
+    {
+      trace: TraceRecord | undefined
+      synthetic: boolean
+      turns: ConversationTurn[]
+    }
   >()
   let excludedTurnCount = 0
 

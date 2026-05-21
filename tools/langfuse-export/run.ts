@@ -12,7 +12,11 @@ import { resolve } from 'node:path'
 
 import { parseArgs, parseDiscriminator, resolveWindow, USAGE } from './src/cli'
 import { createLangfuseClient, fetchTraceData } from './src/clients/langfuse'
-import { createLlmScrub, createModel, synthesizeThemes } from './src/clients/openrouter'
+import {
+  createLlmScrub,
+  createModel,
+  synthesizeThemes
+} from './src/clients/openrouter'
 import { loadEnvFile, parseEnv } from './src/env'
 import { buildStats } from './src/pipeline/aggregate'
 import { normalize } from './src/pipeline/normalize'
@@ -56,7 +60,9 @@ async function main(): Promise<void> {
   const fetchOptions = { throttleMs: options.throttleMs, onProgress: progress }
 
   console.log('=== langfuse-export ===')
-  console.log(`Window:        ${window.from.toISOString()} -> ${window.to.toISOString()}`)
+  console.log(
+    `Window:        ${window.from.toISOString()} -> ${window.to.toISOString()}`
+  )
   console.log(`Discriminator: ${options.discriminator}`)
   console.log(`LLM scrub:     ${options.llmScrub ? 'on' : 'off'}`)
   console.log(`Model:         ${env.openrouterModel}`)
@@ -65,7 +71,11 @@ async function main(): Promise<void> {
   const client = createLangfuseClient(env)
 
   console.log('Fetching traces + observations...')
-  const { traces, observations } = await fetchTraceData(client, window, fetchOptions)
+  const { traces, observations } = await fetchTraceData(
+    client,
+    window,
+    fetchOptions
+  )
   console.log(`  ${traces.length} traces, ${observations.length} generations`)
 
   const { conversations, excludedTurnCount } = normalize(
@@ -131,7 +141,11 @@ async function main(): Promise<void> {
         )
       }
     }
-    writeFileSync(resolve(outDir, 'records.ndjson'), `${lines.join('\n')}\n`, 'utf8')
+    writeFileSync(
+      resolve(outDir, 'records.ndjson'),
+      `${lines.join('\n')}\n`,
+      'utf8'
+    )
   }
 
   if (options.pdf) {
@@ -142,17 +156,23 @@ async function main(): Promise<void> {
     } catch (error) {
       // report.html is already written and fully usable — make that explicit
       // so a PDF-only failure doesn't read as "the whole run failed".
-      console.error(`PDF render failed — report.html is available at ${htmlPath}`)
+      console.error(
+        `PDF render failed — report.html is available at ${htmlPath}`
+      )
       throw error
     }
   }
 
   console.log('')
   console.log(`Done. Output: tools/langfuse-export/output/${id}/`)
-  console.log('Upload only report.html / report.pdf to Drive (direct-share to Aaron).')
+  console.log(
+    'Upload only report.html / report.pdf to Drive (direct-share to Aaron).'
+  )
 }
 
 main().catch((error) => {
-  console.error(`error: ${error instanceof Error ? error.message : String(error)}`)
+  console.error(
+    `error: ${error instanceof Error ? error.message : String(error)}`
+  )
   process.exit(1)
 })

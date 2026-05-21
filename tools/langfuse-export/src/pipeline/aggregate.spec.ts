@@ -45,8 +45,14 @@ function conv(
 describe('buildStats', () => {
   it('computes totals, per-model counts, and total cost', () => {
     const conversations = [
-      conv({ sessionId: 's1', turns: [turn({ costUsd: 0.002 }), turn({ costUsd: 0.003 })] }),
-      conv({ sessionId: 's2', turns: [turn({ model: 'openai/gpt/4o-mini', costUsd: 0.001 })] })
+      conv({
+        sessionId: 's1',
+        turns: [turn({ costUsd: 0.002 }), turn({ costUsd: 0.003 })]
+      }),
+      conv({
+        sessionId: 's2',
+        turns: [turn({ model: 'openai/gpt/4o-mini', costUsd: 0.001 })]
+      })
     ]
     const stats = buildStats(conversations, 5, window)
     expect(stats.totalConversations).toBe(2)
@@ -72,9 +78,15 @@ describe('buildStats', () => {
   })
 
   it('buckets turns with an unparseable startTime under "unknown" so perDay reconciles', () => {
-    const turns = [turn({ startTime: '2026-05-10T00:00:00.000Z' }), turn({ startTime: '' })]
+    const turns = [
+      turn({ startTime: '2026-05-10T00:00:00.000Z' }),
+      turn({ startTime: '' })
+    ]
     const stats = buildStats([conv({ turns })], 0, window)
-    const perDayTotal = Object.values(stats.perDay).reduce((sum, n) => sum + n, 0)
+    const perDayTotal = Object.values(stats.perDay).reduce(
+      (sum, n) => sum + n,
+      0
+    )
     expect(perDayTotal).toBe(stats.totalTurns)
     expect(stats.perDay.unknown).toBe(1)
   })
@@ -87,7 +99,9 @@ describe('buildStats', () => {
     })
     const stats = buildStats([single], 0, window)
     expect(stats.topQuestionsIncludedConversations).toBe(0)
-    expect(stats.topQuestions.map((q) => q.message)).not.toContain('one-shot question')
+    expect(stats.topQuestions.map((q) => q.message)).not.toContain(
+      'one-shot question'
+    )
   })
 
   it('returns zeroed stats with no NaN for an empty set', () => {
@@ -146,7 +160,10 @@ describe('renderReport', () => {
     conv({
       sessionId: 'real-1',
       synthetic: false,
-      turns: [turn({ userMessage: 'What is the meaning of salvation?' }), turn()]
+      turns: [
+        turn({ userMessage: 'What is the meaning of salvation?' }),
+        turn()
+      ]
     })
   ]
 

@@ -17,7 +17,9 @@ function trace(overrides: Partial<TraceRecord> = {}): TraceRecord {
   }
 }
 
-function observation(overrides: Partial<ObservationRecord> = {}): ObservationRecord {
+function observation(
+  overrides: Partial<ObservationRecord> = {}
+): ObservationRecord {
   return {
     id: 'o1',
     traceId: 't1',
@@ -171,27 +173,35 @@ describe('normalize', () => {
       trace({ id: 't1', sessionId: null }),
       trace({ id: 't2', sessionId: null })
     ]
-    const { conversations, excludedTurnCount } = normalize(traces, observations, {
-      excludeMessageRegex: DEFAULT_LOAD_TEST_REGEX
-    })
+    const { conversations, excludedTurnCount } = normalize(
+      traces,
+      observations,
+      {
+        excludeMessageRegex: DEFAULT_LOAD_TEST_REGEX
+      }
+    )
     expect(excludedTurnCount).toBe(1)
     expect(conversations).toHaveLength(1)
     expect(conversations[0].turns[0].userMessage).toBe('what is a christian?')
   })
 
   it('excludes turns whose trace journeyId is in the exclude set', () => {
-    const traces = [trace({ id: 't1', sessionId: 's1', journeyId: 'load-journey' })]
-    const { conversations, excludedTurnCount } = normalize(traces, [observation()], {
-      excludeJourneyIds: new Set(['load-journey'])
-    })
+    const traces = [
+      trace({ id: 't1', sessionId: 's1', journeyId: 'load-journey' })
+    ]
+    const { conversations, excludedTurnCount } = normalize(
+      traces,
+      [observation()],
+      {
+        excludeJourneyIds: new Set(['load-journey'])
+      }
+    )
     expect(excludedTurnCount).toBe(1)
     expect(conversations).toHaveLength(0)
   })
 
   it('produces empty-string fields for empty input / missing output without throwing', () => {
-    const observations = [
-      observation({ inputRaw: [], outputRaw: undefined })
-    ]
+    const observations = [observation({ inputRaw: [], outputRaw: undefined })]
     const { conversations } = normalize([trace()], observations)
     expect(conversations[0].turns[0].userMessage).toBe('')
     expect(conversations[0].turns[0].assistantReply).toBe('')
@@ -208,11 +218,19 @@ describe('normalize', () => {
 
   it('default load-test regex does not match unrelated messages', () => {
     const observations = [
-      observation({ id: 'o1', traceId: 't1', inputRaw: [{ role: 'user', content: 'load factor in beam design' }] })
+      observation({
+        id: 'o1',
+        traceId: 't1',
+        inputRaw: [{ role: 'user', content: 'load factor in beam design' }]
+      })
     ]
-    const { conversations, excludedTurnCount } = normalize([trace({ id: 't1', sessionId: null })], observations, {
-      excludeMessageRegex: DEFAULT_LOAD_TEST_REGEX
-    })
+    const { conversations, excludedTurnCount } = normalize(
+      [trace({ id: 't1', sessionId: null })],
+      observations,
+      {
+        excludeMessageRegex: DEFAULT_LOAD_TEST_REGEX
+      }
+    )
     expect(excludedTurnCount).toBe(0)
     expect(conversations).toHaveLength(1)
   })
