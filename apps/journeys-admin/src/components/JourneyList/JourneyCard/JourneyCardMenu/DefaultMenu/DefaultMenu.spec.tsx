@@ -1141,7 +1141,9 @@ describe('DefaultMenu', () => {
           getByTestId('JourneysAdminMenuItemCopyToCollection')
         ).toBeInTheDocument()
       )
-      // CopyToTeamMenuItem also renders — always shown now, no isLocalTemplate gate.
+      // CopyToTeamMenuItem also renders in this test because the mock omits
+      // `journey.team`, so `isLocalTemplate` evaluates false (the gate from PR
+      // #8510 only suppresses the item for the active team's own templates).
       expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     })
 

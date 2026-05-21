@@ -196,6 +196,9 @@ export function DefaultMenu({
 
   const cantManageJourney = !canManageJourney
 
+  const isLocalTemplate =
+    journey?.template === true && journey?.team?.id !== 'jfp-team'
+
   if (hasCurrentUser && isAnonymousUser) {
     return <></>
   }
@@ -291,13 +294,15 @@ export function DefaultMenu({
           <Divider />
         </>
       )}
-      <CopyToTeamMenuItem
-        id={id}
-        handleCloseMenu={handleCloseMenu}
-        handleKeepMounted={handleKeepMounted}
-        journey={journey}
-        setHasOpenDialog={setHasOpenDialog}
-      />
+      {!isLocalTemplate && (
+        <CopyToTeamMenuItem
+          id={id}
+          handleCloseMenu={handleCloseMenu}
+          handleKeepMounted={handleKeepMounted}
+          journey={journey}
+          setHasOpenDialog={setHasOpenDialog}
+        />
+      )}
       {teamTemplateCollection === true && template === true && (
         <CopyToCollectionMenuItem
           id={id}
