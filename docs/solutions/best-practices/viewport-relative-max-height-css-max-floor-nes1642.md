@@ -52,7 +52,7 @@ Wrap viewport-relative `calc()` with CSS `max()` to guarantee a usable floor:
 max-height: max(80px, calc(100vh - 620px));
 ```
 
-`max()` returns the *larger* of its arguments. On a 700 px viewport: `max(80, 80) = 80`. On a 1080 px viewport: `max(80, 460) = 460`. The floor (`80px` here) is whatever minimum scroll region keeps the UX functional — generally enough to show one or two lines of content plus the scroll thumb.
+`max()` returns the _larger_ of its arguments. On a 700 px viewport: `max(80, 80) = 80`. On a 1080 px viewport: `max(80, 460) = 460`. The floor (`80px` here) is whatever minimum scroll region keeps the UX functional — generally enough to show one or two lines of content plus the scroll thumb.
 
 Pair it with named constants when the calc has more than one input:
 

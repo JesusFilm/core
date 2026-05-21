@@ -54,35 +54,29 @@ const panelId = useId()
 const [open, setOpen] = useState(false)
 
 return (
-<ClickAwayListener onClickAway={handleClickAway}>
-  <Box sx={{ position: 'relative', width: 'fit-content' }}>
-    <ButtonBase
-      ref={triggerRef}
-      aria-expanded={open}
-      aria-controls={panelId}
-      onClick={handleToggle}
-      onKeyDown={handleTriggerKeyDown}
-    >
-      {/* trigger contents */}
-    </ButtonBase>
-    <Fade in={open} unmountOnExit>
-      <Box
-        id={panelId}
-        inert={!open}
-        sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          zIndex: (theme) => theme.zIndex.fab
-        }}
-      >
-        <Unstable_TrapFocus open={open} disableAutoFocus={false}>
-          <Box tabIndex={-1}>{/* panel contents */}</Box>
-        </Unstable_TrapFocus>
-      </Box>
-    </Fade>
-  </Box>
-</ClickAwayListener>
+  <ClickAwayListener onClickAway={handleClickAway}>
+    <Box sx={{ position: 'relative', width: 'fit-content' }}>
+      <ButtonBase ref={triggerRef} aria-expanded={open} aria-controls={panelId} onClick={handleToggle} onKeyDown={handleTriggerKeyDown}>
+        {/* trigger contents */}
+      </ButtonBase>
+      <Fade in={open} unmountOnExit>
+        <Box
+          id={panelId}
+          inert={!open}
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: (theme) => theme.zIndex.fab
+          }}
+        >
+          <Unstable_TrapFocus open={open} disableAutoFocus={false}>
+            <Box tabIndex={-1}>{/* panel contents */}</Box>
+          </Unstable_TrapFocus>
+        </Box>
+      </Fade>
+    </Box>
+  </ClickAwayListener>
 )
 ```
 
@@ -103,7 +97,7 @@ function handleClose(): void {
 }
 ```
 
-`Unstable_TrapFocus` runs its own focus restoration when `open` transitions to `false`. Its restore fires *after* `Fade`'s ~225 ms exit transition completes. The synchronous `.focus()` lands first, then TrapFocus overwrites — focus can drop to `document.body` in real browsers. JSDOM tests pass because no transitions run, so the bug is invisible to unit tests.
+`Unstable_TrapFocus` runs its own focus restoration when `open` transitions to `false`. Its restore fires _after_ `Fade`'s ~225 ms exit transition completes. The synchronous `.focus()` lands first, then TrapFocus overwrites — focus can drop to `document.body` in real browsers. JSDOM tests pass because no transitions run, so the bug is invisible to unit tests.
 
 The fix is to move the focus-return into a post-commit effect with a guard against initial mount:
 
@@ -142,28 +136,32 @@ If two helpers ever mount on the same page (rare but possible — side-by-side j
 const panelId = useId()
 ```
 
-### 5. Pair two ReactFlow `<Panel>` affordances via an inverse switch *inside* one Panel
+### 5. Pair two ReactFlow `<Panel>` affordances via an inverse switch _inside_ one Panel
 
 `@xyflow/react`'s `<Panel position="top-left">` has undefined behavior when two of them mount at the same position. The cleanest pattern for "templates get X, non-templates get Y" is a single Panel whose children switch on the gating condition:
 
 ```tsx
-{/* outer gate: render the Panel only when one branch applies */}
-{shouldRenderTopLeftPanel && (
-  <Panel position="top-left">
-    {isTemplate ? (
-      <TemplateInfoHelper />
-    ) : (
-      <>
-        <AnalyticsOverlaySwitch />
-        <Fade in={showAnalytics} unmountOnExit>
-          <Box>
-            <JourneyAnalyticsCard />
-          </Box>
-        </Fade>
-      </>
-    )}
-  </Panel>
-)}
+{
+  /* outer gate: render the Panel only when one branch applies */
+}
+{
+  shouldRenderTopLeftPanel && (
+    <Panel position="top-left">
+      {isTemplate ? (
+        <TemplateInfoHelper />
+      ) : (
+        <>
+          <AnalyticsOverlaySwitch />
+          <Fade in={showAnalytics} unmountOnExit>
+            <Box>
+              <JourneyAnalyticsCard />
+            </Box>
+          </Fade>
+        </>
+      )}
+    </Panel>
+  )
+}
 ```
 
 The outer gate combines each branch's own conditions (e.g. `(isTemplate && featureFlagA) || (!isTemplate && featureFlagB)`) so the Panel does not render at all when neither branch qualifies. Both branches share the slot but each is independently flag-gated.
