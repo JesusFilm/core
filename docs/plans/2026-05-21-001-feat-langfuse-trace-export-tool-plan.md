@@ -1,5 +1,5 @@
 ---
-title: "feat: Langfuse trace-export tool — API integration + sanitised report synthesis"
+title: 'feat: Langfuse trace-export tool — API integration + sanitised report synthesis'
 type: feat
 status: completed
 date: 2026-05-21
@@ -56,7 +56,7 @@ Aaron wants a post-tournament report on "what are users asking" the Apologist ch
 - `apps/journeys/pages/api/chat/index.ts` — the only existing OpenRouter usage: `createOpenAICompatible({ name, baseURL: 'https://openrouter.ai/api/v1', apiKey })` from `@ai-sdk/openai-compatible`, env `OPENROUTER_API_KEY`, optional `OPENROUTER_MODEL`. Also the source of trace metadata shape: `metadata: { journeyId, language, ipCountry, provider, modelId }`, trace-level `sessionId`.
 - `apps/video-importer/src/env.ts` — repo convention for env loading + validation: `import 'dotenv/config'` then `@t3-oss/env-core` + `zod`.
 - App `fetch-secrets` targets in `*/project.json` (e.g. `apps/journeys/project.json`) — the Doppler download pattern: `doppler secrets download --no-file --format=env-no-quotes --project <p> > <dir>/.env`.
-- `tools/load-test/results/` + `tools/load-test/README.md` — precedent for run-artifact handling (note: load-test *commits* perf JSON; this tool deliberately diverges by gitignoring output because reports contain chat-derived content).
+- `tools/load-test/results/` + `tools/load-test/README.md` — precedent for run-artifact handling (note: load-test _commits_ perf JSON; this tool deliberately diverges by gitignoring output because reports contain chat-derived content).
 
 ### Institutional Learnings
 
@@ -139,7 +139,7 @@ Aaron wants a post-tournament report on "what are users asking" the Apologist ch
 
 ## High-Level Technical Design
 
-> *This illustrates the intended approach and is directional guidance for review, not implementation specification. The implementing agent should treat it as context, not code to reproduce.*
+> _This illustrates the intended approach and is directional guidance for review, not implementation specification. The implementing agent should treat it as context, not code to reproduce._
 
 ```
                    ┌──────────────────────────────────────────────┐
@@ -192,6 +192,7 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 **Dependencies:** None
 
 **Files:**
+
 - Create: `tools/langfuse-export/src/env.ts`
 - Create: `tools/langfuse-export/src/types.ts`
 - Create: `tools/langfuse-export/fetch-env.sh`
@@ -202,6 +203,7 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 - Test: `tools/langfuse-export/src/env.spec.ts`
 
 **Approach:**
+
 - `env.ts`: load `.env` with `dotenv` using an explicit path resolved relative to the tool dir (not cwd), then validate `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_BASE_URL`, `OPENROUTER_API_KEY` (+ optional `OPENROUTER_MODEL`) with zod. Throw a clear, actionable error naming the missing key and pointing at `fetch-env.sh` when validation fails.
 - `fetch-env.sh`: wrap `doppler secrets download --no-file --format=env-no-quotes --project core --config dev > tools/langfuse-export/.env`. Mirror the app `fetch-secrets` invocation shape.
 - `.env.example`: list the four keys with empty values + a one-line comment each, plus a `# DO NOT COMMIT — delete tools/langfuse-export/.env after use` header. Committed; the real `.env` is gitignored.
@@ -210,16 +212,19 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 - `tsconfig.json`: extends `tools/tsconfig.tools.json` but overrides `target` to `es2021` (matching the base lib) so Map/Set iteration in `normalize.ts`/`aggregate.ts` typechecks. The base `tools/tsconfig.tools.json` is `target: es5` with no `downlevelIteration`, under which `npx tsc -p tools/tsconfig.tools.json` already errors today (TS2802) — see Risks. Manual typecheck command becomes `tsc -p tools/langfuse-export/tsconfig.json --noEmit`.
 
 **Patterns to follow:**
+
 - `apps/video-importer/src/env.ts` (dotenv + zod validation shape).
 - App `fetch-secrets` targets in `*/project.json` for the exact Doppler command flags.
 
 **Test scenarios:**
+
 - Happy path: with all required vars set, `env.ts` returns a typed config object with the expected values.
 - Error path: a missing `LANGFUSE_SECRET_KEY` throws an error whose message names the missing key.
 - Error path: a missing `OPENROUTER_API_KEY` throws naming that key.
 - Edge case: `OPENROUTER_MODEL` absent → config exposes the documented default, not `undefined`.
 
 **Verification:**
+
 - `bash tools/langfuse-export/fetch-env.sh` produces `tools/langfuse-export/.env`; `git check-ignore tools/langfuse-export/.env tools/langfuse-export/output/` confirms both are ignored (don't assume the bare-`.env` rule reaches the nested path — verify, and add an explicit `.gitignore` line if it doesn't).
 - `npx vitest run --config tools/langfuse-export/vitest.config.mts` runs and `env.spec.ts` passes.
 - `npx tsc -p tools/langfuse-export/tsconfig.json --noEmit` typechecks clean (the es2021 override is what makes this pass; the base tools tsconfig does not).
@@ -235,11 +240,13 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 **Dependencies:** U1
 
 **Files:**
+
 - Create: `tools/langfuse-export/src/langfuse.ts`
 - Create: `tools/langfuse-export/src/normalize.ts`
 - Test: `tools/langfuse-export/src/normalize.spec.ts`
 
 **Approach:**
+
 - `langfuse.ts`: construct the SDK client from validated env (mirror `apps/journeys/src/libs/langfuse/client.ts`). Expose `fetchAllTraces(window, opts)` that pages `fetchTraces` until `meta.totalPages` with `orderBy` pinned (e.g. `timestamp.asc`), then `fetchObservationsForTraces(traceIds)` that fetches observations **by `traceId`** — not by an independent date window (see Key Technical Decisions). Request the field set that includes `input`/`output`; if the list endpoint returns them truncated, fall back to per-id `fetchObservation(id)`. Insert a small delay between pages to stay under the ~100 req/min ceiling.
 - `normalize.ts` (pure): build a `Map<traceId, TraceRecord>`, attach each observation to its trace, extract the latest user message text + assistant reply from the observation `input`/`output`. **The exact `input`/`output` shape must be verified against a live observation before coding** — the chat handler logs AI-SDK `ModelMessage[]` from `convertToModelMessages(...)` and a plain-string `output`, which differs from the spike CSV's content-parts shape (see Open Questions). Group resulting turns by `sessionId` (synthetic per-trace id when null), order by start time, and **exclude load-test traffic via the configured discriminator**.
 - Carry trace `metadata.ipCountry`, `metadata.journeyId`, `metadata.language`, and `tags` onto each conversation. Track the count of null-`sessionId` traces and single-turn conversations so `aggregate.ts` can report grouping fidelity.
@@ -247,10 +254,12 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 **Execution note:** Capture one real trace + its observations from a live fetch before building `normalize.ts`; key the parser and its fixture spec to the captured shape rather than the spike-CSV assumption.
 
 **Patterns to follow:**
+
 - `apps/journeys/src/libs/langfuse/client.ts` (client construction).
 - The chat handler's generation `input` is `convertToModelMessages(...)` output (AI-SDK `ModelMessage[]`) and `output` a plain string — confirm the live shape; do **not** assume the spike CSV's `[{ role, content: [{ type:'text', text }] }]` content-parts shape.
 
 **Test scenarios:**
+
 - Happy path: two observations sharing a `sessionId` across two traces group into one conversation with two ordered turns.
 - Happy path: latest user message extraction returns the last `role:'user'` text from a captured-shape `input` fixture.
 - Edge case: observation whose trace is missing from the trace map is retained as a single-turn conversation (no crash) and flagged.
@@ -261,6 +270,7 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 - Edge case: turns within a conversation are ordered by start time even when fetched out of order.
 
 **Verification:**
+
 - Against a fixture set of traces+observations, `normalize` returns the expected conversation grouping, turn ordering, discriminator exclusion, and null-session/single-turn counts; `normalize.spec.ts` passes.
 
 ---
@@ -274,18 +284,22 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 **Dependencies:** U2 (consumes `Conversation[]`). No import dependency on U4 — the `llmScrub` callback is injected by `run.ts` (U5).
 
 **Files:**
+
 - Create: `tools/langfuse-export/src/sanitize.ts`
 - Test: `tools/langfuse-export/src/sanitize.spec.ts`
 
 **Approach:**
+
 - `regexScrub(text)` (pure): replace emails, phone numbers (intl + leading-zero national), URLs, and explicit declarations (`my name is X`, `I'm X`, `I live in X`, `I'm from X`) with stable redaction tokens (e.g. `[redacted-email]`). Applied to user turns only — never to assistant replies.
 - `sanitize(conversations, llmScrub?)`: runs `regexScrub` over every user turn and returns a **branded `SanitisedConversation[]`** (never mutates source records). The optional `llmScrub` is an **injected callback**, not a direct import of `openrouter.ts`, so `sanitize.ts` stays import-pure and unit-testable without the network; `run.ts` wires the real `llmScrub` from `openrouter.ts` only when `--llm-scrub` is set.
 - The branded type is the enforcement point: only `sanitize.ts` can construct `SanitisedConversation`, so `aggregate.ts` / `openrouter.ts` / `report.ts` cannot compile against raw `Conversation[]` — the "samples are sanitised before any LLM call" guarantee is type-checked, not conventional.
 
 **Patterns to follow:**
+
 - Keep `regexScrub` pure and synchronous for testability; isolate the network call behind the injected `llmScrub` callback.
 
 **Test scenarios:**
+
 - Happy path: an email, an intl phone number, and a URL in one message are each replaced with their redaction tokens.
 - Happy path: `"my name is Sarah"` → name token; surrounding text preserved.
 - Happy path: `sanitize` returns a `SanitisedConversation[]` (branded) — a raw `Conversation[]` does not satisfy the downstream signatures (type-level check).
@@ -295,6 +309,7 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 - Edge case: when no `llmScrub` callback is injected (default run), the network is never touched; when a stub callback is injected, it is invoked once per user turn.
 
 **Verification:**
+
 - `sanitize.spec.ts` passes; a manual `--llm-scrub` run on a fixture removes a planted free-text disclosure regex missed.
 
 ---
@@ -308,20 +323,24 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 **Dependencies:** U3
 
 **Files:**
+
 - Create: `tools/langfuse-export/src/aggregate.ts`
 - Create: `tools/langfuse-export/src/openrouter.ts`
 - Create: `tools/langfuse-export/src/report.ts`
 - Test: `tools/langfuse-export/src/aggregate.spec.ts`
 
 **Approach:**
+
 - `aggregate.ts` (pure): from `SanitisedConversation[]` + their observations, compute totals, per-model / per-day breakdowns, total + per-day cost, latency p50/p95/p99/max, conversation-length histogram, and grouping-fidelity figures (null-`sessionId` share, single-turn share, load-test-excluded share). Top-N user questions is computed **only over real-session, length>1 conversations** (and labelled with included/excluded counts) so repeated load-test prompts can't dominate the headline "what are users asking" answer. Returns a `ReportStats` object.
 - `openrouter.ts`: build the client mirroring `apps/journeys/pages/api/chat/index.ts` (`createOpenAICompatible` + `ai`'s `generateText`, non-streaming) with `OPENROUTER_API_KEY` and model from config/`--model`. Expose `synthesizeThemes(stats, sanitised: SanitisedConversation[])` returning **theme labels + group assignments only** (e.g. `{ themes: [{ label, conversationIds }] }`) — never excerpt text. Also exports the `llmScrub` primitive that `run.ts` injects into `sanitize.ts`.
 - `report.ts`: assemble `report.html` from a deterministic template — stats tables/figures rendered in code; example-excerpt **text rendered verbatim by code from the sanitised records** under each LLM-assigned theme label, in a clearly-labelled "AI-grouped themes (labels machine-generated; quotes verbatim)" section. If `synthesizeThemes` throws, render stats + verbatim excerpts without thematic grouping and include a visible note.
 
 **Patterns to follow:**
+
 - `apps/journeys/pages/api/chat/index.ts` for the OpenRouter `createOpenAICompatible` setup and env var names.
 
 **Test scenarios:**
+
 - Happy path: fixture conversations produce expected totals, per-model counts, and total cost.
 - Happy path: latency percentiles computed correctly for a known set (p50/p95 land on expected values).
 - Happy path: grouping-fidelity figures (null-session share, single-turn share, excluded-load-test share) are present in `ReportStats`.
@@ -331,6 +350,7 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 - Integration: when `synthesizeThemes` is stubbed to throw, the HTML still renders with stats + verbatim excerpts and a degradation note. (LLM network call itself is verified manually, not unit-tested.)
 
 **Verification:**
+
 - `aggregate.spec.ts` passes; `report.ts` renders an HTML file whose figures match `aggregate` output and whose excerpts byte-match the sanitised source; forced-theme-failure path still yields a complete report.
 
 ---
@@ -344,18 +364,22 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 **Dependencies:** U2, U3, U4
 
 **Files:**
+
 - Create: `tools/langfuse-export/run.ts`
 - Create: `tools/langfuse-export/src/pdf.ts`
 
 **Approach:**
+
 - `run.ts`: parse `process.argv.slice(2)` for `--days N` (default 14), `--from` / `--to`, `--discriminator` (load-test exclusion config), `--llm-scrub`, `--pdf`, `--model`, `--debug`; resolve the window; orchestrate fetch (traces → observations by `traceId`) → normalize (with discriminator exclusion) → sanitise (regex always; inject `openrouter.ts`'s `llmScrub` callback only under `--llm-scrub`) → aggregate → `synthesizeThemes` → assemble; write `output/<run-id>/report.html`, optionally `report.pdf` (via `pdf.ts` when `--pdf`), and `records.ndjson` only under `--debug`; print the output path. `<run-id>` is a timestamp (+ optional label). Mirror the load-test entry shape (no-arg prints usage). (`--environment` is intentionally **not** a flag — it is inert until NES-1688; load-test exclusion is `--discriminator`.)
 - `pdf.ts`: when `--pdf`, launch Playwright Chromium, load the generated `report.html` from disk, `page.pdf()` to `report.pdf`. Isolated so the Playwright import is only paid when `--pdf` is used. Chromium is a separate one-time install (`pnpm exec playwright install chromium`) — catch the missing-executable error and print that exact remediation command rather than a raw stack trace.
 - Validate mutually-exclusive / malformed args (e.g. `--days` together with `--from/--to`) with a clear error.
 
 **Patterns to follow:**
+
 - `tools/load-test/run-chat.ts` (argv parsing, `main()`/`try`/`catch`, usage-on-no-args, `node:fs`/`node:path`).
 
 **Test scenarios:**
+
 - Happy path: `--days 7` resolves to a window of `now-7d → now`.
 - Edge case: passing both `--days` and `--from` errors with a clear message.
 - Edge case: invalid `--from` date string errors rather than producing an invalid window.
@@ -364,6 +388,7 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 - Test expectation: pipeline orchestration and Playwright PDF are verified by the documented manual end-to-end run, not unit tests (they depend on live Langfuse/OpenRouter/Chromium).
 
 **Verification:**
+
 - A manual run against the configured Langfuse project produces `output/<run-id>/report.html` (and `report.pdf` with `--pdf`); `output/` does not appear in `git status`. With `--pdf` on a machine lacking Chromium, the tool prints the `playwright install chromium` remediation rather than crashing.
 
 ---
@@ -377,20 +402,25 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 **Dependencies:** U1, U5
 
 **Files:**
+
 - Create: `tools/langfuse-export/README.md`
 
 **Approach:**
+
 - Sections: purpose + relation to NES-1690/NES-1656; one-time `doppler secrets set` to seed `OPENROUTER_API_KEY` (and confirm the `LANGFUSE_*` triple) into `core/dev`; `fetch-env.sh` to materialise `.env`; one-time `pnpm exec playwright install chromium` (only needed for `--pdf`); run commands with every flag; output layout; the manual Drive step — **upload only `report.html` (and `report.pdf`); never upload `records.ndjson`**, and **share the file directly with Aaron's address rather than link-sharing**, so other Drive collaborators can't reach it.
 - Secrets hygiene: instruct engineers to **delete `tools/langfuse-export/.env` after the run** (it holds the live `LANGFUSE_SECRET_KEY` + `OPENROUTER_API_KEY`); never leave it on disk between uses.
 - Caveats section: regex scrub is best-effort (not a PII guarantee); `--llm-scrub` **and** the always-on theme-synthesis call both send (scrubbed) content to OpenRouter — pending NES-1562 sign-off and an OpenRouter data-retention/no-training check before the first production run; report is global until `journeyRegion` is captured; there is no `--environment` flag because env is unwritten until NES-1688 (use `--discriminator`); single-turn conversations may be under-counted until NES-1616. **Data-readiness:** a run today is ~92% load-test traffic and largely null-session — treat current-data reports as pipeline validation, not a share-worthy artifact for Aaron, until NES-1688/NES-1616 land or a reliable discriminator is configured. PII warning: output is gitignored — do not commit, do not paste raw chat content into shared tools.
 
 **Patterns to follow:**
+
 - `tools/load-test/README.md` (layout, install, run, caveats structure).
 
 **Test scenarios:**
+
 - Test expectation: none — documentation. Verified by following the README end-to-end during the U5 manual run.
 
 **Verification:**
+
 - A reader can go from zero to a generated report using only the README.
 
 ---
@@ -406,17 +436,17 @@ Pipeline contract: numbers **and** user-attributed excerpt text always come from
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| Regex scrub misses free-text PII (e.g. the long personal disclosure seen in the spike data) | Document explicitly that regex is best-effort; offer `--llm-scrub`; gitignore output; README warns against pasting raw content into shared tools. Full policy is NES-1562. |
-| LLM fabricates or leaks — in figures **or quotes** | Numbers and user-attributed excerpt text are code-rendered from sanitised records; the LLM emits only theme labels + group assignments, clearly marked "AI-grouped (labels machine-generated; quotes verbatim)". |
-| (regex-scrubbed) chat content sent to OpenRouter for theme synthesis / `--llm-scrub` may be retained or trained on | Verify OpenRouter data-processing terms before the first production run; set a no-logging/no-training header if available; the NES-1562 deferral explicitly covers this always-on path, not just `--llm-scrub`. |
-| Langfuse Hobby-tier rate limit (~100 req/min) on large windows | Throttle between pages; pin `orderBy` against insertion during pagination; default to a 14-day window; document tuning. |
-| Load-test traffic pollutes the report (255/277 rows in the spike sample were load probes) | `--environment` is **inert** until NES-1688 writes the field — exclude load-test via a present `--discriminator` (message pattern / journeyId / tag) instead; surface the excluded share in stats so pollution is visible. |
-| Conversation grouping degrades when `sessionId` is absent (`.optional()` in the schema; the join can also orphan turns at window edges) | Drive the join from traces (one window); report null-session and single-turn shares so grouping fidelity is visible; gate top-questions on real-session length>1. |
-| v1 may render polished output over unrepresentative data | README data-readiness note: current-data reports are pipeline validation only, not share-worthy for Aaron, until NES-1688/NES-1616 land or a reliable discriminator is configured. |
-| `tools/` has no CI lint/typecheck, and `tsc -p tools/tsconfig.tools.json` already fails today (TS2802 on the es5 target) | Provide tool-local vitest for pure modules; add `tools/langfuse-export/tsconfig.json` (target es2021) and document `tsc -p tools/langfuse-export/tsconfig.json --noEmit`. |
-| Reports contain chat-derived content | Output gitignored; upload only `report.html`/`.pdf` (never `records.ndjson`); direct-share to Aaron, not link-sharing; delete `.env` after use. |
+| Risk                                                                                                                                    | Mitigation                                                                                                                                                                                                                 |
+| --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Regex scrub misses free-text PII (e.g. the long personal disclosure seen in the spike data)                                             | Document explicitly that regex is best-effort; offer `--llm-scrub`; gitignore output; README warns against pasting raw content into shared tools. Full policy is NES-1562.                                                 |
+| LLM fabricates or leaks — in figures **or quotes**                                                                                      | Numbers and user-attributed excerpt text are code-rendered from sanitised records; the LLM emits only theme labels + group assignments, clearly marked "AI-grouped (labels machine-generated; quotes verbatim)".           |
+| (regex-scrubbed) chat content sent to OpenRouter for theme synthesis / `--llm-scrub` may be retained or trained on                      | Verify OpenRouter data-processing terms before the first production run; set a no-logging/no-training header if available; the NES-1562 deferral explicitly covers this always-on path, not just `--llm-scrub`.            |
+| Langfuse Hobby-tier rate limit (~100 req/min) on large windows                                                                          | Throttle between pages; pin `orderBy` against insertion during pagination; default to a 14-day window; document tuning.                                                                                                    |
+| Load-test traffic pollutes the report (255/277 rows in the spike sample were load probes)                                               | `--environment` is **inert** until NES-1688 writes the field — exclude load-test via a present `--discriminator` (message pattern / journeyId / tag) instead; surface the excluded share in stats so pollution is visible. |
+| Conversation grouping degrades when `sessionId` is absent (`.optional()` in the schema; the join can also orphan turns at window edges) | Drive the join from traces (one window); report null-session and single-turn shares so grouping fidelity is visible; gate top-questions on real-session length>1.                                                          |
+| v1 may render polished output over unrepresentative data                                                                                | README data-readiness note: current-data reports are pipeline validation only, not share-worthy for Aaron, until NES-1688/NES-1616 land or a reliable discriminator is configured.                                         |
+| `tools/` has no CI lint/typecheck, and `tsc -p tools/tsconfig.tools.json` already fails today (TS2802 on the es5 target)                | Provide tool-local vitest for pure modules; add `tools/langfuse-export/tsconfig.json` (target es2021) and document `tsc -p tools/langfuse-export/tsconfig.json --noEmit`.                                                  |
+| Reports contain chat-derived content                                                                                                    | Output gitignored; upload only `report.html`/`.pdf` (never `records.ndjson`); direct-share to Aaron, not link-sharing; delete `.env` after use.                                                                            |
 
 ---
 

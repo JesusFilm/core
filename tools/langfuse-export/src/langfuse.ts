@@ -28,7 +28,8 @@ const DEFAULT_PAGE_SIZE = 100
 const MAX_PAGES = 10000
 
 function clampTotalPages(value: unknown): number {
-  if (typeof value !== 'number' || !Number.isFinite(value) || value < 1) return 1
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < 1)
+    return 1
   return Math.min(Math.floor(value), MAX_PAGES)
 }
 
@@ -159,7 +160,9 @@ export async function fetchAllTraces(
     for (const raw of data) traces.push(mapTrace(raw))
 
     totalPages = clampTotalPages(response.meta?.totalPages)
-    options.onProgress?.(`traces: page ${page}/${totalPages} (${traces.length} so far)`)
+    options.onProgress?.(
+      `traces: page ${page}/${totalPages} (${traces.length} so far)`
+    )
     if (data.length === 0) break
     page += 1
     if (page <= totalPages) await sleep(throttleMs)

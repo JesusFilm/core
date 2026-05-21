@@ -33,12 +33,12 @@ tools/langfuse-export/
 
 Secrets live in the Doppler **`core`** project, **`dev`** config (same place `reset-stage` reads repo-tooling secrets). Four keys are required:
 
-| Key | Notes |
-| --- | --- |
-| `LANGFUSE_PUBLIC_KEY` | Langfuse project public key (`pk-lf-...`) |
-| `LANGFUSE_SECRET_KEY` | Langfuse project secret key (`sk-lf-...`) |
-| `LANGFUSE_BASE_URL` | region host, e.g. `https://cloud.langfuse.com` |
-| `OPENROUTER_API_KEY` | OpenRouter API key (`sk-or-...`) |
+| Key                   | Notes                                          |
+| --------------------- | ---------------------------------------------- |
+| `LANGFUSE_PUBLIC_KEY` | Langfuse project public key (`pk-lf-...`)      |
+| `LANGFUSE_SECRET_KEY` | Langfuse project secret key (`sk-lf-...`)      |
+| `LANGFUSE_BASE_URL`   | region host, e.g. `https://cloud.langfuse.com` |
+| `OPENROUTER_API_KEY`  | OpenRouter API key (`sk-or-...`)               |
 
 The Langfuse triple already exists in the `journeys` Doppler project (the chat app uses it). Copy them into `core/dev`, and seed the OpenRouter key, once:
 
@@ -78,16 +78,16 @@ Running with no arguments prints usage.
 
 ### Flags
 
-| Flag | Meaning |
-| --- | --- |
-| `--days N` | Window = last N days (default 14). Mutually exclusive with `--from`/`--to`. |
-| `--from ISO --to ISO` | Explicit window (both required together). |
-| `--discriminator V` | Load-test exclusion: `default` (exclude known probes), `none`, `message:<regex>`, `journey:<csv>`, `tag:<csv>`. **There is no `--environment` flag** — env is unwritten on traces until NES-1688, so it cannot filter anything. |
-| `--llm-scrub` | Extra LLM PII scrub pass (pending NES-1562 sign-off). |
-| `--pdf` | Also render `report.pdf` (needs `playwright install chromium`). |
-| `--model ID` | OpenRouter model id (default `google/gemini-2.5-flash-lite`). |
-| `--throttle MS` | Delay between Langfuse calls (default 700ms; keep under the ~100 req/min Hobby ceiling). |
-| `--debug` | Also write `records.ndjson` (one sanitised turn per line). **Debug artifact — never upload to Drive.** |
+| Flag                  | Meaning                                                                                                                                                                                                                         |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--days N`            | Window = last N days (default 14). Mutually exclusive with `--from`/`--to`.                                                                                                                                                     |
+| `--from ISO --to ISO` | Explicit window (both required together).                                                                                                                                                                                       |
+| `--discriminator V`   | Load-test exclusion: `default` (exclude known probes), `none`, `message:<regex>`, `journey:<csv>`, `tag:<csv>`. **There is no `--environment` flag** — env is unwritten on traces until NES-1688, so it cannot filter anything. |
+| `--llm-scrub`         | Extra LLM PII scrub pass (pending NES-1562 sign-off).                                                                                                                                                                           |
+| `--pdf`               | Also render `report.pdf` (needs `playwright install chromium`).                                                                                                                                                                 |
+| `--model ID`          | OpenRouter model id (default `google/gemini-2.5-flash-lite`).                                                                                                                                                                   |
+| `--throttle MS`       | Delay between Langfuse calls (default 700ms; keep under the ~100 req/min Hobby ceiling).                                                                                                                                        |
+| `--debug`             | Also write `records.ndjson` (one sanitised turn per line). **Debug artifact — never upload to Drive.**                                                                                                                          |
 
 ## Output
 

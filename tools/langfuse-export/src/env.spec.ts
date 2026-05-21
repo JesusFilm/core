@@ -44,7 +44,10 @@ describe('parseEnv', () => {
   })
 
   it('honours an explicit OPENROUTER_MODEL', () => {
-    const env = parseEnv({ ...validSource, OPENROUTER_MODEL: 'google/gemini-2.5-flash' })
+    const env = parseEnv({
+      ...validSource,
+      OPENROUTER_MODEL: 'google/gemini-2.5-flash'
+    })
     expect(env.openrouterModel).toBe('google/gemini-2.5-flash')
   })
 })

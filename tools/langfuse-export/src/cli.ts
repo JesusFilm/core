@@ -59,13 +59,19 @@ export function parseArgs(argv: string[]): CliOptions {
         options.to = requireValue(argv, (index += 1), '--to')
         break
       case '--discriminator':
-        options.discriminator = requireValue(argv, (index += 1), '--discriminator')
+        options.discriminator = requireValue(
+          argv,
+          (index += 1),
+          '--discriminator'
+        )
         break
       case '--model':
         options.model = requireValue(argv, (index += 1), '--model')
         break
       case '--throttle':
-        options.throttleMs = Number(requireValue(argv, (index += 1), '--throttle'))
+        options.throttleMs = Number(
+          requireValue(argv, (index += 1), '--throttle')
+        )
         break
       case '--llm-scrub':
         options.llmScrub = true
@@ -92,7 +98,9 @@ export function parseArgs(argv: string[]): CliOptions {
     options.throttleMs != null &&
     (!Number.isFinite(options.throttleMs) || options.throttleMs < 0)
   ) {
-    throw new Error(`invalid --throttle: ${String(options.throttleMs)} (expected a non-negative number of ms)`)
+    throw new Error(
+      `invalid --throttle: ${String(options.throttleMs)} (expected a non-negative number of ms)`
+    )
   }
 
   return options
@@ -112,9 +120,12 @@ export function resolveWindow(options: CliOptions): DateWindow {
     }
     const from = new Date(options.from)
     const to = new Date(options.to)
-    if (Number.isNaN(from.getTime())) throw new Error(`invalid --from date: ${options.from}`)
-    if (Number.isNaN(to.getTime())) throw new Error(`invalid --to date: ${options.to}`)
-    if (from.getTime() >= to.getTime()) throw new Error('--from must be before --to')
+    if (Number.isNaN(from.getTime()))
+      throw new Error(`invalid --from date: ${options.from}`)
+    if (Number.isNaN(to.getTime()))
+      throw new Error(`invalid --to date: ${options.to}`)
+    if (from.getTime() >= to.getTime())
+      throw new Error('--from must be before --to')
     return { from, to }
   }
 
@@ -134,7 +145,8 @@ export function resolveWindow(options: CliOptions): DateWindow {
 
 export function parseDiscriminator(value: string): NormalizeOptions {
   if (value === 'none') return {}
-  if (value === 'default') return { excludeMessageRegex: DEFAULT_LOAD_TEST_REGEX }
+  if (value === 'default')
+    return { excludeMessageRegex: DEFAULT_LOAD_TEST_REGEX }
 
   const separatorIndex = value.indexOf(':')
   if (separatorIndex === -1) {

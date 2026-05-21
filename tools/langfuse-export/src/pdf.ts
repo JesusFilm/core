@@ -7,7 +7,10 @@ import { pathToFileURL } from 'node:url'
 
 import { chromium } from 'playwright'
 
-export async function renderPdf(htmlPath: string, pdfPath: string): Promise<void> {
+export async function renderPdf(
+  htmlPath: string,
+  pdfPath: string
+): Promise<void> {
   let browser
   try {
     browser = await chromium.launch()

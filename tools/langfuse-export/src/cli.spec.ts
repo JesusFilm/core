@@ -3,8 +3,15 @@ import { parseArgs, parseDiscriminator, resolveWindow } from './cli'
 describe('parseArgs', () => {
   it('parses flags and valued options', () => {
     const opts = parseArgs([
-      '--days', '7', '--discriminator', 'none', '--llm-scrub', '--pdf',
-      '--model', 'google/gemini-2.5-flash', '--debug'
+      '--days',
+      '7',
+      '--discriminator',
+      'none',
+      '--llm-scrub',
+      '--pdf',
+      '--model',
+      'google/gemini-2.5-flash',
+      '--debug'
     ])
     expect(opts).toMatchObject({
       days: 7,
@@ -18,7 +25,12 @@ describe('parseArgs', () => {
 
   it('defaults discriminator to "default" and booleans to false', () => {
     const opts = parseArgs([])
-    expect(opts).toMatchObject({ discriminator: 'default', llmScrub: false, pdf: false, debug: false })
+    expect(opts).toMatchObject({
+      discriminator: 'default',
+      llmScrub: false,
+      pdf: false,
+      debug: false
+    })
   })
 
   it('throws on an unknown argument', () => {
@@ -34,12 +46,16 @@ describe('parseArgs', () => {
   })
 
   it('throws on a negative --throttle', () => {
-    expect(() => parseArgs(['--throttle', '-100'])).toThrow(/invalid --throttle/)
+    expect(() => parseArgs(['--throttle', '-100'])).toThrow(
+      /invalid --throttle/
+    )
   })
 
   it('throws when --throttle swallows the next flag as its value', () => {
     // `Number('--pdf')` is NaN, caught by validation.
-    expect(() => parseArgs(['--throttle', '--pdf'])).toThrow(/invalid --throttle/)
+    expect(() => parseArgs(['--throttle', '--pdf'])).toThrow(
+      /invalid --throttle/
+    )
   })
 })
 
@@ -62,7 +78,9 @@ describe('resolveWindow', () => {
 
   it('errors when --days is combined with --from', () => {
     expect(() =>
-      resolveWindow(parseArgs(['--days', '7', '--from', '2026-05-01', '--to', '2026-05-10']))
+      resolveWindow(
+        parseArgs(['--days', '7', '--from', '2026-05-01', '--to', '2026-05-10'])
+      )
     ).toThrow(/--days cannot be combined/)
   })
 
@@ -101,7 +119,9 @@ describe('parseDiscriminator', () => {
   it('maps "default" to the load-test message regex', () => {
     const result = parseDiscriminator('default')
     expect(result.excludeMessageRegex).toBeInstanceOf(RegExp)
-    expect(result.excludeMessageRegex?.test('load test concurrent client')).toBe(true)
+    expect(
+      result.excludeMessageRegex?.test('load test concurrent client')
+    ).toBe(true)
   })
 
   it('maps "none" to no exclusion', () => {
