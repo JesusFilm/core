@@ -8,11 +8,25 @@ import {
 } from './pipeline/normalize'
 import type { DateWindow } from './types'
 
+// Deployment environments traces are tagged with (NES-1688), plus `all`
+// to disable env filtering. `default` (Langfuse's bucket for pre-1688,
+// untagged traces) is not offered: the deliverable targets these tagged
+// environments; use `all` to include untagged history.
+export const ENVIRONMENTS = [
+  'production',
+  'stage',
+  'preview',
+  'development',
+  'all'
+] as const
+export type EnvironmentOption = (typeof ENVIRONMENTS)[number]
+
 export interface CliOptions {
   days?: number
   from?: string
   to?: string
   discriminator: string
+  environment: EnvironmentOption
   model?: string
   throttleMs?: number
   llmScrub: boolean
@@ -26,7 +40,9 @@ export const USAGE = `Usage: pnpm exec tsx tools/langfuse-export/run.ts [options
   --days N             window = last N days (default 14; mutually exclusive with --from/--to)
   --from ISO --to ISO  explicit window (both required together)
   --discriminator V    load-test exclusion: default | none | message:<regex> | journey:<csv> | tag:<csv>
-                       (default = exclude known load-test probes; --environment is inert until NES-1688)
+                       (default = exclude known load-test probes)
+  --environment E      deployment env filter: production | stage | preview | development | all
+                       (default production; all = every env incl. pre-NES-1688 untagged traces)
   --llm-scrub          run an extra LLM PII scrub pass (pending NES-1562 sign-off)
   --pdf                also render report.pdf (needs: pnpm exec playwright install chromium)
   --model ID           OpenRouter model id (default from env / google/gemini-2.5-flash-lite)
@@ -43,6 +59,7 @@ function requireValue(argv: string[], index: number, flag: string): string {
 export function parseArgs(argv: string[]): CliOptions {
   const options: CliOptions = {
     discriminator: 'default',
+    environment: 'production',
     llmScrub: false,
     pdf: false,
     debug: false,
@@ -68,6 +85,16 @@ export function parseArgs(argv: string[]): CliOptions {
           '--discriminator'
         )
         break
+      case '--environment': {
+        const value = requireValue(argv, (index += 1), '--environment')
+        if (!(ENVIRONMENTS as readonly string[]).includes(value)) {
+          throw new Error(
+            `invalid --environment: ${value} (expected ${ENVIRONMENTS.join(' | ')})`
+          )
+        }
+        options.environment = value as EnvironmentOption
+        break
+      }
       case '--model':
         options.model = requireValue(argv, (index += 1), '--model')
         break

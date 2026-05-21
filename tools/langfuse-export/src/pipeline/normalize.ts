@@ -13,9 +13,10 @@ import type {
 } from '../types'
 
 export interface NormalizeOptions {
-  // Load-test exclusion (the `--environment` filter is inert until NES-1688;
-  // see plan). A turn is excluded if its user message matches the regex, or
-  // its trace's journeyId / any tag is in the exclude sets.
+  // Load-test exclusion (deployment-env filtering happens earlier, at fetch
+  // time — see FetchOptions.environment). A turn is excluded if its user
+  // message matches the regex, or its trace's journeyId / any tag is in the
+  // exclude sets.
   excludeMessageRegex?: RegExp
   excludeJourneyIds?: Set<string>
   excludeTags?: Set<string>

@@ -11,6 +11,7 @@ function trace(overrides: Partial<TraceRecord> = {}): TraceRecord {
     id: 't1',
     sessionId: 's1',
     timestamp: '2026-05-19T00:00:00.000Z',
+    environment: 'production',
     metadata: {},
     tags: [],
     ...overrides

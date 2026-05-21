@@ -19,6 +19,11 @@ export interface FetchOptions {
   throttleMs?: number
   pageSize?: number
   onProgress?: (message: string) => void
+  // Restrict to traces tagged with this deployment environment (NES-1688).
+  // Sent to the v2 observations index (server-side filter, fewer per-trace
+  // fetches — verified honoured) AND re-checked against each trace's own
+  // `environment` as the authoritative guard. `undefined` = all environments.
+  environment?: string
 }
 
 const DEFAULT_THROTTLE_MS = 700
@@ -52,6 +57,7 @@ interface RawTrace {
   id?: string
   sessionId?: string | null
   timestamp?: string | null
+  environment?: string | null
   metadata?: unknown
   tags?: unknown
   observations?: unknown
@@ -122,6 +128,10 @@ export function mapTrace(raw: RawTrace): TraceRecord {
         ? raw.sessionId
         : null,
     timestamp: toIso(raw.timestamp),
+    environment:
+      typeof raw.environment === 'string' && raw.environment.length > 0
+        ? raw.environment
+        : null,
     metadata,
     tags: asStringArray(raw.tags),
     ipCountry: metaString(metadata, 'ipCountry'),
@@ -169,6 +179,8 @@ async function listTraceIds(
       fromStartTime: window.from.toISOString(),
       toStartTime: window.to.toISOString()
     })
+    if (options.environment != null)
+      params.set('environment', options.environment)
     if (cursor != null) params.set('cursor', cursor)
 
     const response = await getJson<{
@@ -238,8 +250,15 @@ export async function fetchTraceData(
       client,
       traceIds[index]
     )
-    traces.push(trace)
-    observations.push(...obs)
+    // Authoritative guard: the index param is server-side best-effort; re-check
+    // the trace's own env. Checked after the fetch so it never skips the throttle.
+    if (
+      options.environment == null ||
+      trace.environment === options.environment
+    ) {
+      traces.push(trace)
+      observations.push(...obs)
+    }
     options.onProgress?.(`traces: ${index + 1}/${traceIds.length}`)
     if (index < traceIds.length - 1) await sleep(throttleMs)
   }

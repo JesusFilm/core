@@ -57,12 +57,20 @@ async function main(): Promise<void> {
   const env = parseEnv()
   if (options.model != null) env.openrouterModel = options.model
 
-  const fetchOptions = { throttleMs: options.throttleMs, onProgress: progress }
+  // `all` disables env filtering; any other value filters to that env.
+  const environment =
+    options.environment === 'all' ? undefined : options.environment
+  const fetchOptions = {
+    throttleMs: options.throttleMs,
+    onProgress: progress,
+    environment
+  }
 
   console.log('=== langfuse-export ===')
   console.log(
     `Window:        ${window.from.toISOString()} -> ${window.to.toISOString()}`
   )
+  console.log(`Environment:   ${options.environment}`)
   console.log(`Discriminator: ${options.discriminator}`)
   console.log(`LLM scrub:     ${options.llmScrub ? 'on' : 'off'}`)
   console.log(`Model:         ${env.openrouterModel}`)
@@ -77,6 +85,12 @@ async function main(): Promise<void> {
     fetchOptions
   )
   console.log(`  ${traces.length} traces, ${observations.length} generations`)
+  if (traces.length === 0 && environment != null) {
+    console.log(
+      `  (no traces tagged environment=${environment} in this window — ` +
+        `pre-NES-1688 traces are untagged; use --environment all to include them)`
+    )
+  }
 
   const { conversations, excludedTurnCount } = normalize(
     traces,
@@ -166,7 +180,7 @@ async function main(): Promise<void> {
   console.log('')
   console.log(`Done. Output: tools/langfuse-export/output/${id}/`)
   console.log(
-    'Upload only report.html / report.pdf to Drive (direct-share to Aaron).'
+    'Upload only report.html / report.pdf to Drive (direct-share to Leadership).'
   )
 }
 

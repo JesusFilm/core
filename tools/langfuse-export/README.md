@@ -1,10 +1,10 @@
 # tools/langfuse-export
 
-Engineer-run CLI that pulls Apologist chat traces from the **Langfuse Public API**, scrubs free-text PII, computes usage stats, and synthesises a shareable HTML report (optional PDF). The engineer uploads the report to Google Drive and shares it with Aaron.
+Engineer-run CLI that pulls Apologist chat traces from the **Langfuse Public API**, scrubs free-text PII, computes usage stats, and synthesises a shareable HTML report (optional PDF). The engineer uploads the report to Google Drive and shares it with Leadership.
 
 Built for **NES-1690**, implementing the **NES-1656** export-path spike. The manual CSV observations export drops the trace-level fields needed to group turns into conversations (`sessionId`), attribute country (`metadata.ipCountry`), and tag — this tool reads those from the API instead.
 
-> **Read the caveats below before sharing any report.** A run against today's data is dominated by load-test traffic and largely null-session — treat current-data reports as pipeline validation, not a share-worthy artifact, until NES-1688 / NES-1616 land.
+> **Read the caveats below before sharing any report.** NES-1688 has landed, so `--environment production` (the default) now isolates real production traffic — but production volume is still low-to-zero today, and `--environment all` is dominated by load-test traffic and largely null-session. Treat current-data reports as pipeline validation, not a share-worthy artifact, until production traffic accumulates and NES-1616 lands.
 
 ## Layout
 
@@ -67,30 +67,36 @@ pnpm exec playwright install chromium
 ## Run
 
 ```sh
-# Last 14 days (default), exclude load-test traffic, HTML report:
+# Last 14 days (default), production traffic only, exclude load-test, HTML report:
 pnpm exec tsx tools/langfuse-export/run.ts --days 14
 
-# Explicit window + PDF:
+# Explicit window, production + PDF:
 pnpm exec tsx tools/langfuse-export/run.ts --from 2026-06-11 --to 2026-07-14 --pdf
 
-# Include everything (no load-test exclusion) + extra LLM scrub pass:
-pnpm exec tsx tools/langfuse-export/run.ts --days 7 --discriminator none --llm-scrub
+# Validate the pipeline against a non-prod env:
+pnpm exec tsx tools/langfuse-export/run.ts --days 7 --environment preview
+
+# Every environment (incl. pre-NES-1688 untagged history), no load-test exclusion:
+pnpm exec tsx tools/langfuse-export/run.ts --days 7 --environment all --discriminator none
 ```
 
 Running with no arguments prints usage.
 
+> **`--environment` defaults to `production`** — the share-worthy report. Traces are tagged with their deployment environment by NES-1688 (`production` / `stage` / `preview` / `development`). Traces created **before** NES-1688 shipped are untagged (Langfuse buckets them as `default`) and are **only** included via `--environment all`. The env filter is applied at the Langfuse observations index (server-side) and re-checked against each trace's own `environment`.
+
 ### Flags
 
-| Flag                  | Meaning                                                                                                                                                                                                                         |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--days N`            | Window = last N days (default 14). Mutually exclusive with `--from`/`--to`.                                                                                                                                                     |
-| `--from ISO --to ISO` | Explicit window (both required together).                                                                                                                                                                                       |
-| `--discriminator V`   | Load-test exclusion: `default` (exclude known probes), `none`, `message:<regex>`, `journey:<csv>`, `tag:<csv>`. **There is no `--environment` flag** — env is unwritten on traces until NES-1688, so it cannot filter anything. |
-| `--llm-scrub`         | Extra LLM PII scrub pass (pending NES-1562 sign-off).                                                                                                                                                                           |
-| `--pdf`               | Also render `report.pdf` (needs `playwright install chromium`).                                                                                                                                                                 |
-| `--model ID`          | OpenRouter model id (default `google/gemini-2.5-flash-lite`).                                                                                                                                                                   |
-| `--throttle MS`       | Delay between Langfuse calls (default 700ms; keep under the ~100 req/min Hobby ceiling).                                                                                                                                        |
-| `--debug`             | Also write `records.ndjson` (one sanitised turn per line). **Debug artifact — never upload to Drive.**                                                                                                                          |
+| Flag                  | Meaning                                                                                                                                                     |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--days N`            | Window = last N days (default 14). Mutually exclusive with `--from`/`--to`.                                                                                 |
+| `--from ISO --to ISO` | Explicit window (both required together).                                                                                                                   |
+| `--discriminator V`   | Load-test exclusion: `default` (exclude known probes), `none`, `message:<regex>`, `journey:<csv>`, `tag:<csv>`. Orthogonal to `--environment` — both apply. |
+| `--environment E`     | Deployment-env filter (NES-1688): `production` (default), `stage`, `preview`, `development`, or `all` (every env, including pre-NES-1688 untagged traces).  |
+| `--llm-scrub`         | Extra LLM PII scrub pass (pending NES-1562 sign-off).                                                                                                       |
+| `--pdf`               | Also render `report.pdf` (needs `playwright install chromium`).                                                                                             |
+| `--model ID`          | OpenRouter model id (default `google/gemini-2.5-flash-lite`).                                                                                               |
+| `--throttle MS`       | Delay between Langfuse calls (default 700ms; keep under the ~100 req/min Hobby ceiling).                                                                    |
+| `--debug`             | Also write `records.ndjson` (one sanitised turn per line). **Debug artifact — never upload to Drive.**                                                      |
 
 ## Output
 
@@ -102,10 +108,10 @@ Each run writes `tools/langfuse-export/output/<timestamp>/`:
 
 `output/` is gitignored.
 
-## Share with Aaron
+## Share with Leadership
 
 1. Upload **only `report.html`** (and `report.pdf` if rendered) to Google Drive — **never `records.ndjson`**.
-2. Share the file **directly with Aaron's email address**, not via link-sharing, so other Drive collaborators can't reach it.
+2. Share the file **directly with Leadership**, not via link-sharing, so other Drive collaborators can't reach it.
 3. Delete `tools/langfuse-export/.env` afterwards.
 
 ## How it works

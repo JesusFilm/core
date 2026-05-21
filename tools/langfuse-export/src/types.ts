@@ -11,6 +11,10 @@ export interface TraceRecord {
   id: string
   sessionId: string | null
   timestamp: string
+  // Deployment environment the trace was tagged with (NES-1688:
+  // production | stage | preview | development). `null` when the trace
+  // predates env tagging — Langfuse buckets those under "default".
+  environment: string | null
   metadata: Record<string, unknown>
   tags: string[]
   ipCountry?: string

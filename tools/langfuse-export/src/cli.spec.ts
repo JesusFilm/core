@@ -7,6 +7,8 @@ describe('parseArgs', () => {
       '7',
       '--discriminator',
       'none',
+      '--environment',
+      'preview',
       '--llm-scrub',
       '--pdf',
       '--model',
@@ -16,6 +18,7 @@ describe('parseArgs', () => {
     expect(opts).toMatchObject({
       days: 7,
       discriminator: 'none',
+      environment: 'preview',
       llmScrub: true,
       pdf: true,
       model: 'google/gemini-2.5-flash',
@@ -23,14 +26,25 @@ describe('parseArgs', () => {
     })
   })
 
-  it('defaults discriminator to "default" and booleans to false', () => {
+  it('defaults discriminator to "default", environment to "production", booleans to false', () => {
     const opts = parseArgs([])
     expect(opts).toMatchObject({
       discriminator: 'default',
+      environment: 'production',
       llmScrub: false,
       pdf: false,
       debug: false
     })
+  })
+
+  it('accepts "all" as the env-filter bypass', () => {
+    expect(parseArgs(['--environment', 'all']).environment).toBe('all')
+  })
+
+  it('throws on an unrecognised --environment value', () => {
+    expect(() => parseArgs(['--environment', 'prod'])).toThrow(
+      /invalid --environment: prod \(expected production \| stage \| preview \| development \| all\)/
+    )
   })
 
   it('throws on an unknown argument', () => {

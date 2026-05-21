@@ -31,6 +31,20 @@ describe('mapTrace', () => {
     expect(result.timestamp).toBe('2026-05-19T12:00:00.000Z')
     expect(result.ipCountry).toBeUndefined()
   })
+
+  it('reads the deployment environment when tagged (NES-1688)', () => {
+    expect(
+      mapTrace({ id: 't', environment: 'production', metadata: {}, tags: [] })
+        .environment
+    ).toBe('production')
+  })
+
+  it('maps a missing or empty environment to null (pre-NES-1688 untagged traces)', () => {
+    expect(mapTrace({ id: 't', metadata: {}, tags: [] }).environment).toBeNull()
+    expect(
+      mapTrace({ id: 't', environment: '', metadata: {}, tags: [] }).environment
+    ).toBeNull()
+  })
 })
 
 describe('mapObservation', () => {
