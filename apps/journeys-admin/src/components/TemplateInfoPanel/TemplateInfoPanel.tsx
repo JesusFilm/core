@@ -15,6 +15,42 @@ import { TemplateTypesSection } from './TemplateTypesSection'
 import { TrackingAndAnalyticsSection } from './TrackingAndAnalyticsSection'
 
 /**
+ * Vertical chrome reserved by the editor canvas (top toolbar / navbar +
+ * bottom breathing room) before the contained panel begins. Used by the
+ * outer Paper's `maxHeight` so the panel stretches with the viewport
+ * instead of being pinned to a fixed pixel count.
+ */
+const CONTAINED_TOP_OFFSET_PX = 160
+
+/**
+ * Total chrome within the contained panel: editor offset (160px) + panel
+ * header (~151px) + four accordion summary rows (~256px) + close bar
+ * (~52px) + dividers. Subtracted from `100vh` to bound the currently-
+ * expanded `AccordionDetails` so only the body scrolls when content
+ * exceeds the available space; summaries stay pinned.
+ */
+const CONTAINED_BODY_RESERVATION_PX = 620
+
+/**
+ * Chrome reservation for the templates-tab Drawer surface: page navbar
+ * (~80px) + panel header (~151px) + four accordion summary rows (~256px)
+ * + safety margin. Smaller than `CONTAINED_BODY_RESERVATION_PX` because
+ * the Drawer surface has no in-panel close bar of its own.
+ */
+const DRAWER_BODY_RESERVATION_PX = 540
+
+/**
+ * Floor for the per-accordion body height when the viewport is too short
+ * for the reservation math. Prevents `AccordionDetails` from collapsing
+ * to zero height (CSS clamps negative `max-height` to 0) on borderline
+ * viewports. NOT a substitute for proper narrow-viewport layout, which
+ * is deferred to follow-up work — on viewports tall enough to fall back
+ * to this floor, total panel content may still exceed the Paper's
+ * `maxHeight` and clip the close bar.
+ */
+const BODY_MIN_HEIGHT_PX = 80
+
+/**
  * Stable IDs for each accordion section. Used for `aria-controls` wiring,
  * single-expand state, and `defaultExpanded` prop selection. The order of the
  * union here matches the order the panel renders in `TemplateInfoPanel`.
@@ -170,9 +206,9 @@ export function TemplateInfoPanel({
         sx={{
           width: 360,
           // Dynamic vertical bound: stretches with the viewport so larger
-          // screens get more reading room. 160px reserves space for the
-          // editor's top toolbar/nav chrome plus bottom breathing room.
-          maxHeight: 'calc(100vh - 160px)',
+          // screens get more reading room. See CONTAINED_TOP_OFFSET_PX for
+          // the reservation rationale.
+          maxHeight: `calc(100vh - ${CONTAINED_TOP_OFFSET_PX}px)`,
           borderRadius: 3,
           overflow: 'hidden',
           bgcolor: 'background.paper',
@@ -190,10 +226,10 @@ export function TemplateInfoPanel({
          * only the long body of the expanded section scrolls; the four
          * summary rows above it and the close bar below it stay pinned.
          *
-         * The calc accounts for the editor chrome (160px reserved by the
-         * outer panel), header (~151px), four summary rows (~256px), the
-         * close bar (~52px), and dividers — leaving the body whatever
-         * vertical space remains.
+         * See CONTAINED_BODY_RESERVATION_PX for the reservation math. The
+         * `max()` floor guards against the calc resolving to ≤0 on short
+         * viewports (CSS would clamp negative maxHeight to 0, hiding the
+         * body entirely).
          */}
         <Box
           sx={{
@@ -202,7 +238,7 @@ export function TemplateInfoPanel({
             display: 'flex',
             flexDirection: 'column',
             '& .MuiAccordionDetails-root': {
-              maxHeight: 'calc(100vh - 620px)',
+              maxHeight: `max(${BODY_MIN_HEIGHT_PX}px, calc(100vh - ${CONTAINED_BODY_RESERVATION_PX}px))`,
               overflowY: 'auto'
             }
           }}
@@ -251,12 +287,12 @@ export function TemplateInfoPanel({
          * Types, How to create, Tracking and Analytics, Sharing and
          * Publishing) stay visible inside the templates-tab Drawer when an
          * expanded section's content is long. Only the body scrolls; the
-         * rest of the Drawer chrome is untouched. Reservation accounts for
-         * the page navbar / tabs (~80px), the panel header (~151px), the
-         * four summary rows (~256px), and a safety margin.
+         * rest of the Drawer chrome is untouched. See
+         * DRAWER_BODY_RESERVATION_PX for the reservation math; the `max()`
+         * floor prevents zero-height collapse on borderline viewports.
          */
         '& .MuiAccordionDetails-root': {
-          maxHeight: 'calc(100vh - 540px)',
+          maxHeight: `max(${BODY_MIN_HEIGHT_PX}px, calc(100vh - ${DRAWER_BODY_RESERVATION_PX}px))`,
           overflowY: 'auto'
         }
       }}

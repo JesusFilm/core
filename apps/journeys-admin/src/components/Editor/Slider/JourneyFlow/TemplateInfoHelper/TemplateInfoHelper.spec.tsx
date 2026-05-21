@@ -95,6 +95,23 @@ describe('TemplateInfoHelper', () => {
     expect(screen.getByTestId('TemplateInfoPanel')).toBeInTheDocument()
   })
 
+  it('keeps focus inside the panel when Tab is pressed (FocusTrap active)', async () => {
+    const user = userEvent.setup()
+    render(<TemplateInfoHelper />)
+
+    await user.click(screen.getByTestId('TemplateInfoHelperTrigger'))
+    const panel = screen.getByTestId('TemplateInfoPanel')
+
+    // Cycle through several tab stops; focus must stay inside the panel
+    // every time. Without Unstable_TrapFocus, Tab would eventually escape
+    // back to the trigger or onto the document body.
+    for (let i = 0; i < 6; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await user.tab()
+      expect(panel.contains(document.activeElement)).toBe(true)
+    }
+  })
+
   it('renders accordions collapsed every time the panel is re-opened', async () => {
     render(<TemplateInfoHelper />)
     const user = userEvent.setup()
