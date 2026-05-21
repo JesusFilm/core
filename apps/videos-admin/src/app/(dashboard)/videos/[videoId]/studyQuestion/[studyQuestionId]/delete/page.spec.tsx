@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
+import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
+
 import StudyQuestionDeletePage from './page'
 
 // Mock the Apollo Client hooks
@@ -61,10 +63,10 @@ describe('StudyQuestionDeletePage', () => {
     render(
       <SnackbarProvider>
         <StudyQuestionDeletePage
-          params={{
+          params={resolvedParams({
             videoId: mockVideoId,
             studyQuestionId: mockStudyQuestionId
-          }}
+          })}
         />
       </SnackbarProvider>
     )

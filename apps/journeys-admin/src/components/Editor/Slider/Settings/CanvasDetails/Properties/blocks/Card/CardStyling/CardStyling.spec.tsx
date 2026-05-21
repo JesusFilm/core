@@ -37,7 +37,9 @@ const initialBlock: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: []
+  children: [],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 const journey: Journey = {
@@ -124,7 +126,9 @@ describe('CardStyling', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <MockedProvider>
@@ -154,7 +158,9 @@ describe('CardStyling', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const step: TreeBlock<StepBlock> = {
       id: 'step1.id',
@@ -194,7 +200,9 @@ describe('CardStyling', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <MockedProvider>
@@ -226,7 +234,9 @@ describe('CardStyling', () => {
           id: 'card1.id',
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base,
-          __typename: 'CardBlock'
+          __typename: 'CardBlock',
+          showAssistant: null,
+          expandChatByDefault: null
         }
       }
     }))
@@ -276,7 +286,9 @@ describe('CardStyling', () => {
           id: 'card1.id',
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base,
-          __typename: 'CardBlock'
+          __typename: 'CardBlock',
+          showAssistant: null,
+          expandChatByDefault: null
         }
       }
     }))

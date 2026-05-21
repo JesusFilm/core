@@ -4,9 +4,9 @@
  */
 
 export const VIDEO_FILENAME_REGEX =
-  /^([^.]+?)---([^.]+?)---([^-]+)---([^-]+)(?:---([^-]+))*\.mp4$/
+  /^([^.]+?)---([^.]+?)---([^-]+)---([^-]+)(?:---([^-]+))?\.mp4$/
 
 export const SUBTITLE_FILENAME_REGEX =
-  /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.(srt|vtt)$/
+  /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))?\.(srt|vtt)$/
 
 export const AUDIO_PREVIEW_FILENAME_REGEX = /^([^.]+)\.aac$/

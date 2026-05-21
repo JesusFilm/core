@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { resolvedParams } from '../../../../../../../../../test/utils/resolvedParams'
+
 // Import the component under test
 import ConfirmDeleteDialog from './page'
 
@@ -115,11 +117,11 @@ describe('ConfirmDeleteDialog', () => {
   it('renders the delete confirmation dialog', () => {
     render(
       <ConfirmDeleteDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockDownloadId
-        }}
+        })}
       />
     )
 
@@ -141,11 +143,11 @@ describe('ConfirmDeleteDialog', () => {
   it('navigates back when cancel button is clicked', () => {
     render(
       <ConfirmDeleteDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockDownloadId
-        }}
+        })}
       />
     )
 
@@ -161,11 +163,11 @@ describe('ConfirmDeleteDialog', () => {
   it('navigates back when dialog is closed', () => {
     render(
       <ConfirmDeleteDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockDownloadId
-        }}
+        })}
       />
     )
 
@@ -181,11 +183,11 @@ describe('ConfirmDeleteDialog', () => {
   it('deletes download and navigates back when confirm button is clicked', async () => {
     render(
       <ConfirmDeleteDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockDownloadId
-        }}
+        })}
       />
     )
 

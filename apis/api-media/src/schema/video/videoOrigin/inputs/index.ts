@@ -1,0 +1,1 @@
+export { VideoOriginsFilter } from './videoOriginsFilter'

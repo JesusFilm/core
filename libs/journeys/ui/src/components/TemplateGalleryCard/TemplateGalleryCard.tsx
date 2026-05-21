@@ -9,7 +9,7 @@ import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import Globe from '@core/shared/ui/icons/Globe'

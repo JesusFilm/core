@@ -10,9 +10,7 @@ if (typeof window !== 'undefined') {
   localePath = require('path').resolve('./public/locales')
 }
 
-/**
- * @type {import('next-i18next').UserConfig}
- **/
+/** @type {import('next-i18next/pages').UserConfig} */
 const i18nConfig = {
   i18n: {
     defaultLocale: 'en',

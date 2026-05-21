@@ -174,7 +174,9 @@ export function useCreateStepFromStep(): (
       coverBlockId: null,
       backgroundColor: null,
       parentOrder: 0,
-      eventLabel: null
+      eventLabel: null,
+      showAssistant: null,
+      expandChatByDefault: null
     }
 
     add({

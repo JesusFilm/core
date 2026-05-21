@@ -2,7 +2,7 @@ import { Reference, gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'

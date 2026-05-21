@@ -12,7 +12,7 @@ import {
   updateProfile
 } from 'firebase/auth'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'

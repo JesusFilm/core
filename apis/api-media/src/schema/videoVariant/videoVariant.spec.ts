@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import {
   MuxVideo,
   Video,
@@ -10,56 +12,61 @@ import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
+import { deleteR2File } from '../cloudflare/r2/asset'
+import { deleteVideo } from '../mux/video/service'
+import {
+  addLanguageToVideo,
+  removeLanguageFromVideoIfUnused,
+  updateParentCollectionLanguages
+} from '../video/lib/updateAvailableLanguages'
 
 // Mock the cache reset functions
-jest.mock('../../lib/videoCacheReset', () => ({
-  videoCacheReset: jest.fn(),
-  videoVariantCacheReset: jest.fn()
+vi.mock('../../lib/videoCacheReset', () => ({
+  videoCacheReset: vi.fn(),
+  videoVariantCacheReset: vi.fn()
 }))
 
 // Mock the Mux video service
-jest.mock('../mux/video/service', () => ({
-  deleteVideo: jest.fn()
+vi.mock('../mux/video/service', () => ({
+  deleteVideo: vi.fn()
 }))
 
 // Mock the deleteR2File function but keep the rest
-jest.mock('../cloudflare/r2/asset', () => ({
-  ...jest.requireActual('../cloudflare/r2/asset'),
-  deleteR2File: jest.fn()
+vi.mock('../cloudflare/r2/asset', async () => ({
+  ...(await vi.importActual('../cloudflare/r2/asset')),
+  deleteR2File: vi.fn()
 }))
 
 // Mock the Algolia service
-jest.mock('../../lib/algolia/algoliaVideoVariantUpdate', () => ({
-  updateVideoVariantInAlgolia: jest.fn()
+vi.mock('../../lib/algolia/algoliaVideoVariantUpdate', () => ({
+  updateVideoVariantInAlgolia: vi.fn()
 }))
 
 // Mock the video available languages functions
-jest.mock('../video/lib/updateAvailableLanguages', () => ({
-  addLanguageToVideo: jest.fn(),
-  removeLanguageFromVideoIfUnused: jest.fn(),
-  updateParentCollectionLanguages: jest.fn()
+vi.mock('../video/lib/updateAvailableLanguages', () => ({
+  addLanguageToVideo: vi.fn(),
+  removeLanguageFromVideoIfUnused: vi.fn(),
+  updateParentCollectionLanguages: vi.fn()
 }))
 
 // Get the mocked functions for testing
-const mockedVideoCacheReset = jest.mocked(videoCacheReset)
-const mockedVideoVariantCacheReset = jest.mocked(videoVariantCacheReset)
-const { deleteVideo: mockedDeleteVideo } = jest.requireMock(
-  '../mux/video/service'
+const mockedVideoCacheReset = vi.mocked(videoCacheReset)
+const mockedVideoVariantCacheReset = vi.mocked(videoVariantCacheReset)
+const mockedDeleteVideo = vi.mocked(deleteVideo)
+const mockedDeleteR2File = vi.mocked(deleteR2File)
+const mockedUpdateVideoVariantInAlgolia = vi.mocked(updateVideoVariantInAlgolia)
+const mockedAddLanguageToVideo = vi.mocked(addLanguageToVideo)
+const mockedRemoveLanguageFromVideoIfUnused = vi.mocked(
+  removeLanguageFromVideoIfUnused
 )
-const { deleteR2File: mockedDeleteR2File } = jest.requireMock(
-  '../cloudflare/r2/asset'
+const mockedUpdateParentCollectionLanguages = vi.mocked(
+  updateParentCollectionLanguages
 )
-const { updateVideoVariantInAlgolia: mockedUpdateVideoVariantInAlgolia } =
-  jest.requireMock('../../lib/algolia/algoliaVideoVariantUpdate')
-const {
-  addLanguageToVideo: mockedAddLanguageToVideo,
-  removeLanguageFromVideoIfUnused: mockedRemoveLanguageFromVideoIfUnused,
-  updateParentCollectionLanguages: mockedUpdateParentCollectionLanguages
-} = jest.requireMock('../video/lib/updateAvailableLanguages')
 
 type VideoVariantAndIncludes = VideoVariant & {
   downloads: VideoVariantDownload[]
@@ -86,7 +93,7 @@ describe('videoVariant', () => {
   })
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockedVideoCacheReset.mockImplementation(() => Promise.resolve())
     mockedVideoVariantCacheReset.mockImplementation(() => Promise.resolve())
     mockedDeleteVideo.mockResolvedValue(undefined)
@@ -2344,12 +2351,10 @@ describe('videoVariant', () => {
     })
 
     describe('parent variant management', () => {
-      it('should have helper functions for managing parent video variants', () => {
+      it('should have helper functions for managing parent video variants', async () => {
         // Test that the helper functions exist and are exported
-        const {
-          handleParentVariantCreation,
-          handleParentVariantCleanup
-        } = require('./videoVariant')
+        const { handleParentVariantCreation, handleParentVariantCleanup } =
+          await import(/* webpackChunkName: "videoVariant" */ './videoVariant')
 
         expect(typeof handleParentVariantCreation).toBe('function')
         expect(typeof handleParentVariantCleanup).toBe('function')

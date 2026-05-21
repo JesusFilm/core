@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { Dispatch, RefObject, SetStateAction, useCallback } from 'react'
 

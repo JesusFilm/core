@@ -118,7 +118,9 @@ export function parseImporterFilenameForTable(
 
     const m = file.match(VIDEO_FILENAME_REGEX)
     if (m) {
-      const [, videoId, editionName, rawLanguageId, version] = m
+      const [, videoId, editionName, rawLanguageId, version, extra] = m
+      const versionDisplay =
+        extra != null && extra.length > 0 ? `${version} +1 extra` : version
 
       return {
         file,
@@ -126,7 +128,7 @@ export function parseImporterFilenameForTable(
         mediaComponentId: videoId,
         languageId: rawLanguageId.trim(),
         kind: 'Video',
-        version
+        version: versionDisplay
       }
     }
 

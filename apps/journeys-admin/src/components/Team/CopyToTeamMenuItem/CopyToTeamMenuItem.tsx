@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
@@ -233,8 +233,6 @@ export function CopyToTeamMenuItem({
             translationData?.journeyAiTranslateCreateSubscription.message ?? ''
         }}
         isTranslating={translationVariables != null}
-        journeyIsTemplate={journeyData?.template ?? false}
-        journeyFromTemplateId={journeyData?.fromTemplateId}
       />
     </>
   )

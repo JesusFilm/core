@@ -49,7 +49,9 @@ describe('getTextResponseBlocks', () => {
       {
         id: 'card1',
         __typename: 'CardBlock',
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       },
       {
         id: 'button1',

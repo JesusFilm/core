@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
+
 import CitationDeletePage from './page'
 
 const mockCitationId = 'citation-123'
@@ -94,7 +96,10 @@ describe('CitationDeletePage', () => {
   it('renders the delete confirmation dialog', () => {
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={resolvedParams({
+          videoId: mockVideoId,
+          citationId: mockCitationId
+        })}
       />
     )
 
@@ -111,7 +116,10 @@ describe('CitationDeletePage', () => {
   it('navigates back when cancel button is clicked', () => {
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={resolvedParams({
+          videoId: mockVideoId,
+          citationId: mockCitationId
+        })}
       />
     )
 
@@ -127,7 +135,10 @@ describe('CitationDeletePage', () => {
   it('calls delete mutation when delete button is clicked', () => {
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={resolvedParams({
+          videoId: mockVideoId,
+          citationId: mockCitationId
+        })}
       />
     )
 
@@ -148,7 +159,10 @@ describe('CitationDeletePage', () => {
 
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={resolvedParams({
+          videoId: mockVideoId,
+          citationId: mockCitationId
+        })}
       />
     )
 
@@ -177,7 +191,10 @@ describe('CitationDeletePage', () => {
 
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={resolvedParams({
+          videoId: mockVideoId,
+          citationId: mockCitationId
+        })}
       />
     )
 

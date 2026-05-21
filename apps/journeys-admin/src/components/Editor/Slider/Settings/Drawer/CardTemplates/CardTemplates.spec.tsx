@@ -41,7 +41,9 @@ describe('CardTemplates', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const step: TreeBlock = {
       id: 'stepId',

@@ -5,7 +5,7 @@ import MuiCard from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import { SxProps, styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode } from 'react'
 
 const Card = styled(MuiCard)(({ theme }) => ({
