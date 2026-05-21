@@ -1,4 +1,4 @@
-import { gql, useApolloClient, useMutation } from '@apollo/client'
+import { useApolloClient } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -13,25 +13,16 @@ import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
 import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
-import {
-  CloudflareUploadComplete,
-  CloudflareUploadCompleteVariables
-} from '../../../../../../../../../__generated__/CloudflareUploadComplete'
 import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 import {
   sendImageUploadFailureEvent,
   sendImageUploadSuccessEvent
 } from '../../../../../../../../libs/sendImageUploadEvent'
 import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/useCloudflareUploadByFileMutation'
+import { useCloudflareUploadCompleteMutation } from '../../../../../../../../libs/useCloudflareUploadCompleteMutation'
 import { MAX_IMAGE_UPLOAD_BYTES } from '../../../../../../../../libs/useImageUpload'
 import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
 import { prependCloudflareImage } from '../../MediaLibrary/prependCloudflareImage'
-
-export const CLOUDFLARE_UPLOAD_COMPLETE = gql`
-  mutation CloudflareUploadComplete($id: ID!) {
-    cloudflareUploadComplete(id: $id)
-  }
-`
 
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
@@ -53,10 +44,7 @@ export function ImageUpload({
   const { t } = useTranslation('apps-journeys-admin')
   const { cache } = useApolloClient()
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
-  const [cloudflareUploadComplete] = useMutation<
-    CloudflareUploadComplete,
-    CloudflareUploadCompleteVariables
-  >(CLOUDFLARE_UPLOAD_COMPLETE)
+  const [cloudflareUploadComplete] = useCloudflareUploadCompleteMutation()
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
   const [errorCode, setErrorCode] = useState<ErrorCode>()
   const successResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
@@ -97,87 +85,112 @@ export function ImageUpload({
     setSuccess(undefined)
     setErrorCode(undefined)
 
-    if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
-      const file = acceptedFiles[0]
-      const formData = new FormData()
-      formData.append('file', file)
+    if (data?.createCloudflareUploadByFile?.uploadUrl == null) return
 
-      const uploadUrl = data.createCloudflareUploadByFile.uploadUrl
-      try {
-        const response = await (
-          await fetch(uploadUrl, {
-            method: 'POST',
-            body: formData as unknown as FormDataType
-          })
-        ).json()
+    const file = acceptedFiles[0]
+    const formData = new FormData()
+    formData.append('file', file)
+    const uploadUrl = data.createCloudflareUploadByFile.uploadUrl
 
-        response.success === true ? setSuccess(true) : setSuccess(false)
-        if (response.errors?.length) {
-          const cloudflareError = response.errors[0].code
-          setSuccess(false)
-          setUploading?.(false)
-          setErrorCode(cloudflareError as ErrorCode)
-          sendImageUploadFailureEvent({
-            fileSize: file.size,
-            fileType: file.type,
-            errorCode: String(cloudflareError)
-          })
-          return
-        }
-
-        const cloudflareId = response?.result?.id
-        const cloudflareUploadKey =
-          process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY
-        if (
-          cloudflareId == null ||
-          cloudflareUploadKey == null ||
-          cloudflareUploadKey === ''
-        ) {
-          setSuccess(false)
-          setUploading?.(false)
-          sendImageUploadFailureEvent({
-            fileSize: file.size,
-            fileType: file.type,
-            errorCode: 'upload-invalid-response'
-          })
-          return
-        }
-        const url = `https://imagedelivery.net/${cloudflareUploadKey}/${cloudflareId}`
-        await cloudflareUploadComplete({ variables: { id: cloudflareId } })
-        prependCloudflareImage(
-          cache,
-          { id: cloudflareId, url, blurhash: null },
-          false
-        )
-        onUploaded?.()
-        onChange({
-          src: `${url}/public`,
-          scale: 100,
-          focalLeft: 50,
-          focalTop: 50
+    let cloudflareResponse
+    try {
+      cloudflareResponse = await (
+        await fetch(uploadUrl, {
+          method: 'POST',
+          body: formData as unknown as FormDataType
         })
-        if (successResetTimerRef.current != null) {
-          clearTimeout(successResetTimerRef.current)
-        }
-        successResetTimerRef.current = setTimeout(
-          () => setSuccess(undefined),
-          4000
-        )
-        setUploading?.(undefined)
-        sendImageUploadSuccessEvent({
-          fileSize: file.size,
-          fileType: file.type
-        })
-      } catch {
-        setSuccess(false)
-        setUploading?.(false)
-        sendImageUploadFailureEvent({
-          fileSize: file.size,
-          fileType: file.type,
-          errorCode: 'upload-exception'
-        })
-      }
+      ).json()
+    } catch {
+      setSuccess(false)
+      setUploading?.(false)
+      sendImageUploadFailureEvent({
+        fileSize: file.size,
+        fileType: file.type,
+        errorCode: 'upload-exception'
+      })
+      return
     }
+
+    if (cloudflareResponse.errors?.length) {
+      const cloudflareError = cloudflareResponse.errors[0].code
+      setSuccess(false)
+      setUploading?.(false)
+      setErrorCode(cloudflareError as ErrorCode)
+      sendImageUploadFailureEvent({
+        fileSize: file.size,
+        fileType: file.type,
+        errorCode: String(cloudflareError)
+      })
+      return
+    }
+
+    if (cloudflareResponse.success !== true) {
+      setSuccess(false)
+      setUploading?.(false)
+      sendImageUploadFailureEvent({
+        fileSize: file.size,
+        fileType: file.type,
+        errorCode: 'upload-failed'
+      })
+      return
+    }
+
+    const cloudflareId = cloudflareResponse?.result?.id
+    const cloudflareUploadKey = process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY
+    if (
+      cloudflareId == null ||
+      cloudflareUploadKey == null ||
+      cloudflareUploadKey === ''
+    ) {
+      setSuccess(false)
+      setUploading?.(false)
+      sendImageUploadFailureEvent({
+        fileSize: file.size,
+        fileType: file.type,
+        errorCode: 'upload-invalid-response'
+      })
+      return
+    }
+
+    try {
+      await cloudflareUploadComplete({ variables: { id: cloudflareId } })
+    } catch {
+      setSuccess(false)
+      setUploading?.(false)
+      sendImageUploadFailureEvent({
+        fileSize: file.size,
+        fileType: file.type,
+        errorCode: 'upload-mark-complete-failed'
+      })
+      return
+    }
+
+    const url = `https://imagedelivery.net/${cloudflareUploadKey}/${cloudflareId}`
+    prependCloudflareImage(
+      cache,
+      { id: cloudflareId, url, blurhash: null },
+      false
+    )
+    onUploaded?.()
+    onChange({
+      src: `${url}/public`,
+      scale: 100,
+      focalLeft: 50,
+      focalTop: 50
+    })
+    setSuccess(true)
+    if (successResetTimerRef.current != null) {
+      clearTimeout(successResetTimerRef.current)
+    }
+    successResetTimerRef.current = setTimeout(
+      () => setSuccess(undefined),
+      4000
+    )
+    setUploading?.(undefined)
+    sendImageUploadSuccessEvent({
+      fileSize: file.size,
+      fileType: file.type
+    })
   }
 
   const { getRootProps, open, getInputProps, isDragAccept } = useDropzone({

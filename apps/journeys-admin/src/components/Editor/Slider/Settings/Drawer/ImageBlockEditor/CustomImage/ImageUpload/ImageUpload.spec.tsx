@@ -5,8 +5,9 @@ import fetch, { Response } from 'node-fetch'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation'
+import { CLOUDFLARE_UPLOAD_COMPLETE } from '../../../../../../../../libs/useCloudflareUploadCompleteMutation/useCloudflareUploadCompleteMutation'
 
-import { CLOUDFLARE_UPLOAD_COMPLETE, ImageUpload } from './ImageUpload'
+import { ImageUpload } from './ImageUpload'
 
 const cloudflareUploadCompleteMockResult = jest.fn(() => ({
   data: { cloudflareUploadComplete: true }
@@ -18,6 +19,14 @@ const cloudflareUploadCompleteMock = {
     variables: { id: 'uploadId' }
   },
   result: cloudflareUploadCompleteMockResult
+}
+
+const cloudflareUploadCompleteErrorMock = {
+  request: {
+    query: CLOUDFLARE_UPLOAD_COMPLETE,
+    variables: { id: 'uploadId' }
+  },
+  error: new Error('cloudflareUploadComplete failed')
 }
 
 jest.mock('node-fetch', () => {
@@ -976,5 +985,60 @@ describe('ImageUpload', () => {
         errorCode: 'upload-exception'
       })
     )
+  })
+
+  it('should report upload-mark-complete-failed and skip onChange when cloudflareUploadComplete throws', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfResponse)
+    } as unknown as Response)
+
+    const onChange = jest.fn()
+    const setUploading = jest.fn()
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: { query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          },
+          cloudflareUploadCompleteErrorMock
+        ]}
+      >
+        <ImageUpload
+          onChange={onChange}
+          setUploading={setUploading}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    const inputEl = screen.getByTestId('drop zone')
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([new Blob(['file'])], 'testFile.png', { type: 'image/png' })
+      ]
+    })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() =>
+      expect(mockSendGTMEvent).toHaveBeenCalledWith({
+        event: 'image_upload_failure',
+        fileSize: expect.any(Number),
+        fileType: 'image/png',
+        errorCode: 'upload-mark-complete-failed'
+      })
+    )
+    expect(onChange).not.toHaveBeenCalled()
+    expect(setUploading).toHaveBeenCalledWith(false)
   })
 })

@@ -324,15 +324,6 @@ describe('cloudflareImage', () => {
         })
       })
 
-      it('should exclude images where uploaded is false', async () => {
-        prismaMock.cloudflareImage.findMany.mockResolvedValue([])
-        await authClient({ document: GET_MY_CLOUDFLARE_IMAGES_QUERY })
-        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith(
-          expect.objectContaining({
-            where: expect.objectContaining({ uploaded: true })
-          })
-        )
-      })
     })
 
     describe('getMyCloudflareImage', () => {

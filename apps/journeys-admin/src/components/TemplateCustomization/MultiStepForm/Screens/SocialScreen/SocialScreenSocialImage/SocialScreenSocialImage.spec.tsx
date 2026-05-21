@@ -7,6 +7,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { cloudflareUploadMutationMock } from '../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation.mock'
+import { cloudflareUploadCompleteMock } from '../../../../../../libs/useCloudflareUploadCompleteMutation/useCloudflareUploadCompleteMutation.mock'
 import { journeyImageBlockAssociationUpdateMock } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation/useJourneyImageBlockAssociationUpdateMutation.mock'
 import { journeyImageBlockCreateMock } from '../../../../../../libs/useJourneyImageBlockCreateMutation/useJourneyImageBlockCreateMutation.mock'
 import { journeyImageBlockUpdateMock } from '../../../../../../libs/useJourneyImageBlockUpdateMutation/useJourneyImageBlockUpdateMutation.mock'
@@ -152,7 +153,7 @@ describe('SocialScreenSocialImage', () => {
     }))
 
     render(
-      <MockedProvider mocks={[cloudflareUploadMutationMock, updateMock]}>
+      <MockedProvider mocks={[cloudflareUploadMutationMock, cloudflareUploadCompleteMock('uploadId'), updateMock]}>
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -237,7 +238,7 @@ describe('SocialScreenSocialImage', () => {
 
     render(
       <MockedProvider
-        mocks={[cloudflareUploadMutationMock, createMock, associationMock]}
+        mocks={[cloudflareUploadMutationMock, cloudflareUploadCompleteMock('uploadId'), createMock, associationMock]}
       >
         <SnackbarProvider>
           <JourneyProvider
@@ -352,7 +353,7 @@ describe('SocialScreenSocialImage', () => {
 
     render(
       <MockedProvider
-        mocks={[cloudflareUploadMutationMock, journeyImageBlockUpdateMock]}
+        mocks={[cloudflareUploadMutationMock, cloudflareUploadCompleteMock('uploadId'), journeyImageBlockUpdateMock]}
       >
         <SnackbarProvider>
           <JourneyProvider
