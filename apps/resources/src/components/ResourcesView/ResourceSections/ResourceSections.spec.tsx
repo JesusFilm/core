@@ -1,20 +1,21 @@
 import { render, screen } from '@testing-library/react'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { useHits } from 'react-instantsearch'
+import type { MockedFunction } from 'vitest'
 
 import { resourceItems } from './ResourceSection/data'
 import { ResourceSections } from './ResourceSections'
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockedUseHits = useHits as jest.MockedFunction<typeof useHits>
+const mockedUseHits = useHits as MockedFunction<typeof useHits>
 
-describe('ResourceSections', () => {
+describe('ResourceSections', async () => {
   beforeEach(() => {
     mockedUseHits.mockReturnValue({
       hits: resourceItems
     } as unknown as HitsRenderState)
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render ResourceSections', () => {

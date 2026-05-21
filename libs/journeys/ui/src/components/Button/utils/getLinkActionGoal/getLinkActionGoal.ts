@@ -34,7 +34,9 @@ function isBiblePlatform(url: string): boolean {
   return biblePlatforms.some((platform) => url.includes(platform))
 }
 
-export function getLinkActionGoal(url: string): GoalType {
+export function getLinkActionGoal(url?: string | null): GoalType {
+  if (url == null) return GoalType.Website
+
   const emailRegex = /\S+@\S+\.\S+/
 
   if (emailRegex.test(url)) {

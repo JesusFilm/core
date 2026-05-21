@@ -1,5 +1,5 @@
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
-import { streamText } from 'ai'
+import { convertToModelMessages, streamText } from 'ai'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { type Mock, type MockedFunction } from 'vitest'
 
@@ -45,6 +45,7 @@ const mockGetLangfuse = getLangfuse as unknown as MockedFunction<
 const mockGetActivePromptLabel =
   getActivePromptLabel as unknown as MockedFunction<typeof getActivePromptLabel>
 const mockStreamText = streamText as unknown as Mock
+const mockConvertToModelMessages = convertToModelMessages as unknown as Mock
 const mockCreateOpenAICompatible =
   createOpenAICompatible as unknown as MockedFunction<
     typeof createOpenAICompatible
@@ -237,7 +238,7 @@ describe('/api/chat handler', () => {
       await handler(req, res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'messages are required' })
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
     })
   })
 
@@ -758,6 +759,186 @@ describe('/api/chat handler', () => {
       expect(json).not.toHaveBeenCalled()
       expect(end).toHaveBeenCalledWith()
       errorSpy.mockRestore()
+    })
+  })
+
+  describe('request bounds (NES-1579)', () => {
+    beforeEach(() => {
+      mockGetFlags.mockResolvedValue({ apologistChat: true })
+    })
+
+    function postReq(body: unknown): NextApiRequest {
+      return {
+        method: 'POST',
+        body,
+        headers: {}
+      } as unknown as NextApiRequest
+    }
+
+    it('rejects a non-object body with 400 invalid request', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(postReq('not-an-object'), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects when messages is missing from the body', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(postReq({}), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects when a message is missing role', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(postReq({ messages: [{ content: 'hi' }] }), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects when a message role is outside the user/assistant/system enum', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({ messages: [{ role: 'banana', content: 'hi' }] }),
+        res
+      )
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects a message that has neither content nor parts', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(postReq({ messages: [{ role: 'user' }] }), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects with 400 when convertToModelMessages throws', async () => {
+      mockGetLangfuse.mockReturnValue(null)
+      mockConvertToModelMessages.mockImplementationOnce(() => {
+        throw new Error('unsupported part shape')
+      })
+      const errorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
+
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({ messages: [{ role: 'user', content: 'hi' }] }),
+        res
+      )
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+      errorSpy.mockRestore()
+    })
+
+    it('rejects when a single message exceeds the per-message char cap', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({
+          messages: [{ role: 'user', content: 'x'.repeat(4001) }]
+        }),
+        res
+      )
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects when the messages array exceeds the count cap', async () => {
+      const messages = Array.from({ length: 21 }, () => ({
+        role: 'user',
+        content: 'hi'
+      }))
+      const { res, status, json } = makeRes()
+
+      await handler(postReq({ messages }), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('rejects when the cumulative input chars exceed the total cap', async () => {
+      // 7 messages * 3000 chars = 21000 > 20000 cap, each within per-message
+      // and message-count caps.
+      const messages = Array.from({ length: 7 }, () => ({
+        role: 'user',
+        content: 'x'.repeat(3000)
+      }))
+      const { res, status, json } = makeRes()
+
+      await handler(postReq({ messages }), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'request too large' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('counts parts[].text toward the per-message and total caps', async () => {
+      const messages = [
+        {
+          role: 'user',
+          parts: [{ type: 'text', text: 'x'.repeat(4001) }]
+        }
+      ]
+      const { res, status, json } = makeRes()
+
+      await handler(postReq({ messages }), res)
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('forwards maxOutputTokens=512 to streamText on the happy path', async () => {
+      mockGetLangfuse.mockReturnValue(null)
+
+      await handler(
+        postReq({ messages: [{ role: 'user', content: 'hi' }] }),
+        makeRes().res
+      )
+
+      expect(mockStreamText).toHaveBeenCalledTimes(1)
+      expect(mockStreamText.mock.calls[0][0]).toMatchObject({
+        maxOutputTokens: 512
+      })
+    })
+
+    it('accepts a request right at the per-message char cap', async () => {
+      mockGetLangfuse.mockReturnValue(null)
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({
+          messages: [{ role: 'user', content: 'x'.repeat(4000) }]
+        }),
+        res
+      )
+
+      expect(status).not.toHaveBeenCalledWith(400)
+      expect(json).not.toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(mockStreamText).toHaveBeenCalledTimes(1)
     })
   })
 })

@@ -9,7 +9,6 @@ import omit from 'lodash/omit'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
-import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -58,26 +57,11 @@ export function TemplateSettingsDialog({
   const { enqueueSnackbar } = useSnackbar()
   const isGlobalTemplate = journey?.team?.id === 'jfp-team'
 
-  const validationSchema = object({
-    strategySlug: string()
-      .trim()
-      .nullable()
-      .test('valid-embed-url', t('Invalid embed link'), (value) => {
-        if (value == null) return true
-        const canvaRegex =
-          /^https:\/\/www\.canva\.com\/design\/[a-zA-Z0-9/-]+\/(view|watch)$/
-
-        const googleSlidesRegex =
-          /^https:\/\/docs\.google\.com\/presentation\/d\/e\/[A-Za-z0-9-_]+\/pub\?(start=true|start=false)&(loop=true|loop=false)&delayms=\d+$/
-
-        const isValidCanvaLink = canvaRegex.test(value)
-        const isValidGoogleLink = googleSlidesRegex.test(value)
-        if (!isValidCanvaLink && !isValidGoogleLink) {
-          return false
-        }
-        return true
-      })
-  })
+  // NES-1678: strategy section UI was removed; the only Yup rule that
+  // existed in this dialog was the embed-URL validation for `strategySlug`,
+  // so the form no longer needs a validation schema. The `strategySlug`
+  // value still rides through `initialValues` → submit so existing slugs
+  // are preserved on save.
   const initialValues: TemplateSettingsFormValues = {
     title: journey?.title,
     description: journey?.description,
@@ -162,7 +146,6 @@ export function TemplateSettingsDialog({
     <Formik
       initialValues={initialValues}
       onSubmit={handleSubmit}
-      validationSchema={validationSchema}
       enableReinitialize
     >
       {({ handleSubmit, isSubmitting, resetForm }) => (
@@ -218,7 +201,7 @@ export function TemplateSettingsDialog({
                 index={isGlobalTemplate ? 2 : 1}
               >
                 <Stack sx={{ pt: 6 }} gap={5}>
-                  <AboutTabPanel showStrategySection={isGlobalTemplate} />
+                  <AboutTabPanel />
                 </Stack>
               </TabPanel>
             </>

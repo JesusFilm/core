@@ -359,7 +359,7 @@ describe('LanguageAutocomplete', () => {
   ]
 
   it('should sort language options alphabetically', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole, queryAllByRole } = render(
       <LanguageAutocomplete
         onChange={handleChange}
@@ -376,7 +376,7 @@ describe('LanguageAutocomplete', () => {
   })
 
   it('should select languages via option click', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole } = render(
       <LanguageAutocomplete
         onChange={handleChange}
@@ -399,7 +399,7 @@ describe('LanguageAutocomplete', () => {
   it('should accept helper text', async () => {
     const { getByText } = render(
       <LanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         value={{
           id: '1106',
           localName: 'German, Standard',
@@ -416,7 +416,7 @@ describe('LanguageAutocomplete', () => {
   it('should set default value', async () => {
     const { getByRole } = render(
       <LanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         value={{
           id: '1106',
           localName: 'German, Standard',
@@ -432,7 +432,7 @@ describe('LanguageAutocomplete', () => {
   it('should show loading animation if loading', async () => {
     const { getByRole } = render(
       <LanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         value={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}
         loading
@@ -468,7 +468,7 @@ describe('LanguageAutocomplete', () => {
     }
     const { getAllByTestId, getByTestId, getByRole } = render(
       <LanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         value={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}
         loading={false}
@@ -510,7 +510,7 @@ describe('LanguageAutocomplete', () => {
       }
     ]
 
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole, queryAllByRole } = render(
       <LanguageAutocomplete
         onChange={handleChange}
@@ -530,7 +530,7 @@ describe('LanguageAutocomplete', () => {
   })
 
   it('should filter by both local and native name', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole, queryAllByRole } = render(
       <LanguageAutocomplete
         onChange={handleChange}
@@ -574,7 +574,7 @@ describe('LanguageAutocomplete', () => {
     }
     const { getAllByTestId, getByTestId, getByRole } = render(
       <LanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         value={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}
         loading={false}

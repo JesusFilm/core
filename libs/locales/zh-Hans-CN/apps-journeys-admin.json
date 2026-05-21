@@ -434,6 +434,8 @@
   "Upload Successful!": "上传成功！",
   "Upload Failed!": "上传失败！",
   "Drop an image here": "在此投放图片",
+  "or click to browse your files": "或点击浏览文件",
+  "Uploading... {{progress}}%": "上传... {{progress}}%",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "上传图像（PNG、JPG、GIF、SVG 或 HEIC）。最大文件大小：10 MB",
   "Upload file": "上传文件",
   "Gallery": "画廊",
