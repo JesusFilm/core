@@ -48,7 +48,7 @@ export function TemplateTypesSection(): ReactElement {
         </Box>
         <Box
           component="img"
-          src="/assets/template-info/template-types-quick-start.png"
+          src="/assets/template-info/template-types-quick-start.gif"
           alt={t('Quick-Start template guided editing UI — mobile-friendly')}
           width={333}
           height={185}
@@ -69,7 +69,7 @@ export function TemplateTypesSection(): ReactElement {
         </Box>
         <Box
           component="img"
-          src="/assets/template-info/template-types-regular.png"
+          src="/assets/template-info/template-types-regular.gif"
           alt={t(
             'Regular template editor interface — desktop multi-screen view'
           )}

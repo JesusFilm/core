@@ -41,11 +41,11 @@ describe('TemplateTypesSection', () => {
 
     expect(quickStartImage).toHaveAttribute(
       'src',
-      '/assets/template-info/template-types-quick-start.png'
+      '/assets/template-info/template-types-quick-start.gif'
     )
     expect(regularImage).toHaveAttribute(
       'src',
-      '/assets/template-info/template-types-regular.png'
+      '/assets/template-info/template-types-regular.gif'
     )
     expect(quickStartImage).toHaveAttribute('loading', 'lazy')
   })
