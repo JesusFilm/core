@@ -39,10 +39,35 @@ describe('regexScrub', () => {
     )
   })
 
+  it('redacts a national-format (leading-zero) phone number', () => {
+    const out = regexScrub('call me on 021 555 1234 tomorrow')
+    expect(out).toContain('[redacted-phone]')
+    expect(out).not.toContain('555 1234')
+  })
+
+  it('redacts hyphen- and dot-separated phone numbers', () => {
+    expect(regexScrub('+1-800-555-1234')).toContain('[redacted-phone]')
+    expect(regexScrub('reach 021.555.1234')).toContain('[redacted-phone]')
+  })
+
+  it('redacts "I\'m X" and "I am X" name declarations', () => {
+    expect(regexScrub("I'm John, nice to meet you")).toBe(
+      "I'm [redacted-name], nice to meet you"
+    )
+    expect(regexScrub('I am John from work')).toContain('I am [redacted-name]')
+  })
+
   it('redacts a declared location', () => {
     expect(regexScrub('I live in Auckland by the sea')).toBe(
       'I live in [redacted-location] by the sea'
     )
+  })
+
+  it('redacts "I\'m from X" and "I am from X" location declarations', () => {
+    expect(regexScrub("I'm from Auckland originally")).toContain(
+      "I'm from [redacted-location]"
+    )
+    expect(regexScrub('I am from Lagos')).toContain('I am from [redacted-location]')
   })
 
   it('redacts all matches of the same type in one message', () => {
@@ -89,6 +114,17 @@ describe('sanitize', () => {
     const withLlm = await sanitize(convs, llmScrub)
     expect(calls).toEqual(['one', 'two'])
     expect(withLlm[0].turns[0].userMessage).toContain('[llm-scrubbed]')
+  })
+
+  it('does not call llmScrub on an empty user message (saves tokens)', async () => {
+    const calls: string[] = []
+    const llmScrub = async (text: string): Promise<string> => {
+      calls.push(text)
+      return text
+    }
+    const result = await sanitize([conversation([turn({ userMessage: '' })])], llmScrub)
+    expect(calls).toEqual([])
+    expect(result[0].turns[0].userMessage).toBe('')
   })
 })
 

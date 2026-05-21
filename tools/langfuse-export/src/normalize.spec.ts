@@ -59,6 +59,14 @@ describe('extractLatestUserMessage', () => {
     expect(extractLatestUserMessage([])).toBe('')
     expect(extractLatestUserMessage(undefined)).toBe('')
   })
+
+  it('returns empty string (never assistant/system text) when no user role is present', () => {
+    const input = [
+      { role: 'system', content: 'you are a helpful assistant' },
+      { role: 'assistant', content: 'how can I help?' }
+    ]
+    expect(extractLatestUserMessage(input)).toBe('')
+  })
 })
 
 describe('extractAssistantReply', () => {
@@ -187,5 +195,25 @@ describe('normalize', () => {
     const { conversations } = normalize([trace()], observations)
     expect(conversations[0].turns[0].userMessage).toBe('')
     expect(conversations[0].turns[0].assistantReply).toBe('')
+  })
+
+  it('does not collapse distinct id-less orphan observations into one conversation', () => {
+    const observations = [
+      observation({ id: '', traceId: 'missing-a' }),
+      observation({ id: '', traceId: 'missing-b' })
+    ]
+    const { conversations } = normalize([], observations)
+    expect(conversations).toHaveLength(2)
+  })
+
+  it('default load-test regex does not match unrelated messages', () => {
+    const observations = [
+      observation({ id: 'o1', traceId: 't1', inputRaw: [{ role: 'user', content: 'load factor in beam design' }] })
+    ]
+    const { conversations, excludedTurnCount } = normalize([trace({ id: 't1', sessionId: null })], observations, {
+      excludeMessageRegex: DEFAULT_LOAD_TEST_REGEX
+    })
+    expect(excludedTurnCount).toBe(0)
+    expect(conversations).toHaveLength(1)
   })
 })

@@ -69,7 +69,9 @@ export function buildStats(
 
     for (const turn of conversation.turns) {
       increment(perModel, turn.model ?? 'unknown')
-      const day = dayKey(turn.startTime)
+      // Bucket unparseable/empty timestamps under 'unknown' so the per-day
+      // breakdown reconciles with the headline turn/cost totals.
+      const day = dayKey(turn.startTime) || 'unknown'
       increment(perDay, day)
       if (turn.costUsd != null) {
         totalCostUsd += turn.costUsd

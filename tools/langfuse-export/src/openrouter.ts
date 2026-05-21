@@ -18,6 +18,8 @@ import type { SanitisedConversation, ThemeSynthesis } from './types'
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 const MAX_THEME_CONVERSATIONS = 150
 const MAX_MESSAGE_CHARS = 300
+// Per-call deadline so a stalled OpenRouter connection can't hang the run.
+const DEFAULT_TIMEOUT_MS = 60_000
 
 export function createModel(env: ToolEnv): LanguageModel {
   const openrouter = createOpenAICompatible({
@@ -38,6 +40,30 @@ function extractJsonObject(text: string): unknown {
     throw new Error('no JSON object found in model output')
   }
   return JSON.parse(candidate.slice(start, end + 1))
+}
+
+// Pure parse of the model's theme JSON. Throws on unusable output (the caller
+// degrades to stats-only). Hallucinated ids are dropped via validIds, and
+// label-less / empty themes are filtered. Extracted from synthesizeThemes so
+// the LLM-output boundary is unit-testable without the network.
+export function parseThemes(text: string, validIds: Set<string>): ThemeSynthesis {
+  const parsed = extractJsonObject(text) as { themes?: unknown }
+  if (!Array.isArray(parsed.themes)) {
+    throw new Error('model output missing themes array')
+  }
+  const themes = parsed.themes
+    .map((theme) => {
+      const record = theme as Record<string, unknown>
+      const label = typeof record.label === 'string' ? record.label : ''
+      const sessionIds = Array.isArray(record.sessionIds)
+        ? record.sessionIds.filter(
+            (id): id is string => typeof id === 'string' && validIds.has(id)
+          )
+        : []
+      return { label, sessionIds }
+    })
+    .filter((theme) => theme.label.length > 0 && theme.sessionIds.length > 0)
+  return { themes }
 }
 
 // Ask the model to label and group conversations. Returns labels + the
@@ -71,28 +97,10 @@ export async function synthesizeThemes(
     model,
     system,
     prompt: `Conversations (id :: first user message):\n${list}`,
-    abortSignal: options.signal
+    abortSignal: options.signal ?? AbortSignal.timeout(DEFAULT_TIMEOUT_MS)
   })
 
-  const parsed = extractJsonObject(text) as { themes?: unknown }
-  if (!Array.isArray(parsed.themes)) {
-    throw new Error('model output missing themes array')
-  }
-
-  const themes = parsed.themes
-    .map((theme) => {
-      const record = theme as Record<string, unknown>
-      const label = typeof record.label === 'string' ? record.label : ''
-      const sessionIds = Array.isArray(record.sessionIds)
-        ? record.sessionIds.filter(
-            (id): id is string => typeof id === 'string' && validIds.has(id)
-          )
-        : []
-      return { label, sessionIds }
-    })
-    .filter((theme) => theme.label.length > 0 && theme.sessionIds.length > 0)
-
-  return { themes }
+  return parseThemes(text, validIds)
 }
 
 // The optional --llm-scrub primitive. Returns a single-message scrubber that
@@ -101,15 +109,26 @@ export function createLlmScrub(
   model: LanguageModel
 ): (text: string) => Promise<string> {
   return async (text: string): Promise<string> => {
-    const { text: cleaned } = await generateText({
-      model,
-      system:
-        'Remove any remaining personal identifying information (names, ' +
-        'locations, contact details, anything that could identify the ' +
-        'speaker or a third party) from the user message. Preserve the ' +
-        'meaning and question. Return ONLY the cleaned message text, nothing else.',
-      prompt: text
-    })
-    return cleaned.trim().length > 0 ? cleaned.trim() : text
+    try {
+      const { text: cleaned } = await generateText({
+        model,
+        system:
+          'Remove any remaining personal identifying information (names, ' +
+          'locations, contact details, anything that could identify the ' +
+          'speaker or a third party) from the user message. Preserve the ' +
+          'meaning and question. Return ONLY the cleaned message text, nothing else.',
+        prompt: text,
+        abortSignal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS)
+      })
+      return cleaned.trim().length > 0 ? cleaned.trim() : text
+    } catch (error) {
+      // Degrade to the already regex-scrubbed input rather than aborting the
+      // whole run on a single scrub failure (mirrors the synthesizeThemes
+      // degradation in run.ts). The input is regex-scrubbed, so this is safe.
+      console.warn(
+        `[langfuse-export] llm-scrub failed for one message (${error instanceof Error ? error.message : String(error)}) — keeping regex-scrubbed text`
+      )
+      return text
+    }
   }
 }

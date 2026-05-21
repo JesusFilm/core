@@ -106,9 +106,22 @@ async function main(): Promise<void> {
     const lines: string[] = []
     for (const conversation of sanitised) {
       for (const turn of conversation.turns) {
+        // Deliberately omit `assistantReply`: it is never scrubbed (it's model
+        // output) and the apologist often echoes user words, so it can carry
+        // user-disclosed PII. The debug record keeps only the sanitised
+        // user message + non-PII metadata.
         lines.push(
           JSON.stringify({
-            ...turn,
+            observationId: turn.observationId,
+            traceId: turn.traceId,
+            startTime: turn.startTime,
+            userMessage: turn.userMessage,
+            model: turn.model,
+            latencySeconds: turn.latencySeconds,
+            inputTokens: turn.inputTokens,
+            outputTokens: turn.outputTokens,
+            totalTokens: turn.totalTokens,
+            costUsd: turn.costUsd,
             sessionId: conversation.sessionId,
             synthetic: conversation.synthetic,
             ipCountry: conversation.ipCountry,
@@ -124,7 +137,14 @@ async function main(): Promise<void> {
   if (options.pdf) {
     console.log('Rendering PDF...')
     const { renderPdf } = await import('./src/pdf')
-    await renderPdf(htmlPath, resolve(outDir, 'report.pdf'))
+    try {
+      await renderPdf(htmlPath, resolve(outDir, 'report.pdf'))
+    } catch (error) {
+      // report.html is already written and fully usable — make that explicit
+      // so a PDF-only failure doesn't read as "the whole run failed".
+      console.error(`PDF render failed — report.html is available at ${htmlPath}`)
+      throw error
+    }
   }
 
   console.log('')

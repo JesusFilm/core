@@ -28,6 +28,19 @@ describe('parseArgs', () => {
   it('throws when a valued flag is missing its value', () => {
     expect(() => parseArgs(['--days'])).toThrow(/--days requires a value/)
   })
+
+  it('throws on a non-numeric --throttle (which would NaN-bypass the rate limit)', () => {
+    expect(() => parseArgs(['--throttle', 'abc'])).toThrow(/invalid --throttle/)
+  })
+
+  it('throws on a negative --throttle', () => {
+    expect(() => parseArgs(['--throttle', '-100'])).toThrow(/invalid --throttle/)
+  })
+
+  it('throws when --throttle swallows the next flag as its value', () => {
+    // `Number('--pdf')` is NaN, caught by validation.
+    expect(() => parseArgs(['--throttle', '--pdf'])).toThrow(/invalid --throttle/)
+  })
 })
 
 describe('resolveWindow', () => {
@@ -70,6 +83,18 @@ describe('resolveWindow', () => {
       resolveWindow(parseArgs(['--from', '2026-05-10', '--to', '2026-05-01']))
     ).toThrow(/--from must be before --to/)
   })
+
+  it('errors on an invalid --to date', () => {
+    expect(() =>
+      resolveWindow(parseArgs(['--from', '2026-05-01', '--to', 'not-a-date']))
+    ).toThrow(/invalid --to date/)
+  })
+
+  it('errors when --days is so large it overflows to an Invalid Date', () => {
+    expect(() => resolveWindow(parseArgs(['--days', '1e15']))).toThrow(
+      /too large/
+    )
+  })
 })
 
 describe('parseDiscriminator', () => {
@@ -98,7 +123,13 @@ describe('parseDiscriminator', () => {
     expect(result.excludeTags).toEqual(new Set(['load', 'test']))
   })
 
-  it('throws on an unrecognised discriminator', () => {
+  it('throws on an unrecognised discriminator with no colon', () => {
     expect(() => parseDiscriminator('bogus')).toThrow(/invalid --discriminator/)
+  })
+
+  it('throws on an unrecognised discriminator kind with a colon', () => {
+    expect(() => parseDiscriminator('environment:foo')).toThrow(
+      /invalid --discriminator kind/
+    )
   })
 })

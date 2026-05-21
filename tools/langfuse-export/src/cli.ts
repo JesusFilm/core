@@ -85,6 +85,16 @@ export function parseArgs(argv: string[]): CliOptions {
     }
   }
 
+  // Validate --throttle here (not in resolveWindow): `Number('--pdf')` /
+  // `Number('abc')` yield NaN, which the `?? DEFAULT` guard in langfuse.ts
+  // does NOT catch, silently disabling the rate-limit delay.
+  if (
+    options.throttleMs != null &&
+    (!Number.isFinite(options.throttleMs) || options.throttleMs < 0)
+  ) {
+    throw new Error(`invalid --throttle: ${String(options.throttleMs)} (expected a non-negative number of ms)`)
+  }
+
   return options
 }
 
@@ -114,6 +124,11 @@ export function resolveWindow(options: CliOptions): DateWindow {
   }
   const to = new Date()
   const from = new Date(to.getTime() - days * DAY_MS)
+  // A huge --days overflows to an Invalid Date; catch it here rather than
+  // letting from.toISOString() throw an opaque RangeError later.
+  if (Number.isNaN(from.getTime())) {
+    throw new Error(`--days is too large: ${String(options.days)}`)
+  }
   return { from, to }
 }
 

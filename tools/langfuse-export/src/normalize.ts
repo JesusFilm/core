@@ -54,7 +54,10 @@ function messageText(message: unknown): string {
   return ''
 }
 
-// Latest user-authored message from a generation's input.
+// Latest user-authored message from a generation's input. When the input is
+// an array of messages, only `role: 'user'` entries are considered — we never
+// fall back to the last element regardless of role, since that would attribute
+// assistant/system/tool text as the user's question (and leak it downstream).
 export function extractLatestUserMessage(input: unknown): string {
   if (Array.isArray(input)) {
     for (let index = input.length - 1; index >= 0; index -= 1) {
@@ -68,8 +71,9 @@ export function extractLatestUserMessage(input: unknown): string {
         if (text.length > 0) return text
       }
     }
-    return input.length > 0 ? messageText(input[input.length - 1]) : ''
+    return ''
   }
+  // A bare (non-array) input has no role to check — treat it as the message.
   return messageText(input)
 }
 
@@ -108,6 +112,12 @@ function toTurn(observation: ObservationRecord): ConversationTurn {
   }
 }
 
+// Cap the text a custom `--discriminator message:<regex>` is tested against.
+// The regex is engineer-supplied and runs against chat content, so a
+// pathological pattern could backtrack catastrophically on a long message;
+// bounding the input is cheap defence-in-depth (use anchored patterns).
+const MAX_DISCRIMINATOR_TEST_CHARS = 2000
+
 function isExcluded(
   turn: ConversationTurn,
   trace: TraceRecord | undefined,
@@ -116,7 +126,9 @@ function isExcluded(
   if (
     options.excludeMessageRegex != null &&
     turn.userMessage.length > 0 &&
-    options.excludeMessageRegex.test(turn.userMessage)
+    options.excludeMessageRegex.test(
+      turn.userMessage.slice(0, MAX_DISCRIMINATOR_TEST_CHARS)
+    )
   ) {
     return true
   }
@@ -154,7 +166,8 @@ export function normalize(
   >()
   let excludedTurnCount = 0
 
-  for (const observation of observations) {
+  for (let index = 0; index < observations.length; index += 1) {
+    const observation = observations[index]
     const trace = traceById.get(observation.traceId)
     const turn = toTurn(observation)
 
@@ -166,7 +179,9 @@ export function normalize(
     let key: string
     let synthetic: boolean
     if (trace == null) {
-      key = `orphan:${observation.id}`
+      // Fall back to the loop index when the observation has no id, so
+      // distinct id-less orphans don't collapse into one `orphan:` group.
+      key = `orphan:${observation.id.length > 0 ? observation.id : `idx-${index}`}`
       synthetic = true
     } else if (trace.sessionId != null) {
       key = `session:${trace.sessionId}`
@@ -207,8 +222,9 @@ export function normalize(
 
 // Default load-test discriminator: matches the probe prompts the load
 // harness sends (see tools/load-test). Used when --discriminator=default.
-export const DEFAULT_LOAD_TEST_REGEX =
-  /^\s*load[\s-]?test\b|^\s*load-test smoke\b/i
+// `load[\s-]?test` already covers "load test", "load-test", and "loadtest"
+// (incl. "load-test smoke"), so a separate smoke branch is unnecessary.
+export const DEFAULT_LOAD_TEST_REGEX = /^\s*load[\s-]?test\b/i
 
 // First non-empty user message in a conversation — the "what they asked".
 export function firstUserMessage(conversation: {

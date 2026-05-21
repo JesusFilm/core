@@ -23,6 +23,14 @@ export interface FetchOptions {
 
 const DEFAULT_THROTTLE_MS = 700
 const DEFAULT_PAGE_SIZE = 100
+// Hard ceiling so a pathological `meta.totalPages` (huge / Infinity / NaN)
+// can't drive an unbounded fetch+sleep loop.
+const MAX_PAGES = 10000
+
+function clampTotalPages(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < 1) return 1
+  return Math.min(Math.floor(value), MAX_PAGES)
+}
 
 // Narrow views of the SDK response items — only the fields we read.
 interface RawTrace {
@@ -84,7 +92,7 @@ function metaString(
   return typeof value === 'string' && value.length > 0 ? value : undefined
 }
 
-function mapTrace(raw: RawTrace): TraceRecord {
+export function mapTrace(raw: RawTrace): TraceRecord {
   const metadata = asRecord(raw.metadata)
   return {
     id: String(raw.id ?? ''),
@@ -105,7 +113,9 @@ function numberOrNull(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null
 }
 
-function mapObservation(raw: RawObservation): ObservationRecord {
+export function mapObservation(raw: RawObservation): ObservationRecord {
+  // Langfuse usage fields are input / output / total (confirmed against the
+  // observations export). usageDetails is preferred; usage is the fallback.
   const usage = asRecord(raw.usageDetails ?? raw.usage)
   return {
     id: String(raw.id ?? ''),
@@ -117,9 +127,9 @@ function mapObservation(raw: RawObservation): ObservationRecord {
     latencySeconds: numberOrNull(raw.latency),
     inputRaw: raw.input,
     outputRaw: raw.output,
-    inputTokens: numberOrNull(usage.input ?? usage.promptTokens),
-    outputTokens: numberOrNull(usage.output ?? usage.completionTokens),
-    totalTokens: numberOrNull(usage.total ?? usage.totalTokens),
+    inputTokens: numberOrNull(usage.input),
+    outputTokens: numberOrNull(usage.output),
+    totalTokens: numberOrNull(usage.total),
     costUsd: numberOrNull(raw.calculatedTotalCost ?? raw.totalCost)
   }
 }
@@ -148,8 +158,9 @@ export async function fetchAllTraces(
     const data = (response.data ?? []) as RawTrace[]
     for (const raw of data) traces.push(mapTrace(raw))
 
-    totalPages = response.meta?.totalPages ?? 1
+    totalPages = clampTotalPages(response.meta?.totalPages)
     options.onProgress?.(`traces: page ${page}/${totalPages} (${traces.length} so far)`)
+    if (data.length === 0) break
     page += 1
     if (page <= totalPages) await sleep(throttleMs)
   } while (page <= totalPages)
@@ -180,7 +191,8 @@ async function fetchGenerationsForTrace(
     const data = (response.data ?? []) as RawObservation[]
     for (const raw of data) observations.push(mapObservation(raw))
 
-    totalPages = response.meta?.totalPages ?? 1
+    totalPages = clampTotalPages(response.meta?.totalPages)
+    if (data.length === 0) break
     page += 1
     if (page <= totalPages) await sleep(throttleMs)
   } while (page <= totalPages)

@@ -57,14 +57,37 @@ describe('buildStats', () => {
     expect(stats.excludedLoadTest.count).toBe(5)
   })
 
-  it('computes latency percentiles for a known set', () => {
+  it('computes latency percentiles (incl. interpolation) for a known set', () => {
     const turns = [0.5, 1, 1.5, 2, 10].map((latencySeconds) =>
       turn({ latencySeconds })
     )
     const stats = buildStats([conv({ turns })], 0, window)
     expect(stats.latencySeconds.count).toBe(5)
     expect(stats.latencySeconds.p50).toBeCloseTo(1.5, 6)
+    // p95 rank = 0.95*(5-1) = 3.8 -> interp(2, 10, 0.8) = 8.4
+    expect(stats.latencySeconds.p95).toBeCloseTo(8.4, 6)
+    // p99 rank = 0.99*4 = 3.96 -> interp(2, 10, 0.96) = 9.68
+    expect(stats.latencySeconds.p99).toBeCloseTo(9.68, 6)
     expect(stats.latencySeconds.max).toBe(10)
+  })
+
+  it('buckets turns with an unparseable startTime under "unknown" so perDay reconciles', () => {
+    const turns = [turn({ startTime: '2026-05-10T00:00:00.000Z' }), turn({ startTime: '' })]
+    const stats = buildStats([conv({ turns })], 0, window)
+    const perDayTotal = Object.values(stats.perDay).reduce((sum, n) => sum + n, 0)
+    expect(perDayTotal).toBe(stats.totalTurns)
+    expect(stats.perDay.unknown).toBe(1)
+  })
+
+  it('excludes real-session single-turn conversations from top-questions', () => {
+    const single = conv({
+      sessionId: 'real-single',
+      synthetic: false,
+      turns: [turn({ userMessage: 'one-shot question' })]
+    })
+    const stats = buildStats([single], 0, window)
+    expect(stats.topQuestionsIncludedConversations).toBe(0)
+    expect(stats.topQuestions.map((q) => q.message)).not.toContain('one-shot question')
   })
 
   it('returns zeroed stats with no NaN for an empty set', () => {
@@ -158,5 +181,26 @@ describe('renderReport', () => {
     const html = renderReport(stats, malicious, null)
     expect(html).toContain('&lt;script&gt;')
     expect(html).not.toContain('<script>alert(1)</script>')
+  })
+
+  it('escapes ampersands, double quotes, and single quotes in excerpts', () => {
+    const tricky = [
+      conv({
+        sessionId: 'q',
+        synthetic: false,
+        turns: [turn({ userMessage: `Q&A says "it's fine"` }), turn()]
+      })
+    ]
+    const stats = buildStats(tricky, 0, window)
+    const html = renderReport(stats, tricky, null)
+    expect(html).toContain('Q&amp;A')
+    expect(html).toContain('&quot;')
+    expect(html).toContain('&#39;')
+  })
+
+  it('renders a distinct note for an empty themes array', () => {
+    const stats = buildStats(sanitised, 0, window)
+    const html = renderReport(stats, sanitised, { themes: [] })
+    expect(html).toMatch(/No themes were produced/i)
   })
 })
