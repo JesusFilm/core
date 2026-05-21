@@ -4,6 +4,7 @@
 // (ThemeSynthesis). If themes are absent (LLM failed), the report still
 // renders stats + a flat verbatim sample with a visible degradation note.
 
+import { firstUserMessage } from './normalize'
 import type {
   ReportStats,
   SanitisedConversation,
@@ -28,13 +29,6 @@ function pct(share: number): string {
 
 function usd(value: number): string {
   return `$${value.toFixed(4)}`
-}
-
-function firstUserMessage(conversation: SanitisedConversation): string {
-  for (const turn of conversation.turns) {
-    if (turn.userMessage.trim().length > 0) return turn.userMessage.trim()
-  }
-  return ''
 }
 
 function kvRows(

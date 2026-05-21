@@ -209,3 +209,13 @@ export function normalize(
 // harness sends (see tools/load-test). Used when --discriminator=default.
 export const DEFAULT_LOAD_TEST_REGEX =
   /^\s*load[\s-]?test\b|^\s*load-test smoke\b/i
+
+// First non-empty user message in a conversation — the "what they asked".
+export function firstUserMessage(conversation: {
+  turns: ConversationTurn[]
+}): string {
+  for (const turn of conversation.turns) {
+    if (turn.userMessage.trim().length > 0) return turn.userMessage.trim()
+  }
+  return ''
+}

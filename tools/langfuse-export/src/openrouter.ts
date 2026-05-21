@@ -12,6 +12,7 @@ import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import { generateText, type LanguageModel } from 'ai'
 
 import type { ToolEnv } from './env'
+import { firstUserMessage } from './normalize'
 import type { SanitisedConversation, ThemeSynthesis } from './types'
 
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
@@ -26,13 +27,6 @@ export function createModel(env: ToolEnv): LanguageModel {
     headers: { 'X-Title': 'langfuse-export (NES-1690)' }
   })
   return openrouter.chatModel(env.openrouterModel)
-}
-
-function firstUserMessage(conversation: SanitisedConversation): string {
-  for (const turn of conversation.turns) {
-    if (turn.userMessage.trim().length > 0) return turn.userMessage.trim()
-  }
-  return ''
 }
 
 function extractJsonObject(text: string): unknown {
