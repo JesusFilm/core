@@ -27,6 +27,7 @@ export interface GetCustomDomains_customDomains {
   id: string;
   apexName: string;
   name: string;
+  routeAllTeamJourneys: boolean;
   journeyCollection: GetCustomDomains_customDomains_journeyCollection | null;
 }
 

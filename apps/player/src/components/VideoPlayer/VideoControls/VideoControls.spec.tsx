@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type Player from 'video.js/dist/types/player'
 
@@ -10,24 +10,18 @@ const player = mockPlayer as unknown as Player
 
 describe('VideoControls', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-    jest.useFakeTimers()
+    vi.clearAllMocks()
     mockPlayer.paused.mockReturnValue(true)
     mockPlayer.currentTime.mockReturnValue(30)
     mockPlayer.duration.mockReturnValue(120)
     mockPlayer.buffered.mockReturnValue({
       length: 1,
-      start: jest.fn().mockReturnValue(0),
-      end: jest.fn().mockReturnValue(60)
+      start: vi.fn().mockReturnValue(0),
+      end: vi.fn().mockReturnValue(60)
     })
     mockPlayer.muted.mockReturnValue(false)
     mockPlayer.volume.mockReturnValue(0.5)
     mockPlayer.isFullscreen.mockReturnValue(false)
-  })
-
-  afterEach(() => {
-    jest.runOnlyPendingTimers()
-    jest.useRealTimers()
   })
 
   it('renders play button when paused', () => {
@@ -47,7 +41,7 @@ describe('VideoControls', () => {
   })
 
   it('toggles play/pause on button click', async () => {
-    const user = userEvent.setup({ delay: null })
+    const user = userEvent.setup()
     mockPlayer.paused.mockReturnValue(true)
 
     render(<VideoControls player={player} />)
@@ -59,7 +53,7 @@ describe('VideoControls', () => {
   })
 
   it('pauses video when pause button is clicked', async () => {
-    const user = userEvent.setup({ delay: null })
+    const user = userEvent.setup()
     mockPlayer.paused.mockReturnValue(false)
 
     render(<VideoControls player={player} />)
@@ -107,7 +101,7 @@ describe('VideoControls', () => {
 
     const progressBar = container.querySelector('[data-progress-bar]')
     if (progressBar) {
-      const mockGetBoundingClientRect = jest.fn().mockReturnValue({
+      const mockGetBoundingClientRect = vi.fn().mockReturnValue({
         left: 0,
         top: 0,
         width: 100,
@@ -116,7 +110,7 @@ describe('VideoControls', () => {
         right: 100,
         x: 0,
         y: 0,
-        toJSON: jest.fn()
+        toJSON: vi.fn()
       })
       progressBar.getBoundingClientRect = mockGetBoundingClientRect
 
@@ -146,7 +140,7 @@ describe('VideoControls', () => {
 
     const progressBar = container.querySelector('[data-progress-bar]')
     if (progressBar) {
-      const mockGetBoundingClientRect = jest.fn().mockReturnValue({
+      const mockGetBoundingClientRect = vi.fn().mockReturnValue({
         left: 0,
         top: 0,
         width: 100,
@@ -155,7 +149,7 @@ describe('VideoControls', () => {
         right: 100,
         x: 0,
         y: 0,
-        toJSON: jest.fn()
+        toJSON: vi.fn()
       })
       progressBar.getBoundingClientRect = mockGetBoundingClientRect
 
@@ -182,7 +176,7 @@ describe('VideoControls', () => {
   })
 
   it('hides hover preview on mouse leave', async () => {
-    const user = userEvent.setup({ delay: null })
+    const user = userEvent.setup()
     mockPlayer.duration.mockReturnValue(120)
 
     const { container } = render(<VideoControls player={player} />)
@@ -199,8 +193,8 @@ describe('VideoControls', () => {
   it('displays buffered progress', () => {
     mockPlayer.buffered.mockReturnValue({
       length: 1,
-      start: jest.fn().mockReturnValue(0),
-      end: jest.fn().mockReturnValue(60)
+      start: vi.fn().mockReturnValue(0),
+      end: vi.fn().mockReturnValue(60)
     })
     mockPlayer.duration.mockReturnValue(120)
 
@@ -211,7 +205,7 @@ describe('VideoControls', () => {
   })
 
   it('toggles mute on mute button click', async () => {
-    const user = userEvent.setup({ delay: null })
+    const user = userEvent.setup()
     mockPlayer.muted.mockReturnValue(false)
 
     render(<VideoControls player={player} />)
@@ -242,7 +236,7 @@ describe('VideoControls', () => {
   })
 
   it('toggles fullscreen on fullscreen button click', async () => {
-    const user = userEvent.setup({ delay: null })
+    const user = userEvent.setup()
     mockPlayer.isFullscreen.mockReturnValue(false)
 
     render(<VideoControls player={player} />)
@@ -254,7 +248,7 @@ describe('VideoControls', () => {
   })
 
   it('exits fullscreen when in fullscreen mode', async () => {
-    const user = userEvent.setup({ delay: null })
+    const user = userEvent.setup()
     mockPlayer.isFullscreen.mockReturnValue(true)
 
     render(<VideoControls player={player} />)
@@ -266,73 +260,75 @@ describe('VideoControls', () => {
   })
 
   it('hides controls after timeout when playing', async () => {
-    mockPlayer.paused.mockReturnValue(false)
+    vi.useFakeTimers()
+    try {
+      mockPlayer.paused.mockReturnValue(false)
 
-    const { container } = render(<VideoControls player={player} />)
+      const { container } = render(<VideoControls player={player} />)
 
-    const controlsWrapper = container.querySelector('.mt-auto.px-4')
-    expect(controlsWrapper).toHaveClass('opacity-100')
+      const controlsWrapper = container.querySelector('.mt-auto.px-4')
+      expect(controlsWrapper).toHaveClass('opacity-100')
 
-    jest.advanceTimersByTime(2500)
-    await Promise.resolve()
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(2500)
+      })
 
-    await waitFor(
-      () => {
-        const updatedControlsWrapper = container.querySelector('.mt-auto.px-4')
-        expect(updatedControlsWrapper).toHaveClass('opacity-0')
-      },
-      { timeout: 100 }
-    )
+      const updatedControlsWrapper = container.querySelector('.mt-auto.px-4')
+      expect(updatedControlsWrapper).toHaveClass('opacity-0')
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('shows controls when paused', async () => {
-    mockPlayer.paused.mockReturnValue(true)
+    vi.useFakeTimers()
+    try {
+      mockPlayer.paused.mockReturnValue(true)
 
-    const { container } = render(<VideoControls player={player} />)
+      const { container } = render(<VideoControls player={player} />)
 
-    const controlsWrapper = container.querySelector('.mt-auto.px-4')
-    expect(controlsWrapper).toHaveClass('opacity-100')
+      const controlsWrapper = container.querySelector('.mt-auto.px-4')
+      expect(controlsWrapper).toHaveClass('opacity-100')
 
-    jest.advanceTimersByTime(2500)
-    await Promise.resolve()
+      vi.advanceTimersByTime(2500)
+      await Promise.resolve()
 
-    await waitFor(
-      () => {
-        const updatedControlsWrapper = container.querySelector('.mt-auto.px-4')
-        expect(updatedControlsWrapper).toHaveClass('opacity-100')
-      },
-      { timeout: 100 }
-    )
+      const updatedControlsWrapper = container.querySelector('.mt-auto.px-4')
+      expect(updatedControlsWrapper).toHaveClass('opacity-100')
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('shows controls on mouse move', async () => {
-    mockPlayer.paused.mockReturnValue(false)
+    vi.useFakeTimers()
+    try {
+      mockPlayer.paused.mockReturnValue(false)
 
-    const { container } = render(<VideoControls player={player} />)
+      const { container } = render(<VideoControls player={player} />)
 
-    jest.advanceTimersByTime(2500)
-    await Promise.resolve()
-
-    const controlsContainer = container.querySelector('[data-video-controls]')
-    if (controlsContainer) {
-      const mouseMoveEvent = new MouseEvent('mousemove', {
-        bubbles: true,
-        cancelable: true
-      })
-      controlsContainer.dispatchEvent(mouseMoveEvent)
+      vi.advanceTimersByTime(2500)
       await Promise.resolve()
 
-      await waitFor(
-        () => {
-          const controlsWrapper = container.querySelector('.mt-auto.px-4')
-          expect(controlsWrapper).toHaveClass('opacity-100')
-        },
-        { timeout: 100 }
-      )
+      const controlsContainer = container.querySelector('[data-video-controls]')
+      if (controlsContainer) {
+        const mouseMoveEvent = new MouseEvent('mousemove', {
+          bubbles: true,
+          cancelable: true
+        })
+        controlsContainer.dispatchEvent(mouseMoveEvent)
+        await Promise.resolve()
+
+        const controlsWrapper = container.querySelector('.mt-auto.px-4')
+        expect(controlsWrapper).toHaveClass('opacity-100')
+      }
+    } finally {
+      vi.useRealTimers()
     }
   })
 
   it('shows play/pause icon on video click', async () => {
+    vi.useFakeTimers()
     mockPlayer.paused.mockReturnValue(true)
 
     const { container } = render(<VideoControls player={player} />)
@@ -360,7 +356,7 @@ describe('VideoControls', () => {
 
       videoContainer.dispatchEvent(clickEvent)
       await Promise.resolve()
-      jest.advanceTimersByTime(100)
+      vi.advanceTimersByTime(100)
       await Promise.resolve()
 
       const iconContainer =
@@ -368,6 +364,7 @@ describe('VideoControls', () => {
         container.querySelector('.pointer-events-none.absolute.inset-0')
       expect(iconContainer).toBeTruthy()
     }
+    vi.useRealTimers()
   })
 
   it('listens to player events', () => {

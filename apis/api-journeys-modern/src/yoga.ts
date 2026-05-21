@@ -105,14 +105,17 @@ export const yoga = createYoga<
             // flushed (NES-1648).
             'Query.templateGalleryPage': 0,
             'Query.templateGalleryPages': 0,
-            // Public renderer. Finite TTL caps cache-poisoning impact: a `null`
-            // response (unknown slug / draft / malformed) caches with no entity
-            // ID, so the publish mutation's entity-ID invalidation cannot evict
-            // it. Without a finite TTL the null branch would persist for the
-            // lifetime of the cache, letting an attacker pre-poison popular
-            // slugs so legitimate later publishes appear 404. 60 s gives the
-            // renderer reasonable cache hit-rate while bounding poisoning impact.
-            'Query.templateGalleryPageBySlug': 60_000,
+            // Public renderer. TTL 0 because the response embeds journey-side
+            // data (the `templates` list) whose underlying mutations live in
+            // the separate api-journeys service. Yoga's entity-ID auto-
+            // invalidation only runs for mutations that flow through this
+            // server, so journey-side actions (trash, edit, soft-delete)
+            // would otherwise leave a stale cached page for up to the TTL.
+            // Cached null entries also can't be reached by entity-ID
+            // invalidation (no entity to track), which previously made
+            // unpublish→republish cycles serve a stale 404. One indexed
+            // slug lookup per request is trivial.
+            'Query.templateGalleryPageBySlug': 0,
             'Query.journeysPlausibleStatsAggregate': 5000,
             'Query.journeysPlausibleStatsBreakdown': 5000,
             'Query.journeysPlausibleStatsRealtimeVisitors': 5000,

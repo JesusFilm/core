@@ -1,0 +1,39 @@
+{
+  "scenario": "chat",
+  "config": {
+    "scenario": "chat",
+    "runId": "concurrent-clients-20260519T230832",
+    "url": "https://your-stage.nextstep.is/api/chat",
+    "method": "POST",
+    "rate": 5,
+    "timeUnit": "1s",
+    "vus": 5,
+    "maxVus": 20,
+    "duration": "30s",
+    "maxIterations": null,
+    "startedAt": "2026-05-19T23:08:32.426Z",
+    "finishedAt": "2026-05-19T23:09:06.669Z",
+    "durationMs": 34242
+  },
+  "totals": {
+    "sent": 141,
+    "by_status": {
+      "200": 141
+    },
+    "buckets": {
+      "success_2xx": 141,
+      "rate_limited_429": 0,
+      "client_errors_4xx_excluding_429": 0,
+      "server_errors_5xx": 0,
+      "network_errors": 0,
+      "unexpected": 0
+    }
+  },
+  "latency_ms": {
+    "p50": 1340,
+    "p95": 3675,
+    "p99": 4597,
+    "max": 8241,
+    "avg": 1576
+  }
+}

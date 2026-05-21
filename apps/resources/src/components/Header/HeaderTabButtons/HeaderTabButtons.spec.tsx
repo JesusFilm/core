@@ -7,7 +7,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { HeaderTabButtons } from './HeaderTabButtons'
 
-jest.mock('next/compat/router', () => ({
+vi.mock('next/compat/router', async () => ({
   __esModule: true,
   useRouter() {
     return { pathname: '/watch' }
@@ -232,12 +232,16 @@ describe('HeaderTabButtons', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should use fallback values when current route does not match any headerItems', () => {
-      jest
-        .spyOn(require('next/compat/router'), 'useRouter')
-        .mockImplementationOnce(() => ({
-          pathname: '/unknown-route'
-        }))
+    it('should use fallback values when current route does not match any headerItems', async () => {
+      const router = await import(
+        /* webpackChunkName: "next-compat-router" */ 'next/compat/router'
+      )
+      vi.spyOn(router, 'useRouter').mockImplementationOnce(
+        () =>
+          ({
+            pathname: '/unknown-route'
+          }) as never
+      )
 
       render(
         <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>

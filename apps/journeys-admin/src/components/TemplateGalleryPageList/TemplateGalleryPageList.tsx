@@ -8,15 +8,24 @@ import {
   useSensor,
   useSensors
 } from '@dnd-kit/core'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
@@ -31,6 +40,7 @@ import {
   TemplateGalleryPageStatus
 } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
+import { useCanPublishCollection } from '../../libs/useCanPublishCollection'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
 import { JourneyCard } from '../JourneyList/JourneyCard'
 import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
@@ -43,6 +53,10 @@ import {
   DroppableCollectionWrapper,
   UnsectionedDroppable
 } from './Droppables'
+import {
+  GalleryDialogLockContext,
+  GalleryDialogLockContextValue
+} from './GalleryDialogLockContext'
 import { useCollectionMutations } from './useCollectionMutations'
 import { useDragEndHandler } from './useDragEndHandler'
 
@@ -85,11 +99,20 @@ export interface TemplateGalleryPageListProps {
    * hidden when status !== 'active'.
    */
   status?: JourneyStatusFilter
+  /**
+   * Opens the Template Info side panel's mobile drawer. When provided, an
+   * inline info IconButton renders next to the Collections heading on xs/sm
+   * viewports (NES-1686 — replaces the prior floating top-right button).
+   * Undefined when the info panel feature is gated off, suppressing the
+   * trigger.
+   */
+  onOpenInfo?: () => void
 }
 
 export function TemplateGalleryPageList({
   visible = true,
-  status = 'active'
+  status = 'active',
+  onOpenInfo
 }: TemplateGalleryPageListProps = {}): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -101,6 +124,12 @@ export function TemplateGalleryPageList({
   // or trashed views the user is curating those buckets, not assigning to
   // public gallery pages.
   const showCollections = status === 'active'
+
+  // Custom-domain teams can't publish gallery pages — gate Publish + Preview
+  // on every Collection surface (NES-1644).
+  const { canPublish, reason: publishBlockedReason } = useCanPublishCollection({
+    teamId
+  })
 
   const collectionsQuery = useTemplateGalleryPagesQuery(
     teamId != null ? { teamId } : undefined,
@@ -143,6 +172,19 @@ export function TemplateGalleryPageList({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, teamId])
 
+  // Mounted guard for `handlePublish`: rawPublish awaits the mutation and
+  // we then setPublishSuccessCollection. If the user navigates away mid-
+  // flight, the post-await setState would warn (and would briefly flash
+  // the dialog open on the next page if React batches the update across
+  // a route change). Mirrors the same pattern in useCollectionMutations.
+  const mountedRef = useRef(true)
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
+
   const {
     busyId,
     publish: rawPublish,
@@ -153,12 +195,50 @@ export function TemplateGalleryPageList({
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
-  const [dragInFlight, setDragInFlight] = useState(false)
+  // `dragInFlight` drives rendering (busy chips, droppable lock); the ref
+  // is the synchronous source of truth for gating a second drop that
+  // arrives within the same tick as a setState batch — state would read
+  // `false` in both event handlers, the ref flips immediately.
+  //
+  // The two are deliberately wired together via a single `setDragInFlight`
+  // wrapper so a future caller can't update one without the other
+  // (Mike review, NES-1644). Always flip both through this setter.
+  const [dragInFlight, setDragInFlightState] = useState(false)
+  const dragInFlightRef = useRef(false)
+  const setDragInFlight = useCallback((next: boolean) => {
+    dragInFlightRef.current = next
+    setDragInFlightState(next)
+  }, [])
   // Holds the just-published collection so the success dialog has a stable
   // reference to it (the gallery list cache may change underneath while the
   // user is still looking at the dialog).
   const [publishSuccessCollection, setPublishSuccessCollection] =
     useState<TemplateGalleryPage | null>(null)
+
+  // NES-1666 v2: track per-card dialogs (Edit Template Details, access,
+  // restore, delete, trash, translate, breakdown analytics) so the
+  // top-level `dialogOpen` boolean also flips when any of them are open.
+  // v1 only handled CollectionDialog; Sharon's repro showed the per-card
+  // template-details dialog still let drags through.
+  const [openDialogCardIds, setOpenDialogCardIds] = useState<
+    ReadonlySet<string>
+  >(() => new Set())
+  const handleCardDialogOpenChange = useCallback(
+    (cardId: string, open: boolean): void => {
+      setOpenDialogCardIds((prev) => {
+        if (open === prev.has(cardId)) return prev
+        const next = new Set(prev)
+        if (open) next.add(cardId)
+        else next.delete(cardId)
+        return next
+      })
+    },
+    []
+  )
+  const galleryDialogLockValue = useMemo<GalleryDialogLockContextValue>(
+    () => ({ onDialogOpenChange: handleCardDialogOpenChange }),
+    [handleCardDialogOpenChange]
+  )
 
   // True when any modal is open. While modal is open, page-level draggables
   // and droppables are disabled and any in-flight drag state is cleared
@@ -167,7 +247,10 @@ export function TemplateGalleryPageList({
   // dialog because the DragOverlay (z-index 999) tracks cursor position
   // beneath the dialog (z-index 1300) even while hidden.
   const dialogOpen =
-    createDialogOpen || editTargetId != null || publishSuccessCollection != null
+    createDialogOpen ||
+    editTargetId != null ||
+    publishSuccessCollection != null ||
+    openDialogCardIds.size > 0
   const interactionsLocked = dragInFlight || dialogOpen
 
   useEffect(() => {
@@ -178,7 +261,9 @@ export function TemplateGalleryPageList({
 
   async function handlePublish(collection: TemplateGalleryPage): Promise<void> {
     const published = await rawPublish(collection)
-    if (published != null) setPublishSuccessCollection(published)
+    if (published != null && mountedRef.current) {
+      setPublishSuccessCollection(published)
+    }
   }
   function handleClosePublishSuccess(): void {
     setPublishSuccessCollection(null)
@@ -188,10 +273,21 @@ export function TemplateGalleryPageList({
     () => collectionsQuery.data?.templateGalleryPages ?? [],
     [collectionsQuery.data]
   )
-  const allTemplates = useMemo<readonly Journey[]>(
-    () => journeysQuery.data?.journeys ?? [],
-    [journeysQuery.data]
-  )
+  // Filter the cached journeys list to the statuses this view allows.
+  // The server-side query is already keyed on `status:
+  // STATUS_FILTER_TO_JOURNEY_STATUSES[status]`, but Apollo's normalized
+  // cache stores each Journey as a normalized entity — when a mutation
+  // flips an in-list journey's status (archive, trash, delete), the
+  // cached list still holds the ref, so the journey leaks into the
+  // wrong view until a refetch. Apply the same status predicate the
+  // server applies so the client view stays consistent with the
+  // entity's current status across optimistic updates.
+  const allTemplates = useMemo<readonly Journey[]>(() => {
+    const allowedStatuses = STATUS_FILTER_TO_JOURNEY_STATUSES[status]
+    return (journeysQuery.data?.journeys ?? []).filter((j) =>
+      allowedStatuses.includes(j.status)
+    )
+  }, [journeysQuery.data, status])
 
   const journeyById = useMemo(() => {
     const map = new Map<string, Journey>()
@@ -283,8 +379,8 @@ export function TemplateGalleryPageList({
     // Refuse any new drag while a dialog is open (NES-1653) or a previous
     // mutation is still in flight — handleDragEnd would silently swallow
     // the drop, leaving the user with the impression their move vanished.
-    if (interactionsLocked) {
-      if (dragInFlight) {
+    if (dialogOpen || dragInFlightRef.current) {
+      if (dragInFlightRef.current) {
         enqueueSnackbar(t('Finishing previous move…'), {
           variant: 'info',
           preventDuplicate: true
@@ -299,7 +395,7 @@ export function TemplateGalleryPageList({
     journeyById,
     templateIdToCollection,
     collectionsById,
-    dragInFlight,
+    dragInFlightRef,
     setDragInFlight,
     setActiveDragId
   })
@@ -332,150 +428,209 @@ export function TemplateGalleryPageList({
     activeDragId != null ? (journeyById.get(activeDragId) ?? null) : null
 
   return (
-    <Box sx={{ p: 4 }} data-testid="TemplateGalleryPageList">
-      {showCollections && (
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          spacing={2}
-          sx={{ mb: 3 }}
-        >
-          {/* min-width: 0 lets the description text wrap inside the flex
+    <GalleryDialogLockContext.Provider value={galleryDialogLockValue}>
+      <Box sx={{ p: 4 }} data-testid="TemplateGalleryPageList">
+        {showCollections && (
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            spacing={2}
+            sx={{ mb: 3 }}
+          >
+            {/* min-width: 0 lets the description text wrap inside the flex
               row instead of pushing into the button on narrow viewports
               (NES-1652). */}
-          <Stack sx={{ minWidth: 0, flex: 1 }}>
-            <Typography variant="h4">{t('Collections')}</Typography>
-            <Typography variant="body2" color="text.secondary">
-              {t('Group your team templates into a public gallery page.')}
-            </Typography>
-          </Stack>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleOpenCreate}
-            sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
-            data-testid="CreateCollectionButton"
-          >
-            {breakpoints.sm ? t('Create Collection') : t('Create')}
-          </Button>
-        </Stack>
-      )}
-
-      <DndContext
-        collisionDetection={closestCenter}
-        sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        {showCollections &&
-          (collections.length === 0 ? (
-            <Alert severity="info" sx={{ mb: 3 }}>
-              {t(
-                "You don't have any collections yet. Create your first collection to start grouping templates."
-              )}
-            </Alert>
-          ) : (
-            <Stack spacing={2} sx={{ mb: 4 }}>
-              {collections.map((collection) => (
-                <DroppableCollectionWrapper
-                  key={collection.id}
-                  id={collection.id}
-                  disabled={
-                    collection.status === TemplateGalleryPageStatus.published ||
-                    interactionsLocked ||
-                    busyId === collection.id
-                  }
-                >
-                  <CollectionCard
-                    collection={collection}
-                    onEdit={handleEdit}
-                    onPublish={handlePublish}
-                    onUnpublish={handleUnpublish}
-                    onUngroup={handleUngroup}
-                    busy={busyId === collection.id || dragInFlight}
+            <Stack sx={{ minWidth: 0, flex: 1 }}>
+              <Stack direction="row" alignItems="center" spacing={0.5}>
+                <Typography variant="h4">{t('Collections')}</Typography>
+                {onOpenInfo != null && (
+                  <IconButton
+                    data-testid="TemplateInfoPanelMobileTrigger"
+                    aria-label={t('Open template info')}
+                    onClick={onOpenInfo}
+                    size="small"
+                    sx={{
+                      display: { xs: 'inline-flex', md: 'none' },
+                      color: 'text.secondary',
+                      p: 0.5
+                    }}
                   >
-                    <DraggableJourneysGrid
-                      journeys={journeysByCollection.get(collection.id) ?? []}
-                      publishedLock={
-                        collection.status ===
-                        TemplateGalleryPageStatus.published
-                      }
-                      dragInFlight={interactionsLocked}
-                    />
-                  </CollectionCard>
-                </DroppableCollectionWrapper>
-              ))}
+                    <InfoOutlinedIcon fontSize="small" />
+                  </IconButton>
+                )}
+              </Stack>
+              <Typography variant="body2" color="text.secondary">
+                {t('Group your team templates into a public gallery page.')}
+              </Typography>
             </Stack>
-          ))}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleOpenCreate}
+              sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
+              data-testid="CreateCollectionButton"
+            >
+              {breakpoints.sm ? t('Create Collection') : t('Create')}
+            </Button>
+          </Stack>
+        )}
 
-        <Box>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            {t('All Templates')}
-          </Typography>
-          <UnsectionedDroppable disabled={interactionsLocked}>
-            {unsectioned.length === 0 ? (
-              <Box sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}>
-                <Typography variant="caption">
-                  {allTemplates.length === 0
-                    ? t('No team templates yet.')
-                    : t('All templates are in collections.')}
-                </Typography>
-              </Box>
-            ) : (
-              <DraggableJourneysGrid
-                journeys={unsectioned}
-                publishedLock={false}
-                dragInFlight={interactionsLocked}
-              />
-            )}
-          </UnsectionedDroppable>
-        </Box>
+        {/* NES-1666: layer a DOM-level `inert` over the existing sensor-level
+          NES-1653 lock. `interactionsLocked` already blocks drag-start and
+          disables droppables, but cursor movement over droppables behind the
+          dialog can still surface hover affordances and (per the QA repro
+          on NES-1666) drive subtle re-renders that look like the template
+          "moves" behind the dialog. `inert` on the DnD subtree makes the
+          whole tree non-interactive at the DOM level — pointer / focus /
+          keyboard — while leaving the portaled CollectionDialog (rendered
+          outside this subtree) fully interactive. Tagged via data-testid so
+          the spec can assert the attribute toggles correctly. */}
+        <Box
+          data-testid="TemplateGalleryDndScope"
+          inert={dialogOpen}
+          sx={{ display: 'contents' }}
+        >
+          <DndContext
+            collisionDetection={closestCenter}
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            {showCollections &&
+              (collections.length === 0 ? (
+                <Alert severity="info" sx={{ mb: 3 }}>
+                  {t(
+                    "You don't have any collections yet. Create your first collection to start grouping templates."
+                  )}
+                </Alert>
+              ) : (
+                <Stack spacing={2} sx={{ mb: 4 }}>
+                  {collections.map((collection) => (
+                    <DroppableCollectionWrapper
+                      key={collection.id}
+                      id={collection.id}
+                      disabled={
+                        collection.status ===
+                          TemplateGalleryPageStatus.published ||
+                        interactionsLocked ||
+                        busyId === collection.id
+                      }
+                    >
+                      <CollectionCard
+                        collection={collection}
+                        onEdit={handleEdit}
+                        onPublish={handlePublish}
+                        onUnpublish={handleUnpublish}
+                        onUngroup={handleUngroup}
+                        busy={busyId === collection.id || dragInFlight}
+                        canPublish={canPublish}
+                        publishBlockedReason={
+                          publishBlockedReason != null
+                            ? t(publishBlockedReason)
+                            : null
+                        }
+                      >
+                        <DraggableJourneysGrid
+                          journeys={
+                            journeysByCollection.get(collection.id) ?? []
+                          }
+                          publishedLock={
+                            collection.status ===
+                            TemplateGalleryPageStatus.published
+                          }
+                          dragInFlight={interactionsLocked}
+                        />
+                      </CollectionCard>
+                    </DroppableCollectionWrapper>
+                  ))}
+                </Stack>
+              ))}
 
-        {/* Default dropAnimation snaps the card back to its origin when a
+            <Box>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                {t('All Templates')}
+              </Typography>
+              <UnsectionedDroppable disabled={interactionsLocked}>
+                {unsectioned.length === 0 ? (
+                  <Box
+                    sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}
+                  >
+                    <Typography variant="caption">
+                      {allTemplates.length === 0
+                        ? t('No team templates yet.')
+                        : t('All templates are in collections.')}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <DraggableJourneysGrid
+                    journeys={unsectioned}
+                    publishedLock={false}
+                    dragInFlight={interactionsLocked}
+                  />
+                )}
+              </UnsectionedDroppable>
+            </Box>
+
+            {/* Default dropAnimation snaps the card back to its origin when a
             drop is rejected (published, no-op, etc.) and runs the standard
             "settle" animation when accepted — gives the user visual
             feedback either way. */}
-        <DragOverlay>
-          {activeDragJourney != null ? (
-            <Box sx={{ width: 280, cursor: 'grabbing', opacity: 0.95 }}>
-              <JourneyCard journey={activeDragJourney} />
-            </Box>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+            <DragOverlay>
+              {activeDragJourney != null ? (
+                <Box sx={{ width: 280, cursor: 'grabbing', opacity: 0.95 }}>
+                  <JourneyCard journey={activeDragJourney} />
+                </Box>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        </Box>
 
-      {createDialogOpen && (
-        <CollectionDialog
-          open
-          mode="create"
-          teamId={teamId}
-          availableJourneys={unsectioned}
-          parentBusy={dragInFlight}
-          onClose={handleCloseCreate}
+        {createDialogOpen && (
+          <CollectionDialog
+            open
+            mode="create"
+            teamId={teamId}
+            availableJourneys={unsectioned}
+            parentBusy={dragInFlight}
+            canPublish={canPublish}
+            publishBlockedReason={
+              publishBlockedReason != null ? t(publishBlockedReason) : null
+            }
+            onClose={handleCloseCreate}
+          />
+        )}
+        {editTarget != null && (
+          <CollectionDialog
+            key={editTarget.id}
+            open
+            mode="edit"
+            teamId={teamId}
+            collection={editTarget}
+            availableJourneys={editAvailableJourneys}
+            parentBusy={dragInFlight}
+            canPublish={canPublish}
+            publishBlockedReason={
+              publishBlockedReason != null ? t(publishBlockedReason) : null
+            }
+            onClose={handleCloseEdit}
+          />
+        )}
+        <CollectionPublishSuccessDialog
+          open={publishSuccessCollection != null}
+          publicUrl={
+            publishSuccessCollection != null
+              ? buildCollectionPublicUrl(publishSuccessCollection.slug)
+              : null
+          }
+          slug={publishSuccessCollection?.slug ?? null}
+          canPublish={canPublish}
+          publishBlockedReason={
+            publishBlockedReason != null ? t(publishBlockedReason) : null
+          }
+          onClose={handleClosePublishSuccess}
         />
-      )}
-      {editTarget != null && (
-        <CollectionDialog
-          key={editTarget.id}
-          open
-          mode="edit"
-          teamId={teamId}
-          collection={editTarget}
-          availableJourneys={editAvailableJourneys}
-          parentBusy={dragInFlight}
-          onClose={handleCloseEdit}
-        />
-      )}
-      <CollectionPublishSuccessDialog
-        open={publishSuccessCollection != null}
-        publicUrl={
-          publishSuccessCollection != null
-            ? buildCollectionPublicUrl(publishSuccessCollection.slug)
-            : null
-        }
-        onClose={handleClosePublishSuccess}
-      />
-    </Box>
+      </Box>
+    </GalleryDialogLockContext.Provider>
   )
 }

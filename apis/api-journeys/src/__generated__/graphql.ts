@@ -1445,12 +1445,9 @@ export type JourneyViewEvent = Event & {
 };
 
 export type JourneyViewEventCreateInput = {
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
-  /** title of the journey being viewed */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** languageId of the journey being viewed */
   value?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -1938,11 +1935,6 @@ export type Mutation = {
   journeyThemeUpdate: JourneyTheme;
   journeyTransferFromAnonymous: Journey;
   journeyUpdate: Journey;
-  /**
-   * Creates a JourneyViewEvent, returns null if attempting to create another
-   * JourneyViewEvent with the same userId, journeyId, and within the same 24hr
-   * period of the previous JourneyViewEvent
-   */
   journeyViewEventCreate?: Maybe<JourneyViewEvent>;
   journeyVisitorExportToGoogleSheet: JourneyVisitorGoogleSheetExportResult;
   /** Sets journeys statuses to archived */
@@ -5026,15 +5018,10 @@ export type StepNextEvent = Event & {
 };
 
 export type StepNextEventCreateInput = {
-  /** Id of the current StepBlock */
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the current stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** id of the next stepBlock */
   nextStepId: Scalars['ID']['input'];
-  /** stepName of the next stepBlock */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -5052,15 +5039,10 @@ export type StepPreviousEvent = Event & {
 };
 
 export type StepPreviousEventCreateInput = {
-  /** Id of the current StepBlock */
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the current stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** id of the previous stepBlock */
   previousStepId: Scalars['ID']['input'];
-  /** stepName of the previous stepBlock */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -5078,11 +5060,8 @@ export type StepViewEvent = Event & {
 };
 
 export type StepViewEventCreateInput = {
-  /** Id of the current StepBlock */
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the current stepBlock */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -6026,15 +6005,10 @@ export type VideoCollapseEvent = Event & {
 
 export type VideoCollapseEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoCollapseEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -6057,15 +6031,10 @@ export type VideoCompleteEvent = Event & {
 
 export type VideoCompleteEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoCompleteEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -6132,15 +6101,10 @@ export type VideoExpandEvent = Event & {
 
 export type VideoExpandEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoExpandEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -6200,15 +6164,10 @@ export type VideoPauseEvent = Event & {
 
 export type VideoPauseEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoPauseEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -6231,15 +6190,10 @@ export type VideoPlayEvent = Event & {
 
 export type VideoPlayEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoPlayEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -6264,17 +6218,11 @@ export type VideoProgressEvent = Event & {
 
 export type VideoProgressEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoProgressEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock */
   progress: Scalars['Int']['input'];
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -6336,15 +6284,10 @@ export type VideoStartEvent = Event & {
 
 export type VideoStartEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoStartEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
 

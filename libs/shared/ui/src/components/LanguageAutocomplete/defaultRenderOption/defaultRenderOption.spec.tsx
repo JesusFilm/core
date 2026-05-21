@@ -19,7 +19,7 @@ describe('defaultRenderOption', () => {
               'aria-disabled': false,
               'aria-selected': false,
               className: 'MuiAutocomplete-option',
-              onClick: jest.fn()
+              onClick: vi.fn()
             },
             {
               id: '1280',

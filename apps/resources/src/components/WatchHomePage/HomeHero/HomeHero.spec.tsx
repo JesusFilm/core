@@ -5,6 +5,6 @@ import { HomeHero } from '.'
 describe('HomeHero', () => {
   it('should render HomeHero', () => {
     const { getByRole } = render(<HomeHero />)
-    expect(getByRole('img')).toHaveAttribute('src', 'jesus.jpg')
+    expect(getByRole('img').getAttribute('src')).toContain('jesus.jpg')
   })
 })
