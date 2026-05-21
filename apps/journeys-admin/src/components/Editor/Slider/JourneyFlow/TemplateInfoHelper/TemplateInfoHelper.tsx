@@ -72,7 +72,6 @@ export function TemplateInfoHelper(): ReactElement {
   }, [])
 
   function handleClickAway(): void {
-    if (!open) return
     handleClose()
   }
 
@@ -109,7 +108,10 @@ export function TemplateInfoHelper(): ReactElement {
           data-testid="TemplateInfoHelperTrigger"
           aria-label={t('Open template info')}
           aria-expanded={open}
-          aria-controls={panelId}
+          // `aria-controls` references the panel by id only while the panel
+          // is mounted; `Fade unmountOnExit` removes the panel from the DOM
+          // when closed, so referencing it would dangle for screen readers.
+          aria-controls={open ? panelId : undefined}
           onClick={handleToggle}
           onKeyDown={handleTriggerKeyDown}
           sx={{
@@ -158,7 +160,7 @@ export function TemplateInfoHelper(): ReactElement {
               zIndex: (theme) => theme.zIndex.fab
             }}
           >
-            <Unstable_TrapFocus open={open} disableAutoFocus={false}>
+            <Unstable_TrapFocus open={open}>
               <Box tabIndex={-1}>
                 <TemplateInfoPanel contained onClose={handleClose} />
               </Box>
