@@ -85,10 +85,7 @@ describe('JourneyView/Menu/ImpersonateDialog', () => {
     // signs in as the impersonated user, then refreshes the server-side
     // session cookie so SSR runs as that user (otherwise journey edits 403)
     await waitFor(() => {
-      expect(mockSignInWithCustomToken).toHaveBeenCalledWith(
-        {},
-        'accessToken'
-      )
+      expect(mockSignInWithCustomToken).toHaveBeenCalledWith({}, 'accessToken')
     })
     expect(mockLoginWithCredential).toHaveBeenCalledWith(credential)
   })
