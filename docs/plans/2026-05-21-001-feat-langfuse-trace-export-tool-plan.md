@@ -1,7 +1,7 @@
 ---
 title: "feat: Langfuse trace-export tool — API integration + sanitised report synthesis"
 type: feat
-status: active
+status: completed
 date: 2026-05-21
 ---
 
