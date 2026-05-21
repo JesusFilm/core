@@ -10,7 +10,7 @@ import type {
   ConversationTurn,
   ObservationRecord,
   TraceRecord
-} from './types'
+} from '../types'
 
 export interface NormalizeOptions {
   // Load-test exclusion (the `--environment` filter is inert until NES-1688;

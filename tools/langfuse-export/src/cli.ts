@@ -2,7 +2,7 @@
 // separate from run.ts (which has side-effecting orchestration) so the
 // parsing logic is unit-testable without executing the pipeline.
 
-import { DEFAULT_LOAD_TEST_REGEX, type NormalizeOptions } from './normalize'
+import { DEFAULT_LOAD_TEST_REGEX, type NormalizeOptions } from './pipeline/normalize'
 import type { DateWindow } from './types'
 
 export interface CliOptions {

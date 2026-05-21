@@ -4,7 +4,7 @@ import {
   extractLatestUserMessage,
   normalize
 } from './normalize'
-import type { ObservationRecord, TraceRecord } from './types'
+import type { ObservationRecord, TraceRecord } from '../types'
 
 function trace(overrides: Partial<TraceRecord> = {}): TraceRecord {
   return {

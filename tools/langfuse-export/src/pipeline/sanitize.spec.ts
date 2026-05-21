@@ -1,5 +1,5 @@
 import { regexScrub, sanitize } from './sanitize'
-import type { Conversation, ConversationTurn, SanitisedConversation } from './types'
+import type { Conversation, ConversationTurn, SanitisedConversation } from '../types'
 
 function turn(overrides: Partial<ConversationTurn> = {}): ConversationTurn {
   return {

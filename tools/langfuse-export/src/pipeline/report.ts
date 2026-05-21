@@ -9,7 +9,7 @@ import type {
   ReportStats,
   SanitisedConversation,
   ThemeSynthesis
-} from './types'
+} from '../types'
 
 const MAX_EXCERPTS_PER_THEME = 3
 const MAX_FLAT_EXCERPTS = 15

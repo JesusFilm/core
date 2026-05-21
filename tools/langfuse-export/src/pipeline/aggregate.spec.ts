@@ -4,7 +4,7 @@ import type {
   ConversationTurn,
   DateWindow,
   SanitisedConversation
-} from './types'
+} from '../types'
 
 const window: DateWindow = {
   from: new Date('2026-05-01T00:00:00.000Z'),

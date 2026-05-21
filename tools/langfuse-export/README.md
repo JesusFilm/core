@@ -8,6 +8,8 @@ Built for **NES-1690**, implementing the **NES-1656** export-path spike. The man
 
 ## Layout
 
+The layout splits on the boundary that matters here: **`pipeline/`** holds pure, unit-tested transforms; **`clients/`** holds the external-I/O modules (network/browser) verified by a manual run. Only sanitised `pipeline/` output crosses into `clients/openrouter`, enforced by the branded `SanitisedConversation` type.
+
 ```text
 tools/langfuse-export/
   run.ts                # CLI entry: argv -> pipeline orchestration
@@ -18,14 +20,16 @@ tools/langfuse-export/
   src/
     env.ts              # dotenv (explicit path) + zod validation
     types.ts            # shared types incl. branded SanitisedConversation
-    langfuse.ts         # fetchTraces + per-traceId fetchObservations
-    normalize.ts        # join obs->trace, group by sessionId -> Conversation[]
-    sanitize.ts         # regex PII scrub -> SanitisedConversation[]; injected llmScrub
-    aggregate.ts        # deterministic usage stats (pure)
-    openrouter.ts       # OpenRouter client + theme synthesis + llmScrub
-    report.ts           # HTML: code-rendered stats + verbatim excerpts + LLM labels
-    pdf.ts              # optional Playwright HTML->PDF
     cli.ts              # pure arg/window/discriminator parsing
+    clients/            # external I/O — verified by the manual run, not unit tests
+      langfuse.ts       #   fetchTraces + per-traceId fetchObservations
+      openrouter.ts     #   OpenRouter client + theme synthesis + llmScrub
+      pdf.ts            #   optional Playwright HTML->PDF
+    pipeline/           # pure transforms — unit tested
+      normalize.ts      #   join obs->trace, group by sessionId -> Conversation[]
+      sanitize.ts       #   regex PII scrub -> SanitisedConversation[]; injected llmScrub
+      aggregate.ts      #   deterministic usage stats
+      report.ts         #   HTML: code-rendered stats + verbatim excerpts + LLM labels
   output/               # gitignored — per-run artifacts (chat-derived; never commit)
 ```
 

@@ -9,8 +9,8 @@
 
 import { Langfuse } from 'langfuse'
 
-import type { ToolEnv } from './env'
-import type { DateWindow, ObservationRecord, TraceRecord } from './types'
+import type { ToolEnv } from '../env'
+import type { DateWindow, ObservationRecord, TraceRecord } from '../types'
 
 export interface FetchOptions {
   // Delay between API calls. Default keeps us under the ~100 req/min

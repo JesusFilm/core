@@ -10,14 +10,14 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
-import { buildStats } from './src/aggregate'
 import { parseArgs, parseDiscriminator, resolveWindow, USAGE } from './src/cli'
+import { createLangfuseClient, fetchTraceData } from './src/clients/langfuse'
+import { createLlmScrub, createModel, synthesizeThemes } from './src/clients/openrouter'
 import { loadEnvFile, parseEnv } from './src/env'
-import { createLangfuseClient, fetchTraceData } from './src/langfuse'
-import { normalize } from './src/normalize'
-import { createLlmScrub, createModel, synthesizeThemes } from './src/openrouter'
-import { renderReport } from './src/report'
-import { sanitize } from './src/sanitize'
+import { buildStats } from './src/pipeline/aggregate'
+import { normalize } from './src/pipeline/normalize'
+import { renderReport } from './src/pipeline/report'
+import { sanitize } from './src/pipeline/sanitize'
 import type { ThemeSynthesis } from './src/types'
 
 function runId(): string {
@@ -136,7 +136,7 @@ async function main(): Promise<void> {
 
   if (options.pdf) {
     console.log('Rendering PDF...')
-    const { renderPdf } = await import('./src/pdf')
+    const { renderPdf } = await import('./src/clients/pdf')
     try {
       await renderPdf(htmlPath, resolve(outDir, 'report.pdf'))
     } catch (error) {

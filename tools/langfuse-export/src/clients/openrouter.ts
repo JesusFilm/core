@@ -11,9 +11,9 @@
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import { generateText, type LanguageModel } from 'ai'
 
-import type { ToolEnv } from './env'
-import { firstUserMessage } from './normalize'
-import type { SanitisedConversation, ThemeSynthesis } from './types'
+import type { ToolEnv } from '../env'
+import { firstUserMessage } from '../pipeline/normalize'
+import type { SanitisedConversation, ThemeSynthesis } from '../types'
 
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 const MAX_THEME_CONVERSATIONS = 150

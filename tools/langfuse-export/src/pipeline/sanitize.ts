@@ -7,7 +7,7 @@
 // so this module stays network-free and testable; run.ts wires the real one
 // only under --llm-scrub.
 
-import type { Conversation, ConversationTurn, SanitisedConversation } from './types'
+import type { Conversation, ConversationTurn, SanitisedConversation } from '../types'
 
 export type LlmScrub = (text: string) => Promise<string>
 

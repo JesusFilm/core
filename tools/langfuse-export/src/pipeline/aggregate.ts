@@ -6,7 +6,7 @@ import type {
   ReportStats,
   SanitisedConversation,
   TopQuestion
-} from './types'
+} from '../types'
 
 const DEFAULT_TOP_N = 20
 
