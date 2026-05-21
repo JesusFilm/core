@@ -2,7 +2,7 @@
 title: 'Template Gallery Page (Collections) frontend patterns (NES-1539)'
 category: best-practices
 date: 2026-05-06
-last_updated: 2026-05-12
+last_updated: 2026-05-21
 problem_type: ui_pattern
 component: journeys-admin/TemplateGalleryPageList
 tags:
@@ -144,6 +144,17 @@ that NES-1644 wired up after the StrictMode regression. Jest tests
 the only real defense is the corrected setup-body-resets-ref pattern
 itself and code review when reading any `useRef(true)` /
 `useEffect(() => () => …, [])` shape.
+
+**Extended variant — subscription-chained orchestration (NES-1637).** When
+the dialog chains a mutation → `useSubscription` → second mutation (e.g.
+the AI-translate flow on the Copy-to-collection menu item), this Pattern 3
+foundation needs two extensions: (a) gate the second mutation's network
+call *before* its `await`, not only after, otherwise the mutation fires
+server-side on the unmounted component; and (b) release any
+`setHasOpenDialog` / lock-context signal in the lifecycle cleanup, not
+only in `guardedClose`, so abnormal-unmount (route navigation
+mid-translation) does not permanently lock the gallery's drag-and-drop.
+See `docs/solutions/best-practices/subscription-bridged-dialog-orchestration-nes1637.md`.
 
 ### 4. DnD single-flight: gate START, not just END
 
