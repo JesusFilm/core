@@ -111,8 +111,18 @@ const INTERNAL_PATH_PREFIXES = [
 function shouldSkipRewrite(pathname: string): boolean {
   return (
     STATIC_ASSET_EXT.test(pathname) ||
+    getLocalePrefixFromPath(pathname) != null ||
     INTERNAL_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix))
   )
+}
+
+function getLocalePrefixFromPath(pathname: string): string | undefined {
+  const parts = pathname.split('/').filter(Boolean)
+  const pathParts =
+    parts[0] === WATCH_BASE_PATH.replace('/', '') ? parts.slice(1) : parts
+  const locale = pathParts[0]
+
+  return SUPPORTED_LOCALES.includes(locale) ? locale : undefined
 }
 
 function getLocalizedWatchPath(pathname: string, locale: string): string {
@@ -131,7 +141,7 @@ export async function proxy(req: NextRequest): Promise<NextResponse> {
   const rewriteUrl = req.nextUrl.clone()
 
   if (pathname === WATCH_BASE_PATH && locale !== DEFAULT_LOCALE) {
-    rewriteUrl.pathname = `${WATCH_BASE_PATH}/${LANGUAGE_MAPPINGS[locale].languageSlugs[0]}`
+    rewriteUrl.pathname = `${WATCH_BASE_PATH}/${locale}`
     return NextResponse.redirect(rewriteUrl, 302)
   }
   if (locale !== DEFAULT_LOCALE) {
