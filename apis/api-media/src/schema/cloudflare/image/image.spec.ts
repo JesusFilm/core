@@ -224,7 +224,7 @@ describe('cloudflareImage', () => {
           }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId', uploaded: true },
+          where: { userId: 'testUserId' },
           orderBy: { createdAt: 'desc' }
         })
       })
@@ -281,7 +281,7 @@ describe('cloudflareImage', () => {
           }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId', uploaded: true },
+          where: { userId: 'testUserId' },
           orderBy: { createdAt: 'desc' },
           take: 10,
           skip: 0
@@ -295,7 +295,7 @@ describe('cloudflareImage', () => {
           variables: { isAi: true }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId', uploaded: true, isAi: true },
+          where: { userId: 'testUserId', isAi: true },
           orderBy: { createdAt: 'desc' }
         })
       })
@@ -307,7 +307,7 @@ describe('cloudflareImage', () => {
           variables: { isAi: false }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId', uploaded: true, isAi: false },
+          where: { userId: 'testUserId', isAi: false },
           orderBy: { createdAt: 'desc' }
         })
       })
@@ -319,7 +319,7 @@ describe('cloudflareImage', () => {
           variables: { isAi: null }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId', uploaded: true },
+          where: { userId: 'testUserId' },
           orderBy: { createdAt: 'desc' }
         })
       })

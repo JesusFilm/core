@@ -85,7 +85,6 @@ builder.queryFields((t) => ({
         ...query,
         where: {
           userId: user.id,
-          uploaded: true,
           ...(isAi != null ? { isAi } : {})
         },
         orderBy: { createdAt: 'desc' },
