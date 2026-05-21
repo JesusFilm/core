@@ -7,10 +7,10 @@ import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { Formik, FormikHelpers } from 'formik'
+import { Formik, FormikHelpers, type FormikErrors } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { boolean, object, string } from 'yup'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -23,7 +23,7 @@ import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { useTemplateGalleryPagesQuery } from '../../../libs/useTemplateGalleryPagesQuery'
 
-interface JourneyLanguage {
+export interface JourneyLanguage {
   id: string
   localName?: string
   nativeName?: string
@@ -33,6 +33,18 @@ interface FormValues {
   collectionSelect: string
   languageSelect?: JourneyLanguage
   showTranslation: boolean
+}
+
+// Yup may surface a top-level `.required()` error as a string OR a nested
+// per-field error object — Formik types reflect both shapes. Normalise to
+// a single string for MUI's `helperText`.
+function resolveLanguageError(
+  error: string | FormikErrors<JourneyLanguage> | undefined,
+  touched: boolean | undefined
+): string {
+  if (touched !== true || error == null) return ''
+  if (typeof error === 'string') return error
+  return error.id ?? ''
 }
 
 export interface CopyToCollectionDialogProps {
@@ -49,10 +61,6 @@ export interface CopyToCollectionDialogProps {
     language?: JourneyLanguage
     showTranslation: boolean
   }) => void
-  translationProgress?: {
-    progress: number
-    message: string
-  }
   isTranslating?: boolean
 }
 
@@ -80,7 +88,6 @@ export function CopyToCollectionDialog({
   journeyTitle,
   onClose,
   onSubmit,
-  translationProgress,
   isTranslating = false
 }: CopyToCollectionDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -115,13 +122,9 @@ export function CopyToCollectionDialog({
     const statusMessage =
       errorMessage != null
         ? errorMessage
-        : t('Copied to {{title}}.', {
-            title: selectedCollectionTitle ?? ''
-          })
-
-    const handleDoneClick = (): void => {
-      onClose()
-    }
+        : selectedCollectionTitle != null && selectedCollectionTitle !== ''
+          ? t('Copied to {{title}}.', { title: selectedCollectionTitle })
+          : t('Copied to collection.')
 
     return (
       <Dialog
@@ -132,7 +135,7 @@ export function CopyToCollectionDialog({
         dialogActionChildren={
           <Button
             variant="contained"
-            onClick={handleDoneClick}
+            onClick={onClose}
             sx={{ backgroundColor: 'secondary.dark' }}
             data-testid="CopyToCollectionDialogDoneButton"
           >
@@ -154,26 +157,31 @@ export function CopyToCollectionDialog({
     )
   }
 
-  const baseLanguageShape = {
-    id: string(),
-    localName: string().optional(),
-    nativeName: string().optional()
-  }
-
-  const copyToSchema = object({
-    collectionSelect: string().required(t('Please select a collection')),
-    showTranslation: boolean().required(),
-    languageSelect: object(baseLanguageShape)
-      .nullable()
-      .when('showTranslation', {
-        is: true,
-        then: (schema) =>
-          schema.required(t('Please select a language')).shape({
-            id: string().required(t('Please select a language'))
-          }),
-        otherwise: (schema) => schema.nullable().optional()
-      })
-  })
+  // Memoised so Formik does not see a fresh schema reference on every
+  // render. Cannot hoist to module scope because `t` is hook-bound.
+  const copyToSchema = useMemo(
+    () =>
+      object({
+        collectionSelect: string().required(t('Please select a collection')),
+        showTranslation: boolean().required(),
+        // Drop `.nullable()` so the inferred Yup type matches FormValues
+        // (`JourneyLanguage | undefined`, never `null`).
+        languageSelect: object({
+          id: string(),
+          localName: string().optional(),
+          nativeName: string().optional()
+        })
+          .when('showTranslation', {
+            is: true,
+            then: (schema) =>
+              schema.required(t('Please select a language')).shape({
+                id: string().required(t('Please select a language'))
+              }),
+            otherwise: (schema) => schema.optional()
+          })
+      }),
+    [t]
+  )
 
   async function handleFormikSubmit(
     values: FormValues,
@@ -253,7 +261,6 @@ export function CopyToCollectionDialog({
             disabled={submitDisabled}
             divider={false}
             testId="CopyToCollectionDialog"
-            translationProgress={translationProgress}
           >
             <Stack direction="column" spacing={4}>
               <FormControl variant="filled" hiddenLabel fullWidth>
@@ -263,7 +270,7 @@ export function CopyToCollectionDialog({
                   autoFocus
                   error={Boolean(errors.collectionSelect)}
                   helperText={
-                    (errors.collectionSelect as string) ??
+                    errors.collectionSelect ??
                     t('Journey will be copied to selected collection.')
                   }
                   variant="filled"
@@ -353,11 +360,10 @@ export function CopyToCollectionDialog({
                 <LanguageAutocomplete
                   languages={languagesData?.languages}
                   loading={languagesLoading}
-                  helperText={
-                    touched.languageSelect && errors.languageSelect
-                      ? (errors.languageSelect as { id?: string })?.id
-                      : ''
-                  }
+                  helperText={resolveLanguageError(
+                    errors.languageSelect,
+                    touched.languageSelect
+                  )}
                   onChange={(value): void => {
                     void setFieldValue('languageSelect', value)
                   }}

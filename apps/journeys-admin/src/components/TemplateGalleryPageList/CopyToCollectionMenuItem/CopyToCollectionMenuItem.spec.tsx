@@ -7,6 +7,7 @@ import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplica
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { useTemplateGalleryPageAssignJourneyMutation } from '../../../libs/useTemplateGalleryPageAssignJourneyMutation'
+import { ThemeProvider } from '../../ThemeProvider'
 
 import { CopyToCollectionMenuItem } from './CopyToCollectionMenuItem'
 
@@ -197,15 +198,17 @@ function renderItem(
   const handleKeepMounted = overrides.handleKeepMounted ?? jest.fn()
   const { unmount } = render(
     <MockedProvider mocks={[]}>
-      <SnackbarProvider>
-        <CopyToCollectionMenuItem
-          id="journey-1"
-          journey={overrides.journey ?? journey}
-          handleCloseMenu={handleCloseMenu}
-          setHasOpenDialog={setHasOpenDialog}
-          handleKeepMounted={handleKeepMounted}
-        />
-      </SnackbarProvider>
+      <ThemeProvider>
+        <SnackbarProvider>
+          <CopyToCollectionMenuItem
+            id="journey-1"
+            journey={overrides.journey ?? journey}
+            handleCloseMenu={handleCloseMenu}
+            setHasOpenDialog={setHasOpenDialog}
+            handleKeepMounted={handleKeepMounted}
+          />
+        </SnackbarProvider>
+      </ThemeProvider>
     </MockedProvider>
   )
   return { handleCloseMenu, setHasOpenDialog, handleKeepMounted, unmount }
@@ -229,6 +232,17 @@ describe('CopyToCollectionMenuItem', () => {
     expect(handleCloseMenu).toHaveBeenCalledTimes(1)
     expect(setHasOpenDialog).toHaveBeenCalledWith(true)
     expect(screen.getByTestId('CopyToCollectionDialogStub')).toBeInTheDocument()
+  })
+
+  it('releases the DnD lock on unmount even when the dialog is still open', () => {
+    const { setHasOpenDialog, unmount } = renderItem()
+
+    fireEvent.click(screen.getByRole('menuitem'))
+    expect(setHasOpenDialog).toHaveBeenLastCalledWith(true)
+
+    setHasOpenDialog.mockClear()
+    unmount()
+    expect(setHasOpenDialog).toHaveBeenCalledWith(false)
   })
 
   it('clicking the menu item while the dialog is already open is a no-op (still open)', () => {

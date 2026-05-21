@@ -10,13 +10,10 @@ import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { useTemplateGalleryPageAssignJourneyMutation } from '../../../libs/useTemplateGalleryPageAssignJourneyMutation'
 import { MenuItem } from '../../MenuItem'
-import { CopyToCollectionDialog } from '../CopyToCollectionDialog'
-
-interface JourneyLanguage {
-  id: string
-  localName?: string
-  nativeName?: string
-}
+import {
+  CopyToCollectionDialog,
+  type JourneyLanguage
+} from '../CopyToCollectionDialog'
 
 interface TranslationVars {
   journeyId: string
@@ -85,7 +82,20 @@ export function CopyToCollectionMenuItem({
     mountedRef.current = true
     return (): void => {
       mountedRef.current = false
+      // Release the DnD lock and null the post-translation refs in case
+      // the component unmounts mid-pipeline (route change, parent
+      // re-render). Calls are idempotent: `setHasOpenDialog?.(false)`
+      // is a no-op when the dialog was never opened, and the refs are
+      // already null at mount. Subscription teardown happens via Apollo
+      // unsubscribing when this hook unmounts.
+      setHasOpenDialog?.(false)
+      newJourneyIdRef.current = null
+      pendingTargetCollectionIdRef.current = null
     }
+    // Lifecycle effect — mount/unmount only. Capturing the latest
+    // `setHasOpenDialog` reference is fine because it is a prop that
+    // does not change across renders in normal use.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const noActiveTeamCopy = t(
@@ -110,6 +120,11 @@ export function CopyToCollectionMenuItem({
     newJourneyId: string,
     targetCollectionId: string
   ): Promise<void> => {
+    // Gate the network call itself on mount status — the assign
+    // mutation would otherwise fire after unmount (subscription
+    // onComplete races a closing dialog), creating a silent server-side
+    // orphan the user has no UI feedback about.
+    if (!mountedRef.current) return
     try {
       await templateGalleryPageAssignJourney({
         variables: { journeyId: newJourneyId, pageId: targetCollectionId }

@@ -19,6 +19,7 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { GET_JOURNEY_WITH_USER_ROLES } from './DefaultMenu'
 
@@ -1108,25 +1109,27 @@ describe('DefaultMenu', () => {
             makeJourneyMock('journey-id')
           ]}
         >
-          <SnackbarProvider>
-            <FlagsProvider flags={{ teamTemplateCollection: flag }}>
-              <TeamProvider>
-                <DefaultMenu
-                  id="journey-id"
-                  slug="journey-slug"
-                  status={JourneyStatus.draft}
-                  journeyId="journey-id"
-                  published={false}
-                  template={template}
-                  setOpenAccessDialog={noop}
-                  handleCloseMenu={noop}
-                  setOpenTrashDialog={noop}
-                  setOpenDetailsDialog={noop}
-                  setOpenTranslateDialog={noop}
-                />
-              </TeamProvider>
-            </FlagsProvider>
-          </SnackbarProvider>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ teamTemplateCollection: flag }}>
+                <TeamProvider>
+                  <DefaultMenu
+                    id="journey-id"
+                    slug="journey-slug"
+                    status={JourneyStatus.draft}
+                    journeyId="journey-id"
+                    published={false}
+                    template={template}
+                    setOpenAccessDialog={noop}
+                    handleCloseMenu={noop}
+                    setOpenTrashDialog={noop}
+                    setOpenDetailsDialog={noop}
+                    setOpenTranslateDialog={noop}
+                  />
+                </TeamProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
         </MockedProvider>
       )
     }

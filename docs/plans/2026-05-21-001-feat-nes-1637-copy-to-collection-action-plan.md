@@ -267,7 +267,7 @@ The template gallery page (Local Template Library, NES-1539 / NES-1547) lets pub
 
 > _This illustrates the intended pipeline shape and is directional guidance for review, not implementation specification._
 
-```
+```text
 handleSubmit({ collectionId, language?, showTranslation? }):
   if loading: return                            // single-flight guard
   teamId = activeTeam?.id

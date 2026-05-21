@@ -9,6 +9,7 @@ import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguag
 import { GetTemplateGalleryPages_templateGalleryPages as Page } from '../../../../__generated__/GetTemplateGalleryPages'
 import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
 import { GET_TEMPLATE_GALLERY_PAGES } from '../../../libs/useTemplateGalleryPagesQuery'
+import { ThemeProvider } from '../../ThemeProvider'
 
 import { CopyToCollectionDialog } from './CopyToCollectionDialog'
 
@@ -164,9 +165,11 @@ function renderDialog({
   }
   return render(
     <MockedProvider mocks={mocks}>
-      <SnackbarProvider>
-        <CopyToCollectionDialog {...baseProps} />
-      </SnackbarProvider>
+      <ThemeProvider>
+        <SnackbarProvider>
+          <CopyToCollectionDialog {...baseProps} />
+        </SnackbarProvider>
+      </ThemeProvider>
     </MockedProvider>
   )
 }
