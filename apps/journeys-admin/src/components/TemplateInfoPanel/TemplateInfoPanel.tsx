@@ -244,7 +244,22 @@ export function TemplateInfoPanel({
     <Box
       className={className}
       data-testid="TemplateInfoPanel"
-      sx={{ width: '100%' }}
+      sx={{
+        width: '100%',
+        /*
+         * Cap each accordion body's height so summary headers (Template
+         * Types, How to create, Tracking and Analytics, Sharing and
+         * Publishing) stay visible inside the templates-tab Drawer when an
+         * expanded section's content is long. Only the body scrolls; the
+         * rest of the Drawer chrome is untouched. Reservation accounts for
+         * the page navbar / tabs (~80px), the panel header (~151px), the
+         * four summary rows (~256px), and a safety margin.
+         */
+        '& .MuiAccordionDetails-root': {
+          maxHeight: 'calc(100vh - 540px)',
+          overflowY: 'auto'
+        }
+      }}
     >
       {header}
       <Divider />
