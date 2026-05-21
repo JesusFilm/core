@@ -71,6 +71,25 @@ interface VideoControlProps {
   wasUnmuted?: boolean
 }
 
+function isPlayerReady(player?: Player): player is Player {
+  return (
+    player != null &&
+    (typeof player.isDisposed !== 'function' || !player.isDisposed())
+  )
+}
+
+function getPlayerCurrentTime(player?: Player): number {
+  return isPlayerReady(player) ? (player.currentTime() ?? 0) : 0
+}
+
+function getPlayerDuration(player?: Player): number {
+  return isPlayerReady(player) ? (player.duration() ?? 1) : 1
+}
+
+function getPlayerVolume(player?: Player): number {
+  return isPlayerReady(player) ? (player.volume() ?? 1) * 100 : 100
+}
+
 function evtToDataLayer(
   eventType,
   mcId,
@@ -185,7 +204,9 @@ export function VideoControls({
       let retryTimeout: NodeJS.Timeout | undefined
 
       const updateDuration = (state: string): void => {
-        const playerDuration = player?.duration()
+        const playerDuration = isPlayerReady(player)
+          ? player.duration()
+          : undefined
 
         if (
           playerDuration != null &&
@@ -248,7 +269,7 @@ export function VideoControls({
   useEffect(() => {
     const percent =
       durationSeconds > 0
-        ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+        ? Math.round((getPlayerCurrentTime(player) / durationSeconds) * 100)
         : 0
     if (percent > progressPercentNotYetEmitted[0]) {
       eventToDataLayer(
@@ -258,7 +279,7 @@ export function VideoControls({
         title[0].value,
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
-        Math.round(player?.currentTime() ?? 0),
+        Math.round(getPlayerCurrentTime(player)),
         percent
       )
       const [, ...rest] = progressPercentNotYetEmitted
@@ -278,7 +299,7 @@ export function VideoControls({
 
   // Define stable event handlers using useCallback
   const handlePlay = useCallback(() => {
-    if ((player?.currentTime() ?? 0) < 0.02) {
+    if (getPlayerCurrentTime(player) < 0.02) {
       eventToDataLayer(
         'video_start',
         id,
@@ -286,9 +307,9 @@ export function VideoControls({
         title[0].value,
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
-        Math.round(player?.currentTime() ?? 0),
+        Math.round(getPlayerCurrentTime(player)),
         durationSeconds > 0
-          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          ? Math.round((getPlayerCurrentTime(player) / durationSeconds) * 100)
           : 0
       )
     } else {
@@ -299,13 +320,13 @@ export function VideoControls({
         title[0].value,
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
-        Math.round(player?.currentTime() ?? 0),
+        Math.round(getPlayerCurrentTime(player)),
         durationSeconds > 0
-          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          ? Math.round((getPlayerCurrentTime(player) / durationSeconds) * 100)
           : 0
       )
     }
-    void player?.play()
+    if (isPlayerReady(player)) void player.play()
     dispatchPlayer({
       type: 'SetPlay',
       play: true
@@ -313,7 +334,7 @@ export function VideoControls({
   }, [player, id, variant, title, durationSeconds, dispatchPlayer])
 
   const handlePause = useCallback(() => {
-    if ((player?.currentTime() ?? 0) > 0.02) {
+    if (getPlayerCurrentTime(player) > 0.02) {
       eventToDataLayer(
         'video_pause',
         id,
@@ -321,13 +342,13 @@ export function VideoControls({
         title[0].value,
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
-        Math.round(player?.currentTime() ?? 0),
+        Math.round(getPlayerCurrentTime(player)),
         durationSeconds > 0
-          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          ? Math.round((getPlayerCurrentTime(player) / durationSeconds) * 100)
           : 0
       )
     }
-    player?.pause()
+    if (isPlayerReady(player)) player.pause()
     dispatchPlayer({
       type: 'SetPlay',
       play: false
@@ -342,7 +363,7 @@ export function VideoControls({
       play: true
     })
     // Analytics for player events
-    if ((player?.currentTime() ?? 0) < 0.02) {
+    if (getPlayerCurrentTime(player) < 0.02) {
       eventToDataLayer(
         'video_start',
         id,
@@ -350,9 +371,9 @@ export function VideoControls({
         title[0].value,
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
-        Math.round(player?.currentTime() ?? 0),
+        Math.round(getPlayerCurrentTime(player)),
         durationSeconds > 0
-          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          ? Math.round((getPlayerCurrentTime(player) / durationSeconds) * 100)
           : 0
       )
     } else {
@@ -363,16 +384,16 @@ export function VideoControls({
         title[0].value,
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
-        Math.round(player?.currentTime() ?? 0),
+        Math.round(getPlayerCurrentTime(player)),
         durationSeconds > 0
-          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          ? Math.round((getPlayerCurrentTime(player) / durationSeconds) * 100)
           : 0
       )
     }
   }, [player, id, variant, title, durationSeconds, dispatchPlayer])
 
   const handlePlayerEventPause = useCallback(() => {
-    if (!(player?.paused() ?? false)) {
+    if (!isPlayerReady(player) || !(player.paused() ?? false)) {
       // Firefox occasionally emits pause events even though playback continues;
       // ignore them so we don't thrash global player state.
       return
@@ -383,7 +404,7 @@ export function VideoControls({
       play: false
     })
     // Analytics for player events
-    if ((player?.currentTime() ?? 0) > 0.02) {
+    if (getPlayerCurrentTime(player) > 0.02) {
       eventToDataLayer(
         'video_pause',
         id,
@@ -391,9 +412,9 @@ export function VideoControls({
         title[0].value,
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
-        Math.round(player?.currentTime() ?? 0),
+        Math.round(getPlayerCurrentTime(player)),
         durationSeconds > 0
-          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          ? Math.round((getPlayerCurrentTime(player) / durationSeconds) * 100)
           : 0
       )
     }
@@ -402,7 +423,7 @@ export function VideoControls({
   const handleTimeUpdate = useCallback(() => {
     dispatchPlayer({
       type: 'SetCurrentTime',
-      currentTime: secondsToTimeFormat(player?.currentTime() ?? 0, {
+      currentTime: secondsToTimeFormat(getPlayerCurrentTime(player), {
         trimZeroes: true
       })
     })
@@ -410,7 +431,7 @@ export function VideoControls({
       type: 'SetProgress',
       progress:
         durationSeconds > 0
-          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          ? Math.round((getPlayerCurrentTime(player) / durationSeconds) * 100)
           : 0
     })
   }, [player, durationSeconds, dispatchPlayer])
@@ -418,18 +439,20 @@ export function VideoControls({
   const handleVolumeChange = useCallback(() => {
     dispatchPlayer({
       type: 'SetMute',
-      mute: player?.muted() ?? false
+      mute: isPlayerReady(player) ? (player.muted() ?? false) : false
     })
     dispatchPlayer({
       type: 'SetVolume',
-      volume: (player?.volume() ?? 1) * 100
+      volume: getPlayerVolume(player)
     })
   }, [player, dispatchPlayer])
 
   const handleFullscreenChange = useCallback(() => {
     dispatchPlayer({
       type: 'SetFullscreen',
-      fullscreen: player?.isFullscreen() ?? false
+      fullscreen: isPlayerReady(player)
+        ? (player.isFullscreen() ?? false)
+        : false
     })
   }, [player, dispatchPlayer])
 
@@ -483,9 +506,9 @@ export function VideoControls({
       title[0].value,
       variant?.language?.name.find(({ primary }) => !primary)?.value ??
         variant?.language?.name[0]?.value,
-      Math.round(player?.currentTime() ?? 0),
+      Math.round(getPlayerCurrentTime(player)),
       durationSeconds > 0
-        ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+        ? Math.round((getPlayerCurrentTime(player) / durationSeconds) * 100)
         : 0
     )
   }, [player, id, variant, title, durationSeconds])
@@ -523,7 +546,7 @@ export function VideoControls({
   useEffect(() => {
     dispatchPlayer({
       type: 'SetVolume',
-      volume: (player?.volume() ?? 1) * 100
+      volume: getPlayerVolume(player)
     })
 
     // Attach handlers - use separate handlers for player events vs user interactions
@@ -550,9 +573,9 @@ export function VideoControls({
           title[0].value,
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
-          Math.round(player?.currentTime() ?? 0),
+          Math.round(getPlayerCurrentTime(player)),
           durationSeconds > 0
-            ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+            ? Math.round((getPlayerCurrentTime(player) / durationSeconds) * 100)
             : 0
         )
       } else {
@@ -563,9 +586,9 @@ export function VideoControls({
           title[0].value,
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
-          Math.round(player?.currentTime() ?? 0),
+          Math.round(getPlayerCurrentTime(player)),
           durationSeconds > 0
-            ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+            ? Math.round((getPlayerCurrentTime(player) / durationSeconds) * 100)
             : 0
         )
       }
@@ -630,7 +653,7 @@ export function VideoControls({
       })
     } else {
       if (isMobile()) {
-        void player?.requestFullscreen()
+        if (isPlayerReady(player)) void player.requestFullscreen()
         dispatchPlayer({
           type: 'SetFullscreen',
           fullscreen: true
@@ -663,7 +686,7 @@ export function VideoControls({
         type: 'SetProgress',
         progress: progressPercent
       })
-      player?.currentTime(timeInSeconds)
+      if (isPlayerReady(player)) player.currentTime(timeInSeconds)
     }
   }
 
@@ -675,7 +698,7 @@ export function VideoControls({
 
   function handleMute(): void {
     const newMuteState = !mute
-    player?.muted(newMuteState)
+    if (isPlayerReady(player)) player.muted(newMuteState)
     dispatchPlayer({
       type: 'SetMute',
       mute: newMuteState
@@ -692,7 +715,7 @@ export function VideoControls({
         type: 'SetVolume',
         volume: value
       })
-      player?.volume(value / 100)
+      if (isPlayerReady(player)) player.volume(value / 100)
     }
   }
 
@@ -738,7 +761,7 @@ export function VideoControls({
       onClick={getClickHandler(handlePlay, () => {
         void handleFullscreen()
       })}
-      onMouseMove={() => player?.userActive(true)}
+      onMouseMove={() => isPlayerReady(player) && player.userActive(true)}
       data-testid="VideoControls"
     >
       {/* Show title overlay only once on a single page */}
@@ -780,7 +803,7 @@ export function VideoControls({
           {images[0]?.mobileCinematicHigh != null && (
             <Image
               src={images[0].mobileCinematicHigh}
-              alt={imageAlt[0].value}
+              alt={imageAlt[0]?.value ?? ''}
               fill
               sizes="100vw"
               style={{

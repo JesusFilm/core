@@ -315,6 +315,30 @@ describe('VideoControls', () => {
     })
   })
 
+  it('does not read volume from a disposed player', async () => {
+    player.dispose()
+
+    expect(() =>
+      render(
+        <MockedProvider>
+          <WatchProvider
+            initialState={{
+              audioLanguageId: '529',
+              subtitleLanguageId: '529',
+              subtitleOn: false
+            }}
+          >
+            <PlayerProvider>
+              <VideoProvider value={{ content: videos[0] }}>
+                <VideoControls player={player} />
+              </VideoProvider>
+            </PlayerProvider>
+          </WatchProvider>
+        </MockedProvider>
+      )
+    ).not.toThrow()
+  })
+
   it('updates volume on volumechange', async () => {
     vi.spyOn(player, 'volume').mockReturnValue(0)
 

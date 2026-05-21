@@ -32,7 +32,8 @@ const mockPlayer = {
   on: jest.fn(),
   off: jest.fn(),
   play: jest.fn(),
-  pause: jest.fn()
+  pause: jest.fn(),
+  isDisposed: jest.fn().mockReturnValue(false)
 } as unknown as Player
 
 describe('VideoControls', () => {
@@ -45,6 +46,26 @@ describe('VideoControls', () => {
     placement: 'singleVideo' as const,
     wasUnmuted: true
   }
+
+  it('does not read volume from a disposed player', () => {
+    const disposedPlayer = {
+      ...mockPlayer,
+      isDisposed: jest.fn().mockReturnValue(true),
+      volume: jest.fn(() => {
+        throw new Error('disposed')
+      })
+    } as unknown as Player
+
+    expect(() =>
+      render(
+        <VideoProvider value={{ content: videos[0] }}>
+          <PlayerProvider>
+            <VideoControls {...defaultProps} player={disposedPlayer} />
+          </PlayerProvider>
+        </VideoProvider>
+      )
+    ).not.toThrow()
+  })
 
   it('should render video controls', () => {
     render(
