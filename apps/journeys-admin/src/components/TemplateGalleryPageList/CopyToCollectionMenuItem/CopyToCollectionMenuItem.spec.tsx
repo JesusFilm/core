@@ -316,7 +316,7 @@ describe('CopyToCollectionMenuItem', () => {
   it('rapid double-click on submit — duplicate is called only once (single-flight)', async () => {
     let resolveDuplicate: (
       value: { data?: { journeyDuplicate?: { id: string } | null } }
-    ) => void = () => {}
+    ) => void = () => undefined
     duplicate.mockImplementation(
       () =>
         new Promise((resolve) => {
@@ -459,7 +459,7 @@ describe('CopyToCollectionMenuItem', () => {
   it('unmount mid-pipeline — does not throw setState-after-unmount', async () => {
     let resolveDuplicate: (
       value: { data?: { journeyDuplicate?: { id: string } | null } }
-    ) => void = () => {}
+    ) => void = () => undefined
     duplicate.mockImplementation(
       () =>
         new Promise((resolve) => {
@@ -467,7 +467,9 @@ describe('CopyToCollectionMenuItem', () => {
         })
     )
 
-    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    const errorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
 
     const { unmount } = renderItem()
     fireEvent.click(screen.getByRole('menuitem'))
