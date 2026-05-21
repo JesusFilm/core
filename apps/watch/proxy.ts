@@ -97,26 +97,45 @@ export const config = {
   matcher: ['/watch/((?!assets).*)', '/watch']
 }
 
+const WATCH_BASE_PATH = '/watch'
+
 /** Paths that look like static assets; do not rewrite so they are served from public/ */
 const STATIC_ASSET_EXT =
   /\.(svg|png|jpg|jpeg|gif|ico|webp|woff2?|ttf|otf|css|js|map)(\?.*)?$/i
 
+const INTERNAL_PATH_PREFIXES = [
+  `${WATCH_BASE_PATH}/_next`,
+  `${WATCH_BASE_PATH}/api`
+]
+
+function shouldSkipRewrite(pathname: string): boolean {
+  return (
+    STATIC_ASSET_EXT.test(pathname) ||
+    INTERNAL_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+  )
+}
+
+function getLocalizedWatchPath(pathname: string, locale: string): string {
+  const pathWithoutBasePath = pathname.slice(WATCH_BASE_PATH.length)
+  return `${WATCH_BASE_PATH}/${locale}${pathWithoutBasePath}`
+}
+
 export async function proxy(req: NextRequest): Promise<NextResponse> {
   const pathname = req.nextUrl.pathname
 
-  if (STATIC_ASSET_EXT.test(pathname)) {
+  if (shouldSkipRewrite(pathname)) {
     return NextResponse.next()
   }
 
   const locale = getLocale(req) ?? DEFAULT_LOCALE
   const rewriteUrl = req.nextUrl.clone()
 
-  if (pathname === '/watch' && locale !== DEFAULT_LOCALE) {
-    rewriteUrl.pathname = `/watch/${LANGUAGE_MAPPINGS[locale].languageSlugs[0]}`
+  if (pathname === WATCH_BASE_PATH && locale !== DEFAULT_LOCALE) {
+    rewriteUrl.pathname = `${WATCH_BASE_PATH}/${LANGUAGE_MAPPINGS[locale].languageSlugs[0]}`
     return NextResponse.redirect(rewriteUrl, 302)
   }
   if (locale !== DEFAULT_LOCALE) {
-    rewriteUrl.pathname = `/${locale}${pathname}`
+    rewriteUrl.pathname = getLocalizedWatchPath(pathname, locale)
 
     return NextResponse.rewrite(rewriteUrl)
   }
