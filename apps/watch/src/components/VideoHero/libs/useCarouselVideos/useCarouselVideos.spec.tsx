@@ -2,6 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook } from '@testing-library/react'
 import type { ReactNode } from 'react'
 
+import { getLanguageIdFromLocale } from '../../../../libs/getLanguageIdFromLocale'
+
 import { GET_COLLECTION_COUNTS, GET_SHORT_FILMS } from './queries'
 import { useCarouselVideos } from './useCarouselVideos'
 import {
@@ -23,7 +25,7 @@ jest.mock('./insertMux', () => ({
 }))
 
 jest.mock('../../../../libs/getLanguageIdFromLocale', () => ({
-  getLanguageIdFromLocale: () => '529'
+  getLanguageIdFromLocale: jest.fn(() => '529')
 }))
 
 const mockVideo = {
@@ -98,12 +100,13 @@ const defaultMocks = [
 ]
 
 describe('useCarouselVideos', () => {
+  const getLanguageIdFromLocaleMock = jest.mocked(getLanguageIdFromLocale)
   const createDefaultConfig = () => ({
     playlistSequence: [['collection1'], ['collection2']],
     blacklistedVideoIds: [],
     version: '1.0.0'
   })
-  let apolloMocks = [...defaultMocks]
+  let apolloMocks: typeof defaultMocks | any[] = [...defaultMocks]
 
   const wrapper = ({ children }: { children: ReactNode }) => (
     <MockedProvider mocks={apolloMocks} addTypename={false}>
@@ -113,6 +116,7 @@ describe('useCarouselVideos', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    getLanguageIdFromLocaleMock.mockReturnValue('529')
     // Clear localStorage and sessionStorage
     if (typeof window !== 'undefined') {
       localStorage.clear()
@@ -158,6 +162,29 @@ describe('useCarouselVideos', () => {
     expect(result.current.slides).toEqual([])
     expect(result.current.videos).toEqual([])
     expect(result.current.currentIndex).toBe(0)
+  })
+
+  it('uses direct languageId without resolving locale', () => {
+    getLanguageIdFromLocaleMock.mockImplementation(() => {
+      throw new Error(
+        'locale should not be resolved when languageId is provided'
+      )
+    })
+    apolloMocks = defaultMocks.map((mock) => ({
+      ...mock,
+      request: {
+        ...mock.request,
+        variables: { ...mock.request.variables, languageId: '496' }
+      }
+    }))
+
+    const { result } = renderHook(
+      () => useCarouselVideos({ languageId: '496' }),
+      { wrapper }
+    )
+
+    expect(result.current.loading).toBe(true)
+    expect(getLanguageIdFromLocaleMock).not.toHaveBeenCalled()
   })
 
   it('provides navigation functions', () => {
