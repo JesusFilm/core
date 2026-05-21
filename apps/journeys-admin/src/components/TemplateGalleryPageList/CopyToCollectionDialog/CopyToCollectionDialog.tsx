@@ -45,6 +45,7 @@ export interface CopyToCollectionDialogProps {
   onClose: () => void
   onSubmit: (values: {
     collectionId: string
+    collectionTitle: string
     language?: JourneyLanguage
     showTranslation: boolean
   }) => void
@@ -183,8 +184,10 @@ export function CopyToCollectionDialog({
     values: FormValues,
     { resetForm }: FormikHelpers<FormValues>
   ): Promise<void> {
+    const selectedPage = pages.find((page) => page.id === values.collectionSelect)
     onSubmit({
       collectionId: values.collectionSelect,
+      collectionTitle: selectedPage?.title ?? '',
       language: values.showTranslation ? values.languageSelect : undefined,
       showTranslation: values.showTranslation
     })

@@ -130,6 +130,7 @@ export function CopyToCollectionMenuItem({
 
   const handleSubmit = async (values: {
     collectionId: string
+    collectionTitle: string
     language?: JourneyLanguage
     showTranslation: boolean
   }): Promise<void> => {
@@ -151,7 +152,10 @@ export function CopyToCollectionMenuItem({
     }
 
     safeSetLoading(true)
-    if (mountedRef.current) setErrorMessage(null)
+    if (mountedRef.current) {
+      setErrorMessage(null)
+      setSelectedCollectionTitle(values.collectionTitle)
+    }
 
     let duplicatedId: string | null = null
     try {
@@ -254,7 +258,6 @@ export function CopyToCollectionMenuItem({
         isTranslating={translationVariables != null}
         onClose={guardedClose}
         onSubmit={(values) => {
-          setSelectedCollectionTitle(undefined)
           void handleSubmit(values)
         }}
       />

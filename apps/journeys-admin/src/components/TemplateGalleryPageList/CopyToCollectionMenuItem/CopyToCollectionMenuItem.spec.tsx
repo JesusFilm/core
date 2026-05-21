@@ -73,6 +73,7 @@ jest.mock(
       onClose: () => void
       onSubmit: (values: {
         collectionId: string
+        collectionTitle: string
         language?: { id: string }
         showTranslation: boolean
       }) => void
@@ -96,6 +97,7 @@ jest.mock(
             onClick={(): void =>
               props.onSubmit({
                 collectionId: 'collection-1',
+                collectionTitle: 'Featured Templates',
                 language: undefined,
                 showTranslation: false
               })
@@ -109,6 +111,7 @@ jest.mock(
             onClick={(): void =>
               props.onSubmit({
                 collectionId: 'collection-1',
+                collectionTitle: 'Featured Templates',
                 language: { id: '528' },
                 showTranslation: true
               })
@@ -271,6 +274,9 @@ describe('CopyToCollectionMenuItem', () => {
     await waitFor(() =>
       expect(screen.getByTestId('DialogDone')).toHaveTextContent('true')
     )
+    expect(
+      screen.getByTestId('DialogSelectedCollection')
+    ).toHaveTextContent('Featured Templates')
   })
 
   it('happy path (with translation) — duplicate, subscription onComplete triggers assign, refetch issued', async () => {

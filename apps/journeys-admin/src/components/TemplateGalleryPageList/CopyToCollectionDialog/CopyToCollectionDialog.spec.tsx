@@ -232,6 +232,7 @@ describe('CopyToCollectionDialog', () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1))
     expect(onSubmit).toHaveBeenCalledWith({
       collectionId: 'page-1',
+      collectionTitle: 'Featured Templates',
       language: undefined,
       showTranslation: false
     })
@@ -280,6 +281,7 @@ describe('CopyToCollectionDialog', () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1))
     const args = onSubmit.mock.calls[0][0]
     expect(args.collectionId).toBe('page-1')
+    expect(args.collectionTitle).toBe('Featured Templates')
     expect(args.showTranslation).toBe(true)
     expect(args.language).toMatchObject({ id: '496' })
   })
