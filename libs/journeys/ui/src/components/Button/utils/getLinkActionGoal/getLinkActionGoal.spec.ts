@@ -24,4 +24,12 @@ describe('getLinkActionGoal', () => {
     const result = getLinkActionGoal(url)
     expect(result).toEqual(GoalType.Website)
   })
+
+  it('should return Website when url is null', () => {
+    expect(getLinkActionGoal(null)).toEqual(GoalType.Website)
+  })
+
+  it('should return Website when url is undefined', () => {
+    expect(getLinkActionGoal(undefined)).toEqual(GoalType.Website)
+  })
 })

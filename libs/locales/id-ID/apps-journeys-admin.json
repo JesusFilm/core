@@ -434,6 +434,8 @@
   "Upload Successful!": "Pengunggahan Berhasil!",
   "Upload Failed!": "Pengunggahan Gagal!",
   "Drop an image here": "Jatuhkan gambar di sini",
+  "or click to browse your files": "atau klik untuk menelusuri file Anda",
+  "Uploading... {{progress}}%": "Mengunggah... {{progress}}%",
   "Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB": "Unggah gambar (PNG, JPG, GIF, SVG, atau HEIC). Ukuran file maksimum: 10 MB",
   "Upload file": "Unggah file",
   "Gallery": "Galeri",

@@ -6,7 +6,8 @@ export default [
     ignores: [
       'apps/journeys-admin/jest.config.ts',
       'apps/journeys-admin/postcss.config.mjs',
-      'apps/journeys-admin/next.config.js'
+      'apps/journeys-admin/next.config.js',
+      'apps/journeys-admin/scripts/**'
     ]
   },
   {

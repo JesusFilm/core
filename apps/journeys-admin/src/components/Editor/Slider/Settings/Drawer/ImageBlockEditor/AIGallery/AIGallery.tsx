@@ -1,8 +1,10 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
+
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 import { CreateAiImage } from '../../../../../../../../__generated__/CreateAiImage'
@@ -10,6 +12,8 @@ import {
   ImageBlockUpdateInput,
   SegmindModel
 } from '../../../../../../../../__generated__/globalTypes'
+import { MediaLibrary } from '../MediaLibrary'
+import { prependCloudflareImage } from '../MediaLibrary/prependCloudflareImage'
 
 import { AIPrompt } from './AIPrompt'
 
@@ -36,9 +40,12 @@ export function AIGallery({
 }: AIGalleryProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+  const { mediaLibrary } = useFlags()
+  const { cache } = useApolloClient()
   const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
+  const [galleryKey, setGalleryKey] = useState(0)
 
-  const handleSubmit = async ({ prompt }): Promise<void> => {
+  async function handleSubmit({ prompt }: { prompt: string }): Promise<void> {
     setUploading?.(true)
     try {
       const { data } = await createAiImage({
@@ -48,12 +55,22 @@ export function AIGallery({
         }
       })
 
-      if (data?.createImageBySegmindPrompt?.id != null) {
-        const src = `https://imagedelivery.net/${
-          process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
-        }/${data?.createImageBySegmindPrompt?.id}/public`
+      const cloudflareId = data?.createImageBySegmindPrompt?.id
+      const cloudflareUploadKey = process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY
+      if (
+        cloudflareId != null &&
+        cloudflareUploadKey != null &&
+        cloudflareUploadKey !== ''
+      ) {
+        const url = `https://imagedelivery.net/${cloudflareUploadKey}/${cloudflareId}`
+        prependCloudflareImage(
+          cache,
+          { id: cloudflareId, url, blurhash: null },
+          true
+        )
+        setGalleryKey((k) => k + 1)
         await onChange({
-          src,
+          src: `${url}/public`,
           alt: `Prompt: ${prompt}`,
           scale: 100,
           focalLeft: 50,
@@ -78,12 +95,30 @@ export function AIGallery({
   }
 
   return (
-    <Box data-testid="AIGallery">
+    <Box
+      data-testid="AIGallery"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        minHeight: 0
+      }}
+    >
       <AIPrompt
         handleSubmit={handleSubmit}
         loading={loading}
         selectedBlock={selectedBlock}
       />
+      {mediaLibrary === true && (
+        <MediaLibrary
+          key={galleryKey}
+          title={t('Generations')}
+          selectedSrc={selectedBlock?.src}
+          onSelect={onChange}
+          isAi={true}
+          uploading={loading}
+        />
+      )}
     </Box>
   )
 }

@@ -194,9 +194,6 @@ describe('AddByFile', () => {
     expect(screen.getByTestId('AddByFile')).toBeInTheDocument()
     expect(screen.getByText('Drop a video here')).toBeInTheDocument()
     expect(
-      screen.getByText('or click to browse your files')
-    ).toBeInTheDocument()
-    expect(
       screen.getByText(
         'Upload a video (MP4 or MOV) at least 1 second long. Maximum file size: 1 GB'
       )

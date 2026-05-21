@@ -35,6 +35,14 @@ export interface CollectionDialogProps {
    * interleaving on the same Apollo cache.
    */
   parentBusy?: boolean
+  /**
+   * False when the active team has a `routeAllTeamJourneys` custom
+   * domain. Disables the "Open in new tab" preview button on the
+   * preview pane (NES-1644). Defaults to true.
+   */
+  canPublish?: boolean
+  /** Tooltip copy for the disabled preview button. */
+  publishBlockedReason?: string | null
   onClose: () => void
 }
 
@@ -54,6 +62,8 @@ export function CollectionDialog({
   collection,
   availableJourneys,
   parentBusy = false,
+  canPublish = true,
+  publishBlockedReason = null,
   onClose
 }: CollectionDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -170,6 +180,9 @@ export function CollectionDialog({
                           }/template-gallery/${encodeURIComponent(values.slug)}`
                         : null
                     }
+                    slug={values.slug !== '' ? values.slug : null}
+                    canPublish={canPublish}
+                    publishBlockedReason={publishBlockedReason}
                   />
                   <Box
                     sx={{
@@ -385,36 +398,17 @@ export function CollectionDialog({
                               )}
                             </Stack>
 
-                            <Stack spacing={1}>
-                              <Typography sx={SECTION_HEADER}>
-                                {t('Add PDF/Video with instructions')}
-                              </Typography>
-                              <TextField
-                                id="mediaUrl"
-                                name="mediaUrl"
-                                placeholder={t('Paste URL')}
-                                fullWidth
-                                variant="filled"
-                                hiddenLabel
-                                inputProps={{
-                                  'aria-label': t(
-                                    'PDF or video URL with instructions'
-                                  )
-                                }}
-                                value={values.mediaUrl}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                error={
-                                  touched.mediaUrl === true &&
-                                  Boolean(errors.mediaUrl)
-                                }
-                                helperText={
-                                  (touched.mediaUrl === true &&
-                                    errors.mediaUrl) ||
-                                  t('Paste a Canva or Google Slides link')
-                                }
-                              />
-                            </Stack>
+                            {/* NES-1682: the "Add PDF/Video with
+                                instructions" section (TextField + helper
+                                copy referencing Canva / Google Slides) was
+                                removed per QA's decision to hide the embed
+                                editing surface. The `mediaUrl` field still
+                                rides through `CollectionFormValues` so
+                                existing values round-trip on save, but
+                                there is no editing surface and the embed
+                                preview in `CollectionPreviewPane` is also
+                                hidden. Replaces NES-1660 (helper-text
+                                approach was rejected by QA). */}
 
                             {mode === 'edit' && (
                               <TextField

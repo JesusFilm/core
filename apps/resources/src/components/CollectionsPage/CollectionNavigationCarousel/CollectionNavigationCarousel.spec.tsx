@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { CollectionNavigationCarousel } from './CollectionNavigationCarousel'
 
 const originalScrollIntoView = window.HTMLElement.prototype.scrollIntoView
-const scrollIntoViewMock = jest.fn()
+const scrollIntoViewMock = vi.fn()
 
 // Mock content items for testing
 const mockContentItems = [
@@ -56,7 +56,7 @@ describe('CollectionNavigationCarousel', () => {
     window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock
     scrollIntoViewMock.mockClear()
 
-    jest.spyOn(document, 'getElementById').mockImplementation((id) => {
+    vi.spyOn(document, 'getElementById').mockImplementation((id) => {
       const div = document.createElement('div')
       div.id = id
       return div
@@ -64,7 +64,7 @@ describe('CollectionNavigationCarousel', () => {
   })
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 
   afterAll(() => {

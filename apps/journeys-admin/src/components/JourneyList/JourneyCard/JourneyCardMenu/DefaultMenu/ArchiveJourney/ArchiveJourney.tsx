@@ -12,6 +12,8 @@ import { GetAdminJourneys } from '../../../../../../../__generated__/GetAdminJou
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { JourneyArchive } from '../../../../../../../__generated__/JourneyArchive'
 import { JourneyUnarchive } from '../../../../../../../__generated__/JourneyUnarchive'
+import { evictFromTemplateGalleryPages } from '../../../../../../libs/evictFromTemplateGalleryPages'
+import { useTemplateGalleryPageAssignJourneyMutation } from '../../../../../../libs/useTemplateGalleryPageAssignJourneyMutation'
 import { MenuItem } from '../../../../../MenuItem'
 
 export const JOURNEY_ARCHIVE = gql`
@@ -67,8 +69,26 @@ export function ArchiveJourney({
           __typename: 'Journey'
         }
       ]
+    },
+    // Filter the archived journey out of every cached
+    // `TemplateGalleryPage.templates` list, then evict only the
+    // `TemplateGalleryItem` variant — the `Journey` entity itself stays
+    // live (it still surfaces in the archived list).
+    update(cache, { data }) {
+      const archivedIds =
+        data?.journeysArchive
+          ?.filter((j): j is NonNullable<typeof j> => j != null)
+          .map((j) => j.id) ?? []
+      evictFromTemplateGalleryPages(cache, archivedIds, {
+        evictJourneyEntity: false
+      })
     }
   })
+
+  // Best-effort unassign so that unarchiving returns the journey to the
+  // flat template list rather than its prior collection slot. Idempotent
+  // no-op server-side when the journey isn't in any collection.
+  const [unassignFromCollection] = useTemplateGalleryPageAssignJourneyMutation()
   const [unarchiveJourney] = useMutation<JourneyUnarchive>(JOURNEY_UNARCHIVE, {
     variables: {
       ids: [id]
@@ -96,12 +116,27 @@ export function ArchiveJourney({
         })
         setLoading(false)
       },
-      onCompleted: async () => {
+      onCompleted: () => {
+        // Snackbar fires on this tick — do NOT await secondary work.
+        // The unassign is fire-and-forget cleanup so unarchiving later
+        // returns the journey to the flat template list rather than its
+        // prior collection slot. Awaiting it would block the snackbar
+        // on a ~1s round-trip the user doesn't care about (Mike review,
+        // NES-1644). Failure mode is identical to pre-fix: stale join
+        // row server-side, surfaces only on restore.
+        void unassignFromCollection({
+          variables: { journeyId: id, pageId: null }
+        }).catch((unassignError) => {
+          console.warn(
+            '[ArchiveJourney] failed to unassign archived journey from its collection',
+            { journeyId: id, error: unassignError }
+          )
+        })
         enqueueSnackbar(t('Journey Archived'), {
           variant: 'success',
           preventDuplicate: true
         })
-        await refetch?.()
+        void refetch?.()
         handleClose()
         setLoading(false)
       }

@@ -1,5 +1,11 @@
+import CloseIcon from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
+import Drawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
+import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -9,6 +15,7 @@ import { User } from '../../libs/auth/authContext'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { usePageWrapperStyles } from '../PageWrapper/utils/usePageWrapperStyles'
 import { TemplateGalleryPageList } from '../TemplateGalleryPageList'
+import { TemplateInfoPanel } from '../TemplateInfoPanel'
 
 import { AddJourneyFab } from './AddJourneyFab'
 import { JourneyListContent } from './JourneyListContent'
@@ -36,11 +43,18 @@ export type JourneyListEvent =
 export function JourneyList({
   user
 }: Pick<JourneyListProps, 'user'>): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const router = useRouter()
   const [event, setEvent] = useState<JourneyListEvent>()
+  /** Mobile-only state for the Template Info side panel drawer (NES-1538). */
+  const [templateInfoDrawerOpen, setTemplateInfoDrawerOpen] = useState(false)
   // When the flag is on, the Team Templates tab renders the Collections
   // panel (TemplateGalleryPageList) in place of the original list.
+  //
+  // The NES-1538 educational side panel rides on the same gate — no separate
+  // flag — because the panel only makes sense on the local-template surface
+  // that this flag already controls.
   const { teamTemplateCollection } = useFlags()
   const { refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
@@ -97,6 +111,29 @@ export function JourneyList({
   const currentContentType = (router?.query?.type as ContentType) ?? 'journeys'
   const sidePanelVisible = currentContentType === 'journeys'
 
+  // The Template Info side panel (NES-1538) mounts beside the templates grid
+  // when the Team Templates tab is active. It shares the
+  // `teamTemplateCollection` gate with the Collections panel since the
+  // educational panel only makes sense alongside that surface.
+  const showTemplateInfoPanel =
+    teamTemplateCollection === true && currentContentType === 'templates'
+
+  // Close the mobile drawer if the user navigates away from the templates tab
+  // or the flag flips off — prevents a stale-open drawer rendering on the
+  // journeys tab if the user toggles between tabs while the drawer is open.
+  useEffect(() => {
+    if (!showTemplateInfoPanel && templateInfoDrawerOpen) {
+      setTemplateInfoDrawerOpen(false)
+    }
+  }, [showTemplateInfoPanel, templateInfoDrawerOpen])
+
+  const handleOpenTemplateInfoDrawer = (): void => {
+    setTemplateInfoDrawerOpen(true)
+  }
+  const handleCloseTemplateInfoDrawer = (): void => {
+    setTemplateInfoDrawerOpen(false)
+  }
+
   // Render function for JourneyListView
   const renderList = (
     contentType: ContentType,
@@ -107,6 +144,9 @@ export function JourneyList({
         <TemplateGalleryPageList
           visible={contentType === currentContentType}
           status={status}
+          onOpenInfo={
+            showTemplateInfoPanel ? handleOpenTemplateInfoDrawer : undefined
+          }
         />
       )
     }
@@ -131,9 +171,10 @@ export function JourneyList({
           mt: { xs: 0, sm: -5 },
           width: {
             sm: '100%',
-            md: sidePanelVisible
-              ? `calc(100vw - ${sidePanel.width} - ${navbar.width} - 80px)`
-              : `calc(100vw - ${navbar.width} - 80px)`
+            md:
+              sidePanelVisible || showTemplateInfoPanel
+                ? `calc(100vw - ${sidePanel.width} - ${navbar.width} - 80px)`
+                : `calc(100vw - ${navbar.width} - 80px)`
           }
         }}
         data-testid="JourneysAdminJourneyList"
@@ -143,10 +184,118 @@ export function JourneyList({
           setActiveEvent={handleClick}
           setSortOrder={handleSetSortOrder}
           sortOrder={sortOrder}
+          infoPanelActive={showTemplateInfoPanel}
         />
       </Box>
       {activeTab === 'active' && currentContentType === 'journeys' && (
         <AddJourneyFab />
+      )}
+      {showTemplateInfoPanel && (
+        <>
+          {/* Desktop (md+): permanent MUI Drawer mirroring the journeys-tab
+              SidePanel's desktopStyle so positioning, width, border, and
+              rounded-top chrome all match the existing journeys panel without
+              any custom maths. Stripping TemplateInfoPanel's outer chrome
+              (border/bg/radius) lets the Drawer Paper own the visual frame. */}
+          <Drawer
+            elevation={1}
+            anchor="right"
+            variant="permanent"
+            hideBackdrop
+            data-testid="TemplateInfoPanelDesktop"
+            sx={{
+              display: { xs: 'none', md: 'flex' },
+              width: sidePanel.width,
+              flexShrink: 1,
+              '& .MuiDrawer-paper': {
+                overflowX: 'hidden',
+                boxSizing: 'border-box',
+                width: sidePanel.width,
+                height: 'calc(100% - 68px)',
+                mt: 15.5,
+                mr: 5,
+                borderTopLeftRadius: { xs: 0, sm: 12 },
+                borderTopRightRadius: { xs: 0, sm: 12 },
+                border: '1px solid',
+                borderColor: 'divider'
+              }
+            }}
+          >
+            <TemplateInfoPanel />
+          </Drawer>
+          {/* Mobile (xs/sm) trigger lives inline next to the Collections
+              header inside TemplateGalleryPageList (NES-1686). The bottom
+              SwipeableDrawer that the trigger opens stays here, owned by the
+              same component that owns its open/close state. */}
+          <SwipeableDrawer
+            anchor="bottom"
+            open={templateInfoDrawerOpen}
+            onOpen={handleOpenTemplateInfoDrawer}
+            onClose={handleCloseTemplateInfoDrawer}
+            disableSwipeToOpen
+            disableDiscovery
+            sx={{
+              display: { xs: 'block', md: 'none' },
+              '& .MuiDrawer-paper': {
+                maxHeight: '80vh',
+                borderTopLeftRadius: 16,
+                borderTopRightRadius: 16,
+                overflowY: 'auto'
+              }
+            }}
+          >
+            <Stack
+              data-testid="TemplateInfoPanelMobileDrawer"
+              role="dialog"
+              aria-labelledby="template-info-drawer-title"
+              sx={{ position: 'relative' }}
+            >
+              {/* Drag-handle pill (visual swipe-to-dismiss affordance) */}
+              <Box
+                aria-hidden
+                sx={{
+                  width: 32,
+                  height: 4,
+                  bgcolor: 'divider',
+                  borderRadius: 2,
+                  mx: 'auto',
+                  mt: 1.5,
+                  mb: 0.5
+                }}
+              />
+              {/* X close button — keyboard / tap fallback for swipe */}
+              <IconButton
+                aria-label={t('Close template info')}
+                onClick={handleCloseTemplateInfoDrawer}
+                size="small"
+                sx={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  zIndex: 1
+                }}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+              {/* Hidden a11y title so aria-labelledby has something to point at */}
+              <Box
+                id="template-info-drawer-title"
+                sx={{
+                  position: 'absolute',
+                  width: 1,
+                  height: 1,
+                  overflow: 'hidden',
+                  clip: 'rect(0 0 0 0)'
+                }}
+              >
+                {t('Template info')}
+              </Box>
+              <Box sx={{ p: 2 }}>
+                <TemplateInfoPanel />
+              </Box>
+            </Stack>
+          </SwipeableDrawer>
+        </>
       )}
     </>
   )

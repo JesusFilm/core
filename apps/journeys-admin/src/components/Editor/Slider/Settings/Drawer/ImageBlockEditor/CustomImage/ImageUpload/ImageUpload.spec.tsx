@@ -180,9 +180,6 @@ describe('ImageUpload', () => {
       </MockedProvider>
     )
     expect(screen.getByText('Drop an image here')).toBeInTheDocument()
-    expect(
-      screen.getByText('or click to browse your files')
-    ).toBeInTheDocument()
   })
 
   it('should render loading state', () => {
@@ -297,6 +294,106 @@ describe('ImageUpload', () => {
     expect(
       screen.getByRole('button', { name: 'Upload file' })
     ).not.toBeDisabled()
+  })
+
+  it('should reject files just over 10 MB', async () => {
+    const onChange = jest.fn()
+    const setUploading = jest.fn()
+
+    render(
+      <MockedProvider>
+        <ImageUpload
+          onChange={onChange}
+          setUploading={setUploading}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+
+    const inputEl = screen.getByTestId('drop zone')
+
+    const boundaryFile = new File(
+      [new ArrayBuffer(10_200_000)],
+      'boundary.png',
+      {
+        type: 'image/png'
+      }
+    )
+
+    Object.defineProperty(inputEl, 'files', {
+      value: [boundaryFile]
+    })
+
+    fireEvent.drop(inputEl)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+        )
+      ).toBeInTheDocument()
+    })
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(mockSendGTMEvent).toHaveBeenCalledWith({
+      event: 'image_upload_failure',
+      fileSize: 10_200_000,
+      fileType: 'image/png',
+      errorCode: 'file-too-large'
+    })
+  })
+
+  it('should accept files just under 10 MB', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfResponse)
+    } as unknown as Response)
+
+    const onChange = jest.fn()
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
+            },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <ImageUpload
+          onChange={onChange}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+
+    const inputEl = screen.getByTestId('drop zone')
+    const justUnderLimit = new File(
+      [new ArrayBuffer(9_999_999)],
+      'just-under.png',
+      { type: 'image/png' }
+    )
+    Object.defineProperty(inputEl, 'files', { value: [justUnderLimit] })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() => expect(onChange).toHaveBeenCalled())
+    expect(
+      screen.queryByText(
+        'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+      )
+    ).not.toBeInTheDocument()
   })
 
   it('should handle wrong file type error', async () => {

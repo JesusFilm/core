@@ -8,19 +8,19 @@ describe('CopyTextField', () => {
   beforeEach(() => {
     Object.assign(navigator, {
       clipboard: {
-        writeText: jest.fn()
+        writeText: vi.fn()
       }
     })
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     Object.assign(navigator, originalNavigator)
   })
 
   it('copies link to clipboard', async () => {
     const link = 'http://localhost/journeys/journeySlug'
-    const mockOnCopyClick = jest.fn().mockImplementation(async () => {
+    const mockOnCopyClick = vi.fn().mockImplementation(async () => {
       await navigator.clipboard.writeText(link)
     })
 
@@ -49,7 +49,7 @@ describe('CopyTextField', () => {
   })
 
   it('allows customization', () => {
-    const mockOnCopyClick = jest.fn()
+    const mockOnCopyClick = vi.fn()
     const { getByRole, getByText } = render(
       <CopyTextField
         label="Journey URL"

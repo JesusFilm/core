@@ -18,14 +18,35 @@ export interface CollectionPublishSuccessDialogProps {
   open: boolean
   /** The shareable public URL for the just-published page. */
   publicUrl: string | null
+  /**
+   * Slug of the just-published collection. "View the page" routes through
+   * the authenticated `/api/preview-template-gallery?slug=<slug>` proxy,
+   * which validates auth and 307-redirects to the public URL. Null when
+   * not yet known (e.g. closed dialog) — in that case "View the page"
+   * stays disabled.
+   */
+  slug: string | null
+  /**
+   * Belt-and-suspenders gate: the success dialog should never open when
+   * the team can't publish, but if it does, "View the page" stays
+   * disabled with the provided reason.
+   */
+  canPublish?: boolean
+  publishBlockedReason?: string | null
   onClose: () => void
 }
 
 export function CollectionPublishSuccessDialog({
   open,
   publicUrl,
+  slug,
+  canPublish = true,
+  publishBlockedReason = null,
   onClose
 }: CollectionPublishSuccessDialogProps): ReactElement {
+  const viewDisabled =
+    publicUrl == null || slug == null || slug === '' || !canPublish
+
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
 
@@ -39,8 +60,15 @@ export function CollectionPublishSuccessDialog({
   }
 
   function handleView(): void {
-    if (publicUrl == null) return
-    window.open(publicUrl, '_blank', 'noopener,noreferrer')
+    // `viewDisabled` already gates at runtime, but TypeScript can't
+    // narrow `slug` through a boolean — the explicit `slug == null`
+    // here is the type-narrowing pair, not a redundant safety check.
+    if (viewDisabled || slug == null) return
+    window.open(
+      `/api/preview-template-gallery?slug=${encodeURIComponent(slug)}`,
+      '_blank',
+      'noopener,noreferrer'
+    )
     onClose()
   }
 
@@ -97,6 +125,11 @@ export function CollectionPublishSuccessDialog({
             )
           }}
         />
+        {!canPublish && publishBlockedReason != null && (
+          <Typography variant="caption" color="text.secondary">
+            {publishBlockedReason}
+          </Typography>
+        )}
       </Stack>
     </Dialog>
   )

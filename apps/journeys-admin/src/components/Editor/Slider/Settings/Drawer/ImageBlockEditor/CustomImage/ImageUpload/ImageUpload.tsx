@@ -1,10 +1,11 @@
+import { useApolloClient } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import type FormDataType from 'form-data'
 import { useTranslation } from 'next-i18next/pages'
 import fetch from 'node-fetch'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { ErrorCode, FileRejection, useDropzone } from 'react-dropzone'
 
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
@@ -18,11 +19,14 @@ import {
   sendImageUploadSuccessEvent
 } from '../../../../../../../../libs/sendImageUploadEvent'
 import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/useCloudflareUploadByFileMutation'
+import { MAX_IMAGE_UPLOAD_BYTES } from '../../../../../../../../libs/useImageUpload'
 import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
+import { prependCloudflareImage } from '../../MediaLibrary/prependCloudflareImage'
 
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
   setUploading?: (uploading?: boolean) => void
+  onUploaded?: () => void
   selectedBlock?: ImageBlock | null
   loading?: boolean
   error?: boolean
@@ -32,22 +36,35 @@ export function ImageUpload({
   onChange,
   selectedBlock,
   setUploading,
+  onUploaded,
   loading,
   error
 }: ImageUploadProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { cache } = useApolloClient()
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
   const [errorCode, setErrorCode] = useState<ErrorCode>()
+  const successResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
 
   useEffect(() => {
     setErrorCode(undefined)
   }, [selectedBlock])
 
-  const onDrop = async (
+  useEffect(() => {
+    return () => {
+      if (successResetTimerRef.current != null) {
+        clearTimeout(successResetTimerRef.current)
+      }
+    }
+  }, [])
+
+  async function handleDrop(
     acceptedFiles: File[],
     rejectedFiles: FileRejection[]
-  ): Promise<void> => {
+  ): Promise<void> {
     if (rejectedFiles.length > 0) {
       const rejection = rejectedFiles[0]
       const rejectionCode = rejection.errors[0].code as ErrorCode
@@ -94,11 +111,43 @@ export function ImageUpload({
           return
         }
 
-        const src = `https://imagedelivery.net/${
-          process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
-        }/${response.result.id as string}/public`
-        onChange({ src, scale: 100, focalLeft: 50, focalTop: 50 })
-        setTimeout(() => setSuccess(undefined), 4000)
+        const cloudflareId = response?.result?.id
+        const cloudflareUploadKey =
+          process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY
+        if (
+          cloudflareId == null ||
+          cloudflareUploadKey == null ||
+          cloudflareUploadKey === ''
+        ) {
+          setSuccess(false)
+          setUploading?.(false)
+          sendImageUploadFailureEvent({
+            fileSize: file.size,
+            fileType: file.type,
+            errorCode: 'upload-invalid-response'
+          })
+          return
+        }
+        const url = `https://imagedelivery.net/${cloudflareUploadKey}/${cloudflareId}`
+        prependCloudflareImage(
+          cache,
+          { id: cloudflareId, url, blurhash: null },
+          false
+        )
+        onUploaded?.()
+        onChange({
+          src: `${url}/public`,
+          scale: 100,
+          focalLeft: 50,
+          focalTop: 50
+        })
+        if (successResetTimerRef.current != null) {
+          clearTimeout(successResetTimerRef.current)
+        }
+        successResetTimerRef.current = setTimeout(
+          () => setSuccess(undefined),
+          4000
+        )
         setUploading?.(undefined)
         sendImageUploadSuccessEvent({
           fileSize: file.size,
@@ -106,6 +155,7 @@ export function ImageUpload({
         })
       } catch {
         setSuccess(false)
+        setUploading?.(false)
         sendImageUploadFailureEvent({
           fileSize: file.size,
           fileType: file.type,
@@ -116,9 +166,9 @@ export function ImageUpload({
   }
 
   const { getRootProps, open, getInputProps, isDragAccept } = useDropzone({
-    onDrop,
+    onDrop: handleDrop,
     noClick: true,
-    maxSize: 10485760,
+    maxSize: MAX_IMAGE_UPLOAD_BYTES,
     accept: {
       'image/png': [],
       'image/jpeg': [],
@@ -209,14 +259,9 @@ export function ImageUpload({
                   : t('Upload Failed!')}
             </Typography>
           ) : (
-            <>
-              <Typography variant="body1" color="secondary.main">
-                {t('Drop an image here')}
-              </Typography>
-              <Typography variant="caption" color="secondary.main">
-                {t('or click to browse your files')}
-              </Typography>
-            </>
+            <Typography variant="body1" color="secondary.main">
+              {t('Drop an image here')}
+            </Typography>
           )}
         </Stack>
         <Button
