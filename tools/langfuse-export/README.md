@@ -35,20 +35,19 @@ tools/langfuse-export/
 
 ## Credentials (one-time setup)
 
-Secrets live in the Doppler **`core`** project, **`dev`** config (same place `reset-stage` reads repo-tooling secrets). Four keys are required:
+Secrets live in the Doppler **`journeys`** project, **`dev`** config — the chat app already uses all four there, so nothing needs seeding. Four keys are required:
 
 | Key | Notes |
 | --- | --- |
 | `LANGFUSE_PUBLIC_KEY` | Langfuse project public key (`pk-lf-...`) |
 | `LANGFUSE_SECRET_KEY` | Langfuse project secret key (`sk-lf-...`) |
-| `LANGFUSE_BASE_URL` | region host, e.g. `https://cloud.langfuse.com` |
+| `LANGFUSE_BASE_URL` | region host, e.g. `https://us.cloud.langfuse.com` |
 | `OPENROUTER_API_KEY` | OpenRouter API key (`sk-or-...`) |
 
-The Langfuse triple already exists in the `journeys` Doppler project (the chat app uses it). Copy them into `core/dev`, and seed the OpenRouter key, once:
+If a key is ever missing from `journeys/dev`, seed it once:
 
 ```sh
-doppler secrets set LANGFUSE_PUBLIC_KEY LANGFUSE_SECRET_KEY LANGFUSE_BASE_URL OPENROUTER_API_KEY \
-  --project core --config dev
+doppler secrets set OPENROUTER_API_KEY --project journeys --config dev
 ```
 
 Then materialise the tool-local `.env` (requires `doppler login`):
@@ -111,7 +110,9 @@ Each run writes `tools/langfuse-export/output/<timestamp>/`:
 
 ## How it works
 
-Numbers and user-attributed quotes are **always code-produced**; the OpenRouter LLM contributes only theme labels and group assignments. `report.ts` renders excerpt text verbatim from the sanitised records, so the model cannot fabricate a quote or leak content it was never given. If theme synthesis fails, the report still renders stats + verbatim excerpts (with a visible note), just without thematic grouping.
+**Fetch.** The Langfuse legacy list endpoints (`/api/public/traces`, `/api/public/observations` — what the SDK v3 wraps) **time out on Langfuse Cloud**, so reads go via raw `fetch` instead: the cursor-paginated **v2 observations index** (`/api/public/v2/observations`) enumerates the distinct `traceId`s in the window, then **`GET /api/public/traces/{id}`** per trace returns the trace context (`sessionId`, `metadata`, `tags`) plus its full nested observations (input/output/usage/cost) in one by-id call. Neither call scans a list, so neither times out.
+
+**Report.** Numbers and user-attributed quotes are **always code-produced**; the OpenRouter LLM contributes only theme labels and group assignments. `report.ts` renders excerpt text verbatim from the sanitised records, so the model cannot fabricate a quote or leak content it was never given. If theme synthesis fails, the report still renders stats + verbatim excerpts (with a visible note), just without thematic grouping.
 
 ## Tests & typecheck
 

@@ -1,9 +1,9 @@
 // Join observations to their traces and group into conversations.
 //
-// Pure: no IO. The text extractors are deliberately tolerant — the live
-// observation `input`/`output` shape is unverified (plan Open Questions),
-// so we handle string content, content-parts arrays, and AI-SDK
-// ModelMessage shapes without assuming any one of them.
+// Pure: no IO. Message shape confirmed against the live Langfuse API:
+// observation `input` is [{ role, content: [{ type:'text', text }] }] and
+// `output` is a plain string. The extractors target that shape with a small
+// string-content fallback.
 
 import type {
   Conversation,
@@ -26,74 +26,54 @@ export interface NormalizeResult {
   excludedTurnCount: number
 }
 
-function partsText(parts: unknown): string {
-  if (!Array.isArray(parts)) return ''
-  return parts
-    .map((part) => {
-      if (typeof part === 'string') return part
-      if (part != null && typeof part === 'object') {
-        const text = (part as Record<string, unknown>).text
-        if (typeof text === 'string') return text
-      }
-      return ''
-    })
+// Join message content to text. Langfuse stores content as a
+// [{ type: 'text', text }] parts array (confirmed against the live API);
+// we also accept a plain string.
+function contentToText(content: unknown): string {
+  if (typeof content === 'string') return content.trim()
+  if (!Array.isArray(content)) return ''
+  return content
+    .map((part) =>
+      part != null &&
+      typeof part === 'object' &&
+      typeof (part as Record<string, unknown>).text === 'string'
+        ? ((part as Record<string, unknown>).text as string)
+        : ''
+    )
     .filter((text) => text.length > 0)
     .join(' ')
     .trim()
 }
 
-// Text of a single message-like value (string, {content}, {text}, or parts).
-function messageText(message: unknown): string {
-  if (typeof message === 'string') return message.trim()
-  if (message != null && typeof message === 'object') {
-    const record = message as Record<string, unknown>
-    if (typeof record.content === 'string') return record.content.trim()
-    if (Array.isArray(record.content)) return partsText(record.content)
-    if (typeof record.text === 'string') return record.text.trim()
+// Latest user message from a generation's input. Input is an array of
+// { role, content } messages (confirmed shape); only `role: 'user'` entries
+// count, so assistant/system text is never attributed to the user.
+export function extractLatestUserMessage(input: unknown): string {
+  if (typeof input === 'string') return input.trim()
+  if (!Array.isArray(input)) return ''
+  for (let index = input.length - 1; index >= 0; index -= 1) {
+    const message = input[index]
+    if (
+      message != null &&
+      typeof message === 'object' &&
+      (message as Record<string, unknown>).role === 'user'
+    ) {
+      const text = contentToText((message as Record<string, unknown>).content)
+      if (text.length > 0) return text
+    }
   }
   return ''
 }
 
-// Latest user-authored message from a generation's input. When the input is
-// an array of messages, only `role: 'user'` entries are considered — we never
-// fall back to the last element regardless of role, since that would attribute
-// assistant/system/tool text as the user's question (and leak it downstream).
-export function extractLatestUserMessage(input: unknown): string {
-  if (Array.isArray(input)) {
-    for (let index = input.length - 1; index >= 0; index -= 1) {
-      const message = input[index]
-      if (
-        message != null &&
-        typeof message === 'object' &&
-        (message as Record<string, unknown>).role === 'user'
-      ) {
-        const text = messageText(message)
-        if (text.length > 0) return text
-      }
-    }
-    return ''
-  }
-  // A bare (non-array) input has no role to check — treat it as the message.
-  return messageText(input)
-}
-
-// Assistant reply from a generation's output.
+// Assistant reply from a generation's output. Output is a plain string
+// (confirmed shape); we also tolerate a parts array or a { content } object.
 export function extractAssistantReply(output: unknown): string {
-  if (Array.isArray(output)) {
-    for (let index = output.length - 1; index >= 0; index -= 1) {
-      const message = output[index]
-      if (
-        message != null &&
-        typeof message === 'object' &&
-        (message as Record<string, unknown>).role === 'assistant'
-      ) {
-        const text = messageText(message)
-        if (text.length > 0) return text
-      }
-    }
-    return partsText(output)
+  if (typeof output === 'string') return output.trim()
+  if (Array.isArray(output)) return contentToText(output)
+  if (output != null && typeof output === 'object') {
+    return contentToText((output as Record<string, unknown>).content)
   }
-  return messageText(output)
+  return ''
 }
 
 function toTurn(observation: ObservationRecord): ConversationTurn {

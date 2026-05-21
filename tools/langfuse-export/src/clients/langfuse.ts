@@ -1,13 +1,14 @@
-// Langfuse Public API reads via the official SDK (langfuse@3).
+// Langfuse Public API reads via raw fetch (HTTP Basic auth).
 //
-// Strategy (see plan Key Technical Decisions): page traces in the window
-// with `orderBy` pinned, then fetch each trace's GENERATION observations
-// BY traceId — one window definition, no date-boundary orphaning. Field
-// access is intentionally defensive: the live payload shape is unverified
-// (plan Open Questions), so we read through narrow local views and never
-// assume a field is present.
-
-import { Langfuse } from 'langfuse'
+// The legacy list endpoints (/api/public/traces and /api/public/observations,
+// which the langfuse SDK v3 wraps) TIME OUT on Langfuse Cloud even with a date
+// filter. So this client takes the working path instead:
+//   1. Page the v2 observations index (/api/public/v2/observations, cursor-
+//      based) to enumerate the distinct traceIds in the window. Slim + fast.
+//   2. GET /api/public/traces/{id} per trace — a by-id read (no list scan) that
+//      returns trace context (sessionId, metadata, tags) AND the full nested
+//      observations (input/output/usage/cost/model/latency) in one call.
+// Neither call scans a list, so neither times out.
 
 import type { ToolEnv } from '../env'
 import type { DateWindow, ObservationRecord, TraceRecord } from '../types'
@@ -17,37 +18,27 @@ export interface FetchOptions {
   // Hobby-tier ceiling (60000 / 100 = 600ms floor).
   throttleMs?: number
   pageSize?: number
-  // Called with progress messages so the CLI can show what's happening.
   onProgress?: (message: string) => void
 }
 
 const DEFAULT_THROTTLE_MS = 700
 const DEFAULT_PAGE_SIZE = 100
-// Hard ceiling so a pathological `meta.totalPages` (huge / Infinity / NaN)
-// can't drive an unbounded fetch+sleep loop.
+// Hard ceiling so a never-terminating cursor can't loop forever.
 const MAX_PAGES = 10000
 
-function clampTotalPages(value: unknown): number {
-  if (typeof value !== 'number' || !Number.isFinite(value) || value < 1) return 1
-  return Math.min(Math.floor(value), MAX_PAGES)
+export interface LangfuseClient {
+  baseUrl: string
+  authHeader: string
 }
 
-// Narrow views of the SDK response items — only the fields we read.
-interface RawTrace {
-  id?: string
-  sessionId?: string | null
-  timestamp?: string | Date | null
-  metadata?: unknown
-  tags?: unknown
-}
-
+// Narrow views of the API payloads — only the fields we read.
 interface RawObservation {
   id?: string
   traceId?: string | null
   type?: string | null
   model?: string | null
-  startTime?: string | Date | null
-  endTime?: string | Date | null
+  startTime?: string | null
+  endTime?: string | null
   latency?: number | null
   input?: unknown
   output?: unknown
@@ -57,20 +48,43 @@ interface RawObservation {
   totalCost?: number | null
 }
 
+interface RawTrace {
+  id?: string
+  sessionId?: string | null
+  timestamp?: string | null
+  metadata?: unknown
+  tags?: unknown
+  observations?: unknown
+}
+
 const sleep = (ms: number): Promise<void> =>
   new Promise((res) => setTimeout(res, ms))
 
-export function createLangfuseClient(env: ToolEnv): Langfuse {
-  return new Langfuse({
-    publicKey: env.langfusePublicKey,
-    secretKey: env.langfuseSecretKey,
-    baseUrl: env.langfuseBaseUrl
-  })
+export function createLangfuseClient(env: ToolEnv): LangfuseClient {
+  const token = Buffer.from(
+    `${env.langfusePublicKey}:${env.langfuseSecretKey}`
+  ).toString('base64')
+  return {
+    baseUrl: env.langfuseBaseUrl.replace(/\/$/, ''),
+    authHeader: `Basic ${token}`
+  }
 }
 
-function toIso(value: string | Date | null | undefined): string {
-  if (value == null) return ''
-  return value instanceof Date ? value.toISOString() : String(value)
+async function getJson<T>(client: LangfuseClient, path: string): Promise<T> {
+  const response = await fetch(`${client.baseUrl}${path}`, {
+    headers: { Authorization: client.authHeader, 'Content-Type': 'application/json' }
+  })
+  if (!response.ok) {
+    const body = await response.text()
+    throw new Error(
+      `Langfuse ${response.status} on ${path}: ${body.slice(0, 300)}`
+    )
+  }
+  return (await response.json()) as T
+}
+
+function toIso(value: string | null | undefined): string {
+  return value == null ? '' : String(value)
 }
 
 function asStringArray(value: unknown): string[] {
@@ -92,6 +106,10 @@ function metaString(
   return typeof value === 'string' && value.length > 0 ? value : undefined
 }
 
+function numberOrNull(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null
+}
+
 export function mapTrace(raw: RawTrace): TraceRecord {
   const metadata = asRecord(raw.metadata)
   return {
@@ -109,13 +127,9 @@ export function mapTrace(raw: RawTrace): TraceRecord {
   }
 }
 
-function numberOrNull(value: unknown): number | null {
-  return typeof value === 'number' && Number.isFinite(value) ? value : null
-}
-
 export function mapObservation(raw: RawObservation): ObservationRecord {
-  // Langfuse usage fields are input / output / total (confirmed against the
-  // observations export). usageDetails is preferred; usage is the fallback.
+  // Langfuse usage fields are input / output / total. usageDetails is
+  // preferred; usage is the fallback (it carries an extra `unit`).
   const usage = asRecord(raw.usageDetails ?? raw.usage)
   return {
     id: String(raw.id ?? ''),
@@ -134,98 +148,67 @@ export function mapObservation(raw: RawObservation): ObservationRecord {
   }
 }
 
-// Page all traces in the window, oldest first.
-export async function fetchAllTraces(
-  client: Langfuse,
+// Enumerate distinct traceIds in the window via the cursor-paginated v2 index.
+async function listTraceIds(
+  client: LangfuseClient,
   window: DateWindow,
-  options: FetchOptions = {}
-): Promise<TraceRecord[]> {
+  options: FetchOptions
+): Promise<string[]> {
   const throttleMs = options.throttleMs ?? DEFAULT_THROTTLE_MS
   const pageSize = options.pageSize ?? DEFAULT_PAGE_SIZE
-  const traces: TraceRecord[] = []
-  let page = 1
-  let totalPages = 1
+  const traceIds = new Set<string>()
+  let cursor: string | undefined
 
-  do {
-    const response = await client.fetchTraces({
-      fromTimestamp: window.from,
-      toTimestamp: window.to,
-      orderBy: 'timestamp.asc',
-      limit: pageSize,
-      page
-    } as Parameters<Langfuse['fetchTraces']>[0])
-
-    const data = (response.data ?? []) as RawTrace[]
-    for (const raw of data) traces.push(mapTrace(raw))
-
-    totalPages = clampTotalPages(response.meta?.totalPages)
-    options.onProgress?.(`traces: page ${page}/${totalPages} (${traces.length} so far)`)
-    if (data.length === 0) break
-    page += 1
-    if (page <= totalPages) await sleep(throttleMs)
-  } while (page <= totalPages)
-
-  return traces
-}
-
-// Fetch GENERATION observations for a single trace (by traceId), paginating
-// if a trace ever has more than one page of generations.
-async function fetchGenerationsForTrace(
-  client: Langfuse,
-  traceId: string,
-  pageSize: number,
-  throttleMs: number
-): Promise<ObservationRecord[]> {
-  const observations: ObservationRecord[] = []
-  let page = 1
-  let totalPages = 1
-
-  do {
-    const response = await client.fetchObservations({
-      traceId,
+  for (let page = 0; page < MAX_PAGES; page += 1) {
+    const params = new URLSearchParams({
       type: 'GENERATION',
-      limit: pageSize,
-      page
-    } as Parameters<Langfuse['fetchObservations']>[0])
+      limit: String(pageSize),
+      fromStartTime: window.from.toISOString(),
+      toStartTime: window.to.toISOString()
+    })
+    if (cursor != null) params.set('cursor', cursor)
 
-    const data = (response.data ?? []) as RawObservation[]
-    for (const raw of data) observations.push(mapObservation(raw))
+    const response = await getJson<{
+      data?: Array<{ traceId?: string | null }>
+      meta?: { cursor?: string | null }
+    }>(client, `/api/public/v2/observations?${params.toString()}`)
 
-    totalPages = clampTotalPages(response.meta?.totalPages)
-    if (data.length === 0) break
-    page += 1
-    if (page <= totalPages) await sleep(throttleMs)
-  } while (page <= totalPages)
-
-  return observations
-}
-
-// Fetch generations for every trace, by traceId, throttled.
-export async function fetchObservationsForTraces(
-  client: Langfuse,
-  traceIds: string[],
-  options: FetchOptions = {}
-): Promise<ObservationRecord[]> {
-  const throttleMs = options.throttleMs ?? DEFAULT_THROTTLE_MS
-  const pageSize = options.pageSize ?? DEFAULT_PAGE_SIZE
-  const all: ObservationRecord[] = []
-
-  for (let index = 0; index < traceIds.length; index += 1) {
-    const traceId = traceIds[index]
-    const generations = await fetchGenerationsForTrace(
-      client,
-      traceId,
-      pageSize,
-      throttleMs
-    )
-    all.push(...generations)
+    const data = response.data ?? []
+    for (const item of data) {
+      if (typeof item.traceId === 'string' && item.traceId.length > 0) {
+        traceIds.add(item.traceId)
+      }
+    }
     options.onProgress?.(
-      `observations: trace ${index + 1}/${traceIds.length} (${all.length} generations)`
+      `observations index: page ${page + 1} (${traceIds.size} traces)`
     )
-    if (index < traceIds.length - 1) await sleep(throttleMs)
+
+    cursor = response.meta?.cursor ?? undefined
+    if (data.length === 0 || cursor == null) break
+    await sleep(throttleMs)
   }
 
-  return all
+  return [...traceIds]
+}
+
+// Fetch one trace's context + its full nested GENERATION observations.
+async function fetchTrace(
+  client: LangfuseClient,
+  traceId: string
+): Promise<{ trace: TraceRecord; observations: ObservationRecord[] }> {
+  const raw = await getJson<RawTrace>(
+    client,
+    `/api/public/traces/${encodeURIComponent(traceId)}`
+  )
+  const trace = mapTrace(raw)
+  const nested = Array.isArray(raw.observations)
+    ? (raw.observations as RawObservation[])
+    : []
+  const observations = nested
+    .filter((observation) => observation.type === 'GENERATION')
+    // Pin traceId to the parent in case the nested record omits it.
+    .map((observation) => ({ ...mapObservation(observation), traceId: trace.id }))
+  return { trace, observations }
 }
 
 export interface TraceData {
@@ -233,17 +216,24 @@ export interface TraceData {
   observations: ObservationRecord[]
 }
 
-// One call the CLI uses: traces in window, then their generations by traceId.
+// The CLI's one call: v2 index -> distinct traceIds -> per-trace detail.
 export async function fetchTraceData(
-  client: Langfuse,
+  client: LangfuseClient,
   window: DateWindow,
   options: FetchOptions = {}
 ): Promise<TraceData> {
-  const traces = await fetchAllTraces(client, window, options)
-  const observations = await fetchObservationsForTraces(
-    client,
-    traces.map((trace) => trace.id),
-    options
-  )
+  const throttleMs = options.throttleMs ?? DEFAULT_THROTTLE_MS
+  const traceIds = await listTraceIds(client, window, options)
+
+  const traces: TraceRecord[] = []
+  const observations: ObservationRecord[] = []
+  for (let index = 0; index < traceIds.length; index += 1) {
+    const { trace, observations: obs } = await fetchTrace(client, traceIds[index])
+    traces.push(trace)
+    observations.push(...obs)
+    options.onProgress?.(`traces: ${index + 1}/${traceIds.length}`)
+    if (index < traceIds.length - 1) await sleep(throttleMs)
+  }
+
   return { traces, observations }
 }

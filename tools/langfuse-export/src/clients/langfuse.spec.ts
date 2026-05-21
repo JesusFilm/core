@@ -19,11 +19,11 @@ describe('mapTrace', () => {
     })
   })
 
-  it('treats an empty sessionId as null and converts a Date timestamp to ISO', () => {
+  it('treats an empty sessionId as null and passes the ISO timestamp through', () => {
     const result = mapTrace({
       id: 't2',
       sessionId: '',
-      timestamp: new Date('2026-05-19T12:00:00.000Z'),
+      timestamp: '2026-05-19T12:00:00.000Z',
       metadata: {},
       tags: []
     })

@@ -45,7 +45,7 @@ export function parseEnv(source: NodeJS.ProcessEnv = process.env): ToolEnv {
     throw new Error(
       `[langfuse-export] missing/invalid env: ${keys}. ` +
         `Run \`bash tools/langfuse-export/fetch-env.sh\` to populate ` +
-        `tools/langfuse-export/.env from Doppler (core/dev).`
+        `tools/langfuse-export/.env from Doppler (journeys/dev).`
     )
   }
 
