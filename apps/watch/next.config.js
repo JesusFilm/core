@@ -11,9 +11,7 @@ const { i18n } = require('./next-i18next.config')
  **/
 const nextConfig = {
   images: {
-    localPatterns: [
-      { pathname: '/watch/images/**' }
-    ],
+    localPatterns: [{ pathname: '/watch/images/**' }],
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
       { protocol: 'https', hostname: 'unsplash.com' },
