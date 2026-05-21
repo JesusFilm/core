@@ -1744,7 +1744,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   """
   Get a single visitor
   """
-  visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS) 
+  visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   block(id: ID!) : Block! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   blocks(where: BlocksFilter) : [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   customDomains(teamId: ID!) : [CustomDomain!]! @join__field(graph: API_JOURNEYS_MODERN) 

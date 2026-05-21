@@ -2158,6 +2158,7 @@ type Query {
     teamId: ID!
   ): [TemplateGalleryPage!]!
   getUserRole: UserRole
+  visitor(id: ID!): Visitor! @override(from: "api-journeys")
   visitorsConnection(teamId: String, first: Int, after: String): VisitorsConnection! @override(from: "api-journeys")
 }
 

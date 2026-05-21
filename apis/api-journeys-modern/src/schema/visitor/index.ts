@@ -1,4 +1,5 @@
 import './visitor'
+import './visitor.query'
 import './visitorsConnection.query'
 import './inputs'
 import './enums'
