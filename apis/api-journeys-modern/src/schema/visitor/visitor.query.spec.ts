@@ -267,9 +267,7 @@ describe('visitor', () => {
       variables: { id: 'visitorId' }
     })
 
-    expect(
-      (prismaMock.visitor as any).findUniqueOrThrow
-    ).not.toHaveBeenCalled()
+    expect((prismaMock.visitor as any).findUniqueOrThrow).not.toHaveBeenCalled()
   })
 
   it('should spread Pothos query into findUniqueOrThrow', async () => {
@@ -287,9 +285,7 @@ describe('visitor', () => {
       variables: { id: 'visitorId' }
     })
 
-    expect(
-      (prismaMock.visitor as any).findUniqueOrThrow
-    ).toHaveBeenCalledWith(
+    expect((prismaMock.visitor as any).findUniqueOrThrow).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id: 'visitorId' }
       })
