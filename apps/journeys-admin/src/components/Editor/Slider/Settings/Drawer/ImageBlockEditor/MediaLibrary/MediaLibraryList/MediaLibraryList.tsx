@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import ImageList from '@mui/material/ImageList'
 import ImageListItem from '@mui/material/ImageListItem'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useCallback, useState } from 'react'
+import { ReactElement } from 'react'
 
 export interface MediaLibraryListImage {
   id: string
@@ -26,19 +26,6 @@ export function MediaLibraryList({
   uploading
 }: MediaLibraryListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [brokenIds, setBrokenIds] = useState<Set<string>>(new Set())
-
-  const handleImageError = useCallback((id: string) => {
-    setBrokenIds((prev) => {
-      if (prev.has(id)) return prev
-      const next = new Set(prev)
-      next.add(id)
-      return next
-    })
-  }, [])
-
-  const visibleImages = images.filter((img) => !brokenIds.has(img.id))
-
   return (
     <ImageList
       gap={10}
@@ -60,7 +47,7 @@ export function MediaLibraryList({
           <CircularProgress size={24} />
         </ImageListItem>
       )}
-      {visibleImages.map((img) => {
+      {images.map((img) => {
         const selected = selectedSrc === img.src
         return (
           <ImageListItem
@@ -90,7 +77,6 @@ export function MediaLibraryList({
                 alt=""
                 loading="lazy"
                 decoding="async"
-                onError={() => handleImageError(img.id)}
                 sx={{
                   width: '100%',
                   height: '100%',
