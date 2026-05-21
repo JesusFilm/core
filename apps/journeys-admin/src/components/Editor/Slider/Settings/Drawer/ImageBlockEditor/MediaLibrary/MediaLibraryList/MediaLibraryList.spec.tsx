@@ -94,4 +94,16 @@ describe('MediaLibraryList', () => {
       screen.getByTestId('media-library-image-uploading')
     ).toBeInTheDocument()
   })
+
+  it('should hide a tile when its image fails to load', () => {
+    render(<MediaLibraryList images={images} handleSelect={jest.fn()} />)
+    const tileB = screen.getByTestId('media-library-image-b')
+    const imgB = tileB.querySelector('img') as HTMLImageElement
+    fireEvent.error(imgB)
+    expect(
+      screen.queryByTestId('media-library-image-b')
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId('media-library-image-a')).toBeInTheDocument()
+    expect(screen.getByTestId('media-library-image-c')).toBeInTheDocument()
+  })
 })
