@@ -1,7 +1,40 @@
 import '@testing-library/jest-dom/vitest'
 import { configure } from '@testing-library/react'
+import videojs from 'video.js'
 
 configure({ asyncUtilTimeout: 5000 })
+
+// jsdom does not implement HTMLMediaElement playback. video.js calls these on
+// the underlying element; left unstubbed they emit "Not implemented" jsdom
+// errors. Stub them as no-ops (play resolves, matching the real Promise API).
+Object.defineProperties(window.HTMLMediaElement.prototype, {
+  play: { configurable: true, value: () => Promise.resolve() },
+  pause: { configurable: true, value: () => undefined },
+  load: { configurable: true, value: () => undefined }
+})
+
+// video.js schedules animation frames; if one is still queued when jsdom tears
+// the window down, `window.requestAnimationFrame` reads back undefined and
+// throws. Back it with timers so it is always callable.
+if (typeof window.requestAnimationFrame !== 'function') {
+  window.requestAnimationFrame = (cb) =>
+    setTimeout(() => cb(Date.now()), 0) as unknown as number
+  window.cancelAnimationFrame = (id) => clearTimeout(id)
+}
+
+// Component specs render video.js players that are never disposed. A deferred
+// `player.play()`/`pause()` stays queued in video.js's ready-queue timer and,
+// under Vitest (unlike Jest, which tore down jsdom between files), fires after
+// the test when the tech is already gone — throwing as an unhandled error that
+// fails whichever spec happens to be running. Disposing every player after
+// each test clears those tracked timers before they fire.
+afterEach(() => {
+  try {
+    videojs.getAllPlayers().forEach((player) => player?.dispose())
+  } catch {
+    // Best-effort teardown — ignore players already disposed by their spec.
+  }
+})
 
 vi.mock(
   'next/router',
@@ -18,13 +51,21 @@ vi.mock('next/dynamic', async () => {
   type AnyComponent = React.ComponentType<Record<string, unknown>>
   const cache = new Map<unknown, AnyComponent>()
 
+  const resolveComponent = (mod: unknown): AnyComponent | null => {
+    if (mod == null) return null
+    return (mod as { default?: AnyComponent }).default ?? (mod as AnyComponent)
+  }
+
   return {
     default: (loader: () => Promise<unknown>) => {
-      void loader().then((mod) => {
-        const resolved = (mod as { default?: AnyComponent }).default ??
-          (mod as AnyComponent)
-        cache.set(loader, resolved)
-      })
+      void loader()
+        .then((mod) => {
+          const resolved = resolveComponent(mod)
+          if (resolved != null) cache.set(loader, resolved)
+        })
+        // Loads can still be in flight when a test tears down; swallow the
+        // late rejection so it does not surface as an unhandled error.
+        .catch(() => {})
 
       return function DynamicComponent(
         props: Record<string, unknown>
@@ -35,13 +76,15 @@ vi.mock('next/dynamic', async () => {
         React.useEffect(() => {
           if (Component != null) return
           let cancelled = false
-          void loader().then((mod) => {
-            if (cancelled) return
-            const resolved = (mod as { default?: AnyComponent }).default ??
-              (mod as AnyComponent)
-            cache.set(loader, resolved)
-            setComponent(() => resolved)
-          })
+          void loader()
+            .then((mod) => {
+              if (cancelled) return
+              const resolved = resolveComponent(mod)
+              if (resolved == null) return
+              cache.set(loader, resolved)
+              setComponent(() => resolved)
+            })
+            .catch(() => {})
           return () => {
             cancelled = true
           }

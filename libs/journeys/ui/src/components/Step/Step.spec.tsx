@@ -453,7 +453,7 @@ describe('Step', () => {
     blockHistoryVar([block])
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
         <JourneyProvider value={{ journey }}>
           <Step {...block} />
         </JourneyProvider>
@@ -470,7 +470,7 @@ describe('Step', () => {
     blockHistoryVar([block])
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
         <JourneyProvider value={{ journey }}>
           <Step {...block} />
         </JourneyProvider>

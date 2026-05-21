@@ -1,20 +1,18 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
 import { ShareDialog } from './ShareDialog'
 
 describe('ShareDialog', () => {
-  it('should copy link', () => {
-    const mockPromise = Promise.resolve()
-    const writeTextMock = vi.fn().mockReturnValue(mockPromise)
+  it('should copy link', async () => {
+    const writeTextMock = vi.fn().mockResolvedValue(undefined)
 
     Object.assign(navigator, {
       clipboard: {
         writeText: writeTextMock
       }
     })
-    vi.spyOn(mockPromise, 'then').mockImplementation(writeTextMock)
 
     const { getByTestId } = render(
       <SnackbarProvider>
@@ -23,7 +21,7 @@ describe('ShareDialog', () => {
     )
 
     fireEvent.click(getByTestId('LinkAngledIcon'))
-    expect(writeTextMock).toHaveBeenCalled()
+    await waitFor(() => expect(writeTextMock).toHaveBeenCalledWith('test-slug'))
   })
 
   it('should share to facebook', () => {
