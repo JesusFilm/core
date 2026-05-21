@@ -91,6 +91,21 @@ describe('visitorsConnection', () => {
     }
   }
 
+  type VisitorsConnectionResult = {
+    visitorsConnection: {
+      edges: Array<{
+        cursor: string
+        node: { id: string; name: string | null; email: string | null }
+      }>
+      pageInfo: {
+        hasNextPage: boolean
+        hasPreviousPage: boolean
+        startCursor: string | null
+        endCursor: string | null
+      }
+    }
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
@@ -194,7 +209,7 @@ describe('visitorsConnection', () => {
     const result = (await authClient({
       document: VISITORS_CONNECTION_QUERY,
       variables: { first: 2 }
-    })) as ExecutionResult
+    })) as ExecutionResult<VisitorsConnectionResult>
 
     expect(result.data?.visitorsConnection.pageInfo.hasNextPage).toBe(true)
     expect(result.data?.visitorsConnection.edges).toHaveLength(2)
