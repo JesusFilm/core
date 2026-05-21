@@ -114,11 +114,14 @@ Mount-site change in `JourneyFlow`:
   {isTemplate && teamTemplateCollection ? (
     <TemplateInfoHelper />
   ) : (
-    !isTemplate && editorAnalytics && (
+    !isTemplate &&
+    editorAnalytics && (
       <>
         <AnalyticsOverlaySwitch />
         <Fade in={showAnalytics} unmountOnExit>
-          <Box><JourneyAnalyticsCard /></Box>
+          <Box>
+            <JourneyAnalyticsCard />
+          </Box>
         </Fade>
       </>
     )
