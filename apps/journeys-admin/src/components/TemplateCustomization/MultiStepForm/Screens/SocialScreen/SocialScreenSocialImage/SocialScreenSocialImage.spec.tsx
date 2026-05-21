@@ -153,7 +153,13 @@ describe('SocialScreenSocialImage', () => {
     }))
 
     render(
-      <MockedProvider mocks={[cloudflareUploadMutationMock, cloudflareUploadCompleteMock('uploadId'), updateMock]}>
+      <MockedProvider
+        mocks={[
+          cloudflareUploadMutationMock,
+          cloudflareUploadCompleteMock('uploadId'),
+          updateMock
+        ]}
+      >
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -238,7 +244,12 @@ describe('SocialScreenSocialImage', () => {
 
     render(
       <MockedProvider
-        mocks={[cloudflareUploadMutationMock, cloudflareUploadCompleteMock('uploadId'), createMock, associationMock]}
+        mocks={[
+          cloudflareUploadMutationMock,
+          cloudflareUploadCompleteMock('uploadId'),
+          createMock,
+          associationMock
+        ]}
       >
         <SnackbarProvider>
           <JourneyProvider
@@ -353,7 +364,11 @@ describe('SocialScreenSocialImage', () => {
 
     render(
       <MockedProvider
-        mocks={[cloudflareUploadMutationMock, cloudflareUploadCompleteMock('uploadId'), journeyImageBlockUpdateMock]}
+        mocks={[
+          cloudflareUploadMutationMock,
+          cloudflareUploadCompleteMock('uploadId'),
+          journeyImageBlockUpdateMock
+        ]}
       >
         <SnackbarProvider>
           <JourneyProvider

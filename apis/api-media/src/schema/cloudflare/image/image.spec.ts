@@ -323,7 +323,6 @@ describe('cloudflareImage', () => {
           orderBy: { createdAt: 'desc' }
         })
       })
-
     })
 
     describe('getMyCloudflareImage', () => {

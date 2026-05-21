@@ -22,8 +22,8 @@ export function useCloudflareUploadCompleteMutation(
     CloudflareUploadCompleteVariables
   >
 ): MutationTuple<CloudflareUploadComplete, CloudflareUploadCompleteVariables> {
-  return useMutation<CloudflareUploadComplete, CloudflareUploadCompleteVariables>(
-    CLOUDFLARE_UPLOAD_COMPLETE,
-    options
-  )
+  return useMutation<
+    CloudflareUploadComplete,
+    CloudflareUploadCompleteVariables
+  >(CLOUDFLARE_UPLOAD_COMPLETE, options)
 }

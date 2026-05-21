@@ -182,10 +182,7 @@ export function ImageUpload({
     if (successResetTimerRef.current != null) {
       clearTimeout(successResetTimerRef.current)
     }
-    successResetTimerRef.current = setTimeout(
-      () => setSuccess(undefined),
-      4000
-    )
+    successResetTimerRef.current = setTimeout(() => setSuccess(undefined), 4000)
     setUploading?.(undefined)
     sendImageUploadSuccessEvent({
       fileSize: file.size,
