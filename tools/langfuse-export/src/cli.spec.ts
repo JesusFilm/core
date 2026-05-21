@@ -55,6 +55,13 @@ describe('parseArgs', () => {
     expect(() => parseArgs(['--days'])).toThrow(/--days requires a value/)
   })
 
+  it('rejects the next flag being swallowed as a value', () => {
+    // Without the guard, model would become '--debug' and --debug would drop.
+    expect(() => parseArgs(['--model', '--debug'])).toThrow(
+      /--model requires a value/
+    )
+  })
+
   it('throws on a non-numeric --throttle (which would NaN-bypass the rate limit)', () => {
     expect(() => parseArgs(['--throttle', 'abc'])).toThrow(/invalid --throttle/)
   })
@@ -66,9 +73,9 @@ describe('parseArgs', () => {
   })
 
   it('throws when --throttle swallows the next flag as its value', () => {
-    // `Number('--pdf')` is NaN, caught by validation.
+    // requireValue rejects '--pdf' before it can be NaN-parsed as a number.
     expect(() => parseArgs(['--throttle', '--pdf'])).toThrow(
-      /invalid --throttle/
+      /--throttle requires a value/
     )
   })
 })
@@ -145,6 +152,12 @@ describe('parseDiscriminator', () => {
   it('maps message:<regex> to a custom regex', () => {
     const result = parseDiscriminator('message:^ping')
     expect(result.excludeMessageRegex?.test('PING me')).toBe(true)
+  })
+
+  it('throws a friendly error on an invalid message regex', () => {
+    expect(() => parseDiscriminator('message:[')).toThrow(
+      /invalid --discriminator message regex/
+    )
   })
 
   it('maps journey:<csv> to a journeyId set', () => {

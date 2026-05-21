@@ -91,6 +91,17 @@ describe('buildStats', () => {
     expect(stats.perDay.unknown).toBe(1)
   })
 
+  it('buckets a malformed (non-date) startTime under "unknown", not a bogus key', () => {
+    const turns = [
+      turn({ startTime: '2026-05-10T00:00:00.000Z' }),
+      turn({ startTime: 'not-a-timestamp-string' })
+    ]
+    const stats = buildStats([conv({ turns })], 0, window)
+    expect(stats.perDay.unknown).toBe(1)
+    // 'not-a-timestamp-string'.slice(0, 10) === 'not-a-time' must not survive.
+    expect(stats.perDay['not-a-time']).toBeUndefined()
+  })
+
   it('excludes real-session single-turn conversations from top-questions', () => {
     const single = conv({
       sessionId: 'real-single',

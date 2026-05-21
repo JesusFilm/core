@@ -52,7 +52,16 @@ export const USAGE = `Usage: pnpm exec tsx tools/langfuse-export/run.ts [options
 
 function requireValue(argv: string[], index: number, flag: string): string {
   const value = argv[index]
-  if (value == null) throw new Error(`${flag} requires a value`)
+  // Reject a missing value or the next flag masquerading as one — without
+  // this, `--model --debug` sets model='--debug' and silently drops --debug.
+  if (
+    value == null ||
+    value.length === 0 ||
+    value === '-h' ||
+    value.startsWith('--')
+  ) {
+    throw new Error(`${flag} requires a value`)
+  }
   return value
 }
 
@@ -196,7 +205,16 @@ export function parseDiscriminator(value: string): NormalizeOptions {
 
   switch (kind) {
     case 'message':
-      return { excludeMessageRegex: new RegExp(rest, 'i') }
+      // The pattern is engineer-supplied (internal tool, not untrusted input)
+      // and the flag is fixed to 'i', so callers can't inject g/y. Wrap the
+      // construction to surface a friendly error instead of a raw SyntaxError.
+      try {
+        return { excludeMessageRegex: new RegExp(rest, 'i') }
+      } catch (error) {
+        throw new Error(
+          `invalid --discriminator message regex: ${error instanceof Error ? error.message : String(error)}`
+        )
+      }
     case 'journey':
       return { excludeJourneyIds: csv(rest) }
     case 'tag':

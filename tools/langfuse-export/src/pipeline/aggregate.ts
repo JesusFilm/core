@@ -11,8 +11,12 @@ import type {
 const DEFAULT_TOP_N = 20
 
 function dayKey(iso: string): string {
-  // YYYY-MM-DD from an ISO timestamp; '' if unparseable.
-  return iso.length >= 10 ? iso.slice(0, 10) : ''
+  // YYYY-MM-DD from an ISO timestamp; '' if unparseable (the caller buckets
+  // '' under 'unknown'). Validate the prefix shape so a malformed value can't
+  // produce a bogus day key.
+  if (iso.length < 10) return ''
+  const day = iso.slice(0, 10)
+  return /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : ''
 }
 
 function percentile(sortedAsc: number[], p: number): number {

@@ -57,11 +57,15 @@ export function parseThemes(
   const themes = parsed.themes
     .map((theme) => {
       const record = theme as Record<string, unknown>
-      const label = typeof record.label === 'string' ? record.label : ''
+      const label = typeof record.label === 'string' ? record.label.trim() : ''
       const sessionIds = Array.isArray(record.sessionIds)
-        ? record.sessionIds.filter(
-            (id): id is string => typeof id === 'string' && validIds.has(id)
-          )
+        ? [
+            ...new Set(
+              record.sessionIds.filter(
+                (id): id is string => typeof id === 'string' && validIds.has(id)
+              )
+            )
+          ]
         : []
       return { label, sessionIds }
     })

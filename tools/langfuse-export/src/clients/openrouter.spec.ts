@@ -26,6 +26,18 @@ describe('parseThemes', () => {
     })
   })
 
+  it('deduplicates repeated sessionIds within a theme', () => {
+    const text = '{"themes":[{"label":"Grace","sessionIds":["a","a","b"]}]}'
+    expect(parseThemes(text, validIds)).toEqual({
+      themes: [{ label: 'Grace', sessionIds: ['a', 'b'] }]
+    })
+  })
+
+  it('trims labels and filters whitespace-only ones', () => {
+    const text = '{"themes":[{"label":"   ","sessionIds":["a"]}]}'
+    expect(parseThemes(text, validIds)).toEqual({ themes: [] })
+  })
+
   it('filters out themes with no label or no surviving sessionIds', () => {
     const text =
       '{"themes":[{"label":"","sessionIds":["a"]},{"label":"Y","sessionIds":["ghost"]},{"label":"Z","sessionIds":["b"]}]}'
