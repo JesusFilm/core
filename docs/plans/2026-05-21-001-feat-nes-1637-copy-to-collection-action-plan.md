@@ -133,25 +133,30 @@ The template gallery page (Local Template Library, NES-1539 / NES-1547) lets pub
 **Dependencies:** None
 
 **Files:**
+
 - Create: `apps/journeys-admin/src/components/TemplateGalleryPageList/InCollectionContext/InCollectionContext.ts`
 - Create: `apps/journeys-admin/src/components/TemplateGalleryPageList/InCollectionContext/index.ts`
-- Modify: `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionCard/CollectionCard.tsx` *or* `apps/journeys-admin/src/components/TemplateGalleryPageList/TemplateGalleryPageList.tsx` (whichever site cleanly wraps only the Collection-grid path's `DraggableJourneysGrid`; do not wrap the All-Templates grid)
+- Modify: `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionCard/CollectionCard.tsx` _or_ `apps/journeys-admin/src/components/TemplateGalleryPageList/TemplateGalleryPageList.tsx` (whichever site cleanly wraps only the Collection-grid path's `DraggableJourneysGrid`; do not wrap the All-Templates grid)
 - Test: `apps/journeys-admin/src/components/TemplateGalleryPageList/InCollectionContext/InCollectionContext.spec.tsx`
 
 **Approach:**
+
 - The context exposes a `useInCollection()` hook returning `true` when the consuming component is under the provider, `false` (or `undefined` coerced to `false`) otherwise.
 - The provider is placed once, inside the Collection-grid mapping in the gallery page — the exact host (CollectionCard children slot vs. TemplateGalleryPageList) is an implementation-time decision based on the smaller diff.
 - The context is admin-app-internal; do not export from `libs/journeys/ui/`.
 
 **Patterns to follow:**
+
 - `apps/journeys-admin/src/components/TemplateGalleryPageList/GalleryDialogLockContext.ts` for the file shape and naming.
 
 **Test scenarios:**
+
 - Happy path: `useInCollection` returns `true` when the consumer is rendered inside the provider.
 - Happy path: `useInCollection` returns `false` when the consumer is rendered outside any provider (no provider in the subtree).
 - Edge case: nesting two providers should not throw; the closest provider's value wins (standard React context semantics — assert non-throw and the deepest-value behavior).
 
 **Verification:**
+
 - `useInCollection` returns `true` only when a parent component has rendered the provider. Existing All-Templates and non-Collection list views are unaffected (the hook returns `false` there).
 
 ---
@@ -165,12 +170,14 @@ The template gallery page (Local Template Library, NES-1539 / NES-1547) lets pub
 **Dependencies:** None (the menu item in U3 will consume it but the dialog can be built and tested independently against mocked submit handlers)
 
 **Files:**
+
 - Create: `apps/journeys-admin/src/components/TemplateGalleryPageList/CopyToCollectionDialog/CopyToCollectionDialog.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateGalleryPageList/CopyToCollectionDialog/index.ts`
 - Create: `apps/journeys-admin/src/components/TemplateGalleryPageList/CopyToCollectionDialog/CopyToCollectionDialog.spec.tsx`
 - Optional: `apps/journeys-admin/src/components/TemplateGalleryPageList/CopyToCollectionDialog/CopyToCollectionDialog.stories.tsx` (low-cost; add if matching `CopyToTeamDialog.stories.tsx`)
 
 **Approach:**
+
 - Compose `TranslationDialogWrapper` for the dialog shell, submit/cancel buttons, and loading state.
 - Formik form with three fields: `collectionSelect: string`, `languageSelect?: JourneyLanguage`, `showTranslation: boolean`. Yup schema requires `collectionSelect` always; requires `languageSelect` only when `showTranslation === true` (same conditional shape `CopyToTeamDialog` uses).
 - Do **not** set `enableReinitialize` on Formik. `CopyToTeamDialog` currently sets `enableReinitialize` (around line 169 at the time of writing) — **do not carry that prop across**. Per NES-1543 Pattern 3, a subscription-driven Apollo cache write can land mid-edit and silently reset `initialValues`. If parent props change (e.g., a journey-id remount is needed), the parent should remount via `key={journey.id}` instead — per NES-1539 Pattern 2.
@@ -189,10 +196,12 @@ The template gallery page (Local Template Library, NES-1539 / NES-1547) lets pub
 - Use `useTranslation('apps-journeys-admin')` for all user-facing strings.
 
 **Patterns to follow:**
+
 - `libs/journeys/ui/src/components/CopyToTeamDialog/CopyToTeamDialog.tsx` — Formik shape, Yup schema, language-picker block, `TranslationDialogWrapper` composition.
 - `apps/journeys-admin/src/libs/useTemplateGalleryPagesQuery/` — collection dropdown source.
 
 **Test scenarios:**
+
 - Happy path: renders with a closed initial state when `open: false`; renders the dropdown with N collections when `open: true` and the query returns N pages.
 - Happy path: selecting a collection enables the submit button; clicking submit calls `onSubmit({ collectionId, language: undefined, showTranslation: false })`.
 - Happy path: toggling translation on reveals the language picker; selecting a language and submitting passes `language` and `showTranslation: true` to `onSubmit`.
@@ -209,6 +218,7 @@ The template gallery page (Local Template Library, NES-1539 / NES-1547) lets pub
 - Integration: closing the dialog mid-loading does not call `onSubmit` again; `onClose` is the only path out.
 
 **Verification:**
+
 - The dialog renders, validates, and surfaces the three terminal states (loading, error, done) without depending on the menu item's orchestration logic. All branches are exercised through props alone.
 
 ---
@@ -222,11 +232,13 @@ The template gallery page (Local Template Library, NES-1539 / NES-1547) lets pub
 **Dependencies:** U2 (dialog), U1 (context — consumed at the call site in U4 but defined here as a peer surface)
 
 **Files:**
+
 - Create: `apps/journeys-admin/src/components/TemplateGalleryPageList/CopyToCollectionMenuItem/CopyToCollectionMenuItem.tsx`
 - Create: `apps/journeys-admin/src/components/TemplateGalleryPageList/CopyToCollectionMenuItem/index.ts`
 - Create: `apps/journeys-admin/src/components/TemplateGalleryPageList/CopyToCollectionMenuItem/CopyToCollectionMenuItem.spec.tsx`
 
 **Approach:**
+
 - Component shape mirrors `CopyToTeamMenuItem`: renders the shared `MenuItem` (label, icon, `onClick`, `testId="CopyToCollection"`) plus the `CopyToCollectionDialog` it controls.
 - Props: `id?: string`, `journey?: Journey`, `handleCloseMenu: () => void`, `setHasOpenDialog?: (open: boolean) => void`, `handleKeepMounted?: () => void` — same shape as `CopyToTeamMenuItem` for symmetry. The optional `setHasOpenDialog` is wired by the parent `JourneyCard` chain (same as the team flow); we rely on the parent to provide it rather than enforcing it at this layer.
 - Internal state: `dialogOpen: boolean`, `loading: boolean`, `errorMessage: string | null`, `done: boolean`, `translationVariables: TranslationVars | null`, `pendingTargetCollectionId: string | null`, `mountedRef: useRef(false)`.
@@ -253,7 +265,7 @@ The template gallery page (Local Template Library, NES-1539 / NES-1547) lets pub
 
 **Technical design:**
 
-> *This illustrates the intended pipeline shape and is directional guidance for review, not implementation specification.*
+> _This illustrates the intended pipeline shape and is directional guidance for review, not implementation specification._
 
 ```
 handleSubmit({ collectionId, language?, showTranslation? }):
@@ -290,11 +302,13 @@ dialog close (via Done or Cancel):
 ```
 
 **Patterns to follow:**
+
 - `apps/journeys-admin/src/components/Team/CopyToTeamMenuItem/CopyToTeamMenuItem.tsx` — overall component shape, subscription gating via `translationVariables` state, `setHasOpenDialog` wiring, `handleKeepMounted` usage.
 - `docs/solutions/best-practices/template-gallery-page-collections-patterns-nes1539.md` Pattern 3 — `mountedRef` + `guardedClose`.
 - `apps/journeys-admin/src/components/TemplateGalleryPageList/useCollectionMutations/` — orchestration extraction pattern if the menu item grows past ~600 lines (then extract a `useCopyToCollection` hook).
 
 **Test scenarios:**
+
 - Happy path: clicking the menu item opens the dialog and calls `setHasOpenDialog(true)`.
 - Happy path (no translation): submitting fires `journeyDuplicate` then `templateGalleryPageAssignJourney` with the duplicated journey's id and the selected collection id; on success the dialog shows the Done state and a `GetAdminJourneys` refetch is issued.
 - Happy path (with translation): submitting fires `journeyDuplicate`, then `useJourneyAiTranslateSubscription` runs to completion, then `templateGalleryPageAssignJourney` runs; on overall success the Done state shows and `GetAdminJourneys` is refetched.
@@ -311,6 +325,7 @@ dialog close (via Done or Cancel):
 - Integration: after a successful pipeline, the gallery-page query receives a `GetAdminJourneys` refetch — the test asserts the refetch was issued (mock the client's `refetchQueries`); the actual cache update of `TemplateGalleryPage.templates` is left to Apollo's normalized merge from the assign mutation's response.
 
 **Verification:**
+
 - The component covers the success path and all three terminal error paths with the correct error copy and the correct refetch behavior. `mountedRef` guards prevent setState on unmount. `setHasOpenDialog` is flipped on open and close.
 
 ---
@@ -324,10 +339,12 @@ dialog close (via Done or Cancel):
 **Dependencies:** U1, U2, U3
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/DefaultMenu/DefaultMenu.tsx`
 - Modify: `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/DefaultMenu/DefaultMenu.spec.tsx`
 
 **Approach:**
+
 - Import `CopyToCollectionMenuItem` and `useInCollection`.
 - Read `teamTemplateCollection` via `useFlags()` (already used elsewhere in this file or imported via `@core/shared/ui/FlagsProvider`).
 - Render the new item as a **sibling block** to the existing `CopyToTeamMenuItem` (not nested inside its `!isLocalTemplate` branch — the new item's gate is independent: `teamTemplateCollection === true && inCollection === true`). Pass through the same `id`, `journey`, `handleCloseMenu`, `handleKeepMounted`, and `setHasOpenDialog` props that `CopyToTeamMenuItem` receives.
@@ -335,12 +352,14 @@ dialog close (via Done or Cancel):
 - Do not change the existing `CopyToTeamMenuItem` rendering or any other menu item.
 
 **Test scenarios:**
+
 - Happy path: when `teamTemplateCollection: true` and the menu is rendered inside the `InCollectionContext.Provider`, the new `"Copy to collection..."` item is in the rendered menu (asserted via `testId`).
 - Edge case: when `teamTemplateCollection: false` and the menu is rendered inside the provider, the new item is NOT in the menu.
 - Edge case: when `teamTemplateCollection: true` and the menu is rendered OUTSIDE the provider (e.g., in `ActiveJourneyList`'s usage path), the new item is NOT in the menu.
 - Integration: the existing `CopyToTeamMenuItem` ("Copy to ...") renders unchanged in all four `(flag, in-collection)` combinations — i.e., adding the new item does not affect the existing one.
 
 **Verification:**
+
 - `DefaultMenu.spec.tsx` snapshots / assertions show the new item appearing only under the `(flag: true, inCollection: true)` combination, with no regressions in any other menu item.
 
 ---
@@ -368,19 +387,19 @@ dialog close (via Done or Cancel):
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|---|---|
-| New journey is invisible in the target Collection card because `journeyDuplicate`'s `update` skips `template: true` reads (the gallery-page's `journeyById` source). | Explicit `refetchQueries({ include: ['GetAdminJourneys'] })` after assign success **and** after assign/translation failure (orphan recovery). Test in U3 asserts the refetch fires. |
-| `JourneyCard` is rendered in non-Collection contexts; a naive flag check would leak the new item there. | Dedicated `InCollectionContext` provided only inside the Collection-grid path; gate the menu item on both `teamTemplateCollection` and `useInCollection()`. U4 tests cover all four `(flag, context)` combinations. |
-| Dialog unmount mid-pipeline causes setState-after-unmount. | `mountedRef` + `guardedClose` per NES-1539 Pattern 3; setup body flips `mountedRef.current = true` (Next-dev/StrictMode trap). |
-| DnD on the gallery page fires while the dialog is open. | `setHasOpenDialog` plumbing into `GalleryDialogLockContext` — same pattern other gallery dialogs use. Asserted in U3 integration tests. |
-| Naming collision with the existing cross-team "Copy to ..." item. | New label `"Copy to collection..."` is distinct in copy and `testId` (`"CopyToCollection"` vs `"Copy"`). |
-| Translation subscription's `onData` writes to the Apollo cache while the user is still in the dialog, potentially resetting Formik. | Form fields are user-only inputs (collection, language, toggle) — they do not read journey fields. Combined with no `enableReinitialize`, the subscription's cache writes are invisible to the form. |
-| `TemplateGalleryPage.templates` typename mismatch (`TemplateGalleryItem` vs `Journey`) per NES-1644 if we ever hand-write a `cache.modify` on `templates`. | Rely on the assign mutation's response shape and Apollo's normalized merge — do not hand-write `cache.modify` on `templates` in this plan. |
-| `useTemplateGalleryPagesQuery` requires a non-nullable `teamId`; the active team may be null in edge cases. | U2 passes `skip: activeTeam?.id == null` to the query and treats the skipped state as a disabled `"Loading…"` row + disabled submit. U3 short-circuits the submit handler with a "no active team" message before any mutation runs. |
-| Rapid double-click on submit fires multiple `journeyDuplicate` calls. | U2 disables the submit button when `loading \|\| done \|\| errorMessage != null`; U3 adds a defensive single-flight `if (loading) return` guard at the top of the submit handler. Tested in U2 and U3. |
-| Translation subscription `onError` may fire on a transient SSE drop after a translated journey already exists. | U3 stops the pipeline and refetches `GetAdminJourneys` so the orphan is visible. R9 copy is generic (`"An error occurred while translating."`) — the user decides whether to delete the partial copy or use it. Terminal-vs-transient distinction is deferred to implementation (investigate the subscription's error envelope; consider a single retry before the terminal error). |
-| Recovery copy ("drag it into the collection from there") in R10 assumes drag-from-All-Templates is supported. | U3 documents a pre-merge verification step. R10 carries contingency copy if the drag direction is missing; follow-up to enable drag-from-All-Templates or add a manual retry affordance on the orphan. |
+| Risk                                                                                                                                                                 | Mitigation                                                                                                                                                                                                                                                                                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| New journey is invisible in the target Collection card because `journeyDuplicate`'s `update` skips `template: true` reads (the gallery-page's `journeyById` source). | Explicit `refetchQueries({ include: ['GetAdminJourneys'] })` after assign success **and** after assign/translation failure (orphan recovery). Test in U3 asserts the refetch fires.                                                                                                                                                                                                 |
+| `JourneyCard` is rendered in non-Collection contexts; a naive flag check would leak the new item there.                                                              | Dedicated `InCollectionContext` provided only inside the Collection-grid path; gate the menu item on both `teamTemplateCollection` and `useInCollection()`. U4 tests cover all four `(flag, context)` combinations.                                                                                                                                                                 |
+| Dialog unmount mid-pipeline causes setState-after-unmount.                                                                                                           | `mountedRef` + `guardedClose` per NES-1539 Pattern 3; setup body flips `mountedRef.current = true` (Next-dev/StrictMode trap).                                                                                                                                                                                                                                                      |
+| DnD on the gallery page fires while the dialog is open.                                                                                                              | `setHasOpenDialog` plumbing into `GalleryDialogLockContext` — same pattern other gallery dialogs use. Asserted in U3 integration tests.                                                                                                                                                                                                                                             |
+| Naming collision with the existing cross-team "Copy to ..." item.                                                                                                    | New label `"Copy to collection..."` is distinct in copy and `testId` (`"CopyToCollection"` vs `"Copy"`).                                                                                                                                                                                                                                                                            |
+| Translation subscription's `onData` writes to the Apollo cache while the user is still in the dialog, potentially resetting Formik.                                  | Form fields are user-only inputs (collection, language, toggle) — they do not read journey fields. Combined with no `enableReinitialize`, the subscription's cache writes are invisible to the form.                                                                                                                                                                                |
+| `TemplateGalleryPage.templates` typename mismatch (`TemplateGalleryItem` vs `Journey`) per NES-1644 if we ever hand-write a `cache.modify` on `templates`.           | Rely on the assign mutation's response shape and Apollo's normalized merge — do not hand-write `cache.modify` on `templates` in this plan.                                                                                                                                                                                                                                          |
+| `useTemplateGalleryPagesQuery` requires a non-nullable `teamId`; the active team may be null in edge cases.                                                          | U2 passes `skip: activeTeam?.id == null` to the query and treats the skipped state as a disabled `"Loading…"` row + disabled submit. U3 short-circuits the submit handler with a "no active team" message before any mutation runs.                                                                                                                                                 |
+| Rapid double-click on submit fires multiple `journeyDuplicate` calls.                                                                                                | U2 disables the submit button when `loading \|\| done \|\| errorMessage != null`; U3 adds a defensive single-flight `if (loading) return` guard at the top of the submit handler. Tested in U2 and U3.                                                                                                                                                                              |
+| Translation subscription `onError` may fire on a transient SSE drop after a translated journey already exists.                                                       | U3 stops the pipeline and refetches `GetAdminJourneys` so the orphan is visible. R9 copy is generic (`"An error occurred while translating."`) — the user decides whether to delete the partial copy or use it. Terminal-vs-transient distinction is deferred to implementation (investigate the subscription's error envelope; consider a single retry before the terminal error). |
+| Recovery copy ("drag it into the collection from there") in R10 assumes drag-from-All-Templates is supported.                                                        | U3 documents a pre-merge verification step. R10 carries contingency copy if the drag direction is missing; follow-up to enable drag-from-All-Templates or add a manual retry affordance on the orphan.                                                                                                                                                                              |
 
 ---
 

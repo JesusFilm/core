@@ -87,13 +87,8 @@ export function CopyToCollectionDialog({
   const { activeTeam } = useTeam()
   const teamId = activeTeam?.id
   const skipQuery = teamId == null
-  const {
-    data: pagesData,
-    loading: pagesLoading
-  } = useTemplateGalleryPagesQuery(
-    { teamId: teamId ?? '' },
-    { skip: skipQuery }
-  )
+  const { data: pagesData, loading: pagesLoading } =
+    useTemplateGalleryPagesQuery({ teamId: teamId ?? '' }, { skip: skipQuery })
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',
@@ -184,7 +179,9 @@ export function CopyToCollectionDialog({
     values: FormValues,
     { resetForm }: FormikHelpers<FormValues>
   ): Promise<void> {
-    const selectedPage = pages.find((page) => page.id === values.collectionSelect)
+    const selectedPage = pages.find(
+      (page) => page.id === values.collectionSelect
+    )
     onSubmit({
       collectionId: values.collectionSelect,
       collectionTitle: selectedPage?.title ?? '',

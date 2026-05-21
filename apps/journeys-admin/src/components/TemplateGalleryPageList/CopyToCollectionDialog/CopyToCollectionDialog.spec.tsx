@@ -203,7 +203,9 @@ describe('CopyToCollectionDialog', () => {
       mocks: [pagesMock, languagesMock],
       props: { open: false }
     })
-    expect(screen.queryByTestId('CopyToCollectionDialog')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('CopyToCollectionDialog')
+    ).not.toBeInTheDocument()
   })
 
   it('selecting a collection enables submit and submits with the chosen id', async () => {
@@ -294,9 +296,7 @@ describe('CopyToCollectionDialog', () => {
     fireEvent.mouseDown(
       screen.getByRole('combobox', { name: 'Select Collection' })
     )
-    const emptyRow = await screen.findByTestId(
-      'CopyToCollectionDialogEmptyRow'
-    )
+    const emptyRow = await screen.findByTestId('CopyToCollectionDialogEmptyRow')
     expect(emptyRow).toHaveTextContent('No collections available')
     expect(emptyRow).toHaveAttribute('aria-disabled', 'true')
 
@@ -419,7 +419,9 @@ describe('CopyToCollectionDialog', () => {
     )
 
     // While loading, the wrapper hides the submit button entirely.
-    expect(screen.queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Copy' })
+    ).not.toBeInTheDocument()
     expect(onSubmit).toHaveBeenCalledTimes(1)
   })
 
@@ -440,8 +442,12 @@ describe('CopyToCollectionDialog', () => {
     )
 
     // The terminal-state Dialog should only show a Done button, no Cancel.
-    expect(screen.queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Cancel' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Copy' })
+    ).not.toBeInTheDocument()
 
     const doneButton = screen.getByRole('button', { name: 'Done' })
     fireEvent.click(doneButton)
@@ -463,8 +469,12 @@ describe('CopyToCollectionDialog', () => {
     expect(status).toHaveAttribute('aria-live', 'polite')
     expect(status).toHaveTextContent('Copied to Featured Templates.')
 
-    expect(screen.queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Copy' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Cancel' })
+    ).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Done' }))
     expect(onClose).toHaveBeenCalledTimes(1)
@@ -477,8 +487,12 @@ describe('CopyToCollectionDialog', () => {
       props: { onSubmit, onClose, loading: true }
     })
 
-    expect(screen.queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Copy' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Cancel' })
+    ).not.toBeInTheDocument()
     expect(onSubmit).not.toHaveBeenCalled()
     expect(onClose).not.toHaveBeenCalled()
   })

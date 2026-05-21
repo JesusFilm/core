@@ -1,11 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor
-} from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
@@ -24,12 +18,9 @@ jest.mock('@core/journeys/ui/useJourneyAiTranslateSubscription', () => ({
   useJourneyAiTranslateSubscription: jest.fn()
 }))
 
-jest.mock(
-  '../../../libs/useTemplateGalleryPageAssignJourneyMutation',
-  () => ({
-    useTemplateGalleryPageAssignJourneyMutation: jest.fn()
-  })
-)
+jest.mock('../../../libs/useTemplateGalleryPageAssignJourneyMutation', () => ({
+  useTemplateGalleryPageAssignJourneyMutation: jest.fn()
+}))
 
 const mockRefetchQueries = jest.fn(() => Promise.resolve([]))
 
@@ -60,77 +51,76 @@ jest.mock('./CopyToCollectionDialog.stub', () => ({}), { virtual: true })
 
 // Replace the dialog with a controllable stub so the menu-item tests focus
 // purely on orchestration. The real dialog is exercised by U2's spec.
-jest.mock(
-  '../CopyToCollectionDialog',
-  () => ({
-    CopyToCollectionDialog: (props: {
-      open: boolean
-      loading?: boolean
-      errorMessage?: string
-      done?: boolean
-      selectedCollectionTitle?: string
-      journeyTitle?: string
-      onClose: () => void
-      onSubmit: (values: {
-        collectionId: string
-        collectionTitle: string
-        language?: { id: string }
-        showTranslation: boolean
-      }) => void
-      isTranslating?: boolean
-    }) => {
-      if (!props.open) return null
-      return (
-        <div data-testid="CopyToCollectionDialogStub">
-          <span data-testid="DialogLoading">{String(props.loading ?? false)}</span>
-          <span data-testid="DialogDone">{String(props.done ?? false)}</span>
-          <span data-testid="DialogError">{props.errorMessage ?? ''}</span>
-          <span data-testid="DialogIsTranslating">
-            {String(props.isTranslating ?? false)}
-          </span>
-          <span data-testid="DialogSelectedCollection">
-            {props.selectedCollectionTitle ?? ''}
-          </span>
-          <button
-            type="button"
-            data-testid="StubSubmitNoTranslation"
-            onClick={(): void =>
-              props.onSubmit({
-                collectionId: 'collection-1',
-                collectionTitle: 'Featured Templates',
-                language: undefined,
-                showTranslation: false
-              })
-            }
-          >
-            submit-no-translation
-          </button>
-          <button
-            type="button"
-            data-testid="StubSubmitWithTranslation"
-            onClick={(): void =>
-              props.onSubmit({
-                collectionId: 'collection-1',
-                collectionTitle: 'Featured Templates',
-                language: { id: '528' },
-                showTranslation: true
-              })
-            }
-          >
-            submit-with-translation
-          </button>
-          <button
-            type="button"
-            data-testid="StubClose"
-            onClick={(): void => props.onClose()}
-          >
-            close
-          </button>
-        </div>
-      )
-    }
-  })
-)
+jest.mock('../CopyToCollectionDialog', () => ({
+  CopyToCollectionDialog: (props: {
+    open: boolean
+    loading?: boolean
+    errorMessage?: string
+    done?: boolean
+    selectedCollectionTitle?: string
+    journeyTitle?: string
+    onClose: () => void
+    onSubmit: (values: {
+      collectionId: string
+      collectionTitle: string
+      language?: { id: string }
+      showTranslation: boolean
+    }) => void
+    isTranslating?: boolean
+  }) => {
+    if (!props.open) return null
+    return (
+      <div data-testid="CopyToCollectionDialogStub">
+        <span data-testid="DialogLoading">
+          {String(props.loading ?? false)}
+        </span>
+        <span data-testid="DialogDone">{String(props.done ?? false)}</span>
+        <span data-testid="DialogError">{props.errorMessage ?? ''}</span>
+        <span data-testid="DialogIsTranslating">
+          {String(props.isTranslating ?? false)}
+        </span>
+        <span data-testid="DialogSelectedCollection">
+          {props.selectedCollectionTitle ?? ''}
+        </span>
+        <button
+          type="button"
+          data-testid="StubSubmitNoTranslation"
+          onClick={(): void =>
+            props.onSubmit({
+              collectionId: 'collection-1',
+              collectionTitle: 'Featured Templates',
+              language: undefined,
+              showTranslation: false
+            })
+          }
+        >
+          submit-no-translation
+        </button>
+        <button
+          type="button"
+          data-testid="StubSubmitWithTranslation"
+          onClick={(): void =>
+            props.onSubmit({
+              collectionId: 'collection-1',
+              collectionTitle: 'Featured Templates',
+              language: { id: '528' },
+              showTranslation: true
+            })
+          }
+        >
+          submit-with-translation
+        </button>
+        <button
+          type="button"
+          data-testid="StubClose"
+          onClick={(): void => props.onClose()}
+        >
+          close
+        </button>
+      </div>
+    )
+  }
+}))
 
 type DuplicateFn = jest.Mock<
   Promise<{ data?: { journeyDuplicate?: { id: string } | null } }>,
@@ -174,9 +164,14 @@ function setupMocks(): void {
   })) as DuplicateFn
   assign = jest.fn(async () => ({})) as AssignFn
 
-  duplicateHookMock.mockReturnValue([duplicate as unknown as never, {} as never])
+  duplicateHookMock.mockReturnValue([
+    duplicate as unknown as never,
+    {} as never
+  ])
   assignHookMock.mockReturnValue([assign as unknown as never, {} as never])
-  subscriptionHookMock.mockImplementation(((opts: typeof lastSubscriptionOpts) => {
+  subscriptionHookMock.mockImplementation(((
+    opts: typeof lastSubscriptionOpts
+  ) => {
     lastSubscriptionOpts = opts
     return { data: undefined } as unknown as ReturnType<
       typeof useJourneyAiTranslateSubscription
@@ -225,7 +220,8 @@ describe('CopyToCollectionMenuItem', () => {
   })
 
   it('clicking the menu item opens the dialog and fires setHasOpenDialog/handleKeepMounted/handleCloseMenu', () => {
-    const { handleCloseMenu, setHasOpenDialog, handleKeepMounted } = renderItem()
+    const { handleCloseMenu, setHasOpenDialog, handleKeepMounted } =
+      renderItem()
 
     fireEvent.click(screen.getByRole('menuitem'))
 
@@ -274,9 +270,9 @@ describe('CopyToCollectionMenuItem', () => {
     await waitFor(() =>
       expect(screen.getByTestId('DialogDone')).toHaveTextContent('true')
     )
-    expect(
-      screen.getByTestId('DialogSelectedCollection')
-    ).toHaveTextContent('Featured Templates')
+    expect(screen.getByTestId('DialogSelectedCollection')).toHaveTextContent(
+      'Featured Templates'
+    )
   })
 
   it('happy path (with translation) — duplicate, subscription onComplete triggers assign, refetch issued', async () => {
@@ -289,7 +285,9 @@ describe('CopyToCollectionMenuItem', () => {
     // After duplicate, translation variables must be armed; assign has NOT
     // fired yet — it waits for subscription onComplete.
     await waitFor(() =>
-      expect(screen.getByTestId('DialogIsTranslating')).toHaveTextContent('true')
+      expect(screen.getByTestId('DialogIsTranslating')).toHaveTextContent(
+        'true'
+      )
     )
     expect(assign).not.toHaveBeenCalled()
 
@@ -314,9 +312,9 @@ describe('CopyToCollectionMenuItem', () => {
   })
 
   it('rapid double-click on submit — duplicate is called only once (single-flight)', async () => {
-    let resolveDuplicate: (
-      value: { data?: { journeyDuplicate?: { id: string } | null } }
-    ) => void = () => undefined
+    let resolveDuplicate: (value: {
+      data?: { journeyDuplicate?: { id: string } | null }
+    }) => void = () => undefined
     duplicate.mockImplementation(
       () =>
         new Promise((resolve) => {
@@ -457,9 +455,9 @@ describe('CopyToCollectionMenuItem', () => {
   })
 
   it('unmount mid-pipeline — does not throw setState-after-unmount', async () => {
-    let resolveDuplicate: (
-      value: { data?: { journeyDuplicate?: { id: string } | null } }
-    ) => void = () => undefined
+    let resolveDuplicate: (value: {
+      data?: { journeyDuplicate?: { id: string } | null }
+    }) => void = () => undefined
     duplicate.mockImplementation(
       () =>
         new Promise((resolve) => {
