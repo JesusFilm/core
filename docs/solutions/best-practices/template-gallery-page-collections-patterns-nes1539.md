@@ -149,7 +149,7 @@ itself and code review when reading any `useRef(true)` /
 the dialog chains a mutation → `useSubscription` → second mutation (e.g.
 the AI-translate flow on the Copy-to-collection menu item), this Pattern 3
 foundation needs two extensions: (a) gate the second mutation's network
-call *before* its `await`, not only after, otherwise the mutation fires
+call _before_ its `await`, not only after, otherwise the mutation fires
 server-side on the unmounted component; and (b) release any
 `setHasOpenDialog` / lock-context signal in the lifecycle cleanup, not
 only in `guardedClose`, so abnormal-unmount (route navigation

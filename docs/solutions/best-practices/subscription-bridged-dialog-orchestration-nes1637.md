@@ -106,21 +106,18 @@ The gap in `CopyToTeamMenuItem`: `handleDuplicateJourney` calls `setLoading(fals
 The `CopyToCollectionMenuItem` fix — `runAssign` early-returns before the `await templateGalleryPageAssignJourney` call when `!mountedRef.current`:
 
 ```tsx
-const runAssign = async (
-  newJourneyId: string,
-  targetCollectionId: string
-): Promise<void> => {
+const runAssign = async (newJourneyId: string, targetCollectionId: string): Promise<void> => {
   // Gate the network call itself on mount status — the assign
   // mutation would otherwise fire after unmount (subscription
   // onComplete races a closing dialog), creating a silent server-side
   // orphan the user has no UI feedback about.
-  if (!mountedRef.current) return        // ← BEFORE the await
+  if (!mountedRef.current) return // ← BEFORE the await
   try {
     await templateGalleryPageAssignJourney({
       variables: { journeyId: newJourneyId, pageId: targetCollectionId }
     })
     refetchAdminJourneys()
-    if (!mountedRef.current) return      // ← AFTER the await (standard NES-1539 guard)
+    if (!mountedRef.current) return // ← AFTER the await (standard NES-1539 guard)
     safeSetLoading(false)
     setTranslationVariables(null)
     setDone(true)
