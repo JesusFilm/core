@@ -57,7 +57,6 @@ import {
   GalleryDialogLockContext,
   GalleryDialogLockContextValue
 } from './GalleryDialogLockContext'
-import { InCollectionContext } from './InCollectionContext'
 import { useCollectionMutations } from './useCollectionMutations'
 import { useDragEndHandler } from './useDragEndHandler'
 
@@ -532,18 +531,16 @@ export function TemplateGalleryPageList({
                             : null
                         }
                       >
-                        <InCollectionContext.Provider value>
-                          <DraggableJourneysGrid
-                            journeys={
-                              journeysByCollection.get(collection.id) ?? []
-                            }
-                            publishedLock={
-                              collection.status ===
-                              TemplateGalleryPageStatus.published
-                            }
-                            dragInFlight={interactionsLocked}
-                          />
-                        </InCollectionContext.Provider>
+                        <DraggableJourneysGrid
+                          journeys={
+                            journeysByCollection.get(collection.id) ?? []
+                          }
+                          publishedLock={
+                            collection.status ===
+                            TemplateGalleryPageStatus.published
+                          }
+                          dragInFlight={interactionsLocked}
+                        />
                       </CollectionCard>
                     </DroppableCollectionWrapper>
                   ))}

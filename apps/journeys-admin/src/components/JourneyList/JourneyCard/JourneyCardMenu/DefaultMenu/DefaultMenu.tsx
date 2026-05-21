@@ -38,7 +38,6 @@ import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
 import { CopyToCollectionMenuItem } from '../../../../TemplateGalleryPageList/CopyToCollectionMenuItem'
-import { useInCollection } from '../../../../TemplateGalleryPageList/InCollectionContext'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
@@ -121,7 +120,6 @@ export function DefaultMenu({
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { teamTemplateCollection } = useFlags()
-  const inCollection = useInCollection()
   const { data: userRoleData } = useUserRoleQuery()
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
   const { hostname } = useCustomDomainsQuery({
@@ -197,9 +195,6 @@ export function DefaultMenu({
     (isPublisher && template === true)
 
   const cantManageJourney = !canManageJourney
-
-  const isLocalTemplate =
-    journey?.template === true && journey?.team?.id !== 'jfp-team'
 
   if (hasCurrentUser && isAnonymousUser) {
     return <></>
@@ -296,16 +291,14 @@ export function DefaultMenu({
           <Divider />
         </>
       )}
-      {!isLocalTemplate && (
-        <CopyToTeamMenuItem
-          id={id}
-          handleCloseMenu={handleCloseMenu}
-          handleKeepMounted={handleKeepMounted}
-          journey={journey}
-          setHasOpenDialog={setHasOpenDialog}
-        />
-      )}
-      {teamTemplateCollection === true && inCollection && (
+      <CopyToTeamMenuItem
+        id={id}
+        handleCloseMenu={handleCloseMenu}
+        handleKeepMounted={handleKeepMounted}
+        journey={journey}
+        setHasOpenDialog={setHasOpenDialog}
+      />
+      {teamTemplateCollection === true && template === true && (
         <CopyToCollectionMenuItem
           id={id}
           journey={journey}
