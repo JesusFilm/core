@@ -1,4 +1,4 @@
-import { useApolloClient } from '@apollo/client'
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -13,6 +13,10 @@ import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
 import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
+import {
+  CloudflareUploadComplete,
+  CloudflareUploadCompleteVariables
+} from '../../../../../../../../../__generated__/CloudflareUploadComplete'
 import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 import {
   sendImageUploadFailureEvent,
@@ -22,6 +26,12 @@ import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/
 import { MAX_IMAGE_UPLOAD_BYTES } from '../../../../../../../../libs/useImageUpload'
 import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
 import { prependCloudflareImage } from '../../MediaLibrary/prependCloudflareImage'
+
+export const CLOUDFLARE_UPLOAD_COMPLETE = gql`
+  mutation CloudflareUploadComplete($id: ID!) {
+    cloudflareUploadComplete(id: $id)
+  }
+`
 
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
@@ -43,6 +53,10 @@ export function ImageUpload({
   const { t } = useTranslation('apps-journeys-admin')
   const { cache } = useApolloClient()
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
+  const [cloudflareUploadComplete] = useMutation<
+    CloudflareUploadComplete,
+    CloudflareUploadCompleteVariables
+  >(CLOUDFLARE_UPLOAD_COMPLETE)
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
   const [errorCode, setErrorCode] = useState<ErrorCode>()
   const successResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
@@ -129,6 +143,7 @@ export function ImageUpload({
           return
         }
         const url = `https://imagedelivery.net/${cloudflareUploadKey}/${cloudflareId}`
+        await cloudflareUploadComplete({ variables: { id: cloudflareId } })
         prependCloudflareImage(
           cache,
           { id: cloudflareId, url, blurhash: null },

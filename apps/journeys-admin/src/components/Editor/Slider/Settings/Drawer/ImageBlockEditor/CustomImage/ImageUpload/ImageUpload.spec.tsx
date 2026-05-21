@@ -6,7 +6,19 @@ import fetch, { Response } from 'node-fetch'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation'
 
-import { ImageUpload } from './ImageUpload'
+import { CLOUDFLARE_UPLOAD_COMPLETE, ImageUpload } from './ImageUpload'
+
+const cloudflareUploadCompleteMockResult = jest.fn(() => ({
+  data: { cloudflareUploadComplete: true }
+}))
+
+const cloudflareUploadCompleteMock = {
+  request: {
+    query: CLOUDFLARE_UPLOAD_COMPLETE,
+    variables: { id: 'uploadId' }
+  },
+  result: cloudflareUploadCompleteMockResult
+}
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
@@ -40,6 +52,7 @@ describe('ImageUpload', () => {
   afterEach(() => {
     process.env = originalEnv
     mockSendGTMEvent.mockClear()
+    cloudflareUploadCompleteMockResult.mockClear()
   })
 
   const imageBlock: ImageBlock = {
@@ -139,7 +152,8 @@ describe('ImageUpload', () => {
                 }
               }
             }
-          }
+          },
+          cloudflareUploadCompleteMock
         ]}
       >
         <ImageUpload
@@ -166,7 +180,188 @@ describe('ImageUpload', () => {
         focalTop: 50
       })
     )
+    expect(cloudflareUploadCompleteMockResult).toHaveBeenCalled()
     expect(screen.getByText('Upload Successful!')).toBeInTheDocument()
+  })
+
+  it('should not call cloudflareUploadComplete on rejected file', async () => {
+    render(
+      <MockedProvider mocks={[cloudflareUploadCompleteMock]}>
+        <ImageUpload
+          onChange={jest.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    const inputEl = screen.getByTestId('drop zone')
+    const largeFile = new File([new ArrayBuffer(11000000)], 'large.png', {
+      type: 'image/png'
+    })
+    Object.defineProperty(inputEl, 'files', { value: [largeFile] })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() =>
+      expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
+    )
+    expect(cloudflareUploadCompleteMockResult).not.toHaveBeenCalled()
+  })
+
+  it('should not call cloudflareUploadComplete on Cloudflare error response', async () => {
+    const cfErrorResponse = {
+      result: { id: 'uploadId' },
+      errors: [{ code: 5000, message: 'Upload failed' }],
+      messages: [],
+      success: false
+    }
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfErrorResponse)
+    } as unknown as Response)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: { query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          },
+          cloudflareUploadCompleteMock
+        ]}
+      >
+        <ImageUpload
+          onChange={jest.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    const inputEl = screen.getByTestId('drop zone')
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([new Blob(['file'])], 'testFile.png', { type: 'image/png' })
+      ]
+    })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() =>
+      expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
+    )
+    expect(cloudflareUploadCompleteMockResult).not.toHaveBeenCalled()
+  })
+
+  it('should not call cloudflareUploadComplete on fetch exception', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('network'))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: { query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          },
+          cloudflareUploadCompleteMock
+        ]}
+      >
+        <ImageUpload
+          onChange={jest.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    const inputEl = screen.getByTestId('drop zone')
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([new Blob(['file'])], 'testFile.png', { type: 'image/png' })
+      ]
+    })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() =>
+      expect(mockSendGTMEvent).toHaveBeenCalledWith({
+        event: 'image_upload_failure',
+        fileSize: expect.any(Number),
+        fileType: 'image/png',
+        errorCode: 'upload-exception'
+      })
+    )
+    expect(cloudflareUploadCompleteMockResult).not.toHaveBeenCalled()
+  })
+
+  it('should not call cloudflareUploadComplete on invalid response (missing cloudflareId)', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () =>
+        await Promise.resolve({
+          result: null,
+          errors: [],
+          messages: [],
+          success: true
+        })
+    } as unknown as Response)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: { query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          },
+          cloudflareUploadCompleteMock
+        ]}
+      >
+        <ImageUpload
+          onChange={jest.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    const inputEl = screen.getByTestId('drop zone')
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([new Blob(['file'])], 'testFile.png', { type: 'image/png' })
+      ]
+    })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() =>
+      expect(mockSendGTMEvent).toHaveBeenCalledWith({
+        event: 'image_upload_failure',
+        fileSize: expect.any(Number),
+        fileType: 'image/png',
+        errorCode: 'upload-invalid-response'
+      })
+    )
+    expect(cloudflareUploadCompleteMockResult).not.toHaveBeenCalled()
   })
 
   it('should render drop zone text in default state', () => {
@@ -226,7 +421,8 @@ describe('ImageUpload', () => {
                 }
               }
             }
-          }
+          },
+          cloudflareUploadCompleteMock
         ]}
       >
         <ImageUpload
@@ -368,7 +564,8 @@ describe('ImageUpload', () => {
                 }
               }
             }
-          }
+          },
+          cloudflareUploadCompleteMock
         ]}
       >
         <ImageUpload
@@ -477,7 +674,8 @@ describe('ImageUpload', () => {
                 }
               }
             }
-          }
+          },
+          cloudflareUploadCompleteMock
         ]}
       >
         <ImageUpload
@@ -539,7 +737,8 @@ describe('ImageUpload', () => {
                 }
               }
             }
-          }
+          },
+          cloudflareUploadCompleteMock
         ]}
       >
         <ImageUpload
@@ -623,7 +822,8 @@ describe('ImageUpload', () => {
                 }
               }
             }
-          }
+          },
+          cloudflareUploadCompleteMock
         ]}
       >
         <ImageUpload

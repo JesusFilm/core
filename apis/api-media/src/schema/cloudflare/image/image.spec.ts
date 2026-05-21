@@ -224,7 +224,7 @@ describe('cloudflareImage', () => {
           }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId' },
+          where: { userId: 'testUserId', uploaded: true },
           orderBy: { createdAt: 'desc' }
         })
       })
@@ -281,7 +281,7 @@ describe('cloudflareImage', () => {
           }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId' },
+          where: { userId: 'testUserId', uploaded: true },
           orderBy: { createdAt: 'desc' },
           take: 10,
           skip: 0
@@ -295,7 +295,7 @@ describe('cloudflareImage', () => {
           variables: { isAi: true }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId', isAi: true },
+          where: { userId: 'testUserId', uploaded: true, isAi: true },
           orderBy: { createdAt: 'desc' }
         })
       })
@@ -307,7 +307,7 @@ describe('cloudflareImage', () => {
           variables: { isAi: false }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId', isAi: false },
+          where: { userId: 'testUserId', uploaded: true, isAi: false },
           orderBy: { createdAt: 'desc' }
         })
       })
@@ -319,9 +319,19 @@ describe('cloudflareImage', () => {
           variables: { isAi: null }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId' },
+          where: { userId: 'testUserId', uploaded: true },
           orderBy: { createdAt: 'desc' }
         })
+      })
+
+      it('should exclude images where uploaded is false', async () => {
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([])
+        await authClient({ document: GET_MY_CLOUDFLARE_IMAGES_QUERY })
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: expect.objectContaining({ uploaded: true })
+          })
+        )
       })
     })
 
