@@ -6,7 +6,11 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useState } from 'react'
+import {
+  ReactElement,
+  type KeyboardEvent as ReactKeyboardEvent,
+  useState
+} from 'react'
 
 import { HowToCreateSection } from './HowToCreateSection'
 import { SharingAndPublishingSection } from './SharingAndPublishingSection'
@@ -252,6 +256,15 @@ export function TemplateInfoPanel({
               data-testid="TemplateInfoPanelClose"
               aria-label={t('Close template info')}
               onClick={onClose}
+              onKeyDown={(event: ReactKeyboardEvent<HTMLButtonElement>) => {
+                // Native <button> activates on Enter/Space via onClick;
+                // preventDefault here avoids onClose firing twice when the
+                // user activates the bar via keyboard.
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  onClose()
+                }
+              }}
               sx={{
                 flexShrink: 0,
                 width: '100%',

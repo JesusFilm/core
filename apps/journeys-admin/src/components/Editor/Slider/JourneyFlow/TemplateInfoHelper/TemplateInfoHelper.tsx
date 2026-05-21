@@ -9,6 +9,7 @@ import Unstable_TrapFocus from '@mui/material/Unstable_TrapFocus'
 import { useTranslation } from 'next-i18next/pages'
 import {
   ReactElement,
+  type KeyboardEvent as ReactKeyboardEvent,
   useCallback,
   useEffect,
   useId,
@@ -48,6 +49,19 @@ export function TemplateInfoHelper(): ReactElement {
 
   function handleToggle(): void {
     setOpen((prev) => !prev)
+  }
+
+  // Per the journeys-admin a11y rule, interactive elements declare an
+  // explicit onKeyDown alongside onClick. Native <button> elements (which
+  // ButtonBase renders) already activate on Enter/Space via onClick, so
+  // we preventDefault here to avoid double-firing handleToggle.
+  function handleTriggerKeyDown(
+    event: ReactKeyboardEvent<HTMLButtonElement>
+  ): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      handleToggle()
+    }
   }
 
   // Stable handler: identity does not change between renders, which keeps
@@ -97,6 +111,7 @@ export function TemplateInfoHelper(): ReactElement {
           aria-expanded={open}
           aria-controls={panelId}
           onClick={handleToggle}
+          onKeyDown={handleTriggerKeyDown}
           sx={{
             bgcolor: 'background.paper',
             color: 'text.primary',
