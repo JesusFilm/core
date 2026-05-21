@@ -44,7 +44,7 @@ export function TrackingAndAnalyticsSection(): ReactElement {
       </Box>
       <Box
         component="img"
-        src="/assets/template-info/tracking-button-properties.png"
+        src="/assets/template-info/tracking-button-properties.gif"
         alt={t('Button Properties panel with tracking event configuration')}
         width={333}
         height={227}
@@ -58,7 +58,7 @@ export function TrackingAndAnalyticsSection(): ReactElement {
       </Typography>
       <Box
         component="img"
-        src="/assets/template-info/tracking-analytics-table.png"
+        src="/assets/template-info/tracking-analytics-table.gif"
         alt={t('Analytics statistics detailed table view showing event data')}
         width={333}
         height={203}

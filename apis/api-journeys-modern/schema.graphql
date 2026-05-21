@@ -1777,6 +1777,15 @@ type OperatingSystem
   version: String
 }
 
+type PageInfo
+  @shareable
+{
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
 type PhoneAction implements Action
   @shareable
 {
@@ -2149,6 +2158,7 @@ type Query {
     teamId: ID!
   ): [TemplateGalleryPage!]!
   getUserRole: UserRole
+  visitorsConnection(teamId: String, first: Int, after: String): VisitorsConnection! @override(from: "api-journeys")
 }
 
 type RadioOptionBlock implements Block
@@ -3243,6 +3253,13 @@ type Visitor
   events: [Event!]!
 }
 
+type VisitorEdge
+  @shareable
+{
+  cursor: String!
+  node: Visitor!
+}
+
 enum VisitorStatus {
   star
   prohibited
@@ -3266,6 +3283,13 @@ input VisitorUpdateInput {
   countryCode: String
   referrer: String
   phone: String
+}
+
+type VisitorsConnection
+  @shareable
+{
+  edges: [VisitorEdge!]!
+  pageInfo: PageInfo!
 }
 
 type YouTube
