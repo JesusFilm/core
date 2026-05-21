@@ -104,7 +104,6 @@ export async function processSubtitleFile(
   try {
     await uploadToR2({
       uploadUrl: r2Asset.uploadUrl,
-      publicUrl: r2Asset.publicUrl,
       bucket: env.CLOUDFLARE_R2_BUCKET,
       filePath,
       contentType,
@@ -115,7 +114,7 @@ export async function processSubtitleFile(
     recordProcessingFailure(
       summary,
       file,
-      `R2 upload/public verification: ${toErrorMessage(error)}${formatR2AssetDiagnostic(r2Asset)}`
+      `R2 upload: ${toErrorMessage(error)}${formatR2AssetDiagnostic(r2Asset)}`
     )
     return
   }

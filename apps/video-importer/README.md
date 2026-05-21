@@ -31,6 +31,7 @@ Before you can use the Video Importer binary, make sure you have the following:
 ### 4. Network Access
 
 - The tool needs to connect to the internet to upload files and update backend records. Ensure your network/firewall allows outgoing connections to the endpoints specified in your `.env` file.
+- Audio preview imports use `CLOUDFLARE_R2_CUSTOM_DOMAIN` to store the public playback URL, matching backend-created R2 assets.
 
 ### 5. Slack notifications (required)
 
@@ -43,7 +44,7 @@ After a real run (not `--dry-run`), the importer posts a summary to Slack using 
    - `SLACK_BOT_TOKEN` — bot token (`xoxb-…`)
    - `SLACK_CHANNEL_ID` — channel ID (starts with `C` for public channels)
 
-Both must be set. If they are missing, the importer exits with a configuration error before processing files. If another required `.env` value is missing but Slack is configured, the importer posts a Slack misconfiguration alert and exits. Use `--no-slack` only for local diagnostics when you intentionally do not want a Slack post.
+Both must be set. If they are missing, the importer exits with a configuration error before processing files. If another required `.env` value is missing but Slack is configured, the importer posts a Slack misconfiguration alert and exits.
 
 The bot needs the `chat:write` scope (and access to the chosen channel).
 

@@ -24,7 +24,6 @@ program
     "Folder containing video files. Defaults to the executable's directory."
   )
   .option('--dry-run', 'Print actions without uploading', false)
-  .option('--no-slack', 'Do not post a Slack summary after the run')
   .parse(process.argv)
 
 const options = program.opts()
@@ -55,7 +54,7 @@ async function main() {
       typeof process.env.SLACK_CHANNEL_ID === 'string' &&
       process.env.SLACK_CHANNEL_ID.trim().length > 0
 
-    if (canPostSlack && options.slack) {
+    if (canPostSlack) {
       try {
         const { postVideoImporterMisconfigurationAlert } = await import(
           /* webpackChunkName: "video-importer-slack" */ './services/slack'
@@ -66,7 +65,7 @@ async function main() {
       } catch (err) {
         console.error('[video-importer] Slack misconfiguration alert failed:', err)
       }
-    } else if (options.slack) {
+    } else {
       console.error(
         '[video-importer] Slack alert not sent because SLACK_BOT_TOKEN and SLACK_CHANNEL_ID are required.'
       )
@@ -212,29 +211,7 @@ async function main() {
   console.log(`Successfully processed: ${summary.successful}`)
   console.log(`Failed: ${summary.failed}`)
 
-  const slackTokenConfigured =
-    typeof process.env.SLACK_BOT_TOKEN === 'string' &&
-    process.env.SLACK_BOT_TOKEN.trim().length > 0
-  const slackChannelConfigured =
-    typeof process.env.SLACK_CHANNEL_ID === 'string' &&
-    process.env.SLACK_CHANNEL_ID.trim().length > 0
-
-  if (
-    !options.dryRun &&
-    options.slack &&
-    slackTokenConfigured !== slackChannelConfigured
-  ) {
-    console.warn(
-      '[video-importer] Slack is partially configured: set both SLACK_BOT_TOKEN and SLACK_CHANNEL_ID to enable notifications.'
-    )
-  }
-
-  if (
-    !options.dryRun &&
-    options.slack &&
-    slackTokenConfigured &&
-    slackChannelConfigured
-  ) {
+  if (!options.dryRun) {
     try {
       const { postVideoImporterSlackSummary } = await import(
         /* webpackChunkName: "video-importer-slack" */ './services/slack'

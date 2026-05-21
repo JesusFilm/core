@@ -15,6 +15,7 @@ const validEnv = {
   CLOUDFLARE_R2_ACCESS_KEY_ID: 'access-key',
   CLOUDFLARE_R2_SECRET_ACCESS_KEY: 'secret-key',
   CLOUDFLARE_R2_BUCKET: 'bucket',
+  CLOUDFLARE_R2_CUSTOM_DOMAIN: 'https://assets.example.com',
   SLACK_BOT_TOKEN: 'xoxb-test',
   SLACK_CHANNEL_ID: 'C123'
 }
@@ -50,6 +51,20 @@ describe('checkStartupEnvironment', () => {
     assert.deepEqual(
       failures.find((failure) => failure.variable === 'FIREBASE_PASSWORD'),
       { variable: 'FIREBASE_PASSWORD', message: 'is missing' }
+    )
+  })
+
+  it('requires the R2 custom domain for public audio preview URLs', () => {
+    const failures = checkStartupEnvironment({
+      ...validEnv,
+      CLOUDFLARE_R2_CUSTOM_DOMAIN: undefined
+    })
+
+    assert.deepEqual(
+      failures.find(
+        (failure) => failure.variable === 'CLOUDFLARE_R2_CUSTOM_DOMAIN'
+      ),
+      { variable: 'CLOUDFLARE_R2_CUSTOM_DOMAIN', message: 'is missing' }
     )
   })
 

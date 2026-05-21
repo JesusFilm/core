@@ -4,9 +4,6 @@ import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_CLOUDFLARE_R2_ASSET } from '../gql/mutations'
 import { R2Asset } from '../types'
-import { toErrorMessage } from '../utils/errorMessage'
-
-const R2_PUBLIC_URL_VERIFY_TIMEOUT_MS = 10_000
 
 function getR2BucketClient(bucket: string): S3Client {
   return new S3Client({
@@ -68,14 +65,12 @@ export async function createR2Asset({
 
 export async function uploadToR2({
   uploadUrl,
-  publicUrl,
   bucket,
   filePath,
   contentType,
   contentLength
 }: {
   uploadUrl: string
-  publicUrl: string
   bucket: string
   filePath: string
   contentType: string
@@ -98,13 +93,8 @@ export async function uploadToR2({
 
   console.log(`[R2 Service] Upload completed (${bytesWritten} bytes written)`)
 
-  // Verify the uploaded file is retrievable through both R2 credentials and the public URL used by Mux/GraphQL.
+  // Verify R2 has the exact object before handing the public URL to downstream consumers.
   await verifyFileUpload(r2BucketClient, key, contentLength)
-  await verifyPublicR2Url({
-    publicUrl,
-    expectedContentLength: contentLength,
-    expectedContentType: contentType
-  })
   console.log('[R2 Service] File verification completed')
 }
 
@@ -144,66 +134,6 @@ export function formatR2AssetDiagnostic(r2Asset: R2Asset): string {
   return parts.length > 0 ? ` (${parts.join(', ')})` : ''
 }
 
-export async function verifyPublicR2Url({
-  publicUrl,
-  expectedContentLength,
-  expectedContentType
-}: {
-  publicUrl: string
-  expectedContentLength: number
-  expectedContentType: string
-}): Promise<void> {
-  console.log(`[R2 Service] Verifying public URL: ${publicUrl}`)
-
-  try {
-    const headResponse = await fetch(publicUrl, {
-      method: 'HEAD',
-      signal: AbortSignal.timeout(R2_PUBLIC_URL_VERIFY_TIMEOUT_MS)
-    })
-
-    if (!headResponse.ok) {
-      throw new Error(`HEAD ${headResponse.status} ${headResponse.statusText}`)
-    }
-
-    const contentLength = headResponse.headers.get('content-length')
-    if (contentLength !== String(expectedContentLength)) {
-      throw new Error(
-        `HEAD content-length mismatch: expected ${expectedContentLength}, got ${contentLength ?? 'missing'}`
-      )
-    }
-
-    const contentType = headResponse.headers.get('content-type')
-    if (contentType == null || !contentType.includes(expectedContentType)) {
-      throw new Error(
-        `HEAD content-type mismatch: expected ${expectedContentType}, got ${contentType ?? 'missing'}`
-      )
-    }
-
-    const rangeResponse = await fetch(publicUrl, {
-      headers: { Range: 'bytes=0-0' },
-      signal: AbortSignal.timeout(R2_PUBLIC_URL_VERIFY_TIMEOUT_MS)
-    })
-
-    if (rangeResponse.status !== 206 && rangeResponse.status !== 200) {
-      throw new Error(
-        `range GET returned ${rangeResponse.status} ${rangeResponse.statusText}`
-      )
-    }
-
-    const bytes = await rangeResponse.arrayBuffer()
-    if (bytes.byteLength === 0) {
-      throw new Error('range GET returned an empty body')
-    }
-
-    console.log(
-      `[R2 Service] Public URL verification successful: ${contentLength} bytes, ${contentType}`
-    )
-  } catch (error) {
-    console.error('[R2 Service] Public URL verification failed:', error)
-    throw new Error(`Public URL verification failed: ${toErrorMessage(error)}`)
-  }
-}
-
 export async function uploadFileToR2Direct({
   bucket,
   key,
@@ -225,14 +155,5 @@ export async function uploadFileToR2Direct({
 
   await verifyFileUpload(r2BucketClient, key, contentLength)
 
-  const publicBaseUrl = `https://${bucket}.${new URL(env.CLOUDFLARE_R2_ENDPOINT).hostname}`
-  const publicUrl = `${publicBaseUrl.replace(/\/$/, '')}/${key}`
-
-  await verifyPublicR2Url({
-    publicUrl,
-    expectedContentLength: contentLength,
-    expectedContentType: contentType
-  })
-
-  return publicUrl
+  return `${env.CLOUDFLARE_R2_CUSTOM_DOMAIN.replace(/\/$/, '')}/${key}`
 }

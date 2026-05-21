@@ -15,6 +15,7 @@ const requiredEnvSchema = z.object({
   CLOUDFLARE_R2_ACCESS_KEY_ID: z.string().trim().min(1),
   CLOUDFLARE_R2_SECRET_ACCESS_KEY: z.string().trim().min(1),
   CLOUDFLARE_R2_BUCKET: z.string().trim().min(1),
+  CLOUDFLARE_R2_CUSTOM_DOMAIN: z.url().trim().min(1),
 
   SLACK_BOT_TOKEN: z.string().trim().min(1),
   SLACK_CHANNEL_ID: z.string().trim().min(1)
