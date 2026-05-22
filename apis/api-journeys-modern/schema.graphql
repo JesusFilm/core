@@ -1562,6 +1562,8 @@ type Mutation {
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent @override(from: "api-journeys")
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @override(from: "api-journeys")
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent! @override(from: "api-journeys")
+  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent! @override(from: "api-journeys")
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
@@ -1572,6 +1574,7 @@ type Mutation {
   videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent! @override(from: "api-journeys")
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent! @override(from: "api-journeys")
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @override(from: "api-journeys")
+  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
   googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!
@@ -1772,6 +1775,15 @@ type OperatingSystem
 {
   name: String
   version: String
+}
+
+type PageInfo
+  @shareable
+{
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
 }
 
 type PhoneAction implements Action
@@ -2146,6 +2158,7 @@ type Query {
     teamId: ID!
   ): [TemplateGalleryPage!]!
   getUserRole: UserRole
+  visitorsConnection(teamId: String, first: Int, after: String): VisitorsConnection! @override(from: "api-journeys")
 }
 
 type RadioOptionBlock implements Block
@@ -3240,6 +3253,13 @@ type Visitor
   events: [Event!]!
 }
 
+type VisitorEdge
+  @shareable
+{
+  cursor: String!
+  node: Visitor!
+}
+
 enum VisitorStatus {
   star
   prohibited
@@ -3263,6 +3283,13 @@ input VisitorUpdateInput {
   countryCode: String
   referrer: String
   phone: String
+}
+
+type VisitorsConnection
+  @shareable
+{
+  edges: [VisitorEdge!]!
+  pageInfo: PageInfo!
 }
 
 type YouTube

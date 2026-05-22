@@ -17,11 +17,8 @@ export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourn
 }
 
 export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_templates {
-  __typename: "Journey";
+  __typename: "TemplateGalleryItem";
   id: string;
-  /**
-   * private title for creators
-   */
   title: string;
   primaryImageBlock: TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_templates_primaryImageBlock | null;
 }
@@ -71,7 +68,7 @@ export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourn
   createdAt: any;
   updatedAt: any;
   /**
-   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list.
+   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
    */
   templates: TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_templates[];
 }

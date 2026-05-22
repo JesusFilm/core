@@ -329,7 +329,7 @@ function buildSlackBlocks(params: {
 function resolveSlackCredentials(): {
   token: string
   channelId: string
-} {
+} | null {
   const token =
     typeof process.env.SLACK_BOT_TOKEN === 'string'
       ? process.env.SLACK_BOT_TOKEN.trim()
@@ -339,10 +339,15 @@ function resolveSlackCredentials(): {
       ? process.env.SLACK_CHANNEL_ID.trim()
       : ''
 
+  if (token.length === 0 && channelId.length === 0) {
+    return null
+  }
+
   if (token.length === 0 || channelId.length === 0) {
-    throw new Error(
-      '[video-importer] SLACK_BOT_TOKEN and SLACK_CHANNEL_ID are required.'
+    console.warn(
+      '[video-importer] Slack is partially configured: set both SLACK_BOT_TOKEN and SLACK_CHANNEL_ID to enable notifications.'
     )
+    return null
   }
 
   return { token, channelId }
@@ -352,7 +357,12 @@ async function postSlackMessage(params: {
   text: string
   blocks: SlackBlock[]
 }): Promise<boolean> {
-  const { token, channelId } = resolveSlackCredentials()
+  const credentials = resolveSlackCredentials()
+  if (credentials === null) {
+    return false
+  }
+
+  const { token, channelId } = credentials
 
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), SLACK_REQUEST_TIMEOUT_MS)

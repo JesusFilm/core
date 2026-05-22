@@ -1,4 +1,5 @@
 import { render, waitFor } from '@testing-library/react'
+import type { MockedFunction } from 'vitest'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
@@ -7,13 +8,13 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoCarousel } from './VideoCarousel'
 
-jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
+vi.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 
-const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
+const mockedUseAlgoliaVideos = useAlgoliaVideos as MockedFunction<
   typeof useAlgoliaVideos
 >
 
-describe('VideosCarousel', () => {
+describe('VideosCarousel', async () => {
   const transformedVideos = [
     {
       __typename: 'Video',
@@ -48,9 +49,9 @@ describe('VideosCarousel', () => {
       loading: false,
       noResults: false,
       items: transformedVideos,
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
   })
 

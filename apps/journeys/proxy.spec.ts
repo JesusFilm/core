@@ -171,4 +171,46 @@ describe('journeys proxy', () => {
 
     expect(result).toBeUndefined()
   })
+
+  describe('template-gallery short-circuit', () => {
+    it('rewrites /template-gallery/<slug> to /home/template-gallery/<slug> regardless of host', async () => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      // Use a host that is neither the root domain nor in DEV_HOSTS —
+      // the short-circuit must still kick in.
+      const result = await proxy(
+        buildRequest('custom.example.com', '/template-gallery/my-collection')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/home/template-gallery/my-collection'
+      )
+    })
+
+    it('preserves the query string on the rewrite', async () => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      const result = await proxy(
+        buildRequest(
+          'your.nextstep.is',
+          '/template-gallery/my-collection?utm=email'
+        )
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://your.nextstep.is/home/template-gallery/my-collection?utm=email'
+      )
+    })
+
+    it('does NOT short-circuit hosts that only share the prefix (e.g. /template-gallery-foo)', async () => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      const result = await proxy(
+        buildRequest('custom.example.com', '/template-gallery-foo')
+      )
+
+      // The startsWith match requires the trailing slash so adjacent
+      // paths fall through to the catch-all.
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/custom.example.com/template-gallery-foo'
+      )
+    })
+  })
 })

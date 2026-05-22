@@ -10,7 +10,6 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, memo } from 'react'
 
-import { StrategySection } from '@core/journeys/ui/StrategySection'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
@@ -35,6 +34,21 @@ interface CollectionPreviewPaneProps {
    * when the collection has no slug yet (i.e. unsaved create dialog).
    */
   publicUrl: string | null
+  /**
+   * Slug of the collection. When provided, "Open in new tab" routes
+   * through the authenticated `/api/preview-template-gallery?slug=<slug>`
+   * proxy. Null on unsaved create dialog (Open is disabled).
+   */
+  slug: string | null
+  /**
+   * False when the active team has a `routeAllTeamJourneys` custom
+   * domain — gallery pages can't be hosted on custom domains, so the
+   * Open-in-new-tab affordance is disabled with a tooltip.
+   * Defaults to true.
+   */
+  canPublish?: boolean
+  /** Tooltip copy for the disabled state when canPublish is false. */
+  publishBlockedReason?: string | null
 }
 
 /**
@@ -49,10 +63,22 @@ interface CollectionPreviewPaneProps {
 function CollectionPreviewPaneImpl({
   values,
   selectedJourneysOrdered,
-  publicUrl
+  publicUrl,
+  slug,
+  canPublish = true,
+  publishBlockedReason = null
 }: CollectionPreviewPaneProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+
+  // Open is disabled when (a) the collection isn't saved yet (no slug),
+  // (b) the URL is missing, or (c) the team's custom-domain gate blocks
+  // gallery publishing entirely.
+  const viewDisabled =
+    publicUrl == null || slug == null || slug === '' || !canPublish
+  const viewTooltip = !canPublish
+    ? (publishBlockedReason ?? '')
+    : t('Open in new tab')
 
   async function handleCopy(): Promise<void> {
     if (publicUrl == null) return
@@ -63,8 +89,15 @@ function CollectionPreviewPaneImpl({
     )
   }
   function handleView(): void {
-    if (publicUrl == null) return
-    window.open(publicUrl, '_blank', 'noopener,noreferrer')
+    // `viewDisabled` already gates at runtime, but TypeScript can't
+    // narrow `slug` through a boolean — the explicit `slug == null`
+    // here is the type-narrowing pair, not a redundant safety check.
+    if (viewDisabled || slug == null) return
+    window.open(
+      `/api/preview-template-gallery?slug=${encodeURIComponent(slug)}`,
+      '_blank',
+      'noopener,noreferrer'
+    )
   }
   return (
     <Box
@@ -122,12 +155,16 @@ function CollectionPreviewPaneImpl({
             )
           }}
         />
-        <Tooltip title={t('Open in new tab')}>
+        <Tooltip
+          title={viewTooltip}
+          disableHoverListener={!viewDisabled}
+          disableFocusListener={!viewDisabled}
+        >
           <span>
             <IconButton
               aria-label={t('Open in new tab')}
               onClick={handleView}
-              disabled={publicUrl == null}
+              disabled={viewDisabled}
               sx={{
                 bgcolor: '#26262E',
                 color: 'common.white',
@@ -341,36 +378,14 @@ function CollectionPreviewPaneImpl({
                 ))}
           </Stack>
         </Box>
-        {/* Embedded PDF/video — same component the editor's About tab
-            uses for strategy embeds. Renders an iframe for Canva /
-            Google Slides URLs and a "Case Study Preview" placeholder
-            otherwise. */}
-        <Box sx={{ mt: 2.5 }}>
-          <Typography
-            sx={{
-              fontFamily: 'Montserrat, sans-serif',
-              fontWeight: 600,
-              fontSize: 16,
-              lineHeight: 1.2,
-              color: '#444451',
-              mb: 1.5
-            }}
-          >
-            {t('Strategy')}
-          </Typography>
-          <Box
-            sx={{
-              // Strip StrategySection's xs/sm bottom padding so it sits
-              // flush within the preview card layout.
-              '& > .MuiStack-root': { pb: 0 }
-            }}
-          >
-            <StrategySection
-              strategySlug={values.mediaUrl !== '' ? values.mediaUrl : null}
-              variant="placeholder"
-            />
-          </Box>
-        </Box>
+        {/* NES-1682: the Strategy section (StrategySection rendered with
+            mediaUrl) was removed from the preview alongside the embed
+            textbox in CollectionDialog. The `mediaUrl` field still rides
+            through the form so existing values round-trip on save, and
+            the shared StrategySection component itself is untouched (it
+            remains in use for other surfaces). The previous label
+            "Strategy" + the iframe/placeholder preview no longer appear
+            here. */}
       </Box>
     </Box>
   )

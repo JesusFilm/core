@@ -219,23 +219,6 @@ input BlockDuplicateIdMap {
 type Mutation {
   """blockRestore is used for redo/undo"""
   blockRestore(id: ID!): [Block!]!
-
-  """
-  Creates a JourneyViewEvent, returns null if attempting to create another
-  JourneyViewEvent with the same userId, journeyId, and within the same 24hr
-  period of the previous JourneyViewEvent
-  """
-  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
-  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
-  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
-  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent!
-  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
-  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
-  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
-  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent!
-  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
-  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
-  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
@@ -1035,20 +1018,6 @@ interface Event {
   value: String
 }
 
-input JourneyViewEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  journeyId: ID!
-
-  """title of the journey being viewed"""
-  label: String
-
-  """languageId of the journey being viewed"""
-  value: ID
-}
-
 extend type Language
   @key(fields: "id")
 {
@@ -1117,19 +1086,6 @@ type SignUpSubmissionEvent implements Event
   email: String
 }
 
-input StepViewEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-
-  """Id of the current StepBlock"""
-  blockId: ID!
-
-  """stepName of the current stepBlock"""
-  value: String
-}
-
 type StepViewEvent implements Event
   @shareable
 {
@@ -1148,25 +1104,6 @@ type StepViewEvent implements Event
   value: String
 }
 
-input StepNextEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-
-  """Id of the current StepBlock"""
-  blockId: ID!
-
-  """id of the next stepBlock"""
-  nextStepId: ID!
-
-  """stepName of the current stepBlock"""
-  label: String
-
-  """stepName of the next stepBlock"""
-  value: String
-}
-
 type StepNextEvent implements Event
   @shareable
 {
@@ -1182,25 +1119,6 @@ type StepNextEvent implements Event
   label: String
 
   """stepName of the next stepBlock"""
-  value: String
-}
-
-input StepPreviousEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-
-  """Id of the current StepBlock"""
-  blockId: ID!
-
-  """id of the previous stepBlock"""
-  previousStepId: ID!
-
-  """stepName of the current stepBlock"""
-  label: String
-
-  """stepName of the previous stepBlock"""
   value: String
 }
 
@@ -1243,26 +1161,6 @@ type TextResponseSubmissionEvent implements Event
   blockId: String
 }
 
-input VideoStartEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoStartEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
 type VideoStartEvent implements Event
   @shareable
 {
@@ -1285,26 +1183,6 @@ type VideoStartEvent implements Event
 
   """source of the video (based on the source in the value field)"""
   source: VideoBlockSource
-}
-
-input VideoPlayEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoPlayEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
 }
 
 type VideoPlayEvent implements Event
@@ -1331,26 +1209,6 @@ type VideoPlayEvent implements Event
   source: VideoBlockSource
 }
 
-input VideoPauseEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoPauseEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
 type VideoPauseEvent implements Event
   @shareable
 {
@@ -1373,26 +1231,6 @@ type VideoPauseEvent implements Event
 
   """source of the video (based on the source in the value field)"""
   source: VideoBlockSource
-}
-
-input VideoCompleteEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoCompleteEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
 }
 
 type VideoCompleteEvent implements Event
@@ -1419,26 +1257,6 @@ type VideoCompleteEvent implements Event
   source: VideoBlockSource
 }
 
-input VideoExpandEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoExpandEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
 type VideoExpandEvent implements Event
   @shareable
 {
@@ -1463,26 +1281,6 @@ type VideoExpandEvent implements Event
   source: VideoBlockSource
 }
 
-input VideoCollapseEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoCollapseEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
 type VideoCollapseEvent implements Event
   @shareable
 {
@@ -1505,31 +1303,6 @@ type VideoCollapseEvent implements Event
 
   """source of the video (based on the source in the value field)"""
   source: VideoBlockSource
-}
-
-input VideoProgressEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoProgressEvent is triggered"""
-  position: Float
-
-  """
-  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
-  """
-  progress: Int!
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
 }
 
 type VideoProgressEvent implements Event

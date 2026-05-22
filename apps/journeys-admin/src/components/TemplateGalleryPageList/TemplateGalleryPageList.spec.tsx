@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
@@ -116,6 +116,33 @@ const journeysMock: MockedResponse<GetAdminJourneys> = {
   }
 }
 
+// Variant of the journeys mock where the only journey is archived. The
+// server-side resolver wouldn't return this row for the active view
+// (status filter at the API), but Apollo's normalized cache merges
+// post-mutation status flips into the same entity ref — so we simulate
+// that here by serving the archived row from the published-status query.
+const journeysMockWithArchivedJourney: MockedResponse<GetAdminJourneys> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      template: true,
+      teamId: TEAM_ID,
+      status: [JourneyStatus.draft, JourneyStatus.published]
+    }
+  },
+  result: {
+    data: {
+      journeys: [
+        {
+          ...(journeysMock.result as { data: GetAdminJourneys }).data
+            .journeys[0],
+          status: JourneyStatus.archived
+        }
+      ]
+    }
+  }
+}
+
 describe('TemplateGalleryPageList', () => {
   it('renders the Collections heading and the existing collection card', async () => {
     const { getByText, getByTestId } = render(
@@ -139,5 +166,169 @@ describe('TemplateGalleryPageList', () => {
     )
     expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
     expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+  })
+
+  it('excludes archived journeys from the active view (defends against post-mutation cache leak)', async () => {
+    // Regression: archive flips a journey's status to `archived` in the
+    // normalized Apollo cache, but the cached query result for
+    // `status: [draft, published]` still holds the ref. The list must
+    // re-filter by status client-side or the archived journey leaks
+    // into the "All Templates" section of the active view.
+    const { queryByText, getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          getLastActiveTeamIdAndTeamsMock,
+          collectionsMock,
+          journeysMockWithArchivedJourney
+        ]}
+      >
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TemplateGalleryPageList />
+            </TeamProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
+    )
+    // The archived journey should NOT appear in the unsectioned list.
+    expect(queryByText('Welcome Tour')).not.toBeInTheDocument()
+  })
+
+  describe('Template Info mobile trigger (NES-1686)', () => {
+    it('renders the inline info trigger next to the Collections heading when onOpenInfo is provided and calls it on click', async () => {
+      const handleOpenInfo = jest.fn()
+      const { getByTestId } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList onOpenInfo={handleOpenInfo} />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      const trigger = await waitFor(() =>
+        getByTestId('TemplateInfoPanelMobileTrigger')
+      )
+      expect(trigger).toHaveAttribute('aria-label', 'Open template info')
+
+      fireEvent.click(trigger)
+      expect(handleOpenInfo).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not render the inline info trigger when onOpenInfo is not provided', async () => {
+      const { queryByTestId, getByTestId } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      // Wait for Collections to render so absence is meaningful (the trigger
+      // would have rendered alongside it).
+      await waitFor(() =>
+        expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+      )
+      expect(queryByTestId('TemplateInfoPanelMobileTrigger')).toBeNull()
+    })
+  })
+
+  // NES-1666 v2: per Sharon's repro, the original fix only covered
+  // CollectionDialog, not per-card dialogs ("Edit Template Details" etc.).
+  // This asserts that when a JourneyCard's own dialog (here, the template
+  // breakdown analytics dialog) opens, the gallery's DnD subtree also
+  // flips to inert via the GalleryDialogLockContext signal.
+  it('marks the DnD subtree inert when a JourneyCard opens a dialog (NES-1666 v2)', async () => {
+    const { getByTestId, getByLabelText } = render(
+      <MockedProvider
+        mocks={[getLastActiveTeamIdAndTeamsMock, collectionsMock, journeysMock]}
+      >
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TemplateGalleryPageList />
+            </TeamProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    // The template card mounts inside the gallery.
+    await waitFor(() =>
+      expect(getByTestId('JourneyCard-journey-1')).toBeInTheDocument()
+    )
+
+    // Default: no dialog open, subtree is interactive.
+    expect(getByTestId('TemplateGalleryDndScope')).not.toHaveAttribute('inert')
+
+    // Open the breakdown analytics dialog rendered by the JourneyCard
+    // itself (this fires the same useEffect path that menu dialogs do —
+    // `hasOpenDialog || breakdownDialogOpen` → context → gallery state).
+    fireEvent.click(getByLabelText('journey breakdown analytics'))
+
+    // The gallery's DnD subtree should now be inert. The dialog renders
+    // via MUI portal so it sits outside the inert subtree and stays
+    // fully interactive.
+    await waitFor(() =>
+      expect(getByTestId('TemplateGalleryDndScope')).toHaveAttribute('inert')
+    )
+  })
+
+  // NES-1666: original CollectionDialog case — kept to guard against
+  // regressions in the v1 wiring after the v2 context plumbing landed.
+  it('marks the DnD subtree inert while CollectionDialog is open (NES-1666)', async () => {
+    const { getByTestId } = render(
+      <MockedProvider
+        mocks={[getLastActiveTeamIdAndTeamsMock, collectionsMock, journeysMock]}
+      >
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TemplateGalleryPageList />
+            </TeamProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+    )
+
+    const dndScope = getByTestId('TemplateGalleryDndScope')
+    // Default state: no dialog open, subtree is interactive.
+    expect(dndScope).not.toHaveAttribute('inert')
+
+    // Open the create-collection dialog and confirm the DnD subtree
+    // flips to inert. The CollectionDialog renders in a portal so it
+    // is unaffected.
+    fireEvent.click(getByTestId('CreateCollectionButton'))
+    await waitFor(() =>
+      expect(getByTestId('TemplateGalleryDndScope')).toHaveAttribute('inert')
+    )
   })
 })
