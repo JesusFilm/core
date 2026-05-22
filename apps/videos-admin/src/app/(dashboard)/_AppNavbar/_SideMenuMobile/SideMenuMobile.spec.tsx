@@ -4,14 +4,14 @@ import { AuthProvider } from '../../../../libs/auth/AuthProvider'
 
 import { SideMenuMobile } from './SideMenuMobile'
 
-jest.mock('next/navigation', () => ({
-  ...jest.requireActual('next/navigation'),
-  useRouter: jest.fn()
+vi.mock('next/navigation', async () => ({
+  ...await vi.importActual('next/navigation'),
+  useRouter: vi.fn()
 }))
 
 describe('SideMenuMobile', () => {
   it('should show menu content', () => {
-    const handleToggle = jest.fn()
+    const handleToggle = vi.fn()
 
     render(
       <AuthProvider
@@ -34,7 +34,7 @@ describe('SideMenuMobile', () => {
   })
 
   it('should show user avatar and display name', () => {
-    const handleToggle = jest.fn()
+    const handleToggle = vi.fn()
     render(
       <AuthProvider
         user={{

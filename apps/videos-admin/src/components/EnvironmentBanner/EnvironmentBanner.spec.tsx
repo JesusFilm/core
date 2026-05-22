@@ -1,19 +1,20 @@
 import { render, screen } from '@testing-library/react'
+import { type Mock } from 'vitest'
+
+import { shouldShowEnvironmentBanner } from '../../libs/environment'
 
 import { EnvironmentBanner } from './EnvironmentBanner'
 
 // Mock the environment utility module
-jest.mock('../../libs/environment', () => ({
-  shouldShowEnvironmentBanner: jest.fn()
+vi.mock('../../libs/environment', () => ({
+  shouldShowEnvironmentBanner: vi.fn()
 }))
 
-const mockShouldShowEnvironmentBanner = jest.requireMock(
-  '../../libs/environment'
-).shouldShowEnvironmentBanner
+const mockShouldShowEnvironmentBanner = vi.mocked(shouldShowEnvironmentBanner as unknown as Mock)
 
 describe('EnvironmentBanner', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should not render when not in staging environment (production)', () => {

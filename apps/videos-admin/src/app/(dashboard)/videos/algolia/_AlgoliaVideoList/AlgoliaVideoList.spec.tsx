@@ -7,56 +7,57 @@ import {
   useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
+import { type MockedFunction } from 'vitest'
 
 import { AlgoliaVideoList } from './AlgoliaVideoList'
 
-const mockPush = jest.fn()
+const mockPush = vi.fn()
 
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
     push: mockPush
   }))
 }))
 
-jest.mock('algoliasearch', () => ({
-  algoliasearch: jest.fn(() => ({}))
+vi.mock('algoliasearch', () => ({
+  algoliasearch: vi.fn(() => ({}))
 }))
 
-jest.mock('react-instantsearch', () => ({
+vi.mock('react-instantsearch', () => ({
   Configure: ({ children }) => <>{children}</>,
   InstantSearch: ({ children }) => <>{children}</>,
-  useHits: jest.fn(),
-  useInstantSearch: jest.fn(),
-  usePagination: jest.fn(),
-  useRefinementList: jest.fn(),
-  useSearchBox: jest.fn()
+  useHits: vi.fn(),
+  useInstantSearch: vi.fn(),
+  usePagination: vi.fn(),
+  useRefinementList: vi.fn(),
+  useSearchBox: vi.fn()
 }))
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<
   typeof useSearchBox
 >
-const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
-const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+const mockUseHits = useHits as MockedFunction<typeof useHits>
+const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >
-const mockUsePagination = usePagination as jest.MockedFunction<
+const mockUsePagination = usePagination as MockedFunction<
   typeof usePagination
 >
-const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
-const mockAlgoliaSearch = algoliasearch as jest.MockedFunction<
+const mockAlgoliaSearch = algoliasearch as MockedFunction<
   typeof algoliasearch
 >
 
 describe('AlgoliaVideoList', () => {
   const originalEnv = process.env
-  const mockSearchRefine = jest.fn()
-  const mockPageRefine = jest.fn()
-  const mockPublishedRefine = jest.fn()
+  const mockSearchRefine = vi.fn()
+  const mockPageRefine = vi.fn()
+  const mockPublishedRefine = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = {
       ...originalEnv,
       NEXT_PUBLIC_ALGOLIA_APP_ID: 'test-app-id',

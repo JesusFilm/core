@@ -1,4 +1,7 @@
+import { useMutation } from '@apollo/client'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { useRouter } from 'next/navigation'
+import { type Mock } from 'vitest'
 
 import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
 
@@ -8,16 +11,16 @@ const mockCitationId = 'citation-123'
 const mockVideoId = 'video-123'
 
 // Mock Apollo client
-jest.mock('@apollo/client', () => {
-  const original = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const original = await vi.importActual('@apollo/client')
   return {
     ...original,
-    useMutation: jest.fn(() => [jest.fn(), { loading: false }])
+    useMutation: vi.fn(() => [vi.fn(), { loading: false }])
   }
 })
 
 // Mock Dialog component
-jest.mock('@core/shared/ui/Dialog', () => ({
+vi.mock('@core/shared/ui/Dialog', () => ({
   Dialog: ({ children, onClose, dialogTitle, dialogAction, loading }) => (
     <div data-testid="mock-dialog">
       <div data-testid="dialog-title">{dialogTitle.title}</div>
@@ -36,17 +39,16 @@ jest.mock('@core/shared/ui/Dialog', () => ({
   )
 }))
 
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn()
-  })
-}))
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
+  }))}))
 
 // Create a mock for enqueueSnackbar function
-const mockEnqueueSnackbar = jest.fn()
+const mockEnqueueSnackbar = vi.fn()
 
 // Mock notistack module
-jest.mock('notistack', () => ({
+vi.mock('notistack', () => ({
   useSnackbar: () => ({
     enqueueSnackbar: mockEnqueueSnackbar
   })
@@ -54,24 +56,22 @@ jest.mock('notistack', () => ({
 
 describe('CitationDeletePage', () => {
   // Mock functions
-  const mockDeleteMutation = jest.fn()
-  const mockRouterPush = jest.fn()
+  const mockDeleteMutation = vi.fn()
+  const mockRouterPush = vi.fn()
   const mockReturnUrl = `/videos/${mockVideoId}`
 
   // Reset mocks before each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Mock router.push
-    jest
-      .spyOn(require('next/navigation'), 'useRouter')
+    vi.mocked(useRouter as unknown as Mock)
       .mockImplementation(() => ({
         push: mockRouterPush
       }))
 
     // Mock useMutation
-    jest
-      .spyOn(require('@apollo/client'), 'useMutation')
+    vi.mocked(useMutation as unknown as Mock)
       .mockImplementation((mutation, options: any = {}) => {
         // Store the callbacks for later use in tests
         const onCompletedCallback = options.onCompleted
@@ -153,8 +153,7 @@ describe('CitationDeletePage', () => {
 
   it('shows loading state while deleting', () => {
     // Mock loading state
-    jest
-      .spyOn(require('@apollo/client'), 'useMutation')
+    vi.mocked(useMutation as unknown as Mock)
       .mockReturnValue([mockDeleteMutation, { loading: true }])
 
     render(
@@ -172,8 +171,7 @@ describe('CitationDeletePage', () => {
 
   it('shows success message and navigates after successful deletion', async () => {
     // Mock useMutation with onCompleted support
-    jest
-      .spyOn(require('@apollo/client'), 'useMutation')
+    vi.mocked(useMutation as unknown as Mock)
       .mockImplementation((mutation, options: any = {}) => {
         // Store the onCompleted callback
         const onCompletedCallback = options.onCompleted

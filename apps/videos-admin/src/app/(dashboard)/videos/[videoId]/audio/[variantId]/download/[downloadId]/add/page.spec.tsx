@@ -1,5 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { useRouter } from 'next/navigation'
+import { enqueueSnackbar } from 'notistack'
 import React from 'react'
+import { type Mock } from 'vitest'
 
 import { resolvedParams } from '../../../../../../../../../test/utils/resolvedParams'
 
@@ -7,7 +10,7 @@ import { resolvedParams } from '../../../../../../../../../test/utils/resolvedPa
 import AddVideoVariantDownloadDialog from './page'
 
 // Mock form requestSubmit method which is not implemented in JSDOM
-HTMLFormElement.prototype.requestSubmit = jest.fn(function () {
+HTMLFormElement.prototype.requestSubmit = vi.fn(function () {
   // Simple mock: just dispatch a submit event
   const submitEvent = new Event('submit', { bubbles: true, cancelable: true })
   this.dispatchEvent(submitEvent)
@@ -15,11 +18,11 @@ HTMLFormElement.prototype.requestSubmit = jest.fn(function () {
 
 // Mock React's useState before other imports to ensure it's available
 
-jest.mock('react', () => {
-  const originalReact = jest.requireActual('react')
-  const mockUseState = jest.fn().mockImplementation((initialValue) => {
+vi.mock('react', async () => {
+  const originalReact = await vi.importActual('react')
+  const mockUseState = vi.fn().mockImplementation((initialValue) => {
     // Default fallback for other useState calls
-    return [initialValue, jest.fn()]
+    return [initialValue, vi.fn()]
   })
 
   return {
@@ -29,30 +32,30 @@ jest.mock('react', () => {
 })
 
 // Mock Apollo client
-jest.mock('@apollo/client', () => {
-  const original = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const original = await vi.importActual('@apollo/client')
   return {
     ...original,
-    useMutation: jest.fn((mutation: any) => {
+    useMutation: vi.fn((mutation: any) => {
       // Get the mock name based on the operation definition
       const operationName = mutation?.definitions?.[0]?.name?.value
 
       // Return different mock functions based on the mutation
       if (operationName === 'VideoVariantDownloadCreate') {
-        return [jest.fn(), { loading: false, error: null }]
+        return [vi.fn(), { loading: false, error: null }]
       }
       if (operationName === 'EnableMuxDownload') {
         return [
-          jest.fn().mockResolvedValue({
+          vi.fn().mockResolvedValue({
             data: { enableMuxDownload: { id: 'mock-mux-id' } }
           }),
           { loading: false, error: null }
         ]
       }
       // Default fallback
-      return [jest.fn(), { loading: false, error: null }]
+      return [vi.fn(), { loading: false, error: null }]
     }),
-    useSuspenseQuery: jest.fn(() => ({
+    useSuspenseQuery: vi.fn(() => ({
       data: {
         videoVariant: {
           id: 'variant-456',
@@ -74,7 +77,7 @@ const formikValues = {
   file: null
 }
 
-jest.mock('formik', () => ({
+vi.mock('formik', () => ({
   Formik: ({ children, initialValues, onSubmit, validationSchema }) => {
     // Update the initial formikValues
     Object.assign(formikValues, initialValues)
@@ -97,7 +100,7 @@ jest.mock('formik', () => ({
       setFieldValue: (field, value) => {
         formikValues[field] = value
       },
-      validateForm: jest.fn().mockResolvedValue({}),
+      validateForm: vi.fn().mockResolvedValue({}),
       isValid: true,
       isSubmitting: false,
       submitForm: () => onSubmit(formikValues)
@@ -117,7 +120,7 @@ jest.mock('formik', () => ({
 }))
 
 // Mock the FileUpload component to handle quality type
-jest.mock('../../../../../../../../../components/FileUpload', () => ({
+vi.mock('../../../../../../../../../components/FileUpload', () => ({
   FileUpload: ({ onDrop }) => {
     // Only render if not auto
     if (formikValues.quality === 'auto') {
@@ -141,7 +144,7 @@ jest.mock('../../../../../../../../../components/FileUpload', () => ({
 }))
 
 // Mock Material UI components
-jest.mock('@mui/material/Dialog', () => ({
+vi.mock('@mui/material/Dialog', () => ({
   __esModule: true,
   default: ({ children, onClose }) => (
     <div data-testid="mock-dialog" onClick={onClose}>
@@ -150,28 +153,28 @@ jest.mock('@mui/material/Dialog', () => ({
   )
 }))
 
-jest.mock('@mui/material/DialogTitle', () => ({
+vi.mock('@mui/material/DialogTitle', () => ({
   __esModule: true,
   default: ({ children }) => (
     <div data-testid="mock-dialog-title">{children}</div>
   )
 }))
 
-jest.mock('@mui/material/DialogContent', () => ({
+vi.mock('@mui/material/DialogContent', () => ({
   __esModule: true,
   default: ({ children }) => (
     <div data-testid="mock-dialog-content">{children}</div>
   )
 }))
 
-jest.mock('@mui/material/DialogActions', () => ({
+vi.mock('@mui/material/DialogActions', () => ({
   __esModule: true,
   default: ({ children }) => (
     <div data-testid="mock-dialog-actions">{children}</div>
   )
 }))
 
-jest.mock('@mui/material/Button', () => ({
+vi.mock('@mui/material/Button', () => ({
   __esModule: true,
   default: ({ children, onClick }) => (
     <button data-testid="mock-button" onClick={onClick}>
@@ -181,21 +184,21 @@ jest.mock('@mui/material/Button', () => ({
 }))
 
 // Mock required components that use DOM APIs
-jest.mock('@mui/material/FormControl', () => ({
+vi.mock('@mui/material/FormControl', () => ({
   __esModule: true,
   default: ({ children }) => (
     <div data-testid="mock-form-control">{children}</div>
   )
 }))
 
-jest.mock('@mui/material/InputLabel', () => ({
+vi.mock('@mui/material/InputLabel', () => ({
   __esModule: true,
   default: ({ children }) => (
     <label data-testid="mock-input-label">{children}</label>
   )
 }))
 
-jest.mock('@mui/material/Select', () => ({
+vi.mock('@mui/material/Select', () => ({
   __esModule: true,
   default: ({ children, onChange, value, name }) => (
     <select
@@ -209,7 +212,7 @@ jest.mock('@mui/material/Select', () => ({
   )
 }))
 
-jest.mock('@mui/material/MenuItem', () => ({
+vi.mock('@mui/material/MenuItem', () => ({
   __esModule: true,
   default: ({ children, value, disabled }) => (
     <option value={value} disabled={disabled} data-testid={`option-${value}`}>
@@ -218,7 +221,7 @@ jest.mock('@mui/material/MenuItem', () => ({
   )
 }))
 
-jest.mock('@mui/material/LinearProgress', () => ({
+vi.mock('@mui/material/LinearProgress', () => ({
   __esModule: true,
   default: ({ value }) => (
     <div data-testid="mock-progress-bar" data-value={value}>
@@ -227,7 +230,7 @@ jest.mock('@mui/material/LinearProgress', () => ({
   )
 }))
 
-jest.mock('@mui/material/Typography', () => ({
+vi.mock('@mui/material/Typography', () => ({
   __esModule: true,
   default: ({ children, variant, color }) => (
     <div
@@ -239,17 +242,17 @@ jest.mock('@mui/material/Typography', () => ({
   )
 }))
 
-jest.mock('@mui/material/Stack', () => ({
+vi.mock('@mui/material/Stack', () => ({
   __esModule: true,
   default: ({ children }) => <div data-testid="mock-stack">{children}</div>
 }))
 
-jest.mock('@mui/material/Box', () => ({
+vi.mock('@mui/material/Box', () => ({
   __esModule: true,
   default: ({ children }) => <div data-testid="mock-box">{children}</div>
 }))
 
-jest.mock('@mui/material/FormHelperText', () => ({
+vi.mock('@mui/material/FormHelperText', () => ({
   __esModule: true,
   default: ({ children }) => (
     <div data-testid="mock-helper-text">{children}</div>
@@ -257,7 +260,7 @@ jest.mock('@mui/material/FormHelperText', () => ({
 }))
 
 // Mock LinkFile component
-jest.mock('../../../../../../../../../components/LinkFile', () => ({
+vi.mock('../../../../../../../../../components/LinkFile', () => ({
   LinkFile: ({ name, link }) => (
     <div data-testid="mock-link-file" data-name={name} data-link={link}>
       {name}
@@ -266,7 +269,7 @@ jest.mock('../../../../../../../../../components/LinkFile', () => ({
 }))
 
 // Mock custom Dialog component to provide access to the submit action
-jest.mock('@core/shared/ui/Dialog', () => ({
+vi.mock('@core/shared/ui/Dialog', () => ({
   Dialog: ({ children, dialogTitle, onClose, dialogAction }) => {
     return (
       <div data-testid="mock-custom-dialog">
@@ -286,28 +289,27 @@ jest.mock('@core/shared/ui/Dialog', () => ({
 }))
 
 // Mock all other dependencies
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn()
-  })
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
+  }))}))
+
+vi.mock('notistack', () => ({
+  enqueueSnackbar: vi.fn()
 }))
 
-jest.mock('notistack', () => ({
-  enqueueSnackbar: jest.fn()
-}))
-
-jest.mock('formik', () => ({
+vi.mock('formik', () => ({
   Formik: ({ children, initialValues, onSubmit }) =>
     children({
       values: initialValues,
       errors: {},
       touched: {},
       handleSubmit: onSubmit,
-      handleChange: jest.fn().mockImplementation((e) => {
+      handleChange: vi.fn().mockImplementation((e) => {
         initialValues[e.target.name] = e.target.value
         return e
       }),
-      setFieldValue: jest.fn().mockImplementation((field, value) => {
+      setFieldValue: vi.fn().mockImplementation((field, value) => {
         initialValues[field] = value
       })
     }),
@@ -319,10 +321,10 @@ jest.mock('formik', () => ({
 }))
 
 // Mock the useCreateR2AssetMutation
-jest.mock('../../../../../../../../../libs/useCreateR2Asset', () => ({
-  uploadAssetFile: jest.fn(),
+vi.mock('../../../../../../../../../libs/useCreateR2Asset', () => ({
+  uploadAssetFile: vi.fn(),
   useCreateR2AssetMutation: () => [
-    jest.fn().mockResolvedValue({
+    vi.fn().mockResolvedValue({
       data: {
         cloudflareR2Create: {
           id: 'mock-asset-id',
@@ -335,8 +337,8 @@ jest.mock('../../../../../../../../../libs/useCreateR2Asset', () => ({
 }))
 
 // Mock the getExtension utility
-jest.mock('../../../../add/_utils/getExtension', () => ({
-  getExtension: jest.fn().mockReturnValue('.mp4')
+vi.mock('../../../../add/_utils/getExtension', () => ({
+  getExtension: vi.fn().mockReturnValue('.mp4')
 }))
 
 describe('AddVideoVariantDownloadDialog', () => {
@@ -346,28 +348,26 @@ describe('AddVideoVariantDownloadDialog', () => {
   const mockReturnUrl = `/videos/${mockVideoId}/audio/${mockVariantId}`
 
   // Mock router push function
-  const mockRouterPush = jest.fn()
+  const mockRouterPush = vi.fn()
   // Mock enqueueSnackbar
-  const mockEnqueueSnackbar = jest.fn()
+  const mockEnqueueSnackbar = vi.fn()
 
   // Reset mocks before each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Reset formikValues for each test
     formikValues.quality = 'high'
     formikValues.file = null
 
     // Mock router.push
-    jest
-      .spyOn(require('next/navigation'), 'useRouter')
+    vi.mocked(useRouter as unknown as Mock)
       .mockImplementation(() => ({
         push: mockRouterPush
       }))
 
     // Mock snackbar
-    jest
-      .spyOn(require('notistack'), 'enqueueSnackbar')
+    vi.mocked(enqueueSnackbar as unknown as Mock)
       .mockImplementation(mockEnqueueSnackbar)
   })
 

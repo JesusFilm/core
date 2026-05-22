@@ -1,17 +1,18 @@
 import { render, screen } from '@testing-library/react'
 import { usePathname } from 'next/navigation'
+import { type MockedFunction } from 'vitest'
 
 import { NavbarBreadcrumbs } from './Breadcrumbs'
 
-jest.mock('next/navigation', () => ({
-  ...jest.requireActual('next/navigation'),
-  usePathname: jest.fn()
+vi.mock('next/navigation', async () => ({
+  ...await vi.importActual('next/navigation'),
+  usePathname: vi.fn()
 }))
 
-const mockedUsePathname = usePathname as jest.MockedFunction<typeof usePathname>
+const mockedUsePathname = usePathname as MockedFunction<typeof usePathname>
 
 describe('NavbarBreadcrumbs', () => {
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should show home breadcrumb', async () => {
     mockedUsePathname.mockReturnValue('/')

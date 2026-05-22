@@ -1,4 +1,6 @@
 import { render } from '@testing-library/react'
+import { useRouter } from 'next/navigation'
+import { type Mock } from 'vitest'
 
 import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
 
@@ -6,26 +8,24 @@ import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
 import DownloadPage from './page'
 
 // Mock the router
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn()
-  })
-}))
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
+  }))}))
 
 describe('Audio Variant Download Page', () => {
   const mockVideoId = 'video-123'
   const mockVariantId = 'variant-456'
 
   // Mock router push function
-  const mockRouterPush = jest.fn()
+  const mockRouterPush = vi.fn()
 
   // Reset mocks before each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Mock router.push
-    jest
-      .spyOn(require('next/navigation'), 'useRouter')
+    vi.mocked(useRouter as unknown as Mock)
       .mockImplementation(() => ({
         push: mockRouterPush
       }))

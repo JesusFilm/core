@@ -1,36 +1,37 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { graphql } from '@core/shared/gql'
 
 import SubtitleCreate from './page'
 
 // Mock useRouter
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
-    push: jest.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
   }))
 }))
 
 // Mock useSnackbar
-jest.mock('notistack', () => ({
-  useSnackbar: jest.fn(() => ({
-    enqueueSnackbar: jest.fn()
+vi.mock('notistack', () => ({
+  useSnackbar: vi.fn(() => ({
+    enqueueSnackbar: vi.fn()
   }))
 }))
 
 // Mock uploadAssetFile
-jest.mock(
+vi.mock(
   '../../../../../../../../libs/useCreateR2Asset/uploadAssetFile/uploadAssetFile',
   () => ({
-    uploadAssetFile: jest.fn().mockResolvedValue(undefined)
+    uploadAssetFile: vi.fn().mockResolvedValue(undefined)
   })
 )
 
 // Mock the component
-jest.mock('./page', () => ({
+vi.mock('./page', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('SubtitleCreate', () => {
@@ -97,7 +98,7 @@ describe('SubtitleCreate', () => {
 
   const setup = () => {
     // Mock implementation
-    ;(SubtitleCreate as jest.Mock).mockImplementation(() => (
+    ;(SubtitleCreate as Mock).mockImplementation(() => (
       <div data-testid="subtitle-create">
         <div data-testid="video-id">{mockVideoId}</div>
         <div data-testid="edition-id">{mockEditionId}</div>
