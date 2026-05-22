@@ -6,9 +6,7 @@ import { Action, Block, Prisma } from '@core/prisma/journeys/client'
 
 import { BlockDuplicateIdMap } from '../../__generated__/graphql'
 import { FromPostgresql } from '../../lib/decorators/FromPostgresql'
-import { ToPostgresql } from '../../lib/decorators/ToPostgresql'
 import { PrismaService } from '../../lib/prisma.service'
-import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
 export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyId', 'isCover']
 
@@ -28,36 +26,7 @@ type PrismaTransation = Omit<
 
 @Injectable()
 export class BlockService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly journeyCustomizableService: JourneyCustomizableService
-  ) {}
-
-  async findParentStepBlock(id?: string): Promise<Block | undefined> {
-    const block = await this.prismaService.block.findUnique({ where: { id } })
-    if (block?.parentBlockId == null) {
-      if (block?.typename === 'StepBlock') return block
-      return
-    }
-    return await this.findParentStepBlock(block.parentBlockId)
-  }
-
-  async setJourneyUpdatedAt(tx: PrismaTransation, block: Block): Promise<void> {
-    await tx.journey.update({
-      where: {
-        id: block.journeyId
-      },
-      data: { updatedAt: block.updatedAt }
-    })
-  }
-
-  @FromPostgresql()
-  async getSiblings(
-    journeyId: string,
-    parentBlockId?: string | null
-  ): Promise<BlockWithAction[]> {
-    return await this.getSiblingsInternal(journeyId, parentBlockId)
-  }
+  constructor(private readonly prismaService: PrismaService) {}
 
   async getSiblingsInternal(
     journeyId: string,
@@ -124,115 +93,6 @@ export class BlockService {
 
     siblings.splice(parentOrder, 0, block)
     return await this.reorderSiblings(siblings, tx)
-  }
-
-  @FromPostgresql()
-  async duplicateBlock(
-    block: BlockWithAction,
-    isStepBlock: boolean,
-    parentOrder?: number,
-    idMap?: BlockDuplicateIdMap[],
-    x?: number,
-    y?: number
-  ): Promise<BlockWithAction[]> {
-    const duplicateBlockId = idMap?.find((map) => block.id === map.oldId)?.newId
-    const blockAndChildrenData = await this.getDuplicateBlockAndChildren(
-      block.id,
-      block.journeyId,
-      block.parentBlockId ?? null,
-      isStepBlock,
-      duplicateBlockId,
-      idMap
-    )
-
-    await this.saveAll(
-      blockAndChildrenData.map((block) => ({
-        // if updating the omit, also do the same in journey.resolver.ts journeyDuplicate uses this saveAll function.
-        ...omit(block, [
-          'parentBlockId',
-          'posterBlockId',
-          'coverBlockId',
-          'nextBlockId',
-          'action',
-          'slug',
-          'pollOptionImageBlockId'
-        ]),
-        customizable: false,
-        settings: block.settings ?? {},
-        journey: {
-          connect: { id: block.journeyId }
-        }
-      }))
-    )
-    const duplicateBlockAndChildren = await Promise.all(
-      blockAndChildrenData.map(async (newBlock) => {
-        // if updating references, also do the same in journey.resolver.ts journeyDuplicate uses this saveAll function.
-        if (
-          newBlock.parentBlockId != null ||
-          newBlock.posterBlockId != null ||
-          newBlock.coverBlockId != null ||
-          newBlock.nextBlockId != null ||
-          newBlock.pollOptionImageBlockId != null ||
-          newBlock.action != null
-        ) {
-          const isActionEmpty = Object.keys(newBlock.action ?? {}).length === 0
-          const updateBlockData = {
-            parentBlockId: newBlock.parentBlockId ?? undefined,
-            posterBlockId: newBlock.posterBlockId ?? undefined,
-            coverBlockId: newBlock.coverBlockId ?? undefined,
-            nextBlockId: newBlock.nextBlockId ?? undefined,
-            pollOptionImageBlockId:
-              newBlock.pollOptionImageBlockId ?? undefined,
-            action:
-              !isActionEmpty && newBlock.action != null
-                ? {
-                    create: {
-                      ...newBlock.action,
-                      customizable: false,
-                      parentStepId: null
-                    }
-                  }
-                : undefined
-          }
-          if (newBlock.typename === 'StepBlock') {
-            return await this.prismaService.block.update({
-              where: { id: newBlock.id },
-              include: { action: true },
-              data: {
-                ...updateBlockData,
-                x: x ?? newBlock.x,
-                y: y ?? newBlock.y
-              }
-            })
-          } else {
-            return await this.prismaService.block.update({
-              where: { id: newBlock.id },
-              include: { action: true },
-              data: updateBlockData
-            })
-          }
-        }
-
-        return newBlock
-      })
-    )
-    const duplicatedBlock = duplicateBlockAndChildren[0]
-    const duplicatedChildren = duplicateBlockAndChildren.slice(1)
-
-    // Newly duplicated block returns with original block and siblings.
-    const siblings = await this.getSiblingsInternal(
-      block.journeyId,
-      block.parentBlockId
-    )
-    const defaultDuplicateBlockIndex = siblings.findIndex(
-      (block) => block.id === duplicatedBlock.id
-    )
-    const insertIndex = parentOrder != null ? parentOrder : siblings.length + 1
-    siblings.splice(defaultDuplicateBlockIndex, 1)
-    siblings.splice(insertIndex, 0, duplicatedBlock)
-    const reorderedBlocks = await this.reorderSiblings(siblings)
-
-    return reorderedBlocks.concat(duplicatedChildren)
   }
 
   async getDuplicateChildren(
@@ -375,33 +235,6 @@ export class BlockService {
     return filteredBlocks
   }
 
-  @FromPostgresql()
-  async removeBlockAndChildren(block: Block): Promise<BlockWithAction[]> {
-    const result = await this.prismaService.$transaction(async (tx) => {
-      const currentTime = new Date().toISOString()
-      const updatedBlock = await tx.block.update({
-        where: { id: block.id },
-        data: { deletedAt: currentTime }
-      })
-      await tx.journey.update({
-        where: {
-          id: updatedBlock.journeyId
-        },
-        data: { updatedAt: currentTime }
-      })
-      return await this.reorderSiblings(
-        await this.getSiblingsInternal(
-          block.journeyId,
-          block.parentBlockId,
-          tx
-        ),
-        tx
-      )
-    })
-    await this.journeyCustomizableService.recalculate(block.journeyId)
-    return result
-  }
-
   async validateBlock(
     id: string | null | undefined,
     value: string | null,
@@ -416,14 +249,6 @@ export class BlockService {
         : null
 
     return block != null ? block[type] === value : false
-  }
-
-  @FromPostgresql()
-  async save<T = Block>(input: Prisma.BlockCreateArgs): Promise<T> {
-    return (await this.prismaService.block.create({
-      ...input,
-      data: omit(input.data, OMITTED_BLOCK_FIELDS) as Prisma.BlockCreateInput
-    })) as unknown as T
   }
 
   @FromPostgresql()
@@ -453,41 +278,5 @@ export class BlockService {
     }
 
     return result
-  }
-
-  @ToPostgresql()
-  async update<T>(
-    id: string,
-    input: Prisma.BlockUpdateInput | Prisma.BlockUncheckedUpdateInput
-  ): Promise<T> {
-    const result = await this.prismaService.$transaction(async (tx) => {
-      if (input.action != null) {
-        const data = {
-          parentBlock: { connect: { id } },
-          ...omit(input.action, 'id')
-        }
-        await tx.action.upsert({
-          where: { parentBlockId: id },
-          create: data,
-          update: data
-        })
-      } else if (input.action === null) {
-        await tx.action.delete({ where: { parentBlockId: id } })
-      }
-      const updatedBlock = await tx.block.update({
-        where: { id },
-        data: omit(input, [
-          ...OMITTED_BLOCK_FIELDS,
-          'action',
-          // deletedAt should only be updated using removeBlockAndChildren
-          'deletedAt'
-        ]) as Prisma.BlockUpdateInput,
-        include: { action: true }
-      })
-      await this.setJourneyUpdatedAt(tx, updatedBlock)
-      return updatedBlock
-    })
-    await this.journeyCustomizableService.recalculate(result.journeyId)
-    return result as unknown as T
   }
 }

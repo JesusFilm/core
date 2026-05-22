@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { Prisma, sites } from '@core/prisma/analytics/client'
 import { graphql } from '@core/shared/gql'
 
@@ -5,9 +7,9 @@ import { getAuthenticatedClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { fixedDate } from '../../../test/timers'
 
-jest.mock('short-unique-id', () => ({
+vi.mock('short-unique-id', () => ({
   __esModule: true,
-  default: jest.fn().mockImplementation(() => ({ rnd: () => 'test-slug' }))
+  default: vi.fn().mockImplementation(() => ({ rnd: () => 'test-slug' }))
 }))
 
 const SITE_CREATE_MUTATION = graphql(`

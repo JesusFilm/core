@@ -61,7 +61,7 @@
       "options": {
         "commands": [
           {
-            "command": "pnpm exec i18next --config libs/journeys/ui/i18next-parser.config.js"
+            "command": "pnpm exec i18next-cli extract --config libs/journeys/ui/i18next.config.js"
           }
         ]
       }

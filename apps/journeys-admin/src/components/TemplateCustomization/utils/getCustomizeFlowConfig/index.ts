@@ -1,4 +1,8 @@
-export { getCustomizeFlowConfig } from './getCustomizeFlowConfig'
+export {
+  getCustomizeFlowConfig,
+  STEPPER_EXCLUDED_SCREENS,
+  STEPPER_HIDDEN_SCREENS
+} from './getCustomizeFlowConfig'
 export type {
   CustomizationScreen,
   CustomizeFlowConfig,

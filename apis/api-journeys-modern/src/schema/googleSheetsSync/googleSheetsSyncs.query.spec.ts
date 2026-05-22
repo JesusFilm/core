@@ -1,3 +1,5 @@
+import { type Mock, type MockedFunction, vi } from 'vitest'
+
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
@@ -5,22 +7,22 @@ import { prismaMock } from '../../../test/prismaMock'
 import { Action, ability } from '../../lib/auth/ability'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-jest.mock('../../lib/auth/ability', () => ({
+vi.mock('../../lib/auth/ability', () => ({
   Action: {
     Export: 'export'
   },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
-const mockAbility = ability as jest.MockedFunction<typeof ability>
+const mockAbility = ability as MockedFunction<typeof ability>
 
 describe('googleSheetsSyncs', () => {
   const mockUser = {
@@ -50,7 +52,7 @@ describe('googleSheetsSyncs', () => {
   `)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockAbility.mockReturnValue(true)
     mockGetUserFromPayload.mockReturnValue(mockUser)
     prismaMock.userRole.findUnique.mockResolvedValue({
@@ -116,8 +118,8 @@ describe('googleSheetsSyncs', () => {
 
       // prismaField spreads query parameter
       expect(prismaMock.googleSheetsSync.findMany).toHaveBeenCalled()
-      const findManyCall = (prismaMock.googleSheetsSync.findMany as jest.Mock)
-        .mock.calls[0][0]
+      const findManyCall = (prismaMock.googleSheetsSync.findMany as Mock).mock
+        .calls[0][0]
       expect(findManyCall).toMatchObject({
         where: { journeyId: 'journey-id' },
         orderBy: [{ deletedAt: 'asc' }, { createdAt: 'desc' }]
@@ -250,8 +252,8 @@ describe('googleSheetsSyncs', () => {
 
       // prismaField spreads query parameter
       expect(prismaMock.googleSheetsSync.findMany).toHaveBeenCalled()
-      const findManyCall = (prismaMock.googleSheetsSync.findMany as jest.Mock)
-        .mock.calls[0][0]
+      const findManyCall = (prismaMock.googleSheetsSync.findMany as Mock).mock
+        .calls[0][0]
       expect(findManyCall).toMatchObject({
         where: { integrationId: 'integration-id' },
         orderBy: [{ deletedAt: 'asc' }, { createdAt: 'desc' }]
@@ -434,8 +436,8 @@ describe('googleSheetsSyncs', () => {
     })
 
     expect(prismaMock.googleSheetsSync.findMany).toHaveBeenCalled()
-    const findManyCall = (prismaMock.googleSheetsSync.findMany as jest.Mock)
-      .mock.calls[0][0]
+    const findManyCall = (prismaMock.googleSheetsSync.findMany as Mock).mock
+      .calls[0][0]
     expect(findManyCall).toMatchObject({
       where: { journeyId: 'journey-id', integrationId: 'integration-id' },
       orderBy: [{ deletedAt: 'asc' }, { createdAt: 'desc' }]

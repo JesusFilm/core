@@ -49,6 +49,17 @@ describe('journeyAcl', () => {
     team: { userTeams: [] }
   } as unknown as Journey
 
+  const journeyUserJourneyInviteRequested = {
+    id: 'journeyId',
+    userJourneys: [
+      {
+        userId: user.id,
+        role: UserJourneyRole.inviteRequested
+      }
+    ],
+    team: { userTeams: [] }
+  } as unknown as Journey
+
   const journeyEmpty = {
     id: 'journeyId',
     userJourneys: [],
@@ -123,6 +134,12 @@ describe('journeyAcl', () => {
 
     it('denies when user is journey editor', () => {
       expect(can(Action.Manage, journeyUserJourneyEditor, user)).toBe(false)
+    })
+
+    it('denies when user has inviteRequested role', () => {
+      expect(can(Action.Manage, journeyUserJourneyInviteRequested, user)).toBe(
+        false
+      )
     })
 
     it('denies when user has no userTeam or userJourneys', () => {
@@ -217,6 +234,25 @@ describe('journeyAcl', () => {
       expect(can(Action.Read, journeyUnpublishedTemplate, user)).toBe(false)
     })
 
+    it('denies when user has inviteRequested role', () => {
+      expect(can(Action.Read, journeyUserJourneyInviteRequested, user)).toBe(
+        false
+      )
+    })
+
+    it('allows when user has inviteRequested role but is team member', () => {
+      const journey = {
+        id: 'journeyId',
+        userJourneys: [
+          { userId: user.id, role: UserJourneyRole.inviteRequested }
+        ],
+        team: {
+          userTeams: [{ userId: user.id, role: UserTeamRole.member }]
+        }
+      } as unknown as Journey
+      expect(can(Action.Read, journey, user)).toBe(true)
+    })
+
     it('denies when user has no userTeam or userJourneys', () => {
       expect(can(Action.Read, journeyEmpty, user)).toBe(false)
     })
@@ -237,6 +273,12 @@ describe('journeyAcl', () => {
 
     it('allows when user is journey editor', () => {
       expect(can(Action.Update, journeyUserJourneyEditor, user)).toBe(true)
+    })
+
+    it('denies when user has inviteRequested role', () => {
+      expect(can(Action.Update, journeyUserJourneyInviteRequested, user)).toBe(
+        false
+      )
     })
 
     it('denies when user has no userTeam or userJourneys', () => {
@@ -269,6 +311,12 @@ describe('journeyAcl', () => {
     it('delegates to manage (denies when user is journey editor)', () => {
       expect(can(Action.Delete, journeyUserJourneyEditor, user)).toBe(false)
     })
+
+    it('denies when user has inviteRequested role', () => {
+      expect(can(Action.Delete, journeyUserJourneyInviteRequested, user)).toBe(
+        false
+      )
+    })
   })
 
   describe('export', () => {
@@ -286,6 +334,12 @@ describe('journeyAcl', () => {
 
     it('denies when user is journey editor', () => {
       expect(can(Action.Export, journeyUserJourneyEditor, user)).toBe(false)
+    })
+
+    it('denies when user has inviteRequested role', () => {
+      expect(can(Action.Export, journeyUserJourneyInviteRequested, user)).toBe(
+        false
+      )
     })
 
     it('denies when user has no userTeam or userJourneys', () => {

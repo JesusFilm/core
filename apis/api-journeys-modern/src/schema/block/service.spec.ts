@@ -1,31 +1,33 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { prismaMock } from '../../../test/prismaMock'
 import { ability } from '../../lib/auth/ability'
+import { fetchJourneyWithAclIncludes } from '../../lib/auth/fetchJourneyWithAclIncludes'
 
-import { authorizeBlockCreate, validateParentBlock } from './service'
+import {
+  authorizeBlockCreate,
+  reorderBlock,
+  validateParentBlock
+} from './service'
 
-jest.mock('../../lib/auth/ability', () => ({
+vi.mock('../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../lib/auth/fetchJourneyWithAclIncludes', () => ({
-  fetchJourneyWithAclIncludes: jest.fn()
+vi.mock('../../lib/auth/fetchJourneyWithAclIncludes', () => ({
+  fetchJourneyWithAclIncludes: vi.fn()
 }))
-
-const {
-  fetchJourneyWithAclIncludes
-} = require('../../lib/auth/fetchJourneyWithAclIncludes')
-
-const mockAbility = ability as jest.MockedFunction<typeof ability>
+const mockAbility = ability as MockedFunction<typeof ability>
 
 describe('authorizeBlockCreate', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('resolves when user is authorized', async () => {
-    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
+    ;(fetchJourneyWithAclIncludes as any).mockResolvedValue({ id: 'journeyId' })
     mockAbility.mockReturnValue(true)
 
     await expect(
@@ -41,7 +43,7 @@ describe('authorizeBlockCreate', () => {
   })
 
   it('throws FORBIDDEN when user is not authorized', async () => {
-    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
+    ;(fetchJourneyWithAclIncludes as any).mockResolvedValue({ id: 'journeyId' })
     mockAbility.mockReturnValue(false)
 
     await expect(
@@ -52,7 +54,7 @@ describe('authorizeBlockCreate', () => {
 
 describe('validateParentBlock', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('resolves when parent block exists in journey', async () => {
@@ -96,5 +98,102 @@ describe('validateParentBlock', () => {
         deletedAt: null
       }
     })
+  })
+})
+
+describe('reorderBlock', () => {
+  const block = {
+    id: 'blockId',
+    journeyId: 'journeyId',
+    parentBlockId: 'parentId',
+    parentOrder: 0,
+    typename: 'ImageBlock',
+    action: null
+  } as any
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('returns empty array when block has no parentOrder', async () => {
+    const result = await reorderBlock(
+      { ...block, parentOrder: null },
+      1,
+      prismaMock as any
+    )
+
+    expect(result).toEqual([])
+    expect(prismaMock.block.findMany).not.toHaveBeenCalled()
+    expect(prismaMock.block.update).not.toHaveBeenCalled()
+  })
+
+  it('reorders sibling blocks with the block at the given position', async () => {
+    const sibling1 = { ...block, id: 'sibling1', parentOrder: 0 }
+    const sibling2 = { ...block, id: 'sibling2', parentOrder: 1 }
+    prismaMock.block.findMany.mockResolvedValue([sibling1, sibling2])
+    prismaMock.block.update
+      .mockResolvedValueOnce({ ...sibling1, parentOrder: 0 })
+      .mockResolvedValueOnce({ ...block, parentOrder: 1 })
+      .mockResolvedValueOnce({ ...sibling2, parentOrder: 2 })
+
+    const result = await reorderBlock(block, 1, prismaMock as any)
+
+    expect(prismaMock.block.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          journeyId: 'journeyId',
+          parentBlockId: 'parentId',
+          parentOrder: { not: null },
+          deletedAt: null,
+          id: { not: 'blockId' }
+        }),
+        orderBy: { parentOrder: 'asc' },
+        include: { action: true }
+      })
+    )
+    expect(prismaMock.block.update).toHaveBeenNthCalledWith(1, {
+      where: { id: 'sibling1' },
+      data: { parentOrder: 0 },
+      include: { action: true }
+    })
+    expect(prismaMock.block.update).toHaveBeenNthCalledWith(2, {
+      where: { id: 'blockId' },
+      data: { parentOrder: 1 },
+      include: { action: true }
+    })
+    expect(prismaMock.block.update).toHaveBeenNthCalledWith(3, {
+      where: { id: 'sibling2' },
+      data: { parentOrder: 2 },
+      include: { action: true }
+    })
+    expect(result).toHaveLength(3)
+  })
+
+  it('queries StepBlocks (no parentBlockId) when block has none', async () => {
+    const stepBlock = {
+      ...block,
+      typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0
+    }
+    prismaMock.block.findMany.mockResolvedValue([])
+    prismaMock.block.update.mockResolvedValueOnce({
+      ...stepBlock,
+      parentOrder: 0
+    })
+
+    await reorderBlock(stepBlock, 0, prismaMock as any)
+
+    expect(prismaMock.block.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          journeyId: 'journeyId',
+          typename: 'StepBlock',
+          parentOrder: { not: null },
+          deletedAt: null,
+          id: { not: 'blockId' }
+        })
+      })
+    )
   })
 })

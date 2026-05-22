@@ -359,7 +359,7 @@ describe('LanguageAutocomplete', () => {
   ]
 
   it('should sort language options alphabetically', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole, queryAllByRole } = render(
       <LanguageAutocomplete
         onChange={handleChange}
@@ -376,7 +376,7 @@ describe('LanguageAutocomplete', () => {
   })
 
   it('should select languages via option click', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole } = render(
       <LanguageAutocomplete
         onChange={handleChange}
@@ -399,7 +399,7 @@ describe('LanguageAutocomplete', () => {
   it('should accept helper text', async () => {
     const { getByText } = render(
       <LanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         value={{
           id: '1106',
           localName: 'German, Standard',
@@ -416,7 +416,7 @@ describe('LanguageAutocomplete', () => {
   it('should set default value', async () => {
     const { getByRole } = render(
       <LanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         value={{
           id: '1106',
           localName: 'German, Standard',
@@ -432,7 +432,7 @@ describe('LanguageAutocomplete', () => {
   it('should show loading animation if loading', async () => {
     const { getByRole } = render(
       <LanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         value={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}
         loading
@@ -468,7 +468,7 @@ describe('LanguageAutocomplete', () => {
     }
     const { getAllByTestId, getByTestId, getByRole } = render(
       <LanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         value={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}
         loading={false}
@@ -483,6 +483,68 @@ describe('LanguageAutocomplete', () => {
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
 
     expect(getAllByTestId('test-option').length).toBeGreaterThan(0)
+  })
+
+  it('should handle languages where all names have primary: true', async () => {
+    const allPrimaryLanguages: Language[] = [
+      {
+        id: '496',
+        slug: 'french',
+        name: [
+          { value: 'Français', primary: true },
+          { value: 'French', primary: true }
+        ]
+      },
+      {
+        id: '1106',
+        slug: 'german-standard',
+        name: [
+          { value: 'Deutsche', primary: true },
+          { value: 'German, Standard', primary: true }
+        ]
+      },
+      {
+        id: '529',
+        slug: 'english',
+        name: [{ value: 'English', primary: true }]
+      }
+    ]
+
+    const handleChange = vi.fn()
+    const { getByRole, queryAllByRole } = render(
+      <LanguageAutocomplete
+        onChange={handleChange}
+        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={allPrimaryLanguages}
+        loading={false}
+      />
+    )
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+
+    const options = queryAllByRole('option')
+    expect(options).toHaveLength(3)
+    expect(options[0]).toHaveTextContent('English')
+    expect(options[1]).toHaveTextContent('French')
+    expect(options[2]).toHaveTextContent('German, Standard')
+  })
+
+  it('should filter by both local and native name', async () => {
+    const handleChange = vi.fn()
+    const { getByRole, queryAllByRole } = render(
+      <LanguageAutocomplete
+        onChange={handleChange}
+        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={languages}
+        loading={false}
+      />
+    )
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.change(getByRole('combobox'), { target: { value: 'Français' } })
+
+    const options = queryAllByRole('option')
+    expect(options).toHaveLength(1)
+    expect(options[0]).toHaveTextContent('French')
   })
 
   it('should have a virtualized list', () => {
@@ -512,7 +574,7 @@ describe('LanguageAutocomplete', () => {
     }
     const { getAllByTestId, getByTestId, getByRole } = render(
       <LanguageAutocomplete
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         value={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}
         loading={false}

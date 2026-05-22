@@ -157,6 +157,7 @@ import MessageSquare from './MessageSquare'
 import MessageText1 from './MessageText1'
 import MessageText2 from './MessageText2'
 import MessageTyping from './MessageTyping'
+import Metaverse from './Metaverse'
 import Minimise1 from './Minimise1'
 import Minimise2 from './Minimise2'
 import MinusCircleContained from './MinusCircleContained'
@@ -176,6 +177,7 @@ import Plus1 from './Plus1'
 import Plus2 from './Plus2'
 import Plus3 from './Plus3'
 import Presentation1 from './Presentation1'
+import QrCode2 from './QrCode2'
 import Search1 from './Search1'
 import Search2 from './Search2'
 import Send1 from './Send1'
@@ -392,6 +394,7 @@ export type IconName =
   | 'MessageText1'
   | 'MessageText2'
   | 'MessageTyping'
+  | 'Metaverse'
   | 'Minimise1'
   | 'Minimise2'
   | 'MinusCircleContained'
@@ -411,6 +414,7 @@ export type IconName =
   | 'Plus2'
   | 'Plus3'
   | 'Presentation1'
+  | 'QrCode2'
   | 'Search1'
   | 'Search2'
   | 'Send1'
@@ -630,6 +634,7 @@ const iconComponents: IconComponents = {
   MessageText1,
   MessageText2,
   MessageTyping,
+  Metaverse,
   Minimise1,
   Minimise2,
   MediaStrip1,
@@ -650,6 +655,7 @@ const iconComponents: IconComponents = {
   Plus2,
   Plus3,
   Presentation1,
+  QrCode2,
   Search1,
   Search2,
   Send1,

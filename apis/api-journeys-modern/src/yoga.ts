@@ -30,6 +30,7 @@ export const yoga = createYoga<
 >({
   schema,
   logging: logger,
+  maskedErrors: process.env.NODE_ENV === 'test' ? false : undefined,
   context: async ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
     const user = getUserFromPayload(payload, logger)
@@ -84,10 +85,37 @@ export const yoga = createYoga<
           cache,
           ttlPerSchemaCoordinate: {
             'Journey.blockTypenames': 0,
+            'Query.adminJourney': 0,
             'Query.adminJourneys': 0,
-            'Query.getJourneyProfile': 1000,
+            'Query.customDomain': 0,
+            'Query.customDomains': 0,
+            // Private per-user data — must not be served from a global shared
+            // cache (session: () => null). TTL 0 disables caching entirely for
+            // this field, preventing cross-user profile contamination that caused
+            // the terms-and-conditions redirect to be skipped for new users.
+            'Query.getJourneyProfile': 0,
             'Query.getUserRole': 0,
             'Query.googleSheetsSyncs': 0,
+            // Team-scoped admin reads. The default TTL of Infinity caches the
+            // first response indefinitely, keyed only on (query, teamId). When
+            // a fresh user's first read returns an empty list, the cached
+            // entry has no TemplateGalleryPage entity IDs in it — so
+            // mutation-based invalidation cannot match it, and subsequent
+            // creates appear to "disappear" until the cache is manually
+            // flushed (NES-1648).
+            'Query.templateGalleryPage': 0,
+            'Query.templateGalleryPages': 0,
+            // Public renderer. TTL 0 because the response embeds journey-side
+            // data (the `templates` list) whose underlying mutations live in
+            // the separate api-journeys service. Yoga's entity-ID auto-
+            // invalidation only runs for mutations that flow through this
+            // server, so journey-side actions (trash, edit, soft-delete)
+            // would otherwise leave a stale cached page for up to the TTL.
+            // Cached null entries also can't be reached by entity-ID
+            // invalidation (no entity to track), which previously made
+            // unpublish→republish cycles serve a stale 404. One indexed
+            // slug lookup per request is trivial.
+            'Query.templateGalleryPageBySlug': 0,
             'Query.journeysPlausibleStatsAggregate': 5000,
             'Query.journeysPlausibleStatsBreakdown': 5000,
             'Query.journeysPlausibleStatsRealtimeVisitors': 5000,

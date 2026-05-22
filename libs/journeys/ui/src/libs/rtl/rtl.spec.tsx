@@ -65,7 +65,8 @@ const journey: Journey = {
   fromTemplateId: null,
   socialNodeX: null,
   socialNodeY: null,
-  customizable: null
+  customizable: null,
+  showAssistant: null
 }
 
 describe('getJourneyRTL', () => {

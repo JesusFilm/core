@@ -9,7 +9,7 @@ import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
-import { builder } from '../builder'
+import { builder, toPrismaDateTimeFilter } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
 import { deleteVideo } from '../mux/video/service'
@@ -324,6 +324,7 @@ async function checkAndRemoveEmptyParentVariant(
 export const VideoVariant = builder.prismaObject('VideoVariant', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     asset: t
       .withAuth({ isPublisher: true })
       .relation('asset', { nullable: true, description: 'master video file' }),
@@ -459,7 +460,8 @@ builder.queryFields((t) => ({
         ...query,
         where: {
           published: input?.onlyPublished === false ? undefined : true,
-          languageId: input?.languageId ?? undefined
+          languageId: input?.languageId ?? undefined,
+          updatedAt: toPrismaDateTimeFilter(input?.updatedAt)
         },
         skip: offset ?? undefined,
         take: limit ?? undefined
@@ -474,7 +476,8 @@ builder.queryFields((t) => ({
       await prisma.videoVariant.count({
         where: {
           published: input?.onlyPublished === false ? undefined : true,
-          languageId: input?.languageId ?? undefined
+          languageId: input?.languageId ?? undefined,
+          updatedAt: toPrismaDateTimeFilter(input?.updatedAt)
         }
       })
   })

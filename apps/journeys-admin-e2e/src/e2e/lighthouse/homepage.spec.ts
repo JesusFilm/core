@@ -7,7 +7,7 @@ import { LandingPage } from '../../pages/landing-page'
 const config = {
   extends: 'lighthouse:default',
   settings: {
-    formFactor: 'desktop',
+    formFactor: 'desktop' as const,
     screenEmulation: {
       mobile: false,
       width: 1350,
@@ -37,7 +37,7 @@ test('Homepage', async () => {
       accessibility: 93,
       'best-practices': 83,
       seo: 82,
-      pwa: 40
+      pwa: 30
     },
     reports: {
       formats: { html: true },

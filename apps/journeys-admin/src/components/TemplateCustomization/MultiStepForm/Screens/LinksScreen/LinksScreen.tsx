@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client'
 import { Formik, FormikHelpers, FormikProvider } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 import { object, string } from 'yup'
 
@@ -36,8 +36,6 @@ import { LinksForm } from './LinksForm'
 interface LinksScreenProps {
   handleNext: (overrideJourneyId?: string) => void
 }
-
-//
 
 export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -231,7 +229,12 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
 
     await Promise.allSettled(updatePromises)
     setNavigating(true)
-    handleNext()
+    try {
+      await handleNext()
+    } catch (error) {
+      console.error('[LinksScreen] Navigation failed:', error)
+      setNavigating(false)
+    }
   }
 
   return (
@@ -299,9 +302,13 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
             subtitle={t(
               'This content contains buttons linking to external sites. Check them and update the links below.'
             )}
-            mobileSubtitle={t(
-              'Buttons here point to external sites. Check and update the links.'
-            )}
+            mobileSubtitle={
+              <>
+                {t('Buttons here point to external sites.')}
+                <br />
+                {t('Check and update the links.')}
+              </>
+            }
             footer={
               <CustomizeFlowNextButton
                 label={t('Next')}

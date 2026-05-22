@@ -126,7 +126,9 @@ const blocks: Blocks[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   }
 ]
 

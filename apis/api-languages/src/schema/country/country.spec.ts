@@ -29,6 +29,7 @@ const COUNTRY_QUERY = graphql(`
       flagPngSrc
       flagWebpSrc
       id
+      updatedAt
       countryLanguages {
         speakers
         displaySpeakers
@@ -136,7 +137,8 @@ describe('country', () => {
       }
     })
     expect(data).toHaveProperty('data.country', {
-      ...country,
+      ...omit(country, ['updatedAt']),
+      updatedAt: country.updatedAt.toISOString(),
       continent: {
         ...continent,
         name: [{ ...omit(continentName, ['id', 'continentId', 'languageId']) }]

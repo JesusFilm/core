@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -49,6 +49,8 @@ const block: TreeBlock<Block> = {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
+      showAssistant: null,
+      expandChatByDefault: null,
       children: [
         {
           id: 'image0.id',

@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 
 import { isHtml5Tech } from '../isHtml5Tech'
 import { isYoutubeTech } from '../isYoutubeTech'

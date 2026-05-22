@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
 
+import { resolvedParams } from '../../../../../../../../test/utils/resolvedParams'
+
 // Import the component under test
 import DownloadPage from './page'
 
@@ -32,10 +34,10 @@ describe('DownloadPage with downloadId', () => {
   it('redirects to the variant page', () => {
     render(
       <DownloadPage
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 
@@ -49,10 +51,10 @@ describe('DownloadPage with downloadId', () => {
   it('renders an empty fragment', () => {
     const { container } = render(
       <DownloadPage
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 

@@ -1,5 +1,10 @@
 {
   "permissions": {
-    "deny": ["Read(**/.env*)", "Read(**/.env.*)"]
+    "deny": [
+      "Read(**/.env*)",
+      "Read(**/.env.*)",
+      "Bash(docker run*-v /*)",
+      "Bash(docker run*--privileged*)"
+    ]
   }
 }

@@ -4,7 +4,8 @@ export const country = {
   latitude: 10,
   longitude: -20.1,
   flagPngSrc: 'flag.png',
-  flagWebpSrc: 'flag.webp'
+  flagWebpSrc: 'flag.webp',
+  updatedAt: new Date('2021-11-19T12:34:56.647Z')
 }
 
 export const countryName = {

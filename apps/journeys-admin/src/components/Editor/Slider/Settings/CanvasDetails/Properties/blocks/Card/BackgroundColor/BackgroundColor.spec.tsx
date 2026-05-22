@@ -90,7 +90,8 @@ const journey: Journey = {
   fromTemplateId: null,
   socialNodeX: null,
   socialNodeY: null,
-  customizable: null
+  customizable: null,
+  showAssistant: null
 }
 
 describe('BackgroundColor', () => {
@@ -106,7 +107,9 @@ describe('BackgroundColor', () => {
     fullscreen: false,
     backdropBlur: null,
     eventLabel: null,
-    children: []
+    children: [],
+    showAssistant: null,
+    expandChatByDefault: null
   }
 
   const fullscreenCard: TreeBlock<CardBlock> = {

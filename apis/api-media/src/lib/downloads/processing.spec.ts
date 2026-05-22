@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { VideoVariantDownloadQuality } from '@core/prisma/media/client'
 
 import { prismaMock } from '../../../test/prismaMock'
@@ -261,7 +263,7 @@ describe('download processing utilities', () => {
 
   describe('createDownloadsFromMuxAsset', () => {
     beforeEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
     })
 
     it('should create downloads successfully', async () => {

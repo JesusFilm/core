@@ -119,7 +119,9 @@ const blocks: Blocks[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   }
 ]
 
@@ -177,7 +179,8 @@ describe('Goals', () => {
     socialNodeX: null,
     socialNodeY: null,
     journeyTheme: null,
-    customizable: null
+    customizable: null,
+    showAssistant: null
   }
 
   it('should render placeholder', () => {

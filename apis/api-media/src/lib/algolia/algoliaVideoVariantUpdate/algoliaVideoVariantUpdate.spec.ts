@@ -1,15 +1,18 @@
 import { Logger } from 'pino'
+import { vi } from 'vitest'
 
 import { prismaMock } from '../../../../test/prismaMock'
+import { getAlgoliaClient } from '../algoliaClient'
+import { getLanguages } from '../languages'
 
 import { updateVideoVariantInAlgolia } from './algoliaVideoVariantUpdate'
 
-const deleteObjectSpy = jest.fn()
-const saveObjectsSpy = jest.fn()
+const deleteObjectSpy = vi.fn()
+const saveObjectsSpy = vi.fn()
 
 // Mock the algolia client helper
-jest.mock('../algoliaClient', () => ({
-  getAlgoliaClient: jest.fn(),
+vi.mock('../algoliaClient', () => ({
+  getAlgoliaClient: vi.fn(),
   getAlgoliaConfig: () => ({
     appId: 'test-app-id',
     apiKey: 'test-api-key',
@@ -19,8 +22,8 @@ jest.mock('../algoliaClient', () => ({
 }))
 
 // Mock the languages helper
-jest.mock('../languages', () => ({
-  getLanguages: jest.fn()
+vi.mock('../languages', () => ({
+  getLanguages: vi.fn()
 }))
 
 describe('algoliaVideoVariantUpdate', () => {
@@ -38,37 +41,37 @@ describe('algoliaVideoVariantUpdate', () => {
   }
 
   const mockLogger: Logger = {
-    info: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn()
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn()
   } as any
 
   // Get the mocked functions
-  const { getLanguages } = require('../languages')
-  const { getAlgoliaClient } = require('../algoliaClient')
+  const mockedGetLanguages = vi.mocked(getLanguages)
+  const mockedGetAlgoliaClient = vi.mocked(getAlgoliaClient)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env.CLOUDFLARE_IMAGE_ACCOUNT = 'test-account'
 
     // Reset the spy mock return values
     saveObjectsSpy.mockResolvedValue([{ taskID: 'test-task-123' }])
     deleteObjectSpy.mockResolvedValue({})
 
-    getAlgoliaClient.mockReturnValue({
+    mockedGetAlgoliaClient.mockReturnValue({
       deleteObject: deleteObjectSpy,
       saveObjects: saveObjectsSpy
-    })
+    } as unknown as ReturnType<typeof getAlgoliaClient>)
 
-    getLanguages.mockResolvedValue(mockLanguages)
+    mockedGetLanguages.mockResolvedValue(mockLanguages)
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should not continue when algolia client creation fails', async () => {
-    getAlgoliaClient.mockImplementationOnce(() => {
+    mockedGetAlgoliaClient.mockImplementationOnce(() => {
       throw new Error('Algolia client failed')
     })
 

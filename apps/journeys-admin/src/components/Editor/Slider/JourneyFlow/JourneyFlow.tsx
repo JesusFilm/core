@@ -2,6 +2,25 @@ import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import { useTheme } from '@mui/material/styles'
+import {
+  Background,
+  type Edge,
+  type Node,
+  type OnConnect,
+  type OnConnectEnd,
+  type OnConnectStart,
+  type OnConnectStartParams,
+  type OnNodeDrag,
+  type OnReconnect,
+  Panel,
+  ReactFlow,
+  type ReactFlowInstance,
+  type ReactFlowProps,
+  SelectionDragHandler,
+  reconnectEdge,
+  useEdgesState,
+  useNodesState
+} from '@xyflow/react'
 import { useRouter } from 'next/compat/router'
 import {
   type MouseEvent,
@@ -12,25 +31,6 @@ import {
   useRef,
   useState
 } from 'react'
-import {
-  Background,
-  type Edge,
-  type Node,
-  type NodeDragHandler,
-  type OnConnect,
-  type OnConnectEnd,
-  type OnConnectStart,
-  type OnConnectStartParams,
-  type OnEdgeUpdateFunc,
-  Panel,
-  ReactFlow,
-  type ReactFlowInstance,
-  type ReactFlowProps,
-  SelectionDragHandler,
-  updateEdge as reactFlowUpdateEdge,
-  useEdgesState,
-  useNodesState
-} from 'reactflow'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -74,7 +74,8 @@ import {
 } from './nodes/SocialPreviewNode/libs/positions'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
-import 'reactflow/dist/style.css'
+import { TemplateInfoHelper } from './TemplateInfoHelper'
+import '@xyflow/react/dist/style.css'
 import { useStepAndBlockSelection } from './utils/useStepAndBlockSelection'
 
 // some styles can only be updated through css after render
@@ -102,7 +103,7 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 
 export function JourneyFlow(): ReactElement {
   const router = useRouter()
-  const { editorAnalytics } = useFlags()
+  const { editorAnalytics, teamTemplateCollection } = useFlags()
   const theme = useTheme()
   const {
     state: { steps, activeSlide, showAnalytics, analytics },
@@ -113,10 +114,35 @@ export function JourneyFlow(): ReactElement {
     useState<ReactFlowInstance | null>(null)
   const connectingParams = useRef<OnConnectStartParams | null>(null)
   const edgeUpdateSuccessful = useRef<boolean | null>(null)
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
-  const [referrerNodes, setReferrerNodes] = useNodesState([])
-  const [referrerEdges, setReferrerEdges] = useEdgesState([])
+  const [nodes, setNodes, onMainNodesChange] = useNodesState<Node>([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
+  const [referrerNodes, setReferrerNodes, onReferrerNodesChange] =
+    useNodesState<Node>([])
+  const [referrerEdges, setReferrerEdges] = useEdgesState<Edge>([])
+
+  const referrerNodeIds = useMemo(
+    () => new Set(referrerNodes.map((n) => n.id)),
+    [referrerNodes]
+  )
+  // Route node changes to the correct state handler. This prevents an infinite
+  // re-render of referrer nodes. See NES-781 for details.
+  const onNodesChange = useCallback<
+    NonNullable<ReactFlowProps['onNodesChange']>
+  >(
+    (changes) => {
+      // Step and social preview nodes
+      const mainChanges = changes.filter(
+        (c) => !('id' in c && referrerNodeIds.has(c.id))
+      )
+      // Referrer nodes
+      const referrerChanges = changes.filter(
+        (c) => 'id' in c && referrerNodeIds.has(c.id)
+      )
+      if (mainChanges.length > 0) onMainNodesChange(mainChanges)
+      if (referrerChanges.length > 0) onReferrerNodesChange(referrerChanges)
+    },
+    [onMainNodesChange, onReferrerNodesChange, referrerNodeIds]
+  )
   const dragTimeStampRef = useRef(0)
 
   const createStepFromStep = useCreateStepFromStep()
@@ -409,10 +435,24 @@ export function JourneyFlow(): ReactElement {
     return endDragTimeStamp - dragTimeStampRef.current < 150
   }
 
-  const onNodeDragStop: NodeDragHandler = (event, node): void => {
+  const isMenuElement = (target: Element): boolean =>
+    target.closest('#StepBlockNodeMenuIcon, #edit-step') != null
+
+  const handleNodeClick = useCallback(
+    (event: MouseEvent, node: Node) => {
+      if (node.type !== 'StepBlock') return
+
+      const target = event.target as HTMLElement
+      if (isMenuElement(target)) return
+
+      handleStepSelection(node.id)
+    },
+    [handleStepSelection]
+  )
+
+  const onNodeDragStop: OnNodeDrag = (event, node): void => {
     if (node.type !== 'StepBlock' && node.type !== 'SocialPreview') return
 
-    // x and y position of node before onNodeDragStop was called
     let prevX
     let prevY
 
@@ -425,20 +465,7 @@ export function JourneyFlow(): ReactElement {
       prevX = step.x
       prevY = step.y
 
-      // if click or tap, go through step selection logic
-      // else go through standard positioning logic below
-      if (isClickOrTouch(event.timeStamp)) {
-        const target = event.target as HTMLElement
-        // if the clicked/tapped element is the StepBlockNodeMenu, don't call handleStepSelection hook https://github.com/JesusFilm/core/pull/4736
-        const menuButtonClicked =
-          (target.parentNode as HTMLElement).id === 'StepBlockNodeMenuIcon' ||
-          target.id === 'StepBlockNodeMenuIcon' ||
-          target.id === 'edit-step'
-        if (menuButtonClicked) return
-
-        handleStepSelection(step.id)
-        return
-      }
+      if (isClickOrTouch(event.timeStamp)) return
     } else if (node.type === 'SocialPreview') {
       prevX = journey?.socialNodeX
       prevY = journey?.socialNodeY
@@ -501,24 +528,24 @@ export function JourneyFlow(): ReactElement {
     })
   }
 
-  const onEdgeUpdateStart = useCallback<
-    NonNullable<ReactFlowProps['onEdgeUpdateStart']>
+  const onReconnectStart = useCallback<
+    NonNullable<ReactFlowProps['onReconnectStart']>
   >(() => {
     edgeUpdateSuccessful.current = false
   }, [])
 
-  const onEdgeUpdate = useCallback<OnEdgeUpdateFunc>(
+  const onReconnect = useCallback<OnReconnect>(
     (oldEdge, newConnection) => {
       const { source, sourceHandle, target } = newConnection
-      setEdges((prev) => reactFlowUpdateEdge(oldEdge, newConnection, prev))
+      setEdges((prev) => reconnectEdge(oldEdge, newConnection, prev))
       edgeUpdateSuccessful.current = true
       void updateEdge({ source, sourceHandle, target, oldEdge })
     },
     [setEdges, updateEdge]
   )
 
-  const onEdgeUpdateEnd = useCallback<
-    NonNullable<ReactFlowProps['onEdgeUpdateEnd']>
+  const onReconnectEnd = useCallback<
+    NonNullable<ReactFlowProps['onReconnectEnd']>
   >(
     (_, edge) => {
       const { source, sourceHandle } = edge
@@ -554,11 +581,10 @@ export function JourneyFlow(): ReactElement {
 
   const hideReferrers =
     <T extends Node | Edge>(hidden: boolean) =>
-    (nodeOrEdge: T) => {
-      nodeOrEdge.hidden = hidden
-
-      return nodeOrEdge
-    }
+    (nodeOrEdge: T): T => ({
+      ...nodeOrEdge,
+      hidden
+    })
 
   useEffect(() => {
     if (analytics?.referrers != null) {
@@ -594,15 +620,16 @@ export function JourneyFlow(): ReactElement {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
+        onNodeClick={handleNodeClick}
         onNodeDragStart={(event) => {
           dragTimeStampRef.current = event.timeStamp
         }}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
         onSelectionDragStop={onSelectionDragStop}
-        onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
-        onEdgeUpdateStart={onEdgeUpdateStart}
-        onEdgeUpdateEnd={onEdgeUpdateEnd}
+        onReconnect={showAnalytics === true ? undefined : onReconnect}
+        onReconnectStart={onReconnectStart}
+        onReconnectEnd={onReconnectEnd}
         onSelectionChange={onSelectionChange}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
@@ -625,20 +652,34 @@ export function JourneyFlow(): ReactElement {
                 <NewStepButton disabled={steps == null || loading} />
               )}
             </Panel>
-            {/* Hide analytics overlay switch for local templates */}
-            {!isTemplate &&
-              journey != null &&
-              /* Only show analytics panel when editorAnalytics feature flag is enabled */
-              editorAnalytics && (
+            {/*
+             * Top-left Panel slot is shared between two affordances, gated by
+             * the journey type:
+             *   - Templates → floating tutorial-info helper (NES-1642), gated
+             *     by `teamTemplateCollection` (same flag the templates-tab
+             *     side panel ships behind, NES-1538).
+             *   - Regular journeys → analytics-overlay switch + card, gated
+             *     by `editorAnalytics`.
+             * Only one branch can match at a time; the Panel itself only
+             * mounts when the active branch's flag is on, preserving the
+             * existing "no Panel when off" behaviour callers rely on.
+             */}
+            {journey != null &&
+              ((isTemplate && teamTemplateCollection === true) ||
+                (!isTemplate && editorAnalytics === true)) && (
                 <Panel position="top-left">
-                  <>
-                    <AnalyticsOverlaySwitch />
-                    <Fade in={showAnalytics} unmountOnExit>
-                      <Box>
-                        <JourneyAnalyticsCard />
-                      </Box>
-                    </Fade>
-                  </>
+                  {isTemplate ? (
+                    <TemplateInfoHelper />
+                  ) : (
+                    <>
+                      <AnalyticsOverlaySwitch />
+                      <Fade in={showAnalytics} unmountOnExit>
+                        <Box>
+                          <JourneyAnalyticsCard />
+                        </Box>
+                      </Fade>
+                    </>
+                  )}
                 </Panel>
               )}
             <Controls handleReset={allBlockPositionUpdate} />

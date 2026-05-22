@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import sortBy from 'lodash/sortBy'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useRef, useState } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'

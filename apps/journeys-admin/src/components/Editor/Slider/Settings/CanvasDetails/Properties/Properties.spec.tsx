@@ -33,7 +33,9 @@ describe('Properties', () => {
     const block = {
       __typename: 'CardBlock',
       id: 'block.id',
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     } as unknown as TreeBlock
     const state = {
       selectedBlock: null,
@@ -63,7 +65,9 @@ describe('Properties', () => {
       id: 'block.id',
       fullscreen: false,
       backdropBlur: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const selectedStep = {}
     const state = {
@@ -93,7 +97,9 @@ describe('Properties', () => {
     const block = {
       __typename: 'CardBlock',
       id: 'block.id',
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     } as unknown as TreeBlock
 
     render(
@@ -119,7 +125,9 @@ describe('Properties', () => {
         {
           __typename: 'CardBlock',
           id: 'card.id',
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     } as unknown as TreeBlock
@@ -355,7 +363,9 @@ describe('Properties', () => {
       id: 'block.id',
       fullscreen: false,
       backdropBlur: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const selectedStep = {}
 
@@ -405,7 +415,9 @@ describe('Properties', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
 
     const step: TreeBlock<StepBlock> = {
@@ -450,5 +462,56 @@ describe('Properties', () => {
       expect(screen.getByTestId('CardProperties')).toBeInTheDocument()
     )
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    expect(screen.getByText('showCardTemplates: false')).toBeInTheDocument()
+  })
+
+  it('should show card properties for empty card when showCardTemplates is false', async () => {
+    const card: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      coverBlockId: null,
+      parentOrder: 0,
+      backgroundColor: null,
+      themeMode: ThemeMode.light,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      backdropBlur: null,
+      eventLabel: null,
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
+    }
+
+    const step: TreeBlock<StepBlock> = {
+      id: 'step.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: null,
+      children: [card]
+    }
+
+    const state = {
+      showCardTemplates: false
+    } as unknown as EditorState
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={state}>
+            <MuxVideoUploadProvider>
+              <Properties block={step} />
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('CardProperties')).toBeInTheDocument()
+    )
   })
 })

@@ -1,6 +1,6 @@
 // import { MockedProvider } from '@apollo/client/testing'
 import { MockedResponse } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
@@ -23,6 +23,7 @@ const customDomain: CustomDomain = {
   name: 'example.com',
   apexName: 'example.com',
   id: 'customDomainId',
+  routeAllTeamJourneys: false,
   journeyCollection: null
 }
 
@@ -31,6 +32,7 @@ const customSubdomain: CustomDomain = {
   name: 'www.example.com',
   apexName: 'example.com',
   id: 'customDomainId',
+  routeAllTeamJourneys: false,
   journeyCollection: null
 }
 

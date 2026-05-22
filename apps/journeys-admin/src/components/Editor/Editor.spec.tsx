@@ -104,7 +104,8 @@ describe('Editor', () => {
     fromTemplateId: null,
     socialNodeX: null,
     socialNodeY: null,
-    customizable: null
+    customizable: null,
+    showAssistant: null
   }
 
   beforeEach(() => {
@@ -181,7 +182,9 @@ describe('Editor', () => {
           themeName: ThemeName.base,
           fullscreen: false,
           backdropBlur: null,
-          eventLabel: null
+          eventLabel: null,
+          showAssistant: null,
+          expandChatByDefault: null
         },
         {
           __typename: 'TypographyBlock',

@@ -1,0 +1,10 @@
+# Smoke test: confirm wiring end-to-end against stage.
+#
+# 5 requests over 5 seconds, single VU. Far below any rate-limit threshold,
+# safe to run repeatedly while debugging the tool itself.
+
+url: https://your-stage.nextstep.is/api/chat
+rps: 1
+duration: 5s
+vus: 1
+message: load-test smoke

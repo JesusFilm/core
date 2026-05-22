@@ -4,7 +4,7 @@ import noop from 'lodash/noop'
 import { NextRouter, useRouter } from 'next/router'
 
 import { setBeaconPageViewed } from '../../../libs/beaconHooks'
-import { getLanguagesMock } from '../data'
+import { getJourneyTemplateLanguageIdsMock, getLanguagesMock } from '../data'
 
 import { HeaderAndLanguageFilter } from '.'
 
@@ -41,16 +41,18 @@ describe('HeaderAndLanguageFilter', () => {
     } as unknown as NextRouter)
 
     render(
-      <MockedProvider mocks={[getLanguagesMock]}>
+      <MockedProvider
+        mocks={[getJourneyTemplateLanguageIdsMock, getLanguagesMock]}
+      >
         <HeaderAndLanguageFilter selectedLanguageIds={[]} onChange={onChange} />
       </MockedProvider>
     )
+    // Wait for both queries to resolve (template language IDs + languages)
     await waitFor(() => {
-      expect(screen.getAllByText('Journey Templates')[0]).toBeInTheDocument()
+      expect(
+        screen.getAllByRole('heading', { name: 'All Languages' })[0]
+      ).toBeInTheDocument()
     })
-    // "All Languages" text is handled by the translation file /locale/en/journeys-admin.json
-    // Manually add the below line to the translation file if can't find the text
-    // "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
     fireEvent.click(
       screen.getAllByRole('heading', { name: 'All Languages' })[0]
     )
@@ -70,7 +72,9 @@ describe('HeaderAndLanguageFilter', () => {
 
   it('should show loading', () => {
     render(
-      <MockedProvider mocks={[getLanguagesMock]}>
+      <MockedProvider
+        mocks={[getJourneyTemplateLanguageIdsMock, getLanguagesMock]}
+      >
         <HeaderAndLanguageFilter onChange={noop} />
       </MockedProvider>
     )

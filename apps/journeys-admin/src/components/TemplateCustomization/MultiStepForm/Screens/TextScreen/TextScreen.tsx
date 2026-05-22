@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -127,7 +127,7 @@ interface TextScreenProps {
 }
 
 export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const [journeyCustomizationFieldUpdate, { loading: isSubmitting }] =
     useMutation<JourneyCustomizationFieldUpdate>(
@@ -186,7 +186,12 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
       })
     }
     setNavigating(true)
-    handleNext()
+    try {
+      await handleNext()
+    } catch (error) {
+      console.error('[TextScreen] Navigation failed:', error)
+      setNavigating(false)
+    }
   }
 
   return (

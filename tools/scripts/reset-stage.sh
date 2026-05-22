@@ -19,8 +19,13 @@ for arg in "$@"; do
       echo ""
       echo "Options:"
       echo "  --apply      Actually reset and rebuild the stage branch (destructive)"
-      echo "  --no-slack   Skip Slack notifications"
+      echo "  --no-slack   Hard opt-out: never post to Slack, even on conflicts"
       echo "  --help, -h   Show this help"
+      echo ""
+      echo "Slack behaviour:"
+      echo "  Dry runs are always silent. Apply runs post to Slack only when"
+      echo "  there are conflicts (auto-resolved > 0 or failed > 0). Clean"
+      echo "  apply runs stay silent."
       exit 0
       ;;
     *)          echo "Unknown flag: $arg (try --help)"; exit 1 ;;
@@ -260,7 +265,9 @@ if $DRY_RUN; then
   echo "  This was a dry run. No changes were made."
   echo ""
   echo "  To perform the actual stage reset:  ./tools/scripts/reset-stage.sh --apply"
-  echo "  To skip Slack notification:         ./tools/scripts/reset-stage.sh --apply --no-slack"
+  echo "  Slack is silent on dry runs and on clean apply runs — it only"
+  echo "  posts when --apply produces conflicts. Pass --no-slack to"
+  echo "  hard-opt-out even when conflicts occur."
 else
   echo "  Stage branch has been reset and pushed."
   echo "  Stage deploy workflows will trigger automatically."
@@ -268,8 +275,17 @@ fi
 echo ""
 
 # ── Slack notification ────────────────────────────────────────────────
+#
+# Gate: only post when an --apply run produced conflicts. Dry runs are
+# always silent; clean apply runs are silent; --no-slack is a hard
+# opt-out even when conflicts occur. See ENG-3679.
 
-if ! $NO_SLACK; then
+HAS_CONFLICTS=false
+if [ "$AUTORESOLVED_COUNT" -gt 0 ] || [ "$FAILED_COUNT" -gt 0 ]; then
+  HAS_CONFLICTS=true
+fi
+
+if ! $DRY_RUN && ! $NO_SLACK && $HAS_CONFLICTS; then
 
   SLACK_API="https://slack.com/api/chat.postMessage"
 
@@ -293,18 +309,12 @@ if ! $NO_SLACK; then
     warn "Add them via: doppler secrets set STAGE_RESET_SLACK_BOT_TOKEN SLACK_ENGINEERING_CHANNEL_ID --project core --config dev"
   else
 
-  if $DRY_RUN; then
-    HEADER_TEXT="Stage Reset Preview (no changes made)  —  $(date '+%Y-%m-%d')"
-    SUMMARY_TEXT="If stage were reset now: *${MERGED_COUNT}* clean  •  *${AUTORESOLVED_COUNT}* auto-resolved  •  *${FAILED_COUNT}* failed  •  *${MISSING_COUNT}* missing"
-    FOOTER_TEXT="This was a dry run — stage has NOT been reset."
+  HEADER_TEXT="Stage Reset — conflicts detected  —  $(date '+%Y-%m-%d')"
+  SUMMARY_TEXT="*${ALL_MERGED}* PRs merged (*${MERGED_COUNT}* clean, *${AUTORESOLVED_COUNT}* auto-resolved)  •  *${FAILED_COUNT}* failed  •  *${MISSING_COUNT}* missing"
+  if [ "$FAILED_COUNT" -gt 0 ]; then
+    FOOTER_TEXT="*${FAILED_COUNT}* PR(s) could not be auto-resolved — authors should investigate. If your PR is listed, your on-stage branch may need a rebase."
   else
-    HEADER_TEXT="Stage Reset Complete  —  $(date '+%Y-%m-%d')"
-    SUMMARY_TEXT="*${ALL_MERGED}* PRs merged (*${MERGED_COUNT}* clean, *${AUTORESOLVED_COUNT}* auto-resolved)  •  *${FAILED_COUNT}* failed  •  *${MISSING_COUNT}* missing"
-    if [ "$FAILED_COUNT" -gt 0 ]; then
-      FOOTER_TEXT="*${FAILED_COUNT}* PR(s) could not be auto-resolved — authors should investigate."
-    else
-      FOOTER_TEXT="All PRs merged successfully. Stage deploy will trigger automatically."
-    fi
+    FOOTER_TEXT="Conflicts were auto-resolved against your on-stage PR(s). If your PR is listed below, double-check stage matches your intent."
   fi
 
   # ── Post 1: top-level summary ──
@@ -368,21 +378,22 @@ EOF
 
     # ── Thread reply 1: merged PRs (clean + auto-resolved) ──
 
-    MERGED_TEXT="*Clean merges (${MERGED_COUNT}):*\n"
+    NL=$'\n'
+    MERGED_TEXT="*Clean merges (${MERGED_COUNT}):*${NL}"
     for entry in "${MERGED_PRS[@]}"; do
       PR_NUM=$(echo "$entry" | cut -d'|' -f1)
       PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
       PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
-      MERGED_TEXT="${MERGED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}\n"
+      MERGED_TEXT="${MERGED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}${NL}"
     done
 
     if [ "$AUTORESOLVED_COUNT" -gt 0 ]; then
-      MERGED_TEXT="${MERGED_TEXT}\n*Auto-resolved (${AUTORESOLVED_COUNT}):*\n"
+      MERGED_TEXT="${MERGED_TEXT}${NL}*Auto-resolved (${AUTORESOLVED_COUNT}):*${NL}"
       for entry in "${AUTORESOLVED_PRS[@]}"; do
         PR_NUM=$(echo "$entry" | cut -d'|' -f1)
         PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
         PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
-        MERGED_TEXT="${MERGED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}\n"
+        MERGED_TEXT="${MERGED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}${NL}"
       done
     fi
 
@@ -400,24 +411,24 @@ EOF
       FAILED_TEXT=""
 
       if [ "$FAILED_COUNT" -gt 0 ]; then
-        FAILED_TEXT="*Failed — could not auto-resolve (${FAILED_COUNT}):*\n"
+        FAILED_TEXT="*Failed — could not auto-resolve (${FAILED_COUNT}):*${NL}"
         for i in "${!FAILED_PRS[@]}"; do
           entry="${FAILED_PRS[$i]}"
           PR_NUM=$(echo "$entry" | cut -d'|' -f1)
           PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
           PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
-          FAILED_TEXT="${FAILED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}\n"
+          FAILED_TEXT="${FAILED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}${NL}"
         done
       fi
 
       if [ "$MISSING_COUNT" -gt 0 ]; then
-        FAILED_TEXT="${FAILED_TEXT}\n*Missing branches (${MISSING_COUNT}):*\n"
+        FAILED_TEXT="${FAILED_TEXT}${NL}*Missing branches (${MISSING_COUNT}):*${NL}"
         for entry in "${MISSING_PRS[@]}"; do
           PR_NUM=$(echo "$entry" | cut -d'|' -f1)
           PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
           PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
           PR_BRANCH=$(echo "$entry" | cut -d'|' -f2)
-          FAILED_TEXT="${FAILED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE} (branch: ${PR_BRANCH})\n"
+          FAILED_TEXT="${FAILED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE} (branch: ${PR_BRANCH})${NL}"
         done
       fi
 

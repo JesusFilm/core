@@ -1,5 +1,6 @@
-import { google } from '@ai-sdk/google'
 import { generateText } from 'ai'
+
+import { withGeminiFallback } from '../geminiModel'
 
 export const getImageDescription = async ({
   imageUrl,
@@ -10,25 +11,28 @@ export const getImageDescription = async ({
 }): Promise<string | null> => {
   try {
     // Use Gemini to analyze the image via URL directly
-    const { text } = await generateText({
-      model: google('gemini-2.5-flash'),
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: prompt
-            },
+    const { text } = await withGeminiFallback((model) =>
+      generateText({
+        model,
+        maxRetries: 0,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: prompt
+              },
 
-            {
-              type: 'image',
-              image: imageUrl
-            }
-          ]
-        }
-      ]
-    })
+              {
+                type: 'image',
+                image: imageUrl
+              }
+            ]
+          }
+        ]
+      })
+    )
     return text
   } catch (error) {
     console.error('Error describing image:', error)

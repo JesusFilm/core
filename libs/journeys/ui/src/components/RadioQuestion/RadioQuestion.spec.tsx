@@ -441,30 +441,31 @@ describe('RadioQuestion', () => {
         expect.any(Object)
       )
     )
-    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom1, {
-      u: expect.stringContaining(`/journey.id/RadioQuestion1`),
+    expect(mockPlausible).toHaveBeenCalledWith('custom1Capture', {
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
-        blockId: 'RadioQuestion1',
+        blockId: 'RadioOption1',
         label: 'Step {{number}}',
         radioOptionBlockId: 'RadioOption1',
         stepId: 'step.id',
         value: 'Option 1',
         key: keyify({
           stepId: 'step.id',
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           blockId: 'RadioOption1',
           target: null,
           journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           blockId: 'RadioOption1',
           journeyId: 'journey.id'
         }),
         templateKey: templateKeyify({
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
+          target: null,
           journeyId: 'journey.id'
         })
       }

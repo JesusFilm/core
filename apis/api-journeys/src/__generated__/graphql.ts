@@ -88,6 +88,7 @@ export type BibleBook = {
   order: Scalars['Int']['output'];
   osisId: Scalars['String']['output'];
   paratextAbbreviation: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 
@@ -101,6 +102,10 @@ export type BibleBookName = {
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
+};
+
+export type BibleBooksFilter = {
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type BibleCitation = {
@@ -310,6 +315,8 @@ export type CardBlock = Block & {
    */
   coverBlockId?: Maybe<Scalars['ID']['output']>;
   eventLabel?: Maybe<BlockEventLabel>;
+  /** When true, the chat drawer auto-opens on first visit to this card. */
+  expandChatByDefault?: Maybe<Scalars['Boolean']['output']>;
   /**
    * fullscreen should control how the coverBlock is displayed. When fullscreen
    * is set to true the coverBlock Image should be displayed as a blur in the
@@ -320,6 +327,8 @@ export type CardBlock = Block & {
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  /** When true, this card displays the AI chat button. */
+  showAssistant?: Maybe<Scalars['Boolean']['output']>;
   /**
    * themeMode can override journey themeMode. If nothing is set then use
    * themeMode from journey
@@ -349,8 +358,10 @@ export type CardBlockUpdateInput = {
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   coverBlockId?: InputMaybe<Scalars['ID']['input']>;
   eventLabel?: InputMaybe<BlockEventLabel>;
+  expandChatByDefault?: InputMaybe<Scalars['Boolean']['input']>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  showAssistant?: InputMaybe<Scalars['Boolean']['input']>;
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
 };
@@ -446,13 +457,16 @@ export type CloudflareImage = {
   blurhash?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
+  isAi?: Maybe<Scalars['Boolean']['output']>;
   mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
   mobileCinematicLow?: Maybe<Scalars['String']['output']>;
   mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
   thumbnail?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
   uploadUrl?: Maybe<Scalars['String']['output']>;
   url?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
+  videoId?: Maybe<Scalars['ID']['output']>;
   videoStill?: Maybe<Scalars['String']['output']>;
 };
 
@@ -569,6 +583,10 @@ export type ContinentName = {
   value: Scalars['String']['output'];
 };
 
+export type CountriesFilter = {
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
 export type Country = {
   __typename?: 'Country';
   continent: Continent;
@@ -583,6 +601,7 @@ export type Country = {
   longitude?: Maybe<Scalars['Float']['output']>;
   name: Array<CountryName>;
   population?: Maybe<Scalars['Int']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 
@@ -635,19 +654,9 @@ export type CustomDomain = {
 
 export type CustomDomainCheck = {
   __typename?: 'CustomDomainCheck';
-  /**
-   * Is the domain correctly configured in the DNS?
-   * If false, A Record and CNAME Record should be added by the user.
-   */
   configured: Scalars['Boolean']['output'];
-  /** Verification records to be added to the DNS to confirm ownership. */
   verification?: Maybe<Array<CustomDomainVerification>>;
-  /** Reasoning as to why verification is required. */
   verificationResponse?: Maybe<CustomDomainVerificationResponse>;
-  /**
-   * Does the domain belong to the team?
-   * If false, verification and verificationResponse will be populated.
-   */
   verified: Scalars['Boolean']['output'];
 };
 
@@ -676,6 +685,11 @@ export type CustomDomainVerificationResponse = {
   __typename?: 'CustomDomainVerificationResponse';
   code: Scalars['String']['output'];
   message: Scalars['String']['output'];
+};
+
+export type DateTimeFilter = {
+  gte?: InputMaybe<Scalars['DateTime']['input']>;
+  lte?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export enum DefaultPlatform {
@@ -1000,6 +1014,7 @@ export type ImageBlockUpdateInput = {
   focalLeft?: InputMaybe<Scalars['Int']['input']>;
   focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
+  isCover?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   scale?: InputMaybe<Scalars['Int']['input']>;
   src?: InputMaybe<Scalars['String']['input']>;
@@ -1024,6 +1039,7 @@ export type IntegrationGoogle = Integration & {
   team: Team;
   type: IntegrationType;
   user?: Maybe<User>;
+  userId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type IntegrationGoogleCreateInput = {
@@ -1105,6 +1121,7 @@ export type Journey = {
   seoDescription?: Maybe<Scalars['String']['output']>;
   /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
+  /** @deprecated Use CardBlock.showAssistant. Removal tracked in NES-1624. */
   showAssistant?: Maybe<Scalars['Boolean']['output']>;
   showChatButtons?: Maybe<Scalars['Boolean']['output']>;
   showDislikeButton?: Maybe<Scalars['Boolean']['output']>;
@@ -1136,11 +1153,20 @@ export type Journey = {
 };
 
 export type JourneyAiTranslateInput = {
+  /** The ID of the journey to translate */
   journeyId: Scalars['ID']['input'];
+  /** The source language name of the journey content */
   journeyLanguageName: Scalars['String']['input'];
+  /** The journey name to translate */
   name: Scalars['String']['input'];
+  /** The target language ID for journey content (blocks, title, description) */
   textLanguageId: Scalars['ID']['input'];
+  /** The target language name for journey content (blocks, title, description) */
   textLanguageName: Scalars['String']['input'];
+  /** Language ID for customization text translation. Falls back to textLanguageId if not provided. */
+  userLanguageId?: InputMaybe<Scalars['ID']['input']>;
+  /** Language name for customization text translation. Falls back to textLanguageName if not provided. */
+  userLanguageName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyAiTranslateProgress = {
@@ -1193,6 +1219,15 @@ export type JourneyCreateInput = {
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
   title: Scalars['String']['input'];
+};
+
+export type JourneyCustomizationDescriptionTranslateInput = {
+  /** The ID of the journey whose customization description to translate */
+  journeyId: Scalars['ID']['input'];
+  /** The current language of the customization description */
+  sourceLanguageName: Scalars['String']['input'];
+  /** The language to translate the customization description into */
+  targetLanguageName: Scalars['String']['input'];
 };
 
 export type JourneyCustomizationField = {
@@ -1410,12 +1445,9 @@ export type JourneyViewEvent = Event & {
 };
 
 export type JourneyViewEventCreateInput = {
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
-  /** title of the journey being viewed */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** languageId of the journey being viewed */
   value?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -1603,7 +1635,12 @@ export type Keyword = {
   __typename?: 'Keyword';
   id: Scalars['ID']['output'];
   language: Language;
+  updatedAt: Scalars['DateTime']['output'];
   value: Scalars['String']['output'];
+};
+
+export type KeywordsFilter = {
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type LabeledVideoCounts = {
@@ -1623,6 +1660,7 @@ export type Language = {
   labeledVideoCounts: LabeledVideoCounts;
   name: Array<LanguageName>;
   slug?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 
@@ -1657,6 +1695,7 @@ export type LanguagesFilter = {
   bcp47?: InputMaybe<Array<Scalars['String']['input']>>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   iso3?: InputMaybe<Array<Scalars['String']['input']>>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type LinkAction = Action & {
@@ -1807,10 +1846,8 @@ export type Mutation = {
   bibleCitationCreate?: Maybe<BibleCitation>;
   bibleCitationDelete?: Maybe<Scalars['Boolean']['output']>;
   bibleCitationUpdate?: Maybe<BibleCitation>;
-  /** blockDelete returns the updated sibling blocks on successful delete */
   blockDelete: Array<Block>;
   blockDeleteAction: Block;
-  /** blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate */
   blockDuplicate: Array<Block>;
   blockOrderUpdate: Array<Block>;
   /** blockRestore is used for redo/undo */
@@ -1878,6 +1915,7 @@ export type Mutation = {
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
   journeyCreate: Journey;
+  journeyCustomizationDescriptionTranslate: Journey;
   journeyCustomizationFieldPublisherUpdate: Array<JourneyCustomizationField>;
   journeyCustomizationFieldUserUpdate: Array<JourneyCustomizationField>;
   journeyDuplicate: Journey;
@@ -1895,12 +1933,8 @@ export type Mutation = {
   journeyThemeCreate: JourneyTheme;
   journeyThemeDelete: JourneyTheme;
   journeyThemeUpdate: JourneyTheme;
+  journeyTransferFromAnonymous: Journey;
   journeyUpdate: Journey;
-  /**
-   * Creates a JourneyViewEvent, returns null if attempting to create another
-   * JourneyViewEvent with the same userId, journeyId, and within the same 24hr
-   * period of the previous JourneyViewEvent
-   */
   journeyViewEventCreate?: Maybe<JourneyViewEvent>;
   journeyVisitorExportToGoogleSheet: JourneyVisitorGoogleSheetExportResult;
   /** Sets journeys statuses to archived */
@@ -1944,7 +1978,7 @@ export type Mutation = {
   /** update an existing short link */
   shortLinkUpdate: MutationShortLinkUpdateResult;
   signUpBlockCreate: SignUpBlock;
-  signUpBlockUpdate?: Maybe<SignUpBlock>;
+  signUpBlockUpdate: SignUpBlock;
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
   siteCreate: MutationSiteCreateResult;
   spacerBlockCreate: SpacerBlock;
@@ -1957,8 +1991,92 @@ export type Mutation = {
   stepViewEventCreate: StepViewEvent;
   teamCreate: Team;
   teamUpdate: Team;
+  /**
+   * Assign a journey to a TemplateGalleryPage, or unassign it. A journey may belong to at most one page at a time (single-membership invariant).
+   *
+   * - `pageId` set: move the journey into that page. The new row appends at the end of the target's display order; if the journey was already in another page (cross-page move) it is removed from the source page first. Both pages are renumbered to contiguous orders 0..N-1 after the change. Allowed on both `draft` and `published` pages.
+   * - `pageId` null/omitted: unassign — remove the journey from whatever page it is currently in. Returns null (idempotent no-op) if the journey is not in any page.
+   * - Same-page-already: idempotent return; no row changes.
+   *
+   * Auth: caller must be a member of the target page's team (and, on a cross-page move, also of the source page's team).
+   *
+   * Errors:
+   * - NOT_FOUND: target `pageId` does not resolve.
+   * - NOT_FOUND (field: `journeyId`): journey does not exist or is soft-deleted.
+   * - BAD_USER_INPUT (field: `journeyId`): journey is not flagged as a template.
+   * - FORBIDDEN: caller is not in the target page's team.
+   * - FORBIDDEN (field: `journeyId`): journey belongs to a different team than the target page.
+   */
+  templateGalleryPageAssignJourney?: Maybe<TemplateGalleryPage>;
+  /**
+   * Create a new TemplateGalleryPage in `draft` status. The server generates a unique slug from `input.title`. Initial `journeyIds` are attached as templates in the order given (cross-team and non-template ids are silently filtered out).
+   *
+   * Auth: caller must be authenticated and a member of `input.teamId`.
+   *
+   * Errors:
+   * - BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.
+   * - BAD_USER_INPUT (field: `slug`): the title normalizes to empty or to a reserved word.
+   */
+  templateGalleryPageCreate: TemplateGalleryPage;
+  /**
+   * Hard-delete a TemplateGalleryPage. Cascades through `TemplateGalleryPageTemplate` join rows automatically; the underlying `Journey` rows are NOT deleted. Returns the deleted page (last canonical view).
+   *
+   * Auth: caller must be a member of the page's team.
+   *
+   * Errors:
+   * - NOT_FOUND: id does not resolve.
+   * - FORBIDDEN: caller is not in the page's team.
+   */
+  templateGalleryPageDelete: TemplateGalleryPage;
+  /**
+   * Transition a `draft` page to `published`, stamping `publishedAt` on the first publish only. Idempotent: calling on an already-published page is a no-op (no state change, no re-stamp of `publishedAt`).
+   *
+   * Auth: caller must be a member of the page's team.
+   *
+   * Errors:
+   * - NOT_FOUND: id does not resolve, or the page was deleted between the auth-fetch and the canonical re-read.
+   * - FORBIDDEN: caller is not in the page's team.
+   */
+  templateGalleryPagePublish: TemplateGalleryPage;
+  /**
+   * Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney`).
+   *
+   * Idempotent: when the journey is already at the requested display index, the call is a no-op.
+   *
+   * Auth: caller must be a member of the page's team.
+   *
+   * Errors:
+   * - NOT_FOUND: `pageId` does not resolve.
+   * - FORBIDDEN: caller is not in the page's team.
+   * - BAD_USER_INPUT (field: `journeyId`): journey is not currently a member of the page.
+   * - BAD_USER_INPUT (field: `order`): order is out of range; must satisfy `0 <= order < count(templates in page)`.
+   */
+  templateGalleryPageReorderTemplate: TemplateGalleryPage;
+  /**
+   * Transition a `published` page back to `draft`. `publishedAt` is intentionally NOT cleared — the historical first-publish timestamp is preserved across unpublish/republish cycles. Idempotent: calling on an already-draft page is a no-op.
+   *
+   * Auth: caller must be a member of the page's team.
+   *
+   * Errors:
+   * - NOT_FOUND: id does not resolve, or the page was deleted between the auth-fetch and the canonical re-read.
+   * - FORBIDDEN: caller is not in the page's team.
+   */
+  templateGalleryPageUnpublish: TemplateGalleryPage;
+  /**
+   * Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced — existing assignments are deleted and recreated in the given order. Single-membership is enforced: if any supplied journey id is currently a member of another TemplateGalleryPage, the call fails before any write. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).
+   *
+   * Auth: caller must be a member of the page's team.
+   *
+   * Errors:
+   * - NOT_FOUND: id does not resolve.
+   * - FORBIDDEN: caller is not in the page's team.
+   * - BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks — including the concurrent-Update race where two callers pass the same slug and the second one trips the DB unique constraint at commit time.
+   * - BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.
+   * - CONFLICT (field: `journeyIds`; extension `journeyId` carries the offending id): one of the supplied journeys is already a member of another TemplateGalleryPage.
+   */
+  templateGalleryPageUpdate: TemplateGalleryPage;
   textResponseBlockCreate: TextResponseBlock;
-  textResponseBlockUpdate?: Maybe<TextResponseBlock>;
+  textResponseBlockUpdate: TextResponseBlock;
   textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
   triggerUnsplashDownload: Scalars['Boolean']['output'];
   typographyBlockCreate: TypographyBlock;
@@ -1966,6 +2084,9 @@ export type Mutation = {
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
   updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
   updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
+  userDeleteCheck: UserDeleteCheckResult;
+  userDeleteJourneysCheck: UserDeleteJourneysCheckResult;
+  userDeleteJourneysConfirm: UserDeleteJourneysConfirmResult;
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -2007,7 +2128,6 @@ export type Mutation = {
   videoPlayEventCreate: VideoPlayEvent;
   videoProgressEventCreate: VideoProgressEvent;
   videoPublishChildren: VideoPublishChildrenResult;
-  videoPublishChildrenAndLanguages: VideoPublishChildrenAndLanguagesResult;
   videoSnippetCreate: VideoSnippet;
   videoSnippetDelete: VideoSnippet;
   videoSnippetUpdate: VideoSnippet;
@@ -2445,6 +2565,11 @@ export type MutationJourneyCreateArgs = {
 };
 
 
+export type MutationJourneyCustomizationDescriptionTranslateArgs = {
+  input: JourneyCustomizationDescriptionTranslateInput;
+};
+
+
 export type MutationJourneyCustomizationFieldPublisherUpdateArgs = {
   journeyId: Scalars['ID']['input'];
   string: Scalars['String']['input'];
@@ -2516,6 +2641,12 @@ export type MutationJourneyThemeDeleteArgs = {
 export type MutationJourneyThemeUpdateArgs = {
   id: Scalars['ID']['input'];
   input: JourneyThemeUpdateInput;
+};
+
+
+export type MutationJourneyTransferFromAnonymousArgs = {
+  journeyId: Scalars['ID']['input'];
+  teamId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -2780,6 +2911,45 @@ export type MutationTeamUpdateArgs = {
 };
 
 
+export type MutationTemplateGalleryPageAssignJourneyArgs = {
+  journeyId: Scalars['ID']['input'];
+  pageId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationTemplateGalleryPageCreateArgs = {
+  input: TemplateGalleryPageCreateInput;
+};
+
+
+export type MutationTemplateGalleryPageDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationTemplateGalleryPagePublishArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationTemplateGalleryPageReorderTemplateArgs = {
+  journeyId: Scalars['ID']['input'];
+  order: Scalars['Int']['input'];
+  pageId: Scalars['ID']['input'];
+};
+
+
+export type MutationTemplateGalleryPageUnpublishArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationTemplateGalleryPageUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: TemplateGalleryPageUpdateInput;
+};
+
+
 export type MutationTextResponseBlockCreateArgs = {
   input: TextResponseBlockCreateInput;
 };
@@ -2826,6 +2996,22 @@ export type MutationUpdateVideoAlgoliaIndexArgs = {
 
 export type MutationUpdateVideoVariantAlgoliaIndexArgs = {
   videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationUserDeleteCheckArgs = {
+  id: Scalars['String']['input'];
+  idType: UserDeleteIdType;
+};
+
+
+export type MutationUserDeleteJourneysCheckArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
+export type MutationUserDeleteJourneysConfirmArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -3023,12 +3209,9 @@ export type MutationVideoProgressEventCreateArgs = {
 
 
 export type MutationVideoPublishChildrenArgs = {
+  dryRun: Scalars['Boolean']['input'];
   id: Scalars['ID']['input'];
-};
-
-
-export type MutationVideoPublishChildrenAndLanguagesArgs = {
-  id: Scalars['ID']['input'];
+  mode: VideoPublishMode;
 };
 
 
@@ -3751,6 +3934,11 @@ export type Query = {
   journeyEventsConnection: JourneyEventsConnection;
   journeyEventsCount: Scalars['Int']['output'];
   journeySimpleGet?: Maybe<Scalars['Json']['output']>;
+  /**
+   * Returns distinct language IDs from published global templates.
+   * Used to dynamically populate the language filter on the templates page.
+   */
+  journeyTemplateLanguageIds: Array<Scalars['String']['output']>;
   journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
@@ -3787,6 +3975,7 @@ export type Query = {
    */
   journeysPlausibleStatsTimeseries: Array<PlausibleStatsResponse>;
   keywords: Array<Keyword>;
+  keywordsCount: Scalars['Int']['output'];
   language?: Maybe<Language>;
   languages: Array<Language>;
   languagesCount: Scalars['Int']['output'];
@@ -3815,6 +4004,24 @@ export type Query = {
   teams: Array<Team>;
   templateFamilyStatsAggregate?: Maybe<TemplateFamilyStatsAggregateResponse>;
   templateFamilyStatsBreakdown?: Maybe<Array<TemplateFamilyStatsBreakdownResponse>>;
+  /**
+   * Read a single TemplateGalleryPage by id. Returns both `draft` and `published` rows — use this for in-team authenticated reads (e.g. an admin viewing or QA-ing their own team's drafts). Anonymous viewers must use `templateGalleryPageBySlug`, which only returns published pages.
+   *
+   * Auth: caller must be a member of the page's team.
+   *
+   * Errors:
+   * - NOT_FOUND: id does not resolve.
+   * - FORBIDDEN: caller is not in the page's team.
+   */
+  templateGalleryPage: TemplateGalleryPage;
+  /** Public, unauthenticated read by slug. Returns the TemplateGalleryPage with the given slug, but ONLY if the page is currently `published`. Returns null for: unknown slug, draft slug, malformed slug (does not match `^[a-z0-9]+(-[a-z0-9]+)*$`), or slug exceeding 200 characters. Authenticated readers fetching their own team's drafts should use `templateGalleryPage(id)` or `templateGalleryPages(teamId)` instead. */
+  templateGalleryPageBySlug?: Maybe<TemplateGalleryPage>;
+  /**
+   * List all TemplateGalleryPages owned by a team — both `draft` and `published` rows — ordered by `createdAt` descending.
+   *
+   * Auth: caller must be a member of the requested team.
+   */
+  templateGalleryPages: Array<TemplateGalleryPage>;
   user?: Maybe<AuthenticatedUser>;
   userByEmail?: Maybe<AuthenticatedUser>;
   userInvites?: Maybe<Array<UserInvite>>;
@@ -3825,9 +4032,18 @@ export type Query = {
   video: Video;
   videoEdition?: Maybe<VideoEdition>;
   videoEditions: Array<VideoEdition>;
+  videoEditionsCount: Scalars['Int']['output'];
+  videoImages: Array<CloudflareImage>;
+  videoImagesCount: Scalars['Int']['output'];
   videoOrigins: Array<VideoOrigin>;
+  videoOriginsCount: Scalars['Int']['output'];
+  videoSubtitles: Array<VideoSubtitle>;
+  videoSubtitlesCount: Scalars['Int']['output'];
   videoVariant: VideoVariant;
+  videoVariantDownloads: Array<VideoVariantDownload>;
+  videoVariantDownloadsCount: Scalars['Int']['output'];
   videoVariants: Array<VideoVariant>;
+  videoVariantsCount: Scalars['Int']['output'];
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
   /** Get a single visitor */
@@ -3880,6 +4096,11 @@ export type QueryArclightApiKeyByKeyArgs = {
 };
 
 
+export type QueryBibleBooksArgs = {
+  where?: InputMaybe<BibleBooksFilter>;
+};
+
+
 export type QueryBibleCitationArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3913,6 +4134,7 @@ export type QueryCheckVideoVariantsInAlgoliaArgs = {
 export type QueryCountriesArgs = {
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   term?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<CountriesFilter>;
 };
 
 
@@ -3943,6 +4165,7 @@ export type QueryGetMyCloudflareImageArgs = {
 
 
 export type QueryGetMyCloudflareImagesArgs = {
+  isAi?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -4087,6 +4310,18 @@ export type QueryJourneysPlausibleStatsTimeseriesArgs = {
 };
 
 
+export type QueryKeywordsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<KeywordsFilter>;
+};
+
+
+export type QueryKeywordsCountArgs = {
+  where?: InputMaybe<KeywordsFilter>;
+};
+
+
 export type QueryLanguageArgs = {
   id: Scalars['ID']['input'];
   idType?: InputMaybe<LanguageIdType>;
@@ -4219,6 +4454,21 @@ export type QueryTemplateFamilyStatsBreakdownArgs = {
 };
 
 
+export type QueryTemplateGalleryPageArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryTemplateGalleryPageBySlugArgs = {
+  slug: Scalars['String']['input'];
+};
+
+
+export type QueryTemplateGalleryPagesArgs = {
+  teamId: Scalars['ID']['input'];
+};
+
+
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
 };
@@ -4261,12 +4511,79 @@ export type QueryVideoEditionArgs = {
 };
 
 
+export type QueryVideoEditionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideoEditionsFilter>;
+};
+
+
+export type QueryVideoEditionsCountArgs = {
+  where?: InputMaybe<VideoEditionsFilter>;
+};
+
+
+export type QueryVideoImagesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideoImagesFilter>;
+};
+
+
+export type QueryVideoImagesCountArgs = {
+  where?: InputMaybe<VideoImagesFilter>;
+};
+
+
+export type QueryVideoOriginsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideoOriginsFilter>;
+};
+
+
+export type QueryVideoOriginsCountArgs = {
+  where?: InputMaybe<VideoOriginsFilter>;
+};
+
+
+export type QueryVideoSubtitlesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideoSubtitlesFilter>;
+};
+
+
+export type QueryVideoSubtitlesCountArgs = {
+  where?: InputMaybe<VideoSubtitlesFilter>;
+};
+
+
 export type QueryVideoVariantArgs = {
   id: Scalars['ID']['input'];
 };
 
 
+export type QueryVideoVariantDownloadsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideoVariantDownloadsFilter>;
+};
+
+
+export type QueryVideoVariantDownloadsCountArgs = {
+  where?: InputMaybe<VideoVariantDownloadsFilter>;
+};
+
+
 export type QueryVideoVariantsArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryVideoVariantsCountArgs = {
   input?: InputMaybe<VideoVariantFilter>;
 };
 
@@ -4664,15 +4981,9 @@ export type StepBlockCreateInput = {
   journeyId: Scalars['ID']['input'];
   locked?: InputMaybe<Scalars['Boolean']['input']>;
   nextBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * x is used to position the block horizontally in the journey flow diagram on
-   * the editor.
-   */
+  /** x is used to position the block horizontally in the journey flow diagram on the editor. */
   x?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * y is used to position the block vertically in the journey flow diagram on
-   * the editor.
-   */
+  /** y is used to position the block vertically in the journey flow diagram on the editor. */
   y?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -4685,23 +4996,11 @@ export type StepBlockPositionUpdateInput = {
 export type StepBlockUpdateInput = {
   locked?: InputMaybe<Scalars['Boolean']['input']>;
   nextBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * Slug should be unique amongst all blocks
-   * (server will throw BAD_USER_INPUT error if not)
-   * If not required will use the current block id
-   * If the generated slug is not unique the uuid will be placed
-   * at the end of the slug guaranteeing uniqueness
-   */
+  /** Slug should be unique amongst all blocks (server will throw BAD_USER_INPUT error if not). If not required will use the current block id. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness */
   slug?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * x is used to position the block horizontally in the journey flow diagram on
-   * the editor.
-   */
+  /** x is used to position the block horizontally in the journey flow diagram on the editor. */
   x?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * y is used to position the block vertically in the journey flow diagram on
-   * the editor.
-   */
+  /** y is used to position the block vertically in the journey flow diagram on the editor. */
   y?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -4719,15 +5018,10 @@ export type StepNextEvent = Event & {
 };
 
 export type StepNextEventCreateInput = {
-  /** Id of the current StepBlock */
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the current stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** id of the next stepBlock */
   nextStepId: Scalars['ID']['input'];
-  /** stepName of the next stepBlock */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -4745,15 +5039,10 @@ export type StepPreviousEvent = Event & {
 };
 
 export type StepPreviousEventCreateInput = {
-  /** Id of the current StepBlock */
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the current stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** id of the previous stepBlock */
   previousStepId: Scalars['ID']['input'];
-  /** stepName of the previous stepBlock */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -4771,22 +5060,30 @@ export type StepViewEvent = Event & {
 };
 
 export type StepViewEventCreateInput = {
-  /** Id of the current StepBlock */
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the current stepBlock */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Subscription = {
   __typename?: 'Subscription';
   journeyAiTranslateCreateSubscription: JourneyAiTranslateProgress;
+  userDeleteConfirm: UserDeleteConfirmProgress;
 };
 
 
 export type SubscriptionJourneyAiTranslateCreateSubscriptionArgs = {
   input: JourneyAiTranslateInput;
+};
+
+
+export type SubscriptionUserDeleteConfirmArgs = {
+  deletedJourneyIds: Array<Scalars['String']['input']>;
+  deletedTeamIds: Array<Scalars['String']['input']>;
+  deletedUserJourneyIds: Array<Scalars['String']['input']>;
+  deletedUserTeamIds: Array<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  idType: UserDeleteIdType;
 };
 
 export type Tag = {
@@ -4877,6 +5174,100 @@ export type TemplateFamilyStatsEventResponse = {
   __typename?: 'TemplateFamilyStatsEventResponse';
   event: Scalars['String']['output'];
   visitors: Scalars['Int']['output'];
+};
+
+/** A template journey assigned to a TemplateGalleryPage, narrowed to the fields the public renderer consumes. Backed by the underlying Journey row but exposed as a separate type so the public anonymous query surface cannot traverse to Journey-wide relations (userJourneys, team, blocks, etc.). */
+export type TemplateGalleryItem = {
+  __typename?: 'TemplateGalleryItem';
+  createdAt: Scalars['DateTime']['output'];
+  customizable?: Maybe<Scalars['Boolean']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  language: Language;
+  primaryImageBlock?: Maybe<ImageBlock>;
+  slug: Scalars['String']['output'];
+  template?: Maybe<Scalars['Boolean']['output']>;
+  title: Scalars['String']['output'];
+  website?: Maybe<Scalars['Boolean']['output']>;
+};
+
+/** A team-curated, slug-addressable public landing page that bundles a hand-picked, hand-ordered list of template journeys. The slug is mutable post-publish — changing it breaks any external links to the old URL. `publishedAt` is monotonic: stamped only on the first publish, never re-stamped on subsequent unpublish/republish, and never cleared. `creatorImageSrc` and `creatorImageAlt` are plain string columns (not a Block FK) — the avatar URL survives independently of any owning Block. */
+export type TemplateGalleryPage = {
+  __typename?: 'TemplateGalleryPage';
+  createdAt: Scalars['DateTimeISO']['output'];
+  /** Optional alt text for the creator avatar. */
+  creatorImageAlt?: Maybe<Scalars['String']['output']>;
+  /** Optional https URL of the creator avatar image. Plain string (not a Block FK) — survives independently of any owning Block. https-only on write. */
+  creatorImageSrc?: Maybe<Scalars['String']['output']>;
+  /** Display name of the team or person credited as the page creator. */
+  creatorName: Scalars['String']['output'];
+  /** Long-form description shown on the public page. Defaults to empty string. */
+  description: Scalars['String']['output'];
+  /** Stable UUID identifier. */
+  id: Scalars['ID']['output'];
+  /** Optional https URL of a hero/cover media asset shown on the public page. https-only on write. */
+  mediaUrl?: Maybe<Scalars['String']['output']>;
+  /** Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published. */
+  publishedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  /** URL-safe identifier. The public page is reached at `/collections/<slug>`. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, and must not be in the reserved list. Mutable after publish — changing it breaks any external links to the old URL. */
+  slug: Scalars['String']['output'];
+  /** `draft` hides the page from the public renderer; `published` exposes it via `templateGalleryPageBySlug`. */
+  status: TemplateGalleryPageStatus;
+  /** Owning team. The page is hard-deleted when the team is deleted. */
+  team: Team;
+  /** Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type. */
+  templates: Array<TemplateGalleryItem>;
+  /** Display title shown in admin UI and on the public page. */
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTimeISO']['output'];
+};
+
+/** Input for creating a new TemplateGalleryPage in `draft` status. The slug is server-generated from `title`. */
+export type TemplateGalleryPageCreateInput = {
+  /** Optional alt text for the creator avatar. */
+  creatorImageAlt?: InputMaybe<Scalars['String']['input']>;
+  /** Optional https URL of the creator avatar image. Rejected if not https. */
+  creatorImageSrc?: InputMaybe<Scalars['String']['input']>;
+  /** Display name of the page creator. */
+  creatorName: Scalars['String']['input'];
+  /** Optional long-form description shown on the public page. Defaults to empty string when omitted. */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** Optional initial template journeys to attach. Cross-team and non-template ids are silently filtered out. */
+  journeyIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** Optional https URL of a hero/cover media asset. Rejected if not https. */
+  mediaUrl?: InputMaybe<Scalars['String']['input']>;
+  /** Owning team. Caller must be a member. */
+  teamId: Scalars['ID']['input'];
+  /** Display title. Drives slug auto-generation: lowercased + hyphenated form of the title, max 200 characters, with the reserved-word list (`admin`, `api`, `app`, `auth`, `graphql`, `health`, `journey`, `journeys`, `public`, `sign-in`, `sign-up`, `static`, `templates`, `webhook`, `webhooks`) blocked. On collision the resolver tries `<base>-2`..`<base>-50`, then falls back to a 6-character random suffix. */
+  title: Scalars['String']['input'];
+};
+
+/** Lifecycle state of a TemplateGalleryPage. Anonymous traffic via `templateGalleryPageBySlug` only sees `published` rows; drafts are hidden. */
+export enum TemplateGalleryPageStatus {
+  /** Hidden from the public renderer. All edit operations are allowed. */
+  Draft = 'draft',
+  /** Reachable at `/collections/<slug>`. `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney` remain allowed (publishers can fix typos and curate the template list while live); `templateGalleryPageReorderTemplate` is rejected with CONFLICT — unpublish first to reorder. */
+  Published = 'published'
+}
+
+/** Input for editing a TemplateGalleryPage. Field omitted = leave the existing value alone. Field set to `null` = clear (only meaningful for nullable fields). */
+export type TemplateGalleryPageUpdateInput = {
+  /** Optional creator avatar alt text. Pass `null` to clear. */
+  creatorImageAlt?: InputMaybe<Scalars['String']['input']>;
+  /** Optional https creator avatar URL. Pass `null` to clear. Rejected if not https. */
+  creatorImageSrc?: InputMaybe<Scalars['String']['input']>;
+  /** Updated creator display name. */
+  creatorName?: InputMaybe<Scalars['String']['input']>;
+  /** Updated long-form description. */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** When provided, replaces the page's template list with these journeys in this exact order (existing assignments are deleted then recreated). Cross-team and non-template ids are silently filtered out. Omit to leave the template list unchanged. */
+  journeyIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** Optional https hero media URL. Pass `null` to clear. Rejected if not https. */
+  mediaUrl?: InputMaybe<Scalars['String']['input']>;
+  /** Updated public slug. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, not be in the reserved list, and not be in use by another page. Changing the slug breaks any external links to the old URL. */
+  slug?: InputMaybe<Scalars['String']['input']>;
+  /** Updated display title. Does NOT regenerate the slug — use `slug` to change the slug. */
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type TextResponseBlock = Block & {
@@ -5032,6 +5423,12 @@ export enum TypographyVariant {
   Subtitle2 = 'subtitle2'
 }
 
+export enum User_Delete_Log_Level {
+  Error = 'ERROR',
+  Info = 'INFO',
+  Warn = 'WARN'
+}
+
 export enum UnsplashColor {
   Black = 'black',
   BlackAndWhite = 'black_and_white',
@@ -5153,6 +5550,62 @@ export type UserAgent = {
   browser: Browser;
   device: Device;
   os: OperatingSystem;
+};
+
+export type UserDeleteCheckResult = {
+  __typename?: 'UserDeleteCheckResult';
+  logs: Array<UserDeleteLogEntry>;
+  userEmail?: Maybe<Scalars['String']['output']>;
+  userFirstName: Scalars['String']['output'];
+  userId: Scalars['String']['output'];
+};
+
+export type UserDeleteConfirmProgress = {
+  __typename?: 'UserDeleteConfirmProgress';
+  done: Scalars['Boolean']['output'];
+  log: UserDeleteLogEntry;
+  success?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export enum UserDeleteIdType {
+  DatabaseId = 'databaseId',
+  Email = 'email',
+  Jwt = 'jwt'
+}
+
+export type UserDeleteJourneysCheckResult = {
+  __typename?: 'UserDeleteJourneysCheckResult';
+  journeysToDelete: Scalars['Int']['output'];
+  journeysToRemove: Scalars['Int']['output'];
+  journeysToTransfer: Scalars['Int']['output'];
+  logs: Array<UserDeleteJourneysLogEntry>;
+  teamsToDelete: Scalars['Int']['output'];
+  teamsToRemove: Scalars['Int']['output'];
+  teamsToTransfer: Scalars['Int']['output'];
+};
+
+export type UserDeleteJourneysConfirmResult = {
+  __typename?: 'UserDeleteJourneysConfirmResult';
+  deletedJourneyIds: Array<Scalars['String']['output']>;
+  deletedTeamIds: Array<Scalars['String']['output']>;
+  deletedUserJourneyIds: Array<Scalars['String']['output']>;
+  deletedUserTeamIds: Array<Scalars['String']['output']>;
+  logs: Array<UserDeleteJourneysLogEntry>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type UserDeleteJourneysLogEntry = {
+  __typename?: 'UserDeleteJourneysLogEntry';
+  level: User_Delete_Log_Level;
+  message: Scalars['String']['output'];
+  timestamp: Scalars['String']['output'];
+};
+
+export type UserDeleteLogEntry = {
+  __typename?: 'UserDeleteLogEntry';
+  level: User_Delete_Log_Level;
+  message: Scalars['String']['output'];
+  timestamp: Scalars['String']['output'];
 };
 
 export type UserInvite = {
@@ -5284,6 +5737,7 @@ export type Video = {
   studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
   title: Array<VideoTitle>;
+  updatedAt: Scalars['DateTime']['output'];
   /** @deprecated Use variants instead */
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
@@ -5551,15 +6005,10 @@ export type VideoCollapseEvent = Event & {
 
 export type VideoCollapseEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoCollapseEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -5582,15 +6031,10 @@ export type VideoCompleteEvent = Event & {
 
 export type VideoCompleteEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoCompleteEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -5618,6 +6062,7 @@ export type VideoEdition = {
   __typename?: 'VideoEdition';
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
   videoSubtitles: Array<VideoSubtitle>;
   videoVariants: Array<VideoVariant>;
 };
@@ -5631,6 +6076,10 @@ export type VideoEditionCreateInput = {
 export type VideoEditionUpdateInput = {
   id: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type VideoEditionsFilter = {
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type VideoExpandEvent = Event & {
@@ -5652,15 +6101,10 @@ export type VideoExpandEvent = Event & {
 
 export type VideoExpandEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoExpandEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -5670,6 +6114,12 @@ export type VideoImageAlt = {
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
+};
+
+export type VideoImagesFilter = {
+  aspectRatio?: InputMaybe<ImageAspectRatio>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  videoId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export enum VideoLabel {
@@ -5688,6 +6138,11 @@ export type VideoOrigin = {
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type VideoOriginsFilter = {
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type VideoPauseEvent = Event & {
@@ -5709,15 +6164,10 @@ export type VideoPauseEvent = Event & {
 
 export type VideoPauseEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoPauseEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -5740,15 +6190,10 @@ export type VideoPlayEvent = Event & {
 
 export type VideoPlayEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoPlayEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -5773,35 +6218,37 @@ export type VideoProgressEvent = Event & {
 
 export type VideoProgressEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoProgressEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock */
   progress: Scalars['Int']['input'];
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
-};
-
-export type VideoPublishChildrenAndLanguagesResult = {
-  __typename?: 'VideoPublishChildrenAndLanguagesResult';
-  parentId?: Maybe<Scalars['ID']['output']>;
-  publishedChildIds?: Maybe<Array<Scalars['ID']['output']>>;
-  publishedChildrenCount?: Maybe<Scalars['Int']['output']>;
-  publishedVariantIds?: Maybe<Array<Scalars['ID']['output']>>;
-  publishedVariantsCount?: Maybe<Scalars['Int']['output']>;
 };
 
 export type VideoPublishChildrenResult = {
   __typename?: 'VideoPublishChildrenResult';
+  dryRun?: Maybe<Scalars['Boolean']['output']>;
   parentId?: Maybe<Scalars['ID']['output']>;
-  publishedChildIds?: Maybe<Array<Scalars['ID']['output']>>;
-  publishedChildrenCount?: Maybe<Scalars['Int']['output']>;
+  publishedVariantIds?: Maybe<Array<Scalars['ID']['output']>>;
+  publishedVariantsCount?: Maybe<Scalars['Int']['output']>;
+  publishedVideoCount?: Maybe<Scalars['Int']['output']>;
+  publishedVideoIds?: Maybe<Array<Scalars['ID']['output']>>;
+  videosFailedValidation: Array<VideoPublishChildrenUnpublishedVideo>;
 };
+
+export type VideoPublishChildrenUnpublishedVideo = {
+  __typename?: 'VideoPublishChildrenUnpublishedVideo';
+  message?: Maybe<Scalars['String']['output']>;
+  missingFields?: Maybe<Array<Scalars['String']['output']>>;
+  videoId?: Maybe<Scalars['ID']['output']>;
+};
+
+export enum VideoPublishMode {
+  ChildrenVideosAndVariants = 'childrenVideosAndVariants',
+  ChildrenVideosOnly = 'childrenVideosOnly',
+  VariantsOnly = 'variantsOnly'
+}
 
 export enum VideoRedirectType {
   Dh = 'dh',
@@ -5837,15 +6284,10 @@ export type VideoStartEvent = Event & {
 
 export type VideoStartEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** title of the video */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** duration of the video played when the VideoStartEvent is triggered */
   position?: InputMaybe<Scalars['Float']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -5891,8 +6333,10 @@ export type VideoSubtitle = {
   srtSrc?: Maybe<Scalars['String']['output']>;
   /** version control for subtitle file */
   srtVersion: Scalars['Int']['output'];
+  updatedAt: Scalars['DateTime']['output'];
   value: Scalars['String']['output'];
   videoEdition: VideoEdition;
+  videoId: Scalars['ID']['output'];
   /** subtitle file */
   vttAsset?: Maybe<CloudflareR2>;
   vttSrc?: Maybe<Scalars['String']['output']>;
@@ -5925,6 +6369,14 @@ export type VideoSubtitleUpdateInput = {
   vttAssetId?: InputMaybe<Scalars['ID']['input']>;
   vttSrc?: InputMaybe<Scalars['String']['input']>;
   vttVersion?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type VideoSubtitlesFilter = {
+  edition?: InputMaybe<Scalars['String']['input']>;
+  languageId?: InputMaybe<Scalars['ID']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  videoId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type VideoTitle = {
@@ -6002,6 +6454,7 @@ export type VideoVariant = {
   slug: Scalars['String']['output'];
   subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
+  updatedAt: Scalars['DateTime']['output'];
   /** version control for master video file */
   version: Scalars['Int']['output'];
   video?: Maybe<Video>;
@@ -6043,9 +6496,11 @@ export type VideoVariantDownload = {
   id: Scalars['ID']['output'];
   quality: VideoVariantDownloadQuality;
   size: Scalars['Float']['output'];
+  updatedAt: Scalars['DateTime']['output'];
   url: Scalars['String']['output'];
   /** master video file version */
   version: Scalars['Int']['output'];
+  videoVariantId?: Maybe<Scalars['ID']['output']>;
   width: Scalars['Int']['output'];
 };
 
@@ -6088,9 +6543,16 @@ export type VideoVariantDownloadUpdateInput = {
   width?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type VideoVariantDownloadsFilter = {
+  quality?: InputMaybe<VideoVariantDownloadQuality>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  videoVariantId?: InputMaybe<Scalars['ID']['input']>;
+};
+
 export type VideoVariantFilter = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
   onlyPublished?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type VideoVariantUpdateInput = {
@@ -6120,6 +6582,7 @@ export type VideosFilter = {
   published?: InputMaybe<Scalars['Boolean']['input']>;
   subtitleLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 /** A visitor with attributes connected to a team. */

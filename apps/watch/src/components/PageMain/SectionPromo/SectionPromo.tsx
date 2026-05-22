@@ -1,4 +1,4 @@
-import { Trans, useTranslation } from 'next-i18next'
+import { Trans, useTranslation } from 'next-i18next/pages'
 import { type ReactElement } from 'react'
 
 import GlobeIcon from '@core/shared/ui/icons/Globe'

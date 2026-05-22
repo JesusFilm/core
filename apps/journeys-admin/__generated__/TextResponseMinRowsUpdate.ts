@@ -14,7 +14,7 @@ export interface TextResponseMinRowsUpdate_textResponseBlockUpdate {
 }
 
 export interface TextResponseMinRowsUpdate {
-  textResponseBlockUpdate: TextResponseMinRowsUpdate_textResponseBlockUpdate | null;
+  textResponseBlockUpdate: TextResponseMinRowsUpdate_textResponseBlockUpdate;
 }
 
 export interface TextResponseMinRowsUpdateVariables {

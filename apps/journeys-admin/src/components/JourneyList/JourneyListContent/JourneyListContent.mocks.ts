@@ -28,6 +28,8 @@ export const user: User = {
   token: 'mock-token'
 } as unknown as User
 
+export const mockTeamId = 'team-id1'
+
 export const activeJourneysMock: MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
@@ -37,7 +39,7 @@ export const activeJourneysMock: MockedResponse<
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       template: false,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -56,7 +58,7 @@ export const noJourneysMock: MockedResponse<
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       template: false,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -75,7 +77,7 @@ export const templatesMock: MockedResponse<
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       template: true,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -99,7 +101,7 @@ export const archivedJourneysMock: MockedResponse<
     variables: {
       status: [JourneyStatus.archived],
       template: false,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -123,7 +125,7 @@ export const trashedJourneysMock: MockedResponse<
     variables: {
       status: [JourneyStatus.trashed],
       template: false,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -148,7 +150,7 @@ export const noTemplatesMock: MockedResponse<
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       template: true,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -167,7 +169,7 @@ export const noArchivedMock: MockedResponse<
     variables: {
       status: [JourneyStatus.archived],
       template: false,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -186,7 +188,7 @@ export const noTrashedMock: MockedResponse<
     variables: {
       status: [JourneyStatus.trashed],
       template: false,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -205,7 +207,7 @@ export const archivedTemplatesMock: MockedResponse<
     variables: {
       status: [JourneyStatus.archived],
       template: true,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -230,7 +232,7 @@ export const noArchivedTemplatesMock: MockedResponse<
     variables: {
       status: [JourneyStatus.archived],
       template: true,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -249,7 +251,7 @@ export const trashedTemplatesMock: MockedResponse<
     variables: {
       status: [JourneyStatus.trashed],
       template: true,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -275,7 +277,7 @@ export const noTrashedTemplatesMock: MockedResponse<
     variables: {
       status: [JourneyStatus.trashed],
       template: true,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {

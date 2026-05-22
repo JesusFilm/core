@@ -1,4 +1,5 @@
 import { ExecutionResult } from 'graphql'
+import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
@@ -6,11 +7,11 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
@@ -91,7 +92,7 @@ describe('adminJourney', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
     prismaMock.userRole.findUnique.mockResolvedValue({
       id: 'userRoleId',
@@ -107,6 +108,9 @@ describe('adminJourney', () => {
       team: { id: 'teamId', userTeams: [] }
     }
     prismaMock.journey.findUnique.mockResolvedValue(journeyWithAcl as any)
+    ;(prismaMock.journey as any).findUniqueOrThrow?.mockResolvedValue?.(
+      mockJourney as any
+    )
 
     const result = (await authClient({
       document: ADMIN_JOURNEY_QUERY,
@@ -135,6 +139,9 @@ describe('adminJourney', () => {
       team: { id: 'teamId', userTeams: [] }
     }
     prismaMock.journey.findUnique.mockResolvedValue(journeyWithAcl as any)
+    ;(prismaMock.journey as any).findUniqueOrThrow?.mockResolvedValue?.(
+      mockJourney as any
+    )
 
     const result = (await authClient({
       document: ADMIN_JOURNEY_QUERY,
@@ -211,6 +218,74 @@ describe('adminJourney', () => {
       }
     }
     prismaMock.journey.findUnique.mockResolvedValue(journeyWithAcl as any)
+    ;(prismaMock.journey as any).findUniqueOrThrow?.mockResolvedValue?.(
+      mockJourney as any
+    )
+
+    const result = (await authClient({
+      document: ADMIN_JOURNEY_QUERY,
+      variables: { id: 'test-journey' }
+    })) as ExecutionResult<{
+      adminJourney: typeof mockJourney & { status: string }
+    }>
+
+    expect(result.data?.adminJourney).toMatchObject({
+      id: 'journeyId',
+      title: 'Test Journey'
+    })
+  })
+
+  it('should not call findUniqueOrThrow when ACL denies access', async () => {
+    const journeyWithAcl = {
+      ...mockJourney,
+      userJourneys: [],
+      team: { id: 'teamId', userTeams: [] }
+    }
+    prismaMock.journey.findUnique.mockResolvedValue(journeyWithAcl as any)
+
+    await authClient({
+      document: ADMIN_JOURNEY_QUERY,
+      variables: { id: 'test-journey' }
+    })
+
+    expect((prismaMock.journey as any).findUniqueOrThrow).not.toHaveBeenCalled()
+  })
+
+  it('should spread Pothos query into findUniqueOrThrow', async () => {
+    const journeyWithAcl = {
+      ...mockJourney,
+      userJourneys: [{ userId: 'userId', role: 'owner' }],
+      team: { id: 'teamId', userTeams: [] }
+    }
+    prismaMock.journey.findUnique.mockResolvedValue(journeyWithAcl as any)
+    ;(prismaMock.journey as any).findUniqueOrThrow?.mockResolvedValue?.(
+      mockJourney as any
+    )
+
+    await authClient({
+      document: ADMIN_JOURNEY_QUERY,
+      variables: { id: 'test-journey' }
+    })
+
+    expect((prismaMock.journey as any).findUniqueOrThrow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { slug: 'test-journey' }
+      })
+    )
+  })
+
+  it('should return journey without team', async () => {
+    const journeyWithAcl = {
+      ...mockJourney,
+      teamId: null,
+      userJourneys: [{ userId: 'userId', role: 'owner' }],
+      team: null
+    }
+    prismaMock.journey.findUnique.mockResolvedValue(journeyWithAcl as any)
+    ;(prismaMock.journey as any).findUniqueOrThrow?.mockResolvedValue?.({
+      ...mockJourney,
+      teamId: null
+    } as any)
 
     const result = (await authClient({
       document: ADMIN_JOURNEY_QUERY,

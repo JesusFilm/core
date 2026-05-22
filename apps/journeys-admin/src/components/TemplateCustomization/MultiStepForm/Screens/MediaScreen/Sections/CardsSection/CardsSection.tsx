@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -60,6 +60,7 @@ export function CardsSection({
           variant="compact"
           onClick={handleStepClick}
           selectedStep={selectedStep}
+          cardLabel={t('Tap to preview')}
         />
       </Box>
     </Stack>

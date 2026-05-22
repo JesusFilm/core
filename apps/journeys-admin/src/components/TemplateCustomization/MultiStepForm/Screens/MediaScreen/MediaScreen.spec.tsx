@@ -48,7 +48,9 @@ const baseJourney = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
-      backdropBlur: null
+      backdropBlur: null,
+      showAssistant: null,
+      expandChatByDefault: null
     } as CardBlock,
     {
       id: 'image1.id',
@@ -90,7 +92,9 @@ const baseJourney = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
-      backdropBlur: null
+      backdropBlur: null,
+      showAssistant: null,
+      expandChatByDefault: null
     } as CardBlock,
     {
       id: 'image2.id',
@@ -115,7 +119,7 @@ jest.mock('./Sections/VideosSection/VideoPreviewPlayer', () => ({
 }))
 
 describe('MediaScreen', () => {
-  const handleNext = jest.fn()
+  const handleNext = jest.fn().mockResolvedValue(undefined)
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -183,7 +187,9 @@ describe('MediaScreen', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
-          backdropBlur: null
+          backdropBlur: null,
+          showAssistant: null,
+          expandChatByDefault: null
         } as CardBlock,
         {
           id: 'image3.id',

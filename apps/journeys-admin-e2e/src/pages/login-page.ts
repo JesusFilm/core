@@ -30,28 +30,11 @@ export class LoginPage {
   }
 
   async waitUntilDiscoverPageLoaded() {
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can take >65s on first run
     await expect(
-      this.page.locator('div[data-testid="JourneysAdminContainedIconButton"]')
-    ).toBeVisible({ timeout: 65000 })
+      this.page.getByRole('button', { name: 'Create Custom Journey' })
+    ).toBeEnabled({ timeout: 90000 })
   }
-
-  // async verifyCreateCustomJourneyBtn() {
-  //   await expect(this.page.locator('div[aria-haspopup="listbox"]')).toBeVisible({ timeout: 60000 })
-  //   await this.page.reload({ waitUntil: 'domcontentloaded', timeout: 120000 })
-  //   // verifying 'Create custom journey' button is display. if not, then select first team in the catch block to display 'Create custom journey' button.
-  //   await expect(this.page.locator('div[data-testid="JourneysAdminContainedIconButton"] button')).toBeVisible().catch(async () => {
-  //     await this.selectFirstTeam()
-  //   })
-  //   // verifying whether the 'Shared With Me' option is selected or. if it is, then select first team in the catch block to display 'Create custom journey' button.
-  //   await expect(this.page.locator('div[aria-haspopup="listbox"]', { hasText: 'Shared With Me' })).toBeHidden().catch(async () => {
-  //     await this.selectFirstTeam()
-  //   })
-
-  // }
-  // async selectFirstTeam() {
-  //   await this.page.locator('div[aria-haspopup="listbox"]').click({ timeout: 60000 })
-  //   await this.page.locator('ul[role="listbox"] li[role="option"]').first().click()
-  // }
 
   async login(accountKey: string = 'admin'): Promise<void> {
     const email = await getEmail(accountKey)

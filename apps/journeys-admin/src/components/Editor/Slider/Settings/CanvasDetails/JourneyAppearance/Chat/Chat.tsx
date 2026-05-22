@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -116,7 +116,7 @@ export function Chat(): ReactElement {
           disableSelection={maxSelection}
         />
         <ChatOption
-          key={customButtons[0]?.id ?? 'custom-0'}
+          key="custom-0"
           chatButton={customButtons[0]}
           title={t('Custom')}
           active={customButtons[0] != null}
@@ -126,7 +126,7 @@ export function Chat(): ReactElement {
         />
         {customButtons.length === 2 && (
           <ChatOption
-            key={customButtons[1]?.id ?? 'custom-1'}
+            key="custom-1"
             chatButton={customButtons[1]}
             title={t('Custom')}
             active

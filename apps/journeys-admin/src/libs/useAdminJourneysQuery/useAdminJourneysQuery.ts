@@ -1,4 +1,9 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import {
+  QueryResult,
+  WatchQueryFetchPolicy,
+  gql,
+  useQuery
+} from '@apollo/client'
 
 import {
   GetAdminJourneys,
@@ -81,12 +86,15 @@ export const GET_ADMIN_JOURNEYS = gql`
 `
 
 export function useAdminJourneysQuery(
-  variables?: GetAdminJourneysVariables
+  variables?: GetAdminJourneysVariables,
+  options?: { skip?: boolean; fetchPolicy?: WatchQueryFetchPolicy }
 ): QueryResult<GetAdminJourneys, GetAdminJourneysVariables> {
   const query = useQuery<GetAdminJourneys, GetAdminJourneysVariables>(
     GET_ADMIN_JOURNEYS,
     {
-      variables
+      variables,
+      skip: options?.skip,
+      fetchPolicy: options?.fetchPolicy
     }
   )
 

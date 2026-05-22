@@ -33,9 +33,17 @@ jest.mock('firebase/auth', () => ({
   }
 }))
 
+const mockLogin = jest.fn().mockResolvedValue(undefined)
+
 jest.mock('../../../libs/auth', () => ({
   getFirebaseAuth: jest.fn(() => ({ currentUser: null })),
+  login: (...args: unknown[]) => mockLogin(...args),
   loginWithCredential: (...args: unknown[]) => mockLoginWithCredential(...args)
+}))
+
+jest.mock('../../../libs/pendingGuestJourney', () => ({
+  getPendingGuestJourney: jest.fn(() => null),
+  clearPendingGuestJourney: jest.fn()
 }))
 
 jest.mock('next/router', () => ({
@@ -248,6 +256,65 @@ describe('PasswordPage', () => {
         screen.getByText('The email address is already used by another account')
       ).toBeInTheDocument()
     })
+  })
+
+  it('should fallback to signInWithEmailAndPassword when anonymous and email-already-in-use', async () => {
+    const mockGetFirebaseAuth = getFirebaseAuth as jest.MockedFunction<
+      typeof getFirebaseAuth
+    >
+    const mockLinkWithCredential = linkWithCredential as jest.MockedFunction<
+      typeof linkWithCredential
+    >
+    const mockSignInWithEmailAndPassword =
+      signInWithEmailAndPassword as jest.MockedFunction<
+        typeof signInWithEmailAndPassword
+      >
+
+    const anonymousUser = { isAnonymous: true, uid: 'anon-123' }
+    mockGetFirebaseAuth.mockReturnValue({
+      currentUser: anonymousUser
+    } as ReturnType<typeof getFirebaseAuth>)
+
+    mockLinkWithCredential.mockRejectedValue(
+      new FirebaseError('auth/email-already-in-use', 'email already in use')
+    )
+
+    const signedInCredential = {
+      user: { getIdToken: jest.fn().mockResolvedValue('new-token') }
+    } as unknown as UserCredential
+    mockSignInWithEmailAndPassword.mockResolvedValue(signedInCredential)
+
+    render(
+      <MockedProvider>
+        <RegisterPage
+          setActivePage={jest.fn()}
+          userEmail="example@example.com"
+        />
+      </MockedProvider>
+    )
+
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: { value: 'First name last name' }
+    })
+    fireEvent.change(screen.getByLabelText('Password'), {
+      target: { value: 'Password' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Sign Up' }))
+
+    await waitFor(() => {
+      expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith(
+        expect.anything(),
+        'example@example.com',
+        'Password'
+      )
+    })
+    await waitFor(() => {
+      expect(mockLogin).toHaveBeenCalledWith('new-token')
+    })
+
+    mockGetFirebaseAuth.mockImplementation(
+      () => ({ currentUser: null }) as ReturnType<typeof getFirebaseAuth>
+    )
   })
 
   it('should validate password', async () => {

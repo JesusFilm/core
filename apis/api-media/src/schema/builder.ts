@@ -128,6 +128,22 @@ builder.addScalarType('Date', DateResolver)
 builder.addScalarType('DateTime', DateTimeResolver)
 builder.addScalarType('BigInt', BigIntResolver)
 
+export const DateTimeFilter = builder.inputType('DateTimeFilter', {
+  fields: (t) => ({
+    gte: t.field({ type: 'DateTime', required: false }),
+    lte: t.field({ type: 'DateTime', required: false })
+  })
+})
+
+type DateTimeFilterInput = typeof DateTimeFilter.$inferInput
+
+export function toPrismaDateTimeFilter(
+  filter: DateTimeFilterInput | null | undefined
+): { gte?: Date; lte?: Date } | undefined {
+  if (filter == null) return undefined
+  return { gte: filter.gte ?? undefined, lte: filter.lte ?? undefined }
+}
+
 builder.queryType({})
 
 builder.mutationType({})

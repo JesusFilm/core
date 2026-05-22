@@ -1,7 +1,7 @@
 import { expect, test } from '../../fixtures/authenticated'
 import { CustomizationMediaPage } from '../../pages/customization-media-page'
 
-const TEMPLATE_ID = '8d4c24c3-5fe0-428d-b221-af9e46975933'
+const TEMPLATE_ID = '00dc45d7-9d37-434e-bbc8-7c89eeb6229a'
 const YOUTUBE_URL =
   'https://www.youtube.com/watch?v=JHdB1dYAteA&pp=ygUKam9obiBwaXBlcg%3D%3D'
 
@@ -14,8 +14,7 @@ test.describe('YouTube video section on Media screen', () => {
     authedPage
   }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
-    await mediaPage.navigateToCustomize(TEMPLATE_ID)
-    await mediaPage.navigateToMediaScreen()
+    await mediaPage.navigateToMediaScreen(TEMPLATE_ID)
     await mediaPage.verifyVideosSectionVisible()
     await mediaPage.verifyYouTubeInputVisible()
     await mediaPage.verifyUploadButtonVisible()
@@ -25,8 +24,7 @@ test.describe('YouTube video section on Media screen', () => {
     authedPage
   }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
-    await mediaPage.navigateToCustomize(TEMPLATE_ID)
-    await mediaPage.navigateToMediaScreen()
+    await mediaPage.navigateToMediaScreen(TEMPLATE_ID)
 
     const input = authedPage
       .getByTestId('VideosSection-youtube-input')
@@ -44,8 +42,7 @@ test.describe('YouTube video section on Media screen', () => {
     authedPage
   }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
-    await mediaPage.navigateToCustomize(TEMPLATE_ID)
-    await mediaPage.navigateToMediaScreen()
+    await mediaPage.navigateToMediaScreen(TEMPLATE_ID)
     await mediaPage.pasteYouTubeUrl(YOUTUBE_URL)
     await mediaPage.waitForAutoSubmit()
 
@@ -56,8 +53,7 @@ test.describe('YouTube video section on Media screen', () => {
 
   test('should show error for invalid YouTube URL', async ({ authedPage }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
-    await mediaPage.navigateToCustomize(TEMPLATE_ID)
-    await mediaPage.navigateToMediaScreen()
+    await mediaPage.navigateToMediaScreen(TEMPLATE_ID)
     await mediaPage.pasteYouTubeUrl('not-a-valid-url')
     await mediaPage.waitForAutoSubmitError()
 
@@ -67,8 +63,7 @@ test.describe('YouTube video section on Media screen', () => {
 
   test('should render upload button at medium size', async ({ authedPage }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
-    await mediaPage.navigateToCustomize(TEMPLATE_ID)
-    await mediaPage.navigateToMediaScreen()
+    await mediaPage.navigateToMediaScreen(TEMPLATE_ID)
 
     const uploadButton = authedPage.getByTestId('VideosSection-upload-button')
     await expect(uploadButton).toBeVisible()
@@ -81,8 +76,7 @@ test.describe('YouTube video section on Media screen', () => {
     authedPage
   }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
-    await mediaPage.navigateToCustomize(TEMPLATE_ID)
-    await mediaPage.navigateToMediaScreen()
+    await mediaPage.navigateToMediaScreen(TEMPLATE_ID)
 
     // Filled variant renders with MuiFilledInput class
     const filledInput = authedPage

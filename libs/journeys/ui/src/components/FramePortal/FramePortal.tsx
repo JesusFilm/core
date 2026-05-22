@@ -64,6 +64,9 @@ function Content({
 
   useEffect(() => {
     document.body.style.backgroundColor = 'transparent'
+    document.body.style.height = '100%'
+    document.body.style.overflow = 'hidden'
+    document.documentElement.style.height = '100%'
   }, [document])
 
   return <CacheProvider value={cache}>{children}</CacheProvider>

@@ -6,7 +6,10 @@ import { Prisma, prisma } from '@core/prisma/journeys/client'
 import { getIntegrationGoogleAccessToken } from '../../../lib/google/googleAuth'
 import {
   clearSheet,
+  columnIndexToA1,
   ensureSheet,
+  escapeSheetName,
+  readValues,
   writeValues
 } from '../../../lib/google/sheets'
 import { computeConnectedBlockIds } from '../../../schema/journeyVisitor/export/connectivity'
@@ -42,6 +45,30 @@ interface JourneyVisitorExportRow {
   visitorId: string
   date: string
   [key: string]: string
+}
+
+function isSheetContentUnchanged({
+  nextValues,
+  existingValues,
+  writeWidth
+}: {
+  nextValues: (string | null)[][]
+  existingValues: (string | null)[][]
+  writeWidth: number
+}): boolean {
+  if (existingValues.length !== nextValues.length) return false
+
+  return nextValues.every((nextRow, rowIndex) => {
+    const existingRow = existingValues[rowIndex] ?? []
+
+    for (let colIndex = 0; colIndex < writeWidth; colIndex++) {
+      const nextCell = String(nextRow[colIndex] ?? '')
+      const existingCell = String(existingRow[colIndex] ?? '')
+      if (nextCell !== existingCell) return false
+    }
+
+    return true
+  })
 }
 
 async function* getJourneyVisitors(
@@ -281,9 +308,6 @@ export async function backfillService(
   // Ensure sheet exists
   await ensureSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
 
-  // Clear existing data
-  await clearSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
-
   // Build data rows
   const sanitizedHeaderRow = headerRow.map((cell) =>
     sanitizeGoogleSheetsCell(cell)
@@ -303,14 +327,46 @@ export async function backfillService(
     values.push(aligned)
   }
 
-  // Write all data at once
-  await writeValues({
-    accessToken,
-    spreadsheetId,
-    sheetTitle: sheetName,
-    values,
-    append: false
-  })
+  const writeWidth = finalHeader.length
+  const lastColumnA1 = columnIndexToA1(writeWidth - 1)
+  const escapedName = escapeSheetName(sheetName)
+  const fullRange = `${escapedName}!A:${lastColumnA1}`
+
+  let existingValues: (string | null)[][] = []
+  let readFailed = false
+  try {
+    existingValues = await readValues({
+      accessToken,
+      spreadsheetId,
+      range: fullRange
+    })
+  } catch (err) {
+    readFailed = true
+    logger?.warn(
+      { err, range: fullRange },
+      'Failed to read existing sheet values, proceeding with full write'
+    )
+  }
+
+  const contentUnchanged =
+    !readFailed &&
+    isSheetContentUnchanged({
+      nextValues: values,
+      existingValues,
+      writeWidth
+    })
+
+  if (!contentUnchanged) {
+    await clearSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
+
+    await writeValues({
+      accessToken,
+      spreadsheetId,
+      sheetTitle: sheetName,
+      values,
+      append: false
+    })
+  }
 
   // Update exportOrder on blocks that don't have it set yet.
   // This ensures columns maintain their positions for future syncs.

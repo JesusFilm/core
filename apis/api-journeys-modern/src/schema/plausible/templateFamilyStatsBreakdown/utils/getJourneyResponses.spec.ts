@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { prismaMock } from '../../../../../test/prismaMock'
 import { JourneyWithAcl } from '../templateFamilyStatsBreakdown.query'
 
@@ -5,7 +7,7 @@ import { getJourneysResponses } from './getJourneyResponses'
 
 describe('getJourneysResponses', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should return empty array when journeys is empty', async () => {
@@ -39,7 +41,7 @@ describe('getJourneysResponses', () => {
       } as unknown as JourneyWithAcl
     ]
 
-    prismaMock.journeyVisitor.groupBy.mockResolvedValue([
+    ;(prismaMock.journeyVisitor.groupBy as any).mockResolvedValue([
       {
         journeyId: 'journey-1',
         _count: {
@@ -95,7 +97,7 @@ describe('getJourneysResponses', () => {
       } as unknown as JourneyWithAcl
     ]
 
-    prismaMock.journeyVisitor.groupBy.mockResolvedValue([])
+    ;(prismaMock.journeyVisitor.groupBy as any).mockResolvedValue([])
 
     const result = await getJourneysResponses(journeys)
 
@@ -124,7 +126,7 @@ describe('getJourneysResponses', () => {
       } as unknown as JourneyWithAcl
     ]
 
-    prismaMock.journeyVisitor.groupBy.mockResolvedValue([
+    ;(prismaMock.journeyVisitor.groupBy as any).mockResolvedValue([
       {
         journeyId: 'journey-1',
         _count: {

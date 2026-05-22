@@ -1,6 +1,8 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import '../../../../test/i18n'
 
 import {
@@ -11,6 +13,7 @@ import {
   archivedTemplatesMock,
   deleteTrashedJourneysMutationMock,
   deleteTrashedTemplatesMutationMock,
+  mockTeamId,
   noArchivedMock,
   noArchivedTemplatesMock,
   noJourneysMock,
@@ -36,11 +39,17 @@ jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
 }))
 
+jest.mock('@core/journeys/ui/TeamProvider', () => ({
+  __esModule: true,
+  useTeam: jest.fn()
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
 }))
 
+const mockUseTeam = useTeam as jest.MockedFunction<typeof useTeam>
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('JourneyListContent', () => {
@@ -50,6 +59,19 @@ describe('JourneyListContent', () => {
       query: {},
       replace: jest.fn()
     } as any)
+    mockUseTeam.mockReturnValue({
+      activeTeam: {
+        __typename: 'Team',
+        id: mockTeamId,
+        title: 'Test Team',
+        publicTitle: null,
+        userTeams: [],
+        customDomains: []
+      },
+      setActiveTeam: jest.fn(),
+      refetch: jest.fn(),
+      query: {} as any
+    })
   })
 
   describe('Learn more button visibility', () => {
@@ -933,6 +955,30 @@ describe('JourneyListContent', () => {
 
       // Replace should not be called since refresh param is not present
       expect(replace).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Loading State', () => {
+    it('should show loading skeleton when activeTeam is undefined', () => {
+      mockUseTeam.mockReturnValue({
+        activeTeam: undefined,
+        setActiveTeam: jest.fn(),
+        refetch: jest.fn(),
+        query: {} as any
+      })
+
+      renderJourneyListContent({
+        mocks: [],
+        contentType: 'journeys',
+        status: 'active',
+        user
+      })
+
+      // Query is skipped when activeTeam is undefined (loading),
+      // so data is null and the loading skeleton should render
+      expect(
+        screen.queryByText('Default Journey Heading')
+      ).not.toBeInTheDocument()
     })
   })
 })

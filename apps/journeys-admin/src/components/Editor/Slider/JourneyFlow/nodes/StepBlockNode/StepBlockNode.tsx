@@ -2,8 +2,8 @@ import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
-import { NodeProps, useUpdateNodeInternals } from 'reactflow'
+import { NodeProps, useUpdateNodeInternals } from '@xyflow/react'
+import { ReactElement, useEffect } from 'react'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
@@ -19,8 +19,8 @@ import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
 export function StepBlockNode({
   id,
-  xPos,
-  yPos,
+  positionAbsoluteX,
+  positionAbsoluteY,
   dragging
 }: NodeProps): ReactElement {
   const {
@@ -33,7 +33,12 @@ export function StepBlockNode({
 
   const step = steps?.find((step) => step.id === id)
   const actionBlocks = filterActionBlocks(step)
-  updateNodeInternals(step?.id ?? '')
+
+  useEffect(() => {
+    if (step?.id != null) {
+      updateNodeInternals(step.id)
+    }
+  }, [step?.id, actionBlocks.length, updateNodeInternals])
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
@@ -109,8 +114,8 @@ export function StepBlockNode({
             in={isSelected || isHovered}
             className="fab"
             step={step}
-            xPos={xPos}
-            yPos={yPos}
+            xPos={positionAbsoluteX}
+            yPos={positionAbsoluteY}
           />
         )}
         <BaseNode

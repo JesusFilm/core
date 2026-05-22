@@ -1,8 +1,8 @@
 import compact from 'lodash/compact'
 
-import { prisma } from '@core/prisma/media/client'
+import { Prisma, prisma } from '@core/prisma/media/client'
 
-import { builder } from '../builder'
+import { DateTimeFilter, builder, toPrismaDateTimeFilter } from '../builder'
 import { Language } from '../language'
 
 builder.prismaObject('BibleBookName', {
@@ -20,6 +20,7 @@ builder.prismaObject('BibleBookName', {
 builder.prismaObject('BibleBook', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     name: t.relation('name', {
       nullable: false,
       args: {
@@ -46,14 +47,27 @@ builder.prismaObject('BibleBook', {
   })
 })
 
+const BibleBooksFilter = builder.inputType('BibleBooksFilter', {
+  fields: (t) => ({
+    updatedAt: t.field({ type: DateTimeFilter, required: false })
+  })
+})
+
 builder.queryFields((t) => ({
   bibleBooks: t.prismaField({
     type: ['BibleBook'],
     nullable: false,
-    resolve: async (query) =>
-      await prisma.bibleBook.findMany({
+    args: {
+      where: t.arg({ type: BibleBooksFilter, required: false })
+    },
+    resolve: async (query, _parent, { where }) => {
+      const filter: Prisma.BibleBookWhereInput = {}
+      filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
+      return await prisma.bibleBook.findMany({
         ...query,
+        where: filter,
         orderBy: { order: 'asc' }
       })
+    }
   })
 }))

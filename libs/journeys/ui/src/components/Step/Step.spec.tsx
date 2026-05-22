@@ -123,7 +123,8 @@ const journey: Journey = {
   fromTemplateId: null,
   socialNodeX: null,
   socialNodeY: null,
-  customizable: null
+  customizable: null,
+  showAssistant: null
 }
 
 const block: TreeBlock<StepFields> = {
@@ -262,7 +263,9 @@ describe('Step', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: BlockEventLabel.custom1,
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     }

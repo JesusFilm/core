@@ -39,7 +39,9 @@ describe('setBlockRestoreEditorState', () => {
         parentBlockId: 'stepId',
         parentOrder: 0,
         themeMode: null,
-        themeName: null
+        themeName: null,
+        showAssistant: null,
+        expandChatByDefault: null
       },
       selectedStep: {
         __typename: 'StepBlock',

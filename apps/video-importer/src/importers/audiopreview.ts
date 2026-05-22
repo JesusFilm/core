@@ -2,10 +2,10 @@ import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_AUDIO_PREVIEW, UPDATE_AUDIO_PREVIEW } from '../gql/mutations'
 import { GET_AUDIO_PREVIEW } from '../gql/queries'
-import { uploadFileToR2Direct } from '../services/r2'
 import { type AudioPreviewInput, type ProcessingSummary } from '../types'
 import { getAudioMetadata } from '../utils/fileMetadataHelpers'
 import { markFileAsCompleted } from '../utils/fileUtils'
+import { validateLanguage } from '../utils/videoEditionValidator'
 
 export const AUDIO_PREVIEW_FILENAME_REGEX = /^([^.]+)\.aac$/
 
@@ -77,9 +77,26 @@ export async function processAudioPreviewFile(
   const match = file.match(AUDIO_PREVIEW_FILENAME_REGEX)
   if (!match) return
 
-  const [, languageId] = match
+  const [, rawLanguageId] = match
+  const languageId = rawLanguageId.trim()
 
   console.log(`Processing audio preview: Language=${languageId}`)
+
+  if (languageId.length === 0) {
+    console.error(
+      `Validation failed for ${file}: missing languageId in filename`
+    )
+    summary.failed++
+    return
+  }
+
+  try {
+    await validateLanguage(languageId)
+  } catch (error) {
+    console.error(`Validation failed for ${file}: ${(error as Error).message}`)
+    summary.failed++
+    return
+  }
 
   const contentType = 'audio/aac'
 
@@ -95,6 +112,9 @@ export async function processAudioPreviewFile(
   let publicUrl: string
 
   try {
+    const { uploadFileToR2Direct } = await import(
+      /* webpackChunkName: "video-importer-r2" */ '../services/r2'
+    )
     publicUrl = await uploadFileToR2Direct({
       bucket: env.CLOUDFLARE_R2_BUCKET,
       key: `audiopreview/${languageId}.aac`,

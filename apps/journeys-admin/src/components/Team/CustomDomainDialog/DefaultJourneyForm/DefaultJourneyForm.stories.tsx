@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
@@ -18,6 +18,7 @@ const customDomain: CustomDomain = {
   name: 'example.com',
   apexName: 'example.com',
   id: 'customDomainId',
+  routeAllTeamJourneys: false,
   journeyCollection: {
     __typename: 'JourneyCollection',
     id: 'journeyCollectionId',

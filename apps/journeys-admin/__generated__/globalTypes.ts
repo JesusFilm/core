@@ -285,6 +285,14 @@ export enum Service {
   apiVideos = "apiVideos",
 }
 
+/**
+ * Lifecycle state of a TemplateGalleryPage. Anonymous traffic via `templateGalleryPageBySlug` only sees `published` rows; drafts are hidden.
+ */
+export enum TemplateGalleryPageStatus {
+  draft = "draft",
+  published = "published",
+}
+
 export enum TextResponseType {
   email = "email",
   freeForm = "freeForm",
@@ -326,6 +334,18 @@ export enum TypographyVariant {
   overline = "overline",
   subtitle1 = "subtitle1",
   subtitle2 = "subtitle2",
+}
+
+export enum USER_DELETE_LOG_LEVEL {
+  ERROR = "ERROR",
+  INFO = "INFO",
+  WARN = "WARN",
+}
+
+export enum UserDeleteIdType {
+  databaseId = "databaseId",
+  email = "email",
+  jwt = "jwt",
 }
 
 export enum UserJourneyRole {
@@ -448,6 +468,8 @@ export interface CardBlockUpdateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+  showAssistant?: boolean | null;
+  expandChatByDefault?: boolean | null;
 }
 
 export interface ChatActionInput {
@@ -492,6 +514,11 @@ export interface CustomDomainCreateInput {
 export interface CustomDomainUpdateInput {
   journeyCollectionId?: string | null;
   routeAllTeamJourneys?: boolean | null;
+}
+
+export interface DateTimeFilter {
+  gte?: any | null;
+  lte?: any | null;
 }
 
 export interface EmailActionInput {
@@ -557,6 +584,7 @@ export interface ImageBlockUpdateInput {
   blurhash?: string | null;
   width?: number | null;
   height?: number | null;
+  isCover?: boolean | null;
   scale?: number | null;
   focalTop?: number | null;
   focalLeft?: number | null;
@@ -590,6 +618,12 @@ export interface JourneyCollectionCreateInput {
 export interface JourneyCollectionUpdateInput {
   title?: string | null;
   journeyIds?: string[] | null;
+}
+
+export interface JourneyCustomizationDescriptionTranslateInput {
+  journeyId: string;
+  sourceLanguageName: string;
+  targetLanguageName: string;
 }
 
 export interface JourneyCustomizationFieldInput {
@@ -723,6 +757,7 @@ export interface LanguagesFilter {
   ids?: string[] | null;
   bcp47?: string[] | null;
   iso3?: string[] | null;
+  updatedAt?: DateTimeFilter | null;
 }
 
 export interface LinkActionInput {
@@ -918,6 +953,34 @@ export interface TeamUpdateInput {
   publicTitle?: string | null;
 }
 
+/**
+ * Input for creating a new TemplateGalleryPage in `draft` status. The slug is server-generated from `title`.
+ */
+export interface TemplateGalleryPageCreateInput {
+  teamId: string;
+  title: string;
+  description?: string | null;
+  creatorName: string;
+  creatorImageSrc?: string | null;
+  creatorImageAlt?: string | null;
+  mediaUrl?: string | null;
+  journeyIds?: string[] | null;
+}
+
+/**
+ * Input for editing a TemplateGalleryPage. Field omitted = leave the existing value alone. Field set to `null` = clear (only meaningful for nullable fields).
+ */
+export interface TemplateGalleryPageUpdateInput {
+  title?: string | null;
+  description?: string | null;
+  slug?: string | null;
+  creatorName?: string | null;
+  creatorImageSrc?: string | null;
+  creatorImageAlt?: string | null;
+  mediaUrl?: string | null;
+  journeyIds?: string[] | null;
+}
+
 export interface TextResponseBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -1087,9 +1150,9 @@ export interface VideoProgressEventCreateInput {
   blockId: string;
   stepId?: string | null;
   position?: number | null;
-  progress: number;
   label?: string | null;
   value?: VideoBlockSource | null;
+  progress: number;
 }
 
 export interface VideoStartEventCreateInput {

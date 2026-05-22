@@ -1,0 +1,1 @@
+export { isValidGallerySlug } from './isValidGallerySlug'
