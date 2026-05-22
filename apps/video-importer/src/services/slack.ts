@@ -2,7 +2,6 @@ import type { ProcessingSummary } from '../types'
 import { parseImporterFilenameForTable } from '../utils/importerFilenameDisplay'
 
 const SLACK_CHAT_POST_MESSAGE = 'https://slack.com/api/chat.postMessage'
-const SLACK_POST_TIMEOUT_MS = 10_000
 
 /** Slack Block Kit payloads (subset we use). */
 type SlackMrkdwn = { type: 'mrkdwn'; text: string }
@@ -43,7 +42,7 @@ const COLUMN_SPECS: ColumnSpec[] = [
   { title: 'Video ID', max: 16 },
   { title: 'Ed', max: 4 },
   { title: 'Lang', max: 6 },
-  { title: 'Error', max: 60 }
+  { title: 'Error', max: 120 }
 ]
 
 interface TableRow {
@@ -330,7 +329,7 @@ function buildSlackBlocks(params: {
 function resolveSlackCredentials(): {
   token: string
   channelId: string
-} | null {
+} {
   const token =
     typeof process.env.SLACK_BOT_TOKEN === 'string'
       ? process.env.SLACK_BOT_TOKEN.trim()
@@ -340,33 +339,20 @@ function resolveSlackCredentials(): {
       ? process.env.SLACK_CHANNEL_ID.trim()
       : ''
 
-  if (token.length === 0 && channelId.length === 0) {
-    return null
-  }
-
   if (token.length === 0 || channelId.length === 0) {
-    console.warn(
-      '[video-importer] Slack is partially configured: set both SLACK_BOT_TOKEN and SLACK_CHANNEL_ID to enable notifications.'
+    throw new Error(
+      '[video-importer] SLACK_BOT_TOKEN and SLACK_CHANNEL_ID are required.'
     )
-    return null
   }
 
   return { token, channelId }
 }
 
-export async function postVideoImporterSlackSummary(params: {
-  folderPath: string
-  summary: ProcessingSummary
+async function postSlackMessage(params: {
+  text: string
+  blocks: SlackBlock[]
 }): Promise<boolean> {
-  const credentials = resolveSlackCredentials()
-  if (credentials === null) {
-    return false
-  }
-
-  const { token, channelId } = credentials
-
-  const text = buildNotificationPlainText(params)
-  const blocks = buildSlackBlocks(params)
+  const { token, channelId } = resolveSlackCredentials()
 
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), SLACK_REQUEST_TIMEOUT_MS)
@@ -381,8 +367,8 @@ export async function postVideoImporterSlackSummary(params: {
       },
       body: JSON.stringify({
         channel: channelId,
-        text,
-        blocks
+        text: params.text,
+        blocks: params.blocks
       }),
       signal: controller.signal
     })
@@ -425,4 +411,65 @@ export async function postVideoImporterSlackSummary(params: {
   }
 
   return true
+}
+
+export async function postVideoImporterSlackSummary(params: {
+  folderPath: string
+  summary: ProcessingSummary
+}): Promise<boolean> {
+  const text = buildNotificationPlainText(params)
+  const blocks = buildSlackBlocks(params)
+
+  return postSlackMessage({ text, blocks })
+}
+
+export async function postVideoImporterMisconfigurationAlert(params: {
+  errors: { variable: string; message: string }[]
+}): Promise<boolean> {
+  const errorLines = params.errors
+    .slice(0, 20)
+    .map(({ variable, message }) => `• \`${variable}\`: ${message}`)
+    .join('\n')
+  const extraCount = params.errors.length - 20
+  const extraLine = extraCount > 0 ? `\n• …and ${extraCount} more` : ''
+  const hostname =
+    typeof process.env.HOSTNAME === 'string' && process.env.HOSTNAME.length > 0
+      ? process.env.HOSTNAME
+      : 'unknown host'
+
+  const text = `Video Importer misconfigured on ${hostname}: ${params.errors
+    .map(({ variable }) => variable)
+    .join(', ')}`
+
+  return postSlackMessage({
+    text,
+    blocks: [
+      {
+        type: 'header',
+        text: {
+          type: 'plain_text',
+          text: 'Video Importer — Misconfigured',
+          emoji: true
+        }
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text:
+            `:warning: The importer could not start on \`${hostname}\` because its .env file is invalid.\n\n` +
+            `${errorLines}${extraLine}`
+        }
+      },
+      {
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: '_Import did not run. Replace the .env file shipped with the latest importer package and run again._'
+          }
+        ]
+      }
+    ]
+  })
 }

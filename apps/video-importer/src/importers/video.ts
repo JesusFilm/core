@@ -4,7 +4,11 @@ import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_MUX_VIDEO_AND_QUEUE_UPLOAD } from '../gql/mutations'
 import { VIDEO_FILENAME_REGEX } from '../importerFilenamePatterns'
-import { createR2Asset, uploadToR2 } from '../services/r2'
+import {
+  createR2Asset,
+  formatR2AssetDiagnostic,
+  uploadToR2
+} from '../services/r2'
 import {
   type ProcessingSummary,
   recordProcessingFailure,
@@ -142,7 +146,7 @@ export async function processVideoFile(
     recordProcessingFailure(
       summary,
       file,
-      `R2 upload: ${toErrorMessage(error)}`
+      `R2 upload: ${toErrorMessage(error)}${formatR2AssetDiagnostic(r2Asset)}`
     )
     return
   }

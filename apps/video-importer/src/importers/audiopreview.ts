@@ -130,7 +130,8 @@ export async function processAudioPreviewFile(
       bucket: env.CLOUDFLARE_R2_BUCKET,
       key: `audiopreview/${languageId}.aac`,
       filePath,
-      contentType
+      contentType,
+      contentLength
     })
   } catch (error) {
     console.error(`Failed to upload audio preview to R2:`, error)
