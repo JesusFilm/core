@@ -103,9 +103,7 @@ describe('ClientLayout', () => {
 
     // Default mock implementation for useQuery
     const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
-    const mockedUseMutation = useMutation as MockedFunction<
-      typeof useMutation
-    >
+    const mockedUseMutation = useMutation as MockedFunction<typeof useMutation>
 
     // Create a complete mock for the QueryResult
     const mockQueryResult: QueryResult<any, OperationVariables> = {

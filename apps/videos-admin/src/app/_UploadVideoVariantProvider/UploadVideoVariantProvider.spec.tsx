@@ -28,7 +28,7 @@ vi.mock('axios', () => ({
 
 // Mock useSnackbar
 vi.mock('notistack', async () => ({
-  ...await vi.importActual('notistack'),
+  ...(await vi.importActual('notistack')),
   useSnackbar: vi.fn()
 }))
 

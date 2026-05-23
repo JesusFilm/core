@@ -80,10 +80,7 @@ vi.mock('formik', async () => {
         handleBlur: vi.fn(),
         handleSubmit: (e) => {
           e?.preventDefault?.()
-          onSubmit(
-            { value: 'New study question' },
-            { setSubmitting: vi.fn() }
-          )
+          onSubmit({ value: 'New study question' }, { setSubmitting: vi.fn() })
         },
         handleReset: vi.fn(),
         setFieldValue: vi.fn(),
@@ -218,12 +215,10 @@ describe('StudyQuestionsAddPage', () => {
   })
 
   it('calls the create mutation when form is submitted', async () => {
-    const mockCreateMutation = vi
-      .fn()
-      .mockImplementation(({ onCompleted }) => {
-        onCompleted?.()
-        return Promise.resolve()
-      })
+    const mockCreateMutation = vi.fn().mockImplementation(({ onCompleted }) => {
+      onCompleted?.()
+      return Promise.resolve()
+    })
     const mockRouter = { push: vi.fn() }
 
     // Mock the Apollo useMutation hook

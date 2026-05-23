@@ -406,7 +406,9 @@ describe('VideoCreateForm', () => {
       const mockEnqueueSnackbar = vi.fn()
 
       // Mock notistack for this test
-      const useSnackbar = vi.mocked(notistackModule_useSnackbar as unknown as Mock)
+      const useSnackbar = vi.mocked(
+        notistackModule_useSnackbar as unknown as Mock
+      )
       useSnackbar.mockReturnValue({
         enqueueSnackbar: mockEnqueueSnackbar
       })
@@ -454,7 +456,9 @@ describe('VideoCreateForm', () => {
       const mockEnqueueSnackbar = vi.fn()
 
       // Mock notistack for this test
-      const useSnackbar = vi.mocked(notistackModule_useSnackbar as unknown as Mock)
+      const useSnackbar = vi.mocked(
+        notistackModule_useSnackbar as unknown as Mock
+      )
       useSnackbar.mockReturnValue({
         enqueueSnackbar: mockEnqueueSnackbar
       })

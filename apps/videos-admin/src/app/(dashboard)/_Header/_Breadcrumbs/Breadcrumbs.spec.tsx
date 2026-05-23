@@ -5,7 +5,7 @@ import { type MockedFunction } from 'vitest'
 import { NavbarBreadcrumbs } from './Breadcrumbs'
 
 vi.mock('next/navigation', async () => ({
-  ...await vi.importActual('next/navigation'),
+  ...(await vi.importActual('next/navigation')),
   usePathname: vi.fn()
 }))
 

@@ -71,7 +71,8 @@ vi.mock('@mui/material/Button', () => ({
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({
     push: vi.fn()
-  }))}))
+  }))
+}))
 
 // Mock notistack
 vi.mock('notistack', () => ({
@@ -100,18 +101,19 @@ describe('ConfirmDeleteDialog', () => {
     vi.clearAllMocks()
 
     // Mock router.push
-    vi.mocked(useRouter as unknown as Mock)
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     // Mock useMutation
-    vi.mocked(useMutation as unknown as Mock)
-      .mockReturnValue([mockDeleteMutation])
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+      mockDeleteMutation
+    ])
 
     // Mock enqueueSnackbar
-    vi.mocked(enqueueSnackbar as unknown as Mock)
-      .mockImplementation(mockEnqueueSnackbar)
+    vi.mocked(enqueueSnackbar as unknown as Mock).mockImplementation(
+      mockEnqueueSnackbar
+    )
   })
 
   it('renders the delete confirmation dialog', () => {

@@ -52,7 +52,8 @@ vi.mock('@core/shared/ui/Dialog', () => ({
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({
     push: vi.fn()
-  }))}))
+  }))
+}))
 
 // Mock notistack
 vi.mock('notistack', () => ({
@@ -74,18 +75,20 @@ describe('DeleteAudio', () => {
     vi.clearAllMocks()
 
     // Mock router.push
-    vi.mocked(useRouter as unknown as Mock)
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     // Mock useMutation
-    vi.mocked(useMutation as unknown as Mock)
-      .mockReturnValue([mockDeleteMutation, { loading: false }])
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+      mockDeleteMutation,
+      { loading: false }
+    ])
 
     // Mock enqueueSnackbar
-    vi.mocked(enqueueSnackbar as unknown as Mock)
-      .mockImplementation(mockEnqueueSnackbar)
+    vi.mocked(enqueueSnackbar as unknown as Mock).mockImplementation(
+      mockEnqueueSnackbar
+    )
   })
 
   it('renders the delete audio dialog with confirmation message', () => {
@@ -151,8 +154,10 @@ describe('DeleteAudio', () => {
 
   it('shows loading state when mutation is in progress', () => {
     // Mock loading state
-    vi.mocked(useMutation as unknown as Mock)
-      .mockReturnValue([mockDeleteMutation, { loading: true }])
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+      mockDeleteMutation,
+      { loading: true }
+    ])
 
     render(
       <DeleteAudio

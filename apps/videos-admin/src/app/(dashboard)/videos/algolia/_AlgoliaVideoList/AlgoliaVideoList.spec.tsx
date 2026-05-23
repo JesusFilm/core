@@ -33,22 +33,16 @@ vi.mock('react-instantsearch', () => ({
   useSearchBox: vi.fn()
 }))
 
-const mockUseSearchBox = useSearchBox as MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 const mockUseHits = useHits as MockedFunction<typeof useHits>
 const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >
-const mockUsePagination = usePagination as MockedFunction<
-  typeof usePagination
->
+const mockUsePagination = usePagination as MockedFunction<typeof usePagination>
 const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
-const mockAlgoliaSearch = algoliasearch as MockedFunction<
-  typeof algoliasearch
->
+const mockAlgoliaSearch = algoliasearch as MockedFunction<typeof algoliasearch>
 
 describe('AlgoliaVideoList', () => {
   const originalEnv = process.env

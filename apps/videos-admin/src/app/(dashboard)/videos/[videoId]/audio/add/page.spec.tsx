@@ -385,10 +385,9 @@ describe('AddAudioLanguageDialog', () => {
 
   it('should navigate back on dialog close', async () => {
     const mockRouterPush = vi.fn()
-    vi.mocked(useRouter as unknown as Mock)
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     render(
       <SnackbarProvider>
@@ -410,10 +409,9 @@ describe('AddAudioLanguageDialog', () => {
 
   it('should prevent dialog close during upload or processing', async () => {
     const mockRouterPush = vi.fn()
-    vi.mocked(useRouter as unknown as Mock)
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
     ;(useUploadVideoVariant as Mock).mockReturnValue({
       uploadState: {
         isUploading: true,

@@ -132,12 +132,10 @@ describe('StudyQuestionDialog', () => {
   })
 
   it('calls the update mutation when form is submitted', async () => {
-    const mockUpdateMutation = vi
-      .fn()
-      .mockImplementation(({ onCompleted }) => {
-        onCompleted?.()
-        return Promise.resolve()
-      })
+    const mockUpdateMutation = vi.fn().mockImplementation(({ onCompleted }) => {
+      onCompleted?.()
+      return Promise.resolve()
+    })
     const mockRouter = { push: vi.fn() }
 
     // Mock the Apollo useMutation hook

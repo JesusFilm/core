@@ -58,7 +58,8 @@ vi.mock('next/navigation', () => ({
 vi.mock('notistack', () => ({
   useSnackbar: vi.fn(() => ({
     enqueueSnackbar: vi.fn()
-  }))}))
+  }))
+}))
 
 describe('DeleteVideoPage', () => {
   const mockVideoId = 'video-123'
@@ -73,14 +74,15 @@ describe('DeleteVideoPage', () => {
     vi.clearAllMocks()
 
     // Mock router.push
-    vi.mocked(useRouter as unknown as Mock)
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     // Mock useMutation
-    vi.mocked(useMutation as unknown as Mock)
-      .mockReturnValue([mockDeleteMutation, { loading: false }])
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+      mockDeleteMutation,
+      { loading: false }
+    ])
 
     // Mock useSnackbar
     vi.mocked(useSnackbar as unknown as Mock).mockReturnValue({
@@ -91,17 +93,16 @@ describe('DeleteVideoPage', () => {
   describe('for draft video that can be deleted', () => {
     beforeEach(() => {
       // Mock successful query for draft video
-      vi.mocked(useSuspenseQuery as unknown as Mock)
-        .mockReturnValue({
-          data: {
-            adminVideo: {
-              id: mockVideoId,
-              published: false,
-              publishedAt: null,
-              title: [{ value: 'Test Draft Video' }]
-            }
+      vi.mocked(useSuspenseQuery as unknown as Mock).mockReturnValue({
+        data: {
+          adminVideo: {
+            id: mockVideoId,
+            published: false,
+            publishedAt: null,
+            title: [{ value: 'Test Draft Video' }]
           }
-        })
+        }
+      })
     })
 
     it('renders the delete video dialog with confirmation message', () => {
@@ -146,8 +147,10 @@ describe('DeleteVideoPage', () => {
 
     it('shows loading state when mutation is in progress', () => {
       // Mock loading state
-      vi.mocked(useMutation as unknown as Mock)
-        .mockReturnValue([mockDeleteMutation, { loading: true }])
+      vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+        mockDeleteMutation,
+        { loading: true }
+      ])
 
       render(<DeleteVideoPage />)
 
@@ -159,17 +162,16 @@ describe('DeleteVideoPage', () => {
   describe('for published video that cannot be deleted', () => {
     beforeEach(() => {
       // Mock query for published video
-      vi.mocked(useSuspenseQuery as unknown as Mock)
-        .mockReturnValue({
-          data: {
-            adminVideo: {
-              id: mockVideoId,
-              published: true,
-              publishedAt: new Date('2023-01-01'),
-              title: [{ value: 'Published Video' }]
-            }
+      vi.mocked(useSuspenseQuery as unknown as Mock).mockReturnValue({
+        data: {
+          adminVideo: {
+            id: mockVideoId,
+            published: true,
+            publishedAt: new Date('2023-01-01'),
+            title: [{ value: 'Published Video' }]
           }
-        })
+        }
+      })
     })
 
     it('shows error message and redirects for published video', () => {
@@ -191,17 +193,16 @@ describe('DeleteVideoPage', () => {
   describe('for video that was previously published', () => {
     beforeEach(() => {
       // Mock query for previously published video
-      vi.mocked(useSuspenseQuery as unknown as Mock)
-        .mockReturnValue({
-          data: {
-            adminVideo: {
-              id: mockVideoId,
-              published: false,
-              publishedAt: new Date('2023-01-01'), // Has publishedAt date
-              title: [{ value: 'Previously Published Video' }]
-            }
+      vi.mocked(useSuspenseQuery as unknown as Mock).mockReturnValue({
+        data: {
+          adminVideo: {
+            id: mockVideoId,
+            published: false,
+            publishedAt: new Date('2023-01-01'), // Has publishedAt date
+            title: [{ value: 'Previously Published Video' }]
           }
-        })
+        }
+      })
     })
 
     it('shows error message and redirects for previously published video', () => {
@@ -223,12 +224,11 @@ describe('DeleteVideoPage', () => {
   describe('when video is not found', () => {
     beforeEach(() => {
       // Mock query with no video found
-      vi.mocked(useSuspenseQuery as unknown as Mock)
-        .mockReturnValue({
-          data: {
-            adminVideo: null
-          }
-        })
+      vi.mocked(useSuspenseQuery as unknown as Mock).mockReturnValue({
+        data: {
+          adminVideo: null
+        }
+      })
     })
 
     it('shows error message and redirects when video not found', () => {

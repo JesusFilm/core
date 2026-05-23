@@ -114,7 +114,8 @@ vi.mock('next/navigation', () => ({
 
 // Mock notistack
 vi.mock('notistack', () => ({
-  useSnackbar: vi.fn(() => ({ enqueueSnackbar: vi.fn() }))}))
+  useSnackbar: vi.fn(() => ({ enqueueSnackbar: vi.fn() }))
+}))
 
 describe('StudyQuestionsList', () => {
   const mockVideoId = 'video-123'
@@ -130,14 +131,15 @@ describe('StudyQuestionsList', () => {
     vi.clearAllMocks()
 
     // Mock router.push
-    vi.mocked(useRouter as unknown as Mock)
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     // Mock useMutation
-    vi.mocked(useMutation as unknown as Mock)
-      .mockReturnValue([mockUpdateStudyQuestionOrder, { loading: false }])
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+      mockUpdateStudyQuestionOrder,
+      { loading: false }
+    ])
 
     // Mock useSnackbar
     vi.mocked(useSnackbar as unknown as Mock).mockImplementation(() => ({

@@ -11,7 +11,8 @@ import DownloadPage from './page'
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({
     push: vi.fn()
-  }))}))
+  }))
+}))
 
 describe('Audio Variant Download Page', () => {
   const mockVideoId = 'video-123'
@@ -25,10 +26,9 @@ describe('Audio Variant Download Page', () => {
     vi.clearAllMocks()
 
     // Mock router.push
-    vi.mocked(useRouter as unknown as Mock)
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
   })
 
   it('should redirect to the variant page with correct path', () => {

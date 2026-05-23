@@ -1,4 +1,7 @@
-import { useMutation as apolloClient_useMutation, useSuspenseQuery as apolloClient_useSuspenseQuery } from '@apollo/client'
+import {
+  useMutation as apolloClient_useMutation,
+  useSuspenseQuery as apolloClient_useSuspenseQuery
+} from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type Mock } from 'vitest'
@@ -31,7 +34,9 @@ vi.mock('@apollo/client', async () => {
 })
 
 describe('PublishAllChildrenDialog (route)', () => {
-  const useSuspenseQuery = vi.mocked(apolloClient_useSuspenseQuery as unknown as Mock)
+  const useSuspenseQuery = vi.mocked(
+    apolloClient_useSuspenseQuery as unknown as Mock
+  )
   const useMutation = vi.mocked(apolloClient_useMutation as unknown as Mock)
 
   beforeEach(() => {

@@ -42,7 +42,8 @@ vi.mock('@core/shared/ui/Dialog', () => ({
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({
     push: vi.fn()
-  }))}))
+  }))
+}))
 
 // Create a mock for enqueueSnackbar function
 const mockEnqueueSnackbar = vi.fn()
@@ -65,14 +66,13 @@ describe('CitationDeletePage', () => {
     vi.clearAllMocks()
 
     // Mock router.push
-    vi.mocked(useRouter as unknown as Mock)
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     // Mock useMutation
-    vi.mocked(useMutation as unknown as Mock)
-      .mockImplementation((mutation, options: any = {}) => {
+    vi.mocked(useMutation as unknown as Mock).mockImplementation(
+      (mutation, options: any = {}) => {
         // Store the callbacks for later use in tests
         const onCompletedCallback = options.onCompleted
 
@@ -90,7 +90,8 @@ describe('CitationDeletePage', () => {
         })
 
         return [mockDeleteMutation, { loading: false }]
-      })
+      }
+    )
   })
 
   it('renders the delete confirmation dialog', () => {
@@ -153,8 +154,10 @@ describe('CitationDeletePage', () => {
 
   it('shows loading state while deleting', () => {
     // Mock loading state
-    vi.mocked(useMutation as unknown as Mock)
-      .mockReturnValue([mockDeleteMutation, { loading: true }])
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+      mockDeleteMutation,
+      { loading: true }
+    ])
 
     render(
       <CitationDeletePage
@@ -171,8 +174,8 @@ describe('CitationDeletePage', () => {
 
   it('shows success message and navigates after successful deletion', async () => {
     // Mock useMutation with onCompleted support
-    vi.mocked(useMutation as unknown as Mock)
-      .mockImplementation((mutation, options: any = {}) => {
+    vi.mocked(useMutation as unknown as Mock).mockImplementation(
+      (mutation, options: any = {}) => {
         // Store the onCompleted callback
         const onCompletedCallback = options.onCompleted
 
@@ -185,7 +188,8 @@ describe('CitationDeletePage', () => {
         })
 
         return [mockDeleteMutation, { loading: false }]
-      })
+      }
+    )
 
     render(
       <CitationDeletePage

@@ -1,4 +1,7 @@
-import { useMutation as apolloClientModule_useMutation, useSuspenseQuery as apolloClientModule_useSuspenseQuery } from '@apollo/client'
+import {
+  useMutation as apolloClientModule_useMutation,
+  useSuspenseQuery as apolloClientModule_useSuspenseQuery
+} from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { useRouter } from 'next/navigation'
@@ -238,22 +241,26 @@ describe('VariantDialog', () => {
     vi.clearAllMocks()
 
     // Mock router.push
-    vi.mocked(useRouter as unknown as Mock)
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     // Mock useMutation to return the expected array format
     const mockMutation = vi.fn()
-    vi.mocked(apolloClientModule_useMutation as unknown as Mock)
-      .mockReturnValue([
-        mockMutation,
-        { loading: false, error: null, data: null }
-      ])
+    vi.mocked(
+      apolloClientModule_useMutation as unknown as Mock
+    ).mockReturnValue([
+      mockMutation,
+      { loading: false, error: null, data: null }
+    ])
 
     // Mock the query result
-    const useSuspenseQuery = vi.mocked(apolloClientModule_useSuspenseQuery as unknown as Mock)
-    const useMutation = vi.mocked(apolloClientModule_useMutation as unknown as Mock)
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
+    const useMutation = vi.mocked(
+      apolloClientModule_useMutation as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({
       data: {
         videoVariant: {
@@ -297,7 +304,9 @@ describe('VariantDialog', () => {
   })
 
   const renderComponent = (mutationLoading = false) => {
-    const useMutation = vi.mocked(apolloClientModule_useMutation as unknown as Mock)
+    const useMutation = vi.mocked(
+      apolloClientModule_useMutation as unknown as Mock
+    )
     useMutation.mockReturnValue([
       vi.fn(),
       { loading: mutationLoading, error: null, data: null }
@@ -410,7 +419,9 @@ describe('VariantDialog', () => {
 
   it('displays "No downloads available" when there are no downloads', () => {
     // Mock the query result with no downloads
-    const useSuspenseQuery = vi.mocked(apolloClientModule_useSuspenseQuery as unknown as Mock)
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({
       data: {
         videoVariant: {
@@ -439,7 +450,9 @@ describe('VariantDialog', () => {
 
   it('handles null videoEdition', () => {
     // Mock the query result with null videoEdition
-    const useSuspenseQuery = vi.mocked(apolloClientModule_useSuspenseQuery as unknown as Mock)
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({
       data: {
         videoVariant: {
@@ -465,7 +478,9 @@ describe('VariantDialog', () => {
 
   it('handles null HLS source', () => {
     // Mock the query result with null HLS
-    const useSuspenseQuery = vi.mocked(apolloClientModule_useSuspenseQuery as unknown as Mock)
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({
       data: {
         videoVariant: {

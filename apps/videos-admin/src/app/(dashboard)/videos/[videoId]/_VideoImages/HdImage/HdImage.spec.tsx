@@ -54,7 +54,9 @@ describe('VideoHd', () => {
     }
 
     // Mock the hook
-    const useSuspenseQuery = vi.mocked(apolloClientModule_useSuspenseQuery as unknown as Mock)
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({ data: mockData })
 
     render(<HdImage videoId={mockVideoId} />)
@@ -84,7 +86,9 @@ describe('VideoHd', () => {
     }
 
     // Mock the hook
-    const useSuspenseQuery = vi.mocked(apolloClientModule_useSuspenseQuery as unknown as Mock)
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({ data: mockData })
 
     render(<HdImage videoId={mockVideoId} />)
@@ -109,7 +113,9 @@ describe('VideoHd', () => {
     }
 
     // Mock the hook
-    const useSuspenseQuery = vi.mocked(apolloClientModule_useSuspenseQuery as unknown as Mock)
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({ data: mockData })
 
     render(<HdImage videoId={mockVideoId} />)

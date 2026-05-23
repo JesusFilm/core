@@ -32,7 +32,7 @@ vi.mock('next/navigation', () => ({
 
 // Mock notistack
 vi.mock('notistack', async () => ({
-  ...await vi.importActual('notistack'),
+  ...(await vi.importActual('notistack')),
   useSnackbar: () => ({
     enqueueSnackbar: vi.fn()
   })

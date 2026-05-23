@@ -292,7 +292,8 @@ vi.mock('@core/shared/ui/Dialog', () => ({
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({
     push: vi.fn()
-  }))}))
+  }))
+}))
 
 vi.mock('notistack', () => ({
   enqueueSnackbar: vi.fn()
@@ -361,14 +362,14 @@ describe('AddVideoVariantDownloadDialog', () => {
     formikValues.file = null
 
     // Mock router.push
-    vi.mocked(useRouter as unknown as Mock)
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     // Mock snackbar
-    vi.mocked(enqueueSnackbar as unknown as Mock)
-      .mockImplementation(mockEnqueueSnackbar)
+    vi.mocked(enqueueSnackbar as unknown as Mock).mockImplementation(
+      mockEnqueueSnackbar
+    )
   })
 
   // Updated test to properly set formik values

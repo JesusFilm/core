@@ -10,7 +10,9 @@ vi.mock('../../libs/environment', () => ({
   shouldShowEnvironmentBanner: vi.fn()
 }))
 
-const mockShouldShowEnvironmentBanner = vi.mocked(shouldShowEnvironmentBanner as unknown as Mock)
+const mockShouldShowEnvironmentBanner = vi.mocked(
+  shouldShowEnvironmentBanner as unknown as Mock
+)
 
 describe('EnvironmentBanner', () => {
   beforeEach(() => {

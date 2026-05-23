@@ -5,7 +5,7 @@ import { AuthProvider } from '../../../../libs/auth/AuthProvider'
 import { SideMenuMobile } from './SideMenuMobile'
 
 vi.mock('next/navigation', async () => ({
-  ...await vi.importActual('next/navigation'),
+  ...(await vi.importActual('next/navigation')),
   useRouter: vi.fn()
 }))
 

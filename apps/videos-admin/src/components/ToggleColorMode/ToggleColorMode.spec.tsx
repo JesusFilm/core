@@ -6,13 +6,11 @@ import { type MockedFunction } from 'vitest'
 import { ToggleColorMode } from './ToggleColorMode'
 
 vi.mock('@mui/material/styles', async () => ({
-  ...await vi.importActual('@mui/material/styles'),
+  ...(await vi.importActual('@mui/material/styles')),
   useColorScheme: vi.fn()
 }))
 
-const mockColorScheme = useColorScheme as MockedFunction<
-  typeof useColorScheme
->
+const mockColorScheme = useColorScheme as MockedFunction<typeof useColorScheme>
 
 describe('ToggleColorMode', () => {
   it('should toggle the theme on click', () => {
