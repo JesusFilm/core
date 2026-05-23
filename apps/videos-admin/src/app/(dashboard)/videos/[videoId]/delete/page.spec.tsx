@@ -1,15 +1,19 @@
+import { useMutation, useSuspenseQuery } from '@apollo/client'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { useRouter } from 'next/navigation'
+import { useSnackbar } from 'notistack'
+import { type Mock } from 'vitest'
 
 // Import the component under test
 import DeleteVideoPage from './page'
 
 // Mock Apollo client
-jest.mock('@apollo/client', () => {
-  const original = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const original = await vi.importActual('@apollo/client')
   return {
     ...original,
-    useMutation: jest.fn(() => [jest.fn(), { loading: false }]),
-    useSuspenseQuery: jest.fn(() => ({
+    useMutation: vi.fn(() => [vi.fn(), { loading: false }]),
+    useSuspenseQuery: vi.fn(() => ({
       data: {
         adminVideo: {
           id: 'video-123',
@@ -23,7 +27,7 @@ jest.mock('@apollo/client', () => {
 })
 
 // Mock the Dialog component
-jest.mock('@core/shared/ui/Dialog', () => ({
+vi.mock('@core/shared/ui/Dialog', () => ({
   Dialog: ({ children, onClose, dialogTitle, dialogAction, loading }) => (
     <div data-testid="mock-dialog">
       <div data-testid="dialog-title">{dialogTitle.title}</div>
@@ -43,46 +47,45 @@ jest.mock('@core/shared/ui/Dialog', () => ({
 }))
 
 // Mock router
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn()
-  }),
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
+  })),
   useParams: () => ({ videoId: 'video-123' })
 }))
 
 // Mock notistack
-jest.mock('notistack', () => ({
-  useSnackbar: () => ({
-    enqueueSnackbar: jest.fn()
-  })
+vi.mock('notistack', () => ({
+  useSnackbar: vi.fn(() => ({
+    enqueueSnackbar: vi.fn()
+  }))
 }))
 
 describe('DeleteVideoPage', () => {
   const mockVideoId = 'video-123'
 
   // Mock functions
-  const mockDeleteMutation = jest.fn()
-  const mockRouterPush = jest.fn()
-  const mockEnqueueSnackbar = jest.fn()
+  const mockDeleteMutation = vi.fn()
+  const mockRouterPush = vi.fn()
+  const mockEnqueueSnackbar = vi.fn()
 
   // Reset mocks before each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Mock router.push
-    jest
-      .spyOn(require('next/navigation'), 'useRouter')
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     // Mock useMutation
-    jest
-      .spyOn(require('@apollo/client'), 'useMutation')
-      .mockReturnValue([mockDeleteMutation, { loading: false }])
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+      mockDeleteMutation,
+      { loading: false }
+    ])
 
     // Mock useSnackbar
-    jest.spyOn(require('notistack'), 'useSnackbar').mockReturnValue({
+    vi.mocked(useSnackbar as unknown as Mock).mockReturnValue({
       enqueueSnackbar: mockEnqueueSnackbar
     })
   })
@@ -90,18 +93,16 @@ describe('DeleteVideoPage', () => {
   describe('for draft video that can be deleted', () => {
     beforeEach(() => {
       // Mock successful query for draft video
-      jest
-        .spyOn(require('@apollo/client'), 'useSuspenseQuery')
-        .mockReturnValue({
-          data: {
-            adminVideo: {
-              id: mockVideoId,
-              published: false,
-              publishedAt: null,
-              title: [{ value: 'Test Draft Video' }]
-            }
+      vi.mocked(useSuspenseQuery as unknown as Mock).mockReturnValue({
+        data: {
+          adminVideo: {
+            id: mockVideoId,
+            published: false,
+            publishedAt: null,
+            title: [{ value: 'Test Draft Video' }]
           }
-        })
+        }
+      })
     })
 
     it('renders the delete video dialog with confirmation message', () => {
@@ -146,9 +147,10 @@ describe('DeleteVideoPage', () => {
 
     it('shows loading state when mutation is in progress', () => {
       // Mock loading state
-      jest
-        .spyOn(require('@apollo/client'), 'useMutation')
-        .mockReturnValue([mockDeleteMutation, { loading: true }])
+      vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+        mockDeleteMutation,
+        { loading: true }
+      ])
 
       render(<DeleteVideoPage />)
 
@@ -160,18 +162,16 @@ describe('DeleteVideoPage', () => {
   describe('for published video that cannot be deleted', () => {
     beforeEach(() => {
       // Mock query for published video
-      jest
-        .spyOn(require('@apollo/client'), 'useSuspenseQuery')
-        .mockReturnValue({
-          data: {
-            adminVideo: {
-              id: mockVideoId,
-              published: true,
-              publishedAt: new Date('2023-01-01'),
-              title: [{ value: 'Published Video' }]
-            }
+      vi.mocked(useSuspenseQuery as unknown as Mock).mockReturnValue({
+        data: {
+          adminVideo: {
+            id: mockVideoId,
+            published: true,
+            publishedAt: new Date('2023-01-01'),
+            title: [{ value: 'Published Video' }]
           }
-        })
+        }
+      })
     })
 
     it('shows error message and redirects for published video', () => {
@@ -193,18 +193,16 @@ describe('DeleteVideoPage', () => {
   describe('for video that was previously published', () => {
     beforeEach(() => {
       // Mock query for previously published video
-      jest
-        .spyOn(require('@apollo/client'), 'useSuspenseQuery')
-        .mockReturnValue({
-          data: {
-            adminVideo: {
-              id: mockVideoId,
-              published: false,
-              publishedAt: new Date('2023-01-01'), // Has publishedAt date
-              title: [{ value: 'Previously Published Video' }]
-            }
+      vi.mocked(useSuspenseQuery as unknown as Mock).mockReturnValue({
+        data: {
+          adminVideo: {
+            id: mockVideoId,
+            published: false,
+            publishedAt: new Date('2023-01-01'), // Has publishedAt date
+            title: [{ value: 'Previously Published Video' }]
           }
-        })
+        }
+      })
     })
 
     it('shows error message and redirects for previously published video', () => {
@@ -226,13 +224,11 @@ describe('DeleteVideoPage', () => {
   describe('when video is not found', () => {
     beforeEach(() => {
       // Mock query with no video found
-      jest
-        .spyOn(require('@apollo/client'), 'useSuspenseQuery')
-        .mockReturnValue({
-          data: {
-            adminVideo: null
-          }
-        })
+      vi.mocked(useSuspenseQuery as unknown as Mock).mockReturnValue({
+        data: {
+          adminVideo: null
+        }
+      })
     })
 
     it('shows error message and redirects when video not found', () => {

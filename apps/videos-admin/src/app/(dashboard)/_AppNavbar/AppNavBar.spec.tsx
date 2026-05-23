@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { AppNavbar } from './AppNavbar'
 
-jest.mock('next/navigation')
+vi.mock('next/navigation')
 
 describe('AppNavBar', () => {
   it('should show theme toggle and menu button and logo', () => {
