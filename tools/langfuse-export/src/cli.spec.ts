@@ -160,6 +160,15 @@ describe('parseDiscriminator', () => {
     )
   })
 
+  it('rejects an empty or whitespace-only message pattern (matches everything)', () => {
+    expect(() => parseDiscriminator('message:')).toThrow(
+      /pattern cannot be empty/
+    )
+    expect(() => parseDiscriminator('message:   ')).toThrow(
+      /pattern cannot be empty/
+    )
+  })
+
   it('maps journey:<csv> to a journeyId set', () => {
     const result = parseDiscriminator('journey:a,b')
     expect(result.excludeJourneyIds).toEqual(new Set(['a', 'b']))

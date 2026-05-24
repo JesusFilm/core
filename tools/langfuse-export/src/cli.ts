@@ -205,6 +205,14 @@ export function parseDiscriminator(value: string): NormalizeOptions {
 
   switch (kind) {
     case 'message':
+      // An empty/whitespace pattern compiles to /(?:)/, which matches every
+      // non-empty message and would silently exclude almost all turns. Reject
+      // it loudly rather than let it pass the SyntaxError guard below.
+      if (rest.trim().length === 0) {
+        throw new Error(
+          'invalid --discriminator message regex: pattern cannot be empty'
+        )
+      }
       // The pattern is engineer-supplied (internal tool, not untrusted input)
       // and the flag is fixed to 'i', so callers can't inject g/y. Wrap the
       // construction to surface a friendly error instead of a raw SyntaxError.
