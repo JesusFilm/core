@@ -11,7 +11,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
-import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
+import CopyRightIcon from '@core/shared/ui/icons/CopyRight'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
 import { copyToClipboard } from '../../../libs/copyToClipboard'
@@ -146,7 +146,7 @@ export function CollectionPublishSuccessDialog({
                       disabled={publicUrl == null}
                       edge="end"
                     >
-                      <LinkAngledIcon />
+                      <CopyRightIcon />
                     </IconButton>
                   </Box>
                 </Tooltip>
