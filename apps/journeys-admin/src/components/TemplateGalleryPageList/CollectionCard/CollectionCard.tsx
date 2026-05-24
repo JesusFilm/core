@@ -118,9 +118,16 @@ function CollectionCardImpl({
       data-testid={`CollectionCard-${collection.id}`}
       sx={{
         p: 2,
-        borderColor: 'divider',
+        // Match the surrounding page grey so the card reads as a
+        // panel of the same surface rather than a raised white card.
+        // The darker grey border + thicker stroke + soft shadow is
+        // what gives each collection its visual separation.
+        backgroundColor: 'background.default',
+        borderColor: 'grey.400',
         borderWidth: 1,
-        borderStyle: 'solid'
+        borderStyle: 'solid',
+        borderRadius: 3,
+        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)'
       }}
       variant="outlined"
     >
@@ -219,9 +226,7 @@ function CollectionCardImpl({
         sx={{
           p: 0,
           '&:last-child': { pb: 0 },
-          minHeight: 100,
-          backgroundColor: (theme) => theme.palette.background.default,
-          borderRadius: 1
+          minHeight: 100
         }}
       >
         {isEmpty ? (

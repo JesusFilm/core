@@ -631,6 +631,10 @@ export function TemplateGalleryPageList({
                     journeys={unsectioned}
                     publishedLock={false}
                     dragInFlight={interactionsLocked}
+                    // No collection-card edge to balance against here —
+                    // drop the outer padding so cards align with the
+                    // collection-card edges above.
+                    outerPadding={false}
                   />
                 )}
               </UnsectionedDroppable>
