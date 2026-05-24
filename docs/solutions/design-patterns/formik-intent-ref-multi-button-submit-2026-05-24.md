@@ -7,9 +7,9 @@ problem_type: design_pattern
 component: tooling
 severity: medium
 applies_when:
-  - "A Formik form needs multiple submit-style buttons that share validation, field values, and error mapping but trigger different mutations"
-  - "Splitting onSubmit into separate handlers would duplicate validation, error mapping, or field normalization"
-  - "One footer action (e.g. Unpublish, Delete) should bypass Formik entirely and discard pending field edits"
+  - 'A Formik form needs multiple submit-style buttons that share validation, field values, and error mapping but trigger different mutations'
+  - 'Splitting onSubmit into separate handlers would duplicate validation, error mapping, or field normalization'
+  - 'One footer action (e.g. Unpublish, Delete) should bypass Formik entirely and discard pending field edits'
 related_components:
   - tooling
 tags:
@@ -54,8 +54,7 @@ const setSubmitIntent = (intent: 'publish' | 'draft'): void => {
 
 async function handleSubmit(values, helpers) {
   // ...diffed update logic shared by all modes...
-  const shouldPublish =
-    mode === 'publish' && submitIntentRef.current === 'publish'
+  const shouldPublish = mode === 'publish' && submitIntentRef.current === 'publish'
 
   if (Object.keys(input).length > 0) {
     await templateGalleryPageUpdate({ variables: { id, input } })
@@ -187,8 +186,7 @@ Problems: two `validateForm` calls, two `try/catch` blocks, two submitting flags
 ```ts
 async function handleSubmit(values, helpers) {
   const input = diff(values, initialValues)
-  const shouldPublish =
-    mode === 'publish' && submitIntentRef.current === 'publish'
+  const shouldPublish = mode === 'publish' && submitIntentRef.current === 'publish'
   if (Object.keys(input).length > 0) {
     await templateGalleryPageUpdate({ variables: { id, input } })
   }
@@ -244,10 +242,10 @@ Formik handles `isSubmitting`, error mapping runs once, Yup validates once, and 
 
 - **`outerPadding` prop on shared grid components.** When the same grid is used both inside a card (needs symmetric padding so the grid's gap visually matches the card's edge padding) and at the top level of a page (needs no padding so it aligns flush with sibling card edges), a single boolean prop is cleaner than two near-duplicate components or a wrapper div with margin hacks.
 
-- **Don't gate the entry point if it's the only path to a needed sub-action.** When consolidating menu items into one state-aware entry (e.g. "Edit" for published, "Publish" for draft), move any gating logic *down* into the dialog (disable the Publish button for empty drafts) rather than disabling the menu item itself. Otherwise the user loses access to legitimate sub-actions like editing draft metadata.
+- **Don't gate the entry point if it's the only path to a needed sub-action.** When consolidating menu items into one state-aware entry (e.g. "Edit" for published, "Publish" for draft), move any gating logic _down_ into the dialog (disable the Publish button for empty drafts) rather than disabling the menu item itself. Otherwise the user loses access to legitimate sub-actions like editing draft metadata.
 
 ## Related
 
 - [Template Gallery Page Collections patterns (NES-1539)](../best-practices/template-gallery-page-collections-patterns-nes1539.md) — the broader CollectionDialog patterns catalog. This intent-ref pattern is the next entry in that catalog and should be referenced from it.
-- [Local Template Dialog Consolidation (NES-1543)](../best-practices/local-template-dialog-consolidation-patterns-nes1543.md) — a sibling pattern: single Formik form firing multiple GraphQL mutations routed by dirty subset (`Promise.allSettled`). Orthogonal to submit-intent routing — that flavor routes on *what changed*, this one routes on *which button was pressed*.
+- [Local Template Dialog Consolidation (NES-1543)](../best-practices/local-template-dialog-consolidation-patterns-nes1543.md) — a sibling pattern: single Formik form firing multiple GraphQL mutations routed by dirty subset (`Promise.allSettled`). Orthogonal to submit-intent routing — that flavor routes on _what changed_, this one routes on _which button was pressed_.
 - PR [#9247](https://github.com/JesusFilm/core/pull/9247) — collection create/edit/publish flow rework where this pattern shipped.

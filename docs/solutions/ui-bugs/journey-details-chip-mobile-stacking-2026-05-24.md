@@ -7,7 +7,7 @@ problem_type: ui_bug
 component: tooling
 symptoms:
   - "TEMPLATE chip squeezed beside the journey title inside the editor's mobile 3-dots dropdown menu"
-  - "On narrow viewports the title takes the full row and the chip wraps awkwardly or gets clipped"
+  - 'On narrow viewports the title takes the full row and the chip wraps awkwardly or gets clipped'
   - "Users on mobile can't tell at a glance whether they're editing a template vs a regular journey"
 root_cause: incomplete_setup
 resolution_type: code_fix
