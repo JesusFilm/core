@@ -22,7 +22,7 @@ export const getCreateR2AssetMock = <
       input
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       cloudflareR2Create: {
         id: 'r2-asset.id',

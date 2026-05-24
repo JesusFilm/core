@@ -4,7 +4,7 @@ import { OrderedItemMenu } from './OrderedItemMenu'
 
 describe('OrderedItemMenu', () => {
   it('should call onClick events', () => {
-    const editOnClick = jest.fn()
+    const editOnClick = vi.fn()
     render(
       <OrderedItemMenu
         id="someId"

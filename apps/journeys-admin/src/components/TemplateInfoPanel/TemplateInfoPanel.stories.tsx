@@ -44,4 +44,8 @@ export const SharingAndPublishingExpanded: StoryObj<typeof TemplateInfoPanel> =
     render: () => <TemplateInfoPanel defaultExpanded="sharingAndPublishing" />
   }
 
+export const Contained: StoryObj<typeof TemplateInfoPanel> = {
+  render: () => <TemplateInfoPanel contained />
+}
+
 export default TemplateInfoPanelStory

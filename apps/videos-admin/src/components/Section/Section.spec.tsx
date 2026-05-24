@@ -52,7 +52,7 @@ describe('Section', () => {
   })
 
   it('should render with action', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
 
     render(
       <Section
