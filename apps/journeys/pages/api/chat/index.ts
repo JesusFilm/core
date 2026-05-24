@@ -17,6 +17,7 @@ import {
   getActivePromptLabel,
   getLangfuse
 } from '../../../src/libs/langfuse/client'
+import { logger } from '../../../src/libs/logger'
 
 // Request bounds (NES-1579). Hard ceilings so a single chat request can't be
 // arbitrarily expensive or arbitrarily shaped.
@@ -214,10 +215,10 @@ export default async function handler(
     )
   } catch (error) {
     const err = error as Error
-    console.error('[chat] convertToModelMessages failed', {
-      name: err?.name,
-      message: err?.message
-    })
+    logger.error(
+      { name: err?.name, message: err?.message },
+      '[chat] convertToModelMessages failed'
+    )
     res.status(400).json({ error: 'invalid request' })
     return
   }
@@ -254,15 +255,16 @@ export default async function handler(
       maxOutputTokens: MAX_OUTPUT_TOKENS,
       onError: async ({ error }) => {
         const err = error as Error
-        // TODO(NES-1615): swap console for structured pino + dd-trace logger
-        // so this reaches Datadog instead of dying in Vercel runtime logs.
-        console.error('[chat] streamText onError', {
-          provider,
-          modelId,
-          name: err?.name,
-          message: err?.message,
-          stack: err?.stack
-        })
+        logger.error(
+          {
+            provider,
+            modelId,
+            name: err?.name,
+            message: err?.message,
+            stack: err?.stack
+          },
+          '[chat] streamText onError'
+        )
         // streamText errors are LLM lifecycle events — record in Langfuse.
         endGenerationIfPending({
           level: 'ERROR',
@@ -297,17 +299,18 @@ export default async function handler(
     result.pipeUIMessageStreamToResponse(res, {
       onError: (error) => {
         const err = error as Error
-        // TODO(NES-1615): pipe-step failures (write to closed socket etc.)
-        // are infrastructure errors, not LLM events — they belong in
-        // Datadog, not Langfuse. Swap console for structured pino logger
-        // once the journeys app has dd-trace + next-logger wired up
-        // (mirror apps/journeys-admin/next-logger.config.js).
-        console.error('[chat] pipe onError', {
-          provider,
-          modelId,
-          name: err?.name,
-          message: err?.message
-        })
+        // Pipe-step failures (write to closed socket etc.) are
+        // infrastructure errors, not LLM events — logged to Datadog,
+        // not recorded in Langfuse.
+        logger.error(
+          {
+            provider,
+            modelId,
+            name: err?.name,
+            message: err?.message
+          },
+          '[chat] pipe onError'
+        )
         // Generic message back to the client — never leak raw error
         // details into the SSE error chunk.
         return 'stream failed'
@@ -315,13 +318,15 @@ export default async function handler(
     })
   } catch (error) {
     const err = error as Error
-    // TODO(NES-1615): structured logger so sync throws reach Datadog.
-    console.error('[chat] synchronous error', {
-      provider,
-      modelId,
-      name: err?.name,
-      message: err?.message
-    })
+    logger.error(
+      {
+        provider,
+        modelId,
+        name: err?.name,
+        message: err?.message
+      },
+      '[chat] synchronous error'
+    )
     // Sync throws happen before the LLM call, but the trace + generation
     // were already created above — close the lifecycle so Langfuse
     // doesn't carry a dangling unfinished span.
@@ -354,7 +359,7 @@ async function resolveSystemMessage({
       { label: getActivePromptLabel() }
     )
     if (promptClient.type !== 'text') {
-      console.warn(
+      logger.warn(
         `[langfuse] expected text prompt for ${APOLOGIST_PROMPT_NAME}, got ${promptClient.type} — using fallback`
       )
       return { system: fallback, promptClient: null }
@@ -365,10 +370,10 @@ async function resolveSystemMessage({
     return { system: compiled, promptClient }
   } catch (error) {
     const err = error as Error
-    console.warn('[langfuse] getPrompt failed — using fallback', {
-      name: err?.name,
-      message: err?.message
-    })
+    logger.warn(
+      { name: err?.name, message: err?.message },
+      '[langfuse] getPrompt failed — using fallback'
+    )
     return { system: fallback, promptClient: null }
   }
 }

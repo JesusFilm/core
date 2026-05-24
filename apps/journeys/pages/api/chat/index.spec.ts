@@ -11,6 +11,11 @@ import {
 
 import handler from './index'
 
+const { mockLoggerError, mockLoggerWarn } = vi.hoisted(() => ({
+  mockLoggerError: vi.fn(),
+  mockLoggerWarn: vi.fn()
+}))
+
 vi.mock('@ai-sdk/google', () => ({
   google: vi.fn(() => ({ id: 'gemini' }))
 }))
@@ -36,6 +41,9 @@ vi.mock('../../../src/libs/langfuse/client', () => ({
   APOLOGIST_PROMPT_NAME: 'apologist-world-cup-chat',
   getActivePromptLabel: vi.fn(() => 'development'),
   getLangfuse: vi.fn(() => null)
+}))
+vi.mock('../../../src/libs/logger', () => ({
+  logger: { error: mockLoggerError, warn: mockLoggerWarn }
 }))
 
 const mockGetFlags = getFlags as unknown as MockedFunction<typeof getFlags>
@@ -427,7 +435,7 @@ describe('/api/chat handler', () => {
       expect(lastStreamConfig?.system).toContain(
         'You are a helpful Christian apologist'
       )
-      expect(warnSpy).toHaveBeenCalled()
+      expect(mockLoggerWarn).toHaveBeenCalled()
       warnSpy.mockRestore()
     })
 
