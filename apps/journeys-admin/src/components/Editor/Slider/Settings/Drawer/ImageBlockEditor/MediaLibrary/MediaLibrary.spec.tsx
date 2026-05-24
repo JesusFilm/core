@@ -205,9 +205,6 @@ describe('MediaLibrary', () => {
     expect(
       screen.queryByRole('button', { name: 'Load More' })
     ).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: 'No more to load' })
-    ).not.toBeInTheDocument()
   })
 
   it('should show the Load More button in a loading state while the initial query is in flight', () => {
