@@ -31,7 +31,7 @@ describe('LinkFile', () => {
   })
 
   it('should show delete button and call onDelete when clicked', async () => {
-    const onDelete = jest.fn()
+    const onDelete = vi.fn()
     render(<LinkFile {...mockProps} onDelete={onDelete} />)
 
     const deleteButton = screen.getByRole('button', { name: 'delete-file' })

@@ -16,10 +16,51 @@ export interface MuxVideoStatusResponse {
   }
 }
 
+export interface ProcessingFailureDetail {
+  file: string
+  reason: string
+}
+
 export interface ProcessingSummary {
   total: number
   successful: number
   failed: number
+  successfulFiles: string[]
+  failedFiles: string[]
+  failureDetails: ProcessingFailureDetail[]
+}
+
+export function createProcessingSummary(total: number): ProcessingSummary {
+  return {
+    total,
+    successful: 0,
+    failed: 0,
+    successfulFiles: [],
+    failedFiles: [],
+    failureDetails: []
+  }
+}
+
+export function recordProcessingFailure(
+  summary: ProcessingSummary,
+  file: string,
+  reason: string
+): void {
+  const trimmed = reason.trim()
+  summary.failed++
+  summary.failedFiles.push(file)
+  summary.failureDetails.push({
+    file,
+    reason: trimmed.length > 0 ? trimmed : 'Unknown error'
+  })
+}
+
+export function recordProcessingSuccess(
+  summary: ProcessingSummary,
+  file: string
+): void {
+  summary.successful++
+  summary.successfulFiles.push(file)
 }
 
 export interface VideoMetadata {

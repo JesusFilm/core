@@ -19,8 +19,8 @@ const GET_VIDEO_BY_ID = graphql(`
 `)
 
 describe('ExistingVideoByIdSelector', () => {
-  const handleSelect = jest.fn()
-  const handleCancel = jest.fn()
+  const handleSelect = vi.fn()
+  const handleCancel = vi.fn()
 
   const mocks = [
     {
@@ -47,7 +47,7 @@ describe('ExistingVideoByIdSelector', () => {
   ]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders the component correctly', () => {

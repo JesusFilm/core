@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { useField } from 'formik'
+import { type Mock } from 'vitest'
 
 import { FormTextField } from './FormTextField'
 
@@ -11,12 +12,12 @@ const props = {
 const fieldMock = { value: 'Textfield value', name: 'name' }
 const metaMock = { value: '', error: '', touched: false, initialTouched: false }
 
-jest.mock('formik', () => ({
+vi.mock('formik', () => ({
   __esModule: true,
-  useField: jest.fn()
+  useField: vi.fn()
 }))
 
-const useFieldMock = useField as jest.Mock
+const useFieldMock = useField as Mock
 
 describe('FormTextField', () => {
   it('should render with value', () => {

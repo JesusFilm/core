@@ -2,7 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 
 // Mock the actual VideoList component
-jest.mock('./VideoList', () => ({
+vi.mock('./VideoList', () => ({
   VideoList: () => <div data-testid="mocked-video-list">Mocked VideoList</div>,
   GET_ADMIN_VIDEOS_AND_COUNT: 'mocked-graphql-query'
 }))

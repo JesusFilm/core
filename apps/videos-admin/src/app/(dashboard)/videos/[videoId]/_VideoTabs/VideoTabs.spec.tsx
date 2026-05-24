@@ -7,26 +7,28 @@ import {
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { type MockedFunction } from 'vitest'
 
 import { VideoTabView } from './VideoTabs'
 
 // Mock Next.js Link component
-jest.mock('next/link', () => {
-  return function MockLink(props: any) {
+vi.mock('next/link', () => ({
+  __esModule: true,
+  default: function MockLink(props: any) {
     return <a {...props}>{props.children}</a>
   }
-})
+}))
 
 // Mock Next.js navigation hooks
-jest.mock('next/navigation', () => ({
+vi.mock('next/navigation', () => ({
   useSearchParams: () => ({
-    get: jest.fn()
+    get: vi.fn()
   }),
   usePathname: () => '/videos/video-123'
 }))
 
 // Mock getVideoChildrenLabel
-jest.mock('../../../../../libs/getVideoChildrenLabel', () => ({
+vi.mock('../../../../../libs/getVideoChildrenLabel', () => ({
   getVideoChildrenLabel: (label: string) => {
     if (label === 'collection') return 'Items'
     if (label === 'featureFilm') return 'Clips'
@@ -36,12 +38,12 @@ jest.mock('../../../../../libs/getVideoChildrenLabel', () => ({
 }))
 
 // Mock useQuery hook
-jest.mock('@apollo/client', () => {
-  const original = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const original = await vi.importActual('@apollo/client')
   return {
     ...original,
-    useQuery: jest.fn(),
-    useSuspenseQuery: jest.fn()
+    useQuery: vi.fn(),
+    useSuspenseQuery: vi.fn()
   }
 })
 
@@ -97,30 +99,30 @@ const mockOtherTypeData = {
 
 // Helper to setup mocked data
 const setupMock = (data: any) => {
-  const mockedUseQuery = useQuery as jest.MockedFunction<typeof useQuery>
+  const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
   mockedUseQuery.mockReturnValue({
     data,
     loading: false,
     error: undefined,
-    refetch: jest.fn(),
-    fetchMore: jest.fn(),
+    refetch: vi.fn(),
+    fetchMore: vi.fn(),
     networkStatus: NetworkStatus.ready,
     client: {} as any,
     previousData: null,
     called: true,
-    startPolling: jest.fn(),
-    stopPolling: jest.fn(),
-    subscribeToMore: jest.fn(),
-    updateQuery: jest.fn(),
+    startPolling: vi.fn(),
+    stopPolling: vi.fn(),
+    subscribeToMore: vi.fn(),
+    updateQuery: vi.fn(),
     observable: {} as any,
-    reobserve: jest.fn(),
+    reobserve: vi.fn(),
     variables: {}
   } as QueryResult<any, OperationVariables>)
 }
 
 describe('VideoTabView', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should display all tabs for feature film', () => {

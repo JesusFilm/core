@@ -11,11 +11,11 @@ import {
 } from './RestrictedDownloads'
 
 // Mock useSuspenseQuery to avoid relying on Suspense resolution in tests
-jest.mock('@apollo/client', () => {
-  const original = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const original = await vi.importActual('@apollo/client')
   return {
     ...original,
-    useSuspenseQuery: jest.fn(
+    useSuspenseQuery: vi.fn(
       (query: unknown, options?: { variables?: { id?: string } }) => {
         const id = options?.variables?.id
         if (id === 'video2') {

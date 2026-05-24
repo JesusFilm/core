@@ -2,10 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "types": ["jest", "@jest/globals", "node"],
-    "jsx": "react"
+    "types": ["vitest/globals", "node"]
   },
   "include": [
     "**/*.spec.ts",
@@ -13,6 +10,6 @@
     "**/*.spec.js",
     "**/*.spec.jsx",
     "**/*.d.ts",
-    "setupTests.ts"
+    "setupTests.tsx"
   ]
 }
