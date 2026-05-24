@@ -100,16 +100,12 @@ describe('CollectionPublishSuccessDialog', () => {
 
   it('disables "View the page" when slug is null', () => {
     renderDialog({ slug: null })
-    expect(
-      screen.getByRole('button', { name: 'View the page' })
-    ).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'View the page' })).toBeDisabled()
   })
 
   it('disables "View the page" when publicUrl is null', () => {
     renderDialog({ publicUrl: null })
-    expect(
-      screen.getByRole('button', { name: 'View the page' })
-    ).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'View the page' })).toBeDisabled()
   })
 
   it('disables "View the page" and surfaces the gate copy when canPublish is false', () => {
@@ -119,8 +115,6 @@ describe('CollectionPublishSuccessDialog', () => {
       publishBlockedReason: 'gate copy'
     })
     expect(screen.getByText('gate copy')).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'View the page' })
-    ).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'View the page' })).toBeDisabled()
   })
 })

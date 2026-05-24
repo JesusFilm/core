@@ -7,10 +7,10 @@ problem_type: convention
 component: tooling
 severity: medium
 applies_when:
-  - "Writing MUI sx spacing props (p, m, px, py, pt, pb, gap, spacing, etc.) in any app or lib that consumes the shared themes (base, journeysAdmin, journeyUi, website)"
-  - "Converting a Figma or design-spec pixel value into sx token values"
-  - "Calling theme.spacing(n) directly in styled components, makeStyles blocks, or stories"
-  - "Reviewing PRs that introduce MUI sx spacing values — verify the px math against the 4× scale, not the 8× default"
+  - 'Writing MUI sx spacing props (p, m, px, py, pt, pb, gap, spacing, etc.) in any app or lib that consumes the shared themes (base, journeysAdmin, journeyUi, website)'
+  - 'Converting a Figma or design-spec pixel value into sx token values'
+  - 'Calling theme.spacing(n) directly in styled components, makeStyles blocks, or stories'
+  - 'Reviewing PRs that introduce MUI sx spacing values — verify the px math against the 4× scale, not the 8× default'
 tags:
   - mui
   - theme
@@ -122,7 +122,7 @@ sx={{
 sx={{ padding: '11px' }}  // bypasses the token, renders 11px literally
 ```
 
-**Session example that surfaced this convention:** I wrote `sx={{ px: 3, pb: 3 }}` on a dialog action area expecting 24px (MUI default math of `3 × 8`). It rendered 12px, because the theme's `spacing = 4` made it `3 × 4`. The user corrected: *"the sizing token is 1 = 4 px, so I think it should be six"*. Changing to `px: 6, pb: 6` produced the intended 24px.
+**Session example that surfaced this convention:** I wrote `sx={{ px: 3, pb: 3 }}` on a dialog action area expecting 24px (MUI default math of `3 × 8`). It rendered 12px, because the theme's `spacing = 4` made it `3 × 4`. The user corrected: _"the sizing token is 1 = 4 px, so I think it should be six"_. Changing to `px: 6, pb: 6` produced the intended 24px.
 
 ## Related
 
