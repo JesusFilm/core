@@ -173,8 +173,7 @@ export function CollectionDialog({
                   : {
                       onSubmit: handleSubmit,
                       closeLabel: t('Cancel'),
-                      submitLabel:
-                        mode === 'create' ? t('Create') : t('Save')
+                      submitLabel: mode === 'create' ? t('Create') : t('Save')
                     }
               }
               dialogActionChildren={(() => {
