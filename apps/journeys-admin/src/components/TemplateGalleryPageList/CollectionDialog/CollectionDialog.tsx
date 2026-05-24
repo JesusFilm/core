@@ -5,6 +5,7 @@ import ButtonBase from '@mui/material/ButtonBase'
 import Collapse from '@mui/material/Collapse'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
@@ -25,7 +26,7 @@ import { useCollectionForm } from './useCollectionForm'
 
 export interface CollectionDialogProps {
   open: boolean
-  mode: 'create' | 'edit'
+  mode: 'create' | 'edit' | 'publish'
   teamId: string
   collection?: TemplateGalleryPage
   availableJourneys: readonly Journey[]
@@ -44,6 +45,8 @@ export interface CollectionDialogProps {
   /** Tooltip copy for the disabled preview button. */
   publishBlockedReason?: string | null
   onClose: () => void
+  /** Forwarded to useCollectionForm in publish mode. */
+  onPublished?: (collection: TemplateGalleryPage) => void
 }
 
 // Matches the Figma "Editor / Subtitle/2" type token on section headers.
@@ -64,12 +67,27 @@ export function CollectionDialog({
   parentBusy = false,
   canPublish = true,
   publishBlockedReason = null,
-  onClose
+  onClose,
+  onPublished
 }: CollectionDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const { initialValues, schema, isPublished, handleSubmit } =
-    useCollectionForm({ mode, teamId, collection, parentBusy, onClose })
+  const {
+    initialValues,
+    schema,
+    isPublished,
+    handleSubmit,
+    setSubmitIntent,
+    handleUnpublishAction,
+    isMutating
+  } = useCollectionForm({
+    mode,
+    teamId,
+    collection,
+    parentBusy,
+    onClose,
+    onPublished
+  })
 
   // O(1) lookup so the preview pane can resolve the user-pick-ordered
   // journey list per Formik render without an O(M) scan.
@@ -130,23 +148,124 @@ export function CollectionDialog({
               open={open}
               onClose={guardedClose}
               maxWidth="md"
-              // Disable the submit + close buttons while the mutation is in
-              // flight. Formik's submitForm has no internal double-click guard
-              // — without this, a fast second click before React re-renders
-              // would fire a second create/update mutation.
-              loading={isSubmitting}
+              // Disable the submit + close buttons while a mutation is in
+              // flight. Covers Formik's submitForm (isSubmitting) and
+              // the out-of-band unpublish action (isMutating). Without
+              // this, a fast second click before React re-renders would
+              // fire a duplicate mutation.
+              loading={isSubmitting || isMutating}
               dialogTitle={{
                 title:
                   mode === 'create'
                     ? t('New Collection')
-                    : t('Edit Collection'),
+                    : mode === 'publish'
+                      ? t('Publish Collection')
+                      : t('Edit Collection'),
                 closeButton: true
               }}
-              dialogAction={{
-                onSubmit: handleSubmit,
-                closeLabel: t('Cancel'),
-                submitLabel: mode === 'create' ? t('Create') : t('Save')
-              }}
+              dialogAction={
+                // Custom footer in publish mode (Save Draft + Publish)
+                // and in edit-while-published mode (Unpublish + Save).
+                // Create + draft-edit fall through to the default
+                // Cancel + Save footer.
+                mode === 'publish' || (mode === 'edit' && isPublished)
+                  ? undefined
+                  : {
+                      onSubmit: handleSubmit,
+                      closeLabel: t('Cancel'),
+                      submitLabel:
+                        mode === 'create' ? t('Create') : t('Save')
+                    }
+              }
+              dialogActionChildren={(() => {
+                const busy = isSubmitting || isMutating
+                if (mode === 'publish') {
+                  // Publish is gated by (a) custom-domain teams that
+                  // can't host gallery pages and (b) an empty selection
+                  // — same checks that previously lived on the card
+                  // menu, moved here so the menu item itself can
+                  // always open the dialog (the user may want to fill
+                  // in metadata before adding templates).
+                  const publishBlockedHere =
+                    !canPublish || values.journeyIds.length === 0
+                  const publishTooltip = !canPublish
+                    ? (publishBlockedReason ?? '')
+                    : values.journeyIds.length === 0
+                      ? t('Add at least one template before publishing')
+                      : ''
+                  return (
+                    <>
+                      <Button onClick={guardedClose} disabled={busy}>
+                        {t('Cancel')}
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setSubmitIntent('draft')
+                          handleSubmit()
+                        }}
+                        disabled={busy}
+                      >
+                        {t('Save Draft')}
+                      </Button>
+                      <Tooltip
+                        title={publishTooltip}
+                        placement="top"
+                        disableHoverListener={!publishBlockedHere}
+                        disableFocusListener={!publishBlockedHere}
+                      >
+                        <span>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => {
+                              setSubmitIntent('publish')
+                              handleSubmit()
+                            }}
+                            loading={isSubmitting}
+                            disabled={publishBlockedHere || busy}
+                          >
+                            {t('Publish')}
+                          </Button>
+                        </span>
+                      </Tooltip>
+                    </>
+                  )
+                }
+                if (mode === 'edit' && isPublished) {
+                  // Unpublish lives inside the dialog so the card menu
+                  // has a single state-aware entry point. Skips
+                  // Formik on purpose — any pending field edits are
+                  // discarded, because "unpublish" is a deliberate
+                  // status change, not a save path.
+                  return (
+                    <>
+                      <Button onClick={guardedClose} disabled={busy}>
+                        {t('Cancel')}
+                      </Button>
+                      <Button
+                        color="error"
+                        onClick={() => {
+                          void handleUnpublishAction()
+                        }}
+                        loading={isMutating}
+                        disabled={busy}
+                      >
+                        {t('Unpublish')}
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleSubmit()}
+                        loading={isSubmitting}
+                        disabled={busy}
+                      >
+                        {t('Save')}
+                      </Button>
+                    </>
+                  )
+                }
+                return undefined
+              })()}
               testId="CollectionDialog"
               sx={{
                 '& .MuiDialogContent-root': {
@@ -308,6 +427,65 @@ export function CollectionDialog({
                               />
                             </Stack>
 
+                            {mode !== 'create' && (
+                              <Stack spacing={1}>
+                                <Typography sx={SECTION_HEADER}>
+                                  {t('Slug')}
+                                </Typography>
+                                <TextField
+                                  id="slug"
+                                  name="slug"
+                                  placeholder={t('Type here')}
+                                  fullWidth
+                                  variant="filled"
+                                  hiddenLabel
+                                  value={values.slug}
+                                  inputProps={{
+                                    'aria-label': t('Slug')
+                                  }}
+                                  // Slugify on every keystroke so the input
+                                  // mirrors what the backend will accept: lowercase,
+                                  // swap whitespace + invalid chars for dashes,
+                                  // collapse runs, and clip leading dashes.
+                                  // Trailing dashes stay so the user can still
+                                  // type "foo-bar"; we strip them on blur.
+                                  onChange={async (event) => {
+                                    const slugified = event.target.value
+                                      .toLowerCase()
+                                      .replace(/[^a-z0-9-]+/g, '-')
+                                      .replace(/-+/g, '-')
+                                      .replace(/^-+/, '')
+                                    await setFieldValue('slug', slugified)
+                                  }}
+                                  onBlur={async (event) => {
+                                    // Strip trailing dashes on blur so the
+                                    // value satisfies SLUG_PATTERN once the
+                                    // user moves on; mid-typing dashes stay
+                                    // so "foo-" doesn't immediately surface
+                                    // a validation error.
+                                    const trimmed = values.slug.replace(
+                                      /-+$/,
+                                      ''
+                                    )
+                                    if (trimmed !== values.slug) {
+                                      await setFieldValue('slug', trimmed)
+                                    }
+                                    handleBlur(event)
+                                  }}
+                                  error={
+                                    touched.slug === true &&
+                                    Boolean(errors.slug)
+                                  }
+                                  helperText={
+                                    (touched.slug === true && errors.slug) ||
+                                    t(
+                                      'Used in the public URL. Must be unique across your collections — changing it breaks existing links.'
+                                    )
+                                  }
+                                />
+                              </Stack>
+                            )}
+
                             <Stack spacing={1}>
                               <Typography sx={SECTION_HEADER}>
                                 {t('Creator Details')}
@@ -409,51 +587,6 @@ export function CollectionDialog({
                                 preview in `CollectionPreviewPane` is also
                                 hidden. Replaces NES-1660 (helper-text
                                 approach was rejected by QA). */}
-
-                            {mode === 'edit' && (
-                              <TextField
-                                id="slug"
-                                name="slug"
-                                label={t('Slug')}
-                                fullWidth
-                                variant="filled"
-                                value={values.slug}
-                                // Slugify on every keystroke so the input
-                                // mirrors what the backend will accept: lowercase,
-                                // swap whitespace + invalid chars for dashes,
-                                // collapse runs, and clip leading dashes.
-                                // Trailing dashes stay so the user can still
-                                // type "foo-bar"; we strip them on blur.
-                                onChange={async (event) => {
-                                  const slugified = event.target.value
-                                    .toLowerCase()
-                                    .replace(/[^a-z0-9-]+/g, '-')
-                                    .replace(/-+/g, '-')
-                                    .replace(/^-+/, '')
-                                  await setFieldValue('slug', slugified)
-                                }}
-                                onBlur={async (event) => {
-                                  // Strip trailing dashes on blur so the value
-                                  // satisfies SLUG_PATTERN once the user moves
-                                  // on; mid-typing dashes stay so "foo-" doesn't
-                                  // immediately surface a validation error.
-                                  const trimmed = values.slug.replace(/-+$/, '')
-                                  if (trimmed !== values.slug) {
-                                    await setFieldValue('slug', trimmed)
-                                  }
-                                  handleBlur(event)
-                                }}
-                                error={
-                                  touched.slug === true && Boolean(errors.slug)
-                                }
-                                helperText={
-                                  (touched.slug === true && errors.slug) ||
-                                  t(
-                                    'Used in the public URL. Must be unique across your collections — changing it breaks existing links.'
-                                  )
-                                }
-                              />
-                            )}
                           </Stack>
                         </Collapse>
                       </Stack>
