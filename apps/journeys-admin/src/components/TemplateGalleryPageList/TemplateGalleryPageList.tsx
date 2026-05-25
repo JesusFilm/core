@@ -294,6 +294,13 @@ export function TemplateGalleryPageList({
     )
   }, [journeysQuery.data, status])
 
+  // Collections only surface once the team has at least one active
+  // (draft/published) template to group (NES-1696). The status filter
+  // already excludes archived/trashed; templates inside existing
+  // collections still count because `allTemplates` is the team's full
+  // template set, not just the unsectioned pool.
+  const showCollectionsSection = showCollections && allTemplates.length > 0
+
   const journeyById = useMemo(() => {
     const map = new Map<string, Journey>()
     for (const journey of allTemplates) map.set(journey.id, journey)
@@ -504,7 +511,7 @@ export function TemplateGalleryPageList({
   return (
     <GalleryDialogLockContext.Provider value={galleryDialogLockValue}>
       <Box sx={{ p: 4 }} data-testid="TemplateGalleryPageList">
-        {showCollections && (
+        {showCollectionsSection && (
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -574,7 +581,7 @@ export function TemplateGalleryPageList({
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            {showCollections &&
+            {showCollectionsSection &&
               (collections.length === 0 ? (
                 <Alert severity="info" sx={{ mb: 3 }}>
                   {t(

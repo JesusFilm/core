@@ -192,11 +192,111 @@ describe('TemplateGalleryPageList', () => {
       </MockedProvider>
     )
 
+    // The only journey is archived, so there are no active templates — the
+    // Collections section is gated off (NES-1696). Wait on the post-load DnD
+    // scope (always rendered) rather than the collection card.
     await waitFor(() =>
-      expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
+      expect(getByTestId('TemplateGalleryDndScope')).toBeInTheDocument()
     )
     // The archived journey should NOT appear in the unsectioned list.
     expect(queryByText('Welcome Tour')).not.toBeInTheDocument()
+  })
+
+  describe('Collections section visibility gate (NES-1696)', () => {
+    // No team templates at all — the gate hides the entire Collections
+    // section (heading + Create button + collection cards).
+    const journeysMockEmpty: MockedResponse<GetAdminJourneys> = {
+      request: {
+        query: GET_ADMIN_JOURNEYS,
+        variables: {
+          template: true,
+          teamId: TEAM_ID,
+          status: [JourneyStatus.draft, JourneyStatus.published]
+        }
+      },
+      result: { data: { journeys: [] } }
+    }
+
+    // The team's only active template lives inside the collection (the
+    // unsectioned pool is empty). In-collection templates still count toward
+    // the gate, so the section must render.
+    const collectionsMockWithTemplate: MockedResponse<GetTemplateGalleryPages> =
+      {
+        request: {
+          query: GET_TEMPLATE_GALLERY_PAGES,
+          variables: { teamId: TEAM_ID }
+        },
+        result: {
+          data: {
+            templateGalleryPages: [
+              {
+                ...(
+                  collectionsMock.result as { data: GetTemplateGalleryPages }
+                ).data.templateGalleryPages[0],
+                templates: [
+                  {
+                    __typename: 'TemplateGalleryItem',
+                    id: 'journey-1',
+                    title: 'Welcome Tour',
+                    primaryImageBlock: null
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+
+    it('hides the Collections section when the team has no active templates', async () => {
+      const { queryByText, queryByTestId, getByTestId } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMockEmpty
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByTestId('TemplateGalleryDndScope')).toBeInTheDocument()
+      )
+      expect(queryByTestId('CreateCollectionButton')).not.toBeInTheDocument()
+      expect(queryByText('Featured Templates')).not.toBeInTheDocument()
+    })
+
+    it('shows the Collections section when the only active template lives inside a collection', async () => {
+      const { getByText, getByTestId } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMockWithTemplate,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Featured Templates')).toBeInTheDocument()
+      )
+      expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+    })
   })
 
   describe('Template Info mobile trigger (NES-1686)', () => {
