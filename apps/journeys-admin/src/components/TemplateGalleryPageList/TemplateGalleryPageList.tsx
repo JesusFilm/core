@@ -11,7 +11,6 @@ import {
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -28,7 +27,7 @@ import {
 } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import {
   GetAdminJourneysVariables,
@@ -118,7 +117,6 @@ export function TemplateGalleryPageList({
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { enqueueSnackbar } = useSnackbar()
-  const breakpoints = useBreakpoints()
   const teamId = activeTeam?.id
 
   // Collections + DnD are only meaningful in the active view. In archived
@@ -545,18 +543,24 @@ export function TemplateGalleryPageList({
                 {t('Group your team templates into a public gallery page.')}
               </Typography>
             </Stack>
-            <Button
-              variant="contained"
-              color="primary"
+            <IconButton
+              aria-label={t('Create Collection')}
+              size="small"
               onClick={() => {
                 void handleCreate()
               }}
               disabled={createLoading}
-              sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
+              sx={{
+                flexShrink: 0,
+                border: 1.5,
+                borderColor: 'text.secondary',
+                borderRadius: 2,
+                color: 'text.secondary'
+              }}
               data-testid="CreateCollectionButton"
             >
-              {breakpoints.sm ? t('Create Collection') : t('Create')}
-            </Button>
+              <Plus2Icon fontSize="small" />
+            </IconButton>
           </Stack>
         )}
 
