@@ -131,4 +131,24 @@ describe('GalleryTemplateCard', () => {
       'https://admin.nextstep.is/?useTemplate=tmpl%2Fwith%20spaces%26chars'
     )
   })
+
+  it.each(['panel', 'hero'] as const)(
+    'renders the %s variant with title, description, and both actions',
+    (variant) => {
+      render(<GalleryTemplateCard template={mockTemplate} variant={variant} />)
+
+      expect(screen.getByText('Sample Template')).toBeInTheDocument()
+      expect(
+        screen.getByText('A sample template for testing')
+      ).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Use' })).toHaveAttribute(
+        'href',
+        'https://admin.nextstep.is/?useTemplate=template-1'
+      )
+      expect(screen.getByRole('link', { name: 'Preview' })).toHaveAttribute(
+        'href',
+        '/sample-template'
+      )
+    }
+  )
 })

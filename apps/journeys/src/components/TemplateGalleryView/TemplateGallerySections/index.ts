@@ -1,0 +1,1 @@
+export { TemplateGallerySections } from './TemplateGallerySections'
