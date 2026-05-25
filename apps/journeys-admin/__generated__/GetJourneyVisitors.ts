@@ -36,7 +36,7 @@ export interface GetJourneyVisitors_visitors_edges_node_visitor {
 }
 
 export interface GetJourneyVisitors_visitors_edges_node_events_JourneyEvent {
-  __typename: "JourneyEvent" | "JourneyViewEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "VideoStartEvent" | "VideoPlayEvent" | "VideoPauseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoCollapseEvent" | "VideoProgressEvent" | "ButtonClickEvent" | "ChatOpenEvent" | "RadioQuestionSubmissionEvent" | "MultiselectSubmissionEvent" | "SignUpSubmissionEvent";
+  __typename: "JourneyEvent" | "ButtonClickEvent" | "ChatOpenEvent" | "JourneyViewEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "RadioQuestionSubmissionEvent" | "MultiselectSubmissionEvent" | "SignUpSubmissionEvent" | "VideoStartEvent" | "VideoPlayEvent" | "VideoPauseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoCollapseEvent" | "VideoProgressEvent";
   id: string;
   createdAt: any;
   label: string | null;

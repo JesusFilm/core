@@ -1,25 +1,28 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
+import { fetchJourneyWithAclIncludes } from '../../../lib/auth/fetchJourneyWithAclIncludes'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { recalculateJourneyCustomizable } from '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 
-jest.mock(
+vi.mock(
   '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 )
 
-jest.mock('../../../lib/auth/ability', () => ({
+vi.mock('../../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../../lib/auth/fetchJourneyWithAclIncludes', () => ({
-  fetchJourneyWithAclIncludes: jest.fn()
+vi.mock('../../../lib/auth/fetchJourneyWithAclIncludes', () => ({
+  fetchJourneyWithAclIncludes: vi.fn()
 }))
 
-jest.mock('./transformInput', () => ({
-  transformInput: jest.fn((input) => Promise.resolve(input))
+vi.mock('./transformInput', () => ({
+  transformInput: vi.fn((input) => Promise.resolve(input))
 }))
 
 describe('imageBlockCreate', () => {
@@ -48,11 +51,7 @@ describe('imageBlockCreate', () => {
       }
     }
   `)
-
-  const {
-    fetchJourneyWithAclIncludes
-  } = require('../../../lib/auth/fetchJourneyWithAclIncludes')
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockAbility = ability as MockedFunction<typeof ability>
 
   const input = {
     journeyId: 'journeyId',
@@ -82,8 +81,8 @@ describe('imageBlockCreate', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
+    vi.clearAllMocks()
+    ;(fetchJourneyWithAclIncludes as any).mockResolvedValue({ id: 'journeyId' })
     mockAbility.mockReturnValue(true)
     prismaMock.block.findMany.mockResolvedValue([] as any)
   })
@@ -91,13 +90,13 @@ describe('imageBlockCreate', () => {
   it('creates image block when authorized', async () => {
     const tx = {
       block: {
-        create: jest.fn().mockResolvedValue({
+        create: vi.fn().mockResolvedValue({
           ...mockBlock,
           journey: { id: 'journeyId' }
         }),
-        findMany: jest.fn().mockResolvedValue([])
+        findMany: vi.fn().mockResolvedValue([])
       },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -162,19 +161,19 @@ describe('imageBlockCreate', () => {
     }
     const tx = {
       block: {
-        create: jest.fn().mockResolvedValue({
+        create: vi.fn().mockResolvedValue({
           ...mockBlock,
           parentOrder: null,
           journey: { id: 'journeyId' }
         }),
-        findMany: jest.fn().mockResolvedValue([]),
-        findUnique: jest.fn().mockResolvedValue({
+        findMany: vi.fn().mockResolvedValue([]),
+        findUnique: vi.fn().mockResolvedValue({
           id: 'parentId',
           coverBlock: oldCoverBlock
         }),
-        update: jest.fn().mockResolvedValue(oldCoverBlock)
+        update: vi.fn().mockResolvedValue(oldCoverBlock)
       },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -221,14 +220,14 @@ describe('imageBlockCreate', () => {
   it('creates image block without parentBlockId', async () => {
     const tx = {
       block: {
-        create: jest.fn().mockResolvedValue({
+        create: vi.fn().mockResolvedValue({
           ...mockBlock,
           parentBlockId: null,
           journey: { id: 'journeyId' }
         }),
-        findMany: jest.fn().mockResolvedValue([])
+        findMany: vi.fn().mockResolvedValue([])
       },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -270,13 +269,13 @@ describe('imageBlockCreate', () => {
     }
     const tx = {
       block: {
-        create: jest.fn().mockResolvedValue({
+        create: vi.fn().mockResolvedValue({
           ...fullBlock,
           journey: { id: 'journeyId' }
         }),
-        findMany: jest.fn().mockResolvedValue([{}, {}])
+        findMany: vi.fn().mockResolvedValue([{}, {}])
       },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 

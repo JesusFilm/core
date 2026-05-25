@@ -1,3 +1,5 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { ability } from '../../../../lib/auth/ability'
 import { JourneyWithAcl } from '../templateFamilyStatsBreakdown.query'
 
@@ -7,19 +9,19 @@ import {
 } from './addPermissionsWithNames'
 import { TransformedResult } from './transformBreakdownResults'
 
-jest.mock('../../../../lib/auth/ability', () => ({
+vi.mock('../../../../lib/auth/ability', () => ({
   Action: { Read: 'read' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-const mockAbility = ability as jest.MockedFunction<typeof ability>
+const mockAbility = ability as MockedFunction<typeof ability>
 
 describe('addPermissionsAndNames', () => {
   const mockUser = { id: 'user-1' } as any
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should return journey and team names for journeys the current user has access to', () => {

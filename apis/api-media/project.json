@@ -49,10 +49,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/apis/api-media"],
       "options": {
-        "jestConfig": "apis/api-media/jest.config.ts"
+        "configFile": "apis/api-media/vitest.config.mts"
       }
     },
     "generate-graphql": {
@@ -159,6 +159,13 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "pnpm exec tsx apis/api-media/src/scripts/mux-videos.ts"
+      }
+    },
+    "run-weekly-video-slack-summary": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["prisma-media:prisma-generate"],
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-weekly-video-slack-summary.ts"
       }
     },
     "populate-crowdin-ids": {

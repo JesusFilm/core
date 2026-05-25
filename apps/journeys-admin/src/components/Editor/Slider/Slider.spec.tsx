@@ -50,7 +50,9 @@ describe('Slider', () => {
         id: 'card1.id',
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   } as unknown as TreeBlock<StepBlock>

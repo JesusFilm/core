@@ -46,7 +46,7 @@ describe('FreeResourceCard', () => {
   })
 
   it('renders CTA button when cta prop is provided', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const ctaProps = {
       label: 'Join Now',
       onClick: handleClick
@@ -61,7 +61,7 @@ describe('FreeResourceCard', () => {
 
   it('calls onClick handler when CTA button is clicked', async () => {
     const user = userEvent.setup()
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const ctaProps = {
       label: 'Join Now',
       onClick: handleClick
@@ -76,7 +76,7 @@ describe('FreeResourceCard', () => {
   })
 
   it('renders icon in CTA button when icon prop is provided', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const ctaProps = {
       label: 'Join Now',
       onClick: handleClick,
@@ -90,7 +90,7 @@ describe('FreeResourceCard', () => {
   })
 
   it('does not render icon when icon prop is not provided', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const ctaProps = {
       label: 'Join Now',
       onClick: handleClick
@@ -103,7 +103,7 @@ describe('FreeResourceCard', () => {
   })
 
   it('handles all props together correctly', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const fullProps: FreeResourceProps = {
       imageUrl: 'https://example.com/test-image.jpg',
       bgColor: '#123456',

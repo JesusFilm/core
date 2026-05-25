@@ -87,7 +87,9 @@ describe('ChatNode', () => {
               settings: null,
               eventLabel: null
             }
-          ]
+          ],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     }

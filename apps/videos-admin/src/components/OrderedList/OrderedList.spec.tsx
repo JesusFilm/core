@@ -5,7 +5,7 @@ import { OrderedList } from './OrderedList'
 
 describe('OrderedList', () => {
   it('should provide dnd context', () => {
-    const onOrderUpdateMock = jest.fn()
+    const onOrderUpdateMock = vi.fn()
     render(
       <OrderedList onOrderUpdate={onOrderUpdateMock} items={[]}>
         <OrderedItem id="1" label="test" idx={0} />

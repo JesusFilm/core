@@ -7,8 +7,8 @@ import { OrderedItemIcons } from './OrderedItemIcons'
 
 describe('OrderedItemIcons', () => {
   it('should call onClick events', () => {
-    const viewOnClick = jest.fn()
-    const editOnClick = jest.fn()
+    const viewOnClick = vi.fn()
+    const editOnClick = vi.fn()
     render(
       <OrderedItemIcons
         iconButtons={[

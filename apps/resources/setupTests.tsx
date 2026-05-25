@@ -1,16 +1,23 @@
-import '@testing-library/jest-dom'
-import 'isomorphic-fetch'
+import '@testing-library/jest-dom/vitest'
+import { ReadableStream, TransformStream, WritableStream } from 'stream/web'
+
 import { configure } from '@testing-library/react'
 
 import { server } from './test/mswServer'
 import './test/i18n'
 
+if (typeof globalThis.TransformStream === 'undefined') {
+  Object.assign(globalThis, { ReadableStream, TransformStream, WritableStream })
+}
+
 configure({ asyncUtilTimeout: 2500 })
 
-jest.mock('next/image', () => ({
+vi.mock('next/image', () => ({
   __esModule: true,
   // eslint-disable-next-line @next/next/no-img-element
-  default: ({ src, alt }) => <img src={src} alt={alt} />
+  default: ({ src, alt }: { src: string; alt: string }) => (
+    <img src={src} alt={alt} />
+  )
 }))
 
 Object.defineProperty(
@@ -26,13 +33,15 @@ Object.defineProperty(
   }))(window.navigator.userAgent)
 )
 
-jest.mock('next/router', () => require('next-router-mock'))
-jest.mock('next/compat/router', () => require('next-router-mock'))
+vi.mock(
+  'next/router',
+  () => import(/* webpackChunkName: "next-router-mock" */ 'next-router-mock')
+)
+vi.mock(
+  'next/compat/router',
+  () => import(/* webpackChunkName: "next-router-mock" */ 'next-router-mock')
+)
 
-if (process.env.CI === 'true')
-  jest.retryTimes(3, { logErrorsBeforeRetry: true })
-
-// Start/stop MSW for node test env
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())

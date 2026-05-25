@@ -81,7 +81,9 @@ export function MenuActionButton(): ReactElement {
       coverBlockId: null,
       backgroundColor: null,
       parentOrder: 0,
-      eventLabel: null
+      eventLabel: null,
+      showAssistant: null,
+      expandChatByDefault: null
     } satisfies CardBlock
 
     const heading = {

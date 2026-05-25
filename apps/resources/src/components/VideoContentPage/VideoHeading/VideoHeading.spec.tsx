@@ -17,7 +17,7 @@ describe('VideoHeading', () => {
           container: videos.find(({ id }) => id === '1_jf-0-0')
         }}
       >
-        <VideoHeading onShareClick={jest.fn()} onDownloadClick={jest.fn()} />
+        <VideoHeading onShareClick={vi.fn()} onDownloadClick={vi.fn()} />
       </VideoProvider>
     )
     expect(getByRole('link', { name: 'JESUS' })).toHaveAttribute(
@@ -40,7 +40,7 @@ describe('VideoHeading', () => {
           container: videos.find(({ id }) => id === 'LUMOCollection')
         }}
       >
-        <VideoHeading onShareClick={jest.fn()} onDownloadClick={jest.fn()} />
+        <VideoHeading onShareClick={vi.fn()} onDownloadClick={vi.fn()} />
       </VideoProvider>
     )
     await waitFor(() =>
@@ -57,8 +57,8 @@ describe('VideoHeading', () => {
   })
 
   it('should have share button and download button', () => {
-    const handleShareClick = jest.fn()
-    const handleDownloadClick = jest.fn()
+    const handleShareClick = vi.fn()
+    const handleDownloadClick = vi.fn()
     const { getByTestId } = render(
       <VideoProvider
         value={{

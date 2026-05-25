@@ -1,26 +1,27 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import EditEditionPage from './page'
 
 // Mock useRouter
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
-    push: jest.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
   }))
 }))
 
 // Mock useSnackbar
-jest.mock('notistack', () => ({
-  useSnackbar: jest.fn(() => ({
-    enqueueSnackbar: jest.fn()
+vi.mock('notistack', () => ({
+  useSnackbar: vi.fn(() => ({
+    enqueueSnackbar: vi.fn()
   }))
 }))
 
 // Import actual component to mock
-jest.mock('./page', () => ({
+vi.mock('./page', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('EditEditionPage', () => {
@@ -29,10 +30,10 @@ describe('EditEditionPage', () => {
 
   const setup = () => {
     // Mock implementation for the component
-    ;(EditEditionPage as jest.Mock).mockImplementation(({ params }) => (
+    ;(EditEditionPage as Mock).mockImplementation(() => (
       <div data-testid="edit-edition-page">
-        <div data-testid="video-id">{params.videoId}</div>
-        <div data-testid="edition-id">{params.editionId}</div>
+        <div data-testid="video-id">{mockVideoId}</div>
+        <div data-testid="edition-id">{mockEditionId}</div>
         <form data-testid="EditionForm">
           <input data-testid="name-field" />
           <button data-testid="save-button" type="submit">
@@ -52,7 +53,10 @@ describe('EditEditionPage', () => {
     return render(
       <MockedProvider mocks={[]}>
         <EditEditionPage
-          params={{ videoId: mockVideoId, editionId: mockEditionId }}
+          params={Promise.resolve({
+            videoId: mockVideoId,
+            editionId: mockEditionId
+          })}
         />
       </MockedProvider>
     )

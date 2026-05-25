@@ -54,7 +54,9 @@ describe('Fab', () => {
                 __typename: 'VideoBlock',
                 children: []
               }
-            ]
+            ],
+            showAssistant: null,
+            expandChatByDefault: null
           }
         ]
       } as unknown as TreeBlock<StepBlock>

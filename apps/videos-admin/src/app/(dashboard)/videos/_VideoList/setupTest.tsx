@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest'
 
 // Create a fake DOM node for React 18's createRoot function
 beforeEach(() => {

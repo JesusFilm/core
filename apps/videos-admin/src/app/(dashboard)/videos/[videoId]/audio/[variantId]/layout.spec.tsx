@@ -1,12 +1,20 @@
+import {
+  useMutation as apolloClientModule_useMutation,
+  useSuspenseQuery as apolloClientModule_useSuspenseQuery
+} from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
+
+import { resolvedParams } from '../../../../../../test/utils/resolvedParams'
 
 // Import the component under test
 import VariantDialog from './layout'
 
 // Mock VariantVideo component
-jest.mock('../_VariantVideo', () => ({
+vi.mock('../_VariantVideo', () => ({
   VariantVideo: ({ hlsSrc }) => (
     <div data-testid="mock-variant-video">
       {hlsSrc ? <div data-testid="hls-source">{hlsSrc}</div> : 'No HLS stream'}
@@ -15,7 +23,7 @@ jest.mock('../_VariantVideo', () => ({
 }))
 
 // Mock the Dialog component
-jest.mock('@core/shared/ui/Dialog', () => ({
+vi.mock('@core/shared/ui/Dialog', () => ({
   Dialog: ({ children, dialogTitle, onClose }) => (
     <div data-testid="mock-dialog">
       <div data-testid="dialog-title">{dialogTitle.title}</div>
@@ -26,14 +34,14 @@ jest.mock('@core/shared/ui/Dialog', () => ({
 }))
 
 // Mock VideoEditionChip component
-jest.mock('./_VideoEditionChip', () => ({
+vi.mock('./_VideoEditionChip', () => ({
   VideoEditionChip: ({ editionName }) => (
     <div data-testid="mock-video-edition-chip">{editionName}</div>
   )
 }))
 
 // Mock the MUI components
-jest.mock('@mui/material/Stack', () => ({
+vi.mock('@mui/material/Stack', () => ({
   __esModule: true,
   default: ({ children, gap }) => (
     <div data-testid="mock-stack" data-gap={gap}>
@@ -42,19 +50,19 @@ jest.mock('@mui/material/Stack', () => ({
   )
 }))
 
-jest.mock('@mui/material/Box', () => ({
+vi.mock('@mui/material/Box', () => ({
   __esModule: true,
   default: ({ children }) => <div data-testid="mock-box">{children}</div>
 }))
 
-jest.mock('@mui/material/Typography', () => ({
+vi.mock('@mui/material/Typography', () => ({
   __esModule: true,
   default: ({ children, variant }) => (
     <div data-testid={`mock-typography-${variant}`}>{children}</div>
   )
 }))
 
-jest.mock('@mui/material/Button', () => ({
+vi.mock('@mui/material/Button', () => ({
   __esModule: true,
   default: ({ children, onClick }) => (
     <button data-testid="mock-button" onClick={onClick}>
@@ -63,48 +71,48 @@ jest.mock('@mui/material/Button', () => ({
   )
 }))
 
-jest.mock('@mui/material/Table', () => ({
+vi.mock('@mui/material/Table', () => ({
   __esModule: true,
   default: ({ children }) => <table data-testid="mock-table">{children}</table>
 }))
 
-jest.mock('@mui/material/TableContainer', () => ({
+vi.mock('@mui/material/TableContainer', () => ({
   __esModule: true,
   default: ({ children }) => (
     <div data-testid="mock-table-container">{children}</div>
   )
 }))
 
-jest.mock('@mui/material/TableHead', () => ({
+vi.mock('@mui/material/TableHead', () => ({
   __esModule: true,
   default: ({ children }) => (
     <thead data-testid="mock-table-head">{children}</thead>
   )
 }))
 
-jest.mock('@mui/material/TableBody', () => ({
+vi.mock('@mui/material/TableBody', () => ({
   __esModule: true,
   default: ({ children }) => (
     <tbody data-testid="mock-table-body">{children}</tbody>
   )
 }))
 
-jest.mock('@mui/material/TableRow', () => ({
+vi.mock('@mui/material/TableRow', () => ({
   __esModule: true,
   default: ({ children }) => <tr data-testid="mock-table-row">{children}</tr>
 }))
 
-jest.mock('@mui/material/TableCell', () => ({
+vi.mock('@mui/material/TableCell', () => ({
   __esModule: true,
   default: ({ children }) => <td data-testid="mock-table-cell">{children}</td>
 }))
 
-jest.mock('@mui/material/Paper', () => ({
+vi.mock('@mui/material/Paper', () => ({
   __esModule: true,
   default: ({ children }) => <div data-testid="mock-paper">{children}</div>
 }))
 
-jest.mock('@mui/material/IconButton', () => ({
+vi.mock('@mui/material/IconButton', () => ({
   __esModule: true,
   default: ({ children, onClick, 'aria-label': ariaLabel }) => (
     <button data-testid={`mock-icon-button-${ariaLabel}`} onClick={onClick}>
@@ -114,7 +122,7 @@ jest.mock('@mui/material/IconButton', () => ({
 }))
 
 // Mock FormSelectField component
-jest.mock('../../../../../../components/FormSelectField', () => ({
+vi.mock('../../../../../../components/FormSelectField', () => ({
   FormSelectField: ({ children, name, label, options, onChange }) => (
     <div data-testid="mock-form-select-field" data-name={name}>
       <label data-testid="mock-form-select-label">{label}</label>
@@ -131,7 +139,7 @@ jest.mock('../../../../../../components/FormSelectField', () => ({
 }))
 
 // Mock CircularProgress
-jest.mock('@mui/material/CircularProgress', () => ({
+vi.mock('@mui/material/CircularProgress', () => ({
   __esModule: true,
   default: ({ size, color }) => (
     <div
@@ -145,7 +153,7 @@ jest.mock('@mui/material/CircularProgress', () => ({
 }))
 
 // Mock FormControl
-jest.mock('@mui/material/FormControl', () => ({
+vi.mock('@mui/material/FormControl', () => ({
   __esModule: true,
   default: ({ children, variant, size, sx }) => (
     <div
@@ -159,13 +167,13 @@ jest.mock('@mui/material/FormControl', () => ({
 }))
 
 // Mock DeleteIcon
-jest.mock('@mui/icons-material/Delete', () => ({
+vi.mock('@mui/icons-material/Delete', () => ({
   __esModule: true,
   default: () => <span data-testid="mock-delete-icon">🗑️</span>
 }))
 
 // Mock MenuItem
-jest.mock('@mui/material/MenuItem', () => ({
+vi.mock('@mui/material/MenuItem', () => ({
   __esModule: true,
   default: ({ children, value }) => (
     <option data-testid="mock-menu-item" value={value}>
@@ -175,7 +183,7 @@ jest.mock('@mui/material/MenuItem', () => ({
 }))
 
 // Mock CancelButton
-jest.mock('../../../../../../components/CancelButton', () => ({
+vi.mock('../../../../../../components/CancelButton', () => ({
   CancelButton: ({ show, handleCancel }) => (
     <button
       data-testid="mock-cancel-button"
@@ -188,33 +196,33 @@ jest.mock('../../../../../../components/CancelButton', () => ({
 }))
 
 // Mock useMediaQuery
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn(() => true) // Default to desktop view (smUp = true)
+  default: vi.fn(() => true) // Default to desktop view (smUp = true)
 }))
 
 // Mock router
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn()
-  }),
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
+  })),
   usePathname: () => '/test-path'
 }))
 
 // Mock useSuspenseQuery
-jest.mock('@apollo/client', () => {
-  const originalModule = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const originalModule = await vi.importActual('@apollo/client')
   return {
     ...originalModule,
-    useSuspenseQuery: jest.fn(),
-    useMutation: jest.fn()
+    useSuspenseQuery: vi.fn(),
+    useMutation: vi.fn()
   }
 })
 
 // Mock notistack
-jest.mock('notistack', () => ({
+vi.mock('notistack', () => ({
   useSnackbar: () => ({
-    enqueueSnackbar: jest.fn()
+    enqueueSnackbar: vi.fn()
   }),
   SnackbarProvider: ({ children }) => (
     <div data-testid="mock-snackbar-provider">{children}</div>
@@ -226,30 +234,33 @@ describe('VariantDialog', () => {
   const mockVideoId = 'video-456'
 
   // Mock router push function
-  const mockRouterPush = jest.fn()
+  const mockRouterPush = vi.fn()
 
   // Reset mocks before each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Mock router.push
-    jest
-      .spyOn(require('next/navigation'), 'useRouter')
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     // Mock useMutation to return the expected array format
-    const mockMutation = jest.fn()
-    jest
-      .spyOn(require('@apollo/client'), 'useMutation')
-      .mockReturnValue([
-        mockMutation,
-        { loading: false, error: null, data: null }
-      ])
+    const mockMutation = vi.fn()
+    vi.mocked(
+      apolloClientModule_useMutation as unknown as Mock
+    ).mockReturnValue([
+      mockMutation,
+      { loading: false, error: null, data: null }
+    ])
 
     // Mock the query result
-    const { useSuspenseQuery, useMutation } = require('@apollo/client')
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
+    const useMutation = vi.mocked(
+      apolloClientModule_useMutation as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({
       data: {
         videoVariant: {
@@ -287,15 +298,17 @@ describe('VariantDialog', () => {
 
     // Mock useMutation to return the expected array format
     useMutation.mockReturnValue([
-      jest.fn(),
+      vi.fn(),
       { loading: false, error: null, data: null }
     ])
   })
 
   const renderComponent = (mutationLoading = false) => {
-    const { useMutation } = require('@apollo/client')
+    const useMutation = vi.mocked(
+      apolloClientModule_useMutation as unknown as Mock
+    )
     useMutation.mockReturnValue([
-      jest.fn(),
+      vi.fn(),
       { loading: mutationLoading, error: null, data: null }
     ])
 
@@ -303,7 +316,10 @@ describe('VariantDialog', () => {
       <MockedProvider>
         <SnackbarProvider>
           <VariantDialog
-            params={{ variantId: mockVariantId, videoId: mockVideoId }}
+            params={resolvedParams({
+              variantId: mockVariantId,
+              videoId: mockVideoId
+            })}
           >
             <div>Child content</div>
           </VariantDialog>
@@ -403,7 +419,9 @@ describe('VariantDialog', () => {
 
   it('displays "No downloads available" when there are no downloads', () => {
     // Mock the query result with no downloads
-    const { useSuspenseQuery } = require('@apollo/client')
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({
       data: {
         videoVariant: {
@@ -432,7 +450,9 @@ describe('VariantDialog', () => {
 
   it('handles null videoEdition', () => {
     // Mock the query result with null videoEdition
-    const { useSuspenseQuery } = require('@apollo/client')
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({
       data: {
         videoVariant: {
@@ -458,7 +478,9 @@ describe('VariantDialog', () => {
 
   it('handles null HLS source', () => {
     // Mock the query result with null HLS
-    const { useSuspenseQuery } = require('@apollo/client')
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({
       data: {
         videoVariant: {

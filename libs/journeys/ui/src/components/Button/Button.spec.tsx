@@ -151,7 +151,9 @@ const activeBlock: TreeBlock<StepBlock> = {
             color: null
           }
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
   ]
 }
@@ -488,7 +490,9 @@ describe('Button', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: null,
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     }
