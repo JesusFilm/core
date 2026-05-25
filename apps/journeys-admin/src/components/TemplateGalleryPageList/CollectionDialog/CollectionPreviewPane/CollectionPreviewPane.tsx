@@ -10,7 +10,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, memo } from 'react'
 
-import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
+import CopyRightIcon from '@core/shared/ui/icons/CopyRight'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
@@ -147,7 +147,7 @@ function CollectionPreviewPaneImpl({
                       edge="end"
                       size="small"
                     >
-                      <LinkAngledIcon fontSize="small" />
+                      <CopyRightIcon fontSize="small" />
                     </IconButton>
                   </span>
                 </Tooltip>

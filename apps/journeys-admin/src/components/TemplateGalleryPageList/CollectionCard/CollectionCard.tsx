@@ -22,7 +22,6 @@ export interface CollectionCardProps {
   collection: TemplateGalleryPage
   onEdit?: (collection: TemplateGalleryPage) => void
   onPublish?: (collection: TemplateGalleryPage) => void
-  onUnpublish?: (collection: TemplateGalleryPage) => void
   onUngroup?: (collection: TemplateGalleryPage) => void
   busy?: boolean
   /**
@@ -48,7 +47,6 @@ function CollectionCardImpl({
   collection,
   onEdit,
   onPublish,
-  onUnpublish,
   onUngroup,
   busy,
   canPublish = true,
@@ -75,14 +73,14 @@ function CollectionCardImpl({
       ? t('Publish the collection to preview it.')
       : ''
 
-  // Publish disabled when: (1) collection is empty, or (2) custom domain
-  // gate. Custom-domain copy wins when both apply (the harder constraint).
-  const publishDisabled = isEmpty || !canPublish
-  const publishTooltip = !canPublish
-    ? (publishBlockedReason ?? '')
-    : isEmpty
-      ? t('Add at least one template before publishing')
-      : ''
+  // The Publish menu item is the user's single entry point into the
+  // dialog for a draft, so we only disable it for the harder
+  // constraint — custom-domain teams that can't publish at all.
+  // Empty collections still open the dialog (the user may want to
+  // fill in metadata before adding templates); the dialog's own
+  // Publish button is what gates emptiness.
+  const publishDisabled = !canPublish
+  const publishTooltip = !canPublish ? (publishBlockedReason ?? '') : ''
 
   function handleMenuOpen(event: MouseEvent<HTMLButtonElement>): void {
     setAnchorEl(event.currentTarget)
@@ -97,10 +95,6 @@ function CollectionCardImpl({
   function handlePublish(): void {
     handleMenuClose()
     onPublish?.(collection)
-  }
-  function handleUnpublish(): void {
-    handleMenuClose()
-    onUnpublish?.(collection)
   }
   function handlePreview(): void {
     handleMenuClose()
@@ -124,9 +118,16 @@ function CollectionCardImpl({
       data-testid={`CollectionCard-${collection.id}`}
       sx={{
         p: 2,
-        borderColor: 'divider',
+        // Match the surrounding page grey so the card reads as a
+        // panel of the same surface rather than a raised white card.
+        // The darker grey border + thicker stroke + soft shadow is
+        // what gives each collection its visual separation.
+        backgroundColor: 'background.default',
+        borderColor: 'grey.400',
         borderWidth: 1,
-        borderStyle: 'solid'
+        borderStyle: 'solid',
+        borderRadius: 3,
+        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)'
       }}
       variant="outlined"
     >
@@ -165,20 +166,15 @@ function CollectionCardImpl({
           open={anchorEl != null}
           onClose={handleMenuClose}
         >
-          <MenuItem onClick={handleEdit}>{t('Edit')}</MenuItem>
-          <Tooltip
-            title={previewTooltip}
-            placement="left"
-            disableHoverListener={!previewDisabled}
-            disableFocusListener={!previewDisabled}
-          >
-            <span>
-              <MenuItem onClick={handlePreview} disabled={previewDisabled}>
-                {t('Preview')}
-              </MenuItem>
-            </span>
-          </Tooltip>
-          {!isPublished && (
+          {/* Single state-aware entry point into CollectionDialog.
+              Draft collections expose "Publish" so the user has a
+              discoverable path to publishing; the dialog itself
+              renders a Save Draft secondary button so draft edits
+              don't require a publish. Published collections expose
+              "Edit" — Publish is no longer applicable. */}
+          {isPublished ? (
+            <MenuItem onClick={handleEdit}>{t('Edit')}</MenuItem>
+          ) : (
             <Tooltip
               title={publishTooltip}
               placement="left"
@@ -192,9 +188,18 @@ function CollectionCardImpl({
               </span>
             </Tooltip>
           )}
-          {isPublished && (
-            <MenuItem onClick={handleUnpublish}>{t('Unpublish')}</MenuItem>
-          )}
+          <Tooltip
+            title={previewTooltip}
+            placement="left"
+            disableHoverListener={!previewDisabled}
+            disableFocusListener={!previewDisabled}
+          >
+            <span>
+              <MenuItem onClick={handlePreview} disabled={previewDisabled}>
+                {t('Preview')}
+              </MenuItem>
+            </span>
+          </Tooltip>
           <MenuItem onClick={handleOpenUngroup}>
             {t('Remove Collection')}
           </MenuItem>
@@ -221,9 +226,7 @@ function CollectionCardImpl({
         sx={{
           p: 0,
           '&:last-child': { pb: 0 },
-          minHeight: 100,
-          backgroundColor: (theme) => theme.palette.background.default,
-          borderRadius: 1
+          minHeight: 100
         }}
       >
         {isEmpty ? (

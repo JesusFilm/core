@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
@@ -10,7 +11,8 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
-import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
+import CopyRightIcon from '@core/shared/ui/icons/CopyRight'
+import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
 import { copyToClipboard } from '../../../libs/copyToClipboard'
 
@@ -76,16 +78,43 @@ export function CollectionPublishSuccessDialog({
     <Dialog
       open={open}
       onClose={onClose}
+      // Switching from `dialogAction` to `dialogActionChildren` flips
+      // the shared Dialog's default to `dividers={true}`. Force off so
+      // the success message + URL + action sit as one clean block.
+      divider={false}
       dialogTitle={{
         title: t('Your Template Page is Published!'),
         closeButton: true
       }}
-      dialogAction={{
-        onSubmit: handleView,
-        submitLabel: t('View the page'),
-        closeLabel: t('Close')
-      }}
+      dialogActionChildren={
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<LinkExternalIcon />}
+          onClick={handleView}
+          disabled={viewDisabled}
+        >
+          {t('View the page')}
+        </Button>
+      }
       testId="CollectionPublishSuccessDialog"
+      // The shared Dialog defaults DialogActions to `padding: 8`, which
+      // tucks the action button into the corner — visually it doesn't
+      // line up with the content above (which has the standard 24px
+      // horizontal padding). Match the horizontal pad here so the
+      // button's left/right edges sit on the same vertical lines as
+      // the URL field and helper copy.
+      sx={{
+        // Align the action area with the 24px padding around title and
+        // content. Top stays at 0 so the button hugs the URL field
+        // above (its own 10px vertical padding gives the breathing
+        // room). Spacing token in this theme is 1 = 4px, so 6 = 24px.
+        '& .MuiDialogActions-root': {
+          pt: 0,
+          px: 6,
+          pb: 6
+        }
+      }}
     >
       <Stack spacing={2}>
         <Typography variant="body2" color="text.secondary">
@@ -117,7 +146,7 @@ export function CollectionPublishSuccessDialog({
                       disabled={publicUrl == null}
                       edge="end"
                     >
-                      <LinkAngledIcon />
+                      <CopyRightIcon />
                     </IconButton>
                   </Box>
                 </Tooltip>

@@ -15,22 +15,11 @@ describe('LoadMoreButton', () => {
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
-  it('should render "No more to load" when hasMore is false', () => {
-    render(
+  it('should render nothing when hasMore is false and not loading', () => {
+    const { container } = render(
       <LoadMoreButton hasMore={false} loading={false} onClick={jest.fn()} />
     )
-    expect(
-      screen.getByRole('button', { name: 'No more to load' })
-    ).toBeInTheDocument()
-  })
-
-  it('should disable the button when hasMore is false', () => {
-    render(
-      <LoadMoreButton hasMore={false} loading={false} onClick={jest.fn()} />
-    )
-    expect(
-      screen.getByRole('button', { name: 'No more to load' })
-    ).toBeDisabled()
+    expect(container).toBeEmptyDOMElement()
   })
 
   it('should disable the button when loading is true', () => {
