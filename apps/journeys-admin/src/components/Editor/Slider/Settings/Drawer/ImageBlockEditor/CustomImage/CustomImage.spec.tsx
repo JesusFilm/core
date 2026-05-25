@@ -1,7 +1,10 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { render, screen, waitFor } from '@testing-library/react'
+
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
+import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibrary/MediaLibrary'
 
 import { CustomImage } from '.'
 
@@ -22,6 +25,25 @@ describe('CustomImage', () => {
     customizable: null
   }
 
+  const myImagesMock: MockedResponse = {
+    request: {
+      query: GET_MY_CLOUDFLARE_IMAGES,
+      variables: { offset: 0, limit: 11, isAi: false }
+    },
+    result: {
+      data: {
+        getMyCloudflareImages: [
+          {
+            __typename: 'CloudflareImage',
+            id: 'a',
+            url: 'https://imagedelivery.net/key/a',
+            blurhash: null
+          }
+        ]
+      }
+    }
+  }
+
   it('should render image upload', () => {
     render(
       <MockedProvider>
@@ -30,5 +52,31 @@ describe('CustomImage', () => {
     )
 
     expect(screen.getByTestId('ImageUpload')).toBeInTheDocument()
+  })
+
+  it('should not render the uploads grid when mediaLibrary flag is off', async () => {
+    render(
+      <MockedProvider mocks={[myImagesMock]}>
+        <FlagsProvider flags={{ mediaLibrary: false }}>
+          <CustomImage onChange={jest.fn()} selectedBlock={imageBlock} />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(screen.queryByText('Uploads')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('MediaLibrary')).not.toBeInTheDocument()
+  })
+
+  it('should render the uploads grid when mediaLibrary flag is on', async () => {
+    render(
+      <MockedProvider mocks={[myImagesMock]}>
+        <FlagsProvider flags={{ mediaLibrary: true }}>
+          <CustomImage onChange={jest.fn()} selectedBlock={imageBlock} />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(screen.getByTestId('MediaLibrary')).toBeInTheDocument()
+    })
+    expect(screen.getByText('Uploads')).toBeInTheDocument()
   })
 })

@@ -1,10 +1,14 @@
+import { GraphQLError } from 'graphql'
+import { vi } from 'vitest'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
+import { validateBlockEvent } from '../utils'
 
-jest.mock('../utils', () => ({
-  ...jest.requireActual('../utils'),
-  validateBlockEvent: jest.fn()
+vi.mock('../utils', async () => ({
+  ...(await vi.importActual('../utils')),
+  validateBlockEvent: vi.fn()
 }))
 
 describe('videoExpandEventCreate', () => {
@@ -22,9 +26,6 @@ describe('videoExpandEventCreate', () => {
       }
     }
   `)
-
-  const { validateBlockEvent } = require('../utils')
-
   const mockVisitor = {
     id: 'visitorId',
     createdAt: new Date('2024-01-01T00:00:00Z'),
@@ -33,7 +34,7 @@ describe('videoExpandEventCreate', () => {
   }
 
   beforeEach(() => {
-    validateBlockEvent.mockResolvedValue({
+    ;(validateBlockEvent as any).mockResolvedValue({
       visitor: mockVisitor,
       journeyVisitor: {
         journeyId: 'journeyId',
@@ -98,8 +99,7 @@ describe('videoExpandEventCreate', () => {
   })
 
   it('returns error when block does not exist', async () => {
-    const { GraphQLError } = require('graphql')
-    validateBlockEvent.mockRejectedValue(
+    ;(validateBlockEvent as any).mockRejectedValue(
       new GraphQLError('Block does not exist', {
         extensions: { code: 'NOT_FOUND' }
       })

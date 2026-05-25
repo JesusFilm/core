@@ -25,6 +25,7 @@ import {
   GetAdminJourneys_journeys as Journey
 } from '../../../../__generated__/GetAdminJourneys'
 import logoGray from '../../../../public/logo-grayscale.svg'
+import { useGalleryDialogLock } from '../../TemplateGalleryPageList/GalleryDialogLockContext'
 
 import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
@@ -74,6 +75,28 @@ export function JourneyCard({
   const [isImageLoading, setIsImageLoading] = useState(true)
   const [breakdownDialogOpen, setBreakdownDialogOpen] = useState(false)
   const [hasOpenDialog, setHasOpenDialog] = useState(false)
+
+  // NES-1666 v2: when this card lives inside the LTL gallery, notify the
+  // gallery's drag context whenever any of our portaled dialogs (menu
+  // dialogs + breakdown analytics) toggles. The gallery uses the
+  // aggregated signal to mark the DnD subtree `inert`, blocking dnd-kit's
+  // document-level sensors from firing while a dialog is on screen. The
+  // hook returns `null` outside the gallery, so this effect is a no-op
+  // for ActiveJourneyList / ArchivedJourneyList / TrashedJourneyList /
+  // TemplateList consumers.
+  const galleryDialogLock = useGalleryDialogLock()
+  const anyDialogOpen = hasOpenDialog || breakdownDialogOpen
+  useEffect(() => {
+    galleryDialogLock?.onDialogOpenChange(journey.id, anyDialogOpen)
+  }, [anyDialogOpen, galleryDialogLock, journey.id])
+  useEffect(() => {
+    // Clear the gallery lock entry when the card unmounts mid-dialog —
+    // otherwise the gallery would stay locked forever if e.g. a team
+    // switch refetched the gallery list while a menu dialog was open.
+    return () => {
+      galleryDialogLock?.onDialogOpenChange(journey.id, false)
+    }
+  }, [galleryDialogLock, journey.id])
 
   const isTemplateCard =
     journey.template === true && journey.team?.id !== 'jfp-team'

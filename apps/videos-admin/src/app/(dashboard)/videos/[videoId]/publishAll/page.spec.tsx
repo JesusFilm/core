@@ -1,38 +1,46 @@
+import {
+  useMutation as apolloClient_useMutation,
+  useSuspenseQuery as apolloClient_useSuspenseQuery
+} from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import PublishAllChildrenDialog from './page'
 
-const mockPush = jest.fn()
-const mockRefresh = jest.fn()
-const mockEnqueueSnackbar = jest.fn()
-const mockPublishChildren = jest.fn()
+const mockPush = vi.fn()
+const mockRefresh = vi.fn()
+const mockEnqueueSnackbar = vi.fn()
+const mockPublishChildren = vi.fn()
 
-jest.mock('next/navigation', () => ({
+vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: mockPush,
     refresh: mockRefresh
   })
 }))
 
-jest.mock('notistack', () => ({
+vi.mock('notistack', () => ({
   useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
 }))
 
-jest.mock('@apollo/client', () => {
-  const original = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const original = await vi.importActual('@apollo/client')
   return {
     ...original,
-    useSuspenseQuery: jest.fn(),
-    useMutation: jest.fn()
+    useSuspenseQuery: vi.fn(),
+    useMutation: vi.fn()
   }
 })
 
 describe('PublishAllChildrenDialog (route)', () => {
-  const { useSuspenseQuery, useMutation } = jest.requireMock('@apollo/client')
+  const useSuspenseQuery = vi.mocked(
+    apolloClient_useSuspenseQuery as unknown as Mock
+  )
+  const useMutation = vi.mocked(apolloClient_useMutation as unknown as Mock)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Default query data: 2 unpublished children, each with variants
     useSuspenseQuery.mockReturnValue({
@@ -92,7 +100,7 @@ describe('PublishAllChildrenDialog (route)', () => {
       }
       return { data: { videoPublishChildren: null } }
     })
-    ;(useMutation as jest.Mock).mockReturnValue([mockPublishChildren, {}])
+    ;(useMutation as Mock).mockReturnValue([mockPublishChildren, {}])
   })
 
   it('renders dialog with actions', () => {

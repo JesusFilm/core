@@ -1,16 +1,19 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
+import { fetchBlockWithJourneyAcl } from '../../../lib/auth/fetchBlockWithJourneyAcl'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
-jest.mock('../../../lib/auth/ability', () => ({
+vi.mock('../../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../../lib/auth/fetchBlockWithJourneyAcl', () => ({
-  fetchBlockWithJourneyAcl: jest.fn()
+vi.mock('../../../lib/auth/fetchBlockWithJourneyAcl', () => ({
+  fetchBlockWithJourneyAcl: vi.fn()
 }))
 
 describe('textResponseBlockUpdate', () => {
@@ -39,20 +42,16 @@ describe('textResponseBlockUpdate', () => {
       }
     }
   `)
-
-  const {
-    fetchBlockWithJourneyAcl
-  } = require('../../../lib/auth/fetchBlockWithJourneyAcl')
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockAbility = ability as MockedFunction<typeof ability>
 
   const id = 'blockId'
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('updates text response block when authorized', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       integrationId: null,
@@ -62,7 +61,7 @@ describe('textResponseBlockUpdate', () => {
 
     const tx = {
       block: {
-        update: jest.fn().mockResolvedValue({
+        update: vi.fn().mockResolvedValue({
           id,
           typename: 'TextResponseBlock',
           journeyId: 'journeyId',
@@ -74,8 +73,8 @@ describe('textResponseBlockUpdate', () => {
           integrationId: null
         })
       },
-      action: { upsert: jest.fn(), delete: jest.fn() },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      action: { upsert: vi.fn(), delete: vi.fn() },
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -110,7 +109,7 @@ describe('textResponseBlockUpdate', () => {
   })
 
   it('returns FORBIDDEN when unauthorized', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       integrationId: null,
@@ -137,7 +136,7 @@ describe('textResponseBlockUpdate', () => {
   })
 
   it('allows routeId when block already has integrationId', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       integrationId: 'existingIntegrationId',
@@ -147,7 +146,7 @@ describe('textResponseBlockUpdate', () => {
 
     const tx = {
       block: {
-        update: jest.fn().mockResolvedValue({
+        update: vi.fn().mockResolvedValue({
           id,
           typename: 'TextResponseBlock',
           journeyId: 'journeyId',
@@ -159,8 +158,8 @@ describe('textResponseBlockUpdate', () => {
           integrationId: 'existingIntegrationId'
         })
       },
-      action: { upsert: jest.fn(), delete: jest.fn() },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      action: { upsert: vi.fn(), delete: vi.fn() },
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -184,7 +183,7 @@ describe('textResponseBlockUpdate', () => {
   })
 
   it('allows routeId when integrationId is provided in input', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       integrationId: null,
@@ -194,7 +193,7 @@ describe('textResponseBlockUpdate', () => {
 
     const tx = {
       block: {
-        update: jest.fn().mockResolvedValue({
+        update: vi.fn().mockResolvedValue({
           id,
           typename: 'TextResponseBlock',
           journeyId: 'journeyId',
@@ -206,8 +205,8 @@ describe('textResponseBlockUpdate', () => {
           integrationId: 'newIntegrationId'
         })
       },
-      action: { upsert: jest.fn(), delete: jest.fn() },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      action: { upsert: vi.fn(), delete: vi.fn() },
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -231,7 +230,7 @@ describe('textResponseBlockUpdate', () => {
   })
 
   it('returns BAD_USER_INPUT when routeId set without integration', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       integrationId: null,

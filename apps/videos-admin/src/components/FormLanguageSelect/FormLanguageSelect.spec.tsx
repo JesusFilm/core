@@ -11,7 +11,7 @@ import { FormLanguageSelect } from './FormLanguageSelect'
 
 describe('FormLanguageSelect', () => {
   it('should render and handle language selection', async () => {
-    const handleSubmit = jest.fn()
+    const handleSubmit = vi.fn()
 
     render(
       <MockedProvider mocks={[getLanguagesMock]}>
@@ -57,7 +57,7 @@ describe('FormLanguageSelect', () => {
 
     render(
       <MockedProvider mocks={[getLanguagesMock]}>
-        <Formik initialValues={{ language: '529' }} onSubmit={jest.fn()}>
+        <Formik initialValues={{ language: '529' }} onSubmit={vi.fn()}>
           <Form>
             <FormLanguageSelect
               name="language"
@@ -80,7 +80,7 @@ describe('FormLanguageSelect', () => {
 
     render(
       <MockedProvider mocks={[getLanguagesMock]}>
-        <Formik initialValues={{ language: '' }} onSubmit={jest.fn()}>
+        <Formik initialValues={{ language: '' }} onSubmit={vi.fn()}>
           <Form>
             <FormLanguageSelect
               name="language"
@@ -121,7 +121,7 @@ describe('FormLanguageSelect', () => {
 
     render(
       <MockedProvider mocks={[getLanguagesMock]}>
-        <Formik initialValues={{ language: '529' }} onSubmit={jest.fn()}>
+        <Formik initialValues={{ language: '529' }} onSubmit={vi.fn()}>
           <Form>
             <FormLanguageSelect
               name="language"
@@ -168,7 +168,7 @@ describe('FormLanguageSelect', () => {
       <MockedProvider mocks={[getLanguagesMock]}>
         <Formik
           initialValues={{ language: '' }}
-          onSubmit={jest.fn()}
+          onSubmit={vi.fn()}
           validate={(values) => {
             const errors: { language?: string } = {}
             if (!values.language) {

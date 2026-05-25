@@ -1,4 +1,8 @@
+import { useMutation } from '@apollo/client'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { useRouter } from 'next/navigation'
+import { enqueueSnackbar } from 'notistack'
+import { type Mock } from 'vitest'
 
 import { resolvedParams } from '../../../../../../../../../test/utils/resolvedParams'
 
@@ -6,16 +10,16 @@ import { resolvedParams } from '../../../../../../../../../test/utils/resolvedPa
 import ConfirmDeleteDialog from './page'
 
 // Mock Apollo client
-jest.mock('@apollo/client', () => {
-  const original = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const original = await vi.importActual('@apollo/client')
   return {
     ...original,
-    useMutation: jest.fn(() => [jest.fn(), { loading: false, error: null }])
+    useMutation: vi.fn(() => [vi.fn(), { loading: false, error: null }])
   }
 })
 
 // Mock Material UI components
-jest.mock('@mui/material/Dialog', () => ({
+vi.mock('@mui/material/Dialog', () => ({
   __esModule: true,
   default: ({ children, open, onClose }) => (
     <div data-testid="mock-dialog" data-open={open} onClick={onClose}>
@@ -24,7 +28,7 @@ jest.mock('@mui/material/Dialog', () => ({
   )
 }))
 
-jest.mock('@mui/material/DialogTitle', () => ({
+vi.mock('@mui/material/DialogTitle', () => ({
   __esModule: true,
   default: ({ children, id }) => (
     <div data-testid="mock-dialog-title" id={id}>
@@ -33,28 +37,28 @@ jest.mock('@mui/material/DialogTitle', () => ({
   )
 }))
 
-jest.mock('@mui/material/DialogContent', () => ({
+vi.mock('@mui/material/DialogContent', () => ({
   __esModule: true,
   default: ({ children }) => (
     <div data-testid="mock-dialog-content">{children}</div>
   )
 }))
 
-jest.mock('@mui/material/DialogContentText', () => ({
+vi.mock('@mui/material/DialogContentText', () => ({
   __esModule: true,
   default: ({ children }) => (
     <div data-testid="mock-dialog-content-text">{children}</div>
   )
 }))
 
-jest.mock('@mui/material/DialogActions', () => ({
+vi.mock('@mui/material/DialogActions', () => ({
   __esModule: true,
   default: ({ children }) => (
     <div data-testid="mock-dialog-actions">{children}</div>
   )
 }))
 
-jest.mock('@mui/material/Button', () => ({
+vi.mock('@mui/material/Button', () => ({
   __esModule: true,
   default: ({ children, onClick, color }) => (
     <button data-testid={`mock-button-${color}`} onClick={onClick}>
@@ -64,15 +68,15 @@ jest.mock('@mui/material/Button', () => ({
 }))
 
 // Mock router
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn()
-  })
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
+  }))
 }))
 
 // Mock notistack
-jest.mock('notistack', () => ({
-  enqueueSnackbar: jest.fn()
+vi.mock('notistack', () => ({
+  enqueueSnackbar: vi.fn()
 }))
 
 describe('ConfirmDeleteDialog', () => {
@@ -82,36 +86,34 @@ describe('ConfirmDeleteDialog', () => {
   const mockReturnUrl = `/videos/${mockVideoId}/audio/${mockVariantId}`
 
   // Mock mutation function and router push function
-  const mockDeleteMutation = jest.fn().mockResolvedValue({
+  const mockDeleteMutation = vi.fn().mockResolvedValue({
     data: {
       videoVariantDownloadDelete: {
         id: mockDownloadId
       }
     }
   })
-  const mockRouterPush = jest.fn()
-  const mockEnqueueSnackbar = jest.fn()
+  const mockRouterPush = vi.fn()
+  const mockEnqueueSnackbar = vi.fn()
 
   // Reset mocks before each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Mock router.push
-    jest
-      .spyOn(require('next/navigation'), 'useRouter')
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     // Mock useMutation
-    jest
-      .spyOn(require('@apollo/client'), 'useMutation')
-      .mockReturnValue([mockDeleteMutation])
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+      mockDeleteMutation
+    ])
 
     // Mock enqueueSnackbar
-    jest
-      .spyOn(require('notistack'), 'enqueueSnackbar')
-      .mockImplementation(mockEnqueueSnackbar)
+    vi.mocked(enqueueSnackbar as unknown as Mock).mockImplementation(
+      mockEnqueueSnackbar
+    )
   })
 
   it('renders the delete confirmation dialog', () => {

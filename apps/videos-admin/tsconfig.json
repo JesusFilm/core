@@ -4,7 +4,7 @@
     "jsx": "preserve",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "types": ["node", "jest"],
+    "types": ["node", "vitest/globals"],
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
@@ -33,5 +33,5 @@
     "../../dist/apps/videos-admin/.next/types/**/*.ts",
     "src/app/(dashboard)/videos/[videoId]/image/[aspectRatio]/layout.tsx"
   ],
-  "exclude": ["node_modules", "jest.config.ts", ".next"]
+  "exclude": ["node_modules", "vitest.config.mts", ".next"]
 }

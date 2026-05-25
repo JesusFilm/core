@@ -187,6 +187,7 @@ describe('DefaultJourneyForm', () => {
     __typename: 'CustomDomain' as const,
     name: 'example.com',
     apexName: 'example.com',
+    routeAllTeamJourneys: false,
     journeyCollection: null
   }
 

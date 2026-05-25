@@ -6,6 +6,8 @@ import { useSnackbar } from 'notistack'
 import { useMemo, useRef } from 'react'
 import { ObjectSchema, array, object, string } from 'yup'
 
+import { TEMPLATE_GALLERY_SLUG_RE } from '@core/journeys/ui/templateGallerySlug'
+
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../../__generated__/GetTemplateGalleryPages'
 import {
   TemplateGalleryPageCreateInput,
@@ -74,46 +76,16 @@ function buildSchema(t: TFunction): ObjectSchema<CollectionFormValues> {
     creatorName: string().max(100, t('Max 100 characters')).default(''),
     creatorImageSrc: string().default(''),
     creatorImageAlt: string().default(''),
-    mediaUrl: string()
-      .max(2048, t('URL too long'))
-      .default('')
-      .test(
-        'canva-or-google-slides',
-        t('Only Canva or Google Slides links work here'),
-        (value) => {
-          if (value == null || value === '') return true
-          // Intentionally more permissive than the editor's Strategy
-          // section regex (which requires a trailing /view|/watch and
-          // exact Google Slides query-param ordering). Real-world share
-          // URLs include utm tags, fragments, and varying param orders;
-          // we accept them as long as the host + path identify a Canva
-          // design or a published Google Slides deck. The render layer
-          // (`StrategySection` in libs/journeys/ui) only knows how to
-          // embed these two — anything else iframes the raw URL and
-          // fails with "refused to connect" (NES-1649).
-          //
-          // Both patterns are fully anchored and restrict the path /
-          // query / fragment to a known character set so a value that
-          // matches can't smuggle whitespace, control bytes, or other
-          // unexpected characters into the iframe src. The host segment
-          // is locked to canva.com or docs.google.com — `..` inside the
-          // path can't escape the host (URL normalisation collapses it
-          // within the path), so the iframe is always loaded from one
-          // of the two trusted embed origins.
-          if (/\s/.test(value)) return false
-          return (
-            /^https:\/\/(www\.)?canva\.com\/design\/[A-Za-z0-9_-]+(\/[A-Za-z0-9._~\-/]*)?(\?[A-Za-z0-9._~\-=&%+]*)?(#[A-Za-z0-9._~\-=&%+]*)?$/i.test(
-              value
-            ) ||
-            /^https:\/\/docs\.google\.com\/presentation\/d\/e\/[A-Za-z0-9_-]+\/pub(\?[A-Za-z0-9._~\-=&%+]*)?(#[A-Za-z0-9._~\-=&%+]*)?$/i.test(
-              value
-            )
-          )
-        }
-      ),
+    // NES-1682: the Canva / Google Slides URL validation was removed
+    // alongside the embed textbox UI in CollectionDialog. The field
+    // still exists in the form so existing values round-trip on save,
+    // but there is no editing surface and no validation rule to assert
+    // against. We keep the length cap as a defensive bound for the
+    // round-tripped value.
+    mediaUrl: string().max(2048, t('URL too long')).default(''),
     slug: string()
       .max(200, t('Max 200 characters'))
-      .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, {
+      .matches(TEMPLATE_GALLERY_SLUG_RE, {
         message: t('Use lowercase letters, numbers, and hyphens only'),
         // The slug field only renders in edit mode. Create mode submits
         // with slug = '' and the server generates one from the title.
@@ -209,8 +181,7 @@ export function useCollectionForm({
         const input: TemplateGalleryPageUpdateInput = {}
         if (values.title !== collection.title) input.title = values.title
         if (values.description !== (collection.description ?? '')) {
-          input.description =
-            values.description === '' ? null : values.description
+          input.description = values.description
         }
         if (values.creatorName !== collection.creatorName) {
           input.creatorName = values.creatorName
@@ -226,7 +197,15 @@ export function useCollectionForm({
         if (values.mediaUrl !== (collection.mediaUrl ?? '')) {
           input.mediaUrl = values.mediaUrl === '' ? null : values.mediaUrl
         }
-        if (values.slug !== collection.slug) input.slug = values.slug
+        // Skip the slug field when the user cleared it. yup's
+        // `excludeEmptyString` lets an empty value pass validation (so
+        // create mode's empty default doesn't error), but sending
+        // `input.slug = ''` would rename the published page's slug to
+        // empty and break every external link. Empty in edit mode means
+        // "leave the slug alone" — same effect as an unchanged field.
+        if (values.slug !== collection.slug && values.slug !== '') {
+          input.slug = values.slug
+        }
         const initialIds = collection.templates.map((tpl) => tpl.id).join(',')
         const nextIds = values.journeyIds.join(',')
         if (initialIds !== nextIds) {

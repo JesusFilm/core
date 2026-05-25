@@ -1,15 +1,19 @@
+import { useMutation, useQuery } from '@apollo/client'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { useRouter } from 'next/navigation'
+import { useSnackbar } from 'notistack'
+import { type Mock } from 'vitest'
 
 // Import the component under test
 import StudyQuestionsList from './default'
 
 // Mock Apollo client
-jest.mock('@apollo/client', () => {
-  const original = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const original = await vi.importActual('@apollo/client')
   return {
     ...original,
-    useMutation: jest.fn(() => [jest.fn(), { loading: false }]),
-    useQuery: jest.fn(() => ({
+    useMutation: vi.fn(() => [vi.fn(), { loading: false }]),
+    useQuery: vi.fn(() => ({
       data: {
         adminVideo: {
           id: 'video-123',
@@ -21,13 +25,13 @@ jest.mock('@apollo/client', () => {
         }
       },
       loading: false,
-      refetch: jest.fn()
+      refetch: vi.fn()
     }))
   }
 })
 
 // Mock OrderedList component
-jest.mock('../../../../../components/OrderedList', () => ({
+vi.mock('../../../../../components/OrderedList', () => ({
   OrderedList: ({ children, items }) => (
     <div data-testid="mock-ordered-list" data-items-count={items.length}>
       {children}
@@ -36,7 +40,7 @@ jest.mock('../../../../../components/OrderedList', () => ({
 }))
 
 // Mock OrderedItem component
-jest.mock('../../../../../components/OrderedList/OrderedItem', () => ({
+vi.mock('../../../../../components/OrderedList/OrderedItem', () => ({
   OrderedItem: ({ id, label, idx, menuActions }) => (
     <div data-testid={`mock-ordered-item-${id}`} data-idx={idx}>
       <span data-testid={`item-label-${id}`}>{label}</span>
@@ -57,7 +61,7 @@ jest.mock('../../../../../components/OrderedList/OrderedItem', () => ({
 }))
 
 // Mock Section component
-jest.mock('../../../../../components/Section', () => {
+vi.mock('../../../../../components/Section', () => {
   const Section = ({ children, title, variant }) => (
     <div data-testid="mock-section" data-variant={variant}>
       <h2 data-testid="section-title">{title}</h2>
@@ -71,7 +75,7 @@ jest.mock('../../../../../components/Section', () => {
 })
 
 // Mock Material UI components
-jest.mock('@mui/material/Stack', () => ({
+vi.mock('@mui/material/Stack', () => ({
   __esModule: true,
   default: ({ children, direction, justifyContent }) => (
     <div
@@ -84,7 +88,7 @@ jest.mock('@mui/material/Stack', () => ({
   )
 }))
 
-jest.mock('@mui/material/Button', () => ({
+vi.mock('@mui/material/Button', () => ({
   __esModule: true,
   default: ({ children, variant, onClick, size, color }) => (
     <button
@@ -100,51 +104,50 @@ jest.mock('@mui/material/Button', () => ({
 }))
 
 // Mock router
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn()
-  }),
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
+  })),
   usePathname: () => '/videos/video-123/studyQuestions',
   useParams: () => ({ videoId: 'video-123' })
 }))
 
 // Mock notistack
-jest.mock('notistack', () => ({
-  useSnackbar: () => ({ enqueueSnackbar: jest.fn() })
+vi.mock('notistack', () => ({
+  useSnackbar: vi.fn(() => ({ enqueueSnackbar: vi.fn() }))
 }))
 
 describe('StudyQuestionsList', () => {
   const mockVideoId = 'video-123'
 
   // Mock functions
-  const mockUpdateStudyQuestionOrder = jest.fn()
-  const mockRouterPush = jest.fn()
-  const mockEnqueueSnackbar = jest.fn()
-  const mockRefetch = jest.fn()
+  const mockUpdateStudyQuestionOrder = vi.fn()
+  const mockRouterPush = vi.fn()
+  const mockEnqueueSnackbar = vi.fn()
+  const mockRefetch = vi.fn()
 
   // Reset mocks before each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Mock router.push
-    jest
-      .spyOn(require('next/navigation'), 'useRouter')
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     // Mock useMutation
-    jest
-      .spyOn(require('@apollo/client'), 'useMutation')
-      .mockReturnValue([mockUpdateStudyQuestionOrder, { loading: false }])
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+      mockUpdateStudyQuestionOrder,
+      { loading: false }
+    ])
 
     // Mock useSnackbar
-    jest.spyOn(require('notistack'), 'useSnackbar').mockImplementation(() => ({
+    vi.mocked(useSnackbar as unknown as Mock).mockImplementation(() => ({
       enqueueSnackbar: mockEnqueueSnackbar
     }))
 
     // Mock useQuery with study questions data
-    jest.spyOn(require('@apollo/client'), 'useQuery').mockReturnValue({
+    vi.mocked(useQuery as unknown as Mock).mockReturnValue({
       data: {
         adminVideo: {
           id: mockVideoId,
@@ -194,7 +197,7 @@ describe('StudyQuestionsList', () => {
 
   it('displays a fallback when there are no study questions', () => {
     // Mock useQuery with empty study questions
-    jest.spyOn(require('@apollo/client'), 'useQuery').mockReturnValue({
+    vi.mocked(useQuery as unknown as Mock).mockReturnValue({
       data: {
         adminVideo: {
           id: mockVideoId,

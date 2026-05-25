@@ -30,7 +30,11 @@ export function TemplateGalleryHeader({
         {gallery.title}
       </Typography>
       {gallery.description !== '' && (
-        <Typography variant="body1" color="text.secondary">
+        <Typography
+          variant="body1"
+          color="text.secondary"
+          sx={{ whiteSpace: 'pre-wrap' }}
+        >
           {gallery.description}
         </Typography>
       )}

@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { prismaMock } from '../../../test/prismaMock'
 
 import {
@@ -11,7 +13,7 @@ import {
 
 describe('generateUniqueSlug', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns the slugified base when no collisions exist', async () => {
@@ -96,7 +98,7 @@ describe('generateUniqueSlug', () => {
 
 describe('validateUserSuppliedSlug', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns the normalized slug when valid and unique', async () => {

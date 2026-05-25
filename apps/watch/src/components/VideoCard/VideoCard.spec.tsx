@@ -46,6 +46,23 @@ describe('VideoCard', () => {
     const img = getByRole('img')
     expect(img).toHaveAttribute('src', videos[0].images[0].mobileCinematicHigh)
     expect(img).toHaveAttribute('alt', videos[0].title[0].value)
+    expect(img).not.toHaveAttribute('data-unoptimized')
+  })
+
+  it('bypasses Next image optimization for local thumbnail overrides', () => {
+    const thumbnailUrl =
+      '/watch/images/thumbnails/1_jf-0-0-vertical.png?v=1540000000000'
+    useThumbnailUrlMock.mockReturnValue({
+      thumbnailUrl,
+      isLoading: false,
+      error: null
+    })
+
+    const { getByRole } = render(<VideoCard video={videos[0]} />)
+    const img = getByRole('img')
+
+    expect(img).toHaveAttribute('src', thumbnailUrl)
+    expect(img).toHaveAttribute('data-unoptimized', 'true')
   })
 
   it('sets link to video url', () => {
