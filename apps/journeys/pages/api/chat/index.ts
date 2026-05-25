@@ -187,8 +187,7 @@ export default async function handler(
     res.status(400).json({ error: 'invalid request' })
     return
   }
-  const { messages, language, sessionId, journeyId, journeyTitle } =
-    parsed.data
+  const { messages, language, sessionId, journeyId, journeyTitle } = parsed.data
 
   if (totalMessageChars(messages) > MAX_TOTAL_CHARS) {
     res.status(400).json({ error: 'request too large' })
