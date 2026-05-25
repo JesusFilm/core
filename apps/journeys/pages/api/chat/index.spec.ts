@@ -426,9 +426,6 @@ describe('/api/chat handler', () => {
         })
       })
       mockGetLangfuse.mockReturnValue(fake as never)
-      const warnSpy = vi
-        .spyOn(console, 'warn')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -437,7 +434,6 @@ describe('/api/chat handler', () => {
         'You are a helpful Christian apologist'
       )
       expect(mockLoggerWarn).toHaveBeenCalled()
-      warnSpy.mockRestore()
     })
 
     it("falls back when prompt type is not 'text'", async () => {
@@ -445,16 +441,12 @@ describe('/api/chat handler', () => {
         promptResult: { type: 'chat', compile: vi.fn() }
       })
       mockGetLangfuse.mockReturnValue(fake as never)
-      const warnSpy = vi
-        .spyOn(console, 'warn')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
       expect(lastStreamConfig?.system).toContain(
         'You are a helpful Christian apologist'
       )
-      warnSpy.mockRestore()
     })
 
     it('compiles the prompt with the language variable on success', async () => {
@@ -566,22 +558,15 @@ describe('/api/chat handler', () => {
         promptError: new Error('boom')
       })
       mockGetLangfuse.mockReturnValue(fake as never)
-      const warnSpy = vi
-        .spyOn(console, 'warn')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
       const generationCall = fake.generation.mock.calls[0][0]
       expect(generationCall.prompt).toBeUndefined()
-      warnSpy.mockRestore()
     })
 
     it('does not create a trace, generation, or flush when langfuse is null', async () => {
       mockGetLangfuse.mockReturnValue(null)
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -599,8 +584,6 @@ describe('/api/chat handler', () => {
       await expect(
         lastStreamConfig?.onError?.({ error: new Error('mid-stream') })
       ).resolves.not.toThrow()
-
-      errorSpy.mockRestore()
     })
 
     it('ends the generation with output + usage on a successful onFinish', async () => {
@@ -692,14 +675,22 @@ describe('/api/chat handler', () => {
       })
     })
 
-    it("ends with ERROR when onFinish reports finishReason 'error'", async () => {
+    it("ends with ERROR and logs a no-PII error event when onFinish reports finishReason 'error'", async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
 
-      await handler(postReq(), makeRes().res)
+      await handler(
+        postReq({
+          language: 'es',
+          sessionId: 'sess-1',
+          journeyId: 'journey-1',
+          ipCountry: 'NZ'
+        }),
+        makeRes().res
+      )
 
       await lastStreamConfig?.onFinish?.({
-        text: '',
+        text: 'secret model reply',
         finishReason: 'error'
       })
 
@@ -709,14 +700,35 @@ describe('/api/chat handler', () => {
         statusMessage: 'finishReason=error'
       })
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
+
+      // Error event carries its own tag but mirrors the success event's
+      // non-PII triage fields, so both are queryable the same way in Datadog.
+      expect(mockLoggerError).toHaveBeenCalledTimes(1)
+      const [fields, message] = mockLoggerError.mock.calls[0]
+      expect(message).toBe('[chat] completed with error')
+      expect(fields).toMatchObject({
+        event: 'apologist_chat_error',
+        journeyId: 'journey-1',
+        language: 'es',
+        ipCountry: 'NZ',
+        sessionId: 'sess-1',
+        provider: 'apologist',
+        modelId: 'openai/gpt/4o-mini',
+        turn: 1,
+        finishReason: 'error'
+      })
+      expect(typeof fields.durationMs).toBe('number')
+      expect(typeof fields.promptChars).toBe('number')
+      // No PII: the user's message text, the model reply, and the raw IP are
+      // never logged — only counts and identifiers.
+      expect(fields).not.toHaveProperty('messages')
+      expect(fields).not.toHaveProperty('text')
+      expect(fields).not.toHaveProperty('journeyTitle')
     })
 
     it('ends with ERROR and flushes when onError fires (mid-stream failure)', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -728,15 +740,15 @@ describe('/api/chat handler', () => {
         statusMessage: 'socket hangup'
       })
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
-      errorSpy.mockRestore()
+      expect(mockLoggerError).toHaveBeenCalledWith(
+        expect.objectContaining({ event: 'apologist_chat_stream_error' }),
+        '[chat] streamText onError'
+      )
     })
 
     it('ends the generation exactly once when onError fires before onFinish', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -752,15 +764,11 @@ describe('/api/chat handler', () => {
         level: 'ERROR',
         statusMessage: 'first'
       })
-      errorSpy.mockRestore()
     })
 
     it('ends the generation exactly once when onFinish fires before onError', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -777,16 +785,12 @@ describe('/api/chat handler', () => {
         usage: { input: 2, output: 3, unit: 'TOKENS' },
         level: 'DEFAULT'
       })
-      errorSpy.mockRestore()
     })
 
     it('responds 500 + ends the generation when streamText throws synchronously', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
       installStreamTextSyncThrow(new Error('sync boom'))
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       const { res, status, json } = makeRes(false)
       await handler(postReq(), res)
@@ -800,16 +804,16 @@ describe('/api/chat handler', () => {
       expect(status).toHaveBeenCalledWith(500)
       // Generic message; raw 'sync boom' stays in server logs.
       expect(json).toHaveBeenCalledWith({ error: 'upstream streamText failed' })
-      errorSpy.mockRestore()
+      expect(mockLoggerError).toHaveBeenCalledWith(
+        expect.objectContaining({ event: 'apologist_chat_sync_error' }),
+        '[chat] synchronous error'
+      )
     })
 
     it('calls res.end() instead of writing JSON when headers were already sent before the throw', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
       installStreamTextSyncThrow(new Error('post-headers boom'))
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       const { res, status, json, end } = makeRes(true)
       await handler(postReq(), res)
@@ -817,7 +821,6 @@ describe('/api/chat handler', () => {
       expect(status).not.toHaveBeenCalled()
       expect(json).not.toHaveBeenCalled()
       expect(end).toHaveBeenCalledWith()
-      errorSpy.mockRestore()
     })
   })
 
@@ -892,9 +895,6 @@ describe('/api/chat handler', () => {
       mockConvertToModelMessages.mockImplementationOnce(() => {
         throw new Error('unsupported part shape')
       })
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       const { res, status, json } = makeRes()
 
@@ -906,7 +906,10 @@ describe('/api/chat handler', () => {
       expect(status).toHaveBeenCalledWith(400)
       expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
       expect(mockStreamText).not.toHaveBeenCalled()
-      errorSpy.mockRestore()
+      expect(mockLoggerError).toHaveBeenCalledWith(
+        expect.objectContaining({ event: 'apologist_chat_convert_error' }),
+        '[chat] convertToModelMessages failed'
+      )
     })
 
     it('rejects when a single message exceeds the per-message char cap', async () => {

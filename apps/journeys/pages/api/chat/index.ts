@@ -199,6 +199,27 @@ export default async function handler(
     return
   }
 
+  const { provider, modelId } = modelResult.resolved
+  const ipCountry = req.headers['x-vercel-ip-country'] as string | undefined
+  // Shared non-PII context spread into every observability event so the
+  // success event and all error events stay queryable on the same fields in
+  // Datadog. The `event` tag stays unique per failure site; these fields stay
+  // common. `turn` = user-message ordinal (1, 2, 3…); `promptChars` = full
+  // prompt size this turn. Both climb across a session because the whole
+  // history is resent each turn — count events per session for volume, max()
+  // for depth; never sum these. Never includes message text, the model reply,
+  // or the raw IP.
+  const chatLogContext = {
+    journeyId,
+    language,
+    ipCountry,
+    sessionId,
+    provider,
+    modelId,
+    turn: messages.filter((m) => m.role === 'user').length,
+    promptChars: totalMessageChars(messages)
+  }
+
   const langfuse = getLangfuse()
   const { system, promptClient } = await resolveSystemMessage({
     language,
@@ -217,15 +238,18 @@ export default async function handler(
   } catch (error) {
     const err = error as Error
     logger.error(
-      { name: err?.name, message: err?.message },
+      {
+        event: 'apologist_chat_convert_error',
+        ...chatLogContext,
+        name: err?.name,
+        message: err?.message,
+        durationMs: Date.now() - startedAt
+      },
       '[chat] convertToModelMessages failed'
     )
     res.status(400).json({ error: 'invalid request' })
     return
   }
-
-  const { provider, modelId } = modelResult.resolved
-  const ipCountry = req.headers['x-vercel-ip-country'] as string | undefined
 
   const trace = langfuse?.trace({
     name: 'apologist-chat',
@@ -258,11 +282,12 @@ export default async function handler(
         const err = error as Error
         logger.error(
           {
-            provider,
-            modelId,
+            event: 'apologist_chat_stream_error',
+            ...chatLogContext,
             name: err?.name,
             message: err?.message,
-            stack: err?.stack
+            stack: err?.stack,
+            durationMs: Date.now() - startedAt
           },
           '[chat] streamText onError'
         )
@@ -282,10 +307,7 @@ export default async function handler(
           logger.error(
             {
               event: 'apologist_chat_error',
-              journeyId,
-              language,
-              provider,
-              modelId,
+              ...chatLogContext,
               finishReason,
               durationMs: Date.now() - startedAt
             },
@@ -310,18 +332,7 @@ export default async function handler(
           logger.info(
             {
               event: 'apologist_chat_completed',
-              journeyId,
-              language,
-              ipCountry,
-              sessionId,
-              provider,
-              modelId,
-              // `turn` = user-message ordinal (1, 2, 3…); `promptChars` =
-              // full prompt size this turn. Both climb across a session
-              // because the whole history is resent each turn — count events
-              // per session for volume, max() for depth; never sum these.
-              turn: messages.filter((m) => m.role === 'user').length,
-              promptChars: totalMessageChars(messages),
+              ...chatLogContext,
               promptTokens: usage?.inputTokens,
               completionTokens: usage?.outputTokens,
               finishReason,
@@ -342,10 +353,11 @@ export default async function handler(
         // not recorded in Langfuse.
         logger.error(
           {
-            provider,
-            modelId,
+            event: 'apologist_chat_pipe_error',
+            ...chatLogContext,
             name: err?.name,
-            message: err?.message
+            message: err?.message,
+            durationMs: Date.now() - startedAt
           },
           '[chat] pipe onError'
         )
@@ -358,10 +370,11 @@ export default async function handler(
     const err = error as Error
     logger.error(
       {
-        provider,
-        modelId,
+        event: 'apologist_chat_sync_error',
+        ...chatLogContext,
         name: err?.name,
-        message: err?.message
+        message: err?.message,
+        durationMs: Date.now() - startedAt
       },
       '[chat] synchronous error'
     )
