@@ -11,8 +11,7 @@
       "options": {
         "commands": [
           "cp -r libs/locales apps/journeys/public",
-          "nx _build journeys",
-          "cp apps/journeys/next-logger.config.js dist/apps/journeys/next-logger.config.js"
+          "nx _build journeys"
         ],
         "parallel": false
       },
@@ -20,8 +19,7 @@
         "production": {
           "commands": [
             "cp -r libs/locales apps/journeys/public",
-            "CI=true nx _build journeys --prod",
-            "cp apps/journeys/next-logger.config.js dist/apps/journeys/next-logger.config.js"
+            "CI=true nx _build journeys --prod"
           ]
         }
       }
