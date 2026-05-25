@@ -659,13 +659,13 @@ describe('/api/chat handler', () => {
         sessionId: 'sess-1',
         provider: 'apologist',
         modelId: 'openai/gpt/4o-mini',
-        messageCount: 1,
+        turn: 1,
         promptTokens: 5,
         completionTokens: 9,
         finishReason: 'stop'
       })
       expect(typeof fields.durationMs).toBe('number')
-      expect(typeof fields.inputChars).toBe('number')
+      expect(typeof fields.promptChars).toBe('number')
       // No PII: raw message text / content is never logged, only counts.
       expect(fields).not.toHaveProperty('messages')
       expect(fields).not.toHaveProperty('text')

@@ -316,8 +316,12 @@ export default async function handler(
               sessionId,
               provider,
               modelId,
-              messageCount: messages.length,
-              inputChars: totalMessageChars(messages),
+              // `turn` = user-message ordinal (1, 2, 3…); `promptChars` =
+              // full prompt size this turn. Both climb across a session
+              // because the whole history is resent each turn — count events
+              // per session for volume, max() for depth; never sum these.
+              turn: messages.filter((m) => m.role === 'user').length,
+              promptChars: totalMessageChars(messages),
               promptTokens: usage?.inputTokens,
               completionTokens: usage?.outputTokens,
               finishReason,
