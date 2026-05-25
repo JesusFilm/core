@@ -669,6 +669,9 @@ describe('/api/chat handler', () => {
       // No PII: raw message text / content is never logged, only counts.
       expect(fields).not.toHaveProperty('messages')
       expect(fields).not.toHaveProperty('text')
+      // Regression guard: journeyTitle was removed as client-controlled
+      // (untrusted) input and must never return to the logs.
+      expect(fields).not.toHaveProperty('journeyTitle')
     })
 
     it('omits usage from the end payload when streamText reports no usage', async () => {
