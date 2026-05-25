@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
 import { useTranslation } from 'next-i18next/pages'
@@ -13,7 +14,10 @@ export interface CollectionDialogFooterProps {
    *  mode. */
   canPublish: boolean
   /** Tooltip copy shown on the disabled Publish button when canPublish
-   *  is false. Null falls back to the empty-selection copy. */
+   *  is false. When null, no tooltip is shown — `useCanPublishCollection`
+   *  always provides a reason today, so a null reason here just leaves
+   *  the button silently disabled. Callers gating Publish should pass a
+   *  non-null string. */
   publishBlockedReason: string | null
   /** Number of templates currently selected — Publish stays disabled
    *  while this is zero, with a tooltip prompting the user to add at
@@ -120,8 +124,10 @@ export function CollectionDialogFooter({
           disableFocusListener={!publishBlocked}
         >
           {/* MUI requires a non-disabled wrapper so the Tooltip can
-              attach pointer events even when the Button is disabled. */}
-          <span>
+              attach pointer events even when the Button is disabled.
+              Using Box with component="span" keeps the inline flow
+              while satisfying the apps "MUI over raw HTML" rule. */}
+          <Box component="span">
             <Button
               variant="contained"
               color="primary"
@@ -131,7 +137,7 @@ export function CollectionDialogFooter({
             >
               {t('Publish')}
             </Button>
-          </span>
+          </Box>
         </Tooltip>
       </>
     )
