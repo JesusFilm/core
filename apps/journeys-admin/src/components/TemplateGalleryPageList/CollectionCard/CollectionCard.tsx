@@ -118,16 +118,16 @@ function CollectionCardImpl({
       data-testid={`CollectionCard-${collection.id}`}
       sx={{
         p: 2,
-        // Match the surrounding page grey so the card reads as a
-        // panel of the same surface rather than a raised white card.
-        // The darker grey border + thicker stroke + soft shadow is
-        // what gives each collection its visual separation.
-        backgroundColor: 'background.default',
-        borderColor: 'grey.400',
+        // NES-1696: a subtle transparent-white panel over the grey page
+        // with a light grey stroke and no shadow, per the Figma design.
+        // Spec: bg rgba(255,255,255,0.40), 1px solid divider (#DEDFE0),
+        // 12px radius (borderRadius 3 × the 4px theme.shape.borderRadius).
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        borderColor: 'divider',
         borderWidth: 1,
         borderStyle: 'solid',
         borderRadius: 3,
-        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)'
+        boxShadow: 'none'
       }}
       variant="outlined"
     >
