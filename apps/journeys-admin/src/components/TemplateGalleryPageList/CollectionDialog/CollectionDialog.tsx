@@ -5,7 +5,6 @@ import ButtonBase from '@mui/material/ButtonBase'
 import Collapse from '@mui/material/Collapse'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
@@ -18,6 +17,7 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 
+import { CollectionDialogFooter } from './CollectionDialogFooter'
 import { CollectionPreviewPane } from './CollectionPreviewPane'
 import { CreatorImagePickerDrawer } from './CreatorImagePickerDrawer'
 import { DiscardConfirmDialog } from './DiscardConfirmDialog'
@@ -79,7 +79,7 @@ export function CollectionDialog({
     handleSubmit,
     setSubmitIntent,
     handleUnpublishAction,
-    isMutating
+    isUnpublishing
   } = useCollectionForm({
     mode,
     teamId,
@@ -124,18 +124,40 @@ export function CollectionDialog({
         setValues,
         isSubmitting
       }) => {
-        // Block close paths while a submit is in flight so the user can't
-        // dismiss the dialog mid-mutation (which would orphan the post-await
-        // side effects). Submit succeeds → onClose() runs explicitly.
-        // Also intercepts close paths when the form is dirty: opens the
-        // "discard changes?" confirmation instead of closing immediately.
+        // Block close paths while a mutation is in flight so the user
+        // can't dismiss the dialog mid-mutation (which would orphan the
+        // post-await side effects). Covers Formik submit (isSubmitting)
+        // and the out-of-band unpublish action (isUnpublishing). Submit
+        // succeeds → onClose() runs explicitly. Also intercepts close
+        // paths when the form is dirty: opens the "discard changes?"
+        // confirmation instead of closing immediately.
         const guardedClose = (): void => {
-          if (isSubmitting) return
+          if (isSubmitting || isUnpublishing) return
           if (dirty) {
             setDiscardConfirmOpen(true)
             return
           }
           onClose()
+        }
+        // Named handlers wired into the footer. Save Draft + Publish
+        // share Formik's submitForm and disambiguate via the intent
+        // ref; Unpublish bypasses Formik (see useCollectionForm).
+        const handleCreateClick = (): void => {
+          handleSubmit()
+        }
+        const handleSaveClick = (): void => {
+          handleSubmit()
+        }
+        const handleSaveDraftClick = (): void => {
+          setSubmitIntent('draft')
+          handleSubmit()
+        }
+        const handlePublishClick = (): void => {
+          setSubmitIntent('publish')
+          handleSubmit()
+        }
+        const handleUnpublishClick = (): void => {
+          void handleUnpublishAction()
         }
         // Selected journeys, ordered by the user's pick order, used for the
         // carousel preview on the left pane.
@@ -148,12 +170,12 @@ export function CollectionDialog({
               open={open}
               onClose={guardedClose}
               maxWidth="md"
-              // Disable the submit + close buttons while a mutation is in
-              // flight. Covers Formik's submitForm (isSubmitting) and
-              // the out-of-band unpublish action (isMutating). Without
-              // this, a fast second click before React re-renders would
-              // fire a duplicate mutation.
-              loading={isSubmitting || isMutating}
+              // Disable the submit + close buttons while any mutation
+              // is in flight. Covers Formik's submitForm (isSubmitting)
+              // and the out-of-band unpublish action (isUnpublishing).
+              // Without this, a fast second click before React
+              // re-renders would fire a duplicate mutation.
+              loading={isSubmitting || isUnpublishing}
               dialogTitle={{
                 title:
                   mode === 'create'
@@ -163,108 +185,27 @@ export function CollectionDialog({
                       : t('Edit Collection'),
                 closeButton: true
               }}
-              dialogAction={
-                // Custom footer in publish mode (Save Draft + Publish)
-                // and in edit-while-published mode (Unpublish + Save).
-                // Create + draft-edit fall through to the default
-                // Cancel + Save footer.
-                mode === 'publish' || (mode === 'edit' && isPublished)
-                  ? undefined
-                  : {
-                      onSubmit: handleSubmit,
-                      closeLabel: t('Cancel'),
-                      submitLabel: mode === 'create' ? t('Create') : t('Save')
-                    }
+              // Footer is always rendered via dialogActionChildren so
+              // CollectionDialogFooter owns the mode-based branching in
+              // one place — see that component for the four button
+              // configurations.
+              dialogActionChildren={
+                <CollectionDialogFooter
+                  mode={mode}
+                  isPublished={isPublished}
+                  canPublish={canPublish}
+                  publishBlockedReason={publishBlockedReason}
+                  journeyCount={values.journeyIds.length}
+                  isSubmitting={isSubmitting}
+                  isUnpublishing={isUnpublishing}
+                  onCancel={guardedClose}
+                  onCreate={handleCreateClick}
+                  onSave={handleSaveClick}
+                  onSaveDraft={handleSaveDraftClick}
+                  onPublish={handlePublishClick}
+                  onUnpublish={handleUnpublishClick}
+                />
               }
-              dialogActionChildren={(() => {
-                const busy = isSubmitting || isMutating
-                if (mode === 'publish') {
-                  // Publish is gated by (a) custom-domain teams that
-                  // can't host gallery pages and (b) an empty selection
-                  // — same checks that previously lived on the card
-                  // menu, moved here so the menu item itself can
-                  // always open the dialog (the user may want to fill
-                  // in metadata before adding templates).
-                  const publishBlockedHere =
-                    !canPublish || values.journeyIds.length === 0
-                  const publishTooltip = !canPublish
-                    ? (publishBlockedReason ?? '')
-                    : values.journeyIds.length === 0
-                      ? t('Add at least one template before publishing')
-                      : ''
-                  return (
-                    <>
-                      <Button onClick={guardedClose} disabled={busy}>
-                        {t('Cancel')}
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setSubmitIntent('draft')
-                          handleSubmit()
-                        }}
-                        disabled={busy}
-                      >
-                        {t('Save Draft')}
-                      </Button>
-                      <Tooltip
-                        title={publishTooltip}
-                        placement="top"
-                        disableHoverListener={!publishBlockedHere}
-                        disableFocusListener={!publishBlockedHere}
-                      >
-                        <span>
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => {
-                              setSubmitIntent('publish')
-                              handleSubmit()
-                            }}
-                            loading={isSubmitting}
-                            disabled={publishBlockedHere || busy}
-                          >
-                            {t('Publish')}
-                          </Button>
-                        </span>
-                      </Tooltip>
-                    </>
-                  )
-                }
-                if (mode === 'edit' && isPublished) {
-                  // Unpublish lives inside the dialog so the card menu
-                  // has a single state-aware entry point. Skips
-                  // Formik on purpose — any pending field edits are
-                  // discarded, because "unpublish" is a deliberate
-                  // status change, not a save path.
-                  return (
-                    <>
-                      <Button onClick={guardedClose} disabled={busy}>
-                        {t('Cancel')}
-                      </Button>
-                      <Button
-                        color="error"
-                        onClick={() => {
-                          void handleUnpublishAction()
-                        }}
-                        loading={isMutating}
-                        disabled={busy}
-                      >
-                        {t('Unpublish')}
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleSubmit()}
-                        loading={isSubmitting}
-                        disabled={busy}
-                      >
-                        {t('Save')}
-                      </Button>
-                    </>
-                  )
-                }
-                return undefined
-              })()}
               testId="CollectionDialog"
               sx={{
                 '& .MuiDialogContent-root': {

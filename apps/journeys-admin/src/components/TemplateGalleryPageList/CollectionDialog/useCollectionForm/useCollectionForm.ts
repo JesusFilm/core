@@ -87,12 +87,13 @@ export interface UseCollectionFormResult {
    */
   handleUnpublishAction: () => Promise<void>
   /**
-   * True while either handleSubmit or handleUnpublishAction is
-   * mid-flight. The dialog binds this onto every footer button so a
-   * second click during the round-trip can't fire a duplicate
-   * mutation.
+   * True only while handleUnpublishAction is in flight. Disjoint from
+   * Formik's `isSubmitting`, which still tracks the Save / Save Draft /
+   * Publish paths. Callers should OR the two together when binding the
+   * footer's `disabled` so neither path can fire a duplicate while the
+   * other is mid-mutation.
    */
-  isMutating: boolean
+  isUnpublishing: boolean
 }
 
 const FIELD_ERROR_KEYS = new Set([
@@ -394,6 +395,6 @@ export function useCollectionForm({
     handleSubmit,
     setSubmitIntent,
     handleUnpublishAction,
-    isMutating: unpublishing
+    isUnpublishing: unpublishing
   }
 }
