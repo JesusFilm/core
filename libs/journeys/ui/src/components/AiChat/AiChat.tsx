@@ -230,13 +230,6 @@ export function AiChat({
   const journeyIdRef = useRef(journeyId)
   journeyIdRef.current = journeyId
 
-  // Org-authored title (not end-user data) — sent so the server can label
-  // chat logs for easy interrogation. Public title first, internal last.
-  const journeyTitle =
-    journey?.displayTitle ?? journey?.seoTitle ?? journey?.title ?? undefined
-  const journeyTitleRef = useRef(journeyTitle)
-  journeyTitleRef.current = journeyTitle
-
   const [sessionId] = useState<string | undefined>(() => {
     if (typeof window === 'undefined') return undefined
     // sessionStorage can throw in Safari private mode, sandboxed
@@ -262,8 +255,7 @@ export function AiChat({
         body: () => ({
           language: languageRef.current,
           sessionId: sessionIdRef.current,
-          journeyId: journeyIdRef.current,
-          journeyTitle: journeyTitleRef.current
+          journeyId: journeyIdRef.current
         })
       }),
     []

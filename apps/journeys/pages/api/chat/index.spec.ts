@@ -635,8 +635,7 @@ describe('/api/chat handler', () => {
             messages: [{ role: 'user', content: 'hi' }],
             language: 'es',
             sessionId: 'sess-1',
-            journeyId: 'journey-1',
-            journeyTitle: 'World Cup — Final Card'
+            journeyId: 'journey-1'
           },
           headers: { 'x-vercel-ip-country': 'NZ' }
         } as unknown as NextApiRequest,
@@ -655,7 +654,6 @@ describe('/api/chat handler', () => {
       expect(fields).toMatchObject({
         event: 'apologist_chat_completed',
         journeyId: 'journey-1',
-        journeyTitle: 'World Cup — Final Card',
         language: 'es',
         ipCountry: 'NZ',
         sessionId: 'sess-1',

@@ -69,8 +69,7 @@ const chatRequestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
   language: z.string().max(64).optional(),
   sessionId: z.string().max(128).optional(),
-  journeyId: z.string().max(128).optional(),
-  journeyTitle: z.string().max(256).optional()
+  journeyId: z.string().max(128).optional()
 })
 
 type ParsedChatMessage = z.infer<typeof messageSchema>
@@ -187,7 +186,7 @@ export default async function handler(
     res.status(400).json({ error: 'invalid request' })
     return
   }
-  const { messages, language, sessionId, journeyId, journeyTitle } = parsed.data
+  const { messages, language, sessionId, journeyId } = parsed.data
 
   if (totalMessageChars(messages) > MAX_TOTAL_CHARS) {
     res.status(400).json({ error: 'request too large' })
@@ -284,7 +283,6 @@ export default async function handler(
             {
               event: 'apologist_chat_error',
               journeyId,
-              journeyTitle,
               language,
               provider,
               modelId,
@@ -313,7 +311,6 @@ export default async function handler(
             {
               event: 'apologist_chat_completed',
               journeyId,
-              journeyTitle,
               language,
               ipCountry,
               sessionId,
