@@ -57,7 +57,9 @@ const DIMENSIONS = [
   { width: 900, height: 900 }
 ]
 
-function buildTemplate(index: number): TemplateGalleryPage['templates'][number] {
+function buildTemplate(
+  index: number
+): TemplateGalleryPage['templates'][number] {
   const { width, height } = DIMENSIONS[index % DIMENSIONS.length]
   return {
     __typename: 'TemplateGalleryItem',

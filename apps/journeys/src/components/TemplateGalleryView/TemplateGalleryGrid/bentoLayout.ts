@@ -35,8 +35,7 @@ export function bentoLayout(count: number, columns: number): BentoSpan[] {
   const featureBandTiles = 1 + flankers
   // Use the feature band unless it would strand exactly one trailing tile,
   // which could only be filled by an ugly full-width banner.
-  const useFeature =
-    count >= featureBandTiles && count - featureBandTiles !== 1
+  const useFeature = count >= featureBandTiles && count - featureBandTiles !== 1
   if (useFeature) {
     spans.push({ col: 2, row: 2 })
     for (let i = 0; i < flankers; i += 1) spans.push({ col: 1, row: 2 })

@@ -227,9 +227,7 @@ export function GalleryTemplateCard({
         sx={{
           position: 'relative',
           width: '100%',
-          ...(isBento
-            ? { flex: 1, minHeight: 0 }
-            : { aspectRatio: '3 / 5' }),
+          ...(isBento ? { flex: 1, minHeight: 0 } : { aspectRatio: '3 / 5' }),
           borderRadius: style.cardRadius,
           overflow: 'hidden',
           backgroundColor: '#ECECEC',
@@ -300,7 +298,11 @@ export function GalleryTemplateCard({
       </Box>
 
       {!isBento && (
-        <GalleryCardActions template={template} accent={style.accent} fullWidth />
+        <GalleryCardActions
+          template={template}
+          accent={style.accent}
+          fullWidth
+        />
       )}
     </Stack>
   )

@@ -33,9 +33,7 @@ const FEATURED_COUNT = 2
 // A faint band tint that reads on any theme (light or dark) without
 // committing the prototype to a colour.
 const bandBackground = (theme: { palette: { mode: string } }): string =>
-  theme.palette.mode === 'dark'
-    ? 'rgba(255,255,255,0.04)'
-    : 'rgba(0,0,0,0.025)'
+  theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.025)'
 
 // Each section is at least one viewport tall: short content centres in the
 // viewport; taller content grows the section (min-height, not fixed) so it
@@ -116,7 +114,9 @@ function metaLine(template: GalleryTemplate): string {
     parsed != null && isValid(parsed)
       ? intlFormat(parsed, { month: 'long', year: 'numeric' })
       : null
-  return [date, language].filter((part) => part != null && part !== '').join(' · ')
+  return [date, language]
+    .filter((part) => part != null && part !== '')
+    .join(' · ')
 }
 
 function SectionLabel({ children }: { children: ReactNode }): ReactElement {
@@ -124,7 +124,12 @@ function SectionLabel({ children }: { children: ReactNode }): ReactElement {
   return (
     <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 3 }}>
       <Box
-        sx={{ width: 28, height: 3, borderRadius: 1, backgroundColor: style.accent }}
+        sx={{
+          width: 28,
+          height: 3,
+          borderRadius: 1,
+          backgroundColor: style.accent
+        }}
       />
       <Typography
         variant="overline"
@@ -159,11 +164,17 @@ function FeaturedRow({
 
   return (
     <Stack
-      direction={{ xs: 'column', md: imagePosition === 'right' ? 'row-reverse' : 'row' }}
+      direction={{
+        xs: 'column',
+        md: imagePosition === 'right' ? 'row-reverse' : 'row'
+      }}
       spacing={{ xs: 3, md: 6 }}
       sx={{ alignItems: { md: 'center' } }}
     >
-      <ScrollReveal from={imageFrom} sx={{ width: '100%', flex: { md: '1 1 56%' } }}>
+      <ScrollReveal
+        from={imageFrom}
+        sx={{ width: '100%', flex: { md: '1 1 56%' } }}
+      >
         <Box
           sx={{
             position: 'relative',
@@ -301,46 +312,49 @@ export function TemplateGallerySections({
         >
           <Container maxWidth="lg">
             <Box ref={restRef} sx={{ willChange: 'transform' }}>
-            <SectionLabel>{t('The complete set')}</SectionLabel>
-            {/* Mobile (xs/sm): portrait overlay cards, two per row */}
-            <Box
-              sx={{
-                display: { xs: 'grid', md: 'none' },
-                mt: 2,
-                gap: 2,
-                gridTemplateColumns: 'repeat(2, 1fr)'
-              }}
-            >
-              {rest.map((template, index) => (
-                <ScrollReveal
-                  key={template.id}
-                  from="up"
-                  delay={Math.min(index, 5) * 70}
-                >
-                  <GalleryTemplateCard template={template} variant="overlay" />
-                </ScrollReveal>
-              ))}
-            </Box>
-            {/* Desktop (md+): elevated panel cards, three per row */}
-            <Box
-              sx={{
-                display: { xs: 'none', md: 'grid' },
-                mt: 2,
-                gap: 4,
-                gridTemplateColumns: 'repeat(3, 1fr)'
-              }}
-            >
-              {rest.map((template, index) => (
-                <ScrollReveal
-                  key={template.id}
-                  from="up"
-                  delay={Math.min(index, 5) * 70}
-                  sx={{ height: '100%' }}
-                >
-                  <GalleryTemplateCard template={template} variant="panel" />
-                </ScrollReveal>
-              ))}
-            </Box>
+              <SectionLabel>{t('The complete set')}</SectionLabel>
+              {/* Mobile (xs/sm): portrait overlay cards, two per row */}
+              <Box
+                sx={{
+                  display: { xs: 'grid', md: 'none' },
+                  mt: 2,
+                  gap: 2,
+                  gridTemplateColumns: 'repeat(2, 1fr)'
+                }}
+              >
+                {rest.map((template, index) => (
+                  <ScrollReveal
+                    key={template.id}
+                    from="up"
+                    delay={Math.min(index, 5) * 70}
+                  >
+                    <GalleryTemplateCard
+                      template={template}
+                      variant="overlay"
+                    />
+                  </ScrollReveal>
+                ))}
+              </Box>
+              {/* Desktop (md+): elevated panel cards, three per row */}
+              <Box
+                sx={{
+                  display: { xs: 'none', md: 'grid' },
+                  mt: 2,
+                  gap: 4,
+                  gridTemplateColumns: 'repeat(3, 1fr)'
+                }}
+              >
+                {rest.map((template, index) => (
+                  <ScrollReveal
+                    key={template.id}
+                    from="up"
+                    delay={Math.min(index, 5) * 70}
+                    sx={{ height: '100%' }}
+                  >
+                    <GalleryTemplateCard template={template} variant="panel" />
+                  </ScrollReveal>
+                ))}
+              </Box>
             </Box>
           </Container>
         </Box>
