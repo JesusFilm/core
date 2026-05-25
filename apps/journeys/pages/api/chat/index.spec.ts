@@ -11,9 +11,10 @@ import {
 
 import handler from './index'
 
-const { mockLoggerError, mockLoggerWarn } = vi.hoisted(() => ({
+const { mockLoggerError, mockLoggerWarn, mockLoggerInfo } = vi.hoisted(() => ({
   mockLoggerError: vi.fn(),
-  mockLoggerWarn: vi.fn()
+  mockLoggerWarn: vi.fn(),
+  mockLoggerInfo: vi.fn()
 }))
 
 vi.mock('@ai-sdk/google', () => ({
@@ -43,7 +44,7 @@ vi.mock('../../../src/libs/langfuse/client', () => ({
   getLangfuse: vi.fn(() => null)
 }))
 vi.mock('../../../src/libs/logger', () => ({
-  logger: { error: mockLoggerError, warn: mockLoggerWarn }
+  logger: { error: mockLoggerError, warn: mockLoggerWarn, info: mockLoggerInfo }
 }))
 
 const mockGetFlags = getFlags as unknown as MockedFunction<typeof getFlags>
@@ -621,6 +622,55 @@ describe('/api/chat handler', () => {
         level: 'DEFAULT'
       })
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
+    })
+
+    it('logs a structured info event on successful completion (no PII)', async () => {
+      const fake = makeFakeLangfuse()
+      mockGetLangfuse.mockReturnValue(fake as never)
+
+      await handler(
+        {
+          method: 'POST',
+          body: {
+            messages: [{ role: 'user', content: 'hi' }],
+            language: 'es',
+            sessionId: 'sess-1',
+            journeyId: 'journey-1',
+            journeyTitle: 'World Cup — Final Card'
+          },
+          headers: { 'x-vercel-ip-country': 'NZ' }
+        } as unknown as NextApiRequest,
+        makeRes().res
+      )
+
+      await lastStreamConfig?.onFinish?.({
+        text: 'a reply',
+        usage: { inputTokens: 5, outputTokens: 9 },
+        finishReason: 'stop'
+      })
+
+      expect(mockLoggerInfo).toHaveBeenCalledTimes(1)
+      const [fields, message] = mockLoggerInfo.mock.calls[0]
+      expect(message).toBe('[chat] completed')
+      expect(fields).toMatchObject({
+        event: 'apologist_chat_completed',
+        journeyId: 'journey-1',
+        journeyTitle: 'World Cup — Final Card',
+        language: 'es',
+        ipCountry: 'NZ',
+        sessionId: 'sess-1',
+        provider: 'apologist',
+        modelId: 'openai/gpt/4o-mini',
+        messageCount: 1,
+        promptTokens: 5,
+        completionTokens: 9,
+        finishReason: 'stop'
+      })
+      expect(typeof fields.durationMs).toBe('number')
+      expect(typeof fields.inputChars).toBe('number')
+      // No PII: raw message text / content is never logged, only counts.
+      expect(fields).not.toHaveProperty('messages')
+      expect(fields).not.toHaveProperty('text')
     })
 
     it('omits usage from the end payload when streamText reports no usage', async () => {

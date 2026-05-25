@@ -69,7 +69,8 @@ const chatRequestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
   language: z.string().max(64).optional(),
   sessionId: z.string().max(128).optional(),
-  journeyId: z.string().max(128).optional()
+  journeyId: z.string().max(128).optional(),
+  journeyTitle: z.string().max(256).optional()
 })
 
 type ParsedChatMessage = z.infer<typeof messageSchema>
@@ -168,6 +169,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
+  const startedAt = Date.now()
   const flags = await getFlags()
   if (flags.apologistChat !== true) {
     res.status(404).end()
@@ -185,7 +187,8 @@ export default async function handler(
     res.status(400).json({ error: 'invalid request' })
     return
   }
-  const { messages, language, sessionId, journeyId } = parsed.data
+  const { messages, language, sessionId, journeyId, journeyTitle } =
+    parsed.data
 
   if (totalMessageChars(messages) > MAX_TOTAL_CHARS) {
     res.status(400).json({ error: 'request too large' })
@@ -278,6 +281,19 @@ export default async function handler(
             level: 'ERROR',
             statusMessage: `finishReason=${finishReason}`
           })
+          logger.error(
+            {
+              event: 'apologist_chat_error',
+              journeyId,
+              journeyTitle,
+              language,
+              provider,
+              modelId,
+              finishReason,
+              durationMs: Date.now() - startedAt
+            },
+            '[chat] completed with error'
+          )
         } else {
           endGenerationIfPending({
             output: text,
@@ -291,6 +307,28 @@ export default async function handler(
                 : undefined,
             level: 'DEFAULT'
           })
+          // Safe, non-PII observability event — registers that a chat
+          // happened, with metadata for troubleshooting. Never logs the
+          // user's message text, the reply, or the raw IP.
+          logger.info(
+            {
+              event: 'apologist_chat_completed',
+              journeyId,
+              journeyTitle,
+              language,
+              ipCountry,
+              sessionId,
+              provider,
+              modelId,
+              messageCount: messages.length,
+              inputChars: totalMessageChars(messages),
+              promptTokens: usage?.inputTokens,
+              completionTokens: usage?.outputTokens,
+              finishReason,
+              durationMs: Date.now() - startedAt
+            },
+            '[chat] completed'
+          )
         }
         await langfuse?.flushAsync()
       }
