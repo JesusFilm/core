@@ -190,6 +190,15 @@ export function TemplateGalleryPageList({
 
   const [templateGalleryPageCreate, { loading: createLoading }] =
     useTemplateGalleryPageCreateMutation()
+  // Synchronous double-click guard for the instant-create flow. The
+  // button's `disabled={createLoading}` reflects Apollo's loading state,
+  // but that flips asynchronously — two clicks in the same tick both
+  // pass the React-state guard and fire two mutations (auto-name then
+  // hands out "Collection 1" + "Collection 2" for a single intent).
+  // A ref mutation is visible to the next synchronous read, so the
+  // second click sees `true` and returns immediately. Same pattern as
+  // `submittingRef` in useCollectionForm and `dragInFlightRef` above.
+  const creatingRef = useRef(false)
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
   const [publishTargetId, setPublishTargetId] = useState<string | null>(null)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
@@ -395,7 +404,8 @@ export function TemplateGalleryPageList({
     // early, so in practice teamId is always defined here. The runtime
     // check is also the TS narrowing — without it, `input.teamId` widens
     // to `string | undefined`.
-    if (createLoading || teamId == null) return
+    if (creatingRef.current || createLoading || teamId == null) return
+    creatingRef.current = true
     try {
       await templateGalleryPageCreate({
         variables: {
@@ -422,6 +432,8 @@ export function TemplateGalleryPageList({
           { variant: 'error', preventDuplicate: true }
         )
       }
+    } finally {
+      creatingRef.current = false
     }
   }
   function handleCloseEdit(): void {
