@@ -117,7 +117,10 @@ function CollectionCardImpl({
     <Card
       data-testid={`CollectionCard-${collection.id}`}
       sx={{
-        p: 2,
+        // 12px inner padding (p:3). The collections Stack bleeds each box
+        // outward by this padding + 1px border so the inner card grid lines
+        // up with the All Templates grid below — keep the two in sync.
+        p: 3,
         // NES-1696: a subtle transparent-white panel over the grey page
         // with a light grey stroke and no shadow, per the Figma design.
         // Spec: bg rgba(255,255,255,0.40), 1px solid divider (#DEDFE0),

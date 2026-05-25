@@ -592,7 +592,19 @@ export function TemplateGalleryPageList({
                   )}
                 </Alert>
               ) : (
-                <Stack spacing={2} sx={{ mb: 4 }}>
+                <Stack
+                  spacing={2}
+                  sx={{
+                    mb: 4,
+                    // Stretch each collection box outward by the
+                    // CollectionCard's inner horizontal padding (p:3 = 12px)
+                    // + 1px border, so the card grid inside spans the same
+                    // width as the All Templates grid below and the cards
+                    // column-align (NES-1696). Keep in sync with the
+                    // CollectionCard padding above.
+                    mx: (theme) => `calc(${theme.spacing(-3)} - 1px)`
+                  }}
+                >
                   {collections.map((collection) => (
                     <DroppableCollectionWrapper
                       key={collection.id}
@@ -647,10 +659,6 @@ export function TemplateGalleryPageList({
                   journeys={unsectioned}
                   publishedLock={false}
                   dragInFlight={interactionsLocked}
-                  // No collection-card edge to balance against here —
-                  // drop the outer padding so cards align with the
-                  // collection-card edges above.
-                  outerPadding={false}
                 />
               )}
             </UnsectionedDroppable>
