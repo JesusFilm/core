@@ -517,31 +517,30 @@ export function TemplateGalleryPageList({
             spacing={2}
             sx={{ mb: 3 }}
           >
-            {/* min-width: 0 lets the description text wrap inside the flex
-              row instead of pushing into the button on narrow viewports
-              (NES-1652). */}
-            <Stack sx={{ minWidth: 0, flex: 1 }}>
-              <Stack direction="row" alignItems="center" spacing={0.5}>
-                <Typography variant="h4">{t('Collections')}</Typography>
-                {onOpenInfo != null && (
-                  <IconButton
-                    data-testid="TemplateInfoPanelMobileTrigger"
-                    aria-label={t('Open template info')}
-                    onClick={onOpenInfo}
-                    size="small"
-                    sx={{
-                      display: { xs: 'inline-flex', md: 'none' },
-                      color: 'text.secondary',
-                      p: 0.5
-                    }}
-                  >
-                    <InfoOutlinedIcon fontSize="small" />
-                  </IconButton>
-                )}
-              </Stack>
-              <Typography variant="body2" color="text.secondary">
-                {t('Group your team templates into a public gallery page.')}
-              </Typography>
+            {/* min-width: 0 lets the title row shrink instead of pushing into
+              the button on narrow viewports (NES-1652). */}
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={0.5}
+              sx={{ minWidth: 0, flex: 1 }}
+            >
+              <Typography variant="h4">{t('Collections')}</Typography>
+              {onOpenInfo != null && (
+                <IconButton
+                  data-testid="TemplateInfoPanelMobileTrigger"
+                  aria-label={t('Open template info')}
+                  onClick={onOpenInfo}
+                  size="small"
+                  sx={{
+                    display: { xs: 'inline-flex', md: 'none' },
+                    color: 'text.secondary',
+                    p: 0.5
+                  }}
+                >
+                  <InfoOutlinedIcon fontSize="small" />
+                </IconButton>
+              )}
             </Stack>
             <IconButton
               aria-label={t('Create Collection')}
@@ -634,34 +633,27 @@ export function TemplateGalleryPageList({
                 </Stack>
               ))}
 
-            <Box>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                {t('All Templates')}
-              </Typography>
-              <UnsectionedDroppable disabled={interactionsLocked}>
-                {unsectioned.length === 0 ? (
-                  <Box
-                    sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}
-                  >
-                    <Typography variant="caption">
-                      {allTemplates.length === 0
-                        ? t('No team templates yet.')
-                        : t('All templates are in collections.')}
-                    </Typography>
-                  </Box>
-                ) : (
-                  <DraggableJourneysGrid
-                    journeys={unsectioned}
-                    publishedLock={false}
-                    dragInFlight={interactionsLocked}
-                    // No collection-card edge to balance against here —
-                    // drop the outer padding so cards align with the
-                    // collection-card edges above.
-                    outerPadding={false}
-                  />
-                )}
-              </UnsectionedDroppable>
-            </Box>
+            <UnsectionedDroppable disabled={interactionsLocked}>
+              {unsectioned.length === 0 ? (
+                <Box sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}>
+                  <Typography variant="caption">
+                    {allTemplates.length === 0
+                      ? t('No team templates yet.')
+                      : t('All templates are in collections.')}
+                  </Typography>
+                </Box>
+              ) : (
+                <DraggableJourneysGrid
+                  journeys={unsectioned}
+                  publishedLock={false}
+                  dragInFlight={interactionsLocked}
+                  // No collection-card edge to balance against here —
+                  // drop the outer padding so cards align with the
+                  // collection-card edges above.
+                  outerPadding={false}
+                />
+              )}
+            </UnsectionedDroppable>
 
             {/* Default dropAnimation snaps the card back to its origin when a
             drop is rejected (published, no-op, etc.) and runs the standard
