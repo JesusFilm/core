@@ -4,35 +4,37 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import { GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPage'
 import { GALLERY_ACCENT } from '../galleryTheme'
+import { PublicGalleryPageData } from '../publicGalleryPageData'
 
-interface TemplateGalleryHeaderProps {
-  gallery: Pick<
-    TemplateGalleryPage,
-    | 'title'
-    | 'description'
-    | 'creatorName'
-    | 'creatorImageSrc'
-    | 'creatorImageAlt'
-  >
+type JourneyViewHeaderData = Pick<
+  PublicGalleryPageData,
+  | 'title'
+  | 'description'
+  | 'creatorName'
+  | 'creatorImageSrc'
+  | 'creatorImageAlt'
+>
+
+interface JourneyViewHeaderProps {
+  data: JourneyViewHeaderData
   /** Place the creator between the title and description instead of last. */
   creatorAboveDescription?: boolean
 }
 
-export function TemplateGalleryHeader({
-  gallery,
+export function JourneyViewHeader({
+  data,
   creatorAboveDescription = false
-}: TemplateGalleryHeaderProps): ReactElement {
-  const { t } = useTranslation('apps-journeys')
+}: JourneyViewHeaderProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
 
   const hasCreatorImage =
-    gallery.creatorImageSrc != null && gallery.creatorImageSrc !== ''
-  const hasCreatorName = gallery.creatorName !== ''
+    data.creatorImageSrc != null && data.creatorImageSrc !== ''
+  const hasCreatorName = data.creatorName !== ''
   const showCreator = hasCreatorImage || hasCreatorName
 
   const descriptionNode =
-    gallery.description !== '' ? (
+    data.description !== '' ? (
       <Typography
         variant="body1"
         sx={{
@@ -44,7 +46,7 @@ export function TemplateGalleryHeader({
           ...(creatorAboveDescription && { pt: { xs: 3, md: 0 } })
         }}
       >
-        {gallery.description}
+        {data.description}
       </Typography>
     ) : null
 
@@ -52,17 +54,17 @@ export function TemplateGalleryHeader({
     <Stack direction="row" spacing={1.5} alignItems="center">
       {hasCreatorImage && (
         <Avatar
-          src={gallery.creatorImageSrc ?? undefined}
+          src={data.creatorImageSrc ?? undefined}
           alt={
-            gallery.creatorImageAlt != null && gallery.creatorImageAlt !== ''
-              ? gallery.creatorImageAlt
-              : gallery.creatorName
+            data.creatorImageAlt != null && data.creatorImageAlt !== ''
+              ? data.creatorImageAlt
+              : data.creatorName
           }
           sx={{ width: 44, height: 44 }}
         />
       )}
       {hasCreatorName && (
-        <Typography variant="subtitle2">{gallery.creatorName}</Typography>
+        <Typography variant="subtitle2">{data.creatorName}</Typography>
       )}
     </Stack>
   ) : null
@@ -92,7 +94,7 @@ export function TemplateGalleryHeader({
           }
         })}
       >
-        {gallery.title}
+        {data.title}
       </Typography>
       {creatorAboveDescription && creatorNode}
       {descriptionNode}

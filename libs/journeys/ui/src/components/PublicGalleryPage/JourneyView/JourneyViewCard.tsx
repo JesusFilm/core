@@ -6,12 +6,11 @@ import { intlFormat, isValid, parseISO } from 'date-fns'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import { abbreviateLanguageName } from '@core/journeys/ui/abbreviateLanguageName'
-
-import { GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate } from '../../../../__generated__/GetTemplateGalleryPage'
+import { abbreviateLanguageName } from '../../../libs/abbreviateLanguageName'
 import { GALLERY_ACCENT, GALLERY_CARD_RADIUS } from '../galleryTheme'
+import { PublicGalleryPageItem } from '../publicGalleryPageData'
 
-import { GalleryCardActions } from './GalleryCardActions'
+import { JourneyViewCardActions } from './JourneyViewCardActions'
 
 /**
  * How the card is drawn:
@@ -21,8 +20,8 @@ import { GalleryCardActions } from './GalleryCardActions'
  */
 type CardVariant = 'overlay' | 'panel'
 
-interface GalleryTemplateCardProps {
-  template: GalleryTemplate
+interface JourneyViewCardProps {
+  item: PublicGalleryPageItem
   priority?: boolean
   variant?: CardVariant
 }
@@ -38,36 +37,37 @@ const clamp = (lines: number) =>
     overflow: 'hidden'
   }) as const
 
-export function GalleryTemplateCard({
-  template,
-  priority = false,
-  variant = 'overlay'
-}: GalleryTemplateCardProps): ReactElement {
-  const localLanguage = template.language.name.find(
-    ({ primary }) => !primary
-  )?.value
-  const nativeLanguage =
-    template.language.name.find(({ primary }) => primary)?.value ?? ''
+export function metaLine(item: PublicGalleryPageItem): string {
+  const names = item.languageName ?? []
+  const localLanguage = names.find(({ primary }) => !primary)?.value
+  const nativeLanguage = names.find(({ primary }) => primary)?.value ?? ''
   const displayLanguage = abbreviateLanguageName(
     localLanguage ?? nativeLanguage
   )
 
   const parsedCreatedAt =
-    template.createdAt != null ? parseISO(String(template.createdAt)) : null
+    item.createdAt != null ? parseISO(String(item.createdAt)) : null
   const date =
     parsedCreatedAt != null && isValid(parsedCreatedAt)
       ? intlFormat(parsedCreatedAt, { month: 'long', year: 'numeric' })
       : null
-  const metaParts = [date, displayLanguage].filter(
-    (part): part is string => part != null && part !== ''
-  )
-  const meta = metaParts.join(' · ')
 
-  const imageSrc = template.primaryImageBlock?.src ?? null
-  const imageAlt = template.primaryImageBlock?.alt ?? template.title
+  return [date, displayLanguage]
+    .filter((part): part is string => part != null && part !== '')
+    .join(' · ')
+}
 
-  const hasDescription =
-    template.description != null && template.description !== ''
+export function JourneyViewCard({
+  item,
+  priority = false,
+  variant = 'overlay'
+}: JourneyViewCardProps): ReactElement {
+  const meta = metaLine(item)
+
+  const imageSrc = item.image?.src ?? null
+  const imageAlt = item.image?.alt ?? item.title
+
+  const hasDescription = item.description != null && item.description !== ''
 
   const imageContent =
     imageSrc != null ? (
@@ -140,19 +140,20 @@ export function GalleryTemplateCard({
           <Typography
             sx={{ fontWeight: 700, fontSize: '1.0625rem', lineHeight: 1.3 }}
           >
-            {template.title}
+            {item.title}
           </Typography>
           {hasDescription && (
             <Typography
               variant="body2"
               sx={{ color: 'text.secondary', ...clamp(2) }}
             >
-              {template.description}
+              {item.description}
             </Typography>
           )}
           <Box sx={{ pt: 1, mt: 'auto' }}>
-            <GalleryCardActions
-              template={template}
+            <JourneyViewCardActions
+              itemId={item.id}
+              itemSlug={item.slug}
               accent={GALLERY_ACCENT}
               fullWidth
             />
@@ -216,7 +217,7 @@ export function GalleryTemplateCard({
                 ...clamp(2)
               }}
             >
-              {template.title}
+              {item.title}
             </Typography>
             {hasDescription && (
               <Typography
@@ -227,15 +228,16 @@ export function GalleryTemplateCard({
                   ...clamp(2)
                 }}
               >
-                {template.description}
+                {item.description}
               </Typography>
             )}
           </Stack>
         </Box>
       </Box>
 
-      <GalleryCardActions
-        template={template}
+      <JourneyViewCardActions
+        itemId={item.id}
+        itemSlug={item.slug}
         accent={GALLERY_ACCENT}
         fullWidth
       />

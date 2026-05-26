@@ -4,34 +4,31 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { intlFormat, isValid, parseISO } from 'date-fns'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode, RefObject, useEffect, useRef } from 'react'
 
-import { abbreviateLanguageName } from '@core/journeys/ui/abbreviateLanguageName'
-
-import {
-  GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate,
-  GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage
-} from '../../../../__generated__/GetTemplateGalleryPage'
 import { GALLERY_ACCENT, GALLERY_CARD_RADIUS } from '../galleryTheme'
-import { TemplateGalleryEmptyState } from '../TemplateGalleryEmptyState'
-import { GalleryCardActions } from '../TemplateGalleryGrid/GalleryCardActions'
-import { GalleryTemplateCard } from '../TemplateGalleryGrid/GalleryTemplateCard'
-import { TemplateGalleryHeader } from '../TemplateGalleryHeader'
-import { TemplateGalleryMedia } from '../TemplateGalleryMedia'
+import {
+  PublicGalleryPageData,
+  PublicGalleryPageItem
+} from '../publicGalleryPageData'
 
+import { JourneyViewCard, metaLine } from './JourneyViewCard'
+import { JourneyViewCardActions } from './JourneyViewCardActions'
+import { JourneyViewEmptyState } from './JourneyViewEmptyState'
+import { JourneyViewHeader } from './JourneyViewHeader'
+import { JourneyViewMedia } from './JourneyViewMedia'
 import { ScrollReveal } from './ScrollReveal'
 
-interface TemplateGallerySectionsProps {
-  gallery: TemplateGalleryPage
+interface JourneyViewProps {
+  data: PublicGalleryPageData
 }
 
 const FEATURED_COUNT = 2
 
 // A faint band tint that reads on any theme (light or dark) without
-// committing the prototype to a colour.
+// committing to a colour.
 const bandBackground = (theme: { palette: { mode: string } }): string =>
   theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.025)'
 
@@ -103,22 +100,6 @@ function useParallax(
   return ref
 }
 
-function metaLine(template: GalleryTemplate): string {
-  const local = template.language.name.find(({ primary }) => !primary)?.value
-  const native =
-    template.language.name.find(({ primary }) => primary)?.value ?? ''
-  const language = abbreviateLanguageName(local ?? native)
-  const parsed =
-    template.createdAt != null ? parseISO(String(template.createdAt)) : null
-  const date =
-    parsed != null && isValid(parsed)
-      ? intlFormat(parsed, { month: 'long', year: 'numeric' })
-      : null
-  return [date, language]
-    .filter((part) => part != null && part !== '')
-    .join(' · ')
-}
-
 function SectionLabel({ children }: { children: ReactNode }): ReactElement {
   return (
     <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 3 }}>
@@ -141,19 +122,18 @@ function SectionLabel({ children }: { children: ReactNode }): ReactElement {
 }
 
 function FeaturedRow({
-  template,
+  item,
   imagePosition,
   priority
 }: {
-  template: GalleryTemplate
+  item: PublicGalleryPageItem
   imagePosition: 'left' | 'right'
   priority: boolean
 }): ReactElement {
-  const meta = metaLine(template)
-  const hasDescription =
-    template.description != null && template.description !== ''
-  const imageSrc = template.primaryImageBlock?.src ?? null
-  const imageAlt = template.primaryImageBlock?.alt ?? template.title
+  const meta = metaLine(item)
+  const hasDescription = item.description != null && item.description !== ''
+  const imageSrc = item.image?.src ?? null
+  const imageAlt = item.image?.alt ?? item.title
 
   // Picture animates in from its own side first, then the text from the
   // opposite side a beat later.
@@ -224,15 +204,19 @@ function FeaturedRow({
             </Typography>
           )}
           <Typography variant="h4" sx={{ fontWeight: 800 }}>
-            {template.title}
+            {item.title}
           </Typography>
           {hasDescription && (
             <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-              {template.description}
+              {item.description}
             </Typography>
           )}
           <Box sx={{ pt: 1 }}>
-            <GalleryCardActions template={template} accent={GALLERY_ACCENT} />
+            <JourneyViewCardActions
+              itemId={item.id}
+              itemSlug={item.slug}
+              accent={GALLERY_ACCENT}
+            />
           </Box>
         </Stack>
       </ScrollReveal>
@@ -240,18 +224,16 @@ function FeaturedRow({
   )
 }
 
-export function TemplateGallerySections({
-  gallery
-}: TemplateGallerySectionsProps): ReactElement {
-  const { t } = useTranslation('apps-journeys')
+export function JourneyView({ data }: JourneyViewProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   const introRef = useParallax()
   const featuredRef = useParallax()
   const restRef = useParallax()
 
-  const featured = gallery.templates.slice(0, FEATURED_COUNT)
-  const rest = gallery.templates.slice(FEATURED_COUNT)
-  const hasTemplates = gallery.templates.length > 0
-  const hasMedia = gallery.mediaUrl != null && gallery.mediaUrl !== ''
+  const featured = data.items.slice(0, FEATURED_COUNT)
+  const rest = data.items.slice(FEATURED_COUNT)
+  const hasTemplates = data.items.length > 0
+  const hasMedia = data.mediaUrl != null && data.mediaUrl !== ''
 
   return (
     <Box data-testid="TemplateGallerySections">
@@ -262,7 +244,7 @@ export function TemplateGallerySections({
       >
         <Container maxWidth="md">
           <Box ref={introRef} sx={{ willChange: 'transform' }}>
-            <TemplateGalleryHeader gallery={gallery} creatorAboveDescription />
+            <JourneyViewHeader data={data} creatorAboveDescription />
           </Box>
         </Container>
       </Box>
@@ -283,10 +265,10 @@ export function TemplateGallerySections({
             <Box ref={featuredRef} sx={{ willChange: 'transform' }}>
               <SectionLabel>{t('Featured')}</SectionLabel>
               <Stack spacing={{ xs: 9, md: 13 }} sx={{ mt: 2 }}>
-                {featured.map((template, index) => (
+                {featured.map((item, index) => (
                   <FeaturedRow
-                    key={template.id}
-                    template={template}
+                    key={item.id}
+                    item={item}
                     imagePosition={index % 2 === 0 ? 'left' : 'right'}
                     priority={index < 2}
                   />
@@ -320,16 +302,13 @@ export function TemplateGallerySections({
                   gridTemplateColumns: 'repeat(2, 1fr)'
                 }}
               >
-                {rest.map((template, index) => (
+                {rest.map((item, index) => (
                   <ScrollReveal
-                    key={template.id}
+                    key={item.id}
                     from="up"
                     delay={Math.min(index, 5) * 70}
                   >
-                    <GalleryTemplateCard
-                      template={template}
-                      variant="overlay"
-                    />
+                    <JourneyViewCard item={item} variant="overlay" />
                   </ScrollReveal>
                 ))}
               </Box>
@@ -342,14 +321,14 @@ export function TemplateGallerySections({
                   gridTemplateColumns: 'repeat(3, 1fr)'
                 }}
               >
-                {rest.map((template, index) => (
+                {rest.map((item, index) => (
                   <ScrollReveal
-                    key={template.id}
+                    key={item.id}
                     from="up"
                     delay={Math.min(index, 5) * 70}
                     sx={{ height: '100%' }}
                   >
-                    <GalleryTemplateCard template={template} variant="panel" />
+                    <JourneyViewCard item={item} variant="panel" />
                   </ScrollReveal>
                 ))}
               </Box>
@@ -360,7 +339,7 @@ export function TemplateGallerySections({
 
       {!hasTemplates && (
         <Container maxWidth="lg" sx={{ py: 10 }}>
-          <TemplateGalleryEmptyState />
+          <JourneyViewEmptyState />
         </Container>
       )}
 
@@ -376,7 +355,7 @@ export function TemplateGallerySections({
           }}
         >
           <Container maxWidth="lg">
-            <TemplateGalleryMedia mediaUrl={gallery.mediaUrl} />
+            <JourneyViewMedia mediaUrl={data.mediaUrl} />
           </Container>
         </Box>
       )}

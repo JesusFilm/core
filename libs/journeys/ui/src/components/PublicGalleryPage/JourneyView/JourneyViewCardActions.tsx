@@ -7,10 +7,10 @@ import { ReactElement } from 'react'
 
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
-import { GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate } from '../../../../__generated__/GetTemplateGalleryPage'
-
-interface GalleryCardActionsProps {
-  template: Pick<GalleryTemplate, 'id' | 'slug'>
+interface JourneyViewCardActionsProps {
+  /** Template id (admin deep link) and slug (public viewer route). */
+  itemId: string
+  itemSlug: string
   /** Accent colour for the outlined Use button and the filled Preview button. */
   accent: string
   fullWidth?: boolean
@@ -22,20 +22,21 @@ interface GalleryCardActionsProps {
 // button line up exactly.
 const ACTION_SIZE = 40
 
-export function GalleryCardActions({
-  template,
+export function JourneyViewCardActions({
+  itemId,
+  itemSlug,
   accent,
   fullWidth = false,
   onDark = false
-}: GalleryCardActionsProps): ReactElement {
-  const { t } = useTranslation('apps-journeys')
+}: JourneyViewCardActionsProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
 
   const adminUrl =
     process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? 'https://admin.nextstep.is'
   // Deep link into the admin "Use Template" receiver (NES-1608).
-  const useTemplateHref = `${adminUrl}/?useTemplate=${encodeURIComponent(template.id)}`
+  const useTemplateHref = `${adminUrl}/?useTemplate=${encodeURIComponent(itemId)}`
   // Public viewer route on the same root domain.
-  const previewHref = `/${template.slug}`
+  const previewHref = `/${itemSlug}`
 
   const useButtonSx = onDark
     ? {

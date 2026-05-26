@@ -4,8 +4,8 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-export function TemplateGalleryEmptyState(): ReactElement {
-  const { t } = useTranslation('apps-journeys')
+export function JourneyViewEmptyState(): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
 
   return (
     <Stack
