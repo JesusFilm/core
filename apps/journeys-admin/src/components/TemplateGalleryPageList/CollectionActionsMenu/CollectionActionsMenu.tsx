@@ -15,7 +15,6 @@ export interface CollectionActionsMenuProps {
   collection: TemplateGalleryPage
   onEdit?: (collection: TemplateGalleryPage) => void
   onPublish?: (collection: TemplateGalleryPage) => void
-  onUnpublish?: (collection: TemplateGalleryPage) => void
   onUngroup?: (collection: TemplateGalleryPage) => void
   busy?: boolean
   canPublish?: boolean
@@ -25,16 +24,16 @@ export interface CollectionActionsMenuProps {
 }
 
 /**
- * Shared 3-dot menu for a single collection's actions
- * (Edit / Preview / Publish-Unpublish / Remove). Used by both the desktop
- * CollectionCard and the mobile filter header strip so the two surfaces
- * cannot drift in available actions or guard logic.
+ * 3-dot actions menu for a single collection, used by the mobile filter header
+ * strip. Mirrors the desktop CollectionCard's inline menu (9247): a state-aware
+ * Edit (published) or Publish (draft) entry, Preview, and Remove. Unpublish is
+ * intentionally absent — it lives in the edit dialog's footer so the menu keeps
+ * a single dialog entry point.
  */
 export function CollectionActionsMenu({
   collection,
   onEdit,
   onPublish,
-  onUnpublish,
   onUngroup,
   busy,
   canPublish = true,
@@ -46,7 +45,6 @@ export function CollectionActionsMenu({
   const [ungroupOpen, setUngroupOpen] = useState(false)
 
   const isPublished = collection.status === TemplateGalleryPageStatus.published
-  const isEmpty = collection.templates.length === 0
   const menuId = `collection-menu-${collection.id}${testIdSuffix != null ? `-${testIdSuffix}` : ''}`
 
   const previewDisabled = !isPublished || !canPublish || !collection.slug
@@ -57,12 +55,11 @@ export function CollectionActionsMenu({
       ? t('Publish the collection to preview it.')
       : ''
 
-  const publishDisabled = isEmpty || !canPublish
-  const publishTooltip = !canPublish
-    ? (publishBlockedReason ?? '')
-    : isEmpty
-      ? t('Add at least one template before publishing')
-      : ''
+  // Empty collections may still open the publish dialog — the dialog's own
+  // Publish button gates emptiness. Only the harder custom-domain constraint
+  // disables the menu item (mirrors the desktop CollectionCard).
+  const publishDisabled = !canPublish
+  const publishTooltip = !canPublish ? (publishBlockedReason ?? '') : ''
 
   function handleMenuOpen(event: MouseEvent<HTMLButtonElement>): void {
     setAnchorEl(event.currentTarget)
@@ -77,10 +74,6 @@ export function CollectionActionsMenu({
   function handlePublish(): void {
     handleMenuClose()
     onPublish?.(collection)
-  }
-  function handleUnpublish(): void {
-    handleMenuClose()
-    onUnpublish?.(collection)
   }
   function handlePreview(): void {
     handleMenuClose()
@@ -118,20 +111,12 @@ export function CollectionActionsMenu({
         open={anchorEl != null}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleEdit}>{t('Edit')}</MenuItem>
-        <Tooltip
-          title={previewTooltip}
-          placement="left"
-          disableHoverListener={!previewDisabled}
-          disableFocusListener={!previewDisabled}
-        >
-          <span>
-            <MenuItem onClick={handlePreview} disabled={previewDisabled}>
-              {t('Preview')}
-            </MenuItem>
-          </span>
-        </Tooltip>
-        {!isPublished && (
+        {/* State-aware single dialog entry point: published collections expose
+            "Edit"; drafts expose "Publish" (the dialog has a Save Draft button
+            for draft edits). Matches the desktop CollectionCard. */}
+        {isPublished ? (
+          <MenuItem onClick={handleEdit}>{t('Edit')}</MenuItem>
+        ) : (
           <Tooltip
             title={publishTooltip}
             placement="left"
@@ -145,9 +130,18 @@ export function CollectionActionsMenu({
             </span>
           </Tooltip>
         )}
-        {isPublished && (
-          <MenuItem onClick={handleUnpublish}>{t('Unpublish')}</MenuItem>
-        )}
+        <Tooltip
+          title={previewTooltip}
+          placement="left"
+          disableHoverListener={!previewDisabled}
+          disableFocusListener={!previewDisabled}
+        >
+          <span>
+            <MenuItem onClick={handlePreview} disabled={previewDisabled}>
+              {t('Preview')}
+            </MenuItem>
+          </span>
+        </Tooltip>
         <MenuItem onClick={handleOpenUngroup}>
           {t('Remove Collection')}
         </MenuItem>

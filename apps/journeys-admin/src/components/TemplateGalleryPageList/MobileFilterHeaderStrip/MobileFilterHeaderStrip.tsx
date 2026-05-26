@@ -14,7 +14,6 @@ export interface MobileFilterHeaderStripProps {
   count: number
   onEdit?: (collection: TemplateGalleryPage) => void
   onPublish?: (collection: TemplateGalleryPage) => void
-  onUnpublish?: (collection: TemplateGalleryPage) => void
   onUngroup?: (collection: TemplateGalleryPage) => void
   busy?: boolean
   canPublish?: boolean
@@ -32,7 +31,6 @@ export function MobileFilterHeaderStrip({
   count,
   onEdit,
   onPublish,
-  onUnpublish,
   onUngroup,
   busy,
   canPublish,
@@ -80,7 +78,6 @@ export function MobileFilterHeaderStrip({
           collection={selectedCollection}
           onEdit={onEdit}
           onPublish={onPublish}
-          onUnpublish={onUnpublish}
           onUngroup={onUngroup}
           busy={busy}
           canPublish={canPublish}

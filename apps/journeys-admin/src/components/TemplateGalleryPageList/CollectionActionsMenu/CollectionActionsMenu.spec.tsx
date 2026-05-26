@@ -31,34 +31,26 @@ function makeCollection(
 }
 
 describe('CollectionActionsMenu', () => {
-  it('opens the menu and surfaces Edit / Publish / Remove for a draft', async () => {
-    render(
-      <CollectionActionsMenu
-        collection={makeCollection({
-          templates: [
-            {
-              __typename: 'TemplateGalleryItem',
-              id: 'j1',
-              title: 'j1',
-              primaryImageBlock: null
-            }
-          ]
-        })}
-      />
-    )
+  it('surfaces Publish / Remove (no Edit, no Unpublish) for a draft', async () => {
+    render(<CollectionActionsMenu collection={makeCollection()} />)
     await userEvent.click(
       screen.getByRole('button', { name: 'Collection actions' })
     )
-    expect(screen.getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
     expect(
       screen.getByRole('menuitem', { name: 'Publish' })
     ).toBeInTheDocument()
     expect(
       screen.getByRole('menuitem', { name: 'Remove Collection' })
     ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('menuitem', { name: 'Edit' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('menuitem', { name: 'Unpublish' })
+    ).not.toBeInTheDocument()
   })
 
-  it('shows Unpublish (and hides Publish) for a published collection', async () => {
+  it('surfaces Edit (no Publish, no Unpublish) for a published collection', async () => {
     render(
       <CollectionActionsMenu
         collection={makeCollection({
@@ -78,17 +70,22 @@ describe('CollectionActionsMenu', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Collection actions' })
     )
-    expect(
-      screen.getByRole('menuitem', { name: 'Unpublish' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
     expect(
       screen.queryByRole('menuitem', { name: 'Publish' })
     ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('menuitem', { name: 'Unpublish' })
+    ).not.toBeInTheDocument()
   })
 
-  it('invokes onEdit with the collection', async () => {
+  it('invokes onEdit for a published collection', async () => {
     const handleEdit = jest.fn()
-    const collection = makeCollection({ id: 'page-42' })
+    const collection = makeCollection({
+      id: 'page-42',
+      status: TemplateGalleryPageStatus.published,
+      publishedAt: '2026-05-06T00:00:00Z'
+    })
     render(
       <CollectionActionsMenu collection={collection} onEdit={handleEdit} />
     )
@@ -97,6 +94,22 @@ describe('CollectionActionsMenu', () => {
     )
     await userEvent.click(screen.getByRole('menuitem', { name: 'Edit' }))
     expect(handleEdit).toHaveBeenCalledWith(collection)
+  })
+
+  it('invokes onPublish for a draft collection', async () => {
+    const handlePublish = jest.fn()
+    const collection = makeCollection({ id: 'page-7' })
+    render(
+      <CollectionActionsMenu
+        collection={collection}
+        onPublish={handlePublish}
+      />
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Collection actions' })
+    )
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Publish' }))
+    expect(handlePublish).toHaveBeenCalledWith(collection)
   })
 
   it('disables the actions button when busy', () => {
