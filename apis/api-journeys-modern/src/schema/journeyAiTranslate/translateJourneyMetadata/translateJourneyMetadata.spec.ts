@@ -28,7 +28,9 @@ const session = {
 } as unknown as OpenrouterFallbackSession
 
 function promptOf(call: unknown): string {
-  const [options] = call as [{ messages: Array<{ content: Array<{ text: string }> }> }]
+  const [options] = call as [
+    { messages: Array<{ content: Array<{ text: string }> }> }
+  ]
   return options.messages[1].content[0].text
 }
 
