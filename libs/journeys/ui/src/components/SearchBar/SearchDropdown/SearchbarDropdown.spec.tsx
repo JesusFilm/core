@@ -23,9 +23,7 @@ import { SearchbarDropdown } from './SearchbarDropdown'
 
 vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 
 const mockUseClearRefinements = useClearRefinements as MockedFunction<
   typeof useClearRefinements

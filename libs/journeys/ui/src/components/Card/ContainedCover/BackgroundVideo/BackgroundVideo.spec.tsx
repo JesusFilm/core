@@ -82,9 +82,7 @@ const playerRefMock = {
 describe('BackgroundVideo', () => {
   describe('BackgroundVideo', () => {
     beforeEach(() => {
-      vi
-        .mocked(videojs)
-        .mockReturnValue(playerRefMock as unknown as Player)
+      vi.mocked(videojs).mockReturnValue(playerRefMock as unknown as Player)
     })
 
     it('should set container to 16:9', () => {

@@ -10,9 +10,7 @@ import { Suggestions } from './Suggestions'
 
 vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 
 describe('Suggestions', () => {
   const refine = vi.fn()

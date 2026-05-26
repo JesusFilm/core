@@ -17,10 +17,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      'next-i18next/pages': resolve(
-        __dirname,
-        './test/next-i18next-pages.ts'
-      )
+      'next-i18next/pages': resolve(__dirname, './test/next-i18next-pages.ts')
     }
   },
   test: {
@@ -37,11 +34,17 @@ export default defineConfig({
     alias: [
       {
         find: /^swiper\/react$/,
-        replacement: resolve(__dirname, '../../../apps/__mocks__/swiper/react.tsx')
+        replacement: resolve(
+          __dirname,
+          '../../../apps/__mocks__/swiper/react.tsx'
+        )
       },
       {
         find: /^swiper\/modules$/,
-        replacement: resolve(__dirname, '../../../apps/__mocks__/swiper/modules.tsx')
+        replacement: resolve(
+          __dirname,
+          '../../../apps/__mocks__/swiper/modules.tsx'
+        )
       },
       {
         find: /^swiper\/css(\/.*)?$/,

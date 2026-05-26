@@ -26,9 +26,7 @@ const mockUseClearRefinements = useClearRefinements as MockedFunction<
   typeof useClearRefinements
 >
 
-const mockUseSearchBox = useSearchBox as MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 
 const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList

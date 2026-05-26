@@ -402,12 +402,10 @@ describe('VideoControls', () => {
 
   describe('fullscreen card', () => {
     beforeEach(() => {
-      vi
-        .spyOn(fscreen, 'fullscreenEnabled', 'get')
-        .mockImplementation(() => true)
-      vi
-        .spyOn(fscreen, 'requestFullscreen')
-        .mockImplementation(() => vi.fn())
+      vi.spyOn(fscreen, 'fullscreenEnabled', 'get').mockImplementation(
+        () => true
+      )
+      vi.spyOn(fscreen, 'requestFullscreen').mockImplementation(() => vi.fn())
     })
 
     it('maximises the entire card on fullscreen icon click', async () => {

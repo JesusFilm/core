@@ -18,9 +18,7 @@ vi.mock('@next/third-parties/google', () => ({
   sendGTMEvent: vi.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as MockedFunction<
-  typeof sendGTMEvent
->
+const mockedSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
 const TestComponent = (): ReactElement => {
   const { query, activeTeam, setActiveTeam, refetch } = useTeam()

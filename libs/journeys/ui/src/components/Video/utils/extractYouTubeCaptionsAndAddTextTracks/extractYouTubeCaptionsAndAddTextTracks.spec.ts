@@ -19,11 +19,10 @@ const mockGetYouTubePlayer = getYouTubePlayer as MockedFunction<
   typeof getYouTubePlayer
 >
 const mockRemoveAllRemoteTextTracks =
-  removeAllRemoteTextTracks as MockedFunction<
-    typeof removeAllRemoteTextTracks
-  >
-const mockSetYouTubeCaptionTrack =
-  setYouTubeCaptionTrack as MockedFunction<typeof setYouTubeCaptionTrack>
+  removeAllRemoteTextTracks as MockedFunction<typeof removeAllRemoteTextTracks>
+const mockSetYouTubeCaptionTrack = setYouTubeCaptionTrack as MockedFunction<
+  typeof setYouTubeCaptionTrack
+>
 const mockUnloadYouTubeCaptions = unloadYouTubeCaptions as MockedFunction<
   typeof unloadYouTubeCaptions
 >

@@ -21,9 +21,7 @@ vi.mock('next-plausible', () => ({
   usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as MockedFunction<
-  typeof usePlausible
->
+const mockUsePlausible = usePlausible as MockedFunction<typeof usePlausible>
 
 describe('ShareButton', () => {
   const originalNavigator = { ...global.navigator }

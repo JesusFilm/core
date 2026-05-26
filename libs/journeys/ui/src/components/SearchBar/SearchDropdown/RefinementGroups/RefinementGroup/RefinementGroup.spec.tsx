@@ -14,9 +14,7 @@ import { RefinementGroup } from './RefinementGroup'
 
 vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 
 const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
@@ -224,12 +222,12 @@ describe('RefinementGroup', () => {
       disconnect: vi.fn()
     }))
 
-    vi
-      .spyOn(HTMLElement.prototype, 'scrollWidth', 'get')
-      .mockImplementation(() => 200)
-    vi
-      .spyOn(HTMLElement.prototype, 'clientWidth', 'get')
-      .mockImplementation(() => 100)
+    vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockImplementation(
+      () => 200
+    )
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(
+      () => 100
+    )
 
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>

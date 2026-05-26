@@ -27,15 +27,13 @@ function mockScrollMetrics({
   scrollTop: number
   clientHeight: number
 }): void {
-  vi
-    .spyOn(HTMLElement.prototype, 'scrollHeight', 'get')
-    .mockReturnValue(scrollHeight)
-  vi
-    .spyOn(HTMLElement.prototype, 'scrollTop', 'get')
-    .mockReturnValue(scrollTop)
-  vi
-    .spyOn(HTMLElement.prototype, 'clientHeight', 'get')
-    .mockReturnValue(clientHeight)
+  vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(
+    scrollHeight
+  )
+  vi.spyOn(HTMLElement.prototype, 'scrollTop', 'get').mockReturnValue(scrollTop)
+  vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(
+    clientHeight
+  )
 }
 
 function fireResizeObservers(): void {

@@ -25,9 +25,7 @@ vi.mock('next-plausible', () => ({
   usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as MockedFunction<
-  typeof usePlausible
->
+const mockUsePlausible = usePlausible as MockedFunction<typeof usePlausible>
 
 describe('ChatButtons', () => {
   const chatButtons: ChatButton[] = [

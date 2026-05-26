@@ -38,9 +38,7 @@ vi.mock('@next/third-parties/google', () => ({
   sendGTMEvent: vi.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as MockedFunction<
-  typeof sendGTMEvent
->
+const mockedSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
 vi.mock('next/router', () => ({
   useRouter() {
@@ -55,9 +53,7 @@ vi.mock('next-plausible', () => ({
   usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as MockedFunction<
-  typeof usePlausible
->
+const mockUsePlausible = usePlausible as MockedFunction<typeof usePlausible>
 
 const block: TreeBlock<SignUpFields> = {
   __typename: 'SignUpBlock',

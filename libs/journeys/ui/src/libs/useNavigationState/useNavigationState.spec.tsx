@@ -46,13 +46,11 @@ describe('useNavigationState', () => {
   it('should set isNavigating to false on routeChangeComplete', () => {
     mockUseRouter.mockReturnValue({
       events: {
-        on: vi
-          .fn()
-          .mockImplementation((event, routeChangeCompleteCallback) => {
-            if (event === 'routeChangeComplete') {
-              routeChangeCompleteCallback()
-            }
-          }),
+        on: vi.fn().mockImplementation((event, routeChangeCompleteCallback) => {
+          if (event === 'routeChangeComplete') {
+            routeChangeCompleteCallback()
+          }
+        }),
         off: vi.fn()
       }
     } as unknown as NextRouter)

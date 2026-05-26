@@ -108,9 +108,7 @@ describe('removeAllRemoteTextTracks', () => {
   })
 
   it('should handle null remoteTextTracks', () => {
-    mockPlayer.remoteTextTracks = vi.fn(
-      () => null as unknown as TextTrackList
-    )
+    mockPlayer.remoteTextTracks = vi.fn(() => null as unknown as TextTrackList)
 
     removeAllRemoteTextTracks(mockPlayer)
 

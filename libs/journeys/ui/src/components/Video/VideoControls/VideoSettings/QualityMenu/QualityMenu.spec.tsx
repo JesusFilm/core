@@ -96,8 +96,7 @@ describe('QualityMenu', () => {
   })
 
   it('calls handleQualityChange when a quality option is clicked', async () => {
-    vi
-      .spyOn(React, 'useState')
+    vi.spyOn(React, 'useState')
       .mockImplementationOnce(() => [
         [
           {
@@ -139,8 +138,7 @@ describe('QualityMenu', () => {
   })
 
   it('selects Auto quality when quality level -1 is selected', () => {
-    vi
-      .spyOn(React, 'useState')
+    vi.spyOn(React, 'useState')
       .mockImplementationOnce(() => [
         [
           {

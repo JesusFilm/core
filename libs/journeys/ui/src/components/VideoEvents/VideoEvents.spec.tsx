@@ -43,18 +43,14 @@ vi.mock('@next/third-parties/google', () => ({
   sendGTMEvent: vi.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as MockedFunction<
-  typeof sendGTMEvent
->
+const mockedSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
 vi.mock('next-plausible', () => ({
   __esModule: true,
   usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as MockedFunction<
-  typeof usePlausible
->
+const mockUsePlausible = usePlausible as MockedFunction<typeof usePlausible>
 
 describe('VideoEvents', () => {
   let props: VideoEventsProps

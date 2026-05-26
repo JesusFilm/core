@@ -50,9 +50,7 @@ vi.mock('@next/third-parties/google', () => ({
   sendGTMEvent: vi.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as MockedFunction<
-  typeof sendGTMEvent
->
+const mockedSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
 vi.mock('../../libs/action', async () => {
   const originalModule =
@@ -79,9 +77,7 @@ vi.mock('next-plausible', () => ({
   usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as MockedFunction<
-  typeof usePlausible
->
+const mockUsePlausible = usePlausible as MockedFunction<typeof usePlausible>
 
 vi.mock('next-i18next/pages', () => ({
   __esModule: true,
