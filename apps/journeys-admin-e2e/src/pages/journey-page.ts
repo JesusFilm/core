@@ -5,7 +5,8 @@ import path from 'path'
 import { expect } from '@playwright/test'
 import type { Page } from 'playwright-core'
 
-import { generateRandomNumber, getBaseUrl } from '../framework/helpers'
+import { generateRandomNumber } from '../framework/helpers'
+import { clickDiscoverStatusTab } from '../framework/status-tabs'
 import testData from '../utils/testData.json'
 
 let journeyName = ''
@@ -414,27 +415,7 @@ export class JourneyPage {
   }
 
   async clickArchivedTab() {
-    const archivedTab = this.page.locator(
-      'button[id*="archived-status-panel-tab"]'
-    )
-    const visible = await archivedTab
-      .first()
-      .isVisible()
-      .catch(() => false)
-    if (!visible) {
-      const baseUrl = await getBaseUrl()
-      const discoverUrl = baseUrl.replace(/\/$/, '') + '/?type=journeys'
-      await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
-    }
-    await expect(archivedTab.first()).toBeVisible({
-      timeout: sixtySecondsTimeout
-    })
-    await archivedTab.first().click()
-    await expect(
-      this.page.locator(
-        'button[id*="archived-status-panel-tab"][aria-selected="true"]'
-      )
-    ).toBeVisible()
+    await clickDiscoverStatusTab(this.page, 'Archived', 'journeys')
   }
 
   async verifyCreatedNewTemplateMovedToArchiveOrNot() {
@@ -468,14 +449,7 @@ export class JourneyPage {
   }
 
   async clickTrashTab() {
-    const trashTab = this.page.locator('button[id*="trashed-status-panel-tab"]')
-    await expect(trashTab).toBeVisible({ timeout: sixtySecondsTimeout })
-    await trashTab.click()
-    await expect(
-      this.page.locator(
-        'button[id*="trashed-status-panel-tab"][aria-selected="true"]'
-      )
-    ).toBeVisible()
+    await clickDiscoverStatusTab(this.page, 'Trash', 'journeys')
   }
 
   async verifyCreatedNewTemplateMovedToTrashTabOrNot() {
@@ -515,14 +489,7 @@ export class JourneyPage {
   }
 
   async clickActiveTab() {
-    const activeTab = this.page.locator('button[id*="active-status-panel-tab"]')
-    await expect(activeTab).toBeVisible({ timeout: sixtySecondsTimeout })
-    await activeTab.click()
-    await expect(
-      this.page.locator(
-        'button[id*="active-status-panel-tab"][aria-selected="true"]'
-      )
-    ).toBeVisible()
+    await clickDiscoverStatusTab(this.page, 'Active', 'journeys')
   }
 
   async clickRestoreBtn() {
