@@ -203,8 +203,11 @@ export function JourneyCardMenu({
         data-testid="JourneyCardMenuButton"
         onClick={handleOpenMenu}
         sx={{
-          width: { xs: '44px', sm: '20px' },
-          height: { xs: '44px', sm: '30px' },
+          // `plain` (mobile list row) is sized to sit inline with the row's
+          // metrics line — a compact 24px target with a 16px glyph, matching
+          // the metric icons. `on-image` keeps the original card-overlay size.
+          width: variant === 'plain' ? 24 : { xs: '44px', sm: '20px' },
+          height: variant === 'plain' ? 24 : { xs: '44px', sm: '30px' },
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -221,8 +224,9 @@ export function JourneyCardMenu({
             variant === 'plain'
               ? {
                   color: 'text.secondary',
-                  width: 32,
-                  height: 32,
+                  width: 24,
+                  height: 24,
+                  p: 0,
                   pointerEvents: 'none'
                 }
               : {
@@ -242,7 +246,10 @@ export function JourneyCardMenu({
                 }
           }
         >
-          <MoreIcon data-testid="MoreIcon" />
+          <MoreIcon
+            data-testid="MoreIcon"
+            sx={variant === 'plain' ? { fontSize: 16 } : undefined}
+          />
         </IconButton>
       </Box>
       <Menu
