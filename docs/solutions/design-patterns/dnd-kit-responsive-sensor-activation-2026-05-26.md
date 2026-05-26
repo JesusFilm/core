@@ -101,6 +101,11 @@ activation prevents scroll-into-drag.
 
 ## Related
 
+- `docs/solutions/design-patterns/pointer-aligned-collision-offset-drag-handle-2026-05-26.md`
+  — the sibling half of the same component's drag hardening: this doc covers
+  _when_ a drag starts (per-viewport `TouchSensor` activation); that one covers
+  _where_ it lands and where the ghost sits (pointer-only collision + a
+  pointer-aligned `DragOverlay`).
 - `apps/journeys-admin/src/components/TemplateGalleryPageList/Droppables/Droppables.tsx`
   — shared drop-zone encoding (`encodeDropZoneId` / `parseDropZoneId`)
   that survives the layout switch unchanged.
