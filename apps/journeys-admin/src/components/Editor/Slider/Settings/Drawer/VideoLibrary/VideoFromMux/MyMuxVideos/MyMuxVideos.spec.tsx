@@ -5,7 +5,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { GetMyMuxVideos } from '../../../../../../../../../__generated__/GetMyMuxVideos'
 
-import { GET_MY_MUX_VIDEOS, MyMuxVideosGrid } from './MyMuxVideosGrid'
+import { GET_MY_MUX_VIDEOS, MyMuxVideos, PAGE_SIZE } from './MyMuxVideos'
+
+const PEEK_LIMIT = PAGE_SIZE + 1
 
 jest.mock('../../VideoDetails', () => ({
   __esModule: true,
@@ -35,7 +37,10 @@ jest.mock('../../VideoDetails', () => ({
 
 const buildMock = (
   videos: GetMyMuxVideos['getMyMuxVideos'],
-  variables: { offset: number; limit: number } = { offset: 0, limit: 9 }
+  variables: { offset: number; limit: number } = {
+    offset: 0,
+    limit: PEEK_LIMIT
+  }
 ): MockedResponse<GetMyMuxVideos> => ({
   request: { query: GET_MY_MUX_VIDEOS, variables },
   result: { data: { getMyMuxVideos: videos } }
@@ -57,7 +62,7 @@ const notReadyVideo = (
   readyToStream: false
 })
 
-describe('MyMuxVideosGrid', () => {
+describe('MyMuxVideos', () => {
   it('should render only ready-to-stream videos with playbackId', async () => {
     render(
       <MockedProvider
@@ -65,7 +70,7 @@ describe('MyMuxVideosGrid', () => {
           buildMock([readyVideo('a'), notReadyVideo('b'), readyVideo('c')])
         ]}
       >
-        <MyMuxVideosGrid onSelect={jest.fn()} />
+        <MyMuxVideos onSelect={jest.fn()} />
       </MockedProvider>
     )
 
@@ -79,7 +84,7 @@ describe('MyMuxVideosGrid', () => {
   it('should render uploading skeleton tile when uploading is true', async () => {
     render(
       <MockedProvider mocks={[buildMock([readyVideo('a')])]}>
-        <MyMuxVideosGrid onSelect={jest.fn()} uploading />
+        <MyMuxVideos onSelect={jest.fn()} uploading />
       </MockedProvider>
     )
 
@@ -91,15 +96,14 @@ describe('MyMuxVideosGrid', () => {
   it('should render nothing when no videos and not uploading', async () => {
     const { container } = render(
       <MockedProvider mocks={[buildMock([])]}>
-        <MyMuxVideosGrid onSelect={jest.fn()} />
+        <MyMuxVideos onSelect={jest.fn()} />
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.queryByTestId('MyMuxVideosGrid')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('MyMuxVideos')).not.toBeInTheDocument()
     })
-    // sanity: container is empty (only React internals)
     expect(
-      container.querySelector('[data-testid="MyMuxVideosGrid"]')
+      container.querySelector('[data-testid="MyMuxVideos"]')
     ).toBeNull()
   })
 
@@ -107,7 +111,7 @@ describe('MyMuxVideosGrid', () => {
     const onSelect = jest.fn()
     render(
       <MockedProvider mocks={[buildMock([readyVideo('a')])]}>
-        <MyMuxVideosGrid onSelect={onSelect} />
+        <MyMuxVideos onSelect={onSelect} />
       </MockedProvider>
     )
 
@@ -133,43 +137,41 @@ describe('MyMuxVideosGrid', () => {
       }
     })
 
-  it('should show Load More when results are full page; clicking fetches next page', async () => {
-    const firstPage = Array.from({ length: 9 }, (_, i) => readyVideo(`v${i}`))
-    const secondPage = [readyVideo('v9')]
+  it('should render only PAGE_SIZE tiles when the server returns a full peek', async () => {
+    const firstPage = Array.from({ length: PEEK_LIMIT }, (_, i) =>
+      readyVideo(`v${i}`)
+    )
 
     render(
-      <MockedProvider
-        cache={buildCache()}
-        mocks={[
-          buildMock(firstPage, { offset: 0, limit: 9 }),
-          buildMock(secondPage, { offset: 9, limit: 9 })
-        ]}
-      >
-        <MyMuxVideosGrid onSelect={jest.fn()} />
+      <MockedProvider cache={buildCache()} mocks={[buildMock(firstPage)]}>
+        <MyMuxVideos onSelect={jest.fn()} />
       </MockedProvider>
     )
 
-    const loadMore = await screen.findByRole('button', { name: 'Load More' })
-    fireEvent.click(loadMore)
-
     await waitFor(() => {
-      expect(screen.getByTestId('my-mux-video-v9')).toBeInTheDocument()
+      expect(screen.getByTestId('my-mux-video-v0')).toBeInTheDocument()
     })
+    // peek item beyond PAGE_SIZE is not rendered
+    expect(
+      screen.queryByTestId(`my-mux-video-v${PAGE_SIZE}`)
+    ).not.toBeInTheDocument()
   })
 
-  it('should show "No more to load" disabled state once a partial page is returned', async () => {
-    const firstPage = Array.from({ length: 9 }, (_, i) => readyVideo(`v${i}`))
-    const secondPage = [readyVideo('v9')]
+  it('should show Load More when results are full peek; clicking fetches next page', async () => {
+    const firstPage = Array.from({ length: PEEK_LIMIT }, (_, i) =>
+      readyVideo(`v${i}`)
+    )
+    const secondPage = [readyVideo(`v${PEEK_LIMIT}`)]
 
     render(
       <MockedProvider
         cache={buildCache()}
         mocks={[
-          buildMock(firstPage, { offset: 0, limit: 9 }),
-          buildMock(secondPage, { offset: 9, limit: 9 })
+          buildMock(firstPage, { offset: 0, limit: PEEK_LIMIT }),
+          buildMock(secondPage, { offset: PAGE_SIZE, limit: PEEK_LIMIT })
         ]}
       >
-        <MyMuxVideosGrid onSelect={jest.fn()} />
+        <MyMuxVideos onSelect={jest.fn()} />
       </MockedProvider>
     )
 
@@ -178,22 +180,42 @@ describe('MyMuxVideosGrid', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'No more to load' })
-      ).toBeDisabled()
+        screen.getByTestId(`my-mux-video-v${PEEK_LIMIT}`)
+      ).toBeInTheDocument()
     })
+  })
+
+  it('should hide the Load More button when no more results', async () => {
+    const firstPage = Array.from({ length: 3 }, (_, i) => readyVideo(`v${i}`))
+
+    render(
+      <MockedProvider cache={buildCache()} mocks={[buildMock(firstPage)]}>
+        <MyMuxVideos onSelect={jest.fn()} />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('my-mux-video-v0')).toBeInTheDocument()
+    })
+    expect(
+      screen.queryByRole('button', { name: 'Load More' })
+    ).not.toBeInTheDocument()
   })
 
   it('should highlight the selected video tile', async () => {
     render(
       <MockedProvider mocks={[buildMock([readyVideo('a'), readyVideo('b')])]}>
-        <MyMuxVideosGrid selectedVideoId="b" onSelect={jest.fn()} />
+        <MyMuxVideos selectedVideoId="b" onSelect={jest.fn()} />
       </MockedProvider>
     )
     await waitFor(() => {
       expect(screen.getByTestId('my-mux-video-b')).toBeInTheDocument()
     })
-    // the selected tile gets a 2px outline; assert via inline style fragment
-    const selected = screen.getByTestId('my-mux-video-b')
-    expect(selected).toBeInTheDocument()
+    expect(
+      screen.getByTestId('my-mux-video-b').getAttribute('aria-pressed')
+    ).toBe('true')
+    expect(
+      screen.getByTestId('my-mux-video-a').getAttribute('aria-pressed')
+    ).toBe('false')
   })
 })

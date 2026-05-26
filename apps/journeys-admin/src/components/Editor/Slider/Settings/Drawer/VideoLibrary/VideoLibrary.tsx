@@ -4,6 +4,7 @@ import Tabs from '@mui/material/Tabs'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
+import { useSnackbar } from 'notistack'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
@@ -73,6 +74,7 @@ export function VideoLibrary({
 
   const { getUploadStatus, cancelUploadForBlock } = useMuxVideoUpload()
   const uploadStatus = getUploadStatus(selectedBlock?.id ?? '')
+  const { enqueueSnackbar } = useSnackbar()
 
   const [activeTab, setActiveTab] = useState(
     uploadStatus != null ? UPLOAD_TAB : LIBRARY_TAB
@@ -116,7 +118,20 @@ export function VideoLibrary({
     const shouldFocus = shouldCloseDrawer
 
     // use editor provider selected block as this accounts for background videos where the video block does not yet exist, hence the selectedBlock prop is null
-    if (editorSelectedBlock != null) cancelUploadForBlock(editorSelectedBlock)
+    if (editorSelectedBlock != null) {
+      const activeUpload = getUploadStatus(editorSelectedBlock.id)
+      const isActive =
+        activeUpload?.status === 'uploading' ||
+        activeUpload?.status === 'processing' ||
+        activeUpload?.status === 'waiting'
+      if (isActive) {
+        enqueueSnackbar(t('Video upload cancelled'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
+      cancelUploadForBlock(editorSelectedBlock)
+    }
 
     if (handleSelect != null) handleSelect(block, shouldFocus)
     setOpenVideoDetails(false)
@@ -214,7 +229,7 @@ export function VideoLibrary({
             sx={{ flexGrow: 1, overflow: 'auto' }}
             unmountUntilVisible
           >
-            <VideoFromMux onSelect={onSelect} />
+            <VideoFromMux onSelect={onSelect} videoBlock={selectedBlock} />
           </TabPanel>
         </Box>
       </Drawer>

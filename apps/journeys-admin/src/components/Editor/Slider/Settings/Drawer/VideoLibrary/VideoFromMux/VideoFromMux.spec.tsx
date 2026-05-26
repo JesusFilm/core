@@ -38,9 +38,18 @@ jest.mock('../../../../../../MuxVideoUploadProvider', () => ({
   })
 }))
 
-jest.mock('./MyMuxVideosGrid', () => ({
+jest.mock('./MyMuxVideos', () => ({
   __esModule: true,
-  MyMuxVideosGrid: () => <div data-testid="mock-my-mux-videos-grid" />
+  MyMuxVideos: ({
+    selectedVideoId
+  }: {
+    selectedVideoId?: string | null
+  }) => (
+    <div
+      data-testid="mock-my-mux-videos"
+      data-selected-video-id={selectedVideoId ?? ''}
+    />
+  )
 }))
 
 jest.mock('./AddByFile', () => {
@@ -179,7 +188,7 @@ describe('VideoFromMux', () => {
     mockUseFlags.mockReturnValue({ mediaLibrary: false })
   })
 
-  it('should not render MyMuxVideosGrid when mediaLibrary flag is off', () => {
+  it('should not render MyMuxVideos when mediaLibrary flag is off', () => {
     mockUseFlags.mockReturnValue({ mediaLibrary: false })
     render(
       <MockedProvider>
@@ -191,11 +200,11 @@ describe('VideoFromMux', () => {
       </MockedProvider>
     )
     expect(
-      screen.queryByTestId('mock-my-mux-videos-grid')
+      screen.queryByTestId('mock-my-mux-videos')
     ).not.toBeInTheDocument()
   })
 
-  it('should render MyMuxVideosGrid when mediaLibrary flag is on', () => {
+  it('should render MyMuxVideos when mediaLibrary flag is on', () => {
     mockUseFlags.mockReturnValue({ mediaLibrary: true })
     render(
       <MockedProvider>
@@ -206,7 +215,66 @@ describe('VideoFromMux', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(screen.getByTestId('mock-my-mux-videos-grid')).toBeInTheDocument()
+    expect(screen.getByTestId('mock-my-mux-videos')).toBeInTheDocument()
+  })
+
+  it('should pass selectedVideoId from the videoBlock prop when block source is mux', () => {
+    mockUseFlags.mockReturnValue({ mediaLibrary: true })
+    const muxVideoBlock: TreeBlock<VideoBlock> = {
+      ...selectedVideoBlock,
+      videoId: 'mux-video-1',
+      source: VideoBlockSource.mux
+    }
+    const cardLikeEditorBlock = {
+      ...selectedVideoBlock,
+      __typename: 'CardBlock',
+      videoId: null,
+      source: null
+    } as unknown as TreeBlock<VideoBlock>
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider
+            initialState={{ selectedBlock: cardLikeEditorBlock }}
+          >
+            <VideoFromMux onSelect={jest.fn()} videoBlock={muxVideoBlock} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('mock-my-mux-videos')).toHaveAttribute(
+      'data-selected-video-id',
+      'mux-video-1'
+    )
+  })
+
+  it('should pass empty selectedVideoId when videoBlock source is not mux', () => {
+    mockUseFlags.mockReturnValue({ mediaLibrary: true })
+    const internalVideoBlock: TreeBlock<VideoBlock> = {
+      ...selectedVideoBlock,
+      videoId: 'internal-1',
+      source: VideoBlockSource.internal
+    }
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider initialState={{ selectedBlock: selectedVideoBlock }}>
+            <VideoFromMux
+              onSelect={jest.fn()}
+              videoBlock={internalVideoBlock}
+            />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('mock-my-mux-videos')).toHaveAttribute(
+      'data-selected-video-id',
+      ''
+    )
   })
 
   it('renders AddByFile trigger', () => {

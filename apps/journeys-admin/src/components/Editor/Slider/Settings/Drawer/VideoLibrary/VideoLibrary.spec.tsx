@@ -694,6 +694,129 @@ describe('VideoLibrary', () => {
     })
   })
 
+  it('should show a cancellation snackbar when an active upload is interrupted by a new selection', async () => {
+    const onSelect = jest.fn()
+    const selectedBlock: TreeBlock<VideoBlock> = {
+      id: 'video1.id',
+      __typename: 'VideoBlock',
+      parentBlockId: 'card1.id',
+      parentOrder: 0,
+      startAt: 0,
+      endAt: null,
+      muted: false,
+      autoplay: true,
+      fullsize: true,
+      action: null,
+      videoId: null,
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.mux,
+      title: null,
+      description: null,
+      duration: null,
+      image: null,
+      objectFit: null,
+      subtitleLanguage: null,
+      showGeneratedSubtitles: null,
+      mediaVideo: null,
+      posterBlockId: null,
+      eventLabel: null,
+      endEventLabel: null,
+      customizable: null,
+      notes: null,
+      children: []
+    }
+
+    mockGetUploadStatus.mockImplementation((id: string) =>
+      id === selectedBlock.id
+        ? {
+            videoBlockId: selectedBlock.id,
+            file: new File(['test'], 'test.mp4', { type: 'video/mp4' }),
+            status: 'uploading',
+            progress: 25
+          }
+        : null
+    )
+
+    const mocks = [
+      {
+        request: {
+          query: GET_VIDEO,
+          variables: { id: 'videoId', languageId: '529' }
+        },
+        result: {
+          data: {
+            video: {
+              id: 'videoId',
+              primaryLanguageId: '529',
+              images: [],
+              title: [
+                { primary: true, value: 'title1', __typename: 'Language' }
+              ],
+              description: [
+                { primary: true, value: 'desc', __typename: 'Language' }
+              ],
+              variant: {
+                id: 'v1',
+                duration: 144,
+                hls: 'https://example.com/video.m3u8',
+                __typename: 'VideoVariant'
+              },
+              variantLanguages: [
+                {
+                  __typename: 'Language',
+                  id: '529',
+                  slug: 'english',
+                  name: [
+                    {
+                      value: 'English',
+                      primary: true,
+                      __typename: 'LanguageName'
+                    }
+                  ]
+                }
+              ],
+              __typename: 'Video'
+            }
+          }
+        }
+      }
+    ]
+
+    mockRouter()
+
+    render(
+      <MockedProvider mocks={mocks}>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock,
+              selectedAttributeId: selectedBlock.id
+            }}
+          >
+            <MuxVideoUploadProvider>
+              <VideoLibrary open onSelect={onSelect} />
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(screen.getByText('title1')).toBeInTheDocument())
+    await waitFor(() =>
+      fireEvent.click(screen.getByTestId('VideoListItem-videoId'))
+    )
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Select' })).toBeEnabled()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Video upload cancelled')).toBeInTheDocument()
+    })
+    expect(mockCancelUploadForBlock).toHaveBeenCalledWith(selectedBlock)
+    mockGetUploadStatus.mockReset()
+  })
+
   it('should navigate to YouTube tab when clicking Change Video on a YouTube video', async () => {
     mswServer.use(getPlaylistItemsEmpty, getVideosWithOffsetAndUrl)
     const onSelect = jest.fn()
