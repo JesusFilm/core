@@ -89,9 +89,7 @@ test.describe('Teams', () => {
     await journeyPage.validateUrlFieldInShareDialog(domainName) //Validate that the URL field from Share dialog contains the custom domain
   })
 
-  test('Verify Integrations option from Three dot menu', async ({
-    page
-  }) => {
+  test('Verify Integrations option from Three dot menu', async ({ page }) => {
     const teamPage = new TeamsPage(page)
 
     await teamPage.clickThreeDotOfTeams() //click three dot from the Discovery page teams section

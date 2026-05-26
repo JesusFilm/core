@@ -2,8 +2,7 @@ import dayjs from 'dayjs'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config()
 
-export const DEFAULT_JOURNEYS_ADMIN_E2E_URL =
-  'https://admin-stage.nextstep.is/'
+export const DEFAULT_JOURNEYS_ADMIN_E2E_URL = 'https://admin-stage.nextstep.is/'
 
 export type DiscoverListType = 'journeys' | 'templates'
 export type DiscoverStatus = 'active' | 'archived' | 'trashed'
