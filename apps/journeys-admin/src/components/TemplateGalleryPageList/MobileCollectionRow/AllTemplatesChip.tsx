@@ -1,5 +1,5 @@
 import { useDroppable } from '@dnd-kit/core'
-import Chip from '@mui/material/Chip'
+import ButtonBase from '@mui/material/ButtonBase'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
@@ -16,6 +16,12 @@ export interface AllTemplatesChipProps {
   dropDisabled?: boolean
 }
 
+/**
+ * "All Templates" filter card. Matches the collection chips' card height and
+ * shape (no image — it represents every template), with a title and a
+ * template-count subtext. Doubles as the unsectioned drop target (drop here to
+ * ungroup a template).
+ */
 export function AllTemplatesChip({
   selected,
   count,
@@ -27,44 +33,45 @@ export function AllTemplatesChip({
     id: encodeDropZoneId({ kind: 'unsectioned' }),
     disabled: dropDisabled
   })
+  const active = selected || isOver
 
   return (
-    <Chip
+    <ButtonBase
       data-testid="AllTemplatesChip"
       ref={setNodeRef}
-      clickable
       onClick={onSelect}
-      variant={isOver ? 'filled' : 'outlined'}
-      color={selected || isOver ? 'primary' : 'default'}
       aria-pressed={selected}
       aria-label={t('All Templates')}
       sx={{
         flexShrink: 0,
-        height: 36,
-        borderWidth: selected ? 2 : 1,
+        height: 72,
+        minWidth: 120,
+        px: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        textAlign: 'left',
+        borderRadius: 2,
+        border: 1,
+        borderColor: active ? 'primary.main' : 'divider',
+        backgroundColor: 'background.paper',
         outline: isOver ? '2px solid' : 'none',
         outlineColor: 'primary.dark',
         outlineOffset: 2,
-        transition: 'outline-color 120ms ease, background-color 120ms ease',
-        '& .MuiChip-label': {
-          px: 1.5,
-          display: 'flex',
-          alignItems: 'center'
-        }
+        transition: 'border-color 120ms ease, outline-color 120ms ease'
       }}
-      label={
-        <Stack direction="row" alignItems="center" spacing={0.75}>
-          <Typography variant="body2" sx={{ fontWeight: selected ? 600 : 400 }}>
-            {t('All Templates')}
-          </Typography>
-          <Typography
-            variant="caption"
-            color={selected ? 'inherit' : 'text.secondary'}
-          >
-            · {count}
-          </Typography>
-        </Stack>
-      }
-    />
+    >
+      <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+        {t('All Templates')}
+      </Typography>
+      <Typography variant="caption" color="text.secondary">
+        {t('{{count}} templates', {
+          count,
+          defaultValue_one: '{{count}} template',
+          defaultValue_other: '{{count}} templates'
+        })}
+      </Typography>
+    </ButtonBase>
   )
 }

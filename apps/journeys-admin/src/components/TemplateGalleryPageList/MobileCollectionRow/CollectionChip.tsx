@@ -1,13 +1,19 @@
 import { useDroppable } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
+import ButtonBase from '@mui/material/ButtonBase'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import Image from 'next/image'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
+import logoGray from '../../../../public/logo-grayscale.svg'
 import { encodeDropZoneId } from '../Droppables'
+
+const CHIP_WIDTH = 250
+const CHIP_HEIGHT = 72
 
 export interface CollectionChipProps {
   collection: TemplateGalleryPage
@@ -19,54 +25,97 @@ export interface CollectionChipProps {
   dropDisabled?: boolean
 }
 
+/**
+ * Collection filter as a small card: the first template's image fills the
+ * left third, the collection title and a template-count subtext fill the
+ * right two thirds. Card-like (not pill-like) to match the collection cards.
+ * Doubles as a dnd-kit drop target and a selectable filter.
+ */
 export function CollectionChip({
   collection,
   selected,
   onSelect,
   dropDisabled = false
 }: CollectionChipProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const isPublished = collection.status === TemplateGalleryPageStatus.published
   const count = collection.templates.length
-  const isEmpty = count === 0
+  const imageSrc = collection.templates[0]?.primaryImageBlock?.src ?? null
   const { setNodeRef, isOver } = useDroppable({
     id: encodeDropZoneId({ kind: 'collection', id: collection.id }),
     disabled: dropDisabled || isPublished
   })
+  const active = selected || isOver
 
   function handleClick(): void {
     onSelect(collection.id)
   }
 
   return (
-    <Chip
+    <ButtonBase
       data-testid={`CollectionChip-${collection.id}`}
       ref={setNodeRef}
-      clickable
       onClick={handleClick}
-      variant={selected || isOver ? 'filled' : 'outlined'}
-      color={selected || isOver ? 'primary' : 'default'}
       aria-pressed={selected}
       aria-label={collection.title}
       sx={{
-        maxWidth: 200,
-        opacity: isEmpty ? 0.6 : 1,
+        width: CHIP_WIDTH,
+        height: CHIP_HEIGHT,
         flexShrink: 0,
-        height: 36,
-        // Bump the drop-target outline so users can see which chip is
-        // about to receive the drop, even on chips that are already
-        // filled (the selected chip).
+        display: 'flex',
+        alignItems: 'stretch',
+        textAlign: 'left',
+        // Card-like radius, not a pill.
+        borderRadius: 2,
+        overflow: 'hidden',
+        border: 1,
+        borderColor: active ? 'primary.main' : 'divider',
+        backgroundColor: 'background.paper',
         outline: isOver ? '2px solid' : 'none',
         outlineColor: 'primary.dark',
         outlineOffset: 2,
-        transition: 'outline-color 120ms ease, background-color 120ms ease',
-        '& .MuiChip-label': {
-          px: 1.5,
-          display: 'flex',
-          alignItems: 'center',
-          overflow: 'visible'
-        }
+        transition: 'border-color 120ms ease, outline-color 120ms ease'
       }}
-      label={
+    >
+      {/* First template's image — the left third. */}
+      <Box
+        sx={{
+          position: 'relative',
+          width: '33.333%',
+          flexShrink: 0,
+          bgcolor: 'rgba(0, 0, 0, 0.06)'
+        }}
+      >
+        {imageSrc != null ? (
+          <Image
+            src={imageSrc}
+            alt=""
+            fill
+            sizes="84px"
+            style={{ objectFit: 'cover' }}
+          />
+        ) : (
+          <Image
+            src={logoGray}
+            alt=""
+            width={28}
+            height={28}
+            style={{
+              objectFit: 'contain',
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)'
+            }}
+          />
+        )}
+      </Box>
+
+      {/* Title + template count — the right two thirds. */}
+      <Stack
+        spacing={0.25}
+        sx={{ flex: 1, minWidth: 0, justifyContent: 'center', px: 1.5 }}
+      >
         <Stack direction="row" alignItems="center" spacing={0.75}>
           <Box
             data-testid="CollectionChipStatusDot"
@@ -80,25 +129,21 @@ export function CollectionChip({
             }}
           />
           <Typography
-            variant="body2"
+            variant="subtitle2"
             noWrap
-            sx={{
-              maxWidth: 130,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
-            }}
+            sx={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}
           >
             {collection.title}
           </Typography>
-          <Typography
-            variant="caption"
-            color={selected ? 'inherit' : 'text.secondary'}
-            sx={{ flexShrink: 0 }}
-          >
-            · {count}
-          </Typography>
         </Stack>
-      }
-    />
+        <Typography variant="caption" color="text.secondary" noWrap>
+          {t('{{count}} templates', {
+            count,
+            defaultValue_one: '{{count}} template',
+            defaultValue_other: '{{count}} templates'
+          })}
+        </Typography>
+      </Stack>
+    </ButtonBase>
   )
 }

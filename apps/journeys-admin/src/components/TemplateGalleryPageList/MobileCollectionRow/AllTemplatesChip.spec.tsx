@@ -25,7 +25,7 @@ describe('AllTemplatesChip', () => {
   it('renders the label and count', () => {
     renderChip()
     expect(screen.getByText('All Templates')).toBeInTheDocument()
-    expect(screen.getByText('· 7')).toBeInTheDocument()
+    expect(screen.getByText('7 templates')).toBeInTheDocument()
   })
 
   it('marks aria-pressed when selected', () => {

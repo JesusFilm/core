@@ -55,7 +55,10 @@ export const MobileCollectionRow = forwardRef<
         position: 'sticky',
         top: 0,
         zIndex: 2,
-        backgroundColor: 'background.paper',
+        // Page-gray (background.default) so the sticky row blends into the
+        // page while it covers list rows scrolling beneath it; only the chips
+        // themselves are white (background.paper).
+        backgroundColor: 'background.default',
         overflowX: 'auto',
         overflowY: 'hidden',
         // Hide the scrollbar visually; users scroll by touch.
@@ -69,7 +72,7 @@ export const MobileCollectionRow = forwardRef<
         px: 2
       }}
     >
-      <Stack direction="row" spacing={1} sx={{ width: 'max-content' }}>
+      <Stack direction="row" spacing={3} sx={{ width: 'max-content' }}>
         <AllTemplatesChip
           selected={selectedCollectionId == null}
           count={allTemplatesCount}

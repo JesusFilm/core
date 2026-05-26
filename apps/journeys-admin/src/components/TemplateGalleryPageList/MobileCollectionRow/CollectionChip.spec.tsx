@@ -62,7 +62,7 @@ describe('CollectionChip', () => {
       </Wrapper>
     )
     expect(screen.getByText('My Collection')).toBeInTheDocument()
-    expect(screen.getByText('· 2')).toBeInTheDocument()
+    expect(screen.getByText('2 templates')).toBeInTheDocument()
   })
 
   it('calls onSelect with the collection id when clicked', async () => {
