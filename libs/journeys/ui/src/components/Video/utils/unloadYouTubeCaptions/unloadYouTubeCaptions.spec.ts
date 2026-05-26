@@ -1,15 +1,17 @@
+import { type Mock } from 'vitest'
+
 import { YoutubeTech } from '../videoJsTypes/YoutubeTech'
 
 import { unloadYouTubeCaptions } from './unloadYouTubeCaptions'
 
 describe('unloadYouTubeCaptions', () => {
   let mockYtPlayer: YoutubeTech['ytPlayer']
-  let mockUnloadModule: jest.Mock
+  let mockUnloadModule: Mock
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
-    mockUnloadModule = jest.fn()
+    mockUnloadModule = vi.fn()
 
     mockYtPlayer = {
       unloadModule: mockUnloadModule
@@ -56,7 +58,7 @@ describe('unloadYouTubeCaptions', () => {
   })
 
   it('should work with different ytPlayer instances', () => {
-    const mockUnloadModule2 = jest.fn()
+    const mockUnloadModule2 = vi.fn()
     const ytPlayer2 = {
       unloadModule: mockUnloadModule2
     } as unknown as YoutubeTech['ytPlayer']
@@ -80,9 +82,9 @@ describe('unloadYouTubeCaptions', () => {
   it('should handle ytPlayer with additional properties', () => {
     const ytPlayerWithExtraProps = {
       unloadModule: mockUnloadModule,
-      loadModule: jest.fn(),
-      setOption: jest.fn(),
-      getOption: jest.fn()
+      loadModule: vi.fn(),
+      setOption: vi.fn(),
+      getOption: vi.fn()
     } as unknown as YoutubeTech['ytPlayer']
 
     unloadYouTubeCaptions(ytPlayerWithExtraProps)
@@ -102,7 +104,7 @@ describe('unloadYouTubeCaptions', () => {
   })
 
   it('should handle ytPlayer with function that throws error', () => {
-    const errorUnloadModule = jest.fn(() => {
+    const errorUnloadModule = vi.fn(() => {
       throw new Error('Test error')
     })
     const ytPlayerWithErrorFunction = {

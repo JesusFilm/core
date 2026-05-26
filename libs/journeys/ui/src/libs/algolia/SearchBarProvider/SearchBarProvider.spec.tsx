@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { ReactNode } from 'react'
 import { useRefinementList } from 'react-instantsearch'
+import { type MockedFunction } from 'vitest'
 
 import { getLanguagesContinentsMock } from '../../useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 
@@ -13,9 +14,9 @@ import {
   useSearchBar
 } from './SearchBarProvider'
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
 
@@ -245,7 +246,7 @@ describe('SearchBarContext', () => {
   describe('SearchBarProvider', () => {
     const useRefinementsList = {
       items: [],
-      refine: jest.fn()
+      refine: vi.fn()
     } as unknown as RefinementListRenderState
 
     beforeEach(() => {

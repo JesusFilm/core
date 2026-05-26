@@ -7,9 +7,9 @@ import { journey } from '../../TemplateFooter/data'
 
 import { TemplateEditButton } from './TemplateEditButton'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('TemplateEditButton', () => {
