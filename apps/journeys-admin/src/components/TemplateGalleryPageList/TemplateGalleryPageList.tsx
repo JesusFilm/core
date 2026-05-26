@@ -1,10 +1,14 @@
 import {
+  CollisionDetection,
   DndContext,
   DragOverlay,
   DragStartEvent,
+  MeasuringStrategy,
+  Modifier,
   MouseSensor,
   TouchSensor,
   closestCenter,
+  pointerWithin,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
@@ -65,9 +69,61 @@ import {
 } from './GalleryDialogLockContext'
 import { MobileCollectionRow } from './MobileCollectionRow'
 import { MobileFilterHeaderStrip } from './MobileFilterHeaderStrip'
-import { MobileTemplateList, MobileTemplateListRow } from './MobileTemplateList'
+import { MobileTemplateList } from './MobileTemplateList'
 import { useCollectionMutations } from './useCollectionMutations'
 import { useDragEndHandler } from './useDragEndHandler'
+
+// Pointer-only collision detection for the mobile layout.
+//
+// The mobile draggable is a full-width list row, but its drop targets include
+// the small collection chips pinned at the top of the view. dnd-kit's default
+// `closestCenter` compares the *dragged row's* centre against each droppable's
+// centre and never looks at the pointer — so a row dragged by its right-edge
+// handle can't reach a chip, and the nearest droppable (the leftmost "All
+// Templates" chip) lights up the instant a drag starts, even when the finger
+// is nowhere near it (NES-1696 QA).
+//
+// `pointerWithin` resolves only the droppable the finger is actually over, and
+// returns nothing when the finger is in dead space — so no chip highlights
+// until the user is genuinely over a drop target. There is deliberately no
+// `closestCenter` fallback: that fallback is exactly what made "All Templates"
+// highlight on every drag. (Safe here because the only sensors are
+// mouse/touch, which always report pointer coordinates — there is no keyboard
+// drag that would need a coordinate-free fallback.)
+const mobileCollisionDetection: CollisionDetection = (args) =>
+  pointerWithin(args)
+
+// Center the mobile drag overlay under the pointer.
+//
+// The mobile drag handle sits on the far right of the row, so by default the
+// ghost trails to the LEFT of the finger: the cursor is at the row's right
+// edge while the visible body extends left. Users aim the body they can see,
+// but `pointerWithin` drops at the actual cursor — so left chips needed the
+// cursor pushed off-screen right and the rightmost chips were unreachable
+// (NES-1696 QA: "only the first two are droppable"). Re-centering the ghost on
+// the pointer makes "aim the ghost" == "aim the cursor", so every chip is
+// reachable and the drop lands where the user is pointing.
+const snapCenterToPointer: Modifier = ({
+  activatorEvent,
+  draggingNodeRect,
+  transform
+}) => {
+  if (draggingNodeRect == null || activatorEvent == null) return transform
+  // activatorEvent is the mouse/touch event that started the drag.
+  const event = activatorEvent as Partial<MouseEvent> & {
+    touches?: TouchList
+  }
+  const clientX = event.touches?.[0]?.clientX ?? event.clientX
+  const clientY = event.touches?.[0]?.clientY ?? event.clientY
+  if (clientX == null || clientY == null) return transform
+  const offsetX = clientX - draggingNodeRect.left
+  const offsetY = clientY - draggingNodeRect.top
+  return {
+    ...transform,
+    x: transform.x + offsetX - draggingNodeRect.width / 2,
+    y: transform.y + offsetY - draggingNodeRect.height / 2
+  }
+}
 
 // Map the page-level status filter (active / archived / trashed) to the
 // underlying JourneyStatus enum values that useAdminJourneysQuery expects.
@@ -627,7 +683,14 @@ export function TemplateGalleryPageList({
           sx={{ display: 'contents' }}
         >
           <DndContext
-            collisionDetection={closestCenter}
+            collisionDetection={
+              useMobileLayout ? mobileCollisionDetection : closestCenter
+            }
+            // Re-measure droppables every frame while dragging. The mobile chip
+            // row is sticky + horizontally scrollable, so a single drag-start
+            // measurement goes stale as soon as anything scrolls — leaving
+            // chips with hit-areas offset from where they're drawn.
+            measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
             sensors={sensors}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
@@ -769,21 +832,32 @@ export function TemplateGalleryPageList({
             drop is rejected (published, no-op, etc.) and runs the standard
             "settle" animation when accepted — gives the user visual
             feedback either way. */}
-            <DragOverlay>
+            <DragOverlay
+              modifiers={useMobileLayout ? [snapCenterToPointer] : undefined}
+            >
               {activeDragJourney != null ? (
                 useMobileLayout ? (
+                  // Compact pill, centred on the pointer (see
+                  // snapCenterToPointer). A full-width row ghost would cover the
+                  // chip the user is dragging onto and hide its drop highlight.
                   <Box
                     sx={{
-                      width: 'calc(100vw - 32px)',
-                      maxWidth: 360,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      maxWidth: 220,
+                      px: 1.5,
+                      py: 1,
+                      borderRadius: 2,
+                      bgcolor: 'background.paper',
+                      boxShadow: 6,
                       cursor: 'grabbing',
-                      opacity: 0.95
+                      opacity: 0.95,
+                      pointerEvents: 'none'
                     }}
                   >
-                    <MobileTemplateListRow
-                      journey={activeDragJourney}
-                      hideDefaultDragHandle
-                    />
+                    <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
+                      {activeDragJourney.title}
+                    </Typography>
                   </Box>
                 ) : (
                   <Box sx={{ width: 280, cursor: 'grabbing', opacity: 0.95 }}>
