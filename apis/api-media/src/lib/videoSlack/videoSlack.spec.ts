@@ -1,5 +1,6 @@
-import { type DeepMockProxy, mockReset } from 'jest-mock-extended'
 import fetch from 'node-fetch'
+import { type MockedFunction, vi } from 'vitest'
+import { type DeepMockProxy, mockDeep, mockReset } from 'vitest-mock-extended'
 
 import type {
   Language,
@@ -98,37 +99,29 @@ function videoVariantRow(overrides: Partial<VideoVariantRow>): VideoVariantRow {
   }
 }
 
-jest.mock('node-fetch')
-jest.mock('@core/prisma/languages/client', () => {
-  const { mockDeep } =
-    jest.requireActual<typeof import('jest-mock-extended')>(
-      'jest-mock-extended'
-    )
+vi.mock('node-fetch')
+vi.mock('@core/prisma/languages/client', () => {
   return { prisma: mockDeep<LanguagesPrismaClient>() }
 })
-jest.mock('@core/prisma/media/client', () => {
-  const { mockDeep } =
-    jest.requireActual<typeof import('jest-mock-extended')>(
-      'jest-mock-extended'
-    )
+vi.mock('@core/prisma/media/client', () => {
   return { prisma: mockDeep<MediaPrismaClient>() }
 })
-jest.mock('../../logger', () => ({
+vi.mock('../../logger', () => ({
   logger: {
-    warn: jest.fn(),
-    info: jest.fn(),
-    child: jest.fn()
+    warn: vi.fn(),
+    info: vi.fn(),
+    child: vi.fn()
   }
 }))
 
 describe('videoSlack', () => {
-  const mockFetch = fetch as jest.MockedFunction<typeof fetch>
+  const mockFetch = fetch as MockedFunction<typeof fetch>
   const mockLanguagesPrisma =
     languagesPrisma as DeepMockProxy<LanguagesPrismaClient>
   const mockMediaPrisma = prisma as DeepMockProxy<MediaPrismaClient>
-  const mockLoggerWarn = jest.mocked(logger.warn)
-  const mockLoggerInfo = jest.mocked(logger.info)
-  const mockLoggerChild = jest.mocked(logger.child)
+  const mockLoggerWarn = vi.mocked(logger.warn)
+  const mockLoggerInfo = vi.mocked(logger.info)
+  const mockLoggerChild = vi.mocked(logger.child)
   const originalEnv = process.env
 
   function reportRow(overrides: Partial<ReportRow>): ReportRow {
@@ -149,7 +142,7 @@ describe('videoSlack', () => {
   beforeEach(() => {
     mockReset(mockLanguagesPrisma)
     mockReset(mockMediaPrisma)
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockLoggerChild.mockReturnValue(logger as any)
     process.env = {
       ...originalEnv,
@@ -161,7 +154,7 @@ describe('videoSlack', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       status: 200,
-      json: jest.fn().mockResolvedValue({ ok: true, ts: '1111.1111' })
+      json: vi.fn().mockResolvedValue({ ok: true, ts: '1111.1111' })
     } as any)
     mockMediaPrisma.video.findMany.mockResolvedValue([])
     mockMediaPrisma.videoVariant.findMany.mockResolvedValue([])
@@ -659,7 +652,7 @@ describe('videoSlack', () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
-      json: jest
+      json: vi
         .fn()
         .mockResolvedValue({ ok: false, error: 'channel_not_found' })
     } as any)

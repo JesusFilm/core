@@ -5,8 +5,7 @@
     "module": "commonjs",
     "jsx": "react-jsx",
     "types": [
-      "jest",
-      "@jest/globals",
+      "vitest/globals",
       "node",
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"
@@ -16,7 +15,7 @@
     "**/*.spec.ts",
     "**/*.spec.tsx",
     "**/*.d.ts",
-    "jest.config.ts",
+    "vitest.config.mts",
     "test/**/*.ts"
   ]
 }

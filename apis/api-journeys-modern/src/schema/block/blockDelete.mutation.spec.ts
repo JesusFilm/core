@@ -1,23 +1,27 @@
+import { GraphQLError } from 'graphql'
+import { type MockedFunction, vi } from 'vitest'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { Action, ability } from '../../lib/auth/ability'
+import { fetchBlockWithJourneyAcl } from '../../lib/auth/fetchBlockWithJourneyAcl'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 
-jest.mock('../../lib/auth/ability', () => ({
+vi.mock('../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../lib/auth/fetchBlockWithJourneyAcl', () => ({
-  fetchBlockWithJourneyAcl: jest.fn()
+vi.mock('../../lib/auth/fetchBlockWithJourneyAcl', () => ({
+  fetchBlockWithJourneyAcl: vi.fn()
 }))
 
-jest.mock(
+vi.mock(
   '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable',
   () => ({
-    recalculateJourneyCustomizable: jest.fn()
+    recalculateJourneyCustomizable: vi.fn()
   })
 )
 
@@ -36,12 +40,8 @@ describe('blockDelete', () => {
       }
     }
   `)
-
-  const {
-    fetchBlockWithJourneyAcl
-  } = require('../../lib/auth/fetchBlockWithJourneyAcl')
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
-  const mockRecalculate = recalculateJourneyCustomizable as jest.MockedFunction<
+  const mockAbility = ability as MockedFunction<typeof ability>
+  const mockRecalculate = recalculateJourneyCustomizable as MockedFunction<
     typeof recalculateJourneyCustomizable
   >
 
@@ -66,27 +66,27 @@ describe('blockDelete', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('deletes block and returns reordered siblings when authorized', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue(block)
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue(block)
     mockAbility.mockReturnValue(true)
 
     const reorderedSibling = { ...sibling, parentOrder: 0 }
 
     const tx = {
       block: {
-        update: jest
+        update: vi
           .fn()
           .mockResolvedValueOnce({
             ...block,
             deletedAt: new Date().toISOString()
           })
           .mockResolvedValueOnce(reorderedSibling),
-        findMany: jest.fn().mockResolvedValue([sibling])
+        findMany: vi.fn().mockResolvedValue([sibling])
       },
-      journey: { update: jest.fn().mockResolvedValue(journey) }
+      journey: { update: vi.fn().mockResolvedValue(journey) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -118,7 +118,7 @@ describe('blockDelete', () => {
   })
 
   it('returns FORBIDDEN when unauthorized', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue(block)
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue(block)
     mockAbility.mockReturnValue(false)
 
     const result = await authClient({
@@ -138,8 +138,7 @@ describe('blockDelete', () => {
   })
 
   it('returns NOT_FOUND when block does not exist', async () => {
-    const { GraphQLError } = require('graphql')
-    fetchBlockWithJourneyAcl.mockRejectedValue(
+    ;(fetchBlockWithJourneyAcl as any).mockRejectedValue(
       new GraphQLError('block not found', {
         extensions: { code: 'NOT_FOUND' }
       })

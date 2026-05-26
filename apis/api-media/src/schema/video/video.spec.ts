@@ -1,4 +1,5 @@
 import { GraphQLError } from 'graphql'
+import { type MockedFunction, vi } from 'vitest'
 
 import {
   BibleCitation,
@@ -27,12 +28,12 @@ import { notifyVideoSlackOfMutation } from '../../lib/slack'
 import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
 import { getLanguageIdFromInfo } from './video'
 
-jest.mock('./lib/updateAvailableLanguages', () => ({
-  updateVideoAvailableLanguages: jest.fn()
+vi.mock('./lib/updateAvailableLanguages', () => ({
+  updateVideoAvailableLanguages: vi.fn()
 }))
 
-jest.mock('../../lib/slack', () => ({
-  notifyVideoSlackOfMutation: jest.fn()
+vi.mock('../../lib/slack', () => ({
+  notifyVideoSlackOfMutation: vi.fn()
 }))
 
 describe('video', () => {
@@ -308,7 +309,8 @@ describe('video', () => {
           updatedAt: new Date(),
           videoId: null,
           blurhash: null,
-          blurhashAttemptedAt: null
+          blurhashAttemptedAt: null,
+          isAi: null
         }
       ],
       cloudflareAssets: [
@@ -3337,7 +3339,7 @@ describe('video', () => {
       `)
 
       const mockUpdateVideoAvailableLanguages =
-        updateVideoAvailableLanguages as jest.MockedFunction<
+        updateVideoAvailableLanguages as MockedFunction<
           typeof updateVideoAvailableLanguages
         >
 

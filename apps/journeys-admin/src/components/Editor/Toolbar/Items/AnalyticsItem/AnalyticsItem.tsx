@@ -1,7 +1,7 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { formatISO } from 'date-fns'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ComponentProps, ReactElement, useEffect } from 'react'
 
 import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'

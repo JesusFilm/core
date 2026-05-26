@@ -9,34 +9,35 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
+import { type MockedFunction } from 'vitest'
 
 import ClientLayout from './layout'
 
 // Mock useQuery and useMutation hooks
-jest.mock('@apollo/client', () => {
-  const original = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const original = await vi.importActual('@apollo/client')
   return {
     ...original,
-    useQuery: jest.fn(),
-    useMutation: jest.fn()
+    useQuery: vi.fn(),
+    useMutation: vi.fn()
   }
 })
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => false
 }))
 
-const mockPush = jest.fn()
-const mockRefetch = jest.fn()
-const mockUpdateVariant = jest.fn()
-const mockEnqueueSnackbar = jest.fn()
+const mockPush = vi.fn()
+const mockRefetch = vi.fn()
+const mockUpdateVariant = vi.fn()
+const mockEnqueueSnackbar = vi.fn()
 
 // Mock next/navigation with a function to change pathname
 let mockPathname = '/videos/video123/audio'
-const mockUsePathname = jest.fn(() => mockPathname)
+const mockUsePathname = vi.fn(() => mockPathname)
 
-jest.mock('next/navigation', () => ({
+vi.mock('next/navigation', () => ({
   useParams: () => ({ videoId: 'video123' }),
   useRouter: () => ({
     push: mockPush
@@ -45,7 +46,7 @@ jest.mock('next/navigation', () => ({
 }))
 
 // Mock notistack
-jest.mock('notistack', () => ({
+vi.mock('notistack', () => ({
   useSnackbar: () => ({
     enqueueSnackbar: mockEnqueueSnackbar
   }),
@@ -98,13 +99,11 @@ describe('ClientLayout', () => {
   ]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Default mock implementation for useQuery
-    const mockedUseQuery = useQuery as jest.MockedFunction<typeof useQuery>
-    const mockedUseMutation = useMutation as jest.MockedFunction<
-      typeof useMutation
-    >
+    const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+    const mockedUseMutation = useMutation as MockedFunction<typeof useMutation>
 
     // Create a complete mock for the QueryResult
     const mockQueryResult: QueryResult<any, OperationVariables> = {
@@ -118,18 +117,18 @@ describe('ClientLayout', () => {
       },
       loading: false,
       error: undefined,
-      fetchMore: jest.fn(),
+      fetchMore: vi.fn(),
       refetch: mockRefetch,
       networkStatus: NetworkStatus.ready,
       client: {} as any,
       called: true,
-      startPolling: jest.fn(),
-      stopPolling: jest.fn(),
-      subscribeToMore: jest.fn(),
-      updateQuery: jest.fn(),
+      startPolling: vi.fn(),
+      stopPolling: vi.fn(),
+      subscribeToMore: vi.fn(),
+      updateQuery: vi.fn(),
       observable: {} as any,
       variables: { id: 'video123' },
-      reobserve: jest.fn(),
+      reobserve: vi.fn(),
       previousData: undefined
     }
 
@@ -144,12 +143,12 @@ describe('ClientLayout', () => {
         data: undefined,
         called: false,
         client: {} as any,
-        reset: jest.fn()
+        reset: vi.fn()
       }
     ])
 
     // Mock document.getElementById to return a fake element with getBoundingClientRect
-    document.getElementById = jest.fn().mockImplementation(() => ({
+    document.getElementById = vi.fn().mockImplementation(() => ({
       getBoundingClientRect: () => ({
         width: 800,
         height: 600
@@ -286,7 +285,7 @@ describe('ClientLayout', () => {
 
   it('should show info message when no draft variants exist (and not navigate)', async () => {
     // Mock data with all published variants
-    const mockedUseQuery = useQuery as jest.MockedFunction<typeof useQuery>
+    const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
     const allPublishedVariants = [
       {
         id: 'variant1',
@@ -319,18 +318,18 @@ describe('ClientLayout', () => {
       },
       loading: false,
       error: undefined,
-      fetchMore: jest.fn(),
+      fetchMore: vi.fn(),
       refetch: mockRefetch,
       networkStatus: NetworkStatus.ready,
       client: {} as any,
       called: true,
-      startPolling: jest.fn(),
-      stopPolling: jest.fn(),
-      subscribeToMore: jest.fn(),
-      updateQuery: jest.fn(),
+      startPolling: vi.fn(),
+      stopPolling: vi.fn(),
+      subscribeToMore: vi.fn(),
+      updateQuery: vi.fn(),
       observable: {} as any,
       variables: { id: 'video123' },
-      reobserve: jest.fn(),
+      reobserve: vi.fn(),
       previousData: undefined
     })
 
@@ -390,7 +389,7 @@ describe('ClientLayout', () => {
 
   it('should open preview in new window when preview button is clicked for published variant', async () => {
     // Mock window.open
-    const mockWindowOpen = jest.fn()
+    const mockWindowOpen = vi.fn()
     Object.defineProperty(window, 'open', {
       value: mockWindowOpen,
       writable: true

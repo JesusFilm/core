@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { userEvent, waitFor, within } from 'storybook/test'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'

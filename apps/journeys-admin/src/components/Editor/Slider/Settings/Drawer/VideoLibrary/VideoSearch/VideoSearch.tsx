@@ -3,7 +3,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { Formik } from 'formik'
 import debounce from 'lodash/debounce'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import LinkIcon from '@core/shared/ui/icons/Link'

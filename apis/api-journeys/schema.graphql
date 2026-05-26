@@ -204,7 +204,7 @@ type Journey
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
-  showAssistant: Boolean
+  showAssistant: Boolean @deprecated(reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624.")
   journeyCustomizationDescription: String
   journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
@@ -219,30 +219,6 @@ input BlockDuplicateIdMap {
 type Mutation {
   """blockRestore is used for redo/undo"""
   blockRestore(id: ID!): [Block!]!
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
-  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
-  chatButtonRemove(id: ID!): ChatButton!
-  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
-  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
-  customDomainDelete(id: ID!): CustomDomain!
-  customDomainCheck(id: ID!): CustomDomainCheck!
-
-  """
-  Creates a JourneyViewEvent, returns null if attempting to create another
-  JourneyViewEvent with the same userId, journeyId, and within the same 24hr
-  period of the previous JourneyViewEvent
-  """
-  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
-  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
-  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
-  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent!
-  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
-  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
-  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
-  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent!
-  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
-  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
-  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
@@ -418,6 +394,12 @@ type CardBlock implements Block
   themeName from journey
   """
   themeName: ThemeName @shareable
+
+  """When true, this card displays the AI chat button."""
+  showAssistant: Boolean @shareable
+
+  """When true, the chat drawer auto-opens on first visit to this card."""
+  expandChatByDefault: Boolean @shareable
 }
 
 enum GridDirection {
@@ -900,17 +882,6 @@ type ChatButton
   customizable: Boolean
 }
 
-input ChatButtonCreateInput {
-  link: String
-  platform: MessagePlatform
-}
-
-input ChatButtonUpdateInput {
-  link: String
-  platform: MessagePlatform
-  customizable: Boolean
-}
-
 type CustomDomain
   @shareable
 {
@@ -920,125 +891,6 @@ type CustomDomain
   apexName: String!
   journeyCollection: JourneyCollection
   routeAllTeamJourneys: Boolean!
-}
-
-type CustomDomainCheck
-  @shareable
-{
-  """
-  Is the domain correctly configured in the DNS?
-  If false, A Record and CNAME Record should be added by the user.
-  """
-  configured: Boolean!
-
-  """
-  Does the domain belong to the team?
-  If false, verification and verificationResponse will be populated.
-  """
-  verified: Boolean!
-
-  """Verification records to be added to the DNS to confirm ownership."""
-  verification: [CustomDomainVerification!]
-
-  """Reasoning as to why verification is required."""
-  verificationResponse: CustomDomainVerificationResponse
-}
-
-input CustomDomainCreateInput {
-  id: ID
-  teamId: String!
-  name: String!
-  journeyCollectionId: ID
-  routeAllTeamJourneys: Boolean
-}
-
-input CustomDomainUpdateInput {
-  journeyCollectionId: ID
-  routeAllTeamJourneys: Boolean
-}
-
-type CustomDomainVerification
-  @shareable
-{
-  type: String!
-  domain: String!
-  value: String!
-  reason: String!
-}
-
-type CustomDomainVerificationResponse
-  @shareable
-{
-  code: String!
-  message: String!
-}
-
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
-  customDomain(id: ID!): CustomDomain!
-  customDomains(teamId: ID!): [CustomDomain!]!
-  hosts(teamId: ID!): [Host!]!
-  integrations(teamId: ID!): [Integration!]!
-  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
-  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
-
-  """
-  Returns distinct language IDs from published global templates.
-  Used to dynamically populate the language filter on the templates page.
-  """
-  journeyTemplateLanguageIds: [String!]!
-  journeyCollection(id: ID!): JourneyCollection!
-  journeyCollections(teamId: ID!): [JourneyCollection]!
-  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
-  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
-  journeyTheme(journeyId: ID!): JourneyTheme
-
-  """Get a list of Visitor Information by Journey"""
-  journeyVisitorsConnection(
-    """Returns the elements in the list that match the specified filter."""
-    filter: JourneyVisitorFilter!
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-
-    """Specifies the sort field for the list."""
-    sort: JourneyVisitorSort
-  ): JourneyVisitorsConnection!
-
-  """Get a JourneyVisitor count by JourneyVisitorFilter"""
-  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
-  journeysEmailPreference(email: String!): JourneysEmailPreference
-  qrCode(id: ID!): QrCode!
-  qrCodes(where: QrCodesFilter!): [QrCode!]!
-  teams: [Team!]!
-  team(id: ID!): Team!
-  userInvites(journeyId: ID!): [UserInvite!]
-  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
-  userTeam(id: ID!): UserTeam!
-  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
-
-  """A list of visitors that are connected with a specific team."""
-  visitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-  ): VisitorsConnection!
-
-  """Get a single visitor"""
-  visitor(id: ID!): Visitor!
 }
 
 enum ButtonAction {
@@ -1166,20 +1018,6 @@ interface Event {
   value: String
 }
 
-input JourneyViewEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  journeyId: ID!
-
-  """title of the journey being viewed"""
-  label: String
-
-  """languageId of the journey being viewed"""
-  value: ID
-}
-
 extend type Language
   @key(fields: "id")
 {
@@ -1248,19 +1086,6 @@ type SignUpSubmissionEvent implements Event
   email: String
 }
 
-input StepViewEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-
-  """Id of the current StepBlock"""
-  blockId: ID!
-
-  """stepName of the current stepBlock"""
-  value: String
-}
-
 type StepViewEvent implements Event
   @shareable
 {
@@ -1279,25 +1104,6 @@ type StepViewEvent implements Event
   value: String
 }
 
-input StepNextEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-
-  """Id of the current StepBlock"""
-  blockId: ID!
-
-  """id of the next stepBlock"""
-  nextStepId: ID!
-
-  """stepName of the current stepBlock"""
-  label: String
-
-  """stepName of the next stepBlock"""
-  value: String
-}
-
 type StepNextEvent implements Event
   @shareable
 {
@@ -1313,25 +1119,6 @@ type StepNextEvent implements Event
   label: String
 
   """stepName of the next stepBlock"""
-  value: String
-}
-
-input StepPreviousEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-
-  """Id of the current StepBlock"""
-  blockId: ID!
-
-  """id of the previous stepBlock"""
-  previousStepId: ID!
-
-  """stepName of the current stepBlock"""
-  label: String
-
-  """stepName of the previous stepBlock"""
   value: String
 }
 
@@ -1374,26 +1161,6 @@ type TextResponseSubmissionEvent implements Event
   blockId: String
 }
 
-input VideoStartEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoStartEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
 type VideoStartEvent implements Event
   @shareable
 {
@@ -1416,26 +1183,6 @@ type VideoStartEvent implements Event
 
   """source of the video (based on the source in the value field)"""
   source: VideoBlockSource
-}
-
-input VideoPlayEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoPlayEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
 }
 
 type VideoPlayEvent implements Event
@@ -1462,26 +1209,6 @@ type VideoPlayEvent implements Event
   source: VideoBlockSource
 }
 
-input VideoPauseEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoPauseEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
 type VideoPauseEvent implements Event
   @shareable
 {
@@ -1504,26 +1231,6 @@ type VideoPauseEvent implements Event
 
   """source of the video (based on the source in the value field)"""
   source: VideoBlockSource
-}
-
-input VideoCompleteEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoCompleteEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
 }
 
 type VideoCompleteEvent implements Event
@@ -1550,26 +1257,6 @@ type VideoCompleteEvent implements Event
   source: VideoBlockSource
 }
 
-input VideoExpandEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoExpandEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
 type VideoExpandEvent implements Event
   @shareable
 {
@@ -1594,26 +1281,6 @@ type VideoExpandEvent implements Event
   source: VideoBlockSource
 }
 
-input VideoCollapseEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoCollapseEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
 type VideoCollapseEvent implements Event
   @shareable
 {
@@ -1636,31 +1303,6 @@ type VideoCollapseEvent implements Event
 
   """source of the video (based on the source in the value field)"""
   source: VideoBlockSource
-}
-
-input VideoProgressEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoProgressEvent is triggered"""
-  position: Float
-
-  """
-  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
-  """
-  progress: Int!
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
 }
 
 type VideoProgressEvent implements Event
@@ -1711,6 +1353,72 @@ input HostUpdateInput {
   location: String
   src1: String
   src2: String
+}
+
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
+  hosts(teamId: ID!): [Host!]!
+  integrations(teamId: ID!): [Integration!]!
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
+  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
+  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
+
+  """
+  Returns distinct language IDs from published global templates.
+  Used to dynamically populate the language filter on the templates page.
+  """
+  journeyTemplateLanguageIds: [String!]!
+  journeyCollection(id: ID!): JourneyCollection!
+  journeyCollections(teamId: ID!): [JourneyCollection]!
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
+  journeyTheme(journeyId: ID!): JourneyTheme
+
+  """Get a list of Visitor Information by Journey"""
+  journeyVisitorsConnection(
+    """Returns the elements in the list that match the specified filter."""
+    filter: JourneyVisitorFilter!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Specifies the sort field for the list."""
+    sort: JourneyVisitorSort
+  ): JourneyVisitorsConnection!
+
+  """Get a JourneyVisitor count by JourneyVisitorFilter"""
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
+  journeysEmailPreference(email: String!): JourneysEmailPreference
+  qrCode(id: ID!): QrCode!
+  qrCodes(where: QrCodesFilter!): [QrCode!]!
+  teams: [Team!]!
+  team(id: ID!): Team!
+  userInvites(journeyId: ID!): [UserInvite!]
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
+  userTeam(id: ID!): UserTeam!
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
+
+  """A list of visitors that are connected with a specific team."""
+  visitorsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+  ): VisitorsConnection!
+
+  """Get a single visitor"""
+  visitor(id: ID!): Visitor!
 }
 
 input HostCreateInput {

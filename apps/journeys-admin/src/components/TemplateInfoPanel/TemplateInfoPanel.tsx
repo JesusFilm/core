@@ -1,0 +1,318 @@
+import NorthWestIcon from '@mui/icons-material/NorthWest'
+import Box from '@mui/material/Box'
+import ButtonBase from '@mui/material/ButtonBase'
+import Divider from '@mui/material/Divider'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next/pages'
+import {
+  ReactElement,
+  type KeyboardEvent as ReactKeyboardEvent,
+  useState
+} from 'react'
+
+import { HowToCreateSection } from './HowToCreateSection'
+import { SharingAndPublishingSection } from './SharingAndPublishingSection'
+import { TemplateInfoAccordion } from './TemplateInfoAccordion'
+import { TemplateTypesSection } from './TemplateTypesSection'
+import { TrackingAndAnalyticsSection } from './TrackingAndAnalyticsSection'
+
+/**
+ * Vertical chrome reserved by the editor canvas (top toolbar / navbar +
+ * bottom breathing room) before the contained panel begins. Used by the
+ * outer Paper's `maxHeight` so the panel stretches with the viewport
+ * instead of being pinned to a fixed pixel count.
+ */
+const CONTAINED_TOP_OFFSET_PX = 160
+
+/**
+ * Total chrome within the contained panel: editor offset (160px) + panel
+ * header (~151px) + four accordion summary rows (~256px) + close bar
+ * (~52px) + dividers. Subtracted from `100vh` to bound the currently-
+ * expanded `AccordionDetails` so only the body scrolls when content
+ * exceeds the available space; summaries stay pinned.
+ */
+const CONTAINED_BODY_RESERVATION_PX = 620
+
+/**
+ * Chrome reservation for the templates-tab Drawer surface: page navbar
+ * (~80px) + panel header (~151px) + four accordion summary rows (~256px)
+ * + safety margin. Smaller than `CONTAINED_BODY_RESERVATION_PX` because
+ * the Drawer surface has no in-panel close bar of its own.
+ */
+const DRAWER_BODY_RESERVATION_PX = 540
+
+/**
+ * Floor for the per-accordion body height when the viewport is too short
+ * for the reservation math. Prevents `AccordionDetails` from collapsing
+ * to zero height (CSS clamps negative `max-height` to 0) on borderline
+ * viewports. NOT a substitute for proper narrow-viewport layout, which
+ * is deferred to follow-up work — on viewports tall enough to fall back
+ * to this floor, total panel content may still exceed the Paper's
+ * `maxHeight` and clip the close bar.
+ */
+const BODY_MIN_HEIGHT_PX = 80
+
+/**
+ * Stable IDs for each accordion section. Used for `aria-controls` wiring,
+ * single-expand state, and `defaultExpanded` prop selection. The order of the
+ * union here matches the order the panel renders in `TemplateInfoPanel`.
+ */
+export type TemplateInfoSectionId =
+  | 'templateTypes'
+  | 'howToCreate'
+  | 'trackingAndAnalytics'
+  | 'sharingAndPublishing'
+
+export interface TemplateInfoPanelProps {
+  /**
+   * Optional starting section. When omitted, all accordions render collapsed
+   * on first mount (matches Figma `39653-66422`).
+   */
+  defaultExpanded?: TemplateInfoSectionId
+  /**
+   * Controls the outer chrome of the panel.
+   *
+   * - `false` (default) — chrome-less `Box` that fills its parent. Used on
+   *   the Team Templates tab where a parent `Drawer`/`SwipeableDrawer`
+   *   supplies the chrome (NES-1538).
+   * - `true` — self-contained `Paper` with rounded corners on all sides,
+   *   soft elevation, a fixed width, and a capped height with internal
+   *   scrolling for the accordion content. Used by the editor canvas
+   *   floating helper, where the panel floats free rather than docking to a
+   *   drawer (NES-1642, Figma `39662-67865`).
+   */
+  contained?: boolean
+  /**
+   * Optional close handler. When supplied, the panel renders a bottom row
+   * with a chevron-up button that fires this callback — used by the
+   * editor canvas floating helper (NES-1642) to dismiss the floating
+   * panel. Only meaningful under `contained={true}`; ignored otherwise.
+   */
+  onClose?: () => void
+  className?: string
+}
+
+/**
+ * TemplateInfoPanel — the static educational side panel that lives next to
+ * the local template grid on the Team Templates tab (NES-1538). The component
+ * is purely presentational: it reads no Apollo, no `JourneyProvider`, no
+ * `useEditor`. NES-1642 will reuse it as-is for the editor floating helper.
+ *
+ * Visuals are driven by Figma frame `39653-66422` (chrome) and its
+ * expanded-state siblings (`39657-66822`, `39653-66495`, `39657-66677`,
+ * `39657-66751`). Section 5 (Embedding Canva or Google Slides) has no Figma —
+ * its copy comes from Siyang's 2026-05-11 ticket comment.
+ *
+ * Accordions are single-expand: opening any section collapses the previously
+ * expanded one. Clicking an already-open section closes it. The single source
+ * of truth lives in this component's `expanded` state so the section
+ * components stay stateless and reusable.
+ */
+export function TemplateInfoPanel({
+  defaultExpanded,
+  contained = false,
+  onClose,
+  className
+}: TemplateInfoPanelProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const [expanded, setExpanded] = useState<TemplateInfoSectionId | null>(
+    defaultExpanded ?? null
+  )
+
+  function makeHandleChange(id: TemplateInfoSectionId) {
+    return (nextExpanded: boolean): void => {
+      setExpanded(nextExpanded ? id : null)
+    }
+  }
+
+  const header = (
+    <Stack
+      sx={{
+        px: 2.5,
+        pt: 3,
+        pb: 2.5,
+        gap: 1,
+        color: 'text.primary'
+      }}
+    >
+      <Typography
+        component="h2"
+        sx={{
+          fontFamily: 'Montserrat, sans-serif',
+          fontWeight: 600,
+          fontSize: 22,
+          lineHeight: '27px'
+        }}
+      >
+        {t('What templates are about:')}
+      </Typography>
+      <Typography
+        sx={{
+          fontFamily: 'Open Sans, sans-serif',
+          fontWeight: 400,
+          fontSize: 16,
+          lineHeight: '24px'
+        }}
+      >
+        {t(
+          'You can share projects created on our platform with others. This allows you to track the performance of every project generated from your template.'
+        )}
+      </Typography>
+    </Stack>
+  )
+
+  const accordions = (
+    <Box>
+      <TemplateInfoAccordion
+        id="templateTypes"
+        title={t('Template Types')}
+        expanded={expanded === 'templateTypes'}
+        onChange={makeHandleChange('templateTypes')}
+      >
+        <TemplateTypesSection />
+      </TemplateInfoAccordion>
+      <TemplateInfoAccordion
+        id="howToCreate"
+        title={t('How to create')}
+        expanded={expanded === 'howToCreate'}
+        onChange={makeHandleChange('howToCreate')}
+      >
+        <HowToCreateSection />
+      </TemplateInfoAccordion>
+      <TemplateInfoAccordion
+        id="trackingAndAnalytics"
+        title={t('Tracking and Analytics')}
+        expanded={expanded === 'trackingAndAnalytics'}
+        onChange={makeHandleChange('trackingAndAnalytics')}
+      >
+        <TrackingAndAnalyticsSection />
+      </TemplateInfoAccordion>
+      <TemplateInfoAccordion
+        id="sharingAndPublishing"
+        title={t('Sharing and Publishing')}
+        expanded={expanded === 'sharingAndPublishing'}
+        onChange={makeHandleChange('sharingAndPublishing')}
+        isLast
+      >
+        <SharingAndPublishingSection />
+      </TemplateInfoAccordion>
+    </Box>
+  )
+
+  if (contained) {
+    return (
+      <Paper
+        elevation={3}
+        className={className}
+        data-testid="TemplateInfoPanel"
+        sx={{
+          width: 360,
+          // Dynamic vertical bound: stretches with the viewport so larger
+          // screens get more reading room. See CONTAINED_TOP_OFFSET_PX for
+          // the reservation rationale.
+          maxHeight: `calc(100vh - ${CONTAINED_TOP_OFFSET_PX}px)`,
+          borderRadius: 3,
+          overflow: 'hidden',
+          bgcolor: 'background.paper',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <Box sx={{ flexShrink: 0 }}>{header}</Box>
+        <Divider sx={{ flexShrink: 0 }} />
+        {/*
+         * Accordion list. The list itself does NOT scroll — its summaries
+         * stay visible at all times so the user can always reach the close
+         * affordance and switch sections. Instead, the currently-expanded
+         * AccordionDetails has its own max-height + internal scroll, so
+         * only the long body of the expanded section scrolls; the four
+         * summary rows above it and the close bar below it stay pinned.
+         *
+         * See CONTAINED_BODY_RESERVATION_PX for the reservation math. The
+         * `max()` floor guards against the calc resolving to ≤0 on short
+         * viewports (CSS would clamp negative maxHeight to 0, hiding the
+         * body entirely).
+         */}
+        <Box
+          sx={{
+            flex: '1 1 auto',
+            minHeight: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            '& .MuiAccordionDetails-root': {
+              maxHeight: `max(${BODY_MIN_HEIGHT_PX}px, calc(100vh - ${CONTAINED_BODY_RESERVATION_PX}px))`,
+              overflowY: 'auto'
+            }
+          }}
+        >
+          {accordions}
+        </Box>
+        {onClose != null && (
+          <>
+            <Divider sx={{ flexShrink: 0 }} />
+            <ButtonBase
+              data-testid="TemplateInfoPanelClose"
+              aria-label={t('Close template info')}
+              onClick={onClose}
+              onKeyDown={(event: ReactKeyboardEvent<HTMLButtonElement>) => {
+                // Native <button> activates on Enter/Space via onClick;
+                // preventDefault here avoids onClose firing twice when the
+                // user activates the bar via keyboard.
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  onClose()
+                }
+              }}
+              sx={{
+                flexShrink: 0,
+                width: '100%',
+                justifyContent: 'flex-end',
+                px: 2.5,
+                py: 1.5,
+                color: 'text.primary',
+                '&:hover': {
+                  bgcolor: 'action.hover'
+                },
+                '&:focus-visible': {
+                  outline: (theme) => `2px solid ${theme.palette.primary.main}`,
+                  outlineOffset: -2
+                }
+              }}
+            >
+              <NorthWestIcon />
+            </ButtonBase>
+          </>
+        )}
+      </Paper>
+    )
+  }
+
+  return (
+    <Box
+      className={className}
+      data-testid="TemplateInfoPanel"
+      sx={{
+        width: '100%',
+        /*
+         * Cap each accordion body's height so summary headers (Template
+         * Types, How to create, Tracking and Analytics, Sharing and
+         * Publishing) stay visible inside the templates-tab Drawer when an
+         * expanded section's content is long. Only the body scrolls; the
+         * rest of the Drawer chrome is untouched. See
+         * DRAWER_BODY_RESERVATION_PX for the reservation math; the `max()`
+         * floor prevents zero-height collapse on borderline viewports.
+         */
+        '& .MuiAccordionDetails-root': {
+          maxHeight: `max(${BODY_MIN_HEIGHT_PX}px, calc(100vh - ${DRAWER_BODY_RESERVATION_PX}px))`,
+          overflowY: 'auto'
+        }
+      }}
+    >
+      {header}
+      <Divider />
+      {accordions}
+    </Box>
+  )
+}

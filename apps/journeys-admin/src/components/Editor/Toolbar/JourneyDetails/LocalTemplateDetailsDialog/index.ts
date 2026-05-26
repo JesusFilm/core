@@ -1,0 +1,1 @@
+export { LocalTemplateDetailsDialog } from './LocalTemplateDetailsDialog'

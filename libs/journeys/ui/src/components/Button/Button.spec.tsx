@@ -79,7 +79,7 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
   typeof usePlausible
 >
 
-jest.mock('next-i18next', () => ({
+jest.mock('next-i18next/pages', () => ({
   __esModule: true,
   useTranslation: () => {
     return {
@@ -151,7 +151,9 @@ const activeBlock: TreeBlock<StepBlock> = {
             color: null
           }
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
   ]
 }
@@ -488,7 +490,9 @@ describe('Button', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: null,
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     }

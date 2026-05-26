@@ -49,10 +49,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/apis/api-media"],
       "options": {
-        "jestConfig": "apis/api-media/jest.config.ts"
+        "configFile": "apis/api-media/vitest.config.mts"
       }
     },
     "generate-graphql": {

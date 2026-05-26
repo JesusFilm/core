@@ -162,7 +162,9 @@ describe('blockDeleteUpdate', () => {
         id: 'cardId',
         parentBlockId: 'step1.id',
         parentOrder: 0,
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       },
       'VideoBlock:videoId': { ...video },
       'ImageBlock:imageId': { ...image }

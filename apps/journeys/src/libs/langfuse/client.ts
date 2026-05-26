@@ -30,10 +30,27 @@ export function getLangfuse(): Langfuse | null {
     return cached
   }
 
-  cached = new Langfuse({ publicKey, secretKey, baseUrl })
+  cached = new Langfuse({
+    publicKey,
+    secretKey,
+    baseUrl,
+    environment: resolveTracingEnvironment()
+  })
   return cached
 }
 
 export function getActivePromptLabel(): string {
   return process.env.VERCEL_ENV === 'production' ? 'production' : 'development'
+}
+
+// Without this, every trace ships as `environment: undefined` and Langfuse
+// buckets prod, stage, preview, and local-dev together as "default".
+function resolveTracingEnvironment(): string {
+  const override = process.env.LANGFUSE_TRACING_ENVIRONMENT
+  if (override != null && override !== '') return override
+  if (process.env.VERCEL_ENV === 'production') return 'production'
+  if (process.env.VERCEL_ENV === 'preview') {
+    return process.env.VERCEL_GIT_COMMIT_REF === 'stage' ? 'stage' : 'preview'
+  }
+  return 'development'
 }

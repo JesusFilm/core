@@ -1,37 +1,41 @@
+import { vi } from 'vitest'
+
 import { cli } from './cli'
 
 // Mock chalk to return the input string without styling
-jest.mock('chalk', () => ({
-  greenBright: (str: string) => str,
-  grey: (str: string) => str,
-  bold: (str: string) => str,
-  cyan: (...args: string[]) => args.join(' '),
-  red: (str: string) => str
+vi.mock('chalk', () => ({
+  default: {
+    greenBright: (str: string) => str,
+    grey: (str: string) => str,
+    bold: (str: string) => str,
+    cyan: (...args: string[]) => args.join(' '),
+    red: (str: string) => str
+  }
 }))
 
 // Mock the services
-jest.mock('./dataExport/service', () => ({
-  service: jest.fn().mockResolvedValue(undefined)
+vi.mock('./dataExport/service', () => ({
+  service: vi.fn().mockResolvedValue(undefined)
 }))
 
 // Mock Queue
-jest.mock('bullmq', () => ({
-  Queue: jest.fn().mockImplementation(() => ({
-    add: jest
+vi.mock('bullmq', () => ({
+  Queue: vi.fn().mockImplementation(() => ({
+    add: vi
       .fn()
       .mockResolvedValue({ id: 'test-id', getState: () => 'waiting' }),
-    getJobs: jest.fn().mockResolvedValue([])
+    getJobs: vi.fn().mockResolvedValue([])
   })),
-  Worker: jest.fn()
+  Worker: vi.fn()
 }))
 
 // Mock process.exit
-const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {
+const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
   return undefined as never
 })
 
 // Mock console.log and console.error
-const mockConsoleLog = jest
+const mockConsoleLog = vi
   .spyOn(console, 'log')
   .mockImplementation(() => undefined)
 
@@ -39,7 +43,7 @@ describe('CLI', () => {
   const originalNodeEnv = process.env.NODE_ENV
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env.NODE_ENV = 'production'
   })
 

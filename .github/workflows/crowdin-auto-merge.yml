@@ -7,7 +7,7 @@ on:
         type: boolean
         default: true
   schedule:
-    - cron: '0 1 * * 5' # Friday 01:00 UTC = Friday 1pm NZST / 2pm NZDT
+    - cron: '17 1 * * 5' # Friday 01:17 UTC = Friday 1:17pm NZST / 2:17pm NZDT — off-peak minute to avoid GitHub Actions schedule drops at the top of the hour
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true

@@ -1,17 +1,20 @@
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { Mock } from 'vitest'
+
 import { prisma } from '../../../../libs/prisma/analytics/src/client'
 import { addGoalsToAllSites } from '../lib/site/addGoalsToSites'
 
 import main from './sites-add-goals'
 
-jest.mock('../../../../libs/prisma/analytics/src/client', () => ({
+vi.mock('../../../../libs/prisma/analytics/src/client', () => ({
   __esModule: true,
-  prisma: { $disconnect: jest.fn() },
-  PrismaClient: jest.fn()
+  prisma: { $disconnect: vi.fn() },
+  PrismaClient: vi.fn()
 }))
 
-jest.mock('../lib/site/addGoalsToSites', () => ({
+vi.mock('../lib/site/addGoalsToSites', () => ({
   __esModule: true,
-  addGoalsToAllSites: jest.fn()
+  addGoalsToAllSites: vi.fn()
 }))
 
 describe('sites-add-goals script', () => {
@@ -20,10 +23,10 @@ describe('sites-add-goals script', () => {
   const originalExitCode = process.exitCode
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = { ...originalEnv }
     process.argv = [...originalArgv]
-    delete process.exitCode
+    process.exitCode = undefined
   })
 
   afterAll(() => {
@@ -36,7 +39,7 @@ describe('sites-add-goals script', () => {
     process.env.GOALS = 'goal1,goal2'
     process.env.BATCH_SIZE = '200'
     process.argv = ['node', 'sites-add-goals.ts']
-    ;(addGoalsToAllSites as jest.Mock).mockResolvedValue({
+    ;(addGoalsToAllSites as Mock).mockResolvedValue({
       totalAdded: 10,
       totalFailed: 0
     })
@@ -55,7 +58,7 @@ describe('sites-add-goals script', () => {
   it('sets process.exitCode=1 when totalFailed > 0', async () => {
     process.env.GOALS = 'goal1'
     process.argv = ['node', 'sites-add-goals.ts']
-    ;(addGoalsToAllSites as jest.Mock).mockResolvedValue({
+    ;(addGoalsToAllSites as Mock).mockResolvedValue({
       totalAdded: 0,
       totalFailed: 2
     })
@@ -69,7 +72,7 @@ describe('sites-add-goals script', () => {
   it('exits with code 1 when GOALS is missing and still disconnects', async () => {
     process.argv = ['node', 'sites-add-goals.ts']
 
-    const exitSpy = jest.spyOn(process, 'exit').mockImplementation(((
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(((
       code?: number
     ) => {
       throw new Error(`process.exit:${code ?? ''}`)

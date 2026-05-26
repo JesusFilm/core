@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { differenceInSeconds } from 'date-fns'
-import { Trans, useTranslation } from 'next-i18next'
+import { Trans, useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 interface LastModifiedDateProps {

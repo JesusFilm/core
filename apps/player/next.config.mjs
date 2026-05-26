@@ -47,15 +47,10 @@ const nextConfig = {
     }
   },
   nx: {},
-  experimental: {
-    reactCompiler: true
-  },
+  reactCompiler: true,
   productionBrowserSourceMaps: true,
   typescript: {
     ignoreBuildErrors: env.CI
-  },
-  eslint: {
-    ignoreDuringBuilds: env.CI
   },
   outputFileTracingExcludes: {
     '*': [

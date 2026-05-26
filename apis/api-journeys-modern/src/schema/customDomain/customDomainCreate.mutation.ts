@@ -27,7 +27,6 @@ builder.mutationField('customDomainCreate', (t) =>
     .prismaField({
       type: CustomDomainRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         input: t.arg({ type: CustomDomainCreateInput, required: true })
       },

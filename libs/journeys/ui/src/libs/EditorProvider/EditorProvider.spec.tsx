@@ -246,7 +246,9 @@ describe('EditorContext', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: null,
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
         const step: TreeBlock = {
           id: 'step0.id',
@@ -291,7 +293,9 @@ describe('EditorContext', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: null,
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
         const step: TreeBlock = {
           id: 'step0.id',
@@ -353,7 +357,9 @@ describe('EditorContext', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: null,
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
         const step: TreeBlock = {
           id: 'step0.id',
@@ -545,7 +551,9 @@ describe('EditorContext', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: null,
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
         const originalStep: TreeBlock = {
           id: 'original-step.id',
@@ -639,7 +647,9 @@ describe('EditorContext', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: null,
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
         const persistentStep: TreeBlock = {
           id: 'persistent-step.id',
@@ -706,7 +716,9 @@ describe('EditorContext', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: null,
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
         const step: TreeBlock = {
           id: 'step0.id',
@@ -776,7 +788,9 @@ describe('EditorContext', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: null,
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
         const step: TreeBlock = {
           id: 'step0.id',
@@ -868,7 +882,9 @@ describe('EditorContext', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: null,
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
         const step: TreeBlock = {
           id: 'step0.id',

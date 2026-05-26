@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse, isAxiosError } from 'axios'
+import { type Mocked, type MockedFunction, vi } from 'vitest'
 
 import { UserRole } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
@@ -10,19 +11,19 @@ import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
 import { JourneyWithAcl } from './templateFamilyStatsBreakdown.query'
 
-jest.mock('axios')
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('axios')
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
-jest.mock('../../../lib/auth/ability', () => ({
+vi.mock('../../../lib/auth/ability', () => ({
   Action: {
     Read: 'read',
     Update: 'update'
   },
-  ability: jest.fn(),
-  subject: jest.fn((_type, object) => ({ subject: _type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((_type, object) => ({ subject: _type, object }))
 }))
-jest.mock('../../../../env', () => ({
+vi.mock('../../../../env', () => ({
   env: {
     get JOURNEYS_URL(): string | undefined {
       return process.env.JOURNEYS_URL
@@ -36,14 +37,14 @@ jest.mock('../../../../env', () => ({
   }
 }))
 
-const mockAxios = axios as jest.Mocked<typeof axios>
-const mockIsAxiosError = isAxiosError as jest.MockedFunction<
+const mockAxios = axios as Mocked<typeof axios>
+const mockIsAxiosError = isAxiosError as unknown as MockedFunction<
   typeof isAxiosError
 >
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
-const mockAbility = ability as jest.MockedFunction<typeof ability>
+const mockAbility = ability as MockedFunction<typeof ability>
 
 describe('templateFamilyStatsBreakdown', () => {
   const originalEnv = process.env
@@ -90,7 +91,7 @@ describe('templateFamilyStatsBreakdown', () => {
   `)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = {
       ...originalEnv,
       PLAUSIBLE_URL: 'https://plausible.example',
@@ -148,7 +149,7 @@ describe('templateFamilyStatsBreakdown', () => {
         userJourneys: []
       }
     ] as unknown as JourneyWithAcl[])
-    prismaMock.journeyVisitor.groupBy.mockResolvedValue([])
+    ;(prismaMock.journeyVisitor.groupBy as any).mockResolvedValue([])
 
     mockAxios.get
       .mockResolvedValueOnce({
@@ -298,7 +299,7 @@ describe('templateFamilyStatsBreakdown', () => {
         userJourneys: []
       }
     ] as unknown as JourneyWithAcl[])
-    prismaMock.journeyVisitor.groupBy.mockResolvedValue([
+    ;(prismaMock.journeyVisitor.groupBy as any).mockResolvedValue([
       {
         journeyId: 'journey-1',
         _count: { journeyId: 5 }
@@ -396,8 +397,7 @@ describe('templateFamilyStatsBreakdown', () => {
         userJourneys: []
       }
     ] as unknown as JourneyWithAcl[])
-
-    prismaMock.journeyVisitor.groupBy.mockResolvedValue([
+    ;(prismaMock.journeyVisitor.groupBy as any).mockResolvedValue([
       {
         journeyId: 'journey-1',
         _count: { journeyId: 5 }
@@ -626,7 +626,7 @@ describe('templateFamilyStatsBreakdown', () => {
         userJourneys: []
       }
     ] as unknown as JourneyWithAcl[])
-    prismaMock.journeyVisitor.groupBy.mockResolvedValue([])
+    ;(prismaMock.journeyVisitor.groupBy as any).mockResolvedValue([])
 
     mockAxios.get
       .mockResolvedValueOnce({
@@ -743,7 +743,7 @@ describe('templateFamilyStatsBreakdown', () => {
       ] as unknown as JourneyWithAcl[])
 
     // Responses exist (journeyVisitor with lastTextResponse not null)
-    prismaMock.journeyVisitor.groupBy
+    ;(prismaMock.journeyVisitor.groupBy as any)
       .mockResolvedValueOnce([
         {
           journeyId: 'journey-1',

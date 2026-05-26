@@ -2,7 +2,7 @@ import MuiFab from '@mui/material/Fab'
 import type { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Zoom from '@mui/material/Zoom'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import type { MouseEvent, ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'

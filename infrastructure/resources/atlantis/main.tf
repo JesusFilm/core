@@ -8,6 +8,12 @@ module "atlantis" {
   version = "~> 3.0"
 
   name = "atlantis"
+  # Pinned to first stable Atlantis release built after HashiCorp's
+  # release-signing GPG key expired (2026-04-18). Earlier images (including
+  # the previously floating :latest) trust the now-expired key and fail
+  # terraform downloads with "openpgp: key expired". See
+  # https://github.com/runatlantis/atlantis/issues/6405.
+  atlantis_version = "v0.43.0"
   # user needed because of https://github.com/runatlantis/atlantis/issues/2221
   # this is atlantis user per the official docker image
   user = "100:1000"
@@ -16,6 +22,15 @@ module "atlantis" {
     {
       name : "ATLANTIS_REPO_CONFIG_JSON",
       value : jsonencode(yamldecode(file("${path.module}/server-atlantis.yaml"))),
+      }, {
+      # Default all repos/projects to OpenTofu. Avoids the HashiCorp
+      # release-signing GPG key (expired 2026-04-18), which breaks Terraform
+      # binary downloads with "openpgp: key expired". OpenTofu downloads via
+      # tofudl using its own signing key. The repo config has no distribution
+      # field, so this server flag is the correct place to set the default.
+      # See https://github.com/runatlantis/atlantis/issues/6405.
+      name : "ATLANTIS_DEFAULT_TF_DISTRIBUTION"
+      value : "opentofu"
       }, {
       name : "AWS_ACCESS_KEY_ID"
       value : resource.aws_iam_access_key.jfp_terraform_user_access_key.id

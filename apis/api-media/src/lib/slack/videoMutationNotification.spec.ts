@@ -1,22 +1,23 @@
 import fetch from 'node-fetch'
+import { type MockedFunction, vi } from 'vitest'
 
 import { logger } from '../../logger'
 
 import { notifyVideoSlackOfMutation } from './videoMutationNotification'
 
-jest.mock('node-fetch')
-jest.mock('../../logger', () => ({
+vi.mock('node-fetch')
+vi.mock('../../logger', () => ({
   logger: {
-    warn: jest.fn(),
-    info: jest.fn(),
-    child: jest.fn()
+    warn: vi.fn(),
+    info: vi.fn(),
+    child: vi.fn()
   }
 }))
 
 describe('notifyVideoSlackOfMutation', () => {
-  const mockFetch = fetch as jest.MockedFunction<typeof fetch>
-  const mockLoggerWarn = jest.mocked(logger.warn)
-  const mockLoggerChild = jest.mocked(logger.child)
+  const mockFetch = fetch as MockedFunction<typeof fetch>
+  const mockLoggerWarn = vi.mocked(logger.warn)
+  const mockLoggerChild = vi.mocked(logger.child)
   const originalEnv = process.env
 
   const flushAsync = async (): Promise<void> => {
@@ -25,7 +26,7 @@ describe('notifyVideoSlackOfMutation', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockLoggerChild.mockReturnValue(logger as any)
     process.env = {
       ...originalEnv,
@@ -36,7 +37,7 @@ describe('notifyVideoSlackOfMutation', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       status: 200,
-      json: jest.fn().mockResolvedValue({ ok: true, ts: '1111.1111' })
+      json: vi.fn().mockResolvedValue({ ok: true, ts: '1111.1111' })
     } as any)
   })
 
@@ -140,7 +141,7 @@ describe('notifyVideoSlackOfMutation', () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
       status: 500,
-      json: jest.fn().mockResolvedValue({ ok: false, error: 'server_error' })
+      json: vi.fn().mockResolvedValue({ ok: false, error: 'server_error' })
     } as any)
 
     notifyVideoSlackOfMutation({
