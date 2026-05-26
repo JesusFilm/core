@@ -70,12 +70,22 @@ interface DraggableJourneysGridProps {
   journeys: readonly Journey[]
   publishedLock: boolean
   dragInFlight: boolean
+  /**
+   * When true (default), wraps the grid in outer padding that matches
+   * the Grid's spacing so the gap from a card to the collection
+   * edge equals the gap between cards — the in-collection layout
+   * Sushma flagged in DM.
+   * Pass false in the All Templates section so cards line up with
+   * the collection-card edges above instead of inset by the padding.
+   */
+  outerPadding?: boolean
 }
 
 function DraggableJourneysGridImpl({
   journeys,
   publishedLock,
-  dragInFlight
+  dragInFlight,
+  outerPadding = true
 }: DraggableJourneysGridProps): ReactElement | null {
   if (journeys.length === 0) return null
   // SortableContext gives intra-collection ordering: each item is both a
@@ -84,10 +94,7 @@ function DraggableJourneysGridImpl({
   const ids = journeys.map((j) => j.id)
   return (
     <SortableContext items={ids} strategy={rectSortingStrategy}>
-      {/* Outer padding matches the Grid's spacing/rowSpacing so the gap
-          between a card and the collection edge equals the gap between
-          two cards — Sushma flagged the inconsistent 8px-vs-32px in DM. */}
-      <Box sx={{ p: { xs: 2.5, sm: 4 } }}>
+      <Box sx={outerPadding ? { p: { xs: 2.5, sm: 4 } } : undefined}>
         <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
           {journeys.map((journey) => (
             <Grid

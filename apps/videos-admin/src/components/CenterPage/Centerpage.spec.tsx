@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Breakpoint, ThemeProvider, createTheme } from '@mui/material/styles'
 import { render, screen } from '@testing-library/react'
 
-import '@testing-library/jest-dom' // For extended matchers like toBeInTheDocument
+import '@testing-library/jest-dom/vitest' // For extended matchers like toBeInTheDocument
 import { CenterPage } from './CenterPage'
 
 const theme = createTheme({

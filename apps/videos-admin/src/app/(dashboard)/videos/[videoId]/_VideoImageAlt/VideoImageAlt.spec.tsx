@@ -2,6 +2,7 @@ import { NetworkStatus, useSuspenseQuery } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { type MockedFunction } from 'vitest'
 
 import {
   CREATE_VIDEO_IMAGE_ALT,
@@ -37,11 +38,11 @@ const mockImageAlt = {
 }
 
 // Mock the useSuspenseQuery hook
-jest.mock('@apollo/client', () => {
-  const original = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const original = await vi.importActual('@apollo/client')
   return {
     ...original,
-    useSuspenseQuery: jest.fn()
+    useSuspenseQuery: vi.fn()
   }
 })
 
@@ -87,7 +88,7 @@ describe('VideoImageAlt', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         videoImageAltUpdate: {
           id: '8cef078b-8fea-6777-d660-d004a0cded70',
@@ -98,19 +99,19 @@ describe('VideoImageAlt', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     // Default mock implementation for useSuspenseQuery
-    const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+    const mockedUseSuspenseQuery = useSuspenseQuery as MockedFunction<
       typeof useSuspenseQuery
     >
     mockedUseSuspenseQuery.mockReturnValue({
       data: mockVideoImageAltResult.data,
-      fetchMore: jest.fn(),
-      subscribeToMore: jest.fn(),
+      fetchMore: vi.fn(),
+      subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
-      refetch: jest.fn()
+      refetch: vi.fn()
     })
   })
 
@@ -156,20 +157,20 @@ describe('VideoImageAlt', () => {
 
   test('should create video image alt if none exists', async () => {
     // Mock empty imageAlt array for this test
-    const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+    const mockedUseSuspenseQuery = useSuspenseQuery as MockedFunction<
       typeof useSuspenseQuery
     >
     mockedUseSuspenseQuery.mockReturnValue({
       data: { adminVideo: { id: mockVideoId, imageAlt: [] } },
-      fetchMore: jest.fn(),
-      subscribeToMore: jest.fn(),
+      fetchMore: vi.fn(),
+      subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
-      refetch: jest.fn()
+      refetch: vi.fn()
     })
 
-    const result = jest.fn().mockReturnValue(mockCreateVideoImageAlt.result)
+    const result = vi.fn().mockReturnValue(mockCreateVideoImageAlt.result)
 
     render(
       <MockedProvider mocks={[{ ...mockCreateVideoImageAlt, result }]}>

@@ -18,7 +18,7 @@ describe('OrderedItem', () => {
   })
 
   it('should render menu with actions', async () => {
-    const viewHandlerMock = jest.fn()
+    const viewHandlerMock = vi.fn()
 
     render(
       <OrderedItem
@@ -50,8 +50,8 @@ describe('OrderedItem', () => {
   })
 
   it('should render icon buttons', async () => {
-    const viewOnClick = jest.fn()
-    const editOnClick = jest.fn()
+    const viewOnClick = vi.fn()
+    const editOnClick = vi.fn()
 
     render(
       <OrderedItem

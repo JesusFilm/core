@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 
 import { CancelButton } from './CancelButton'
 
-const mockCancel = jest.fn()
+const mockCancel = vi.fn()
 
 describe('CancelButton', () => {
   it('should render cancel button', () => {

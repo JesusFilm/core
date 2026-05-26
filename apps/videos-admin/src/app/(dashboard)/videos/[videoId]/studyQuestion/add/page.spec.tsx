@@ -1,13 +1,16 @@
+import { useMutation, useSuspenseQuery } from '@apollo/client'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import StudyQuestionsAddPage from './page'
 
 // Mock the Apollo Client hooks
-jest.mock('@apollo/client', () => ({
-  useMutation: jest.fn(() => [jest.fn(), { loading: false }]),
-  useSuspenseQuery: jest.fn(() => ({
+vi.mock('@apollo/client', () => ({
+  useMutation: vi.fn(() => [vi.fn(), { loading: false }]),
+  useSuspenseQuery: vi.fn(() => ({
     data: {
       adminVideo: {
         id: 'video-123',
@@ -27,15 +30,27 @@ jest.mock('@apollo/client', () => ({
 }))
 
 // Mock the next/navigation
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
-    push: jest.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
   })),
   useParams: () => ({ videoId: 'video-123' })
 }))
 
+// Mock notistack (hoisted so the factory can reference the mock)
+const { mockEnqueueSnackbar } = vi.hoisted(() => ({
+  mockEnqueueSnackbar: vi.fn()
+}))
+
+vi.mock('notistack', async () => ({
+  ...(await vi.importActual('notistack')),
+  useSnackbar: () => ({
+    enqueueSnackbar: mockEnqueueSnackbar
+  })
+}))
+
 // Mock Dialog component
-jest.mock('@core/shared/ui/Dialog', () => ({
+vi.mock('@core/shared/ui/Dialog', () => ({
   Dialog: ({ children, onClose, dialogTitle }) => (
     <div data-testid="mock-dialog">
       <div data-testid="dialog-title">{dialogTitle.title}</div>
@@ -48,8 +63,8 @@ jest.mock('@core/shared/ui/Dialog', () => ({
 }))
 
 // Mock Formik to make testing easier
-jest.mock('formik', () => {
-  const originalModule = jest.requireActual('formik')
+vi.mock('formik', async () => {
+  const originalModule = (await vi.importActual('formik')) as any
   return {
     ...originalModule,
     Formik: ({ initialValues, onSubmit, children }) => {
@@ -61,28 +76,25 @@ jest.mock('formik', () => {
         isSubmitting: false,
         isValidating: false,
         submitCount: 0,
-        handleChange: jest.fn(),
-        handleBlur: jest.fn(),
+        handleChange: vi.fn(),
+        handleBlur: vi.fn(),
         handleSubmit: (e) => {
           e?.preventDefault?.()
-          onSubmit(
-            { value: 'New study question' },
-            { setSubmitting: jest.fn() }
-          )
+          onSubmit({ value: 'New study question' }, { setSubmitting: vi.fn() })
         },
-        handleReset: jest.fn(),
-        setFieldValue: jest.fn(),
-        setFieldError: jest.fn(),
-        setFieldTouched: jest.fn(),
-        validateForm: jest.fn(),
-        validateField: jest.fn(),
-        setErrors: jest.fn(),
-        setTouched: jest.fn(),
-        setValues: jest.fn(),
-        setStatus: jest.fn(),
-        setSubmitting: jest.fn(),
-        resetForm: jest.fn(),
-        setFormikState: jest.fn(),
+        handleReset: vi.fn(),
+        setFieldValue: vi.fn(),
+        setFieldError: vi.fn(),
+        setFieldTouched: vi.fn(),
+        validateForm: vi.fn(),
+        validateField: vi.fn(),
+        setErrors: vi.fn(),
+        setTouched: vi.fn(),
+        setValues: vi.fn(),
+        setStatus: vi.fn(),
+        setSubmitting: vi.fn(),
+        resetForm: vi.fn(),
+        setFormikState: vi.fn(),
         dirty: true,
         isValid: true
       }
@@ -99,7 +111,7 @@ jest.mock('formik', () => {
                 e.preventDefault()
                 onSubmit(
                   { value: 'New study question' },
-                  { setSubmitting: jest.fn() }
+                  { setSubmitting: vi.fn() }
                 )
               }}
             >
@@ -116,7 +128,7 @@ jest.mock('formik', () => {
 })
 
 // Mock Material UI components
-jest.mock('@mui/material/Button', () => ({
+vi.mock('@mui/material/Button', () => ({
   __esModule: true,
   default: (props) => (
     <button
@@ -130,7 +142,7 @@ jest.mock('@mui/material/Button', () => ({
   )
 }))
 
-jest.mock('@mui/material/TextField', () => ({
+vi.mock('@mui/material/TextField', () => ({
   __esModule: true,
   default: (props) => (
     <div data-testid="mui-text-field">
@@ -146,7 +158,7 @@ jest.mock('@mui/material/TextField', () => ({
   )
 }))
 
-jest.mock('@mui/material/Stack', () => ({
+vi.mock('@mui/material/Stack', () => ({
   __esModule: true,
   default: (props) => (
     <div
@@ -189,8 +201,8 @@ describe('StudyQuestionsAddPage', () => {
   })
 
   it('redirects when close button is clicked', async () => {
-    const mockRouter = { push: jest.fn() }
-    require('next/navigation').useRouter.mockReturnValue(mockRouter)
+    const mockRouter = { push: vi.fn() }
+    vi.mocked(useRouter as unknown as Mock).mockReturnValue(mockRouter)
 
     renderComponent()
 
@@ -203,31 +215,20 @@ describe('StudyQuestionsAddPage', () => {
   })
 
   it('calls the create mutation when form is submitted', async () => {
-    const mockCreateMutation = jest
-      .fn()
-      .mockImplementation(({ onCompleted }) => {
-        onCompleted?.()
-        return Promise.resolve()
-      })
-    const mockRouter = { push: jest.fn() }
-    const mockEnqueueSnackbar = jest.fn()
+    const mockCreateMutation = vi.fn().mockImplementation(({ onCompleted }) => {
+      onCompleted?.()
+      return Promise.resolve()
+    })
+    const mockRouter = { push: vi.fn() }
 
     // Mock the Apollo useMutation hook
-    require('@apollo/client').useMutation.mockReturnValue([
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
       mockCreateMutation,
       { loading: false }
     ])
 
     // Mock the router
-    require('next/navigation').useRouter.mockReturnValue(mockRouter)
-
-    // Mock the snackbar
-    jest.mock('notistack', () => ({
-      ...jest.requireActual('notistack'),
-      useSnackbar: () => ({
-        enqueueSnackbar: mockEnqueueSnackbar
-      })
-    }))
+    vi.mocked(useRouter as unknown as Mock).mockReturnValue(mockRouter)
 
     renderComponent()
 
@@ -257,7 +258,7 @@ describe('StudyQuestionsAddPage', () => {
 
   it('handles empty studyQuestions array', async () => {
     // Mock data with empty study questions array
-    require('@apollo/client').useSuspenseQuery.mockReturnValue({
+    vi.mocked(useSuspenseQuery as unknown as Mock).mockReturnValue({
       data: {
         adminVideo: {
           id: 'video-123',
@@ -266,8 +267,8 @@ describe('StudyQuestionsAddPage', () => {
       }
     })
 
-    const mockCreateMutation = jest.fn()
-    require('@apollo/client').useMutation.mockReturnValue([
+    const mockCreateMutation = vi.fn()
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
       mockCreateMutation,
       { loading: false }
     ])
@@ -292,25 +293,16 @@ describe('StudyQuestionsAddPage', () => {
 
   it('handles mutation errors properly', async () => {
     const errorMessage = 'Failed to create study question'
-    const mockCreateMutation = jest.fn().mockImplementation(({ onError }) => {
+    const mockCreateMutation = vi.fn().mockImplementation(({ onError }) => {
       onError?.({ message: errorMessage })
       return Promise.resolve()
     })
-    const mockEnqueueSnackbar = jest.fn()
 
     // Mock the Apollo useMutation hook
-    require('@apollo/client').useMutation.mockReturnValue([
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
       mockCreateMutation,
       { loading: false }
     ])
-
-    // Mock the snackbar
-    jest.mock('notistack', () => ({
-      ...jest.requireActual('notistack'),
-      useSnackbar: () => ({
-        enqueueSnackbar: mockEnqueueSnackbar
-      })
-    }))
 
     renderComponent()
 
@@ -324,8 +316,8 @@ describe('StudyQuestionsAddPage', () => {
 
   it('shows loading state when mutation is in progress', () => {
     // Mock loading state
-    require('@apollo/client').useMutation.mockReturnValue([
-      jest.fn(),
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+      vi.fn(),
       { loading: true }
     ])
 
