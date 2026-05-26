@@ -5,14 +5,14 @@ import {
   withOpenrouterFallback
 } from './openrouterModel'
 
-jest.mock('@openrouter/ai-sdk-provider', () => ({
+vi.mock('@openrouter/ai-sdk-provider', () => ({
   openrouter: Object.assign(
-    jest.fn((modelId: string) => ({
+    vi.fn((modelId: string) => ({
       modelId,
       provider: 'openrouter'
     })),
     {
-      chat: jest.fn((modelId: string) => ({
+      chat: vi.fn((modelId: string) => ({
         modelId,
         provider: 'openrouter'
       }))
@@ -26,7 +26,7 @@ const TEST_MODELS = [
   'custom/fallback-model'
 ]
 
-const mockedOpenrouter = jest.mocked(openrouter)
+const mockedOpenrouter = vi.mocked(openrouter, true)
 
 describe('openrouterModel', () => {
   const originalEnv = process.env
@@ -43,16 +43,16 @@ describe('openrouterModel', () => {
 
   describe('createOpenrouterFallbackSession', () => {
     beforeEach(() => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
     })
 
     afterEach(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('should use first model on success', async () => {
       const session = createOpenrouterFallbackSession(TEST_MODELS)
-      const operation = jest.fn().mockResolvedValue('ok')
+      const operation = vi.fn().mockResolvedValue('ok')
       const result = await session.execute(operation)
 
       expect(result).toBe('ok')
@@ -68,7 +68,7 @@ describe('openrouterModel', () => {
         statusCode: 429
       })
       const session = createOpenrouterFallbackSession(TEST_MODELS)
-      const operation = jest
+      const operation = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError)
         .mockResolvedValueOnce('second-ok')
@@ -91,7 +91,7 @@ describe('openrouterModel', () => {
         { statusCode: 403 }
       )
       const session = createOpenrouterFallbackSession(TEST_MODELS)
-      const operation = jest
+      const operation = vi
         .fn()
         .mockRejectedValueOnce(keyLimitError)
         .mockResolvedValueOnce('paid-ok')
@@ -113,7 +113,7 @@ describe('openrouterModel', () => {
         statusCode: 429
       })
       const session = createOpenrouterFallbackSession(TEST_MODELS)
-      const operation = jest
+      const operation = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError)
         .mockRejectedValueOnce(rateLimitError)
@@ -143,7 +143,7 @@ describe('openrouterModel', () => {
         statusCode: 429
       })
       const session = createOpenrouterFallbackSession(TEST_MODELS)
-      const operation = jest
+      const operation = vi
         .fn()
         .mockRejectedValueOnce(keyLimitError)
         .mockRejectedValueOnce(rateLimitError)
@@ -170,13 +170,13 @@ describe('openrouterModel', () => {
       })
       const session = createOpenrouterFallbackSession(TEST_MODELS)
 
-      const op1 = jest
+      const op1 = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError)
         .mockResolvedValueOnce('first-fallback')
       await session.execute(op1)
 
-      const op2 = jest.fn().mockResolvedValue('second-call')
+      const op2 = vi.fn().mockResolvedValue('second-call')
       const result2 = await session.execute(op2)
 
       expect(result2).toBe('second-call')
@@ -191,7 +191,7 @@ describe('openrouterModel', () => {
       const rateLimitError = Object.assign(new Error('rate limited'), {
         statusCode: 429
       })
-      const operation = jest
+      const operation = vi
         .fn()
         .mockRejectedValueOnce(rateLimitError)
         .mockRejectedValueOnce(rateLimitError)
@@ -199,8 +199,8 @@ describe('openrouterModel', () => {
 
       const session = createOpenrouterFallbackSession(TEST_MODELS)
       const promise = session.execute(operation)
-      await jest.advanceTimersByTimeAsync(1000)
-      await jest.advanceTimersByTimeAsync(2000)
+      await vi.advanceTimersByTimeAsync(1000)
+      await vi.advanceTimersByTimeAsync(2000)
       const result = await promise
 
       expect(result).toBe('retry-ok')
@@ -215,7 +215,7 @@ describe('openrouterModel', () => {
     it('should throw immediately on non-429/403 error', async () => {
       const session = createOpenrouterFallbackSession(TEST_MODELS)
       const error = new Error('bad request')
-      const operation = jest.fn().mockRejectedValue(error)
+      const operation = vi.fn().mockRejectedValue(error)
 
       await expect(session.execute(operation)).rejects.toThrow('bad request')
       expect(operation).toHaveBeenCalledTimes(1)
@@ -227,7 +227,7 @@ describe('openrouterModel', () => {
         statusCode: 429
       })
       const session = createOpenrouterFallbackSession(TEST_MODELS)
-      const operation = jest.fn().mockRejectedValue(rateLimitError)
+      const operation = vi.fn().mockRejectedValue(rateLimitError)
 
       await expect(session.execute(operation)).rejects.toThrow('rate limited')
       expect(operation).toHaveBeenCalledTimes(3)
@@ -236,7 +236,7 @@ describe('openrouterModel', () => {
 
   describe('withOpenrouterFallback', () => {
     it('should use first model on success', async () => {
-      const operation = jest.fn().mockResolvedValue('ok')
+      const operation = vi.fn().mockResolvedValue('ok')
       const result = await withOpenrouterFallback(operation, TEST_MODELS)
 
       expect(result).toBe('ok')
@@ -253,7 +253,7 @@ describe('openrouterModel', () => {
       const rateLimitError = Object.assign(new Error('rate limited'), {
         statusCode: 429
       })
-      const operation = jest
+      const operation = vi
         .fn()
         .mockRejectedValueOnce(keyLimitError)
         .mockRejectedValueOnce(rateLimitError)
