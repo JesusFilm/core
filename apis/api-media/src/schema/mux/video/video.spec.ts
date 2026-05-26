@@ -1241,6 +1241,112 @@ describe('mux/video', () => {
         })
       })
 
+      const ENABLE_MUX_DOWNLOADS = graphql(`
+        mutation EnableMuxDownloads($id: ID!, $resolutions: [String!]!) {
+          enableMuxDownloads(id: $id, resolutions: $resolutions) {
+            id
+            downloadable
+          }
+        }
+      `)
+
+      it('should enable multiple downloads and queue processing once', async () => {
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        ;(prismaMock.muxVideo.findUniqueOrThrow as Mock).mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: null,
+          userId: 'testUserId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: false,
+          updatedAt: new Date()
+        })
+        ;(prismaMock.muxVideo.update as Mock).mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: null,
+          userId: 'testUserId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: true,
+          updatedAt: new Date()
+        })
+
+        const result = await publisherClient({
+          document: ENABLE_MUX_DOWNLOADS,
+          variables: {
+            id: 'videoId',
+            resolutions: ['720p', '360p', '270p']
+          }
+        })
+
+        expect(enableDownload).toHaveBeenCalledTimes(3)
+        expect(enableDownload).toHaveBeenCalledWith('assetId', false, '720p')
+        expect(enableDownload).toHaveBeenCalledWith('assetId', false, '360p')
+        expect(enableDownload).toHaveBeenCalledWith('assetId', false, '270p')
+
+        const { queue } = await vi.importMock<any>(
+          '../../../workers/processVideoDownloads/queue'
+        )
+        expect(queue.add).toHaveBeenCalledTimes(1)
+        expect(queue.add).toHaveBeenCalledWith(
+          'process-video-downloads',
+          {
+            videoId: 'videoId',
+            assetId: 'assetId',
+            isUserGenerated: false
+          },
+          {
+            jobId: 'download:videoId',
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 1000 },
+            removeOnComplete: true,
+            removeOnFail: { age: 432000, count: 50 }
+          }
+        )
+        expect(result).toHaveProperty('data.enableMuxDownloads', {
+          id: 'videoId',
+          downloadable: true
+        })
+      })
+
+      it('should reject invalid batch download resolutions', async () => {
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+
+        const result = (await publisherClient({
+          document: ENABLE_MUX_DOWNLOADS,
+          variables: {
+            id: 'videoId',
+            resolutions: ['720p', 'bad-resolution']
+          }
+        })) as {
+          data: any
+          errors?: { message: string; extensions?: { code: string } }[]
+        }
+
+        expect(result.errors).toBeDefined()
+        expect(result.errors?.[0]?.message).toBe('Invalid resolution')
+        expect(result.errors?.[0]?.extensions?.code).toBe('BAD_REQUEST')
+        expect(enableDownload).not.toHaveBeenCalled()
+      })
+
       it('should throw an error for invalid resolution', async () => {
         ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',

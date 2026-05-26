@@ -7,6 +7,20 @@ import {
   prisma
 } from '@core/prisma/media/client'
 
+const MUX_STREAM_BASE_URL = 'https://stream.mux.com/'
+
+function hasMissingDownloadMetadata(download: {
+  size?: number | null
+  bitrate?: number | null
+}): boolean {
+  return (
+    download.size == null ||
+    download.size === 0 ||
+    download.bitrate == null ||
+    download.bitrate === 0
+  )
+}
+
 export const qualityEnumToOrder: Record<VideoVariantDownloadQuality, number> = {
   [VideoVariantDownloadQuality.distroLow]: 0,
   [VideoVariantDownloadQuality.distroSd]: 1,
@@ -323,30 +337,64 @@ export async function createDownloadsFromMuxAsset({
   let createdCount = 0
   for (const download of data) {
     try {
-      await prisma.videoVariantDownload.create({
-        data: download
+      const existingDownload = await prisma.videoVariantDownload.findUnique({
+        where: {
+          quality_videoVariantId: {
+            quality: download.quality,
+            videoVariantId: variantId
+          }
+        }
       })
-      createdCount++
-    } catch (error: any) {
-      // Skip if already exists (P2002 constraint violation)
-      if (error?.code === 'P2002') {
-        logger?.info(
+
+      if (download.size === 0 || download.bitrate === 0) {
+        logger?.warn(
           {
             videoVariantId: variantId,
-            quality: download.quality
+            quality: download.quality,
+            size: download.size,
+            bitrate: download.bitrate
           },
-          'Download already exists, skipping'
-        )
-      } else {
-        logger?.error(
-          {
-            error,
-            videoVariantId: variantId,
-            quality: download.quality
-          },
-          'Failed to create individual download'
+          'Mux static rendition metadata is missing size or bitrate'
         )
       }
+
+      if (existingDownload == null) {
+        await prisma.videoVariantDownload.create({
+          data: download
+        })
+        createdCount++
+        continue
+      }
+
+      if (
+        existingDownload.url.startsWith(MUX_STREAM_BASE_URL) &&
+        hasMissingDownloadMetadata(existingDownload)
+      ) {
+        await prisma.videoVariantDownload.update({
+          where: { id: existingDownload.id },
+          data: download
+        })
+        createdCount++
+        continue
+      }
+
+      logger?.info(
+        {
+          videoVariantId: variantId,
+          quality: download.quality,
+          isMuxDownload: existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
+        },
+        'Existing download does not need Mux metadata refresh'
+      )
+    } catch (error: any) {
+      logger?.error(
+        {
+          error,
+          videoVariantId: variantId,
+          quality: download.quality
+        },
+        'Failed to create or update individual download'
+      )
     }
   }
 

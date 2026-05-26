@@ -1,11 +1,21 @@
 import Mux from '@mux/mux-node'
 
-import { prisma } from '../../../../libs/prisma/media/src/client'
+import {
+  VideoVariantDownloadQuality,
+  prisma
+} from '../../../../libs/prisma/media/src/client'
 import {
   createDownloadsFromMuxAsset,
   downloadsReadyToStore
 } from '../lib/downloads'
 import { getVideo } from '../schema/mux/video/service'
+
+const MUX_STREAM_BASE_URL = 'https://stream.mux.com'
+const DISTRO_DOWNLOAD_QUALITIES = [
+  VideoVariantDownloadQuality.distroLow,
+  VideoVariantDownloadQuality.distroSd,
+  VideoVariantDownloadQuality.distroHigh
+]
 
 function getMuxClient(): Mux {
   if (process.env.MUX_ACCESS_TOKEN_ID == null)
@@ -168,7 +178,10 @@ export async function updateHls(mux: Mux): Promise<void> {
           variant.muxVideo?.assetId as string
         )
       } catch (error) {
-        console.error(`Error retrieving mux upload for variant ${variant.id}`)
+        console.error(
+          `Error retrieving mux upload for variant ${variant.id}`,
+          error
+        )
         continue
       }
       try {
@@ -210,6 +223,27 @@ export async function updateHls(mux: Mux): Promise<void> {
 export async function processDownloads(): Promise<void> {
   console.log('mux downloads processing started')
 
+  const dryRun = process.env.MUX_DOWNLOAD_BACKFILL_DRY_RUN === 'true'
+  const target = process.env.MUX_DOWNLOAD_BACKFILL_TARGET?.trim()
+  const targetFilter =
+    target != null && target !== ''
+      ? {
+          OR: [
+            { id: { contains: target } },
+            { videoId: { contains: target } },
+            { slug: { contains: target } },
+            { video: { slug: { contains: target } } }
+          ]
+        }
+      : undefined
+
+  if (targetFilter != null) {
+    console.log(`Filtering download processing to target: ${target}`)
+  }
+  if (dryRun) {
+    console.log('Dry run enabled: no download rows will be created or refreshed')
+  }
+
   const take = 100
   let hasMore = true
   let totalProcessed = 0
@@ -228,27 +262,22 @@ export async function processDownloads(): Promise<void> {
           assetId: { not: null },
           readyToStream: true
         },
-        OR: [
+        AND: [
+          ...(targetFilter != null ? [targetFilter] : []),
           {
-            // Variants with no downloads at all (excluding distro downloads)
-            downloads: {
-              none: {
-                quality: {
-                  notIn: ['distroLow', 'distroSd', 'distroHigh']
-                }
-              }
-            }
-          },
-          {
-            // Variants with downloads that are not from Mux (non-Mux URLs)
+            // Existing standard Mux downloads with missing metadata need refresh/backfill.
             downloads: {
               some: {
                 quality: {
-                  notIn: ['distroLow', 'distroSd', 'distroHigh']
+                  notIn: DISTRO_DOWNLOAD_QUALITIES
                 },
-                url: {
-                  not: { startsWith: 'https://stream.mux.com' }
-                }
+                url: { startsWith: MUX_STREAM_BASE_URL },
+                OR: [
+                  { size: null },
+                  { size: 0 },
+                  { bitrate: null },
+                  { bitrate: 0 }
+                ]
               }
             }
           },
@@ -274,10 +303,16 @@ export async function processDownloads(): Promise<void> {
         muxVideo: true,
         downloads: {
           where: {
-            // Include existing downloads that are NOT distro quality levels
             quality: {
-              notIn: ['distroLow', 'distroSd', 'distroHigh']
-            }
+              notIn: DISTRO_DOWNLOAD_QUALITIES
+            },
+            url: { startsWith: MUX_STREAM_BASE_URL },
+            OR: [
+              { size: null },
+              { size: 0 },
+              { bitrate: null },
+              { bitrate: 0 }
+            ]
           }
         }
       },
@@ -295,7 +330,19 @@ export async function processDownloads(): Promise<void> {
         continue
       }
 
-      console.log(`Processing downloads for variant ${variant.id}`)
+      const zeroMetadataDownloads = variant.downloads
+      console.log(
+        `Processing downloads for variant ${variant.id}, zero-metadata Mux download count: ${zeroMetadataDownloads.length}`
+      )
+
+      if (dryRun) {
+        console.log(
+          `Dry run: would refresh zero-metadata Mux downloads for variant ${variant.id}, count: ${zeroMetadataDownloads.length}`
+        )
+        totalProcessed++
+        continue
+      }
+
       await new Promise((resolve) => setTimeout(resolve, 1500)) // wait 1.5 sec to avoid rate limit
 
       try {
@@ -306,28 +353,14 @@ export async function processDownloads(): Promise<void> {
           muxVideoAsset.playback_ids?.[0].id != null &&
           downloadsReadyToStore(muxVideoAsset)
         ) {
-          // Delete existing non-distro downloads first
-          if (variant.downloads.length > 0) {
-            const downloadIds = variant.downloads.map((d) => d.id)
-            await prisma.videoVariantDownload.deleteMany({
-              where: {
-                id: { in: downloadIds }
-              }
-            })
-
-            console.log(
-              `Deleted existing non-distro downloads for variant ${variant.id}, count: ${downloadIds.length}`
-            )
-          }
-
-          // Process downloads if static renditions are ready
+          // Process downloads if static renditions are ready. Existing valid and distro rows are preserved.
           const createdCount = await createDownloadsFromMuxAsset({
             variantId: variant.id,
             muxVideoAsset
           })
 
           console.log(
-            `Successfully created ${createdCount} video downloads for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
+            `Successfully created or refreshed ${createdCount} video downloads for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
           )
         } else {
           console.log(
@@ -344,7 +377,7 @@ export async function processDownloads(): Promise<void> {
       totalProcessed++
     }
 
-    if (variants.length === 0) {
+    if (variants.length === 0 || dryRun) {
       hasMore = false
     }
   }
@@ -359,11 +392,18 @@ async function runMuxVideosScript(): Promise<void> {
   console.log('Starting Mux Videos processing script...')
 
   try {
-    const mux = getMuxClient()
+    const downloadsOnly = process.env.MUX_DOWNLOAD_BACKFILL_ONLY === 'true'
 
-    // Run all three processes in sequence
-    await importMuxVideos(mux)
-    await updateHls(mux)
+    if (!downloadsOnly) {
+      const mux = getMuxClient()
+
+      // Run all three processes in sequence
+      await importMuxVideos(mux)
+      await updateHls(mux)
+    } else {
+      console.log('Downloads-only mode enabled: skipping import and HLS update')
+    }
+
     await processDownloads()
 
     console.log('Mux Videos processing completed successfully!')

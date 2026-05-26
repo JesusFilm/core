@@ -423,7 +423,7 @@ describe('download processing utilities', () => {
       expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledTimes(2)
     })
 
-    it('should handle duplicate constraint violations gracefully', async () => {
+    it('should refresh existing Mux downloads instead of skipping duplicates', async () => {
       const muxVideoAsset = {
         playback_ids: [{ id: 'test-playback-id' }],
         static_renditions: {
@@ -440,20 +440,167 @@ describe('download processing utilities', () => {
         }
       }
 
-      const duplicateError = new Error('Unique constraint violation') as any
-      duplicateError.code = 'P2002'
-
-      prismaMock.videoVariantDownload.create
-        .mockRejectedValueOnce(duplicateError)
-        .mockResolvedValueOnce({} as any)
+      prismaMock.videoVariantDownload.findUnique
+        .mockResolvedValueOnce({
+          id: 'existing-high-download',
+          quality: VideoVariantDownloadQuality.high,
+          videoVariantId: 'variant-1',
+          url: 'https://stream.mux.com/test-playback-id/720p.mp4',
+          size: 0,
+          height: 720,
+          width: 1280,
+          bitrate: 0,
+          version: 0,
+          assetId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        .mockResolvedValueOnce({
+          id: 'existing-highest-download',
+          quality: VideoVariantDownloadQuality.highest,
+          videoVariantId: 'variant-1',
+          url: 'https://stream.mux.com/test-playback-id/720p.mp4',
+          size: 0,
+          height: 720,
+          width: 1280,
+          bitrate: 0,
+          version: 0,
+          assetId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+      prismaMock.videoVariantDownload.update.mockResolvedValue({} as any)
 
       const result = await createDownloadsFromMuxAsset({
         variantId: 'variant-1',
         muxVideoAsset
       })
 
-      expect(result).toBe(1) // Only 1 successful creation
-      expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledTimes(2)
+      expect(result).toBe(2)
+      expect(prismaMock.videoVariantDownload.create).not.toHaveBeenCalled()
+      expect(prismaMock.videoVariantDownload.update).toHaveBeenCalledWith({
+        where: { id: 'existing-high-download' },
+        data: expect.objectContaining({
+          quality: VideoVariantDownloadQuality.high,
+          size: 157286400,
+          bitrate: 2500000
+        })
+      })
+      expect(prismaMock.videoVariantDownload.update).toHaveBeenCalledWith({
+        where: { id: 'existing-highest-download' },
+        data: expect.objectContaining({
+          quality: VideoVariantDownloadQuality.highest,
+          size: 157286400,
+          bitrate: 2500000
+        })
+      })
+    })
+
+    it('should preserve existing Mux downloads when metadata is already populated', async () => {
+      const muxVideoAsset = {
+        playback_ids: [{ id: 'test-playback-id' }],
+        static_renditions: {
+          files: [
+            {
+              resolution: '720p',
+              status: 'ready',
+              filesize: '157286400',
+              height: 720,
+              width: 1280,
+              bitrate: 2500000
+            }
+          ]
+        }
+      }
+
+      prismaMock.videoVariantDownload.findUnique
+        .mockResolvedValueOnce({
+          id: 'existing-high-download',
+          quality: VideoVariantDownloadQuality.high,
+          videoVariantId: 'variant-1',
+          url: 'https://stream.mux.com/test-playback-id/720p.mp4',
+          size: 157286400,
+          height: 720,
+          width: 1280,
+          bitrate: 2500000,
+          version: 1,
+          assetId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        .mockResolvedValueOnce({
+          id: 'existing-highest-download',
+          quality: VideoVariantDownloadQuality.highest,
+          videoVariantId: 'variant-1',
+          url: 'https://stream.mux.com/test-playback-id/720p.mp4',
+          size: 157286400,
+          height: 720,
+          width: 1280,
+          bitrate: 2500000,
+          version: 1,
+          assetId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+
+      const result = await createDownloadsFromMuxAsset({
+        variantId: 'variant-1',
+        muxVideoAsset
+      })
+
+      expect(result).toBe(0)
+      expect(prismaMock.videoVariantDownload.create).not.toHaveBeenCalled()
+      expect(prismaMock.videoVariantDownload.update).not.toHaveBeenCalled()
+    })
+
+    it('should preserve existing non-Mux downloads for the same quality', async () => {
+      const muxVideoAsset = {
+        playback_ids: [{ id: 'test-playback-id' }],
+        static_renditions: {
+          files: [
+            {
+              resolution: '720p',
+              status: 'ready',
+              filesize: '157286400',
+              height: 720,
+              width: 1280,
+              bitrate: 2500000
+            }
+          ]
+        }
+      }
+
+      prismaMock.videoVariantDownload.findUnique
+        .mockResolvedValueOnce({
+          id: 'existing-high-download',
+          quality: VideoVariantDownloadQuality.high,
+          videoVariantId: 'variant-1',
+          url: 'https://example.com/download.mp4',
+          size: 157286400,
+          height: 720,
+          width: 1280,
+          bitrate: 2500000,
+          version: 1,
+          assetId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        .mockResolvedValueOnce(null)
+      prismaMock.videoVariantDownload.create.mockResolvedValue({} as any)
+
+      const result = await createDownloadsFromMuxAsset({
+        variantId: 'variant-1',
+        muxVideoAsset
+      })
+
+      expect(result).toBe(1)
+      expect(prismaMock.videoVariantDownload.update).not.toHaveBeenCalled()
+      expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledTimes(1)
+      expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          quality: VideoVariantDownloadQuality.highest
+        })
+      })
     })
 
     it('should handle other database errors', async () => {

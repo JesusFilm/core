@@ -398,6 +398,7 @@ type Mutation {
   createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, generateSubtitlesInput: GenerateSubtitlesInput, journeyId: ID): MuxVideo!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, journeyId: ID): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
+  enableMuxDownloads(id: ID!, resolutions: [String!]!): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
   playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
   playlistUpdate(id: ID!, input: PlaylistUpdateInput!): MutationPlaylistUpdateResult
