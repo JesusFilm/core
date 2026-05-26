@@ -90,6 +90,33 @@ function getTextFromMessage(message: UIMessage): string {
     .join('')
 }
 
+// AI SDK v6's HttpChatTransport discards the HTTP status on a non-2xx response
+// and throws `new Error(await response.text())`, so the only signal the client
+// gets is the response *body*. The server (apps/journeys/pages/api/chat) tags
+// its deterministic failures with a structured `code`; we read it back out
+// here. Transient failures (network drop, upstream 5xx, mid-stream abort)
+// arrive as non-JSON messages → no code → treated as retriable.
+function parseChatErrorCode(error: Error | undefined): string | undefined {
+  if (error?.message == null) return undefined
+  try {
+    const parsed = JSON.parse(error.message) as { code?: unknown }
+    return typeof parsed.code === 'string' ? parsed.code : undefined
+  } catch {
+    return undefined
+  }
+}
+
+// Codes whose retry would deterministically fail again — re-firing wastes a
+// request and, for the cap-hit, re-sends a max-size prompt. Retry is hidden
+// for these and shown for everything else (transient / unknown).
+const NON_RETRIABLE_CHAT_ERROR_CODES = new Set([
+  'conversation_capped',
+  'invalid_request',
+  'not_found'
+])
+
+const CONVERSATION_CAPPED_CODE = 'conversation_capped'
+
 const TYPEWRITER_CHARS_PER_SEC = 280
 
 interface TypewriterResult {
@@ -279,6 +306,13 @@ export function AiChat({
     void regenerate()
   }, [regenerate])
 
+  const errorCode = useMemo(() => parseChatErrorCode(error), [error])
+  const isConversationCapped = errorCode === CONVERSATION_CAPPED_CODE
+  // Retriable by default so transient failures (network/5xx/mid-stream, which
+  // carry no code) keep their Retry; hidden only for known deterministic codes.
+  const canRetry =
+    error != null && !NON_RETRIABLE_CHAT_ERROR_CODES.has(errorCode ?? '')
+
   useEffect(() => {
     if (
       initialMessage != null &&
@@ -408,23 +442,29 @@ export function AiChat({
                 surface={isOverlay ? 'dark' : 'light'}
               >
                 <Box component="span" sx={{ opacity: 0.7 }}>
-                  {t('Something went wrong. Please try again.')}
+                  {isConversationCapped
+                    ? t(
+                        "This conversation's gotten long — close and reopen the chat to start a fresh one."
+                      )
+                    : t('Something went wrong. Please try again.')}
                 </Box>
               </Message>
-              <Box sx={{ display: 'flex', px: 2, py: 0.25 }}>
-                <Button
-                  size="small"
-                  onClick={handleRetry}
-                  aria-label={t('Retry')}
-                  sx={{
-                    fontSize: 12,
-                    color: isOverlay ? OVERLAY_FG_RETRY : MUTED_FG,
-                    minWidth: 0
-                  }}
-                >
-                  {t('Retry')}
-                </Button>
-              </Box>
+              {canRetry && (
+                <Box sx={{ display: 'flex', px: 2, py: 0.25 }}>
+                  <Button
+                    size="small"
+                    onClick={handleRetry}
+                    aria-label={t('Retry')}
+                    sx={{
+                      fontSize: 12,
+                      color: isOverlay ? OVERLAY_FG_RETRY : MUTED_FG,
+                      minWidth: 0
+                    }}
+                  >
+                    {t('Retry')}
+                  </Button>
+                </Box>
+              )}
             </Box>
           )}
         </Conversation>
