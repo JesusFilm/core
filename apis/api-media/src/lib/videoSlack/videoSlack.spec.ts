@@ -652,9 +652,7 @@ describe('videoSlack', () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
-      json: vi
-        .fn()
-        .mockResolvedValue({ ok: false, error: 'channel_not_found' })
+      json: vi.fn().mockResolvedValue({ ok: false, error: 'channel_not_found' })
     } as any)
 
     await sendDataLangVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
