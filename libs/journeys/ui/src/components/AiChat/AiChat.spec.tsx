@@ -81,7 +81,9 @@ describe('AiChat', () => {
       expect(
         screen.getByText(/close and reopen the chat to start a fresh one/i)
       ).toBeInTheDocument()
-      expect(screen.queryByText(/Something went wrong/i)).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(/Something went wrong/i)
+      ).not.toBeInTheDocument()
       // For the cap-hit the catered message replaces Retry — re-firing a
       // max-size prompt is precisely the cost we must not hand to the user.
       expect(
@@ -108,15 +110,15 @@ describe('AiChat', () => {
       // The provider-unconfigured 503 returns `{ error: '...' }` with no
       // `code` — parsed, but unrecognised → retriable.
       setChatState({
-        error: new Error(JSON.stringify({ error: 'provider is not configured' }))
+        error: new Error(
+          JSON.stringify({ error: 'provider is not configured' })
+        )
       })
 
       render(<AiChat variant="overlay" collapsible={false} />)
 
       expect(screen.getByText(/Something went wrong/i)).toBeInTheDocument()
-      expect(
-        screen.getByRole('button', { name: 'Retry' })
-      ).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument()
     })
 
     it('hides Retry for a deterministic invalid_request error', () => {
@@ -143,7 +145,10 @@ describe('AiChat', () => {
     })
 
     it('does not render the error block while a request is still in flight', () => {
-      setChatState({ status: 'streaming', error: codedError('conversation_capped') })
+      setChatState({
+        status: 'streaming',
+        error: codedError('conversation_capped')
+      })
 
       render(<AiChat variant="overlay" collapsible={false} />)
 
