@@ -1,97 +1,66 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { makeGallery, mockTemplate } from './galleryFixture'
 import { TemplateGalleryView } from './TemplateGalleryView'
 
+function makeTemplates(count: number): (typeof mockTemplate)[] {
+  return Array.from({ length: count }, (_, index) => ({
+    ...mockTemplate,
+    id: `template-${index}`,
+    slug: `template-${index}`
+  }))
+}
+
 describe('TemplateGalleryView', () => {
-  it('renders gallery header, media, and template grid when populated', () => {
+  it('renders the sectioned layout with header, media, and templates', () => {
     render(
       <TemplateGalleryView
         gallery={makeGallery({
           mediaUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-          templates: [mockTemplate]
+          templates: makeTemplates(5)
         })}
       />
     )
+    expect(screen.getByTestId('TemplateGallerySections')).toBeInTheDocument()
     expect(screen.getByTestId('TemplateGalleryHeader')).toBeInTheDocument()
     expect(screen.getByTestId('TemplateGalleryMedia')).toBeInTheDocument()
-    expect(screen.getByTestId('TemplateGalleryGrid')).toBeInTheDocument()
-    expect(screen.getByTestId('GalleryTemplateCard')).toBeInTheDocument()
-    expect(screen.getByText('Sample Template')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Use' })).toHaveAttribute(
+    expect(screen.getAllByText('Sample Template').length).toBeGreaterThan(0)
+    expect(screen.getAllByRole('link', { name: 'Use' })[0]).toHaveAttribute(
       'href',
-      'https://admin.nextstep.is/?useTemplate=template-1'
+      'https://admin.nextstep.is/?useTemplate=template-0'
     )
-    expect(screen.getByRole('link', { name: 'Preview' })).toHaveAttribute(
+    expect(screen.getAllByRole('link', { name: 'Preview' })[0]).toHaveAttribute(
       'href',
-      '/sample-template'
+      '/template-0'
     )
   })
 
   it('shows the empty state when there are no templates', () => {
     render(<TemplateGalleryView gallery={makeGallery({ templates: [] })} />)
     expect(screen.getByTestId('TemplateGalleryEmptyState')).toBeInTheDocument()
-    expect(screen.queryByTestId('TemplateGalleryGrid')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('GalleryTemplateCard')).not.toBeInTheDocument()
   })
 
   it('omits the media block when mediaUrl is null', () => {
-    render(<TemplateGalleryView gallery={makeGallery({ mediaUrl: null })} />)
+    render(
+      <TemplateGalleryView
+        gallery={makeGallery({ mediaUrl: null, templates: makeTemplates(3) })}
+      />
+    )
     expect(screen.queryByTestId('TemplateGalleryMedia')).not.toBeInTheDocument()
   })
 
-  it('selects a different layout preset from the toggle', () => {
-    render(<TemplateGalleryView gallery={makeGallery({ templates: [] })} />)
-    const showcase = screen.getByRole('button', { name: 'Showcase' })
-    const landing = screen.getByRole('button', { name: 'Landing' })
-    expect(showcase).toHaveAttribute('aria-pressed', 'true')
-
-    fireEvent.click(landing)
-
-    expect(landing).toHaveAttribute('aria-pressed', 'true')
-    expect(showcase).toHaveAttribute('aria-pressed', 'false')
-  })
-
-  it('features the first template when the Spotlight layout is selected', () => {
+  it('features the first two templates and grids the rest', () => {
     render(
       <TemplateGalleryView
-        gallery={makeGallery({ templates: [mockTemplate] })}
+        gallery={makeGallery({ templates: makeTemplates(5) })}
       />
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Spotlight' }))
-    // The hero feature plus any scroller still surface the template.
-    expect(screen.getByText('Sample Template')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Use' })).toBeInTheDocument()
-  })
-
-  it('renders the sectioned layout with two featured templates', () => {
-    const templates = Array.from({ length: 5 }, (_, index) => ({
-      ...mockTemplate,
-      id: `template-${index}`,
-      slug: `template-${index}`
-    }))
-    render(<TemplateGalleryView gallery={makeGallery({ templates })} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Sections' }))
-
-    expect(screen.getByTestId('TemplateGallerySections')).toBeInTheDocument()
-    // Every template surfaces. The "complete set" renders both a mobile and a
-    // desktop grid (CSS toggles which is visible), so each rest template has
-    // two cards: 2 featured + 3 rest × 2 = 8 Use buttons in the DOM.
+    // The "complete set" renders both a mobile and a desktop grid (CSS toggles
+    // which is visible), so each rest template has two cards: 2 featured rows +
+    // 3 rest × 2 = 8 Use buttons in the DOM.
     expect(
       screen.getAllByTestId('GalleryTemplateCardUseButton').length
     ).toBeGreaterThanOrEqual(5)
-  })
-
-  it('caps Feature rows at three and grids the remainder', () => {
-    const templates = Array.from({ length: 5 }, (_, index) => ({
-      ...mockTemplate,
-      id: `template-${index}`,
-      slug: `template-${index}`
-    }))
-    render(<TemplateGalleryView gallery={makeGallery({ templates })} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Feature rows' }))
-
-    // 3 feature rows + 2 in the remainder grid = 5 cards, and the grid mounts.
-    expect(screen.getAllByTestId('GalleryTemplateCard')).toHaveLength(5)
-    expect(screen.getByTestId('TemplateGalleryGrid')).toBeInTheDocument()
   })
 })

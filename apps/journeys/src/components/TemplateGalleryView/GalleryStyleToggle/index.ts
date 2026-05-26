@@ -1,1 +1,0 @@
-export { GalleryStyleToggle } from './GalleryStyleToggle'

@@ -132,7 +132,7 @@ describe('GalleryTemplateCard', () => {
     )
   })
 
-  it.each(['panel', 'hero'] as const)(
+  it.each(['overlay', 'panel'] as const)(
     'renders the %s variant with title, description, and both actions',
     (variant) => {
       render(<GalleryTemplateCard template={mockTemplate} variant={variant} />)

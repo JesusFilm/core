@@ -15,7 +15,7 @@ import {
   GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate,
   GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage
 } from '../../../../__generated__/GetTemplateGalleryPage'
-import { useGalleryStyle } from '../GalleryStyleContext'
+import { GALLERY_ACCENT, GALLERY_CARD_RADIUS } from '../galleryTheme'
 import { TemplateGalleryEmptyState } from '../TemplateGalleryEmptyState'
 import { GalleryCardActions } from '../TemplateGalleryGrid/GalleryCardActions'
 import { GalleryTemplateCard } from '../TemplateGalleryGrid/GalleryTemplateCard'
@@ -120,7 +120,6 @@ function metaLine(template: GalleryTemplate): string {
 }
 
 function SectionLabel({ children }: { children: ReactNode }): ReactElement {
-  const style = useGalleryStyle()
   return (
     <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 3 }}>
       <Box
@@ -128,12 +127,12 @@ function SectionLabel({ children }: { children: ReactNode }): ReactElement {
           width: 28,
           height: 3,
           borderRadius: 1,
-          backgroundColor: style.accent
+          backgroundColor: GALLERY_ACCENT
         }}
       />
       <Typography
         variant="overline"
-        sx={{ color: style.accent, fontWeight: 700, letterSpacing: '0.14em' }}
+        sx={{ color: GALLERY_ACCENT, fontWeight: 700, letterSpacing: '0.14em' }}
       >
         {children}
       </Typography>
@@ -150,7 +149,6 @@ function FeaturedRow({
   imagePosition: 'left' | 'right'
   priority: boolean
 }): ReactElement {
-  const style = useGalleryStyle()
   const meta = metaLine(template)
   const hasDescription =
     template.description != null && template.description !== ''
@@ -180,7 +178,7 @@ function FeaturedRow({
             position: 'relative',
             width: '100%',
             aspectRatio: '3 / 2',
-            borderRadius: style.cardRadius,
+            borderRadius: GALLERY_CARD_RADIUS,
             overflow: 'hidden',
             backgroundColor: '#ECECEC'
           }}
@@ -217,7 +215,7 @@ function FeaturedRow({
             <Typography
               variant="overline"
               sx={{
-                color: style.accent,
+                color: GALLERY_ACCENT,
                 fontWeight: 700,
                 letterSpacing: '0.12em'
               }}
@@ -234,7 +232,7 @@ function FeaturedRow({
             </Typography>
           )}
           <Box sx={{ pt: 1 }}>
-            <GalleryCardActions template={template} accent={style.accent} />
+            <GalleryCardActions template={template} accent={GALLERY_ACCENT} />
           </Box>
         </Stack>
       </ScrollReveal>

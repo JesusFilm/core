@@ -9,21 +9,22 @@ import { ReactElement } from 'react'
 import { abbreviateLanguageName } from '@core/journeys/ui/abbreviateLanguageName'
 
 import { GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate } from '../../../../__generated__/GetTemplateGalleryPage'
-import { useGalleryStyle } from '../GalleryStyleContext'
-import { CardVariant } from '../galleryStyles'
+import { GALLERY_ACCENT, GALLERY_CARD_RADIUS } from '../galleryTheme'
 
 import { GalleryCardActions } from './GalleryCardActions'
+
+/**
+ * How the card is drawn:
+ * - `overlay` — portrait image with the title overlaid (mobile grid)
+ * - `panel`   — an elevated surface: image, then captioned text and actions
+ *   (desktop grid)
+ */
+type CardVariant = 'overlay' | 'panel'
 
 interface GalleryTemplateCardProps {
   template: GalleryTemplate
   priority?: boolean
-  /**
-   * Overrides the preset's card variant. `'hero'` renders the large
-   * featured block used by the Spotlight feature and the Feature-rows items.
-   */
-  variant?: CardVariant | 'hero'
-  /** Side the media sits on for the hero variant (Feature rows alternates). */
-  imagePosition?: 'left' | 'right'
+  variant?: CardVariant
 }
 
 const OVERLAY_GRADIENT =
@@ -40,12 +41,8 @@ const clamp = (lines: number) =>
 export function GalleryTemplateCard({
   template,
   priority = false,
-  variant,
-  imagePosition = 'left'
+  variant = 'overlay'
 }: GalleryTemplateCardProps): ReactElement {
-  const style = useGalleryStyle()
-  const cardVariant = variant ?? style.cardVariant
-
   const localLanguage = template.language.name.find(
     ({ primary }) => !primary
   )?.value
@@ -108,49 +105,8 @@ export function GalleryTemplateCard({
       </Typography>
     ) : null
 
-  // ── Hero: large featured block, image beside text ─────────────────────
-  if (variant === 'hero') {
-    const rowDirection = imagePosition === 'right' ? 'row-reverse' : 'row'
-    return (
-      <Stack
-        data-testid="GalleryTemplateCard"
-        direction={{ xs: 'column', md: rowDirection }}
-        spacing={{ xs: 2, md: 5 }}
-        sx={{ width: '100%', alignItems: { md: 'center' } }}
-      >
-        <Box
-          sx={{
-            position: 'relative',
-            width: '100%',
-            flex: { md: '1 1 58%' },
-            aspectRatio: { xs: '16 / 9', md: '3 / 2' },
-            borderRadius: style.cardRadius,
-            overflow: 'hidden',
-            backgroundColor: '#ECECEC'
-          }}
-        >
-          {imageContent}
-        </Box>
-        <Stack spacing={1.5} sx={{ flex: { md: '1 1 42%' } }}>
-          {eyebrow}
-          <Typography variant="h4" sx={{ fontWeight: 800 }}>
-            {template.title}
-          </Typography>
-          {hasDescription && (
-            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-              {template.description}
-            </Typography>
-          )}
-          <Box sx={{ pt: 1 }}>
-            <GalleryCardActions template={template} accent={style.accent} />
-          </Box>
-        </Stack>
-      </Stack>
-    )
-  }
-
   // ── Panel: elevated surface with image, caption and actions ───────────
-  if (cardVariant === 'panel') {
+  if (variant === 'panel') {
     return (
       <Stack
         data-testid="GalleryTemplateCard"
@@ -197,7 +153,7 @@ export function GalleryTemplateCard({
           <Box sx={{ pt: 1, mt: 'auto' }}>
             <GalleryCardActions
               template={template}
-              accent={style.accent}
+              accent={GALLERY_ACCENT}
               fullWidth
             />
           </Box>
@@ -207,28 +163,18 @@ export function GalleryTemplateCard({
   }
 
   // ── Overlay (default): portrait image with the title overlaid ─────────
-  // Scroll layouts use a fixed-width card in the horizontal scroller; the
-  // bento tile fills its grid cell; anywhere else (e.g. a responsive grid)
-  // the card fills the column width.
-  const isBento = style.layout === 'bento'
-  const isScroll = style.layout === 'scroll' || style.layout === 'hero'
-  const overlayOuterSx = isScroll
-    ? {
-        flex: '0 0 auto',
-        width: { xs: 220, sm: 240, md: 260 },
-        scrollSnapAlign: 'start'
-      }
-    : isBento
-      ? { width: '100%', height: '100%' }
-      : { width: '100%' }
   return (
-    <Stack data-testid="GalleryTemplateCard" spacing={1.5} sx={overlayOuterSx}>
+    <Stack
+      data-testid="GalleryTemplateCard"
+      spacing={1.5}
+      sx={{ width: '100%' }}
+    >
       <Box
         sx={{
           position: 'relative',
           width: '100%',
-          ...(isBento ? { flex: 1, minHeight: 0 } : { aspectRatio: '3 / 5' }),
-          borderRadius: style.cardRadius,
+          aspectRatio: '3 / 5',
+          borderRadius: GALLERY_CARD_RADIUS,
           overflow: 'hidden',
           backgroundColor: '#ECECEC',
           color: 'common.white'
@@ -248,7 +194,7 @@ export function GalleryTemplateCard({
           }}
         >
           <Stack spacing={0.75}>
-            {!isBento && meta !== '' && (
+            {meta !== '' && (
               <Typography
                 sx={{
                   color: 'rgba(255,255,255,0.85)',
@@ -272,7 +218,7 @@ export function GalleryTemplateCard({
             >
               {template.title}
             </Typography>
-            {!isBento && hasDescription && (
+            {hasDescription && (
               <Typography
                 sx={{
                   color: 'rgba(255,255,255,0.85)',
@@ -284,26 +230,15 @@ export function GalleryTemplateCard({
                 {template.description}
               </Typography>
             )}
-            {isBento && (
-              <Box sx={{ pt: 1 }}>
-                <GalleryCardActions
-                  template={template}
-                  accent={style.accent}
-                  onDark
-                />
-              </Box>
-            )}
           </Stack>
         </Box>
       </Box>
 
-      {!isBento && (
-        <GalleryCardActions
-          template={template}
-          accent={style.accent}
-          fullWidth
-        />
-      )}
+      <GalleryCardActions
+        template={template}
+        accent={GALLERY_ACCENT}
+        fullWidth
+      />
     </Stack>
   )
 }

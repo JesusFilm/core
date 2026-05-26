@@ -6,10 +6,10 @@ import { journeysConfig } from '../../libs/storybook'
 import { TemplateGalleryView } from './TemplateGalleryView'
 
 /**
- * Prototype preview for the public template-collection page. The page
- * carries a "Style preview" toggle at the top — flip between the five
- * layout presets (Showcase, Spotlight, Landing, Bento, Feature rows) to
- * compare them. This is exploratory scaffolding, not shipped UI.
+ * The public template-collection page (`/template-gallery/[slug]`): a
+ * sectioned, animated single-page layout — intro, two featured templates,
+ * then the rest — with scroll-reveal animations and a gap-closing parallax.
+ * `prefers-reduced-motion` disables the animations.
  */
 const meta: Meta<typeof TemplateGalleryView> = {
   ...journeysConfig,
