@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -8,6 +7,8 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
+
+import { LabelChip } from '../../../LabelChip'
 
 export function JourneyDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -57,26 +58,10 @@ export function JourneyDetails(): ReactElement {
               {journey.title}
             </Typography>
             {journey.template === true && (
-              <Chip
+              <LabelChip
                 label={t('TEMPLATE')}
                 data-testid="TemplateBadge"
-                sx={{
-                  flexShrink: 0,
-                  height: 28,
-                  borderRadius: '4px',
-                  bgcolor: '#DEDFE0',
-                  color: '#444451',
-                  fontFamily: '"Open Sans", sans-serif',
-                  fontSize: 14,
-                  fontWeight: 600,
-                  lineHeight: '20px',
-                  px: 2,
-                  py: 1,
-                  '& .MuiChip-label': {
-                    px: 0,
-                    py: 0
-                  }
-                }}
+                sx={{ flexShrink: 0 }}
               />
             )}
           </Stack>

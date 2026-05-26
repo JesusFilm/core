@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -15,6 +14,7 @@ import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
+import { LabelChip } from '../../LabelChip'
 
 import { CollectionUngroupDialog } from './CollectionUngroupDialog'
 
@@ -142,14 +142,11 @@ function CollectionCardImpl({
       >
         <Stack direction="row" spacing={2} alignItems="center">
           <Typography variant="h6">{collection.title}</Typography>
-          <Chip
-            size="small"
+          <LabelChip
             color={isPublished ? 'success' : 'default'}
-            label={isPublished ? t('Published') : t('Draft')}
+            label={isPublished ? t('Live') : t('Draft')}
           />
-          {isEmpty && (
-            <Chip size="small" variant="outlined" label={t('Empty')} />
-          )}
+          {isEmpty && <LabelChip label={t('Empty')} />}
         </Stack>
         <IconButton
           aria-label={t('Collection actions')}
