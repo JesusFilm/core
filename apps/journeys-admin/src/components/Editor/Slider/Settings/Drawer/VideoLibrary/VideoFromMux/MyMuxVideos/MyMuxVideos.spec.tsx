@@ -102,9 +102,7 @@ describe('MyMuxVideos', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('MyMuxVideos')).not.toBeInTheDocument()
     })
-    expect(
-      container.querySelector('[data-testid="MyMuxVideos"]')
-    ).toBeNull()
+    expect(container.querySelector('[data-testid="MyMuxVideos"]')).toBeNull()
   })
 
   it('should open the preview when a tile is clicked and apply the selection on confirm', async () => {

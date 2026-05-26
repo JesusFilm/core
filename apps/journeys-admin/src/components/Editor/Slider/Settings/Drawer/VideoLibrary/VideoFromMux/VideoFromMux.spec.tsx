@@ -40,11 +40,7 @@ jest.mock('../../../../../../MuxVideoUploadProvider', () => ({
 
 jest.mock('./MyMuxVideos', () => ({
   __esModule: true,
-  MyMuxVideos: ({
-    selectedVideoId
-  }: {
-    selectedVideoId?: string | null
-  }) => (
+  MyMuxVideos: ({ selectedVideoId }: { selectedVideoId?: string | null }) => (
     <div
       data-testid="mock-my-mux-videos"
       data-selected-video-id={selectedVideoId ?? ''}
@@ -199,9 +195,7 @@ describe('VideoFromMux', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(
-      screen.queryByTestId('mock-my-mux-videos')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId('mock-my-mux-videos')).not.toBeInTheDocument()
   })
 
   it('should render MyMuxVideos when mediaLibrary flag is on', () => {
@@ -235,9 +229,7 @@ describe('VideoFromMux', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
-          <EditorProvider
-            initialState={{ selectedBlock: cardLikeEditorBlock }}
-          >
+          <EditorProvider initialState={{ selectedBlock: cardLikeEditorBlock }}>
             <VideoFromMux onSelect={jest.fn()} videoBlock={muxVideoBlock} />
           </EditorProvider>
         </JourneyProvider>
