@@ -27,6 +27,8 @@ interface JourneyViewCardProps {
   item: PublicGalleryPageItem
   priority?: boolean
   variant?: CardVariant
+  /** Render the action buttons as non-interactive look-alikes (admin preview). */
+  decorative?: boolean
 }
 
 const OVERLAY_GRADIENT =
@@ -63,7 +65,8 @@ export function metaLine(item: PublicGalleryPageItem): string {
 export function JourneyViewCard({
   item,
   priority = false,
-  variant = 'overlay'
+  variant = 'overlay',
+  decorative = false
 }: JourneyViewCardProps): ReactElement {
   const meta = metaLine(item)
 
@@ -159,6 +162,7 @@ export function JourneyViewCard({
               itemSlug={item.slug}
               accent={GALLERY_ACCENT}
               fullWidth
+              decorative={decorative}
             />
           </Box>
         </Stack>
@@ -243,6 +247,7 @@ export function JourneyViewCard({
         itemSlug={item.slug}
         accent={GALLERY_ACCENT}
         fullWidth
+        decorative={decorative}
       />
     </Stack>
   )

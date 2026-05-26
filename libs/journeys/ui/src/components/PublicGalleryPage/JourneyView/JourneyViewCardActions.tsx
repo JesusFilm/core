@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -16,6 +17,12 @@ interface JourneyViewCardActionsProps {
   fullWidth?: boolean
   /** Light treatment for the Use button when it sits over a dark image. */
   onDark?: boolean
+  /**
+   * Render the buttons as non-interactive, `aria-hidden` look-alikes — used
+   * by the read-only admin preview so the same card visual carries no real
+   * links or focus targets.
+   */
+  decorative?: boolean
 }
 
 // Use and Preview share this height so the labelled button and the icon
@@ -27,9 +34,49 @@ export function JourneyViewCardActions({
   itemSlug,
   accent,
   fullWidth = false,
-  onDark = false
+  onDark = false,
+  decorative = false
 }: JourneyViewCardActionsProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
+
+  if (decorative) {
+    return (
+      <Stack direction="row" spacing={1} alignItems="center" aria-hidden="true">
+        <Box
+          sx={{
+            flex: fullWidth ? 1 : '0 0 auto',
+            height: ACTION_SIZE,
+            px: fullWidth ? 0 : 2.5,
+            borderRadius: 1,
+            border: `1px solid ${accent}`,
+            color: accent,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 500,
+            fontSize: '0.875rem'
+          }}
+        >
+          {t('Use')}
+        </Box>
+        <Box
+          sx={{
+            width: ACTION_SIZE,
+            height: ACTION_SIZE,
+            flexShrink: 0,
+            backgroundColor: accent,
+            color: '#FFFFFF',
+            borderRadius: 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <Play3Icon />
+        </Box>
+      </Stack>
+    )
+  }
 
   const adminUrl =
     process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? 'https://admin.nextstep.is'
