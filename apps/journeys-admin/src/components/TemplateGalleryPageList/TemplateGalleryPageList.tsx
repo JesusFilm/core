@@ -69,6 +69,7 @@ import {
 } from './GalleryDialogLockContext'
 import { MobileCollectionRow } from './MobileCollectionRow'
 import { MobileFilterHeaderStrip } from './MobileFilterHeaderStrip'
+import { MobileGallerySkeleton } from './MobileGallerySkeleton'
 import { MobileTemplateList } from './MobileTemplateList'
 import { useCollectionMutations } from './useCollectionMutations'
 import { useDragEndHandler } from './useDragEndHandler'
@@ -598,11 +599,14 @@ export function TemplateGalleryPageList({
     (journeysQuery.loading && journeysQuery.data == null)
   ) {
     return (
-      <Box
-        sx={{ p: 4, display: 'flex', justifyContent: 'center' }}
-        data-testid="TemplateGalleryPageList"
-      >
-        <CircularProgress />
+      <Box sx={{ p: { xs: 2, md: 4 } }} data-testid="TemplateGalleryPageList">
+        {useMobileLayout ? (
+          <MobileGallerySkeleton />
+        ) : (
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <CircularProgress />
+          </Box>
+        )}
       </Box>
     )
   }
