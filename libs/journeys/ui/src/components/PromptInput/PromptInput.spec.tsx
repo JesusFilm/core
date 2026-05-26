@@ -153,4 +153,42 @@ describe('PromptInput', () => {
       expect(form?.className).not.toMatch(/prompt-input-shake/)
     })
   })
+
+  describe('disabled state (NES-1663)', () => {
+    it('disables the textarea and the send button when disabled', () => {
+      render(
+        <PromptInput
+          input="hello"
+          onInputChange={noop}
+          onSubmit={noop}
+          isLoading={false}
+          disabled
+        />
+      )
+      expect(
+        screen.getByRole('textbox', { name: 'Chat message input' })
+      ).toBeDisabled()
+      expect(
+        screen.getByRole('button', { name: 'Send message' })
+      ).toBeDisabled()
+    })
+
+    it('does not submit on Enter while disabled', () => {
+      const onSubmit = jest.fn()
+      render(
+        <PromptInput
+          input="hello"
+          onInputChange={noop}
+          onSubmit={onSubmit}
+          isLoading={false}
+          disabled
+        />
+      )
+      fireEvent.keyDown(
+        screen.getByRole('textbox', { name: 'Chat message input' }),
+        { key: 'Enter' }
+      )
+      expect(onSubmit).not.toHaveBeenCalled()
+    })
+  })
 })

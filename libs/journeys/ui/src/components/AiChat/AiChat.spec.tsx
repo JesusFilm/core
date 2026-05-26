@@ -32,7 +32,9 @@ jest.mock('../Conversation', () => ({
 }))
 
 jest.mock('../PromptInput', () => ({
-  PromptInput: () => <div data-testid="prompt-input" />
+  PromptInput: ({ disabled }: { disabled?: boolean }) => (
+    <div data-testid="prompt-input" data-disabled={String(disabled === true)} />
+  )
 }))
 
 // `Response` pulls in react-markdown (ESM-only, untransformed by jest) and is
@@ -44,6 +46,8 @@ jest.mock('../Response', () => ({
 const mockUseChat = useChat as unknown as jest.Mock
 
 const mockRegenerate = jest.fn()
+const mockSetMessages = jest.fn()
+const mockClearError = jest.fn()
 
 function setChatState(
   overrides: Partial<{
@@ -59,6 +63,8 @@ function setChatState(
     stop: jest.fn(),
     status: 'error',
     error: undefined,
+    setMessages: mockSetMessages,
+    clearError: mockClearError,
     ...overrides
   } as unknown as ReturnType<typeof useChat>)
 }
@@ -73,22 +79,45 @@ describe('AiChat', () => {
   })
 
   describe('error states — catered message + retry-gating (NES-1663)', () => {
-    it('shows the catered cap-hit message and hides Retry when capped', () => {
+    it('shows the catered cap-hit message + reset action, disables input, and hides Retry when capped', () => {
       setChatState({ error: codedError('conversation_capped') })
 
       render(<AiChat variant="overlay" collapsible={false} />)
 
+      // Catered, session-specific copy that mentions clearing the session.
       expect(
-        screen.getByText(/close and reopen the chat to start a fresh one/i)
+        screen.getByText(
+          /start a new one to keep chatting.*clears the current session/i
+        )
       ).toBeInTheDocument()
       expect(
         screen.queryByText(/Something went wrong/i)
       ).not.toBeInTheDocument()
-      // For the cap-hit the catered message replaces Retry — re-firing a
-      // max-size prompt is precisely the cost we must not hand to the user.
+      // Retry is replaced by the reset action — re-firing a max-size prompt is
+      // precisely the cost we must not hand to the user.
       expect(
         screen.queryByRole('button', { name: 'Retry' })
       ).not.toBeInTheDocument()
+      // Input is locked: the only way forward is starting a new conversation.
+      expect(screen.getByTestId('prompt-input')).toHaveAttribute(
+        'data-disabled',
+        'true'
+      )
+    })
+
+    it('resets the conversation in place when the cap-hit action is clicked', () => {
+      setChatState({ error: codedError('conversation_capped') })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Start a new conversation' })
+      )
+
+      // Clears the resent history (drops the server-side size cap) and the
+      // error state — works identically on overlay and pinned bar.
+      expect(mockSetMessages).toHaveBeenCalledWith([])
+      expect(mockClearError).toHaveBeenCalledTimes(1)
     })
 
     it('shows the generic message and Retry for a transient error', () => {
@@ -101,6 +130,15 @@ describe('AiChat', () => {
       expect(screen.getByText(/Something went wrong/i)).toBeInTheDocument()
       const retry = screen.getByRole('button', { name: 'Retry' })
       expect(retry).toBeInTheDocument()
+      // A transient error is not the cap — the input stays usable and there's
+      // no reset action.
+      expect(screen.getByTestId('prompt-input')).toHaveAttribute(
+        'data-disabled',
+        'false'
+      )
+      expect(
+        screen.queryByRole('button', { name: 'Start a new conversation' })
+      ).not.toBeInTheDocument()
 
       fireEvent.click(retry)
       expect(mockRegenerate).toHaveBeenCalledTimes(1)
@@ -153,7 +191,7 @@ describe('AiChat', () => {
       render(<AiChat variant="overlay" collapsible={false} />)
 
       expect(
-        screen.queryByText(/close and reopen the chat to start a fresh one/i)
+        screen.queryByText(/start a new one to keep chatting/i)
       ).not.toBeInTheDocument()
       expect(
         screen.queryByRole('button', { name: 'Retry' })
