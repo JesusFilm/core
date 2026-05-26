@@ -1,1 +1,1 @@
-export * from './LabelChip'
+export { LabelChip } from './LabelChip'
