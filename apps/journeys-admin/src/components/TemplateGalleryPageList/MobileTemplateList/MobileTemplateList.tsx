@@ -1,7 +1,4 @@
-import {
-  SortableContext,
-  verticalListSortingStrategy
-} from '@dnd-kit/sortable'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 

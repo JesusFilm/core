@@ -38,9 +38,7 @@ describe('MobileTemplateListRow', () => {
 
   it('renders a 3-dot menu button on each row', () => {
     renderRow()
-    expect(
-      screen.getByTestId('JourneyCardMenuButton')
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('JourneyCardMenuButton')).toBeInTheDocument()
   })
 
   it('renders a dedicated drag handle column', () => {

@@ -47,19 +47,9 @@ import { MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
-const isMobileLayout = useMediaQuery((theme: Theme) =>
-  theme.breakpoints.down('md')
-)
+const isMobileLayout = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'))
 
-const sensors = useSensors(
-  useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
-  useSensor(
-    TouchSensor,
-    isMobileLayout
-      ? { activationConstraint: { distance: 8 } }
-      : { activationConstraint: { delay: 200, tolerance: 5 } }
-  )
-)
+const sensors = useSensors(useSensor(MouseSensor, { activationConstraint: { distance: 8 } }), useSensor(TouchSensor, isMobileLayout ? { activationConstraint: { distance: 8 } } : { activationConstraint: { delay: 200, tolerance: 5 } }))
 ```
 
 `useSensor`'s second argument is a plain options object. Changing it

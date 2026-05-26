@@ -208,9 +208,7 @@ export function MobileTemplateListRow({
                 spacing={0.5}
                 sx={{ minWidth: 0 }}
               >
-                <TranslateIcon
-                  sx={{ fontSize: 14, color: 'text.secondary' }}
-                />
+                <TranslateIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
                 <Typography
                   variant="caption"
                   color="text.secondary"
@@ -254,9 +252,7 @@ export function MobileTemplateListRow({
           journey={journey}
           template={journey.template ?? false}
           variant="plain"
-          onAnalyticsRequest={
-            isTemplateCard ? handleOpenAnalytics : undefined
-          }
+          onAnalyticsRequest={isTemplateCard ? handleOpenAnalytics : undefined}
           setHasOpenDialog={setHasMenuDialogOpen}
         />
       </Box>

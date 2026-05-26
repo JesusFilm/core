@@ -68,11 +68,7 @@ export function SortableMobileTemplateListRow({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: disabled
-                ? 'default'
-                : isDragging
-                  ? 'grabbing'
-                  : 'grab',
+              cursor: disabled ? 'default' : isDragging ? 'grabbing' : 'grab',
               touchAction: 'none',
               color: 'text.secondary',
               // Visible focus ring for keyboard users — useSortable supports

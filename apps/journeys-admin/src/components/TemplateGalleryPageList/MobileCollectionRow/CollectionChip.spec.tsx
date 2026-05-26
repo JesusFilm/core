@@ -28,8 +28,18 @@ function makeCollection(
     createdAt: '2026-05-06T00:00:00Z',
     updatedAt: '2026-05-06T00:00:00Z',
     templates: [
-      { __typename: 'TemplateGalleryItem', id: 'j1', title: 'a', primaryImageBlock: null },
-      { __typename: 'TemplateGalleryItem', id: 'j2', title: 'b', primaryImageBlock: null }
+      {
+        __typename: 'TemplateGalleryItem',
+        id: 'j1',
+        title: 'a',
+        primaryImageBlock: null
+      },
+      {
+        __typename: 'TemplateGalleryItem',
+        id: 'j2',
+        title: 'b',
+        primaryImageBlock: null
+      }
     ],
     ...overrides
   }

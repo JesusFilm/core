@@ -44,10 +44,7 @@ export interface JourneyCardMenuProps {
   variant?: 'on-image' | 'plain'
 }
 
-export function JourneyCardMenu({
-  variant = 'on-image',
-  ...rest
-}: JourneyCardMenuProps): ReactElement {
+export function JourneyCardMenu({ variant = 'on-image', ...rest }: JourneyCardMenuProps): ReactElement {
   return (
     <IconButton
       sx={
@@ -55,7 +52,7 @@ export function JourneyCardMenu({
           ? { color: 'text.secondary', width: 32, height: 32 }
           : {
               color: hovered ? 'gray.400' : 'white',
-              '& svg': { filter: 'drop-shadow(0px 1px 2px rgba(0,0,0,0.4))' },
+              '& svg': { filter: 'drop-shadow(0px 1px 2px rgba(0,0,0,0.4))' }
               // ...image-overlay styling
             }
       }
@@ -100,12 +97,12 @@ file, not two.
 
 ### Choosing between A and B
 
-| Signal | Pattern |
-|--------|---------|
-| Same structure, different styling per surface | **A: variant prop** |
-| Same actions/logic, different parent layouts | **B: extract** |
-| Optional menu item that one surface needs and another doesn't | **A: optional callback prop** (see below) |
-| You're already touching both surfaces in the same PR | **B: extract now** — the cost is lowest when both call sites are in your hands |
+| Signal                                                        | Pattern                                                                        |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Same structure, different styling per surface                 | **A: variant prop**                                                            |
+| Same actions/logic, different parent layouts                  | **B: extract**                                                                 |
+| Optional menu item that one surface needs and another doesn't | **A: optional callback prop** (see below)                                      |
+| You're already touching both surfaces in the same PR          | **B: extract now** — the cost is lowest when both call sites are in your hands |
 
 A and B are not mutually exclusive — in NES-1695, `JourneyCardMenu`
 gained a `variant` prop (A) for the icon styling, while the

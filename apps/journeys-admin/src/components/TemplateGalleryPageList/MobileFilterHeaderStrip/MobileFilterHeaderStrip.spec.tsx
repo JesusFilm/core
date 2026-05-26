@@ -31,9 +31,7 @@ function makeCollection(
 
 describe('MobileFilterHeaderStrip', () => {
   it('renders "All Templates" with count and hides the menu when no collection is selected', () => {
-    render(
-      <MobileFilterHeaderStrip selectedCollection={null} count={12} />
-    )
+    render(<MobileFilterHeaderStrip selectedCollection={null} count={12} />)
     expect(screen.getByText('All Templates')).toBeInTheDocument()
     expect(screen.getByText(/12 templates/)).toBeInTheDocument()
     // The 3-dot menu must not render for the All Templates filter.

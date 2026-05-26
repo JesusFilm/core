@@ -6,7 +6,9 @@ import '../../../../test/i18n'
 
 import { AllTemplatesChip } from './AllTemplatesChip'
 
-function renderChip(props: Partial<React.ComponentProps<typeof AllTemplatesChip>> = {}) {
+function renderChip(
+  props: Partial<React.ComponentProps<typeof AllTemplatesChip>> = {}
+) {
   return render(
     <DndContext>
       <AllTemplatesChip
