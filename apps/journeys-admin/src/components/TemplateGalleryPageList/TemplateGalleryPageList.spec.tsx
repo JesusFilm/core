@@ -230,9 +230,8 @@ describe('TemplateGalleryPageList', () => {
           data: {
             templateGalleryPages: [
               {
-                ...(
-                  collectionsMock.result as { data: GetTemplateGalleryPages }
-                ).data.templateGalleryPages[0],
+                ...(collectionsMock.result as { data: GetTemplateGalleryPages })
+                  .data.templateGalleryPages[0],
                 templates: [
                   {
                     __typename: 'TemplateGalleryItem',
