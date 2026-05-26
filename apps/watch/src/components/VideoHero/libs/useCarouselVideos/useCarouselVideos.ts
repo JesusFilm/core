@@ -72,7 +72,20 @@ export interface UseCarouselVideosReturn {
   currentPoolIndex: number
 }
 
-export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
+interface UseCarouselVideosOptions {
+  locale?: string
+  languageId?: string
+}
+
+function resolveUseCarouselVideosOptions(
+  options?: string | UseCarouselVideosOptions
+): UseCarouselVideosOptions {
+  return typeof options === 'string' ? { locale: options } : (options ?? {})
+}
+
+export function useCarouselVideos(
+  options?: string | UseCarouselVideosOptions
+): UseCarouselVideosReturn {
   // Initialize from session storage if available
   const [videos, setVideos] = useState<CarouselVideo[]>([])
   const [currentIndex, setCurrentIndex] = useState(() => {
@@ -110,7 +123,9 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     () => new Set(config.blacklistedVideoIds),
     [config.blacklistedVideoIds]
   )
-  const languageId = getLanguageIdFromLocale(locale)
+  const { locale, languageId: providedLanguageId } =
+    resolveUseCarouselVideosOptions(options)
+  const languageId = providedLanguageId ?? getLanguageIdFromLocale(locale)
 
   // Reset pool exhaustion every 50 videos to ensure infinite cycling
   useEffect(() => {

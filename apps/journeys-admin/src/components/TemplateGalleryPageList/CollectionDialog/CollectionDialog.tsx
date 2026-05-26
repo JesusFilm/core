@@ -17,6 +17,7 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 
+import { CollectionDialogFooter } from './CollectionDialogFooter'
 import { CollectionPreviewPane } from './CollectionPreviewPane'
 import { CreatorImagePickerDrawer } from './CreatorImagePickerDrawer'
 import { DiscardConfirmDialog } from './DiscardConfirmDialog'
@@ -25,7 +26,7 @@ import { useCollectionForm } from './useCollectionForm'
 
 export interface CollectionDialogProps {
   open: boolean
-  mode: 'create' | 'edit'
+  mode: 'create' | 'edit' | 'publish'
   teamId: string
   collection?: TemplateGalleryPage
   availableJourneys: readonly Journey[]
@@ -35,7 +36,17 @@ export interface CollectionDialogProps {
    * interleaving on the same Apollo cache.
    */
   parentBusy?: boolean
+  /**
+   * False when the active team has a `routeAllTeamJourneys` custom
+   * domain. Disables the "Open in new tab" preview button on the
+   * preview pane (NES-1644). Defaults to true.
+   */
+  canPublish?: boolean
+  /** Tooltip copy for the disabled preview button. */
+  publishBlockedReason?: string | null
   onClose: () => void
+  /** Forwarded to useCollectionForm in publish mode. */
+  onPublished?: (collection: TemplateGalleryPage) => void
 }
 
 // Matches the Figma "Editor / Subtitle/2" type token on section headers.
@@ -54,12 +65,29 @@ export function CollectionDialog({
   collection,
   availableJourneys,
   parentBusy = false,
-  onClose
+  canPublish = true,
+  publishBlockedReason = null,
+  onClose,
+  onPublished
 }: CollectionDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const { initialValues, schema, isPublished, handleSubmit } =
-    useCollectionForm({ mode, teamId, collection, parentBusy, onClose })
+  const {
+    initialValues,
+    schema,
+    isPublished,
+    handleSubmit,
+    setSubmitIntent,
+    handleUnpublishAction,
+    isUnpublishing
+  } = useCollectionForm({
+    mode,
+    teamId,
+    collection,
+    parentBusy,
+    onClose,
+    onPublished
+  })
 
   // O(1) lookup so the preview pane can resolve the user-pick-ordered
   // journey list per Formik render without an O(M) scan.
@@ -96,18 +124,40 @@ export function CollectionDialog({
         setValues,
         isSubmitting
       }) => {
-        // Block close paths while a submit is in flight so the user can't
-        // dismiss the dialog mid-mutation (which would orphan the post-await
-        // side effects). Submit succeeds → onClose() runs explicitly.
-        // Also intercepts close paths when the form is dirty: opens the
-        // "discard changes?" confirmation instead of closing immediately.
+        // Block close paths while a mutation is in flight so the user
+        // can't dismiss the dialog mid-mutation (which would orphan the
+        // post-await side effects). Covers Formik submit (isSubmitting)
+        // and the out-of-band unpublish action (isUnpublishing). Submit
+        // succeeds → onClose() runs explicitly. Also intercepts close
+        // paths when the form is dirty: opens the "discard changes?"
+        // confirmation instead of closing immediately.
         const guardedClose = (): void => {
-          if (isSubmitting) return
+          if (isSubmitting || isUnpublishing) return
           if (dirty) {
             setDiscardConfirmOpen(true)
             return
           }
           onClose()
+        }
+        // Named handlers wired into the footer. Save Draft + Publish
+        // share Formik's submitForm and disambiguate via the intent
+        // ref; Unpublish bypasses Formik (see useCollectionForm).
+        const handleCreateClick = (): void => {
+          handleSubmit()
+        }
+        const handleSaveClick = (): void => {
+          handleSubmit()
+        }
+        const handleSaveDraftClick = (): void => {
+          setSubmitIntent('draft')
+          handleSubmit()
+        }
+        const handlePublishClick = (): void => {
+          setSubmitIntent('publish')
+          handleSubmit()
+        }
+        const handleUnpublishClick = (): void => {
+          void handleUnpublishAction()
         }
         // Selected journeys, ordered by the user's pick order, used for the
         // carousel preview on the left pane.
@@ -120,23 +170,42 @@ export function CollectionDialog({
               open={open}
               onClose={guardedClose}
               maxWidth="md"
-              // Disable the submit + close buttons while the mutation is in
-              // flight. Formik's submitForm has no internal double-click guard
-              // — without this, a fast second click before React re-renders
-              // would fire a second create/update mutation.
-              loading={isSubmitting}
+              // Disable the submit + close buttons while any mutation
+              // is in flight. Covers Formik's submitForm (isSubmitting)
+              // and the out-of-band unpublish action (isUnpublishing).
+              // Without this, a fast second click before React
+              // re-renders would fire a duplicate mutation.
+              loading={isSubmitting || isUnpublishing}
               dialogTitle={{
                 title:
                   mode === 'create'
                     ? t('New Collection')
-                    : t('Edit Collection'),
+                    : mode === 'publish'
+                      ? t('Publish Collection')
+                      : t('Edit Collection'),
                 closeButton: true
               }}
-              dialogAction={{
-                onSubmit: handleSubmit,
-                closeLabel: t('Cancel'),
-                submitLabel: mode === 'create' ? t('Create') : t('Save')
-              }}
+              // Footer is always rendered via dialogActionChildren so
+              // CollectionDialogFooter owns the mode-based branching in
+              // one place — see that component for the four button
+              // configurations.
+              dialogActionChildren={
+                <CollectionDialogFooter
+                  mode={mode}
+                  isPublished={isPublished}
+                  canPublish={canPublish}
+                  publishBlockedReason={publishBlockedReason}
+                  journeyCount={values.journeyIds.length}
+                  isSubmitting={isSubmitting}
+                  isUnpublishing={isUnpublishing}
+                  onCancel={guardedClose}
+                  onCreate={handleCreateClick}
+                  onSave={handleSaveClick}
+                  onSaveDraft={handleSaveDraftClick}
+                  onPublish={handlePublishClick}
+                  onUnpublish={handleUnpublishClick}
+                />
+              }
               testId="CollectionDialog"
               sx={{
                 '& .MuiDialogContent-root': {
@@ -170,6 +239,9 @@ export function CollectionDialog({
                           }/template-gallery/${encodeURIComponent(values.slug)}`
                         : null
                     }
+                    slug={values.slug !== '' ? values.slug : null}
+                    canPublish={canPublish}
+                    publishBlockedReason={publishBlockedReason}
                   />
                   <Box
                     sx={{
@@ -295,6 +367,65 @@ export function CollectionDialog({
                               />
                             </Stack>
 
+                            {mode !== 'create' && (
+                              <Stack spacing={1}>
+                                <Typography sx={SECTION_HEADER}>
+                                  {t('Slug')}
+                                </Typography>
+                                <TextField
+                                  id="slug"
+                                  name="slug"
+                                  placeholder={t('Type here')}
+                                  fullWidth
+                                  variant="filled"
+                                  hiddenLabel
+                                  value={values.slug}
+                                  inputProps={{
+                                    'aria-label': t('Slug')
+                                  }}
+                                  // Slugify on every keystroke so the input
+                                  // mirrors what the backend will accept: lowercase,
+                                  // swap whitespace + invalid chars for dashes,
+                                  // collapse runs, and clip leading dashes.
+                                  // Trailing dashes stay so the user can still
+                                  // type "foo-bar"; we strip them on blur.
+                                  onChange={async (event) => {
+                                    const slugified = event.target.value
+                                      .toLowerCase()
+                                      .replace(/[^a-z0-9-]+/g, '-')
+                                      .replace(/-+/g, '-')
+                                      .replace(/^-+/, '')
+                                    await setFieldValue('slug', slugified)
+                                  }}
+                                  onBlur={async (event) => {
+                                    // Strip trailing dashes on blur so the
+                                    // value satisfies SLUG_PATTERN once the
+                                    // user moves on; mid-typing dashes stay
+                                    // so "foo-" doesn't immediately surface
+                                    // a validation error.
+                                    const trimmed = values.slug.replace(
+                                      /-+$/,
+                                      ''
+                                    )
+                                    if (trimmed !== values.slug) {
+                                      await setFieldValue('slug', trimmed)
+                                    }
+                                    handleBlur(event)
+                                  }}
+                                  error={
+                                    touched.slug === true &&
+                                    Boolean(errors.slug)
+                                  }
+                                  helperText={
+                                    (touched.slug === true && errors.slug) ||
+                                    t(
+                                      'Used in the public URL. Must be unique across your collections — changing it breaks existing links.'
+                                    )
+                                  }
+                                />
+                              </Stack>
+                            )}
+
                             <Stack spacing={1}>
                               <Typography sx={SECTION_HEADER}>
                                 {t('Creator Details')}
@@ -396,51 +527,6 @@ export function CollectionDialog({
                                 preview in `CollectionPreviewPane` is also
                                 hidden. Replaces NES-1660 (helper-text
                                 approach was rejected by QA). */}
-
-                            {mode === 'edit' && (
-                              <TextField
-                                id="slug"
-                                name="slug"
-                                label={t('Slug')}
-                                fullWidth
-                                variant="filled"
-                                value={values.slug}
-                                // Slugify on every keystroke so the input
-                                // mirrors what the backend will accept: lowercase,
-                                // swap whitespace + invalid chars for dashes,
-                                // collapse runs, and clip leading dashes.
-                                // Trailing dashes stay so the user can still
-                                // type "foo-bar"; we strip them on blur.
-                                onChange={async (event) => {
-                                  const slugified = event.target.value
-                                    .toLowerCase()
-                                    .replace(/[^a-z0-9-]+/g, '-')
-                                    .replace(/-+/g, '-')
-                                    .replace(/^-+/, '')
-                                  await setFieldValue('slug', slugified)
-                                }}
-                                onBlur={async (event) => {
-                                  // Strip trailing dashes on blur so the value
-                                  // satisfies SLUG_PATTERN once the user moves
-                                  // on; mid-typing dashes stay so "foo-" doesn't
-                                  // immediately surface a validation error.
-                                  const trimmed = values.slug.replace(/-+$/, '')
-                                  if (trimmed !== values.slug) {
-                                    await setFieldValue('slug', trimmed)
-                                  }
-                                  handleBlur(event)
-                                }}
-                                error={
-                                  touched.slug === true && Boolean(errors.slug)
-                                }
-                                helperText={
-                                  (touched.slug === true && errors.slug) ||
-                                  t(
-                                    'Used in the public URL. Must be unique across your collections — changing it breaks existing links.'
-                                  )
-                                }
-                              />
-                            )}
                           </Stack>
                         </Collapse>
                       </Stack>

@@ -47,7 +47,8 @@ export interface UseImageUploadReturn {
   fileRejections: readonly FileRejection[]
 }
 
-const DEFAULT_MAX_SIZE = 10485760 // 10MB
+export const MAX_IMAGE_UPLOAD_BYTES = 10_000_000 // 10 MB (decimal)
+const DEFAULT_MAX_SIZE = MAX_IMAGE_UPLOAD_BYTES
 const DEFAULT_ACCEPT: Accept = {
   'image/png': [],
   'image/jpeg': [],

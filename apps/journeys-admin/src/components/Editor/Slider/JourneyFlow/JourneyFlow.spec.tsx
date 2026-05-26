@@ -649,4 +649,129 @@ describe('JourneyFlow', () => {
       screen.queryByRole('checkbox', { name: 'Analytics Overlay' })
     ).not.toBeInTheDocument()
   })
+
+  describe('template info helper (NES-1642)', () => {
+    const localTemplateJourney = {
+      ...defaultJourney,
+      team: {
+        __typename: 'Team' as const,
+        id: 'my-team-id',
+        title: 'My Team',
+        publicTitle: null
+      },
+      template: true
+    }
+
+    const globalTemplateJourney = {
+      ...defaultJourney,
+      team: {
+        __typename: 'Team' as const,
+        id: 'jfp-team',
+        title: 'JFP Team',
+        publicTitle: null
+      },
+      template: true
+    }
+
+    const nonTemplateJourney = {
+      ...defaultJourney,
+      team: {
+        __typename: 'Team' as const,
+        id: 'my-team-id',
+        title: 'My Team',
+        publicTitle: null
+      },
+      template: false
+    }
+
+    function renderWithFlags(
+      journey: Journey,
+      flags: { teamTemplateCollection?: boolean; editorAnalytics?: boolean }
+    ) {
+      const result = jest
+        .fn()
+        .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+      render(
+        <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+          <SnackbarProvider>
+            <FlagsProvider flags={flags}>
+              <JourneyProvider value={{ journey }}>
+                <EditorProvider
+                  initialState={{
+                    steps,
+                    activeSlide: ActiveSlide.JourneyFlow
+                  }}
+                >
+                  <MuxVideoUploadProvider>
+                    <Box sx={{ width: '100vw', height: '100vh' }}>
+                      <JourneyFlow />
+                    </Box>
+                  </MuxVideoUploadProvider>
+                </EditorProvider>
+              </JourneyProvider>
+            </FlagsProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      return { result }
+    }
+
+    it('renders the helper trigger for local templates when teamTemplateCollection is on', async () => {
+      const { result } = renderWithFlags(localTemplateJourney, {
+        teamTemplateCollection: true
+      })
+
+      await waitFor(() => expect(result).toHaveBeenCalled())
+
+      expect(
+        screen.getByTestId('TemplateInfoHelperTrigger')
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('checkbox', { name: 'Analytics Overlay' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders the helper trigger for global templates when teamTemplateCollection is on', async () => {
+      const { result } = renderWithFlags(globalTemplateJourney, {
+        teamTemplateCollection: true
+      })
+
+      await waitFor(() => expect(result).toHaveBeenCalled())
+
+      expect(
+        screen.getByTestId('TemplateInfoHelperTrigger')
+      ).toBeInTheDocument()
+    })
+
+    it('does not render the helper trigger when teamTemplateCollection is off', async () => {
+      const { result } = renderWithFlags(localTemplateJourney, {
+        teamTemplateCollection: false
+      })
+
+      await waitFor(() => expect(result).toHaveBeenCalled())
+
+      expect(
+        screen.queryByTestId('TemplateInfoHelperTrigger')
+      ).not.toBeInTheDocument()
+    })
+
+    it('does not render the helper trigger for non-template journeys', async () => {
+      const { result } = renderWithFlags(nonTemplateJourney, {
+        teamTemplateCollection: true,
+        editorAnalytics: true
+      })
+
+      await waitFor(() => expect(result).toHaveBeenCalled())
+
+      expect(
+        screen.queryByTestId('TemplateInfoHelperTrigger')
+      ).not.toBeInTheDocument()
+      // The analytics switch still renders for non-template journeys.
+      expect(
+        screen.getByRole('checkbox', { name: 'Analytics Overlay' })
+      ).toBeInTheDocument()
+    })
+  })
 })

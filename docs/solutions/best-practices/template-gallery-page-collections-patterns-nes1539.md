@@ -2,6 +2,7 @@
 title: 'Template Gallery Page (Collections) frontend patterns (NES-1539)'
 category: best-practices
 date: 2026-05-06
+last_updated: 2026-05-21
 problem_type: ui_pattern
 component: journeys-admin/TemplateGalleryPageList
 tags:
@@ -23,10 +24,12 @@ tags:
 related_prs:
   - 'https://github.com/JesusFilm/core/pull/9143'
   - 'https://github.com/JesusFilm/core/pull/9119'
+  - 'https://github.com/JesusFilm/core/pull/9174'
 related_tickets:
   - NES-1539
   - NES-1607
   - NES-1547
+  - NES-1644
 related_docs:
   - docs/solutions/best-practices/local-template-dialog-consolidation-patterns-nes1543.md
   - docs/solutions/integration-issues/pothos-public-unauthenticated-query-pattern-api-journeys-modern.md
@@ -109,7 +112,18 @@ loses errors.
 
 ```ts
 const mountedRef = useRef(true)
-useEffect(() => () => { mountedRef.current = false }, [])
+useEffect(() => {
+  // Setup MUST flip mountedRef.current = true. Under React StrictMode
+  // (Next.js dev) effects run setup → cleanup → setup; a body-less setup
+  // leaves the ref stuck at `false` after the second setup, breaking
+  // every later post-await guard. NES-1644 hit exactly this: an unpublish
+  // would never clear `busyId`, so the 3-dot menu stayed permanently
+  // disabled.
+  mountedRef.current = true
+  return () => {
+    mountedRef.current = false
+  }
+}, [])
 
 // in handleSubmit, after each await:
 if (!mountedRef.current) return
@@ -120,6 +134,27 @@ enqueueSnackbar(...)
 Pair it with a `guardedClose` that no-ops while `isSubmitting` is true so
 backdrop / Escape / Cancel can't dismiss mid-mutation. See
 `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionDialog/CollectionDialog.tsx`.
+
+The same `mountedRef` shape also guards async post-await branches inside
+non-dialog hooks — see `useCollectionMutations.ts:46-52` for the
+`if (mountedRef.current) setBusyId(null)` finally-block + snackbar guards
+that NES-1644 wired up after the StrictMode regression. Jest tests
+(`NODE_ENV=test`) do NOT trigger React's StrictMode double-invoke, so a
+`<StrictMode>` wrapper around `renderHook` is a false guardrail —
+the only real defense is the corrected setup-body-resets-ref pattern
+itself and code review when reading any `useRef(true)` /
+`useEffect(() => () => …, [])` shape.
+
+**Extended variant — subscription-chained orchestration (NES-1637).** When
+the dialog chains a mutation → `useSubscription` → second mutation (e.g.
+the AI-translate flow on the Copy-to-collection menu item), this Pattern 3
+foundation needs two extensions: (a) gate the second mutation's network
+call _before_ its `await`, not only after, otherwise the mutation fires
+server-side on the unmounted component; and (b) release any
+`setHasOpenDialog` / lock-context signal in the lifecycle cleanup, not
+only in `guardedClose`, so abnormal-unmount (route navigation
+mid-translation) does not permanently lock the gallery's drag-and-drop.
+See `docs/solutions/best-practices/subscription-bridged-dialog-orchestration-nes1637.md`.
 
 ### 4. DnD single-flight: gate START, not just END
 
@@ -393,6 +428,151 @@ WHERE t.id = sub.id;
 COMMIT;
 ```
 
+### 14. SSR + Yoga-cache TTL 0 for low-traffic admin-managed public pages (NES-1644)
+
+The public template-gallery page is rendered via `getServerSideProps`
+(`apps/journeys/pages/home/template-gallery/[slug].tsx`) with
+`Cache-Control: no-store, max-age=0`. The Yoga response-cache entry
+for `Query.templateGalleryPageBySlug` is set to TTL 0 in
+`apis/api-journeys-modern/src/yoga.ts` — uncached.
+
+Why this shape, and not ISR + a revalidate chain:
+
+- **Revalidate chains for ISR pages are surprisingly brittle.** The
+  earlier design relied on a three-layer chain (admin proxy →
+  journeys proxy → `res.revalidate(path)`) plus a safety-net awaited
+  revalidate on Preview. It worked but added moving parts the public
+  page didn't need: a shared-secret endpoint, a CSRF-gated proxy on
+  admin, and a 200–400 ms tax per mutation.
+- **Yoga's entity-ID auto-invalidation can't reach cached null
+  entries.** A draft page → first GET caches `null` → publish fires
+  the entity-ID invalidator → but the cached null has no entity to
+  invalidate against. The null sticks for the full TTL. With TTL 0
+  this entire class of bug disappears.
+- **Cross-service mutations don't reach this server.** Journey-side
+  mutations (trash, edit, soft-delete) live in `api-journeys`. Yoga's
+  invalidator only runs for mutations that flow through
+  `api-journeys-modern`. Caching a cross-service-dependent field
+  means accepting indefinite staleness windows.
+- **Traffic profile.** One indexed slug lookup per request is
+  trivial. The public page is admin-managed, not a hot path.
+
+Pattern: when a public page **(a)** depends on cross-service writes,
+**(b)** has a "cached null after first-miss" failure mode, or
+**(c)** isn't on a hot read path, prefer SSR + uncached resolver
+over ISR + a revalidate chain. The implementation collapses to one
+header and one schema-coordinate TTL — the rest of the chain
+disappears.
+
+`useRevalidateTemplateGallery`, the admin/journeys revalidate
+proxies, and the shared-secret Bearer-auth scheme were all removed
+in NES-1644. If a future page reintroduces ISR, the prior auth
+hardening lives in this file's git history under
+`8c39ce6c`-era revisions.
+
+### 15. Auth posture on the admin → journeys preview proxy (NES-1644)
+
+The single remaining proxy is `/api/preview-template-gallery` on the
+admin side: a GET endpoint that gates Preview behind the same
+Firebase auth as the admin app and 307-redirects to the public URL.
+Two non-obvious rules:
+
+1. **CSRF defence via `Sec-Fetch-Site`.** Browsers set
+   `Sec-Fetch-Site` automatically on every request and JavaScript
+   cannot spoof it. The handler accepts only `same-origin` (admin →
+   admin navigation) and `none` (direct address-bar entry). Any
+   `cross-site` request — including `<img>` / `<script>` /
+   third-party `fetch` carrying a stolen cookie — is rejected with 403. This is the right CSRF shape for a `window.open`-shaped
+   endpoint where `X-Requested-With` doesn't fit.
+
+2. **Slug validation before redirect.** The handler runs the slug
+   through `isValidTemplateGallerySlug` (shared with the server's
+   `SLUG_RE`) before interpolating it into the redirect URL. This
+   blocks open-redirect attempts that try to smuggle a foreign host
+   or path-traversal segment through the `slug` query param.
+
+The `timingSafeEqual` shared-secret pattern and the legacy
+`?accessToken=...` rejection from the earlier revalidate chain are
+gone with that chain. Both remain valid patterns for any future
+shared-secret endpoint — they're worth re-reading in this file's
+git history if you need to reintroduce server-to-server auth.
+
+### 16. Custom-domain publish gate: client-side `useCanPublishCollection` over `useCustomDomainsQuery` (NES-1644)
+
+Template-gallery collections are routed off `your.nextstep.is`
+only. Teams with a `customDomain.routeAllTeamJourneys === true`
+domain have no public path that resolves to a gallery page, so the
+Publish CTA is gated.
+
+`useCanPublishCollection(teamId)` returns
+`{ canPublish, reason, loading }`. Two contracts worth keeping:
+
+- **Loading: fail-open.** While the customDomains query is in
+  flight (or `teamId` hasn't resolved yet), `canPublish: true`.
+  Failing closed during the loading flicker disables the CTA on
+  every page render until the query lands — a UX papercut for the
+  common case (most teams don't have custom domains).
+- **Error: fail-closed.** If the query errors (network, 500), we
+  cannot determine whether the team has a routeAll domain.
+  `canPublish: false` with a distinct "couldn't check" reason. The
+  alternative (fail-open on error) would let a custom-domain team
+  publish a page that won't route from their domain. The hook also
+  `console.warn`s on this branch so operators see silent prod
+  failures.
+
+The server is authoritative — the backend publish resolver will
+reject the same condition independently. This hook is a UX
+guardrail; never the security boundary.
+
+Don't conflate the gate's routeAll semantics with the existing
+`useCustomDomainsQuery().primaryHostname` accessor, which returns
+`customDomains[0]?.name` for share-link / preview / QR display.
+The two answer different questions for teams with multiple custom
+domains. The hook's JSDoc surfaces the warning at the API
+boundary.
+
+### 17. Sever join rows on lifecycle transitions; don't rely on read-time filters alone (NES-1644)
+
+`journeysTrash` and `journeysArchive` only flip `journey.status`. The `TemplateGalleryPage.templates` resolver filters by `status: 'published'`, so trashed/archived journeys visually disappear from collections — but the underlying `TemplateGalleryPageTemplate` join rows survive. A later restore returns `status` to `published`, and the journey reappears in its prior collection slot, which surprised users.
+
+Two ways to enforce "trashed/archived = severed":
+
+- **Backend:** delete the join rows transactionally inside the trash/archive mutation. Architecturally cleanest, but `journeysTrash` lives in `api-journeys` (NestJS, legacy subgraph) while the join row lives in the `prisma-journeys` schema. Both services share the same Prisma client, so a within-domain transactional delete would work — but the cleanest implementation also wants to migrate `journeysTrash` to api-journeys-modern (Pothos) following Mike Allison's `chore: *modern` PR pattern, which adds scope. Tracked as a follow-up.
+- **Frontend (shipped):** fire a best-effort `templateGalleryPageAssignJourney({ journeyId, pageId: null })` after the trash/archive mutation succeeds. The server resolver is idempotent — `pageId: null` removes the join row when present, returns `null` when not. Wrapped in its own try/catch so failure logs a `console.warn` and doesn't contradict the primary mutation's success snackbar (trash/archive is the user's intent; the unassign is cleanup).
+
+```ts
+onCompleted: async () => {
+  try {
+    await unassignFromCollection({
+      variables: { journeyId: id, pageId: null }
+    })
+  } catch (unassignError) {
+    console.warn('[ArchiveJourney] failed to unassign archived journey from its collection', { journeyId: id, error: unassignError })
+  }
+  enqueueSnackbar(t('Journey Archived'), { variant: 'success' })
+  await refetch?.()
+}
+```
+
+The frontend approach is correct in 99% of cases (single tab, normal network). The 1% failure mode (network blip between the two mutations) is strictly no worse than the prior buggy behavior — the join row stays, restore returns the journey to its old slot for that one row. Acceptable as a frontend-only fix until the backend migration lands.
+
+### 18. Re-apply the server's status predicate on the client when the cache merges entities by ref (NES-1644)
+
+Apollo's normalized cache stores each `Journey` as a single entity. The active-view query result (`adminJourneys(status: [draft, published])`) holds an array of refs to those entities. When a mutation flips `status: published → trashed/archived` on the same entity, the ref stays in the cached list — the journey now reads as `{ status: 'trashed' }` but the list array is unchanged. The UI dereferences the list, gets the (now wrong-status) entity, and renders it in the wrong view until refetch.
+
+The fix is one line in the parent component:
+
+```ts
+const allTemplates = useMemo<readonly Journey[]>(() => {
+  const allowedStatuses = STATUS_FILTER_TO_JOURNEY_STATUSES[status]
+  return (journeysQuery.data?.journeys ?? []).filter((j) => allowedStatuses.includes(j.status))
+}, [journeysQuery.data, status])
+```
+
+Pattern: when a query is keyed by a field that mutations can mutate (status, archived flag, soft-delete timestamp), re-apply the server-side predicate on the client so the entity status drives the view, not the cached list shape. Without this, every status-changing mutation (trash, archive, delete) needs its own bespoke cache update to surgically remove the ref from the right query result — and any one missed mutation leaks. The status-filter approach defends all of them automatically.
+
+This sits alongside the explicit `cache.modify` in the mutation's `update` callback (which keeps the `TemplateGalleryPage.templates` lists clean across the typename boundary). The two patterns are complementary: `cache.modify` for parent-list refs Apollo can't reach, status filtering for query-result refs that go stale when the entity changes.
+
 ## Prevention
 
 - Default to `cache.updateQuery` for list mutations. Reserve `cache.modify`
@@ -417,6 +597,30 @@ COMMIT;
   ship the copy-event fallback for the focus-trap edge case.
 - Keep components under ~600 lines. Extract sibling components and hooks
   before they pass that bar.
+- Shared-secret API endpoints: token rides in `Authorization: Bearer`,
+  compared with `timingSafeEqual` after a length-check guard. Never in
+  the URL.
+- Side-effecting API endpoints behind cookie auth need a CSRF gate.
+  POST + `X-Requested-With` for fetch-shaped consumers; GET +
+  `Sec-Fetch-Site` for navigation-shaped consumers.
+- Public pages that depend on cross-service mutations should default
+  to SSR + TTL-0 Yoga cache, not ISR + a revalidate chain. ISR's
+  cached-null stickiness and the multi-hop revalidate plumbing aren't
+  worth the read-perf gain for low-traffic admin-managed pages.
+- Custom-domain feature gates: fail-open while loading, fail-CLOSED on
+  query error with a distinct reason copy. Log the error.
+- `getStaticProps` null-branch logging: log only when `errors !== null`;
+  cap error count; whitelist extension fields (never log raw
+  `extensions` — can leak stack traces / Prisma context).
+- Soft-delete-style status flips (trash, archive) should sever join
+  rows, not just hide via read-time filters. Until backend support
+  lands, pair the lifecycle mutation with a best-effort `…assignJourney
+({ pageId: null })` on the client.
+- When a query is keyed by a mutable field (status, archived flag,
+  soft-delete timestamp), re-apply that predicate on the client when
+  reading the cached list. Apollo's normalized cache stores entities
+  once; a mutation that flips the field leaves the ref in the wrong
+  query result until refetch.
 
 ## Cross-references
 
@@ -434,6 +638,30 @@ COMMIT;
 - `apis/api-journeys-modern/src/schema/templateGalleryPage/applyContiguousOrder.ts`
   — `lockPage` + `applyContiguousOrder` helpers shared between the
   reorder and assign resolvers.
+- `apps/journeys/pages/home/template-gallery/[slug].tsx` — SSR public
+  page with `Cache-Control: no-store` (Pattern 14).
+- `apis/api-journeys-modern/src/yoga.ts` — `Query.templateGalleryPageBySlug`
+  set to TTL 0 (Pattern 14).
+- `apps/journeys-admin/pages/api/preview-template-gallery.ts` —
+  authenticated 307 jump-link, only proxy that survived NES-1644
+  (Pattern 15).
+- `apps/journeys-admin/src/libs/useCanPublishCollection/` +
+  `apps/journeys-admin/src/libs/useCustomDomainsQuery/` — custom-
+  domain publish gate (Pattern 16).
+- `apps/journeys/pages/home/template-gallery/[slug].tsx` —
+  null-branch SSR diagnostic log (NES-1644 enrichment).
+- `apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TrashJourneyDialog/TrashJourneyDialog.tsx`
+  - `.../DefaultMenu/ArchiveJourney/ArchiveJourney.tsx` — explicit
+    `cache.modify` filtering of `TemplateGalleryPage.templates` lists
+    on lifecycle transitions, plus best-effort
+    `templateGalleryPageAssignJourney({ pageId: null })` (Pattern 17).
+- `apps/journeys-admin/src/components/TemplateGalleryPageList/TemplateGalleryPageList.tsx`
+  — client-side status predicate on `allTemplates` (Pattern 18).
+- `docs/solutions/runtime-errors/yoga-response-cache-null-stickiness-and-zombie-process-debugging-nes1644.md`
+  — full investigation history that motivated Pattern 14's
+  simplification, plus the Apollo cache evolution from
+  `evict + gc` (worked locally, failed on stage) to explicit
+  `cache.modify`.
 
 ## Related work split out
 

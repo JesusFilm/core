@@ -1,0 +1,12 @@
+# Trip the Vercel Firewall rate-limit rule on /api/chat (stage).
+#
+# ~200 requests/min sustained for 2 minutes (~400 total). Well above any
+# realistic per-IP threshold. Expect a non-zero 429 count once the rule is
+# past Log mode.
+
+url: https://your-stage.nextstep.is/api/chat
+rpm: 200
+duration: 2m
+vus: 5
+max_vus: 20
+message: firewall trip load test

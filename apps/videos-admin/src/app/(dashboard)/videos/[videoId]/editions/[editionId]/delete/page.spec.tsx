@@ -1,25 +1,28 @@
+import { useMutation } from '@apollo/client'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
 
 import DeleteEditionPage from './page'
 
 // Mock the Apollo Client hooks
-jest.mock('@apollo/client', () => ({
-  useMutation: jest.fn(() => [jest.fn(), { loading: false }])
+vi.mock('@apollo/client', () => ({
+  useMutation: vi.fn(() => [vi.fn(), { loading: false }])
 }))
 
 // Mock the next/navigation
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
-    push: jest.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
   }))
 }))
 
 // Mock Dialog component
-jest.mock('@core/shared/ui/Dialog', () => ({
+vi.mock('@core/shared/ui/Dialog', () => ({
   Dialog: ({ children, onClose, dialogTitle, dialogAction, loading }) => (
     <div data-testid="mock-dialog">
       <div data-testid="dialog-title">{dialogTitle.title}</div>
@@ -67,20 +70,20 @@ describe('DeleteEditionPage', () => {
   })
 
   it('calls the mutation and redirects when confirmed', async () => {
-    const mockDeleteMutation = jest.fn().mockImplementation((options) => {
+    const mockDeleteMutation = vi.fn().mockImplementation((options) => {
       // Call onCompleted callback immediately to simulate successful deletion
       if (options.onCompleted) {
         options.onCompleted()
       }
     })
-    const mockRouter = { push: jest.fn() }
+    const mockRouter = { push: vi.fn() }
 
-    require('@apollo/client').useMutation.mockReturnValue([
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
       mockDeleteMutation,
       { loading: false }
     ])
 
-    require('next/navigation').useRouter.mockReturnValue(mockRouter)
+    vi.mocked(useRouter as unknown as Mock).mockReturnValue(mockRouter)
 
     render(
       <SnackbarProvider>
@@ -112,8 +115,8 @@ describe('DeleteEditionPage', () => {
   })
 
   it('redirects when dialog is closed', async () => {
-    const mockRouter = { push: jest.fn() }
-    require('next/navigation').useRouter.mockReturnValue(mockRouter)
+    const mockRouter = { push: vi.fn() }
+    vi.mocked(useRouter as unknown as Mock).mockReturnValue(mockRouter)
 
     render(
       <SnackbarProvider>

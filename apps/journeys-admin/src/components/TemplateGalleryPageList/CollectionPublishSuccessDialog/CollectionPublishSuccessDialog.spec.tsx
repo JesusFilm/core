@@ -40,6 +40,7 @@ describe('CollectionPublishSuccessDialog', () => {
         <CollectionPublishSuccessDialog
           open
           publicUrl="https://example.com/p/my-collection"
+          slug="my-collection"
           onClose={onClose}
           {...props}
         />
@@ -86,21 +87,34 @@ describe('CollectionPublishSuccessDialog', () => {
     })
   })
 
-  it('opens the public URL in a new tab and closes the dialog when "View the page" is clicked', async () => {
-    const { onClose } = renderDialog()
+  it('opens the proxy URL (with slug) in a new tab and closes the dialog when "View the page" is clicked', async () => {
+    const { onClose } = renderDialog({ slug: 'my-collection' })
     await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
     expect(window.open).toHaveBeenCalledWith(
-      'https://example.com/p/my-collection',
+      '/api/preview-template-gallery?slug=my-collection',
       '_blank',
       'noopener,noreferrer'
     )
     expect(onClose).toHaveBeenCalledTimes(1)
   })
 
-  it('does not open a new tab if publicUrl is null', async () => {
-    const { onClose } = renderDialog({ publicUrl: null })
-    await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
-    expect(window.open).not.toHaveBeenCalled()
-    expect(onClose).not.toHaveBeenCalled()
+  it('disables "View the page" when slug is null', () => {
+    renderDialog({ slug: null })
+    expect(screen.getByRole('button', { name: 'View the page' })).toBeDisabled()
+  })
+
+  it('disables "View the page" when publicUrl is null', () => {
+    renderDialog({ publicUrl: null })
+    expect(screen.getByRole('button', { name: 'View the page' })).toBeDisabled()
+  })
+
+  it('disables "View the page" and surfaces the gate copy when canPublish is false', () => {
+    renderDialog({
+      slug: 'my-collection',
+      canPublish: false,
+      publishBlockedReason: 'gate copy'
+    })
+    expect(screen.getByText('gate copy')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'View the page' })).toBeDisabled()
   })
 })

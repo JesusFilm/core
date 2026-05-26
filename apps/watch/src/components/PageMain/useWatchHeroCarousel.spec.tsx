@@ -139,6 +139,15 @@ describe('useWatchHeroCarousel', () => {
     expect(result.current.activeVideo?.id).toBe(muxSlideOne.id)
   })
 
+  it('passes direct languageId to carousel video loader', () => {
+    renderHook(() => useWatchHeroCarousel({ languageId: '496' }))
+
+    expect(useCarouselVideosMock).toHaveBeenCalledWith({
+      locale: undefined,
+      languageId: '496'
+    })
+  })
+
   it('advances through mux slides and into videos when inserts complete', () => {
     const { result } = renderHook(() => useWatchHeroCarousel())
 

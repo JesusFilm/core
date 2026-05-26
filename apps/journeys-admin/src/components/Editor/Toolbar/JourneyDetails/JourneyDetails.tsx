@@ -32,7 +32,11 @@ export function JourneyDetails(): ReactElement {
           }}
         >
           <Stack
-            direction="row"
+            // QA-459: stack title + TEMPLATE chip vertically inside the
+            // mobile dropdown menu so the chip sits clearly below the
+            // title instead of getting squeezed against it. Desktop
+            // toolbar (md+) keeps the original side-by-side layout.
+            direction={{ xs: 'column', md: 'row' }}
             alignItems={{ xs: 'flex-start', md: 'center' }}
             gap={1}
             sx={{ minWidth: 0 }}

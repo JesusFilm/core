@@ -40,6 +40,8 @@ import {
   TemplateGalleryPageStatus
 } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
+import { useCanPublishCollection } from '../../libs/useCanPublishCollection'
+import { useTemplateGalleryPageCreateMutation } from '../../libs/useTemplateGalleryPageCreateMutation'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
 import { JourneyCard } from '../JourneyList/JourneyCard'
 import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
@@ -124,6 +126,12 @@ export function TemplateGalleryPageList({
   // public gallery pages.
   const showCollections = status === 'active'
 
+  // Custom-domain teams can't publish gallery pages — gate Publish + Preview
+  // on every Collection surface (NES-1644).
+  const { canPublish, reason: publishBlockedReason } = useCanPublishCollection({
+    teamId
+  })
+
   const collectionsQuery = useTemplateGalleryPagesQuery(
     teamId != null ? { teamId } : undefined,
     { skip: teamId == null || !showCollections }
@@ -165,17 +173,49 @@ export function TemplateGalleryPageList({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, teamId])
 
-  const {
-    busyId,
-    publish: rawPublish,
-    unpublish: handleUnpublish,
-    ungroup: handleUngroup
-  } = useCollectionMutations()
+  // Mounted guard for `handlePublish`: rawPublish awaits the mutation and
+  // we then setPublishSuccessCollection. If the user navigates away mid-
+  // flight, the post-await setState would warn (and would briefly flash
+  // the dialog open on the next page if React batches the update across
+  // a route change). Mirrors the same pattern in useCollectionMutations.
+  const mountedRef = useRef(true)
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
 
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const { busyId, ungroup: handleUngroup } = useCollectionMutations()
+
+  const [templateGalleryPageCreate, { loading: createLoading }] =
+    useTemplateGalleryPageCreateMutation()
+  // Synchronous double-click guard for the instant-create flow. The
+  // button's `disabled={createLoading}` reflects Apollo's loading state,
+  // but that flips asynchronously — two clicks in the same tick both
+  // pass the React-state guard and fire two mutations (auto-name then
+  // hands out "Collection 1" + "Collection 2" for a single intent).
+  // A ref mutation is visible to the next synchronous read, so the
+  // second click sees `true` and returns immediately. Same pattern as
+  // `submittingRef` in useCollectionForm and `dragInFlightRef` above.
+  const creatingRef = useRef(false)
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
+  const [publishTargetId, setPublishTargetId] = useState<string | null>(null)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
-  const [dragInFlight, setDragInFlight] = useState(false)
+  // `dragInFlight` drives rendering (busy chips, droppable lock); the ref
+  // is the synchronous source of truth for gating a second drop that
+  // arrives within the same tick as a setState batch — state would read
+  // `false` in both event handlers, the ref flips immediately.
+  //
+  // The two are deliberately wired together via a single `setDragInFlight`
+  // wrapper so a future caller can't update one without the other
+  // (Mike review, NES-1644). Always flip both through this setter.
+  const [dragInFlight, setDragInFlightState] = useState(false)
+  const dragInFlightRef = useRef(false)
+  const setDragInFlight = useCallback((next: boolean) => {
+    dragInFlightRef.current = next
+    setDragInFlightState(next)
+  }, [])
   // Holds the just-published collection so the success dialog has a stable
   // reference to it (the gallery list cache may change underneath while the
   // user is still looking at the dialog).
@@ -214,8 +254,8 @@ export function TemplateGalleryPageList({
   // dialog because the DragOverlay (z-index 999) tracks cursor position
   // beneath the dialog (z-index 1300) even while hidden.
   const dialogOpen =
-    createDialogOpen ||
     editTargetId != null ||
+    publishTargetId != null ||
     publishSuccessCollection != null ||
     openDialogCardIds.size > 0
   const interactionsLocked = dragInFlight || dialogOpen
@@ -226,9 +266,9 @@ export function TemplateGalleryPageList({
     }
   }, [dialogOpen])
 
-  async function handlePublish(collection: TemplateGalleryPage): Promise<void> {
-    const published = await rawPublish(collection)
-    if (published != null) setPublishSuccessCollection(published)
+  function handlePublished(collection: TemplateGalleryPage): void {
+    if (!mountedRef.current) return
+    setPublishSuccessCollection(collection)
   }
   function handleClosePublishSuccess(): void {
     setPublishSuccessCollection(null)
@@ -238,10 +278,21 @@ export function TemplateGalleryPageList({
     () => collectionsQuery.data?.templateGalleryPages ?? [],
     [collectionsQuery.data]
   )
-  const allTemplates = useMemo<readonly Journey[]>(
-    () => journeysQuery.data?.journeys ?? [],
-    [journeysQuery.data]
-  )
+  // Filter the cached journeys list to the statuses this view allows.
+  // The server-side query is already keyed on `status:
+  // STATUS_FILTER_TO_JOURNEY_STATUSES[status]`, but Apollo's normalized
+  // cache stores each Journey as a normalized entity — when a mutation
+  // flips an in-list journey's status (archive, trash, delete), the
+  // cached list still holds the ref, so the journey leaks into the
+  // wrong view until a refetch. Apply the same status predicate the
+  // server applies so the client view stays consistent with the
+  // entity's current status across optimistic updates.
+  const allTemplates = useMemo<readonly Journey[]>(() => {
+    const allowedStatuses = STATUS_FILTER_TO_JOURNEY_STATUSES[status]
+    return (journeysQuery.data?.journeys ?? []).filter((j) =>
+      allowedStatuses.includes(j.status)
+    )
+  }, [journeysQuery.data, status])
 
   const journeyById = useMemo(() => {
     const map = new Map<string, Journey>()
@@ -291,23 +342,39 @@ export function TemplateGalleryPageList({
 
   const editTarget =
     editTargetId != null ? (collectionsById.get(editTargetId) ?? null) : null
+  const publishTarget =
+    publishTargetId != null
+      ? (collectionsById.get(publishTargetId) ?? null)
+      : null
 
   // Pool the dialog's template picker draws from. Only ungrouped templates
-  // are addable, plus (in edit mode) the templates already in the collection
-  // being edited so the user can deselect them. Hides templates owned by
-  // other collections to prevent accidental dual-membership.
-  const editAvailableJourneys = useMemo<readonly Journey[]>(() => {
-    if (editTarget == null) return unsectioned
+  // are addable, plus the templates already in the collection being
+  // edited / published so the user can deselect them. Hides templates
+  // owned by other collections to prevent accidental dual-membership.
+  function buildAvailableJourneys(
+    target: TemplateGalleryPage | null
+  ): readonly Journey[] {
+    if (target == null) return unsectioned
     const seen = new Set(unsectioned.map((j) => j.id))
     // Resolve each template through journeyById so the picker always sees
     // the full Journey shape (the gallery fragment only carries id/title
     // and would not satisfy Journey on its own).
-    const own = editTarget.templates
+    const own = target.templates
       .filter((tpl) => !seen.has(tpl.id))
       .map((tpl) => journeyById.get(tpl.id))
       .filter((j): j is Journey => j != null)
     return [...unsectioned, ...own]
-  }, [unsectioned, editTarget, journeyById])
+  }
+  const editAvailableJourneys = useMemo<readonly Journey[]>(
+    () => buildAvailableJourneys(editTarget),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [unsectioned, editTarget, journeyById]
+  )
+  const publishAvailableJourneys = useMemo<readonly Journey[]>(
+    () => buildAvailableJourneys(publishTarget),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [unsectioned, publishTarget, journeyById]
+  )
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
@@ -316,11 +383,58 @@ export function TemplateGalleryPageList({
     })
   )
 
-  function handleOpenCreate(): void {
-    setCreateDialogOpen(true)
+  // Scan existing collection titles for the "Collection N" pattern and
+  // return the smallest unused N (>= 1). The match is case-sensitive
+  // and ignores extra whitespace — only the exact shape this handler
+  // produces counts as "ours", so a user-renamed collection like
+  // "Collection 7 — old" never collides with the next auto-name.
+  function nextCollectionName(): string {
+    const used = new Set<number>()
+    for (const c of collections) {
+      const match = /^Collection (\d+)$/.exec(c.title)
+      if (match != null) used.add(Number(match[1]))
+    }
+    let n = 1
+    while (used.has(n)) n += 1
+    return `Collection ${n}`
   }
-  function handleCloseCreate(): void {
-    setCreateDialogOpen(false)
+
+  async function handleCreate(): Promise<void> {
+    // Button is only rendered after the teamId == null guard returns
+    // early, so in practice teamId is always defined here. The runtime
+    // check is also the TS narrowing — without it, `input.teamId` widens
+    // to `string | undefined`.
+    if (creatingRef.current || createLoading || teamId == null) return
+    creatingRef.current = true
+    try {
+      await templateGalleryPageCreate({
+        variables: {
+          input: {
+            teamId,
+            title: nextCollectionName(),
+            creatorName: '',
+            journeyIds: []
+          }
+        }
+      })
+      if (mountedRef.current) {
+        enqueueSnackbar(t('Collection created'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      }
+    } catch (error) {
+      if (mountedRef.current) {
+        enqueueSnackbar(
+          error instanceof Error
+            ? error.message
+            : t("Couldn't create collection"),
+          { variant: 'error', preventDuplicate: true }
+        )
+      }
+    } finally {
+      creatingRef.current = false
+    }
   }
   function handleCloseEdit(): void {
     setEditTargetId(null)
@@ -328,13 +442,19 @@ export function TemplateGalleryPageList({
   function handleEdit(collection: TemplateGalleryPage): void {
     setEditTargetId(collection.id)
   }
+  function handleOpenPublish(collection: TemplateGalleryPage): void {
+    setPublishTargetId(collection.id)
+  }
+  function handleClosePublish(): void {
+    setPublishTargetId(null)
+  }
 
   function handleDragStart(event: DragStartEvent): void {
     // Refuse any new drag while a dialog is open (NES-1653) or a previous
     // mutation is still in flight — handleDragEnd would silently swallow
     // the drop, leaving the user with the impression their move vanished.
-    if (interactionsLocked) {
-      if (dragInFlight) {
+    if (dialogOpen || dragInFlightRef.current) {
+      if (dragInFlightRef.current) {
         enqueueSnackbar(t('Finishing previous move…'), {
           variant: 'info',
           preventDuplicate: true
@@ -349,7 +469,7 @@ export function TemplateGalleryPageList({
     journeyById,
     templateIdToCollection,
     collectionsById,
-    dragInFlight,
+    dragInFlightRef,
     setDragInFlight,
     setActiveDragId
   })
@@ -421,7 +541,10 @@ export function TemplateGalleryPageList({
             <Button
               variant="contained"
               color="primary"
-              onClick={handleOpenCreate}
+              onClick={() => {
+                void handleCreate()
+              }}
+              disabled={createLoading}
               sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
               data-testid="CreateCollectionButton"
             >
@@ -474,10 +597,15 @@ export function TemplateGalleryPageList({
                       <CollectionCard
                         collection={collection}
                         onEdit={handleEdit}
-                        onPublish={handlePublish}
-                        onUnpublish={handleUnpublish}
+                        onPublish={handleOpenPublish}
                         onUngroup={handleUngroup}
                         busy={busyId === collection.id || dragInFlight}
+                        canPublish={canPublish}
+                        publishBlockedReason={
+                          publishBlockedReason != null
+                            ? t(publishBlockedReason)
+                            : null
+                        }
                       >
                         <DraggableJourneysGrid
                           journeys={
@@ -515,6 +643,10 @@ export function TemplateGalleryPageList({
                     journeys={unsectioned}
                     publishedLock={false}
                     dragInFlight={interactionsLocked}
+                    // No collection-card edge to balance against here —
+                    // drop the outer padding so cards align with the
+                    // collection-card edges above.
+                    outerPadding={false}
                   />
                 )}
               </UnsectionedDroppable>
@@ -534,16 +666,6 @@ export function TemplateGalleryPageList({
           </DndContext>
         </Box>
 
-        {createDialogOpen && (
-          <CollectionDialog
-            open
-            mode="create"
-            teamId={teamId}
-            availableJourneys={unsectioned}
-            parentBusy={dragInFlight}
-            onClose={handleCloseCreate}
-          />
-        )}
         {editTarget != null && (
           <CollectionDialog
             key={editTarget.id}
@@ -553,7 +675,32 @@ export function TemplateGalleryPageList({
             collection={editTarget}
             availableJourneys={editAvailableJourneys}
             parentBusy={dragInFlight}
+            canPublish={canPublish}
+            publishBlockedReason={
+              publishBlockedReason != null ? t(publishBlockedReason) : null
+            }
             onClose={handleCloseEdit}
+          />
+        )}
+        {publishTarget != null && (
+          <CollectionDialog
+            // Distinct key prefix so React tears down the Formik instance
+            // when the user pivots from Edit to Publish on the same
+            // collection — without it, the edit form's dirty state would
+            // leak into the publish dialog.
+            key={`publish-${publishTarget.id}`}
+            open
+            mode="publish"
+            teamId={teamId}
+            collection={publishTarget}
+            availableJourneys={publishAvailableJourneys}
+            parentBusy={dragInFlight}
+            canPublish={canPublish}
+            publishBlockedReason={
+              publishBlockedReason != null ? t(publishBlockedReason) : null
+            }
+            onClose={handleClosePublish}
+            onPublished={handlePublished}
           />
         )}
         <CollectionPublishSuccessDialog
@@ -562,6 +709,11 @@ export function TemplateGalleryPageList({
             publishSuccessCollection != null
               ? buildCollectionPublicUrl(publishSuccessCollection.slug)
               : null
+          }
+          slug={publishSuccessCollection?.slug ?? null}
+          canPublish={canPublish}
+          publishBlockedReason={
+            publishBlockedReason != null ? t(publishBlockedReason) : null
           }
           onClose={handleClosePublishSuccess}
         />

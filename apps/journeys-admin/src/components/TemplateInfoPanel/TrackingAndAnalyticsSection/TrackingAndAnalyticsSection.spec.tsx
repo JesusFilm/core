@@ -27,7 +27,7 @@ describe('TrackingAndAnalyticsSection', () => {
       )
     ).toHaveAttribute(
       'src',
-      '/assets/template-info/tracking-button-properties.png'
+      '/assets/template-info/tracking-button-properties.gif'
     )
     expect(
       screen.getByAltText(
@@ -35,7 +35,7 @@ describe('TrackingAndAnalyticsSection', () => {
       )
     ).toHaveAttribute(
       'src',
-      '/assets/template-info/tracking-analytics-table.png'
+      '/assets/template-info/tracking-analytics-table.gif'
     )
   })
 
