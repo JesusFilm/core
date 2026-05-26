@@ -22,6 +22,10 @@ const sectionSx = {
   borderColor: 'divider'
 } as const
 
+// Matches the journey view: the first two items are featured, the rest fall
+// into a grid below.
+const FEATURED_COUNT = 2
+
 function SectionLabel({ children }: { children: string }): ReactElement {
   return (
     <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
@@ -53,6 +57,8 @@ export function AdminView({ data }: AdminViewProps): ReactElement {
 
   const hasItems = data.items.length > 0
   const hasMedia = data.mediaUrl != null && data.mediaUrl !== ''
+  const featured = data.items.slice(0, FEATURED_COUNT)
+  const rest = data.items.slice(FEATURED_COUNT)
 
   const headerData = {
     title: data.title !== '' ? data.title : t('Untitled collection'),
@@ -71,11 +77,11 @@ export function AdminView({ data }: AdminViewProps): ReactElement {
         <JourneyViewHeader data={headerData} creatorAboveDescription />
       </Box>
 
-      {hasItems && (
+      {featured.length > 0 && (
         <Box component="section" sx={sectionSx}>
           <SectionLabel>{t('Featured')}</SectionLabel>
           <Stack spacing={3}>
-            {data.items.map((item) => (
+            {featured.map((item) => (
               <JourneyViewCard
                 key={item.id}
                 item={item}
@@ -84,6 +90,28 @@ export function AdminView({ data }: AdminViewProps): ReactElement {
               />
             ))}
           </Stack>
+        </Box>
+      )}
+
+      {rest.length > 0 && (
+        <Box component="section" sx={sectionSx}>
+          <SectionLabel>{t('The complete set')}</SectionLabel>
+          <Box
+            sx={{
+              display: 'grid',
+              gap: 2,
+              gridTemplateColumns: 'repeat(2, 1fr)'
+            }}
+          >
+            {rest.map((item) => (
+              <JourneyViewCard
+                key={item.id}
+                item={item}
+                variant="overlay"
+                decorative
+              />
+            ))}
+          </Box>
         </Box>
       )}
 
