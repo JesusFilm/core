@@ -17,6 +17,7 @@ import { getLanguagesContinentsMock } from '../../libs/useLanguagesContinentsQue
 import { fetchCountryMock, languageRefinements } from './data'
 import { SearchBar } from './SearchBar'
 
+const originalFetch = global.fetch
 global.fetch = vi.fn(fetchCountryMock) as Mock
 
 vi.mock('react-instantsearch')
@@ -60,9 +61,14 @@ describe('SearchBar', () => {
   } as unknown as ClearRefinementsRenderState
 
   beforeEach(() => {
+    refine.mockClear()
     mockUseRefinementList.mockReturnValue(useRefinementList)
     mockUseSearchBox.mockReturnValue(useSearchBox)
     mockUseClearRefinements.mockReturnValue(clearRefinements)
+  })
+
+  afterAll(() => {
+    global.fetch = originalFetch
   })
 
   it('should render input field', async () => {

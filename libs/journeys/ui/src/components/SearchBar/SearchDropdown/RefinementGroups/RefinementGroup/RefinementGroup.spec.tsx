@@ -24,6 +24,7 @@ const mockUseRefinementList = useRefinementList as MockedFunction<
 
 describe('RefinementGroup', () => {
   const refine = vi.fn()
+  const originalResizeObserver = window.ResizeObserver
 
   const useRefinementList = {
     items: languageRefinements,
@@ -50,6 +51,14 @@ describe('RefinementGroup', () => {
     mockUseSearchBox.mockReturnValue(useSearchBox)
     mockUseRefinementList.mockReturnValue(useRefinementList)
     vi.clearAllMocks()
+  })
+
+  // The tooltip test below overrides window.ResizeObserver and spies on
+  // HTMLElement.prototype getters. Vitest does not tear jsdom down between
+  // files, so restore them here to avoid leaking into later specs.
+  afterEach(() => {
+    window.ResizeObserver = originalResizeObserver
+    vi.restoreAllMocks()
   })
 
   it('should have languages header', () => {

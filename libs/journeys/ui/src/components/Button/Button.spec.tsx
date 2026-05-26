@@ -1355,7 +1355,10 @@ describe('Button', () => {
   })
 
   it.skip('should not show red outline when editableLabel is not provided', () => {
-    // disabled due to Jest v30 compatibility issues
+    // Skipped under Vitest: the rendered button does not carry the expected
+    // default outline styles (outlineColor: transparent / outlineOffset: 5px /
+    // zIndex: 0), so toHaveStyle fails. Re-enable once the editableLabel
+    // default-state styling is reconciled with this assertion.
     render(
       <MockedProvider>
         <Button {...block} />

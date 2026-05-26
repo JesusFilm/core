@@ -65,7 +65,7 @@ vi.mock('next/dynamic', async () => {
         })
         // Loads can still be in flight when a test tears down; swallow the
         // late rejection so it does not surface as an unhandled error.
-        .catch(() => {})
+        .catch(() => undefined)
 
       return function DynamicComponent(
         props: Record<string, unknown>
@@ -84,7 +84,7 @@ vi.mock('next/dynamic', async () => {
               cache.set(loader, resolved)
               setComponent(() => resolved)
             })
-            .catch(() => {})
+            .catch(() => undefined)
           return () => {
             cancelled = true
           }
