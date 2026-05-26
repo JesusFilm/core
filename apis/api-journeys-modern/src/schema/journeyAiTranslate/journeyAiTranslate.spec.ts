@@ -1,4 +1,4 @@
-import { Output, generateText, streamText } from 'ai'
+import { Output, streamText } from 'ai'
 import { type MockedFunction, vi } from 'vitest'
 
 import { getClient } from '../../../test/client'
@@ -8,6 +8,7 @@ import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
 import { translateCustomizationFields } from './translateCustomizationFields/translateCustomizationFields'
+import { translateJourneyMetadata } from './translateJourneyMetadata/translateJourneyMetadata'
 
 // Mock all external dependencies
 vi.mock('@openrouter/ai-sdk-provider', () => ({
@@ -46,6 +47,11 @@ vi.mock('./translateCustomizationFields/translateCustomizationFields', () => ({
   translateCustomizationFields: vi.fn()
 }))
 
+vi.mock('./translateJourneyMetadata/translateJourneyMetadata', () => ({
+  TRANSLATION_SYSTEM_PROMPT: 'mocked translation system prompt',
+  translateJourneyMetadata: vi.fn()
+}))
+
 // Mock utility to create AsyncIterator for testing
 function createMockAsyncIterator<T>(items: T[]): AsyncIterable<T> {
   return {
@@ -65,9 +71,7 @@ function createMockAsyncIterator<T>(items: T[]): AsyncIterable<T> {
 
 describe('journeyAiTranslateCreate mutation', () => {
   const mockAbility = ability as MockedFunction<typeof ability>
-  const mockGenerateText = generateText as MockedFunction<typeof generateText>
   const mockStreamText = streamText as MockedFunction<typeof streamText>
-  const mockOutputObject = Output.object as MockedFunction<typeof Output.object>
   const mockOutputArray = Output.array as MockedFunction<typeof Output.array>
   const mockGetCardBlocksContent = getCardBlocksContent as MockedFunction<
     typeof getCardBlocksContent
@@ -76,6 +80,8 @@ describe('journeyAiTranslateCreate mutation', () => {
     translateCustomizationFields as MockedFunction<
       typeof translateCustomizationFields
     >
+  const mockTranslateJourneyMetadata =
+    translateJourneyMetadata as MockedFunction<typeof translateJourneyMetadata>
 
   // Sample data
   const mockJourneyId = 'journey123'
@@ -231,20 +237,7 @@ describe('journeyAiTranslateCreate mutation', () => {
 
     mockAbility.mockReturnValue(true)
 
-    mockGenerateText.mockResolvedValue({
-      output: mockAnalysisAndTranslation,
-      usage: {
-        totalTokens: 1000,
-        inputTokens: 600,
-        outputTokens: 400
-      },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
+    mockTranslateJourneyMetadata.mockResolvedValue(mockAnalysisAndTranslation)
 
     // Create a mock implementation for streamText
     mockStreamText.mockReturnValue({
@@ -311,28 +304,15 @@ describe('journeyAiTranslateCreate mutation', () => {
       }
     )
 
-    // Verify AI analysis was requested
-    expect(mockOutputObject).toHaveBeenCalled()
+    // Verify journey metadata translation was requested with the journey's
+    // own title and description (not swapped)
     expect(mockOutputArray).toHaveBeenCalled()
-    expect(mockGenerateText).toHaveBeenCalledWith(
+    expect(mockTranslateJourneyMetadata).toHaveBeenCalledWith(
       expect.objectContaining({
-        model: 'mocked-openrouter-model',
-        output: expect.any(Object),
-        messages: expect.arrayContaining([
-          expect.objectContaining({
-            role: 'system',
-            content: expect.any(String)
-          }),
-          expect.objectContaining({
-            role: 'user',
-            content: expect.arrayContaining([
-              expect.objectContaining({
-                type: 'text',
-                text: expect.any(String)
-              })
-            ])
-          })
-        ])
+        journeyTitle: mockInput.name,
+        journeyDescription: mockJourney.description,
+        sourceLanguageName: mockInput.journeyLanguageName,
+        targetLanguageName: mockInput.textLanguageName
       })
     )
 
@@ -467,23 +447,10 @@ describe('journeyAiTranslateCreate mutation', () => {
   })
 
   it('should throw an error if title translation fails', async () => {
-    mockGenerateText.mockResolvedValueOnce({
-      output: {
-        ...mockAnalysisAndTranslation,
-        title: '' // Empty title
-      },
-      usage: {
-        totalTokens: 1000,
-        inputTokens: 600,
-        outputTokens: 400
-      },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
+    mockTranslateJourneyMetadata.mockResolvedValueOnce({
+      ...mockAnalysisAndTranslation,
+      title: '' // Empty title
+    })
 
     const result = await authClient({
       document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
@@ -594,23 +561,10 @@ describe('journeyAiTranslateCreate mutation', () => {
       languageId: mockInput.textLanguageId
     } as any)
 
-    mockGenerateText.mockResolvedValueOnce({
-      output: {
-        ...mockAnalysisAndTranslation,
-        description: '' // Empty description
-      },
-      usage: {
-        totalTokens: 1000,
-        inputTokens: 600,
-        outputTokens: 400
-      },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
+    mockTranslateJourneyMetadata.mockResolvedValueOnce({
+      ...mockAnalysisAndTranslation,
+      description: '' // Empty description
+    })
 
     const result = await authClient({
       document: graphql(`
@@ -732,7 +686,6 @@ describe('journeyAiTranslateCreate mutation', () => {
 
 describe('journeyAiTranslateCreateSubscription', () => {
   const mockAbility = ability as MockedFunction<typeof ability>
-  const mockGenerateText = generateText as MockedFunction<typeof generateText>
   const mockStreamText = streamText as MockedFunction<typeof streamText>
   const mockGetCardBlocksContent = getCardBlocksContent as MockedFunction<
     typeof getCardBlocksContent
@@ -741,6 +694,8 @@ describe('journeyAiTranslateCreateSubscription', () => {
     translateCustomizationFields as MockedFunction<
       typeof translateCustomizationFields
     >
+  const mockTranslateJourneyMetadata =
+    translateJourneyMetadata as MockedFunction<typeof translateJourneyMetadata>
 
   // Sample data
   const mockJourneyId = 'journey123'
@@ -855,21 +810,8 @@ describe('journeyAiTranslateCreateSubscription', () => {
     // Mock card blocks content
     mockGetCardBlocksContent.mockResolvedValue(mockCardBlocksContent)
 
-    // Mock generateText for journey analysis
-    mockGenerateText.mockResolvedValue({
-      output: mockAnalysisAndTranslation,
-      usage: {
-        totalTokens: 1000,
-        inputTokens: 600,
-        outputTokens: 400
-      },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
+    // Mock journey metadata translation (analysis + title/description/SEO)
+    mockTranslateJourneyMetadata.mockResolvedValue(mockAnalysisAndTranslation)
 
     // Mock streamText for block translations
     mockStreamText.mockReturnValue({
@@ -915,7 +857,7 @@ describe('journeyAiTranslateCreateSubscription', () => {
 
   it('should validate subscription includes SEO fields in schema', () => {
     // Test that the subscription now supports SEO fields
-    expect(mockGenerateText).toBeDefined()
+    expect(mockTranslateJourneyMetadata).toBeDefined()
     expect(mockStreamText).toBeDefined()
 
     // This tests the updated schema includes SEO fields
