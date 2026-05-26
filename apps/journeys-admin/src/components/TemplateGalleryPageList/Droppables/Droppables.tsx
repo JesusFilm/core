@@ -10,6 +10,7 @@ import { ReactElement, memo } from 'react'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
+import { COLLECTION_GRID_SPACING } from '../collectionLayout'
 
 // Drop zone identity is encoded into a string the dnd-kit `over.id` carries
 // back into the dispatcher. Wrappers use the encoder; the parent uses the
@@ -84,11 +85,11 @@ function DraggableJourneysGridImpl({
   const ids = journeys.map((j) => j.id)
   // No outer padding: the grid sits directly in its container so the
   // in-collection grid and the All Templates grid share identical
-  // geometry and their cards column-align (NES-1696). spacing 3 (12px)
-  // is the card gap, matched to the CollectionCard's inner padding.
+  // geometry and their cards column-align (NES-1696). The card gap is
+  // matched to the CollectionCard's inner padding via collectionLayout.
   return (
     <SortableContext items={ids} strategy={rectSortingStrategy}>
-      <Grid container spacing={3}>
+      <Grid container spacing={COLLECTION_GRID_SPACING}>
         {journeys.map((journey) => (
           <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}>
             <DraggableJourney

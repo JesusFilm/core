@@ -15,6 +15,10 @@ import MoreIcon from '@core/shared/ui/icons/More'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
 import { LabelChip } from '../../LabelChip'
+import {
+  COLLECTION_CARD_BORDER_WIDTH,
+  COLLECTION_CARD_PADDING
+} from '../collectionLayout'
 
 import { CollectionUngroupDialog } from './CollectionUngroupDialog'
 
@@ -117,17 +121,17 @@ function CollectionCardImpl({
     <Card
       data-testid={`CollectionCard-${collection.id}`}
       sx={{
-        // 12px inner padding (p:3). The collections Stack bleeds each box
-        // outward by this padding + 1px border so the inner card grid lines
-        // up with the All Templates grid below — keep the two in sync.
-        p: 3,
+        // Inner padding (12px). The collections Stack bleeds each box outward
+        // by this padding + border so the inner card grid lines up with the
+        // All Templates grid — both derive from collectionLayout constants.
+        p: COLLECTION_CARD_PADDING,
         // NES-1696: a subtle transparent-white panel over the grey page
         // with a light grey stroke and no shadow, per the Figma design.
         // Spec: bg rgba(255,255,255,0.40), 1px solid divider (#DEDFE0),
         // 12px radius (borderRadius 3 × the 4px theme.shape.borderRadius).
         backgroundColor: 'rgba(255, 255, 255, 0.4)',
         borderColor: 'divider',
-        borderWidth: 1,
+        borderWidth: COLLECTION_CARD_BORDER_WIDTH,
         borderStyle: 'solid',
         borderRadius: 3,
         boxShadow: 'none'

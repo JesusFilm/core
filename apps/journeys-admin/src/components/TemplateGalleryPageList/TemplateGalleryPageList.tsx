@@ -47,6 +47,10 @@ import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
 
 import { CollectionCard } from './CollectionCard'
 import { CollectionDialog } from './CollectionDialog'
+import {
+  COLLECTION_CARD_BORDER_WIDTH,
+  COLLECTION_CARD_PADDING
+} from './collectionLayout'
 import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
 import {
   DraggableJourneysGrid,
@@ -597,12 +601,12 @@ export function TemplateGalleryPageList({
                   sx={{
                     mb: 4,
                     // Stretch each collection box outward by the
-                    // CollectionCard's inner horizontal padding (p:3 = 12px)
-                    // + 1px border, so the card grid inside spans the same
-                    // width as the All Templates grid below and the cards
-                    // column-align (NES-1696). Keep in sync with the
-                    // CollectionCard padding above.
-                    mx: (theme) => `calc(${theme.spacing(-3)} - 1px)`
+                    // CollectionCard's inner horizontal padding + border, so
+                    // the card grid inside spans the same width as the All
+                    // Templates grid below and the cards column-align
+                    // (NES-1696). Both sides derive from collectionLayout.
+                    mx: (theme) =>
+                      `calc(${theme.spacing(-COLLECTION_CARD_PADDING)} - ${COLLECTION_CARD_BORDER_WIDTH}px)`
                   }}
                 >
                   {collections.map((collection) => (
