@@ -47,8 +47,14 @@ export function MobileFilterHeaderStrip({
       alignItems="center"
       sx={{
         py: 1,
-        px: 0,
-        minHeight: 44
+        // Align the title with the Collections header / tab labels above it
+        // (16px from the panel edge). The gallery's own px is 8px on xs/sm, so
+        // add 8px; md already sits at 16px.
+        pl: { xs: 2, md: 0 },
+        // Reserve the 3-dot menu's height (40px default IconButton + py) even
+        // when "All Templates" hides the menu, so the strip stays 48px in both
+        // states and the list below doesn't shift when switching filters.
+        minHeight: 48
       }}
     >
       <Stack

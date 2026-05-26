@@ -619,7 +619,14 @@ export function TemplateGalleryPageList({
             justifyContent="space-between"
             alignItems="center"
             spacing={2}
-            sx={{ mb: 3 }}
+            sx={{
+              mb: 3,
+              // Align the title with the tab labels above it. The tabs sit 16px
+              // from the panel edge (MUI Tab padding); the gallery's own px is
+              // only 8px on xs/sm, so add 8px to match. On md the gallery px is
+              // already 16px, so no extra is needed.
+              pl: { xs: 2, md: 0 }
+            }}
           >
             {/* min-width: 0 lets the title row shrink instead of pushing into
               the button on narrow viewports (NES-1652). */}
@@ -704,29 +711,26 @@ export function TemplateGalleryPageList({
                   onSelect={setMobileFilterCollectionId}
                   dropDisabled={interactionsLocked}
                 />
-                {/* Only show the header strip for a selected collection (its
-                    name + count + actions menu). "All Templates" has no title
-                    strip — parity with the desktop view, which no longer
-                    renders an "All Templates" heading above the unsectioned
-                    grid. */}
-                {mobileSelectedCollection != null && (
-                  <MobileFilterHeaderStrip
-                    selectedCollection={mobileSelectedCollection}
-                    count={mobileFilteredJourneys.length}
-                    onEdit={handleEdit}
-                    onPublish={handleOpenPublish}
-                    onUngroup={handleUngroup}
-                    busy={
-                      busyId === mobileSelectedCollection.id || dragInFlight
-                    }
-                    canPublish={canPublish}
-                    publishBlockedReason={
-                      publishBlockedReason != null
-                        ? t(publishBlockedReason)
-                        : null
-                    }
-                  />
-                )}
+                {/* Title strip for the active filter — the collection name (with
+                    its actions menu) or "All Templates" — sat above the list. */}
+                <MobileFilterHeaderStrip
+                  selectedCollection={mobileSelectedCollection}
+                  count={mobileFilteredJourneys.length}
+                  onEdit={handleEdit}
+                  onPublish={handleOpenPublish}
+                  onUngroup={handleUngroup}
+                  busy={
+                    (mobileSelectedCollection != null &&
+                      busyId === mobileSelectedCollection.id) ||
+                    dragInFlight
+                  }
+                  canPublish={canPublish}
+                  publishBlockedReason={
+                    publishBlockedReason != null
+                      ? t(publishBlockedReason)
+                      : null
+                  }
+                />
                 {mobileFilteredJourneys.length === 0 ? (
                   <Box
                     sx={{
