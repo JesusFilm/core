@@ -19,7 +19,7 @@ import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/
 import logoGray from '../../../../public/logo-grayscale.svg'
 import { JourneyCardMenu } from '../../JourneyList/JourneyCard/JourneyCardMenu'
 
-import { TemplateUsesMetric } from './TemplateUsesMetric'
+import { TemplateRowMetrics } from './TemplateRowMetrics'
 import { ThumbBadge } from './ThumbBadge'
 
 const TemplateBreakdownAnalyticsDialog = dynamic(
@@ -199,7 +199,17 @@ export function MobileTemplateListRow({
             direction="row"
             alignItems="center"
             spacing={1}
-            sx={{ mt: 0.5, minHeight: 20 }}
+            sx={{
+              mt: 0.5,
+              minHeight: 20,
+              // Wrap to a second line on narrow screens rather than crowding
+              // language + the three metrics onto one line.
+              flexWrap: 'wrap',
+              rowGap: 0.5,
+              // Reserve the bottom-right corner for the absolutely-positioned
+              // 3-dot menu so wrapped meta content doesn't run under it.
+              pr: '40px'
+            }}
           >
             {languageName != null && (
               <Stack
@@ -221,15 +231,14 @@ export function MobileTemplateListRow({
             )}
             {isTemplateCard && (
               <>
-                <Typography variant="caption" color="text.secondary">
-                  ·
-                </Typography>
-                <TemplateUsesMetric journeyId={journey.id} />
+                {languageName != null && (
+                  <Typography variant="caption" color="text.secondary">
+                    ·
+                  </Typography>
+                )}
+                <TemplateRowMetrics journeyId={journey.id} />
               </>
             )}
-            {/* Spacer reserves room for the absolutely-positioned 3-dot
-                menu so the meta items don't crowd into it. */}
-            <Box sx={{ width: 36, flexShrink: 0 }} />
           </Stack>
         </Stack>
       </CardActionArea>
