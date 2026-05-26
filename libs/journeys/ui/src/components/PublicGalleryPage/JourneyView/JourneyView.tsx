@@ -8,11 +8,12 @@ import Image from 'next/image'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode, RefObject, useEffect, useRef } from 'react'
 
-import { GALLERY_ACCENT, GALLERY_CARD_RADIUS } from '../galleryTheme'
 import {
+  GALLERY_ACCENT,
+  GALLERY_CARD_RADIUS,
   PublicGalleryPageData,
   PublicGalleryPageItem
-} from '../publicGalleryPageData'
+} from '../PublicGalleryPage'
 
 import { JourneyViewCard, metaLine } from './JourneyViewCard'
 import { JourneyViewCardActions } from './JourneyViewCardActions'

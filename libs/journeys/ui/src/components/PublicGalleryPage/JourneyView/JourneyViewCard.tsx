@@ -7,8 +7,11 @@ import Image from 'next/image'
 import { ReactElement } from 'react'
 
 import { abbreviateLanguageName } from '../../../libs/abbreviateLanguageName'
-import { GALLERY_ACCENT, GALLERY_CARD_RADIUS } from '../galleryTheme'
-import { PublicGalleryPageItem } from '../publicGalleryPageData'
+import {
+  GALLERY_ACCENT,
+  GALLERY_CARD_RADIUS,
+  PublicGalleryPageItem
+} from '../PublicGalleryPage'
 
 import { JourneyViewCardActions } from './JourneyViewCardActions'
 

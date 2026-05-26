@@ -3,8 +3,7 @@ import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { PublicGalleryPage } from './PublicGalleryPage'
-import { PublicGalleryPageData } from './publicGalleryPageData'
+import { PublicGalleryPage, PublicGalleryPageData } from './PublicGalleryPage'
 
 /**
  * The public gallery (template-collection) page, shared by the live

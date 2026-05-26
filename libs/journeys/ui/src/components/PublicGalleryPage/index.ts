@@ -3,4 +3,4 @@ export type {
   PublicGalleryPageData,
   PublicGalleryPageItem,
   PublicGalleryPageVariant
-} from './publicGalleryPageData'
+} from './PublicGalleryPage'

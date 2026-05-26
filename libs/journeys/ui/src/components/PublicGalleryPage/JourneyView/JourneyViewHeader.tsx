@@ -4,8 +4,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import { GALLERY_ACCENT } from '../galleryTheme'
-import { PublicGalleryPageData } from '../publicGalleryPageData'
+import { GALLERY_ACCENT, PublicGalleryPageData } from '../PublicGalleryPage'
 
 type JourneyViewHeaderData = Pick<
   PublicGalleryPageData,

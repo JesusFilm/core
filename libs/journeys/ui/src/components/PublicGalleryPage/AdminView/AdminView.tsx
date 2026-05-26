@@ -7,7 +7,7 @@ import { ReactElement } from 'react'
 
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
-import { PublicGalleryPageData } from '../publicGalleryPageData'
+import { PublicGalleryPageData } from '../PublicGalleryPage'
 
 interface AdminViewProps {
   data: PublicGalleryPageData
