@@ -40,14 +40,33 @@ export function MobileTemplateList({
     <SortableContext items={ids} strategy={verticalListSortingStrategy}>
       <Stack
         data-testid="MobileTemplateList"
-        spacing={1}
-        sx={{ py: 1 }}
         // The `allowReorder` flag is informational for now — the drag
         // handler's existing "unsectioned" no-op branch covers the
         // disable case. Surface it as a data attribute so tests and
         // future enhancements can read the current mode without
         // re-deriving from props.
         data-allow-reorder={allowReorder ? 'true' : 'false'}
+        sx={{
+          // No top margin: the list sits flush under the chip row (or the
+          // collection header strip) so the grey page background doesn't show
+          // through a gap above it.
+          mb: 1,
+          // Full-bleed: bleed past both the gallery's own `px` (2) and
+          // MainPanelBody's body padding (px: { xs: 0, sm: 8 }) so the list
+          // spans the full screen width on phone and tablet (mirrors the chip
+          // row). Top/bottom hairlines plus between-row dividers, no rounded
+          // box or side borders. The divider lives on each sortable wrapper
+          // (the direct child) so it travels with the row during a reorder
+          // drag instead of staying put.
+          mx: { xs: -2, sm: -10 },
+          borderTop: 1,
+          borderBottom: 1,
+          borderColor: 'divider',
+          '& > *:not(:last-child)': {
+            borderBottom: 1,
+            borderColor: 'divider'
+          }
+        }}
       >
         {journeys.map((journey) => (
           <SortableMobileTemplateListRow

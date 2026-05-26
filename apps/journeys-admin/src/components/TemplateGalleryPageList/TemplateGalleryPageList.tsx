@@ -704,24 +704,29 @@ export function TemplateGalleryPageList({
                   onSelect={setMobileFilterCollectionId}
                   dropDisabled={interactionsLocked}
                 />
-                <MobileFilterHeaderStrip
-                  selectedCollection={mobileSelectedCollection}
-                  count={mobileFilteredJourneys.length}
-                  onEdit={handleEdit}
-                  onPublish={handleOpenPublish}
-                  onUngroup={handleUngroup}
-                  busy={
-                    (mobileSelectedCollection != null &&
-                      busyId === mobileSelectedCollection.id) ||
-                    dragInFlight
-                  }
-                  canPublish={canPublish}
-                  publishBlockedReason={
-                    publishBlockedReason != null
-                      ? t(publishBlockedReason)
-                      : null
-                  }
-                />
+                {/* Only show the header strip for a selected collection (its
+                    name + count + actions menu). "All Templates" has no title
+                    strip — parity with the desktop view, which no longer
+                    renders an "All Templates" heading above the unsectioned
+                    grid. */}
+                {mobileSelectedCollection != null && (
+                  <MobileFilterHeaderStrip
+                    selectedCollection={mobileSelectedCollection}
+                    count={mobileFilteredJourneys.length}
+                    onEdit={handleEdit}
+                    onPublish={handleOpenPublish}
+                    onUngroup={handleUngroup}
+                    busy={
+                      busyId === mobileSelectedCollection.id || dragInFlight
+                    }
+                    canPublish={canPublish}
+                    publishBlockedReason={
+                      publishBlockedReason != null
+                        ? t(publishBlockedReason)
+                        : null
+                    }
+                  />
+                )}
                 {mobileFilteredJourneys.length === 0 ? (
                   <Box
                     sx={{

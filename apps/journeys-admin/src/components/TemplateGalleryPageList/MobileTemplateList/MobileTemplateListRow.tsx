@@ -91,7 +91,11 @@ export function MobileTemplateListRow({
         position: 'relative',
         display: 'flex',
         alignItems: 'stretch',
-        borderColor: 'divider'
+        // The list container (MobileTemplateList) owns the outer border and the
+        // between-row dividers, so each row is borderless and square to read as
+        // one continuous list rather than a stack of separate cards.
+        border: 0,
+        borderRadius: 0
       }}
     >
       <CardActionArea

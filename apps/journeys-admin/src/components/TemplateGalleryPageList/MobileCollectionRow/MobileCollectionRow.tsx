@@ -62,9 +62,10 @@ export const MobileCollectionRow = forwardRef<
         scrollbarWidth: 'none',
         '&::-webkit-scrollbar': { display: 'none' },
         py: 1.5,
-        // Negative inline margin lets the chips sit flush with the
-        // gallery's edge padding instead of an inset gutter.
-        mx: -2,
+        // Bleed past both the gallery's own `px` (2) and MainPanelBody's body
+        // padding (px: { xs: 0, sm: 8 }) so the chip row runs edge-to-edge on
+        // both phone and tablet, while the gallery's text headers stay inset.
+        mx: { xs: -2, sm: -10 },
         px: 2
       }}
     >
