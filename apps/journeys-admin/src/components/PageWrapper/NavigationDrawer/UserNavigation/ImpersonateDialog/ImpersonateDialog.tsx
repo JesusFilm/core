@@ -1,4 +1,4 @@
-import { ApolloError, gql, useApolloClient, useMutation } from '@apollo/client'
+import { ApolloError, gql, useMutation } from '@apollo/client'
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import TextField from '@mui/material/TextField'
@@ -15,6 +15,7 @@ import {
   UserImpersonate,
   UserImpersonateVariables
 } from '../../../../../../__generated__/UserImpersonate'
+import { loginWithCredential } from '../../../../../libs/auth'
 
 export const USER_IMPERSONATE = gql`
   mutation UserImpersonate($email: String!) {
@@ -35,7 +36,6 @@ export function ImpersonateDialog({
     UserImpersonate,
     UserImpersonateVariables
   >(USER_IMPERSONATE)
-  const client = useApolloClient()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -51,8 +51,14 @@ export function ImpersonateDialog({
       })
       if (data?.userImpersonate != null) {
         const auth = getAuth()
-        await signInWithCustomToken(auth, data.userImpersonate)
-        await client.resetStore()
+        const credential = await signInWithCustomToken(
+          auth,
+          data.userImpersonate
+        )
+        // Refresh the server-side session cookie so SSR (e.g. the journey
+        // editor) runs as the impersonated user rather than the superuser.
+        // loginWithCredential reloads the page once the cookie is set.
+        await loginWithCredential(credential)
       }
       handleClose(formikHelpers.resetForm)()
     } catch (error) {
