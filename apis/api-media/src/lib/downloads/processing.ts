@@ -190,20 +190,22 @@ export interface CreateDownloadsFromMuxAssetOptions {
   logger?: Logger
 }
 
-export async function createDownloadsFromMuxAsset({
+function buildMuxDownloadRows({
   variantId,
   muxVideoAsset,
   logger
-}: CreateDownloadsFromMuxAssetOptions): Promise<number> {
+}: CreateDownloadsFromMuxAssetOptions):
+  | Prisma.VideoVariantDownloadCreateManyInput[]
+  | null {
   if (muxVideoAsset.static_renditions?.files == null) {
     logger?.info({ variantId }, 'No static renditions files available')
-    return 0
+    return null
   }
 
   const playbackId = muxVideoAsset.playback_ids?.[0]?.id
   if (!playbackId) {
     logger?.info({ variantId }, 'No playback ID available')
-    return 0
+    return null
   }
 
   // First, process files with direct mappings
@@ -326,12 +328,34 @@ export async function createDownloadsFromMuxAsset({
 
   if (validDownloads.length === 0) {
     logger?.info({ variantId }, 'No valid downloads to create')
-    return 0
+    return null
   }
 
   // Find the highest quality by enum up to uhd since mux doesn't generate highest enum
   const highest = getHighestResolutionDownload(validDownloads)
-  const data = [...validDownloads, highest]
+  return [...validDownloads, highest]
+}
+
+export function previewMuxDownloadsFromAsset(
+  options: CreateDownloadsFromMuxAssetOptions
+): Prisma.VideoVariantDownloadCreateManyInput[] {
+  return buildMuxDownloadRows(options) ?? []
+}
+
+export async function createDownloadsFromMuxAsset({
+  variantId,
+  muxVideoAsset,
+  logger
+}: CreateDownloadsFromMuxAssetOptions): Promise<number> {
+  const data = buildMuxDownloadRows({
+    variantId,
+    muxVideoAsset,
+    logger
+  })
+
+  if (data == null) {
+    return 0
+  }
 
   // Create downloads individually to handle duplicates gracefully
   let createdCount = 0

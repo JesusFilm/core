@@ -6,7 +6,8 @@ import {
 } from '../../../../libs/prisma/media/src/client'
 import {
   createDownloadsFromMuxAsset,
-  downloadsReadyToStore
+  downloadsReadyToStore,
+  previewMuxDownloadsFromAsset
 } from '../lib/downloads'
 import { getVideo } from '../schema/mux/video/service'
 
@@ -224,6 +225,7 @@ export async function processDownloads(): Promise<void> {
   console.log('mux downloads processing started')
 
   const dryRun = process.env.MUX_DOWNLOAD_BACKFILL_DRY_RUN === 'true'
+  const dryRunPreview = process.env.MUX_DOWNLOAD_BACKFILL_PREVIEW_VALUES === 'true'
   const target = process.env.MUX_DOWNLOAD_BACKFILL_TARGET?.trim()
   const targetFilter =
     target != null && target !== ''
@@ -242,6 +244,9 @@ export async function processDownloads(): Promise<void> {
   }
   if (dryRun) {
     console.log('Dry run enabled: no download rows will be created or refreshed')
+  }
+  if (dryRunPreview) {
+    console.log('Dry run preview enabled: will fetch Mux metadata and print replacement values')
   }
 
   const take = 100
@@ -335,7 +340,7 @@ export async function processDownloads(): Promise<void> {
         `Processing downloads for variant ${variant.id}, zero-metadata Mux download count: ${zeroMetadataDownloads.length}`
       )
 
-      if (dryRun) {
+      if (dryRun && !dryRunPreview) {
         console.log(
           `Dry run: would refresh zero-metadata Mux downloads for variant ${variant.id}, count: ${zeroMetadataDownloads.length}`
         )
@@ -353,6 +358,40 @@ export async function processDownloads(): Promise<void> {
           muxVideoAsset.playback_ids?.[0].id != null &&
           downloadsReadyToStore(muxVideoAsset)
         ) {
+          if (dryRunPreview) {
+            const previewDownloads = previewMuxDownloadsFromAsset({
+              variantId: variant.id,
+              muxVideoAsset
+            })
+            const previewByQuality = new Map(
+              previewDownloads.map(
+                (download): [typeof download.quality, typeof download] => [
+                  download.quality,
+                  download
+                ]
+              )
+            )
+
+            console.log(
+              `Dry run preview for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
+            )
+            for (const download of zeroMetadataDownloads) {
+              const replacement = previewByQuality.get(download.quality)
+              if (replacement == null) {
+                console.log(
+                  `  quality=${download.quality}: no replacement generated from current Mux renditions`
+                )
+                continue
+              }
+
+              console.log(
+                `  quality=${download.quality}: size ${download.size ?? 'null'} -> ${replacement.size}, bitrate ${download.bitrate ?? 'null'} -> ${replacement.bitrate}`
+              )
+            }
+            totalProcessed++
+            continue
+          }
+
           // Process downloads if static renditions are ready. Existing valid and distro rows are preserved.
           const createdCount = await createDownloadsFromMuxAsset({
             variantId: variant.id,
