@@ -7,7 +7,7 @@ import { HostInfo } from './HostInfo'
 
 describe('HostInfo', () => {
   it('should render hostinfo', () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
 
     const { getByText, getByTestId, getByRole } = render(
       <MockedProvider>
@@ -33,7 +33,7 @@ describe('HostInfo', () => {
   })
 
   it('should call handleselection on back button click', () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
 
     const { getByRole } = render(
       <MockedProvider>

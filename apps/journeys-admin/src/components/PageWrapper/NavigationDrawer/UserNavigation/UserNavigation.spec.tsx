@@ -13,7 +13,7 @@ import { User } from '../../../../libs/auth/authContext'
 import { UserNavigation } from '.'
 
 // Mock dynamic UserMenu/ImpersonateDialog to avoid loadable act noise
-jest.mock('./UserMenu', () => ({
+vi.mock('./UserMenu', async () => ({
   __esModule: true,
   UserMenu: ({
     profileOpen,
@@ -28,7 +28,7 @@ jest.mock('./UserMenu', () => ({
       </div>
     ) : null
 }))
-jest.mock('./ImpersonateDialog', () => ({
+vi.mock('./ImpersonateDialog', async () => ({
   __esModule: true,
   ImpersonateDialog: ({
     open,
@@ -45,24 +45,24 @@ jest.mock('./ImpersonateDialog', () => ({
 }))
 
 // Synchronous Apollo + local suspense hooks for tests
-const mockUseSuspenseQuery = jest.fn()
-jest.mock('@apollo/client', () => {
-  const actual = jest.requireActual('@apollo/client')
+const mockUseSuspenseQuery = vi.fn()
+vi.mock('@apollo/client', async () => {
+  const actual = (await vi.importActual('@apollo/client'))
   return {
     ...actual,
     useSuspenseQuery: (...args: unknown[]) => mockUseSuspenseQuery(...args)
   }
 })
 
-const mockUseUserRoleSuspenseQuery = jest.fn()
-jest.mock('../../../../libs/useUserRoleSuspenseQuery', () => ({
+const mockUseUserRoleSuspenseQuery = vi.fn()
+vi.mock('../../../../libs/useUserRoleSuspenseQuery', async () => ({
   __esModule: true,
   useUserRoleSuspenseQuery: (...args: unknown[]) =>
     mockUseUserRoleSuspenseQuery(...args)
 }))
 
-const mockUseAdminJourneysSuspenseQuery = jest.fn()
-jest.mock('../../../../libs/useAdminJourneysSuspenseQuery', () => ({
+const mockUseAdminJourneysSuspenseQuery = vi.fn()
+vi.mock('../../../../libs/useAdminJourneysSuspenseQuery', async () => ({
   __esModule: true,
   useAdminJourneysSuspenseQuery: (...args: unknown[]) =>
     mockUseAdminJourneysSuspenseQuery(...args)
@@ -229,7 +229,7 @@ describe('UserNavigation', () => {
   })
 
   it('should set tooltip to new editing request', async () => {
-    const setTooltip = jest.fn()
+    const setTooltip = vi.fn()
     mockUseAdminJourneysSuspenseQuery.mockReturnValueOnce({
       data: {
         journeys: [
@@ -269,7 +269,7 @@ describe('UserNavigation', () => {
   })
 
   it('should set tooltip to new journey', async () => {
-    const setTooltip = jest.fn()
+    const setTooltip = vi.fn()
     mockUseAdminJourneysSuspenseQuery.mockReturnValueOnce({
       data: {
         journeys: [

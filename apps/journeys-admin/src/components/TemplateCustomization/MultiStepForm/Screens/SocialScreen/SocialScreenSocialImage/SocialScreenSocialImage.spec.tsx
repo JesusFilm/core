@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
@@ -13,16 +14,16 @@ import { journeyImageBlockUpdateMock } from '../../../../../../libs/useJourneyIm
 
 import { SocialScreenSocialImage } from './SocialScreenSocialImage'
 
-jest.mock('node-fetch', () => {
-  const originalModule = jest.requireActual('node-fetch')
+vi.mock('node-fetch', async () => {
+  const originalModule = (await vi.importActual('node-fetch'))
   return {
     __esModule: true,
     ...originalModule,
-    default: jest.fn()
+    default: vi.fn()
   }
 })
 
-const mockFetch = fetch as jest.MockedFunction<typeof fetch>
+const mockFetch = fetch as MockedFunction<typeof fetch>
 
 describe('SocialScreenSocialImage', () => {
   let originalEnv
@@ -37,7 +38,7 @@ describe('SocialScreenSocialImage', () => {
 
   afterEach(() => {
     process.env = originalEnv
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const mockJourney = {
@@ -131,7 +132,7 @@ describe('SocialScreenSocialImage', () => {
     } as unknown as Response)
 
     const updateMock = { ...journeyImageBlockUpdateMock }
-    updateMock.result = jest.fn(() => ({
+    updateMock.result = vi.fn(() => ({
       data: {
         imageBlockUpdate: {
           __typename: 'ImageBlock',
@@ -149,7 +150,7 @@ describe('SocialScreenSocialImage', () => {
           customizable: null
         }
       }
-    }))
+    })) as typeof journeyImageBlockUpdateMock.result
 
     render(
       <MockedProvider mocks={[cloudflareUploadMutationMock, updateMock]}>
@@ -191,7 +192,7 @@ describe('SocialScreenSocialImage', () => {
     } as unknown as Response)
 
     const createMock = { ...journeyImageBlockCreateMock }
-    createMock.result = jest.fn(() => ({
+    createMock.result = vi.fn(() => ({
       data: {
         imageBlockCreate: {
           __typename: 'ImageBlock',
@@ -209,7 +210,7 @@ describe('SocialScreenSocialImage', () => {
           customizable: null
         }
       }
-    }))
+    })) as typeof journeyImageBlockCreateMock.result
 
     const associationMock = {
       ...journeyImageBlockAssociationUpdateMock,
@@ -221,7 +222,7 @@ describe('SocialScreenSocialImage', () => {
         }
       }
     }
-    associationMock.result = jest.fn(() => ({
+    associationMock.result = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',
@@ -233,7 +234,7 @@ describe('SocialScreenSocialImage', () => {
           creatorImageBlock: null
         }
       }
-    }))
+    })) as typeof journeyImageBlockAssociationUpdateMock.result
 
     render(
       <MockedProvider

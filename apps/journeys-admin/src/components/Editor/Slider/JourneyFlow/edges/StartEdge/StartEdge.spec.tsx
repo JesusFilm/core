@@ -6,8 +6,8 @@ import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 
 import { StartEdge } from '.'
 
-jest.mock('@xyflow/react', () => {
-  const originalModule = jest.requireActual('@xyflow/react')
+vi.mock('@xyflow/react', async () => {
+  const originalModule = (await vi.importActual('@xyflow/react'))
   return {
     __esModule: true,
     ...originalModule,

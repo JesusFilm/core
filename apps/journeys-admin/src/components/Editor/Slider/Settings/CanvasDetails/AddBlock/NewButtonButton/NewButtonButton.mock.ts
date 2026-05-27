@@ -132,7 +132,7 @@ export const buttonBlockCreateMock: MockedResponse<
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       buttonBlockCreate: {
         __typename: 'ButtonBlock',
@@ -217,7 +217,7 @@ export const submitButtonCreateMock: MockedResponse<
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       buttonBlockCreate: {
         __typename: 'ButtonBlock',

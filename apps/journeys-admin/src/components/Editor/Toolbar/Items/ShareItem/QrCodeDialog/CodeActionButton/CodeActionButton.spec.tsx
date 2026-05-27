@@ -5,14 +5,14 @@ import { CodeActionButton } from './CodeActionButton'
 
 Object.assign(navigator, {
   clipboard: {
-    writeText: jest.fn()
+    writeText: vi.fn()
   }
 })
 
 describe('CodeActionButton', () => {
   it('should render the download buttons', () => {
     render(
-      <CodeActionButton shortLink="url" handleGenerateQrCode={jest.fn()} />
+      <CodeActionButton shortLink="url" handleGenerateQrCode={vi.fn()} />
     )
 
     expect(
@@ -24,7 +24,7 @@ describe('CodeActionButton', () => {
   it('should copy short link', async () => {
     render(
       <SnackbarProvider>
-        <CodeActionButton shortLink="url" handleGenerateQrCode={jest.fn()} />
+        <CodeActionButton shortLink="url" handleGenerateQrCode={vi.fn()} />
       </SnackbarProvider>
     )
 
@@ -37,7 +37,7 @@ describe('CodeActionButton', () => {
   })
 
   it('should handle qr code generation', () => {
-    const generateQrCode = jest.fn()
+    const generateQrCode = vi.fn()
     render(
       <CodeActionButton
         shortLink={undefined}
@@ -54,7 +54,7 @@ describe('CodeActionButton', () => {
       <CodeActionButton
         shortLink="url"
         loading
-        handleGenerateQrCode={jest.fn()}
+        handleGenerateQrCode={vi.fn()}
       />
     )
 
@@ -65,12 +65,12 @@ describe('CodeActionButton', () => {
     const canvas = document.createElement('canvas')
     canvas.id = 'qr-code-download'
     document.body.appendChild(canvas)
-    const toDataURLMock = jest
+    const toDataURLMock = vi
       .spyOn(canvas, 'toDataURL')
       .mockReturnValue('data:image/png;base64,test')
 
     render(
-      <CodeActionButton shortLink="url" handleGenerateQrCode={jest.fn()} />
+      <CodeActionButton shortLink="url" handleGenerateQrCode={vi.fn()} />
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Download PNG' }))
@@ -83,13 +83,13 @@ describe('CodeActionButton', () => {
     const canvas = document.createElement('canvas')
     canvas.id = 'qr-code-download'
     document.body.appendChild(canvas)
-    jest.spyOn(canvas, 'toDataURL').mockImplementation(() => {
+    vi.spyOn(canvas, 'toDataURL').mockImplementation(() => {
       throw new Error('Test error')
     })
 
     render(
       <SnackbarProvider>
-        <CodeActionButton shortLink="url" handleGenerateQrCode={jest.fn()} />
+        <CodeActionButton shortLink="url" handleGenerateQrCode={vi.fn()} />
       </SnackbarProvider>
     )
 

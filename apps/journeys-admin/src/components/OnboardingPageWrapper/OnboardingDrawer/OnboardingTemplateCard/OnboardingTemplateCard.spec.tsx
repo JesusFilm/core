@@ -62,7 +62,7 @@ describe('OnboardingTemplateCard', () => {
   }
 
   it('should render OnboardingTemplateCard', async () => {
-    const result = jest.fn(() => ({ data: { journey } }))
+    const result = vi.fn(() => ({ data: { journey } }))
 
     render(
       <MockedProvider

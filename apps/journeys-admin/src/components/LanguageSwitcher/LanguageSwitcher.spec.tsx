@@ -1,14 +1,15 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { LanguageSwitcher } from './LanguageSwitcher'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('react-i18next', () => ({
+vi.mock('next-i18next/pages', () => ({
   __esModule: true,
   useTranslation: () => {
     return {
@@ -34,15 +35,15 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('LanguageSwitcher', () => {
-  const handleClose = jest.fn()
+  const handleClose = vi.fn()
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should translate page when new language selected', async () => {
-    const push = jest.fn()
+    const push = vi.fn()
     mockUseRouter.mockReturnValue({
       push,
       asPath: '/'
@@ -60,7 +61,7 @@ describe('LanguageSwitcher', () => {
   })
 
   it('should revert back to previous language', async () => {
-    const push = jest.fn()
+    const push = vi.fn()
     mockUseRouter.mockReturnValue({
       push,
       asPath: '/'

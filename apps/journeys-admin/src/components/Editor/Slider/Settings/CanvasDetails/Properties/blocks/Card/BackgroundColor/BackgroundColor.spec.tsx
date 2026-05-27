@@ -32,7 +32,7 @@ import {
   CARD_BLOCK_BACKGROUND_COLOR_UPDATE
 } from './BackgroundColor'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -213,7 +213,7 @@ describe('BackgroundColor', () => {
           __typename: 'Journey'
         }
       })
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           cardBlockUpdate: { id: 'card1.id', backgroundColor: '#B0BEC54D' }
         }
@@ -266,7 +266,7 @@ describe('BackgroundColor', () => {
           __typename: 'Journey'
         }
       })
-      const cardBlockBackgroundColorUpdateMockResult = jest.fn(() => ({
+      const cardBlockBackgroundColorUpdateMockResult = vi.fn(() => ({
         ...cardBlockBackgroundColorUpdateMock.result
       }))
 
@@ -292,7 +292,7 @@ describe('BackgroundColor', () => {
         }
       }
 
-      const cardBlockBackgroundColorUpdateUndoMockResult = jest.fn(() => ({
+      const cardBlockBackgroundColorUpdateUndoMockResult = vi.fn(() => ({
         ...cardBlockBackgroundColorUpdateUndoMock.result
       }))
 
@@ -458,7 +458,7 @@ describe('BackgroundColor', () => {
         }
       })
 
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           cardBlockUpdate: { id: 'card1.id', backdropBlur: 15 }
         }
@@ -526,7 +526,7 @@ describe('BackgroundColor', () => {
             input: { backdropBlur: 25 }
           }
         },
-        result: jest.fn(() => ({
+        result: vi.fn(() => ({
           data: {
             cardBlockUpdate: {
               __typename: 'CardBlock',
@@ -534,7 +534,10 @@ describe('BackgroundColor', () => {
               backdropBlur: 25
             }
           }
-        }))
+        })) as MockedResponse<
+          CardBlockBackdropBlurUpdate,
+          CardBlockBackdropBlurUpdateVariables
+        >['result']
       }
 
       render(
@@ -577,7 +580,7 @@ describe('BackgroundColor', () => {
         }
       })
 
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           cardBlockUpdate: { id: 'card1.id', backdropBlur: 12 }
         }
@@ -633,7 +636,7 @@ describe('BackgroundColor', () => {
         }
       })
 
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           cardBlockUpdate: { id: 'card1.id', backdropBlur: 10 }
         }
@@ -686,20 +689,20 @@ describe('BackgroundColor', () => {
         }
       })
 
-      const upperBoundResult = jest.fn(() => ({
+      const upperBoundResult = vi.fn(() => ({
         data: {
           cardBlockUpdate: { id: 'card1.id', backdropBlur: 25 }
         }
       }))
 
-      const lowerBoundResult = jest.fn(() => ({
+      const lowerBoundResult = vi.fn(() => ({
         data: {
           cardBlockUpdate: { id: 'card1.id', backdropBlur: 0 }
         }
       }))
 
       // Mock for when -10% gets filtered to 10% which becomes 3px (2.5 rounded up)
-      const filteredNegativeResult = jest.fn(() => ({
+      const filteredNegativeResult = vi.fn(() => ({
         data: {
           cardBlockUpdate: { id: 'card1.id', backdropBlur: 3 }
         }
@@ -764,7 +767,7 @@ describe('BackgroundColor', () => {
       })
 
       // Reset for next test
-      jest.clearAllMocks()
+      vi.clearAllMocks()
 
       // Test input filtering: -10% gets filtered to 10% which becomes 3px (2.5 rounded up)
       await userEvent.clear(input as HTMLInputElement)
@@ -817,13 +820,13 @@ describe('BackgroundColor', () => {
         }
       })
 
-      const blurUpdateResult = jest.fn(() => ({
+      const blurUpdateResult = vi.fn(() => ({
         data: {
           cardBlockUpdate: { id: 'card1.id', backdropBlur: 15 }
         }
       }))
 
-      const blurUndoResult = jest.fn(() => ({
+      const blurUndoResult = vi.fn(() => ({
         data: {
           cardBlockUpdate: { id: 'card1.id', backdropBlur: 20 }
         }

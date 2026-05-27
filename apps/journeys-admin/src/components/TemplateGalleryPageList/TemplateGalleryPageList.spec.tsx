@@ -201,7 +201,7 @@ describe('TemplateGalleryPageList', () => {
 
   describe('Template Info mobile trigger (NES-1686)', () => {
     it('renders the inline info trigger next to the Collections heading when onOpenInfo is provided and calls it on click', async () => {
-      const handleOpenInfo = jest.fn()
+      const handleOpenInfo = vi.fn()
       const { getByTestId } = render(
         <MockedProvider
           mocks={[

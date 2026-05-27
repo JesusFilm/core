@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -31,17 +32,17 @@ import { LOGO_BLOCK_CREATE } from './Logo'
 
 import { Logo } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('Logo', () => {
   const defaultJourney = {
@@ -86,7 +87,7 @@ describe('Logo', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           imageBlockCreate: {
             ...imageBlock,
@@ -101,7 +102,10 @@ describe('Logo', () => {
             }
           }
         }
-      }))
+      })) as MockedResponse<
+        LogoBlockCreate,
+        LogoBlockCreateVariables
+      >['result']
     }
   }
 
@@ -130,7 +134,7 @@ describe('Logo', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           imageBlockUpdate: {
             ...imageBlock,

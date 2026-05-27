@@ -18,9 +18,9 @@ import { TestEditorState } from '../../../../../libs/TestEditorState'
 
 import { GoalDetails } from './GoalDetails'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn(() => false)
+  default: vi.fn(() => false)
 }))
 
 describe('GoalDetails', () => {

@@ -25,14 +25,14 @@ import { NavigationDrawer } from '.'
 
 describe('NavigationDrawer', () => {
   it('should show toggle and call onClose with false when open', async () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
     render(<NavigationDrawer open onClose={handleClose} />)
     fireEvent.click(screen.getByTestId('NavigationListItemToggle'))
     expect(handleClose).toHaveBeenCalledWith(false)
   })
 
   it('should show toggle and call onClose with false when not open', async () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
     render(<NavigationDrawer onClose={handleClose} />)
     fireEvent.click(screen.getByTestId('NavigationListItemToggle'))
     expect(handleClose).toHaveBeenCalledWith(true)
@@ -62,7 +62,7 @@ describe('NavigationDrawer', () => {
 
   it('should show selected templates link when selected page templates', async () => {
     render(
-      <NavigationDrawer open onClose={jest.fn()} selectedPage="templates" />
+      <NavigationDrawer open onClose={vi.fn()} selectedPage="templates" />
     )
     expect(screen.getByTestId('NavigationListItemTemplates')).toHaveClass(
       'Mui-selected'

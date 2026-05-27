@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -27,17 +28,17 @@ import {
 
 import { NewButtonButton } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('NewButtonButton', () => {
   const selectedStep: TreeBlock<StepBlock> = {
@@ -69,7 +70,7 @@ describe('NewButtonButton', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('regular button logic', () => {
@@ -103,7 +104,7 @@ describe('NewButtonButton', () => {
       mockUuidv4.mockReturnValueOnce('startIconId')
       mockUuidv4.mockReturnValueOnce('endIconId')
 
-      const deleteResult = jest
+      const deleteResult = vi
         .fn()
         .mockResolvedValue({ ...deleteBlock.result })
       const deleteBlockMock = {
@@ -145,7 +146,7 @@ describe('NewButtonButton', () => {
       mockUuidv4.mockReturnValueOnce('startIconId')
       mockUuidv4.mockReturnValueOnce('endIconId')
 
-      const deleteResult = jest
+      const deleteResult = vi
         .fn()
         .mockResolvedValue({ ...deleteBlock.result })
       const deleteBlockMock = {
@@ -159,7 +160,7 @@ describe('NewButtonButton', () => {
         result: deleteResult
       }
 
-      const restoreResult = jest
+      const restoreResult = vi
         .fn()
         .mockResolvedValue({ ...blockRestore.result })
       const blockRestoreMock = {
@@ -307,8 +308,16 @@ describe('NewButtonButton', () => {
 
   describe('loading state', () => {
     it('should disable when loading', async () => {
+      mockUuidv4.mockReturnValueOnce('buttonBlockId')
+      mockUuidv4.mockReturnValueOnce('startIconId')
+      mockUuidv4.mockReturnValueOnce('endIconId')
+
+      // The click fires ButtonBlockCreate. A never-resolving mock keeps the
+      // mutation in flight (button stays disabled) and matches the operation
+      // so it does not raise an unhandled Apollo error after the test
+      // completes.
       const { getByRole } = render(
-        <MockedProvider>
+        <MockedProvider mocks={[{ ...buttonBlockCreateMock, delay: Infinity }]}>
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,

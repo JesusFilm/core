@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
@@ -12,15 +13,15 @@ import { JOURNEY_TRASH } from './TrashJourneyDialog'
 
 import { TrashJourneyDialog } from '.'
 
-jest.mock(
+vi.mock(
   '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
   () => ({
-    useTemplateFamilyStatsAggregateLazyQuery: jest.fn()
+    useTemplateFamilyStatsAggregateLazyQuery: vi.fn()
   })
 )
 
 const mockedUseTemplateFamilyStatsAggregateLazyQuery =
-  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+  useTemplateFamilyStatsAggregateLazyQuery as MockedFunction<
     typeof useTemplateFamilyStatsAggregateLazyQuery
   >
 
@@ -46,14 +47,14 @@ function unassignMock(
 }
 
 describe('TrashJourneyDialog', () => {
-  const refetchTemplateStats = jest.fn()
+  const refetchTemplateStats = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     refetchTemplateStats.mockClear()
     mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
       query: [
-        jest.fn(),
+        vi.fn(),
         {
           data: undefined,
           loading: false,
@@ -65,8 +66,8 @@ describe('TrashJourneyDialog', () => {
   })
 
   it('should change journey status to trashed', async () => {
-    const handleClose = jest.fn()
-    const result = jest.fn(() => ({
+    const handleClose = vi.fn()
+    const result = vi.fn(() => ({
       data: {
         journeysTrash: [
           {
@@ -131,8 +132,8 @@ describe('TrashJourneyDialog', () => {
   })
 
   it('should call refetchTemplateStats when trashing a journey with fromTemplateId', async () => {
-    const handleClose = jest.fn()
-    const result = jest.fn(() => ({
+    const handleClose = vi.fn()
+    const result = vi.fn(() => ({
       data: {
         journeysTrash: [
           {
@@ -214,7 +215,7 @@ describe('TrashJourneyDialog', () => {
       }
     })
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeysTrash: [
           {
@@ -242,7 +243,7 @@ describe('TrashJourneyDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <TrashJourneyDialog id="journey-id" open handleClose={jest.fn()} />
+          <TrashJourneyDialog id="journey-id" open handleClose={vi.fn()} />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -267,8 +268,8 @@ describe('TrashJourneyDialog', () => {
   })
 
   it('should not call refetchTemplateStats when trashing a journey without fromTemplateId', async () => {
-    const handleClose = jest.fn()
-    const result = jest.fn(() => ({
+    const handleClose = vi.fn()
+    const result = vi.fn(() => ({
       data: {
         journeysTrash: [
           {
@@ -315,7 +316,7 @@ describe('TrashJourneyDialog', () => {
   })
 
   it('unassigns the journey from its collection after trashing', async () => {
-    const trashMock = jest.fn(() => ({
+    const trashMock = vi.fn(() => ({
       data: {
         journeysTrash: [
           {
@@ -327,7 +328,7 @@ describe('TrashJourneyDialog', () => {
         ]
       }
     }))
-    const unassignResult = jest.fn(() => ({
+    const unassignResult = vi.fn(() => ({
       data: { templateGalleryPageAssignJourney: null }
     }))
 
@@ -351,7 +352,7 @@ describe('TrashJourneyDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <TrashJourneyDialog id="journey-id" open handleClose={jest.fn()} />
+          <TrashJourneyDialog id="journey-id" open handleClose={vi.fn()} />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -367,7 +368,7 @@ describe('TrashJourneyDialog', () => {
     // test holds the unassign mock indefinitely and asserts the
     // snackbar still appears — proving the dialog doesn't await
     // unassign before surfacing success.
-    const trashMock = jest.fn(() => ({
+    const trashMock = vi.fn(() => ({
       data: {
         journeysTrash: [
           {
@@ -412,7 +413,7 @@ describe('TrashJourneyDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <TrashJourneyDialog id="journey-id" open handleClose={jest.fn()} />
+          <TrashJourneyDialog id="journey-id" open handleClose={vi.fn()} />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -429,8 +430,8 @@ describe('TrashJourneyDialog', () => {
   })
 
   it('still surfaces success when the unassign mutation fails (best-effort)', async () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(noop)
-    const trashMock = jest.fn(() => ({
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+    const trashMock = vi.fn(() => ({
       data: {
         journeysTrash: [
           {
@@ -463,7 +464,7 @@ describe('TrashJourneyDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <TrashJourneyDialog id="journey-id" open handleClose={jest.fn()} />
+          <TrashJourneyDialog id="journey-id" open handleClose={vi.fn()} />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -485,8 +486,8 @@ describe('TrashJourneyDialog', () => {
   // and success snackbar all switch to template-flavoured copy. The
   // underlying mutation is unchanged — `journeysTrash` handles both.
   it('shows template-flavoured copy and snackbar when template is true (NES-1669)', async () => {
-    const handleClose = jest.fn()
-    const result = jest.fn(() => ({
+    const handleClose = vi.fn()
+    const result = vi.fn(() => ({
       data: {
         journeysTrash: [
           {

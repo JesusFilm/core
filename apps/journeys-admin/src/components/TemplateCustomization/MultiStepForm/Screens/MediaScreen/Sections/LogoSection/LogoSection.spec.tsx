@@ -13,22 +13,22 @@ import { useImageUpload } from '../../../../../../../libs/useImageUpload'
 
 import { LOGO_IMAGE_BLOCK_UPDATE, LogoSection } from './LogoSection'
 
-const useImageUploadModule = jest.requireActual<
+const useImageUploadModule = await vi.importActual<
   typeof import('../../../../../../../libs/useImageUpload')
 >('../../../../../../../libs/useImageUpload')
 
-const mockedUseImageUpload = jest.mocked(useImageUpload)
+const mockedUseImageUpload = vi.mocked(useImageUpload)
 
-jest.mock('@core/shared/ui/NextImage', () => ({
-  NextImage: jest.fn(({ src, alt }) => <img src={src} alt={alt} />)
+vi.mock('@core/shared/ui/NextImage', async () => ({
+  NextImage: vi.fn(({ src, alt }) => <img src={src} alt={alt} />)
 }))
 
-jest.mock('../../../../../../../libs/useImageUpload', () => {
-  const actual = jest.requireActual('../../../../../../../libs/useImageUpload')
+vi.mock('../../../../../../../libs/useImageUpload', async () => {
+  const actual = (await vi.importActual('../../../../../../../libs/useImageUpload'))
   return {
     __esModule: true,
     ...actual,
-    useImageUpload: jest.fn((...args: unknown[]) =>
+    useImageUpload: vi.fn((...args: unknown[]) =>
       (
         actual as { useImageUpload: (...args: unknown[]) => unknown }
       ).useImageUpload(...args)
@@ -36,9 +36,9 @@ jest.mock('../../../../../../../libs/useImageUpload', () => {
   }
 })
 
-const mockEnqueueSnackbar = jest.fn()
-jest.mock('notistack', () => ({
-  ...jest.requireActual('notistack'),
+const mockEnqueueSnackbar = vi.fn()
+vi.mock('notistack', async () => ({
+  ...(await vi.importActual('notistack')),
   useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
 }))
 
@@ -70,7 +70,7 @@ const journeyWithoutLogoSrc = {
 
 describe('LogoSection', () => {
   beforeEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
     mockedUseImageUpload.mockImplementation((...args) =>
       useImageUploadModule.useImageUpload(...args)
     )
@@ -134,10 +134,10 @@ describe('LogoSection', () => {
   })
 
   it('calls open when Upload File button is clicked', () => {
-    const open = jest.fn()
+    const open = vi.fn()
     mockedUseImageUpload.mockReturnValue({
-      getRootProps: jest.fn(),
-      getInputProps: jest.fn().mockReturnValue({}),
+      getRootProps: vi.fn(),
+      getInputProps: vi.fn().mockReturnValue({}),
       open,
       loading: false
     } as any)
@@ -150,9 +150,9 @@ describe('LogoSection', () => {
 
   it('shows loading spinner and disables button during upload', () => {
     mockedUseImageUpload.mockReturnValue({
-      getRootProps: jest.fn(),
-      getInputProps: jest.fn().mockReturnValue({}),
-      open: jest.fn(),
+      getRootProps: vi.fn(),
+      getInputProps: vi.fn().mockReturnValue({}),
+      open: vi.fn(),
       loading: true
     } as any)
 
@@ -172,18 +172,18 @@ describe('LogoSection', () => {
   })
 
   it('calls imageBlockUpdate mutation on upload complete', async () => {
-    let onUploadCompleteCallback: (url: string) => void = jest.fn()
+    let onUploadCompleteCallback: (url: string) => void = vi.fn()
     mockedUseImageUpload.mockImplementation((options) => {
       onUploadCompleteCallback = options.onUploadComplete
       return {
-        getRootProps: jest.fn(),
-        getInputProps: jest.fn().mockReturnValue({}),
-        open: jest.fn(),
+        getRootProps: vi.fn(),
+        getInputProps: vi.fn().mockReturnValue({}),
+        open: vi.fn(),
         loading: false
       } as any
     })
 
-    const mutationResultSpy = jest.fn().mockReturnValue({
+    const mutationResultSpy = vi.fn().mockReturnValue({
       data: {
         imageBlockUpdate: {
           id: 'logo-block-id',
@@ -225,13 +225,13 @@ describe('LogoSection', () => {
   })
 
   it('shows error snackbar when mutation fails', async () => {
-    let onUploadCompleteCallback: (url: string) => void = jest.fn()
+    let onUploadCompleteCallback: (url: string) => void = vi.fn()
     mockedUseImageUpload.mockImplementation((options) => {
       onUploadCompleteCallback = options.onUploadComplete
       return {
-        getRootProps: jest.fn(),
-        getInputProps: jest.fn().mockReturnValue({}),
-        open: jest.fn(),
+        getRootProps: vi.fn(),
+        getInputProps: vi.fn().mockReturnValue({}),
+        open: vi.fn(),
         loading: false
       } as any
     })
@@ -265,15 +265,15 @@ describe('LogoSection', () => {
   })
 
   it('does not call mutation when logoImageBlock is null', () => {
-    let onUploadCompleteCallback: (url: string) => void = jest.fn()
-    const mutationSpy = jest.fn()
+    let onUploadCompleteCallback: (url: string) => void = vi.fn()
+    const mutationSpy = vi.fn()
 
     mockedUseImageUpload.mockImplementation((options) => {
       onUploadCompleteCallback = options.onUploadComplete
       return {
-        getRootProps: jest.fn(),
-        getInputProps: jest.fn().mockReturnValue({}),
-        open: jest.fn(),
+        getRootProps: vi.fn(),
+        getInputProps: vi.fn().mockReturnValue({}),
+        open: vi.fn(),
         loading: false
       } as any
     })

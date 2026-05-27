@@ -16,14 +16,14 @@ import { getTemplateGalleryPageUnpublishMock } from '../../../libs/useTemplateGa
 
 import { useCollectionMutations } from './useCollectionMutations'
 
-const mockEnqueueSnackbar = jest.fn()
-jest.mock('notistack', () => {
-  const actual = jest.requireActual('notistack')
+const mockEnqueueSnackbar = vi.fn()
+vi.mock('notistack', async () => {
+  const actual = (await vi.importActual('notistack'))
   return {
     ...actual,
     useSnackbar: () => ({
       enqueueSnackbar: mockEnqueueSnackbar,
-      closeSnackbar: jest.fn()
+      closeSnackbar: vi.fn()
     })
   }
 })

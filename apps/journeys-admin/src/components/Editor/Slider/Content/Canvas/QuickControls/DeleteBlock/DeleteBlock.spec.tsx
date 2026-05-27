@@ -27,7 +27,7 @@ import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { DeleteBlock } from './DeleteBlock'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -51,7 +51,7 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
-    const deleteBlockResultMock = jest.fn(() => ({ ...deleteBlockMock.result }))
+    const deleteBlockResultMock = vi.fn(() => ({ ...deleteBlockMock.result }))
     render(
       <SnackbarProvider>
         <MockedProvider
@@ -101,7 +101,7 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
-    const deleteBlockResultMock = jest.fn(() => ({ ...deleteBlockMock.result }))
+    const deleteBlockResultMock = vi.fn(() => ({ ...deleteBlockMock.result }))
     render(
       <SnackbarProvider>
         <MockedProvider
@@ -156,7 +156,7 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
-    const deleteCardResultMock = jest.fn(() => ({ ...deleteStepMock.result }))
+    const deleteCardResultMock = vi.fn(() => ({ ...deleteStepMock.result }))
     render(
       <SnackbarProvider>
         <MockedProvider
@@ -212,7 +212,7 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
-    const deleteCardResultMock = jest.fn(() => ({ ...deleteStepMock.result }))
+    const deleteCardResultMock = vi.fn(() => ({ ...deleteStepMock.result }))
     render(
       <SnackbarProvider>
         <MockedProvider
@@ -308,7 +308,7 @@ describe('DeleteBlock', () => {
           id: passedInStep.id
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           blockDelete: [
             {
@@ -319,7 +319,7 @@ describe('DeleteBlock', () => {
             }
           ]
         }
-      }))
+      })) as MockedResponse<BlockDelete>['result']
     }
 
     const cache = new InMemoryCache()
@@ -335,7 +335,7 @@ describe('DeleteBlock', () => {
       }
     })
 
-    const deleteCardResultMock = jest.fn(() => ({ ...deleteStepMock.result }))
+    const deleteCardResultMock = vi.fn(() => ({ ...deleteStepMock.result }))
     render(
       <SnackbarProvider>
         <MockedProvider
@@ -382,7 +382,7 @@ describe('DeleteBlock', () => {
 
   it('should restore card on undo click', async () => {
     const selectedBlock = selectedStep
-    const restoreCardMockResult = jest.fn(() => ({
+    const restoreCardMockResult = vi.fn(() => ({
       ...restoreStepMock.result
     }))
     const cache = new InMemoryCache()
@@ -406,7 +406,7 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
-    const deleteCardResultMock = jest.fn(() => ({ ...deleteStepMock.result }))
+    const deleteCardResultMock = vi.fn(() => ({ ...deleteStepMock.result }))
     render(
       <SnackbarProvider>
         <MockedProvider

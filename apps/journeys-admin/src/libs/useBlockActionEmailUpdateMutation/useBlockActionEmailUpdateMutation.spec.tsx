@@ -27,7 +27,7 @@ describe('useBlockActionEmailUpdateMutation', () => {
   }
 
   it('should update block action', async () => {
-    const mockResult = jest
+    const mockResult = vi
       .fn()
       .mockReturnValue(blockActionEmailUpdateMock.result)
 

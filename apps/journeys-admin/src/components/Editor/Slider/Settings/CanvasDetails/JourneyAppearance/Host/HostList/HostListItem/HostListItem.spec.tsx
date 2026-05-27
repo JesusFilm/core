@@ -14,7 +14,7 @@ describe('HostListItem', () => {
         location={hostLocation}
         src1="pic"
         src2="image"
-        onClick={jest.fn}
+        onClick={vi.fn()}
       />
     )
 
@@ -40,7 +40,7 @@ describe('HostListItem', () => {
         location={null}
         src1={null}
         src2={null}
-        onClick={jest.fn}
+        onClick={vi.fn()}
       />
     )
 
@@ -53,7 +53,7 @@ describe('HostListItem', () => {
   })
 
   it('passes the correct host data when clicked', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const hostTitle = 'Edmond Shen'
     const hostTitleTwo = 'Siyang Diesel'
 

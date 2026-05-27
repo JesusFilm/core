@@ -3,6 +3,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -17,27 +18,27 @@ import { GET_ROLE } from './Menu'
 
 import { Menu } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-jest.mock('@core/journeys/ui/TeamProvider', () => ({
+vi.mock('@core/journeys/ui/TeamProvider', () => ({
   __esModule: true,
-  useTeam: jest.fn()
+  useTeam: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const mockedUseTeam = useTeam as jest.MockedFunction<typeof useTeam>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
+const mockedUseTeam = useTeam as MockedFunction<typeof useTeam>
 
 describe('Toolbar Menu', () => {
-  const push = jest.fn()
-  const on = jest.fn()
+  const push = vi.fn()
+  const on = vi.fn()
 
   const language = {
     __typename: 'Language',
@@ -63,15 +64,15 @@ describe('Toolbar Menu', () => {
         userTeams: [],
         customDomains: []
       },
-      setActiveTeam: jest.fn(),
-      refetch: jest.fn(),
+      setActiveTeam: vi.fn(),
+      refetch: vi.fn(),
       query: {} as any
     })
   })
 
   describe('smUp', () => {
     beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
+      (useMediaQuery as Mock).mockImplementation(() => true)
     )
 
     it('should render menu items', () => {
@@ -252,8 +253,8 @@ describe('Toolbar Menu', () => {
     it('should not render make template menu item for shared with me team', async () => {
       mockedUseTeam.mockReturnValue({
         activeTeam: null,
-        setActiveTeam: jest.fn(),
-        refetch: jest.fn(),
+        setActiveTeam: vi.fn(),
+        refetch: vi.fn(),
         query: {} as any
       })
       const selectedBlock: TreeBlock<StepBlock> = {
@@ -588,14 +589,14 @@ describe('Toolbar Menu', () => {
 
   describe('smDown', () => {
     beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => false)
+      (useMediaQuery as Mock).mockImplementation(() => false)
     )
 
     it('should render mobile menu items', () => {
       mockedUseRouter.mockReturnValue({
         events: {
-          on: jest.fn(),
-          off: jest.fn()
+          on: vi.fn(),
+          off: vi.fn()
         }
       } as unknown as NextRouter)
 

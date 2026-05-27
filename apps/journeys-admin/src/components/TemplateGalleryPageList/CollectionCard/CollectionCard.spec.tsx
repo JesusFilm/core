@@ -112,8 +112,8 @@ describe('CollectionCard', () => {
   })
 
   it('fires onEdit / onPublish / onUnpublish with the collection', async () => {
-    const onEdit = jest.fn()
-    const onPublish = jest.fn()
+    const onEdit = vi.fn()
+    const onPublish = vi.fn()
     const collection = makeCollection({ templates: [journeyRef('j1')] })
 
     const { rerender } = render(
@@ -135,7 +135,7 @@ describe('CollectionCard', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: 'Publish' }))
     expect(onPublish).toHaveBeenCalledWith(collection)
 
-    const onUnpublish = jest.fn()
+    const onUnpublish = vi.fn()
     const published = makeCollection({
       templates: [journeyRef('j1')],
       status: TemplateGalleryPageStatus.published,
@@ -152,7 +152,7 @@ describe('CollectionCard', () => {
   })
 
   it('opens the ungroup confirmation dialog from the menu and fires onUngroup on confirm', async () => {
-    const onUngroup = jest.fn()
+    const onUngroup = vi.fn()
     const collection = makeCollection({ templates: [journeyRef('j1')] })
     render(<CollectionCard collection={collection} onUngroup={onUngroup} />)
     await userEvent.click(
@@ -198,7 +198,7 @@ describe('CollectionCard', () => {
 
   it('renders a Preview menu item that opens the proxy URL in a new tab when published', async () => {
     const originalOpen = window.open
-    window.open = jest.fn() as unknown as typeof window.open
+    window.open = vi.fn() as unknown as typeof window.open
     try {
       render(
         <CollectionCard

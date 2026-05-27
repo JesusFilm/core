@@ -1,15 +1,16 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { sendPasswordResetEmail } from 'firebase/auth'
+import { type MockedFunction } from 'vitest'
 
 import { PasswordResetPage } from './PasswordResetPage'
 
-jest.mock('firebase/auth', () => ({
-  getAuth: jest.fn(),
-  sendPasswordResetEmail: jest.fn()
+vi.mock('firebase/auth', () => ({
+  getAuth: vi.fn(),
+  sendPasswordResetEmail: vi.fn()
 }))
 
 describe('PasswordResetPage', () => {
-  const mockSetActivePage = jest.fn()
+  const mockSetActivePage = vi.fn()
 
   it('should render elements with default user email', () => {
     const { getByText, getByRole } = render(
@@ -41,7 +42,7 @@ describe('PasswordResetPage', () => {
 
   it('should trigger send button click', async () => {
     const mockSendPasswordResetEmail =
-      sendPasswordResetEmail as jest.MockedFunction<
+      sendPasswordResetEmail as MockedFunction<
         typeof sendPasswordResetEmail
       >
 

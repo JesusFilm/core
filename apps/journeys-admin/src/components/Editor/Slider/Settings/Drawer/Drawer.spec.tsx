@@ -1,11 +1,12 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { Drawer } from './Drawer'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('Drawer', () => {
@@ -17,7 +18,7 @@ describe('Drawer', () => {
   })
 
   it('should handle on close', () => {
-    const mockHandleClose = jest.fn()
+    const mockHandleClose = vi.fn()
     render(
       <Drawer title="title" open onClose={mockHandleClose}>
         children
@@ -32,7 +33,7 @@ describe('Drawer', () => {
 
   describe('smUp', () => {
     beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
+      (useMediaQuery as Mock).mockImplementation(() => true)
     )
 
     it('should render drawer from the right', () => {
@@ -45,7 +46,7 @@ describe('Drawer', () => {
 
   describe('smDown', () => {
     beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => false)
+      (useMediaQuery as Mock).mockImplementation(() => false)
     )
 
     it('should render drawer from the bottom', () => {

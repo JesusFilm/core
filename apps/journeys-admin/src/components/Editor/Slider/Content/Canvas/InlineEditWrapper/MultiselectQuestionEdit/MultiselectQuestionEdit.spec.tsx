@@ -17,12 +17,12 @@ import { MULTISELECT_OPTION_BLOCK_CREATE } from './MultiselectQuestionEdit'
 
 import { MultiselectQuestionEdit } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   v4: () => 'multiselectOption.id'
 }))
 
@@ -51,7 +51,7 @@ describe('MultiselectQuestionEdit', () => {
   }
 
   it('adds an option on click', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         multiselectOptionBlockCreate: {
           id: 'multiselectOption.id',
@@ -118,7 +118,7 @@ describe('MultiselectQuestionEdit', () => {
   })
 
   it('can undo an option create', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         multiselectOptionBlockCreate: {
           id: 'multiselectOption.id',
@@ -130,7 +130,7 @@ describe('MultiselectQuestionEdit', () => {
       }
     }))
 
-    const blockDeleteResult = jest.fn().mockReturnValue(deleteBlockMock.result)
+    const blockDeleteResult = vi.fn().mockReturnValue(deleteBlockMock.result)
 
     const { getAllByRole, getByRole } = render(
       <MockedProvider
@@ -196,7 +196,7 @@ describe('MultiselectQuestionEdit', () => {
   })
 
   it('can redo an option create', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         multiselectOptionBlockCreate: {
           id: 'multiselectOption.id',
@@ -208,8 +208,8 @@ describe('MultiselectQuestionEdit', () => {
       }
     }))
 
-    const blockDeleteResult = jest.fn().mockReturnValue(deleteBlockMock.result)
-    const blockRestoreResult = jest
+    const blockDeleteResult = vi.fn().mockReturnValue(deleteBlockMock.result)
+    const blockRestoreResult = vi
       .fn()
       .mockReturnValue(blockRestoreMock.result)
 

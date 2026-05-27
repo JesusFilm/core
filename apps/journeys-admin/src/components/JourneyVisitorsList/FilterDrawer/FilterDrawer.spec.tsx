@@ -36,15 +36,15 @@ const props = {
   withSubmittedText: false,
   withIcon: false,
   hideInteractive: false,
-  handleClearAll: jest.fn(),
-  handleChange: jest.fn((e) => e.target.value),
+  handleClearAll: vi.fn(),
+  handleChange: vi.fn((e) => e.target.value),
   disableExportButton: false,
-  onSyncDialogOpen: jest.fn()
+  onSyncDialogOpen: vi.fn()
 }
 
 describe('FilterDrawer', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('calls handleClearAll when the clear all button is clicked', async () => {

@@ -1,17 +1,18 @@
 import { renderHook } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import {
   useTemplateDeepLinkActive,
   useTemplateDeepLinkJourneyId
 } from './useTemplateDeepLinkActive'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 function mockRouterQuery(query: NextRouter['query']): void {
   mockUseRouter.mockReturnValue({ query } as unknown as NextRouter)
@@ -19,7 +20,7 @@ function mockRouterQuery(query: NextRouter['query']): void {
 
 describe('useTemplateDeepLinkJourneyId', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns null when useTemplate is absent', () => {
@@ -55,7 +56,7 @@ describe('useTemplateDeepLinkJourneyId', () => {
 
 describe('useTemplateDeepLinkActive', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns false when useTemplate is absent', () => {

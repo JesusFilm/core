@@ -287,7 +287,7 @@ describe('UserListItem', () => {
 
   describe('menu actions', () => {
     it('should handle on promote action', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           userJourneyPromote: {
             __typename: 'UserJourney',
@@ -341,7 +341,7 @@ describe('UserListItem', () => {
     })
 
     it('should handle approve action', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           userJourneyApprove: {
             __typename: 'UserJourney',
@@ -382,7 +382,7 @@ describe('UserListItem', () => {
     })
 
     it('should handle remove action', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           userInviteRemove: {
             __typename: 'UserInvite',

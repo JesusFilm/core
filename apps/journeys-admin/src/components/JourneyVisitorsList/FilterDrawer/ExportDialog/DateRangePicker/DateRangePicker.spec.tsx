@@ -3,11 +3,11 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { DateRangePicker } from './DateRangePicker'
 
 describe('DateRangePicker', () => {
-  const mockStartDateChange = jest.fn()
-  const mockEndDateChange = jest.fn()
+  const mockStartDateChange = vi.fn()
+  const mockEndDateChange = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders the date pickers with labels', () => {

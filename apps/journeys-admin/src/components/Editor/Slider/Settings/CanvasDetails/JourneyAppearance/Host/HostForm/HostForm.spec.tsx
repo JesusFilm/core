@@ -27,12 +27,12 @@ import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
 import { DELETE_HOST, HostForm } from './HostForm'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {
     return {
@@ -65,7 +65,7 @@ describe('HostForm', () => {
   }
 
   it('should render a create host form', async () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
     const { getByRole, getByTestId, getByText } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -77,7 +77,7 @@ describe('HostForm', () => {
           >
             <HostForm
               handleSelection={handleSelection}
-              getAllTeamHostsQuery={jest.fn()}
+              getAllTeamHostsQuery={vi.fn()}
             />
           </JourneyProvider>
         </ThemeProvider>
@@ -115,8 +115,8 @@ describe('HostForm', () => {
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostForm
-              handleSelection={jest.fn()}
-              getAllTeamHostsQuery={jest.fn()}
+              handleSelection={vi.fn()}
+              getAllTeamHostsQuery={vi.fn()}
             />
           </JourneyProvider>
         </ThemeProvider>
@@ -143,7 +143,7 @@ describe('HostForm', () => {
   })
 
   it('should navigate to list on back button click', () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -155,7 +155,7 @@ describe('HostForm', () => {
           >
             <HostForm
               handleSelection={handleSelection}
-              getAllTeamHostsQuery={jest.fn()}
+              getAllTeamHostsQuery={vi.fn()}
             />
           </JourneyProvider>
         </ThemeProvider>
@@ -180,7 +180,7 @@ describe('HostForm', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyUpdate: {
             __typename: 'Journey',
@@ -191,7 +191,10 @@ describe('HostForm', () => {
             }
           }
         }
-      }))
+      })) as MockedResponse<
+        UpdateJourneyHost,
+        UpdateJourneyHostVariables
+      >['result']
     }
 
     const hostDeleteMock: MockedResponse<DeleteHost> = {
@@ -202,18 +205,18 @@ describe('HostForm', () => {
           teamId: journey.team?.id
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           hostDelete: {
             __typename: 'Host',
             id: defaultHost.id
           }
         }
-      }))
+      })) as MockedResponse<DeleteHost>['result']
     }
 
-    const handleSelection = jest.fn()
-    const mockGetAllTeamHostsQuery = jest.fn()
+    const handleSelection = vi.fn()
+    const mockGetAllTeamHostsQuery = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[hostDeleteMock, updateJourneyHostMock]}>
         <ThemeProvider>
@@ -263,12 +266,12 @@ describe('HostForm', () => {
       }
     }
 
-    const mockHostUpdateResult = jest
+    const mockHostUpdateResult = vi
       .fn()
       .mockReturnValue(updateHostMock.result)
 
-    const handleSelection = jest.fn()
-    const mockGetAllTeamHostsQuery = jest.fn()
+    const handleSelection = vi.fn()
+    const mockGetAllTeamHostsQuery = vi.fn()
     render(
       <MockedProvider
         mocks={[{ ...updateHostMock, result: mockHostUpdateResult }]}
@@ -310,12 +313,12 @@ describe('HostForm', () => {
       }
     }
 
-    const mockCreateResult = jest.fn().mockReturnValue(hostCreateMock.result)
-    const mockJourneyUpdateResult = jest
+    const mockCreateResult = vi.fn().mockReturnValue(hostCreateMock.result)
+    const mockJourneyUpdateResult = vi
       .fn()
       .mockReturnValue(updateJourneyHostMock.result)
-    const handleSelection = jest.fn()
-    const mockGetAllTeamHostsQuery = jest.fn()
+    const handleSelection = vi.fn()
+    const mockGetAllTeamHostsQuery = vi.fn()
 
     render(
       <MockedProvider
@@ -369,12 +372,12 @@ describe('HostForm', () => {
       }
     }
 
-    const mockHostUpdateResult = jest
+    const mockHostUpdateResult = vi
       .fn()
       .mockReturnValue(updateHostMock.result)
 
-    const handleSelection = jest.fn()
-    const mockGetAllTeamHostsQuery = jest.fn()
+    const handleSelection = vi.fn()
+    const mockGetAllTeamHostsQuery = vi.fn()
     render(
       <MockedProvider
         mocks={[{ ...updateHostMock, result: mockHostUpdateResult }]}
@@ -416,12 +419,12 @@ describe('HostForm', () => {
       }
     }
 
-    const mockCreateResult = jest.fn().mockReturnValue(hostCreateMock.result)
-    const mockJourneyUpdateResult = jest
+    const mockCreateResult = vi.fn().mockReturnValue(hostCreateMock.result)
+    const mockJourneyUpdateResult = vi
       .fn()
       .mockReturnValue(updateJourneyHostMock.result)
-    const handleSelection = jest.fn()
-    const mockGetAllTeamHostsQuery = jest.fn()
+    const handleSelection = vi.fn()
+    const mockGetAllTeamHostsQuery = vi.fn()
 
     render(
       <MockedProvider

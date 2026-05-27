@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -17,7 +18,7 @@ import { STEP_BLOCK_SLUG_UPDATE } from './CardSlugEdit'
 
 import { CardSlugEdit } from '.'
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
@@ -30,7 +31,7 @@ function getSlugUpdateMock(
       query: STEP_BLOCK_SLUG_UPDATE,
       variables: { id, input: { slug } }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         stepBlockUpdate: {
           __typename: 'StepBlock',
@@ -38,7 +39,10 @@ function getSlugUpdateMock(
           slug
         }
       }
-    }))
+    })) as MockedResponse<
+      StepBlockSlugUpdate,
+      StepBlockSlugUpdateVariables
+    >['result']
   }
 }
 
@@ -148,7 +152,7 @@ describe('CardSlugEdit', () => {
     fireEvent.blur(screen.getByRole('textbox'))
 
     await waitFor(() =>
-      expect(updateMock.result as jest.Mock).toHaveBeenCalled()
+      expect(updateMock.result as Mock).toHaveBeenCalled()
     )
   })
 
@@ -172,7 +176,7 @@ describe('CardSlugEdit', () => {
         query: STEP_BLOCK_SLUG_UPDATE,
         variables: { id: step.id, input: { slug: null } }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           stepBlockUpdate: {
             __typename: 'StepBlock',
@@ -180,7 +184,10 @@ describe('CardSlugEdit', () => {
             slug: null
           }
         }
-      }))
+      })) as MockedResponse<
+        StepBlockSlugUpdate,
+        StepBlockSlugUpdateVariables
+      >['result']
     }
 
     render(
@@ -206,7 +213,7 @@ describe('CardSlugEdit', () => {
     fireEvent.blur(input)
 
     await waitFor(() =>
-      expect(nullSlugMock.result as jest.Mock).toHaveBeenCalled()
+      expect(nullSlugMock.result as Mock).toHaveBeenCalled()
     )
   })
 
@@ -299,11 +306,11 @@ describe('CardSlugEdit', () => {
     fireEvent.blur(input)
 
     await waitFor(() =>
-      expect(updateMock.result as jest.Mock).toHaveBeenCalled()
+      expect(updateMock.result as Mock).toHaveBeenCalled()
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
-    await waitFor(() => expect(undoMock.result as jest.Mock).toHaveBeenCalled())
+    await waitFor(() => expect(undoMock.result as Mock).toHaveBeenCalled())
   })
 })

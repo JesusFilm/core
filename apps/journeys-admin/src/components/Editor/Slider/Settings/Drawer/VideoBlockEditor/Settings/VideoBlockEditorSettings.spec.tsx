@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -20,28 +21,28 @@ import { GET_MY_GENERATED_MUX_SUBTITLE_TRACK } from './MuxSubtitles/MuxSubtitleS
 
 import { VideoBlockEditorSettings } from '.'
 
-jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
-  useYouTubeClosedCaptions: jest.fn()
+vi.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
+  useYouTubeClosedCaptions: vi.fn()
 }))
 
-jest.mock('../../../../../../../libs/validateMuxLanguage', () => ({
-  validateMuxLanguage: jest.fn()
+vi.mock('../../../../../../../libs/validateMuxLanguage', () => ({
+  validateMuxLanguage: vi.fn()
 }))
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string) => key
   })
 }))
 
 const mockUseYouTubeClosedCaptions =
-  useYouTubeClosedCaptions as jest.MockedFunction<
+  useYouTubeClosedCaptions as MockedFunction<
     typeof useYouTubeClosedCaptions
   >
 
-const { validateMuxLanguage } = jest.requireMock(
+const { validateMuxLanguage } = (await vi.importMock(
   '../../../../../../../libs/validateMuxLanguage'
-)
+)) as { validateMuxLanguage: Mock }
 
 const mockSubtitleTrackReady: MockedResponse = {
   request: {
@@ -154,7 +155,7 @@ describe('VideoBlockEditorSettings', () => {
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should disable fields when no selected block', () => {
@@ -165,7 +166,7 @@ describe('VideoBlockEditorSettings', () => {
             <VideoBlockEditorSettings
               selectedBlock={null}
               posterBlock={null}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -185,7 +186,7 @@ describe('VideoBlockEditorSettings', () => {
             <VideoBlockEditorSettings
               selectedBlock={{ ...video, parentOrder: null }}
               posterBlock={null}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -198,7 +199,7 @@ describe('VideoBlockEditorSettings', () => {
   })
 
   it('should update autoplay', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
@@ -229,7 +230,7 @@ describe('VideoBlockEditorSettings', () => {
   })
 
   it('should update muted', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole, getByText, queryByText } = render(
       <ThemeProvider>
         <MockedProvider>
@@ -273,7 +274,7 @@ describe('VideoBlockEditorSettings', () => {
   })
 
   it('should update startAt', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
@@ -306,7 +307,7 @@ describe('VideoBlockEditorSettings', () => {
   })
 
   it('should update endAt', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
@@ -339,7 +340,7 @@ describe('VideoBlockEditorSettings', () => {
   })
 
   it('should update objectFit to fit', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
@@ -370,7 +371,7 @@ describe('VideoBlockEditorSettings', () => {
   })
 
   it('Aspect ratio buttons should be disabled for youtube video', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
@@ -398,7 +399,7 @@ describe('VideoBlockEditorSettings', () => {
   })
 
   it('should disable aspect ratio buttons for microwebsites', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
@@ -432,7 +433,7 @@ describe('VideoBlockEditorSettings', () => {
   })
 
   it('should not allow startAt to be greater than endAt', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole, getByText } = render(
       <ThemeProvider>
         <MockedProvider>
@@ -490,7 +491,7 @@ describe('VideoBlockEditorSettings', () => {
                 videoId: 'test-youtube-id'
               }}
               posterBlock={null}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -511,7 +512,7 @@ describe('VideoBlockEditorSettings', () => {
                 source: VideoBlockSource.internal
               }}
               posterBlock={null}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -528,7 +529,7 @@ describe('VideoBlockEditorSettings', () => {
       error: undefined
     })
 
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
@@ -575,7 +576,7 @@ describe('VideoBlockEditorSettings', () => {
       error: undefined
     })
 
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
@@ -638,7 +639,7 @@ describe('VideoBlockEditorSettings', () => {
                 videoId: 'test-youtube-id'
               }}
               posterBlock={null}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -669,7 +670,7 @@ describe('VideoBlockEditorSettings', () => {
                 videoId: 'test-internal-id'
               }}
               posterBlock={null}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -700,7 +701,7 @@ describe('VideoBlockEditorSettings', () => {
                 videoId: null
               }}
               posterBlock={null}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -753,7 +754,7 @@ describe('VideoBlockEditorSettings', () => {
                       }
                     }}
                     posterBlock={null}
-                    onChange={jest.fn()}
+                    onChange={vi.fn()}
                   />
                 </EditorProvider>
               </JourneyProvider>
@@ -778,7 +779,7 @@ describe('VideoBlockEditorSettings', () => {
                   source: VideoBlockSource.internal
                 }}
                 posterBlock={null}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -789,7 +790,7 @@ describe('VideoBlockEditorSettings', () => {
     })
 
     it('should call onChange with showGeneratedSubtitles and subtitleLanguageId when MuxSubtitleSwitch is toggled on', async () => {
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       const mockJourney: Journey = {
         __typename: 'Journey',
         language: { bcp47: 'en', id: '529' }
@@ -871,7 +872,7 @@ describe('VideoBlockEditorSettings', () => {
     })
 
     it('should call onChange with showGeneratedSubtitles false and subtitleLanguageId null when MuxSubtitleSwitch is toggled off', async () => {
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       const mockJourney: Journey = {
         __typename: 'Journey',
         language: { bcp47: 'en', id: '529' }
@@ -959,7 +960,7 @@ describe('VideoBlockEditorSettings', () => {
     })
 
     it('should handle missing journey when MuxSubtitleSwitch is toggled', async () => {
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       // When journey is missing, journeyLanguageCode is undefined
       // This causes the GraphQL query to be skipped (because journeyLanguageCode == null)
       // So subtitleStatus is null, which means the switch will be disabled
@@ -1025,7 +1026,7 @@ describe('VideoBlockEditorSettings', () => {
 
   describe('Timing Validation', () => {
     it('should not allow startAt to exceed video duration - 3 seconds', async () => {
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       const { getByRole } = render(
         <ThemeProvider>
           <MockedProvider>
@@ -1054,7 +1055,7 @@ describe('VideoBlockEditorSettings', () => {
     })
 
     it('should not allow endAt to exceed video duration', async () => {
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       const { getByRole } = render(
         <ThemeProvider>
           <MockedProvider>
@@ -1083,7 +1084,7 @@ describe('VideoBlockEditorSettings', () => {
     })
 
     it('should allow valid timing changes', async () => {
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       const { getByRole } = render(
         <ThemeProvider>
           <MockedProvider>
@@ -1128,7 +1129,7 @@ describe('VideoBlockEditorSettings', () => {
               <VideoBlockEditorSettings
                 selectedBlock={video}
                 posterBlock={null}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -1148,7 +1149,7 @@ describe('VideoBlockEditorSettings', () => {
               <VideoBlockEditorSettings
                 selectedBlock={video}
                 posterBlock={null}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -1166,7 +1167,7 @@ describe('VideoBlockEditorSettings', () => {
               <VideoBlockEditorSettings
                 selectedBlock={video}
                 posterBlock={null}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -1182,7 +1183,7 @@ describe('VideoBlockEditorSettings', () => {
 
   describe('ObjectFit (Aspect Ratio)', () => {
     it('should update objectFit to zoomed', async () => {
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       const { getByRole } = render(
         <ThemeProvider>
           <MockedProvider>
@@ -1225,7 +1226,7 @@ describe('VideoBlockEditorSettings', () => {
                   source: VideoBlockSource.youTube
                 }}
                 posterBlock={null}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -1250,7 +1251,7 @@ describe('VideoBlockEditorSettings', () => {
                 <VideoBlockEditorSettings
                   selectedBlock={video}
                   posterBlock={null}
-                  onChange={jest.fn()}
+                  onChange={vi.fn()}
                 />
               </JourneyProvider>
             </SnackbarProvider>

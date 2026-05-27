@@ -6,7 +6,7 @@ import { USER_IMPERSONATE } from './ImpersonateDialog'
 
 import { ImpersonateDialog } from '.'
 
-const onClose = jest.fn()
+const onClose = vi.fn()
 
 describe('JourneyView/Menu/ImpersonateDialog', () => {
   it('should not set journey impersonate on close', async () => {
@@ -27,7 +27,7 @@ describe('JourneyView/Menu/ImpersonateDialog', () => {
   })
 
   it('should impersonate user on submit', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         userImpersonate: 'accessToken'
       }

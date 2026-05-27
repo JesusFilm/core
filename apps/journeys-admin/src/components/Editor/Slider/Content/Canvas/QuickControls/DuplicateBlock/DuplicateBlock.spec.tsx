@@ -35,12 +35,12 @@ import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { BLOCK_DUPLICATE, DuplicateBlock } from './DuplicateBlock'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   v4: () => 'newBlockId'
 }))
 
@@ -95,7 +95,7 @@ describe('DuplicateBlock', () => {
   }
 
   it('should duplicate a block on button click', async () => {
-    const duplicateBlockResultMock = jest.fn(() => ({
+    const duplicateBlockResultMock = vi.fn(() => ({
       ...duplicateBlockMock.result
     }))
     render(
@@ -125,11 +125,11 @@ describe('DuplicateBlock', () => {
   })
 
   it('should undo duplicating a block', async () => {
-    const duplicateBlockResultMock = jest.fn(() => ({
+    const duplicateBlockResultMock = vi.fn(() => ({
       ...duplicateBlockMock.result
     }))
 
-    const blockDeleteMockResult = jest
+    const blockDeleteMockResult = vi
       .fn()
       .mockResolvedValue(deleteBlockMock.result)
     render(
@@ -177,15 +177,15 @@ describe('DuplicateBlock', () => {
   })
 
   it('should undo and redo duplicating a block', async () => {
-    const duplicateBlockResultMock = jest.fn(() => ({
+    const duplicateBlockResultMock = vi.fn(() => ({
       ...duplicateBlockMock.result
     }))
 
-    const blockDeleteMockResult = jest
+    const blockDeleteMockResult = vi
       .fn()
       .mockResolvedValue(deleteBlockMock.result)
 
-    const blockRestoreMockResult = jest
+    const blockRestoreMockResult = vi
       .fn()
       .mockResolvedValue(blockRestoreMock.result)
     render(
@@ -278,7 +278,7 @@ describe('DuplicateBlock', () => {
       }
     })
 
-    const duplicateBlockResultMock = jest.fn(() => ({
+    const duplicateBlockResultMock = vi.fn(() => ({
       data: {
         blockDuplicate: [
           {
@@ -353,7 +353,7 @@ describe('DuplicateBlock', () => {
     // capture the optimistic response from the mutation
     let capturedOptimisticResponse: BlockDuplicate | null = null
 
-    jest
+    vi
       .spyOn(require('@apollo/client'), 'useMutation')
       .mockImplementation(() => {
         return [
@@ -403,6 +403,6 @@ describe('DuplicateBlock', () => {
     expect(duplicatedButton.id).toBe('newBlockId')
     expect(duplicatedButton.submitEnabled).toBe(false)
 
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 })

@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
@@ -15,12 +16,12 @@ import {
   mockStepBlockRestoreFromStep
 } from './useCreateStepFromStep.mock'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 const step = {
   __typename: 'StepBlock',
@@ -43,7 +44,7 @@ describe('useCreateStepFromStep', () => {
     mockUuidv4.mockReturnValueOnce('newStep.id')
     mockUuidv4.mockReturnValueOnce('newCard.id')
 
-    const result = jest.fn().mockReturnValue(mockStepBlockCreateFromStep.result)
+    const result = vi.fn().mockReturnValue(mockStepBlockCreateFromStep.result)
 
     render(
       <MockedProvider
@@ -109,8 +110,8 @@ describe('useCreateStepFromStep', () => {
     mockUuidv4.mockReturnValueOnce('newStep.id')
     mockUuidv4.mockReturnValueOnce('newCard.id')
 
-    const result = jest.fn().mockReturnValue(mockStepBlockCreateFromStep.result)
-    const result2 = jest
+    const result = vi.fn().mockReturnValue(mockStepBlockCreateFromStep.result)
+    const result2 = vi
       .fn()
       .mockReturnValue(mockStepBlockDeleteFromStep.result)
 
@@ -184,11 +185,11 @@ describe('useCreateStepFromStep', () => {
     mockUuidv4.mockReturnValueOnce('newStep.id')
     mockUuidv4.mockReturnValueOnce('newCard.id')
 
-    const result = jest.fn().mockReturnValue(mockStepBlockCreateFromStep.result)
-    const result2 = jest
+    const result = vi.fn().mockReturnValue(mockStepBlockCreateFromStep.result)
+    const result2 = vi
       .fn()
       .mockReturnValue(mockStepBlockDeleteFromStep.result)
-    const result3 = jest
+    const result3 = vi
       .fn()
       .mockReturnValue(mockStepBlockRestoreFromStep.result)
 

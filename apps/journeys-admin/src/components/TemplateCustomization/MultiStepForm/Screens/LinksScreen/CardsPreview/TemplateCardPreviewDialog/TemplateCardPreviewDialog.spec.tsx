@@ -9,7 +9,7 @@ import {
   TemplateCardPreviewDialogProps
 } from './TemplateCardPreviewDialog'
 
-jest.mock(
+vi.mock(
   '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview',
   () => ({
     TemplateCardPreview: ({
@@ -48,7 +48,7 @@ function buildSteps(count: number): Array<TreeBlock<StepBlock>> {
 describe('TemplateCardPreviewDialog', () => {
   const defaultProps: TemplateCardPreviewDialogProps = {
     open: true,
-    onClose: jest.fn(),
+    onClose: vi.fn(),
     steps: buildSteps(3),
     initialStepId: 'step-1'
   }
@@ -71,7 +71,7 @@ describe('TemplateCardPreviewDialog', () => {
   })
 
   it('should call onClose when dialog backdrop is clicked', () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
     render(
       <TemplateCardPreviewDialog {...defaultProps} onClose={handleClose} />
     )

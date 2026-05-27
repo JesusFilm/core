@@ -69,7 +69,7 @@ describe('MediaLibrary', () => {
   it('should render images returned by the query', async () => {
     render(
       <MockedProvider mocks={[firstFullPageMock]}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -83,7 +83,7 @@ describe('MediaLibrary', () => {
   it('should render only PAGE_SIZE tiles when the server returns a full peek', async () => {
     render(
       <MockedProvider mocks={[firstFullPageMock]}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
@@ -103,7 +103,7 @@ describe('MediaLibrary', () => {
     }
     const { container } = render(
       <MockedProvider mocks={[emptyMock]}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -121,7 +121,7 @@ describe('MediaLibrary', () => {
     }
     render(
       <MockedProvider mocks={[errorMock]}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -132,7 +132,7 @@ describe('MediaLibrary', () => {
   })
 
   it('should invoke onSelect with imagedelivery src when a tile is clicked', async () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     render(
       <MockedProvider mocks={[firstFullPageMock]}>
         <MediaLibrary title="Your uploads" onSelect={onSelect} isAi={false} />
@@ -155,7 +155,7 @@ describe('MediaLibrary', () => {
       <MockedProvider mocks={[firstFullPageMock]}>
         <MediaLibrary
           title="Your uploads"
-          onSelect={jest.fn()}
+          onSelect={vi.fn()}
           isAi={false}
           uploading
         />
@@ -172,7 +172,7 @@ describe('MediaLibrary', () => {
         mocks={[firstFullPageMock, secondShortPageMock]}
         cache={paginatedCache()}
       >
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
@@ -198,7 +198,7 @@ describe('MediaLibrary', () => {
   it('should disable Load More with "No more to load" when a short page is returned', async () => {
     render(
       <MockedProvider mocks={[firstShortPageMock]}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
@@ -210,7 +210,7 @@ describe('MediaLibrary', () => {
   it('should show the Load More button in a loading state while the initial query is in flight', () => {
     render(
       <MockedProvider mocks={[firstFullPageMock]}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     const button = screen.getByRole('button', { name: 'Loading...' })
@@ -231,7 +231,7 @@ describe('MediaLibrary', () => {
         mocks={[firstFullPageMock, failingSecondPage]}
         cache={paginatedCache()}
       >
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
@@ -250,7 +250,7 @@ describe('MediaLibrary', () => {
     const cache = paginatedCache()
     render(
       <MockedProvider mocks={[firstFullPageMock]} cache={cache}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
@@ -275,7 +275,7 @@ describe('MediaLibrary', () => {
     const cache = paginatedCache()
     render(
       <MockedProvider mocks={[firstFullPageMock]} cache={cache}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
@@ -309,7 +309,7 @@ describe('MediaLibrary', () => {
     }
     render(
       <MockedProvider mocks={[aiMock]}>
-        <MediaLibrary title="Your generations" onSelect={jest.fn()} isAi />
+        <MediaLibrary title="Your generations" onSelect={vi.fn()} isAi />
       </MockedProvider>
     )
     expect(

@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
@@ -15,15 +16,13 @@ import { defaultTemplate, fakeDate, oldTemplate } from '../data'
 
 import { TrashedTemplateList } from '.'
 
-jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
-  useTemplateFamilyStatsAggregateLazyQuery: jest.fn(),
-  extractTemplateIdsFromJourneys: jest.requireActual(
-    '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
-  ).extractTemplateIdsFromJourneys
+vi.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', async () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: vi.fn(),
+  extractTemplateIdsFromJourneys: (await vi.importActual('../../../libs/useTemplateFamilyStatsAggregateLazyQuery')).extractTemplateIdsFromJourneys
 }))
 
 const mockedUseTemplateFamilyStatsAggregateLazyQuery =
-  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+  useTemplateFamilyStatsAggregateLazyQuery as MockedFunction<
     typeof useTemplateFamilyStatsAggregateLazyQuery
   >
 
@@ -63,14 +62,14 @@ const noJourneysMock = {
 }
 
 describe('TrashedTemplateList', () => {
-  const refetchTemplateStats = jest.fn()
+  const refetchTemplateStats = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     refetchTemplateStats.mockClear()
     mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
       query: [
-        jest.fn(),
+        vi.fn(),
         {
           data: undefined,
           loading: false,
@@ -82,12 +81,12 @@ describe('TrashedTemplateList', () => {
   })
 
   beforeAll(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date(fakeDate))
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    vi.setSystemTime(new Date(fakeDate))
   })
 
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('should render templates in descending updatedAt date by default', async () => {
@@ -232,7 +231,7 @@ describe('TrashedTemplateList', () => {
   })
 
   describe('Restore All', () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeysRestore: [
           {
@@ -343,7 +342,7 @@ describe('TrashedTemplateList', () => {
   })
 
   describe('Delete All', () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: { journeysDelete: [{ id: defaultTemplate.id, status: 'deleted' }] }
     }))
     const deleteJourneysMock = {

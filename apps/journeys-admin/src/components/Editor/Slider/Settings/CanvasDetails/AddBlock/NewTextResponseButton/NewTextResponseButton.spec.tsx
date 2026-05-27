@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -22,17 +23,17 @@ import { TEXT_RESPONSE_BLOCK_CREATE } from './NewTextResponseButton'
 
 import { NewTextResponseButton } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate> =
   {
@@ -47,7 +48,7 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockCreate: {
           __typename: 'TextResponseBlock',
@@ -65,11 +66,11 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
           hideLabel: false
         }
       }
-    }))
+    })) as MockedResponse<TextResponseBlockCreate>['result']
   }
 
 describe('NewTextResponseButton', () => {
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   describe('TextResponseBlock', () => {
     it('should create a new TextResponseBlock', async () => {
@@ -100,7 +101,7 @@ describe('NewTextResponseButton', () => {
 
     it('should undo when undo clicked', async () => {
       mockUuidv4.mockReturnValueOnce('textResponseBlock.id')
-      const deleteResult = jest.fn().mockResolvedValue({
+      const deleteResult = vi.fn().mockResolvedValue({
         ...deleteBlock.result,
         type: TextResponseType.freeForm
       })
@@ -143,7 +144,7 @@ describe('NewTextResponseButton', () => {
 
     it('should redo when redo clicked', async () => {
       mockUuidv4.mockReturnValueOnce('textResponseBlock.id')
-      const deleteResult = jest
+      const deleteResult = vi
         .fn()
         .mockResolvedValue({ ...deleteBlock.result })
       const deleteBlockMock = {
@@ -157,7 +158,7 @@ describe('NewTextResponseButton', () => {
         result: deleteResult
       }
 
-      const restoreResult = jest
+      const restoreResult = vi
         .fn()
         .mockResolvedValue({ ...blockRestore.result })
 
@@ -248,7 +249,7 @@ describe('NewTextResponseButton', () => {
 
   describe('TextResponseWithButton', () => {
     beforeEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
     })
 
     it('should create text response with button and update cache', async () => {
@@ -396,8 +397,30 @@ describe('NewTextResponseButton', () => {
 
   describe('loading state', () => {
     it('textResponseBlock: should disable when loading', async () => {
+      mockUuidv4.mockReturnValueOnce('textResponseBlock.id')
+
+      // The click fires TextResponseBlockCreate. A never-resolving mock keeps
+      // the mutation in flight (so the button stays disabled) and gives the
+      // operation a matching mock so it does not raise an unhandled Apollo
+      // error after the test completes.
+      const loadingMock: MockedResponse<TextResponseBlockCreate> = {
+        request: {
+          query: TEXT_RESPONSE_BLOCK_CREATE,
+          variables: {
+            input: {
+              id: 'textResponseBlock.id',
+              journeyId: 'journeyId',
+              parentBlockId: 'card.id',
+              label: 'Field Name'
+            }
+          }
+        },
+        delay: Infinity,
+        result: {}
+      }
+
       const { getByRole } = render(
-        <MockedProvider>
+        <MockedProvider mocks={[loadingMock]}>
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -417,8 +440,63 @@ describe('NewTextResponseButton', () => {
     })
 
     it('textResponseWithButton: should disable when loading', async () => {
+      mockUuidv4
+        .mockReturnValueOnce('textResponse.id')
+        .mockReturnValueOnce('button.id')
+        .mockReturnValueOnce('startIcon.id')
+        .mockReturnValueOnce('endIcon.id')
+
+      // The click fires TextResponseWithButtonCreate. A never-resolving mock
+      // keeps the mutation in flight (button stays disabled) and gives the
+      // operation a matching mock so it does not raise an unhandled Apollo
+      // error after the test completes.
+      const loadingMock: MockedResponse = {
+        ...textResponseWithButtonCreateMock,
+        request: {
+          ...textResponseWithButtonCreateMock.request,
+          variables: {
+            textResponseInput: {
+              id: 'textResponse.id',
+              journeyId: 'journeyId',
+              parentBlockId: 'card.id',
+              label: 'Field Name'
+            },
+            buttonInput: {
+              id: 'button.id',
+              journeyId: 'journeyId',
+              parentBlockId: 'card.id',
+              label: '',
+              variant: 'contained',
+              color: 'primary',
+              size: 'medium',
+              submitEnabled: true,
+              settings: { alignment: 'justify' }
+            },
+            iconInput1: {
+              id: 'startIcon.id',
+              journeyId: 'journeyId',
+              parentBlockId: 'button.id',
+              name: null
+            },
+            iconInput2: {
+              id: 'endIcon.id',
+              journeyId: 'journeyId',
+              parentBlockId: 'button.id',
+              name: null
+            },
+            buttonId: 'button.id',
+            journeyId: 'journeyId',
+            buttonUpdateInput: {
+              startIconId: 'startIcon.id',
+              endIconId: 'endIcon.id'
+            }
+          }
+        },
+        delay: Infinity
+      }
+
       const { getByRole } = render(
-        <MockedProvider>
+        <MockedProvider mocks={[loadingMock]}>
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,

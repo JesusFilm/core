@@ -8,6 +8,7 @@ import {
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { formatISO } from 'date-fns'
+import { type MockedFunction } from 'vitest'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -20,10 +21,10 @@ import { earliestStatsCollected } from './buildPresetDateRange'
 
 import { AnalyticsOverlaySwitch } from '.'
 
-jest.mock('./buildPlausibleDateRange')
+vi.mock('./buildPlausibleDateRange')
 
 const mockBuildPlausibleDateRange =
-  buildPlausibleDateRange as jest.MockedFunction<typeof buildPlausibleDateRange>
+  buildPlausibleDateRange as MockedFunction<typeof buildPlausibleDateRange>
 
 const mockCurrentDate = '2024-06-02'
 
@@ -33,19 +34,19 @@ describe('AnalyticsOverlaySwitch', () => {
   })
 
   beforeAll(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date('2024-06-02'))
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    vi.setSystemTime(new Date('2024-06-02'))
   })
 
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('toggles showAnalytics', async () => {
     mockBuildPlausibleDateRange.mockReturnValue(
       `${earliestStatsCollected},${mockCurrentDate}`
     )
-    const result = jest.fn().mockReturnValue(getJourneyAnalytics.result)
+    const result = vi.fn().mockReturnValue(getJourneyAnalytics.result)
     const journey = { id: 'journeyId' } as unknown as GetJourney_journey
     const request = {
       ...getJourneyAnalytics.request,
@@ -110,7 +111,7 @@ describe('AnalyticsOverlaySwitch', () => {
     // Pretend the date picker has already produced our custom range
     mockBuildPlausibleDateRange.mockReturnValue(formattedDateRange)
 
-    const result = jest.fn().mockReturnValue(getJourneyAnalytics.result)
+    const result = vi.fn().mockReturnValue(getJourneyAnalytics.result)
     const journey = { id: 'journeyId' } as unknown as GetJourney_journey
 
     render(
@@ -156,7 +157,7 @@ describe('AnalyticsOverlaySwitch', () => {
       `${earliestStatsCollected},${mockCurrentDate}`
     )
 
-    const result = jest.fn().mockReturnValue(getJourneyAnalytics.result)
+    const result = vi.fn().mockReturnValue(getJourneyAnalytics.result)
     const journey = { id: 'journeyId' } as unknown as GetJourney_journey
     const request = {
       ...getJourneyAnalytics.request,
@@ -203,7 +204,7 @@ describe('AnalyticsOverlaySwitch', () => {
       `${earliestStatsCollected},${mockCurrentDate}`
     )
 
-    const result = jest.fn().mockReturnValue(getJourneyAnalytics.result)
+    const result = vi.fn().mockReturnValue(getJourneyAnalytics.result)
     const journey = { id: 'journeyId' } as unknown as GetJourney_journey
     const request = {
       ...getJourneyAnalytics.request,

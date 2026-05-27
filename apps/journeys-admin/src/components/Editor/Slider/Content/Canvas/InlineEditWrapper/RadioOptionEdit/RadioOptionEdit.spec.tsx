@@ -15,7 +15,7 @@ import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { RADIO_OPTION_BLOCK_UPDATE_CONTENT, RadioOptionEdit } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -43,7 +43,7 @@ describe('RadioOptionEdit', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         radioOptionBlockUpdate: [
           {
@@ -66,7 +66,7 @@ describe('RadioOptionEdit', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         radioOptionBlockUpdate: [
           {
@@ -110,7 +110,7 @@ describe('RadioOptionEdit', () => {
     journeyCustomizationFields: []
   } as unknown as Journey
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('selects the input on click', () => {
     render(

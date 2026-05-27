@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -17,17 +18,17 @@ import { SIGN_UP_BLOCK_CREATE } from './NewSignUpButton'
 
 import { NewSignUpButton } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('NewSignUpButton', () => {
   const selectedStep: TreeBlock = {
@@ -62,7 +63,7 @@ describe('NewSignUpButton', () => {
     mockUuidv4.mockReturnValueOnce('signUpBlockId')
     mockUuidv4.mockReturnValueOnce('iconId')
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         signUpBlockCreate: {
           id: 'signUpBlockId'
@@ -138,7 +139,7 @@ describe('NewSignUpButton', () => {
     mockUuidv4.mockReturnValueOnce('signUpBlockId')
     mockUuidv4.mockReturnValueOnce('iconId')
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         signUpBlockCreate: {
           id: 'signUpBlockId',
@@ -166,7 +167,7 @@ describe('NewSignUpButton', () => {
       }
     }))
 
-    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteResult = vi.fn().mockResolvedValue({ ...deleteBlock.result })
     const deleteBlockMock = {
       ...deleteBlock,
       request: {
@@ -231,7 +232,7 @@ describe('NewSignUpButton', () => {
     mockUuidv4.mockReturnValueOnce('signUpBlockId')
     mockUuidv4.mockReturnValueOnce('iconId')
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         signUpBlockCreate: {
           id: 'signUpBlockId',
@@ -258,7 +259,7 @@ describe('NewSignUpButton', () => {
       }
     }))
 
-    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteResult = vi.fn().mockResolvedValue({ ...deleteBlock.result })
     const deleteBlockMock = {
       ...deleteBlock,
       request: {
@@ -270,7 +271,7 @@ describe('NewSignUpButton', () => {
       result: deleteResult
     }
 
-    const restoreResult = jest
+    const restoreResult = vi
       .fn()
       .mockResolvedValue({ ...blockRestore.result })
 
@@ -349,7 +350,7 @@ describe('NewSignUpButton', () => {
         __typename: 'Journey'
       }
     })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         signUpBlockCreate: {
           __typename: 'SignUpBlock',
@@ -434,8 +435,44 @@ describe('NewSignUpButton', () => {
   })
 
   it('should disable when loading', async () => {
+    mockUuidv4.mockReturnValueOnce('signUpBlockId')
+    mockUuidv4.mockReturnValueOnce('iconId')
+
     const { getByRole } = render(
-      <MockedProvider>
+      // The click fires SignUpBlockCreate. A never-resolving mock keeps the
+      // mutation in flight (button stays disabled) and matches the operation
+      // so it does not raise an unhandled Apollo error after the test
+      // completes.
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: SIGN_UP_BLOCK_CREATE,
+              variables: {
+                input: {
+                  id: 'signUpBlockId',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  submitLabel: 'Submit'
+                },
+                iconBlockCreateInput: {
+                  id: 'iconId',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'signUpBlockId',
+                  name: null
+                },
+                id: 'signUpBlockId',
+                journeyId: 'journeyId',
+                updateInput: {
+                  submitIconId: 'iconId'
+                }
+              }
+            },
+            delay: Infinity,
+            result: {}
+          }
+        ]}
+      >
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,

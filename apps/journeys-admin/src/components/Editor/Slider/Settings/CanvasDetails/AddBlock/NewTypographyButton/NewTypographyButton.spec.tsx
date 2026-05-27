@@ -21,12 +21,12 @@ import { TYPOGRAPHY_BLOCK_CREATE } from './NewTypographyButton'
 
 import { NewTypographyButton } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
   v4: () => 'typographyBlockId'
 }))
@@ -94,7 +94,7 @@ describe('NewTypographyButton', () => {
   }
 
   it('should check if the mutation gets called', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         typographyBlockCreate: {
           id: 'typographyBlockId',
@@ -148,7 +148,7 @@ describe('NewTypographyButton', () => {
 
     const stepWithExistingTypog = { ...selectedStep, children: [cardWithTypog] }
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         typographyBlockCreate: {
           id: 'typographyBlockId',
@@ -200,7 +200,7 @@ describe('NewTypographyButton', () => {
   })
 
   it('should undo if undo is clicked', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         typographyBlockCreate: {
           id: 'typographyBlockId',
@@ -214,7 +214,7 @@ describe('NewTypographyButton', () => {
       }
     }))
 
-    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteResult = vi.fn().mockResolvedValue({ ...deleteBlock.result })
     const deleteBlockMock = {
       ...deleteBlock,
       request: {
@@ -269,7 +269,7 @@ describe('NewTypographyButton', () => {
   })
 
   it('should redo if redo is clicked', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         typographyBlockCreate: {
           id: 'typographyBlockId',
@@ -283,7 +283,7 @@ describe('NewTypographyButton', () => {
       }
     }))
 
-    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteResult = vi.fn().mockResolvedValue({ ...deleteBlock.result })
     const deleteBlockMock = {
       ...deleteBlock,
       request: {
@@ -295,7 +295,7 @@ describe('NewTypographyButton', () => {
       result: deleteResult
     }
 
-    const restoreResult = jest
+    const restoreResult = vi
       .fn()
       .mockResolvedValue({ ...blockRestore.result })
 
@@ -363,7 +363,7 @@ describe('NewTypographyButton', () => {
         __typename: 'Journey'
       }
     })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         typographyBlockCreate: {
           id: 'typographyBlockId',
@@ -425,7 +425,26 @@ describe('NewTypographyButton', () => {
 
   it('should disable when loading', async () => {
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: TYPOGRAPHY_BLOCK_CREATE,
+              variables: {
+                input: {
+                  id: 'typographyBlockId',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  content: '',
+                  variant: TypographyVariant.h1
+                }
+              }
+            },
+            delay: Infinity,
+            result: {}
+          }
+        ]}
+      >
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,

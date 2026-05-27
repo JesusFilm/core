@@ -4,12 +4,12 @@ import { addUploadToQueue } from './addUploadToQueue'
 
 describe('addUploadToQueue', () => {
   it('should add upload task to queue with waiting status', () => {
-    const setUploadTasks = jest.fn()
+    const setUploadTasks = vi.fn()
     const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
     const videoBlockId = 'block-1'
     const languageCode = 'en'
     const languageName = 'English'
-    const onComplete = jest.fn()
+    const onComplete = vi.fn()
 
     addUploadToQueue(
       videoBlockId,
@@ -39,7 +39,7 @@ describe('addUploadToQueue', () => {
   })
 
   it('should handle undefined language code and name', () => {
-    const setUploadTasks = jest.fn()
+    const setUploadTasks = vi.fn()
     const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
     const videoBlockId = 'block-1'
 
@@ -59,7 +59,7 @@ describe('addUploadToQueue', () => {
   })
 
   it('should add to existing map without overwriting other tasks', () => {
-    const setUploadTasks = jest.fn()
+    const setUploadTasks = vi.fn()
     const file1 = new File(['test1'], 'test1.mp4', { type: 'video/mp4' })
     const file2 = new File(['test2'], 'test2.mp4', { type: 'video/mp4' })
     const existingTask: UploadTask = {

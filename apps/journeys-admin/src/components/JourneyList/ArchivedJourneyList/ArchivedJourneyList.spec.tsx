@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import {
   GetAdminJourneys,
@@ -20,25 +21,23 @@ import { SortOrder } from '../JourneySort'
 
 import { ArchivedJourneyList } from '.'
 
-jest.mock('@core/journeys/ui/useNavigationState', () => ({
-  useNavigationState: jest.fn(() => false)
+vi.mock('@core/journeys/ui/useNavigationState', async () => ({
+  useNavigationState: vi.fn(() => false)
 }))
 
-jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
-  useTemplateFamilyStatsAggregateLazyQuery: jest.fn(),
-  extractTemplateIdsFromJourneys: jest.requireActual(
-    '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
-  ).extractTemplateIdsFromJourneys
+vi.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', async () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: vi.fn(),
+  extractTemplateIdsFromJourneys: (await vi.importActual('../../../libs/useTemplateFamilyStatsAggregateLazyQuery')).extractTemplateIdsFromJourneys
 }))
 
 const mockedUseTemplateFamilyStatsAggregateLazyQuery =
-  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+  useTemplateFamilyStatsAggregateLazyQuery as MockedFunction<
     typeof useTemplateFamilyStatsAggregateLazyQuery
   >
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', async () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
 const archivedJourneysMock: MockedResponse<
@@ -78,14 +77,14 @@ const noJourneysMock: MockedResponse<
 }
 
 describe('ArchivedJourneyList', () => {
-  const refetchTemplateStats = jest.fn()
+  const refetchTemplateStats = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     refetchTemplateStats.mockClear()
     mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
       query: [
-        jest.fn(),
+        vi.fn(),
         {
           data: undefined,
           loading: false,
@@ -97,12 +96,12 @@ describe('ArchivedJourneyList', () => {
   })
 
   beforeAll(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date(fakeDate))
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    vi.setSystemTime(new Date(fakeDate))
   })
 
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('should render journeys in descending updatedAt date by default', async () => {
@@ -169,7 +168,7 @@ describe('ArchivedJourneyList', () => {
   })
 
   describe('Unarchive All', () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeysRestore: [
           {
@@ -320,7 +319,7 @@ describe('ArchivedJourneyList', () => {
   })
 
   describe('Trash All', () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeysTrash: [
           {

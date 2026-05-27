@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -11,12 +12,12 @@ import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastAc
 
 import { BreadcrumbNavigation } from './BreadcrumbNavigation'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('BreadcrumbNavigation', () => {
   const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {

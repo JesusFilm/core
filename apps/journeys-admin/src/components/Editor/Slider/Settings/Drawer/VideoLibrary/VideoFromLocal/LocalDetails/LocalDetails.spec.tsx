@@ -9,9 +9,9 @@ import { VideoBlockSource } from '../../../../../../../../../__generated__/globa
 
 import { GET_VIDEO, LocalDetails } from './LocalDetails'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('LocalDetails', () => {
@@ -73,7 +73,7 @@ describe('LocalDetails', () => {
   it('should render details of a video', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider mocks={[getVideoMock]}>
-        <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
       </MockedProvider>
     )
     await waitFor(() =>
@@ -97,7 +97,7 @@ describe('LocalDetails', () => {
   it('should open the languages drawer on language button click', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'English' }))
@@ -105,7 +105,7 @@ describe('LocalDetails', () => {
   })
 
   it('should render variant language', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         video: {
           id: '2_Acts7302-0-0',
@@ -183,7 +183,7 @@ describe('LocalDetails', () => {
             } as unknown as TreeBlock<VideoBlock>
           }}
         >
-          <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
+          <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
         </EditorProvider>
       </MockedProvider>
     )
@@ -194,8 +194,8 @@ describe('LocalDetails', () => {
   })
 
   it('should call onSelect on select click', async () => {
-    const onSelect = jest.fn()
-    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const onSelect = vi.fn()
+    const result = vi.fn().mockReturnValue(getVideoMock.result)
     const { getByRole } = render(
       <MockedProvider mocks={[{ ...getVideoMock, result }]}>
         <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
@@ -214,8 +214,8 @@ describe('LocalDetails', () => {
   })
 
   it('should disable select button if loading', async () => {
-    const onSelect = jest.fn()
-    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const onSelect = vi.fn()
+    const result = vi.fn().mockReturnValue(getVideoMock.result)
     const { getByRole } = render(
       <MockedProvider mocks={[{ ...getVideoMock, result }]}>
         <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
@@ -227,8 +227,8 @@ describe('LocalDetails', () => {
   })
 
   it('should commit the language change and close the picker when Apply is clicked', async () => {
-    const onSelect = jest.fn()
-    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const onSelect = vi.fn()
+    const result = vi.fn().mockReturnValue(getVideoMock.result)
     render(
       <MockedProvider mocks={[{ ...getVideoMock, result }]}>
         <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
@@ -256,8 +256,8 @@ describe('LocalDetails', () => {
   })
 
   it('should commit the matching language id (not the video id) when Apply is clicked on an existing video block without changing language', async () => {
-    const onSelect = jest.fn()
-    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const onSelect = vi.fn()
+    const result = vi.fn().mockReturnValue(getVideoMock.result)
     render(
       <MockedProvider mocks={[{ ...getVideoMock, result }]}>
         <EditorProvider
@@ -299,7 +299,7 @@ describe('LocalDetails', () => {
   })
 
   it('should keep startAt and endAt values if already exist on select click', async () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     const { getByRole } = render(
       <MockedProvider>
         <EditorProvider

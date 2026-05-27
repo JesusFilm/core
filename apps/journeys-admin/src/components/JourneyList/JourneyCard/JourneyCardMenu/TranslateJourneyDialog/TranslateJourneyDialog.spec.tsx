@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
@@ -17,20 +18,16 @@ import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/us
 
 import { TranslateJourneyDialog } from './TranslateJourneyDialog'
 
-jest.mock('@mui/material/useMediaQuery')
+vi.mock('@mui/material/useMediaQuery')
 
-jest.mock(
-  '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
-  () => ({
-    useTemplateFamilyStatsAggregateLazyQuery: jest.fn(),
-    extractTemplateIdsFromJourneys: jest.requireActual(
-      '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
-    ).extractTemplateIdsFromJourneys
+vi.mock('../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery', async () => ({
+    useTemplateFamilyStatsAggregateLazyQuery: vi.fn(),
+    extractTemplateIdsFromJourneys: (await vi.importActual('../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery')).extractTemplateIdsFromJourneys
   })
 )
 
 const mockedUseTemplateFamilyStatsAggregateLazyQuery =
-  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+  useTemplateFamilyStatsAggregateLazyQuery as MockedFunction<
     typeof useTemplateFamilyStatsAggregateLazyQuery
   >
 
@@ -40,8 +37,8 @@ describe('TranslateJourneyDialog', () => {
   const originalConsoleWarn = console.warn
 
   beforeAll(() => {
-    console.error = jest.fn()
-    console.warn = jest.fn()
+    console.error = vi.fn()
+    console.warn = vi.fn()
   })
 
   afterAll(() => {
@@ -129,7 +126,7 @@ describe('TranslateJourneyDialog', () => {
         teamId: 'teamId'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         journeyDuplicate: {
           id: 'duplicatedJourneyId'
@@ -138,8 +135,8 @@ describe('TranslateJourneyDialog', () => {
     }))
   }
 
-  const handleClose = jest.fn()
-  const refetchTemplateStats = jest.fn()
+  const handleClose = vi.fn()
+  const refetchTemplateStats = vi.fn()
 
   beforeEach(() => {
     journeyDuplicateMock.result.mockClear()
@@ -147,7 +144,7 @@ describe('TranslateJourneyDialog', () => {
     refetchTemplateStats.mockClear()
     mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
       query: [
-        jest.fn(),
+        vi.fn(),
         {
           data: undefined,
           loading: false,
@@ -174,7 +171,7 @@ describe('TranslateJourneyDialog', () => {
   })
 
   it('should call onClose when cancel is clicked', () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
 
     render(
       <MockedProvider mocks={[getLanguagesMock]}>
@@ -230,7 +227,7 @@ describe('TranslateJourneyDialog', () => {
   })
 
   it('should close dialog normally when not in loading/translation state', () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
 
     render(
       <MockedProvider mocks={[getLanguagesMock]}>
@@ -340,7 +337,7 @@ describe('TranslateJourneyDialog', () => {
           userLanguageName: ''
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyAiTranslateCreateSubscription: {
             progress: 100,
@@ -381,7 +378,7 @@ describe('TranslateJourneyDialog', () => {
           getLastActiveTeamIdAndTeamsMock,
           {
             ...journeyDuplicateMock,
-            result: jest.fn(() => ({
+            result: vi.fn(() => ({
               data: {
                 journeyDuplicate: {
                   id: 'duplicatedJourneyId',

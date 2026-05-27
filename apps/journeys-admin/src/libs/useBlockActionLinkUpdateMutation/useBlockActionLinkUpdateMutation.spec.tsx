@@ -27,7 +27,7 @@ describe('useBlockActionLinkUpdateMutation', () => {
   }
 
   it('should update block action', async () => {
-    const mockResult = jest
+    const mockResult = vi
       .fn()
       .mockReturnValue(blockActionLinkUpdateMock.result)
 

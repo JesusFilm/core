@@ -5,19 +5,19 @@ import { handlePollingComplete } from './handlePollingComplete'
 
 describe('handlePollingComplete', () => {
   beforeEach(() => {
-    jest.useFakeTimers()
-    jest.clearAllMocks()
+    vi.useFakeTimers()
+    vi.clearAllMocks()
   })
 
   afterEach(() => {
-    jest.runOnlyPendingTimers()
-    jest.useRealTimers()
+    vi.runOnlyPendingTimers()
+    vi.useRealTimers()
   })
 
   it('should update task status to completed', async () => {
-    const setPollingTasks = jest.fn()
-    const showSnackbar = jest.fn()
-    const t = jest.fn((key: string) => key)
+    const setPollingTasks = vi.fn()
+    const showSnackbar = vi.fn()
+    const t = vi.fn((key: string) => key)
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const task: PollingTask = {
@@ -44,9 +44,9 @@ describe('handlePollingComplete', () => {
   })
 
   it('should clear polling interval', async () => {
-    const setPollingTasks = jest.fn()
-    const showSnackbar = jest.fn()
-    const t = jest.fn((key: string) => key)
+    const setPollingTasks = vi.fn()
+    const showSnackbar = vi.fn()
+    const t = vi.fn((key: string) => key)
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const noop = (): void => {
@@ -73,9 +73,9 @@ describe('handlePollingComplete', () => {
   })
 
   it('should show success snackbar', async () => {
-    const setPollingTasks = jest.fn()
-    const showSnackbar = jest.fn()
-    const t = jest.fn((key: string) => `translated:${key}`)
+    const setPollingTasks = vi.fn()
+    const showSnackbar = vi.fn()
+    const t = vi.fn((key: string) => `translated:${key}`)
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const task: PollingTask = {
@@ -105,12 +105,12 @@ describe('handlePollingComplete', () => {
   })
 
   it('should call onComplete callback if provided', async () => {
-    const setPollingTasks = jest.fn()
-    const showSnackbar = jest.fn()
-    const t = jest.fn((key: string) => key)
+    const setPollingTasks = vi.fn()
+    const showSnackbar = vi.fn()
+    const t = vi.fn((key: string) => key)
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
-    const onComplete = jest.fn()
+    const onComplete = vi.fn()
     const task: PollingTask = {
       videoId,
       status: 'processing',
@@ -131,9 +131,9 @@ describe('handlePollingComplete', () => {
   })
 
   it('should not call onComplete if not provided', async () => {
-    const setPollingTasks = jest.fn()
-    const showSnackbar = jest.fn()
-    const t = jest.fn((key: string) => key)
+    const setPollingTasks = vi.fn()
+    const showSnackbar = vi.fn()
+    const t = vi.fn((key: string) => key)
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const task: PollingTask = {
@@ -156,9 +156,9 @@ describe('handlePollingComplete', () => {
   })
 
   it('should remove task after cleanup delay', async () => {
-    const setPollingTasks = jest.fn()
-    const showSnackbar = jest.fn()
-    const t = jest.fn((key: string) => key)
+    const setPollingTasks = vi.fn()
+    const showSnackbar = vi.fn()
+    const t = vi.fn((key: string) => key)
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const task: PollingTask = {
@@ -180,7 +180,7 @@ describe('handlePollingComplete', () => {
     expect(setPollingTasks).toHaveBeenCalledTimes(1)
 
     // Advance time by cleanup delay
-    jest.advanceTimersByTime(TASK_CLEANUP_DELAY)
+    vi.advanceTimersByTime(TASK_CLEANUP_DELAY)
 
     // Second call removes the task
     expect(setPollingTasks).toHaveBeenCalledTimes(2)
@@ -193,9 +193,9 @@ describe('handlePollingComplete', () => {
   })
 
   it('should return early if task does not exist', async () => {
-    const setPollingTasks = jest.fn()
-    const showSnackbar = jest.fn()
-    const t = jest.fn((key: string) => key)
+    const setPollingTasks = vi.fn()
+    const showSnackbar = vi.fn()
+    const t = vi.fn((key: string) => key)
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const pollingTasks = new Map<string, PollingTask>()

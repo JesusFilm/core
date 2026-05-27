@@ -1,6 +1,7 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
 import { ReactElement } from 'react'
+import { type Mock } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrappersProps } from '@core/journeys/ui/BlockRenderer'
@@ -12,14 +13,14 @@ import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { CardWrapper } from '.'
 
-jest.mock('@core/journeys/ui/Card', () => ({
+vi.mock('@core/journeys/ui/Card', () => ({
   __esModule: true,
-  Card: jest.fn(() => <></>)
+  Card: vi.fn(() => <></>)
 }))
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn(() => true)
+  default: vi.fn(() => true)
 }))
 
 describe('CardWrapper', () => {
@@ -345,7 +346,7 @@ describe('CardWrapper', () => {
 
   describe('mobile', () => {
     beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => false)
+      (useMediaQuery as Mock).mockImplementation(() => false)
     )
 
     it('opens card template library', () => {
