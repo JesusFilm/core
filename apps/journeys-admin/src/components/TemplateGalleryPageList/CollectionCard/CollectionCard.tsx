@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -15,6 +14,11 @@ import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
+import { LabelChip } from '../../LabelChip'
+import {
+  COLLECTION_CARD_BORDER_WIDTH,
+  COLLECTION_CARD_PADDING
+} from '../collectionLayout'
 
 import { CollectionUngroupDialog } from './CollectionUngroupDialog'
 
@@ -117,17 +121,20 @@ function CollectionCardImpl({
     <Card
       data-testid={`CollectionCard-${collection.id}`}
       sx={{
-        p: 2,
-        // Match the surrounding page grey so the card reads as a
-        // panel of the same surface rather than a raised white card.
-        // The darker grey border + thicker stroke + soft shadow is
-        // what gives each collection its visual separation.
-        backgroundColor: 'background.default',
-        borderColor: 'grey.400',
-        borderWidth: 1,
+        // Inner padding (12px). The collections Stack bleeds each box outward
+        // by this padding + border so the inner card grid lines up with the
+        // All Templates grid — both derive from collectionLayout constants.
+        p: COLLECTION_CARD_PADDING,
+        // NES-1696: a subtle transparent-white panel over the grey page
+        // with a light grey stroke and no shadow, per the Figma design.
+        // Spec: bg rgba(255,255,255,0.40), 1px solid divider (#DEDFE0),
+        // 12px radius (borderRadius 3 × the 4px theme.shape.borderRadius).
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        borderColor: 'divider',
+        borderWidth: COLLECTION_CARD_BORDER_WIDTH,
         borderStyle: 'solid',
         borderRadius: 3,
-        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)'
+        boxShadow: 'none'
       }}
       variant="outlined"
     >
@@ -139,14 +146,11 @@ function CollectionCardImpl({
       >
         <Stack direction="row" spacing={2} alignItems="center">
           <Typography variant="h6">{collection.title}</Typography>
-          <Chip
-            size="small"
+          <LabelChip
             color={isPublished ? 'success' : 'default'}
-            label={isPublished ? t('Published') : t('Draft')}
+            label={isPublished ? t('Live') : t('Draft')}
           />
-          {isEmpty && (
-            <Chip size="small" variant="outlined" label={t('Empty')} />
-          )}
+          {isEmpty && <LabelChip label={t('Empty')} />}
         </Stack>
         <IconButton
           aria-label={t('Collection actions')}

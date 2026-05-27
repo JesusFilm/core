@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyMenuButtonIcon } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
@@ -18,16 +19,16 @@ const menuStep = {
   children: []
 }
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({
+  useRouter: vi.fn(() => ({
     query: { stepSlug: 'menu' },
-    push: jest.fn(),
-    back: jest.fn()
+    push: vi.fn(),
+    back: vi.fn()
   }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('StepHeaderMenu', () => {
   describe('Journey', () => {
@@ -87,7 +88,7 @@ describe('StepHeaderMenu', () => {
     })
 
     it('should navigate to menu card when clicked', () => {
-      const push = jest.fn()
+      const push = vi.fn()
 
       mockedUseRouter.mockReturnValueOnce({
         query: { stepSlug: 'step.id' },
@@ -112,7 +113,7 @@ describe('StepHeaderMenu', () => {
     })
 
     it('should navigate back when close button is clicked', () => {
-      const back = jest.fn()
+      const back = vi.fn()
 
       mockedUseRouter.mockReturnValueOnce({
         query: { stepSlug: 'menu' },

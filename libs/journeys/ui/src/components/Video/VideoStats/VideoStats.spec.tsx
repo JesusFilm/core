@@ -5,18 +5,20 @@ import 'video.js/dist/video-js.css'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import VideoJsPlayer from '../utils/videoJsTypes'
+import { formatTimeRanges } from '../utils/videoStatsUtils/formatTimeRanges'
+import { getCurrentQuality as _getCurrentQuality } from '../utils/videoStatsUtils/getCurrentQuality'
 
 import { VideoStats } from './VideoStats'
 
 // Mock the translation function
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string) => key
   })
 }))
 
 // Mock the individual modules
-jest.mock('../utils/videoStatsUtils/formatTime', () => ({
+vi.mock('../utils/videoStatsUtils/formatTime', () => ({
   formatTime: (seconds: number) => {
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = Math.floor(seconds % 60)
@@ -24,29 +26,24 @@ jest.mock('../utils/videoStatsUtils/formatTime', () => ({
   }
 }))
 
-jest.mock('../utils/videoStatsUtils/formatTimeRanges', () => ({
-  formatTimeRanges: (
-    timeRanges: TimeRanges | null | undefined,
-    startAt: number,
-    endAt: number
-  ) => '0:00-1:00'
+vi.mock('../utils/videoStatsUtils/formatTimeRanges', () => ({
+  formatTimeRanges: vi
+    .fn<(...args: unknown[]) => string>()
+    .mockReturnValue('0:00-1:00')
 }))
 
-jest.mock('../utils/videoStatsUtils/getCurrentQuality', () => ({
-  getCurrentQuality: jest.fn().mockReturnValue('720p')
+vi.mock('../utils/videoStatsUtils/getCurrentQuality', () => ({
+  getCurrentQuality: vi.fn().mockReturnValue('720p')
 }))
 
-// Import the mocked functions after mocking
-const { getCurrentQuality } = jest.requireMock(
-  '../utils/videoStatsUtils/getCurrentQuality'
-)
+const getCurrentQuality = vi.mocked(_getCurrentQuality)
 
 describe('VideoStats', () => {
   let player: VideoJsPlayer
 
   beforeEach(() => {
     // Reset all mocks
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Create a video element and initialize videojs player
     const video = document.createElement('video')
@@ -58,18 +55,18 @@ describe('VideoStats', () => {
     }) as VideoJsPlayer
 
     // Mock the player methods
-    jest.spyOn(player, 'currentTime').mockReturnValue(30)
-    jest.spyOn(player, 'duration').mockReturnValue(120)
+    vi.spyOn(player, 'currentTime').mockReturnValue(30)
+    vi.spyOn(player, 'duration').mockReturnValue(120)
 
     // Mock buffered and seekable timeRanges
     const mockTimeRanges = {
       length: 1,
-      start: jest.fn().mockReturnValue(0),
-      end: jest.fn().mockReturnValue(60)
+      start: vi.fn().mockReturnValue(0),
+      end: vi.fn().mockReturnValue(60)
     } as unknown as TimeRanges
 
-    jest.spyOn(player, 'buffered').mockReturnValue(mockTimeRanges)
-    jest.spyOn(player, 'seekable').mockReturnValue(mockTimeRanges)
+    vi.spyOn(player, 'buffered').mockReturnValue(mockTimeRanges)
+    vi.spyOn(player, 'seekable').mockReturnValue(mockTimeRanges)
   })
 
   afterEach(() => {
@@ -102,7 +99,7 @@ describe('VideoStats', () => {
 
   it('should clean up event listeners on unmount', () => {
     // Spy on player.off method
-    const offSpy = jest.spyOn(player, 'off')
+    const offSpy = vi.spyOn(player, 'off')
 
     const { unmount } = render(
       <VideoStats player={player} startAt={0} endAt={120} />
@@ -117,17 +114,14 @@ describe('VideoStats', () => {
 
   it('should adjust stats for trimmed videos', () => {
     // Mock formatTimeRanges to return different values based on parameters
-    const formatTimeRangesMock = jest.requireMock(
-      '../utils/videoStatsUtils/formatTimeRanges'
-    )
-    formatTimeRangesMock.formatTimeRanges = jest
-      .fn()
-      .mockImplementation((timeRanges, startAt, endAt) => {
+    vi.mocked(formatTimeRanges).mockImplementation(
+      (timeRanges, startAt, endAt) => {
         if (startAt === 30 && endAt === 90) {
           return '0:00-0:30' // Adjusted for trimming
         }
         return '0:00-1:00' // Default
-      })
+      }
+    )
 
     // Render with trimming (startAt=30, endAt=90)
     render(<VideoStats player={player} startAt={30} endAt={90} />)

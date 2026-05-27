@@ -9,7 +9,7 @@ import { journeyVideoBlocks } from './data'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 import '../../../../test/i18n'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -20,7 +20,7 @@ describe('TemplatePreviewTabs', () => {
     blocks: journeyVideoBlocks
   }
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should render tabs component', async () => {
     const { getByText, getAllByTestId } = render(
