@@ -338,6 +338,15 @@ export class JourneyPage {
   }
 
   async backToHome() {
+    // Some callers reach this helper with an open MUI Popover (e.g. the
+    // three-dot menu hasn't closed itself after "Make Template" because
+    // the page navigation races the menu's onClose). Press Escape to
+    // dismiss any lingering Modal/Backdrop before navigating.
+    const backdrop = this.page.locator('.MuiModal-backdrop').first()
+    if (await backdrop.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await this.page.keyboard.press('Escape')
+      await backdrop.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
+    }
     // Three navigation surfaces, in priority order:
     //   1. Legacy `<a data-testid="NextStepsLogo">` in the old editor header.
     //   2. New editor header link labelled "Back to Home" (href "/?type=journeys").
