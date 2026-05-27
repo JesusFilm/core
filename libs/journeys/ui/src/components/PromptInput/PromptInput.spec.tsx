@@ -65,7 +65,7 @@ describe('PromptInput', () => {
     })
 
     it('truncates an over-cap paste and surfaces the clipped value to onInputChange', () => {
-      const onInputChange = jest.fn()
+      const onInputChange = vi.fn()
       render(
         <PromptInput
           input=""
@@ -90,7 +90,7 @@ describe('PromptInput', () => {
     })
 
     it('lets a within-cap paste pass through untouched (browser handles it)', () => {
-      const onInputChange = jest.fn()
+      const onInputChange = vi.fn()
       render(
         <PromptInput
           input="hello "

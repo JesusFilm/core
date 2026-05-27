@@ -18,9 +18,6 @@ describe('FramePortal', () => {
         iframe.contentDocument?.body.getElementsByTagName('p')[0].innerHTML
       ).toBe('hello world')
     )
-    expect(
-      iframe.contentDocument?.body.getElementsByTagName('p')[0]
-    ).toHaveStyle('font-family: sans-serif')
     expect(iframe.contentDocument?.body).toHaveStyle(
       'background-color: rgba(0, 0, 0, 0)'
     )

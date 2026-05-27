@@ -27,7 +27,9 @@ describe('TemplateVideoPreview', () => {
     )
 
     expect(queryByTestId('TemplateVideoPlayer')).not.toBeInTheDocument()
-    await waitFor(() => fireEvent.click(getAllByRole('img')[0]))
-    expect(getByRole('region', { name: 'Video Player' })).toBeInTheDocument()
+    fireEvent.click(getAllByRole('img')[0])
+    await waitFor(() =>
+      expect(getByRole('region', { name: 'Video Player' })).toBeInTheDocument()
+    )
   })
 })

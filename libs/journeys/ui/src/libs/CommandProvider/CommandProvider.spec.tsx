@@ -463,7 +463,7 @@ describe('CommandContext', () => {
         const command1: Command = {
           parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
-          undo: jest.fn()
+          undo: vi.fn()
         }
         const state: CommandState = {
           commandIndex: 2,
@@ -501,7 +501,7 @@ describe('CommandContext', () => {
         }
         const command1: Command = {
           parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
-          execute: jest.fn()
+          execute: vi.fn()
         }
         const state: CommandState = {
           commandIndex: 2,
@@ -568,8 +568,8 @@ describe('CommandContext', () => {
         }
         const command1: Command = {
           parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
-          execute: jest.fn(),
-          redo: jest.fn(),
+          execute: vi.fn(),
+          redo: vi.fn(),
           undo: () => {}
         }
         const state: CommandState = {
@@ -609,7 +609,7 @@ describe('CommandContext', () => {
         }
         const command1: Command = {
           parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
-          execute: jest.fn()
+          execute: vi.fn()
         }
         const state: CommandState = {
           commandIndex: 1,
@@ -671,7 +671,7 @@ describe('CommandContext', () => {
       it('should add command', async () => {
         const command: Command = {
           parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
-          execute: jest.fn()
+          execute: vi.fn()
         }
         const state: CommandState = {
           commandIndex: 0,

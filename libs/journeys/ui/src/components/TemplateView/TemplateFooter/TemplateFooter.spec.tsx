@@ -1,30 +1,31 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 
 import { journey } from './data'
 import { TemplateFooter } from './TemplateFooter'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 const customizableJourney = { ...journey, customizable: true }
 const nonCustomizableJourney = { ...journey, customizable: false }
 
 describe('TemplateFooter', () => {
-  const push = jest.fn().mockResolvedValue('')
-  const prefetch = jest.fn()
+  const push = vi.fn().mockResolvedValue('')
+  const prefetch = vi.fn()
 
   beforeEach(() => {
     mockUseRouter.mockReturnValue({
@@ -33,7 +34,7 @@ describe('TemplateFooter', () => {
       query: { createNew: false }
     } as unknown as NextRouter)
 
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render', () => {

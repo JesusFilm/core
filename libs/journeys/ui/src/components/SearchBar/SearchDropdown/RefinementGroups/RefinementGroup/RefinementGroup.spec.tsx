@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useRefinementList, useSearchBox } from 'react-instantsearch'
+import { type MockedFunction } from 'vitest'
 
 import '../../../../../../test/i18n'
 import { SearchBarProvider } from '../../../../../libs/algolia/SearchBarProvider'
@@ -11,18 +12,17 @@ import { languageRefinements } from '../../../data'
 
 import { RefinementGroup } from './RefinementGroup'
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 
-const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
 
 describe('RefinementGroup', () => {
-  const refine = jest.fn()
+  const refine = vi.fn()
+  const originalResizeObserver = window.ResizeObserver
 
   const useRefinementList = {
     items: languageRefinements,
@@ -48,7 +48,15 @@ describe('RefinementGroup', () => {
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue(useSearchBox)
     mockUseRefinementList.mockReturnValue(useRefinementList)
-    jest.clearAllMocks()
+    vi.clearAllMocks()
+  })
+
+  // The tooltip test below overrides window.ResizeObserver and spies on
+  // HTMLElement.prototype getters. Vitest does not tear jsdom down between
+  // files, so restore them here to avoid leaking into later specs.
+  afterEach(() => {
+    window.ResizeObserver = originalResizeObserver
+    vi.restoreAllMocks()
   })
 
   it('should have languages header', () => {
@@ -146,7 +154,7 @@ describe('RefinementGroup', () => {
   })
 
   it('should not refine query when no language in query', () => {
-    const refineQuery = jest.fn()
+    const refineQuery = vi.fn()
     const useSearchBox = {
       query: 'Hello World!',
       refineQuery
@@ -167,7 +175,7 @@ describe('RefinementGroup', () => {
   })
 
   it('should not refine query when refinement being unselected', () => {
-    const refineQuery = jest.fn()
+    const refineQuery = vi.fn()
     const useSearchBox = {
       query: 'Hello World!',
       refineQuery
@@ -189,7 +197,7 @@ describe('RefinementGroup', () => {
   })
 
   it('should refine query with language-striped query when language in query', async () => {
-    const refineQuery = jest.fn()
+    const refineQuery = vi.fn()
     const useSearchBox = {
       query: 'Jesus Chinese',
       refine: refineQuery
@@ -208,18 +216,18 @@ describe('RefinementGroup', () => {
   })
 
   it('should show tooltip when hovering over langauge', async () => {
-    window.ResizeObserver = jest.fn().mockImplementation(() => ({
-      observe: jest.fn(),
-      unobserve: jest.fn(),
-      disconnect: jest.fn()
+    window.ResizeObserver = vi.fn().mockImplementation(() => ({
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn()
     }))
 
-    jest
-      .spyOn(HTMLElement.prototype, 'scrollWidth', 'get')
-      .mockImplementation(() => 200)
-    jest
-      .spyOn(HTMLElement.prototype, 'clientWidth', 'get')
-      .mockImplementation(() => 100)
+    vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockImplementation(
+      () => 200
+    )
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(
+      () => 100
+    )
 
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
