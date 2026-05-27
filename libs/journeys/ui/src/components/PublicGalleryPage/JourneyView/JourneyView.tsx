@@ -4,7 +4,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { darken, useTheme } from '@mui/material/styles'
+import { lighten, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next/pages'
@@ -272,11 +272,11 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
   // always at least one section — and the template sections follow based on
   // how many templates (and whether media) the collection has.
   const navSections = useMemo<JourneyViewNavSection[]>(() => {
+    // The cover uses a static label, not the collection title: a long title
+    // stretches the desktop nav row and looks unbalanced. The full title is
+    // still the hero of the cover section.
     const sections: JourneyViewNavSection[] = [
-      {
-        id: SECTION_IDS.cover,
-        label: data.title !== '' ? data.title : t('Collection')
-      }
+      { id: SECTION_IDS.cover, label: t('Overview') }
     ]
     if (featured.length > 0)
       sections.push({ id: SECTION_IDS.featured, label: t('Explore') })
@@ -284,7 +284,7 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
       sections.push({ id: SECTION_IDS.set, label: t('More') })
     if (hasMedia) sections.push({ id: SECTION_IDS.media, label: t('Strategy') })
     return sections
-  }, [data.title, featured.length, rest.length, hasMedia, t])
+  }, [featured.length, rest.length, hasMedia, t])
 
   return (
     <Box data-testid="TemplateGallerySections">
@@ -342,6 +342,7 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
               variant="contained"
               onClick={() => scrollToSection(SECTION_IDS.featured)}
               endIcon={<KeyboardArrowDownRoundedIcon />}
+              data-testid="GalleryCoverCta"
               sx={{
                 backgroundColor: GALLERY_ACCENT,
                 color: '#FFFFFF',
@@ -350,10 +351,10 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
                 py: 1.25,
                 fontWeight: 700,
                 textTransform: 'none',
-                '&:hover': { backgroundColor: darken(GALLERY_ACCENT, 0.15) }
+                '&:hover': { backgroundColor: lighten(GALLERY_ACCENT, 0.15) }
               }}
             >
-              {t('See the collection')}
+              {t('Explore')}
             </Button>
           </Box>
         )}

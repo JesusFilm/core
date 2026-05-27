@@ -92,7 +92,7 @@ describe('PublicGalleryPage', () => {
       // The cover (collection title) leads, then five items + media surface the
       // remaining sections as nav links.
       expect(
-        within(nav).getByRole('button', { name: 'Easter Gallery 2026' })
+        within(nav).getByRole('button', { name: 'Overview' })
       ).toBeInTheDocument()
       expect(
         within(nav).getByRole('button', { name: 'Explore' })
@@ -116,7 +116,7 @@ describe('PublicGalleryPage', () => {
       // so the nav still shows — the cover plus the featured section.
       const nav = screen.getByRole('navigation', { name: 'Gallery sections' })
       expect(
-        within(nav).getByRole('button', { name: 'Easter Gallery 2026' })
+        within(nav).getByRole('button', { name: 'Overview' })
       ).toBeInTheDocument()
       expect(
         within(nav).getByRole('button', { name: 'Explore' })
@@ -132,7 +132,7 @@ describe('PublicGalleryPage', () => {
       )
       const nav = screen.getByRole('navigation', { name: 'Gallery sections' })
       expect(
-        within(nav).getByRole('button', { name: 'Easter Gallery 2026' })
+        within(nav).getByRole('button', { name: 'Overview' })
       ).toBeInTheDocument()
       expect(
         within(nav).queryByRole('button', { name: 'Explore' })
@@ -148,32 +148,29 @@ describe('PublicGalleryPage', () => {
       )
       const nav = screen.getByRole('navigation', { name: 'Gallery sections' })
       // The hamburger carries the nav's label and a popup; the section links
-      // (cover title, "Explore", …) carry their own labels.
+      // (cover "Overview", "Explore", …) carry their own labels.
       const menuButton = within(nav).getByRole('button', {
         name: 'Gallery sections'
       })
       expect(menuButton).toHaveAttribute('aria-haspopup', 'true')
     })
 
-    it('shows the "See the collection" CTA on the cover when there are templates', () => {
+    it('shows the cover CTA when there are templates', () => {
       render(
         <PublicGalleryPage
           variant="journey"
           data={makeData({ items: makeItems(5) })}
         />
       )
-      expect(
-        screen.getByRole('button', { name: 'See the collection' })
-      ).toBeInTheDocument()
+      // Targeted by testid: its "Explore" label is shared with the nav links.
+      expect(screen.getByTestId('GalleryCoverCta')).toBeInTheDocument()
     })
 
-    it('omits the "See the collection" CTA when there are no templates', () => {
+    it('omits the cover CTA when there are no templates', () => {
       render(
         <PublicGalleryPage variant="journey" data={makeData({ items: [] })} />
       )
-      expect(
-        screen.queryByRole('button', { name: 'See the collection' })
-      ).not.toBeInTheDocument()
+      expect(screen.queryByTestId('GalleryCoverCta')).not.toBeInTheDocument()
     })
 
     it('shows the empty state when there are no items', () => {
