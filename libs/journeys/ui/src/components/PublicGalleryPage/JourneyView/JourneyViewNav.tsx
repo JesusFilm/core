@@ -104,16 +104,26 @@ export function JourneyViewNav({
   // active link on first load.
   useEffect(() => {
     if (typeof IntersectionObserver !== 'function') return
-    const elements = sections
-      .map((section) => document.getElementById(section.id))
+    const ids = sections.map((section) => section.id)
+    const elements = ids
+      .map((id) => document.getElementById(id))
       .filter((element): element is HTMLElement => element != null)
     if (elements.length === 0) return
 
+    // Track which sections currently cross the centre band, reacting to both
+    // entering AND leaving, then pick the topmost in scroll order. Choosing
+    // deterministically by order (rather than "whichever entry fired last")
+    // keeps the active link correct when two sections straddle the band — e.g.
+    // when you reverse direction right at a section boundary.
+    const visible = new Set<string>()
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveId(entry.target.id)
-        })
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.add(entry.target.id)
+          else visible.delete(entry.target.id)
+        }
+        const next = ids.find((id) => visible.has(id))
+        if (next != null) setActiveId(next)
       },
       { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
     )
