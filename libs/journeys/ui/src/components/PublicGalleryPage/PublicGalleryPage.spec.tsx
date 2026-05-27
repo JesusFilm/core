@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 
 import { PublicGalleryPage } from './PublicGalleryPage'
 import { makeData, makeItems } from './publicGalleryPageData.mock'
@@ -56,9 +56,10 @@ describe('PublicGalleryPage', () => {
         />
       )
       // All three sit in the featured rows, so the complete-set grid never
-      // renders and is not left showing a single bare card.
+      // renders and is not left showing a single bare card. ('Featured' shows
+      // both as the section label and the nav link, hence getAllByText.)
       expect(screen.queryByText('The complete set')).not.toBeInTheDocument()
-      expect(screen.getByText('Featured')).toBeInTheDocument()
+      expect(screen.getAllByText('Featured').length).toBeGreaterThan(0)
     })
 
     it('keeps two featured and grids the rest when there are four', () => {
@@ -68,9 +69,111 @@ describe('PublicGalleryPage', () => {
           data={makeData({ items: makeItems(4) })}
         />
       )
-      // Four items keep the two-featured default, so the complete set holds
-      // the remaining two cards rather than a single bare one.
-      expect(screen.getByText('The complete set')).toBeInTheDocument()
+      // Four items keep the two-featured default, so the complete-set grid
+      // renders the remaining two cards (each in the mobile and desktop grid)
+      // rather than sitting empty. Featured rows use no card testid, so these
+      // come only from the complete set.
+      expect(
+        screen.getAllByTestId('GalleryTemplateCard').length
+      ).toBeGreaterThan(0)
+    })
+
+    it('renders the section nav with the cover plus a link per visible section', () => {
+      render(
+        <PublicGalleryPage
+          variant="journey"
+          data={makeData({
+            items: makeItems(5),
+            mediaUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+          })}
+        />
+      )
+      const nav = screen.getByRole('navigation', { name: 'Gallery sections' })
+      // The cover (collection title) leads, then five items + media surface the
+      // remaining sections as nav links.
+      expect(
+        within(nav).getByRole('button', { name: 'Easter Gallery 2026' })
+      ).toBeInTheDocument()
+      expect(
+        within(nav).getByRole('button', { name: 'Featured' })
+      ).toBeInTheDocument()
+      expect(
+        within(nav).getByRole('button', { name: 'The complete set' })
+      ).toBeInTheDocument()
+      expect(
+        within(nav).getByRole('button', { name: 'Strategy' })
+      ).toBeInTheDocument()
+    })
+
+    it('derives sections from template count: cover + featured only, with few templates', () => {
+      render(
+        <PublicGalleryPage
+          variant="journey"
+          data={makeData({ items: makeItems(3) })}
+        />
+      )
+      // Three items feature all three (no complete set) and there's no media,
+      // so the nav still shows — the cover plus the featured section.
+      const nav = screen.getByRole('navigation', { name: 'Gallery sections' })
+      expect(
+        within(nav).getByRole('button', { name: 'Easter Gallery 2026' })
+      ).toBeInTheDocument()
+      expect(
+        within(nav).getByRole('button', { name: 'Featured' })
+      ).toBeInTheDocument()
+      expect(
+        within(nav).queryByRole('button', { name: 'The complete set' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('always keeps the cover section in the nav, even with no templates', () => {
+      render(
+        <PublicGalleryPage variant="journey" data={makeData({ items: [] })} />
+      )
+      const nav = screen.getByRole('navigation', { name: 'Gallery sections' })
+      expect(
+        within(nav).getByRole('button', { name: 'Easter Gallery 2026' })
+      ).toBeInTheDocument()
+      expect(
+        within(nav).queryByRole('button', { name: 'Featured' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('exposes a hamburger menu button (the mobile nav entry point)', () => {
+      render(
+        <PublicGalleryPage
+          variant="journey"
+          data={makeData({ items: makeItems(5) })}
+        />
+      )
+      const nav = screen.getByRole('navigation', { name: 'Gallery sections' })
+      // The hamburger carries the nav's label and a popup; the section links
+      // (cover title, "Featured", …) carry their own labels.
+      const menuButton = within(nav).getByRole('button', {
+        name: 'Gallery sections'
+      })
+      expect(menuButton).toHaveAttribute('aria-haspopup', 'true')
+    })
+
+    it('shows the "See the collection" CTA on the cover when there are templates', () => {
+      render(
+        <PublicGalleryPage
+          variant="journey"
+          data={makeData({ items: makeItems(5) })}
+        />
+      )
+      expect(
+        screen.getByRole('button', { name: 'See the collection' })
+      ).toBeInTheDocument()
+    })
+
+    it('omits the "See the collection" CTA when there are no templates', () => {
+      render(
+        <PublicGalleryPage variant="journey" data={makeData({ items: [] })} />
+      )
+      expect(
+        screen.queryByRole('button', { name: 'See the collection' })
+      ).not.toBeInTheDocument()
     })
 
     it('shows the empty state when there are no items', () => {

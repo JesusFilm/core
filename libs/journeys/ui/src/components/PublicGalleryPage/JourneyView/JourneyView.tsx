@@ -1,12 +1,21 @@
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
+import { darken, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, ReactNode, RefObject, useEffect, useRef } from 'react'
+import {
+  ReactElement,
+  ReactNode,
+  RefObject,
+  useEffect,
+  useMemo,
+  useRef
+} from 'react'
 
 import {
   GALLERY_ACCENT,
@@ -20,6 +29,12 @@ import { JourneyViewCardActions } from './JourneyViewCardActions'
 import { JourneyViewEmptyState } from './JourneyViewEmptyState'
 import { JourneyViewHeader } from './JourneyViewHeader'
 import { JourneyViewMedia } from './JourneyViewMedia'
+import {
+  GALLERY_NAV_HEIGHT,
+  JourneyViewNav,
+  JourneyViewNavSection,
+  scrollToSection
+} from './JourneyViewNav'
 import { ScrollReveal } from './ScrollReveal'
 
 interface JourneyViewProps {
@@ -27,6 +42,14 @@ interface JourneyViewProps {
 }
 
 const FEATURED_COUNT = 2
+
+// Stable ids the fixed nav scrolls to and the scrollspy observes.
+const SECTION_IDS = {
+  cover: 'gallery-cover',
+  featured: 'gallery-featured',
+  set: 'gallery-set',
+  media: 'gallery-media'
+} as const
 
 // A faint band tint that reads on any theme (light or dark) without
 // committing to a colour.
@@ -227,7 +250,10 @@ function FeaturedRow({
 
 export function JourneyView({ data }: JourneyViewProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const introRef = useParallax()
+  // The cover carries the CTA, so its drift is halved (half the default
+  // strength) to keep the movement subtle there; the other sections keep the
+  // standard parallax.
+  const introRef = useParallax(0.03, 0.015)
   const featuredRef = useParallax()
   const restRef = useParallax()
 
@@ -241,26 +267,106 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
   const hasTemplates = data.items.length > 0
   const hasMedia = data.mediaUrl != null && data.mediaUrl !== ''
 
+  // Nav links mirror the sections that actually render, in scroll order, and
+  // reuse each section's own label. The cover is always first — so there's
+  // always at least one section — and the template sections follow based on
+  // how many templates (and whether media) the collection has.
+  const navSections = useMemo<JourneyViewNavSection[]>(() => {
+    const sections: JourneyViewNavSection[] = [
+      {
+        id: SECTION_IDS.cover,
+        label: data.title !== '' ? data.title : t('Collection')
+      }
+    ]
+    if (featured.length > 0)
+      sections.push({ id: SECTION_IDS.featured, label: t('Featured') })
+    if (rest.length > 0)
+      sections.push({ id: SECTION_IDS.set, label: t('The complete set') })
+    if (hasMedia) sections.push({ id: SECTION_IDS.media, label: t('Strategy') })
+    return sections
+  }, [data.title, featured.length, rest.length, hasMedia, t])
+
   return (
     <Box data-testid="TemplateGallerySections">
-      {/* Section 1 — intro (title, description, author) with a parallax drift */}
+      <JourneyViewNav
+        sections={navSections}
+        ariaLabel={t('Gallery sections')}
+      />
+      {/* Section 1 — intro/cover (title, description, author) with a parallax
+          drift; the nav's first, always-present section. */}
       <Box
         component="section"
-        sx={{ ...fullHeightSection, py: { xs: 8, md: 14 } }}
+        id={SECTION_IDS.cover}
+        sx={{
+          minHeight: '100svh',
+          display: 'flex',
+          flexDirection: 'column',
+          scrollMarginTop: { xs: 0, md: `${GALLERY_NAV_HEIGHT}px` },
+          pt: { xs: 8, md: 14 },
+          pb: { xs: 5, md: 8 }
+        }}
       >
-        <Container maxWidth="md">
-          <Box ref={introRef} sx={{ willChange: 'transform' }}>
-            <JourneyViewHeader data={data} creatorAboveDescription />
+        {/* The header centres in the available height; the CTA follows it in
+            normal flow, so the gap between them is guaranteed and never
+            collapses on short screens. */}
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center'
+          }}
+        >
+          <Container maxWidth="md">
+            <Box ref={introRef} sx={{ willChange: 'transform' }}>
+              <JourneyViewHeader data={data} creatorAboveDescription />
+            </Box>
+          </Container>
+        </Box>
+        {/* A standing call to action at the foot of the cover: it both invites
+            the visitor in and points to the templates below. The top padding
+            sets the minimum distance from the header above — wide enough that
+            the header's parallax drift (up to ~6% of the viewport) never pushes
+            the text under the button. */}
+        {hasTemplates && (
+          <Box
+            sx={{
+              flexShrink: 0,
+              display: 'flex',
+              justifyContent: 'center',
+              px: 2,
+              pt: { xs: 10, md: 14 }
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={() => scrollToSection(SECTION_IDS.featured)}
+              endIcon={<KeyboardArrowDownRoundedIcon />}
+              sx={{
+                backgroundColor: GALLERY_ACCENT,
+                color: '#FFFFFF',
+                borderRadius: 999,
+                px: 3,
+                py: 1.25,
+                fontWeight: 700,
+                textTransform: 'none',
+                '&:hover': { backgroundColor: darken(GALLERY_ACCENT, 0.15) }
+              }}
+            >
+              {t('See the collection')}
+            </Button>
           </Box>
-        </Container>
+        )}
       </Box>
 
       {/* Section 2 — the featured templates (two, or three when that's all) */}
       {featured.length > 0 && (
         <Box
           component="section"
+          id={SECTION_IDS.featured}
           sx={{
             ...fullHeightSection,
+            scrollMarginTop: { xs: 0, md: `${GALLERY_NAV_HEIGHT}px` },
             py: { xs: 9, md: 13 },
             borderTop: '1px solid',
             borderColor: 'divider',
@@ -285,12 +391,19 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
         </Box>
       )}
 
-      {/* Section 3 — the rest of the templates */}
+      {/* Section 3 — the rest of the templates. Top-aligned (not centred) so a
+          sparse set's cards sit near the top edge — the same position they take
+          when the set is long enough to overflow the viewport. This keeps the
+          leading whitespace small, so the cards are visible as soon as you
+          scroll in and signal there's more to see. */}
       {rest.length > 0 && (
         <Box
           component="section"
+          id={SECTION_IDS.set}
           sx={{
             ...fullHeightSection,
+            justifyContent: 'flex-start',
+            scrollMarginTop: { xs: 0, md: `${GALLERY_NAV_HEIGHT}px` },
             py: { xs: 9, md: 13 },
             borderTop: '1px solid',
             borderColor: 'divider'
@@ -352,8 +465,10 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
       {hasMedia && (
         <Box
           component="section"
+          id={SECTION_IDS.media}
           sx={{
             ...fullHeightSection,
+            scrollMarginTop: { xs: 0, md: `${GALLERY_NAV_HEIGHT}px` },
             py: { xs: 8, md: 12 },
             borderTop: '1px solid',
             borderColor: 'divider',
