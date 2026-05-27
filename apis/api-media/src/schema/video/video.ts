@@ -90,6 +90,105 @@ export function getLanguageIdFromInfo(
       )?.find(({ id }: { id: string }) => id === parentId)?.primaryLanguageId
 }
 
+interface VideoUpdateChange {
+  field: string
+  before: string
+  after: string
+}
+
+interface CurrentVideoForChangeSummary {
+  label?: string | null
+  primaryLanguageId?: string | null
+  published?: boolean | null
+  slug?: string | null
+  noIndex?: boolean | null
+  childIds?: string[] | null
+  restrictDownloadPlatforms?: string[] | null
+  restrictViewPlatforms?: string[] | null
+  keywords?: Array<{ id: string }> | null
+}
+
+const videoUpdateChangeFields = [
+  ['label', 'Label'],
+  ['primaryLanguageId', 'Primary language'],
+  ['published', 'Published'],
+  ['slug', 'Slug'],
+  ['noIndex', 'No index'],
+  ['childIds', 'Children'],
+  ['keywordIds', 'Keywords'],
+  ['restrictDownloadPlatforms', 'Download restrictions'],
+  ['restrictViewPlatforms', 'View restrictions']
+] as const
+
+function buildVideoUpdateChanges(
+  input: Record<string, unknown>,
+  currentVideo: CurrentVideoForChangeSummary | null
+): VideoUpdateChange[] {
+  if (currentVideo == null) {
+    return []
+  }
+
+  return videoUpdateChangeFields.flatMap(([inputKey, label]) => {
+    if (!Object.prototype.hasOwnProperty.call(input, inputKey)) {
+      return []
+    }
+
+    const beforeValue = getPreviousVideoValue(inputKey, currentVideo)
+    const afterValue = input[inputKey]
+
+    if (normalizeChangeValue(beforeValue) === normalizeChangeValue(afterValue)) {
+      return []
+    }
+
+    return [
+      {
+        field: label,
+        before: formatChangeValue(beforeValue),
+        after: formatChangeValue(afterValue)
+      }
+    ]
+  })
+}
+
+function getPreviousVideoValue(
+  inputKey: string,
+  currentVideo: CurrentVideoForChangeSummary
+): unknown {
+  if (inputKey === 'keywordIds') {
+    return currentVideo.keywords?.map(({ id }) => id) ?? []
+  }
+  return currentVideo[inputKey as keyof CurrentVideoForChangeSummary]
+}
+
+function normalizeChangeValue(value: unknown): string {
+  if (Array.isArray(value)) {
+    return value.map(formatPrimitiveChangeValue).sort().join('|')
+  }
+  return formatPrimitiveChangeValue(value)
+}
+
+function formatChangeValue(value: unknown): string {
+  if (Array.isArray(value)) {
+    return value.length === 0
+      ? '(none)'
+      : value.map(formatPrimitiveChangeValue).sort().join(', ')
+  }
+  return formatPrimitiveChangeValue(value)
+}
+
+function formatPrimitiveChangeValue(value: unknown): string {
+  if (value == null || value === '') {
+    return '(empty)'
+  }
+  if (typeof value === 'boolean') {
+    return value ? 'true' : 'false'
+  }
+  if (typeof value === 'string' || typeof value === 'number') {
+    return String(value)
+  }
+  return JSON.stringify(value)
+}
+
 const Video = builder.prismaObject('Video', {
   shareable: true,
   include: {
@@ -735,22 +834,29 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }, context) => {
-      // Get current video data to check if published status is changing and to prevent slug change after publish
-      const currentVideo =
-        input.published !== undefined || input.slug !== undefined
-          ? await prisma.video.findUnique({
-              where: { id: input.id },
-              select: {
-                published: true,
-                publishedAt: true,
-                slug: true,
-                variants: {
-                  where: { published: true },
-                  select: { languageId: true }
-                }
-              }
-            })
-          : null
+      // Get current video data to check publish transitions, slug safety, and changed fields.
+      const currentVideo = await prisma.video.findUnique({
+        where: { id: input.id },
+        select: {
+          label: true,
+          primaryLanguageId: true,
+          published: true,
+          publishedAt: true,
+          slug: true,
+          noIndex: true,
+          childIds: true,
+          restrictDownloadPlatforms: true,
+          restrictViewPlatforms: true,
+          keywords: {
+            select: { id: true }
+          },
+          variants: {
+            where: { published: true },
+            select: { languageId: true }
+          }
+        }
+      })
+      const changes = buildVideoUpdateChanges(input, currentVideo)
 
       // Prevent changing slug after video has been published
       if (
@@ -861,7 +967,8 @@ builder.mutationFields((t) => ({
       notifyVideoSlackOfMutation({
         kind: 'update',
         video: { id: video.id, label: video.label },
-        user: context.user
+        user: context.user,
+        changes
       })
 
       return video

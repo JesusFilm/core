@@ -2741,9 +2741,16 @@ describe('video', () => {
           updatedAt: new Date()
         })
         prismaMock.video.findUnique.mockResolvedValue({
+          label: VideoLabel.shortFilm,
+          primaryLanguageId: 'oldLanguageId',
           published: false,
           publishedAt: null,
           slug: 'old-slug',
+          noIndex: false,
+          childIds: ['old-child'],
+          restrictDownloadPlatforms: [],
+          restrictViewPlatforms: [],
+          keywords: [],
           variants: [{ languageId: 'en' }]
         } as any)
         prismaMock.video.findMany.mockResolvedValue([{ id: 'id' }] as any)
@@ -2803,7 +2810,12 @@ describe('video', () => {
         expect(notifyVideoSlackOfMutation).toHaveBeenCalledWith(
           expect.objectContaining({
             kind: 'update',
-            video: expect.objectContaining({ id: 'id', label: 'episode' })
+            video: expect.objectContaining({ id: 'id', label: 'episode' }),
+            changes: expect.arrayContaining([
+              { field: 'Label', before: 'shortFilm', after: 'episode' },
+              { field: 'Published', before: 'false', after: 'true' },
+              { field: 'Slug', before: 'old-slug', after: 'slug' }
+            ])
           })
         )
       })

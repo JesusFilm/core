@@ -103,7 +103,15 @@ describe('notifyVideoSlackOfMutation', () => {
     notifyVideoSlackOfMutation({
       kind: 'update',
       video: { id: 'video-2', label: 'segment' },
-      user: { id: 'user-2', firstName: 'Ada', lastName: 'Lovelace' }
+      user: { id: 'user-2', firstName: 'Ada', lastName: 'Lovelace' },
+      changes: [
+        { field: 'Label', before: 'shortFilm', after: 'segment' },
+        {
+          field: 'Published',
+          before: 'false',
+          after: 'true'
+        }
+      ]
     })
 
     await flushAsync()
@@ -121,7 +129,18 @@ describe('notifyVideoSlackOfMutation', () => {
         expect.objectContaining({ text: '*Environment*\nNon-production' })
       ])
     )
-    expect(body.blocks[2].elements[0]).toMatchObject({
+    expect(body.blocks[2]).toMatchObject({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: [
+          '*Changes*',
+          '*Label:* shortFilm -> segment',
+          '*Published:* false -> true'
+        ].join('\n')
+      }
+    })
+    expect(body.blocks[3].elements[0]).toMatchObject({
       type: 'button',
       text: { text: 'Open in Nexus' },
       url: 'https://nexus-stage.jesusfilm.org/videos/video-2'

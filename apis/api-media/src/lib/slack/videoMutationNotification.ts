@@ -15,6 +15,12 @@ interface MutationUser {
   lastName?: string | null
 }
 
+interface VideoMutationChange {
+  field: string
+  before: string
+  after: string
+}
+
 /**
  * Fire-and-forget Slack notification for publisher video mutations. Calls
  * `slackChatPostMessage`; failures are logged only so they never block the
@@ -24,6 +30,7 @@ export function notifyVideoSlackOfMutation(args: {
   kind: 'create' | 'update'
   video: VideoSummary
   user?: MutationUser | null
+  changes?: VideoMutationChange[]
 }): void {
   void (async () => {
     const childLogger = logger.child({ slack: 'video-mutation' })
@@ -37,6 +44,7 @@ export function notifyVideoSlackOfMutation(args: {
     const who = formatUser(args.user)
     const videoUrl = buildVideoUrl(args.video.id)
     const summary = `${title}: ${label} (${args.video.id}) by ${who}`
+    const changesBlock = buildChangesBlock(args.changes ?? [])
 
     await slackChatPostMessage({
       config,
@@ -72,6 +80,7 @@ export function notifyVideoSlackOfMutation(args: {
               }
             ]
           },
+          ...(changesBlock != null ? [changesBlock] : []),
           {
             type: 'actions',
             elements: [
@@ -127,4 +136,27 @@ function formatUser(user: MutationUser | null | undefined): string {
     return fullName
   }
   return user.id
+}
+
+function buildChangesBlock(changes: VideoMutationChange[]):
+  | {
+      type: 'section'
+      text: { type: 'mrkdwn'; text: string }
+    }
+  | undefined {
+  if (changes.length === 0) {
+    return undefined
+  }
+
+  return {
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: ['*Changes*', ...changes.map(formatChangeLine)].join('\n')
+    }
+  }
+}
+
+function formatChangeLine(change: VideoMutationChange): string {
+  return `*${change.field}:* ${change.before} -> ${change.after}`
 }
