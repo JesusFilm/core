@@ -34,9 +34,9 @@ export function notifyVideoSlackOfMutation(args: {
 
     const title = args.kind === 'create' ? 'Video created' : 'Video updated'
     const label = args.video.label ?? '—'
-    const idLink = buildVideoIdLink(args.video.id)
     const who = formatUser(args.user)
-    const summary = `${title}: ${label} (${args.video.id})`
+    const videoUrl = buildVideoUrl(args.video.id)
+    const summary = `${title}: ${label} (${args.video.id}) by ${who}`
 
     await slackChatPostMessage({
       config,
@@ -44,15 +44,47 @@ export function notifyVideoSlackOfMutation(args: {
         text: summary,
         blocks: [
           {
-            type: 'section',
+            type: 'header',
             text: {
-              type: 'mrkdwn',
-              text: [
-                `*${title}*`,
-                `*Label:* ${label} · *ID:* ${idLink}`,
-                `*By:* ${who}`
-              ].join('\n')
+              type: 'plain_text',
+              text: title,
+              emoji: true
             }
+          },
+          {
+            type: 'section',
+            fields: [
+              {
+                type: 'mrkdwn',
+                text: `*Label*\n${label}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `*Video ID*\n\`${args.video.id}\``
+              },
+              {
+                type: 'mrkdwn',
+                text: `*By*\n${who}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `*Environment*\n${getEnvironmentLabel()}`
+              }
+            ]
+          },
+          {
+            type: 'actions',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'Open in Nexus',
+                  emoji: true
+                },
+                url: videoUrl
+              }
+            ]
           }
         ]
       },
@@ -68,12 +100,16 @@ const videosAdminBaseUrl = {
   nonProd: 'https://nexus-stage.jesusfilm.org'
 } as const
 
-function buildVideoIdLink(videoId: string): string {
+function buildVideoUrl(videoId: string): string {
   const base =
     process.env.SERVICE_ENV === 'prod'
       ? videosAdminBaseUrl.prod
       : videosAdminBaseUrl.nonProd
-  return `<${base}/videos/${videoId}|\`${videoId}\`>`
+  return `${base}/videos/${encodeURIComponent(videoId)}`
+}
+
+function getEnvironmentLabel(): string {
+  return process.env.SERVICE_ENV === 'prod' ? 'Production' : 'Non-production'
 }
 
 function formatUser(user: MutationUser | null | undefined): string {

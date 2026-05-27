@@ -66,15 +66,35 @@ describe('notifyVideoSlackOfMutation', () => {
 
     const body = JSON.parse(init?.body as string)
     expect(body.channel).toBe('test-channel')
-    expect(body.text).toBe('Video created: featureFilm (video-1)')
-
-    const sectionText = body.blocks[0].text.text as string
-    expect(sectionText).toContain('*Video created*')
-    expect(sectionText).toContain('*Label:* featureFilm')
-    expect(sectionText).toContain(
-      '<https://nexus.jesusfilm.org/videos/video-1|`video-1`>'
+    expect(body.text).toBe(
+      'Video created: featureFilm (video-1) by editor@example.com'
     )
-    expect(sectionText).toContain('*By:* editor@example.com')
+
+    expect(body.blocks[0]).toMatchObject({
+      type: 'header',
+      text: { text: 'Video created' }
+    })
+    expect(body.blocks[1]).toMatchObject({
+      type: 'section',
+      fields: expect.arrayContaining([
+        expect.objectContaining({ text: '*Label*\nfeatureFilm' }),
+        expect.objectContaining({ text: '*Video ID*\n`video-1`' }),
+        expect.objectContaining({ text: '*By*\neditor@example.com' }),
+        expect.objectContaining({ text: '*Environment*\nProduction' })
+      ])
+    })
+    expect(body.blocks[2]).toMatchObject({ type: 'actions' })
+    expect(body.blocks[2].elements).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: 'button',
+          url: 'https://nexus.jesusfilm.org/videos/video-1'
+        })
+      ])
+    )
+    expect(body.blocks[2].elements[0].text).toMatchObject({
+      text: 'Open in Nexus'
+    })
   })
 
   it('posts an update message with the nexus-stage link for non-prod', async () => {
@@ -90,13 +110,22 @@ describe('notifyVideoSlackOfMutation', () => {
 
     expect(mockFetch).toHaveBeenCalledTimes(1)
     const body = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
-    expect(body.text).toBe('Video updated: segment (video-2)')
-    const sectionText = body.blocks[0].text.text as string
-    expect(sectionText).toContain('*Video updated*')
-    expect(sectionText).toContain(
-      '<https://nexus-stage.jesusfilm.org/videos/video-2|`video-2`>'
+    expect(body.text).toBe('Video updated: segment (video-2) by Ada Lovelace')
+    expect(body.blocks[0]).toMatchObject({
+      type: 'header',
+      text: { text: 'Video updated' }
+    })
+    expect(body.blocks[1].fields).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ text: '*By*\nAda Lovelace' }),
+        expect.objectContaining({ text: '*Environment*\nNon-production' })
+      ])
     )
-    expect(sectionText).toContain('*By:* Ada Lovelace')
+    expect(body.blocks[2].elements[0]).toMatchObject({
+      type: 'button',
+      text: { text: 'Open in Nexus' },
+      url: 'https://nexus-stage.jesusfilm.org/videos/video-2'
+    })
   })
 
   it('falls back to nexus-stage and unknown user when label and user are missing', async () => {
@@ -112,12 +141,15 @@ describe('notifyVideoSlackOfMutation', () => {
 
     expect(mockFetch).toHaveBeenCalledTimes(1)
     const body = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
-    const sectionText = body.blocks[0].text.text as string
-    expect(sectionText).toContain(
-      '<https://nexus-stage.jesusfilm.org/videos/video-3|`video-3`>'
+    expect(body.blocks[1].fields).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ text: '*Label*\n—' }),
+        expect.objectContaining({ text: '*By*\n_unknown_' })
+      ])
     )
-    expect(sectionText).toContain('*Label:* —')
-    expect(sectionText).toContain('*By:* _unknown_')
+    expect(body.blocks[2].elements[0]).toMatchObject({
+      url: 'https://nexus-stage.jesusfilm.org/videos/video-3'
+    })
   })
 
   it('skips and warns when Slack env vars are missing', async () => {
