@@ -1,32 +1,46 @@
-import Container from '@mui/material/Container'
-import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
-import { GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage } from '../../../__generated__/GetTemplateGalleryPage'
+import type { PublicGalleryPageData } from '@core/journeys/ui/PublicGalleryPage'
+import { PublicTemplateGallery } from '@core/journeys/ui/PublicTemplateGallery'
 
-import { TemplateGalleryEmptyState } from './TemplateGalleryEmptyState'
-import { TemplateGalleryGrid } from './TemplateGalleryGrid'
-import { TemplateGalleryHeader } from './TemplateGalleryHeader'
-import { TemplateGalleryMedia } from './TemplateGalleryMedia'
+import { GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage } from '../../../__generated__/GetTemplateGalleryPage'
 
 interface TemplateGalleryViewProps {
   gallery: TemplateGalleryPage
 }
 
+/** Maps the public GraphQL page DTO onto the shared gallery contract. */
+function toGalleryData(gallery: TemplateGalleryPage): PublicGalleryPageData {
+  return {
+    title: gallery.title,
+    description: gallery.description,
+    creatorName: gallery.creatorName,
+    creatorImageSrc: gallery.creatorImageSrc,
+    creatorImageAlt: gallery.creatorImageAlt,
+    mediaUrl: gallery.mediaUrl,
+    items: gallery.templates.map((template) => ({
+      id: template.id,
+      title: template.title,
+      description: template.description,
+      slug: template.slug,
+      createdAt: template.createdAt != null ? String(template.createdAt) : null,
+      languageName: template.language.name.map(({ value, primary }) => ({
+        value,
+        primary
+      })),
+      image:
+        template.primaryImageBlock != null
+          ? {
+              src: template.primaryImageBlock.src,
+              alt: template.primaryImageBlock.alt
+            }
+          : null
+    }))
+  }
+}
+
 export function TemplateGalleryView({
   gallery
 }: TemplateGalleryViewProps): ReactElement {
-  const hasTemplates = gallery.templates.length > 0
-  const hasMedia = gallery.mediaUrl != null && gallery.mediaUrl !== ''
-
-  return (
-    <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 } }}>
-      <Stack spacing={{ xs: 4, md: 6 }}>
-        <TemplateGalleryHeader gallery={gallery} />
-        {hasTemplates && <TemplateGalleryGrid templates={gallery.templates} />}
-        {!hasTemplates && !hasMedia && <TemplateGalleryEmptyState />}
-        <TemplateGalleryMedia mediaUrl={gallery.mediaUrl} />
-      </Stack>
-    </Container>
-  )
+  return <PublicTemplateGallery data={toGalleryData(gallery)} />
 }

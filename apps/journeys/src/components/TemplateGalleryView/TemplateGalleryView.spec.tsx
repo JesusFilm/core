@@ -1,10 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 
 import { makeGallery, mockTemplate } from './galleryFixture'
 import { TemplateGalleryView } from './TemplateGalleryView'
 
 describe('TemplateGalleryView', () => {
-  it('renders gallery header, media, and template grid when populated', () => {
+  it('renders the gallery header, templates, and media when populated', () => {
     render(
       <TemplateGalleryView
         gallery={makeGallery({
@@ -13,16 +13,19 @@ describe('TemplateGalleryView', () => {
         })}
       />
     )
-    expect(screen.getByTestId('TemplateGalleryHeader')).toBeInTheDocument()
-    expect(screen.getByTestId('TemplateGalleryMedia')).toBeInTheDocument()
-    expect(screen.getByTestId('TemplateGalleryGrid')).toBeInTheDocument()
-    expect(screen.getByTestId('GalleryTemplateCard')).toBeInTheDocument()
+    expect(screen.getByTestId('PublicTemplateGallery')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Easter Gallery 2026' })
+    ).toBeInTheDocument()
     expect(screen.getByText('Sample Template')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Use' })).toHaveAttribute(
+    expect(screen.getByTestId('PublicTemplateGalleryMedia')).toBeInTheDocument()
+
+    const card = screen.getByTestId('PublicTemplateGalleryCard')
+    expect(within(card).getByRole('link', { name: 'Use' })).toHaveAttribute(
       'href',
       'https://admin.nextstep.is/?useTemplate=template-1'
     )
-    expect(screen.getByRole('link', { name: 'Preview' })).toHaveAttribute(
+    expect(within(card).getByRole('link', { name: 'Preview' })).toHaveAttribute(
       'href',
       '/sample-template'
     )
@@ -30,12 +33,18 @@ describe('TemplateGalleryView', () => {
 
   it('shows the empty state when there are no templates', () => {
     render(<TemplateGalleryView gallery={makeGallery({ templates: [] })} />)
-    expect(screen.getByTestId('TemplateGalleryEmptyState')).toBeInTheDocument()
-    expect(screen.queryByTestId('TemplateGalleryGrid')).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('PublicTemplateGalleryEmptyState')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('PublicTemplateGalleryCard')
+    ).not.toBeInTheDocument()
   })
 
   it('omits the media block when mediaUrl is null', () => {
     render(<TemplateGalleryView gallery={makeGallery({ mediaUrl: null })} />)
-    expect(screen.queryByTestId('TemplateGalleryMedia')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('PublicTemplateGalleryMedia')
+    ).not.toBeInTheDocument()
   })
 })
