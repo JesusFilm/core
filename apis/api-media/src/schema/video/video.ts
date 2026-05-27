@@ -13,7 +13,6 @@ import {
   updateVideoInAlgolia,
   updateVideoPublishedStatus
 } from '../../lib/algolia/algoliaVideoUpdate'
-import { notifyVideoSlackOfMutation } from '../../lib/slack'
 import { videoCacheReset } from '../../lib/videoCacheReset'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
@@ -649,7 +648,7 @@ builder.mutationFields((t) => ({
     args: {
       input: t.arg({ type: VideoCreateInput, required: true })
     },
-    resolve: async (query, _parent, { input }, context) => {
+    resolve: async (query, _parent, { input }) => {
       // Handle child relation synchronization if childIds is provided
       let childRelationData = {}
       if (input.childIds && input.childIds.length > 0) {
@@ -694,12 +693,6 @@ builder.mutationFields((t) => ({
           await videoCacheReset(video.id)
         } catch {}
 
-        notifyVideoSlackOfMutation({
-          kind: 'create',
-          video: { id: video.id, label: video.label },
-          user: context.user
-        })
-
         return video
       } catch (e) {
         if (
@@ -734,7 +727,7 @@ builder.mutationFields((t) => ({
     args: {
       input: t.arg({ type: VideoUpdateInput, required: true })
     },
-    resolve: async (query, _parent, { input }, context) => {
+    resolve: async (query, _parent, { input }) => {
       // Get current video data to check if published status is changing and to prevent slug change after publish
       const currentVideo =
         input.published !== undefined || input.slug !== undefined
@@ -857,12 +850,6 @@ builder.mutationFields((t) => ({
       try {
         await videoCacheReset(video.id)
       } catch {}
-
-      notifyVideoSlackOfMutation({
-        kind: 'update',
-        video: { id: video.id, label: video.label },
-        user: context.user
-      })
 
       return video
     }
