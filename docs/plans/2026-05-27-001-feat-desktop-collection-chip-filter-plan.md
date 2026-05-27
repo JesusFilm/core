@@ -102,15 +102,18 @@ On desktop, every collection renders as a `CollectionCard` containing its full t
 **Dependencies:** None
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/TemplateGalleryPageList/TemplateGalleryPageList.tsx`
 
 **Approach:**
+
 - Rename `mobileFilterCollectionId` → `filterCollectionId`, `mobileSelectedCollection` → `selectedCollection`, `mobileFilteredJourneys` → `filteredJourneys`. Default `null` = "All Templates" → unsectioned templates.
 - `useMobileLayout` no longer gates the existence of this state; it will only gate the content view (U3). `showCollectionsSection` gating is unchanged.
 
 **Patterns to follow:** existing `mobileSelectedCollection` / `mobileFilteredJourneys` `useMemo` derivations.
 
 **Test scenarios:**
+
 - Test expectation: none — pure rename/state-hoist; behavior is exercised by U3/U5 integration tests.
 
 **Verification:** typecheck passes; no remaining `mobile`-prefixed filter identifiers.
@@ -126,11 +129,13 @@ On desktop, every collection renders as a `CollectionCard` containing its full t
 **Dependencies:** U1
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/TemplateGalleryPageList/TemplateGalleryPageList.tsx`
 - Modify: `apps/journeys-admin/src/components/TemplateGalleryPageList/MobileCollectionRow/MobileCollectionRow.tsx` (full-bleed margins → xs/sm only; comment that it is breakpoint-shared)
 - Modify: `apps/journeys-admin/src/components/TemplateGalleryPageList/MobileFilterHeaderStrip/MobileFilterHeaderStrip.tsx` (comment shared usage; verify padding at `md`)
 
 **Approach:**
+
 - Render `<MobileCollectionRow>` + `<MobileFilterHeaderStrip>` unconditionally above the content (outside the `useMobileLayout` branch), driven by the shared filter state.
 - Gate the chip-row full-bleed `mx` to `{ xs: -2, sm: -10 }` (drop the bleed at `md`+ so it aligns within the gallery's `p: 4`).
 - "Create Collection" stays in the existing Collections header; keep `showCollectionsSection` gating.
@@ -138,6 +143,7 @@ On desktop, every collection renders as a `CollectionCard` containing its full t
 **Patterns to follow:** current mobile-branch rendering of `MobileCollectionRow` / `MobileFilterHeaderStrip`.
 
 **Test scenarios:**
+
 - Happy path: at a desktop width, the chip row renders with an "All Templates" chip + one chip per collection. (Covers R1.)
 - Happy path: the filter strip shows the active collection's name + count and its actions menu when a collection chip is selected; shows "All Templates" with no menu otherwise. (Covers R5.)
 - Edge case: `showCollectionsSection` false (no active templates) → no chip row / header.
@@ -155,10 +161,12 @@ On desktop, every collection renders as a `CollectionCard` containing its full t
 **Dependencies:** U1, U2
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/TemplateGalleryPageList/TemplateGalleryPageList.tsx`
 - Modify: `apps/journeys-admin/src/components/TemplateGalleryPageList/Droppables/Droppables.tsx` (remove `DroppableCollectionWrapper` if unused after this change)
 
 **Approach:**
+
 - Content area becomes `useMobileLayout ? <MobileTemplateList journeys={filteredJourneys} .../> : <DraggableJourneysGrid journeys={filteredJourneys} publishedLock={selectedCollection?.status === published} dragInFlight={interactionsLocked} />`.
 - Mirror the mobile empty states: collection selected + empty → "drag templates here"; All Templates empty → "No team templates yet." / "All templates are in collections."
 - Remove the `collections.map(<DroppableCollectionWrapper><CollectionCard><DraggableJourneysGrid/></CollectionCard></DroppableCollectionWrapper>)` block and the standalone `UnsectionedDroppable` section.
@@ -167,6 +175,7 @@ On desktop, every collection renders as a `CollectionCard` containing its full t
 **Patterns to follow:** the mobile content branch (`mobileFilteredJourneys`, `allowReorder`, empty-state copy); existing `DraggableJourneysGrid`.
 
 **Test scenarios:**
+
 - Happy path: selecting a collection chip renders that collection's templates in the grid; "All Templates" renders the unsectioned grid. (Covers R2, R3.)
 - Edge case: empty selected collection → drag-here empty state; All Templates empty → appropriate empty copy.
 - Integration: archived/trashed status (no collections) renders unchanged. (Covers R7.)
@@ -184,9 +193,11 @@ On desktop, every collection renders as a `CollectionCard` containing its full t
 **Dependencies:** U2, U3
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/TemplateGalleryPageList/TemplateGalleryPageList.tsx`
 
 **Approach:**
+
 - Use the pointer-first `collisionDetection` for both layouts (rename `mobileCollisionDetection` → `collectionCollisionDetection`, or apply it unconditionally). `measuring: MeasuringStrategy.Always` already applies to both.
 - Desktop `DragOverlay`: start with the existing `JourneyCard` preview plus `snapCenterToPointer`; if the card ghost covers the chips during a drag-to-chip, switch to the compact pill (deferred decision).
 - Sensor activation unchanged (desktop whole-card `delay: 200`, mobile handle `distance: 8`).
@@ -194,6 +205,7 @@ On desktop, every collection renders as a `CollectionCard` containing its full t
 **Patterns to follow:** `pointer-aligned-collision-offset-drag-handle` learning; existing `snapCenterToPointer` / `DragOverlay`.
 
 **Test scenarios:**
+
 - Integration (drag-end dispatch, via `useDragEndHandler` — already covered): drop on a collection chip → move; drop on All Templates → ungroup; reorder within a selected collection → reorder; unsectioned reorder → no-op. Confirm these still pass with the unified collision.
 - Note: collision geometry itself is not unit-testable (jsdom has no layout) → manual QA at desktop widths.
 
@@ -210,17 +222,20 @@ On desktop, every collection renders as a `CollectionCard` containing its full t
 **Dependencies:** U3
 
 **Files:**
+
 - Delete (if no other consumers): `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionCard/CollectionCard.tsx` + `CollectionCard.spec.tsx` + `index.ts`
 - Modify: `apps/journeys-admin/src/components/TemplateGalleryPageList/TemplateGalleryPageList.spec.tsx`
 - Modify: any spec asserting the desktop collection stack
 
 **Approach:**
+
 - Confirm `CollectionCard` has no other importers (grep) before deleting. Keep `LabelChip` (used elsewhere).
 - Rewrite `TemplateGalleryPageList.spec` desktop assertions: chip row + filtered grid instead of the vertical card stack; collection actions reachable via the filter strip; empty states.
 
 **Patterns to follow:** existing mobile-oriented specs (`MobileCollectionRow.spec`, `MobileFilterHeaderStrip.spec`) for the required provider stack.
 
 **Test scenarios:**
+
 - Happy path: desktop render shows chip row + grid; selecting a chip filters the grid. (Covers R2, R3.)
 - Happy path: collection actions menu opens from the filter strip on desktop. (Covers R5.)
 - Edge case: no active templates → Collections section hidden.
@@ -240,13 +255,13 @@ On desktop, every collection renders as a `CollectionCard` containing its full t
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| Supersedes 9252's just-merged desktop `CollectionCard` restyle | Confirmed acceptable by product owner; delete cleanly, keep `LabelChip`/`collectionLayout` for their other uses |
-| Loss of multi-collection overview on desktop | Confirmed intended — the vertical-stack sprawl is the motivating problem |
+| Risk                                                                            | Mitigation                                                                                                                 |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Supersedes 9252's just-merged desktop `CollectionCard` restyle                  | Confirmed acceptable by product owner; delete cleanly, keep `LabelChip`/`collectionLayout` for their other uses            |
+| Loss of multi-collection overview on desktop                                    | Confirmed intended — the vertical-stack sprawl is the motivating problem                                                   |
 | Dragging a large grid card onto a small chip feels awkward / ghost covers chips | Pointer-first collision + `snapCenterToPointer`; fall back to the compact pill overlay if needed (deferred decision in U4) |
-| Collision geometry not unit-testable | Rely on `useDragEndHandler` dispatch tests + manual QA at desktop widths |
-| Significant spec churn (desktop stack assertions) | Scoped to U5; reuse the established provider-stack patterns |
+| Collision geometry not unit-testable                                            | Rely on `useDragEndHandler` dispatch tests + manual QA at desktop widths                                                   |
+| Significant spec churn (desktop stack assertions)                               | Scoped to U5; reuse the established provider-stack patterns                                                                |
 
 ---
 
