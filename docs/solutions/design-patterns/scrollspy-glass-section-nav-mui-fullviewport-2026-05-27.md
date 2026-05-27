@@ -10,7 +10,7 @@ applies_when:
   - 'Building a section-nav for a full-viewport (100svh) sectioned scrolling page in MUI'
   - 'Tracking the active section with IntersectionObserver using a centre band (rootMargin -45% top and bottom)'
   - 'Splitting nav UI responsively: a fixed glass top bar on desktop vs a floating glass hamburger + right Drawer on mobile'
-  - "Applying backdrop-filter glass to a MUI Drawer (needs a transparent Modal backdrop and backgroundImage: none)"
+  - 'Applying backdrop-filter glass to a MUI Drawer (needs a transparent Modal backdrop and backgroundImage: none)'
   - 'Smooth-scrolling to anchors while honouring prefers-reduced-motion and offsetting a fixed bar via scrollMarginTop'
 related_components:
   - libs/journeys/ui/src/components/PublicGalleryPage/JourneyView/JourneyViewNav.tsx
@@ -47,9 +47,7 @@ const navSections = useMemo<JourneyViewNavSection[]>(() => {
   // Cover uses a STATIC label, not the collection title — a long title
   // stretches/unbalances the centred desktop nav row. The full title is still
   // the hero of the cover section itself.
-  const sections: JourneyViewNavSection[] = [
-    { id: SECTION_IDS.cover, label: t('Overview') }
-  ]
+  const sections: JourneyViewNavSection[] = [{ id: SECTION_IDS.cover, label: t('Overview') }]
   if (featured.length > 0) sections.push({ id: SECTION_IDS.featured, label: t('Explore') })
   if (rest.length > 0) sections.push({ id: SECTION_IDS.set, label: t('More') })
   if (hasMedia) sections.push({ id: SECTION_IDS.media, label: t('Strategy') })
@@ -63,15 +61,13 @@ const navSections = useMemo<JourneyViewNavSection[]>(() => {
 
 The active section is the one crossing the viewport's vertical centre. A symmetric `rootMargin: '-45% 0px -45% 0px'` collapses the observation root to a ~10% centre band. Because the cover spans the full viewport at the top, it is the active link on first load.
 
-**Track a set of currently-intersecting sections (enter AND leave), then pick the topmost in scroll order** — do *not* just `setActiveId` on the first `isIntersecting` entry:
+**Track a set of currently-intersecting sections (enter AND leave), then pick the topmost in scroll order** — do _not_ just `setActiveId` on the first `isIntersecting` entry:
 
 ```tsx
 useEffect(() => {
   if (typeof IntersectionObserver !== 'function') return // jsdom / SSR guard
   const ids = sections.map((section) => section.id)
-  const elements = ids
-    .map((id) => document.getElementById(id))
-    .filter((element): element is HTMLElement => element != null)
+  const elements = ids.map((id) => document.getElementById(id)).filter((element): element is HTMLElement => element != null)
   if (elements.length === 0) return
 
   const visible = new Set<string>()
@@ -91,7 +87,7 @@ useEffect(() => {
 }, [sections])
 ```
 
-GOTCHA — **don't use "last `isIntersecting` entry wins."** The naive version (`entries.forEach((e) => { if (e.isIntersecting) setActiveId(e.target.id) })`) has two bugs that surface when you reverse scroll direction right at a boundary: (1) at a boundary both the leaving and entering section briefly cross the thin band in one batched callback, and `forEach` ends on whichever entry is *last* in the array (order is not guaranteed document order), so the active link can land on the upper section while you're scrolling into the lower one; (2) it never handles `isIntersecting === false`, so once it's wrong it stays wrong (the leave event that should correct it is ignored). Tracking a set (reacting to leave too) and selecting deterministically by scroll order fixes both. When the band is momentarily empty (`next == null`), keep the last active section rather than clearing it.
+GOTCHA — **don't use "last `isIntersecting` entry wins."** The naive version (`entries.forEach((e) => { if (e.isIntersecting) setActiveId(e.target.id) })`) has two bugs that surface when you reverse scroll direction right at a boundary: (1) at a boundary both the leaving and entering section briefly cross the thin band in one batched callback, and `forEach` ends on whichever entry is _last_ in the array (order is not guaranteed document order), so the active link can land on the upper section while you're scrolling into the lower one; (2) it never handles `isIntersecting === false`, so once it's wrong it stays wrong (the leave event that should correct it is ignored). Tracking a set (reacting to leave too) and selecting deterministically by scroll order fixes both. When the band is momentarily empty (`next == null`), keep the last active section rather than clearing it.
 
 ### 3. "Glass" styling: translucent tint + backdrop blur, border only after scroll
 
@@ -108,7 +104,7 @@ transition: 'border-color 200ms ease'
 
 ### 4. GOTCHA — the MUI Drawer scrim defeats the glass
 
-A MUI `Drawer` is a `Modal`, whose default backdrop is a dark scrim. Over a glass drawer that scrim dims the page so you no longer see the blurred content *through* the glass. Make the backdrop transparent (taps still close it) and set `backgroundImage: 'none'` on the paper so the dark-mode elevation overlay doesn't fight the tint:
+A MUI `Drawer` is a `Modal`, whose default backdrop is a dark scrim. Over a glass drawer that scrim dims the page so you no longer see the blurred content _through_ the glass. Make the backdrop transparent (taps still close it) and set `backgroundImage: 'none'` on the paper so the dark-mode elevation overlay doesn't fight the tint:
 
 ```tsx
 <Drawer
@@ -147,14 +143,16 @@ Leaving the 56px offset on mobile (where there is no bar) leaves a phantom gap a
 
 ### 7. GOTCHA — parallax vs the cover CTA: flow layout, not absolute positioning
 
-The cover header sits in a `useParallax` wrapper that drifts it *downward* (up to ~`strength × viewport`) as you scroll; an absolutely-positioned bottom CTA got overlapped. The fix is twofold:
+The cover header sits in a `useParallax` wrapper that drifts it _downward_ (up to ~`strength × viewport`) as you scroll; an absolutely-positioned bottom CTA got overlapped. The fix is twofold:
 
 - **Flow layout, not absolute.** The header lives in a `flex: 1` centred region; the CTA follows it in normal flow with a guaranteed top-padding gap, so the gap can't collapse. The CTA is never inside the parallax wrapper.
 
 ```tsx
 <Box sx={{ minHeight: '100svh', display: 'flex', flexDirection: 'column' }}>
   <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-    <Box ref={introRef} sx={{ willChange: 'transform' }}>{/* parallaxed header */}</Box>
+    <Box ref={introRef} sx={{ willChange: 'transform' }}>
+      {/* parallaxed header */}
+    </Box>
   </Box>
   <Box sx={{ flexShrink: 0, display: 'flex', justifyContent: 'center', pt: { xs: 10, md: 14 } }}>
     {/* CTA — in flow, outside the parallax wrapper; targeted in tests by a
@@ -175,7 +173,7 @@ const featured = data.items.slice(0, featuredCount)
 const rest = data.items.slice(featuredCount)
 ```
 
-This is the *derived-logic* face of the shared cross-app view pattern — the two views share a neutral data model but the split derivation was duplicated. See [shared-cross-app-view-component](../architecture-patterns/shared-cross-app-view-component-2026-05-26.md); the cleanest prevention is to extract the split into a shared helper rather than copy the constant into each variant.
+This is the _derived-logic_ face of the shared cross-app view pattern — the two views share a neutral data model but the split derivation was duplicated. See [shared-cross-app-view-component](../architecture-patterns/shared-cross-app-view-component-2026-05-26.md); the cleanest prevention is to extract the split into a shared helper rather than copy the constant into each variant.
 
 ### 9. One `scrollToSection` helper for reduced motion
 
@@ -194,7 +192,7 @@ export function scrollToSection(id: string): void {
 ## Why This Matters
 
 - **Content-derived sections** keep the nav truthful — no dead links to sections that didn't render — and the always-present cover guarantees the nav is never empty.
-- **The 45% centre band narrows *when* a section is "active"** to a ~10% strip near the centre, but two sections still straddle it briefly at a boundary — which is exactly why the active section must be chosen deterministically (set of intersecting ids + topmost in scroll order) rather than by "last entry wins," or it sticks on the wrong section when you reverse direction at the boundary.
+- **The 45% centre band narrows _when_ a section is "active"** to a ~10% strip near the centre, but two sections still straddle it briefly at a boundary — which is exactly why the active section must be chosen deterministically (set of intersecting ids + topmost in scroll order) rather than by "last entry wins," or it sticks on the wrong section when you reverse direction at the boundary.
 - **Glass only works if nothing opaque sits behind it.** The dark Modal scrim and the dark-mode elevation overlay are both invisible until they silently kill the effect — the two highest-value gotchas here.
 - **`scrollMarginTop` is per-breakpoint** because its only justification (a fixed bar) is per-breakpoint; coupling them prevents the mobile phantom-gap regression.
 - **Flow layout beats absolute positioning under parallax** — a normal-flow `pt` gap can't be overlapped by a transform on a sibling, whereas absolute children share the coordinate space the parallax drifts through.
@@ -221,4 +219,4 @@ export function scrollToSection(id: string): void {
 - [shared-cross-app-view-component](../architecture-patterns/shared-cross-app-view-component-2026-05-26.md) — the JourneyView/AdminView shared-view pattern; this nav's split-drift gotcha is its derived-logic counterpart.
 - [collection-grid-bleed-column-alignment-nes1696](./collection-grid-bleed-column-alignment-nes1696.md) — sibling MUI template-gallery layout pattern.
 - [template-gallery-page-collections-patterns-nes1539](../best-practices/template-gallery-page-collections-patterns-nes1539.md) — broader template-gallery/collections patterns.
-- Linear: NES-1694 (public page restyle). (NES-* tickets live in Linear, not GitHub Issues.)
+- Linear: NES-1694 (public page restyle). (NES-\* tickets live in Linear, not GitHub Issues.)
