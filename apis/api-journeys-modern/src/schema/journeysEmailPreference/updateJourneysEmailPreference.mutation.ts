@@ -2,8 +2,8 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
-import { JourneysEmailPreferenceRef } from './journeysEmailPreference'
 import { JourneysEmailPreferenceUpdateInput } from './inputs'
+import { JourneysEmailPreferenceRef } from './journeysEmailPreference'
 
 builder.mutationField('updateJourneysEmailPreference', (t) =>
   t.prismaField({

@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma, UserTeamRole } from '@core/prisma/journeys/client'
+import { UserTeamRole, prisma } from '@core/prisma/journeys/client'
 
 import { queue as emailQueue } from '../../workers/email/queue'
 import { builder } from '../builder'
@@ -16,7 +16,7 @@ builder.mutationField('userTeamInviteAcceptAll', (t) =>
       nullable: false,
       override: { from: 'api-journeys' },
       resolve: async (query, _parent, _args, context) => {
-        const user = context.user!
+        const user = context.user
         if (user.email == null)
           throw new GraphQLError(
             'User must have an email to accept invites',

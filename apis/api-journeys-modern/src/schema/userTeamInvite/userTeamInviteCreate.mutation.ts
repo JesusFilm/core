@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma, Team } from '@core/prisma/journeys/client'
+import { Team, prisma } from '@core/prisma/journeys/client'
 
 import { queue as emailQueue } from '../../workers/email/queue'
 import { builder } from '../builder'
@@ -41,11 +41,11 @@ builder.mutationField('userTeamInviteCreate', (t) =>
             },
             create: {
               email: args.input!.email,
-              senderId: context.user!.id,
+              senderId: context.user.id,
               team: { connect: { id: String(args.teamId) } }
             },
             update: {
-              senderId: context.user!.id,
+              senderId: context.user.id,
               acceptedAt: null,
               receipientId: null,
               removedAt: null
@@ -53,13 +53,13 @@ builder.mutationField('userTeamInviteCreate', (t) =>
             include: INCLUDE_USER_TEAM_INVITE_ACL
           })
 
-          if (!userTeamInviteAcl(Action.Create, userTeamInvite, context.user!))
+          if (!userTeamInviteAcl(Action.Create, userTeamInvite, context.user))
             throw new GraphQLError(
               'user is not allowed to create userTeamInvite',
               { extensions: { code: 'FORBIDDEN' } }
             )
 
-          const user = context.user!
+          const user = context.user
           const { id: _id, emailVerified: _ev, ...sender } = user
           void emailQueue
             .add(

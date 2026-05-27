@@ -27,7 +27,7 @@ builder.queryField('userTeams', (t) =>
             ...roleFilter,
             team: {
               userTeams: {
-                some: { userId: context.user!.id }
+                some: { userId: context.user.id }
               }
             }
           }

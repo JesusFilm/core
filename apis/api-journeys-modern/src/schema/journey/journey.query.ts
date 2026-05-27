@@ -1,16 +1,16 @@
 import { GraphQLError } from 'graphql'
 
 import {
-  JourneyStatus as PrismaJourneyStatus,
   Prisma,
+  JourneyStatus as PrismaJourneyStatus,
   prisma
 } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
 import { IdType } from './enums/idType'
-import { JourneyRef } from './journey'
 import { JourneysQueryOptions } from './inputs'
+import { JourneyRef } from './journey'
 
 builder.queryField('journey', (t) =>
   t.prismaField({

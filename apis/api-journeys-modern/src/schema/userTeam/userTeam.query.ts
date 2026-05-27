@@ -28,7 +28,7 @@ builder.queryField('userTeam', (t) =>
             extensions: { code: 'NOT_FOUND' }
           })
 
-        if (!userTeamAcl(Action.Read, userTeam, context.user!))
+        if (!userTeamAcl(Action.Read, userTeam, context.user))
           throw new GraphQLError('user is not allowed to view userTeam', {
             extensions: { code: 'FORBIDDEN' }
           })

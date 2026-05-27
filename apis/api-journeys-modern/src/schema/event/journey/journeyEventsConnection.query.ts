@@ -8,8 +8,8 @@ import {
 import { builder } from '../../builder'
 import { PageInfoRef } from '../../visitor/visitorsConnection.query'
 
-import { JourneyEventRef } from './journeyEvent'
 import { JourneyEventsFilter } from './inputs'
+import { JourneyEventRef } from './journeyEvent'
 
 interface PageInfoShape {
   hasNextPage: boolean

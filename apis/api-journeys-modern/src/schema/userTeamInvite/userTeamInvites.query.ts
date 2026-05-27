@@ -23,7 +23,7 @@ builder.queryField('userTeamInvites', (t) =>
             teamId: String(args.teamId),
             team: {
               userTeams: {
-                some: { userId: context.user!.id }
+                some: { userId: context.user.id }
               }
             }
           }

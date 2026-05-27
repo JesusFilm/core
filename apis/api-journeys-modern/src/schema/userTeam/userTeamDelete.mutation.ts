@@ -30,7 +30,7 @@ builder.mutationField('userTeamDelete', (t) =>
             extensions: { code: 'NOT_FOUND' }
           })
 
-        if (!userTeamAcl(Action.Delete, userTeam, context.user!))
+        if (!userTeamAcl(Action.Delete, userTeam, context.user))
           throw new GraphQLError('user is not allowed to delete userTeam', {
             extensions: { code: 'FORBIDDEN' }
           })

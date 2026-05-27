@@ -7,9 +7,9 @@ import { UserJourneyRole, prisma } from '@core/prisma/journeys/client'
 import { queue as plausibleQueue } from '../../workers/plausible/queue'
 import { builder } from '../builder'
 
+import { JourneyCreateInput } from './inputs'
 import { JourneyRef } from './journey'
 import { Action, journeyAcl } from './journey.acl'
-import { JourneyCreateInput } from './inputs'
 
 const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 

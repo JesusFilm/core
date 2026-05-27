@@ -30,7 +30,7 @@ builder.mutationField('teamUpdate', (t) =>
             extensions: { code: 'NOT_FOUND' }
           })
 
-        if (!teamAcl(Action.Update, team, context.user!))
+        if (!teamAcl(Action.Update, team, context.user))
           throw new GraphQLError('user is not allowed to update team', {
             extensions: { code: 'FORBIDDEN' }
           })

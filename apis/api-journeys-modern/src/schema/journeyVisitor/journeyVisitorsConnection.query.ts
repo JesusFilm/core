@@ -7,9 +7,8 @@ import {
 } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
-import { JourneyVisitorFilter } from '../visitor/inputs/journeyVisitorFilter'
 import { JourneyVisitorSort } from '../visitor/enums/journeyVisitorSort'
-
+import { JourneyVisitorFilter } from '../visitor/inputs/journeyVisitorFilter'
 import { PageInfoRef } from '../visitor/visitorsConnection.query'
 
 import { JourneyVisitorRef } from './journeyVisitor'

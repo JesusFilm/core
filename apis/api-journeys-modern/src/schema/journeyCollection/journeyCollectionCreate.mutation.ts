@@ -5,9 +5,9 @@ import { Prisma, prisma } from '@core/prisma/journeys/client'
 import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
 
+import { JourneyCollectionCreateInput } from './inputs'
 import { JourneyCollectionRef } from './journeyCollection'
 import { canAccessJourneyCollection } from './journeyCollection.acl'
-import { JourneyCollectionCreateInput } from './inputs'
 
 builder.mutationField('journeyCollectionCreate', (t) =>
   t

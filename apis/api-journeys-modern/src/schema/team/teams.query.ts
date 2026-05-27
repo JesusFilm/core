@@ -16,7 +16,7 @@ builder.queryField('teams', (t) =>
           ...query,
           where: {
             userTeams: {
-              some: { userId: context.user!.id }
+              some: { userId: context.user.id }
             }
           }
         })

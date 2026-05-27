@@ -9,9 +9,9 @@ import { queue as revalidateQueue } from '../../workers/revalidate/queue'
 import { updateJourneyShortlink } from '../../workers/shortlinkUpdater/service'
 import { builder } from '../builder'
 
+import { JourneyUpdateInput } from './inputs'
 import { JourneyRef } from './journey'
 import { Action, journeyAcl } from './journey.acl'
-import { JourneyUpdateInput } from './inputs'
 
 const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
@@ -113,7 +113,7 @@ builder.mutationField('journeyUpdate', (t) =>
                 hostname: (result as any).team?.customDomains?.[0]?.name,
                 fbReScrape: true
               })
-              .catch(() => {})
+              .catch(() => undefined)
           }
 
           if (input.website !== undefined) {

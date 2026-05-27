@@ -6,8 +6,8 @@ import {
 
 import { builder } from '../builder'
 
-import { JourneyRef } from './journey'
 import { JourneysFilter, JourneysQueryOptions } from './inputs'
+import { JourneyRef } from './journey'
 
 builder.queryField('journeys', (t) =>
   t.prismaField({

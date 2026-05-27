@@ -2,8 +2,8 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
-import { INCLUDE_INTEGRATION_ACL, integrationAcl } from './integration.acl'
 import { IntegrationRef } from './integration'
+import { INCLUDE_INTEGRATION_ACL, integrationAcl } from './integration.acl'
 
 builder.queryField('integrations', (t) =>
   t

@@ -37,7 +37,7 @@ builder.mutationField('userTeamInviteRemove', (t) =>
             extensions: { code: 'NOT_FOUND' }
           })
 
-        if (!userTeamInviteAcl(Action.Manage, invite, context.user!))
+        if (!userTeamInviteAcl(Action.Manage, invite, context.user))
           throw new GraphQLError(
             'user is not allowed to remove userTeamInvite',
             { extensions: { code: 'FORBIDDEN' } }

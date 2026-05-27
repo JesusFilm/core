@@ -22,7 +22,7 @@ builder.mutationField('teamCreate', (t) =>
             title: args.input?.title ?? '',
             publicTitle: args.input?.publicTitle ?? null,
             userTeams: {
-              create: { userId: context.user!.id, role: 'manager' }
+              create: { userId: context.user.id, role: 'manager' }
             }
           }
         })
