@@ -22,8 +22,8 @@ const sectionSx = {
   borderColor: 'divider'
 } as const
 
-// Matches the journey view: the first two items are featured, the rest fall
-// into a grid below.
+// Default number of featured items, matching the journey view; the exact
+// split (including the three-template exception) is computed in `featuredCount`.
 const FEATURED_COUNT = 2
 
 function SectionLabel({ children }: { children: string }): ReactElement {
@@ -57,8 +57,12 @@ export function AdminView({ data }: AdminViewProps): ReactElement {
 
   const hasItems = data.items.length > 0
   const hasMedia = data.mediaUrl != null && data.mediaUrl !== ''
-  const featured = data.items.slice(0, FEATURED_COUNT)
-  const rest = data.items.slice(FEATURED_COUNT)
+  // Mirror the journey view: feature the first two by default, but with
+  // exactly three feature all three so the "More" grid never shows a single
+  // bare card.
+  const featuredCount = data.items.length === 3 ? 3 : FEATURED_COUNT
+  const featured = data.items.slice(0, featuredCount)
+  const rest = data.items.slice(featuredCount)
 
   const headerData = {
     title: data.title !== '' ? data.title : t('Untitled collection'),

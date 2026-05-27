@@ -228,6 +228,30 @@ describe('PublicGalleryPage', () => {
       expect(screen.getAllByText('Sample Template')).toHaveLength(3)
     })
 
+    it('mirrors the journey split: three items all sit in Explore, no More', () => {
+      render(
+        <PublicGalleryPage
+          variant="admin"
+          data={makeData({ items: makeItems(3) })}
+        />
+      )
+      // No nav in the admin preview, so these labels appear only as section
+      // headings.
+      expect(screen.getByText('Explore')).toBeInTheDocument()
+      expect(screen.queryByText('More')).not.toBeInTheDocument()
+    })
+
+    it('mirrors the journey split: four items fill the More section', () => {
+      render(
+        <PublicGalleryPage
+          variant="admin"
+          data={makeData({ items: makeItems(4) })}
+        />
+      )
+      expect(screen.getByText('Explore')).toBeInTheDocument()
+      expect(screen.getByText('More')).toBeInTheDocument()
+    })
+
     it('renders decorative, non-interactive actions (no real links)', () => {
       render(
         <PublicGalleryPage
