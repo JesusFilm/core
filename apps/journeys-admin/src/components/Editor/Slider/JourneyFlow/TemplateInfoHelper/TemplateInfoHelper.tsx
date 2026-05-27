@@ -117,10 +117,14 @@ export function TemplateInfoHelper(): ReactElement {
           sx={{
             bgcolor: 'background.paper',
             color: 'text.primary',
-            borderRadius: 1.5,
+            // Match Figma 39661-67393: 16px radius, 1px Editor/Divider stroke,
+            // white surface, 20px padding around the 24px icons (NES-1696).
+            borderRadius: 4,
+            border: 1,
+            borderColor: 'divider',
             boxShadow: 2,
-            px: 2.5,
-            py: 1.5,
+            px: 5,
+            py: 5,
             '&:hover': {
               bgcolor: 'background.paper',
               boxShadow: 3
@@ -131,14 +135,14 @@ export function TemplateInfoHelper(): ReactElement {
             }
           }}
         >
-          <Stack direction="row" alignItems="center" spacing={1.5}>
+          <Stack direction="row" alignItems="center" spacing={2}>
             <InfoOutlinedIcon
               data-testid="TemplateInfoHelperTriggerInfoIcon"
-              sx={{ fontSize: 28 }}
+              sx={{ fontSize: 24 }}
             />
             <SouthEastIcon
               data-testid="TemplateInfoHelperTriggerArrowIcon"
-              sx={{ fontSize: 28 }}
+              sx={{ fontSize: 24 }}
             />
           </Stack>
         </ButtonBase>
