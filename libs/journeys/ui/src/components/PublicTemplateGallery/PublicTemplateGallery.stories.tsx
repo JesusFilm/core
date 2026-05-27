@@ -19,7 +19,7 @@ const PublicTemplateGalleryStory: Meta<typeof PublicTemplateGallery> = {
 const galleryData: PublicGalleryPageData = {
   title: 'Digital invitation for events',
   description:
-    'The templates include event details, a short description, and a built-in registration form. Easy to customize for your event and share.\n\nIf you have any questions, feel free to email me vovan85@gmail.com.',
+    'The templates include event details, a short description, and a built-in registration form. Easy to customize for your event and share.\n\nIf you have any questions, feel free to email me hello@example.com.',
   creatorName: 'Konstantin Konstantinov',
   creatorImageSrc:
     'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=128&q=80',

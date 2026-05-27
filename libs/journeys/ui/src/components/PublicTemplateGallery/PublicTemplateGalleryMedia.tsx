@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { GALLERY_CARD_RADIUS } from '../PublicGalleryPage'
@@ -26,7 +27,11 @@ function isImageUrl(mediaUrl: string): boolean {
  * else is embedded as-is.
  */
 function toEmbedUrl(mediaUrl: string): string {
-  if (mediaUrl.includes('canva')) return `${mediaUrl}?embed`
+  if (mediaUrl.includes('canva')) {
+    // Append the embed flag without clobbering any existing query string.
+    const separator = mediaUrl.includes('?') ? '&' : '?'
+    return `${mediaUrl}${separator}embed`
+  }
   return mediaUrl.replace('pub?start', 'embed?start')
 }
 
@@ -34,6 +39,7 @@ export function PublicTemplateGalleryMedia({
   mediaUrl,
   compact
 }: PublicTemplateGalleryMediaProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   const image = isImageUrl(mediaUrl)
 
   return (
@@ -65,7 +71,7 @@ export function PublicTemplateGalleryMedia({
           src={toEmbedUrl(mediaUrl)}
           allow="fullscreen"
           allowFullScreen
-          title=""
+          title={t('Gallery media')}
           sx={{
             position: 'absolute',
             inset: 0,
