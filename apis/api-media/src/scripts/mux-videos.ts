@@ -1,6 +1,7 @@
 import Mux from '@mux/mux-node'
 
 import {
+  Prisma,
   VideoVariantDownloadQuality,
   prisma
 } from '../../../../libs/prisma/media/src/client'
@@ -250,10 +251,7 @@ export async function processDownloads(): Promise<void> {
 
   let hasMore = true
   let totalProcessed = 0
-  // Track variants already attempted this run so a variant whose Mux
-  // metadata is still incomplete after processing isn't re-selected forever
-  // by the same query - it remains eligible for the next script run instead.
-  const attemptedVariantIds: string[] = []
+  let nextCursor: string | null = null
 
   while (hasMore) {
     const remainingSampleSize = sampleSize == null ? null : sampleSize - totalProcessed
@@ -261,16 +259,16 @@ export async function processDownloads(): Promise<void> {
       break
     }
 
-    const take = remainingSampleSize == null ? 100 : Math.min(100, remainingSampleSize)
-    const variants = await prisma.videoVariant.findMany({
+    const take =
+      remainingSampleSize == null ? 100 : Math.min(100, remainingSampleSize)
+    const variants: Prisma.VideoVariantGetPayload<{
+      include: {
+        muxVideo: true
+        downloads: true
+      }
+    }>[] = await prisma.videoVariant.findMany({
       where: {
-        id: { notIn: attemptedVariantIds },
         muxVideoId: { not: null },
-        muxVideo: {
-          downloadable: true,
-          assetId: { not: null },
-          readyToStream: true
-        },
         downloads: {
           some: {
             quality: {
@@ -303,6 +301,17 @@ export async function processDownloads(): Promise<void> {
           }
         }
       },
+      orderBy: {
+        id: 'asc'
+      },
+      ...(nextCursor == null
+        ? {}
+        : {
+            cursor: {
+              id: nextCursor
+            },
+            skip: 1
+          }),
       take
     })
 
@@ -311,9 +320,11 @@ export async function processDownloads(): Promise<void> {
     )
 
     for (const variant of variants) {
-      attemptedVariantIds.push(variant.id)
-
       if (!variant.muxVideo?.assetId) {
+        console.log(
+          `Skipping variant ${variant.id}: mux video has no assetId to repair from`
+        )
+        totalProcessed++
         continue
       }
 
@@ -389,7 +400,9 @@ export async function processDownloads(): Promise<void> {
       totalProcessed++
     }
 
-    if (variants.length === 0) {
+    nextCursor = variants.at(-1)?.id ?? null
+
+    if (variants.length < take || nextCursor == null) {
       hasMore = false
     }
   }
