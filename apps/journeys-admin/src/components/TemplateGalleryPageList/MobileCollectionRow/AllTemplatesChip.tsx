@@ -44,8 +44,10 @@ export function AllTemplatesChip({
       aria-label={t('All Templates')}
       sx={{
         flexShrink: 0,
-        height: 72,
-        minWidth: 120,
+        // Match the collection chips' height (doubled on desktop) so the row
+        // stays aligned.
+        height: { xs: 72, md: 144 },
+        minWidth: { xs: 120, md: 160 },
         px: 2,
         display: 'flex',
         flexDirection: 'column',

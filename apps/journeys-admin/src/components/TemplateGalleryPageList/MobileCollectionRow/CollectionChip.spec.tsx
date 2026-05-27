@@ -111,4 +111,44 @@ describe('CollectionChip', () => {
     )
     expect(screen.getByTestId('CollectionChipStatusDot')).toBeInTheDocument()
   })
+
+  it('shows a "+N" overflow tile when a collection has more than four templates', () => {
+    const templates = Array.from({ length: 6 }, (_, index) => ({
+      __typename: 'TemplateGalleryItem' as const,
+      id: `j${index}`,
+      title: `t${index}`,
+      primaryImageBlock: null
+    }))
+    render(
+      <Wrapper>
+        <CollectionChip
+          collection={makeCollection({ templates })}
+          selected={false}
+          onSelect={jest.fn()}
+        />
+      </Wrapper>
+    )
+    // Six templates → three image tiles + a "+3" overflow tile (6 - 3).
+    expect(screen.getByText('+3')).toBeInTheDocument()
+    expect(screen.getByText('6 templates')).toBeInTheDocument()
+  })
+
+  it('shows no overflow tile when a collection has four or fewer templates', () => {
+    const templates = Array.from({ length: 4 }, (_, index) => ({
+      __typename: 'TemplateGalleryItem' as const,
+      id: `j${index}`,
+      title: `t${index}`,
+      primaryImageBlock: null
+    }))
+    render(
+      <Wrapper>
+        <CollectionChip
+          collection={makeCollection({ templates })}
+          selected={false}
+          onSelect={jest.fn()}
+        />
+      </Wrapper>
+    )
+    expect(screen.queryByText(/^\+/)).not.toBeInTheDocument()
+  })
 })

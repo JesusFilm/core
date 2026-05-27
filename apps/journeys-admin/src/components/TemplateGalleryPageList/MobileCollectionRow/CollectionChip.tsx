@@ -13,9 +13,6 @@ import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes
 import logoGray from '../../../../public/logo-grayscale.svg'
 import { encodeDropZoneId } from '../Droppables'
 
-const CHIP_WIDTH = 250
-const CHIP_HEIGHT = 72
-
 export interface CollectionChipProps {
   collection: TemplateGalleryPage
   selected: boolean
@@ -26,11 +23,19 @@ export interface CollectionChipProps {
   dropDisabled?: boolean
 }
 
+// A cell in the chip's preview grid: a template image, or the "+N" overflow
+// counter shown when a collection has more templates than the grid can show.
+type ChipImageTile =
+  | { key: string; src: string | null }
+  | { key: string; overflow: number }
+
 /**
- * Collection filter as a small card: the first template's image fills the
- * left third, the collection title and a template-count subtext fill the
- * right two thirds. Card-like (not pill-like) to match the collection cards.
- * Doubles as a dnd-kit drop target and a selectable filter.
+ * Collection filter as a card: a preview of the collection's template images on
+ * the left third, the collection title and a template-count subtext on the
+ * right two thirds. On desktop the chip is doubled in size and the preview is a
+ * 2x2 grid of up to four images (>4 templates → three images + a "+N" tile);
+ * on mobile it stays compact with a single image. Doubles as a dnd-kit drop
+ * target and a selectable filter.
  */
 export function CollectionChip({
   collection,
@@ -40,8 +45,29 @@ export function CollectionChip({
 }: CollectionChipProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const isPublished = collection.status === TemplateGalleryPageStatus.published
-  const count = collection.templates.length
-  const imageSrc = collection.templates[0]?.primaryImageBlock?.src ?? null
+  const templates = collection.templates
+  const count = templates.length
+
+  // Desktop preview shows up to four images. With more than four templates,
+  // show the first three plus a "+N" tile where N is the remaining count.
+  // Mobile shows only the first tile (the rest are hidden via CSS).
+  const imageTiles: ChipImageTile[] =
+    count === 0
+      ? [{ key: 'empty', src: null }]
+      : count > 4
+        ? [
+            ...templates.slice(0, 3).map((tpl) => ({
+              key: tpl.id,
+              src: tpl.primaryImageBlock?.src ?? null
+            })),
+            { key: 'overflow', overflow: count - 3 }
+          ]
+        : templates.slice(0, 4).map((tpl) => ({
+            key: tpl.id,
+            src: tpl.primaryImageBlock?.src ?? null
+          }))
+  const singleTile = imageTiles.length === 1
+
   const { setNodeRef, isOver } = useDroppable({
     id: encodeDropZoneId({ kind: 'collection', id: collection.id }),
     // Published collections can't accept membership changes, but stay a
@@ -75,8 +101,9 @@ export function CollectionChip({
         aria-pressed={selected}
         aria-label={collection.title}
         sx={{
-          width: CHIP_WIDTH,
-          height: CHIP_HEIGHT,
+          // Doubled on desktop (md+); compact on mobile (xs/sm).
+          width: { xs: 250, md: 500 },
+          height: { xs: 72, md: 144 },
           flexShrink: 0,
           display: 'flex',
           alignItems: 'stretch',
@@ -102,38 +129,80 @@ export function CollectionChip({
           transition: 'border-color 120ms ease, outline-color 120ms ease'
         }}
       >
-        {/* First template's image — the left third. */}
+        {/* Template image preview — the left third. Single image on mobile; a
+            2x2 grid (up to 4 images, or 3 + a "+N" tile) on desktop. */}
         <Box
           sx={{
             position: 'relative',
             width: '33.333%',
             flexShrink: 0,
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+            gridTemplateRows: { xs: '1fr', md: '1fr 1fr' },
+            gap: '2px',
             bgcolor: 'rgba(0, 0, 0, 0.06)'
           }}
         >
-          {imageSrc != null ? (
-            <Image
-              src={imageSrc}
-              alt=""
-              fill
-              sizes="84px"
-              style={{ objectFit: 'cover' }}
-            />
-          ) : (
-            <Image
-              src={logoGray}
-              alt=""
-              width={28}
-              height={28}
-              style={{
-                objectFit: 'contain',
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)'
+          {imageTiles.map((tile, index) => (
+            <Box
+              key={tile.key}
+              sx={{
+                position: 'relative',
+                overflow: 'hidden',
+                bgcolor: 'rgba(0, 0, 0, 0.06)',
+                // The first tile always shows; the rest of the 2x2 grid is
+                // desktop-only (mobile keeps a single image).
+                display: index === 0 ? 'block' : { xs: 'none', md: 'block' },
+                // A lone image fills the whole preview instead of sitting in one
+                // quadrant.
+                ...(singleTile
+                  ? { gridColumn: '1 / -1', gridRow: '1 / -1' }
+                  : {})
               }}
-            />
-          )}
+            >
+              {'overflow' in tile ? (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    bgcolor: 'rgba(0, 0, 0, 0.55)'
+                  }}
+                >
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ color: 'common.white', fontWeight: 600 }}
+                  >
+                    +{tile.overflow}
+                  </Typography>
+                </Box>
+              ) : tile.src != null ? (
+                <Image
+                  src={tile.src}
+                  alt=""
+                  fill
+                  sizes="84px"
+                  style={{ objectFit: 'cover' }}
+                />
+              ) : (
+                <Image
+                  src={logoGray}
+                  alt=""
+                  width={24}
+                  height={24}
+                  style={{
+                    objectFit: 'contain',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)'
+                  }}
+                />
+              )}
+            </Box>
+          ))}
         </Box>
 
         {/* Title + template count — the right two thirds. */}
