@@ -42,7 +42,7 @@ const COLUMN_SPECS: ColumnSpec[] = [
   { title: 'Video ID', max: 16 },
   { title: 'Ed', max: 4 },
   { title: 'Lang', max: 6 },
-  { title: 'Error', max: 60 }
+  { title: 'Error', max: 120 }
 ]
 
 interface TableRow {
@@ -353,9 +353,9 @@ function resolveSlackCredentials(): {
   return { token, channelId }
 }
 
-export async function postVideoImporterSlackSummary(params: {
-  folderPath: string
-  summary: ProcessingSummary
+async function postSlackMessage(params: {
+  text: string
+  blocks: SlackBlock[]
 }): Promise<boolean> {
   const credentials = resolveSlackCredentials()
   if (credentials === null) {
@@ -363,9 +363,6 @@ export async function postVideoImporterSlackSummary(params: {
   }
 
   const { token, channelId } = credentials
-
-  const text = buildNotificationPlainText(params)
-  const blocks = buildSlackBlocks(params)
 
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), SLACK_REQUEST_TIMEOUT_MS)
@@ -380,8 +377,8 @@ export async function postVideoImporterSlackSummary(params: {
       },
       body: JSON.stringify({
         channel: channelId,
-        text,
-        blocks
+        text: params.text,
+        blocks: params.blocks
       }),
       signal: controller.signal
     })
@@ -424,4 +421,65 @@ export async function postVideoImporterSlackSummary(params: {
   }
 
   return true
+}
+
+export async function postVideoImporterSlackSummary(params: {
+  folderPath: string
+  summary: ProcessingSummary
+}): Promise<boolean> {
+  const text = buildNotificationPlainText(params)
+  const blocks = buildSlackBlocks(params)
+
+  return postSlackMessage({ text, blocks })
+}
+
+export async function postVideoImporterMisconfigurationAlert(params: {
+  errors: { variable: string; message: string }[]
+}): Promise<boolean> {
+  const errorLines = params.errors
+    .slice(0, 20)
+    .map(({ variable, message }) => `• \`${variable}\`: ${message}`)
+    .join('\n')
+  const extraCount = params.errors.length - 20
+  const extraLine = extraCount > 0 ? `\n• …and ${extraCount} more` : ''
+  const hostname =
+    typeof process.env.HOSTNAME === 'string' && process.env.HOSTNAME.length > 0
+      ? process.env.HOSTNAME
+      : 'unknown host'
+
+  const text = `Video Importer misconfigured on ${hostname}: ${params.errors
+    .map(({ variable }) => variable)
+    .join(', ')}`
+
+  return postSlackMessage({
+    text,
+    blocks: [
+      {
+        type: 'header',
+        text: {
+          type: 'plain_text',
+          text: 'Video Importer — Misconfigured',
+          emoji: true
+        }
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text:
+            `:warning: The importer could not start on \`${hostname}\` because its .env file is invalid.\n\n` +
+            `${errorLines}${extraLine}`
+        }
+      },
+      {
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: '_Import did not run. Replace the .env file shipped with the latest importer package and run again._'
+          }
+        ]
+      }
+    ]
+  })
 }

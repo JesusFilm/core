@@ -4,7 +4,11 @@ import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_MUX_VIDEO_AND_QUEUE_UPLOAD } from '../gql/mutations'
 import { VIDEO_FILENAME_REGEX } from '../importerFilenamePatterns'
-import { createR2Asset, uploadToR2 } from '../services/r2'
+import {
+  createR2Asset,
+  formatR2AssetDiagnostic,
+  uploadToR2
+} from '../services/r2'
 import {
   type ProcessingSummary,
   recordProcessingFailure,
@@ -14,6 +18,7 @@ import { toErrorMessage } from '../utils/errorMessage'
 import { getVideoMetadata } from '../utils/fileMetadataHelpers'
 import { markFileAsCompleted } from '../utils/fileUtils'
 import { validateVideoAndEdition } from '../utils/videoEditionValidator'
+import { parseVideoFilename } from '../utils/videoFilename'
 
 export { VIDEO_FILENAME_REGEX }
 
@@ -23,12 +28,26 @@ export async function processVideoFile(
   contentLength: number,
   summary: ProcessingSummary
 ): Promise<void> {
-  const match = file.match(VIDEO_FILENAME_REGEX)
-  if (!match) return
+  if (!VIDEO_FILENAME_REGEX.test(file)) {
+    return
+  }
 
-  const [, videoId, editionName, rawLanguageId, version] = match
-  const languageId = rawLanguageId.trim()
-  const edition = editionName.toLowerCase()
+  const parsed = parseVideoFilename(file)
+  if (parsed == null) {
+    console.error(
+      `Validation failed for ${file}: unsupported filename shape. Expected <videoId>---<edition>---<lang>---<version>.mp4 or <videoId>---<edition>---<audioLang>---<audioVersion>---<burnedLang>---<burnedVersion>.mp4`
+    )
+    recordProcessingFailure(
+      summary,
+      file,
+      'Unsupported filename shape (expected 4 or 6 `---` segments before .mp4)'
+    )
+    return
+  }
+
+  const { videoId, edition, version, audioLanguageId, audioVersion, burnedIn } =
+    parsed
+  const languageId = parsed.languageId.trim()
   const parsedVersion = Number.parseInt(version, 10)
 
   if (languageId.length === 0) {
@@ -51,9 +70,15 @@ export async function processVideoFile(
     return
   }
 
-  console.log(
-    `Processing: Video=${videoId}, Edition=${edition}, Lang=${languageId}, Version=${parsedVersion}`
-  )
+  if (burnedIn) {
+    console.log(
+      `Processing: Video=${videoId}, Edition=${edition}, AudioLang=${audioLanguageId} (v${audioVersion}), BurnedInLang=${languageId} (v${parsedVersion}) — using burned-in pair as variant language/version`
+    )
+  } else {
+    console.log(
+      `Processing: Video=${videoId}, Edition=${edition}, Lang=${languageId}, Version=${parsedVersion}`
+    )
+  }
 
   try {
     await validateVideoAndEdition(videoId, edition, languageId)
@@ -121,7 +146,7 @@ export async function processVideoFile(
     recordProcessingFailure(
       summary,
       file,
-      `R2 upload: ${toErrorMessage(error)}`
+      `R2 upload: ${toErrorMessage(error)}${formatR2AssetDiagnostic(r2Asset)}`
     )
     return
   }
