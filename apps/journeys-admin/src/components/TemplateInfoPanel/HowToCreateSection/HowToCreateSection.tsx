@@ -5,14 +5,13 @@ import { Trans, useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import {
-  bodySx,
   bulletListSx,
   mediaSlotSx,
   numberedListSx,
   subHeadingSx
 } from '../styles'
 
-// Visual chrome only — font/size/color come from Typography variant="body1"
+// Visual chrome only — font/size/color come from Typography variant="body2"
 // + color="text.primary" applied on the consumer element.
 const calloutBoxSx = {
   p: 1,
@@ -52,7 +51,7 @@ export function HowToCreateSection(): ReactElement {
         loading="lazy"
         sx={mediaSlotSx}
       />
-      <Typography variant="body1" color="text.primary" sx={calloutBoxSx}>
+      <Typography variant="body2" color="text.primary" sx={calloutBoxSx}>
         {t(
           'If you want to have a Quick-Start template, you need to prepare it.'
         )}
@@ -75,7 +74,7 @@ export function HowToCreateSection(): ReactElement {
             )}
           </li>
         </Box>
-        <Typography sx={bodySx}>
+        <Typography variant="body2">
           {t(
             'Marked blocks will be available for editing in Step-by-step customisation.'
           )}
@@ -96,7 +95,7 @@ export function HowToCreateSection(): ReactElement {
             )}{' '}
             <Typography
               component="code"
-              variant="body1"
+              variant="body2"
               sx={{ fontStyle: 'italic' }}
             >
               {'{{date}}'}
@@ -108,7 +107,7 @@ export function HowToCreateSection(): ReactElement {
             )}{' '}
             <Typography
               component="code"
-              variant="body1"
+              variant="body2"
               sx={{ fontStyle: 'italic' }}
             >
               {'{{date: May, 8}}'}

@@ -44,7 +44,7 @@ describe('CollectionCard', () => {
     expect(screen.getByText('Empty')).toBeInTheDocument()
   })
 
-  it('shows a Published chip when the collection is published', () => {
+  it('shows a Live chip when the collection is published', () => {
     render(
       <CollectionCard
         collection={makeCollection({
@@ -54,7 +54,7 @@ describe('CollectionCard', () => {
         })}
       />
     )
-    expect(screen.getByText('Published')).toBeInTheDocument()
+    expect(screen.getByText('Live')).toBeInTheDocument()
     expect(screen.queryByText('Empty')).not.toBeInTheDocument()
   })
 

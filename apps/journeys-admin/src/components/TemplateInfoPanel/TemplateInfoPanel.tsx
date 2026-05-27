@@ -130,32 +130,17 @@ export function TemplateInfoPanel({
   const header = (
     <Stack
       sx={{
-        px: 2.5,
+        px: 4.5,
         pt: 3,
         pb: 2.5,
         gap: 1,
         color: 'text.primary'
       }}
     >
-      <Typography
-        component="h2"
-        sx={{
-          fontFamily: 'Montserrat, sans-serif',
-          fontWeight: 600,
-          fontSize: 22,
-          lineHeight: '27px'
-        }}
-      >
-        {t('What templates are about:')}
+      <Typography component="h2" variant="h6">
+        {t('What team templates are about:')}
       </Typography>
-      <Typography
-        sx={{
-          fontFamily: 'Open Sans, sans-serif',
-          fontWeight: 400,
-          fontSize: 16,
-          lineHeight: '24px'
-        }}
-      >
+      <Typography variant="body2">
         {t(
           'You can share projects created on our platform with others. This allows you to track the performance of every project generated from your template.'
         )}
@@ -269,7 +254,7 @@ export function TemplateInfoPanel({
                 flexShrink: 0,
                 width: '100%',
                 justifyContent: 'flex-end',
-                px: 2.5,
+                px: 4.5,
                 py: 1.5,
                 color: 'text.primary',
                 '&:hover': {
