@@ -1,53 +1,54 @@
 import { useChat } from '@ai-sdk/react'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { AiChat } from './AiChat'
 
-jest.mock('@ai-sdk/react', () => ({
-  useChat: jest.fn()
+vi.mock('@ai-sdk/react', () => ({
+  useChat: vi.fn()
 }))
 
 // `ai` transitively loads streaming machinery that needs `TransformStream`
 // (absent in jsdom). `useChat` is mocked, so the transport is never
 // exercised — stub it to a constructable no-op.
-jest.mock('ai', () => ({
+vi.mock('ai', () => ({
   DefaultChatTransport: class DefaultChatTransport {}
 }))
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
-jest.mock('../../libs/JourneyProvider', () => ({
+vi.mock('../../libs/JourneyProvider', () => ({
   useJourney: () => ({ journey: undefined })
 }))
 
 // Conversation owns scroll/ResizeObserver machinery that jsdom lacks; the
 // error-state behaviour under test lives in AiChat itself, so render its
 // children directly.
-jest.mock('../Conversation', () => ({
+vi.mock('../Conversation', () => ({
   Conversation: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="conversation">{children}</div>
   )
 }))
 
-jest.mock('../PromptInput', () => ({
+vi.mock('../PromptInput', () => ({
   PromptInput: ({ disabled }: { disabled?: boolean }) => (
     <div data-testid="prompt-input" data-disabled={String(disabled === true)} />
   )
 }))
 
-// `Response` pulls in react-markdown (ESM-only, untransformed by jest) and is
-// only rendered for assistant messages — never in the error states under test.
-jest.mock('../Response', () => ({
+// `Response` pulls in react-markdown (heavy ESM) and is only rendered for
+// assistant messages — never in the error states under test, so stub it out.
+vi.mock('../Response', () => ({
   Response: ({ content }: { content: string }) => <div>{content}</div>
 }))
 
-const mockUseChat = useChat as unknown as jest.Mock
+const mockUseChat = useChat as unknown as Mock
 
-const mockRegenerate = jest.fn()
-const mockSetMessages = jest.fn()
-const mockClearError = jest.fn()
+const mockRegenerate = vi.fn()
+const mockSetMessages = vi.fn()
+const mockClearError = vi.fn()
 
 function setChatState(
   overrides: Partial<{
@@ -58,9 +59,9 @@ function setChatState(
 ): void {
   mockUseChat.mockReturnValue({
     messages: [],
-    sendMessage: jest.fn(),
+    sendMessage: vi.fn(),
     regenerate: mockRegenerate,
-    stop: jest.fn(),
+    stop: vi.fn(),
     status: 'error',
     error: undefined,
     setMessages: mockSetMessages,
@@ -75,7 +76,7 @@ function codedError(code: string): Error {
 
 describe('AiChat', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('error states — catered message + retry-gating (NES-1663)', () => {

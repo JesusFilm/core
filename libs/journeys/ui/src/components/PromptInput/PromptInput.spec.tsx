@@ -174,7 +174,7 @@ describe('PromptInput', () => {
     })
 
     it('does not submit on Enter while disabled', () => {
-      const onSubmit = jest.fn()
+      const onSubmit = vi.fn()
       render(
         <PromptInput
           input="hello"
