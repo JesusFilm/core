@@ -26,7 +26,7 @@ interface VisitorsConnectionShape {
   pageInfo: PageInfoShape
 }
 
-const PageInfoRef = builder.objectRef<PageInfoShape>('PageInfo').implement({
+export const PageInfoRef = builder.objectRef<PageInfoShape>('PageInfo').implement({
   shareable: true,
   fields: (t) => ({
     hasNextPage: t.exposeBoolean('hasNextPage', { nullable: false }),
