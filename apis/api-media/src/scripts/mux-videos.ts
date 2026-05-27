@@ -249,9 +249,129 @@ export async function processDownloads(): Promise<void> {
     console.log(`Sample size limit enabled: processing up to ${sampleSize} variants`)
   }
 
+  type ZeroMetadataDownloadRow = Prisma.VideoVariantDownloadGetPayload<{
+    include: {
+      videoVariant: {
+        include: {
+          muxVideo: true
+        }
+      }
+    }
+  }>
+
+  const zeroMetadataWhere: Prisma.VideoVariantDownloadWhereInput = {
+    quality: {
+      notIn: DISTRO_DOWNLOAD_QUALITIES
+    },
+    videoVariantId: {
+      not: null
+    },
+    OR: [{ size: null }, { size: 0 }, { bitrate: null }, { bitrate: 0 }]
+  }
+
   let hasMore = true
   let totalProcessed = 0
   let nextCursor: string | null = null
+  let carryoverDownloads: ZeroMetadataDownloadRow[] = []
+
+  const processVariant = async (
+    variant: Prisma.VideoVariantGetPayload<{
+      include: {
+        muxVideo: true
+      }
+    }>,
+    variantZeroMetadataDownloads: ZeroMetadataDownloadRow[]
+  ): Promise<void> => {
+    console.log(
+      `Processing downloads for variant ${variant.id}, zero-metadata download count: ${variantZeroMetadataDownloads.length}`
+    )
+
+    const nonMuxDownloads = variantZeroMetadataDownloads.filter(
+      (download) => !download.url.startsWith(MUX_STREAM_BASE_URL)
+    )
+    for (const download of nonMuxDownloads) {
+      console.log(
+        `  quality=${download.quality}: cannot repair from Mux because url is not a Mux stream URL`
+      )
+    }
+
+    const muxBackedDownloads = variantZeroMetadataDownloads.filter((download) =>
+      download.url.startsWith(MUX_STREAM_BASE_URL)
+    )
+    if (muxBackedDownloads.length === 0) {
+      return
+    }
+
+    if (!variant.muxVideo?.assetId) {
+      console.log(
+        `Skipping Mux-backed downloads for variant ${variant.id}: mux video has no assetId to repair from`
+      )
+      return
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
+    try {
+      const muxVideoAsset = await getVideo(variant.muxVideo.assetId, false)
+
+      if (
+        muxVideoAsset.status === 'ready' &&
+        muxVideoAsset.playback_ids?.[0].id != null &&
+        downloadsReadyToStore(muxVideoAsset)
+      ) {
+        if (!applyChanges) {
+          const previewDownloads = previewMuxDownloadsFromAsset({
+            variantId: variant.id,
+            muxVideoAsset
+          })
+          const previewByQuality = new Map(
+            previewDownloads.map(
+              (download): [typeof download.quality, typeof download] => [
+                download.quality,
+                download
+              ]
+            )
+          )
+
+          console.log(
+            `Preview for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
+          )
+          for (const download of muxBackedDownloads) {
+            const replacement = previewByQuality.get(download.quality)
+            if (replacement == null) {
+              console.log(
+                `  quality=${download.quality}: no replacement generated from current Mux renditions`
+              )
+              continue
+            }
+
+            console.log(
+              `  quality=${download.quality}: size ${download.size ?? 'null'} -> ${replacement.size}, bitrate ${download.bitrate ?? 'null'} -> ${replacement.bitrate}`
+            )
+          }
+          return
+        }
+
+        const createdCount = await createDownloadsFromMuxAsset({
+          variantId: variant.id,
+          muxVideoAsset
+        })
+
+        console.log(
+          `Successfully created or refreshed ${createdCount} video downloads for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
+        )
+      } else {
+        console.log(
+          `Video not ready for download processing - variant: ${variant.id}, assetId: ${variant.muxVideo.assetId}, status: ${muxVideoAsset.status}, hasPlaybackId: ${!!muxVideoAsset.playback_ids?.[0].id}, downloadsReady: ${downloadsReadyToStore(muxVideoAsset)}`
+        )
+      }
+    } catch (error) {
+      console.error(
+        `Failed to process downloads for variant ${variant.id}, assetId: ${variant.muxVideo.assetId}`,
+        error
+      )
+    }
+  }
 
   while (hasMore) {
     const remainingSampleSize = sampleSize == null ? null : sampleSize - totalProcessed
@@ -259,151 +379,118 @@ export async function processDownloads(): Promise<void> {
       break
     }
 
-    const take =
-      remainingSampleSize == null ? 100 : Math.min(100, remainingSampleSize)
-    const variants: Prisma.VideoVariantGetPayload<{
-      include: {
-        muxVideo: true
-        downloads: true
-      }
-    }>[] = await prisma.videoVariant.findMany({
-      where: {
-        muxVideoId: { not: null },
-        downloads: {
-          some: {
-            quality: {
-              notIn: DISTRO_DOWNLOAD_QUALITIES
-            },
-            url: { startsWith: MUX_STREAM_BASE_URL },
-            OR: [
-              { size: null },
-              { size: 0 },
-              { bitrate: null },
-              { bitrate: 0 }
-            ]
+    const take = remainingSampleSize == null ? 500 : Math.max(100, remainingSampleSize * 5)
+    const zeroMetadataDownloads: ZeroMetadataDownloadRow[] =
+      await prisma.videoVariantDownload.findMany({
+        where: zeroMetadataWhere,
+        include: {
+          videoVariant: {
+            include: {
+              muxVideo: true
+            }
           }
-        }
-      },
-      include: {
-        muxVideo: true,
-        downloads: {
-          where: {
-            quality: {
-              notIn: DISTRO_DOWNLOAD_QUALITIES
-            },
-            url: { startsWith: MUX_STREAM_BASE_URL },
-            OR: [
-              { size: null },
-              { size: 0 },
-              { bitrate: null },
-              { bitrate: 0 }
-            ]
-          }
-        }
-      },
-      orderBy: {
-        id: 'asc'
-      },
-      ...(nextCursor == null
-        ? {}
-        : {
-            cursor: {
-              id: nextCursor
-            },
-            skip: 1
-          }),
-      take
-    })
+        },
+        orderBy: [{ videoVariantId: 'asc' }, { id: 'asc' }],
+        ...(nextCursor == null
+          ? {}
+          : {
+              cursor: {
+                id: nextCursor
+              },
+              skip: 1
+            }),
+        take
+      })
 
-    console.log(
-      `Found ${variants.length} variants with downloadable Mux videos to process in this batch`
-    )
+    const downloadsWithCarryover = [...carryoverDownloads, ...zeroMetadataDownloads]
+    carryoverDownloads = []
 
-    for (const variant of variants) {
-      if (!variant.muxVideo?.assetId) {
-        console.log(
-          `Skipping variant ${variant.id}: mux video has no assetId to repair from`
-        )
-        totalProcessed++
-        continue
+    let completeDownloads = downloadsWithCarryover
+    const lastDownload = downloadsWithCarryover.at(-1)
+    if (zeroMetadataDownloads.length === take && lastDownload?.videoVariantId != null) {
+      let trailingIndex = downloadsWithCarryover.length - 1
+      while (
+        trailingIndex >= 0 &&
+        downloadsWithCarryover[trailingIndex]?.videoVariantId === lastDownload.videoVariantId
+      ) {
+        trailingIndex--
       }
+      carryoverDownloads = downloadsWithCarryover.slice(trailingIndex + 1)
+      completeDownloads = downloadsWithCarryover.slice(0, trailingIndex + 1)
+    }
 
-      const zeroMetadataDownloads = variant.downloads
-      console.log(
-        `Processing downloads for variant ${variant.id}, zero-metadata Mux download count: ${zeroMetadataDownloads.length}`
+    const downloadsByVariant = new Map<string, ZeroMetadataDownloadRow[]>()
+    for (const download of completeDownloads) {
+      const variantId = download.videoVariantId
+      if (variantId == null) continue
+
+      const downloadsForVariant = downloadsByVariant.get(variantId)
+      if (downloadsForVariant == null) {
+        downloadsByVariant.set(variantId, [download])
+      } else {
+        downloadsForVariant.push(download)
+      }
+    }
+
+    const variants = Array.from(downloadsByVariant.values())
+      .map((downloads) => downloads[0]?.videoVariant)
+      .filter(
+        (variant): variant is Prisma.VideoVariantGetPayload<{
+          include: {
+            muxVideo: true
+          }
+        }> => variant != null
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 1500)) // wait 1.5 sec to avoid rate limit
+    const variantsToProcess =
+      remainingSampleSize == null ? variants : variants.slice(0, remainingSampleSize)
 
-      try {
-        const muxVideoAsset = await getVideo(variant.muxVideo.assetId, false)
+    console.log(
+      `Found ${variantsToProcess.length} variants with zero-metadata download rows to process in this batch`
+    )
 
-        if (
-          muxVideoAsset.status === 'ready' &&
-          muxVideoAsset.playback_ids?.[0].id != null &&
-          downloadsReadyToStore(muxVideoAsset)
-        ) {
-          if (!applyChanges) {
-            const previewDownloads = previewMuxDownloadsFromAsset({
-              variantId: variant.id,
-              muxVideoAsset
-            })
-            const previewByQuality = new Map(
-              previewDownloads.map(
-                (download): [typeof download.quality, typeof download] => [
-                  download.quality,
-                  download
-                ]
-              )
-            )
-
-            console.log(
-              `Preview for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
-            )
-            for (const download of zeroMetadataDownloads) {
-              const replacement = previewByQuality.get(download.quality)
-              if (replacement == null) {
-                console.log(
-                  `  quality=${download.quality}: no replacement generated from current Mux renditions`
-                )
-                continue
-              }
-
-              console.log(
-                `  quality=${download.quality}: size ${download.size ?? 'null'} -> ${replacement.size}, bitrate ${download.bitrate ?? 'null'} -> ${replacement.bitrate}`
-              )
-            }
-            totalProcessed++
-            continue
-          }
-
-          const createdCount = await createDownloadsFromMuxAsset({
-            variantId: variant.id,
-            muxVideoAsset
-          })
-
-          console.log(
-            `Successfully created or refreshed ${createdCount} video downloads for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
-          )
-        } else {
-          console.log(
-            `Video not ready for download processing - variant: ${variant.id}, assetId: ${variant.muxVideo.assetId}, status: ${muxVideoAsset.status}, hasPlaybackId: ${!!muxVideoAsset.playback_ids?.[0].id}, downloadsReady: ${downloadsReadyToStore(muxVideoAsset)}`
-          )
-        }
-      } catch (error) {
-        console.error(
-          `Failed to process downloads for variant ${variant.id}, assetId: ${variant.muxVideo.assetId}`,
-          error
-        )
-      }
-
+    for (const variant of variantsToProcess) {
+      const variantZeroMetadataDownloads = downloadsByVariant.get(variant.id) ?? []
+      await processVariant(variant, variantZeroMetadataDownloads)
       totalProcessed++
     }
 
-    nextCursor = variants.at(-1)?.id ?? null
+    nextCursor = zeroMetadataDownloads.at(-1)?.id ?? null
 
-    if (variants.length < take || nextCursor == null) {
+    if (zeroMetadataDownloads.length < take || nextCursor == null) {
       hasMore = false
+    }
+  }
+
+  if (carryoverDownloads.length > 0 && (sampleSize == null || totalProcessed < sampleSize)) {
+    const downloadsByVariant = new Map<string, ZeroMetadataDownloadRow[]>()
+    for (const download of carryoverDownloads) {
+      const variantId = download.videoVariantId
+      if (variantId == null) continue
+
+      const downloadsForVariant = downloadsByVariant.get(variantId)
+      if (downloadsForVariant == null) {
+        downloadsByVariant.set(variantId, [download])
+      } else {
+        downloadsForVariant.push(download)
+      }
+    }
+
+    for (const [variantId, variantDownloads] of downloadsByVariant) {
+      if (sampleSize != null && totalProcessed >= sampleSize) {
+        break
+      }
+
+      const variant = variantDownloads[0]?.videoVariant
+      if (variant == null) {
+        continue
+      }
+
+      console.log(
+        `Found final carryover variant ${variantId} with ${variantDownloads.length} zero-metadata download rows`
+      )
+      await processVariant(variant, variantDownloads)
+      totalProcessed++
     }
   }
 
