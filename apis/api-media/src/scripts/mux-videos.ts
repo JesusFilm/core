@@ -266,6 +266,9 @@ export async function processDownloads(): Promise<void> {
     videoVariantId: {
       not: null
     },
+    url: {
+      startsWith: MUX_STREAM_BASE_URL
+    },
     OR: [{ size: null }, { size: 0 }, { bitrate: null }, { bitrate: 0 }]
   }
 
@@ -285,22 +288,6 @@ export async function processDownloads(): Promise<void> {
     console.log(
       `Processing downloads for variant ${variant.id}, zero-metadata download count: ${variantZeroMetadataDownloads.length}`
     )
-
-    const nonMuxDownloads = variantZeroMetadataDownloads.filter(
-      (download) => !download.url.startsWith(MUX_STREAM_BASE_URL)
-    )
-    for (const download of nonMuxDownloads) {
-      console.log(
-        `  quality=${download.quality}: cannot repair from Mux because url is not a Mux stream URL`
-      )
-    }
-
-    const muxBackedDownloads = variantZeroMetadataDownloads.filter((download) =>
-      download.url.startsWith(MUX_STREAM_BASE_URL)
-    )
-    if (muxBackedDownloads.length === 0) {
-      return
-    }
 
     if (!variant.muxVideo?.assetId) {
       console.log(
@@ -336,7 +323,7 @@ export async function processDownloads(): Promise<void> {
           console.log(
             `Preview for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
           )
-          for (const download of muxBackedDownloads) {
+          for (const download of variantZeroMetadataDownloads) {
             const replacement = previewByQuality.get(download.quality)
             if (replacement == null) {
               console.log(
