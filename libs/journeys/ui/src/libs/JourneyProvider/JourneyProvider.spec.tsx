@@ -6,7 +6,7 @@ import { journey } from './JourneyProvider.mock'
 
 import { JourneyProvider, useJourney } from '.'
 
-const checkJourney = jest.fn()
+const checkJourney = vi.fn()
 
 const TestComponent = (): ReactElement => {
   const { journey } = useJourney()

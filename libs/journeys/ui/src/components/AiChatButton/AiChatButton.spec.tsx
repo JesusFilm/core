@@ -12,7 +12,7 @@ import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated
 
 import { AiChatButton } from './AiChatButton'
 
-jest.mock('../ChatOverlay', () => ({
+vi.mock('../ChatOverlay', () => ({
   __esModule: true,
   ChatOverlay: ({ open }: { open: boolean }) =>
     open ? <div data-testid="ChatOverlay-open" /> : null

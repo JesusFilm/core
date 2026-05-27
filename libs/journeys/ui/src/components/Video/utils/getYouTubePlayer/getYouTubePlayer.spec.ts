@@ -5,11 +5,9 @@ import { isYoutubeTech } from '../videoStatsUtils/isYoutubeTech'
 
 import { getYouTubePlayer } from './getYouTubePlayer'
 
-jest.mock('../videoStatsUtils/isYoutubeTech')
+vi.mock('../videoStatsUtils/isYoutubeTech')
 
-const mockIsYoutubeTech = isYoutubeTech as jest.MockedFunction<
-  typeof isYoutubeTech
->
+const mockIsYoutubeTech = vi.mocked(isYoutubeTech)
 
 describe('getYouTubePlayer', () => {
   let mockPlayer: VideoJsPlayer
@@ -17,15 +15,15 @@ describe('getYouTubePlayer', () => {
   let mockYtPlayer: any
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     mockYtPlayer = {
-      getOption: jest.fn(),
-      loadModule: jest.fn(),
-      setOption: jest.fn(),
-      getPlaybackQuality: jest.fn(),
-      getAvailableQualityLevels: jest.fn(),
-      getVideoLoadedFraction: jest.fn()
+      getOption: vi.fn(),
+      loadModule: vi.fn(),
+      setOption: vi.fn(),
+      getPlaybackQuality: vi.fn(),
+      getAvailableQualityLevels: vi.fn(),
+      getVideoLoadedFraction: vi.fn()
     }
 
     mockTech = {
@@ -34,7 +32,7 @@ describe('getYouTubePlayer', () => {
     } as YoutubeTech
 
     mockPlayer = {
-      tech: jest.fn(() => mockTech)
+      tech: vi.fn(() => mockTech)
     } as unknown as VideoJsPlayer
   })
 
@@ -59,7 +57,7 @@ describe('getYouTubePlayer', () => {
   })
 
   it('should return null when tech is null', () => {
-    mockPlayer.tech = jest.fn(() => null as any)
+    mockPlayer.tech = vi.fn(() => null as any)
     mockIsYoutubeTech.mockReturnValue(false)
 
     const result = getYouTubePlayer(mockPlayer)
@@ -70,7 +68,7 @@ describe('getYouTubePlayer', () => {
   })
 
   it('should return null when tech is undefined', () => {
-    mockPlayer.tech = jest.fn(() => undefined as any)
+    mockPlayer.tech = vi.fn(() => undefined as any)
     mockIsYoutubeTech.mockReturnValue(false)
 
     const result = getYouTubePlayer(mockPlayer)
@@ -89,7 +87,7 @@ describe('getYouTubePlayer', () => {
       }
     } as Html5
 
-    mockPlayer.tech = jest.fn(() => html5Tech)
+    mockPlayer.tech = vi.fn(() => html5Tech)
     mockIsYoutubeTech.mockReturnValue(false)
 
     const result = getYouTubePlayer(mockPlayer)
@@ -105,7 +103,7 @@ describe('getYouTubePlayer', () => {
       ytPlayer: mockYtPlayer
     } as YoutubeTech
 
-    mockPlayer.tech = jest.fn(() => youtubeTechWithYtPlayer)
+    mockPlayer.tech = vi.fn(() => youtubeTechWithYtPlayer)
     mockIsYoutubeTech.mockReturnValue(true)
 
     const result = getYouTubePlayer(mockPlayer)
@@ -121,7 +119,7 @@ describe('getYouTubePlayer', () => {
       ytPlayer: null as any
     } as YoutubeTech
 
-    mockPlayer.tech = jest.fn(() => youtubeTechWithNullYtPlayer)
+    mockPlayer.tech = vi.fn(() => youtubeTechWithNullYtPlayer)
     mockIsYoutubeTech.mockReturnValue(true)
 
     const result = getYouTubePlayer(mockPlayer)
@@ -137,7 +135,7 @@ describe('getYouTubePlayer', () => {
       ytPlayer: undefined as any
     } as YoutubeTech
 
-    mockPlayer.tech = jest.fn(() => youtubeTechWithUndefinedYtPlayer)
+    mockPlayer.tech = vi.fn(() => youtubeTechWithUndefinedYtPlayer)
     mockIsYoutubeTech.mockReturnValue(true)
 
     const result = getYouTubePlayer(mockPlayer)

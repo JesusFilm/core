@@ -89,7 +89,7 @@ describe('TemplateInfoHelper', () => {
     const trigger = screen.getByTestId('TemplateInfoHelperTrigger')
     await user.click(trigger)
 
-    await user.click(screen.getByText('What templates are about:'))
+    await user.click(screen.getByText('What team templates are about:'))
 
     expect(trigger).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByTestId('TemplateInfoPanel')).toBeInTheDocument()
