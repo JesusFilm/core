@@ -1,6 +1,7 @@
 ---
 title: Share a cross-app page via a neutral view-model and variant prop
 date: 2026-05-26
+last_refreshed: 2026-05-27
 category: docs/solutions/architecture-patterns/
 module: journeys/ui/PublicGalleryPage
 problem_type: architecture_pattern
@@ -99,6 +100,8 @@ export function PublicGalleryPage({
 
 `JourneyView` is the full-screen, parallax experience; `AdminView` is the compact decorative thumbnail. They share `PublicGalleryPageData` and the visual tokens, nothing else. (Because the admin variant is static, no separate "disable animations" prop was needed — animation lives only in `JourneyView`.)
 
+**Caveat — share *derived* logic too, not just the data.** Two sibling views that share only the data model still drift on any non-trivial derivation each computes for itself. If both variants must, say, split items into featured/rest the same way, that rule belongs in the shared module (a shared helper, or precomputed onto the view-model) — not copied into each view. NES-1694 learned this the hard way: `JourneyView` and `AdminView` each kept their own `FEATURED_COUNT = 2` slice, and when the journey view started featuring all three templates at a count of three, the admin preview didn't — a lone bare card appeared in its grid until the rule was mirrored. Treat shared derivation like shared data.
+
 **3. Keep app-specific chrome in the app.** Only the recreated card _body_ moved into the shared `admin` variant. `CollectionPreviewPane` keeps its copy-link / open-in-new-tab controls, its read-only URL field, and the dialog frame — these are admin concerns the public page has no business knowing about. The shared component renders the page content; the app wraps it in app-specific affordances.
 
 ### Secondary learning: the parent↔child circular import this creates
@@ -138,7 +141,7 @@ If a project _does_ enable `import/no-cycle` (or you want to avoid the cycle on 
 
 ## Why This Matters
 
-- **One source of truth eliminates drift.** The NES-1682 regression (a section surviving in the preview after removal from the live page) is structurally impossible once both surfaces consume the same `PublicGalleryPageData` through the same component.
+- **One source of truth eliminates *structural* drift — but not *derived-logic* drift.** Sharing `PublicGalleryPageData` and the component tree makes the NES-1682 regression (a section surviving in the preview after removal from the live page) structurally impossible. It does **not** protect logic each variant computes independently: the NES-1694 `FEATURED_COUNT` split drifted between `JourneyView` and `AdminView` precisely because each recomputed it. Shared *data* is not shared *derivation* — see the caveat under guidance rule 2.
 - **The neutral model survives schema churn.** Because the shared component never imports either app's generated types, an Apollo query change in one app cannot break the other or the library — only that app's `toData()` mapper changes, a small type-checked edit.
 - **Two variants beat one over-responsive component.** A single component juggling `100svh` parallax sections _and_ a 287px thumbnail accumulates conditional branches that are hard to read and easy to break. Two sibling views are each simple and self-contained, while still kept in sync by the shared model.
 - **The circular-import gotcha is a silent footgun.** It works only because of a precise combination (no `import/no-cycle` + render-time-only reads). A future developer adding one module-scope `const x = GALLERY_ACCENT` in a child would get `undefined` with no warning. Documenting the rule (and the leaf-module escape hatch) prevents that.
@@ -220,5 +223,6 @@ Verification on the actual change: library `tsc` + Jest (9 tests across both var
 
 ## Related
 
+- `design-patterns/scrollspy-glass-section-nav-mui-fullviewport-2026-05-27.md` — the section-nav built on top of `JourneyView`; its "shared-variant split must be identical" gotcha is the concrete NES-1694 instance of the derived-logic caveat above.
 - `design-patterns/floating-disclosure-mui-journeys-admin-canvas-nes1642.md` — nearest neighbor: another reusable MUI component pattern in the journeys family (single-app, different problem).
 - `logic-errors/plausible-analytics-event-name-mismatch-qa359.md` — touches an `import/no-cycle` lint note on a barrel re-export; discoverable alongside this doc's circular-import discussion.
