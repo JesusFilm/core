@@ -48,6 +48,31 @@ describe('PublicGalleryPage', () => {
       ).toBeGreaterThanOrEqual(5)
     })
 
+    it('features all three items (no complete set) when there are exactly three', () => {
+      render(
+        <PublicGalleryPage
+          variant="journey"
+          data={makeData({ items: makeItems(3) })}
+        />
+      )
+      // All three sit in the featured rows, so the complete-set grid never
+      // renders and is not left showing a single bare card.
+      expect(screen.queryByText('The complete set')).not.toBeInTheDocument()
+      expect(screen.getByText('Featured')).toBeInTheDocument()
+    })
+
+    it('keeps two featured and grids the rest when there are four', () => {
+      render(
+        <PublicGalleryPage
+          variant="journey"
+          data={makeData({ items: makeItems(4) })}
+        />
+      )
+      // Four items keep the two-featured default, so the complete set holds
+      // the remaining two cards rather than a single bare one.
+      expect(screen.getByText('The complete set')).toBeInTheDocument()
+    })
+
     it('shows the empty state when there are no items', () => {
       render(
         <PublicGalleryPage variant="journey" data={makeData({ items: [] })} />

@@ -231,8 +231,13 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
   const featuredRef = useParallax()
   const restRef = useParallax()
 
-  const featured = data.items.slice(0, FEATURED_COUNT)
-  const rest = data.items.slice(FEATURED_COUNT)
+  // Feature the first two templates by default. With exactly three, feature
+  // all three so the complete set isn't left showing a single, bare card.
+  // From four onward the default holds, so the complete set always has at
+  // least two cards.
+  const featuredCount = data.items.length === 3 ? 3 : FEATURED_COUNT
+  const featured = data.items.slice(0, featuredCount)
+  const rest = data.items.slice(featuredCount)
   const hasTemplates = data.items.length > 0
   const hasMedia = data.mediaUrl != null && data.mediaUrl !== ''
 
@@ -250,7 +255,7 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
         </Container>
       </Box>
 
-      {/* Section 2 — the two featured templates */}
+      {/* Section 2 — the featured templates (two, or three when that's all) */}
       {featured.length > 0 && (
         <Box
           component="section"
