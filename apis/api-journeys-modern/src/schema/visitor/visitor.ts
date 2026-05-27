@@ -82,8 +82,7 @@ export const VisitorRef = builder.prismaObject('Visitor', {
           if (isTeamMember === true) return true
 
           const isJourneyOwner = event.journey.userJourneys?.some(
-            (uj) =>
-              uj.userId === userId && uj.role === UserJourneyRole.owner
+            (uj) => uj.userId === userId && uj.role === UserJourneyRole.owner
           )
           return isJourneyOwner === true
         })

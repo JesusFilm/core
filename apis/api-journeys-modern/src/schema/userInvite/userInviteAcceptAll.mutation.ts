@@ -17,10 +17,9 @@ builder.mutationField('userInviteAcceptAll', (t) =>
         const user = context.user
 
         if (user.email == null)
-          throw new GraphQLError(
-            'User must have an email to accept invites',
-            { extensions: { code: 'BAD_REQUEST' } }
-          )
+          throw new GraphQLError('User must have an email to accept invites', {
+            extensions: { code: 'BAD_REQUEST' }
+          })
 
         const pendingInvites = await prisma.userInvite.findMany({
           where: {

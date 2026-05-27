@@ -6,10 +6,7 @@ import { encryptSymmetric } from '@core/yoga/crypto'
 
 import { env } from '../../../env'
 import { builder } from '../../builder'
-import {
-  INCLUDE_INTEGRATION_ACL,
-  integrationAcl
-} from '../integration.acl'
+import { INCLUDE_INTEGRATION_ACL, integrationAcl } from '../integration.acl'
 
 import { IntegrationGrowthSpacesRef } from './growthSpaces'
 import { IntegrationGrowthSpacesCreateInput } from './inputs'

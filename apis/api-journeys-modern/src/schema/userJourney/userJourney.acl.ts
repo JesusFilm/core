@@ -51,8 +51,10 @@ export function userJourneyAcl(
 
   switch (action) {
     case UserJourneyAction.Create:
-      return userJourney.userId === user.id &&
+      return (
+        userJourney.userId === user.id &&
         userJourney.role === UserJourneyRole.inviteRequested
+      )
     case UserJourneyAction.UpdateRole:
       return isOwner || isTeamManager
     case UserJourneyAction.UpdateOpenedAt:

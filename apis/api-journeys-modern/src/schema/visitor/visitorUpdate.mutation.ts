@@ -26,10 +26,9 @@ builder.mutationField('visitorUpdate', (t) =>
         })
 
         if (visitor == null)
-          throw new GraphQLError(
-            `visitor with id "${args.id}" not found`,
-            { extensions: { code: 'NOT_FOUND' } }
-          )
+          throw new GraphQLError(`visitor with id "${args.id}" not found`, {
+            extensions: { code: 'NOT_FOUND' }
+          })
 
         if (!visitorAcl(visitor, context.user))
           throw new GraphQLError('user is not allowed to update visitor', {

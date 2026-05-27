@@ -226,12 +226,8 @@ export function canManageTemplateField(
   journey: Partial<Journey>,
   user: User
 ): boolean {
-  const userJourney = journey?.userJourneys?.find(
-    (uj) => uj.userId === user.id
-  )
-  const userTeam = journey?.team?.userTeams.find(
-    (ut) => ut.userId === user.id
-  )
+  const userJourney = journey?.userJourneys?.find((uj) => uj.userId === user.id)
+  const userTeam = journey?.team?.userTeams.find((ut) => ut.userId === user.id)
 
   const hasJourneyRole =
     userJourney?.role === UserJourneyRole.owner ||

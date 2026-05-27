@@ -33,16 +33,11 @@ builder.mutationField('userJourneyRemove', (t) =>
           })
 
         if (
-          !userJourneyAcl(
-            UserJourneyAction.Delete,
-            userJourney,
-            context.user
-          )
+          !userJourneyAcl(UserJourneyAction.Delete, userJourney, context.user)
         )
-          throw new GraphQLError(
-            'user is not allowed to delete userJourney',
-            { extensions: { code: 'FORBIDDEN' } }
-          )
+          throw new GraphQLError('user is not allowed to delete userJourney', {
+            extensions: { code: 'FORBIDDEN' }
+          })
 
         return prisma.userJourney.delete({
           ...query,

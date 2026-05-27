@@ -51,10 +51,9 @@ builder.mutationField('qrCodeCreate', (t) =>
           })
 
           if (!canManageQrCode(qrCode, context.user))
-            throw new GraphQLError(
-              'User is not allowed to create the QrCode',
-              { extensions: { code: 'FORBIDDEN' } }
-            )
+            throw new GraphQLError('User is not allowed to create the QrCode', {
+              extensions: { code: 'FORBIDDEN' }
+            })
 
           return tx.qrCode.findUniqueOrThrow({
             ...query,

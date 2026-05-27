@@ -56,11 +56,7 @@ builder.mutationField('journeyCollectionCreate', (t) =>
           })
 
           if (
-            !canAccessJourneyCollection(
-              Action.Create,
-              collection,
-              context.user
-            )
+            !canAccessJourneyCollection(Action.Create, collection, context.user)
           )
             throw new GraphQLError(
               'user is not allowed to create journey collection',

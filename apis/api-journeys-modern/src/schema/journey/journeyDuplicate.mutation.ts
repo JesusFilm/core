@@ -89,13 +89,20 @@ async function getDuplicateBlockAndChildren(
           : null
     } else if (key.includes('BlockId') || key.includes('IconId')) {
       const blockId: string | null | undefined = (block as any)[key]
-      updatedBlockProps[key] = blockId != null ? (childIds.get(blockId) ?? null) : null
+      updatedBlockProps[key] =
+        blockId != null ? (childIds.get(blockId) ?? null) : null
     }
     if (key === 'action') {
-      const action = omit(block.action, 'parentBlockId') as unknown as BlockAction
+      const action = omit(
+        block.action,
+        'parentBlockId'
+      ) as unknown as BlockAction
       updatedBlockProps[key] =
         action?.blockId != null
-          ? { ...action, blockId: duplicateStepIds.get(action.blockId) ?? action.blockId }
+          ? {
+              ...action,
+              blockId: duplicateStepIds.get(action.blockId) ?? action.blockId
+            }
           : action
     }
   }
@@ -439,7 +446,10 @@ builder.mutationField('journeyDuplicate', (t) =>
                 __typename: 'plausibleCreateJourneySite',
                 journeyId: duplicateJourneyId
               },
-              { removeOnComplete: true, removeOnFail: { age: FIVE_DAYS, count: 50 } }
+              {
+                removeOnComplete: true,
+                removeOnFail: { age: FIVE_DAYS, count: 50 }
+              }
             )
             void plausibleQueue.add(
               'create-team-site',
@@ -447,7 +457,10 @@ builder.mutationField('journeyDuplicate', (t) =>
                 __typename: 'plausibleCreateTeamSite',
                 teamId: String(teamId)
               },
-              { removeOnComplete: true, removeOnFail: { age: FIVE_DAYS, count: 50 } }
+              {
+                removeOnComplete: true,
+                removeOnFail: { age: FIVE_DAYS, count: 50 }
+              }
             )
 
             return await prisma.journey.findUniqueOrThrow({

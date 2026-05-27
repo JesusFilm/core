@@ -38,12 +38,8 @@ export function userInviteAcl(
 ): boolean {
   const journey = userInvite.journey
 
-  const userJourney = journey?.userJourneys?.find(
-    (uj) => uj.userId === user.id
-  )
-  const userTeam = journey?.team?.userTeams.find(
-    (ut) => ut.userId === user.id
-  )
+  const userJourney = journey?.userJourneys?.find((uj) => uj.userId === user.id)
+  const userTeam = journey?.team?.userTeams.find((ut) => ut.userId === user.id)
 
   const isOwner = userJourney?.role === UserJourneyRole.owner
   const isEditor = userJourney?.role === UserJourneyRole.editor

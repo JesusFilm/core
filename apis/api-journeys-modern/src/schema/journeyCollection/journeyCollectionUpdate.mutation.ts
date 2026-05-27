@@ -23,11 +23,10 @@ builder.mutationField('journeyCollectionUpdate', (t) =>
       resolve: async (query, _parent, args, context) => {
         const { id, input } = args
 
-        const journeyCollection =
-          await prisma.journeyCollection.findUnique({
-            where: { id: String(id) },
-            include: { team: { include: { userTeams: true } } }
-          })
+        const journeyCollection = await prisma.journeyCollection.findUnique({
+          where: { id: String(id) },
+          include: { team: { include: { userTeams: true } } }
+        })
 
         if (journeyCollection == null)
           throw new GraphQLError('journey collection not found', {

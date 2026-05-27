@@ -39,10 +39,9 @@ builder.mutationField('userJourneyPromote', (t) =>
             context.user
           )
         )
-          throw new GraphQLError(
-            'user is not allowed to update userJourney',
-            { extensions: { code: 'FORBIDDEN' } }
-          )
+          throw new GraphQLError('user is not allowed to update userJourney', {
+            extensions: { code: 'FORBIDDEN' }
+          })
 
         return prisma.$transaction(async (tx) => {
           await tx.userJourney.updateMany({

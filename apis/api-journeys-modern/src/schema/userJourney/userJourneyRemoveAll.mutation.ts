@@ -26,10 +26,7 @@ builder.mutationField('userJourneyRemoveAll', (t) =>
 
         await prisma.userJourney.deleteMany({
           where: {
-            AND: [
-              accessible,
-              { id: { in: userJourneys.map(({ id }) => id) } }
-            ]
+            AND: [accessible, { id: { in: userJourneys.map(({ id }) => id) } }]
           }
         })
 

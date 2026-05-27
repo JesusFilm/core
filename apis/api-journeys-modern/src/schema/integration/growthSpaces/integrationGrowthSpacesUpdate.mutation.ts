@@ -6,10 +6,7 @@ import { encryptSymmetric } from '@core/yoga/crypto'
 
 import { env } from '../../../env'
 import { builder } from '../../builder'
-import {
-  INCLUDE_INTEGRATION_ACL,
-  integrationAcl
-} from '../integration.acl'
+import { INCLUDE_INTEGRATION_ACL, integrationAcl } from '../integration.acl'
 
 import { IntegrationGrowthSpacesRef } from './growthSpaces'
 import { IntegrationGrowthSpacesUpdateInput } from './inputs'
@@ -68,10 +65,9 @@ builder.mutationField('integrationGrowthSpacesUpdate', (t) =>
           })
 
         if (!integrationAcl(integration, context.user))
-          throw new GraphQLError(
-            'user is not allowed to update integration',
-            { extensions: { code: 'FORBIDDEN' } }
-          )
+          throw new GraphQLError('user is not allowed to update integration', {
+            extensions: { code: 'FORBIDDEN' }
+          })
 
         await authenticate({ accessId, accessSecret })
 

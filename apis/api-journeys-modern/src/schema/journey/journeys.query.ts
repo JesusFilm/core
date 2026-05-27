@@ -1,8 +1,4 @@
-import {
-  JourneyStatus,
-  Prisma,
-  prisma
-} from '@core/prisma/journeys/client'
+import { JourneyStatus, Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 

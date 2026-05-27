@@ -25,10 +25,9 @@ builder.mutationField('qrCodeDelete', (t) =>
         })
 
         if (!canManageQrCode(qrCode, context.user))
-          throw new GraphQLError(
-            'User is not allowed to delete the QrCode',
-            { extensions: { code: 'FORBIDDEN' } }
-          )
+          throw new GraphQLError('User is not allowed to delete the QrCode', {
+            extensions: { code: 'FORBIDDEN' }
+          })
 
         return await prisma.$transaction(async (tx) => {
           await deleteShortLink(qrCode.shortLinkId)

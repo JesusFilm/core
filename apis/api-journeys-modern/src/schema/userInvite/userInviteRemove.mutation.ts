@@ -33,13 +33,10 @@ builder.mutationField('userInviteRemove', (t) =>
             extensions: { code: 'NOT_FOUND' }
           })
 
-        if (
-          !userInviteAcl(UserInviteAction.Manage, userInvite, context.user)
-        )
-          throw new GraphQLError(
-            'user is not allowed to remove userInvite',
-            { extensions: { code: 'FORBIDDEN' } }
-          )
+        if (!userInviteAcl(UserInviteAction.Manage, userInvite, context.user))
+          throw new GraphQLError('user is not allowed to remove userInvite', {
+            extensions: { code: 'FORBIDDEN' }
+          })
 
         return prisma.userInvite.update({
           ...query,

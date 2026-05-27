@@ -53,11 +53,7 @@ builder.mutationField('userJourneyRequest', (t) =>
           })
 
           if (
-            !userJourneyAcl(
-              UserJourneyAction.Create,
-              userJourney,
-              context.user
-            )
+            !userJourneyAcl(UserJourneyAction.Create, userJourney, context.user)
           )
             throw new GraphQLError(
               'user is not allowed to create userJourney',

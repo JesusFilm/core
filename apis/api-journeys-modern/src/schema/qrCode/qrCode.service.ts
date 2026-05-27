@@ -85,7 +85,9 @@ export async function createShortLink(
   return { id: result.data?.id ?? input.id }
 }
 
-export async function updateShortLink(input: ShortLinkUpdateInput): Promise<void> {
+export async function updateShortLink(
+  input: ShortLinkUpdateInput
+): Promise<void> {
   const query = `
     mutation shortLinkUpdate($input: MutationShortLinkUpdateInput!) {
       shortLinkUpdate(input: $input) {
@@ -104,10 +106,7 @@ export async function updateShortLink(input: ShortLinkUpdateInput): Promise<void
     message?: string
   }
 
-  if (
-    result.__typename === 'ZodError' ||
-    result.__typename === 'NotFoundError'
-  )
+  if (result.__typename === 'ZodError' || result.__typename === 'NotFoundError')
     throw new GraphQLError(result.message ?? 'Short link update failed', {
       extensions: { code: 'BAD_USER_INPUT' }
     })
@@ -160,9 +159,7 @@ export async function getTo({
       : null
 
   const base =
-    customDomain?.name != null
-      ? `https://${customDomain.name}`
-      : JOURNEYS_URL
+    customDomain?.name != null ? `https://${customDomain.name}` : JOURNEYS_URL
 
   const path = `${journey.slug}${block != null ? `/${block.id}` : ''}`
   const utm = `?utm_source=ns-qr-code&utm_campaign=${shortLinkId}`

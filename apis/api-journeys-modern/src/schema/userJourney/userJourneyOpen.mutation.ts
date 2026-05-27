@@ -28,10 +28,9 @@ builder.mutationField('userJourneyOpen', (t) =>
         if (userJourney == null) return null
 
         if (userJourney.userId !== context.user.id)
-          throw new GraphQLError(
-            'user is not allowed to update userJourney',
-            { extensions: { code: 'FORBIDDEN' } }
-          )
+          throw new GraphQLError('user is not allowed to update userJourney', {
+            extensions: { code: 'FORBIDDEN' }
+          })
 
         return prisma.userJourney.update({
           ...query,

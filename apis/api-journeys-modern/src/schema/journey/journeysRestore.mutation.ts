@@ -22,7 +22,10 @@ builder.mutationField('journeysRestore', (t) =>
         const journeys = await prisma.journey.findMany({
           where: {
             AND: [
-              journeyReadAccessWhere(userId, context.user as typeof context.user & { roles?: string[] }),
+              journeyReadAccessWhere(
+                userId,
+                context.user as typeof context.user & { roles?: string[] }
+              ),
               { id: { in: ids } }
             ]
           },

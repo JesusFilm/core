@@ -26,15 +26,17 @@ interface VisitorsConnectionShape {
   pageInfo: PageInfoShape
 }
 
-export const PageInfoRef = builder.objectRef<PageInfoShape>('PageInfo').implement({
-  shareable: true,
-  fields: (t) => ({
-    hasNextPage: t.exposeBoolean('hasNextPage', { nullable: false }),
-    hasPreviousPage: t.exposeBoolean('hasPreviousPage', { nullable: false }),
-    startCursor: t.exposeString('startCursor', { nullable: true }),
-    endCursor: t.exposeString('endCursor', { nullable: true })
+export const PageInfoRef = builder
+  .objectRef<PageInfoShape>('PageInfo')
+  .implement({
+    shareable: true,
+    fields: (t) => ({
+      hasNextPage: t.exposeBoolean('hasNextPage', { nullable: false }),
+      hasPreviousPage: t.exposeBoolean('hasPreviousPage', { nullable: false }),
+      startCursor: t.exposeString('startCursor', { nullable: true }),
+      endCursor: t.exposeString('endCursor', { nullable: true })
+    })
   })
-})
 
 const VisitorEdgeRef = builder
   .objectRef<VisitorEdgeShape>('VisitorEdge')

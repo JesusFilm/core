@@ -29,10 +29,9 @@ builder.mutationField('qrCodeUpdate', (t) =>
         })
 
         if (!canManageQrCode(qrCode, context.user))
-          throw new GraphQLError(
-            'User is not allowed to update the QrCode',
-            { extensions: { code: 'FORBIDDEN' } }
-          )
+          throw new GraphQLError('User is not allowed to update the QrCode', {
+            extensions: { code: 'FORBIDDEN' }
+          })
 
         const updateData: {
           toJourneyId?: string

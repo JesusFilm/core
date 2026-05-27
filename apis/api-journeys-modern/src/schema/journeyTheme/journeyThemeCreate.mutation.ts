@@ -34,9 +34,7 @@ builder.mutationField('journeyThemeCreate', (t) =>
             extensions: { code: 'NOT_FOUND' }
           })
 
-        if (
-          !ability(Action.Update, subject('Journey', journey), context.user)
-        )
+        if (!ability(Action.Update, subject('Journey', journey), context.user))
           throw new GraphQLError(
             'user is not allowed to create journey theme',
             { extensions: { code: 'FORBIDDEN' } }

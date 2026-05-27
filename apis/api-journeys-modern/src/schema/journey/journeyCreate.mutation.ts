@@ -86,7 +86,10 @@ builder.mutationField('journeyCreate', (t) =>
                 __typename: 'plausibleCreateJourneySite',
                 journeyId: journey.id
               },
-              { removeOnComplete: true, removeOnFail: { age: FIVE_DAYS, count: 50 } }
+              {
+                removeOnComplete: true,
+                removeOnFail: { age: FIVE_DAYS, count: 50 }
+              }
             )
             void plausibleQueue.add(
               'create-team-site',
@@ -94,7 +97,10 @@ builder.mutationField('journeyCreate', (t) =>
                 __typename: 'plausibleCreateTeamSite',
                 teamId: String(teamId)
               },
-              { removeOnComplete: true, removeOnFail: { age: FIVE_DAYS, count: 50 } }
+              {
+                removeOnComplete: true,
+                removeOnFail: { age: FIVE_DAYS, count: 50 }
+              }
             )
 
             return await prisma.journey.findUniqueOrThrow({

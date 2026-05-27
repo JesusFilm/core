@@ -61,13 +61,10 @@ builder.mutationField('userInviteCreate', (t) =>
             }
           })
 
-          if (
-            !userInviteAcl(UserInviteAction.Create, userInvite, context.user)
-          )
-            throw new GraphQLError(
-              'user is not allowed to create userInvite',
-              { extensions: { code: 'FORBIDDEN' } }
-            )
+          if (!userInviteAcl(UserInviteAction.Create, userInvite, context.user))
+            throw new GraphQLError('user is not allowed to create userInvite', {
+              extensions: { code: 'FORBIDDEN' }
+            })
 
           const { id: _id, ...sender } = context.user
           const url = `${env.JOURNEYS_ADMIN_URL}/journeys/${journeyId}`

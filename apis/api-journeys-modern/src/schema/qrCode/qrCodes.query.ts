@@ -17,7 +17,8 @@ builder.queryField('qrCodes', (t) =>
       },
       resolve: async (query, _parent, args) => {
         const filter: Prisma.QrCodeWhereInput = {}
-        if (args.where.journeyId) filter.journeyId = String(args.where.journeyId)
+        if (args.where.journeyId)
+          filter.journeyId = String(args.where.journeyId)
         if (args.where.teamId) filter.teamId = String(args.where.teamId)
 
         return prisma.qrCode.findMany({

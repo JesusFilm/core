@@ -19,11 +19,10 @@ builder.queryField('journeyCollection', (t) =>
         id: t.arg({ type: 'ID', required: true })
       },
       resolve: async (query, _parent, args, context) => {
-        const journeyCollection =
-          await prisma.journeyCollection.findUnique({
-            where: { id: String(args.id) },
-            include: { team: { include: { userTeams: true } } }
-          })
+        const journeyCollection = await prisma.journeyCollection.findUnique({
+          where: { id: String(args.id) },
+          include: { team: { include: { userTeams: true } } }
+        })
 
         if (journeyCollection == null)
           throw new GraphQLError('journey collection not found', {
