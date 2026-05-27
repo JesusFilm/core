@@ -224,32 +224,30 @@ export async function updateHls(mux: Mux): Promise<void> {
 export async function processDownloads(): Promise<void> {
   console.log('mux downloads processing started')
 
-  const dryRun = process.env.MUX_DOWNLOAD_BACKFILL_DRY_RUN === 'true'
-  const dryRunPreview = process.env.MUX_DOWNLOAD_BACKFILL_PREVIEW_VALUES === 'true'
-  const target = process.env.MUX_DOWNLOAD_BACKFILL_TARGET?.trim()
-  const targetFilter =
-    target != null && target !== ''
-      ? {
-          OR: [
-            { id: { contains: target } },
-            { videoId: { contains: target } },
-            { slug: { contains: target } },
-            { video: { slug: { contains: target } } }
-          ]
-        }
-      : undefined
+  const applyChanges = process.env.MUX_DOWNLOAD_BACKFILL_APPLY === 'true'
+  const sampleSizeValue = process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE?.trim()
+  const sampleSize =
+    sampleSizeValue != null && sampleSizeValue !== ''
+      ? Number.parseInt(sampleSizeValue, 10)
+      : null
 
-  if (targetFilter != null) {
-    console.log(`Filtering download processing to target: ${target}`)
-  }
-  if (dryRun) {
-    console.log('Dry run enabled: no download rows will be created or refreshed')
-  }
-  if (dryRunPreview) {
-    console.log('Dry run preview enabled: will fetch Mux metadata and print replacement values')
+  if (sampleSize != null && (!Number.isFinite(sampleSize) || sampleSize <= 0)) {
+    throw new Error(
+      'MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE must be a positive integer'
+    )
   }
 
-  const take = 100
+  if (applyChanges) {
+    console.log('Apply mode enabled: download metadata rows will be refreshed')
+  } else {
+    console.log(
+      'Preview mode enabled: no download rows will be changed and replacement values will be printed'
+    )
+  }
+  if (sampleSize != null) {
+    console.log(`Sample size limit enabled: processing up to ${sampleSize} variants`)
+  }
+
   let hasMore = true
   let totalProcessed = 0
   // Track variants already attempted this run so a variant whose Mux
@@ -258,6 +256,12 @@ export async function processDownloads(): Promise<void> {
   const attemptedVariantIds: string[] = []
 
   while (hasMore) {
+    const remainingSampleSize = sampleSize == null ? null : sampleSize - totalProcessed
+    if (remainingSampleSize != null && remainingSampleSize <= 0) {
+      break
+    }
+
+    const take = remainingSampleSize == null ? 100 : Math.min(100, remainingSampleSize)
     const variants = await prisma.videoVariant.findMany({
       where: {
         id: { notIn: attemptedVariantIds },
@@ -267,42 +271,20 @@ export async function processDownloads(): Promise<void> {
           assetId: { not: null },
           readyToStream: true
         },
-        AND: [
-          ...(targetFilter != null ? [targetFilter] : []),
-          {
-            // Existing standard Mux downloads with missing metadata need refresh/backfill.
-            downloads: {
-              some: {
-                quality: {
-                  notIn: DISTRO_DOWNLOAD_QUALITIES
-                },
-                url: { startsWith: MUX_STREAM_BASE_URL },
-                OR: [
-                  { size: null },
-                  { size: 0 },
-                  { bitrate: null },
-                  { bitrate: 0 }
-                ]
-              }
-            }
-          },
-          {
-            // Variants with Mux downloads persisted with a zero size or
-            // bitrate (see VMT-239) - re-fetch from Mux in case the metadata
-            // has since propagated
-            downloads: {
-              some: {
-                quality: {
-                  notIn: ['distroLow', 'distroSd', 'distroHigh']
-                },
-                url: {
-                  startsWith: 'https://stream.mux.com'
-                },
-                OR: [{ size: 0 }, { bitrate: 0 }]
-              }
-            }
+        downloads: {
+          some: {
+            quality: {
+              notIn: DISTRO_DOWNLOAD_QUALITIES
+            },
+            url: { startsWith: MUX_STREAM_BASE_URL },
+            OR: [
+              { size: null },
+              { size: 0 },
+              { bitrate: null },
+              { bitrate: 0 }
+            ]
           }
-        ]
+        }
       },
       include: {
         muxVideo: true,
@@ -325,7 +307,7 @@ export async function processDownloads(): Promise<void> {
     })
 
     console.log(
-      `Found ${variants.length} variants with downloadable Mux videos to process`
+      `Found ${variants.length} variants with downloadable Mux videos to process in this batch`
     )
 
     for (const variant of variants) {
@@ -340,14 +322,6 @@ export async function processDownloads(): Promise<void> {
         `Processing downloads for variant ${variant.id}, zero-metadata Mux download count: ${zeroMetadataDownloads.length}`
       )
 
-      if (dryRun && !dryRunPreview) {
-        console.log(
-          `Dry run: would refresh zero-metadata Mux downloads for variant ${variant.id}, count: ${zeroMetadataDownloads.length}`
-        )
-        totalProcessed++
-        continue
-      }
-
       await new Promise((resolve) => setTimeout(resolve, 1500)) // wait 1.5 sec to avoid rate limit
 
       try {
@@ -358,7 +332,7 @@ export async function processDownloads(): Promise<void> {
           muxVideoAsset.playback_ids?.[0].id != null &&
           downloadsReadyToStore(muxVideoAsset)
         ) {
-          if (dryRunPreview) {
+          if (!applyChanges) {
             const previewDownloads = previewMuxDownloadsFromAsset({
               variantId: variant.id,
               muxVideoAsset
@@ -373,7 +347,7 @@ export async function processDownloads(): Promise<void> {
             )
 
             console.log(
-              `Dry run preview for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
+              `Preview for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
             )
             for (const download of zeroMetadataDownloads) {
               const replacement = previewByQuality.get(download.quality)
@@ -392,7 +366,6 @@ export async function processDownloads(): Promise<void> {
             continue
           }
 
-          // Process downloads if static renditions are ready. Existing valid and distro rows are preserved.
           const createdCount = await createDownloadsFromMuxAsset({
             variantId: variant.id,
             muxVideoAsset
@@ -416,7 +389,7 @@ export async function processDownloads(): Promise<void> {
       totalProcessed++
     }
 
-    if (variants.length === 0 || dryRun) {
+    if (variants.length === 0) {
       hasMore = false
     }
   }
