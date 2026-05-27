@@ -130,6 +130,29 @@ describe('Card', () => {
       })
     })
 
+    it('shows event label for non-template journey when editJourneyTrackingMetrics is enabled', async () => {
+      const card = createCard()
+      renderWithProviders(<Card {...card} />, {
+        selectedBlock: card,
+        journey: { template: false },
+        flags: { editJourneyTrackingMetrics: true }
+      })
+      const trackingButton = screen.getByText('Tracking')
+      fireEvent.click(trackingButton)
+      await waitFor(() => {
+        expect(screen.getByTestId('EventLabelSelect')).toBeInTheDocument()
+      })
+    })
+
+    it('hides event label for non-template journey when editJourneyTrackingMetrics is disabled', () => {
+      const card = createCard()
+      renderWithProviders(<Card {...card} />, {
+        selectedBlock: card,
+        journey: { template: false }
+      })
+      expect(screen.queryByText('Tracking')).not.toBeInTheDocument()
+    })
+
     it('shows default attributes when no props provided', () => {
       const card = createCard()
       renderWithProviders(<Card {...card} />)

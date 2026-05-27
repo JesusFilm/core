@@ -63,12 +63,14 @@ export async function processSubtitleFile(
   const fileName = `${videoId}/editions/${edition}/subtitles/${subtitleVariantId}.${fileExtension}`
 
   let createR2Asset: typeof import('../services/r2').createR2Asset
+  let formatR2AssetDiagnostic: typeof import('../services/r2').formatR2AssetDiagnostic
   let uploadToR2: typeof import('../services/r2').uploadToR2
   try {
     const r2 = await import(
       /* webpackChunkName: "video-importer-r2" */ '../services/r2'
     )
     createR2Asset = r2.createR2Asset
+    formatR2AssetDiagnostic = r2.formatR2AssetDiagnostic
     uploadToR2 = r2.uploadToR2
   } catch (error) {
     console.error(`Failed to load R2 module for subtitle ${file}:`, error)
@@ -112,7 +114,7 @@ export async function processSubtitleFile(
     recordProcessingFailure(
       summary,
       file,
-      `R2 upload: ${toErrorMessage(error)}`
+      `R2 upload: ${toErrorMessage(error)}${formatR2AssetDiagnostic(r2Asset)}`
     )
     return
   }

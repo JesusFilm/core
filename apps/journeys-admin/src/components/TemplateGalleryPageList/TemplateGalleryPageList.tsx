@@ -11,7 +11,6 @@ import {
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -28,7 +27,7 @@ import {
 } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import {
   GetAdminJourneysVariables,
@@ -48,6 +47,10 @@ import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
 
 import { CollectionCard } from './CollectionCard'
 import { CollectionDialog } from './CollectionDialog'
+import {
+  COLLECTION_CARD_BORDER_WIDTH,
+  COLLECTION_CARD_PADDING
+} from './collectionLayout'
 import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
 import {
   DraggableJourneysGrid,
@@ -118,7 +121,6 @@ export function TemplateGalleryPageList({
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { enqueueSnackbar } = useSnackbar()
-  const breakpoints = useBreakpoints()
   const teamId = activeTeam?.id
 
   // Collections + DnD are only meaningful in the active view. In archived
@@ -293,6 +295,13 @@ export function TemplateGalleryPageList({
       allowedStatuses.includes(j.status)
     )
   }, [journeysQuery.data, status])
+
+  // Collections only surface once the team has at least one active
+  // (draft/published) template to group (NES-1696). The status filter
+  // already excludes archived/trashed; templates inside existing
+  // collections still count because `allTemplates` is the team's full
+  // template set, not just the unsectioned pool.
+  const showCollectionsSection = showCollections && allTemplates.length > 0
 
   const journeyById = useMemo(() => {
     const map = new Map<string, Journey>()
@@ -504,7 +513,7 @@ export function TemplateGalleryPageList({
   return (
     <GalleryDialogLockContext.Provider value={galleryDialogLockValue}>
       <Box sx={{ p: 4 }} data-testid="TemplateGalleryPageList">
-        {showCollections && (
+        {showCollectionsSection && (
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -512,44 +521,49 @@ export function TemplateGalleryPageList({
             spacing={2}
             sx={{ mb: 3 }}
           >
-            {/* min-width: 0 lets the description text wrap inside the flex
-              row instead of pushing into the button on narrow viewports
-              (NES-1652). */}
-            <Stack sx={{ minWidth: 0, flex: 1 }}>
-              <Stack direction="row" alignItems="center" spacing={0.5}>
-                <Typography variant="h4">{t('Collections')}</Typography>
-                {onOpenInfo != null && (
-                  <IconButton
-                    data-testid="TemplateInfoPanelMobileTrigger"
-                    aria-label={t('Open template info')}
-                    onClick={onOpenInfo}
-                    size="small"
-                    sx={{
-                      display: { xs: 'inline-flex', md: 'none' },
-                      color: 'text.secondary',
-                      p: 0.5
-                    }}
-                  >
-                    <InfoOutlinedIcon fontSize="small" />
-                  </IconButton>
-                )}
-              </Stack>
-              <Typography variant="body2" color="text.secondary">
-                {t('Group your team templates into a public gallery page.')}
-              </Typography>
+            {/* min-width: 0 lets the title row shrink instead of pushing into
+              the button on narrow viewports (NES-1652). */}
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={0.5}
+              sx={{ minWidth: 0, flex: 1 }}
+            >
+              <Typography variant="h4">{t('Collections')}</Typography>
+              {onOpenInfo != null && (
+                <IconButton
+                  data-testid="TemplateInfoPanelMobileTrigger"
+                  aria-label={t('Open template info')}
+                  onClick={onOpenInfo}
+                  size="small"
+                  sx={{
+                    display: { xs: 'inline-flex', md: 'none' },
+                    color: 'text.secondary',
+                    p: 0.5
+                  }}
+                >
+                  <InfoOutlinedIcon fontSize="small" />
+                </IconButton>
+              )}
             </Stack>
-            <Button
-              variant="contained"
-              color="primary"
+            <IconButton
+              aria-label={t('Create Collection')}
+              size="small"
               onClick={() => {
                 void handleCreate()
               }}
               disabled={createLoading}
-              sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
+              sx={{
+                flexShrink: 0,
+                border: 1.5,
+                borderColor: 'text.secondary',
+                borderRadius: 2,
+                color: 'text.secondary'
+              }}
               data-testid="CreateCollectionButton"
             >
-              {breakpoints.sm ? t('Create Collection') : t('Create')}
-            </Button>
+              <Plus2Icon fontSize="small" />
+            </IconButton>
           </Stack>
         )}
 
@@ -574,7 +588,7 @@ export function TemplateGalleryPageList({
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            {showCollections &&
+            {showCollectionsSection &&
               (collections.length === 0 ? (
                 <Alert severity="info" sx={{ mb: 3 }}>
                   {t(
@@ -582,7 +596,19 @@ export function TemplateGalleryPageList({
                   )}
                 </Alert>
               ) : (
-                <Stack spacing={2} sx={{ mb: 4 }}>
+                <Stack
+                  spacing={2}
+                  sx={{
+                    mb: 4,
+                    // Stretch each collection box outward by the
+                    // CollectionCard's inner horizontal padding + border, so
+                    // the card grid inside spans the same width as the All
+                    // Templates grid below and the cards column-align
+                    // (NES-1696). Both sides derive from collectionLayout.
+                    mx: (theme) =>
+                      `calc(${theme.spacing(-COLLECTION_CARD_PADDING)} - ${COLLECTION_CARD_BORDER_WIDTH}px)`
+                  }}
+                >
                   {collections.map((collection) => (
                     <DroppableCollectionWrapper
                       key={collection.id}
@@ -623,34 +649,23 @@ export function TemplateGalleryPageList({
                 </Stack>
               ))}
 
-            <Box>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                {t('All Templates')}
-              </Typography>
-              <UnsectionedDroppable disabled={interactionsLocked}>
-                {unsectioned.length === 0 ? (
-                  <Box
-                    sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}
-                  >
-                    <Typography variant="caption">
-                      {allTemplates.length === 0
-                        ? t('No team templates yet.')
-                        : t('All templates are in collections.')}
-                    </Typography>
-                  </Box>
-                ) : (
-                  <DraggableJourneysGrid
-                    journeys={unsectioned}
-                    publishedLock={false}
-                    dragInFlight={interactionsLocked}
-                    // No collection-card edge to balance against here —
-                    // drop the outer padding so cards align with the
-                    // collection-card edges above.
-                    outerPadding={false}
-                  />
-                )}
-              </UnsectionedDroppable>
-            </Box>
+            <UnsectionedDroppable disabled={interactionsLocked}>
+              {unsectioned.length === 0 ? (
+                <Box sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}>
+                  <Typography variant="caption">
+                    {allTemplates.length === 0
+                      ? t('No team templates yet.')
+                      : t('All templates are in collections.')}
+                  </Typography>
+                </Box>
+              ) : (
+                <DraggableJourneysGrid
+                  journeys={unsectioned}
+                  publishedLock={false}
+                  dragInFlight={interactionsLocked}
+                />
+              )}
+            </UnsectionedDroppable>
 
             {/* Default dropAnimation snaps the card back to its origin when a
             drop is rejected (published, no-op, etc.) and runs the standard

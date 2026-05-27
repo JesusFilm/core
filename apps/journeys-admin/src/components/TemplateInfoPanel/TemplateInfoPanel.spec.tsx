@@ -6,7 +6,9 @@ describe('TemplateInfoPanel', () => {
   it('renders the always-visible header copy verbatim', () => {
     render(<TemplateInfoPanel />)
 
-    expect(screen.getByText('What templates are about:')).toBeInTheDocument()
+    expect(
+      screen.getByText('What team templates are about:')
+    ).toBeInTheDocument()
     expect(
       screen.getByText(
         'You can share projects created on our platform with others. This allows you to track the performance of every project generated from your template.'
