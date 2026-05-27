@@ -123,12 +123,15 @@ export function JourneyViewCard({
           overflow: 'hidden',
           backgroundColor: '#FFFFFF',
           border: '1px solid rgba(0,0,0,0.1)',
-          transition: 'box-shadow 0.2s ease, transform 0.2s ease',
-          '&:hover': {
-            boxShadow: '0 14px 34px rgba(0,0,0,0.12)',
-            transform: 'translateY(-4px)',
-            borderColor: 'transparent'
-          }
+          // No hover lift in the decorative (admin preview) rendering.
+          ...(!decorative && {
+            transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+            '&:hover': {
+              boxShadow: '0 14px 34px rgba(0,0,0,0.12)',
+              transform: 'translateY(-4px)',
+              borderColor: 'transparent'
+            }
+          })
         }}
       >
         <Box
