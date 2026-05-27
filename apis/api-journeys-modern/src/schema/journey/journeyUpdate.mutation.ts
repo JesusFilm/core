@@ -72,7 +72,7 @@ builder.mutationField('journeyUpdate', (t) =>
               })
             }
 
-            return await tx.journey.update({
+            const updated = await tx.journey.update({
               ...query,
               where: { id: journeyId },
               include: {
@@ -94,11 +94,13 @@ builder.mutationField('journeyUpdate', (t) =>
                     : undefined
               }
             })
-          })
 
-          if (input.slug != null) {
-            void updateJourneyShortlink(result.id, input.slug).catch(() => {})
-          }
+            if (input.slug != null) {
+              await updateJourneyShortlink(updated.id, input.slug)
+            }
+
+            return updated
+          })
 
           if (
             input.seoTitle != null ||

@@ -193,9 +193,9 @@ builder.queryField('journeyVisitorsConnection', (t) =>
           pageInfo: {
             hasNextPage: result.length > first,
             hasPreviousPage: false,
-            startCursor: result.length > 0 ? result[0].id : null,
+            startCursor: sendResult.length > 0 ? sendResult[0].id : null,
             endCursor:
-              result.length > 0
+              sendResult.length > 0
                 ? sendResult[sendResult.length - 1].id
                 : null
           }
