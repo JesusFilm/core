@@ -67,8 +67,10 @@ export const MobileCollectionRow = forwardRef<
         py: 1.5,
         // Bleed past both the gallery's own `px` (2) and MainPanelBody's body
         // padding (px: { xs: 0, sm: 8 }) so the chip row runs edge-to-edge on
-        // both phone and tablet, while the gallery's text headers stay inset.
-        mx: { xs: -2, sm: -10 },
+        // phone and tablet, while the gallery's text headers stay inset. On
+        // desktop (md+) the row aligns within the gallery padding instead of
+        // bleeding — md resets the negative margin the sm value would carry up.
+        mx: { xs: -2, sm: -10, md: 0 },
         px: 2
       }}
     >

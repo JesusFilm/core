@@ -7,7 +7,6 @@ import {
   Modifier,
   MouseSensor,
   TouchSensor,
-  closestCenter,
   pointerWithin,
   useSensor,
   useSensors
@@ -48,21 +47,11 @@ import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { useCanPublishCollection } from '../../libs/useCanPublishCollection'
 import { useTemplateGalleryPageCreateMutation } from '../../libs/useTemplateGalleryPageCreateMutation'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
-import { JourneyCard } from '../JourneyList/JourneyCard'
 import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
 
-import { CollectionCard } from './CollectionCard'
 import { CollectionDialog } from './CollectionDialog'
-import {
-  COLLECTION_CARD_BORDER_WIDTH,
-  COLLECTION_CARD_PADDING
-} from './collectionLayout'
 import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
-import {
-  DraggableJourneysGrid,
-  DroppableCollectionWrapper,
-  UnsectionedDroppable
-} from './Droppables'
+import { DraggableJourneysGrid, UnsectionedDroppable } from './Droppables'
 import {
   GalleryDialogLockContext,
   GalleryDialogLockContextValue
@@ -74,24 +63,24 @@ import { MobileTemplateList } from './MobileTemplateList'
 import { useCollectionMutations } from './useCollectionMutations'
 import { useDragEndHandler } from './useDragEndHandler'
 
-// Pointer-only collision detection for the mobile layout.
+// Pointer-only collision detection for the collection gallery (both layouts).
 //
-// The mobile draggable is a full-width list row, but its drop targets include
-// the small collection chips pinned at the top of the view. dnd-kit's default
-// `closestCenter` compares the *dragged row's* centre against each droppable's
-// centre and never looks at the pointer — so a row dragged by its right-edge
-// handle can't reach a chip, and the nearest droppable (the leftmost "All
-// Templates" chip) lights up the instant a drag starts, even when the finger
-// is nowhere near it (NES-1696 QA).
+// The draggable is a card/row, but its drop targets include the small
+// collection chips pinned at the top of the view. dnd-kit's default
+// `closestCenter` compares the *dragged element's* centre against each
+// droppable's centre and never looks at the pointer — so a wide card/row can't
+// reach a small chip, and the nearest droppable (the leftmost "All Templates"
+// chip) lights up the instant a drag starts, even when the pointer is nowhere
+// near it (NES-1696 QA).
 //
-// `pointerWithin` resolves only the droppable the finger is actually over, and
-// returns nothing when the finger is in dead space — so no chip highlights
+// `pointerWithin` resolves only the droppable the pointer is actually over, and
+// returns nothing when the pointer is in dead space — so no chip highlights
 // until the user is genuinely over a drop target. There is deliberately no
 // `closestCenter` fallback: that fallback is exactly what made "All Templates"
 // highlight on every drag. (Safe here because the only sensors are
 // mouse/touch, which always report pointer coordinates — there is no keyboard
 // drag that would need a coordinate-free fallback.)
-const mobileCollisionDetection: CollisionDetection = (args) =>
+const collectionCollisionDetection: CollisionDetection = (args) =>
   pointerWithin(args)
 
 // Center the mobile drag overlay under the pointer.
@@ -274,13 +263,13 @@ export function TemplateGalleryPageList({
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
   const [publishTargetId, setPublishTargetId] = useState<string | null>(null)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
-  // Mobile-only filter state. `null` means "All Templates" is active and
-  // the list shows unsectioned templates. A collection id filters the
-  // list to that collection's templates. Ignored on desktop where the
-  // full grid renders every section at once.
-  const [mobileFilterCollectionId, setMobileFilterCollectionId] = useState<
-    string | null
-  >(null)
+  // Collection filter (both layouts). `null` means "All Templates" is active
+  // and the content shows unsectioned templates; a collection id filters the
+  // content to that collection's templates. Drives the chip row + the content
+  // view (list on mobile, card grid on desktop).
+  const [filterCollectionId, setFilterCollectionId] = useState<string | null>(
+    null
+  )
   // `dragInFlight` drives rendering (busy chips, droppable lock); the ref
   // is the synchronous source of truth for gating a second drop that
   // arrives within the same tick as a setState batch — state would read
@@ -433,19 +422,19 @@ export function TemplateGalleryPageList({
       ? (collectionsById.get(publishTargetId) ?? null)
       : null
 
-  // Mobile-only: resolve the filter id into the collection (or null for
-  // "All Templates") and the list of templates the row component renders.
-  // When the filter points at a collection that has since been removed
-  // (e.g. user ungroupped it from another tab), fall back to "All
-  // Templates" so the strip header doesn't render with a stale title.
-  const mobileSelectedCollection =
-    mobileFilterCollectionId != null
-      ? (collectionsById.get(mobileFilterCollectionId) ?? null)
+  // Resolve the filter id into the collection (or null for "All Templates")
+  // and the templates the content view renders. When the filter points at a
+  // collection that has since been removed (e.g. user ungrouped it from
+  // another tab), fall back to "All Templates" so the header strip doesn't
+  // render with a stale title.
+  const selectedCollection =
+    filterCollectionId != null
+      ? (collectionsById.get(filterCollectionId) ?? null)
       : null
-  const mobileFilteredJourneys = useMemo<readonly Journey[]>(() => {
-    if (mobileSelectedCollection == null) return unsectioned
-    return journeysByCollection.get(mobileSelectedCollection.id) ?? []
-  }, [mobileSelectedCollection, journeysByCollection, unsectioned])
+  const filteredJourneys = useMemo<readonly Journey[]>(() => {
+    if (selectedCollection == null) return unsectioned
+    return journeysByCollection.get(selectedCollection.id) ?? []
+  }, [selectedCollection, journeysByCollection, unsectioned])
 
   // Pool the dialog's template picker draws from. Only ungrouped templates
   // are addable, plus the templates already in the collection being
@@ -694,11 +683,9 @@ export function TemplateGalleryPageList({
           sx={{ display: 'contents' }}
         >
           <DndContext
-            collisionDetection={
-              useMobileLayout ? mobileCollisionDetection : closestCenter
-            }
-            // Re-measure droppables every frame while dragging. The mobile chip
-            // row is sticky + horizontally scrollable, so a single drag-start
+            collisionDetection={collectionCollisionDetection}
+            // Re-measure droppables every frame while dragging. The chip row is
+            // sticky + horizontally scrollable, so a single drag-start
             // measurement goes stale as soon as anything scrolls — leaving
             // chips with hit-areas offset from where they're drawn.
             measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
@@ -706,26 +693,31 @@ export function TemplateGalleryPageList({
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            {useMobileLayout ? (
+            {showCollectionsSection ? (
               <>
+                {/* Shared chip-filter UI across breakpoints, shown only when the
+                    Collections section is active (>=1 active template). The
+                    `Mobile*` component names are historical — they are used on
+                    desktop too now. Drop targets are the chips; the content
+                    below shows the active filter's templates. */}
                 <MobileCollectionRow
                   collections={collections}
                   allTemplatesCount={allTemplates.length}
-                  selectedCollectionId={mobileFilterCollectionId}
-                  onSelect={setMobileFilterCollectionId}
+                  selectedCollectionId={filterCollectionId}
+                  onSelect={setFilterCollectionId}
                   dropDisabled={interactionsLocked}
                 />
                 {/* Title strip for the active filter — the collection name (with
-                    its actions menu) or "All Templates" — sat above the list. */}
+                    its actions menu) or "All Templates" — above the content. */}
                 <MobileFilterHeaderStrip
-                  selectedCollection={mobileSelectedCollection}
-                  count={mobileFilteredJourneys.length}
+                  selectedCollection={selectedCollection}
+                  count={filteredJourneys.length}
                   onEdit={handleEdit}
                   onPublish={handleOpenPublish}
                   onUngroup={handleUngroup}
                   busy={
-                    (mobileSelectedCollection != null &&
-                      busyId === mobileSelectedCollection.id) ||
+                    (selectedCollection != null &&
+                      busyId === selectedCollection.id) ||
                     dragInFlight
                   }
                   canPublish={canPublish}
@@ -735,16 +727,12 @@ export function TemplateGalleryPageList({
                       : null
                   }
                 />
-                {mobileFilteredJourneys.length === 0 ? (
+                {filteredJourneys.length === 0 ? (
                   <Box
-                    sx={{
-                      p: 4,
-                      color: 'text.disabled',
-                      textAlign: 'center'
-                    }}
+                    sx={{ p: 4, color: 'text.disabled', textAlign: 'center' }}
                   >
                     <Typography variant="body2">
-                      {mobileSelectedCollection != null
+                      {selectedCollection != null
                         ? t(
                             'No templates yet — drag templates here to add them.'
                           )
@@ -753,130 +741,75 @@ export function TemplateGalleryPageList({
                           : t('All templates are in collections.')}
                     </Typography>
                   </Box>
-                ) : (
+                ) : useMobileLayout ? (
+                  // Mobile: compact list rows.
                   <MobileTemplateList
-                    journeys={mobileFilteredJourneys}
-                    allowReorder={mobileSelectedCollection != null}
+                    journeys={filteredJourneys}
+                    allowReorder={selectedCollection != null}
+                    dragInFlight={interactionsLocked}
+                  />
+                ) : (
+                  // Desktop: the richer card grid for the active filter.
+                  <DraggableJourneysGrid
+                    journeys={filteredJourneys}
+                    publishedLock={
+                      selectedCollection?.status ===
+                      TemplateGalleryPageStatus.published
+                    }
                     dragInFlight={interactionsLocked}
                   />
                 )}
               </>
             ) : (
-              <>
-                {showCollectionsSection &&
-                  (collections.length === 0 ? (
-                    <Alert severity="info" sx={{ mb: 3 }}>
-                      {t(
-                        "You don't have any collections yet. Create your first collection to start grouping templates."
-                      )}
-                    </Alert>
-                  ) : (
-                    <Stack
-                      spacing={2}
-                      sx={{
-                        mb: 4,
-                        mx: (theme) =>
-                          `calc(${theme.spacing(-COLLECTION_CARD_PADDING)} - ${COLLECTION_CARD_BORDER_WIDTH}px)`
-                      }}
-                    >
-                      {collections.map((collection) => (
-                        <DroppableCollectionWrapper
-                          key={collection.id}
-                          id={collection.id}
-                          disabled={
-                            collection.status ===
-                              TemplateGalleryPageStatus.published ||
-                            interactionsLocked ||
-                            busyId === collection.id
-                          }
-                        >
-                          <CollectionCard
-                            collection={collection}
-                            onEdit={handleEdit}
-                            onPublish={handleOpenPublish}
-                            onUngroup={handleUngroup}
-                            busy={busyId === collection.id || dragInFlight}
-                            canPublish={canPublish}
-                            publishBlockedReason={
-                              publishBlockedReason != null
-                                ? t(publishBlockedReason)
-                                : null
-                            }
-                          >
-                            <DraggableJourneysGrid
-                              journeys={
-                                journeysByCollection.get(collection.id) ?? []
-                              }
-                              publishedLock={
-                                collection.status ===
-                                TemplateGalleryPageStatus.published
-                              }
-                              dragInFlight={interactionsLocked}
-                            />
-                          </CollectionCard>
-                        </DroppableCollectionWrapper>
-                      ))}
-                    </Stack>
-                  ))}
-
-                <UnsectionedDroppable disabled={interactionsLocked}>
-                  {unsectioned.length === 0 ? (
-                    <Box
-                      sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}
-                    >
-                      <Typography variant="caption">
-                        {allTemplates.length === 0
-                          ? t('No team templates yet.')
-                          : t('All templates are in collections.')}
-                      </Typography>
-                    </Box>
-                  ) : (
-                    <DraggableJourneysGrid
-                      journeys={unsectioned}
-                      publishedLock={false}
-                      dragInFlight={interactionsLocked}
-                    />
-                  )}
-                </UnsectionedDroppable>
-              </>
+              // Archived / Trashed: no collections — show the plain grid of all
+              // templates for that status (no chip row).
+              <UnsectionedDroppable disabled={interactionsLocked}>
+                {unsectioned.length === 0 ? (
+                  <Box
+                    sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}
+                  >
+                    <Typography variant="caption">
+                      {allTemplates.length === 0
+                        ? t('No team templates yet.')
+                        : t('All templates are in collections.')}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <DraggableJourneysGrid
+                    journeys={unsectioned}
+                    publishedLock={false}
+                    dragInFlight={interactionsLocked}
+                  />
+                )}
+              </UnsectionedDroppable>
             )}
 
             {/* Default dropAnimation snaps the card back to its origin when a
             drop is rejected (published, no-op, etc.) and runs the standard
-            "settle" animation when accepted — gives the user visual
-            feedback either way. */}
-            <DragOverlay
-              modifiers={useMobileLayout ? [snapCenterToPointer] : undefined}
-            >
+            "settle" animation when accepted — gives the user visual feedback
+            either way. A compact pill (not a full card/row) centred on the
+            pointer keeps the ghost from covering the chip being targeted. */}
+            <DragOverlay modifiers={[snapCenterToPointer]}>
               {activeDragJourney != null ? (
-                useMobileLayout ? (
-                  // Compact pill, centred on the pointer (see
-                  // snapCenterToPointer). A full-width row ghost would cover the
-                  // chip the user is dragging onto and hide its drop highlight.
-                  <Box
-                    sx={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      maxWidth: 220,
-                      px: 1.5,
-                      py: 1,
-                      borderRadius: 2,
-                      bgcolor: 'background.paper',
-                      boxShadow: 6,
-                      cursor: 'grabbing',
-                      opacity: 0.95,
-                      pointerEvents: 'none'
-                    }}
-                  >
-                    <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
-                      {activeDragJourney.title}
-                    </Typography>
-                  </Box>
-                ) : (
-                  <Box sx={{ width: 280, cursor: 'grabbing', opacity: 0.95 }}>
-                    <JourneyCard journey={activeDragJourney} />
-                  </Box>
-                )
+                <Box
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    maxWidth: 220,
+                    px: 1.5,
+                    py: 1,
+                    borderRadius: 2,
+                    bgcolor: 'background.paper',
+                    boxShadow: 6,
+                    cursor: 'grabbing',
+                    opacity: 0.95,
+                    pointerEvents: 'none'
+                  }}
+                >
+                  <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
+                    {activeDragJourney.title}
+                  </Typography>
+                </Box>
               ) : null}
             </DragOverlay>
           </DndContext>

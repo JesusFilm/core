@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
@@ -144,7 +144,7 @@ const journeysMockWithArchivedJourney: MockedResponse<GetAdminJourneys> = {
 }
 
 describe('TemplateGalleryPageList', () => {
-  it('renders the Collections heading and the existing collection card', async () => {
+  it('renders the Collections header and a filter chip per collection', async () => {
     const { getByText, getByTestId } = render(
       <MockedProvider
         mocks={[getLastActiveTeamIdAndTeamsMock, collectionsMock, journeysMock]}
@@ -159,12 +159,13 @@ describe('TemplateGalleryPageList', () => {
       </MockedProvider>
     )
 
-    // The TeamProvider mock activates team `TEAM_ID` (jfp-team) — wait for the
-    // collections query to resolve and the heading to render.
+    // The collection renders as a filter chip (not a vertical card); the
+    // Collections header + Create button sit above the chip row.
     await waitFor(() =>
-      expect(getByText('Featured Templates')).toBeInTheDocument()
+      expect(getByTestId('CollectionChip-page-1')).toBeInTheDocument()
     )
-    expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
+    expect(getByText('Collections')).toBeInTheDocument()
+    expect(getByText('Featured Templates')).toBeInTheDocument()
     expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
   })
 
@@ -400,7 +401,7 @@ describe('TemplateGalleryPageList', () => {
   // NES-1666: original CollectionDialog case — kept to guard against
   // regressions in the v1 wiring after the v2 context plumbing landed.
   it('marks the DnD subtree inert while CollectionDialog is open (NES-1666)', async () => {
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, getByLabelText } = render(
       <MockedProvider
         mocks={[getLastActiveTeamIdAndTeamsMock, collectionsMock, journeysMock]}
       >
@@ -415,24 +416,21 @@ describe('TemplateGalleryPageList', () => {
     )
 
     await waitFor(() =>
-      expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
+      expect(getByTestId('CollectionChip-page-1')).toBeInTheDocument()
     )
 
     const dndScope = getByTestId('TemplateGalleryDndScope')
     // Default state: no dialog open, subtree is interactive.
     expect(dndScope).not.toHaveAttribute('inert')
 
-    // Open the publish dialog from the draft collection's action menu
-    // and confirm the DnD subtree flips to inert. The CollectionDialog
-    // renders in a portal so it is unaffected. (The create button no
-    // longer opens a dialog — it creates instantly with an auto-name —
-    // and drafts now surface "Publish" as the single dialog entry
-    // point in place of the old "Edit" item.)
-    fireEvent.click(
-      within(getByTestId('CollectionCard-page-1')).getByLabelText(
-        'Collection actions'
-      )
-    )
+    // The desktop CollectionCard and its inline menu were retired in favour of
+    // the shared chip-filter UI: selecting a collection chip surfaces the
+    // filter header strip's actions menu. Open the publish dialog from there
+    // and confirm the DnD subtree flips to inert (the CollectionDialog renders
+    // in a portal so it is unaffected). Drafts surface "Publish" as the single
+    // dialog entry point.
+    fireEvent.click(getByTestId('CollectionChip-page-1'))
+    fireEvent.click(getByLabelText('Collection actions'))
     fireEvent.click(getByText('Publish'))
     await waitFor(() =>
       expect(getByTestId('TemplateGalleryDndScope')).toHaveAttribute('inert')
