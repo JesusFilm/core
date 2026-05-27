@@ -138,21 +138,21 @@ export class Publisher {
 
   async getExistingTemplateName() {
     await expect(
-      this.page.locator('div[aria-label="template-card"]').first()
+      this.page.locator('div[aria-label="journey-card"]').first()
     ).toBeVisible()
     const templateCount = await this.page
-      .locator('div[aria-label="template-card"]')
+      .locator('div[aria-label="journey-card"]')
       .count()
     for (let template = 0; template < templateCount; template++) {
       const templateName = await this.page
         .locator(
-          'div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .nth(template)
         .innerText()
       if (
         (await this.page
-          .locator('div[aria-label="template-card"]', { hasText: templateName })
+          .locator('div[aria-label="journey-card"]', { hasText: templateName })
           .count()) === 1
       ) {
         this.templateName = templateName
@@ -188,7 +188,7 @@ export class Publisher {
   async verifyCreatedNewTemplateMovedToArchiveOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: this.templateName }
       )
     ).toBeVisible()
@@ -227,7 +227,7 @@ export class Publisher {
   async verifyCreatedNewTemplateMovedToTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: this.templateName }
       )
     ).toBeVisible()
@@ -244,7 +244,7 @@ export class Publisher {
   async verifyCreatedNewTemplateRemovedFromTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: this.templateName }
       )
     ).toBeHidden()
@@ -261,7 +261,7 @@ export class Publisher {
 
   async clickThreeDotOfExistingTemplate() {
     await this.page
-      .locator('div[aria-label="template-card"]', {
+      .locator('div[aria-label="journey-card"]', {
         hasText: this.templateName
       })
       .locator('#journey-actions')
@@ -294,7 +294,7 @@ export class Publisher {
   async verifyTemplateMovedToActivePage() {
     await expect(
       this.page.locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: this.templateName }
       )
     ).toBeVisible()
@@ -310,13 +310,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible()
     this.templateList = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
   }
@@ -358,13 +358,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible({ timeout: 30000 })
     const archiveTabTemplateList = await this.page
       .locator(
-        'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
     for (let template = 0; template < this.templateList.length; template++) {
@@ -379,13 +379,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible()
     this.templateList = await this.page
       .locator(
-        'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
   }
@@ -403,13 +403,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible({ timeout: 30000 })
     const activeTabTemplateList = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
     for (let template = 0; template < this.templateList.length; template++) {
@@ -425,13 +425,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible({ timeout: 30000 })
     const trashTabTemplateList = await this.page
       .locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
     for (let template = 0; template < this.templateList.length; template++) {
@@ -446,13 +446,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible()
     this.templateList = await this.page
       .locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
   }
@@ -460,7 +460,7 @@ export class Publisher {
   async verifyAllTemplateAreDeletedFromTrashTab() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
     ).toHaveCount(0)
     await expect(
@@ -472,7 +472,7 @@ export class Publisher {
 
   async clickOnTemplateInPublisherPage() {
     await this.page
-      .locator('div[aria-label="template-card"]', {
+      .locator('div[aria-label="journey-card"]', {
         hasText: this.templateName
       })
       .click()

@@ -1,6 +1,5 @@
 /* eslint-disable playwright/expect-expect */
 import { chromium, test } from '@playwright/test'
-import { playAudit } from 'playwright-lighthouse'
 
 import { LandingPage } from '../../pages/landing-page'
 
@@ -29,6 +28,8 @@ test('Homepage', async () => {
   const page = await browser.newPage()
   const landingPage = new LandingPage(page)
   await landingPage.goToAdminUrl()
+  // playwright-lighthouse is ESM-only, so we dynamic import it from the CJS test file.
+  const { playAudit } = await import('playwright-lighthouse')
   await playAudit({
     page,
     config,

@@ -1,4 +1,3 @@
-/* eslint-disable playwright/no-skipped-test */
 /* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
 
@@ -81,7 +80,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Video - create, update & delete
-  test.skip('Video - create, update & delete', async ({ page }) => {
+  test('Video - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.deleteAllAddedCardProperties() // deleting all the added properties in the card
     await cardLevelActionPage.clickOnVideoJourneyCard() // clicking on the journey card
@@ -108,7 +107,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Poll - create, update & delete
-  test.fixme('Poll - create, update & delete', async ({ page }) => {
+  test('Poll - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Poll') // clicking on poll button in add block drawer

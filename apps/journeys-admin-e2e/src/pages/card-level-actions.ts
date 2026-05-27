@@ -655,11 +655,15 @@ export class CardLevelActionPage {
   async selectWholePollOptions() {
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
+    // Selecting the whole poll block means clicking the SelectableWrapper
+    // that contains the RadioQuestionList — not the inner "Add Option"
+    // button (which would add a new option, not select the block). The
+    // wrapper has data-testid containing "SelectableWrapper".
     await frame
       .locator(
-        'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] div:not([data-testid*="SelectableWrapper"])',
-        { hasText: 'Add New Option' }
+        'div[data-testid*="SelectableWrapper"]:has(div[data-testid*="JourneysRadioQuestionList"])'
       )
+      .first()
       .click()
   }
 
