@@ -9,6 +9,7 @@ import {
 } from 'react-dropzone'
 
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
+import { useCloudflareUploadCompleteMutation } from '../useCloudflareUploadCompleteMutation'
 
 /**
  * Error codes for image upload.
@@ -73,6 +74,7 @@ export function useImageUpload(
     noKeyboard = false
   } = useImageUploadOptions
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
+  const [cloudflareUploadComplete] = useCloudflareUploadCompleteMutation()
   const [loading, setLoading] = useState(false)
   const loadingRef = useRef(false)
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
@@ -152,11 +154,23 @@ export function useImageUpload(
         ).json()
 
         if (response.success === true) {
-          setSuccess(true)
+          const cloudflareId = response.result.id as string
+          try {
+            await cloudflareUploadComplete({
+              variables: { id: cloudflareId }
+            })
+          } catch {
+            setSuccess(false)
+            const error: ImageUploadErrorCode = 'unknown-error'
+            setErrorCode(error)
+            onUploadError?.(error, getErrorMessage(error))
+            return
+          }
           const src = `https://imagedelivery.net/${
             process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
-          }/${response.result.id as string}/public`
+          }/${cloudflareId}/public`
           onUploadComplete(src)
+          setSuccess(true)
           if (successTimeoutRef.current != null) {
             clearTimeout(successTimeoutRef.current)
           }

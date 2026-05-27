@@ -2,6 +2,7 @@ import { act, renderHook } from '@testing-library/react'
 import { ErrorCode, useDropzone } from 'react-dropzone'
 
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
+import { useCloudflareUploadCompleteMutation } from '../useCloudflareUploadCompleteMutation'
 
 import { useImageUpload } from './useImageUpload'
 
@@ -14,10 +15,18 @@ jest.mock('../useCloudflareUploadByFileMutation', () => ({
   useCloudflareUploadByFileMutation: jest.fn()
 }))
 
+jest.mock('../useCloudflareUploadCompleteMutation', () => ({
+  useCloudflareUploadCompleteMutation: jest.fn()
+}))
+
 const mockUseDropzone = useDropzone as jest.MockedFunction<typeof useDropzone>
 const mockUseCloudflareUploadByFileMutation =
   useCloudflareUploadByFileMutation as jest.MockedFunction<
     typeof useCloudflareUploadByFileMutation
+  >
+const mockUseCloudflareUploadCompleteMutation =
+  useCloudflareUploadCompleteMutation as jest.MockedFunction<
+    typeof useCloudflareUploadCompleteMutation
   >
 
 describe('useImageUpload', () => {
@@ -46,6 +55,9 @@ describe('useImageUpload', () => {
       fileRejections: []
     } as any)
     mockUseCloudflareUploadByFileMutation.mockReturnValue([jest.fn()] as any)
+    mockUseCloudflareUploadCompleteMutation.mockReturnValue([
+      jest.fn().mockResolvedValue({ data: { cloudflareUploadComplete: true } })
+    ] as any)
   })
 
   afterEach(() => {

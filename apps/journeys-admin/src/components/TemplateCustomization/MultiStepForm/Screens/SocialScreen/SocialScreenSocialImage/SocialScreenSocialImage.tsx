@@ -24,6 +24,7 @@ import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import { useCloudflareUploadByFileMutation } from '../../../../../../libs/useCloudflareUploadByFileMutation'
+import { useCloudflareUploadCompleteMutation } from '../../../../../../libs/useCloudflareUploadCompleteMutation'
 import { useJourneyImageBlockAssociationUpdateMutation } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation'
 import { useJourneyImageBlockCreateMutation } from '../../../../../../libs/useJourneyImageBlockCreateMutation'
 import { useJourneyImageBlockUpdateMutation } from '../../../../../../libs/useJourneyImageBlockUpdateMutation'
@@ -59,6 +60,7 @@ export function SocialScreenSocialImage({
   const { enqueueSnackbar } = useSnackbar()
 
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
+  const [cloudflareUploadComplete] = useCloudflareUploadCompleteMutation()
   const [journeyImageBlockAssociationUpdate] =
     useJourneyImageBlockAssociationUpdateMutation()
   const [journeyImageBlockUpdate] = useJourneyImageBlockUpdateMutation()
@@ -81,9 +83,11 @@ export function SocialScreenSocialImage({
             body: formData as unknown as FormDataType
           })
         ).json()
+        const cloudflareId = response.result.id as string
+        await cloudflareUploadComplete({ variables: { id: cloudflareId } })
         const src = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
-        }/${response.result.id as string}/public`
+        }/${cloudflareId}/public`
 
         if (journey?.primaryImageBlock != null) {
           await journeyImageBlockUpdate({
