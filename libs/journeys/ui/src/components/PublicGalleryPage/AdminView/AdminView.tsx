@@ -79,7 +79,7 @@ export function AdminView({ data }: AdminViewProps): ReactElement {
 
       {featured.length > 0 && (
         <Box component="section" sx={sectionSx}>
-          <SectionLabel>{t('Featured')}</SectionLabel>
+          <SectionLabel>{t('Explore')}</SectionLabel>
           <Stack spacing={3}>
             {featured.map((item) => (
               <JourneyViewCard
@@ -95,7 +95,7 @@ export function AdminView({ data }: AdminViewProps): ReactElement {
 
       {rest.length > 0 && (
         <Box component="section" sx={sectionSx}>
-          <SectionLabel>{t('The complete set')}</SectionLabel>
+          <SectionLabel>{t('More')}</SectionLabel>
           <Box
             sx={{
               display: 'grid',

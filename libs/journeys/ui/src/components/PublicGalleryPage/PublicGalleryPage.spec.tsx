@@ -55,11 +55,11 @@ describe('PublicGalleryPage', () => {
           data={makeData({ items: makeItems(3) })}
         />
       )
-      // All three sit in the featured rows, so the complete-set grid never
-      // renders and is not left showing a single bare card. ('Featured' shows
-      // both as the section label and the nav link, hence getAllByText.)
-      expect(screen.queryByText('The complete set')).not.toBeInTheDocument()
-      expect(screen.getAllByText('Featured').length).toBeGreaterThan(0)
+      // All three sit in the featured rows, so the "More" grid never renders
+      // and is not left showing a single bare card. ('Explore' shows both as
+      // the section label and the nav link, hence getAllByText.)
+      expect(screen.queryByText('More')).not.toBeInTheDocument()
+      expect(screen.getAllByText('Explore').length).toBeGreaterThan(0)
     })
 
     it('keeps two featured and grids the rest when there are four', () => {
@@ -95,10 +95,10 @@ describe('PublicGalleryPage', () => {
         within(nav).getByRole('button', { name: 'Easter Gallery 2026' })
       ).toBeInTheDocument()
       expect(
-        within(nav).getByRole('button', { name: 'Featured' })
+        within(nav).getByRole('button', { name: 'Explore' })
       ).toBeInTheDocument()
       expect(
-        within(nav).getByRole('button', { name: 'The complete set' })
+        within(nav).getByRole('button', { name: 'More' })
       ).toBeInTheDocument()
       expect(
         within(nav).getByRole('button', { name: 'Strategy' })
@@ -119,10 +119,10 @@ describe('PublicGalleryPage', () => {
         within(nav).getByRole('button', { name: 'Easter Gallery 2026' })
       ).toBeInTheDocument()
       expect(
-        within(nav).getByRole('button', { name: 'Featured' })
+        within(nav).getByRole('button', { name: 'Explore' })
       ).toBeInTheDocument()
       expect(
-        within(nav).queryByRole('button', { name: 'The complete set' })
+        within(nav).queryByRole('button', { name: 'More' })
       ).not.toBeInTheDocument()
     })
 
@@ -135,7 +135,7 @@ describe('PublicGalleryPage', () => {
         within(nav).getByRole('button', { name: 'Easter Gallery 2026' })
       ).toBeInTheDocument()
       expect(
-        within(nav).queryByRole('button', { name: 'Featured' })
+        within(nav).queryByRole('button', { name: 'Explore' })
       ).not.toBeInTheDocument()
     })
 
@@ -148,7 +148,7 @@ describe('PublicGalleryPage', () => {
       )
       const nav = screen.getByRole('navigation', { name: 'Gallery sections' })
       // The hamburger carries the nav's label and a popup; the section links
-      // (cover title, "Featured", …) carry their own labels.
+      // (cover title, "Explore", …) carry their own labels.
       const menuButton = within(nav).getByRole('button', {
         name: 'Gallery sections'
       })

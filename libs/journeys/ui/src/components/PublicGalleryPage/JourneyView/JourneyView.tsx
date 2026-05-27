@@ -279,9 +279,9 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
       }
     ]
     if (featured.length > 0)
-      sections.push({ id: SECTION_IDS.featured, label: t('Featured') })
+      sections.push({ id: SECTION_IDS.featured, label: t('Explore') })
     if (rest.length > 0)
-      sections.push({ id: SECTION_IDS.set, label: t('The complete set') })
+      sections.push({ id: SECTION_IDS.set, label: t('More') })
     if (hasMedia) sections.push({ id: SECTION_IDS.media, label: t('Strategy') })
     return sections
   }, [data.title, featured.length, rest.length, hasMedia, t])
@@ -375,7 +375,7 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
         >
           <Container maxWidth="lg">
             <Box ref={featuredRef} sx={{ willChange: 'transform' }}>
-              <SectionLabel>{t('Featured')}</SectionLabel>
+              <SectionLabel>{t('Explore')}</SectionLabel>
               <Stack spacing={{ xs: 9, md: 13 }} sx={{ mt: 2 }}>
                 {featured.map((item, index) => (
                   <FeaturedRow
@@ -411,7 +411,7 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
         >
           <Container maxWidth="lg">
             <Box ref={restRef} sx={{ willChange: 'transform' }}>
-              <SectionLabel>{t('The complete set')}</SectionLabel>
+              <SectionLabel>{t('More')}</SectionLabel>
               {/* Mobile (xs/sm): portrait overlay cards, two per row */}
               <Box
                 sx={{
