@@ -5,7 +5,7 @@ import { GridVariant as RadioOptionGridVariant } from '../../RadioOption/GridVar
 import { GridVariant } from './GridVariant'
 
 describe('GridVariant', () => {
-  const mockHandleClick = jest.fn()
+  const mockHandleClick = vi.fn()
   const options = [
     <RadioOptionGridVariant
       key="option1"
@@ -34,7 +34,7 @@ describe('GridVariant', () => {
   })
 
   it('should display add option button', () => {
-    const addOption = jest.fn()
+    const addOption = vi.fn()
 
     render(
       <GridVariant options={options} blockId="123" addOption={addOption} />

@@ -1,7 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
+import '../../../test/i18n'
 import {
   JourneyStatus,
   ThemeMode,
@@ -11,18 +13,16 @@ import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__g
 
 import { TemplateGalleryCard } from '.'
 
-import '../../../test/i18n'
-
-jest.mock('@core/journeys/ui/useNavigationState', () => ({
-  useNavigationState: jest.fn(() => false)
+vi.mock('@core/journeys/ui/useNavigationState', () => ({
+  useNavigationState: vi.fn(() => false)
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -117,7 +117,7 @@ describe('TemplateGalleryCard', () => {
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should render Template Gallery Card', () => {
@@ -183,7 +183,7 @@ describe('TemplateGalleryCard', () => {
 
 describe('TemplateGalleryCard from different route', () => {
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should link to journeys details when not at /templates', () => {
@@ -210,7 +210,7 @@ describe('TemplateGalleryCard from different route', () => {
     )
   })
 
-  xit('should focus templategallerycard', async () => {
+  it.skip('should focus templategallerycard', async () => {
     // disabled due to Jest v30 compatibility issues
     mockUseRouter.mockReturnValue({
       pathname: '/journeys'
@@ -232,7 +232,7 @@ describe('TemplateGalleryCard website and quick start badges', () => {
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should show quick start badge when journey is customizable', () => {

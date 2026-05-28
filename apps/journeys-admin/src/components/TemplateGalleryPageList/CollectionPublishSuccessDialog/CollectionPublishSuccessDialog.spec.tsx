@@ -99,29 +99,23 @@ describe('CollectionPublishSuccessDialog', () => {
     expect(onClose).toHaveBeenCalledTimes(1)
   })
 
-  it('does not open a new tab when slug is null', async () => {
-    const { onClose } = renderDialog({ slug: null })
-    await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
-    expect(window.open).not.toHaveBeenCalled()
-    expect(onClose).not.toHaveBeenCalled()
+  it('disables "View the page" when slug is null', () => {
+    renderDialog({ slug: null })
+    expect(screen.getByRole('button', { name: 'View the page' })).toBeDisabled()
   })
 
-  it('does not open a new tab if publicUrl is null', async () => {
-    const { onClose } = renderDialog({ publicUrl: null })
-    await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
-    expect(window.open).not.toHaveBeenCalled()
-    expect(onClose).not.toHaveBeenCalled()
+  it('disables "View the page" when publicUrl is null', () => {
+    renderDialog({ publicUrl: null })
+    expect(screen.getByRole('button', { name: 'View the page' })).toBeDisabled()
   })
 
-  it('does not open a new tab and surfaces the gate copy when canPublish is false', async () => {
-    const { onClose } = renderDialog({
+  it('disables "View the page" and surfaces the gate copy when canPublish is false', () => {
+    renderDialog({
       slug: 'my-collection',
       canPublish: false,
       publishBlockedReason: 'gate copy'
     })
     expect(screen.getByText('gate copy')).toBeInTheDocument()
-    await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
-    expect(window.open).not.toHaveBeenCalled()
-    expect(onClose).not.toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: 'View the page' })).toBeDisabled()
   })
 })

@@ -17,16 +17,16 @@ import { StepFields } from '../Step/__generated__/StepFields'
 
 import { StepFooter } from './StepFooter'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('next/navigation', () => ({
+vi.mock('next/navigation', () => ({
   useParams: () => ({ stepSlug: null })
 }))
 
-jest.mock('../AiChatButton', () => ({
+vi.mock('../AiChatButton', () => ({
   __esModule: true,
   AiChatButton: () => <div data-testid="AiChatButton" />
 }))

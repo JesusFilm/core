@@ -2,35 +2,35 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
+import '../../../../test/i18n'
 import { setBeaconPageViewed } from '../../../libs/beaconHooks'
 import { getJourneyTemplateLanguageIdsMock, getLanguagesMock } from '../data'
 
 import { HeaderAndLanguageFilter } from '.'
 
-import '../../../../test/i18n'
-
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-jest.mock('../../../libs/beaconHooks', () => ({
-  setBeaconPageViewed: jest.fn()
+vi.mock('../../../libs/beaconHooks', () => ({
+  setBeaconPageViewed: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('HeaderAndLanguageFilter', () => {
   it('should open the language filter popper on button click', async () => {
-    const onChange = jest.fn()
-    const push = jest.fn()
-    const on = jest.fn()
+    const onChange = vi.fn()
+    const push = vi.fn()
+    const on = vi.fn()
 
     mockedUseRouter.mockReturnValue({
       query: { param: null },
