@@ -254,4 +254,14 @@ describe('PublishHero', () => {
       '1 collection is ready to publish — pick one from the sidebar to publish'
     )
   })
+
+  it('renders the quick-create-collection drop zone above All Templates', () => {
+    renderHero({ collections: [] })
+    const dropZone = screen.getByTestId('PublishHeroCreateNewDropZone')
+    expect(dropZone).toBeInTheDocument()
+    // Idle label is "New collection"; it switches to "Drop to create" while
+    // a template is over the zone (drag state isn't simulated here, so we
+    // only assert the idle copy).
+    expect(dropZone).toHaveTextContent('New collection')
+  })
 })

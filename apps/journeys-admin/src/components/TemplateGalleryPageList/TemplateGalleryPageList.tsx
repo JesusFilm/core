@@ -552,6 +552,49 @@ export function TemplateGalleryPageList({
       creatingRef.current = false
     }
   }
+  // Drop-target callback for the PublishHero "create new collection" zone:
+  // create a fresh collection seeded with the dropped template. Mirrors
+  // handleCreate's logic but pre-populates `journeyIds` with the dragged
+  // template so the template lands inside the new collection in a single
+  // server round-trip, then auto-selects it so the user sees the result.
+  async function handleCreateCollectionFromTemplate(
+    templateId: string
+  ): Promise<void> {
+    if (creatingRef.current || createLoading || teamId == null) return
+    creatingRef.current = true
+    try {
+      const result = await templateGalleryPageCreate({
+        variables: {
+          input: {
+            teamId,
+            title: nextCollectionName(),
+            creatorName: '',
+            journeyIds: [templateId]
+          }
+        }
+      })
+      if (mountedRef.current) {
+        const newId = result.data?.templateGalleryPageCreate?.id
+        if (newId != null) setFilterCollectionId(newId)
+        enqueueSnackbar(t('Collection created'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      }
+    } catch (error) {
+      if (mountedRef.current) {
+        enqueueSnackbar(
+          error instanceof Error
+            ? error.message
+            : t("Couldn't create collection"),
+          { variant: 'error', preventDuplicate: true }
+        )
+      }
+    } finally {
+      creatingRef.current = false
+    }
+  }
+
   function handleCloseEdit(): void {
     setEditTargetId(null)
   }
@@ -587,7 +630,8 @@ export function TemplateGalleryPageList({
     collectionsById,
     dragInFlightRef,
     setDragInFlight,
-    setActiveDragId
+    setActiveDragId,
+    onCreateCollectionFromTemplate: handleCreateCollectionFromTemplate
   })
 
   if (teamId == null) {

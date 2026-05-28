@@ -18,18 +18,26 @@ import { COLLECTION_GRID_SPACING } from '../collectionLayout'
 export type DropZoneId =
   | { kind: 'unsectioned' }
   | { kind: 'collection'; id: string }
+  // Drop here to create a brand-new collection seeded with the dropped
+  // template. Only the PublishHero design variant currently exposes this
+  // zone; the dispatcher in useDragEndHandler routes it through the
+  // optional `onCreateCollectionFromTemplate` callback supplied by the
+  // parent. When no callback is wired, drops on this zone no-op.
+  | { kind: 'create-new' }
 
 const UNSECTIONED_ID = 'unsectioned'
 const COLLECTION_PREFIX = 'collection:'
+const CREATE_NEW_ID = 'create-new'
 
 export function encodeDropZoneId(zone: DropZoneId): string {
-  return zone.kind === 'unsectioned'
-    ? UNSECTIONED_ID
-    : `${COLLECTION_PREFIX}${zone.id}`
+  if (zone.kind === 'unsectioned') return UNSECTIONED_ID
+  if (zone.kind === 'create-new') return CREATE_NEW_ID
+  return `${COLLECTION_PREFIX}${zone.id}`
 }
 
 export function parseDropZoneId(raw: string): DropZoneId | null {
   if (raw === UNSECTIONED_ID) return { kind: 'unsectioned' }
+  if (raw === CREATE_NEW_ID) return { kind: 'create-new' }
   if (raw.startsWith(COLLECTION_PREFIX)) {
     return { kind: 'collection', id: raw.slice(COLLECTION_PREFIX.length) }
   }

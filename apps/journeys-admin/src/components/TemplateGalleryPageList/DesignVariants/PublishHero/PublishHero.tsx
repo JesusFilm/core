@@ -1,4 +1,4 @@
-import { useDroppable } from '@dnd-kit/core'
+import { useDndContext, useDroppable } from '@dnd-kit/core'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement, useMemo, useState } from 'react'
 
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
@@ -172,6 +173,12 @@ export function PublishHero({
         </Box>
 
         <Box sx={{ flex: 1, overflowY: 'auto', py: 1 }}>
+          {/* "Drop a template here to create a new collection seeded with
+              it." Sits above All Templates so the quick-create path is the
+              first thing the user encounters while dragging. The dashed
+              border is the universal drop-zone signal; idle state stays
+              muted so it doesn't compete with the hero CTA on the right. */}
+          <CreateCollectionDropZone disabled={dropDisabled} />
           <SidebarRow
             testId="PublishHeroRow-all"
             title={t('All Templates')}
@@ -283,6 +290,92 @@ export function PublishHero({
         </Stack>
       </Stack>
     </Stack>
+  )
+}
+
+/**
+ * Quick-create drop zone. Dropping a template here triggers the
+ * `create-new` drop kind in `useDragEndHandler`, which calls the parent's
+ * `handleCreateCollectionFromTemplate` — a single `templateGalleryPageCreate`
+ * call with `journeyIds: [templateId]` that creates the collection AND
+ * seeds it with the dropped template in one server round-trip.
+ *
+ * Visually muted at idle so it doesn't compete with the hero PUBLISH NOW
+ * CTA on the right; the dashed border + primary highlight kick in only
+ * while a template is being dragged over it.
+ */
+function CreateCollectionDropZone({
+  disabled
+}: {
+  disabled: boolean
+}): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const { setNodeRef, isOver } = useDroppable({
+    id: encodeDropZoneId({ kind: 'create-new' }),
+    disabled
+  })
+  // Subscribe to the dnd-kit context so the zone can react as soon as ANY
+  // drag begins — not just when the pointer is over the zone. This is what
+  // makes the zone "glow" the moment the user picks up a template,
+  // signalling the quick-create affordance before they're aiming.
+  const { active } = useDndContext()
+  const dragActive = active != null
+
+  return (
+    <Box
+      ref={setNodeRef}
+      data-testid="PublishHeroCreateNewDropZone"
+      aria-label={t('Drop a template here to create a new collection')}
+      sx={{
+        mx: 1,
+        mb: 1.5,
+        py: 2.5,
+        px: 1.5,
+        borderRadius: 1.5,
+        border: '2px dashed',
+        // Idle: muted divider. Drag-active: primary border (the "glow"
+        // borrows the same color). isOver wins over both.
+        borderColor: isOver || dragActive ? 'primary.main' : 'divider',
+        backgroundColor: isOver
+          ? 'action.selected'
+          : dragActive
+            ? 'action.hover'
+            : 'transparent',
+        color: isOver || dragActive ? 'primary.main' : 'text.secondary',
+        // Glow on drag-active. The admin theme's primary is #C52D3A, so we
+        // use rgba of that hue for the box-shadow halo. Stronger when
+        // hovered, softer (pulsing) when drag is active but not over.
+        boxShadow: isOver
+          ? '0 0 0 4px rgba(197, 45, 58, 0.22), 0 0 24px rgba(197, 45, 58, 0.45)'
+          : 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 0.75,
+        transition:
+          'border-color 200ms ease, background-color 200ms ease, color 200ms ease, box-shadow 200ms ease',
+        animation:
+          dragActive && !isOver
+            ? 'publishHeroCreateNewPulse 1.6s ease-in-out infinite'
+            : 'none',
+        '@keyframes publishHeroCreateNewPulse': {
+          '0%, 100%': {
+            boxShadow:
+              '0 0 0 0 rgba(197, 45, 58, 0), 0 0 8px rgba(197, 45, 58, 0.25)'
+          },
+          '50%': {
+            boxShadow:
+              '0 0 0 6px rgba(197, 45, 58, 0.12), 0 0 22px rgba(197, 45, 58, 0.45)'
+          }
+        }
+      }}
+    >
+      <Plus2Icon sx={{ fontSize: 26 }} />
+      <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
+        {isOver ? t('Drop to create') : t('New collection')}
+      </Typography>
+    </Box>
   )
 }
 
