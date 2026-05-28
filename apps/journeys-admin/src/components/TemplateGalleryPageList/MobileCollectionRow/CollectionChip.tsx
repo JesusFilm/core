@@ -32,11 +32,13 @@ type ChipImageTile =
 
 /**
  * Collection filter as a card: a preview of the collection's template images on
- * the left, the collection title and a template-count subtext on the right. On
- * desktop the chip is enlarged and the preview is a 2x2 grid of up to four
- * images (>4 templates → three images + a "+N" tile); on mobile it stays
- * compact with a single image. A status label (Live / Draft) sits beside the
- * title. Doubles as a dnd-kit drop target and a selectable filter.
+ * the left, the collection title on the right. On mobile the chip stays
+ * compact with a single image, a status dot beside the title and a template
+ * count beneath it (original layout). On desktop the chip is enlarged: the
+ * preview becomes a 2x2 grid of up to four images (>4 templates → three
+ * images + a "+N" tile), a status label (Live / Draft) sits above the title,
+ * and the count is replaced by the collection description (clamped to two
+ * lines). Doubles as a dnd-kit drop target and a selectable filter.
  */
 export function CollectionChip({
   collection,
@@ -218,9 +220,21 @@ export function CollectionChip({
             title. */}
         <Stack
           spacing={{ xs: 0.25, md: 0.5 }}
-          // 8px padding all around the text column; the image well stays
-          // edge-to-edge on its side (no padding around it).
-          sx={{ flex: 1, minWidth: 0, justifyContent: 'center', p: 2 }}
+          // Mobile keeps the original centered layout with the template count
+          // beneath the title. Desktop is top-aligned so the label/title sit
+          // at fixed y positions regardless of description length — the
+          // desktop top padding pins the label at the y it would sit at if
+          // the reference content (label + 1-row title + 2-row description)
+          // were centered in the chip, so when the description is shorter or
+          // empty the label/title don't pop upward.
+          sx={{
+            flex: 1,
+            minWidth: 0,
+            justifyContent: { xs: 'center', md: 'flex-start' },
+            px: 2,
+            pt: { xs: 2, md: 6 },
+            pb: 2
+          }}
         >
           {/* Desktop-only status label (mobile uses the dot below). */}
           <LabelChip
@@ -267,13 +281,34 @@ export function CollectionChip({
               {collection.title}
             </Typography>
           </Stack>
-          <Typography variant="caption" color="text.secondary" noWrap>
+          {/* Mobile-only template count (original layout). */}
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            noWrap
+            sx={{ display: { xs: 'block', md: 'none' } }}
+          >
             {t('{{count}} templates', {
               count,
               defaultValue_one: '{{count}} template',
               defaultValue_other: '{{count}} templates'
             })}
           </Typography>
+          {/* Desktop-only description with a two-line clamp. */}
+          {collection.description != null && collection.description !== '' && (
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{
+                display: { xs: 'none', md: '-webkit-box' },
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 2,
+                overflow: 'hidden'
+              }}
+            >
+              {collection.description}
+            </Typography>
+          )}
         </Stack>
       </ButtonBase>
     </Tooltip>

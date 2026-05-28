@@ -51,17 +51,41 @@ function Wrapper({ children }: { children: ReactNode }): ReactElement {
 }
 
 describe('CollectionChip', () => {
-  it('renders title and count', () => {
+  it('renders title, mobile count, and desktop description', () => {
+    // Both the mobile count caption and the desktop description Typography
+    // render into the DOM regardless of breakpoint (visibility is gated by
+    // CSS display, not conditional rendering), so we assert on both here.
     render(
       <Wrapper>
         <CollectionChip
-          collection={makeCollection()}
+          collection={makeCollection({
+            description: 'A great collection of templates'
+          })}
           selected={false}
           onSelect={jest.fn()}
         />
       </Wrapper>
     )
     expect(screen.getByText('My Collection')).toBeInTheDocument()
+    expect(screen.getByText('2 templates')).toBeInTheDocument()
+    expect(
+      screen.getByText('A great collection of templates')
+    ).toBeInTheDocument()
+  })
+
+  it('omits the desktop description when description is empty', () => {
+    render(
+      <Wrapper>
+        <CollectionChip
+          collection={makeCollection({ description: '' })}
+          selected={false}
+          onSelect={jest.fn()}
+        />
+      </Wrapper>
+    )
+    expect(screen.getByText('My Collection')).toBeInTheDocument()
+    // Count still renders for the mobile layout; only the desktop description
+    // Typography is conditionally omitted.
     expect(screen.getByText('2 templates')).toBeInTheDocument()
   })
 
