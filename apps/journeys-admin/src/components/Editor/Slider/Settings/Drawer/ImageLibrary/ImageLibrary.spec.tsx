@@ -31,9 +31,7 @@ describe('ImageLibrary', () => {
   }
 
   describe('smUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as Mock).mockImplementation(() => true)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
     it('should switch tabs', () => {
       render(
@@ -96,9 +94,7 @@ describe('ImageLibrary', () => {
   })
 
   describe('xsDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as Mock).mockImplementation(() => false)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => false))
 
     it('should render the Image Library from the bottom', () => {
       render(

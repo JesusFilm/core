@@ -36,9 +36,7 @@ const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >

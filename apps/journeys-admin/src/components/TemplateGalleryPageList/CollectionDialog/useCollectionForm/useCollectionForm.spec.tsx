@@ -16,7 +16,7 @@ import { CollectionFormValues, useCollectionForm } from './useCollectionForm'
 
 const mockEnqueueSnackbar = vi.fn()
 vi.mock('notistack', async () => {
-  const actual = (await vi.importActual('notistack'))
+  const actual = await vi.importActual('notistack')
   return {
     ...actual,
     useSnackbar: () => ({

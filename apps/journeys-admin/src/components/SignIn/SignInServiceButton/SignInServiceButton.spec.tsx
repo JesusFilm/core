@@ -72,9 +72,7 @@ const mockSignInWithCredential = signInWithCredential as MockedFunction<
 const mockGetFirebaseAuth = getFirebaseAuth as MockedFunction<
   typeof getFirebaseAuth
 >
-const mockLinkWithPopup = linkWithPopup as MockedFunction<
-  typeof linkWithPopup
->
+const mockLinkWithPopup = linkWithPopup as MockedFunction<typeof linkWithPopup>
 const mockCredentialFromError = (
   OAuthProvider as unknown as { credentialFromError: Mock }
 ).credentialFromError

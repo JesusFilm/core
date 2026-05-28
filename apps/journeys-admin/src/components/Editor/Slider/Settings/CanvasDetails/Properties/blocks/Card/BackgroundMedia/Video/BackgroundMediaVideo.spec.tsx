@@ -97,9 +97,7 @@ vi.mock('video.js', () => {
   return { __esModule: true, default: videojs }
 })
 
-const mockUseSearchBox = useSearchBox as MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >

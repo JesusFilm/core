@@ -209,9 +209,7 @@ describe('MultiselectQuestionEdit', () => {
     }))
 
     const blockDeleteResult = vi.fn().mockReturnValue(deleteBlockMock.result)
-    const blockRestoreResult = vi
-      .fn()
-      .mockReturnValue(blockRestoreMock.result)
+    const blockRestoreResult = vi.fn().mockReturnValue(blockRestoreMock.result)
 
     const { getAllByRole, getByRole } = render(
       <MockedProvider

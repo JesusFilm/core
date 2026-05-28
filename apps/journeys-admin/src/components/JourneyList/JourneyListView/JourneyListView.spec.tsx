@@ -39,9 +39,7 @@ const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 const mockedUseTranslation = vi.mocked(useTranslation)
 const mockedUseTeam = useTeam as MockedFunction<typeof useTeam>
 
-const mockRenderList = vi.fn(() => (
-  <div data-testid="rendered-list">List</div>
-))
+const mockRenderList = vi.fn(() => <div data-testid="rendered-list">List</div>)
 const mockSetActiveEvent = vi.fn()
 const mockSetSortOrder = vi.fn()
 

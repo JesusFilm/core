@@ -20,9 +20,7 @@ describe('DiscardConfirmDialog', () => {
   })
 
   it('renders the title and explanatory copy when open', () => {
-    render(
-      <DiscardConfirmDialog open onCancel={vi.fn()} onConfirm={vi.fn()} />
-    )
+    render(<DiscardConfirmDialog open onCancel={vi.fn()} onConfirm={vi.fn()} />)
     expect(
       screen.getByText('You have unsaved changes — discard?')
     ).toBeInTheDocument()

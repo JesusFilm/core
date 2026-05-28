@@ -102,10 +102,7 @@ describe('Logo', () => {
             }
           }
         }
-      })) as MockedResponse<
-        LogoBlockCreate,
-        LogoBlockCreateVariables
-      >['result']
+      })) as MockedResponse<LogoBlockCreate, LogoBlockCreateVariables>['result']
     }
   }
 

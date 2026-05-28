@@ -40,12 +40,8 @@ const step1: TreeBlock<StepBlock> = {
 describe('useUpdateEdge', () => {
   it('should update block order for SocialPreview edge and undo/redo', async () => {
     const mockResult = vi.fn().mockReturnValue(blockOrderUpdateMock.result)
-    const mockUndoResult = vi
-      .fn()
-      .mockReturnValue(blockOrderUpdateMock.result)
-    const mockRedoResult = vi
-      .fn()
-      .mockReturnValue(blockOrderUpdateMock.result)
+    const mockUndoResult = vi.fn().mockReturnValue(blockOrderUpdateMock.result)
+    const mockRedoResult = vi.fn().mockReturnValue(blockOrderUpdateMock.result)
 
     const { result } = renderHook(() => useUpdateEdge(), {
       wrapper: ({ children }) => (

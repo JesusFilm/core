@@ -144,9 +144,7 @@ describe('NewTextResponseButton', () => {
 
     it('should redo when redo clicked', async () => {
       mockUuidv4.mockReturnValueOnce('textResponseBlock.id')
-      const deleteResult = vi
-        .fn()
-        .mockResolvedValue({ ...deleteBlock.result })
+      const deleteResult = vi.fn().mockResolvedValue({ ...deleteBlock.result })
       const deleteBlockMock = {
         ...deleteBlock,
         request: {

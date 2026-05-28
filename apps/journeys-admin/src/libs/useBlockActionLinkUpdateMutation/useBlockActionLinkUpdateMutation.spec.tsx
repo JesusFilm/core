@@ -27,9 +27,7 @@ describe('useBlockActionLinkUpdateMutation', () => {
   }
 
   it('should update block action', async () => {
-    const mockResult = vi
-      .fn()
-      .mockReturnValue(blockActionLinkUpdateMock.result)
+    const mockResult = vi.fn().mockReturnValue(blockActionLinkUpdateMock.result)
 
     const { result } = renderHook(() => useBlockActionLinkUpdateMutation(), {
       wrapper: ({ children }) => (

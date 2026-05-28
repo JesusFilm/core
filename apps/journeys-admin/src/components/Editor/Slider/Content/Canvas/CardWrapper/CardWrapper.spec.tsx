@@ -345,9 +345,7 @@ describe('CardWrapper', () => {
   })
 
   describe('mobile', () => {
-    beforeEach(() =>
-      (useMediaQuery as Mock).mockImplementation(() => false)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => false))
 
     it('opens card template library', () => {
       const card: TreeBlock = {

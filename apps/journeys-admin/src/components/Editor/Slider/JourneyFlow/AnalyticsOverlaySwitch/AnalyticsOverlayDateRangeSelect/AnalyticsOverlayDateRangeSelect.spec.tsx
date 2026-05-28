@@ -6,9 +6,7 @@ import { AnalyticsOverlayDateRangeSelect } from './AnalyticsOverlayDateRangeSele
 
 describe('AnalyticsOverlayDateRangeSelect', () => {
   it('renders with the current preset label and aria label', () => {
-    render(
-      <AnalyticsOverlayDateRangeSelect value="today" onChange={vi.fn()} />
-    )
+    render(<AnalyticsOverlayDateRangeSelect value="today" onChange={vi.fn()} />)
 
     const selectRoot = screen.getByLabelText('Date range preset')
 
@@ -40,9 +38,7 @@ describe('AnalyticsOverlayDateRangeSelect', () => {
   })
 
   it('renders dividers between preset groups', () => {
-    render(
-      <AnalyticsOverlayDateRangeSelect value="today" onChange={vi.fn()} />
-    )
+    render(<AnalyticsOverlayDateRangeSelect value="today" onChange={vi.fn()} />)
 
     const selectRoot = screen.getByLabelText('Date range preset')
     const combobox = within(selectRoot).getByRole('combobox')

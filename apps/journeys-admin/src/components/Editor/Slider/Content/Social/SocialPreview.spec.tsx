@@ -21,9 +21,7 @@ vi.mock('@mui/material/useMediaQuery', () => ({
   default: vi.fn()
 }))
 
-const mockUseMediaQuery = useMediaQuery as MockedFunction<
-  typeof useMediaQuery
->
+const mockUseMediaQuery = useMediaQuery as MockedFunction<typeof useMediaQuery>
 
 describe('SocialPreview', () => {
   beforeEach(() => {

@@ -56,8 +56,9 @@ vi.mock('../TemplateGalleryPageList', () => ({
 }))
 
 const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
-const mockedUseAdminJourneysQuery =
-  useAdminJourneysQuery as MockedFunction<typeof useAdminJourneysQuery>
+const mockedUseAdminJourneysQuery = useAdminJourneysQuery as MockedFunction<
+  typeof useAdminJourneysQuery
+>
 
 describe('JourneyList', () => {
   let originalSetItem: typeof Storage.prototype.setItem

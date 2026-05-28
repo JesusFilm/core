@@ -82,8 +82,7 @@ vi.mock('next/router', () => ({
     isReady: false
   }))
 }))
-const mockUseRouter = (await vi.importMock('next/router'))
-  .useRouter as Mock
+const mockUseRouter = (await vi.importMock('next/router')).useRouter as Mock
 
 function setRouterQuery(
   query: Record<string, string>,

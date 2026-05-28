@@ -41,10 +41,9 @@ describe('PasswordResetPage', () => {
   })
 
   it('should trigger send button click', async () => {
-    const mockSendPasswordResetEmail =
-      sendPasswordResetEmail as MockedFunction<
-        typeof sendPasswordResetEmail
-      >
+    const mockSendPasswordResetEmail = sendPasswordResetEmail as MockedFunction<
+      typeof sendPasswordResetEmail
+    >
 
     const { getByRole } = render(
       <PasswordResetPage

@@ -85,9 +85,7 @@ const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >
@@ -148,9 +146,7 @@ describe('VideoLibrary', () => {
   })
 
   describe('smUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as Mock).mockImplementation(() => true)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
     it('should render the Video Library on the right', () => {
       render(
@@ -306,9 +302,7 @@ describe('VideoLibrary', () => {
   })
 
   describe('xsDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as Mock).mockImplementation(() => false)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => false))
 
     it('should render the VideoLibrary from the bottom', () => {
       render(
@@ -328,9 +322,7 @@ describe('VideoLibrary', () => {
   })
 
   describe('VideoSearch', () => {
-    beforeEach(() =>
-      (useMediaQuery as Mock).mockImplementation(() => true)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
     it('displays searched video', async () => {
       render(

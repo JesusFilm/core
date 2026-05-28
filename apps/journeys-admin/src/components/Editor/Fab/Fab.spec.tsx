@@ -31,9 +31,7 @@ describe('Fab', () => {
   }
 
   describe('mdUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as Mock).mockImplementation(() => true)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
     it('should be disabled', () => {
       const step = {
@@ -187,9 +185,7 @@ describe('Fab', () => {
   })
 
   describe('mdDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as Mock).mockImplementation(() => false)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => false))
 
     it('should handle add', async () => {
       render(

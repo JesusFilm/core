@@ -125,9 +125,7 @@ describe('useCreateStepFromAction', () => {
       .fn()
       .mockResolvedValue(mockStepBlockDeleteFromAction.result)
 
-    const result3 = vi
-      .fn()
-      .mockResolvedValue(mockBlockRestoreFromAction.result)
+    const result3 = vi.fn().mockResolvedValue(mockBlockRestoreFromAction.result)
 
     render(
       <MockedProvider

@@ -10,9 +10,7 @@ vi.mock('@next/third-parties/google', () => ({
   sendGTMEvent: vi.fn()
 }))
 
-const mockSendGTMEvent = sendGTMEvent as MockedFunction<
-  typeof sendGTMEvent
->
+const mockSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
 describe('sendImageUploadEvent', () => {
   beforeEach(() => {

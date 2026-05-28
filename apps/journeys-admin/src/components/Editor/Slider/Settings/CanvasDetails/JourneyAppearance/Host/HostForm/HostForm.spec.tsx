@@ -266,9 +266,7 @@ describe('HostForm', () => {
       }
     }
 
-    const mockHostUpdateResult = vi
-      .fn()
-      .mockReturnValue(updateHostMock.result)
+    const mockHostUpdateResult = vi.fn().mockReturnValue(updateHostMock.result)
 
     const handleSelection = vi.fn()
     const mockGetAllTeamHostsQuery = vi.fn()
@@ -372,9 +370,7 @@ describe('HostForm', () => {
       }
     }
 
-    const mockHostUpdateResult = vi
-      .fn()
-      .mockReturnValue(updateHostMock.result)
+    const mockHostUpdateResult = vi.fn().mockReturnValue(updateHostMock.result)
 
     const handleSelection = vi.fn()
     const mockGetAllTeamHostsQuery = vi.fn()

@@ -90,9 +90,7 @@ describe('JourneyQuickSettingsChat', () => {
       }
     }
 
-    const mockHostUpdateResult = vi
-      .fn()
-      .mockReturnValue(updateHostMock.result)
+    const mockHostUpdateResult = vi.fn().mockReturnValue(updateHostMock.result)
 
     render(
       <MockedProvider

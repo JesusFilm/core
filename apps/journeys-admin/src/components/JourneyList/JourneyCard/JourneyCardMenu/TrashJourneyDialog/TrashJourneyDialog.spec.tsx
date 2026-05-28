@@ -13,12 +13,9 @@ import { JOURNEY_TRASH } from './TrashJourneyDialog'
 
 import { TrashJourneyDialog } from '.'
 
-vi.mock(
-  '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
-  () => ({
-    useTemplateFamilyStatsAggregateLazyQuery: vi.fn()
-  })
-)
+vi.mock('../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: vi.fn()
+}))
 
 const mockedUseTemplateFamilyStatsAggregateLazyQuery =
   useTemplateFamilyStatsAggregateLazyQuery as MockedFunction<

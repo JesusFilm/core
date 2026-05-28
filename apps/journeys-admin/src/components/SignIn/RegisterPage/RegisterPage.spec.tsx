@@ -77,10 +77,7 @@ describe('PasswordPage', () => {
   it('should render register page', () => {
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={vi.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
 
@@ -93,10 +90,7 @@ describe('PasswordPage', () => {
   it('should require user to enter a name and password', async () => {
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={vi.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
 
@@ -126,10 +120,7 @@ describe('PasswordPage', () => {
 
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={vi.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
 
@@ -189,10 +180,7 @@ describe('PasswordPage', () => {
 
     render(
       <MockedProvider mocks={[journeyPublishMock]}>
-        <RegisterPage
-          setActivePage={vi.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
 
@@ -233,10 +221,7 @@ describe('PasswordPage', () => {
 
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={vi.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
 
@@ -287,10 +272,7 @@ describe('PasswordPage', () => {
 
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={vi.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
 
@@ -321,10 +303,7 @@ describe('PasswordPage', () => {
   it('should validate password', async () => {
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={vi.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
     fireEvent.change(screen.getByLabelText('Password'), {
@@ -354,10 +333,7 @@ describe('PasswordPage', () => {
   it('should check if name is too short', async () => {
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={vi.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
     fireEvent.change(screen.getByLabelText('Name'), {
@@ -372,10 +348,7 @@ describe('PasswordPage', () => {
   it('should check if name is too long', async () => {
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={vi.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
     fireEvent.change(screen.getByLabelText('Name'), {

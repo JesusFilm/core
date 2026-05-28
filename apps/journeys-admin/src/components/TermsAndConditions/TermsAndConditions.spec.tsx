@@ -191,9 +191,7 @@ describe('TermsAndConditions', () => {
       .fn()
       .mockReturnValue(journeyDuplicateMock.result)
 
-    const teamCreateMockResult = vi
-      .fn()
-      .mockReturnValue(teamCreateMock.result)
+    const teamCreateMockResult = vi.fn().mockReturnValue(teamCreateMock.result)
 
     const updateLastActiveTeamIdMockResult = vi
       .fn()
@@ -281,9 +279,7 @@ describe('TermsAndConditions', () => {
       .fn()
       .mockReturnValue(journeyDuplicateMock.result)
 
-    const teamCreateMockResult = vi
-      .fn()
-      .mockReturnValue(teamCreateMock.result)
+    const teamCreateMockResult = vi.fn().mockReturnValue(teamCreateMock.result)
 
     const updateLastActiveTeamIdMockResult = vi
       .fn()
@@ -595,9 +591,7 @@ describe('TermsAndConditions', () => {
       .fn()
       .mockReturnValue(journeyProfileCreateMock.result)
 
-    const teamCreateMockResult = vi
-      .fn()
-      .mockReturnValue(teamCreateMock.result)
+    const teamCreateMockResult = vi.fn().mockReturnValue(teamCreateMock.result)
 
     const journeyDuplicateMockResult = vi
       .fn()

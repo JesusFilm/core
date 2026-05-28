@@ -15,7 +15,7 @@ import { journeyImageBlockUpdateMock } from '../../../../../../libs/useJourneyIm
 import { SocialScreenSocialImage } from './SocialScreenSocialImage'
 
 vi.mock('node-fetch', async () => {
-  const originalModule = (await vi.importActual('node-fetch'))
+  const originalModule = await vi.importActual('node-fetch')
   return {
     __esModule: true,
     ...originalModule,

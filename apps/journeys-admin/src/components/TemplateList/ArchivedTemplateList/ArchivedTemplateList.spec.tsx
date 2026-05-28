@@ -18,7 +18,11 @@ import { ArchivedTemplateList } from '.'
 
 vi.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', async () => ({
   useTemplateFamilyStatsAggregateLazyQuery: vi.fn(),
-  extractTemplateIdsFromJourneys: (await vi.importActual('../../../libs/useTemplateFamilyStatsAggregateLazyQuery')).extractTemplateIdsFromJourneys
+  extractTemplateIdsFromJourneys: (
+    await vi.importActual(
+      '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+    )
+  ).extractTemplateIdsFromJourneys
 }))
 
 const mockedUseTemplateFamilyStatsAggregateLazyQuery =

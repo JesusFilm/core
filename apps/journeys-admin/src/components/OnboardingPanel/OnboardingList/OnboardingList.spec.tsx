@@ -7,7 +7,7 @@ import { onboardingJourneys } from '../data'
 import { OnboardingList } from './OnboardingList'
 
 vi.mock('@apollo/client', async () => {
-  const actual = (await vi.importActual('@apollo/client'))
+  const actual = await vi.importActual('@apollo/client')
   return {
     ...actual,
     useSuspenseQuery: vi.fn()

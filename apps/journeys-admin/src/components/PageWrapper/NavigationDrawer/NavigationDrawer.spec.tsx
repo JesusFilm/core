@@ -61,9 +61,7 @@ describe('NavigationDrawer', () => {
   })
 
   it('should show selected templates link when selected page templates', async () => {
-    render(
-      <NavigationDrawer open onClose={vi.fn()} selectedPage="templates" />
-    )
+    render(<NavigationDrawer open onClose={vi.fn()} selectedPage="templates" />)
     expect(screen.getByTestId('NavigationListItemTemplates')).toHaveClass(
       'Mui-selected'
     )

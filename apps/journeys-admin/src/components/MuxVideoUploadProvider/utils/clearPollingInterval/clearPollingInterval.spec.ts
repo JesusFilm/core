@@ -9,7 +9,9 @@ describe('clearPollingInterval', () => {
   let mockClearInterval: MockInstance
 
   beforeEach(() => {
-    mockClearInterval = vi.spyOn(global, 'clearInterval').mockImplementation(noop)
+    mockClearInterval = vi
+      .spyOn(global, 'clearInterval')
+      .mockImplementation(noop)
     pollingIntervalsRef = {
       current: new Map<string, NodeJS.Timeout>()
     }

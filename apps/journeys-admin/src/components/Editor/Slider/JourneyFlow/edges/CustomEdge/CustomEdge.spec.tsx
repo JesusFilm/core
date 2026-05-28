@@ -10,7 +10,7 @@ import { useDeleteEdge } from '../../libs/useDeleteEdge'
 import { CustomEdge } from '.'
 
 vi.mock('@xyflow/react', async () => {
-  const originalModule = (await vi.importActual('@xyflow/react'))
+  const originalModule = await vi.importActual('@xyflow/react')
   return {
     __esModule: true,
     ...originalModule,
@@ -26,9 +26,7 @@ vi.mock('../../libs/useDeleteEdge', async () => {
   }
 })
 
-const mockUseDeleteEdge = useDeleteEdge as MockedFunction<
-  typeof useDeleteEdge
->
+const mockUseDeleteEdge = useDeleteEdge as MockedFunction<typeof useDeleteEdge>
 
 describe('CustomEdge', () => {
   beforeEach(() => {

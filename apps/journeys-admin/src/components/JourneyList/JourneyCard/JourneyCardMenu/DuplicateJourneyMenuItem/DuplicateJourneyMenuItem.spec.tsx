@@ -28,12 +28,9 @@ vi.mock('next/router', () => ({
   }))
 }))
 
-vi.mock(
-  '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
-  () => ({
-    useTemplateFamilyStatsAggregateLazyQuery: vi.fn()
-  })
-)
+vi.mock('../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: vi.fn()
+}))
 
 const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 const mockedUseTemplateFamilyStatsAggregateLazyQuery =

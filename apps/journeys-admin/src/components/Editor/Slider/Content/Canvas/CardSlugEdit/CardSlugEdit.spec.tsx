@@ -151,9 +151,7 @@ describe('CardSlugEdit', () => {
     })
     fireEvent.blur(screen.getByRole('textbox'))
 
-    await waitFor(() =>
-      expect(updateMock.result as Mock).toHaveBeenCalled()
-    )
+    await waitFor(() => expect(updateMock.result as Mock).toHaveBeenCalled())
   })
 
   it('should set slug as null if empty string', async () => {
@@ -212,9 +210,7 @@ describe('CardSlugEdit', () => {
     fireEvent.change(input, { target: { value: '' } })
     fireEvent.blur(input)
 
-    await waitFor(() =>
-      expect(nullSlugMock.result as Mock).toHaveBeenCalled()
-    )
+    await waitFor(() => expect(nullSlugMock.result as Mock).toHaveBeenCalled())
   })
 
   it('should throw error if invalid slug and reset input', async () => {
@@ -305,9 +301,7 @@ describe('CardSlugEdit', () => {
     fireEvent.change(input, { target: { value: 'new-slug' } })
     fireEvent.blur(input)
 
-    await waitFor(() =>
-      expect(updateMock.result as Mock).toHaveBeenCalled()
-    )
+    await waitFor(() => expect(updateMock.result as Mock).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 

@@ -31,7 +31,7 @@ const mockUseMutation = vi.fn()
 const mockUseSubscription = vi.fn()
 
 vi.mock('@apollo/client', async () => {
-  const actual = (await vi.importActual('@apollo/client'))
+  const actual = await vi.importActual('@apollo/client')
   return {
     ...actual,
     useSuspenseQuery: (...args: unknown[]) => mockUseSuspenseQuery(...args),

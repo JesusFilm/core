@@ -71,9 +71,7 @@ describe('Toolbar Menu', () => {
   })
 
   describe('smUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as Mock).mockImplementation(() => true)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
     it('should render menu items', () => {
       const selectedBlock: TreeBlock<StepBlock> = {
@@ -588,9 +586,7 @@ describe('Toolbar Menu', () => {
   })
 
   describe('smDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as Mock).mockImplementation(() => false)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => false))
 
     it('should render mobile menu items', () => {
       mockedUseRouter.mockReturnValue({

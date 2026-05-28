@@ -29,10 +29,9 @@ const getLaunchDarklyClientMock = getLaunchDarklyClient as MockedFunction<
 const createApolloClientMock = createApolloClient as MockedFunction<
   typeof createApolloClient
 >
-const checkConditionalRedirectMock =
-  checkConditionalRedirect as MockedFunction<
-    typeof checkConditionalRedirect
-  >
+const checkConditionalRedirectMock = checkConditionalRedirect as MockedFunction<
+  typeof checkConditionalRedirect
+>
 const getAppMock = getApp as MockedFunction<typeof getApp>
 const getAuthMock = getAuth as MockedFunction<typeof getAuth>
 const signInAnonymouslyMock = signInAnonymously as MockedFunction<

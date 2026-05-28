@@ -104,9 +104,7 @@ describe('NewButtonButton', () => {
       mockUuidv4.mockReturnValueOnce('startIconId')
       mockUuidv4.mockReturnValueOnce('endIconId')
 
-      const deleteResult = vi
-        .fn()
-        .mockResolvedValue({ ...deleteBlock.result })
+      const deleteResult = vi.fn().mockResolvedValue({ ...deleteBlock.result })
       const deleteBlockMock = {
         ...deleteBlock,
         request: {
@@ -146,9 +144,7 @@ describe('NewButtonButton', () => {
       mockUuidv4.mockReturnValueOnce('startIconId')
       mockUuidv4.mockReturnValueOnce('endIconId')
 
-      const deleteResult = vi
-        .fn()
-        .mockResolvedValue({ ...deleteBlock.result })
+      const deleteResult = vi.fn().mockResolvedValue({ ...deleteBlock.result })
       const deleteBlockMock = {
         ...deleteBlock,
         request: {

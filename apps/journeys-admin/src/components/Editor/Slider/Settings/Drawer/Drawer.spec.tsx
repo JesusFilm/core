@@ -32,9 +32,7 @@ describe('Drawer', () => {
   })
 
   describe('smUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as Mock).mockImplementation(() => true)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
     it('should render drawer from the right', () => {
       render(<Drawer open />)
@@ -45,9 +43,7 @@ describe('Drawer', () => {
   })
 
   describe('smDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as Mock).mockImplementation(() => false)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => false))
 
     it('should render drawer from the bottom', () => {
       render(<Drawer open />)

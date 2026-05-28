@@ -10,7 +10,7 @@ import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../../libs/u
 import { ImageUpload } from './ImageUpload'
 
 vi.mock('node-fetch', async () => {
-  const originalModule = (await vi.importActual('node-fetch'))
+  const originalModule = await vi.importActual('node-fetch')
   return {
     __esModule: true,
     ...originalModule,
@@ -23,9 +23,7 @@ vi.mock('@next/third-parties/google', async () => ({
 }))
 
 const mockFetch = fetch as MockedFunction<typeof fetch>
-const mockSendGTMEvent = sendGTMEvent as MockedFunction<
-  typeof sendGTMEvent
->
+const mockSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
 describe('ImageUpload', () => {
   let originalEnv

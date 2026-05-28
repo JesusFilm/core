@@ -23,8 +23,9 @@ import { AnalyticsOverlaySwitch } from '.'
 
 vi.mock('./buildPlausibleDateRange')
 
-const mockBuildPlausibleDateRange =
-  buildPlausibleDateRange as MockedFunction<typeof buildPlausibleDateRange>
+const mockBuildPlausibleDateRange = buildPlausibleDateRange as MockedFunction<
+  typeof buildPlausibleDateRange
+>
 
 const mockCurrentDate = '2024-06-02'
 

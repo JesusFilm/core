@@ -22,7 +22,7 @@ import { useDeleteEdge } from '../useDeleteEdge'
 import { useDeleteOnKeyPress } from './useDeleteOnKeyPress'
 
 vi.mock('@xyflow/react', async () => {
-  const originalModule = (await vi.importActual('@xyflow/react'))
+  const originalModule = await vi.importActual('@xyflow/react')
   return {
     __esModule: true,
     ...originalModule,
@@ -35,9 +35,7 @@ vi.mock('../useDeleteEdge', async () => {
     useDeleteEdge: vi.fn()
   }
 })
-const mockUseDeleteEdge = useDeleteEdge as MockedFunction<
-  typeof useDeleteEdge
->
+const mockUseDeleteEdge = useDeleteEdge as MockedFunction<typeof useDeleteEdge>
 
 vi.mock('../../../../../../libs/useBlockDeleteMutation', async () => {
   return {
@@ -45,8 +43,9 @@ vi.mock('../../../../../../libs/useBlockDeleteMutation', async () => {
   }
 })
 
-const mockUseBlockDeleteMutation =
-  useBlockDeleteMutation as MockedFunction<typeof useBlockDeleteMutation>
+const mockUseBlockDeleteMutation = useBlockDeleteMutation as MockedFunction<
+  typeof useBlockDeleteMutation
+>
 
 describe('useDeleteOnKeyPress', () => {
   const deleteBlock = vi.fn()

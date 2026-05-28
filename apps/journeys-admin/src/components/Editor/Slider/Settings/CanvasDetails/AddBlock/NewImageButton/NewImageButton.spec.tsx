@@ -135,9 +135,7 @@ describe('NewImageButton', () => {
       result: deleteResult
     }
 
-    const restoreResult = vi
-      .fn()
-      .mockResolvedValue({ ...blockRestore.result })
+    const restoreResult = vi.fn().mockResolvedValue({ ...blockRestore.result })
 
     const blockRestoreMock = {
       ...blockRestore,

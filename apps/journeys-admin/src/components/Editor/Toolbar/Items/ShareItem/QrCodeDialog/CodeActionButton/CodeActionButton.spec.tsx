@@ -11,9 +11,7 @@ Object.assign(navigator, {
 
 describe('CodeActionButton', () => {
   it('should render the download buttons', () => {
-    render(
-      <CodeActionButton shortLink="url" handleGenerateQrCode={vi.fn()} />
-    )
+    render(<CodeActionButton shortLink="url" handleGenerateQrCode={vi.fn()} />)
 
     expect(
       screen.getByRole('button', { name: 'Download PNG' })
@@ -69,9 +67,7 @@ describe('CodeActionButton', () => {
       .spyOn(canvas, 'toDataURL')
       .mockReturnValue('data:image/png;base64,test')
 
-    render(
-      <CodeActionButton shortLink="url" handleGenerateQrCode={vi.fn()} />
-    )
+    render(<CodeActionButton shortLink="url" handleGenerateQrCode={vi.fn()} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Download PNG' }))
 

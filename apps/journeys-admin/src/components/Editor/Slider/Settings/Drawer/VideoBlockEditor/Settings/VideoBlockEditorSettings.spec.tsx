@@ -35,10 +35,9 @@ vi.mock('next-i18next/pages', () => ({
   })
 }))
 
-const mockUseYouTubeClosedCaptions =
-  useYouTubeClosedCaptions as MockedFunction<
-    typeof useYouTubeClosedCaptions
-  >
+const mockUseYouTubeClosedCaptions = useYouTubeClosedCaptions as MockedFunction<
+  typeof useYouTubeClosedCaptions
+>
 
 const { validateMuxLanguage } = (await vi.importMock(
   '../../../../../../../libs/validateMuxLanguage'

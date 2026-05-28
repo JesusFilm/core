@@ -11,12 +11,9 @@ import { JOURNEY_RESTORE } from './RestoreJourneyDialog'
 
 import { RestoreJourneyDialog } from '.'
 
-vi.mock(
-  '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
-  () => ({
-    useTemplateFamilyStatsAggregateLazyQuery: vi.fn()
-  })
-)
+vi.mock('../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: vi.fn()
+}))
 
 const mockedUseTemplateFamilyStatsAggregateLazyQuery =
   useTemplateFamilyStatsAggregateLazyQuery as MockedFunction<

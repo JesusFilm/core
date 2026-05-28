@@ -34,8 +34,7 @@ vi.mock('notistack', () => ({
   useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
 }))
 
-const mockUseRouter = (await vi.importMock('next/router'))
-  .useRouter as Mock
+const mockUseRouter = (await vi.importMock('next/router')).useRouter as Mock
 
 function createParams(
   overrides: Partial<UseTemplateCustomizationRedirectParams> = {}

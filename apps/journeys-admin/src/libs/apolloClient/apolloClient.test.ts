@@ -1,4 +1,3 @@
-import { type MockedFunction, type Mock } from 'vitest'
 import {
   ApolloLink,
   FetchResult,
@@ -9,6 +8,7 @@ import {
 } from '@apollo/client'
 import { print } from 'graphql'
 import { createClient } from 'graphql-sse'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { logout } from '../auth/firebase'
 
@@ -27,9 +27,7 @@ vi.mock('../auth/firebase', () => ({
   logout: vi.fn().mockResolvedValue(undefined)
 }))
 
-const mockCreateClient = createClient as MockedFunction<
-  typeof createClient
->
+const mockCreateClient = createClient as MockedFunction<typeof createClient>
 const mockLogout = logout as MockedFunction<typeof logout>
 
 describe('createApolloClient', () => {

@@ -47,7 +47,7 @@ vi.mock('./ImpersonateDialog', async () => ({
 // Synchronous Apollo + local suspense hooks for tests
 const mockUseSuspenseQuery = vi.fn()
 vi.mock('@apollo/client', async () => {
-  const actual = (await vi.importActual('@apollo/client'))
+  const actual = await vi.importActual('@apollo/client')
   return {
     ...actual,
     useSuspenseQuery: (...args: unknown[]) => mockUseSuspenseQuery(...args)

@@ -156,11 +156,7 @@ describe('TeamCreateDialog', () => {
       <MockedProvider mocks={[teamCreateErrorMock]}>
         <SnackbarProvider>
           <TeamProvider>
-            <TeamCreateDialog
-              open
-              onClose={vi.fn()}
-              onCreate={handleCreate}
-            />
+            <TeamCreateDialog open onClose={vi.fn()} onCreate={handleCreate} />
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>

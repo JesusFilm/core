@@ -57,9 +57,7 @@ const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 vi.mock('../../../../libs/useStepBlockPositionUpdateMutation', () => {
   return {
-    useStepBlockPositionUpdateMutation: vi
-      .fn()
-      .mockReturnValue([vi.fn(), null])
+    useStepBlockPositionUpdateMutation: vi.fn().mockReturnValue([vi.fn(), null])
   }
 })
 
@@ -74,10 +72,9 @@ vi.mock('../../../../libs/useJourneyUpdateMutation', () => {
   }
 })
 
-const mockUseJourneyUpdateMutation =
-  useJourneyUpdateMutation as MockedFunction<
-    typeof useJourneyUpdateMutation
-  >
+const mockUseJourneyUpdateMutation = useJourneyUpdateMutation as MockedFunction<
+  typeof useJourneyUpdateMutation
+>
 
 vi.mock('./libs/transformSteps', () => {
   return {
@@ -119,9 +116,7 @@ describe('JourneyFlow', () => {
   mockTransformSteps.mockReturnValue({ nodes, edges })
 
   it('should render graph', async () => {
-    const result = vi
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     const nonTemplateJourney: Journey = {
       ...defaultJourney,
@@ -239,9 +234,7 @@ describe('JourneyFlow', () => {
   })
 
   it('should reorganize graph', async () => {
-    const result = vi
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
     const mockUpdate = vi.fn()
     const mockResult = vi.fn() as unknown as MutationResult
     mockUseStepBlockPositionUpdateMutation.mockReturnValue([
@@ -337,9 +330,7 @@ describe('JourneyFlow', () => {
   })
 
   it('should update social preview node position during reset/undo/redo', async () => {
-    const result = vi
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     // Mock for journey update
     const mockJourneyUpdate = vi.fn()
@@ -429,9 +420,7 @@ describe('JourneyFlow', () => {
   })
 
   it('should hide new step button if in analytics mode', async () => {
-    const result = vi
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
@@ -491,9 +480,7 @@ describe('JourneyFlow', () => {
   })
 
   it('should hide analytics panel for local templates', async () => {
-    const result = vi
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     const localTemplateJourney = {
       ...defaultJourney,
@@ -534,9 +521,7 @@ describe('JourneyFlow', () => {
   })
 
   it('should not show analytics panel for global templates', async () => {
-    const result = vi
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     const jfpTeamTemplateJourney = {
       ...defaultJourney,
@@ -577,9 +562,7 @@ describe('JourneyFlow', () => {
   })
 
   it('should show analytics panel for journeys', async () => {
-    const result = vi
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     const jfpTeamTemplateJourney = {
       ...defaultJourney,
@@ -620,9 +603,7 @@ describe('JourneyFlow', () => {
   })
 
   it('should hide analytics panel when editorAnalytics feature flag is false', async () => {
-    const result = vi
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>

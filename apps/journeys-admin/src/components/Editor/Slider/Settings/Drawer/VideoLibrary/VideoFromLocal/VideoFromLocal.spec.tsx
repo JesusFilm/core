@@ -19,9 +19,7 @@ vi.mock('@mui/material/useMediaQuery', () => ({
 
 vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >

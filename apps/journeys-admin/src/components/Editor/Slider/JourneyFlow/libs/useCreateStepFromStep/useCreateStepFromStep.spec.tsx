@@ -111,9 +111,7 @@ describe('useCreateStepFromStep', () => {
     mockUuidv4.mockReturnValueOnce('newCard.id')
 
     const result = vi.fn().mockReturnValue(mockStepBlockCreateFromStep.result)
-    const result2 = vi
-      .fn()
-      .mockReturnValue(mockStepBlockDeleteFromStep.result)
+    const result2 = vi.fn().mockReturnValue(mockStepBlockDeleteFromStep.result)
 
     render(
       <MockedProvider
@@ -186,12 +184,8 @@ describe('useCreateStepFromStep', () => {
     mockUuidv4.mockReturnValueOnce('newCard.id')
 
     const result = vi.fn().mockReturnValue(mockStepBlockCreateFromStep.result)
-    const result2 = vi
-      .fn()
-      .mockReturnValue(mockStepBlockDeleteFromStep.result)
-    const result3 = vi
-      .fn()
-      .mockReturnValue(mockStepBlockRestoreFromStep.result)
+    const result2 = vi.fn().mockReturnValue(mockStepBlockDeleteFromStep.result)
+    const result3 = vi.fn().mockReturnValue(mockStepBlockRestoreFromStep.result)
 
     render(
       <MockedProvider

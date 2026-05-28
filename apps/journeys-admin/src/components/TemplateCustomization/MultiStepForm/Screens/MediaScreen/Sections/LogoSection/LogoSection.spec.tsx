@@ -24,7 +24,9 @@ vi.mock('@core/shared/ui/NextImage', async () => ({
 }))
 
 vi.mock('../../../../../../../libs/useImageUpload', async () => {
-  const actual = (await vi.importActual('../../../../../../../libs/useImageUpload'))
+  const actual = await vi.importActual(
+    '../../../../../../../libs/useImageUpload'
+  )
   return {
     __esModule: true,
     ...actual,

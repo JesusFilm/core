@@ -353,9 +353,8 @@ describe('DuplicateBlock', () => {
     // capture the optimistic response from the mutation
     let capturedOptimisticResponse: BlockDuplicate | null = null
 
-    vi
-      .spyOn(require('@apollo/client'), 'useMutation')
-      .mockImplementation(() => {
+    vi.spyOn(require('@apollo/client'), 'useMutation').mockImplementation(
+      () => {
         return [
           (options: any) => {
             capturedOptimisticResponse = options?.optimisticResponse
@@ -363,7 +362,8 @@ describe('DuplicateBlock', () => {
           },
           { loading: false }
         ]
-      })
+      }
+    )
 
     render(
       <SnackbarProvider>
