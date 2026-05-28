@@ -121,7 +121,8 @@ export function CollectionChip({
             ? 'text.disabled'
             : active
               ? 'primary.main'
-              : 'grey.400',
+              : // Original light border on mobile; one step darker on desktop.
+                { xs: 'divider', md: 'grey.400' },
           backgroundColor: 'background.paper',
           outline: isOver && !isPublished ? '2px solid' : 'none',
           outlineColor: 'primary.dark',
@@ -143,7 +144,7 @@ export function CollectionChip({
             gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
             gridTemplateRows: { xs: '1fr', md: '1fr 1fr' },
             gap: '2px',
-            bgcolor: 'grey.200'
+            bgcolor: { xs: 'rgba(0, 0, 0, 0.06)', md: 'grey.200' }
           }}
         >
           {imageTiles.map((tile, index) => (
@@ -152,10 +153,11 @@ export function CollectionChip({
               sx={{
                 position: 'relative',
                 overflow: 'hidden',
-                // Mid-grey fill: dark enough to read as a distinct well, but
-                // still lighter than the placeholder logo's light-grey segment
-                // (#DEDFE0 / divider) so the logo doesn't blend in.
-                bgcolor: 'grey.200',
+                // Original subtle fill on mobile; on desktop a mid-grey well
+                // dark enough to read as distinct, yet still lighter than the
+                // placeholder logo's light-grey segment (#DEDFE0 / divider) so
+                // the logo doesn't blend in.
+                bgcolor: { xs: 'rgba(0, 0, 0, 0.06)', md: 'grey.200' },
                 // The first tile always shows; the rest of the 2x2 grid is
                 // desktop-only (mobile keeps a single image).
                 display: index === 0 ? 'block' : { xs: 'none', md: 'block' },
@@ -196,8 +198,8 @@ export function CollectionChip({
                 <Image
                   src={logoGray}
                   alt=""
-                  width={24}
-                  height={24}
+                  width={28}
+                  height={28}
                   style={{
                     objectFit: 'contain',
                     position: 'absolute',
@@ -211,30 +213,58 @@ export function CollectionChip({
           ))}
         </Box>
 
-        {/* Status label, title and template count — stacked vertically. */}
+        {/* Status, title and count. Mobile keeps the original compact dot +
+            single-line title; desktop stacks a status label above a two-line
+            title. */}
         <Stack
-          spacing={0.5}
+          spacing={{ xs: 0.25, md: 0.5 }}
           sx={{ flex: 1, minWidth: 0, justifyContent: 'center', px: 1.5 }}
         >
+          {/* Desktop-only status label (mobile uses the dot below). */}
           <LabelChip
             data-testid="CollectionChipStatusLabel"
             color={isPublished ? 'success' : 'default'}
             label={isPublished ? t('Live') : t('Draft')}
-            sx={{ alignSelf: 'flex-start' }}
-          />
-          <Typography
-            variant="subtitle2"
             sx={{
-              minWidth: 0,
-              // One line on the compact mobile chip; up to two on desktop.
-              display: '-webkit-box',
-              WebkitBoxOrient: 'vertical',
-              WebkitLineClamp: { xs: 1, md: 2 },
-              overflow: 'hidden'
+              alignSelf: 'flex-start',
+              display: { xs: 'none', md: 'inline-flex' }
             }}
+          />
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={0.75}
+            sx={{ minWidth: 0 }}
           >
-            {collection.title}
-          </Typography>
+            {/* Mobile-only status dot (desktop uses the label above). */}
+            <Box
+              data-testid="CollectionChipStatusDot"
+              aria-hidden
+              sx={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                bgcolor: isPublished ? 'success.main' : 'warning.main',
+                flexShrink: 0,
+                display: { xs: 'block', md: 'none' }
+              }}
+            />
+            <Typography
+              variant="subtitle2"
+              sx={{
+                minWidth: 0,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                // Mobile: single-line ellipsis. Desktop: up to two lines.
+                whiteSpace: { xs: 'nowrap', md: 'normal' },
+                display: { xs: 'block', md: '-webkit-box' },
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: { md: 2 }
+              }}
+            >
+              {collection.title}
+            </Typography>
+          </Stack>
           <Typography variant="caption" color="text.secondary" noWrap>
             {t('{{count}} templates', {
               count,

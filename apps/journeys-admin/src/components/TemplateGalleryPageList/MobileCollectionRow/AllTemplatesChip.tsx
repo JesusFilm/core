@@ -44,19 +44,22 @@ export function AllTemplatesChip({
       aria-label={t('All Templates')}
       sx={{
         flexShrink: 0,
-        // Match the collection chips' footprint (enlarged on desktop) so the
-        // row stays uniform.
+        // Match the collection chips' footprint per breakpoint: original
+        // content-width compact chip on mobile, full 400px (centered) on
+        // desktop so the row stays uniform.
         height: { xs: 72, md: 144 },
-        width: { xs: 250, md: 400 },
+        minWidth: { xs: 120, md: 400 },
         px: 2,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        alignItems: { xs: 'flex-start', md: 'center' },
         justifyContent: 'center',
-        textAlign: 'center',
+        textAlign: { xs: 'left', md: 'center' },
         borderRadius: 2,
         border: 1,
-        borderColor: active ? 'primary.main' : 'grey.400',
+        borderColor: active
+          ? 'primary.main'
+          : { xs: 'divider', md: 'grey.400' },
         backgroundColor: 'background.paper',
         outline: isOver ? '2px solid' : 'none',
         outlineColor: 'primary.dark',
