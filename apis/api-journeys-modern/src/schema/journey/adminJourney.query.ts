@@ -12,9 +12,6 @@ builder.queryField('adminJourney', (t) =>
   t.withAuth({ isAuthenticated: true, isAnonymous: true }).prismaField({
     type: JourneyRef,
     nullable: false,
-    override: {
-      from: 'api-journeys'
-    },
     args: {
       id: t.arg({ type: 'ID', required: true }),
       idType: t.arg({ type: IdType, required: false, defaultValue: 'slug' })

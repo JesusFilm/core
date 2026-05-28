@@ -13,7 +13,7 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
-jest.mock('next-i18next', () => ({
+jest.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (str: string) => str
   })
@@ -94,7 +94,7 @@ describe('GuestPreviewScreen', () => {
     )
     expect(
       screen.getByText(
-        'This content contains buttons linking to external sites. Check them and update the links below.'
+        'Preview your changes here. Tap on a card to zoom it in.'
       )
     ).toBeInTheDocument()
   })

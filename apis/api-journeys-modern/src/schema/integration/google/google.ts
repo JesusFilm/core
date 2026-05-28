@@ -9,6 +9,7 @@ export const IntegrationGoogleRef = builder.prismaObject('Integration', {
   shareable: true,
   fields: (t) => ({
     accountEmail: t.exposeString('accountEmail', { nullable: true }),
+    userId: t.exposeID('userId', { nullable: true }),
     team: t.relation('team', { nullable: false }),
     user: t.field({
       type: UserRef,

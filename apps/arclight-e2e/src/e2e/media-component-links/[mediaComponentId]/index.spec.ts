@@ -94,7 +94,7 @@ test.describe('single media component link', () => {
       }
     })
 
-    expect(data.linkedMediaComponentIds.containedBy.length).toBe(1)
+    expect(data.linkedMediaComponentIds.containedBy).toHaveLength(1)
     expect(data.linkedMediaComponentIds.contains).toBeUndefined()
   })
 
@@ -133,7 +133,7 @@ test.describe('single media component link', () => {
       }
     })
 
-    expect(data.linkedMediaComponentIds.contains.length).toBe(0)
+    expect(data.linkedMediaComponentIds.contains).toHaveLength(0)
     expect(data.linkedMediaComponentIds.containedBy.length).toBeGreaterThan(0)
   })
 

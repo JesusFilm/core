@@ -1,16 +1,17 @@
 import { render, screen } from '@testing-library/react'
 import { usePathname } from 'next/navigation'
+import { type Mock } from 'vitest'
 
 import { LockedVideoView } from './LockedVideo'
 
-jest.mock('next/navigation', () => ({
-  usePathname: jest.fn()
+vi.mock('next/navigation', () => ({
+  usePathname: vi.fn()
 }))
 
 describe('LockedVideoView', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-    ;(usePathname as jest.Mock).mockReturnValue('/videos/123')
+    vi.clearAllMocks()
+    ;(usePathname as Mock).mockReturnValue('/videos/123')
   })
 
   it('should render correctly', () => {

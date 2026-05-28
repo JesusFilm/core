@@ -6,7 +6,7 @@ describe('Revalidate API', () => {
   const OLD_ENV = process.env
 
   beforeEach(() => {
-    jest.resetModules()
+    vi.resetModules()
     process.env = { ...OLD_ENV }
     process.env.REVALIDATE_SECRET = 'test-secret'
   })
@@ -22,8 +22,8 @@ describe('Revalidate API', () => {
     } as unknown as NextApiRequest
 
     const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn()
     } as unknown as NextApiResponse
 
     await handler(req, res)
@@ -39,8 +39,8 @@ describe('Revalidate API', () => {
     } as unknown as NextApiRequest
 
     const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn()
     } as unknown as NextApiResponse
 
     await handler(req, res)
@@ -57,8 +57,8 @@ describe('Revalidate API', () => {
     } as unknown as NextApiRequest
 
     const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn()
     } as unknown as NextApiResponse
 
     await handler(req, res)
@@ -75,8 +75,8 @@ describe('Revalidate API', () => {
     } as unknown as NextApiRequest
 
     const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn()
     } as unknown as NextApiResponse
 
     await handler(req, res)
@@ -93,10 +93,10 @@ describe('Revalidate API', () => {
       body: { url }
     } as unknown as NextApiRequest
 
-    const revalidate = jest.fn().mockResolvedValue(undefined)
+    const revalidate = vi.fn().mockResolvedValue(undefined)
     const res = {
       revalidate,
-      json: jest.fn()
+      json: vi.fn()
     } as unknown as NextApiResponse
 
     await handler(req, res)
@@ -114,11 +114,11 @@ describe('Revalidate API', () => {
       body: { url }
     } as unknown as NextApiRequest
 
-    const revalidate = jest.fn().mockRejectedValue(new Error(errorMessage))
+    const revalidate = vi.fn().mockRejectedValue(new Error(errorMessage))
     const res = {
       revalidate,
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn()
     } as unknown as NextApiResponse
 
     await handler(req, res)
@@ -132,7 +132,9 @@ describe('Revalidate API', () => {
   })
 
   it('should log the url being revalidated', async () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation()
+    const consoleSpy = vi
+      .spyOn(console, 'log')
+      .mockImplementation(() => undefined)
     const url = '/watch/some-video.html/english.html'
     const req = {
       method: 'POST',
@@ -140,10 +142,10 @@ describe('Revalidate API', () => {
       body: { url }
     } as unknown as NextApiRequest
 
-    const revalidate = jest.fn().mockResolvedValue(undefined)
+    const revalidate = vi.fn().mockResolvedValue(undefined)
     const res = {
       revalidate,
-      json: jest.fn()
+      json: vi.fn()
     } as unknown as NextApiResponse
 
     await handler(req, res)

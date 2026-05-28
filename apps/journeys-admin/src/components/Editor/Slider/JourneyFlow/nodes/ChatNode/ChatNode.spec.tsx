@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { NodeProps, ReactFlowProvider } from 'reactflow'
+import { NodeProps, ReactFlowProvider } from '@xyflow/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -87,7 +87,9 @@ describe('ChatNode', () => {
               settings: null,
               eventLabel: null
             }
-          ]
+          ],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     }

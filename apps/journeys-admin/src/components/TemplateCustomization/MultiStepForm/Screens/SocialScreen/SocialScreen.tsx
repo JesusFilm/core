@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
@@ -40,16 +40,15 @@ export function SocialScreen({ handleNext }: SocialScreenProps): ReactElement {
     >
       <Stack
         alignItems="center"
-        gap={6}
+        gap={5}
         data-testid="SocialShareAppearance"
         sx={{
-          width: '100%',
-          py: 5
+          width: '100%'
         }}
       >
-        <SocialScreenSocialImage />
-        <TitleEdit />
-        <DescriptionEdit />
+        <SocialScreenSocialImage hideAdornments />
+        <TitleEdit hideHelperText />
+        <DescriptionEdit hideHelperText />
       </Stack>
     </ScreenWrapper>
   )

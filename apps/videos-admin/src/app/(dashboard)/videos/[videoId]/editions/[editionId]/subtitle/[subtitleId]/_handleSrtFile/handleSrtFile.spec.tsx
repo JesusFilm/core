@@ -8,7 +8,7 @@ describe('handleSrtFile', () => {
   const mockUploadUrl = 'https://example.com/upload'
   const mockPublicUrl = 'https://example.com/public/test.srt'
 
-  const mockCreateR2Asset = jest.fn().mockResolvedValue({
+  const mockCreateR2Asset = vi.fn().mockResolvedValue({
     data: {
       cloudflareR2Create: {
         uploadUrl: mockUploadUrl,
@@ -17,10 +17,10 @@ describe('handleSrtFile', () => {
     }
   })
 
-  const mockUploadAssetFile = jest.fn().mockResolvedValue(undefined)
+  const mockUploadAssetFile = vi.fn().mockResolvedValue(undefined)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should upload an SRT file and return the public URL, upload URL, and r2AssetId', async () => {

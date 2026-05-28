@@ -10,6 +10,7 @@ import {
   ReactElement,
   useEffect,
   useReducer,
+  useRef,
   useState
 } from 'react'
 
@@ -339,22 +340,32 @@ export function VideoControls({
     player.userActive(true)
   }
 
+  // Held in a ref so a pending single-click timeout survives re-renders and,
+  // crucially, can be cleared on unmount — otherwise the deferred play/pause
+  // fires against a torn-down player.
+  const clickTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
+
+  useEffect(() => {
+    return () => {
+      if (clickTimeoutRef.current != null) clearTimeout(clickTimeoutRef.current)
+    }
+  }, [])
+
   function getClickHandler(
     onClick: MouseEventHandler,
     onDblClick: MouseEventHandler,
     delay = 250
   ): MouseEventHandler {
-    let timeoutID: NodeJS.Timeout | undefined
     return (event) => {
       event.stopPropagation()
-      if (timeoutID == null) {
-        timeoutID = setTimeout(() => {
+      if (clickTimeoutRef.current == null) {
+        clickTimeoutRef.current = setTimeout(() => {
           onClick(event)
-          timeoutID = undefined
+          clickTimeoutRef.current = undefined
         }, delay)
       } else {
-        clearTimeout(timeoutID)
-        timeoutID = undefined
+        clearTimeout(clickTimeoutRef.current)
+        clickTimeoutRef.current = undefined
         onDblClick(event)
       }
     }

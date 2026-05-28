@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import {
+  getJourneyTemplateLanguageIdsMock,
   getJourneysWithoutLanguageIdsMock,
   getLanguagesMock,
   getTagsMock
@@ -35,7 +36,12 @@ export const Default = {
   ...Template,
   parameters: {
     apolloClient: {
-      mocks: [getJourneysWithoutLanguageIdsMock, getLanguagesMock, getTagsMock]
+      mocks: [
+        getJourneyTemplateLanguageIdsMock,
+        getJourneysWithoutLanguageIdsMock,
+        getLanguagesMock,
+        getTagsMock
+      ]
     }
   }
 }
@@ -45,6 +51,7 @@ export const Loading = {
   parameters: {
     apolloClient: {
       mocks: [
+        { ...getJourneyTemplateLanguageIdsMock, delay: 100000000000000 },
         { ...getJourneysWithoutLanguageIdsMock, delay: 100000000000000 },
         { ...getLanguagesMock, delay: 100000000000000 },
         { ...getTagsMock, delay: 100000000000000 }

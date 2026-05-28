@@ -3,7 +3,8 @@ import { timeout } from 'hono/timeout'
 
 import { VideoLabel, prisma as mediaPrisma } from '@core/prisma/media/client'
 
-import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
+import { generateCacheKey } from '../../../../lib/cache'
+import { getWithStaleCacheForRequest } from '../../../../lib/cacheBypass'
 import {
   getLanguageDetailsFromTags,
   getPreferredContent,
@@ -153,7 +154,7 @@ mediaComponents.openapi(route, async (c) => {
     ...metadataLanguageTags.slice(0, 20)
   ])
 
-  const response = await getWithStaleCache(cacheKey, async () => {
+  const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
     const metadataLanguages =
       await getLanguageDetailsFromTags(metadataLanguageTags)
     const metadataLanguageIds = metadataLanguages.map((lang) => lang.id)

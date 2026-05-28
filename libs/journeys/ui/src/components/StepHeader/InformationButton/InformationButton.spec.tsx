@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import {
   JourneyStatus,
@@ -12,12 +13,12 @@ import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__genera
 
 import { InformationButton } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 mockedUseRouter.mockReturnValue({
   query: {}
@@ -90,7 +91,8 @@ describe('InformationButton', () => {
     fromTemplateId: null,
     socialNodeX: null,
     socialNodeY: null,
-    customizable: null
+    customizable: null,
+    showAssistant: null
   }
 
   it('should have report contact button', () => {

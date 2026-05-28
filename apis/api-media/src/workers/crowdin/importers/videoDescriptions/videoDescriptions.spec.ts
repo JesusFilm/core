@@ -1,4 +1,5 @@
 import type { Logger } from 'pino'
+import { type Mocked, vi } from 'vitest'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processFile } from '../../importer'
@@ -7,8 +8,8 @@ import { getFullVideoId } from '../videoTitles/videoTitles'
 
 import { importVideoDescriptions } from './videoDescriptions'
 
-jest.mock('../../importer')
-jest.mock('../videoTitles/videoTitles')
+vi.mock('../../importer')
+vi.mock('../videoTitles/videoTitles')
 
 const testTranslation: ProcessedTranslation = {
   identifier: 'VIDEO123',
@@ -19,23 +20,21 @@ const testTranslation: ProcessedTranslation = {
 
 describe('importVideoDescriptions', () => {
   const mockLogger = {
-    info: jest.fn(),
-    error: jest.fn(),
-    debug: jest.fn(),
-    child: jest.fn().mockReturnThis()
-  } as unknown as Partial<Logger> as jest.Mocked<Logger>
+    info: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+    child: vi.fn().mockReturnThis()
+  } as unknown as Partial<Logger> as Mocked<Logger>
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    jest.mocked(getFullVideoId).mockReturnValue('FULL_VIDEO123')
+    vi.clearAllMocks()
+    vi.mocked(getFullVideoId).mockReturnValue('FULL_VIDEO123')
   })
 
   it('should import video descriptions successfully', async () => {
-    jest
-      .spyOn({ processFile }, 'processFile')
-      .mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+      await callback(testTranslation)
+    })
 
     await importVideoDescriptions(mockLogger)
 
@@ -62,13 +61,11 @@ describe('importVideoDescriptions', () => {
   })
 
   it('should handle invalid video IDs', async () => {
-    jest.mocked(getFullVideoId).mockReturnValue(undefined)
+    vi.mocked(getFullVideoId).mockReturnValue(undefined)
 
-    jest
-      .spyOn({ processFile }, 'processFile')
-      .mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+      await callback(testTranslation)
+    })
 
     await importVideoDescriptions(mockLogger)
 
@@ -76,11 +73,9 @@ describe('importVideoDescriptions', () => {
   })
 
   it('should handle database errors', async () => {
-    jest
-      .spyOn({ processFile }, 'processFile')
-      .mockImplementation(async (_, callback) => {
-        await callback(testTranslation)
-      })
+    vi.mocked(processFile).mockImplementation(async (_, callback) => {
+      await callback(testTranslation)
+    })
 
     prismaMock.videoDescription.upsert.mockRejectedValueOnce(
       new Error('Database error')

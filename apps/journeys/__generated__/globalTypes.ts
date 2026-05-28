@@ -297,6 +297,12 @@ export interface DateTimeFilter {
   lte?: any | null;
 }
 
+export interface JourneyCustomizationDescriptionTranslateInput {
+  journeyId: string;
+  sourceLanguageName: string;
+  targetLanguageName: string;
+}
+
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
   journeyFlowBackButtonClicked?: boolean | null;
@@ -443,9 +449,9 @@ export interface VideoProgressEventCreateInput {
   blockId: string;
   stepId?: string | null;
   position?: number | null;
-  progress: number;
   label?: string | null;
   value?: VideoBlockSource | null;
+  progress: number;
 }
 
 export interface VideoStartEventCreateInput {

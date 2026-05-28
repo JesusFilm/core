@@ -181,7 +181,9 @@ describe('useBlockDeleteCommand', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: [multiselect]
+      children: [multiselect],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const step: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
@@ -315,7 +317,9 @@ describe('useBlockDeleteCommand', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: [multiselect]
+      children: [multiselect],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const step: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',

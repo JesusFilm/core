@@ -80,6 +80,8 @@ type CheckVideoVariantsInAlgoliaResult {
 
 type CloudflareImage {
   id: ID!
+  updatedAt: DateTime!
+  videoId: ID
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -91,6 +93,7 @@ type CloudflareImage {
   thumbnail: String
   videoStill: String
   blurhash: String
+  isAi: Boolean
 }
 
 type CloudflareR2 {
@@ -712,14 +715,17 @@ input PlaylistUpdateInput {
 }
 
 type Query {
-  getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
+  getMyCloudflareImages(offset: Int, limit: Int, isAi: Boolean): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
+  videoImages(where: VideoImagesFilter, offset: Int, limit: Int): [CloudflareImage!]!
+  videoImagesCount(where: VideoImagesFilter): Int!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
   bibleBooks(where: BibleBooksFilter): [BibleBook!]!
   bibleCitations(videoId: ID): [BibleCitation!]!
   bibleCitation(id: ID!): BibleCitation!
-  keywords(where: KeywordsFilter): [Keyword!]!
+  keywords(where: KeywordsFilter, offset: Int, limit: Int): [Keyword!]!
+  keywordsCount(where: KeywordsFilter): Int!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
@@ -762,6 +768,10 @@ type Query {
     last: Int
   ): QueryShortLinksConnection!
   userMediaProfile: UserMediaProfile
+  videoSubtitles(where: VideoSubtitlesFilter, offset: Int, limit: Int): [VideoSubtitle!]!
+  videoSubtitlesCount(where: VideoSubtitlesFilter): Int!
+  videoVariantDownloads(where: VideoVariantDownloadsFilter, offset: Int, limit: Int): [VideoVariantDownload!]!
+  videoVariantDownloadsCount(where: VideoVariantDownloadsFilter): Int!
   videoVariant(id: ID!): VideoVariant!
   videoVariants(input: VideoVariantFilter, offset: Int, limit: Int): [VideoVariant!]!
   videoVariantsCount(input: VideoVariantFilter): Int!
@@ -773,8 +783,10 @@ type Query {
   videosCount(where: VideosFilter): Int!
   checkVideoInAlgolia(videoId: ID!): CheckVideoInAlgoliaResult!
   checkVideoVariantsInAlgolia(videoId: ID!): CheckVideoVariantsInAlgoliaResult!
-  videoOrigins: [VideoOrigin!]!
-  videoEditions: [VideoEdition!]!
+  videoOrigins(where: VideoOriginsFilter, offset: Int, limit: Int): [VideoOrigin!]!
+  videoOriginsCount(where: VideoOriginsFilter): Int!
+  videoEditions(where: VideoEditionsFilter, offset: Int, limit: Int): [VideoEdition!]!
+  videoEditionsCount(where: VideoEditionsFilter): Int!
   videoEdition(id: ID!): VideoEdition
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
@@ -1184,11 +1196,21 @@ input VideoEditionUpdateInput {
   name: String
 }
 
+input VideoEditionsFilter {
+  updatedAt: DateTimeFilter
+}
+
 type VideoImageAlt {
   id: ID!
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+input VideoImagesFilter {
+  updatedAt: DateTimeFilter
+  videoId: ID
+  aspectRatio: ImageAspectRatio
 }
 
 enum VideoLabel {
@@ -1204,8 +1226,13 @@ enum VideoLabel {
 
 type VideoOrigin {
   id: ID!
+  updatedAt: DateTime!
   name: String!
   description: String
+}
+
+input VideoOriginsFilter {
+  updatedAt: DateTimeFilter
 }
 
 type VideoPublishChildrenResult {
@@ -1277,6 +1304,8 @@ input VideoStudyQuestionUpdateInput {
 
 type VideoSubtitle {
   id: ID!
+  updatedAt: DateTime!
+  videoId: ID!
   languageId: ID!
   primary: Boolean!
   edition: String!
@@ -1324,6 +1353,14 @@ input VideoSubtitleUpdateInput {
   srtVersion: Int
   primary: Boolean
   languageId: String
+}
+
+input VideoSubtitlesFilter {
+  updatedAt: DateTimeFilter
+  videoId: ID
+  languageId: ID
+  edition: String
+  primary: Boolean
 }
 
 type VideoTitle {
@@ -1413,6 +1450,8 @@ input VideoVariantCreateInput {
 
 type VideoVariantDownload {
   id: ID!
+  updatedAt: DateTime!
+  videoVariantId: ID
 
   """master video file"""
   asset: CloudflareR2
@@ -1464,6 +1503,12 @@ input VideoVariantDownloadUpdateInput {
   bitrate: Int
   url: String
   version: Int
+}
+
+input VideoVariantDownloadsFilter {
+  updatedAt: DateTimeFilter
+  videoVariantId: ID
+  quality: VideoVariantDownloadQuality
 }
 
 input VideoVariantFilter {

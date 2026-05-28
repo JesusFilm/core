@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentPropsWithoutRef } from 'react'
 import { expect, screen, userEvent, waitFor } from 'storybook/test'
 
@@ -72,7 +72,8 @@ const journey: Journey = {
   fromTemplateId: null,
   socialNodeX: null,
   socialNodeY: null,
-  customizable: null
+  customizable: null,
+  showAssistant: null
 }
 
 type Story = StoryObj<ComponentPropsWithoutRef<typeof InformationButton>>

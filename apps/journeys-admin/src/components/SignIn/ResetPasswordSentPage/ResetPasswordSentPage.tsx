@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { PageProps } from '../types'
@@ -26,9 +26,8 @@ export function ResetPasswordSentPage({
           </Typography>
         </Stack>
         <Button
-          variant="contained"
-          size="large"
-          color="secondary"
+          variant="blockContained"
+          color="solid"
           type="submit"
           fullWidth
           onClick={() => setActivePage?.('home')}

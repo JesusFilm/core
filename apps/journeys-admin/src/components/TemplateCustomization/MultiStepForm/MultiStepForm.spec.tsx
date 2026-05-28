@@ -979,21 +979,29 @@ describe('MultiStepForm', () => {
       })
 
       it('should redirect to first screen when URL has screen not in journey flow', async () => {
-        const journeyWithNoCapabilities = {
+        const journeyWithLinksOnly = {
           ...journey,
           journeyCustomizationDescription: null,
           journeyCustomizationFields: [],
-          chatButtons: [],
+          chatButtons: [
+            {
+              __typename: 'ChatButton',
+              id: 'cb1',
+              link: 'https://wa.me/123',
+              platform: 'whatsApp',
+              customizable: true
+            }
+          ],
           blocks: []
         } as unknown as Journey
 
-        const journeyId = journeyWithNoCapabilities.id
+        const journeyId = journeyWithLinksOnly.id
         setRouterQuery({ journeyId, screen: 'text' }, { isReady: true })
 
         render(
           <FlagsProvider flags={defaultFlags}>
             <SnackbarProvider>
-              <JourneyProvider value={{ journey: journeyWithNoCapabilities }}>
+              <JourneyProvider value={{ journey: journeyWithLinksOnly }}>
                 <MultiStepForm />
               </JourneyProvider>
             </SnackbarProvider>
@@ -1129,21 +1137,28 @@ describe('MultiStepForm', () => {
           }
         })
 
-        const journeyWithNoCapabilities = {
+        const journeyWithTextCapabilities = {
           ...journey,
-          journeyCustomizationDescription: null,
-          journeyCustomizationFields: [],
+          journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
+          journeyCustomizationFields: [
+            {
+              id: '1',
+              key: 'firstName',
+              value: 'John',
+              __typename: 'JourneyCustomizationField'
+            }
+          ],
           chatButtons: [],
           blocks: []
         } as unknown as Journey
 
-        const journeyId = journeyWithNoCapabilities.id
+        const journeyId = journeyWithTextCapabilities.id
         setRouterQuery({ journeyId, screen: 'social' }, { isReady: true })
 
         render(
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <SnackbarProvider>
-              <JourneyProvider value={{ journey: journeyWithNoCapabilities }}>
+              <JourneyProvider value={{ journey: journeyWithTextCapabilities }}>
                 <MultiStepForm />
               </JourneyProvider>
             </SnackbarProvider>

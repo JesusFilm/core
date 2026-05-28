@@ -79,7 +79,7 @@ describe('Video', () => {
     )
 
     expect(getByText('Video Source')).toBeInTheDocument()
-    expect(getByText('FallingPlates')).toBeInTheDocument()
+    expect(getByText('Jesus Film Library')).toBeInTheDocument()
   })
 
   it('shows event label when template', () => {

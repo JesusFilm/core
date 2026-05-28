@@ -48,24 +48,29 @@ ComponentName/
 
 Page-level wrapping order (from `_app.tsx` and `JourneyPageWrapper`):
 
-1. `AppCacheProvider` — MUI Emotion cache for SSR
-2. `ApolloProvider` — GraphQL client
-3. `SnackbarProvider` — toast notifications
-4. `PlausibleProvider` — analytics (per journey)
-5. `JourneyProvider` — journey data context (`useJourney()`)
-6. `ThemeProvider` — per-step theming with custom fonts
+1. `FlagsProvider` — LaunchDarkly feature flags (outermost)
+2. `AppCacheProvider` — MUI Emotion cache for SSR
+3. `ApolloProvider` — GraphQL client
+4. `SnackbarProvider` — toast notifications
+5. `PlausibleProvider` — analytics (per journey)
+6. `JourneyProvider` — journey data context (`useJourney()`)
+7. `ThemeProvider` — per-step theming with custom fonts
 
 Tests must wrap components in the required providers:
 
 ```tsx
-<MockedProvider mocks={[...]}>
-  <SnackbarProvider>
-    <JourneyProvider value={{ journey }}>
-      <Component />
-    </JourneyProvider>
-  </SnackbarProvider>
-</MockedProvider>
+<FlagsProvider flags={{ apologistChat: true }}>
+  <MockedProvider mocks={[...]}>
+    <SnackbarProvider>
+      <JourneyProvider value={{ journey }}>
+        <Component />
+      </JourneyProvider>
+    </SnackbarProvider>
+  </MockedProvider>
+</FlagsProvider>
 ```
+
+Note: `FlagsProvider` is optional in tests unless the component under test uses `useFlags()`. Components that consume flags should be wrapped to ensure flag values are provided.
 
 ## Data model — blocks and trees
 
@@ -112,12 +117,12 @@ Pages Router with static generation:
 
 ## Testing
 
-- Framework: Jest + `@testing-library/react`
+- Framework: Vitest + `@testing-library/react`
 - Setup: `setupTests.ts` configures `asyncUtilTimeout: 2500`, mocks `next/router`
-- CI retries: 3 attempts
+- CI retries: 3 attempts (via `retry` in vitest config)
 - Required providers in tests: `MockedProvider`, `SnackbarProvider`, `JourneyProvider` (see provider stack above)
 - Mock data: `src/libs/testData/storyData.ts` provides `basic`, `imageBlocks`, `videoBlocks` fixtures
-- Mock patterns: Apollo `MockedProvider` with explicit request/result objects, `jest.fn()` for UUID generation
+- Mock patterns: Apollo `MockedProvider` with explicit request/result objects, `vi.fn()` for UUID generation
 
 ## Quality gates
 

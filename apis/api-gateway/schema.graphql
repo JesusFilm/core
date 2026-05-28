@@ -115,159 +115,9 @@ type Error implements BaseError @join__type(graph: API_ANALYTICS)  @join__type(g
 type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
   siteCreate(input: SiteCreateInput!) : MutationSiteCreateResult! @join__field(graph: API_ANALYTICS) 
   """
-  blockDelete returns the updated sibling blocks on successful delete
-  """
-  blockDelete(
-    id: ID!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-    """
-    drop this parameter after merging teams
-    """
-    parentBlockId: ID
-  ): [Block!]! @join__field(graph: API_JOURNEYS) 
-  """
-  blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
-  """
-  blockDuplicate(
-    id: ID!
-    """
-    parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
-    """
-    parentOrder: Int
-    """
-    idMap is used to set custom ids for the duplicated block and it's descendants.
-    """
-    idMap: [BlockDuplicateIdMap!]
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-    """
-    x is used to position a step block block horizontally in the journey flow diagram on
-    the editor.
-    """
-    x: Int
-    """
-    y is used to position a step block block vertically in the journey flow diagram on
-    the editor.
-    """
-    y: Int
-  ): [Block!]! @join__field(graph: API_JOURNEYS) 
-  blockOrderUpdate(
-    id: ID!
-    parentOrder: Int!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): [Block!]! @join__field(graph: API_JOURNEYS) 
-  """
   blockRestore is used for redo/undo
   """
   blockRestore(id: ID!) : [Block!]! @join__field(graph: API_JOURNEYS) 
-  cardBlockCreate(input: CardBlockCreateInput!) : CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  cardBlockUpdate(
-    id: ID!
-    input: CardBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  iconBlockCreate(input: IconBlockCreateInput!) : IconBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  iconBlockUpdate(
-    id: ID!
-    input: IconBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): IconBlock! @join__field(graph: API_JOURNEYS) 
-  imageBlockCreate(input: ImageBlockCreateInput!) : ImageBlock! @join__field(graph: API_JOURNEYS) 
-  imageBlockUpdate(
-    id: ID!
-    input: ImageBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): ImageBlock! @join__field(graph: API_JOURNEYS) 
-  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!) : RadioOptionBlock! @join__field(graph: API_JOURNEYS) 
-  radioOptionBlockUpdate(
-    id: ID!
-    input: RadioOptionBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): RadioOptionBlock! @join__field(graph: API_JOURNEYS) 
-  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS) 
-  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS) 
-  signUpBlockCreate(input: SignUpBlockCreateInput!) : SignUpBlock! @join__field(graph: API_JOURNEYS) 
-  signUpBlockUpdate(
-    id: ID!
-    input: SignUpBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): SignUpBlock @join__field(graph: API_JOURNEYS) 
-  spacerBlockCreate(input: SpacerBlockCreateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS) 
-  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS) 
-  stepBlockCreate(input: StepBlockCreateInput!) : StepBlock! @join__field(graph: API_JOURNEYS) 
-  stepBlockUpdate(
-    id: ID!
-    input: StepBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): StepBlock! @join__field(graph: API_JOURNEYS) 
-  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!) : [StepBlock!]! @join__field(graph: API_JOURNEYS) 
-  textResponseBlockCreate(input: TextResponseBlockCreateInput!) : TextResponseBlock! @join__field(graph: API_JOURNEYS) 
-  textResponseBlockUpdate(
-    id: ID!
-    input: TextResponseBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): TextResponseBlock @join__field(graph: API_JOURNEYS) 
-  typographyBlockCreate(input: TypographyBlockCreateInput!) : TypographyBlock! @join__field(graph: API_JOURNEYS) 
-  typographyBlockUpdate(
-    id: ID!
-    input: TypographyBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): TypographyBlock! @join__field(graph: API_JOURNEYS) 
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput) : ChatButton! @join__field(graph: API_JOURNEYS) 
-  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!) : ChatButton! @join__field(graph: API_JOURNEYS) 
-  chatButtonRemove(id: ID!) : ChatButton! @join__field(graph: API_JOURNEYS) 
-  customDomainCreate(input: CustomDomainCreateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS) 
-  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS) 
-  customDomainDelete(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS) 
-  customDomainCheck(id: ID!) : CustomDomainCheck! @join__field(graph: API_JOURNEYS) 
-  """
-  Creates a JourneyViewEvent, returns null if attempting to create another
-  JourneyViewEvent with the same userId, journeyId, and within the same 24hr
-  period of the previous JourneyViewEvent
-  """
-  journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent @join__field(graph: API_JOURNEYS) 
-  stepViewEventCreate(input: StepViewEventCreateInput!) : StepViewEvent! @join__field(graph: API_JOURNEYS) 
-  stepNextEventCreate(input: StepNextEventCreateInput!) : StepNextEvent! @join__field(graph: API_JOURNEYS) 
-  stepPreviousEventCreate(input: StepPreviousEventCreateInput!) : StepPreviousEvent! @join__field(graph: API_JOURNEYS) 
-  videoStartEventCreate(input: VideoStartEventCreateInput!) : VideoStartEvent! @join__field(graph: API_JOURNEYS) 
-  videoPlayEventCreate(input: VideoPlayEventCreateInput!) : VideoPlayEvent! @join__field(graph: API_JOURNEYS) 
-  videoPauseEventCreate(input: VideoPauseEventCreateInput!) : VideoPauseEvent! @join__field(graph: API_JOURNEYS) 
-  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!) : VideoCompleteEvent! @join__field(graph: API_JOURNEYS) 
-  videoExpandEventCreate(input: VideoExpandEventCreateInput!) : VideoExpandEvent! @join__field(graph: API_JOURNEYS) 
-  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!) : VideoCollapseEvent! @join__field(graph: API_JOURNEYS) 
-  videoProgressEventCreate(input: VideoProgressEventCreateInput!) : VideoProgressEvent! @join__field(graph: API_JOURNEYS) 
   hostCreate(teamId: ID!, input: HostCreateInput!) : Host! @join__field(graph: API_JOURNEYS) 
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput) : Host! @join__field(graph: API_JOURNEYS) 
   hostDelete(id: ID!, teamId: ID!) : Host! @join__field(graph: API_JOURNEYS) 
@@ -351,7 +201,37 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS) 
-  buttonBlockCreate(input: ButtonBlockCreateInput!) : ButtonBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockDelete(
+    id: ID!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+    """
+    drop this parameter after merging teams
+    """
+    parentBlockId: ID
+  ): [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockDuplicate(
+    id: ID!
+    parentOrder: Int
+    idMap: [BlockDuplicateIdMap!]
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+    x: Int
+    y: Int
+  ): [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockOrderUpdate(
+    id: ID!
+    parentOrder: Int!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  buttonBlockCreate(input: ButtonBlockCreateInput!) : ButtonBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   buttonBlockUpdate(
     id: ID!
     input: ButtonBlockUpdateInput!
@@ -359,7 +239,34 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): ButtonBlock @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): ButtonBlock @join__field(graph: API_JOURNEYS_MODERN) 
+  cardBlockCreate(input: CardBlockCreateInput!) : CardBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): CardBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  iconBlockCreate(input: IconBlockCreateInput!) : IconBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  iconBlockUpdate(
+    id: ID!
+    input: IconBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): IconBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  imageBlockCreate(input: ImageBlockCreateInput!) : ImageBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  imageBlockUpdate(
+    id: ID!
+    input: ImageBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): ImageBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   multiselectBlockCreate(input: MultiselectBlockCreateInput!) : MultiselectBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   multiselectBlockUpdate(
     id: ID!
@@ -378,6 +285,56 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     journeyId: ID
   ): MultiselectOptionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!) : RadioOptionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  radioOptionBlockUpdate(
+    id: ID!
+    input: RadioOptionBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): RadioOptionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  signUpBlockCreate(input: SignUpBlockCreateInput!) : SignUpBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  signUpBlockUpdate(
+    id: ID!
+    input: SignUpBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): SignUpBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  spacerBlockCreate(input: SpacerBlockCreateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  stepBlockCreate(input: StepBlockCreateInput!) : StepBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!) : [StepBlock!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  stepBlockUpdate(
+    id: ID!
+    input: StepBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): StepBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  textResponseBlockCreate(input: TextResponseBlockCreateInput!) : TextResponseBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  textResponseBlockUpdate(
+    id: ID!
+    input: TextResponseBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): TextResponseBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  typographyBlockCreate(input: TypographyBlockCreateInput!) : TypographyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  typographyBlockUpdate(
+    id: ID!
+    input: TypographyBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): TypographyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   videoBlockCreate(input: VideoBlockCreateInput!) : VideoBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   videoBlockUpdate(
     id: ID!
@@ -394,12 +351,30 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID) : NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN) 
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID) : PhoneAction! @join__field(graph: API_JOURNEYS_MODERN) 
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID) : ChatAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN) 
+  chatButtonRemove(id: ID!) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN) 
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomainCheck(id: ID!) : CustomDomainCheck! @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomainDelete(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomainCreate(input: CustomDomainCreateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
   buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  stepViewEventCreate(input: StepViewEventCreateInput!) : StepViewEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  stepNextEventCreate(input: StepNextEventCreateInput!) : StepNextEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  stepPreviousEventCreate(input: StepPreviousEventCreateInput!) : StepPreviousEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!) : RadioQuestionSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!) : MultiselectSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!) : SignUpSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!) : TextResponseSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  videoStartEventCreate(input: VideoStartEventCreateInput!) : VideoStartEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!) : VideoPlayEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!) : VideoPauseEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!) : VideoCompleteEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  videoExpandEventCreate(input: VideoExpandEventCreateInput!) : VideoExpandEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!) : VideoCollapseEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  videoProgressEventCreate(input: VideoProgressEventCreateInput!) : VideoProgressEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
   googleSheetsSyncDelete(id: ID!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -412,9 +387,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   integrationDelete(id: ID!) : Integration! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyTransferFromAnonymous(journeyId: ID!, teamId: ID) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyCustomizationDescriptionTranslate(input: JourneyCustomizationDescriptionTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
     filter: JourneyEventsFilter
@@ -426,6 +402,129 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     timezone: String
   ): JourneyVisitorGoogleSheetExportResult! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Create a new TemplateGalleryPage in `draft` status. The server generates a unique slug from `input.title`. Initial `journeyIds` are attached as templates in the order given (cross-team and non-template ids are silently filtered out).
+  
+  Auth: caller must be authenticated and a member of `input.teamId`.
+  
+  Errors:
+  - BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.
+  - BAD_USER_INPUT (field: `slug`): the title normalizes to empty or to a reserved word.
+  """
+  templateGalleryPageCreate(input: TemplateGalleryPageCreateInput!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced — existing assignments are deleted and recreated in the given order. Single-membership is enforced: if any supplied journey id is currently a member of another TemplateGalleryPage, the call fails before any write. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).
+  
+  Auth: caller must be a member of the page's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the page's team.
+  - BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks — including the concurrent-Update race where two callers pass the same slug and the second one trips the DB unique constraint at commit time.
+  - BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.
+  - CONFLICT (field: `journeyIds`; extension `journeyId` carries the offending id): one of the supplied journeys is already a member of another TemplateGalleryPage.
+  """
+  templateGalleryPageUpdate(
+    """
+    Stable page identifier.
+    """
+    id: ID!
+    input: TemplateGalleryPageUpdateInput!
+  ): TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Transition a `draft` page to `published`, stamping `publishedAt` on the first publish only. Idempotent: calling on an already-published page is a no-op (no state change, no re-stamp of `publishedAt`).
+  
+  Auth: caller must be a member of the page's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve, or the page was deleted between the auth-fetch and the canonical re-read.
+  - FORBIDDEN: caller is not in the page's team.
+  """
+  templateGalleryPagePublish("""
+  Stable page identifier.
+  """
+  id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Transition a `published` page back to `draft`. `publishedAt` is intentionally NOT cleared — the historical first-publish timestamp is preserved across unpublish/republish cycles. Idempotent: calling on an already-draft page is a no-op.
+  
+  Auth: caller must be a member of the page's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve, or the page was deleted between the auth-fetch and the canonical re-read.
+  - FORBIDDEN: caller is not in the page's team.
+  """
+  templateGalleryPageUnpublish("""
+  Stable page identifier.
+  """
+  id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Assign a journey to a TemplateGalleryPage, or unassign it. A journey may belong to at most one page at a time (single-membership invariant).
+  
+  - `pageId` set: move the journey into that page. The new row appends at the end of the target's display order; if the journey was already in another page (cross-page move) it is removed from the source page first. Both pages are renumbered to contiguous orders 0..N-1 after the change. Allowed on both `draft` and `published` pages.
+  - `pageId` null/omitted: unassign — remove the journey from whatever page it is currently in. Returns null (idempotent no-op) if the journey is not in any page.
+  - Same-page-already: idempotent return; no row changes.
+  
+  Auth: caller must be a member of the target page's team (and, on a cross-page move, also of the source page's team).
+  
+  Errors:
+  - NOT_FOUND: target `pageId` does not resolve.
+  - NOT_FOUND (field: `journeyId`): journey does not exist or is soft-deleted.
+  - BAD_USER_INPUT (field: `journeyId`): journey is not flagged as a template.
+  - FORBIDDEN: caller is not in the target page's team.
+  - FORBIDDEN (field: `journeyId`): journey belongs to a different team than the target page.
+  """
+  templateGalleryPageAssignJourney(
+    """
+    The journey to assign or unassign. Must be a non-deleted, template-flagged journey owned by the target page's team (when assigning).
+    """
+    journeyId: ID!
+    """
+    Target page id. Omit or pass `null` to unassign the journey from whatever page currently owns it (returning it to the flat template list). When set, the journey is moved into this page (and removed from any current source page in the same transaction).
+    """
+    pageId: ID
+  ): TemplateGalleryPage @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney`).
+  
+  Idempotent: when the journey is already at the requested display index, the call is a no-op.
+  
+  Auth: caller must be a member of the page's team.
+  
+  Errors:
+  - NOT_FOUND: `pageId` does not resolve.
+  - FORBIDDEN: caller is not in the page's team.
+  - BAD_USER_INPUT (field: `journeyId`): journey is not currently a member of the page.
+  - BAD_USER_INPUT (field: `order`): order is out of range; must satisfy `0 <= order < count(templates in page)`.
+  """
+  templateGalleryPageReorderTemplate(
+    """
+    Target template gallery page id.
+    """
+    pageId: ID!
+    """
+    The journey whose position is being changed. Must already be a member of the page; use `templateGalleryPageAssignJourney` to add a journey first.
+    """
+    journeyId: ID!
+    """
+    0-based display index in the page's CURRENT template list, NOT the stored `order` column value. Range: `0 <= order < count(templates in page)`. The underlying `order` column may be gappy from prior assign/unassign churn; the resolver translates the display index into the correct splice position and renumbers the page contiguously.
+    """
+    order: Int!
+  ): TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Hard-delete a TemplateGalleryPage. Cascades through `TemplateGalleryPageTemplate` join rows automatically; the underlying `Journey` rows are NOT deleted. Returns the deleted page (last canonical view).
+  
+  Auth: caller must be a member of the page's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the page's team.
+  """
+  templateGalleryPageDelete("""
+  Stable page identifier.
+  """
+  id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  userDeleteJourneysCheck(userId: String!) : UserDeleteJourneysCheckResult! @join__field(graph: API_JOURNEYS_MODERN) 
+  userDeleteJourneysConfirm(userId: String!) : UserDeleteJourneysConfirmResult! @join__field(graph: API_JOURNEYS_MODERN) 
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewDelete(languageId: ID!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
@@ -554,6 +653,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
+  userDeleteCheck(idType: UserDeleteIdType!, id: String!) : UserDeleteCheckResult! @join__field(graph: API_USERS) 
 }
 
 type MutationSiteCreateSuccess @join__type(graph: API_ANALYTICS)  {
@@ -698,7 +798,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
-  showAssistant: Boolean
+  showAssistant: Boolean @deprecated(reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624.") 
   journeyCustomizationDescription: String
   journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
@@ -707,247 +807,6 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   Distinct block typenames present on this journey (non-deleted blocks only)
   """
   blockTypenames: [String!]! @join__field(graph: API_JOURNEYS_MODERN) 
-}
-
-type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
-  blocks(where: BlocksFilter) : [Block!]! @join__field(graph: API_JOURNEYS) 
-  block(id: ID!) : Block! @join__field(graph: API_JOURNEYS) 
-  customDomain(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS) 
-  customDomains(teamId: ID!) : [CustomDomain!]! @join__field(graph: API_JOURNEYS) 
-  hosts(teamId: ID!) : [Host!]! @join__field(graph: API_JOURNEYS) 
-  integrations(teamId: ID!) : [Integration!]! @join__field(graph: API_JOURNEYS) 
-  adminJourneysReport(reportType: JourneysReportType!) : PowerBiEmbed @join__field(graph: API_JOURNEYS) 
-  adminJourney(id: ID!, idType: IdType = slug) : Journey! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeys(where: JourneysFilter, options: JourneysQueryOptions) : [Journey!]! @join__field(graph: API_JOURNEYS) 
-  journey(id: ID!, idType: IdType, options: JourneysQueryOptions) : Journey! @join__field(graph: API_JOURNEYS) 
-  journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
-  journeyCollections(teamId: ID!) : [JourneyCollection]! @join__field(graph: API_JOURNEYS) 
-  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS) 
-  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter) : Int! @join__field(graph: API_JOURNEYS) 
-  journeyTheme(journeyId: ID!) : JourneyTheme @join__field(graph: API_JOURNEYS) 
-  """
-  Get a list of Visitor Information by Journey
-  """
-  journeyVisitorsConnection(
-    """
-    Returns the elements in the list that match the specified filter.
-    """
-    filter: JourneyVisitorFilter!
-    """
-    Returns the first n elements from the list.
-    """
-    first: Int
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-    """
-    Specifies the sort field for the list.
-    """
-    sort: JourneyVisitorSort
-  ): JourneyVisitorsConnection! @join__field(graph: API_JOURNEYS) 
-  """
-  Get a JourneyVisitor count by JourneyVisitorFilter
-  """
-  journeyVisitorCount(filter: JourneyVisitorFilter!) : Int! @join__field(graph: API_JOURNEYS) 
-  journeysEmailPreference(email: String!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS) 
-  qrCode(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS) 
-  qrCodes(where: QrCodesFilter!) : [QrCode!]! @join__field(graph: API_JOURNEYS) 
-  teams: [Team!]! @join__field(graph: API_JOURNEYS) 
-  team(id: ID!) : Team! @join__field(graph: API_JOURNEYS) 
-  userInvites(journeyId: ID!) : [UserInvite!] @join__field(graph: API_JOURNEYS) 
-  userTeams(teamId: ID!, where: UserTeamFilterInput) : [UserTeam!]! @join__field(graph: API_JOURNEYS) 
-  userTeam(id: ID!) : UserTeam! @join__field(graph: API_JOURNEYS) 
-  userTeamInvites(teamId: ID!) : [UserTeamInvite!]! @join__field(graph: API_JOURNEYS) 
-  """
-  A list of visitors that are connected with a specific team.
-  """
-  visitorsConnection(
-    """
-    Returns the visitor items related to a specific team.
-    """
-    teamId: String
-    """
-    Returns the first n elements from the list.
-    """
-    first: Int
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-  ): VisitorsConnection! @join__field(graph: API_JOURNEYS) 
-  """
-  Get a single visitor
-  """
-  visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS) 
-  node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
-  nodes(ids: [ID!]!) : [Node]! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
-  googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
-  integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
-  adminJourneys(
-    status: [JourneyStatus!]
-    template: Boolean
-    teamId: ID
-    useLastActiveTeamId: Boolean
-  ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS_MODERN) 
-  """
-  Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
-  """
-  journeyVisitorExport(
-    journeyId: ID!
-    filter: JourneyEventsFilter
-    select: JourneyVisitorExportSelect
-    """
-    IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.
-    """
-    timezone: String
-  ): String @join__field(graph: API_JOURNEYS_MODERN) 
-  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType = slug) : PlausibleStatsAggregateResponse! @join__field(graph: API_JOURNEYS_MODERN) 
-  """
-  This endpoint allows you to break down your stats by some property.
-  If you are familiar with SQL family databases, this endpoint corresponds to
-  running `GROUP BY` on a certain property in your stats, then ordering by the
-  count.
-  Check out the [properties](https://plausible.io/docs/stats-api#properties)
-  section for a reference of all the properties you can use in this query.
-  This endpoint can be used to fetch data for `Top sources`, `Top pages`,
-  `Top countries` and similar reports.
-  Currently, it is only possible to break down on one property at a time.
-  Using a list of properties with one query is not supported. So if you want
-  a breakdown by both `event:page` and `visit:source` for example, you would
-  have to make multiple queries (break down on one property and filter on
-   another) and then manually/programmatically group the results together in one
-   report. This also applies for breaking down by time periods. To get a daily
-   breakdown for every page, you would have to break down on `event:page` and
-   make multiple queries for each date.
-  """
-  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType = slug) : [PlausibleStatsResponse!]! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType = slug) : Int! @join__field(graph: API_JOURNEYS_MODERN) 
-  """
-  This endpoint provides timeseries data over a certain time period.
-  If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
-  """
-  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug) : [PlausibleStatsResponse!]! @join__field(graph: API_JOURNEYS_MODERN) 
-  templateFamilyStatsAggregate(id: ID!, idType: IdType = slug, where: PlausibleStatsAggregateFilter!) : TemplateFamilyStatsAggregateResponse @join__field(graph: API_JOURNEYS_MODERN) 
-  templateFamilyStatsBreakdown(
-    id: ID!
-    idType: IdType = slug
-    where: PlausibleStatsBreakdownFilter!
-    """
-    Filter results to only include the specified events. If null or empty, all events are returned.
-    """
-    events: [PlausibleEvent!]
-    """
-    Filter results to only include the specified status. If null or empty, all statuses are returned.
-    """
-    status: [JourneyStatus!]
-  ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
-  getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
-  languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
-  languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
-  country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
-  countries(term: String, ids: [ID!], where: CountriesFilter) : [Country!]! @join__field(graph: API_LANGUAGES) 
-  getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
-  getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
-  listUnsplashCollectionPhotos(
-    collectionId: String!
-    page: Int
-    perPage: Int
-    orientation: UnsplashPhotoOrientation
-  ): [UnsplashPhoto!]! @join__field(graph: API_MEDIA) 
-  searchUnsplashPhotos(
-    query: String!
-    page: Int
-    perPage: Int
-    orderBy: UnsplashOrderBy
-    collections: [String!]
-    contentFilter: UnsplashContentFilter
-    color: UnsplashColor
-    orientation: UnsplashPhotoOrientation
-  ): UnsplashQueryResponse! @join__field(graph: API_MEDIA) 
-  bibleBooks(where: BibleBooksFilter) : [BibleBook!]! @join__field(graph: API_MEDIA) 
-  bibleCitations(videoId: ID) : [BibleCitation!]! @join__field(graph: API_MEDIA) 
-  bibleCitation(id: ID!) : BibleCitation! @join__field(graph: API_MEDIA) 
-  keywords(where: KeywordsFilter) : [Keyword!]! @join__field(graph: API_MEDIA) 
-  getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
-  getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
-  getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
-  getMyGeneratedMuxSubtitleTrack(muxVideoId: ID!, bcp47: String!, userGenerated: Boolean) : QueryGetMyGeneratedMuxSubtitleTrackResult! @join__field(graph: API_MEDIA) 
-  playlists: [Playlist!] @join__field(graph: API_MEDIA) 
-  playlist(id: ID!, idType: IdType! = databaseId) : QueryPlaylistResult @join__field(graph: API_MEDIA) 
-  """
-  List of short link domains that can be used for short links
-  """
-  shortLinkDomains(
-    """
-    Filter by service (including domains with no services set)
-    """
-    service: Service
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): QueryShortLinkDomainsConnection! @join__field(graph: API_MEDIA) 
-  """
-  Find a short link domain by id
-  """
-  shortLinkDomain(id: String!) : QueryShortLinkDomainResult! @join__field(graph: API_MEDIA) 
-  """
-  find a short link by path and hostname
-  """
-  shortLinkByPath(
-    """
-    short link path not including the leading slash
-    """
-    pathname: String!
-    """
-    the hostname including subdomain, domain, and TLD, but excluding port
-    """
-    hostname: String!
-  ): QueryShortLinkByPathResult! @join__field(graph: API_MEDIA) 
-  """
-  find a short link by id
-  """
-  shortLink(id: String!) : QueryShortLinkResult! @join__field(graph: API_MEDIA) 
-  """
-  find all short links with optional hostname filter
-  """
-  shortLinks(
-    """
-    the hostname including subdomain, domain, and TLD, but excluding port
-    """
-    hostname: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): QueryShortLinksConnection! @join__field(graph: API_MEDIA) 
-  userMediaProfile: UserMediaProfile @join__field(graph: API_MEDIA) 
-  videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
-  videoVariants(input: VideoVariantFilter, offset: Int, limit: Int) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
-  videoVariantsCount(input: VideoVariantFilter) : Int! @join__field(graph: API_MEDIA) 
-  adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
-  adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
-  adminVideosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
-  video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
-  videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
-  videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
-  checkVideoInAlgolia(videoId: ID!) : CheckVideoInAlgoliaResult! @join__field(graph: API_MEDIA) 
-  checkVideoVariantsInAlgolia(videoId: ID!) : CheckVideoVariantsInAlgoliaResult! @join__field(graph: API_MEDIA) 
-  videoOrigins: [VideoOrigin!]! @join__field(graph: API_MEDIA) 
-  videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
-  videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
-  tags: [Tag!]! @join__field(graph: API_MEDIA) 
-  taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
-  youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
-  arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
-  arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
-  me(input: MeInput) : User @join__field(graph: API_USERS) 
-  user(id: ID!) : AuthenticatedUser @join__field(graph: API_USERS) 
-  userByEmail(email: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
 }
 
 type ButtonBlockSettings @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -1014,6 +873,14 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(gr
   themeName from journey
   """
   themeName: ThemeName
+  """
+  When true, this card displays the AI chat button.
+  """
+  showAssistant: Boolean
+  """
+  When true, the chat drawer auto-opens on first visit to this card.
+  """
+  expandChatByDefault: Boolean
 }
 
 type GridContainerBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1320,11 +1187,11 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   subtitleLanguage: Language
   showGeneratedSubtitles: Boolean
   customizable: Boolean
-  mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Publisher notes for template adapters (e.g. trailer, intro).
   """
-  notes: String @join__field(graph: API_JOURNEYS_MODERN) 
+  notes: String
+  mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
 """
@@ -1358,39 +1225,6 @@ type CustomDomain @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURN
   apexName: String!
   journeyCollection: JourneyCollection
   routeAllTeamJourneys: Boolean!
-}
-
-type CustomDomainCheck @join__type(graph: API_JOURNEYS)  {
-  """
-  Is the domain correctly configured in the DNS?
-  If false, A Record and CNAME Record should be added by the user.
-  """
-  configured: Boolean!
-  """
-  Does the domain belong to the team?
-  If false, verification and verificationResponse will be populated.
-  """
-  verified: Boolean!
-  """
-  Verification records to be added to the DNS to confirm ownership.
-  """
-  verification: [CustomDomainVerification!]
-  """
-  Reasoning as to why verification is required.
-  """
-  verificationResponse: CustomDomainVerificationResponse
-}
-
-type CustomDomainVerification @join__type(graph: API_JOURNEYS)  {
-  type: String!
-  domain: String!
-  value: String!
-  reason: String!
-}
-
-type CustomDomainVerificationResponse @join__type(graph: API_JOURNEYS)  {
-  code: String!
-  message: String!
 }
 
 type ButtonClickEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
@@ -1840,11 +1674,298 @@ type Host @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODE
   src2: String
 }
 
+type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
+  hosts(teamId: ID!) : [Host!]! @join__field(graph: API_JOURNEYS) 
+  integrations(teamId: ID!) : [Integration!]! @join__field(graph: API_JOURNEYS) 
+  adminJourneysReport(reportType: JourneysReportType!) : PowerBiEmbed @join__field(graph: API_JOURNEYS) 
+  journeys(where: JourneysFilter, options: JourneysQueryOptions) : [Journey!]! @join__field(graph: API_JOURNEYS) 
+  journey(id: ID!, idType: IdType, options: JourneysQueryOptions) : Journey! @join__field(graph: API_JOURNEYS) 
+  """
+  Returns distinct language IDs from published global templates.
+  Used to dynamically populate the language filter on the templates page.
+  """
+  journeyTemplateLanguageIds: [String!]! @join__field(graph: API_JOURNEYS) 
+  journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
+  journeyCollections(teamId: ID!) : [JourneyCollection]! @join__field(graph: API_JOURNEYS) 
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS) 
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter) : Int! @join__field(graph: API_JOURNEYS) 
+  journeyTheme(journeyId: ID!) : JourneyTheme @join__field(graph: API_JOURNEYS) 
+  """
+  Get a list of Visitor Information by Journey
+  """
+  journeyVisitorsConnection(
+    """
+    Returns the elements in the list that match the specified filter.
+    """
+    filter: JourneyVisitorFilter!
+    """
+    Returns the first n elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+    """
+    Specifies the sort field for the list.
+    """
+    sort: JourneyVisitorSort
+  ): JourneyVisitorsConnection! @join__field(graph: API_JOURNEYS) 
+  """
+  Get a JourneyVisitor count by JourneyVisitorFilter
+  """
+  journeyVisitorCount(filter: JourneyVisitorFilter!) : Int! @join__field(graph: API_JOURNEYS) 
+  journeysEmailPreference(email: String!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS) 
+  qrCode(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS) 
+  qrCodes(where: QrCodesFilter!) : [QrCode!]! @join__field(graph: API_JOURNEYS) 
+  teams: [Team!]! @join__field(graph: API_JOURNEYS) 
+  team(id: ID!) : Team! @join__field(graph: API_JOURNEYS) 
+  userInvites(journeyId: ID!) : [UserInvite!] @join__field(graph: API_JOURNEYS) 
+  userTeams(teamId: ID!, where: UserTeamFilterInput) : [UserTeam!]! @join__field(graph: API_JOURNEYS) 
+  userTeam(id: ID!) : UserTeam! @join__field(graph: API_JOURNEYS) 
+  userTeamInvites(teamId: ID!) : [UserTeamInvite!]! @join__field(graph: API_JOURNEYS) 
+  """
+  A list of visitors that are connected with a specific team.
+  """
+  visitorsConnection(
+    """
+    Returns the visitor items related to a specific team.
+    """
+    teamId: String
+    """
+    Returns the first n elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+  ): VisitorsConnection! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  """
+  Get a single visitor
+  """
+  visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS) 
+  block(id: ID!) : Block! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blocks(where: BlocksFilter) : [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  customDomains(teamId: ID!) : [CustomDomain!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomain(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
+  node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
+  nodes(ids: [ID!]!) : [Node]! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
+  googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
+  adminJourney(id: ID!, idType: IdType = slug) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
+  adminJourneys(
+    status: [JourneyStatus!]
+    template: Boolean
+    teamId: ID
+    useLastActiveTeamId: Boolean
+  ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
+  """
+  journeyVisitorExport(
+    journeyId: ID!
+    filter: JourneyEventsFilter
+    select: JourneyVisitorExportSelect
+    """
+    IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.
+    """
+    timezone: String
+  ): String @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType = slug) : PlausibleStatsAggregateResponse! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  This endpoint allows you to break down your stats by some property.
+  If you are familiar with SQL family databases, this endpoint corresponds to
+  running `GROUP BY` on a certain property in your stats, then ordering by the
+  count.
+  Check out the [properties](https://plausible.io/docs/stats-api#properties)
+  section for a reference of all the properties you can use in this query.
+  This endpoint can be used to fetch data for `Top sources`, `Top pages`,
+  `Top countries` and similar reports.
+  Currently, it is only possible to break down on one property at a time.
+  Using a list of properties with one query is not supported. So if you want
+  a breakdown by both `event:page` and `visit:source` for example, you would
+  have to make multiple queries (break down on one property and filter on
+   another) and then manually/programmatically group the results together in one
+   report. This also applies for breaking down by time periods. To get a daily
+   breakdown for every page, you would have to break down on `event:page` and
+   make multiple queries for each date.
+  """
+  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType = slug) : [PlausibleStatsResponse!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType = slug) : Int! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  This endpoint provides timeseries data over a certain time period.
+  If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
+  """
+  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug) : [PlausibleStatsResponse!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  templateFamilyStatsAggregate(id: ID!, idType: IdType = slug, where: PlausibleStatsAggregateFilter!) : TemplateFamilyStatsAggregateResponse @join__field(graph: API_JOURNEYS_MODERN) 
+  templateFamilyStatsBreakdown(
+    id: ID!
+    idType: IdType = slug
+    where: PlausibleStatsBreakdownFilter!
+    """
+    Filter results to only include the specified events. If null or empty, all events are returned.
+    """
+    events: [PlausibleEvent!]
+    """
+    Filter results to only include the specified status. If null or empty, all statuses are returned.
+    """
+    status: [JourneyStatus!]
+  ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Read a single TemplateGalleryPage by id. Returns both `draft` and `published` rows — use this for in-team authenticated reads (e.g. an admin viewing or QA-ing their own team's drafts). Anonymous viewers must use `templateGalleryPageBySlug`, which only returns published pages.
+  
+  Auth: caller must be a member of the page's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the page's team.
+  """
+  templateGalleryPage("""
+  Stable page identifier.
+  """
+  id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Public, unauthenticated read by slug. Returns the TemplateGalleryPage with the given slug, but ONLY if the page is currently `published`. Returns null for: unknown slug, draft slug, malformed slug (does not match `^[a-z0-9]+(-[a-z0-9]+)*$`), or slug exceeding 200 characters. Authenticated readers fetching their own team's drafts should use `templateGalleryPage(id)` or `templateGalleryPages(teamId)` instead.
+  """
+  templateGalleryPageBySlug(
+    """
+    Case-sensitive public slug. Must match `^[a-z0-9]+(-[a-z0-9]+)*$` (lowercase letters, digits, and hyphen-separated segments only) and be at most 200 characters. Slugs that fail this shape return null without hitting the database.
+    """
+    slug: String!
+  ): TemplateGalleryPage @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  List all TemplateGalleryPages owned by a team — both `draft` and `published` rows — ordered by `createdAt` descending.
+  
+  Auth: caller must be a member of the requested team.
+  """
+  templateGalleryPages("""
+  Owning team. Caller must be a member.
+  """
+  teamId: ID!) : [TemplateGalleryPage!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN) 
+  language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
+  languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
+  languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
+  country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
+  countries(term: String, ids: [ID!], where: CountriesFilter) : [Country!]! @join__field(graph: API_LANGUAGES) 
+  getMyCloudflareImages(offset: Int, limit: Int, isAi: Boolean) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
+  getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
+  videoImages(where: VideoImagesFilter, offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
+  videoImagesCount(where: VideoImagesFilter) : Int! @join__field(graph: API_MEDIA) 
+  listUnsplashCollectionPhotos(
+    collectionId: String!
+    page: Int
+    perPage: Int
+    orientation: UnsplashPhotoOrientation
+  ): [UnsplashPhoto!]! @join__field(graph: API_MEDIA) 
+  searchUnsplashPhotos(
+    query: String!
+    page: Int
+    perPage: Int
+    orderBy: UnsplashOrderBy
+    collections: [String!]
+    contentFilter: UnsplashContentFilter
+    color: UnsplashColor
+    orientation: UnsplashPhotoOrientation
+  ): UnsplashQueryResponse! @join__field(graph: API_MEDIA) 
+  bibleBooks(where: BibleBooksFilter) : [BibleBook!]! @join__field(graph: API_MEDIA) 
+  bibleCitations(videoId: ID) : [BibleCitation!]! @join__field(graph: API_MEDIA) 
+  bibleCitation(id: ID!) : BibleCitation! @join__field(graph: API_MEDIA) 
+  keywords(where: KeywordsFilter, offset: Int, limit: Int) : [Keyword!]! @join__field(graph: API_MEDIA) 
+  keywordsCount(where: KeywordsFilter) : Int! @join__field(graph: API_MEDIA) 
+  getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
+  getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
+  getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
+  getMyGeneratedMuxSubtitleTrack(muxVideoId: ID!, bcp47: String!, userGenerated: Boolean) : QueryGetMyGeneratedMuxSubtitleTrackResult! @join__field(graph: API_MEDIA) 
+  playlists: [Playlist!] @join__field(graph: API_MEDIA) 
+  playlist(id: ID!, idType: IdType! = databaseId) : QueryPlaylistResult @join__field(graph: API_MEDIA) 
+  """
+  List of short link domains that can be used for short links
+  """
+  shortLinkDomains(
+    """
+    Filter by service (including domains with no services set)
+    """
+    service: Service
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): QueryShortLinkDomainsConnection! @join__field(graph: API_MEDIA) 
+  """
+  Find a short link domain by id
+  """
+  shortLinkDomain(id: String!) : QueryShortLinkDomainResult! @join__field(graph: API_MEDIA) 
+  """
+  find a short link by path and hostname
+  """
+  shortLinkByPath(
+    """
+    short link path not including the leading slash
+    """
+    pathname: String!
+    """
+    the hostname including subdomain, domain, and TLD, but excluding port
+    """
+    hostname: String!
+  ): QueryShortLinkByPathResult! @join__field(graph: API_MEDIA) 
+  """
+  find a short link by id
+  """
+  shortLink(id: String!) : QueryShortLinkResult! @join__field(graph: API_MEDIA) 
+  """
+  find all short links with optional hostname filter
+  """
+  shortLinks(
+    """
+    the hostname including subdomain, domain, and TLD, but excluding port
+    """
+    hostname: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): QueryShortLinksConnection! @join__field(graph: API_MEDIA) 
+  userMediaProfile: UserMediaProfile @join__field(graph: API_MEDIA) 
+  videoSubtitles(where: VideoSubtitlesFilter, offset: Int, limit: Int) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
+  videoSubtitlesCount(where: VideoSubtitlesFilter) : Int! @join__field(graph: API_MEDIA) 
+  videoVariantDownloads(where: VideoVariantDownloadsFilter, offset: Int, limit: Int) : [VideoVariantDownload!]! @join__field(graph: API_MEDIA) 
+  videoVariantDownloadsCount(where: VideoVariantDownloadsFilter) : Int! @join__field(graph: API_MEDIA) 
+  videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
+  videoVariants(input: VideoVariantFilter, offset: Int, limit: Int) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
+  videoVariantsCount(input: VideoVariantFilter) : Int! @join__field(graph: API_MEDIA) 
+  adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
+  adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
+  adminVideosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
+  video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
+  videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
+  videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
+  checkVideoInAlgolia(videoId: ID!) : CheckVideoInAlgoliaResult! @join__field(graph: API_MEDIA) 
+  checkVideoVariantsInAlgolia(videoId: ID!) : CheckVideoVariantsInAlgoliaResult! @join__field(graph: API_MEDIA) 
+  videoOrigins(where: VideoOriginsFilter, offset: Int, limit: Int) : [VideoOrigin!]! @join__field(graph: API_MEDIA) 
+  videoOriginsCount(where: VideoOriginsFilter) : Int! @join__field(graph: API_MEDIA) 
+  videoEditions(where: VideoEditionsFilter, offset: Int, limit: Int) : [VideoEdition!]! @join__field(graph: API_MEDIA) 
+  videoEditionsCount(where: VideoEditionsFilter) : Int! @join__field(graph: API_MEDIA) 
+  videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
+  tags: [Tag!]! @join__field(graph: API_MEDIA) 
+  taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
+  youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
+  arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
+  arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
+  me(input: MeInput) : User @join__field(graph: API_USERS) 
+  user(id: ID!) : AuthenticatedUser @join__field(graph: API_USERS) 
+  userByEmail(email: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
+}
+
 type IntegrationGoogle implements Integration @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Integration")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Integration")  {
   id: ID!
   team: Team!
   type: IntegrationType!
   user: User
+  userId: ID
   accountEmail: String
 }
 
@@ -2328,7 +2449,7 @@ type Visitor @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
 """
 An edge in a connection.
 """
-type VisitorEdge @join__type(graph: API_JOURNEYS)  {
+type VisitorEdge @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   A cursor for use in pagination.
   """
@@ -2342,7 +2463,7 @@ type VisitorEdge @join__type(graph: API_JOURNEYS)  {
 """
 Information about pagination in a connection.
 """
-type PageInfo @join__type(graph: API_JOURNEYS)  @join__type(graph: API_MEDIA)  {
+type PageInfo @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  {
   """
   When paginating forwards, are there more items?
   """
@@ -2364,7 +2485,7 @@ type PageInfo @join__type(graph: API_JOURNEYS)  @join__type(graph: API_MEDIA)  {
 """
 A list of visitors connected with a team.
 """
-type VisitorsConnection @join__type(graph: API_JOURNEYS)  {
+type VisitorsConnection @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   A list of edges.
   """
@@ -2373,6 +2494,25 @@ type VisitorsConnection @join__type(graph: API_JOURNEYS)  {
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
+}
+
+type CustomDomainCheck @join__type(graph: API_JOURNEYS_MODERN)  {
+  configured: Boolean!
+  verified: Boolean!
+  verification: [CustomDomainVerification!]
+  verificationResponse: CustomDomainVerificationResponse
+}
+
+type CustomDomainVerification @join__type(graph: API_JOURNEYS_MODERN)  {
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+  code: String!
+  message: String!
 }
 
 type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2526,8 +2666,16 @@ type PlausibleStatsResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   timeOnPage: Float
 }
 
-type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
-  journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
+type Subscription @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
+  journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress! @join__field(graph: API_JOURNEYS_MODERN) 
+  userDeleteConfirm(
+    idType: UserDeleteIdType!
+    id: String!
+    deletedJourneyIds: [String!]!
+    deletedTeamIds: [String!]!
+    deletedUserJourneyIds: [String!]!
+    deletedUserTeamIds: [String!]!
+  ): UserDeleteConfirmProgress! @join__field(graph: API_USERS) 
 }
 
 type TemplateFamilyStatsAggregateResponse @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2547,6 +2695,103 @@ type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN
 type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   event: String!
   visitors: Int!
+}
+
+"""
+A template journey assigned to a TemplateGalleryPage, narrowed to the fields the public renderer consumes. Backed by the underlying Journey row but exposed as a separate type so the public anonymous query surface cannot traverse to Journey-wide relations (userJourneys, team, blocks, etc.).
+"""
+type TemplateGalleryItem @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID!
+  title: String!
+  description: String
+  slug: String!
+  createdAt: DateTime!
+  template: Boolean
+  customizable: Boolean
+  website: Boolean
+  language: Language!
+  primaryImageBlock: ImageBlock
+}
+
+"""
+A team-curated, slug-addressable public landing page that bundles a hand-picked, hand-ordered list of template journeys. The slug is mutable post-publish — changing it breaks any external links to the old URL. `publishedAt` is monotonic: stamped only on the first publish, never re-stamped on subsequent unpublish/republish, and never cleared. `creatorImageSrc` and `creatorImageAlt` are plain string columns (not a Block FK) — the avatar URL survives independently of any owning Block.
+"""
+type TemplateGalleryPage @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Stable UUID identifier.
+  """
+  id: ID!
+  """
+  Display title shown in admin UI and on the public page.
+  """
+  title: String!
+  """
+  Long-form description shown on the public page. Defaults to empty string.
+  """
+  description: String!
+  """
+  URL-safe identifier. The public page is reached at `/collections/<slug>`. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, and must not be in the reserved list. Mutable after publish — changing it breaks any external links to the old URL.
+  """
+  slug: String!
+  """
+  `draft` hides the page from the public renderer; `published` exposes it via `templateGalleryPageBySlug`.
+  """
+  status: TemplateGalleryPageStatus!
+  """
+  Display name of the team or person credited as the page creator.
+  """
+  creatorName: String!
+  """
+  Optional https URL of the creator avatar image. Plain string (not a Block FK) — survives independently of any owning Block. https-only on write.
+  """
+  creatorImageSrc: String
+  """
+  Optional alt text for the creator avatar.
+  """
+  creatorImageAlt: String
+  """
+  Optional https URL of a hero/cover media asset shown on the public page. https-only on write.
+  """
+  mediaUrl: String
+  """
+  Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.
+  """
+  publishedAt: DateTimeISO
+  createdAt: DateTimeISO!
+  updatedAt: DateTimeISO!
+  """
+  Owning team. The page is hard-deleted when the team is deleted.
+  """
+  team: Team!
+  """
+  Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
+  """
+  templates: [TemplateGalleryItem!]!
+}
+
+type UserDeleteJourneysCheckResult @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeysToDelete: Int!
+  journeysToTransfer: Int!
+  journeysToRemove: Int!
+  teamsToDelete: Int!
+  teamsToTransfer: Int!
+  teamsToRemove: Int!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysConfirmResult @join__type(graph: API_JOURNEYS_MODERN)  {
+  success: Boolean!
+  deletedJourneyIds: [String!]!
+  deletedTeamIds: [String!]!
+  deletedUserJourneyIds: [String!]!
+  deletedUserTeamIds: [String!]!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysLogEntry @join__type(graph: API_JOURNEYS_MODERN)  {
+  message: String!
+  level: USER_DELETE_LOG_LEVEL!
+  timestamp: String!
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
@@ -2684,6 +2929,8 @@ type CheckVideoVariantsInAlgoliaResult @join__type(graph: API_MEDIA)  {
 
 type CloudflareImage @join__type(graph: API_MEDIA)  {
   id: ID!
+  updatedAt: DateTime!
+  videoId: ID
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -2695,6 +2942,7 @@ type CloudflareImage @join__type(graph: API_MEDIA)  {
   thumbnail: String
   videoStill: String
   blurhash: String
+  isAi: Boolean
 }
 
 type CloudflareR2 @join__type(graph: API_MEDIA)  {
@@ -3155,6 +3403,7 @@ type VideoImageAlt @join__type(graph: API_MEDIA)  {
 
 type VideoOrigin @join__type(graph: API_MEDIA)  {
   id: ID!
+  updatedAt: DateTime!
   name: String!
   description: String
 }
@@ -3193,6 +3442,8 @@ type VideoStudyQuestion @join__type(graph: API_MEDIA)  {
 
 type VideoSubtitle @join__type(graph: API_MEDIA)  {
   id: ID!
+  updatedAt: DateTime!
+  videoId: ID!
   languageId: ID!
   primary: Boolean!
   edition: String!
@@ -3262,6 +3513,8 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
 
 type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   id: ID!
+  updatedAt: DateTime!
+  videoVariantId: ID
   """
   master video file
   """
@@ -3296,6 +3549,25 @@ type ZodFieldError @join__type(graph: API_MEDIA)  {
 
 type AnonymousUser implements User @join__type(graph: API_USERS, key: "id")  @join__implements(graph: API_USERS, interface: "User")  {
   id: ID!
+}
+
+type UserDeleteCheckResult @join__type(graph: API_USERS)  {
+  userId: String!
+  userEmail: String
+  userFirstName: String!
+  logs: [UserDeleteLogEntry!]!
+}
+
+type UserDeleteConfirmProgress @join__type(graph: API_USERS)  {
+  log: UserDeleteLogEntry!
+  done: Boolean!
+  success: Boolean
+}
+
+type UserDeleteLogEntry @join__type(graph: API_USERS)  {
+  message: String!
+  level: USER_DELETE_LOG_LEVEL!
+  timestamp: String!
 }
 
 interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
@@ -3430,22 +3702,9 @@ enum JourneyMenuButtonIcon @join__type(graph: API_JOURNEYS)  @join__type(graph: 
   chevronDown @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum JourneysReportType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  multipleFull @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  multipleSummary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  singleFull @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  singleSummary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-}
-
 enum IdType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  {
   databaseId @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
   slug @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
-}
-
-enum JourneyVisitorSort @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  date @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  duration @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  activity @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum ButtonVariant @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3660,6 +3919,19 @@ enum ButtonAction @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURN
   ChatAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+enum JourneysReportType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  multipleFull @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  multipleSummary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  singleFull @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  singleSummary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum JourneyVisitorSort @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  date @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  duration @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  activity @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum IntegrationType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   google @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   growthSpaces @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3774,6 +4046,26 @@ enum PlausibleEvent @join__type(graph: API_JOURNEYS_MODERN)  {
   linksClicked @join__enumValue(graph: API_JOURNEYS_MODERN) 
   journeyVisitors @join__enumValue(graph: API_JOURNEYS_MODERN) 
   journeyResponses @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+"""
+Lifecycle state of a TemplateGalleryPage. Anonymous traffic via `templateGalleryPageBySlug` only sees `published` rows; drafts are hidden.
+"""
+enum TemplateGalleryPageStatus @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Hidden from the public renderer. All edit operations are allowed.
+  """
+  draft @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  """
+  Reachable at `/collections/<slug>`. `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney` remain allowed (publishers can fix typos and curate the template list while live); `templateGalleryPageReorderTemplate` is rejected with CONFLICT — unpublish first to reorder.
+  """
+  published @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum USER_DELETE_LOG_LEVEL @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
+  INFO @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_USERS) 
+  WARN @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_USERS) 
+  ERROR @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_USERS) 
 }
 
 enum LanguageRole @join__type(graph: API_LANGUAGES)  {
@@ -3908,15 +4200,16 @@ enum App @join__type(graph: API_USERS)  {
   JesusFilmOne @join__enumValue(graph: API_USERS) 
 }
 
+enum UserDeleteIdType @join__type(graph: API_USERS)  {
+  databaseId @join__enumValue(graph: API_USERS) 
+  email @join__enumValue(graph: API_USERS) 
+  jwt @join__enumValue(graph: API_USERS) 
+}
+
 input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
   domain: String!
   goals: [String!]
   disableSharedLinks: Boolean
-}
-
-input BlocksFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  journeyIds: [ID!]
-  typenames: [String!]
 }
 
 input BlockDuplicateIdMap @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3929,495 +4222,8 @@ input ButtonBlockSettingsInput @join__type(graph: API_JOURNEYS)  @join__type(gra
   color: String
 }
 
-input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  eventLabel: BlockEventLabel
-  backgroundColor: String
-  backdropBlur: Int
-  fullscreen: Boolean
-  themeMode: ThemeMode
-  themeName: ThemeName
-}
-
-input CardBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  coverBlockId: ID
-  backgroundColor: String
-  backdropBlur: Int
-  fullscreen: Boolean
-  themeMode: ThemeMode
-  themeName: ThemeName
-}
-
-input IconBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  parentBlockId: ID!
-  journeyId: ID!
-  name: IconName
-  color: IconColor
-  size: IconSize
-}
-
-input IconBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  name: IconName
-  color: IconColor
-  size: IconSize
-}
-
-input ImageBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  parentBlockId: ID
-  journeyId: ID!
-  src: String
-  alt: String!
-  """
-  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
-  """
-  blurhash: String
-  width: Int
-  height: Int
-  """
-  True if the coverBlockId in a parent block should be set to this block's id.
-  """
-  isCover: Boolean
-  scale: Int
-  focalTop: Int
-  focalLeft: Int
-  customizable: Boolean
-}
-
-input ImageBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  src: String
-  alt: String
-  """
-  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
-  """
-  blurhash: String
-  width: Int
-  height: Int
-  scale: Int
-  focalTop: Int
-  focalLeft: Int
-  customizable: Boolean
-}
-
-input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  eventLabel: BlockEventLabel
-  label: String!
-}
-
-input RadioOptionBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  label: String
-  pollOptionImageBlockId: ID
-}
-
-input RadioQuestionBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-}
-
-input SignUpBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  submitLabel: String!
-}
-
-input SignUpBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  submitIconId: ID
-  submitLabel: String
-}
-
-input SpacerBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  spacing: Int
-}
-
-input SpacerBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  spacing: Int
-}
-
-input StepBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  nextBlockId: ID
-  locked: Boolean
-  """
-  x is used to position the block horizontally in the journey flow diagram on
-  the editor.
-  """
-  x: Int
-  """
-  y is used to position the block vertically in the journey flow diagram on
-  the editor.
-  """
-  y: Int
-}
-
-input StepBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  nextBlockId: ID
-  locked: Boolean
-  """
-  x is used to position the block horizontally in the journey flow diagram on
-  the editor.
-  """
-  x: Int
-  """
-  y is used to position the block vertically in the journey flow diagram on
-  the editor.
-  """
-  y: Int
-  """
-  Slug should be unique amongst all blocks
-  (server will throw BAD_USER_INPUT error if not)
-  If not required will use the current block id
-  If the generated slug is not unique the uuid will be placed
-  at the end of the slug guaranteeing uniqueness
-  """
-  slug: String
-}
-
-input StepBlockPositionUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID!
-  x: Int
-  y: Int
-}
-
-input TextResponseBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  label: String!
-}
-
-input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  label: String
-  placeholder: String
-  required: Boolean
-  hint: String
-  hideLabel: Boolean
-  minRows: Int
-  routeId: String
-  type: TextResponseType
-  integrationId: String
-}
-
 input TypographyBlockSettingsInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   color: String
-}
-
-input TypographyBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  content: String!
-  variant: TypographyVariant
-  color: TypographyColor
-  align: TypographyAlign
-  settings: TypographyBlockSettingsInput
-}
-
-input TypographyBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  content: String
-  variant: TypographyVariant
-  color: TypographyColor
-  align: TypographyAlign
-  settings: TypographyBlockSettingsInput
-}
-
-input ChatButtonCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  link: String
-  platform: MessagePlatform
-}
-
-input ChatButtonUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  link: String
-  platform: MessagePlatform
-  customizable: Boolean
-}
-
-input CustomDomainCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  teamId: String!
-  name: String!
-  journeyCollectionId: ID
-  routeAllTeamJourneys: Boolean
-}
-
-input CustomDomainUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  journeyCollectionId: ID
-  routeAllTeamJourneys: Boolean
-}
-
-input JourneyViewEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  journeyId: ID!
-  """
-  title of the journey being viewed
-  """
-  label: String
-  """
-  languageId of the journey being viewed
-  """
-  value: ID
-}
-
-input StepViewEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  """
-  Id of the current StepBlock
-  """
-  blockId: ID!
-  """
-  stepName of the current stepBlock
-  """
-  value: String
-}
-
-input StepNextEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  """
-  Id of the current StepBlock
-  """
-  blockId: ID!
-  """
-  id of the next stepBlock
-  """
-  nextStepId: ID!
-  """
-  stepName of the current stepBlock
-  """
-  label: String
-  """
-  stepName of the next stepBlock
-  """
-  value: String
-}
-
-input StepPreviousEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  """
-  Id of the current StepBlock
-  """
-  blockId: ID!
-  """
-  id of the previous stepBlock
-  """
-  previousStepId: ID!
-  """
-  stepName of the current stepBlock
-  """
-  label: String
-  """
-  stepName of the previous stepBlock
-  """
-  value: String
-}
-
-input VideoStartEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  duration of the video played when the VideoStartEvent is triggered
-  """
-  position: Float
-  """
-  title of the video
-  """
-  label: String
-  """
-  source of the video
-  """
-  value: VideoBlockSource
-}
-
-input VideoPlayEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  duration of the video played when the VideoPlayEvent is triggered
-  """
-  position: Float
-  """
-  title of the video
-  """
-  label: String
-  """
-  source of the video
-  """
-  value: VideoBlockSource
-}
-
-input VideoPauseEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  duration of the video played when the VideoPauseEvent is triggered
-  """
-  position: Float
-  """
-  title of the video
-  """
-  label: String
-  """
-  source of the video
-  """
-  value: VideoBlockSource
-}
-
-input VideoCompleteEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  duration of the video played when the VideoCompleteEvent is triggered
-  """
-  position: Float
-  """
-  title of the video
-  """
-  label: String
-  """
-  source of the video
-  """
-  value: VideoBlockSource
-}
-
-input VideoExpandEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  duration of the video played when the VideoExpandEvent is triggered
-  """
-  position: Float
-  """
-  title of the video
-  """
-  label: String
-  """
-  source of the video
-  """
-  value: VideoBlockSource
-}
-
-input VideoCollapseEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  duration of the video played when the VideoCollapseEvent is triggered
-  """
-  position: Float
-  """
-  title of the video
-  """
-  label: String
-  """
-  source of the video
-  """
-  value: VideoBlockSource
-}
-
-input VideoProgressEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  duration of the video played when the VideoProgressEvent is triggered
-  """
-  position: Float
-  """
-  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
-  """
-  progress: Int!
-  """
-  title of the video
-  """
-  label: String
-  """
-  source of the video
-  """
-  value: VideoBlockSource
 }
 
 input HostUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4708,6 +4514,11 @@ input BlockUpdateActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   blockId: String
 }
 
+input BlocksFilter @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyIds: [ID!]
+  typenames: [String!]
+}
+
 input ButtonBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   journeyId: ID!
@@ -4764,12 +4575,48 @@ input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   actionValue: String
 }
 
+input CardBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  eventLabel: BlockEventLabel
+  backgroundColor: String
+  backdropBlur: Int
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
+input CardBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  eventLabel: BlockEventLabel
+  coverBlockId: ID
+  backgroundColor: String
+  backdropBlur: Int
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+  showAssistant: Boolean
+  expandChatByDefault: Boolean
+}
+
 input ChatActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   gtmEventName: String
   chatUrl: String!
   target: String
   customizable: Boolean
   parentStepId: String
+}
+
+input ChatButtonCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  link: String
+  platform: MessagePlatform
+}
+
+input ChatButtonUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  link: String
+  platform: MessagePlatform
+  customizable: Boolean
 }
 
 input ChatOpenEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4796,6 +4643,19 @@ input CreateGoogleSheetsSyncInput @join__type(graph: API_JOURNEYS_MODERN)  {
   folderId: String
 }
 
+input CustomDomainCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  teamId: String!
+  name: String!
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
+}
+
+input CustomDomainUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
+}
+
 input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   gtmEventName: String
   email: String!
@@ -4806,6 +4666,66 @@ input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
 input GoogleSheetsSyncsFilter @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID
   integrationId: ID
+}
+
+input IconBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  parentBlockId: ID!
+  journeyId: ID!
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
+input IconBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
+input ImageBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  parentBlockId: ID
+  journeyId: ID!
+  src: String
+  alt: String!
+  """
+  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
+  """
+  blurhash: String
+  width: Int
+  height: Int
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
+  scale: Int
+  focalTop: Int
+  focalLeft: Int
+  customizable: Boolean
+}
+
+input ImageBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  src: String
+  alt: String
+  """
+  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
+  """
+  blurhash: String
+  width: Int
+  height: Int
+  isCover: Boolean
+  scale: Int
+  focalTop: Int
+  focalLeft: Int
+  customizable: Boolean
 }
 
 input IntegrationGoogleCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4820,11 +4740,49 @@ input IntegrationGoogleUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input JourneyAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  The ID of the journey to translate
+  """
   journeyId: ID!
+  """
+  The journey name to translate
+  """
   name: String!
+  """
+  The source language name of the journey content
+  """
   journeyLanguageName: String!
+  """
+  The target language ID for journey content (blocks, title, description)
+  """
   textLanguageId: ID!
+  """
+  The target language name for journey content (blocks, title, description)
+  """
   textLanguageName: String!
+  """
+  Language ID for customization text translation. Falls back to textLanguageId if not provided.
+  """
+  userLanguageId: ID
+  """
+  Language name for customization text translation. Falls back to textLanguageName if not provided.
+  """
+  userLanguageName: String
+}
+
+input JourneyCustomizationDescriptionTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  The ID of the journey whose customization description to translate
+  """
+  journeyId: ID!
+  """
+  The current language of the customization description
+  """
+  sourceLanguageName: String!
+  """
+  The language to translate the customization description into
+  """
+  targetLanguageName: String!
 }
 
 input JourneyEventsExportLogInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4839,6 +4797,13 @@ input JourneyProfileUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyFlowBackButtonClicked: Boolean
   plausibleJourneyFlowViewed: Boolean
   plausibleDashboardViewed: Boolean
+}
+
+input JourneyViewEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  label: String
+  value: ID
 }
 
 input JourneyVisitorExportSelect @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5002,6 +4967,27 @@ input PlausibleStatsTimeseriesFilter @join__type(graph: API_JOURNEYS_MODERN)  {
   interval: String
 }
 
+input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  eventLabel: BlockEventLabel
+  label: String!
+}
+
+input RadioOptionBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  eventLabel: BlockEventLabel
+  label: String
+  pollOptionImageBlockId: ID
+}
+
+input RadioQuestionBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+}
+
 input RadioQuestionSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   blockId: ID!
@@ -5009,6 +4995,19 @@ input RadioQuestionSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MO
   stepId: ID
   label: String
   value: String
+}
+
+input SignUpBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  submitLabel: String!
+}
+
+input SignUpBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  submitIconId: ID
+  submitLabel: String
 }
 
 input SignUpSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5019,12 +5018,200 @@ input SignUpSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  
   email: String!
 }
 
+input SpacerBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  spacing: Int
+}
+
+input SpacerBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  spacing: Int
+}
+
+input StepBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  nextBlockId: ID
+  locked: Boolean
+  """
+  x is used to position the block horizontally in the journey flow diagram on the editor.
+  """
+  x: Int
+  """
+  y is used to position the block vertically in the journey flow diagram on the editor.
+  """
+  y: Int
+}
+
+input StepBlockPositionUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID!
+  x: Int
+  y: Int
+}
+
+input StepBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  nextBlockId: ID
+  locked: Boolean
+  """
+  x is used to position the block horizontally in the journey flow diagram on the editor.
+  """
+  x: Int
+  """
+  y is used to position the block vertically in the journey flow diagram on the editor.
+  """
+  y: Int
+  """
+  Slug should be unique amongst all blocks (server will throw BAD_USER_INPUT error if not). If not required will use the current block id. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness
+  """
+  slug: String
+}
+
+input StepNextEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  blockId: ID!
+  nextStepId: ID!
+  label: String
+  value: String
+}
+
+input StepPreviousEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  blockId: ID!
+  previousStepId: ID!
+  label: String
+  value: String
+}
+
+input StepViewEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  blockId: ID!
+  value: String
+}
+
+"""
+Input for creating a new TemplateGalleryPage in `draft` status. The slug is server-generated from `title`.
+"""
+input TemplateGalleryPageCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Owning team. Caller must be a member.
+  """
+  teamId: ID!
+  """
+  Display title. Drives slug auto-generation: lowercased + hyphenated form of the title, max 200 characters, with the reserved-word list (`admin`, `api`, `app`, `auth`, `graphql`, `health`, `journey`, `journeys`, `public`, `sign-in`, `sign-up`, `static`, `templates`, `webhook`, `webhooks`) blocked. On collision the resolver tries `<base>-2`..`<base>-50`, then falls back to a 6-character random suffix.
+  """
+  title: String!
+  """
+  Optional long-form description shown on the public page. Defaults to empty string when omitted.
+  """
+  description: String
+  """
+  Display name of the page creator.
+  """
+  creatorName: String!
+  """
+  Optional https URL of the creator avatar image. Rejected if not https.
+  """
+  creatorImageSrc: String
+  """
+  Optional alt text for the creator avatar.
+  """
+  creatorImageAlt: String
+  """
+  Optional https URL of a hero/cover media asset. Rejected if not https.
+  """
+  mediaUrl: String
+  """
+  Optional initial template journeys to attach. Cross-team and non-template ids are silently filtered out.
+  """
+  journeyIds: [ID!]
+}
+
+"""
+Input for editing a TemplateGalleryPage. Field omitted = leave the existing value alone. Field set to `null` = clear (only meaningful for nullable fields).
+"""
+input TemplateGalleryPageUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Updated display title. Does NOT regenerate the slug — use `slug` to change the slug.
+  """
+  title: String
+  """
+  Updated long-form description.
+  """
+  description: String
+  """
+  Updated public slug. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, not be in the reserved list, and not be in use by another page. Changing the slug breaks any external links to the old URL.
+  """
+  slug: String
+  """
+  Updated creator display name.
+  """
+  creatorName: String
+  """
+  Optional https creator avatar URL. Pass `null` to clear. Rejected if not https.
+  """
+  creatorImageSrc: String
+  """
+  Optional creator avatar alt text. Pass `null` to clear.
+  """
+  creatorImageAlt: String
+  """
+  Optional https hero media URL. Pass `null` to clear. Rejected if not https.
+  """
+  mediaUrl: String
+  """
+  When provided, replaces the page's template list with these journeys in this exact order (existing assignments are deleted then recreated). Cross-team and non-template ids are silently filtered out. Omit to leave the template list unchanged.
+  """
+  journeyIds: [ID!]
+}
+
+input TextResponseBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+}
+
+input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  label: String
+  placeholder: String
+  required: Boolean
+  hint: String
+  hideLabel: Boolean
+  minRows: Int
+  routeId: String
+  type: TextResponseType
+  integrationId: String
+}
+
 input TextResponseSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   blockId: ID!
   stepId: ID
   label: String
   value: String!
+}
+
+input TypographyBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  content: String!
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+  settings: TypographyBlockSettingsInput
+}
+
+input TypographyBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  content: String
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+  settings: TypographyBlockSettingsInput
 }
 
 input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5089,6 +5276,70 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear.
   """
   notes: String
+}
+
+input VideoCollapseEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+input VideoCompleteEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+input VideoExpandEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+input VideoPauseEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+input VideoPlayEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+input VideoProgressEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+  progress: Int!
+}
+
+input VideoStartEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
 }
 
 input CountriesFilter @join__type(graph: API_LANGUAGES)  {
@@ -5391,6 +5642,20 @@ input VideoEditionUpdateInput @join__type(graph: API_MEDIA)  {
   name: String
 }
 
+input VideoEditionsFilter @join__type(graph: API_MEDIA)  {
+  updatedAt: DateTimeFilter
+}
+
+input VideoImagesFilter @join__type(graph: API_MEDIA)  {
+  updatedAt: DateTimeFilter
+  videoId: ID
+  aspectRatio: ImageAspectRatio
+}
+
+input VideoOriginsFilter @join__type(graph: API_MEDIA)  {
+  updatedAt: DateTimeFilter
+}
+
 input VideoStudyQuestionCreateInput @join__type(graph: API_MEDIA)  {
   id: ID
   videoId: String!
@@ -5440,6 +5705,14 @@ input VideoSubtitleUpdateInput @join__type(graph: API_MEDIA)  {
   srtVersion: Int
   primary: Boolean
   languageId: String
+}
+
+input VideoSubtitlesFilter @join__type(graph: API_MEDIA)  {
+  updatedAt: DateTimeFilter
+  videoId: ID
+  languageId: ID
+  edition: String
+  primary: Boolean
 }
 
 input VideoTranslationCreateInput @join__type(graph: API_MEDIA)  {
@@ -5513,6 +5786,12 @@ input VideoVariantDownloadUpdateInput @join__type(graph: API_MEDIA)  {
   bitrate: Int
   url: String
   version: Int
+}
+
+input VideoVariantDownloadsFilter @join__type(graph: API_MEDIA)  {
+  updatedAt: DateTimeFilter
+  videoVariantId: ID
+  quality: VideoVariantDownloadQuality
 }
 
 input VideoVariantFilter @join__type(graph: API_MEDIA)  {

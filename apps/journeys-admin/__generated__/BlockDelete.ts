@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface BlockDelete_blockDelete_ImageBlock {
-  __typename: "ImageBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "ButtonBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
@@ -27,9 +27,6 @@ export interface BlockDelete_blockDelete_StepBlock {
 export type BlockDelete_blockDelete = BlockDelete_blockDelete_ImageBlock | BlockDelete_blockDelete_StepBlock;
 
 export interface BlockDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   blockDelete: BlockDelete_blockDelete[];
 }
 

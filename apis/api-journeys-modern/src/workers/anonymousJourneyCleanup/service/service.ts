@@ -4,6 +4,8 @@ import { Logger } from 'pino'
 import { UserJourneyRole, prisma } from '@core/prisma/journeys/client'
 import { prisma as prismaUsers } from '@core/prisma/users/client'
 
+import { collectMediaFromJourneys, deleteUnusedMedia } from './mediaCleanup'
+
 const CLEANUP_DAYS = 5
 
 export async function service(job: Job, logger?: Logger): Promise<void> {
@@ -12,6 +14,8 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
   const cutoffDate = new Date(Date.now() - CLEANUP_DAYS * 24 * 60 * 60 * 1000)
   let deletedJourneyCount = 0
   let deletedUserCount = 0
+  let deletedMuxVideoCount = 0
+  let deletedCloudflareImageCount = 0
 
   try {
     const anonymousUsers = await prismaUsers.user.findMany({
@@ -47,10 +51,15 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
         `Found ${journeys.length} journeys older than ${CLEANUP_DAYS} days`
       )
 
+      const journeyIds = journeys.map((j) => j.id)
+      const mediaRefs = await collectMediaFromJourneys(journeyIds)
+
+      const deletedJourneyIds: string[] = []
       for (const journey of journeys) {
         try {
           await prisma.journey.delete({ where: { id: journey.id } })
           deletedJourneyCount++
+          deletedJourneyIds.push(journey.id)
           logger?.info(
             { journeyId: journey.id },
             `Deleted journey "${journey.title}"`
@@ -61,6 +70,22 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
             `Failed to delete journey "${journey.title}"`
           )
         }
+      }
+
+      if (
+        deletedJourneyIds.length > 0 &&
+        (mediaRefs.muxVideoIds.size > 0 ||
+          mediaRefs.cloudflareImageIds.size > 0)
+      ) {
+        const { deletedMuxVideos, deletedCloudflareImages } =
+          await deleteUnusedMedia(
+            mediaRefs,
+            deletedJourneyIds,
+            user.userId,
+            logger
+          )
+        deletedMuxVideoCount += deletedMuxVideos
+        deletedCloudflareImageCount += deletedCloudflareImages
       }
 
       const remainingJourneys = await prisma.journey.count({
@@ -117,8 +142,13 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
     }
 
     logger?.info(
-      { deletedJourneyCount, deletedUserCount },
-      `Anonymous journey cleanup completed: deleted ${deletedJourneyCount} journeys and ${deletedUserCount} users`
+      {
+        deletedJourneyCount,
+        deletedUserCount,
+        deletedMuxVideoCount,
+        deletedCloudflareImageCount
+      },
+      `Anonymous journey cleanup completed: deleted ${deletedJourneyCount} journeys, ${deletedUserCount} users, ${deletedMuxVideoCount} Mux videos, ${deletedCloudflareImageCount} Cloudflare images`
     )
   } catch (error) {
     logger?.error({ error }, 'Anonymous journey cleanup failed')

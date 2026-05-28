@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface CoverBlockDelete_blockDelete {
-  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "ButtonBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
@@ -25,9 +25,6 @@ export interface CoverBlockDelete_cardBlockUpdate {
 }
 
 export interface CoverBlockDelete {
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
   blockDelete: CoverBlockDelete_blockDelete[];
   cardBlockUpdate: CoverBlockDelete_cardBlockUpdate;
 }

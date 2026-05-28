@@ -1,23 +1,45 @@
 import { prisma } from '@core/prisma/media/client'
 
-import { builder } from '../../builder'
+import { builder, toPrismaDateTimeFilter } from '../../builder'
+
+import { VideoOriginsFilter } from './inputs'
 
 builder.prismaObject('VideoOrigin', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     name: t.exposeString('name', { nullable: false }),
     description: t.exposeString('description', { nullable: true })
   })
 })
 
 builder.queryFields((t) => ({
-  videoOrigins: t.withAuth({ isPublisher: true }).prismaField({
+  videoOrigins: t.prismaField({
     type: ['VideoOrigin'],
     nullable: false,
-    resolve: async (query) => {
+    args: {
+      where: t.arg({ type: VideoOriginsFilter, required: false }),
+      offset: t.arg.int({ required: false }),
+      limit: t.arg.int({ required: false })
+    },
+    resolve: async (query, _parent, { where, offset, limit }) => {
       return await prisma.videoOrigin.findMany({
         ...query,
-        orderBy: { name: 'asc' }
+        where: { updatedAt: toPrismaDateTimeFilter(where?.updatedAt) },
+        skip: offset ?? 0,
+        take: limit ?? undefined,
+        orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }]
+      })
+    }
+  }),
+  videoOriginsCount: t.int({
+    nullable: false,
+    args: {
+      where: t.arg({ type: VideoOriginsFilter, required: false })
+    },
+    resolve: async (_parent, { where }) => {
+      return await prisma.videoOrigin.count({
+        where: { updatedAt: toPrismaDateTimeFilter(where?.updatedAt) }
       })
     }
   })

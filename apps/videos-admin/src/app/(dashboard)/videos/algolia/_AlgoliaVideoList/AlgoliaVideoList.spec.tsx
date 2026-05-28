@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { algoliasearch } from 'algoliasearch'
 import {
   useHits,
@@ -7,56 +7,51 @@ import {
   useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
+import { type MockedFunction } from 'vitest'
 
 import { AlgoliaVideoList } from './AlgoliaVideoList'
 
-const mockPush = jest.fn()
+const mockPush = vi.fn()
 
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
     push: mockPush
   }))
 }))
 
-jest.mock('algoliasearch', () => ({
-  algoliasearch: jest.fn(() => ({}))
+vi.mock('algoliasearch', () => ({
+  algoliasearch: vi.fn(() => ({}))
 }))
 
-jest.mock('react-instantsearch', () => ({
+vi.mock('react-instantsearch', () => ({
   Configure: ({ children }) => <>{children}</>,
   InstantSearch: ({ children }) => <>{children}</>,
-  useHits: jest.fn(),
-  useInstantSearch: jest.fn(),
-  usePagination: jest.fn(),
-  useRefinementList: jest.fn(),
-  useSearchBox: jest.fn()
+  useHits: vi.fn(),
+  useInstantSearch: vi.fn(),
+  usePagination: vi.fn(),
+  useRefinementList: vi.fn(),
+  useSearchBox: vi.fn()
 }))
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
-const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
-const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
+const mockUseHits = useHits as MockedFunction<typeof useHits>
+const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >
-const mockUsePagination = usePagination as jest.MockedFunction<
-  typeof usePagination
->
-const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+const mockUsePagination = usePagination as MockedFunction<typeof usePagination>
+const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
-const mockAlgoliaSearch = algoliasearch as jest.MockedFunction<
-  typeof algoliasearch
->
+const mockAlgoliaSearch = algoliasearch as MockedFunction<typeof algoliasearch>
 
 describe('AlgoliaVideoList', () => {
   const originalEnv = process.env
-  const mockSearchRefine = jest.fn()
-  const mockPageRefine = jest.fn()
-  const mockPublishedRefine = jest.fn()
+  const mockSearchRefine = vi.fn()
+  const mockPageRefine = vi.fn()
+  const mockPublishedRefine = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = {
       ...originalEnv,
       NEXT_PUBLIC_ALGOLIA_APP_ID: 'test-app-id',
@@ -73,7 +68,6 @@ describe('AlgoliaVideoList', () => {
     } as any)
     mockUseInstantSearch.mockReturnValue({
       status: 'idle',
-      results: { nbHits: 0 },
       error: null
     } as any)
     mockUsePagination.mockReturnValue({
@@ -94,19 +88,18 @@ describe('AlgoliaVideoList', () => {
     process.env = originalEnv
   })
 
-  it('renders search and published filter controls', () => {
+  it('renders search and published filter controls with facet counts', () => {
     render(<AlgoliaVideoList />)
 
-    expect(screen.getByLabelText('Search Algolia')).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Previous page' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Next page' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('combobox', { name: 'Published' })
-    ).toBeInTheDocument()
+    expect(screen.getByLabelText('Search Algolia')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Previous page' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Next page' })).toBeTruthy()
+    expect(screen.getByRole('combobox', { name: 'Published' })).toBeTruthy()
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Published' }))
+    expect(screen.getByRole('option', { name: 'Both (3)' })).toBeTruthy()
+    expect(screen.getByRole('option', { name: 'Published (2)' })).toBeTruthy()
+    expect(screen.getByRole('option', { name: 'Draft (1)' })).toBeTruthy()
   })
 
   it('renders mapped hits and published draft chips', () => {
@@ -134,19 +127,18 @@ describe('AlgoliaVideoList', () => {
     } as any)
     mockUseInstantSearch.mockReturnValue({
       status: 'idle',
-      results: { nbHits: 2 },
       error: null
     } as any)
 
     render(<AlgoliaVideoList />)
 
-    expect(screen.getByText('English Title')).toBeInTheDocument()
-    expect(screen.getByText('Fallback Title')).toBeInTheDocument()
-    const publishedRow = screen.getByRole('row', { name: /english title/i })
-    expect(
-      within(publishedRow).getByTestId('PublishedChip')
-    ).toBeInTheDocument()
-    expect(screen.getByText('Draft')).toBeInTheDocument()
+    expect(screen.getByText('English Title')).toBeTruthy()
+    expect(screen.getByText('Fallback Title')).toBeTruthy()
+    const publishedChips = screen.getAllByTestId('PublishedChip')
+    expect(publishedChips).toHaveLength(2)
+    expect(publishedChips.map((chip) => chip.textContent)).toEqual(
+      expect.arrayContaining(['Published', 'Draft'])
+    )
   })
 
   it('navigates to media component detail on row click', () => {
@@ -171,11 +163,32 @@ describe('AlgoliaVideoList', () => {
     expect(mockPush).toHaveBeenCalledWith('/videos/video-id')
   })
 
+  it('does not navigate when row has no mediaComponentId', () => {
+    mockUseHits.mockReturnValue({
+      items: [
+        {
+          objectID: 'orphan-id',
+          title: 'Orphan Record',
+          description: 'No editable mapping',
+          published: false,
+          subType: '',
+          containsCount: 0
+        }
+      ]
+    } as any)
+
+    render(<AlgoliaVideoList />)
+
+    fireEvent.click(screen.getByText('orphan-id'))
+
+    expect(mockPush).not.toHaveBeenCalled()
+  })
+
   it('refines published filter with dropdown selections', () => {
     render(<AlgoliaVideoList />)
 
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Published' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Published' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Published (2)' }))
 
     expect(mockPublishedRefine).toHaveBeenCalledWith('published:true')
   })
@@ -193,7 +206,7 @@ describe('AlgoliaVideoList', () => {
       screen.getByText(
         'Set NEXT_PUBLIC_ALGOLIA_APP_ID and NEXT_PUBLIC_ALGOLIA_API_KEY to use this tab.'
       )
-    ).toBeInTheDocument()
+    ).toBeTruthy()
     expect(mockAlgoliaSearch).not.toHaveBeenCalled()
   })
 
@@ -209,7 +222,7 @@ describe('AlgoliaVideoList', () => {
 
     expect(
       screen.getByText('Set NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS to use this tab.')
-    ).toBeInTheDocument()
-    expect(screen.queryByLabelText('Search Algolia')).not.toBeInTheDocument()
+    ).toBeTruthy()
+    expect(screen.queryByLabelText('Search Algolia')).toBeNull()
   })
 })

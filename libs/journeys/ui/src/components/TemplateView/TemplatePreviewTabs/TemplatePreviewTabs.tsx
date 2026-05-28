@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, SyntheticEvent, useMemo, useState } from 'react'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'

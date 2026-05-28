@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import Download2 from '@core/shared/ui/icons/Download2'

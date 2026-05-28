@@ -1,14 +1,16 @@
+import { type Mock, type MockedFunction, vi } from 'vitest'
+
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
@@ -29,7 +31,7 @@ describe('googleSheetsSyncDelete', () => {
   `)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser as any)
     prismaMock.userRole.findUnique.mockResolvedValue({
       userId: mockUser.id,
@@ -81,7 +83,7 @@ describe('googleSheetsSyncDelete', () => {
 
     // prismaField spreads query parameter, so we check for the call with spread
     expect(prismaMock.googleSheetsSync.update).toHaveBeenCalled()
-    const updateCall = (prismaMock.googleSheetsSync.update as jest.Mock).mock
+    const updateCall = (prismaMock.googleSheetsSync.update as Mock).mock
       .calls[0][0]
     expect(updateCall).toMatchObject({
       where: { id: 'sync-id' },

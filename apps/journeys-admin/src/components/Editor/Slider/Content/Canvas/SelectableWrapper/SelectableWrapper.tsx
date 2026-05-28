@@ -80,6 +80,9 @@ export function SelectableWrapper({
     e.stopPropagation()
   }
 
+  const isVideoSelected =
+    block?.__typename === 'VideoBlock' && selectedBlock?.id === block.id
+
   const videoOutlineStyles =
     block?.__typename === 'VideoBlock'
       ? {
@@ -88,9 +91,24 @@ export function SelectableWrapper({
           position: 'absolute',
           top: 0,
           left: 0,
-          outlineOffset: '-3px',
+          outline: 'none',
           borderRadius: '24px',
+          overflow: 'hidden',
           my: '0px !important',
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderRadius: '24px',
+            border: isVideoSelected
+              ? '2px solid #C52D3A'
+              : '2px solid transparent',
+            pointerEvents: 'none',
+            zIndex: 2
+          },
           '&:first-child': {
             '& > *': { zIndex: -1 }
           }

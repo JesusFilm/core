@@ -6,17 +6,16 @@ import Tabs from '@mui/material/Tabs'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik } from 'formik'
 import omit from 'lodash/omit'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
-import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
-import { JourneyCustomizationDescriptionUpdate } from '../../../../../../../__generated__/JourneyCustomizationDescriptionUpdate'
 import { JourneyFeature } from '../../../../../../../__generated__/JourneyFeature'
+import { useJourneyCustomizationDescriptionUpdateMutation } from '../../../../../../libs/useJourneyCustomizationDescriptionUpdateMutation'
 import { useJourneyUpdateMutation } from '../../../../../../libs/useJourneyUpdateMutation'
 
 import { AboutTabPanel } from './AboutTabPanel'
@@ -26,27 +25,14 @@ import { TemplateSettingsFormValues } from './useTemplateSettingsForm'
 import { formatTemplateCustomizationString } from './utils/formatTemplateCustomizationString'
 import { getTemplateCustomizationFields } from './utils/getTemplateCustomizationFields'
 
+// Re-exported for backwards compatibility with the existing spec file.
+export { JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE } from '../../../../../../libs/useJourneyCustomizationDescriptionUpdateMutation'
+
 export const JOURNEY_FEATURE_UPDATE = gql`
   mutation JourneyFeature($id: ID!, $feature: Boolean!) {
     journeyFeature(id: $id, feature: $feature) {
       id
       featuredAt
-    }
-  }
-`
-
-export const JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE = gql`
-  mutation JourneyCustomizationDescriptionUpdate(
-    $journeyId: ID!
-    $string: String!
-  ) {
-    journeyCustomizationFieldPublisherUpdate(
-      journeyId: $journeyId
-      string: $string
-    ) {
-      id
-      key
-      value
     }
   }
 `
@@ -67,32 +53,15 @@ export function TemplateSettingsDialog({
   const [journeySettingsUpdate] = useJourneyUpdateMutation()
   const [journeyFeature] = useMutation<JourneyFeature>(JOURNEY_FEATURE_UPDATE)
   const [journeyCustomizationDescriptionUpdate] =
-    useMutation<JourneyCustomizationDescriptionUpdate>(
-      JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE
-    )
+    useJourneyCustomizationDescriptionUpdateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const isGlobalTemplate = journey?.team?.id === 'jfp-team'
 
-  const validationSchema = object({
-    strategySlug: string()
-      .trim()
-      .nullable()
-      .test('valid-embed-url', t('Invalid embed link'), (value) => {
-        if (value == null) return true
-        const canvaRegex =
-          /^https:\/\/www\.canva\.com\/design\/[a-zA-Z0-9/-]+\/(view|watch)$/
-
-        const googleSlidesRegex =
-          /^https:\/\/docs\.google\.com\/presentation\/d\/e\/[A-Za-z0-9-_]+\/pub\?(start=true|start=false)&(loop=true|loop=false)&delayms=\d+$/
-
-        const isValidCanvaLink = canvaRegex.test(value)
-        const isValidGoogleLink = googleSlidesRegex.test(value)
-        if (!isValidCanvaLink && !isValidGoogleLink) {
-          return false
-        }
-        return true
-      })
-  })
+  // NES-1678: strategy section UI was removed; the only Yup rule that
+  // existed in this dialog was the embed-URL validation for `strategySlug`,
+  // so the form no longer needs a validation schema. The `strategySlug`
+  // value still rides through `initialValues` → submit so existing slugs
+  // are preserved on save.
   const initialValues: TemplateSettingsFormValues = {
     title: journey?.title,
     description: journey?.description,
@@ -177,7 +146,6 @@ export function TemplateSettingsDialog({
     <Formik
       initialValues={initialValues}
       onSubmit={handleSubmit}
-      validationSchema={validationSchema}
       enableReinitialize
     >
       {({ handleSubmit, isSubmitting, resetForm }) => (
@@ -233,7 +201,7 @@ export function TemplateSettingsDialog({
                 index={isGlobalTemplate ? 2 : 1}
               >
                 <Stack sx={{ pt: 6 }} gap={5}>
-                  <AboutTabPanel showStrategySection={isGlobalTemplate} />
+                  <AboutTabPanel />
                 </Stack>
               </TabPanel>
             </>

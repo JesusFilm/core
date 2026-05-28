@@ -3,6 +3,7 @@ import { act, renderHook, waitFor } from '@testing-library/react'
 import axios from 'axios'
 import { SnackbarProvider, useSnackbar } from 'notistack'
 import { ReactNode } from 'react'
+import { type Mock } from 'vitest'
 
 import { refreshToken } from '../api'
 
@@ -17,33 +18,35 @@ import {
 } from './UploadVideoVariantProvider'
 
 // Mock axios
-jest.mock('axios', () => ({
-  put: jest.fn().mockResolvedValue({
-    headers: {
-      etag: '"etag-1"'
-    }
-  })
+vi.mock('axios', () => ({
+  default: {
+    put: vi.fn().mockResolvedValue({
+      headers: {
+        etag: '"etag-1"'
+      }
+    })
+  }
 }))
 
 // Mock useSnackbar
-jest.mock('notistack', () => ({
-  ...jest.requireActual('notistack'),
-  useSnackbar: jest.fn()
+vi.mock('notistack', async () => ({
+  ...(await vi.importActual('notistack')),
+  useSnackbar: vi.fn()
 }))
 
-jest.mock('uuid', () => ({
-  v4: jest.fn().mockReturnValue('uuidv4')
+vi.mock('uuid', () => ({
+  v4: vi.fn().mockReturnValue('uuidv4')
 }))
 
-jest.mock('../api', () => ({
-  refreshToken: jest.fn().mockResolvedValue('refreshed-token')
+vi.mock('../api', () => ({
+  refreshToken: vi.fn().mockResolvedValue('refreshed-token')
 }))
 
 // Mock the getExtension function
-jest.mock(
+vi.mock(
   '../(dashboard)/videos/[videoId]/audio/add/_utils/getExtension',
   () => ({
-    getExtension: jest.fn().mockReturnValue('.mp4')
+    getExtension: vi.fn().mockReturnValue('.mp4')
   })
 )
 
@@ -63,7 +66,7 @@ const prepareR2MultipartMock = {
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       cloudflareR2MultipartPrepare: {
         id: 'r2-asset.id',
@@ -259,12 +262,12 @@ const initialStateForTests = {
   videoSlug: null
 }
 
-const mockEnqueueSnackbar = jest.fn()
+const mockEnqueueSnackbar = vi.fn()
 
 const createWrapper = (mocks: any[] = []) => {
   return ({ children }: { children: ReactNode }) => {
     // Setup mock for useSnackbar
-    ;(useSnackbar as jest.Mock).mockReturnValue({
+    ;(useSnackbar as Mock).mockReturnValue({
       enqueueSnackbar: mockEnqueueSnackbar
     })
 
@@ -280,8 +283,8 @@ const createWrapper = (mocks: any[] = []) => {
 
 describe('UploadVideoVariantContext', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-    ;(refreshToken as jest.Mock).mockResolvedValue('refreshed-token')
+    vi.clearAllMocks()
+    ;(refreshToken as Mock).mockResolvedValue('refreshed-token')
   })
 
   it('should initialize with default state', () => {
@@ -316,9 +319,22 @@ describe('UploadVideoVariantContext', () => {
         wrapper: createWrapper(mocks)
       })
 
-      // Start upload
-      await act(async () => {
-        await result.current.startUpload(
+      // Kick off the upload. START_UPLOAD dispatches synchronously before the
+      // first await, so the metadata is observable mid-flight — before the
+      // pipeline reaches COMPLETE and resets state back to initial.
+      let resolveUpload: (value: {
+        headers: { etag: string }
+      }) => void = () => {}
+      ;(axios.put as Mock).mockImplementationOnce(
+        () =>
+          new Promise<{ headers: { etag: string } }>((resolve) => {
+            resolveUpload = resolve
+          })
+      )
+
+      let uploadPromise: Promise<void> = Promise.resolve()
+      act(() => {
+        uploadPromise = result.current.startUpload(
           file,
           'video-id',
           'language-id',
@@ -331,11 +347,18 @@ describe('UploadVideoVariantContext', () => {
       })
 
       // Should be in uploading state with correct metadata
-      // Note: In React 19, state updates may be batched, so we check after the initial async operation
-      expect(result.current.uploadState.videoId).toBe('video-id')
+      await waitFor(() => {
+        expect(result.current.uploadState.videoId).toBe('video-id')
+      })
       expect(result.current.uploadState.languageId).toBe('language-id')
       expect(result.current.uploadState.languageSlug).toBe('en')
       expect(result.current.uploadState.edition).toBe('base')
+
+      // Let the upload pipeline run to completion
+      await act(async () => {
+        resolveUpload({ headers: { etag: '"etag-1"' } })
+        await uploadPromise
+      })
 
       // Should call axios.put for file upload
       await waitFor(() => {

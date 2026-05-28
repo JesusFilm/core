@@ -85,10 +85,11 @@ describe('useJourneyQuery', () => {
       fromTemplateId: null,
       socialNodeX: null,
       socialNodeY: null,
-      customizable: null
+      customizable: null,
+      showAssistant: null
     }
 
-    const result = jest.fn(() => ({ data: { journey } }))
+    const result = vi.fn(() => ({ data: { journey } }))
 
     renderHook(
       () =>

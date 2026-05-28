@@ -102,7 +102,7 @@ describe('VideoLanguage', () => {
     })
   })
 
-  it('should call onClose when Apply clicked', async () => {
+  it('should call onClose when Apply clicked and no onApply provided', async () => {
     const { getByRole } = render(
       <VideoLanguage
         open
@@ -115,5 +115,24 @@ describe('VideoLanguage', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Apply' }))
     expect(handleClose).toHaveBeenCalled()
+  })
+
+  it('should call onApply (and not onClose) when Apply clicked with onApply provided', () => {
+    const handleApply = jest.fn()
+    const localHandleClose = jest.fn()
+    const { getByRole } = render(
+      <VideoLanguage
+        open
+        onClose={localHandleClose}
+        onChange={handleChange}
+        onApply={handleApply}
+        language={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={languages}
+        loading={false}
+      />
+    )
+    fireEvent.click(getByRole('button', { name: 'Apply' }))
+    expect(handleApply).toHaveBeenCalledTimes(1)
+    expect(localHandleClose).not.toHaveBeenCalled()
   })
 })

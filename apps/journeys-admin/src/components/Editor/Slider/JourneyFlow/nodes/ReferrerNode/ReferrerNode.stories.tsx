@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { Background, ReactFlow } from '@xyflow/react'
 import type { ComponentPropsWithoutRef } from 'react'
-import { Background, ReactFlow } from 'reactflow'
 
 import {
   EditorProvider,
@@ -60,6 +60,26 @@ export const Default = {
           __typename: 'PlausibleStatsResponse',
           property: 'Direct / None',
           visitors: 10
+        },
+        position: { x: 100, y: 0 }
+      }
+    ],
+    initialState: {}
+  }
+}
+
+export const QRCode = {
+  ...Template,
+  args: {
+    ...defaultFlowProps,
+    nodes: [
+      {
+        id: 'QR Code',
+        type: 'Referrer',
+        data: {
+          __typename: 'PlausibleStatsResponse',
+          property: 'QR Code',
+          visitors: 7
         },
         position: { x: 100, y: 0 }
       }

@@ -46,7 +46,8 @@ interface AlgoliaVideoRecord {
 
 interface AlgoliaRow {
   id: string
-  mediaComponentId: string
+  displayId: string
+  mediaComponentId: string | null
   title: string
   description: string
   subType: string
@@ -79,9 +80,15 @@ function getPrimaryText(
 }
 
 function mapAlgoliaHitToRow(hit: AlgoliaVideoRecord): AlgoliaRow {
+  const mediaComponentId =
+    hit.mediaComponentId != null && hit.mediaComponentId !== ''
+      ? hit.mediaComponentId
+      : null
+
   return {
     id: hit.objectID,
-    mediaComponentId: hit.mediaComponentId ?? hit.objectID,
+    displayId: mediaComponentId ?? hit.objectID,
+    mediaComponentId,
     title: getPrimaryText(hit.titles) || hit.title || '',
     description: getPrimaryText(hit.descriptions) || hit.description || '',
     subType: hit.subType ?? '',
@@ -126,8 +133,11 @@ function PublishedFilter(): ReactElement {
     }
   }
 
+  const publishedCount = publishedTrueItem?.count ?? 0
+  const draftCount = publishedFalseItem?.count ?? 0
+
   return (
-    <FormControl size="small" sx={{ minWidth: 170 }}>
+    <FormControl size="small" sx={{ minWidth: 200 }}>
       <InputLabel id="published-filter-label">Published</InputLabel>
       <Select
         labelId="published-filter-label"
@@ -135,9 +145,9 @@ function PublishedFilter(): ReactElement {
         value={selectedPublishedFilter}
         onChange={handlePublishedChange}
       >
-        <MenuItem value="both">Both</MenuItem>
-        <MenuItem value="published">Published</MenuItem>
-        <MenuItem value="draft">Draft</MenuItem>
+        <MenuItem value="both">Both ({publishedCount + draftCount})</MenuItem>
+        <MenuItem value="published">Published ({publishedCount})</MenuItem>
+        <MenuItem value="draft">Draft ({draftCount})</MenuItem>
       </Select>
     </FormControl>
   )
@@ -147,21 +157,20 @@ function AlgoliaInstantSearchResults(): ReactElement {
   const router = useRouter()
   const { query, refine } = useSearchBox()
   const { items } = useHits<AlgoliaVideoRecord>()
-  const { status, results, error } = useInstantSearch()
+  const { status, error } = useInstantSearch()
   const { currentRefinement, nbPages, refine: refinePage } = usePagination()
 
   const rows: GridRowsProp<AlgoliaRow> = items.map(mapAlgoliaHitToRow)
 
   const handleRowClick = (params: GridRowParams<AlgoliaRow>): void => {
     const selectedMediaComponentId = params.row.mediaComponentId
-    if (selectedMediaComponentId == null || selectedMediaComponentId === '')
-      return
+    if (selectedMediaComponentId == null) return
 
     router.push(`/videos/${selectedMediaComponentId}`)
   }
 
   const columns: GridColDef[] = [
-    { field: 'mediaComponentId', headerName: 'ID', minWidth: 220 },
+    { field: 'displayId', headerName: 'ID', minWidth: 220 },
     { field: 'title', headerName: 'Title', minWidth: 220, flex: 1 },
     {
       field: 'published',
@@ -183,20 +192,23 @@ function AlgoliaInstantSearchResults(): ReactElement {
   ]
 
   return (
-    <Stack sx={{ width: '100%', height: 'calc(100vh - 210px)' }} gap={2}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between">
-        <Typography variant="h4">Algolia Video Library</Typography>
-        <Typography variant="body2" color="text.secondary">
-          Results: {results?.nbHits ?? 0}
-        </Typography>
-      </Stack>
+    <Stack
+      sx={{
+        width: '100%',
+        height: 'calc(100vh - 210px)',
+        minHeight: 400,
+        overflow: 'hidden'
+      }}
+      gap={2}
+    >
+      <Typography variant="h4">Algolia Video Library</Typography>
       <Stack direction="row" spacing={1} alignItems="center">
         <TextField
           label="Search Algolia"
           value={query}
           onChange={(event) => refine(event.target.value)}
           size="small"
-          placeholder="Search titles, descriptions, and IDs"
+          placeholder="Search by ID, title, or description"
           sx={{ flexGrow: 1 }}
         />
         <PublishedFilter />
@@ -205,7 +217,7 @@ function AlgoliaInstantSearchResults(): ReactElement {
       <Typography variant="caption" color="text.secondary">
         Some Algolia records may not map to an editable admin video detail page.
       </Typography>
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1, minHeight: 0 }}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -213,14 +225,26 @@ function AlgoliaInstantSearchResults(): ReactElement {
           onRowClick={handleRowClick}
           disableRowSelectionOnClick
           hideFooter
+          getRowClassName={(params) =>
+            params.row.mediaComponentId == null ? 'row--disabled' : ''
+          }
           sx={{
             '& .MuiDataGrid-row': {
               cursor: 'pointer'
+            },
+            '& .row--disabled': {
+              cursor: 'default',
+              color: 'text.disabled'
             }
           }}
         />
       </Box>
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack
+        direction="row"
+        spacing={1}
+        alignItems="center"
+        sx={{ flexShrink: 0 }}
+      >
         <Button
           aria-label="Previous page"
           variant="outlined"

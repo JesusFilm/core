@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 
 import type { EventLabelOption, EventLabelType } from '../eventLabels'
 import { eventLabelOptions } from '../eventLabels'

@@ -19,12 +19,12 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../libs/use
 
 import { StepFooter } from './StepFooter'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('next/navigation', () => ({
+vi.mock('next/navigation', () => ({
   useParams: () => ({ stepSlug: null })
 }))
 
@@ -90,7 +90,8 @@ describe('StepFooter', () => {
     fromTemplateId: null,
     socialNodeX: null,
     socialNodeY: null,
-    customizable: null
+    customizable: null,
+    showAssistant: null
   }
 
   it('should render custom styles', () => {
@@ -135,7 +136,7 @@ describe('StepFooter', () => {
   })
 
   it('should call onFooterClick on click', () => {
-    const onFooterClick = jest.fn()
+    const onFooterClick = vi.fn()
     render(
       <MockedProvider>
         <SnackbarProvider>
@@ -167,7 +168,7 @@ describe('StepFooter', () => {
               journey: { ...journey, seoTitle: 'discovery journey title' }
             }}
           >
-            <StepFooter onFooterClick={jest.fn()} />
+            <StepFooter onFooterClick={vi.fn()} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>

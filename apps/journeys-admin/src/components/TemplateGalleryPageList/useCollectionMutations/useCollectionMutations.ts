@@ -1,0 +1,202 @@
+import { useTranslation } from 'next-i18next/pages'
+import { useSnackbar } from 'notistack'
+import { useEffect, useRef, useState } from 'react'
+
+import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
+import { useTemplateGalleryPageDeleteMutation } from '../../../libs/useTemplateGalleryPageDeleteMutation'
+import { useTemplateGalleryPagePublishMutation } from '../../../libs/useTemplateGalleryPagePublishMutation'
+import { useTemplateGalleryPageUnpublishMutation } from '../../../libs/useTemplateGalleryPageUnpublishMutation'
+
+interface CollectionMutations {
+  /** Id of the collection currently mid-mutation, or null when idle. */
+  busyId: string | null
+  /**
+   * Publishes the collection. Resolves to the just-published collection
+   * on success, or null if the mutation failed (the snackbar already
+   * told the user). The parent uses the resolved value to open the
+   * success dialog with the now-live public URL.
+   */
+  publish: (
+    collection: TemplateGalleryPage
+  ) => Promise<TemplateGalleryPage | null>
+  unpublish: (collection: TemplateGalleryPage) => Promise<void>
+  ungroup: (collection: TemplateGalleryPage) => Promise<void>
+}
+
+/**
+ * Wraps the publish / unpublish / delete mutations with shared snackbar
+ * + busy-id bookkeeping. Extracted out of TemplateGalleryPageList so each
+ * mutation flow is unit-testable in isolation.
+ */
+export function useCollectionMutations(): CollectionMutations {
+  const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
+  const [busyId, setBusyId] = useState<string | null>(null)
+  // Each mutation's `setBusyId(null)` lands after an await — if the
+  // consumer unmounts mid-flight we'd be writing to dead state and React
+  // would warn. Gate the post-await setState on this ref.
+  //
+  // Setup MUST flip `mountedRef.current = true`. Under React StrictMode
+  // (Next.js dev) effects run setup → cleanup → setup. A body-less setup
+  // would leave the ref stuck at `false` after the second setup, breaking
+  // every later `setBusyId(null)` in finally — which is exactly the bug
+  // that left the 3-dot menu permanently disabled after an unpublish.
+  const mountedRef = useRef(true)
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
+
+  // Synchronous double-mutation guard. `busyId` is React state, so its
+  // read inside the guard reflects the value from the closure's render
+  // — two synchronous clicks (different rows, same render snapshot)
+  // both see `busyId === null` and both proceed past the check. A ref
+  // flips inside the same JS tick that fires the mutation, so the
+  // second invocation sees `true` and returns immediately. Mirrors the
+  // same pattern in `useCollectionForm.handleSubmit`.
+  const submittingRef = useRef(false)
+
+  const [templateGalleryPagePublish] = useTemplateGalleryPagePublishMutation()
+  const [templateGalleryPageUnpublish] =
+    useTemplateGalleryPageUnpublishMutation()
+  const [templateGalleryPageDelete] = useTemplateGalleryPageDeleteMutation()
+
+  function showError(error: unknown, fallback: string): void {
+    // Guarded so a mutation that rejects after the consumer unmounted
+    // doesn't enqueue a snackbar onto the next page's SnackbarProvider.
+    if (!mountedRef.current) return
+    enqueueSnackbar(error instanceof Error ? error.message : fallback, {
+      variant: 'error',
+      preventDuplicate: true
+    })
+  }
+
+  // Surface a visible info toast when a second mutation is dropped by
+  // the synchronous submit guard — without it, the user clicks
+  // something and nothing happens, with no signal explaining why
+  // (Mike review, NES-1644).
+  function showBusy(): void {
+    if (!mountedRef.current) return
+    enqueueSnackbar(t('Please wait for the current action to finish.'), {
+      variant: 'info',
+      preventDuplicate: true
+    })
+  }
+
+  async function publish(
+    collection: TemplateGalleryPage
+  ): Promise<TemplateGalleryPage | null> {
+    // Entry-guard: a second concurrent click on a different row would
+    // overwrite busyId mid-flight and de-disable the first row's menu
+    // before its mutation resolved. `busyId` (state) can't gate this
+    // synchronously because React batches the setBusyId call; the ref
+    // does — see the submittingRef comment near the hook top.
+    if (submittingRef.current) {
+      showBusy()
+      return null
+    }
+    submittingRef.current = true
+    setBusyId(collection.id)
+    try {
+      const { data } = await templateGalleryPagePublish({
+        variables: { id: collection.id }
+      })
+      const result = data?.templateGalleryPagePublish
+      if (result == null) {
+        // Apollo can resolve a mutation without throwing even when `data`
+        // is null — e.g. a partial GraphQL error reaches `errorPolicy:
+        // 'all'` consumers as `{ data: null, errors: [...] }`. Silently
+        // returning null here leaves the user staring at a no-op button,
+        // identical to the failure mode the catch branch protects
+        // against. Surface a snackbar so the user gets the same signal.
+        showError(null, t("Couldn't publish collection"))
+        return null
+      }
+      // Merge server-set fields (status, publishedAt, updatedAt, slug)
+      // into the input collection so the caller can open the success
+      // dialog with the live public URL — and so any later read sees
+      // the same authoritative timestamps as the gallery list refetch.
+      return {
+        ...collection,
+        status: result.status,
+        publishedAt: result.publishedAt,
+        updatedAt: result.updatedAt,
+        slug: result.slug
+      }
+    } catch (error) {
+      showError(error, t("Couldn't publish collection"))
+      return null
+    } finally {
+      submittingRef.current = false
+      if (mountedRef.current) setBusyId(null)
+    }
+  }
+
+  async function unpublish(collection: TemplateGalleryPage): Promise<void> {
+    if (submittingRef.current) {
+      showBusy()
+      return
+    }
+    submittingRef.current = true
+    setBusyId(collection.id)
+    try {
+      const { data } = await templateGalleryPageUnpublish({
+        variables: { id: collection.id }
+      })
+      if (data?.templateGalleryPageUnpublish == null) {
+        // Mutation resolved with `null` data (partial GraphQL error,
+        // `errorPolicy: 'all'`, etc.). Surface a snackbar so the user
+        // gets the same signal as the catch branch — without this they
+        // see a silent 3-dot-menu re-enable and assume the unpublish
+        // worked.
+        showError(null, t("Couldn't unpublish collection"))
+        return
+      }
+      if (mountedRef.current) {
+        enqueueSnackbar(t('Collection unpublished'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      }
+    } catch (error) {
+      showError(error, t("Couldn't unpublish collection"))
+    } finally {
+      submittingRef.current = false
+      if (mountedRef.current) setBusyId(null)
+    }
+  }
+
+  async function ungroup(collection: TemplateGalleryPage): Promise<void> {
+    if (submittingRef.current) {
+      showBusy()
+      return
+    }
+    submittingRef.current = true
+    setBusyId(collection.id)
+    try {
+      const { data } = await templateGalleryPageDelete({
+        variables: { id: collection.id }
+      })
+      if (data?.templateGalleryPageDelete == null) {
+        // Same null-result trap as publish/unpublish above.
+        showError(null, t("Couldn't remove collection"))
+        return
+      }
+      if (mountedRef.current) {
+        enqueueSnackbar(t('Collection removed'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      }
+    } catch (error) {
+      showError(error, t("Couldn't remove collection"))
+    } finally {
+      submittingRef.current = false
+      if (mountedRef.current) setBusyId(null)
+    }
+  }
+
+  return { busyId, publish, unpublish, ungroup }
+}

@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import Grid from '@mui/material/GridLegacy'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import type { ComponentProps, MouseEvent, ReactElement } from 'react'
 
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
