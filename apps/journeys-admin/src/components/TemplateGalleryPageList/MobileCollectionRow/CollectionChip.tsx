@@ -144,7 +144,7 @@ export function CollectionChip({
             gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
             gridTemplateRows: { xs: '1fr', md: '1fr 1fr' },
             gap: '2px',
-            bgcolor: { xs: 'rgba(0, 0, 0, 0.06)', md: 'grey.200' }
+            bgcolor: 'grey.200'
           }}
         >
           {imageTiles.map((tile, index) => (
@@ -153,11 +153,11 @@ export function CollectionChip({
               sx={{
                 position: 'relative',
                 overflow: 'hidden',
-                // Original subtle fill on mobile; on desktop a mid-grey well
-                // dark enough to read as distinct, yet still lighter than the
-                // placeholder logo's light-grey segment (#DEDFE0 / divider) so
-                // the logo doesn't blend in.
-                bgcolor: { xs: 'rgba(0, 0, 0, 0.06)', md: 'grey.200' },
+                // Mid-grey well: dark enough to read as a distinct area, yet
+                // still lighter than the placeholder logo's light-grey segment
+                // (#DEDFE0 / divider) so the logo doesn't blend in. Same value
+                // on mobile and desktop.
+                bgcolor: 'grey.200',
                 // The first tile always shows; the rest of the 2x2 grid is
                 // desktop-only (mobile keeps a single image).
                 display: index === 0 ? 'block' : { xs: 'none', md: 'block' },
