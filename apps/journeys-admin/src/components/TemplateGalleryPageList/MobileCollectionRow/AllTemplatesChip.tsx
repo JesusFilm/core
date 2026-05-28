@@ -47,7 +47,7 @@ export function AllTemplatesChip({
         // Match the collection chips' height (doubled on desktop) so the row
         // stays aligned.
         height: { xs: 72, md: 144 },
-        minWidth: { xs: 120, md: 160 },
+        minWidth: { xs: 120, md: 220 },
         px: 2,
         display: 'flex',
         flexDirection: 'column',
@@ -56,7 +56,7 @@ export function AllTemplatesChip({
         textAlign: 'left',
         borderRadius: 2,
         border: 1,
-        borderColor: active ? 'primary.main' : 'divider',
+        borderColor: active ? 'primary.main' : 'grey.400',
         backgroundColor: 'background.paper',
         outline: isOver ? '2px solid' : 'none',
         outlineColor: 'primary.dark',

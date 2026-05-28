@@ -96,7 +96,7 @@ describe('CollectionChip', () => {
     )
   })
 
-  it('renders the status dot for a published collection', () => {
+  it('renders a "Live" status label for a published collection', () => {
     render(
       <Wrapper>
         <CollectionChip
@@ -109,7 +109,22 @@ describe('CollectionChip', () => {
         />
       </Wrapper>
     )
-    expect(screen.getByTestId('CollectionChipStatusDot')).toBeInTheDocument()
+    expect(screen.getByText('Live')).toBeInTheDocument()
+  })
+
+  it('renders a "Draft" status label for an unpublished collection', () => {
+    render(
+      <Wrapper>
+        <CollectionChip
+          collection={makeCollection({
+            status: TemplateGalleryPageStatus.draft
+          })}
+          selected={false}
+          onSelect={jest.fn()}
+        />
+      </Wrapper>
+    )
+    expect(screen.getByText('Draft')).toBeInTheDocument()
   })
 
   it('shows a "+N" overflow tile when a collection has more than four templates', () => {

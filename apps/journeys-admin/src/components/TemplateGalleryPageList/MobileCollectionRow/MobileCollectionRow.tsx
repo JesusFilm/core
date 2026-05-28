@@ -74,7 +74,11 @@ export const MobileCollectionRow = forwardRef<
         px: 2
       }}
     >
-      <Stack direction="row" spacing={3} sx={{ width: 'max-content' }}>
+      <Stack
+        direction="row"
+        spacing={{ xs: 3, md: 4 }}
+        sx={{ width: 'max-content' }}
+      >
         <AllTemplatesChip
           selected={selectedCollectionId == null}
           count={allTemplatesCount}

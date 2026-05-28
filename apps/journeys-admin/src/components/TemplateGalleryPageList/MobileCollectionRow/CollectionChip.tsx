@@ -11,6 +11,7 @@ import { ReactElement } from 'react'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
 import logoGray from '../../../../public/logo-grayscale.svg'
+import { LabelChip } from '../../LabelChip'
 import { encodeDropZoneId } from '../Droppables'
 
 export interface CollectionChipProps {
@@ -31,11 +32,11 @@ type ChipImageTile =
 
 /**
  * Collection filter as a card: a preview of the collection's template images on
- * the left third, the collection title and a template-count subtext on the
- * right two thirds. On desktop the chip is doubled in size and the preview is a
- * 2x2 grid of up to four images (>4 templates → three images + a "+N" tile);
- * on mobile it stays compact with a single image. Doubles as a dnd-kit drop
- * target and a selectable filter.
+ * the left, the collection title and a template-count subtext on the right. On
+ * desktop the chip is enlarged and the preview is a 2x2 grid of up to four
+ * images (>4 templates → three images + a "+N" tile); on mobile it stays
+ * compact with a single image. A status label (Live / Draft) sits beside the
+ * title. Doubles as a dnd-kit drop target and a selectable filter.
  */
 export function CollectionChip({
   collection,
@@ -101,8 +102,8 @@ export function CollectionChip({
         aria-pressed={selected}
         aria-label={collection.title}
         sx={{
-          // Doubled on desktop (md+); compact on mobile (xs/sm).
-          width: { xs: 250, md: 500 },
+          // Enlarged on desktop (md+); compact on mobile (xs/sm).
+          width: { xs: 250, md: 400 },
           height: { xs: 72, md: 144 },
           flexShrink: 0,
           display: 'flex',
@@ -120,7 +121,7 @@ export function CollectionChip({
             ? 'text.disabled'
             : active
               ? 'primary.main'
-              : 'divider',
+              : 'grey.400',
           backgroundColor: 'background.paper',
           outline: isOver && !isPublished ? '2px solid' : 'none',
           outlineColor: 'primary.dark',
@@ -134,13 +135,15 @@ export function CollectionChip({
         <Box
           sx={{
             position: 'relative',
-            width: '33.333%',
+            // Mobile: a third of the compact chip. Desktop: a fixed-width 2x2
+            // preview so shrinking the chip only narrows the text side.
+            width: { xs: '33.333%', md: 168 },
             flexShrink: 0,
             display: 'grid',
             gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
             gridTemplateRows: { xs: '1fr', md: '1fr 1fr' },
             gap: '2px',
-            bgcolor: 'rgba(0, 0, 0, 0.06)'
+            bgcolor: 'grey.50'
           }}
         >
           {imageTiles.map((tile, index) => (
@@ -149,7 +152,9 @@ export function CollectionChip({
               sx={{
                 position: 'relative',
                 overflow: 'hidden',
-                bgcolor: 'rgba(0, 0, 0, 0.06)',
+                // Light fill so the grayscale placeholder logo (which has a
+                // light-grey segment) stays visible against it.
+                bgcolor: 'grey.50',
                 // The first tile always shows; the rest of the 2x2 grid is
                 // desktop-only (mobile keeps a single image).
                 display: index === 0 ? 'block' : { xs: 'none', md: 'block' },
@@ -211,16 +216,11 @@ export function CollectionChip({
           sx={{ flex: 1, minWidth: 0, justifyContent: 'center', px: 1.5 }}
         >
           <Stack direction="row" alignItems="center" spacing={0.75}>
-            <Box
-              data-testid="CollectionChipStatusDot"
-              aria-hidden
-              sx={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                bgcolor: isPublished ? 'success.main' : 'warning.main',
-                flexShrink: 0
-              }}
+            <LabelChip
+              data-testid="CollectionChipStatusLabel"
+              color={isPublished ? 'success' : 'default'}
+              label={isPublished ? t('Live') : t('Draft')}
+              sx={{ flexShrink: 0 }}
             />
             <Typography
               variant="subtitle2"
