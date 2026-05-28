@@ -52,12 +52,12 @@ import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
 import { CollectionDialog } from './CollectionDialog'
 import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
 import {
-  CompactPills,
   DesignVariantTabs,
-  FinderColumns,
-  FinderSidebar,
   FolderGrid,
   LibrarySidebar,
+  PublishHero,
+  PublishPipeline,
+  PublishPriority,
   type CollectionViewProps,
   type DesignVariant
 } from './DesignVariants'
@@ -821,16 +821,16 @@ export function TemplateGalleryPageList({
                           : null
                     }
                     switch (activeVariant) {
-                      case 'finderSidebar':
-                        return <FinderSidebar {...variantProps} />
-                      case 'finderColumns':
-                        return <FinderColumns {...variantProps} />
-                      case 'compactPills':
-                        return <CompactPills {...variantProps} />
                       case 'folderGrid':
                         return <FolderGrid {...variantProps} />
                       case 'librarySidebar':
                         return <LibrarySidebar {...variantProps} />
+                      case 'publishPipeline':
+                        return <PublishPipeline {...variantProps} />
+                      case 'publishPriority':
+                        return <PublishPriority {...variantProps} />
+                      case 'publishHero':
+                        return <PublishHero {...variantProps} />
                       default:
                         return null
                     }

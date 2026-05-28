@@ -1,1 +1,0 @@
-export { CompactPills } from './CompactPills'

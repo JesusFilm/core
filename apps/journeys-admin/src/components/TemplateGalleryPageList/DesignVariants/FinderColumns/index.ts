@@ -1,1 +1,0 @@
-export { FinderColumns } from './FinderColumns'

@@ -12,30 +12,30 @@ export type { Journey, TemplateGalleryPage }
  */
 export type DesignVariant =
   | 'original'
-  | 'finderSidebar'
-  | 'finderColumns'
-  | 'compactPills'
   | 'folderGrid'
   | 'librarySidebar'
+  | 'publishPipeline'
+  | 'publishPriority'
+  | 'publishHero'
 
 /** Ordered list of variants used for the tab strip + array indexing. */
 export const DESIGN_VARIANTS: readonly DesignVariant[] = [
   'original',
-  'finderSidebar',
-  'finderColumns',
-  'compactPills',
   'folderGrid',
-  'librarySidebar'
+  'librarySidebar',
+  'publishPipeline',
+  'publishPriority',
+  'publishHero'
 ] as const
 
 /** Human-readable labels for the design-variant tabs. */
 export const VARIANT_LABELS: Record<DesignVariant, string> = {
   original: 'Original',
-  finderSidebar: 'Finder Sidebar',
-  finderColumns: 'Finder Columns',
-  compactPills: 'Compact Pills',
   folderGrid: 'Folder Grid',
-  librarySidebar: 'Library Sidebar'
+  librarySidebar: 'Library Sidebar',
+  publishPipeline: 'Publish Pipeline',
+  publishPriority: 'Publish Priority',
+  publishHero: 'Publish Hero'
 }
 
 /**

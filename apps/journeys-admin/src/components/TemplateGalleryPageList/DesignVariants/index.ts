@@ -1,10 +1,10 @@
 export { DesignVariantTabs } from './DesignVariantTabs'
 export type { DesignVariantTabsProps } from './DesignVariantTabs'
-export { FinderSidebar } from './FinderSidebar'
-export { FinderColumns } from './FinderColumns'
-export { CompactPills } from './CompactPills'
 export { FolderGrid } from './FolderGrid'
 export { LibrarySidebar } from './LibrarySidebar'
+export { PublishPipeline } from './PublishPipeline'
+export { PublishPriority } from './PublishPriority'
+export { PublishHero } from './PublishHero'
 export {
   DESIGN_VARIANTS,
   VARIANT_LABELS,
