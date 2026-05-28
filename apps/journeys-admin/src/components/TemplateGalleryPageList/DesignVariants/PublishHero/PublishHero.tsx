@@ -236,16 +236,20 @@ export function PublishHero({
           ) : (
             <Box
               data-testid="PublishHeroDraggableScope"
-              // Drag-affordance layer (the "cheap" discoverability cues):
-              //   - `cursor: grab` on every template card so the user sees the
-              //     universal "you can pick this up" signal on hover.
-              //   - A small ⋮⋮ handle overlay that appears in the top-left of
-              //     each card on hover. Top-left to avoid the existing menu
-              //     button in the top-right, and `pointerEvents: none` so it
-              //     doesn't intercept clicks/drags.
-              // Scoped via `& .MuiCard-root` so it only applies to template
-              // cards inside this scope — the hero card and sidebar rows are
-              // unaffected.
+              // Drag-affordance layer for the template cards in this scope:
+              //   - `cursor: grab` on every card (and `grabbing` while
+              //     active) — the universal "you can pick this up" signal.
+              //   - On hover, a centered "move" icon (Material Design's
+              //     open_with — four arrows pointing out) overlays the image
+              //     area on a translucent dark badge so the affordance reads
+              //     against any thumbnail. The badge sits at ~25% from the
+              //     top of the card, which lands inside the image region of
+              //     the standard JourneyCard layout.
+              //   - The overlay is `pointerEvents: none` so it never
+              //     intercepts clicks or drags.
+              // Scoped via `& .MuiCard-root` so only template cards inside
+              // this scope are affected — the hero card and sidebar rows
+              // stay untouched.
               sx={{
                 '& .MuiCard-root': {
                   cursor: 'grab',
@@ -254,28 +258,26 @@ export function PublishHero({
                     cursor: 'grabbing'
                   },
                   '&::after': {
-                    content: '"⋮⋮"',
+                    content: '""',
                     position: 'absolute',
-                    top: 6,
-                    left: 6,
-                    width: 22,
-                    height: 22,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    letterSpacing: '-1px',
-                    color: 'common.white',
-                    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                    top: '25%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 56,
+                    height: 56,
                     borderRadius: '50%',
+                    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                    backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z'/></svg>")`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundSize: '28px 28px',
                     opacity: 0,
-                    transition: 'opacity 150ms ease',
                     pointerEvents: 'none',
-                    zIndex: 1
+                    transition: 'opacity 150ms ease',
+                    zIndex: 2
                   },
                   '&:hover::after': {
-                    opacity: 0.9
+                    opacity: 1
                   }
                 }
               }}
