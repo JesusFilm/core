@@ -227,11 +227,58 @@ export function PublishHero({
               allTemplatesCount={allTemplatesCount}
             />
           ) : (
-            <DraggableJourneysGrid
-              journeys={filteredJourneys}
-              publishedLock={publishedLock}
-              dragInFlight={dragInFlight}
-            />
+            <Box
+              data-testid="PublishHeroDraggableScope"
+              // Drag-affordance layer (the "cheap" discoverability cues):
+              //   - `cursor: grab` on every template card so the user sees the
+              //     universal "you can pick this up" signal on hover.
+              //   - A small ⋮⋮ handle overlay that appears in the top-left of
+              //     each card on hover. Top-left to avoid the existing menu
+              //     button in the top-right, and `pointerEvents: none` so it
+              //     doesn't intercept clicks/drags.
+              // Scoped via `& .MuiCard-root` so it only applies to template
+              // cards inside this scope — the hero card and sidebar rows are
+              // unaffected.
+              sx={{
+                '& .MuiCard-root': {
+                  cursor: 'grab',
+                  position: 'relative',
+                  '&:active': {
+                    cursor: 'grabbing'
+                  },
+                  '&::after': {
+                    content: '"⋮⋮"',
+                    position: 'absolute',
+                    top: 6,
+                    left: 6,
+                    width: 22,
+                    height: 22,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    letterSpacing: '-1px',
+                    color: 'common.white',
+                    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                    borderRadius: '50%',
+                    opacity: 0,
+                    transition: 'opacity 150ms ease',
+                    pointerEvents: 'none',
+                    zIndex: 1
+                  },
+                  '&:hover::after': {
+                    opacity: 0.9
+                  }
+                }
+              }}
+            >
+              <DraggableJourneysGrid
+                journeys={filteredJourneys}
+                publishedLock={publishedLock}
+                dragInFlight={dragInFlight}
+              />
+            </Box>
           )}
         </Stack>
       </Stack>
