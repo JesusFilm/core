@@ -1,0 +1,1 @@
+export { FinderSidebar } from './FinderSidebar'

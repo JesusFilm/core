@@ -51,6 +51,16 @@ import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
 
 import { CollectionDialog } from './CollectionDialog'
 import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
+import {
+  CompactPills,
+  DesignVariantTabs,
+  FinderColumns,
+  FinderSidebar,
+  FolderGrid,
+  LibrarySidebar,
+  type CollectionViewProps,
+  type DesignVariant
+} from './DesignVariants'
 import { DraggableJourneysGrid, UnsectionedDroppable } from './Droppables'
 import {
   GalleryDialogLockContext,
@@ -270,6 +280,13 @@ export function TemplateGalleryPageList({
   const [filterCollectionId, setFilterCollectionId] = useState<string | null>(
     null
   )
+  // Design-lab: which collection layout to render. `original` is the
+  // production chip-row UI; the other values are exploration prototypes
+  // (NES-1695 — Finder Sidebar, Finder Columns, Compact Pills, Folder Grid,
+  // Library Sidebar). Desktop-only — variants target desktop folder-system
+  // layouts; mobile (useMobileLayout) always renders the production layout
+  // regardless of this value.
+  const [activeVariant, setActiveVariant] = useState<DesignVariant>('original')
   // `dragInFlight` drives rendering (busy chips, droppable lock); the ref
   // is the synchronous source of truth for gating a second drop that
   // arrives within the same tick as a setState batch — state would read
@@ -695,69 +712,129 @@ export function TemplateGalleryPageList({
           >
             {showCollectionsSection ? (
               <>
-                {/* Shared chip-filter UI across breakpoints, shown only when the
-                    Collections section is active (>=1 active template). The
-                    `Mobile*` component names are historical — they are used on
-                    desktop too now. Drop targets are the chips; the content
-                    below shows the active filter's templates. */}
-                <MobileCollectionRow
-                  collections={collections}
-                  allTemplatesCount={allTemplates.length}
-                  selectedCollectionId={filterCollectionId}
-                  onSelect={setFilterCollectionId}
-                  dropDisabled={interactionsLocked}
+                {/* Design-lab variant tabs (desktop-only). Lets the team
+                    compare the production chip-row layout against the
+                    exploration variants. Mobile always renders the
+                    production layout regardless of which tab is active. */}
+                <DesignVariantTabs
+                  value={activeVariant}
+                  onChange={setActiveVariant}
                 />
-                {/* Title strip for the active filter — the collection name (with
-                    its actions menu) or "All Templates" — above the content. */}
-                <MobileFilterHeaderStrip
-                  selectedCollection={selectedCollection}
-                  count={filteredJourneys.length}
-                  onEdit={handleEdit}
-                  onPublish={handleOpenPublish}
-                  onUngroup={handleUngroup}
-                  busy={
-                    (selectedCollection != null &&
-                      busyId === selectedCollection.id) ||
-                    dragInFlight
-                  }
-                  canPublish={canPublish}
-                  publishBlockedReason={
-                    publishBlockedReason != null
-                      ? t(publishBlockedReason)
-                      : null
-                  }
-                />
-                {filteredJourneys.length === 0 ? (
-                  <Box
-                    sx={{ p: 4, color: 'text.disabled', textAlign: 'center' }}
-                  >
-                    <Typography variant="body2">
-                      {selectedCollection != null
-                        ? t(
-                            'No templates yet — drag templates here to add them.'
-                          )
-                        : allTemplates.length === 0
-                          ? t('No team templates yet.')
-                          : t('All templates are in collections.')}
-                    </Typography>
-                  </Box>
-                ) : useMobileLayout ? (
-                  // Mobile: compact list rows.
-                  <MobileTemplateList
-                    journeys={filteredJourneys}
-                    allowReorder={selectedCollection != null}
-                    dragInFlight={interactionsLocked}
-                  />
+                {useMobileLayout || activeVariant === 'original' ? (
+                  <>
+                    {/* Shared chip-filter UI across breakpoints, shown only when the
+                        Collections section is active (>=1 active template). The
+                        `Mobile*` component names are historical — they are used on
+                        desktop too now. Drop targets are the chips; the content
+                        below shows the active filter's templates. */}
+                    <MobileCollectionRow
+                      collections={collections}
+                      allTemplatesCount={allTemplates.length}
+                      selectedCollectionId={filterCollectionId}
+                      onSelect={setFilterCollectionId}
+                      dropDisabled={interactionsLocked}
+                    />
+                    {/* Title strip for the active filter — the collection name
+                        (with its actions menu) or "All Templates" — above the
+                        content. */}
+                    <MobileFilterHeaderStrip
+                      selectedCollection={selectedCollection}
+                      count={filteredJourneys.length}
+                      onEdit={handleEdit}
+                      onPublish={handleOpenPublish}
+                      onUngroup={handleUngroup}
+                      busy={
+                        (selectedCollection != null &&
+                          busyId === selectedCollection.id) ||
+                        dragInFlight
+                      }
+                      canPublish={canPublish}
+                      publishBlockedReason={
+                        publishBlockedReason != null
+                          ? t(publishBlockedReason)
+                          : null
+                      }
+                    />
+                    {filteredJourneys.length === 0 ? (
+                      <Box
+                        sx={{
+                          p: 4,
+                          color: 'text.disabled',
+                          textAlign: 'center'
+                        }}
+                      >
+                        <Typography variant="body2">
+                          {selectedCollection != null
+                            ? t(
+                                'No templates yet — drag templates here to add them.'
+                              )
+                            : allTemplates.length === 0
+                              ? t('No team templates yet.')
+                              : t('All templates are in collections.')}
+                        </Typography>
+                      </Box>
+                    ) : useMobileLayout ? (
+                      // Mobile: compact list rows.
+                      <MobileTemplateList
+                        journeys={filteredJourneys}
+                        allowReorder={selectedCollection != null}
+                        dragInFlight={interactionsLocked}
+                      />
+                    ) : (
+                      // Desktop: the richer card grid for the active filter.
+                      <DraggableJourneysGrid
+                        journeys={filteredJourneys}
+                        publishedLock={
+                          selectedCollection?.status ===
+                          TemplateGalleryPageStatus.published
+                        }
+                        dragInFlight={interactionsLocked}
+                      />
+                    )}
+                  </>
                 ) : (
-                  // Desktop: the richer card grid for the active filter.
-                  <DraggableJourneysGrid
-                    journeys={filteredJourneys}
-                    publishedLock={
-                      selectedCollection?.status ===
-                      TemplateGalleryPageStatus.published
+                  // Desktop design-lab variants. Each variant receives the
+                  // same `CollectionViewProps` and renders its own full
+                  // collection-picker + template-grid layout. The parent's
+                  // DndContext wraps everything, so drop targets registered
+                  // inside the variants share the production drag-end
+                  // handler — drag a template onto a variant's collection
+                  // element and it routes through the existing pipeline.
+                  (() => {
+                    const variantProps: CollectionViewProps = {
+                      collections,
+                      allTemplatesCount: allTemplates.length,
+                      selectedCollectionId: filterCollectionId,
+                      onSelectCollection: setFilterCollectionId,
+                      dropDisabled: interactionsLocked,
+                      filteredJourneys,
+                      selectedCollection,
+                      dragInFlight: interactionsLocked,
+                      onEdit: handleEdit,
+                      onOpenPublish: handleOpenPublish,
+                      onUngroup: handleUngroup,
+                      busyId,
+                      canPublish,
+                      publishBlockedReason:
+                        publishBlockedReason != null
+                          ? t(publishBlockedReason)
+                          : null
                     }
-                    dragInFlight={interactionsLocked}
-                  />
+                    switch (activeVariant) {
+                      case 'finderSidebar':
+                        return <FinderSidebar {...variantProps} />
+                      case 'finderColumns':
+                        return <FinderColumns {...variantProps} />
+                      case 'compactPills':
+                        return <CompactPills {...variantProps} />
+                      case 'folderGrid':
+                        return <FolderGrid {...variantProps} />
+                      case 'librarySidebar':
+                        return <LibrarySidebar {...variantProps} />
+                      default:
+                        return null
+                    }
+                  })()
                 )}
               </>
             ) : (
