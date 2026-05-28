@@ -109,6 +109,8 @@ export function CollectionChip({
           display: 'flex',
           alignItems: 'stretch',
           textAlign: 'left',
+          // 8px breathing room between the chip border and its contents.
+          p: 2,
           // Card-like radius, not a pill.
           borderRadius: 2,
           overflow: 'hidden',

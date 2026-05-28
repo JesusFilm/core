@@ -49,7 +49,8 @@ export function AllTemplatesChip({
         // desktop so the row stays uniform.
         height: { xs: 72, md: 144 },
         minWidth: { xs: 120, md: 400 },
-        px: 2,
+        // 8px breathing room between the chip border and its contents.
+        p: 2,
         display: 'flex',
         flexDirection: 'column',
         alignItems: { xs: 'flex-start', md: 'center' },
