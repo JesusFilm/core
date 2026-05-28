@@ -74,7 +74,7 @@ function toData(
       title: journey.title,
       description: journey.description,
       slug: journey.slug,
-      createdAt: journey.createdAt != null ? String(journey.createdAt) : null,
+      createdAt: journey.createdAt,
       languageName: journey.language.name,
       image:
         journey.primaryImageBlock != null

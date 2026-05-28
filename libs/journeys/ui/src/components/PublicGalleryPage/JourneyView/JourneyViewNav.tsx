@@ -64,7 +64,11 @@ export function JourneyViewNav({
   ariaLabel
 }: JourneyViewNavProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const [activeId, setActiveId] = useState<string | null>(null)
+  // Seed the first section as active so the first link is highlighted on the
+  // very first paint, before the IntersectionObserver fires its first callback.
+  const [activeId, setActiveId] = useState<string | null>(
+    () => sections[0]?.id ?? null
+  )
   const [scrolled, setScrolled] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -209,7 +213,7 @@ export function JourneyViewNav({
       <IconButton
         aria-label={ariaLabel}
         aria-haspopup="true"
-        aria-controls={drawerOpen ? 'gallery-nav-drawer' : undefined}
+        aria-controls="gallery-nav-drawer"
         aria-expanded={drawerOpen ? 'true' : undefined}
         onClick={handleOpenDrawer}
         sx={{

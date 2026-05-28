@@ -51,7 +51,7 @@ export function metaLine(item: PublicGalleryPageItem): string {
   )
 
   const parsedCreatedAt =
-    item.createdAt != null ? parseISO(String(item.createdAt)) : null
+    item.createdAt != null ? parseISO(item.createdAt) : null
   const date =
     parsedCreatedAt != null && isValid(parsedCreatedAt)
       ? intlFormat(parsedCreatedAt, { month: 'long', year: 'numeric' })
@@ -163,6 +163,7 @@ export function JourneyViewCard({
             <JourneyViewCardActions
               itemId={item.id}
               itemSlug={item.slug}
+              itemTitle={item.title}
               accent={GALLERY_ACCENT}
               fullWidth
               decorative={decorative}
@@ -248,6 +249,7 @@ export function JourneyViewCard({
       <JourneyViewCardActions
         itemId={item.id}
         itemSlug={item.slug}
+        itemTitle={item.title}
         accent={GALLERY_ACCENT}
         fullWidth
         decorative={decorative}

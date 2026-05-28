@@ -21,13 +21,12 @@ describe('TemplateGalleryView', () => {
         gallery={makeGallery({ templates: [mockTemplate] })}
       />
     )
-    expect(screen.getByRole('link', { name: 'Use' })).toHaveAttribute(
+    expect(screen.getByTestId('GalleryTemplateCardUseButton')).toHaveAttribute(
       'href',
       'https://admin.nextstep.is/?useTemplate=template-1'
     )
-    expect(screen.getByRole('link', { name: 'Preview' })).toHaveAttribute(
-      'href',
-      '/sample-template'
-    )
+    expect(
+      screen.getByTestId('GalleryTemplateCardPreviewButton')
+    ).toHaveAttribute('href', '/sample-template')
   })
 })

@@ -24,12 +24,16 @@ describe('PublicGalleryPage', () => {
           data={makeData({ items: makeItems(5) })}
         />
       )
-      expect(screen.getAllByRole('link', { name: 'Use' })[0]).toHaveAttribute(
+      // Per-card aria-labels (e.g. "Use {{title}}") mean role-name queries
+      // don't resolve in this stubbed-t environment; testids are stable.
+      expect(
+        screen.getAllByTestId('GalleryTemplateCardUseButton')[0]
+      ).toHaveAttribute(
         'href',
         'https://admin.nextstep.is/?useTemplate=template-0'
       )
       expect(
-        screen.getAllByRole('link', { name: 'Preview' })[0]
+        screen.getAllByTestId('GalleryTemplateCardPreviewButton')[0]
       ).toHaveAttribute('href', '/template-0')
     })
 

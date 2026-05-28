@@ -25,7 +25,7 @@ function toData(gallery: TemplateGalleryPage): PublicGalleryPageData {
       title: template.title,
       description: template.description,
       slug: template.slug,
-      createdAt: template.createdAt != null ? String(template.createdAt) : null,
+      createdAt: template.createdAt,
       languageName: template.language.name,
       image:
         template.primaryImageBlock != null
