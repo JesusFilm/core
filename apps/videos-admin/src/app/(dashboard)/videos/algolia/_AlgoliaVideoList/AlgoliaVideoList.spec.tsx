@@ -91,15 +91,25 @@ describe('AlgoliaVideoList', () => {
   it('renders search and published filter controls with facet counts', () => {
     render(<AlgoliaVideoList />)
 
-    expect(screen.getByLabelText('Search Algolia')).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Previous page' })).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Next page' })).toBeTruthy()
-    expect(screen.getByRole('combobox', { name: 'Published' })).toBeTruthy()
+    expect(screen.getByLabelText('Search Algolia')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Previous page' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Next page' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('combobox', { name: 'Published' })
+    ).toBeInTheDocument()
 
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Published' }))
-    expect(screen.getByRole('option', { name: 'Both (3)' })).toBeTruthy()
-    expect(screen.getByRole('option', { name: 'Published (2)' })).toBeTruthy()
-    expect(screen.getByRole('option', { name: 'Draft (1)' })).toBeTruthy()
+    expect(screen.getByRole('option', { name: 'Both (3)' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: 'Published (2)' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: 'Draft (1)' })
+    ).toBeInTheDocument()
   })
 
   it('renders mapped hits and published draft chips', () => {
@@ -132,8 +142,8 @@ describe('AlgoliaVideoList', () => {
 
     render(<AlgoliaVideoList />)
 
-    expect(screen.getByText('English Title')).toBeTruthy()
-    expect(screen.getByText('Fallback Title')).toBeTruthy()
+    expect(screen.getByText('English Title')).toBeInTheDocument()
+    expect(screen.getByText('Fallback Title')).toBeInTheDocument()
     const publishedChips = screen.getAllByTestId('PublishedChip')
     expect(publishedChips).toHaveLength(2)
     expect(publishedChips.map((chip) => chip.textContent)).toEqual(
@@ -206,7 +216,7 @@ describe('AlgoliaVideoList', () => {
       screen.getByText(
         'Set NEXT_PUBLIC_ALGOLIA_APP_ID and NEXT_PUBLIC_ALGOLIA_API_KEY to use this tab.'
       )
-    ).toBeTruthy()
+    ).toBeInTheDocument()
     expect(mockAlgoliaSearch).not.toHaveBeenCalled()
   })
 
@@ -222,7 +232,7 @@ describe('AlgoliaVideoList', () => {
 
     expect(
       screen.getByText('Set NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS to use this tab.')
-    ).toBeTruthy()
-    expect(screen.queryByLabelText('Search Algolia')).toBeNull()
+    ).toBeInTheDocument()
+    expect(screen.queryByLabelText('Search Algolia')).not.toBeInTheDocument()
   })
 })
