@@ -16,7 +16,6 @@ import { TreeBlock } from '@core/journeys/ui/block'
 
 import { CreateMuxVideoUploadByFileMutation } from '../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { GetMyMuxVideoQuery } from '../../../__generated__/GetMyMuxVideoQuery'
-
 import { prependMuxVideo } from '../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/MyMuxVideos/prependMuxVideo'
 
 import { addUploadToQueue as addUploadTaskUtil } from './utils/addUploadToQueue'
