@@ -144,6 +144,16 @@ const journeysMockWithArchivedJourney: MockedResponse<GetAdminJourneys> = {
 }
 
 describe('TemplateGalleryPageList', () => {
+  // The "new view" trial toggle defaults OFF (flat grid, no collections);
+  // existing specs assert against the collections / chip-row UI, which is
+  // now the ON state — flip the localStorage flag so render() picks it up.
+  beforeEach(() => {
+    window.localStorage.setItem('nes1695-templates-new-view', 'true')
+  })
+  afterEach(() => {
+    window.localStorage.removeItem('nes1695-templates-new-view')
+  })
+
   it('renders the Collections header and a filter chip per collection', async () => {
     const { getByText, getByTestId } = render(
       <MockedProvider

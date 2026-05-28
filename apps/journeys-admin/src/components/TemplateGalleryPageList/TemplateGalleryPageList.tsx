@@ -14,15 +14,20 @@ import {
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
+import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import {
+  ChangeEvent,
   ReactElement,
   useCallback,
   useEffect,
@@ -49,8 +54,11 @@ import { useTemplateGalleryPageCreateMutation } from '../../libs/useTemplateGall
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
 import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
 
+import { JourneyCard } from '../JourneyList/JourneyCard'
+
 import { CollectionDialog } from './CollectionDialog'
 import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
+import { COLLECTION_GRID_SPACING } from './collectionLayout'
 import {
   DesignVariantTabs,
   FolderGrid,
@@ -287,6 +295,30 @@ export function TemplateGalleryPageList({
   // layouts; mobile (useMobileLayout) always renders the production layout
   // regardless of this value.
   const [activeVariant, setActiveVariant] = useState<DesignVariant>('original')
+
+  // Opt-in trial of the new folder-based view. When OFF (default), the
+  // Active templates panel renders as a flat grid with no collections,
+  // matching the existing Archived/Trashed pattern — keeps coherence with
+  // Team Projects' Active/Archived/Trashed/3-dot model. When ON, the user
+  // sees the new collection + design-lab world (DesignVariantTabs and the
+  // PublishHero-style folder navigation). Persisted to localStorage so the
+  // user's choice survives navigation. Mobile + Archived + Trashed are
+  // unaffected by this flag.
+  const NEW_VIEW_STORAGE_KEY = 'nes1695-templates-new-view'
+  const [newViewEnabled, setNewViewEnabled] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false
+    return window.localStorage.getItem(NEW_VIEW_STORAGE_KEY) === 'true'
+  })
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem(NEW_VIEW_STORAGE_KEY, String(newViewEnabled))
+  }, [newViewEnabled])
+  function handleToggleNewView(
+    _event: ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ): void {
+    setNewViewEnabled(checked)
+  }
   // `dragInFlight` drives rendering (busy chips, droppable lock); the ref
   // is the synchronous source of truth for gating a second drop that
   // arrives within the same tick as a setState batch — state would read
@@ -667,7 +699,42 @@ export function TemplateGalleryPageList({
   return (
     <GalleryDialogLockContext.Provider value={galleryDialogLockValue}>
       <Box sx={{ p: { xs: 2, md: 4 } }} data-testid="TemplateGalleryPageList">
-        {showCollectionsSection && (
+        {/* Opt-in trial toggle for the new folder-based view. Only shown in
+            the Active sub-filter — Archived / Trashed already render as a
+            flat list and aren't part of the trial. */}
+        {status === 'active' && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              mb: 2
+            }}
+          >
+            <FormControlLabel
+              data-testid="TemplatesNewViewToggleLabel"
+              control={
+                <Switch
+                  data-testid="TemplatesNewViewToggle"
+                  checked={newViewEnabled}
+                  onChange={handleToggleNewView}
+                  inputProps={{
+                    'aria-label': t('Toggle the new templates view')
+                  }}
+                />
+              }
+              label={
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <Typography variant="body2">
+                    {t('Try the new view')}
+                  </Typography>
+                  <Chip label={t('Beta')} size="small" />
+                </Stack>
+              }
+              sx={{ mr: 0 }}
+            />
+          </Box>
+        )}
+        {showCollectionsSection && newViewEnabled && (
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -754,7 +821,37 @@ export function TemplateGalleryPageList({
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            {showCollectionsSection ? (
+            {status === 'active' && !newViewEnabled ? (
+              // Trial OFF (default in active mode): flat grid of all active
+              // templates. No collections, no chip row, no DesignVariantTabs
+              // — matches the visual pattern of the Archived / Trashed
+              // panels so navigating between sub-filters feels coherent.
+              // Cards render without drag wiring (no SortableContext, no
+              // droppable underneath) — drag-and-drop only exists in the
+              // new view.
+              <Box data-testid="TemplatesFlatGrid">
+                {allTemplates.length === 0 ? (
+                  <Box
+                    sx={{ p: 4, color: 'text.disabled', textAlign: 'center' }}
+                  >
+                    <Typography variant="body2">
+                      {t('No team templates yet.')}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Grid container spacing={COLLECTION_GRID_SPACING}>
+                    {allTemplates.map((journey) => (
+                      <Grid
+                        key={journey.id}
+                        size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
+                      >
+                        <JourneyCard journey={journey} />
+                      </Grid>
+                    ))}
+                  </Grid>
+                )}
+              </Box>
+            ) : showCollectionsSection ? (
               <>
                 {/* Design-lab variant tabs (desktop-only). Lets the team
                     compare the production chip-row layout against the
