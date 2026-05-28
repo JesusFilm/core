@@ -203,11 +203,13 @@ export function JourneyCardMenu({
         data-testid="JourneyCardMenuButton"
         onClick={handleOpenMenu}
         sx={{
-          // `plain` (mobile list row) is sized to sit inline with the row's
-          // metrics line — a compact 24px target with a 16px glyph, matching
-          // the metric icons. `on-image` keeps the original card-overlay size.
-          width: variant === 'plain' ? 24 : { xs: '44px', sm: '20px' },
-          height: variant === 'plain' ? 24 : { xs: '44px', sm: '30px' },
+          // `plain` (mobile list row): the visible icon button is 44px wide,
+          // but the tap area stretches to the full row height (height: 100%)
+          // so the menu is easy to hit anywhere down the row's side. The
+          // IconButton inside stays 44×44 and centers within. `on-image`
+          // keeps the original card-overlay size.
+          width: variant === 'plain' ? 44 : { xs: '44px', sm: '20px' },
+          height: variant === 'plain' ? '100%' : { xs: '44px', sm: '30px' },
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -224,8 +226,8 @@ export function JourneyCardMenu({
             variant === 'plain'
               ? {
                   color: 'text.secondary',
-                  width: 24,
-                  height: 24,
+                  width: 44,
+                  height: 44,
                   p: 0,
                   pointerEvents: 'none'
                 }
@@ -246,10 +248,7 @@ export function JourneyCardMenu({
                 }
           }
         >
-          <MoreIcon
-            data-testid="MoreIcon"
-            sx={variant === 'plain' ? { fontSize: 16 } : undefined}
-          />
+          <MoreIcon data-testid="MoreIcon" />
         </IconButton>
       </Box>
       <Menu

@@ -247,14 +247,16 @@ export function MobileTemplateListRow({
         </Stack>
       </CardActionArea>
 
-      {/* Menu sits OUTSIDE the CardActionArea so taps on it don't trigger
-          navigation. Anchored to the bottom-right of the content column. */}
+      {/* Menu column — sits OUTSIDE the CardActionArea so taps on the menu
+          don't trigger navigation. Sized to match the drag handle column and
+          centered vertically; sits at flex-end, just before the drag handle. */}
       <Box
+        data-testid="MobileTemplateListRowMenuColumn"
         sx={{
-          position: 'absolute',
-          bottom: 4,
-          right: DRAG_HANDLE_WIDTH + 2,
-          zIndex: 2
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0
         }}
       >
         <JourneyCardMenu

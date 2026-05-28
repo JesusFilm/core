@@ -65,13 +65,20 @@ export const MobileCollectionRow = forwardRef<
         scrollbarWidth: 'none',
         '&::-webkit-scrollbar': { display: 'none' },
         py: 1.5,
-        // Bleed past both the gallery's own `px` (2) and MainPanelBody's body
-        // padding (px: { xs: 0, sm: 8 }) so the chip row runs edge-to-edge on
-        // phone and tablet, while the gallery's text headers stay inset. On
-        // desktop (md+) the row aligns within the gallery padding instead of
-        // bleeding — md resets the negative margin the sm value would carry up.
-        mx: { xs: -2, sm: -10, md: 0 },
-        px: 2
+        // Bleed the scroll container past both the gallery's own `p`
+        // (xs:2 / md:4) and MainPanelBody's body padding (px: { xs: 0, sm: 8 })
+        // so the chip row runs edge-to-edge of the available area on every
+        // breakpoint — phone/tablet to the screen edges, desktop to the navbar
+        // edge on the left and the info help panel edge on the right. The
+        // gallery's text headers stay inset within the gallery's padding.
+        mx: { xs: -2, sm: -10, md: -12 },
+        // Inner padding keeps the first chip (All Templates) aligned with its
+        // existing position when scrolled to the start: original 8px inset on
+        // mobile, and on desktop pl:14 (= gallery padding 16 + MainPanelBody
+        // padding 32 + original 8px inset) so it lands exactly where it sat
+        // before the bleed.
+        pl: { xs: 2, md: 14 },
+        pr: 2
       }}
     >
       {/* spacing 3 (12px) matches the journey-card grid gap below the chips
