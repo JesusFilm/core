@@ -33,7 +33,7 @@ const VideoDetails = dynamic(
 const VideoFromMux = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoLibrary/VideoFromCMux/VideoFromMux" */ './VideoFromMux'
+      /* webpackChunkName: "Editor/VideoLibrary/VideoFromMux/VideoFromMux" */ './VideoFromMux'
     ).then((mod) => mod.VideoFromMux),
   { ssr: false }
 )
@@ -124,9 +124,14 @@ export function VideoLibrary({
         activeUpload?.status === 'uploading' ||
         activeUpload?.status === 'processing' ||
         activeUpload?.status === 'waiting'
-      if (isActive) {
+      // Only announce a cancellation for user-driven selects (Select / Apply,
+      // which pass shouldCloseDrawer=true). A natural upload completion calls
+      // onSelect with shouldCloseDrawer=false while the task is still mid-flight
+      // (onComplete fires before the 'completed' status commits), so without
+      // this guard a successful upload would show a false "cancelled" message.
+      if (isActive && shouldCloseDrawer) {
         enqueueSnackbar(t('Video upload cancelled'), {
-          variant: 'error',
+          variant: 'info',
           preventDuplicate: true
         })
       }

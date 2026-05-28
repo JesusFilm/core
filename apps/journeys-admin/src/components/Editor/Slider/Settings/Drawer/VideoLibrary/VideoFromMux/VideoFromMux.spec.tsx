@@ -29,10 +29,12 @@ jest.mock('@core/shared/ui/FlagsProvider', () => ({
   useFlags: () => mockUseFlags()
 }))
 
+const mockGetUploadStatus = jest.fn(() => null as null | { status: string })
+
 jest.mock('../../../../../../MuxVideoUploadProvider', () => ({
   __esModule: true,
   useMuxVideoUpload: () => ({
-    getUploadStatus: () => null,
+    getUploadStatus: mockGetUploadStatus,
     addUploadTask: jest.fn(),
     cancelUploadForBlock: jest.fn()
   })
@@ -40,10 +42,17 @@ jest.mock('../../../../../../MuxVideoUploadProvider', () => ({
 
 jest.mock('./MyMuxVideos', () => ({
   __esModule: true,
-  MyMuxVideos: ({ selectedVideoId }: { selectedVideoId?: string | null }) => (
+  MyMuxVideos: ({
+    selectedVideoId,
+    uploading
+  }: {
+    selectedVideoId?: string | null
+    uploading?: boolean
+  }) => (
     <div
       data-testid="mock-my-mux-videos"
       data-selected-video-id={selectedVideoId ?? ''}
+      data-uploading={String(uploading ?? false)}
     />
   )
 }))
@@ -210,6 +219,25 @@ describe('VideoFromMux', () => {
       </MockedProvider>
     )
     expect(screen.getByTestId('mock-my-mux-videos')).toBeInTheDocument()
+  })
+
+  it('should pass uploading=true to MyMuxVideos while the selected block has an active upload', () => {
+    mockUseFlags.mockReturnValue({ mediaLibrary: true })
+    mockGetUploadStatus.mockReturnValue({ status: 'processing' })
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider initialState={{ selectedBlock: selectedVideoBlock }}>
+            <VideoFromMux onSelect={jest.fn()} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('mock-my-mux-videos')).toHaveAttribute(
+      'data-uploading',
+      'true'
+    )
+    mockGetUploadStatus.mockReset()
   })
 
   it('should pass selectedVideoId from the videoBlock prop when block source is mux', () => {

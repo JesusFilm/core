@@ -40,27 +40,6 @@ interface MyMuxVideosProps {
 export const PAGE_SIZE = 10
 const PEEK_LIMIT = PAGE_SIZE + 1
 
-interface RenderedVideo {
-  id: string
-  playbackId: string
-  thumbnail: string
-}
-
-function toRenderedVideos(
-  nodes: readonly (MuxVideoNode | null)[]
-): RenderedVideo[] {
-  return nodes.flatMap((node) =>
-    node == null || !node.readyToStream || node.playbackId == null
-      ? []
-      : [
-          {
-            id: node.id,
-            playbackId: node.playbackId,
-            thumbnail: `https://image.mux.com/${node.playbackId}/thumbnail.png?time=1`
-          }
-        ]
-  )
-}
 
 export function MyMuxVideos({
   selectedVideoId,
@@ -86,7 +65,7 @@ export function MyMuxVideos({
 
   const isFetchingMore = networkStatus === NetworkStatus.fetchMore
 
-  const allVideos = toRenderedVideos(data?.getMyMuxVideos ?? [])
+  const allVideos = data?.getMyMuxVideos ?? []
   const videos = allVideos.slice(0, pagesFetched * PAGE_SIZE)
   const hasMore = allVideos.length > pagesFetched * PAGE_SIZE
 
@@ -94,8 +73,8 @@ export function MyMuxVideos({
     !loading && error == null && uploading !== true && videos.length === 0
   if (isEmpty) return null
 
-  const handleClick = (video: RenderedVideo): void => {
-    setPreviewVideo({ id: video.id, playbackId: video.playbackId })
+  const handleClick = (video: MuxVideoNode): void => {
+    setPreviewVideo({ id: video.id, playbackId: video.playbackId as string })
   }
 
   const handlePreviewClose = (): void => {
@@ -166,7 +145,7 @@ export function MyMuxVideos({
               >
                 <Box
                   component="img"
-                  src={video.thumbnail}
+                  src={`https://image.mux.com/${video.playbackId as string}/thumbnail.png?time=1`}
                   alt=""
                   loading="lazy"
                   decoding="async"

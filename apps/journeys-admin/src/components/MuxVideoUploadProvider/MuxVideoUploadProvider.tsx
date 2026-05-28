@@ -17,6 +17,8 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { CreateMuxVideoUploadByFileMutation } from '../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { GetMyMuxVideoQuery } from '../../../__generated__/GetMyMuxVideoQuery'
 
+import { prependMuxVideo } from '../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/MyMuxVideos/prependMuxVideo'
+
 import { addUploadToQueue as addUploadTaskUtil } from './utils/addUploadToQueue'
 import { cancelUploadForBlock as cancelUploadForBlockUtil } from './utils/cancelUploadForBlock'
 import { MAX_POLL_TIME, POLL_INTERVAL } from './utils/constants'
@@ -109,7 +111,7 @@ export function MuxVideoUploadProvider({
   const apolloClient = useApolloClient()
 
   const handlePollingCompleteCallback = useCallback(
-    async (videoId: string) => {
+    async (videoId: string, playbackId: string) => {
       await handlePollingComplete(videoId, {
         pollingTasks,
         setPollingTasks,
@@ -117,7 +119,14 @@ export function MuxVideoUploadProvider({
         t,
         pollingIntervalsRef
       })
-      void apolloClient.refetchQueries({ include: ['GetMyMuxVideos'] })
+      // Surgical cache prepend — mirrors prependCloudflareImage in the image
+      // picker. Avoids the offsetLimitPagination refetch-stomp where an
+      // offset:0 refetch would overwrite accumulated later pages.
+      prependMuxVideo(apolloClient.cache, {
+        id: videoId,
+        playbackId,
+        readyToStream: true
+      })
     },
     [showSnackbar, t, pollingTasks, pollingIntervalsRef, apolloClient]
   )
@@ -230,8 +239,8 @@ export function MuxVideoUploadProvider({
             video?.assetId != null &&
             video?.playbackId != null
 
-          if (isVideoReady) {
-            await handlePollingCompleteCallback(videoId)
+          if (isVideoReady && video?.playbackId != null) {
+            await handlePollingCompleteCallback(videoId, video.playbackId)
             return
           }
 

@@ -122,7 +122,6 @@ export function MuxDetails({
             onClick={handleSelect}
             size="small"
             sx={{ backgroundColor: 'secondary.dark' }}
-            disabled={playbackId == null}
           >
             {t('Select')}
           </Button>

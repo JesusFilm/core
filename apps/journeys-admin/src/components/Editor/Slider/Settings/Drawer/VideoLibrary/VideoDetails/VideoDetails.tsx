@@ -65,6 +65,9 @@ export function VideoDetails({
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
 
+  // playbackId is only consumed by MuxDetails; LocalDetails and YouTubeDetails
+  // accept a narrower prop set and harmlessly ignore it. It stays in this shared
+  // shape so VideoDetails can forward it generically without a per-source branch.
   let Details: (
     props: Pick<
       VideoDetailsProps,

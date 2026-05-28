@@ -1235,4 +1235,57 @@ describe('VideoLibrary', () => {
     )
     expect(onClose).not.toHaveBeenCalled()
   })
+
+  it('should not show a cancellation snackbar when an upload completes naturally (shouldCloseDrawer=false)', async () => {
+    const onSelect = jest.fn()
+    const editorBlock = {
+      id: 'bg-card-id',
+      __typename: 'CardBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      children: []
+    } as unknown as TreeBlock<VideoBlock>
+
+    // Active upload exists for the block, but the completion path passes
+    // shouldCloseDrawer=false — the snackbar must stay suppressed.
+    mockGetUploadStatus.mockImplementation((id: string) =>
+      id === editorBlock.id
+        ? {
+            videoBlockId: editorBlock.id,
+            file: new File(['test'], 'test.mp4', { type: 'video/mp4' }),
+            status: 'processing',
+            progress: 100
+          }
+        : null
+    )
+
+    mockRouter()
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock: editorBlock }}>
+            <MuxVideoUploadProvider>
+              <VideoLibrary open onSelect={onSelect} />
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
+    await waitFor(() =>
+      expect(
+        screen.getByTestId('mock-mux-background-complete')
+      ).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByTestId('mock-mux-background-complete'))
+
+    expect(onSelect).toHaveBeenCalledWith(
+      { videoId: 'mux-bg-id', source: 'mux' },
+      false
+    )
+    expect(screen.queryByText('Video upload cancelled')).not.toBeInTheDocument()
+    mockGetUploadStatus.mockReset()
+  })
 })

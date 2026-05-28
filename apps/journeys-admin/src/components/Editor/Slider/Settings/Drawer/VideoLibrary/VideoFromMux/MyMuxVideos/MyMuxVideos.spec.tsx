@@ -53,34 +53,7 @@ const readyVideo = (id: string): GetMyMuxVideos['getMyMuxVideos'][number] => ({
   readyToStream: true
 })
 
-const notReadyVideo = (
-  id: string
-): GetMyMuxVideos['getMyMuxVideos'][number] => ({
-  __typename: 'MuxVideo',
-  id,
-  playbackId: null,
-  readyToStream: false
-})
-
 describe('MyMuxVideos', () => {
-  it('should render only ready-to-stream videos with playbackId', async () => {
-    render(
-      <MockedProvider
-        mocks={[
-          buildMock([readyVideo('a'), notReadyVideo('b'), readyVideo('c')])
-        ]}
-      >
-        <MyMuxVideos onSelect={jest.fn()} />
-      </MockedProvider>
-    )
-
-    await waitFor(() => {
-      expect(screen.getByTestId('my-mux-video-a')).toBeInTheDocument()
-    })
-    expect(screen.getByTestId('my-mux-video-c')).toBeInTheDocument()
-    expect(screen.queryByTestId('my-mux-video-b')).not.toBeInTheDocument()
-  })
-
   it('should render uploading skeleton tile when uploading is true', async () => {
     render(
       <MockedProvider mocks={[buildMock([readyVideo('a')])]}>
@@ -215,5 +188,68 @@ describe('MyMuxVideos', () => {
     expect(
       screen.getByTestId('my-mux-video-a').getAttribute('aria-pressed')
     ).toBe('false')
+  })
+
+  it('should show an error message when the query fails', async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_MY_MUX_VIDEOS,
+              variables: { offset: 0, limit: PEEK_LIMIT }
+            },
+            error: new Error('Network error')
+          }
+        ]}
+      >
+        <MyMuxVideos onSelect={jest.fn()} />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Could not load your videos.')
+      ).toBeInTheDocument()
+    })
+    expect(screen.getByTestId('MyMuxVideos')).toBeInTheDocument()
+  })
+
+  it('should not advance pagination when Load More fails', async () => {
+    const firstPage = Array.from({ length: PEEK_LIMIT }, (_, i) =>
+      readyVideo(`v${i}`)
+    )
+
+    render(
+      <MockedProvider
+        cache={buildCache()}
+        mocks={[
+          buildMock(firstPage, { offset: 0, limit: PEEK_LIMIT }),
+          {
+            request: {
+              query: GET_MY_MUX_VIDEOS,
+              variables: { offset: PAGE_SIZE, limit: PEEK_LIMIT }
+            },
+            error: new Error('Network error')
+          }
+        ]}
+      >
+        <MyMuxVideos onSelect={jest.fn()} />
+      </MockedProvider>
+    )
+
+    const loadMore = await screen.findByRole('button', { name: 'Load More' })
+    fireEvent.click(loadMore)
+
+    // fetchMore rejects: pagesFetched stays at 1, so the peek-beyond tile
+    // (v{PAGE_SIZE}) never renders and Load More remains available.
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'Load More' })
+      ).toBeInTheDocument()
+    })
+    expect(
+      screen.queryByTestId(`my-mux-video-v${PAGE_SIZE}`)
+    ).not.toBeInTheDocument()
   })
 })
