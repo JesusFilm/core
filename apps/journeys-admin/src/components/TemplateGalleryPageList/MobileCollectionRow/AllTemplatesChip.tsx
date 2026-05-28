@@ -56,9 +56,9 @@ export function AllTemplatesChip({
         py: 2,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: { xs: 'flex-start', md: 'center' },
+        alignItems: 'center',
         justifyContent: 'center',
-        textAlign: { xs: 'left', md: 'center' },
+        textAlign: 'center',
         borderRadius: 2,
         border: 1,
         borderColor: active
