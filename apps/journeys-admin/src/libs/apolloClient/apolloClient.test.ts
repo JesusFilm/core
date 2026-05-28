@@ -105,7 +105,7 @@ describe('SSELink', () => {
               )
               resolve()
             } catch (error) {
-              reject(error)
+              reject(error instanceof Error ? error : new Error(String(error)))
             }
           },
           error: reject
@@ -148,7 +148,7 @@ describe('SSELink', () => {
               expect(mockSubscribe).toHaveBeenCalled()
               resolve()
             } catch (error) {
-              reject(error)
+              reject(error instanceof Error ? error : new Error(String(error)))
             }
           },
           error: reject
@@ -189,7 +189,7 @@ describe('SSELink', () => {
               expect(err).toBe(sseError)
               resolve()
             } catch (error) {
-              reject(error)
+              reject(error instanceof Error ? error : new Error(String(error)))
             }
           }
         })
@@ -346,7 +346,7 @@ describe('createErrorLink', () => {
             expect(err.message).toBe('Session expired')
             resolve()
           } catch (error) {
-            reject(error)
+            reject(error instanceof Error ? error : new Error(String(error)))
           }
         }
       })
@@ -387,7 +387,7 @@ describe('createErrorLink', () => {
           try {
             expect(mockLogout).not.toHaveBeenCalled()
           } catch (error) {
-            reject(error)
+            reject(error instanceof Error ? error : new Error(String(error)))
           }
         },
         complete: resolve,
