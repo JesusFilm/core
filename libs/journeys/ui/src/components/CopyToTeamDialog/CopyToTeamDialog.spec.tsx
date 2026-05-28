@@ -1,6 +1,8 @@
+import { type FetchResult } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
@@ -14,18 +16,18 @@ import {
 import { CopyToTeamDialog } from './CopyToTeamDialog'
 
 describe('CopyToTeamDialog', () => {
-  const handleCloseMenuMock = jest.fn()
-  const handleSubmitActionMock = jest.fn()
+  const handleCloseMenuMock = vi.fn()
+  const handleSubmitActionMock = vi.fn()
 
   afterEach(() => {
     handleCloseMenuMock.mockClear()
     handleSubmitActionMock.mockClear()
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('dialog interactions', () => {
     it('should set initial team selection if only 1 team', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
           getJourneyProfile: {
@@ -83,16 +85,18 @@ describe('CopyToTeamDialog', () => {
               }
             }
           },
-          result: jest.fn(() => ({
-            data: {
-              journeyProfileUpdate: {
-                __typename: 'JourneyProfile',
-                id: 'teamId'
+          result: vi.fn(
+            (): FetchResult<UpdateLastActiveTeamId> => ({
+              data: {
+                journeyProfileUpdate: {
+                  __typename: 'JourneyProfile',
+                  id: 'teamId'
+                }
               }
-            }
-          }))
+            })
+          )
         }
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           teams: [
             {
@@ -170,16 +174,18 @@ describe('CopyToTeamDialog', () => {
               }
             }
           },
-          result: jest.fn(() => ({
-            data: {
-              journeyProfileUpdate: {
-                __typename: 'JourneyProfile',
-                id: 'teamId'
+          result: vi.fn(
+            (): FetchResult<UpdateLastActiveTeamId> => ({
+              data: {
+                journeyProfileUpdate: {
+                  __typename: 'JourneyProfile',
+                  id: 'teamId'
+                }
               }
-            }
-          }))
+            })
+          )
         }
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           teams: [
             {
@@ -243,7 +249,7 @@ describe('CopyToTeamDialog', () => {
     })
 
     it('should show translation UI when isTranslating is true', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
           getJourneyProfile: {
@@ -329,7 +335,7 @@ describe('CopyToTeamDialog', () => {
     })
 
     it('should call on close action on dialog close', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
           getJourneyProfile: {
@@ -560,7 +566,7 @@ describe('CopyToTeamDialog', () => {
     })
 
     it('should close dialog normally when translation is not enabled', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
           getJourneyProfile: {
@@ -580,14 +586,16 @@ describe('CopyToTeamDialog', () => {
               }
             }
           },
-          result: jest.fn(() => ({
-            data: {
-              journeyProfileUpdate: {
-                __typename: 'JourneyProfile',
-                id: 'teamId'
+          result: vi.fn(
+            (): FetchResult<UpdateLastActiveTeamId> => ({
+              data: {
+                journeyProfileUpdate: {
+                  __typename: 'JourneyProfile',
+                  id: 'teamId'
+                }
               }
-            }
-          }))
+            })
+          )
         }
 
       const { getByRole } = render(
@@ -657,8 +665,8 @@ describe('CopyToTeamDialog', () => {
     }: {
       defaultToActiveTeam?: boolean
       lastActiveTeamId: string | null
-    }): ReturnType<typeof render> & { queryResult: jest.Mock } {
-      const queryResult = jest.fn(() => ({
+    }): ReturnType<typeof render> & { queryResult: Mock } {
+      const queryResult = vi.fn(() => ({
         data: {
           teams: [
             { id: 'team-a', title: 'Team A', __typename: 'Team' },

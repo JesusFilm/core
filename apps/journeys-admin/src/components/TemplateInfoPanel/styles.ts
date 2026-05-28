@@ -8,52 +8,37 @@ import { SxProps, Theme } from '@mui/material/styles'
  * file. Per-section overrides spread these and override what they need.
  */
 
-/** Open Sans Regular 16/24 — `Body/1` token used for paragraph copy. */
-export const bodySx: SxProps<Theme> = {
-  fontFamily: 'Open Sans, sans-serif',
-  fontWeight: 400,
-  fontSize: 16,
-  lineHeight: '24px',
-  color: 'text.primary'
-}
+/**
+ * Open Sans Bold 14/22 (Editor/Secondary/Light grey) — in-body sub-headings
+ * above template variants and sub-sections (e.g. "Quick-Start", "Regular",
+ * "Links, Images, Video", "Text"). Derives from the `body2` variant (there is
+ * no bold-14 variant) so its size tracks the body copy (NES-1696).
+ */
+export const subHeadingSx: SxProps<Theme> = (theme) => ({
+  ...theme.typography.body2,
+  fontWeight: 700,
+  color: 'text.secondary'
+})
 
 /**
- * Open Sans Bold 16/24 in the Editor/Secondary/Light grey — used for the
- * in-body sub-headings above template variants and sub-sections (e.g.
- * "Quick-Start", "Regular", "Links, Images, Video", "Text", "Canva",
- * "Google Slides", "Troubleshooting").
+ * Decimal-style numbered list used for "do this, then this" step sequences.
+ * The <li> elements borrow the `body2` variant via `sx` (a raw <li> can't
+ * take a Typography `variant`).
  */
-export const subHeadingSx: SxProps<Theme> = {
-  fontFamily: 'Open Sans, sans-serif',
-  fontWeight: 700,
-  fontSize: 16,
-  lineHeight: '24px',
-  color: 'text.secondary'
-}
-
-const listItemSx: SxProps<Theme> = {
-  fontFamily: 'Open Sans, sans-serif',
-  fontWeight: 400,
-  fontSize: 16,
-  lineHeight: '24px',
-  color: 'text.primary'
-}
-
-/** Decimal-style numbered list used for "do this, then this" step sequences. */
-export const numberedListSx: SxProps<Theme> = {
+export const numberedListSx: SxProps<Theme> = (theme) => ({
   pl: 3,
   m: 0,
   listStyle: 'decimal',
-  '& li': listItemSx
-}
+  '& li': { ...theme.typography.body2, color: 'text.primary' }
+})
 
 /** Bullet-style list used for unordered enumerations inside a section body. */
-export const bulletListSx: SxProps<Theme> = {
+export const bulletListSx: SxProps<Theme> = (theme) => ({
   pl: 3,
   m: 0,
   listStyle: 'disc',
-  '& li': listItemSx
-}
+  '& li': { ...theme.typography.body2, color: 'text.primary' }
+})
 
 /**
  * Visual chrome for an embedded screenshot or GIF slot in a section body.

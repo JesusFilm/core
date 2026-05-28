@@ -9,7 +9,7 @@ describe('TagCarousels', () => {
   it('should render TagCarousels', async () => {
     const { getByTestId, getAllByTestId, getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels onChange={jest.fn()} />
+        <TagCarousels onChange={vi.fn()} />
       </MockedProvider>
     )
 
@@ -38,7 +38,7 @@ describe('TagCarousels', () => {
   })
 
   it('should filter by felt needs tag', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagCarousels onChange={onChange} />
@@ -63,7 +63,7 @@ describe('TagCarousels', () => {
   })
 
   it('should filter out felt needs tags that have no backgrounds', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole, queryAllByText } = render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagCarousels onChange={onChange} />
@@ -86,7 +86,7 @@ describe('TagCarousels', () => {
   })
 
   it('should filter by collections tag', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagCarousels onChange={onChange} />

@@ -6,7 +6,7 @@ import { ReactElement } from 'react'
 
 import ActivityIcon from '@core/shared/ui/icons/Activity'
 
-import { bodySx, mediaSlotSx, numberedListSx } from '../styles'
+import { mediaSlotSx, numberedListSx } from '../styles'
 
 /**
  * TrackingAndAnalyticsSection — Section 3 of TemplateInfoPanel (NES-1538).
@@ -20,7 +20,7 @@ export function TrackingAndAnalyticsSection(): ReactElement {
 
   return (
     <Stack gap={2} data-testid="TrackingAndAnalyticsSection">
-      <Typography sx={bodySx}>
+      <Typography variant="body2">
         {t(
           'Track more than just views and responses. To track specific button clicks, video views, or card visits, you must tag those elements as "trackable."'
         )}
@@ -51,7 +51,7 @@ export function TrackingAndAnalyticsSection(): ReactElement {
         loading="lazy"
         sx={mediaSlotSx}
       />
-      <Typography sx={bodySx}>
+      <Typography variant="body2">
         {t(
           'After your shared projects generate activity, you will be able to see the statistics for your selected events in a detailed table.'
         )}
