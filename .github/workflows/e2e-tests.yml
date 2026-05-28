@@ -157,14 +157,13 @@ jobs:
           name: ${{ matrix.app }}-e2e-playwright-report
           path: |
             playwright-report/
-            apps/${{ matrix.app }}-e2e/src/e2e/
             test-results
           retention-days: 30
 
   notify-slack-on-deploy-and-test-failure:
     name: Notify Slack on deploy-and-test failure
     needs: [deploy-and-test]
-    if: always() && needs.deploy-and-test.result == 'failure'
+    if: always() && needs.deploy-and-test.result == 'failure' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: slackapi/slack-github-action@v2.1.1
@@ -174,13 +173,13 @@ jobs:
           payload-templated: true
           payload: |
             {
-              "text": "❌ E2E Tests Failed (deploy-and-test)",
+              "text": "❌ Daily E2E workflow failed (deploy-and-test) on main",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*E2E Tests Failed* (all-e2e)\n*Trigger:* ${{ github.event_name == 'schedule' && 'Scheduled morning run' || 'Manual run' }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
+                    "text": "*Daily E2E workflow failed* (deploy-and-test, all apps)\n*Branch:* main\n*Trigger:* ${{ github.event_name == 'schedule' && 'Scheduled morning run' || 'Manual workflow dispatch' }}\n\nDeploy, setup, or Playwright test steps may have failed — check the workflow run for details.\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
                   }
                 }
               ]
@@ -245,14 +244,13 @@ jobs:
           name: ${{ matrix.test-suite }}-playwright-report
           path: |
             playwright-report/
-            apps/${{ matrix.test-suite }}/src/e2e/
             test-results
           retention-days: 30
 
   notify-slack-on-e2e-tests-failure:
     name: Notify Slack on E2E_Tests failure
     needs: [E2E_Tests]
-    if: always() && needs.E2E_Tests.result == 'failure'
+    if: always() && needs.E2E_Tests.result == 'failure' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: slackapi/slack-github-action@v2.1.1
@@ -262,13 +260,13 @@ jobs:
           payload-templated: true
           payload: |
             {
-              "text": "❌ E2E Tests Failed (single suite)",
+              "text": "❌ E2E Tests Failed (${{ inputs.TargetTests }}) on main",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*E2E Tests Failed* (${{ inputs.TargetTests }})\n*Trigger:* Manual run\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
+                    "text": "*E2E Tests Failed* (${{ inputs.TargetTests }})\n*Branch:* main\n*Trigger:* Manual workflow dispatch\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
                   }
                 }
               ]
