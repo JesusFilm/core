@@ -109,8 +109,6 @@ export function CollectionChip({
           display: 'flex',
           alignItems: 'stretch',
           textAlign: 'left',
-          // 8px breathing room between the chip border and its contents.
-          p: 2,
           // Card-like radius, not a pill.
           borderRadius: 2,
           overflow: 'hidden',
@@ -220,7 +218,9 @@ export function CollectionChip({
             title. */}
         <Stack
           spacing={{ xs: 0.25, md: 0.5 }}
-          sx={{ flex: 1, minWidth: 0, justifyContent: 'center', px: 1.5 }}
+          // 8px padding all around the text column; the image well stays
+          // edge-to-edge on its side (no padding around it).
+          sx={{ flex: 1, minWidth: 0, justifyContent: 'center', p: 2 }}
         >
           {/* Desktop-only status label (mobile uses the dot below). */}
           <LabelChip
