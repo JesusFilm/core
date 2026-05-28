@@ -18,7 +18,7 @@ describe('useJourneyImageBlockDeleteMutation', () => {
           journeyId: 'journeyId'
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           blockDelete: [
             {
@@ -28,7 +28,7 @@ describe('useJourneyImageBlockDeleteMutation', () => {
             }
           ]
         }
-      }))
+      })) as MockedResponse<JourneyImageBlockDelete>['result']
     }
 
   it('should delete image block', async () => {

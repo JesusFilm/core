@@ -7,7 +7,7 @@ import { Item } from './Item'
 describe('Item', () => {
   describe('icon button variant', () => {
     it('should handle icon button click', async () => {
-      const handleClick = jest.fn()
+      const handleClick = vi.fn()
       const { getByRole } = render(
         <Item
           variant="icon-button"
@@ -27,7 +27,7 @@ describe('Item', () => {
 
   describe('button variant', () => {
     it('handles button click', async () => {
-      const handleClick = jest.fn()
+      const handleClick = vi.fn()
       const { getByRole } = render(
         <Item
           variant="button"
@@ -47,7 +47,7 @@ describe('Item', () => {
 
   describe('menu item variant', () => {
     it('handles menu item click', async () => {
-      const handleClick = jest.fn()
+      const handleClick = vi.fn()
       const { getByRole } = render(
         <Item
           variant="menu-item"

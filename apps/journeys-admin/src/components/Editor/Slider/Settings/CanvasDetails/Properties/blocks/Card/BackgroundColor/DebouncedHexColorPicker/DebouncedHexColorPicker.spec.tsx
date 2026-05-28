@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
 
 // Mock react-colorful to make testing more reliable
-jest.mock('react-colorful', () => ({
+vi.mock('react-colorful', () => ({
   HexAlphaColorPicker: ({ onChange, color, ...props }: any) => (
     <div
       data-testid="HexAlphaColorPicker"
@@ -25,8 +25,9 @@ jest.mock('react-colorful', () => ({
 }))
 
 // Mock lodash debounce to work with Jest 30's fake timers
-jest.mock('lodash/debounce', () => {
-  return jest.fn((fn, delay) => {
+vi.mock('lodash/debounce', () => ({
+  __esModule: true,
+  default: vi.fn((fn, delay) => {
     let timeoutId: NodeJS.Timeout | null = null
 
     const debounced = (...args: any[]) => {
@@ -53,20 +54,20 @@ jest.mock('lodash/debounce', () => {
 
     return debounced
   })
-})
+}))
 
-xdescribe('DebouncedHexColorPicker', () => {
-  const mockOnChange = jest.fn()
+describe.skip('DebouncedHexColorPicker', () => {
+  const mockOnChange = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    jest.clearAllTimers()
-    jest.useFakeTimers()
+    vi.clearAllMocks()
+    vi.clearAllTimers()
+    vi.useFakeTimers()
   })
 
   afterEach(() => {
-    jest.runOnlyPendingTimers()
-    jest.useRealTimers()
+    vi.runOnlyPendingTimers()
+    vi.useRealTimers()
   })
 
   describe('Initial Rendering', () => {
@@ -160,7 +161,7 @@ xdescribe('DebouncedHexColorPicker', () => {
 
       // Fast-forward timers to trigger debounced function
       act(() => {
-        jest.advanceTimersByTime(100)
+        vi.advanceTimersByTime(100)
       })
 
       await waitFor(() => {
@@ -180,7 +181,7 @@ xdescribe('DebouncedHexColorPicker', () => {
 
       // Fast-forward timers to trigger debounced function
       act(() => {
-        jest.advanceTimersByTime(100)
+        vi.advanceTimersByTime(100)
       })
 
       await waitFor(() => {
@@ -205,7 +206,7 @@ xdescribe('DebouncedHexColorPicker', () => {
 
       // Fast-forward timers to trigger debounced function
       act(() => {
-        jest.advanceTimersByTime(100)
+        vi.advanceTimersByTime(100)
       })
 
       await waitFor(() => {
@@ -226,7 +227,7 @@ xdescribe('DebouncedHexColorPicker', () => {
 
       // Fast-forward timers to trigger debounced function
       act(() => {
-        jest.advanceTimersByTime(100)
+        vi.advanceTimersByTime(100)
       })
 
       await waitFor(() => {
@@ -253,13 +254,13 @@ xdescribe('DebouncedHexColorPicker', () => {
 
       // Fast-forward by less than debounce delay
       act(() => {
-        jest.advanceTimersByTime(50)
+        vi.advanceTimersByTime(50)
       })
       expect(mockOnChange).not.toHaveBeenCalled()
 
       // Fast-forward to complete debounce delay
       act(() => {
-        jest.advanceTimersByTime(100)
+        vi.advanceTimersByTime(100)
       })
 
       await waitFor(() => {
@@ -279,7 +280,7 @@ xdescribe('DebouncedHexColorPicker', () => {
 
       // Advance time partially
       act(() => {
-        jest.advanceTimersByTime(50)
+        vi.advanceTimersByTime(50)
       })
 
       // Second change should cancel the first
@@ -287,7 +288,7 @@ xdescribe('DebouncedHexColorPicker', () => {
 
       // Advance time to complete the second debounce
       act(() => {
-        jest.advanceTimersByTime(100)
+        vi.advanceTimersByTime(100)
       })
 
       await waitFor(() => {
@@ -307,7 +308,7 @@ xdescribe('DebouncedHexColorPicker', () => {
       fireEvent.click(colorPicker)
 
       act(() => {
-        jest.advanceTimersByTime(100)
+        vi.advanceTimersByTime(100)
       })
 
       await waitFor(() => {
@@ -350,7 +351,7 @@ xdescribe('DebouncedHexColorPicker', () => {
 
       // Advance time
       act(() => {
-        jest.advanceTimersByTime(200)
+        vi.advanceTimersByTime(200)
       })
 
       // Should not call onChange after unmount
@@ -384,7 +385,7 @@ xdescribe('DebouncedHexColorPicker', () => {
         fireEvent.click(colorPicker)
 
         act(() => {
-          jest.advanceTimersByTime(100)
+          vi.advanceTimersByTime(100)
         })
       }).not.toThrow()
     })
@@ -434,7 +435,7 @@ xdescribe('DebouncedHexColorPicker', () => {
       fireEvent.click(colorPicker)
 
       act(() => {
-        jest.advanceTimersByTime(100)
+        vi.advanceTimersByTime(100)
       })
 
       // Wait for first call to complete
@@ -446,7 +447,7 @@ xdescribe('DebouncedHexColorPicker', () => {
       fireEvent.click(colorPicker)
 
       act(() => {
-        jest.advanceTimersByTime(100)
+        vi.advanceTimersByTime(100)
       })
 
       // Wait for second call to complete

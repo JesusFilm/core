@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useSearchBox } from 'react-instantsearch'
 import { SWRConfig } from 'swr'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { mswServer } from '../../../../../../../../test/mswServer'
 
@@ -16,22 +17,20 @@ import {
 
 import { VideoFromYouTube } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 
 describe('VideoFromYouTube', () => {
   beforeEach(() => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
     mockUseSearchBox.mockReturnValue({
-      refine: jest.fn()
+      refine: vi.fn()
     } as unknown as SearchBoxRenderState)
   })
 
@@ -40,7 +39,7 @@ describe('VideoFromYouTube', () => {
     render(
       <MockedProvider>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <VideoFromYouTube onSelect={jest.fn()} />
+          <VideoFromYouTube onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -54,7 +53,7 @@ describe('VideoFromYouTube', () => {
     render(
       <MockedProvider>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <VideoFromYouTube onSelect={jest.fn()} />
+          <VideoFromYouTube onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -75,7 +74,7 @@ describe('VideoFromYouTube', () => {
     render(
       <MockedProvider>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <VideoFromYouTube onSelect={jest.fn()} />
+          <VideoFromYouTube onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -92,7 +91,7 @@ describe('VideoFromYouTube', () => {
     render(
       <MockedProvider>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <VideoFromYouTube onSelect={jest.fn()} />
+          <VideoFromYouTube onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -119,7 +118,7 @@ describe('VideoFromYouTube', () => {
     render(
       <MockedProvider>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <VideoFromYouTube onSelect={jest.fn()} />
+          <VideoFromYouTube onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )

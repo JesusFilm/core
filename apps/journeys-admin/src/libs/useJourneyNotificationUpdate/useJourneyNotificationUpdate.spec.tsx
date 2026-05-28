@@ -5,7 +5,7 @@ import { useJourneyNotificationUpdate } from './useJourneyNotificationUpdate'
 import { useJourneyNotifcationUpdateMock } from './useJourneyNotificationUpdate.mock'
 
 describe('useJourneyNotificationUpdate', () => {
-  afterEach(() => jest.clearAllMocks())
+  afterEach(() => vi.clearAllMocks())
 
   it('should update event email notifications', async () => {
     const { result } = renderHook(() => useJourneyNotificationUpdate(), {

@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
@@ -13,14 +14,14 @@ import {
 
 import { AnalyticsItem, GET_JOURNEY_PLAUSIBLE_VISITORS } from './AnalyticsItem'
 
-jest.mock('date-fns', () => {
+vi.mock('date-fns', async () => {
   return {
-    ...jest.requireActual('date-fns'),
-    formatISO: jest.fn()
+    ...(await vi.importActual('date-fns')),
+    formatISO: vi.fn()
   }
 })
 
-const mockFormatIso = formatISO as jest.MockedFunction<typeof formatISO>
+const mockFormatIso = formatISO as MockedFunction<typeof formatISO>
 
 const getJourneyPlausibleVisitorsMock: MockedResponse<
   GetJourneyPlausibleVisitors,
@@ -52,7 +53,7 @@ describe('AnalyticsItem', () => {
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should link to journey reports page as a list item', async () => {
@@ -112,7 +113,7 @@ describe('AnalyticsItem', () => {
   })
 
   it('should show number of plausible visitors', async () => {
-    const result = jest
+    const result = vi
       .fn()
       .mockReturnValue(getJourneyPlausibleVisitorsMock.result)
 

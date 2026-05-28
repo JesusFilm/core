@@ -17,11 +17,16 @@ import {
   mockSingleRowData
 } from './TemplateBreakdownAnalyticsTable.mockData'
 
-jest.mock('next/link', () => {
-  return ({ children, href }: { children: React.ReactNode; href: string }) => {
-    return <a href={href}>{children}</a>
-  }
-})
+vi.mock('next/link', () => ({
+  __esModule: true,
+  default: ({
+    children,
+    href
+  }: {
+    children: React.ReactNode
+    href: string
+  }) => <a href={href}>{children}</a>
+}))
 
 describe('TemplateBreakdownAnalyticsTable', () => {
   it('should render empty box when loading', () => {

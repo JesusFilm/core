@@ -10,8 +10,8 @@ describe('DiscardConfirmDialog', () => {
     render(
       <DiscardConfirmDialog
         open={false}
-        onCancel={jest.fn()}
-        onConfirm={jest.fn()}
+        onCancel={vi.fn()}
+        onConfirm={vi.fn()}
       />
     )
     expect(
@@ -20,9 +20,7 @@ describe('DiscardConfirmDialog', () => {
   })
 
   it('renders the title and explanatory copy when open', () => {
-    render(
-      <DiscardConfirmDialog open onCancel={jest.fn()} onConfirm={jest.fn()} />
-    )
+    render(<DiscardConfirmDialog open onCancel={vi.fn()} onConfirm={vi.fn()} />)
     expect(
       screen.getByText('You have unsaved changes — discard?')
     ).toBeInTheDocument()
@@ -32,8 +30,8 @@ describe('DiscardConfirmDialog', () => {
   })
 
   it('fires onConfirm when the Discard button is clicked', async () => {
-    const onConfirm = jest.fn()
-    const onCancel = jest.fn()
+    const onConfirm = vi.fn()
+    const onCancel = vi.fn()
     render(
       <DiscardConfirmDialog open onCancel={onCancel} onConfirm={onConfirm} />
     )
@@ -43,8 +41,8 @@ describe('DiscardConfirmDialog', () => {
   })
 
   it('fires onCancel when the Cancel button is clicked', async () => {
-    const onConfirm = jest.fn()
-    const onCancel = jest.fn()
+    const onConfirm = vi.fn()
+    const onCancel = vi.fn()
     render(
       <DiscardConfirmDialog open onCancel={onCancel} onConfirm={onConfirm} />
     )

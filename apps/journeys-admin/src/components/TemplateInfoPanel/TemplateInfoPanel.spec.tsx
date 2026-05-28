@@ -189,7 +189,7 @@ describe('TemplateInfoPanel', () => {
     })
 
     it('invokes onClose when the close button is clicked', () => {
-      const handleClose = jest.fn()
+      const handleClose = vi.fn()
       render(<TemplateInfoPanel contained onClose={handleClose} />)
 
       fireEvent.click(screen.getByTestId('TemplateInfoPanelClose'))

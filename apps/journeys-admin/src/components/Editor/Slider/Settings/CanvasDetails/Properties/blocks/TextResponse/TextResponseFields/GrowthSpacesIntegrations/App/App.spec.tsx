@@ -78,7 +78,7 @@ describe('App', () => {
         routeId: null
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
@@ -87,7 +87,10 @@ describe('App', () => {
           routeId: null
         }
       }
-    }))
+    })) as MockedResponse<
+      TextResponseIntegrationUpdate,
+      TextResponseIntegrationUpdateVariables
+    >['result']
   }
 
   const integrationUpdateMock2: MockedResponse<
@@ -102,7 +105,7 @@ describe('App', () => {
         routeId: null
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
@@ -111,10 +114,13 @@ describe('App', () => {
           routeId: null
         }
       }
-    }))
+    })) as MockedResponse<
+      TextResponseIntegrationUpdate,
+      TextResponseIntegrationUpdateVariables
+    >['result']
   }
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should change integrationId of text response', async () => {
     render(

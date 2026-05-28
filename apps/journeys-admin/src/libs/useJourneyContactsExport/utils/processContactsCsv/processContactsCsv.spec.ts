@@ -4,18 +4,18 @@ import { format } from 'date-fns'
 import { downloadCsv } from '.'
 
 // Mock dependencies
-jest.mock('date-fns', () => ({
-  format: jest.fn(() => '2023-01-01')
+vi.mock('date-fns', () => ({
+  format: vi.fn(() => '2023-01-01')
 }))
 
 // Mock DOM methods
-const mockCreateElement = jest.fn()
-const mockAppendChild = jest.fn()
-const mockRemoveChild = jest.fn()
-const mockClick = jest.fn()
-const mockSetAttribute = jest.fn()
-const mockCreateObjectURL = jest.fn(() => 'blob:url')
-const mockRevokeObjectURL = jest.fn()
+const mockCreateElement = vi.fn()
+const mockAppendChild = vi.fn()
+const mockRemoveChild = vi.fn()
+const mockClick = vi.fn()
+const mockSetAttribute = vi.fn()
+const mockCreateObjectURL = vi.fn(() => 'blob:url')
+const mockRevokeObjectURL = vi.fn()
 
 Object.defineProperty(document, 'createElement', {
   value: mockCreateElement,
@@ -48,7 +48,7 @@ describe('downloadCsv', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockCreateElement.mockReturnValue(mockLinkElement)
   })
 

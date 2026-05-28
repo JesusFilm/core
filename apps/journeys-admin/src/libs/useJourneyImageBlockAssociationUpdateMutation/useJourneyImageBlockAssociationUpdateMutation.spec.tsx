@@ -20,7 +20,7 @@ describe('useJourneyImageBlockAssociationUpdateMutation', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyUpdate: {
             __typename: 'Journey',
@@ -32,7 +32,7 @@ describe('useJourneyImageBlockAssociationUpdateMutation', () => {
             creatorImageBlock: null
           }
         }
-      }))
+      })) as MockedResponse<JourneyImageBlockAssociationUpdate>['result']
     }
 
   it('should update journey image block association', async () => {
@@ -78,7 +78,7 @@ describe('useJourneyImageBlockAssociationUpdateMutation', () => {
             }
           }
         },
-        result: jest.fn(() => ({
+        result: vi.fn(() => ({
           data: {
             journeyUpdate: {
               __typename: 'Journey',
@@ -90,7 +90,7 @@ describe('useJourneyImageBlockAssociationUpdateMutation', () => {
               }
             }
           }
-        }))
+        })) as MockedResponse<JourneyImageBlockAssociationUpdate>['result']
       }
 
     const { result } = renderHook(

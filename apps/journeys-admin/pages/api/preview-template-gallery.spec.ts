@@ -1,25 +1,26 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getApiRequestTokens } from 'next-firebase-auth-edge'
+import { type Mock } from 'vitest'
 
 import handler from './preview-template-gallery'
 
-jest.mock('next-firebase-auth-edge', () => ({
-  getApiRequestTokens: jest.fn()
+vi.mock('next-firebase-auth-edge', () => ({
+  getApiRequestTokens: vi.fn()
 }))
 
-const mockGetApiRequestTokens = getApiRequestTokens as unknown as jest.Mock
+const mockGetApiRequestTokens = getApiRequestTokens as unknown as Mock
 
 interface CapturedRes {
   res: NextApiResponse
-  status: jest.Mock
-  json: jest.Mock
-  redirect: jest.Mock
+  status: Mock
+  json: Mock
+  redirect: Mock
 }
 
 function mockResponse(): CapturedRes {
-  const json = jest.fn()
-  const status = jest.fn(() => ({ json }))
-  const redirect = jest.fn()
+  const json = vi.fn()
+  const status = vi.fn(() => ({ json }))
+  const redirect = vi.fn()
   const res = { status, json, redirect } as unknown as NextApiResponse
   return { res, status, json, redirect }
 }

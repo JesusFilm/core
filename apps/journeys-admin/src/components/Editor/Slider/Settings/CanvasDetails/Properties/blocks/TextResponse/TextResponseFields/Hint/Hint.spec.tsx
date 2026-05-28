@@ -17,7 +17,7 @@ import { TEXT_RESPONSE_HINT_UPDATE } from './Hint'
 
 import { Hint } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -52,7 +52,7 @@ describe('Edit Hint field', () => {
         hint: 'A hint message more'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
@@ -70,7 +70,7 @@ describe('Edit Hint field', () => {
         hint: 'A hint message'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
@@ -88,7 +88,7 @@ describe('Edit Hint field', () => {
         hint: 'A hint message more'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
@@ -98,7 +98,7 @@ describe('Edit Hint field', () => {
     }))
   }
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should display hint value', () => {
     render(

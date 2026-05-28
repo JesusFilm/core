@@ -3,9 +3,9 @@ import { fireEvent, render, waitFor, within } from '@testing-library/react'
 
 import { VisitorInfo } from './VisitorInfo'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('VisitorInfo', () => {

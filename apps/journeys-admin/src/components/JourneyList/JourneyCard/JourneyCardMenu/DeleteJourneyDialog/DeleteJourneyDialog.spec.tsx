@@ -11,8 +11,8 @@ import { DeleteJourneyDialog } from '.'
 
 describe('DeleteJourneyDialog', () => {
   it('should change journey status to delete', async () => {
-    const handleClose = jest.fn()
-    const result = jest.fn(() => ({
+    const handleClose = vi.fn()
+    const result = vi.fn(() => ({
       data: {
         journeysDelete: [
           {

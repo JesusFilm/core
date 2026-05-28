@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -34,17 +35,17 @@ import { CARD_CTA_CREATE, CARD_CTA_DELETE, CARD_CTA_RESTORE } from './CardCta'
 
 import { CardCta } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('CardCta', () => {
   const card: TreeBlock = {
@@ -574,8 +575,8 @@ describe('CardCta', () => {
     mockUuidv4.mockReturnValueOnce('startIcon3Id')
     mockUuidv4.mockReturnValueOnce('endIcon3Id')
 
-    const result = jest.fn().mockResolvedValue(cardCtaCreateMock.result)
-    const result2 = jest.fn().mockResolvedValue(cardCtaDeleteMock.result)
+    const result = vi.fn().mockResolvedValue(cardCtaCreateMock.result)
+    const result2 = vi.fn().mockResolvedValue(cardCtaDeleteMock.result)
 
     const { getByRole } = render(
       <MockedProvider
@@ -614,9 +615,9 @@ describe('CardCta', () => {
     mockUuidv4.mockReturnValueOnce('startIcon3Id')
     mockUuidv4.mockReturnValueOnce('endIcon3Id')
 
-    const result = jest.fn().mockResolvedValue(cardCtaCreateMock.result)
-    const result2 = jest.fn().mockResolvedValue(cardCtaDeleteMock.result)
-    const result3 = jest.fn().mockResolvedValue(cardCtaRestoreMock.result)
+    const result = vi.fn().mockResolvedValue(cardCtaCreateMock.result)
+    const result2 = vi.fn().mockResolvedValue(cardCtaDeleteMock.result)
+    const result3 = vi.fn().mockResolvedValue(cardCtaRestoreMock.result)
 
     const { getByRole } = render(
       <MockedProvider

@@ -19,8 +19,8 @@ describe('processCsv', () => {
   it('should process the CSV file', () => {
     // Mock Blob and URL.createObjectURL
     const mockBlob = {}
-    global.Blob = jest.fn(() => mockBlob) as any
-    global.URL.createObjectURL = jest.fn(() => 'mock-url')
+    global.Blob = vi.fn(() => mockBlob) as any
+    global.URL.createObjectURL = vi.fn(() => 'mock-url')
 
     const eventData = [
       {
@@ -38,11 +38,11 @@ describe('processCsv', () => {
     ]
 
     const journeySlug = 'test-journey'
-    const t = jest.fn((text: string): string => text) as unknown as TFunction
+    const t = vi.fn((text: string): string => text) as unknown as TFunction
 
-    const createElementSpy = jest.spyOn(document, 'createElement')
-    const appendChildSpy = jest.spyOn(document.body, 'appendChild')
-    const setAttributeSpy = jest.spyOn(
+    const createElementSpy = vi.spyOn(document, 'createElement')
+    const appendChildSpy = vi.spyOn(document.body, 'appendChild')
+    const setAttributeSpy = vi.spyOn(
       HTMLAnchorElement.prototype,
       'setAttribute'
     )

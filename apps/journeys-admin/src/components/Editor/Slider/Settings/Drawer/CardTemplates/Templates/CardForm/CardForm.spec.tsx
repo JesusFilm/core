@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -38,20 +39,20 @@ import {
 
 import { CardForm } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('CardForm', () => {
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   const card: TreeBlock = {
     id: 'cardId',
@@ -449,8 +450,8 @@ describe('CardForm', () => {
     mockUuidv4.mockReturnValueOnce('endIconId')
     mockUuidv4.mockReturnValueOnce('bodyId')
 
-    const result = jest.fn().mockResolvedValue(cardFormCreateMock.result)
-    const result1 = jest.fn().mockResolvedValue(cardFormDeleteMock.result)
+    const result = vi.fn().mockResolvedValue(cardFormCreateMock.result)
+    const result1 = vi.fn().mockResolvedValue(cardFormDeleteMock.result)
 
     const { getByRole } = render(
       <MockedProvider
@@ -489,9 +490,9 @@ describe('CardForm', () => {
     mockUuidv4.mockReturnValueOnce('endIconId')
     mockUuidv4.mockReturnValueOnce('bodyId')
 
-    const result = jest.fn().mockResolvedValue(cardFormCreateMock.result)
-    const result1 = jest.fn().mockResolvedValue(cardFormDeleteMock.result)
-    const result2 = jest.fn().mockResolvedValue(cardFormRestoreMock.result)
+    const result = vi.fn().mockResolvedValue(cardFormCreateMock.result)
+    const result1 = vi.fn().mockResolvedValue(cardFormDeleteMock.result)
+    const result2 = vi.fn().mockResolvedValue(cardFormRestoreMock.result)
 
     const { getByRole } = render(
       <MockedProvider

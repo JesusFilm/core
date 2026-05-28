@@ -17,7 +17,7 @@ import '../../../../../test/i18n'
 
 describe('ActivePriorityList', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should show journeyCard in default priority for owners', () => {
@@ -36,7 +36,7 @@ describe('ActivePriorityList', () => {
           <SnackbarProvider>
             <ActivePriorityList
               journeys={[defaultJourney, newJourney, pendingActionJourney]}
-              refetch={jest.fn()}
+              refetch={vi.fn()}
               user={user}
             />
           </SnackbarProvider>
@@ -77,7 +77,7 @@ describe('ActivePriorityList', () => {
                 pendingActionJourney
               ]}
               sortOrder={SortOrder.TITLE}
-              refetch={jest.fn()}
+              refetch={vi.fn()}
               user={user}
             />
           </SnackbarProvider>
