@@ -45,6 +45,32 @@ export interface PublicGalleryPageData {
   items: ReadonlyArray<PublicGalleryPageItem>
 }
 
+/** Default number of items featured in the "Explore" section. */
+export const FEATURED_COUNT = 2
+
+export interface SplitFeaturedItems {
+  featured: ReadonlyArray<PublicGalleryPageItem>
+  rest: ReadonlyArray<PublicGalleryPageItem>
+}
+
+/**
+ * Shared split rule for the gallery's "Explore" lead-in vs the "More" grid.
+ * Default is the first two items featured, the rest in the grid — but with
+ * exactly three items feature all three, so the "More" grid is never left
+ * with a single bare card. Both the live `JourneyView` and the `AdminView`
+ * preview must split identically; centralising the rule here prevents the
+ * derived-logic drift that surfaced in NES-1694.
+ */
+export function splitFeatured(
+  items: ReadonlyArray<PublicGalleryPageItem>
+): SplitFeaturedItems {
+  const featuredCount = items.length === 3 ? 3 : FEATURED_COUNT
+  return {
+    featured: items.slice(0, featuredCount),
+    rest: items.slice(featuredCount)
+  }
+}
+
 /**
  * Which surface the page renders for:
  * - `journey` — the real full-screen page in the journeys app

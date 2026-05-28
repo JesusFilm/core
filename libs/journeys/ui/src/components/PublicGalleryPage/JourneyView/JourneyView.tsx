@@ -4,7 +4,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { lighten, useTheme } from '@mui/material/styles'
+import { Theme, lighten, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next/pages'
@@ -21,7 +21,8 @@ import {
   GALLERY_ACCENT,
   GALLERY_CARD_RADIUS,
   PublicGalleryPageData,
-  PublicGalleryPageItem
+  PublicGalleryPageItem,
+  splitFeatured
 } from '../PublicGalleryPage'
 
 import { JourneyViewCard, metaLine } from './JourneyViewCard'
@@ -41,8 +42,6 @@ interface JourneyViewProps {
   data: PublicGalleryPageData
 }
 
-const FEATURED_COUNT = 2
-
 // Stable ids the fixed nav scrolls to and the scrollspy observes.
 const SECTION_IDS = {
   cover: 'gallery-cover',
@@ -53,7 +52,7 @@ const SECTION_IDS = {
 
 // A faint band tint that reads on any theme (light or dark) without
 // committing to a colour.
-const bandBackground = (theme: { palette: { mode: string } }): string =>
+const bandBackground = (theme: Theme): string =>
   theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.025)'
 
 // Each section is at least one viewport tall: short content centres in the
@@ -239,6 +238,7 @@ function FeaturedRow({
             <JourneyViewCardActions
               itemId={item.id}
               itemSlug={item.slug}
+              itemTitle={item.title}
               accent={GALLERY_ACCENT}
             />
           </Box>
@@ -257,13 +257,9 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
   const featuredRef = useParallax()
   const restRef = useParallax()
 
-  // Feature the first two templates by default. With exactly three, feature
-  // all three so the complete set isn't left showing a single, bare card.
-  // From four onward the default holds, so the complete set always has at
-  // least two cards.
-  const featuredCount = data.items.length === 3 ? 3 : FEATURED_COUNT
-  const featured = data.items.slice(0, featuredCount)
-  const rest = data.items.slice(featuredCount)
+  // The split rule (feature all three when there are exactly three) lives in
+  // the shared module so this view and the AdminView preview can't drift.
+  const { featured, rest } = splitFeatured(data.items)
   const hasTemplates = data.items.length > 0
   const hasMedia = data.mediaUrl != null && data.mediaUrl !== ''
 

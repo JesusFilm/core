@@ -12,6 +12,12 @@ interface JourneyViewCardActionsProps {
   /** Template id (admin deep link) and slug (public viewer route). */
   itemId: string
   itemSlug: string
+  /**
+   * Template title — used to disambiguate the Use/Preview controls on a page
+   * with many cards (every card otherwise has identical "Use"/"Preview" labels,
+   * which is impossible to navigate with voice control or a screen reader).
+   */
+  itemTitle: string
   /** Accent colour for the outlined Use button and the filled Preview button. */
   accent: string
   fullWidth?: boolean
@@ -32,6 +38,7 @@ const ACTION_SIZE = 40
 export function JourneyViewCardActions({
   itemId,
   itemSlug,
+  itemTitle,
   accent,
   fullWidth = false,
   onDark = false,
@@ -80,8 +87,12 @@ export function JourneyViewCardActions({
 
   const adminUrl =
     process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? 'https://admin.nextstep.is'
-  // Deep link into the admin "Use Template" receiver (NES-1608).
-  const useTemplateHref = `${adminUrl}/?useTemplate=${encodeURIComponent(itemId)}`
+  // Deep link into the admin "Use Template" receiver (NES-1608). Built via
+  // `new URL` so a trailing slash on the env var doesn't double the path; the
+  // URL searchParams handle encoding the template id.
+  const useTemplateUrl = new URL('/', adminUrl)
+  useTemplateUrl.searchParams.set('useTemplate', itemId)
+  const useTemplateHref = useTemplateUrl.toString()
   // Public viewer route on the same root domain.
   const previewHref = `/${itemSlug}`
 
@@ -112,6 +123,7 @@ export function JourneyViewCardActions({
         rel="noopener noreferrer"
         variant="outlined"
         fullWidth={fullWidth}
+        aria-label={t('Use {{title}}', { title: itemTitle })}
         data-testid="GalleryTemplateCardUseButton"
         sx={{ height: ACTION_SIZE, ...useButtonSx }}
       >
@@ -122,7 +134,7 @@ export function JourneyViewCardActions({
         href={previewHref}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={t('Preview')}
+        aria-label={t('Preview {{title}}', { title: itemTitle })}
         data-testid="GalleryTemplateCardPreviewButton"
         sx={{
           width: ACTION_SIZE,
