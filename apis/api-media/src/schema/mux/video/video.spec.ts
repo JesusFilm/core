@@ -224,7 +224,7 @@ describe('mux/video', () => {
         )
       })
 
-      it('should return an empty array when no videos match the filter', async () => {
+      it('should return an empty array when findMany returns no results', async () => {
         ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
