@@ -44,16 +44,16 @@ export function AllTemplatesChip({
       aria-label={t('All Templates')}
       sx={{
         flexShrink: 0,
-        // Match the collection chips' height (doubled on desktop) so the row
-        // stays aligned.
+        // Match the collection chips' footprint (enlarged on desktop) so the
+        // row stays uniform.
         height: { xs: 72, md: 144 },
-        minWidth: { xs: 120, md: 220 },
+        width: { xs: 250, md: 400 },
         px: 2,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         justifyContent: 'center',
-        textAlign: 'left',
+        textAlign: 'center',
         borderRadius: 2,
         border: 1,
         borderColor: active ? 'primary.main' : 'grey.400',

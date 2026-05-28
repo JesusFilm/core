@@ -143,7 +143,7 @@ export function CollectionChip({
             gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
             gridTemplateRows: { xs: '1fr', md: '1fr 1fr' },
             gap: '2px',
-            bgcolor: 'grey.50'
+            bgcolor: 'grey.200'
           }}
         >
           {imageTiles.map((tile, index) => (
@@ -152,9 +152,10 @@ export function CollectionChip({
               sx={{
                 position: 'relative',
                 overflow: 'hidden',
-                // Light fill so the grayscale placeholder logo (which has a
-                // light-grey segment) stays visible against it.
-                bgcolor: 'grey.50',
+                // Mid-grey fill: dark enough to read as a distinct well, but
+                // still lighter than the placeholder logo's light-grey segment
+                // (#DEDFE0 / divider) so the logo doesn't blend in.
+                bgcolor: 'grey.200',
                 // The first tile always shows; the rest of the 2x2 grid is
                 // desktop-only (mobile keeps a single image).
                 display: index === 0 ? 'block' : { xs: 'none', md: 'block' },
@@ -210,26 +211,30 @@ export function CollectionChip({
           ))}
         </Box>
 
-        {/* Title + template count — the right two thirds. */}
+        {/* Status label, title and template count — stacked vertically. */}
         <Stack
-          spacing={0.25}
+          spacing={0.5}
           sx={{ flex: 1, minWidth: 0, justifyContent: 'center', px: 1.5 }}
         >
-          <Stack direction="row" alignItems="center" spacing={0.75}>
-            <LabelChip
-              data-testid="CollectionChipStatusLabel"
-              color={isPublished ? 'success' : 'default'}
-              label={isPublished ? t('Live') : t('Draft')}
-              sx={{ flexShrink: 0 }}
-            />
-            <Typography
-              variant="subtitle2"
-              noWrap
-              sx={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}
-            >
-              {collection.title}
-            </Typography>
-          </Stack>
+          <LabelChip
+            data-testid="CollectionChipStatusLabel"
+            color={isPublished ? 'success' : 'default'}
+            label={isPublished ? t('Live') : t('Draft')}
+            sx={{ alignSelf: 'flex-start' }}
+          />
+          <Typography
+            variant="subtitle2"
+            sx={{
+              minWidth: 0,
+              // One line on the compact mobile chip; up to two on desktop.
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: { xs: 1, md: 2 },
+              overflow: 'hidden'
+            }}
+          >
+            {collection.title}
+          </Typography>
           <Typography variant="caption" color="text.secondary" noWrap>
             {t('{{count}} templates', {
               count,
