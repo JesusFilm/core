@@ -48,9 +48,12 @@ export function AllTemplatesChip({
         // content-width compact chip on mobile, full 400px (centered) on
         // desktop so the row stays uniform.
         height: { xs: 72, md: 144 },
-        minWidth: { xs: 120, md: 400 },
-        // 8px breathing room between the chip border and its contents.
-        p: 2,
+        minWidth: { xs: 160, md: 400 },
+        // 12px horizontal padding on mobile, 8px on desktop; 8px vertical
+        // padding on both. Mobile leans wider so the chip reads as a tap
+        // target alongside the larger desktop card.
+        px: { xs: 3, md: 2 },
+        py: 2,
         display: 'flex',
         flexDirection: 'column',
         alignItems: { xs: 'flex-start', md: 'center' },
