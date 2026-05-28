@@ -162,10 +162,18 @@ export class Publisher {
   }
 
   async clickThreeDotOfTemple() {
+    // The 3-dot menu (JourneyCardMenuBox) renders as a sibling preceding the
+    // link inside the journey-card wrapper (`position: absolute` overlay).
+    // Scope to the card whose heading matches the template name and click
+    // its menu button — more resilient than the historical XPath which
+    // assumed `following-sibling::div`, but the menu has been a *preceding*
+    // sibling since JourneyCard.tsx was refactored to position it absolutely.
     await this.page
-      .locator(
-        `//h6[text()='${this.templateName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
-      )
+      .locator('div[aria-label="journey-card"]', {
+        hasText: this.templateName
+      })
+      .first()
+      .locator('[data-testid="JourneyCardMenuButton"]')
       .first()
       .click()
   }
@@ -207,11 +215,36 @@ export class Publisher {
   }
 
   async verifyToastMessage(message: string) {
+    // The product now distinguishes "Template(s) <verb>" from "Journey(s) <verb>"
+    // for some lifecycle operations on template cards (e.g. trash, archive).
+    // Tests historically pass "Journey trashed" / "Journeys Archived" but the
+    // snackbar reads "Template trashed" / "Templates Archived" when the card
+    // is a template. Accept either to remove the brittle dependency on the
+    // journey-vs-template wording.
+    let alternateMessage = message
+    if (/^Journeys\b/i.test(message)) {
+      alternateMessage = message.replace(/^Journeys\b/i, 'Templates')
+    } else if (/^Journey\b/i.test(message)) {
+      alternateMessage = message.replace(/^Journey\b/i, 'Template')
+    } else if (/^Templates\b/i.test(message)) {
+      alternateMessage = message.replace(/^Templates\b/i, 'Journeys')
+    } else if (/^Template\b/i.test(message)) {
+      alternateMessage = message.replace(/^Template\b/i, 'Journey')
+    }
+    const escapeRegex = (s: string): string =>
+      s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const messageRegex = new RegExp(
+      `${escapeRegex(message)}|${escapeRegex(alternateMessage)}`,
+      'i'
+    )
     await expect(
-      this.page.locator('#notistack-snackbar', { hasText: message })
-    ).toBeVisible({ timeout: 300000 })
+      this.page.locator('#notistack-snackbar', { hasText: messageRegex })
+    ).toBeVisible({ timeout: 60000 })
+    // 60s for hidden keeps the test from waiting 5 minutes when notistack
+    // lingers; the dismiss animation is normally a few seconds. Original
+    // 300000ms was the largest contributor to the runaway test timeouts.
     await expect(this.page.locator('#notistack-snackbar')).toBeHidden({
-      timeout: 300000
+      timeout: 60000
     })
   }
 
@@ -619,11 +652,15 @@ export class Publisher {
 
   /// ///////////
   async clickDropDownOpenIconForFilters(filterOption: string) {
+    // The MUI Grid wrapper class changed in newer @mui/material (Grid v2 uses
+    // `MuiGrid2-root` and friends and no longer reliably exposes
+    // `MuiGrid-item`). Locate the Autocomplete by its rendered label text
+    // directly instead of relying on the grandparent grid class.
     await this.page
-      .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
-        { hasText: filterOption }
-      )
+      .locator('div[class*="MuiAutocomplete-root"]', {
+        hasText: filterOption
+      })
+      .first()
       .locator('button[aria-label="Open"]')
       .click()
   }
@@ -665,10 +702,10 @@ export class Publisher {
 
   async clickDropDownCloseIconForFilters(filterOption: string) {
     await this.page
-      .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
-        { hasText: filterOption }
-      )
+      .locator('div[class*="MuiAutocomplete-root"]', {
+        hasText: filterOption
+      })
+      .first()
       .locator('button[aria-label="Close"]')
       .click()
   }

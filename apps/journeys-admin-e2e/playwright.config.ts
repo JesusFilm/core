@@ -18,8 +18,12 @@ export default defineConfig({
   globalSetup: './src/global-setup.ts',
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 3 : 0,
+  /* Retry on CI only.
+   * Kept at 1 (not the historical 3) so a single broken test only doubles its
+   * cost instead of quadrupling it — the previous setting compounded with
+   * fullyParallel:false to push CI runtime past 50 minutes whenever a handful
+   * of tests failed. */
+  retries: process.env.CI ? 1 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 10 : 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */

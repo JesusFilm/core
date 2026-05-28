@@ -655,16 +655,32 @@ export class CardLevelActionPage {
   async selectWholePollOptions() {
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
-    // Selecting the whole poll block means clicking the SelectableWrapper
-    // that contains the RadioQuestionList — not the inner "Add Option"
-    // button (which would add a new option, not select the block). The
-    // wrapper has data-testid containing "SelectableWrapper".
+    // Deselect anything that may already be focused (e.g. the option that
+    // was renamed earlier in the test) — otherwise the next click can land
+    // inside the inner option wrapper and select that instead of the outer
+    // poll block.
+    await this.page.keyboard.press('Escape')
+    await this.page.waitForTimeout(300)
+    // Click the SelectableWrapper that contains the entire RadioQuestionList
+    // (not an inner "Add Option" button or a single option wrapper). The
+    // `:has()` filter scopes us to the outer wrapper. `force: true` skips
+    // the "stable / not covered" actionability check, which can fail when a
+    // floating tooltip or animation overlaps the wrapper but doesn't block
+    // the click semantically.
     await frame
       .locator(
         'div[data-testid*="SelectableWrapper"]:has(div[data-testid*="JourneysRadioQuestionList"])'
       )
       .first()
-      .click()
+      // eslint-disable-next-line playwright/no-force-option
+      .click({ force: true })
+    // Wait for the editor's selection tooltip ("delete-block-actions") to
+    // appear before continuing — its presence is the signal that the block
+    // is actually selected and the next deleteAllThePollOptions() will hit
+    // the right button.
+    await expect(
+      frame.locator('div[role="tooltip"] button[id="delete-block-actions"]')
+    ).toBeVisible({ timeout: 10000 })
   }
 
   async deleteAllThePollOptions() {

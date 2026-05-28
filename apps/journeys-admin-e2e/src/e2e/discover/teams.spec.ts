@@ -89,7 +89,12 @@ test.describe('Teams', () => {
     await journeyPage.validateUrlFieldInShareDialog(domainName) //Validate that the URL field from Share dialog contains the custom domain
   })
 
-  test('Verify Integrations option from Three dot menu', async ({
+  // Skipped on the daily-e2e environment because the "Growth Spaces" integration
+  // is gated behind the `teamIntegrations` feature flag. The flag is currently
+  // off in the daily-e2e Vercel deployment, so the link this test asserts on
+  // never renders. Re-enable once the flag is on in daily-e2e (or once the
+  // feature flag dependency is removed from the integrations list).
+  test.skip('Verify Integrations option from Three dot menu', async ({
     page
   }) => {
     const teamPage = new TeamsPage(page)

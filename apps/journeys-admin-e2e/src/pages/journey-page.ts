@@ -32,11 +32,16 @@ export class JourneyPage {
     journeyName = testData.journey.firstJourneyName + generateRandomNumber(3)
   }
   async verifyJourneyTitleGotUpdated() {
+    // `.first()` — the JourneyList sometimes renders duplicate cards for the
+    // same journey (Apollo cache fragment overlap when a teamTemplate refresh
+    // races the optimistic update). Asserting on the first match keeps the
+    // test focused on "did the title save" instead of an unrelated render bug.
     await expect(
-      this.page.locator(
-        'button[aria-label="Click to edit"] p.MuiTypography-root',
-        { hasText: journeyName }
-      )
+      this.page
+        .locator('button[aria-label="Click to edit"] p.MuiTypography-root', {
+          hasText: journeyName
+        })
+        .first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
   async createAndVerifyCustomJourney() {
@@ -61,7 +66,10 @@ export class JourneyPage {
   }
   async createAndVerifyTemplateFromNewJourney() {
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickCreateTempleteOrTemplateSettingsOption('Make Template')
+    // "Make Global Template" lands on /publisher/<id> so the publisher list
+    // assertions below find the new template. Falls back to "Make Template"
+    // automatically when the test admin lacks the publisher role.
+    await this.clickCreateTempleteOrTemplateSettingsOption('Make Global Template')
     await this.backToHome()
     await this.verifyCreatedCustomJourneyInActiveList()
     await this.navigateToPublisherPage()
@@ -70,7 +78,7 @@ export class JourneyPage {
   async createAndVerifyTemplate() {
     await this.clickOnTheCreatedCustomJourney()
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickCreateTempleteOrTemplateSettingsOption('Make Template')
+    await this.clickCreateTempleteOrTemplateSettingsOption('Make Global Template')
     await this.backToHome()
     await this.navigateToPublisherPage()
     await this.verifyCreatedJourneyInTemplateList()
@@ -373,10 +381,14 @@ export class JourneyPage {
   }
 
   async verifyCreatedCustomJourneyInActiveList() {
+    // `.first()` — see verifyJourneyTitleGotUpdated for the duplicate-card
+    // rationale; the same applies here when the active list refetches.
     await expect(
-      this.page.locator(this.journeyNamePath, {
-        hasText: journeyName
-      })
+      this.page
+        .locator(this.journeyNamePath, {
+          hasText: journeyName
+        })
+        .first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 
@@ -385,6 +397,7 @@ export class JourneyPage {
       .locator(this.journeyNamePath, {
         hasText: journeyName
       })
+      .first()
       .click()
     await expect(
       this.page.locator('div[data-testid="StrategyItem"] button')
@@ -392,34 +405,64 @@ export class JourneyPage {
   }
 
   async clickCreateTempleteOrTemplateSettingsOption(
-    optionName = 'Make Template'
+    optionName = 'Make Global Template'
   ) {
+    // The 3-dot menu of a journey card exposes two creation actions for users
+    // with the publisher role:
+    //   - "Make Template"        → creates a *team* template, navigates to
+    //                              `/?type=templates` (Team Templates view).
+    //   - "Make Global Template" → creates a publisher template under the
+    //                              `jfp-team`, navigates to
+    //                              `/publisher/<id>` so it shows on the
+    //                              Publisher list.
+    // The publisher-page assertions in this suite (StatusTabPanel, "Make this
+    // template public", category/metadata settings) only exist for global
+    // templates, so we default to the global flow when it is available and
+    // fall back to the local one otherwise (e.g. Template Settings menu items
+    // which carry their own option name).
+    const menu = this.page.locator(
+      'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]'
+    )
+    const targetItem = menu.filter({ hasText: optionName }).first()
+    if (
+      optionName === 'Make Global Template' &&
+      !(await targetItem.isVisible({ timeout: 2000 }).catch(() => false))
+    ) {
+      // User isn't a publisher in this environment — fall back to local.
+      optionName = 'Make Template'
+    }
     await this.page
       .locator(
         'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
         { hasText: optionName }
       )
+      .first()
       .click({ delay: 3000 })
-    // verifying that the 'Make Template' option is disappeared, if not once again clicking on that option
+    // The clicked menu item should disappear once the menu closes; if it
+    // doesn't, click again (the original code's pragmatic recovery for the
+    // sporadic case where the first click is swallowed during route change).
     try {
       await expect(
-        this.page.locator(
-          'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
-          { hasText: 'Make Template' }
-        )
+        this.page
+          .locator(
+            'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
+            { hasText: optionName }
+          )
+          .first()
       ).toBeHidden({ timeout: sixtySecondsTimeout })
     } catch {
       await this.page
         .locator(
           'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
-          { hasText: 'Make Template' }
+          { hasText: optionName }
         )
+        .first()
         .click({ delay: 3000 })
     }
-    // "Make Template" used to land on `/publisher/...`. The current admin
-    // shell instead navigates to `/?type=templates` (Team Templates view on
-    // the journey list). Accept either landing surface so the helper works
-    // against the old and new admin shells.
+    // Accept any of the post-click landing surfaces:
+    //   - `/publisher/<id>` for global templates
+    //   - `/?type=templates` for local team templates
+    //   - `/templates/<id>` when settings flows reuse this helper
     await this.page.waitForURL(/\/publisher|[?&]type=templates|\/templates/, {
       timeout: 60000
     })
@@ -437,10 +480,16 @@ export class JourneyPage {
   }
 
   async clickThreeDotOfCreatedNewTemple() {
+    // See publisher-and-templates-page.ts#clickThreeDotOfTemple — the menu
+    // button is a *preceding* sibling of the link (absolute-positioned
+    // overlay), so the original XPath that walked `following-sibling::div`
+    // never finds it on the current shell. Scope by card and click the
+    // testid-tagged menu button instead.
     await this.page
-      .locator(
-        `//h6[text()='${journeyName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
-      )
+      .locator('div[aria-label="journey-card"]', { hasText: journeyName })
+      .first()
+      .locator('[data-testid="JourneyCardMenuButton"]')
+      .first()
       .click()
   }
 

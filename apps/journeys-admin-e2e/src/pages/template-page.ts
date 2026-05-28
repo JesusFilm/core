@@ -151,10 +151,13 @@ export class TemplatePage {
   }
 
   async selectTeamInAddJourneyToTeamPopup() {
+    // Historically two CopyToTeamDialog roots were rendered (hidden + visible)
+    // and the selector keyed on adjacency. The current admin shell renders
+    // exactly one Dialog, so locate the open one directly and click its
+    // select. `.last()` keeps the prior intent of preferring the most
+    // recently mounted dialog if MUI ever portals a second instance.
     await this.page
-      .locator(
-        'div[data-testid="CopyToTeamDialog"][aria-hidden="true"] + div[data-testid="CopyToTeamDialog"]'
-      )
+      .locator('div[data-testid="CopyToTeamDialog"]')
       .last()
       .locator(
         'div[data-testid="team-duplicate-select"] div[aria-haspopup="listbox"]'
@@ -173,21 +176,36 @@ export class TemplatePage {
 
   async clickAddBtnInPopup() {
     await this.page
-      .locator(
-        'div[data-testid="CopyToTeamDialog"][aria-hidden="true"] + div[data-testid="CopyToTeamDialog"]'
-      )
+      .locator('div[data-testid="CopyToTeamDialog"]')
       .last()
       .locator('div[data-testid="dialog-action"] button', { hasText: 'Add' })
       .click()
   }
 
   async verifySelectedTemplateInCustomJourneyPage() {
-    await expect(
-      this.page.locator(
-        'div[data-testid="JourneyDetails"] button[type="button"] p',
-        { hasText: this.selecetdTemplated }
-      )
-    ).toBeVisible({ timeout: sixtySecondsTimeout })
+    // The "Use This Template" + Add-to-Team flow no longer auto-opens the new
+    // journey in the editor; the current shell drops the user on the team's
+    // journey list (Team Projects) with the duplicated journey at the top.
+    // Try the editor's JourneyDetails first (legacy behaviour), and if it
+    // isn't there within a short window, look for the journey card on the
+    // list and click into it so downstream test steps can edit the journey.
+    const detailsTitle = this.page.locator(
+      'div[data-testid="JourneyDetails"] button[type="button"] p',
+      { hasText: this.selecetdTemplated }
+    )
+    if (
+      await detailsTitle.isVisible({ timeout: 3000 }).catch(() => false)
+    ) {
+      return
+    }
+    const listCard = this.page
+      .locator('div[aria-label="journey-card"]', {
+        hasText: this.selecetdTemplated
+      })
+      .first()
+    await expect(listCard).toBeVisible({ timeout: sixtySecondsTimeout })
+    await listCard.click()
+    await expect(detailsTitle).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
   async clickPreviewBtnInJourneyTemplatePage() {
@@ -295,11 +313,13 @@ export class TemplatePage {
   }
 
   async clickDropDownOpenIconForFilters(filterOption: string) {
+    // MUI Grid v2 dropped the `MuiGrid-item` class, so scope by the
+    // Autocomplete's own label text rather than the now-absent grid wrapper.
     await this.page
-      .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
-        { hasText: filterOption }
-      )
+      .locator('div[class*="MuiAutocomplete-root"]', {
+        hasText: filterOption
+      })
+      .first()
       .locator('button[aria-label="Open"]')
       .click()
   }
@@ -319,10 +339,10 @@ export class TemplatePage {
 
   async clickDropDownCloseIconForFilters(filterOption: string) {
     await this.page
-      .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
-        { hasText: filterOption }
-      )
+      .locator('div[class*="MuiAutocomplete-root"]', {
+        hasText: filterOption
+      })
+      .first()
       .locator('button[aria-label="Close"]')
       .click()
   }
@@ -351,9 +371,10 @@ export class TemplatePage {
 
   async hoverTheTopicFilterField() {
     await this.page
-      .locator('div[class*="MuiGrid-item"]', {
+      .locator('div[class*="MuiAutocomplete-root"]', {
         hasText: 'Topics, holidays, felt needs, collections'
       })
+      .first()
       .hover()
   }
 
