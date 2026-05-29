@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -30,14 +31,12 @@ import {
 
 import { Slider } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn(() => false)
+  default: vi.fn(() => false)
 }))
 
-const mockUseMediaQuery = useMediaQuery as jest.MockedFunction<
-  typeof useMediaQuery
->
+const mockUseMediaQuery = useMediaQuery as MockedFunction<typeof useMediaQuery>
 
 describe('Slider', () => {
   let state: EditorState
@@ -69,7 +68,7 @@ describe('Slider', () => {
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders slides', () => {
@@ -193,7 +192,7 @@ describe('Slider', () => {
         request: {
           query: GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED
         },
-        result: jest.fn(() => ({
+        result: vi.fn(() => ({
           data: {
             getJourneyProfile: {
               __typename: 'JourneyProfile',
@@ -201,7 +200,7 @@ describe('Slider', () => {
               journeyFlowBackButtonClicked: null
             }
           }
-        }))
+        })) as MockedResponse<getJourneyFlowBackButtonClicked>['result']
       }
 
     const mockUpdateJourneyFlowBackButtonClicked: MockedResponse<
@@ -216,7 +215,7 @@ describe('Slider', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyProfileUpdate: {
             __typename: 'JourneyProfile',
@@ -224,7 +223,10 @@ describe('Slider', () => {
             journeyFlowBackButtonClicked: true
           }
         }
-      }))
+      })) as MockedResponse<
+        UpdateJourneyFlowBackButtonClicked,
+        UpdateJourneyFlowBackButtonClickedVariables
+      >['result']
     }
 
     render(
@@ -266,7 +268,7 @@ describe('Slider', () => {
         request: {
           query: GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED
         },
-        result: jest.fn(() => ({
+        result: vi.fn(() => ({
           data: {
             getJourneyProfile: {
               __typename: 'JourneyProfile',
@@ -274,7 +276,7 @@ describe('Slider', () => {
               journeyFlowBackButtonClicked: true
             }
           }
-        }))
+        })) as MockedResponse<getJourneyFlowBackButtonClicked>['result']
       }
 
     render(

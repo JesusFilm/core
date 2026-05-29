@@ -8,13 +8,16 @@ Workspaces that use Vitest (have a `vitest.config.mts` at the workspace root):
 | ------------------------ | ------------------------------------------ |
 | `apps/arclight`          | `apps/arclight/vitest.config.mts`          |
 | `apps/journeys`          | `apps/journeys/vitest.config.mts`          |
+| `apps/journeys-admin`    | `apps/journeys-admin/vitest.config.mts`    |
 | `apps/resources`         | `apps/resources/vitest.config.mts`         |
+| `apps/watch`             | `apps/watch/vitest.config.mts`             |
 | `apis/api-analytics`     | `apis/api-analytics/vitest.config.mts`     |
 | `apis/api-media`         | `apis/api-media/vitest.config.mts`         |
+| `libs/shared/dev-hosts`  | `libs/shared/dev-hosts/vitest.config.mts`  |
 | `libs/shared/ui-dynamic` | `libs/shared/ui-dynamic/vitest.config.mts` |
 | `libs/yoga`              | `libs/yoga/vitest.config.mts`              |
 
-For workspaces with a `jest.config.ts` (e.g. `apps/journeys-admin`, `apps/cms`, `apps/watch`), see `running-jest-tests.md`.
+For workspaces with a `jest.config.ts` (e.g. `apps/cms`), see `running-jest-tests.md`.
 
 ## Use `npx vitest run` directly — never `npx nx test`
 

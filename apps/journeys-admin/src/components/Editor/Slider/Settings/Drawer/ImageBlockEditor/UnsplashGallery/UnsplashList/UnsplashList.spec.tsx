@@ -54,7 +54,7 @@ describe('UnsplashList', () => {
   }
 
   it('should call onChange on image click', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(
       <MockedProvider mocks={[triggerUnsplashDownloadMock]}>
         <ThemeProvider>
@@ -83,7 +83,7 @@ describe('UnsplashList', () => {
           <UnsplashList
             selectedBlock={{ src: item.urls.regular } as unknown as ImageBlock}
             gallery={[item]}
-            onChange={jest.fn()}
+            onChange={vi.fn()}
           />
         </ThemeProvider>
       </MockedProvider>

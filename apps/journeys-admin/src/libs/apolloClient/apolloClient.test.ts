@@ -8,6 +8,7 @@ import {
 } from '@apollo/client'
 import { print } from 'graphql'
 import { createClient } from 'graphql-sse'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { logout } from '../auth/firebase'
 
@@ -18,23 +19,21 @@ import {
   resolveGatewayUrl
 } from './apolloClient'
 
-jest.mock('graphql-sse', () => ({
-  createClient: jest.fn()
+vi.mock('graphql-sse', () => ({
+  createClient: vi.fn()
 }))
 
-jest.mock('../auth/firebase', () => ({
-  logout: jest.fn().mockResolvedValue(undefined)
+vi.mock('../auth/firebase', () => ({
+  logout: vi.fn().mockResolvedValue(undefined)
 }))
 
-const mockCreateClient = createClient as jest.MockedFunction<
-  typeof createClient
->
-const mockLogout = logout as jest.MockedFunction<typeof logout>
+const mockCreateClient = createClient as MockedFunction<typeof createClient>
+const mockLogout = logout as MockedFunction<typeof logout>
 
 describe('createApolloClient', () => {
   beforeEach(() => {
     mockCreateClient.mockReturnValue({
-      subscribe: jest.fn()
+      subscribe: vi.fn()
     } as unknown as ReturnType<typeof createClient>)
   })
 
@@ -54,16 +53,16 @@ describe('createApolloClient', () => {
 })
 
 describe('SSELink', () => {
-  let mockSubscribe: jest.Mock
+  let mockSubscribe: Mock
 
   beforeEach(() => {
-    mockSubscribe = jest.fn()
+    mockSubscribe = vi.fn()
     mockCreateClient.mockReturnValue({
       subscribe: mockSubscribe
     } as unknown as ReturnType<typeof createClient>)
   })
 
-  it('forwards operation query, variables, and operationName to graphql-sse client', (done) => {
+  it('forwards operation query, variables, and operationName to graphql-sse client', async () => {
     mockSubscribe.mockImplementation((_op, sink) => {
       sink.next({ data: { item: { id: 'item-1' } } })
       sink.complete()
@@ -80,35 +79,41 @@ describe('SSELink', () => {
     `
     const vars = { id: 'item-1' }
 
-    link
-      .request(
-        {
-          query: doc,
-          variables: vars,
-          operationName: 'TestOp',
-          getContext: () => ({ headers: {} }),
-          setContext: jest.fn(),
-          extensions: {}
-        },
-        undefined
-      )
-      ?.subscribe({
-        next: () => {
-          expect(mockSubscribe).toHaveBeenCalledWith(
-            expect.objectContaining({
-              query: print(doc),
-              variables: vars,
-              operationName: 'TestOp'
-            }),
-            expect.any(Object)
-          )
-          done()
-        },
-        error: done
-      })
+    await new Promise<void>((resolve, reject) => {
+      link
+        .request(
+          {
+            query: doc,
+            variables: vars,
+            operationName: 'TestOp',
+            getContext: () => ({ headers: {} }),
+            setContext: vi.fn(),
+            extensions: {}
+          },
+          undefined
+        )
+        ?.subscribe({
+          next: () => {
+            try {
+              expect(mockSubscribe).toHaveBeenCalledWith(
+                expect.objectContaining({
+                  query: print(doc),
+                  variables: vars,
+                  operationName: 'TestOp'
+                }),
+                expect.any(Object)
+              )
+              resolve()
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error(String(error)))
+            }
+          },
+          error: reject
+        })
+    })
   })
 
-  it('forwards auth headers from operation context', (done) => {
+  it('forwards auth headers from operation context', async () => {
     mockSubscribe.mockImplementation((_op, sink) => {
       sink.next({ data: {} })
       sink.complete()
@@ -122,30 +127,36 @@ describe('SSELink', () => {
       }
     `
 
-    link
-      .request(
-        {
-          query: doc,
-          variables: {},
-          operationName: 'TestSub',
-          getContext: () => ({ headers: { Authorization: 'JWT my-token' } }),
-          setContext: jest.fn(),
-          extensions: {}
-        },
-        undefined
-      )
-      ?.subscribe({
-        next: () => {
-          // The headers factory in createClient is called at subscribe time,
-          // so we verify that the client was created and subscribe was called
-          expect(mockSubscribe).toHaveBeenCalled()
-          done()
-        },
-        error: done
-      })
+    await new Promise<void>((resolve, reject) => {
+      link
+        .request(
+          {
+            query: doc,
+            variables: {},
+            operationName: 'TestSub',
+            getContext: () => ({ headers: { Authorization: 'JWT my-token' } }),
+            setContext: vi.fn(),
+            extensions: {}
+          },
+          undefined
+        )
+        ?.subscribe({
+          next: () => {
+            try {
+              // The headers factory in createClient is called at subscribe time,
+              // so we verify that the client was created and subscribe was called
+              expect(mockSubscribe).toHaveBeenCalled()
+              resolve()
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error(String(error)))
+            }
+          },
+          error: reject
+        })
+    })
   })
 
-  it('propagates errors from graphql-sse sink to the observer', (done) => {
+  it('propagates errors from graphql-sse sink to the observer', async () => {
     const sseError = new Error('SSE connection failed')
     mockSubscribe.mockImplementation((_op, sink) => {
       sink.error(sseError)
@@ -159,24 +170,30 @@ describe('SSELink', () => {
       }
     `
 
-    link
-      .request(
-        {
-          query: doc,
-          variables: {},
-          operationName: 'TestSubError',
-          getContext: () => ({}),
-          setContext: jest.fn(),
-          extensions: {}
-        },
-        undefined
-      )
-      ?.subscribe({
-        error: (err: Error) => {
-          expect(err).toBe(sseError)
-          done()
-        }
-      })
+    await new Promise<void>((resolve, reject) => {
+      link
+        .request(
+          {
+            query: doc,
+            variables: {},
+            operationName: 'TestSubError',
+            getContext: () => ({}),
+            setContext: vi.fn(),
+            extensions: {}
+          },
+          undefined
+        )
+        ?.subscribe({
+          error: (err: Error) => {
+            try {
+              expect(err).toBe(sseError)
+              resolve()
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error(String(error)))
+            }
+          }
+        })
+    })
   })
 })
 
@@ -293,7 +310,7 @@ describe('createErrorLink', () => {
     mockLogout.mockClear()
   })
 
-  it('calls logout and propagates Session expired error on UNAUTHENTICATED', (done) => {
+  it('calls logout and propagates Session expired error on UNAUTHENTICATED', async () => {
     const errorLink = createErrorLink()
 
     const terminatingLink = new ApolloLink(
@@ -315,22 +332,28 @@ describe('createErrorLink', () => {
 
     const link = from([errorLink, terminatingLink])
 
-    execute(link, {
-      query: gql`
-        query Test {
-          test
+    await new Promise<void>((resolve, reject) => {
+      execute(link, {
+        query: gql`
+          query Test {
+            test
+          }
+        `
+      }).subscribe({
+        error: (err: Error) => {
+          try {
+            expect(mockLogout).toHaveBeenCalled()
+            expect(err.message).toBe('Session expired')
+            resolve()
+          } catch (error) {
+            reject(error instanceof Error ? error : new Error(String(error)))
+          }
         }
-      `
-    }).subscribe({
-      error: (err: Error) => {
-        expect(mockLogout).toHaveBeenCalled()
-        expect(err.message).toBe('Session expired')
-        done()
-      }
+      })
     })
   })
 
-  it('does not call logout for non-UNAUTHENTICATED errors', (done) => {
+  it('does not call logout for non-UNAUTHENTICATED errors', async () => {
     const errorLink = createErrorLink()
 
     const terminatingLink = new ApolloLink(
@@ -352,18 +375,24 @@ describe('createErrorLink', () => {
 
     const link = from([errorLink, terminatingLink])
 
-    execute(link, {
-      query: gql`
-        query TestNonAuth {
-          test
-        }
-      `
-    }).subscribe({
-      next: () => {
-        expect(mockLogout).not.toHaveBeenCalled()
-      },
-      complete: done,
-      error: done
+    await new Promise<void>((resolve, reject) => {
+      execute(link, {
+        query: gql`
+          query TestNonAuth {
+            test
+          }
+        `
+      }).subscribe({
+        next: () => {
+          try {
+            expect(mockLogout).not.toHaveBeenCalled()
+          } catch (error) {
+            reject(error instanceof Error ? error : new Error(String(error)))
+          }
+        },
+        complete: resolve,
+        error: reject
+      })
     })
   })
 })

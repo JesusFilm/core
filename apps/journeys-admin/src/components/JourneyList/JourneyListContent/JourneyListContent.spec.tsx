@@ -1,5 +1,6 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
@@ -35,29 +36,29 @@ import {
 } from './JourneyListContent.mocks'
 import { renderJourneyListContent } from './JourneyListContent.testUtils'
 
-jest.mock('@core/journeys/ui/useNavigationState', () => ({
-  useNavigationState: jest.fn(() => false)
+vi.mock('@core/journeys/ui/useNavigationState', () => ({
+  useNavigationState: vi.fn(() => false)
 }))
 
-jest.mock('@core/journeys/ui/TeamProvider', () => ({
+vi.mock('@core/journeys/ui/TeamProvider', () => ({
   __esModule: true,
-  useTeam: jest.fn()
+  useTeam: vi.fn()
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseTeam = useTeam as jest.MockedFunction<typeof useTeam>
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseTeam = useTeam as MockedFunction<typeof useTeam>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('JourneyListContent', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseRouter.mockReturnValue({
       query: {},
-      replace: jest.fn()
+      replace: vi.fn()
     } as any)
     mockUseTeam.mockReturnValue({
       activeTeam: {
@@ -68,8 +69,8 @@ describe('JourneyListContent', () => {
         userTeams: [],
         customDomains: []
       },
-      setActiveTeam: jest.fn(),
-      refetch: jest.fn(),
+      setActiveTeam: vi.fn(),
+      refetch: vi.fn(),
       query: {} as any
     })
   })
@@ -876,7 +877,7 @@ describe('JourneyListContent', () => {
 
   describe('Refresh Query Param', () => {
     it('should refetch and remove refresh param when refresh query param is present', async () => {
-      const replace = jest.fn()
+      const replace = vi.fn()
       const pathname = '/'
       mockUseRouter.mockReturnValue({
         query: { refresh: 'true' },
@@ -905,7 +906,7 @@ describe('JourneyListContent', () => {
     })
 
     it('should preserve other query params when removing refresh param', async () => {
-      const replace = jest.fn()
+      const replace = vi.fn()
       const pathname = '/'
       mockUseRouter.mockReturnValue({
         query: { refresh: 'true', type: 'journeys', status: 'active' },
@@ -934,7 +935,7 @@ describe('JourneyListContent', () => {
     })
 
     it('should not call replace when refresh param is not present', async () => {
-      const replace = jest.fn()
+      const replace = vi.fn()
       mockUseRouter.mockReturnValue({
         query: { type: 'journeys' },
         pathname: '/',
@@ -962,8 +963,8 @@ describe('JourneyListContent', () => {
     it('should show loading skeleton when activeTeam is undefined', () => {
       mockUseTeam.mockReturnValue({
         activeTeam: undefined,
-        setActiveTeam: jest.fn(),
-        refetch: jest.fn(),
+        setActiveTeam: vi.fn(),
+        refetch: vi.fn(),
         query: {} as any
       })
 

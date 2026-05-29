@@ -9,6 +9,7 @@ import {
   useInstantSearch,
   useSearchBox
 } from 'react-instantsearch'
+import { type MockedFunction } from 'vitest'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
@@ -21,27 +22,25 @@ import { GET_VIDEO_VARIANT_LANGUAGES } from './SourceFromLocal/SourceFromLocal'
 
 import { Source } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
-const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
+const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >
-const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+const mockUseInfiniteHits = useInfiniteHits as MockedFunction<
   typeof useInfiniteHits
 >
 
@@ -119,17 +118,17 @@ const getVideoVariantLanguagesMock = {
 }
 
 describe('Source', () => {
-  const push = jest.fn()
-  const on = jest.fn()
+  const push = vi.fn()
+  const on = vi.fn()
 
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue({
-      refine: jest.fn()
+      refine: vi.fn()
     } as unknown as SearchBoxRenderState)
 
     mockUseInfiniteHits.mockReturnValue({
       items: videoItems,
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)
 
@@ -141,12 +140,12 @@ describe('Source', () => {
       }
     } as unknown as InstantSearchApi)
 
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('calls onChange when video selected', async () => {
-    const onChange = jest.fn()
-    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const onChange = vi.fn()
+    const result = vi.fn().mockReturnValue(getVideoMock.result)
 
     mockedUseRouter.mockReturnValue({
       query: { param: null },
@@ -199,7 +198,7 @@ describe('Source', () => {
   })
 
   it('shows YouTube video', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(
       <MockedProvider>
         <MuxVideoUploadProvider>
@@ -254,7 +253,7 @@ describe('Source', () => {
   })
 
   it('shows video details on source button click', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -324,7 +323,7 @@ describe('Source', () => {
   })
 
   it('shows SourceFromLocal when source is internal with videoId', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -393,7 +392,7 @@ describe('Source', () => {
   })
 
   it('shows SourceFromMux when source is mux', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -449,7 +448,7 @@ describe('Source', () => {
   })
 
   it('shows SourceEmpty when selectedBlock is null', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -471,7 +470,7 @@ describe('Source', () => {
   })
 
   it('shows SourceEmpty when source is internal without videoId', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -524,7 +523,7 @@ describe('Source', () => {
   })
 
   it('opens VideoLibrary dialog when card is clicked', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -558,7 +557,7 @@ describe('Source', () => {
   })
 
   it('renders VideoLibrary component when open is true', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,

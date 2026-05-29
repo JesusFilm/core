@@ -52,7 +52,7 @@ describe('TeamUpdateDialog', () => {
   }
 
   it('updates active team and sets it as active', async () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
     const cache = new InMemoryCache()
     const { getByRole, getByText, getAllByRole } = render(
       <MockedProvider
@@ -89,7 +89,7 @@ describe('TeamUpdateDialog', () => {
   })
 
   it('should be disabled if user does not have required permissions', async () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
     const cache = new InMemoryCache()
     const { getAllByRole, getAllByText } = render(
       <MockedProvider
@@ -121,7 +121,7 @@ describe('TeamUpdateDialog', () => {
       >
         <SnackbarProvider>
           <TeamProvider>
-            <TeamUpdateDialog open onClose={jest.fn()} />
+            <TeamUpdateDialog open onClose={vi.fn()} />
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -160,7 +160,7 @@ describe('TeamUpdateDialog', () => {
       >
         <SnackbarProvider>
           <TeamProvider>
-            <TeamUpdateDialog open onClose={jest.fn()} />
+            <TeamUpdateDialog open onClose={vi.fn()} />
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>

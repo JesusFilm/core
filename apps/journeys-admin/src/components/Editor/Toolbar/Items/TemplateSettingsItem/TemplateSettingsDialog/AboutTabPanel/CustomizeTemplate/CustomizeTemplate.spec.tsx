@@ -78,7 +78,7 @@ describe('CustomizeTemplate', () => {
   })
 
   it('refreshes customization text using journey blocks', () => {
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     const journey = {
       ...(defaultJourney as Journey),
       blocks: [
@@ -132,7 +132,7 @@ describe('CustomizeTemplate', () => {
   })
 
   it('handles text change', () => {
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     const journey = defaultJourney as Journey
     render(
       <MockedProvider>
@@ -169,7 +169,7 @@ describe('CustomizeTemplate', () => {
   })
 
   it('inserts em-space on Tab keydown at caret position', () => {
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     const journey = {
       ...(defaultJourney as Journey),
       journeyCustomizationDescription: 'ABC'

@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
@@ -13,12 +14,12 @@ import { ThemeProvider } from '../../ThemeProvider'
 
 import { CopyToCollectionDialog } from './CopyToCollectionDialog'
 
-jest.mock('@core/journeys/ui/TeamProvider', () => ({
+vi.mock('@core/journeys/ui/TeamProvider', () => ({
   __esModule: true,
-  useTeam: jest.fn()
+  useTeam: vi.fn()
 }))
 
-const mockUseTeam = useTeam as jest.MockedFunction<typeof useTeam>
+const mockUseTeam = useTeam as MockedFunction<typeof useTeam>
 
 const TEAM_ID = 'team-1'
 
@@ -127,8 +128,8 @@ function setActiveTeam(id: string | null): void {
   if (id == null) {
     mockUseTeam.mockReturnValue({
       activeTeam: null,
-      setActiveTeam: jest.fn(),
-      refetch: jest.fn(),
+      setActiveTeam: vi.fn(),
+      refetch: vi.fn(),
       query: {} as any
     })
     return
@@ -142,8 +143,8 @@ function setActiveTeam(id: string | null): void {
       userTeams: [],
       customDomains: []
     } as any,
-    setActiveTeam: jest.fn(),
-    refetch: jest.fn(),
+    setActiveTeam: vi.fn(),
+    refetch: vi.fn(),
     query: {} as any
   })
 }
@@ -159,8 +160,8 @@ function renderDialog({
 }: RenderOptions = {}): ReturnType<typeof render> {
   const baseProps: React.ComponentProps<typeof CopyToCollectionDialog> = {
     open: true,
-    onClose: jest.fn(),
-    onSubmit: jest.fn(),
+    onClose: vi.fn(),
+    onSubmit: vi.fn(),
     ...props
   }
   return render(
@@ -176,7 +177,7 @@ function renderDialog({
 
 describe('CopyToCollectionDialog', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     setActiveTeam(TEAM_ID)
   })
 
@@ -212,7 +213,7 @@ describe('CopyToCollectionDialog', () => {
   })
 
   it('selecting a collection enables submit and submits with the chosen id', async () => {
-    const onSubmit = jest.fn()
+    const onSubmit = vi.fn()
     const pagesMock = makePagesMock([
       makePage({ id: 'page-1', title: 'Featured Templates' })
     ])
@@ -244,7 +245,7 @@ describe('CopyToCollectionDialog', () => {
   })
 
   it('toggling translation reveals the language picker and submits with language and showTranslation true', async () => {
-    const onSubmit = jest.fn()
+    const onSubmit = vi.fn()
     const pagesMock = makePagesMock([
       makePage({ id: 'page-1', title: 'Featured Templates' })
     ])
@@ -387,7 +388,7 @@ describe('CopyToCollectionDialog', () => {
   })
 
   it('rapid double-click on submit fires onSubmit only once (loading prop disables button)', async () => {
-    const onSubmit = jest.fn()
+    const onSubmit = vi.fn()
     const pagesMock = makePagesMock([
       makePage({ id: 'page-1', title: 'Featured Templates' })
     ])
@@ -414,7 +415,7 @@ describe('CopyToCollectionDialog', () => {
           <CopyToCollectionDialog
             open
             loading
-            onClose={jest.fn()}
+            onClose={vi.fn()}
             onSubmit={onSubmit}
           />
         </SnackbarProvider>
@@ -429,7 +430,7 @@ describe('CopyToCollectionDialog', () => {
   })
 
   it('renders the error state in an aria-live region with a single Done button bound to onClose', () => {
-    const onClose = jest.fn()
+    const onClose = vi.fn()
     renderDialog({
       props: {
         onClose,
@@ -458,7 +459,7 @@ describe('CopyToCollectionDialog', () => {
   })
 
   it('renders the done state with success copy echoing the selected collection title', () => {
-    const onClose = jest.fn()
+    const onClose = vi.fn()
     renderDialog({
       props: {
         onClose,
@@ -484,8 +485,8 @@ describe('CopyToCollectionDialog', () => {
   })
 
   it('when loading is true the submit/cancel actions are not rendered and onSubmit is not called', () => {
-    const onSubmit = jest.fn()
-    const onClose = jest.fn()
+    const onSubmit = vi.fn()
+    const onClose = vi.fn()
     renderDialog({
       props: { onSubmit, onClose, loading: true }
     })

@@ -1,21 +1,24 @@
 import noop from 'lodash/noop'
 import { RefObject } from 'react'
+import { type MockInstance } from 'vitest'
 
 import { clearPollingInterval } from './clearPollingInterval'
 
 describe('clearPollingInterval', () => {
   let pollingIntervalsRef: RefObject<Map<string, NodeJS.Timeout>>
-  let mockClearInterval: jest.SpyInstance
+  let mockClearInterval: MockInstance
 
   beforeEach(() => {
-    mockClearInterval = jest.spyOn(global, 'clearInterval').mockImplementation()
+    mockClearInterval = vi
+      .spyOn(global, 'clearInterval')
+      .mockImplementation(noop)
     pollingIntervalsRef = {
       current: new Map<string, NodeJS.Timeout>()
     }
   })
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 
   it('should clear interval and delete from map when interval exists', () => {

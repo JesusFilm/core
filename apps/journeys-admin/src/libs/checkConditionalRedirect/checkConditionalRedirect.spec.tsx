@@ -21,7 +21,7 @@ describe('checkConditionalRedirect', () => {
       graphQLErrors: [{ extensions: { code: 'UNAUTHENTICATED' } }]
     }
     const apolloClient = {
-      query: jest.fn().mockRejectedValueOnce(unauthError)
+      query: vi.fn().mockRejectedValueOnce(unauthError)
     } as unknown as ApolloClient<NormalizedCacheObject>
     expect(
       await checkConditionalRedirect({ apolloClient, resolvedUrl: '/' })
@@ -34,7 +34,7 @@ describe('checkConditionalRedirect', () => {
   it('rethrows non-UNAUTHENTICATED errors from GetMe', async () => {
     const networkError = new Error('Network error')
     const apolloClient = {
-      query: jest.fn().mockRejectedValueOnce(networkError)
+      query: vi.fn().mockRejectedValueOnce(networkError)
     } as unknown as ApolloClient<NormalizedCacheObject>
     await expect(
       checkConditionalRedirect({ apolloClient, resolvedUrl: '/' })
@@ -43,7 +43,7 @@ describe('checkConditionalRedirect', () => {
 
   it('calls apollo apolloClient', async () => {
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data: {} })
         .mockResolvedValueOnce({ data: meData })
@@ -62,7 +62,7 @@ describe('checkConditionalRedirect', () => {
       teams: []
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({
@@ -85,7 +85,7 @@ describe('checkConditionalRedirect', () => {
       teams: []
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({
@@ -104,7 +104,7 @@ describe('checkConditionalRedirect', () => {
 
   it('does not redirect when user is AnonymousUser and allowGuest is true', async () => {
     const apolloClient = {
-      query: jest.fn().mockResolvedValueOnce({
+      query: vi.fn().mockResolvedValueOnce({
         data: { me: { __typename: 'AnonymousUser' } }
       })
     } as unknown as ApolloClient<NormalizedCacheObject>
@@ -123,7 +123,7 @@ describe('checkConditionalRedirect', () => {
       teams: []
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -142,7 +142,7 @@ describe('checkConditionalRedirect', () => {
       teams: []
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -166,7 +166,7 @@ describe('checkConditionalRedirect', () => {
       teams: []
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -194,7 +194,7 @@ describe('checkConditionalRedirect', () => {
       teams: []
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -222,7 +222,7 @@ describe('checkConditionalRedirect', () => {
       teams: []
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -249,7 +249,7 @@ describe('checkConditionalRedirect', () => {
       teams: [{ id: 'teamId', __typename: 'Team' }]
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -276,7 +276,7 @@ describe('checkConditionalRedirect', () => {
       teams: [{ id: 'teamId', __typename: 'Team' }]
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -303,7 +303,7 @@ describe('checkConditionalRedirect', () => {
       teams: []
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -327,7 +327,7 @@ describe('checkConditionalRedirect', () => {
       teams: []
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -351,7 +351,7 @@ describe('checkConditionalRedirect', () => {
       teams: []
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -383,7 +383,7 @@ describe('checkConditionalRedirect', () => {
       ]
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -404,11 +404,11 @@ describe('checkConditionalRedirect', () => {
       teams: []
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData }),
-      mutate: jest.fn().mockResolvedValue({})
+      mutate: vi.fn().mockResolvedValue({})
     } as unknown as ApolloClient<NormalizedCacheObject>
     expect(
       await checkConditionalRedirect({
@@ -428,7 +428,7 @@ describe('checkConditionalRedirect', () => {
 
   it('passes decoded redirect URL to GET_ME instead of query string', async () => {
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({
           data: {
@@ -460,7 +460,7 @@ describe('checkConditionalRedirect', () => {
 
   it('passes undefined redirect to GET_ME when resolvedUrl is root', async () => {
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({
           data: {
@@ -489,7 +489,7 @@ describe('checkConditionalRedirect', () => {
 
   it('passes resolvedUrl to GET_ME when no redirect param and not root', async () => {
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({
           data: {
@@ -527,7 +527,7 @@ describe('checkConditionalRedirect', () => {
       teams: [{ id: 'teamId', __typename: 'Team' }]
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -555,7 +555,7 @@ describe('checkConditionalRedirect', () => {
       teams: [{ id: 'teamId', __typename: 'Team' }]
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -583,7 +583,7 @@ describe('checkConditionalRedirect', () => {
       teams: [{ id: 'teamId', __typename: 'Team' }]
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData })
@@ -610,11 +610,11 @@ describe('checkConditionalRedirect', () => {
       teams: []
     }
     const apolloClient = {
-      query: jest
+      query: vi
         .fn()
         .mockResolvedValue({ data })
         .mockResolvedValueOnce({ data: meData }),
-      mutate: jest.fn().mockResolvedValue({})
+      mutate: vi.fn().mockResolvedValue({})
     } as unknown as ApolloClient<NormalizedCacheObject>
     expect(
       await checkConditionalRedirect({

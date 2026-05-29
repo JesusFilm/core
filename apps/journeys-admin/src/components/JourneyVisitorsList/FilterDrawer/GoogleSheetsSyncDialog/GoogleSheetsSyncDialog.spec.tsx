@@ -1,44 +1,45 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import mockRouter from 'next-router-mock'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { useAuth } from '../../../../libs/auth'
 
 import { GoogleSheetsSyncDialog } from './GoogleSheetsSyncDialog'
 
-jest.mock('../../../../libs/auth', () => ({
-  useAuth: jest.fn()
+vi.mock('../../../../libs/auth', () => ({
+  useAuth: vi.fn()
 }))
 
-const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>
+const mockUseAuth = useAuth as MockedFunction<typeof useAuth>
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (value: string) => value
   })
 }))
 
-const mockEnqueueSnackbar = jest.fn()
+const mockEnqueueSnackbar = vi.fn()
 
-jest.mock('notistack', () => ({
+vi.mock('notistack', () => ({
   useSnackbar: () => ({
     enqueueSnackbar: mockEnqueueSnackbar
   })
 }))
 
-const mockUseQuery = jest.fn()
-const mockUseLazyQuery = jest.fn()
-const mockUseMutation = jest.fn()
+const mockUseQuery = vi.fn()
+const mockUseLazyQuery = vi.fn()
+const mockUseMutation = vi.fn()
 
-jest.mock('@apollo/client', () => ({
+vi.mock('@apollo/client', () => ({
   gql: (strings: TemplateStringsArray | string) => strings,
   useQuery: (...args: unknown[]) => mockUseQuery(...args),
   useLazyQuery: (...args: unknown[]) => mockUseLazyQuery(...args),
   useMutation: (...args: unknown[]) => mockUseMutation(...args)
 }))
 
-const mockUseIntegrationQuery = jest.fn()
+const mockUseIntegrationQuery = vi.fn()
 
-jest.mock('../../../../libs/useIntegrationQuery/useIntegrationQuery', () => ({
+vi.mock('../../../../libs/useIntegrationQuery/useIntegrationQuery', () => ({
   useIntegrationQuery: (...args: unknown[]) => mockUseIntegrationQuery(...args)
 }))
 
@@ -65,7 +66,7 @@ const defaultIntegrationsData = {
   ]
 }
 
-let loadSyncsMock: jest.Mock
+let loadSyncsMock: Mock
 function setupApolloMocks({
   syncs = [],
   syncsLoading = false
@@ -73,8 +74,8 @@ function setupApolloMocks({
   syncs?: Array<Record<string, unknown>>
   syncsLoading?: boolean
 } = {}): void {
-  const getPickerTokenMock = jest.fn()
-  loadSyncsMock = jest.fn().mockResolvedValue(undefined)
+  const getPickerTokenMock = vi.fn()
+  loadSyncsMock = vi.fn().mockResolvedValue(undefined)
 
   mockUseLazyQuery
     .mockImplementationOnce(() => [
@@ -92,20 +93,20 @@ function setupApolloMocks({
 
   mockUseMutation
     .mockImplementationOnce(() => [
-      jest.fn().mockResolvedValue(undefined),
+      vi.fn().mockResolvedValue(undefined),
       { loading: false }
     ])
     .mockImplementationOnce(() => [
-      jest.fn().mockResolvedValue(undefined),
+      vi.fn().mockResolvedValue(undefined),
       { loading: false }
     ])
 }
 
 describe('GoogleSheetsSyncDialog', () => {
-  const onClose = jest.fn()
+  const onClose = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseQuery.mockReset()
     mockUseLazyQuery.mockReset()
     mockUseMutation.mockReset()
@@ -123,10 +124,10 @@ describe('GoogleSheetsSyncDialog', () => {
       data: defaultIntegrationsData
     })
     mockUseLazyQuery.mockImplementation(() => [
-      jest.fn(),
+      vi.fn(),
       { data: undefined, loading: false, called: false }
     ])
-    mockUseMutation.mockImplementation(() => [jest.fn(), { loading: false }])
+    mockUseMutation.mockImplementation(() => [vi.fn(), { loading: false }])
   })
 
   it('fetches syncs when dialog is opened', async () => {

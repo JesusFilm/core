@@ -6,14 +6,14 @@ import { ThemeProvider } from '../ThemeProvider'
 
 import { TemplateList } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => {
+  useRouter: vi.fn(() => {
     return {
       query: {
         tab: 'active'
       },
-      push: jest.fn()
+      push: vi.fn()
     }
   })
 }))

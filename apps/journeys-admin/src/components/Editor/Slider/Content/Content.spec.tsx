@@ -5,9 +5,9 @@ import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { Content } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn(() => false)
+  default: vi.fn(() => false)
 }))
 
 describe('Content', () => {

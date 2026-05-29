@@ -17,7 +17,7 @@ import { TEXT_RESPONSE_PLACEHOLDER_UPDATE } from './Placeholder'
 
 import { Placeholder } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -48,7 +48,7 @@ describe('Edit Placeholder field', () => {
         placeholder: 'Your placeholder here more'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
@@ -66,7 +66,7 @@ describe('Edit Placeholder field', () => {
         placeholder: 'Your placeholder here'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
@@ -84,7 +84,7 @@ describe('Edit Placeholder field', () => {
         placeholder: 'Your placeholder here more'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
@@ -94,7 +94,7 @@ describe('Edit Placeholder field', () => {
     }))
   }
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should display placeholder value', () => {
     render(

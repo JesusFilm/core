@@ -8,7 +8,7 @@ import {
 } from './UserTeamInviteRemoveMenuItem'
 
 describe('UserTeamInviteRemoveMenuItem', () => {
-  const inviteResult = jest.fn(() => ({
+  const inviteResult = vi.fn(() => ({
     data: {
       userTeamInviteRemove: {
         id: 'userTeamInviteId'
@@ -39,7 +39,7 @@ describe('UserTeamInviteRemoveMenuItem', () => {
   })
 
   it('should remove a team invite', async () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const { getByText } = render(
       <MockedProvider mocks={mocks} cache={cache}>
         <UserTeamInviteRemoveMenuItem

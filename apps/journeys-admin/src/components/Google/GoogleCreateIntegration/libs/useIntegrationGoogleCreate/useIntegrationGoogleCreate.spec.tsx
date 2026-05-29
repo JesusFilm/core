@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
 import { ReactNode } from 'react'
+import { type MockedFunction } from 'vitest'
 
 import { useAuth } from '../../../../../libs/auth'
 
@@ -10,16 +11,16 @@ import {
   useIntegrationGoogleCreate
 } from './useIntegrationGoogleCreate'
 
-jest.mock('next/router', () => ({
-  useRouter: jest.fn()
+vi.mock('next/router', () => ({
+  useRouter: vi.fn()
 }))
 
-jest.mock('../../../../../libs/auth', () => ({
-  useAuth: jest.fn()
+vi.mock('../../../../../libs/auth', () => ({
+  useAuth: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
+const mockUseAuth = useAuth as MockedFunction<typeof useAuth>
 
 function createWrapper(
   mocks: MockedResponse[] = []
@@ -36,25 +37,25 @@ function createWrapper(
 const defaultRouter = {
   query: {},
   pathname: '/teams/[teamId]',
-  replace: jest.fn(),
-  push: jest.fn(),
-  prefetch: jest.fn(),
+  replace: vi.fn(),
+  push: vi.fn(),
+  prefetch: vi.fn(),
   route: '',
   asPath: '',
   basePath: '',
   isLocaleDomain: false,
   isReady: true,
   isPreview: false,
-  back: jest.fn(),
-  beforePopState: jest.fn(),
-  reload: jest.fn(),
-  events: { on: jest.fn(), off: jest.fn(), emit: jest.fn() },
+  back: vi.fn(),
+  beforePopState: vi.fn(),
+  reload: vi.fn(),
+  events: { on: vi.fn(), off: vi.fn(), emit: vi.fn() },
   isFallback: false
 } as unknown as ReturnType<typeof useRouter>
 
 describe('useIntegrationGoogleCreate', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseAuth.mockReturnValue({
       user: { id: 'user-id' } as any
     })
@@ -139,14 +140,14 @@ describe('useIntegrationGoogleCreate', () => {
   })
 
   it('should call mutation and onSuccess when code is present', async () => {
-    const replace = jest.fn()
+    const replace = vi.fn()
     mockUseRouter.mockReturnValue({
       ...defaultRouter,
       query: { code: 'auth-code' },
       replace
     })
 
-    const onSuccess = jest.fn()
+    const onSuccess = vi.fn()
 
     const mutationMock: MockedResponse = {
       request: {
@@ -189,14 +190,14 @@ describe('useIntegrationGoogleCreate', () => {
   })
 
   it('should call onError when mutation returns no ID', async () => {
-    const replace = jest.fn()
+    const replace = vi.fn()
     mockUseRouter.mockReturnValue({
       ...defaultRouter,
       query: { code: 'auth-code' },
       replace
     })
 
-    const onError = jest.fn()
+    const onError = vi.fn()
 
     const mutationMock: MockedResponse = {
       request: {
@@ -231,14 +232,14 @@ describe('useIntegrationGoogleCreate', () => {
   })
 
   it('should call onError when mutation throws', async () => {
-    const replace = jest.fn()
+    const replace = vi.fn()
     mockUseRouter.mockReturnValue({
       ...defaultRouter,
       query: { code: 'auth-code' },
       replace
     })
 
-    const onError = jest.fn()
+    const onError = vi.fn()
 
     const mutationMock: MockedResponse = {
       request: {
@@ -269,7 +270,7 @@ describe('useIntegrationGoogleCreate', () => {
   })
 
   it('should strip code param from URL on trigger', () => {
-    const replace = jest.fn()
+    const replace = vi.fn()
     mockUseRouter.mockReturnValue({
       ...defaultRouter,
       query: { code: 'auth-code', teamId: 'teamId' },
@@ -308,14 +309,14 @@ describe('useIntegrationGoogleCreate', () => {
   })
 
   it('should not re-trigger mutation on rerender', async () => {
-    const replace = jest.fn()
+    const replace = vi.fn()
     mockUseRouter.mockReturnValue({
       ...defaultRouter,
       query: { code: 'auth-code' },
       replace
     })
 
-    const onSuccess = jest.fn()
+    const onSuccess = vi.fn()
 
     const mutationMock: MockedResponse = {
       request: {

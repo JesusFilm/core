@@ -34,7 +34,7 @@ export const getTemplateGalleryPageUpdateMock = (
   TemplateGalleryPageUpdateVariables
 > => ({
   request: { query: TEMPLATE_GALLERY_PAGE_UPDATE, variables },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       templateGalleryPageUpdate: { ...defaultUpdated, ...overrides }
     }

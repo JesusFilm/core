@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 
@@ -20,23 +21,23 @@ import { getTeamsMock } from './data'
 
 import { OnboardingPanel } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-jest.mock('./OnboardingList', () => ({
+vi.mock('./OnboardingList', () => ({
   __esModule: true,
   OnboardingList: () => null
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 const variables = {
   journeyId: 'createdJourneyId',
   title: 'Untitled Journey',
@@ -126,7 +127,7 @@ const mocks: MockedResponse[] = [createJourneyMock, getTeamsMock]
 
 describe('OnboardingPanel', () => {
   it('should add a new journey on custom journey button click', async () => {
-    const push = jest.fn()
+    const push = vi.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
     mockUuidv4.mockReturnValueOnce(variables.journeyId)
     mockUuidv4.mockReturnValueOnce(variables.stepId)
@@ -158,7 +159,7 @@ describe('OnboardingPanel', () => {
   })
 
   it('should not show create journey button when on shared with me', async () => {
-    const result = jest.fn().mockReturnValueOnce({
+    const result = vi.fn().mockReturnValueOnce({
       data: {
         teams: []
       }

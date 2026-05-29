@@ -5,7 +5,7 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoCarousel } from './VideoCarousel'
 
-jest.mock('swiper/react', () => ({
+vi.mock('swiper/react', () => ({
   Swiper: ({ children, className, 'data-testid': testId }: any) => (
     <div data-testid={testId} className={className}>
       {children}
@@ -18,13 +18,13 @@ jest.mock('swiper/react', () => ({
   )
 }))
 
-jest.mock('swiper/modules', () => ({
+vi.mock('swiper/modules', () => ({
   A11y: {},
   FreeMode: {},
   Mousewheel: {}
 }))
 
-jest.mock('../VideoCarouselCard/VideoCarouselCard', () => ({
+vi.mock('../VideoCarouselCard/VideoCarouselCard', () => ({
   VideoCarouselCard: ({ data, active, onVideoSelect }: any) => {
     return (
       <div
@@ -114,7 +114,7 @@ describe('VideoCarousel', () => {
   })
 
   it('should call onVideoSelect when provided and video card is clicked', () => {
-    const mockOnVideoSelect = jest.fn()
+    const mockOnVideoSelect = vi.fn()
 
     render(
       <VideoCarousel

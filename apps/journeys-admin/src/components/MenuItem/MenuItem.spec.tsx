@@ -29,7 +29,7 @@ describe('MenuItem', () => {
   })
 
   it('should call onClick on MenuItem click', () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     const { getByRole } = render(
       <MenuItem label="Preview" icon={<EyeOpenIcon />} onClick={onClick} />
     )

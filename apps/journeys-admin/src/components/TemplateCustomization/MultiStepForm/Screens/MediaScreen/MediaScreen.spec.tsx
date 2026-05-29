@@ -14,12 +14,12 @@ import {
 
 import { MediaScreen } from './MediaScreen'
 
-const mockHasActiveUploads = jest.fn()
-jest.mock('../../TemplateVideoUploadProvider', () => ({
-  ...jest.requireActual('../../TemplateVideoUploadProvider'),
+const mockHasActiveUploads = vi.fn()
+vi.mock('../../TemplateVideoUploadProvider', async () => ({
+  ...(await vi.importActual('../../TemplateVideoUploadProvider')),
   useTemplateVideoUpload: () => ({
-    startUpload: jest.fn(),
-    getUploadStatus: jest.fn(),
+    startUpload: vi.fn(),
+    getUploadStatus: vi.fn(),
     hasActiveUploads: mockHasActiveUploads()
   })
 }))
@@ -114,15 +114,15 @@ const baseJourney = {
   ]
 } as unknown as Journey
 
-jest.mock('./Sections/VideosSection/VideoPreviewPlayer', () => ({
+vi.mock('./Sections/VideosSection/VideoPreviewPlayer', async () => ({
   VideoPreviewPlayer: () => <div data-testid="VideoPreviewPlayer" />
 }))
 
 describe('MediaScreen', () => {
-  const handleNext = jest.fn().mockResolvedValue(undefined)
+  const handleNext = vi.fn().mockResolvedValue(undefined)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockHasActiveUploads.mockReturnValue(false)
   })
 

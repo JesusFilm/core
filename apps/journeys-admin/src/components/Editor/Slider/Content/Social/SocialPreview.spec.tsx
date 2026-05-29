@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { type MockedFunction } from 'vitest'
 
 import {
   ActiveCanvasDetailsDrawer,
@@ -15,14 +16,12 @@ import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { SocialPreview } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-const mockUseMediaQuery = useMediaQuery as jest.MockedFunction<
-  typeof useMediaQuery
->
+const mockUseMediaQuery = useMediaQuery as MockedFunction<typeof useMediaQuery>
 
 describe('SocialPreview', () => {
   beforeEach(() => {

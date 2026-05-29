@@ -110,8 +110,8 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       order: 2
     })
-    const setDragInFlight = jest.fn()
-    const setActiveDragId = jest.fn()
+    const setDragInFlight = vi.fn()
+    const setActiveDragId = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -148,8 +148,8 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       pageId: 'page-B'
     })
-    const setDragInFlight = jest.fn()
-    const setActiveDragId = jest.fn()
+    const setDragInFlight = vi.fn()
+    const setActiveDragId = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -206,8 +206,8 @@ describe('useDragEndHandler', () => {
         useDragEndHandler({
           ...indexes,
           dragInFlightRef: { current: false },
-          setDragInFlight: jest.fn(),
-          setActiveDragId: jest.fn()
+          setDragInFlight: vi.fn(),
+          setActiveDragId: vi.fn()
         }),
       { wrapper: wrapperWithMocks([assignMock], cache) }
     )
@@ -249,8 +249,8 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       pageId: null
     })
-    const setDragInFlight = jest.fn()
-    const setActiveDragId = jest.fn()
+    const setDragInFlight = vi.fn()
+    const setActiveDragId = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -287,7 +287,7 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       pageId: 'page-B'
     })
-    const setDragInFlight = jest.fn()
+    const setDragInFlight = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -295,7 +295,7 @@ describe('useDragEndHandler', () => {
           ...indexes,
           dragInFlightRef: { current: false },
           setDragInFlight,
-          setActiveDragId: jest.fn()
+          setActiveDragId: vi.fn()
         }),
       { wrapper: wrapperWithMocks([assignMock]) }
     )
@@ -326,7 +326,7 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       pageId: 'page-B'
     })
-    const setDragInFlight = jest.fn()
+    const setDragInFlight = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -334,7 +334,7 @@ describe('useDragEndHandler', () => {
           ...indexes,
           dragInFlightRef: { current: false },
           setDragInFlight,
-          setActiveDragId: jest.fn()
+          setActiveDragId: vi.fn()
         }),
       { wrapper: wrapperWithMocks([assignMock]) }
     )
@@ -363,7 +363,7 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       order: 0
     })
-    const setDragInFlight = jest.fn()
+    const setDragInFlight = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -371,7 +371,7 @@ describe('useDragEndHandler', () => {
           ...indexes,
           dragInFlightRef: { current: false },
           setDragInFlight,
-          setActiveDragId: jest.fn()
+          setActiveDragId: vi.fn()
         }),
       { wrapper: wrapperWithMocks([reorderMock]) }
     )
@@ -397,8 +397,8 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       order: 0
     })
-    const setDragInFlight = jest.fn()
-    const setActiveDragId = jest.fn()
+    const setDragInFlight = vi.fn()
+    const setActiveDragId = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -435,7 +435,7 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       pageId: 'page-B'
     })
-    const setDragInFlight = jest.fn()
+    const setDragInFlight = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -443,7 +443,7 @@ describe('useDragEndHandler', () => {
           ...indexes,
           dragInFlightRef: { current: true },
           setDragInFlight,
-          setActiveDragId: jest.fn()
+          setActiveDragId: vi.fn()
         }),
       { wrapper: wrapperWithMocks([assignMock]) }
     )
@@ -496,8 +496,8 @@ describe('useDragEndHandler', () => {
         useDragEndHandler({
           ...indexes,
           dragInFlightRef: { current: false },
-          setDragInFlight: jest.fn(),
-          setActiveDragId: jest.fn()
+          setDragInFlight: vi.fn(),
+          setActiveDragId: vi.fn()
         }),
       { wrapper: wrapperWithMocks([assignMock], cache) }
     )

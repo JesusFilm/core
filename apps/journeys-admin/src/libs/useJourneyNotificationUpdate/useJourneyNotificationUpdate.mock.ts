@@ -20,7 +20,7 @@ export const useJourneyNotifcationUpdateMock: MockedResponse<
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       journeyNotificationUpdate: {
         __typename: 'JourneyNotification',
@@ -32,5 +32,8 @@ export const useJourneyNotifcationUpdateMock: MockedResponse<
         visitorInteractionEmail: true
       }
     }
-  }))
+  })) as MockedResponse<
+    JourneyNotificationUpdate,
+    JourneyNotificationUpdateVariables
+  >['result']
 }
