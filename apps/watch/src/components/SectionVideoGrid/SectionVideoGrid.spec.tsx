@@ -233,13 +233,14 @@ const emptyMocks: MockedResponse[] = [
 describe('SectionVideoGrid', () => {
   beforeEach(() => {
     capturedSlides = []
-    vi
-      .spyOn(carouselContentHook, 'useSectionVideoCollectionCarouselContent')
-      .mockImplementation((options) => {
-        const result = originalUseCarouselContent(options)
-        capturedSlides = result.slides
-        return result
-      })
+    vi.spyOn(
+      carouselContentHook,
+      'useSectionVideoCollectionCarouselContent'
+    ).mockImplementation((options) => {
+      const result = originalUseCarouselContent(options)
+      capturedSlides = result.slides
+      return result
+    })
   })
 
   afterEach(() => {

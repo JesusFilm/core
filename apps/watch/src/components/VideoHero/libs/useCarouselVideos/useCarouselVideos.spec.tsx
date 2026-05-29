@@ -128,9 +128,7 @@ describe('useCarouselVideos', () => {
       getPlaylistConfig as MockedFunction<typeof getPlaylistConfig>
     ).mockReturnValue(createDefaultConfig())
     ;(
-      getDeterministicOffset as MockedFunction<
-        typeof getDeterministicOffset
-      >
+      getDeterministicOffset as MockedFunction<typeof getDeterministicOffset>
     ).mockReturnValue(0)
     ;(
       getRandomFromMultipleCollections as MockedFunction<

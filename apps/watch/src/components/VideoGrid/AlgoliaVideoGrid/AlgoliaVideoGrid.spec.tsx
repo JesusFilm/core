@@ -26,9 +26,7 @@ const mockedUseLatestVideos = useLatestVideos as MockedFunction<
 const mockedUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
-const mockedUseLanguages = useLanguages as MockedFunction<
-  typeof useLanguages
->
+const mockedUseLanguages = useLanguages as MockedFunction<typeof useLanguages>
 
 describe('AlgoliaVideoGrid', () => {
   const transformedVideos = [

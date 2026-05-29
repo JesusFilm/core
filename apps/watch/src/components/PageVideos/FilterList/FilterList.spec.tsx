@@ -17,9 +17,7 @@ import { FilterList } from './FilterList'
 vi.mock('react-instantsearch')
 vi.mock('../../../libs/algolia/useAlgoliaRouter/useAlgoliaRouter')
 
-const mockUseSearchBox = useSearchBox as MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 const mockUseMenu = useMenu as MockedFunction<typeof useMenu>
 const mockUseAlgoliaRouter = useAlgoliaRouter as MockedFunction<
   typeof useAlgoliaRouter

@@ -32,9 +32,7 @@ vi.mock('fs', async (importOriginal) => ({
   readFileSync: vi.fn()
 }))
 
-const mockReadFileSync = readFileSync as MockedFunction<
-  typeof readFileSync
->
+const mockReadFileSync = readFileSync as MockedFunction<typeof readFileSync>
 
 describe('Blurhash API', () => {
   let mockEncode: Mock

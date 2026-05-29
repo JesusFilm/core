@@ -10,9 +10,7 @@ vi.mock('../../../libs/useLanguages', () => ({
   useLanguages: vi.fn()
 }))
 
-const useLanguagesMock = useLanguages as MockedFunction<
-  typeof useLanguages
->
+const useLanguagesMock = useLanguages as MockedFunction<typeof useLanguages>
 
 describe('AudioTrackSelect', () => {
   const french = {

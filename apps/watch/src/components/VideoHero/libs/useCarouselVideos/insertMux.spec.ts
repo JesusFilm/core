@@ -15,7 +15,9 @@ describe('mergeMuxInserts', () => {
   })
 
   it('adds sequence-start inserts before the first video', async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true }).setSystemTime(new Date('2024-10-15T12:00:00Z'))
+    vi.useFakeTimers({ shouldAdvanceTime: true }).setSystemTime(
+      new Date('2024-10-15T12:00:00Z')
+    )
     vi.doMock('../../../../../config/video-inserts.mux.json', () => ({
       __esModule: true,
       default: {

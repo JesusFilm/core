@@ -25,9 +25,7 @@ vi.mock('../SectionVideoGrid', () => ({
 
 vi.mock('../../libs/useLanguages')
 
-const mockUseLanguages = useLanguages as MockedFunction<
-  typeof useLanguages
->
+const mockUseLanguages = useLanguages as MockedFunction<typeof useLanguages>
 
 const collectionVideo: VideoContentFields = {
   ...videos[0],
