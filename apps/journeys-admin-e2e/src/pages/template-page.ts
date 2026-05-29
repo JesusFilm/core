@@ -183,29 +183,38 @@ export class TemplatePage {
   }
 
   async verifySelectedTemplateInCustomJourneyPage() {
-    // The "Use This Template" + Add-to-Team flow no longer auto-opens the new
-    // journey in the editor; the current shell drops the user on the team's
-    // journey list (Team Projects) with the duplicated journey at the top.
-    // Try the editor's JourneyDetails first (legacy behaviour), and if it
-    // isn't there within a short window, look for the journey card on the
-    // list and click into it so downstream test steps can edit the journey.
     const detailsTitle = this.page.locator(
       'div[data-testid="JourneyDetails"] button[type="button"] p',
       { hasText: this.selecetdTemplated }
     )
-    if (
-      await detailsTitle.isVisible({ timeout: 3000 }).catch(() => false)
-    ) {
-      return
-    }
+    const editorTitle = this.page.locator(
+      'button[aria-label="Click to edit"] p',
+      { hasText: this.selecetdTemplated }
+    )
     const listCard = this.page
       .locator('div[aria-label="journey-card"]', {
         hasText: this.selecetdTemplated
       })
       .first()
-    await expect(listCard).toBeVisible({ timeout: sixtySecondsTimeout })
-    await listCard.click()
-    await expect(detailsTitle).toBeVisible({ timeout: sixtySecondsTimeout })
+
+    // Wait up to 60s for whichever landing surface the flow produces — the
+    // 3s probe we used before was too short for /templates → Edit → editor
+    // navigation to finish.
+    await expect(
+      detailsTitle.or(editorTitle).or(listCard)
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
+
+    if (
+      (await listCard.isVisible()) &&
+      !(await detailsTitle.isVisible().catch(() => false)) &&
+      !(await editorTitle.isVisible().catch(() => false))
+    ) {
+      await listCard.click()
+    }
+
+    await expect(
+      detailsTitle.or(editorTitle).first()
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
   async clickPreviewBtnInJourneyTemplatePage() {
@@ -395,9 +404,7 @@ export class TemplatePage {
   async selectSlideFilters(slideFilter: string) {
     this.selectedFilterOption = slideFilter
     await this.page
-      .locator('div[aria-live="polite"] div[class*="swiper-slide"] h3', {
-        hasText: slideFilter
-      })
+      .getByRole('button', { name: new RegExp(`${slideFilter} tag`, 'i') })
       .click()
   }
 

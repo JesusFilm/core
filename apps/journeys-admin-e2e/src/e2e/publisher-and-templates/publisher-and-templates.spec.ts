@@ -236,7 +236,7 @@ test.describe('Publisher page', () => {
     await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
     await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
     await publisherPage.clickTheDotOptionsInEditTemplatePage('Edit Details') // clicking Language option from the three dot options
-    await journeyLevelActions.enterLanguage('Abau') // selecting language in the edit language popup
+    await journeyLevelActions.enterLanguage('Adi') // selecting language in the edit language popup
     await publisherPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
     await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
     await publisherPage.clickTheDotOptionsInEditTemplatePage('Edit Details') // clicking Language option from the three dot options
@@ -392,8 +392,8 @@ test.describe('Template page', () => {
     const journeyPage = new JourneyPage(page)
 
     await publisherAndTemplatesPage.navigateToPublisherPage() // navigating to the publisher page
-    await publisherAndTemplatesPage.getExistingTemplateName() // getting name of existing template
-    await publisherAndTemplatesPage.clickOnTemplateInPublisherPage() // clicking on existing template
+    publisherAndTemplatesPage.templateName = await journeyPage.getJourneyName()
+    await publisherAndTemplatesPage.clickOnTemplateInPublisherPage() // clicking on template created in beforeEach
     await publisherAndTemplatesPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
     await publisherAndTemplatesPage.clickTheDotOptionsInEditTemplatePage(
       'Template Settings'
@@ -422,8 +422,8 @@ test.describe('Template page', () => {
     const journeyPage = new JourneyPage(page)
 
     await publisherAndTemplatesPage.navigateToPublisherPage() // navigating to the publisher page
-    await publisherAndTemplatesPage.getExistingTemplateName() // getting name of existing template
-    await publisherAndTemplatesPage.clickOnTemplateInPublisherPage() // clicking on existing template
+    publisherAndTemplatesPage.templateName = await journeyPage.getJourneyName()
+    await publisherAndTemplatesPage.clickOnTemplateInPublisherPage() // clicking on template created in beforeEach
     await publisherAndTemplatesPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
     await publisherAndTemplatesPage.clickTheDotOptionsInEditTemplatePage(
       'Template Settings'

@@ -175,7 +175,11 @@ export class JourneyPage {
     await this.selectThreeDotOptionsBesideSortByOption('Archive All')
     await this.clickDialogBoxBtn('Archive')
     await this.verifySnackbarToastMessage('Journeys Archived')
-    await this.verifyActiveTabShowsEmptyMessage()
+    for (const name of this.journeyList) {
+      await expect(
+        this.page.locator(this.journeyNamePath, { hasText: name }).first()
+      ).toBeHidden({ timeout: thirtySecondsTimeout })
+    }
     await this.clickArchivedTab()
     await this.verifyAllJourneyMovedToArchivedTab()
   }

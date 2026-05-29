@@ -3,22 +3,17 @@ import { test } from '@playwright/test'
 
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
-import { Register } from '../../pages/register-Page'
 import { TeamsPage } from '../../pages/teams-page'
 
-let userEmail = ''
-
 test.describe('Verify Add member', () => {
-  test.beforeAll('Register new account', async ({ browser }) => {
+  test.beforeAll('Ensure team exists for member flows', async ({ browser }) => {
     const page = await browser.newPage()
     const teamsPage = new TeamsPage(page)
     const landingPage = new LandingPage(page)
-    const register = new Register(page)
+    const loginPage = new LoginPage(page)
     await landingPage.goToAdminUrl()
-    await register.registerNewAccount() // registering new user account
-    userEmail = await register.getUserEmailId() // storing the registered user email id
-    await teamsPage.createNewTeamAndVerifyCreatedTeam() // create new team and verify the created team
-    console.log(`userName : ${userEmail}`)
+    await loginPage.login()
+    await teamsPage.createNewTeamAndVerifyCreatedTeam()
     await page.close()
   })
 
@@ -26,7 +21,7 @@ test.describe('Verify Add member', () => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
     await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
+    await loginPage.login()
   })
 
   // Verify the user able to add the member through member option in discover page

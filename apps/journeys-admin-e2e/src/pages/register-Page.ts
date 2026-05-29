@@ -32,9 +32,11 @@ export class Register {
     await this.clickValidateEmailBtn()
     await this.verifyPageNavigatedBeforeStartPage()
     await this.clickIAgreeBtn()
-    await this.clickNextBtn()
+    await this.clickTermsAndConditionsNext()
+    await this.completeWorkspaceSetupIfNeeded()
     await this.waitUntilDiscoverPageLoaded()
     await this.waitUntilTheToestMsgDisappear()
+    await this.verifyMoreJourneyHerePopup()
   }
 
   async enterUserName() {
@@ -108,7 +110,47 @@ export class Register {
   }
 
   async clickIAgreeBtn() {
-    await this.page.locator('input[aria-labelledby="i-agree-label"]').check()
+    // The checkbox is controlled by React state on the ListItemButton — calling
+    // `.check()` on the input alone does not flip `accepted`, so Next stays
+    // disabled. Click the labelled agreement control instead.
+    await this.page
+      .getByRole('button', {
+        name: 'I agree with listed above conditions and requirements'
+      })
+      .click()
+    await expect(
+      this.page.getByTestId('TermsAndConditionsNextButton')
+    ).toBeEnabled({ timeout: thirtySecondsTimeout })
+  }
+
+  async clickTermsAndConditionsNext() {
+    const nextButton = this.page.getByTestId('TermsAndConditionsNextButton')
+    await expect(nextButton).toBeEnabled({ timeout: 90000 })
+    await Promise.all([
+      this.page.waitForURL(
+        (url) => {
+          const { pathname } = new URL(url)
+          return pathname === '/' || pathname === '/teams/new'
+        },
+        { timeout: 180000 }
+      ),
+      nextButton.click()
+    ])
+  }
+
+  async completeWorkspaceSetupIfNeeded() {
+    const workspaceHeading = this.page.locator(
+      'div[data-testid="JourneysAdminOnboardingPageWrapper"] h2',
+      { hasText: 'Create Your Workspace' }
+    )
+    if (!(await workspaceHeading.isVisible({ timeout: 30000 }).catch(() => false))) {
+      return
+    }
+    await this.entetTeamName()
+    const createButton = this.page.getByRole('button', { name: 'Create' })
+    await expect(createButton).toBeEnabled({ timeout: thirtySecondsTimeout })
+    await createButton.click()
+    await expect(workspaceHeading).toBeHidden({ timeout: 90000 })
   }
 
   async clickNextBtn() {

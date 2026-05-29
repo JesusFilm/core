@@ -4,24 +4,19 @@ import { test } from '@playwright/test'
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
-import { Register } from '../../pages/register-Page'
 import { TeamsPage } from '../../pages/teams-page'
 
-let userEmail = ''
-
 test.describe('Verify user able to Active, Archived, Trash the journeys', () => {
-  // Issue 1 : In Terms and Conditions page,The 'Next' button is not working properly
-  // Issue 2 : The error toast message is displaying after registration new account
-  test.beforeAll('Register new account', async ({ browser }) => {
+  test.beforeAll('Ensure dedicated team for archive/trash flows', async ({
+    browser
+  }) => {
     const page = await browser.newPage()
     const landingPage = new LandingPage(page)
+    const loginPage = new LoginPage(page)
     const teamsPage = new TeamsPage(page)
-    const register = new Register(page)
     await landingPage.goToAdminUrl()
-    await register.registerNewAccount() // registering new user account
-    userEmail = await register.getUserEmailId() // storing the registered user email id
-    await teamsPage.createNewTeamAndVerifyCreatedTeam() // create new team and verify the created team
-    console.log(`userName : ${userEmail}`)
+    await loginPage.login()
+    await teamsPage.createNewTeamAndVerifyCreatedTeam()
     await page.close()
   })
 
@@ -30,7 +25,7 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
     const loginPage = new LoginPage(page)
     const journeyPage = new JourneyPage(page)
     await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
+    await loginPage.login()
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
   })

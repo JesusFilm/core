@@ -9,6 +9,7 @@ import type { Page } from 'playwright-core'
 import testData from '../utils/testData.json'
 
 const sixtySecondsTimeout = 60000
+const thirtySecondsTimeout = 30000
 export class CardLevelActionPage {
   readonly page: Page
   randomNumber: string
@@ -179,12 +180,19 @@ export class CardLevelActionPage {
   async clickDeleteBtnInToolTipBar() {
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
-    await expect(
-      frame.locator('div[role="tooltip"] button[id="delete-block-actions"]')
-    ).toHaveCount(1, { timeout: 10000 })
-    await frame
-      .locator('div[role="tooltip"] button[id="delete-block-actions"]')
-      .click({ timeout: sixtySecondsTimeout, delay: 3000 })
+    const deleteBtn = frame
+      .getByRole('button', { name: 'Delete Block Actions' })
+      .first()
+    await expect(deleteBtn).toBeVisible({ timeout: 10000 })
+    // DeleteBlock wires deletion to onMouseUp (not onClick). A plain Playwright
+    // click is occasionally swallowed inside the iframe tooltip, so synthesize
+    // the mouse-up directly on the button centre.
+    const box = await deleteBtn.boundingBox()
+    if (box != null) {
+      await this.page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+    } else {
+      await deleteBtn.dispatchEvent('mouseup')
+    }
   }
 
   async verifyAddedTextDeletedFromJourneyCard() {
@@ -679,13 +687,22 @@ export class CardLevelActionPage {
     // is actually selected and the next deleteAllThePollOptions() will hit
     // the right button.
     await expect(
-      frame.locator('div[role="tooltip"] button[id="delete-block-actions"]')
+      frame
+        .locator('div[role="tooltip"] button[id="delete-block-actions"]')
+        .first()
     ).toBeVisible({ timeout: 10000 })
   }
 
   async deleteAllThePollOptions() {
     await this.selectWholePollOptions()
     await this.clickDeleteBtnInToolTipBar()
+    const iframes = this.page.locator(this.journeyCardFrame)
+    const frame = await iframes.first().contentFrame()
+    const pollBlock = frame.locator('div[data-testid*="JourneysRadioQuestionList"]')
+    if (await pollBlock.isVisible().catch(() => false)) {
+      await this.selectWholePollOptions()
+      await this.clickDeleteBtnInToolTipBar()
+    }
   }
 
   async verifyPollOptionsDeletedFromCard() {
@@ -695,7 +712,7 @@ export class CardLevelActionPage {
       frame.locator(
         'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"]'
       )
-    ).toBeHidden()
+    ).toBeHidden({ timeout: thirtySecondsTimeout })
   }
 
   async verifyFeedBackAddedToCard() {

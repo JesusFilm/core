@@ -304,11 +304,12 @@ export class JourneyLevelActions {
       timeout: thirtySecondsTimeout
     })
     await languageInput.fill(this.selectedLanguage)
-    const option = this.page
-      .locator("div[class *='MuiAutocomplete-popper'] li", {
-        hasText: this.selectedLanguage
-      })
-      .first()
+    // MUI Autocomplete substring-matches — typing "Abau" surfaces
+    // "Minangkabau". Require an exact option label match.
+    const option = this.page.getByRole('option', {
+      name: this.selectedLanguage,
+      exact: true
+    })
     await expect(option).toBeVisible({ timeout: thirtySecondsTimeout })
     await option.click()
   }

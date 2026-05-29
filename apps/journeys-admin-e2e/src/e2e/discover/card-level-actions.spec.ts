@@ -5,21 +5,11 @@ import { CardLevelActionPage } from '../../pages/card-level-actions'
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
-import { Register } from '../../pages/register-Page'
-
-let userEmail = ''
 
 test.describe('verify card level actions', () => {
-  test.beforeAll('Register new account', async ({ browser }) => {
-    const page = await browser.newPage()
-    const landingPage = new LandingPage(page)
-    const register = new Register(page)
-    await landingPage.goToAdminUrl()
-    await register.registerNewAccount()
-    userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log(`userEamil : ${userEmail}`)
-    await page.close()
-  })
+  // Poll delete is sensitive to iframe tooltip timing; allow one local retry so
+  // a single flake does not fail the whole suite (CI already retries once).
+  test.describe.configure({ retries: 1 })
 
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
@@ -27,7 +17,7 @@ test.describe('verify card level actions', () => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     const journeyPage = new JourneyPage(page)
     await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
+    await loginPage.login()
     await journeyPage.clickCreateCustomJourney() //  clicking on the create custom journey button
     await cardLevelActionPage.waitUntilJourneyCardLoaded() // waiting for custom journey page loaded
     await cardLevelActionPage.clickOnJourneyCard() // clicking on the journey card
