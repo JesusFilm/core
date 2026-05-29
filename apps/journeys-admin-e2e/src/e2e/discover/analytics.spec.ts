@@ -19,8 +19,8 @@ test.describe('Verify analytics page functionality', () => {
     await journeyPage.setBrowserContext(context)
     await journeyPage.clickCreateCustomJourney() // click create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // craeting custom journey and verifying that created journey in active tab list
-    await journeyPage.selectExistingJourney() // selecting existing journey
-    await journeyPage.clickAnalyticsIconInCustomJourneyPage() // clicking on analytics icon in custom journey page
+    const journeyName = await journeyPage.getJourneyName()
+    await journeyPage.selectCreatedJourney(journeyName) // selecting created journey
     await journeyPage.verifyAnalyticsPageNavigation() // verifing it's navigated to analytics page
   })
 })

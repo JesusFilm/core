@@ -23,9 +23,10 @@ export default defineConfig({
    * cost instead of quadrupling it — the previous setting compounded with
    * fullyParallel:false to push CI runtime past 50 minutes whenever a handful
    * of tests failed. */
-  retries: process.env.CI ? 3 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 10 : 1,
+  retries: process.env.CI ? 1 : 0,
+  /* Serial on CI: every spec shares one admin account/team, so parallel
+   * workers race on journey lists, team switches, and archive-all flows. */
+  workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */

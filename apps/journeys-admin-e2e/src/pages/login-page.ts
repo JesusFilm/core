@@ -40,8 +40,30 @@ export class LoginPage {
     await this.page.locator('button[type="submit"]').click()
   }
 
+  async ensureActiveTeamSelected(): Promise<void> {
+    const teamSelect = this.page.getByTestId('TeamSelect')
+    await expect(teamSelect).toBeVisible({ timeout: sixtySecondsTimeout })
+    const combobox = teamSelect.locator('div[aria-haspopup="listbox"]')
+    const selectedTeamLabel = (await combobox.innerText()).trim()
+    if (selectedTeamLabel === 'Shared With Me') {
+      await combobox.click()
+      const teamOption = this.page
+        .locator('ul[role="listbox"] li[role="option"]')
+        .filter({ hasNotText: 'Shared With Me' })
+        .first()
+      await expect(teamOption).toBeVisible({ timeout: sixtySecondsTimeout })
+      await teamOption.click()
+      await expect(combobox).not.toHaveText('Shared With Me', {
+        timeout: sixtySecondsTimeout
+      })
+    }
+  }
+
   async waitUntilDiscoverPageLoaded() {
-    // 90s: cold Vercel SSR + TeamProvider Apollo query can take >65s on first run
+    await expect(
+      this.page.getByTestId('JourneysAdminJourneyList')
+    ).toBeVisible({ timeout: 90000 })
+    await this.ensureActiveTeamSelected()
     await expect(
       this.page.getByRole('button', { name: 'Create Custom Journey' })
     ).toBeEnabled({ timeout: 90000 })

@@ -145,8 +145,7 @@ export class JourneyPage {
   }
 
   async verifyExistingJourneyMovedActiveToArchivedTab() {
-    await this.clickThreeDotOfExistingJourney()
-    await this.setExistingJourneyNameToJourneyName()
+    await this.clickThreeDotOfCreatedNewJourney()
     await this.clickArchiveOption()
     await this.verifySnackbarToastMessage('Journey Archived')
     await this.clickArchivedTab()
@@ -1064,11 +1063,17 @@ export class JourneyPage {
 
   async verifyPreviewFromCustomJourneyPage() {
     const [newPage] = await Promise.all([
-      this.context.waitForEvent('page'),
+      this.context.waitForEvent('page', { timeout: sixtySecondsTimeout }),
       this.clickPreviewBtnInCustomJourneyPage()
     ])
-    await newPage.waitForLoadState()
-    // await expect(await newPage.locator('h3[data-testid="JourneysTypography"]')).toHaveText(this.existingJourneyName)
+    await newPage.waitForLoadState('domcontentloaded')
+    await expect(
+      newPage
+        .locator(
+          'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+        )
+        .first()
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     const tabName: string = await newPage.title()
     expect(tabName.includes(journeyName)).toBeTruthy()
     const slidesCount = await newPage
@@ -1121,6 +1126,15 @@ export class JourneyPage {
       .click()
   }
 
+  async selectCreatedJourney(name: string) {
+    this.existingJourneyName = name
+    const journeyCard = this.page
+      .locator('div[aria-label="journey-card"]', { hasText: name })
+      .first()
+    await expect(journeyCard).toBeVisible({ timeout: thirtySecondsTimeout })
+    await journeyCard.click({ delay: 500 })
+  }
+
   async navigateToPublisherPage() {
     await this.page
       .locator('a[data-testid="NavigationListItemPublisher"]')
@@ -1132,10 +1146,9 @@ export class JourneyPage {
 
   async clickAnalyticsIconInCustomJourneyPage() {
     await this.page
-      .locator('div[aria-label="journey-card"]', {
-        hasText: this.existingJourneyName
-      })
-      .locator('div[data-testid="AnalyticsItem"] a')
+      .getByTestId('AnalyticsItem')
+      .locator('a[aria-label="Analytics"]')
+      .first()
       .click()
   }
 

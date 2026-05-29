@@ -115,8 +115,10 @@ test.describe('Publisher page', () => {
   // Discover page -> Create a new journey with one card -> Three dots on top right -> Create Template
   test('Create a template via existing journey', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
-    await journeyPage.selectExistingJourney() // clicking existing journey in the journey list of discover page
-    await journeyPage.setExistingJourneyNameToJourneyName() // setting the journey name
+    await journeyPage.clickCreateCustomJourney()
+    await journeyPage.createAndVerifyCustomJourney()
+    const journeyName = await journeyPage.getJourneyName()
+    await journeyPage.selectCreatedJourney(journeyName) // clicking created journey in the journey list
     await journeyPage.backToHome()
     await journeyPage.createAndVerifyTemplate() // Making the selecetd journey as template by clicking on 'Create Template' option and verifying the journey is updated in the template list of publisher page
   })

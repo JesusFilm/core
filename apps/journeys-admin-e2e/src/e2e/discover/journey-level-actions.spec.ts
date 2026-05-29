@@ -53,7 +53,8 @@ test.describe('Journey level actions', () => {
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // click the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
-    await journeyLevelActions.clickThreeDotOfExistingJourney() // clicking three dot of existing journey in the journey list
+    const journeyName = await journeyPage.getJourneyName()
+    await journeyLevelActions.clickThreeDotOfCreatedJourney(journeyName) // clicking three dot of created journey in the journey list
     await journeyLevelActions.clickThreeDotOptions('Access') // clicking on the access option of the three dot options and it will open manage editors popup
     await journeyLevelActions.enterTeamMember() // manage editors popup, entering mail address of team member in the email field
     await journeyLevelActions.clickPlusMemberInMemberPopup() // clicking on plus icon in the manage editors popup
@@ -138,7 +139,8 @@ test.describe('Journey level actions', () => {
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
-    await journeyLevelActions.selectExistingJourney() // clicking on existing journey in the journey list
+    const journeyName = await journeyPage.getJourneyName()
+    await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on created journey in the journey list
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
       'Edit Details'
@@ -183,7 +185,8 @@ test.describe('Journey level actions', () => {
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
-    await journeyLevelActions.selectExistingJourney() // clicking on existing journey in the journey list
+    const journeyName = await journeyPage.getJourneyName()
+    await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on created journey in the journey list
     await journeyLevelActions.clickNavigateToGoalBtn() // clicking the strategy button
     await journeyLevelActions.verifyPageIsNavigatedToGoalPage() // verifying the page is navigated to goal page
   })

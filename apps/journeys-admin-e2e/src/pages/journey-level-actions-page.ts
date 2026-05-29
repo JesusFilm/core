@@ -139,16 +139,23 @@ export class JourneyLevelActions {
   }
 
   async verifyPreviewForExistingJourney(): Promise<void> {
+    const previewLink = this.page.locator(
+      'ul[aria-labelledby="journey-actions"] a',
+      { hasText: 'Preview' }
+    )
+    await expect(previewLink).toBeVisible({ timeout: thirtySecondsTimeout })
     const [newPage] = await Promise.all([
-      this.context.waitForEvent('page'),
-      this.page
-        .locator('ul[aria-labelledby="journey-actions"] a', {
-          hasText: 'Preview'
-        })
-        .click()
+      this.context.waitForEvent('page', { timeout: thirtySecondsTimeout }),
+      previewLink.click()
     ])
-    await newPage.waitForLoadState()
-    // await expect(await newPage.locator('h3[data-testid="JourneysTypography"]').toHaveText(this.existingJourneyName)
+    await newPage.waitForLoadState('domcontentloaded')
+    await expect(
+      newPage
+        .locator(
+          'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+        )
+        .first()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
     const tabName: string = await newPage.title()
     expect(tabName.includes(this.existingJourneyName)).toBeTruthy()
     const slidesCount = await newPage
@@ -255,25 +262,11 @@ export class JourneyLevelActions {
   }
 
   async clickThreeDotOptionsOfJourneyCreationPage(option): Promise<void> {
-    await this.page
-      .locator('ul[aria-labelledby="edit-journey-actions"] li', {
-        hasText: option
-      })
-      .click({ delay: 2000, timeout: thirtySecondsTimeout })
-    // After selecting the option from the list, check that the menu items list got closed, if not then again select the same option from the menu items in catch block
-    try {
-      await expect(
-        this.page.locator(
-          'div[id=edit-journey-actions][aria-hidden="true"] ul[aria-labelledby="edit-journey-actions"] li'
-        )
-      ).not.toHaveCount(0)
-    } catch {
-      await this.page
-        .locator('ul[aria-labelledby="edit-journey-actions"] li', {
-          hasText: option
-        })
-        .click({ delay: 2000, timeout: thirtySecondsTimeout })
-    }
+    const menu = this.page.locator('ul[aria-labelledby="edit-journey-actions"]')
+    const menuItem = menu.locator('li', { hasText: option })
+    await expect(menuItem).toBeVisible({ timeout: thirtySecondsTimeout })
+    await menuItem.click({ delay: 500, timeout: thirtySecondsTimeout })
+    await expect(menu).toBeHidden({ timeout: thirtySecondsTimeout })
   }
 
   async enterDescription(): Promise<void> {
