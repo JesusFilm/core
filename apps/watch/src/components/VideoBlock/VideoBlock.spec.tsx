@@ -11,7 +11,7 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoBlock } from './VideoBlock'
 
-jest.mock('../ContentHeader', () => ({
+vi.mock('../ContentHeader', () => ({
   ContentHeader: ({
     languageSlug,
     isPersistent
@@ -29,7 +29,7 @@ jest.mock('../ContentHeader', () => ({
   )
 }))
 
-jest.mock('./VideoBlockPlayer', () => ({
+vi.mock('./VideoBlockPlayer', () => ({
   VideoBlockPlayer: ({
     isPreview,
     collapsed,
@@ -111,7 +111,7 @@ describe('VideoBlock', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders with default props', () => {
@@ -274,7 +274,7 @@ describe('VideoBlock', () => {
   })
 
   it('calls onMuxInsertComplete when mux insert completes', () => {
-    const onMuxInsertComplete = jest.fn()
+    const onMuxInsertComplete = vi.fn()
     const muxInsert: CarouselMuxSlide = {
       source: 'mux',
       id: 'test-mux-id',
@@ -304,7 +304,7 @@ describe('VideoBlock', () => {
   })
 
   it('calls onSkipActiveVideo when skip button is clicked', () => {
-    const onSkipActiveVideo = jest.fn()
+    const onSkipActiveVideo = vi.fn()
 
     renderVideoBlock({ onSkipActiveVideo })
 

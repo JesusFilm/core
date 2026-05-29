@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook } from '@testing-library/react'
 import type { ReactNode } from 'react'
+import type { MockedFunction } from 'vitest'
 
 import { getLanguageIdFromLocale } from '../../../../libs/getLanguageIdFromLocale'
 
@@ -16,16 +17,16 @@ import {
 } from './utils'
 
 // Mock utils
-jest.mock('./utils')
+vi.mock('./utils')
 
-jest.mock('./insertMux', () => ({
-  mergeMuxInserts: jest.fn((videos: any[]) =>
+vi.mock('./insertMux', () => ({
+  mergeMuxInserts: vi.fn((videos: any[]) =>
     videos.map((video) => ({ source: 'video', id: video.id, video }))
   )
 }))
 
-jest.mock('../../../../libs/getLanguageIdFromLocale', () => ({
-  getLanguageIdFromLocale: jest.fn(() => '529')
+vi.mock('../../../../libs/getLanguageIdFromLocale', () => ({
+  getLanguageIdFromLocale: vi.fn(() => '529')
 }))
 
 const mockVideo = {
@@ -100,7 +101,7 @@ const defaultMocks = [
 ]
 
 describe('useCarouselVideos', () => {
-  const getLanguageIdFromLocaleMock = jest.mocked(getLanguageIdFromLocale)
+  const getLanguageIdFromLocaleMock = vi.mocked(getLanguageIdFromLocale)
   const createDefaultConfig = () => ({
     playlistSequence: [['collection1'], ['collection2']],
     blacklistedVideoIds: [],
@@ -115,7 +116,7 @@ describe('useCarouselVideos', () => {
   )
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     getLanguageIdFromLocaleMock.mockReturnValue('529')
     // Clear localStorage and sessionStorage
     if (typeof window !== 'undefined') {
@@ -124,15 +125,13 @@ describe('useCarouselVideos', () => {
     }
 
     ;(
-      getPlaylistConfig as jest.MockedFunction<typeof getPlaylistConfig>
+      getPlaylistConfig as MockedFunction<typeof getPlaylistConfig>
     ).mockReturnValue(createDefaultConfig())
     ;(
-      getDeterministicOffset as jest.MockedFunction<
-        typeof getDeterministicOffset
-      >
+      getDeterministicOffset as MockedFunction<typeof getDeterministicOffset>
     ).mockReturnValue(0)
     ;(
-      getRandomFromMultipleCollections as jest.MockedFunction<
+      getRandomFromMultipleCollections as MockedFunction<
         typeof getRandomFromMultipleCollections
       >
     ).mockReturnValue({
@@ -140,13 +139,13 @@ describe('useCarouselVideos', () => {
       childIndex: 0
     })
     ;(
-      isVideoAlreadyPlayed as jest.MockedFunction<typeof isVideoAlreadyPlayed>
+      isVideoAlreadyPlayed as MockedFunction<typeof isVideoAlreadyPlayed>
     ).mockReturnValue(false)
     ;(
-      isPoolExhausted as jest.MockedFunction<typeof isPoolExhausted>
+      isPoolExhausted as MockedFunction<typeof isPoolExhausted>
     ).mockReturnValue(false)
     ;(
-      filterOutBlacklistedVideos as jest.MockedFunction<
+      filterOutBlacklistedVideos as MockedFunction<
         typeof filterOutBlacklistedVideos
       >
     ).mockImplementation((videos) => videos)
