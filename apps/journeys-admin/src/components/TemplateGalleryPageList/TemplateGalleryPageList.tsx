@@ -14,20 +14,15 @@ import {
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
-import Stack from '@mui/material/Stack'
-import Switch from '@mui/material/Switch'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import {
-  ChangeEvent,
   ReactElement,
   useCallback,
   useEffect,
@@ -37,7 +32,6 @@ import {
 } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import {
   GetAdminJourneysVariables,
@@ -59,16 +53,7 @@ import { JourneyCard } from '../JourneyList/JourneyCard'
 import { CollectionDialog } from './CollectionDialog'
 import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
 import { COLLECTION_GRID_SPACING } from './collectionLayout'
-import {
-  DesignVariantTabs,
-  FolderGrid,
-  LibrarySidebar,
-  PublishHero,
-  PublishPipeline,
-  PublishPriority,
-  type CollectionViewProps,
-  type DesignVariant
-} from './DesignVariants'
+import { PublishHero, type CollectionViewProps } from './DesignVariants'
 import { DraggableJourneysGrid, UnsectionedDroppable } from './Droppables'
 import {
   GalleryDialogLockContext,
@@ -180,12 +165,22 @@ export interface TemplateGalleryPageListProps {
    * trigger.
    */
   onOpenInfo?: () => void
+  /**
+   * NES-1695 opt-in trial flag. When true, the Active templates panel
+   * renders the new folder-based view (PublishHero on desktop, original
+   * chip-row design on mobile). When false (the default), renders a flat
+   * grid of all active templates — matches the Archived/Trashed pattern.
+   * State + the Switch live in JourneyList / TeamMode; this prop just
+   * receives the current value.
+   */
+  newViewEnabled?: boolean
 }
 
 export function TemplateGalleryPageList({
   visible = true,
   status = 'active',
-  onOpenInfo
+  onOpenInfo,
+  newViewEnabled = false
 }: TemplateGalleryPageListProps = {}): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -294,31 +289,6 @@ export function TemplateGalleryPageList({
   // Library Sidebar). Desktop-only — variants target desktop folder-system
   // layouts; mobile (useMobileLayout) always renders the production layout
   // regardless of this value.
-  const [activeVariant, setActiveVariant] = useState<DesignVariant>('original')
-
-  // Opt-in trial of the new folder-based view. When OFF (default), the
-  // Active templates panel renders as a flat grid with no collections,
-  // matching the existing Archived/Trashed pattern — keeps coherence with
-  // Team Projects' Active/Archived/Trashed/3-dot model. When ON, the user
-  // sees the new collection + design-lab world (DesignVariantTabs and the
-  // PublishHero-style folder navigation). Persisted to localStorage so the
-  // user's choice survives navigation. Mobile + Archived + Trashed are
-  // unaffected by this flag.
-  const NEW_VIEW_STORAGE_KEY = 'nes1695-templates-new-view'
-  const [newViewEnabled, setNewViewEnabled] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false
-    return window.localStorage.getItem(NEW_VIEW_STORAGE_KEY) === 'true'
-  })
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    window.localStorage.setItem(NEW_VIEW_STORAGE_KEY, String(newViewEnabled))
-  }, [newViewEnabled])
-  function handleToggleNewView(
-    _event: ChangeEvent<HTMLInputElement>,
-    checked: boolean
-  ): void {
-    setNewViewEnabled(checked)
-  }
   // `dragInFlight` drives rendering (busy chips, droppable lock); the ref
   // is the synchronous source of truth for gating a second drop that
   // arrives within the same tick as a setState batch — state would read
@@ -547,48 +517,13 @@ export function TemplateGalleryPageList({
     return `Collection ${n}`
   }
 
-  async function handleCreate(): Promise<void> {
-    // Button is only rendered after the teamId == null guard returns
-    // early, so in practice teamId is always defined here. The runtime
-    // check is also the TS narrowing — without it, `input.teamId` widens
-    // to `string | undefined`.
-    if (creatingRef.current || createLoading || teamId == null) return
-    creatingRef.current = true
-    try {
-      await templateGalleryPageCreate({
-        variables: {
-          input: {
-            teamId,
-            title: nextCollectionName(),
-            creatorName: '',
-            journeyIds: []
-          }
-        }
-      })
-      if (mountedRef.current) {
-        enqueueSnackbar(t('Collection created'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-      }
-    } catch (error) {
-      if (mountedRef.current) {
-        enqueueSnackbar(
-          error instanceof Error
-            ? error.message
-            : t("Couldn't create collection"),
-          { variant: 'error', preventDuplicate: true }
-        )
-      }
-    } finally {
-      creatingRef.current = false
-    }
-  }
-  // Drop-target callback for the PublishHero "create new collection" zone:
-  // create a fresh collection seeded with the dropped template. Mirrors
-  // handleCreate's logic but pre-populates `journeyIds` with the dragged
-  // template so the template lands inside the new collection in a single
-  // server round-trip, then auto-selects it so the user sees the result.
+  // Drop-target callback for the PublishHero quick-create drop zone:
+  // create a fresh collection seeded with the dropped template in a
+  // single `templateGalleryPageCreate` round-trip (`journeyIds:
+  // [templateId]`), then auto-select it so the user sees the result.
+  // This replaces the old "+ Create Collection" button — there is no
+  // longer an empty-create path; collections are only ever created by
+  // dropping a template, which guarantees a non-empty starting state.
   async function handleCreateCollectionFromTemplate(
     templateId: string
   ): Promise<void> {
@@ -699,100 +634,29 @@ export function TemplateGalleryPageList({
   return (
     <GalleryDialogLockContext.Provider value={galleryDialogLockValue}>
       <Box sx={{ p: { xs: 2, md: 4 } }} data-testid="TemplateGalleryPageList">
-        {/* Opt-in trial toggle for the new folder-based view. Only shown in
-            the Active sub-filter — Archived / Trashed already render as a
-            flat list and aren't part of the trial. */}
-        {status === 'active' && (
+        {/* The standalone "Collections" header + Create button used to sit
+            here, but PublishHero now owns its own Collections sidebar with
+            an inline create affordance (the quick-create drop zone above
+            All Templates). The mobile info-panel trigger that lived in this
+            header survives as a small floating control. */}
+        {showCollectionsSection && newViewEnabled && onOpenInfo != null && (
           <Box
             sx={{
-              display: 'flex',
+              display: { xs: 'flex', md: 'none' },
               justifyContent: 'flex-end',
               mb: 2
             }}
           >
-            <FormControlLabel
-              data-testid="TemplatesNewViewToggleLabel"
-              control={
-                <Switch
-                  data-testid="TemplatesNewViewToggle"
-                  checked={newViewEnabled}
-                  onChange={handleToggleNewView}
-                  inputProps={{
-                    'aria-label': t('Toggle the new templates view')
-                  }}
-                />
-              }
-              label={
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  <Typography variant="body2">
-                    {t('Try the new view')}
-                  </Typography>
-                  <Chip label={t('Beta')} size="small" />
-                </Stack>
-              }
-              sx={{ mr: 0 }}
-            />
-          </Box>
-        )}
-        {showCollectionsSection && newViewEnabled && (
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            spacing={2}
-            sx={{
-              mb: 3,
-              // Align the title with the tab labels above it. The tabs sit 16px
-              // from the panel edge (MUI Tab padding); the gallery's own px is
-              // only 8px on xs/sm, so add 8px to match. On md the gallery px is
-              // already 16px, so no extra is needed.
-              pl: { xs: 2, md: 0 }
-            }}
-          >
-            {/* min-width: 0 lets the title row shrink instead of pushing into
-              the button on narrow viewports (NES-1652). */}
-            <Stack
-              direction="row"
-              alignItems="center"
-              spacing={0.5}
-              sx={{ minWidth: 0, flex: 1 }}
-            >
-              <Typography variant="h4">{t('Collections')}</Typography>
-              {onOpenInfo != null && (
-                <IconButton
-                  data-testid="TemplateInfoPanelMobileTrigger"
-                  aria-label={t('Open template info')}
-                  onClick={onOpenInfo}
-                  size="small"
-                  sx={{
-                    display: { xs: 'inline-flex', md: 'none' },
-                    color: 'text.secondary',
-                    p: 0.5
-                  }}
-                >
-                  <InfoOutlinedIcon fontSize="small" />
-                </IconButton>
-              )}
-            </Stack>
             <IconButton
-              aria-label={t('Create Collection')}
+              data-testid="TemplateInfoPanelMobileTrigger"
+              aria-label={t('Open template info')}
+              onClick={onOpenInfo}
               size="small"
-              onClick={() => {
-                void handleCreate()
-              }}
-              disabled={createLoading}
-              sx={{
-                flexShrink: 0,
-                border: 1.5,
-                borderColor: 'text.secondary',
-                borderRadius: 2,
-                color: 'text.secondary'
-              }}
-              data-testid="CreateCollectionButton"
+              sx={{ color: 'text.secondary' }}
             >
-              <Plus2Icon fontSize="small" />
+              <InfoOutlinedIcon fontSize="small" />
             </IconButton>
-          </Stack>
+          </Box>
         )}
 
         {/* NES-1666: layer a DOM-level `inert` over the existing sensor-level
@@ -852,132 +716,91 @@ export function TemplateGalleryPageList({
                 )}
               </Box>
             ) : showCollectionsSection ? (
-              <>
-                {/* Design-lab variant tabs (desktop-only). Lets the team
-                    compare the production chip-row layout against the
-                    exploration variants. Mobile always renders the
-                    production layout regardless of which tab is active. */}
-                <DesignVariantTabs
-                  value={activeVariant}
-                  onChange={setActiveVariant}
+              useMobileLayout ? (
+                // Mobile keeps the original chip-row + filter-strip + list
+                // design for now. The new PublishHero layout is desktop-
+                // specific while we evaluate how well the folder model
+                // translates to small screens.
+                <>
+                  <MobileCollectionRow
+                    collections={collections}
+                    allTemplatesCount={allTemplates.length}
+                    selectedCollectionId={filterCollectionId}
+                    onSelect={setFilterCollectionId}
+                    dropDisabled={interactionsLocked}
+                  />
+                  <MobileFilterHeaderStrip
+                    selectedCollection={selectedCollection}
+                    count={filteredJourneys.length}
+                    onEdit={handleEdit}
+                    onPublish={handleOpenPublish}
+                    onUngroup={handleUngroup}
+                    busy={
+                      (selectedCollection != null &&
+                        busyId === selectedCollection.id) ||
+                      dragInFlight
+                    }
+                    canPublish={canPublish}
+                    publishBlockedReason={
+                      publishBlockedReason != null
+                        ? t(publishBlockedReason)
+                        : null
+                    }
+                  />
+                  {filteredJourneys.length === 0 ? (
+                    <Box
+                      sx={{
+                        p: 4,
+                        color: 'text.disabled',
+                        textAlign: 'center'
+                      }}
+                    >
+                      <Typography variant="body2">
+                        {selectedCollection != null
+                          ? t(
+                              'No templates yet — drag templates here to add them.'
+                            )
+                          : allTemplates.length === 0
+                            ? t('No team templates yet.')
+                            : t('All templates are in collections.')}
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <MobileTemplateList
+                      journeys={filteredJourneys}
+                      allowReorder={selectedCollection != null}
+                      dragInFlight={interactionsLocked}
+                    />
+                  )}
+                </>
+              ) : (
+                // Desktop: PublishHero owns the whole panel — sidebar of
+                // collections + quick-create drop zone + hero card with the
+                // publish CTA + templates grid. Drop targets register
+                // inside PublishHero against the same encoded drop-zone
+                // IDs the parent's drag-end handler consumes.
+                <PublishHero
+                  {...({
+                    collections,
+                    allTemplatesCount: allTemplates.length,
+                    selectedCollectionId: filterCollectionId,
+                    onSelectCollection: setFilterCollectionId,
+                    dropDisabled: interactionsLocked,
+                    filteredJourneys,
+                    selectedCollection,
+                    dragInFlight: interactionsLocked,
+                    onEdit: handleEdit,
+                    onOpenPublish: handleOpenPublish,
+                    onUngroup: handleUngroup,
+                    busyId,
+                    canPublish,
+                    publishBlockedReason:
+                      publishBlockedReason != null
+                        ? t(publishBlockedReason)
+                        : null
+                  } satisfies CollectionViewProps)}
                 />
-                {useMobileLayout || activeVariant === 'original' ? (
-                  <>
-                    {/* Shared chip-filter UI across breakpoints, shown only when the
-                        Collections section is active (>=1 active template). The
-                        `Mobile*` component names are historical — they are used on
-                        desktop too now. Drop targets are the chips; the content
-                        below shows the active filter's templates. */}
-                    <MobileCollectionRow
-                      collections={collections}
-                      allTemplatesCount={allTemplates.length}
-                      selectedCollectionId={filterCollectionId}
-                      onSelect={setFilterCollectionId}
-                      dropDisabled={interactionsLocked}
-                    />
-                    {/* Title strip for the active filter — the collection name
-                        (with its actions menu) or "All Templates" — above the
-                        content. */}
-                    <MobileFilterHeaderStrip
-                      selectedCollection={selectedCollection}
-                      count={filteredJourneys.length}
-                      onEdit={handleEdit}
-                      onPublish={handleOpenPublish}
-                      onUngroup={handleUngroup}
-                      busy={
-                        (selectedCollection != null &&
-                          busyId === selectedCollection.id) ||
-                        dragInFlight
-                      }
-                      canPublish={canPublish}
-                      publishBlockedReason={
-                        publishBlockedReason != null
-                          ? t(publishBlockedReason)
-                          : null
-                      }
-                    />
-                    {filteredJourneys.length === 0 ? (
-                      <Box
-                        sx={{
-                          p: 4,
-                          color: 'text.disabled',
-                          textAlign: 'center'
-                        }}
-                      >
-                        <Typography variant="body2">
-                          {selectedCollection != null
-                            ? t(
-                                'No templates yet — drag templates here to add them.'
-                              )
-                            : allTemplates.length === 0
-                              ? t('No team templates yet.')
-                              : t('All templates are in collections.')}
-                        </Typography>
-                      </Box>
-                    ) : useMobileLayout ? (
-                      // Mobile: compact list rows.
-                      <MobileTemplateList
-                        journeys={filteredJourneys}
-                        allowReorder={selectedCollection != null}
-                        dragInFlight={interactionsLocked}
-                      />
-                    ) : (
-                      // Desktop: the richer card grid for the active filter.
-                      <DraggableJourneysGrid
-                        journeys={filteredJourneys}
-                        publishedLock={
-                          selectedCollection?.status ===
-                          TemplateGalleryPageStatus.published
-                        }
-                        dragInFlight={interactionsLocked}
-                      />
-                    )}
-                  </>
-                ) : (
-                  // Desktop design-lab variants. Each variant receives the
-                  // same `CollectionViewProps` and renders its own full
-                  // collection-picker + template-grid layout. The parent's
-                  // DndContext wraps everything, so drop targets registered
-                  // inside the variants share the production drag-end
-                  // handler — drag a template onto a variant's collection
-                  // element and it routes through the existing pipeline.
-                  (() => {
-                    const variantProps: CollectionViewProps = {
-                      collections,
-                      allTemplatesCount: allTemplates.length,
-                      selectedCollectionId: filterCollectionId,
-                      onSelectCollection: setFilterCollectionId,
-                      dropDisabled: interactionsLocked,
-                      filteredJourneys,
-                      selectedCollection,
-                      dragInFlight: interactionsLocked,
-                      onEdit: handleEdit,
-                      onOpenPublish: handleOpenPublish,
-                      onUngroup: handleUngroup,
-                      busyId,
-                      canPublish,
-                      publishBlockedReason:
-                        publishBlockedReason != null
-                          ? t(publishBlockedReason)
-                          : null
-                    }
-                    switch (activeVariant) {
-                      case 'folderGrid':
-                        return <FolderGrid {...variantProps} />
-                      case 'librarySidebar':
-                        return <LibrarySidebar {...variantProps} />
-                      case 'publishPipeline':
-                        return <PublishPipeline {...variantProps} />
-                      case 'publishPriority':
-                        return <PublishPriority {...variantProps} />
-                      case 'publishHero':
-                        return <PublishHero {...variantProps} />
-                      default:
-                        return null
-                    }
-                  })()
-                )}
-              </>
+              )
             ) : (
               // Archived / Trashed: no collections — show the plain grid of all
               // templates for that status (no chip row).

@@ -144,17 +144,13 @@ const journeysMockWithArchivedJourney: MockedResponse<GetAdminJourneys> = {
 }
 
 describe('TemplateGalleryPageList', () => {
-  // The "new view" trial toggle defaults OFF (flat grid, no collections);
-  // existing specs assert against the collections / chip-row UI, which is
-  // now the ON state — flip the localStorage flag so render() picks it up.
-  beforeEach(() => {
-    window.localStorage.setItem('nes1695-templates-new-view', 'true')
-  })
-  afterEach(() => {
-    window.localStorage.removeItem('nes1695-templates-new-view')
-  })
+  // The "Try the new view" trial toggle defaults OFF (flat grid, no
+  // collections); the existing specs assert against the new
+  // folder-based UI, so they pass `newViewEnabled` explicitly. State
+  // lives in JourneyList / TeamMode now, not in localStorage on this
+  // component.
 
-  it('renders the Collections header and a filter chip per collection', async () => {
+  it('renders the PublishHero sidebar with a row per collection', async () => {
     const { getByText, getByTestId } = render(
       <MockedProvider
         mocks={[getLastActiveTeamIdAndTeamsMock, collectionsMock, journeysMock]}
@@ -162,21 +158,22 @@ describe('TemplateGalleryPageList', () => {
         <ThemeProvider>
           <SnackbarProvider>
             <TeamProvider>
-              <TemplateGalleryPageList />
+              <TemplateGalleryPageList newViewEnabled />
             </TeamProvider>
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
-    // The collection renders as a filter chip (not a vertical card); the
-    // Collections header + Create button sit above the chip row.
+    // Desktop renders PublishHero — the sidebar carries the "Collections"
+    // heading and one row per collection. The old chip-row + standalone
+    // Collections header + Create button were removed when the variants
+    // collapsed to the PublishHero-only design.
     await waitFor(() =>
-      expect(getByTestId('CollectionChip-page-1')).toBeInTheDocument()
+      expect(getByTestId('PublishHeroRow-page-1')).toBeInTheDocument()
     )
     expect(getByText('Collections')).toBeInTheDocument()
     expect(getByText('Featured Templates')).toBeInTheDocument()
-    expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
   })
 
   it('excludes archived journeys from the active view (defends against post-mutation cache leak)', async () => {
@@ -196,7 +193,7 @@ describe('TemplateGalleryPageList', () => {
         <ThemeProvider>
           <SnackbarProvider>
             <TeamProvider>
-              <TemplateGalleryPageList />
+              <TemplateGalleryPageList newViewEnabled />
             </TeamProvider>
           </SnackbarProvider>
         </ThemeProvider>
@@ -269,7 +266,7 @@ describe('TemplateGalleryPageList', () => {
           <ThemeProvider>
             <SnackbarProvider>
               <TeamProvider>
-                <TemplateGalleryPageList />
+                <TemplateGalleryPageList newViewEnabled />
               </TeamProvider>
             </SnackbarProvider>
           </ThemeProvider>
@@ -295,7 +292,7 @@ describe('TemplateGalleryPageList', () => {
           <ThemeProvider>
             <SnackbarProvider>
               <TeamProvider>
-                <TemplateGalleryPageList />
+                <TemplateGalleryPageList newViewEnabled />
               </TeamProvider>
             </SnackbarProvider>
           </ThemeProvider>
@@ -305,7 +302,10 @@ describe('TemplateGalleryPageList', () => {
       await waitFor(() =>
         expect(getByText('Featured Templates')).toBeInTheDocument()
       )
-      expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+      // The standalone CreateCollectionButton was retired with the
+      // chip-row Collections header; the "create new" affordance now
+      // lives as the quick-create drop zone inside PublishHero's sidebar.
+      expect(getByTestId('PublishHeroCreateNewDropZone')).toBeInTheDocument()
     })
   })
 
@@ -323,7 +323,10 @@ describe('TemplateGalleryPageList', () => {
           <ThemeProvider>
             <SnackbarProvider>
               <TeamProvider>
-                <TemplateGalleryPageList onOpenInfo={handleOpenInfo} />
+                <TemplateGalleryPageList
+                  newViewEnabled
+                  onOpenInfo={handleOpenInfo}
+                />
               </TeamProvider>
             </SnackbarProvider>
           </ThemeProvider>
@@ -351,17 +354,19 @@ describe('TemplateGalleryPageList', () => {
           <ThemeProvider>
             <SnackbarProvider>
               <TeamProvider>
-                <TemplateGalleryPageList />
+                <TemplateGalleryPageList newViewEnabled />
               </TeamProvider>
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
-      // Wait for Collections to render so absence is meaningful (the trigger
-      // would have rendered alongside it).
+      // Wait for the collections sidebar to render so absence is
+      // meaningful (the trigger would have rendered above it). Use a
+      // PublishHero row as the marker since the standalone
+      // CreateCollectionButton was retired.
       await waitFor(() =>
-        expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+        expect(getByTestId('PublishHeroRow-page-1')).toBeInTheDocument()
       )
       expect(queryByTestId('TemplateInfoPanelMobileTrigger')).toBeNull()
     })
@@ -380,7 +385,7 @@ describe('TemplateGalleryPageList', () => {
         <ThemeProvider>
           <SnackbarProvider>
             <TeamProvider>
-              <TemplateGalleryPageList />
+              <TemplateGalleryPageList newViewEnabled />
             </TeamProvider>
           </SnackbarProvider>
         </ThemeProvider>
@@ -418,7 +423,7 @@ describe('TemplateGalleryPageList', () => {
         <ThemeProvider>
           <SnackbarProvider>
             <TeamProvider>
-              <TemplateGalleryPageList />
+              <TemplateGalleryPageList newViewEnabled />
             </TeamProvider>
           </SnackbarProvider>
         </ThemeProvider>
@@ -426,22 +431,21 @@ describe('TemplateGalleryPageList', () => {
     )
 
     await waitFor(() =>
-      expect(getByTestId('CollectionChip-page-1')).toBeInTheDocument()
+      expect(getByTestId('PublishHeroRow-page-1')).toBeInTheDocument()
     )
 
     const dndScope = getByTestId('TemplateGalleryDndScope')
     // Default state: no dialog open, subtree is interactive.
     expect(dndScope).not.toHaveAttribute('inert')
 
-    // The desktop CollectionCard and its inline menu were retired in favour of
-    // the shared chip-filter UI: selecting a collection chip surfaces the
-    // filter header strip's actions menu. Open the publish dialog from there
-    // and confirm the DnD subtree flips to inert (the CollectionDialog renders
-    // in a portal so it is unaffected). Drafts surface "Publish" as the single
-    // dialog entry point.
-    fireEvent.click(getByTestId('CollectionChip-page-1'))
-    fireEvent.click(getByLabelText('Collection actions'))
-    fireEvent.click(getByText('Publish'))
+    // Selecting the sidebar row reveals the hero card's actions. The
+    // PUBLISH NOW CTA only appears for draft collections that have
+    // templates — `page-1` in this mock is empty, so use the Edit
+    // button (always rendered). Clicking it opens CollectionDialog,
+    // and the DnD subtree flips to inert (the dialog renders in a
+    // portal so it is unaffected).
+    fireEvent.click(getByTestId('PublishHeroRow-page-1'))
+    fireEvent.click(getByTestId('PublishHeroEditButton'))
     await waitFor(() =>
       expect(getByTestId('TemplateGalleryDndScope')).toHaveAttribute('inert')
     )

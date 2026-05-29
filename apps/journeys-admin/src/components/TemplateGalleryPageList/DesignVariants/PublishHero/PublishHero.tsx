@@ -134,16 +134,16 @@ export function PublishHero({
           maxHeight: '100vh'
         }}
       >
-        <Box sx={{ px: 2, pt: 2, pb: 1 }}>
+        <Box sx={{ px: 2, pt: 2, pb: 1.5 }}>
           <Typography
-            variant="overline"
+            variant="h6"
             sx={{
-              color: 'text.secondary',
-              letterSpacing: 0.6,
-              lineHeight: 1
+              color: 'text.primary',
+              lineHeight: 1.2,
+              fontWeight: 700
             }}
           >
-            {t('Folders')}
+            {t('Collections')}
           </Typography>
         </Box>
 
@@ -153,11 +153,11 @@ export function PublishHero({
           <TextField
             value={search}
             onChange={handleSearchChange}
-            placeholder={t('Search folders')}
+            placeholder={t('Search collections')}
             size="small"
             fullWidth
             variant="standard"
-            inputProps={{ 'aria-label': t('Search folders') }}
+            inputProps={{ 'aria-label': t('Search collections') }}
             InputProps={{
               disableUnderline: false,
               startAdornment: (

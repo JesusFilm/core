@@ -43,6 +43,20 @@ export interface JourneyListViewProps {
    * this prop go.
    */
   infoPanelActive?: boolean
+  /**
+   * Opt-in trial state for the new folder-based templates view (NES-1695).
+   * When true, the Templates tab content renders the new design and the
+   * Tabs row hides Status + Sort controls (the folder system replaces
+   * them). Forwarded to TeamMode for the toggle Switch and the conditional
+   * controls.
+   */
+  newViewEnabled?: boolean
+  /**
+   * Setter for `newViewEnabled`. Bound to the Switch in TeamMode's Tabs
+   * row. Owner: JourneyList (state lives there so both the Tabs row and
+   * the templates panel share it).
+   */
+  onNewViewEnabledChange?: (next: boolean) => void
 }
 
 // Re-export ContentTypeOption for external use
@@ -65,7 +79,9 @@ export function JourneyListView({
   setActiveEvent,
   setSortOrder,
   sortOrder,
-  infoPanelActive = false
+  infoPanelActive = false,
+  newViewEnabled = false,
+  onNewViewEnabledChange
 }: JourneyListViewProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
@@ -220,6 +236,8 @@ export function JourneyListView({
       router={router}
       renderList={renderList}
       infoPanelActive={infoPanelActive}
+      newViewEnabled={newViewEnabled}
+      onNewViewEnabledChange={onNewViewEnabledChange}
     />
   )
 }
