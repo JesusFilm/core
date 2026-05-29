@@ -233,7 +233,7 @@ const emptyMocks: MockedResponse[] = [
 describe('SectionVideoGrid', () => {
   beforeEach(() => {
     capturedSlides = []
-    jest
+    vi
       .spyOn(carouselContentHook, 'useSectionVideoCollectionCarouselContent')
       .mockImplementation((options) => {
         const result = originalUseCarouselContent(options)
@@ -243,7 +243,7 @@ describe('SectionVideoGrid', () => {
   })
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 
   it('renders slides from collection children and videos in grid layout', async () => {

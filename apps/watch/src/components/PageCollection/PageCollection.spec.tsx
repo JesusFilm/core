@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import mockRouter from 'next-router-mock'
 import { SnackbarProvider } from 'notistack'
+import type { MockedFunction } from 'vitest'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { PlayerProvider } from '../../libs/playerContext'
@@ -12,7 +13,7 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { PageCollection } from '.'
 
-jest.mock('../SectionVideoGrid', () => ({
+vi.mock('../SectionVideoGrid', () => ({
   SectionVideoGrid: ({ primaryCollectionId, languageId }: any) => (
     <div
       data-testid="SectionVideoGrid"
@@ -22,9 +23,9 @@ jest.mock('../SectionVideoGrid', () => ({
   )
 }))
 
-jest.mock('../../libs/useLanguages')
+vi.mock('../../libs/useLanguages')
 
-const mockUseLanguages = useLanguages as jest.MockedFunction<
+const mockUseLanguages = useLanguages as MockedFunction<
   typeof useLanguages
 >
 

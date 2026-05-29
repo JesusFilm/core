@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { useRefinementList } from 'react-instantsearch'
+import type { MockedFunction } from 'vitest'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
@@ -9,23 +10,23 @@ import { useLatestVideos } from '../../../libs/useLatestVideos'
 
 import { AlgoliaVideoGrid } from './AlgoliaVideoGrid'
 
-jest.mock('react-instantsearch', () => ({
-  useRefinementList: jest.fn()
+vi.mock('react-instantsearch', () => ({
+  useRefinementList: vi.fn()
 }))
-jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
-jest.mock('../../../libs/useLanguages')
-jest.mock('../../../libs/useLatestVideos')
+vi.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
+vi.mock('../../../libs/useLanguages')
+vi.mock('../../../libs/useLatestVideos')
 
-const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
+const mockedUseAlgoliaVideos = useAlgoliaVideos as MockedFunction<
   typeof useAlgoliaVideos
 >
-const mockedUseLatestVideos = useLatestVideos as jest.MockedFunction<
+const mockedUseLatestVideos = useLatestVideos as MockedFunction<
   typeof useLatestVideos
 >
-const mockedUseRefinementList = useRefinementList as jest.MockedFunction<
+const mockedUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
-const mockedUseLanguages = useLanguages as jest.MockedFunction<
+const mockedUseLanguages = useLanguages as MockedFunction<
   typeof useLanguages
 >
 
@@ -65,7 +66,7 @@ describe('AlgoliaVideoGrid', () => {
   ] as unknown as CoreVideo[]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockedUseRefinementList.mockReturnValue({ items: [] } as any)
     mockedUseLanguages.mockReturnValue({ languages: [], isLoading: false })
     mockedUseLatestVideos.mockReturnValue({
@@ -79,9 +80,9 @@ describe('AlgoliaVideoGrid', () => {
       loading: false,
       noResults: false,
       items: transformedVideos,
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<AlgoliaVideoGrid />)
@@ -92,14 +93,14 @@ describe('AlgoliaVideoGrid', () => {
   })
 
   it('should request most videos', async () => {
-    const showMore = jest.fn()
+    const showMore = vi.fn()
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
       items: transformedVideos,
       showMore,
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<AlgoliaVideoGrid showLoadMore />)
@@ -112,9 +113,9 @@ describe('AlgoliaVideoGrid', () => {
       loading: false,
       noResults: false,
       items: transformedVideos,
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: true,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<AlgoliaVideoGrid showLoadMore />)
@@ -132,9 +133,9 @@ describe('AlgoliaVideoGrid', () => {
       loading: true,
       noResults: false,
       items: transformedVideos,
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<AlgoliaVideoGrid showLoadMore />)
@@ -149,9 +150,9 @@ describe('AlgoliaVideoGrid', () => {
       loading: true,
       noResults: false,
       items: transformedVideos,
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: true,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<AlgoliaVideoGrid showLoadMore />)
@@ -166,9 +167,9 @@ describe('AlgoliaVideoGrid', () => {
       loading: false,
       noResults: true,
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: true,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<AlgoliaVideoGrid showLoadMore />)
@@ -205,9 +206,9 @@ describe('AlgoliaVideoGrid', () => {
       loading: false,
       noResults: true,
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: true,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<AlgoliaVideoGrid />)

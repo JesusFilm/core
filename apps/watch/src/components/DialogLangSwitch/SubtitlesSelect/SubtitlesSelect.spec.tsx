@@ -1,15 +1,16 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { MockedFunction } from 'vitest'
 
 import { useLanguages } from '../../../libs/useLanguages'
 
 import { SubtitlesSelect } from './SubtitlesSelect'
 
-jest.mock('../../../libs/useLanguages', () => ({
-  useLanguages: jest.fn()
+vi.mock('../../../libs/useLanguages', () => ({
+  useLanguages: vi.fn()
 }))
 
-const useLanguagesMock = useLanguages as jest.MockedFunction<
+const useLanguagesMock = useLanguages as MockedFunction<
   typeof useLanguages
 >
 
@@ -57,7 +58,7 @@ describe('SubtitlesSelect', () => {
   const languages = [english, french, spanish, nonSubtitleLanguage]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     useLanguagesMock.mockReturnValue({
       languages,
       isLoading: false
@@ -131,7 +132,7 @@ describe('SubtitlesSelect', () => {
     })
 
     it('should call onLanguageChange when a language is selected', async () => {
-      const onLanguageChange = jest.fn()
+      const onLanguageChange = vi.fn()
       render(
         <SubtitlesSelect
           subtitleOn
@@ -153,7 +154,7 @@ describe('SubtitlesSelect', () => {
 
   describe('switch', () => {
     it('should call updateSubtitleOn when checkbox is changed', async () => {
-      const onSubtitleToggleChange = jest.fn()
+      const onSubtitleToggleChange = vi.fn()
       render(
         <SubtitlesSelect
           subtitleOn

@@ -4,51 +4,53 @@ import { encode } from 'blurhash'
 import { HttpResponse, delay, http } from 'msw'
 import { NextApiRequest, NextApiResponse } from 'next'
 import sharp from 'sharp'
+import type { Mock, MockedFunction } from 'vitest'
 
 import { server } from '../../test/mswServer'
 
 import handler from './blurhash'
 
 // Mock blurhash encode
-jest.mock('blurhash', () => ({
-  encode: jest.fn()
+vi.mock('blurhash', () => ({
+  encode: vi.fn()
 }))
 
 // Mock sharp
-jest.mock('sharp', () => {
+vi.mock('sharp', () => {
   const mockSharp = {
-    resize: jest.fn().mockReturnThis(),
-    raw: jest.fn().mockReturnThis(),
-    ensureAlpha: jest.fn().mockReturnThis(),
-    toBuffer: jest.fn()
+    resize: vi.fn().mockReturnThis(),
+    raw: vi.fn().mockReturnThis(),
+    ensureAlpha: vi.fn().mockReturnThis(),
+    toBuffer: vi.fn()
   }
-  return jest.fn(() => mockSharp)
+  return { __esModule: true, default: vi.fn(() => mockSharp) }
 })
 
 // Mock fs module
-jest.mock('fs', () => ({
-  readFileSync: jest.fn()
+vi.mock('fs', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('fs')>()),
+  readFileSync: vi.fn()
 }))
 
-const mockReadFileSync = readFileSync as jest.MockedFunction<
+const mockReadFileSync = readFileSync as MockedFunction<
   typeof readFileSync
 >
 
 describe('Blurhash API', () => {
-  let mockEncode: jest.Mock
+  let mockEncode: Mock
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    mockEncode = encode as jest.Mock
+    vi.clearAllMocks()
+    mockEncode = encode as Mock
     mockEncode.mockReturnValue('UWE2^XE2M{t7~XIoaeofS%n}s:S4A0xZj[R*')
     mockReadFileSync.mockReturnValue(Buffer.from('mock image data'))
     // Reset sharp mock to default implementation
-    ;(sharp as unknown as jest.Mock).mockReset()
-    ;(sharp as unknown as jest.Mock).mockImplementation(() => ({
-      resize: jest.fn().mockReturnThis(),
-      raw: jest.fn().mockReturnThis(),
-      ensureAlpha: jest.fn().mockReturnThis(),
-      toBuffer: jest.fn().mockResolvedValue({
+    ;(sharp as unknown as Mock).mockReset()
+    ;(sharp as unknown as Mock).mockImplementation(() => ({
+      resize: vi.fn().mockReturnThis(),
+      raw: vi.fn().mockReturnThis(),
+      ensureAlpha: vi.fn().mockReturnThis(),
+      toBuffer: vi.fn().mockResolvedValue({
         data: new Uint8ClampedArray(32 * 32 * 4),
         info: { width: 32, height: 32 }
       })
@@ -56,7 +58,7 @@ describe('Blurhash API', () => {
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const createMockRequest = (
@@ -70,9 +72,9 @@ describe('Blurhash API', () => {
 
   const createMockResponse = (): NextApiResponse => {
     const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-      setHeader: jest.fn()
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+      setHeader: vi.fn()
     } as unknown as NextApiResponse
     return res
   }
@@ -107,25 +109,25 @@ describe('Blurhash API', () => {
       )
 
       const mockSharpInstance = {
-        resize: jest.fn().mockReturnThis(),
-        raw: jest.fn().mockReturnThis(),
-        ensureAlpha: jest.fn().mockReturnThis(),
-        toBuffer: jest.fn().mockResolvedValue({
+        resize: vi.fn().mockReturnThis(),
+        raw: vi.fn().mockReturnThis(),
+        ensureAlpha: vi.fn().mockReturnThis(),
+        toBuffer: vi.fn().mockResolvedValue({
           data: new Uint8ClampedArray(32 * 32 * 4),
           info: { width: 32, height: 32 }
         })
       }
 
       const mockSharpForColor = {
-        resize: jest.fn().mockReturnThis(),
-        raw: jest.fn().mockReturnThis(),
-        toBuffer: jest.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
+        resize: vi.fn().mockReturnThis(),
+        raw: vi.fn().mockReturnThis(),
+        toBuffer: vi.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
       }
 
-      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+      ;(sharp as unknown as Mock).mockImplementationOnce(
         () => mockSharpInstance
       )
-      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+      ;(sharp as unknown as Mock).mockImplementationOnce(
         () => mockSharpForColor
       )
 
@@ -218,25 +220,25 @@ describe('Blurhash API', () => {
       )
 
       const mockSharpInstance = {
-        resize: jest.fn().mockReturnThis(),
-        raw: jest.fn().mockReturnThis(),
-        ensureAlpha: jest.fn().mockReturnThis(),
-        toBuffer: jest.fn().mockResolvedValue({
+        resize: vi.fn().mockReturnThis(),
+        raw: vi.fn().mockReturnThis(),
+        ensureAlpha: vi.fn().mockReturnThis(),
+        toBuffer: vi.fn().mockResolvedValue({
           data: new Uint8ClampedArray(32 * 32 * 4),
           info: { width: 32, height: 32 }
         })
       }
 
       const mockSharpForColor = {
-        resize: jest.fn().mockReturnThis(),
-        raw: jest.fn().mockReturnThis(),
-        toBuffer: jest.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
+        resize: vi.fn().mockReturnThis(),
+        raw: vi.fn().mockReturnThis(),
+        toBuffer: vi.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
       }
 
-      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+      ;(sharp as unknown as Mock).mockImplementationOnce(
         () => mockSharpInstance
       )
-      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+      ;(sharp as unknown as Mock).mockImplementationOnce(
         () => mockSharpForColor
       )
 
@@ -263,25 +265,25 @@ describe('Blurhash API', () => {
       )
 
       const mockSharpInstance = {
-        resize: jest.fn().mockReturnThis(),
-        raw: jest.fn().mockReturnThis(),
-        ensureAlpha: jest.fn().mockReturnThis(),
-        toBuffer: jest.fn().mockResolvedValue({
+        resize: vi.fn().mockReturnThis(),
+        raw: vi.fn().mockReturnThis(),
+        ensureAlpha: vi.fn().mockReturnThis(),
+        toBuffer: vi.fn().mockResolvedValue({
           data: new Uint8ClampedArray(32 * 32 * 4),
           info: { width: 32, height: 32 }
         })
       }
 
       const mockSharpForColor = {
-        resize: jest.fn().mockReturnThis(),
-        raw: jest.fn().mockReturnThis(),
-        toBuffer: jest.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
+        resize: vi.fn().mockReturnThis(),
+        raw: vi.fn().mockReturnThis(),
+        toBuffer: vi.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
       }
 
-      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+      ;(sharp as unknown as Mock).mockImplementationOnce(
         () => mockSharpInstance
       )
-      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+      ;(sharp as unknown as Mock).mockImplementationOnce(
         () => mockSharpForColor
       )
 
@@ -308,25 +310,25 @@ describe('Blurhash API', () => {
       )
 
       const mockSharpInstance = {
-        resize: jest.fn().mockReturnThis(),
-        raw: jest.fn().mockReturnThis(),
-        ensureAlpha: jest.fn().mockReturnThis(),
-        toBuffer: jest.fn().mockResolvedValue({
+        resize: vi.fn().mockReturnThis(),
+        raw: vi.fn().mockReturnThis(),
+        ensureAlpha: vi.fn().mockReturnThis(),
+        toBuffer: vi.fn().mockResolvedValue({
           data: new Uint8ClampedArray(32 * 32 * 4),
           info: { width: 32, height: 32 }
         })
       }
 
       const mockSharpForColor = {
-        resize: jest.fn().mockReturnThis(),
-        raw: jest.fn().mockReturnThis(),
-        toBuffer: jest.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
+        resize: vi.fn().mockReturnThis(),
+        raw: vi.fn().mockReturnThis(),
+        toBuffer: vi.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
       }
 
-      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+      ;(sharp as unknown as Mock).mockImplementationOnce(
         () => mockSharpInstance
       )
-      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+      ;(sharp as unknown as Mock).mockImplementationOnce(
         () => mockSharpForColor
       )
 
@@ -426,25 +428,25 @@ describe('Blurhash API', () => {
       )
 
       const mockSharpInstance = {
-        resize: jest.fn().mockReturnThis(),
-        raw: jest.fn().mockReturnThis(),
-        ensureAlpha: jest.fn().mockReturnThis(),
-        toBuffer: jest.fn().mockResolvedValue({
+        resize: vi.fn().mockReturnThis(),
+        raw: vi.fn().mockReturnThis(),
+        ensureAlpha: vi.fn().mockReturnThis(),
+        toBuffer: vi.fn().mockResolvedValue({
           data: new Uint8ClampedArray(32 * 32 * 4),
           info: { width: 32, height: 32 }
         })
       }
 
       const mockSharpForColor = {
-        resize: jest.fn().mockReturnThis(),
-        raw: jest.fn().mockReturnThis(),
-        toBuffer: jest.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
+        resize: vi.fn().mockReturnThis(),
+        raw: vi.fn().mockReturnThis(),
+        toBuffer: vi.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
       }
 
-      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+      ;(sharp as unknown as Mock).mockImplementationOnce(
         () => mockSharpInstance
       )
-      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+      ;(sharp as unknown as Mock).mockImplementationOnce(
         () => mockSharpForColor
       )
 
@@ -477,7 +479,7 @@ describe('Blurhash API', () => {
           })
         })
       )
-      ;(sharp as unknown as jest.Mock).mockImplementationOnce(() => {
+      ;(sharp as unknown as Mock).mockImplementationOnce(() => {
         throw new Error('Input buffer contains unsupported image format')
       })
 
@@ -529,25 +531,25 @@ describe('Blurhash API', () => {
       )
 
       const mockSharpInstance = {
-        resize: jest.fn().mockReturnThis(),
-        raw: jest.fn().mockReturnThis(),
-        ensureAlpha: jest.fn().mockReturnThis(),
-        toBuffer: jest.fn().mockResolvedValue({
+        resize: vi.fn().mockReturnThis(),
+        raw: vi.fn().mockReturnThis(),
+        ensureAlpha: vi.fn().mockReturnThis(),
+        toBuffer: vi.fn().mockResolvedValue({
           data: new Uint8ClampedArray(32 * 32 * 4),
           info: { width: 32, height: 32 }
         })
       }
 
       const mockSharpForColor = {
-        resize: jest.fn().mockReturnThis(),
-        raw: jest.fn().mockReturnThis(),
-        toBuffer: jest.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
+        resize: vi.fn().mockReturnThis(),
+        raw: vi.fn().mockReturnThis(),
+        toBuffer: vi.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
       }
 
-      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+      ;(sharp as unknown as Mock).mockImplementationOnce(
         () => mockSharpInstance
       )
-      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+      ;(sharp as unknown as Mock).mockImplementationOnce(
         () => mockSharpForColor
       )
 

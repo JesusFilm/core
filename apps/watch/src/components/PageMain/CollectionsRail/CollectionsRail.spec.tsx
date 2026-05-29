@@ -22,13 +22,13 @@ const mockTranslations: Record<string, string> = {
     "L'Écriture, prononcée exactement comme elle est écrite"
 }
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string) => mockTranslations[key] ?? key
   })
 }))
 
-jest.mock('../../SectionVideoCarousel', () => ({
+vi.mock('../../SectionVideoCarousel', () => ({
   SectionVideoCarousel: ({
     id,
     subtitleOverride,
@@ -48,7 +48,7 @@ jest.mock('../../SectionVideoCarousel', () => ({
   )
 }))
 
-jest.mock('../../SectionVideoGrid', () => ({
+vi.mock('../../SectionVideoGrid', () => ({
   SectionVideoGrid: ({
     id,
     subtitleOverride,

@@ -1,15 +1,16 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { MockedFunction } from 'vitest'
 
 import { useLanguages } from '../../../libs/useLanguages'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
 
-jest.mock('../../../libs/useLanguages', () => ({
-  useLanguages: jest.fn()
+vi.mock('../../../libs/useLanguages', () => ({
+  useLanguages: vi.fn()
 }))
 
-const useLanguagesMock = useLanguages as jest.MockedFunction<
+const useLanguagesMock = useLanguages as MockedFunction<
   typeof useLanguages
 >
 
@@ -24,7 +25,7 @@ describe('AudioTrackSelect', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     useLanguagesMock.mockReturnValue({
       languages: [
         {
@@ -108,7 +109,7 @@ describe('AudioTrackSelect', () => {
     })
 
     it('should call onLanguageChange when a language is selected', async () => {
-      const onLanguageChange = jest.fn()
+      const onLanguageChange = vi.fn()
       render(
         <AudioTrackSelect
           audioLanguageId="529"
@@ -127,7 +128,7 @@ describe('AudioTrackSelect', () => {
     })
 
     it('should call updateAudioLanguage with reload true when selected language is in videoAudioLanguageIds', async () => {
-      const onLanguageChange = jest.fn()
+      const onLanguageChange = vi.fn()
       render(
         <AudioTrackSelect
           audioLanguageId="529"

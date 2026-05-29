@@ -7,16 +7,16 @@ describe('mergeMuxInserts', () => {
   }
 
   beforeEach(() => {
-    jest.resetModules()
+    vi.resetModules()
   })
 
   afterEach(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('adds sequence-start inserts before the first video', async () => {
-    jest.useFakeTimers().setSystemTime(new Date('2024-10-15T12:00:00Z'))
-    jest.doMock('../../../../../config/video-inserts.mux.json', () => ({
+    vi.useFakeTimers({ shouldAdvanceTime: true }).setSystemTime(new Date('2024-10-15T12:00:00Z'))
+    vi.doMock('../../../../../config/video-inserts.mux.json', () => ({
       __esModule: true,
       default: {
         version: '1.0.0',
@@ -51,7 +51,7 @@ describe('mergeMuxInserts', () => {
   })
 
   it('inserts after the configured count', async () => {
-    jest.doMock('../../../../../config/video-inserts.mux.json', () => ({
+    vi.doMock('../../../../../config/video-inserts.mux.json', () => ({
       __esModule: true,
       default: {
         version: '1.0.0',
