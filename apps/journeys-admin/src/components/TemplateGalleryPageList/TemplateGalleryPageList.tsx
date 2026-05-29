@@ -631,9 +631,23 @@ export function TemplateGalleryPageList({
   const activeDragJourney =
     activeDragId != null ? (journeyById.get(activeDragId) ?? null) : null
 
+  // In the new desktop view (PublishHero), the workspace surface needs to
+  // run straight down to the page bottom — so we drop the page Box's
+  // bottom padding for that case. The mobile chip-row layout and the OFF
+  // flat-grid both keep their existing breathing room below.
+  const dropBottomPadding =
+    showCollectionsSection && newViewEnabled && !useMobileLayout
+
   return (
     <GalleryDialogLockContext.Provider value={galleryDialogLockValue}>
-      <Box sx={{ p: { xs: 2, md: 4 } }} data-testid="TemplateGalleryPageList">
+      <Box
+        sx={{
+          pt: { xs: 2, md: 4 },
+          px: { xs: 2, md: 4 },
+          pb: dropBottomPadding ? 0 : { xs: 2, md: 4 }
+        }}
+        data-testid="TemplateGalleryPageList"
+      >
         {/* The standalone "Collections" header + Create button used to sit
             here, but PublishHero now owns its own Collections sidebar with
             an inline create affordance (the quick-create drop zone above

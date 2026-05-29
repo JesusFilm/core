@@ -110,11 +110,24 @@ export function PublishHero({
       direction="row"
       spacing={0}
       sx={{
-        minHeight: 480,
+        // Always fills the visible viewport so the white surface reads as
+        // a full-height workspace, independent of how many templates the
+        // selected collection has. The 180px offset accounts for the app
+        // header + Tabs row + page padding above this panel; if either of
+        // those changes meaningfully the offset can be re-tuned.
+        minHeight: 'calc(100vh - 180px)',
         alignItems: 'stretch',
         border: 1,
+        // Bottom edge runs straight down to (and past) the viewport bottom
+        // — top corners stay rounded, bottom corners are square and the
+        // bottom border is suppressed so there's no horizontal line where
+        // the surface meets the page edge.
+        borderBottomWidth: 0,
         borderColor: 'divider',
-        borderRadius: 2,
+        borderTopLeftRadius: 2,
+        borderTopRightRadius: 2,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
         overflow: 'hidden',
         bgcolor: 'background.paper'
       }}
@@ -127,11 +140,10 @@ export function PublishHero({
           width: 200,
           flexShrink: 0,
           borderRight: 1,
-          borderColor: 'divider',
-          position: 'sticky',
-          top: 0,
-          alignSelf: 'flex-start',
-          maxHeight: '100vh'
+          borderColor: 'divider'
+          // Stretches with the parent (default alignItems on the row
+          // Stack), so the dividing rule runs the full height of the
+          // workspace down to the page bottom — matches the main panel.
         }}
       >
         <Box sx={{ px: 2, pt: 2, pb: 1.5 }}>
