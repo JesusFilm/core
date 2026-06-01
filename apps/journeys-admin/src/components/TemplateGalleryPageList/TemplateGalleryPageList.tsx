@@ -46,14 +46,13 @@ import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { useCanPublishCollection } from '../../libs/useCanPublishCollection'
 import { useTemplateGalleryPageCreateMutation } from '../../libs/useTemplateGalleryPageCreateMutation'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
+import { JourneyCard } from '../JourneyList/JourneyCard'
 import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
 
-import { JourneyCard } from '../JourneyList/JourneyCard'
-
 import { CollectionDialog } from './CollectionDialog'
-import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
 import { COLLECTION_GRID_SPACING } from './collectionLayout'
-import { PublishHero, type CollectionViewProps } from './DesignVariants'
+import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
+import { type CollectionViewProps, PublishHero } from './DesignVariants'
 import { DraggableJourneysGrid, UnsectionedDroppable } from './Droppables'
 import {
   GalleryDialogLockContext,
