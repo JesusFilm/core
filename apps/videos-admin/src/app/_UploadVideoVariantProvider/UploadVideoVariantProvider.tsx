@@ -1,11 +1,6 @@
 'use client'
 
-import {
-  gql,
-  useApolloClient,
-  useLazyQuery,
-  useMutation
-} from '@apollo/client'
+import { gql, useApolloClient, useLazyQuery, useMutation } from '@apollo/client'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
 import { ReactNode, createContext, useContext, useReducer, useRef } from 'react'
