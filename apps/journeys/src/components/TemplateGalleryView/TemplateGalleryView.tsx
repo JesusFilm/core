@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import {
   PublicGalleryPage,
@@ -25,7 +25,10 @@ function toData(gallery: TemplateGalleryPage): PublicGalleryPageData {
       title: template.title,
       description: template.description,
       slug: template.slug,
-      createdAt: template.createdAt,
+      // String-coerce defensively: if Apollo ever returns a custom DateTime
+      // scalar or a Date here, parseISO downstream silently yields Invalid
+      // Date and the meta line drops the date without warning.
+      createdAt: template.createdAt != null ? String(template.createdAt) : null,
       languageName: template.language.name,
       image:
         template.primaryImageBlock != null
@@ -41,9 +44,12 @@ function toData(gallery: TemplateGalleryPage): PublicGalleryPageData {
 export function TemplateGalleryView({
   gallery
 }: TemplateGalleryViewProps): ReactElement {
+  // Memoise the mapped view-model so a React.memo wrapper around children
+  // would actually benefit; a fresh object every render is the default.
+  const data = useMemo(() => toData(gallery), [gallery])
   return (
     <Box sx={{ minHeight: '100dvh' }}>
-      <PublicGalleryPage variant="journey" data={toData(gallery)} />
+      <PublicGalleryPage variant="journey" data={data} />
     </Box>
   )
 }

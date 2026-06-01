@@ -8,14 +8,7 @@ import { Theme, lighten, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next/pages'
-import {
-  ReactElement,
-  ReactNode,
-  RefObject,
-  useEffect,
-  useMemo,
-  useRef
-} from 'react'
+import { ReactElement, ReactNode, RefObject, useMemo, useRef } from 'react'
 
 import {
   GALLERY_ACCENT,
@@ -36,7 +29,9 @@ import {
   JourneyViewNavSection,
   scrollToSection
 } from './JourneyViewNav'
+import { ScrollProvider, useScrollSubscription } from './scrollContext'
 import { ScrollReveal } from './ScrollReveal'
+import { usePrefersReducedMotion } from './usePrefersReducedMotion'
 
 interface JourneyViewProps {
   data: PublicGalleryPageData
@@ -75,6 +70,11 @@ const fullHeightSection = {
  * offset as a fraction of the viewport height, lighter on mobile (xs/sm)
  * than on desktop. Offset is 0 when centred, so each section reads normally
  * when it's the focus.
+ *
+ * Driven by the shared `ScrollProvider` so three parallax refs + the nav's
+ * border-fade ride one window scroll listener, not four. `prefers-reduced-
+ * motion` is tracked reactively, so toggling the OS setting mid-session
+ * starts/stops the drift immediately.
  */
 function useParallax(
   desktopStrength = 0.06,
@@ -83,43 +83,30 @@ function useParallax(
   const ref = useRef<HTMLDivElement>(null)
   const { breakpoints } = useTheme()
   const mobileMaxWidth = breakpoints.values.md
+  const reduceMotion = usePrefersReducedMotion()
 
-  useEffect(() => {
+  useScrollSubscription(() => {
     const element = ref.current
     if (element == null) return
-    if (
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    )
+    if (reduceMotion) {
+      // Clear any prior offset so toggling reduce-motion ON mid-session
+      // doesn't leave the element stuck mid-translate.
+      element.style.transform = ''
       return
+    }
+    const viewport = window.innerHeight || 1
+    // xs/sm get the gentler drift; md+ the full strength.
+    const strength =
+      window.innerWidth < mobileMaxWidth ? mobileStrength : desktopStrength
+    const rect = element.getBoundingClientRect()
+    // -1 (well above the viewport) … 0 (centred) … 1 (well below)
+    const progress = (rect.top + rect.height / 2 - viewport / 2) / viewport
+    const clamped = Math.max(-1, Math.min(1, progress))
+    // Negative sign: below-centre content lifts (catches up to the section
+    // above) and above-centre content sinks (lags), shrinking the gap.
+    element.style.transform = `translateY(${(-clamped * strength * viewport).toFixed(1)}px)`
+  })
 
-    let frame = 0
-    const update = (): void => {
-      frame = 0
-      const viewport = window.innerHeight || 1
-      // xs/sm get the gentler drift; md+ the full strength.
-      const strength =
-        window.innerWidth < mobileMaxWidth ? mobileStrength : desktopStrength
-      const rect = element.getBoundingClientRect()
-      // -1 (well above the viewport) … 0 (centred) … 1 (well below)
-      const progress = (rect.top + rect.height / 2 - viewport / 2) / viewport
-      const clamped = Math.max(-1, Math.min(1, progress))
-      // Negative sign: below-centre content lifts (catches up to the section
-      // above) and above-centre content sinks (lags), shrinking the gap.
-      element.style.transform = `translateY(${(-clamped * strength * viewport).toFixed(1)}px)`
-    }
-    const onScroll = (): void => {
-      if (frame === 0) frame = requestAnimationFrame(update)
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll, { passive: true })
-    update()
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-      if (frame !== 0) cancelAnimationFrame(frame)
-    }
-  }, [desktopStrength, mobileStrength, mobileMaxWidth])
   return ref
 }
 
@@ -146,12 +133,10 @@ function SectionLabel({ children }: { children: ReactNode }): ReactElement {
 
 function FeaturedRow({
   item,
-  imagePosition,
-  priority
+  imagePosition
 }: {
   item: PublicGalleryPageItem
   imagePosition: 'left' | 'right'
-  priority: boolean
 }): ReactElement {
   const meta = metaLine(item)
   const hasDescription = item.description != null && item.description !== ''
@@ -191,7 +176,6 @@ function FeaturedRow({
               src={imageSrc}
               alt={imageAlt}
               fill
-              priority={priority}
               sizes="(max-width: 900px) 100vw, 600px"
               style={{ objectFit: 'cover' }}
             />
@@ -249,6 +233,16 @@ function FeaturedRow({
 }
 
 export function JourneyView({ data }: JourneyViewProps): ReactElement {
+  // The ScrollProvider gives `useParallax` (×3) and `JourneyViewNav`'s
+  // border-fade one shared scroll listener instead of four.
+  return (
+    <ScrollProvider>
+      <JourneyViewBody data={data} />
+    </ScrollProvider>
+  )
+}
+
+function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   // The cover carries the CTA, so its drift is halved (half the default
   // strength) to keep the movement subtle there; the other sections keep the
@@ -379,7 +373,6 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
                     key={item.id}
                     item={item}
                     imagePosition={index % 2 === 0 ? 'left' : 'right'}
-                    priority={index < 2}
                   />
                 ))}
               </Stack>

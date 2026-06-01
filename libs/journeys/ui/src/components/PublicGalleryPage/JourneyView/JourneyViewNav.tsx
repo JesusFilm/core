@@ -15,6 +15,8 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { GALLERY_ACCENT } from '../PublicGalleryPage'
 
+import { useScrollSubscription } from './scrollContext'
+
 /** Height of the fixed desktop bar; sections offset their scroll target by it. */
 export const GALLERY_NAV_HEIGHT = 56
 
@@ -85,22 +87,10 @@ export function JourneyViewNav({
 
   // The glass background is always on; the bottom border only appears once the
   // page leaves the very top, so the bar reads as borderless over the cover.
-  useEffect(() => {
-    let frame = 0
-    const update = (): void => {
-      frame = 0
-      setScrolled(window.scrollY > 8)
-    }
-    const onScroll = (): void => {
-      if (frame === 0) frame = requestAnimationFrame(update)
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    update()
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      if (frame !== 0) cancelAnimationFrame(frame)
-    }
-  }, [])
+  // Driven by the shared ScrollProvider rather than its own scroll listener.
+  useScrollSubscription(() => {
+    setScrolled(window.scrollY > 8)
+  })
 
   // Scrollspy: the section crossing the viewport's centre is active. A thin
   // centre band (45% margins top and bottom) keeps one section active through
@@ -126,8 +116,10 @@ export function JourneyViewNav({
           if (entry.isIntersecting) visible.add(entry.target.id)
           else visible.delete(entry.target.id)
         }
-        const next = ids.find((id) => visible.has(id))
-        if (next != null) setActiveId(next)
+        // `next ?? null` clears the active link when no observed section
+        // intersects the centre band — e.g. when the user scrolls past the
+        // last section into footer/whitespace below the page content.
+        setActiveId(ids.find((id) => visible.has(id)) ?? null)
       },
       { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
     )

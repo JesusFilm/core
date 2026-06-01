@@ -6,7 +6,7 @@ import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, memo } from 'react'
+import { ReactElement, memo, useMemo } from 'react'
 
 import {
   PublicGalleryPage,
@@ -74,7 +74,10 @@ function toData(
       title: journey.title,
       description: journey.description,
       slug: journey.slug,
-      createdAt: journey.createdAt,
+      // String-coerce defensively: if Apollo ever returns a custom DateTime
+      // scalar or a Date here, parseISO downstream silently yields Invalid
+      // Date and the meta line drops the date without warning.
+      createdAt: journey.createdAt != null ? String(journey.createdAt) : null,
       languageName: journey.language.name,
       image:
         journey.primaryImageBlock != null
@@ -108,6 +111,12 @@ function CollectionPreviewPaneImpl({
 }: CollectionPreviewPaneProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+  // Memoise the mapped view-model so PublicGalleryPage gets a stable
+  // reference unless the form values or selected journeys actually change.
+  const data = useMemo(
+    () => toData(values, selectedJourneysOrdered),
+    [values, selectedJourneysOrdered]
+  )
 
   // Open is disabled when (a) the collection isn't saved yet (no slug),
   // (b) the URL is missing, or (c) the team's custom-domain gate blocks
@@ -246,10 +255,7 @@ function CollectionPreviewPaneImpl({
           overflowY: 'auto'
         }}
       >
-        <PublicGalleryPage
-          variant="admin"
-          data={toData(values, selectedJourneysOrdered)}
-        />
+        <PublicGalleryPage variant="admin" data={data} />
       </Box>
     </Box>
   )

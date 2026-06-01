@@ -1,16 +1,19 @@
 import { ReactElement } from 'react'
 
+import { brandRed } from '@core/shared/ui/themes/base/tokens/colors'
+
 import { AdminView } from './AdminView'
 import { JourneyView } from './JourneyView'
 
 /**
  * Shared visual tokens for the public gallery page.
  *
- * `GALLERY_ACCENT` is the journeys-admin brand red (journeysAdmin palette
- * primary.main), hard-coded so the page keeps the admin accent regardless
- * of the active MUI theme.
+ * `GALLERY_ACCENT` reuses the project-wide `brandRed` token so the page
+ * keeps a single source of truth for the brand colour, independent of the
+ * active MUI theme. (Different consuming themes don't all expose a matching
+ * palette slot, so we read the token directly rather than via the theme.)
  */
-export const GALLERY_ACCENT = '#C52D3A'
+export const GALLERY_ACCENT = brandRed
 
 /** Corner radius (theme spacing units) for gallery card images. */
 export const GALLERY_CARD_RADIUS = 3

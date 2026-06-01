@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 
 import { PublicGalleryPage } from './PublicGalleryPage'
-import { makeData, makeItems } from './publicGalleryPageData.mock'
+import { makeData, makeItems, mockItem } from './publicGalleryPageData.mock'
 
 describe('PublicGalleryPage', () => {
   describe('journey variant', () => {
@@ -175,6 +175,139 @@ describe('PublicGalleryPage', () => {
         <PublicGalleryPage variant="journey" data={makeData({ items: [] })} />
       )
       expect(screen.queryByTestId('GalleryCoverCta')).not.toBeInTheDocument()
+    })
+
+    describe('admin URL construction', () => {
+      // Restore the env var between tests so override/fallback don't leak.
+      const originalAdminUrl = process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL
+
+      afterEach(() => {
+        if (originalAdminUrl == null) {
+          delete process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL
+        } else {
+          process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL = originalAdminUrl
+        }
+      })
+
+      it('encodes special characters in the template id via URLSearchParams', () => {
+        // URLSearchParams uses application/x-www-form-urlencoded: spaces become
+        // `+`, `/` becomes `%2F`, `&` becomes `%26`. Pinning this so a future
+        // change to URL construction can't silently shift the encoding.
+        const items = [{ ...mockItem, id: 'tmpl/with spaces&chars' }]
+        render(
+          <PublicGalleryPage variant="journey" data={makeData({ items })} />
+        )
+        expect(
+          screen.getAllByTestId('GalleryTemplateCardUseButton')[0]
+        ).toHaveAttribute(
+          'href',
+          'https://admin.nextstep.is/?useTemplate=tmpl%2Fwith+spaces%26chars'
+        )
+      })
+
+      it('uses NEXT_PUBLIC_JOURNEYS_ADMIN_URL when set', () => {
+        process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL =
+          'https://staging.example.com'
+        render(
+          <PublicGalleryPage
+            variant="journey"
+            data={makeData({ items: makeItems(1) })}
+          />
+        )
+        expect(
+          screen.getAllByTestId('GalleryTemplateCardUseButton')[0]
+        ).toHaveAttribute(
+          'href',
+          'https://staging.example.com/?useTemplate=template-0'
+        )
+      })
+
+      it('falls back to https://admin.nextstep.is when env unset', () => {
+        delete process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL
+        render(
+          <PublicGalleryPage
+            variant="journey"
+            data={makeData({ items: makeItems(1) })}
+          />
+        )
+        expect(
+          screen.getAllByTestId('GalleryTemplateCardUseButton')[0]
+        ).toHaveAttribute(
+          'href',
+          'https://admin.nextstep.is/?useTemplate=template-0'
+        )
+      })
+
+      it('preserves the env value verbatim — a trailing slash does not double the path', () => {
+        process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL =
+          'https://staging.example.com/'
+        render(
+          <PublicGalleryPage
+            variant="journey"
+            data={makeData({ items: makeItems(1) })}
+          />
+        )
+        // `new URL('/', base)` collapses the duplicate slash that the old
+        // template-string construction produced.
+        expect(
+          screen.getAllByTestId('GalleryTemplateCardUseButton')[0]
+        ).toHaveAttribute(
+          'href',
+          'https://staging.example.com/?useTemplate=template-0'
+        )
+      })
+    })
+
+    describe('meta line', () => {
+      it('omits the language when languageName is empty', () => {
+        const items = [
+          {
+            ...mockItem,
+            languageName: [],
+            createdAt: '2026-01-15T00:00:00.000Z'
+          }
+        ]
+        render(
+          <PublicGalleryPage variant="journey" data={makeData({ items })} />
+        )
+        // metaLine returns just the date when there's no language to join.
+        expect(screen.getByText('January 2026')).toBeInTheDocument()
+      })
+
+      it('omits the date when createdAt is null', () => {
+        const items = [{ ...mockItem, createdAt: null }]
+        render(
+          <PublicGalleryPage variant="journey" data={makeData({ items })} />
+        )
+        // No "Month Year" string anywhere on the page.
+        expect(
+          screen.queryByText(/^[A-Z][a-z]+ \d{4}$/)
+        ).not.toBeInTheDocument()
+      })
+    })
+
+    it('renders the placeholder icon when an item has no image', () => {
+      // MUI sets a `data-testid="<Name>Icon"` on SvgIcon outside production.
+      const items = [{ ...mockItem, image: null }]
+      render(<PublicGalleryPage variant="journey" data={makeData({ items })} />)
+      expect(
+        screen.getAllByTestId('InsertPhotoRoundedIcon').length
+      ).toBeGreaterThan(0)
+    })
+
+    it('preserves newlines in the collection description (pre-wrap)', () => {
+      render(
+        <PublicGalleryPage
+          variant="journey"
+          data={makeData({ description: 'line one\nline two' })}
+        />
+      )
+      // RTL's default normaliser would collapse the newline; the identity
+      // normaliser proves the DOM text node still carries it (the pre-wrap
+      // style class is what then renders it on its own line in the browser).
+      expect(
+        screen.getByText('line one\nline two', { normalizer: (text) => text })
+      ).toBeInTheDocument()
     })
 
     it('shows the empty state when there are no items', () => {
