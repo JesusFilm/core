@@ -517,13 +517,49 @@ export function TemplateGalleryPageList({
     return `Collection ${n}`
   }
 
-  // Drop-target callback for the PublishHero quick-create drop zone:
-  // create a fresh collection seeded with the dropped template in a
-  // single `templateGalleryPageCreate` round-trip (`journeyIds:
-  // [templateId]`), then auto-select it so the user sees the result.
-  // This replaces the old "+ Create Collection" button — there is no
-  // longer an empty-create path; collections are only ever created by
-  // dropping a template, which guarantees a non-empty starting state.
+  // Click-create callback for the PublishHero quick-create zone: create
+  // an empty collection (no templates). The zone doubles as a button and
+  // a drop target — clicking creates empty, dropping creates seeded.
+  async function handleCreateEmptyCollection(): Promise<void> {
+    if (creatingRef.current || createLoading || teamId == null) return
+    creatingRef.current = true
+    try {
+      const result = await templateGalleryPageCreate({
+        variables: {
+          input: {
+            teamId,
+            title: nextCollectionName(),
+            creatorName: '',
+            journeyIds: []
+          }
+        }
+      })
+      if (mountedRef.current) {
+        const newId = result.data?.templateGalleryPageCreate?.id
+        if (newId != null) setFilterCollectionId(newId)
+        enqueueSnackbar(t('Collection created'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      }
+    } catch (error) {
+      if (mountedRef.current) {
+        enqueueSnackbar(
+          error instanceof Error
+            ? error.message
+            : t("Couldn't create collection"),
+          { variant: 'error', preventDuplicate: true }
+        )
+      }
+    } finally {
+      creatingRef.current = false
+    }
+  }
+
+  // Drop-target callback for the PublishHero quick-create zone: create a
+  // fresh collection seeded with the dropped template in a single
+  // `templateGalleryPageCreate` round-trip (`journeyIds: [templateId]`),
+  // then auto-select it so the user sees the result.
   async function handleCreateCollectionFromTemplate(
     templateId: string
   ): Promise<void> {
@@ -796,7 +832,11 @@ export function TemplateGalleryPageList({
                 <PublishHero
                   {...({
                     collections,
-                    allTemplatesCount: allTemplates.length,
+                    // All Templates = templates not in any collection. The
+                    // count next to it matches what the user sees when that
+                    // row is selected (the unsectioned grid below the hero),
+                    // not the total across every collection.
+                    allTemplatesCount: unsectioned.length,
                     selectedCollectionId: filterCollectionId,
                     onSelectCollection: setFilterCollectionId,
                     dropDisabled: interactionsLocked,
@@ -811,7 +851,10 @@ export function TemplateGalleryPageList({
                     publishBlockedReason:
                       publishBlockedReason != null
                         ? t(publishBlockedReason)
-                        : null
+                        : null,
+                    onCreateEmptyCollection: () => {
+                      void handleCreateEmptyCollection()
+                    }
                   } satisfies CollectionViewProps)}
                 />
               )

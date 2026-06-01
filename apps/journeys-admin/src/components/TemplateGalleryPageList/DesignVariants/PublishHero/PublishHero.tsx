@@ -1,4 +1,6 @@
 import { useDndContext, useDroppable } from '@dnd-kit/core'
+import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -57,7 +59,8 @@ export function PublishHero({
   onUngroup,
   busyId,
   canPublish,
-  publishBlockedReason
+  publishBlockedReason,
+  onCreateEmptyCollection
 }: CollectionViewProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [search, setSearch] = useState('')
@@ -112,10 +115,12 @@ export function PublishHero({
       sx={{
         // Always fills the visible viewport so the white surface reads as
         // a full-height workspace, independent of how many templates the
-        // selected collection has. The 180px offset accounts for the app
-        // header + Tabs row + page padding above this panel; if either of
-        // those changes meaningfully the offset can be re-tuned.
-        minHeight: 'calc(100vh - 180px)',
+        // selected collection has. The 140px offset accounts for the app
+        // header + Tabs row + page padding-top above this panel — the
+        // page Box's bottom padding is already dropped to 0 in the new
+        // view (TemplateGalleryPageList) so this surface runs straight to
+        // the page bottom.
+        minHeight: 'calc(100vh - 140px)',
         alignItems: 'stretch',
         border: 1,
         // Bottom edge runs straight down to (and past) the viewport bottom
@@ -190,7 +195,10 @@ export function PublishHero({
               first thing the user encounters while dragging. The dashed
               border is the universal drop-zone signal; idle state stays
               muted so it doesn't compete with the hero CTA on the right. */}
-          <CreateCollectionDropZone disabled={dropDisabled} />
+          <CreateCollectionDropZone
+            disabled={dropDisabled}
+            onClick={onCreateEmptyCollection}
+          />
           <SidebarRow
             testId="PublishHeroRow-all"
             title={t('All Templates')}
@@ -216,6 +224,35 @@ export function PublishHero({
               }
             />
           ))}
+          {/* System folders — pinned at the bottom of the collections list
+              and visually separated from the user-created collections by a
+              divider. Visual scaffolding for now: clicking surfaces the
+              row as a placeholder filter so the design is testable; drops
+              and the actual archived/trashed template queries are the
+              follow-up. */}
+          <Box
+            sx={{
+              mt: 2,
+              pt: 1.5,
+              mx: 1,
+              borderTop: 1,
+              borderColor: 'divider'
+            }}
+          />
+          <SystemFolderRow
+            testId="PublishHeroRow-archived"
+            title={t('Archived')}
+            kind="archived"
+            selected={selectedCollectionId === '__archived__'}
+            onSelect={() => onSelectCollection('__archived__')}
+          />
+          <SystemFolderRow
+            testId="PublishHeroRow-trashed"
+            title={t('Trash')}
+            kind="trashed"
+            selected={selectedCollectionId === '__trashed__'}
+            onSelect={() => onSelectCollection('__trashed__')}
+          />
         </Box>
       </Stack>
 
@@ -308,20 +345,22 @@ export function PublishHero({
 }
 
 /**
- * Quick-create drop zone. Dropping a template here triggers the
- * `create-new` drop kind in `useDragEndHandler`, which calls the parent's
- * `handleCreateCollectionFromTemplate` — a single `templateGalleryPageCreate`
- * call with `journeyIds: [templateId]` that creates the collection AND
- * seeds it with the dropped template in one server round-trip.
+ * Quick-create drop zone — doubles as a button. Clicking creates an empty
+ * collection (`onCreateEmptyCollection`); dropping a template creates a
+ * collection seeded with that template (via the `create-new` drop kind in
+ * `useDragEndHandler`).
  *
  * Visually muted at idle so it doesn't compete with the hero PUBLISH NOW
  * CTA on the right; the dashed border + primary highlight kick in only
- * while a template is being dragged over it.
+ * while a template is being dragged over it. The whole zone glows the
+ * moment any drag starts (subscribes to `useDndContext().active`).
  */
 function CreateCollectionDropZone({
-  disabled
+  disabled,
+  onClick
 }: {
   disabled: boolean
+  onClick: () => void
 }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { setNodeRef, isOver } = useDroppable({
@@ -329,22 +368,28 @@ function CreateCollectionDropZone({
     disabled
   })
   // Subscribe to the dnd-kit context so the zone can react as soon as ANY
-  // drag begins — not just when the pointer is over the zone. This is what
-  // makes the zone "glow" the moment the user picks up a template,
-  // signalling the quick-create affordance before they're aiming.
+  // drag begins — not just when the pointer is over the zone.
   const { active } = useDndContext()
   const dragActive = active != null
 
   return (
-    <Box
+    <ButtonBase
       ref={setNodeRef}
+      onClick={onClick}
+      disabled={disabled}
       data-testid="PublishHeroCreateNewDropZone"
-      aria-label={t('Drop a template here to create a new collection')}
+      aria-label={t(
+        'Create a new collection (click to create empty, drop a template to seed it)'
+      )}
       sx={{
         mx: 1,
         mb: 1.5,
-        py: 2.5,
+        // Double the previous height (py: 2.5 → 5) so the zone reads as a
+        // primary affordance the user can't miss — both as a button and as
+        // a drop target.
+        py: 5,
         px: 1.5,
+        width: 'calc(100% - 16px)',
         borderRadius: 1.5,
         border: '2px dashed',
         // Idle: muted divider. Drag-active: primary border (the "glow"
@@ -357,8 +402,7 @@ function CreateCollectionDropZone({
             : 'transparent',
         color: isOver || dragActive ? 'primary.main' : 'text.secondary',
         // Glow on drag-active. The admin theme's primary is #C52D3A, so we
-        // use rgba of that hue for the box-shadow halo. Stronger when
-        // hovered, softer (pulsing) when drag is active but not over.
+        // use rgba of that hue for the box-shadow halo.
         boxShadow: isOver
           ? '0 0 0 4px rgba(197, 45, 58, 0.22), 0 0 24px rgba(197, 45, 58, 0.45)'
           : 'none',
@@ -369,6 +413,11 @@ function CreateCollectionDropZone({
         gap: 0.75,
         transition:
           'border-color 200ms ease, background-color 200ms ease, color 200ms ease, box-shadow 200ms ease',
+        '&:hover': {
+          borderColor: isOver || dragActive ? 'primary.main' : 'text.secondary',
+          color: 'primary.main',
+          backgroundColor: isOver ? 'action.selected' : 'action.hover'
+        },
         animation:
           dragActive && !isOver
             ? 'publishHeroCreateNewPulse 1.6s ease-in-out infinite'
@@ -385,11 +434,66 @@ function CreateCollectionDropZone({
         }
       }}
     >
-      <Plus2Icon sx={{ fontSize: 26 }} />
+      <Plus2Icon sx={{ fontSize: 28 }} />
       <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
         {isOver ? t('Drop to create') : t('New collection')}
       </Typography>
-    </Box>
+    </ButtonBase>
+  )
+}
+
+/**
+ * Pinned system folder row (Archived / Trash). Visual scaffolding for the
+ * folder model — same row shape as a regular collection but with an icon
+ * prefix, muted styling, and no count. Click selects it as a filter
+ * placeholder so the design is testable; the actual archived / trashed
+ * template queries and drag-to-archive / drag-to-trash mutations are
+ * follow-ups.
+ */
+function SystemFolderRow({
+  testId,
+  title,
+  kind,
+  selected,
+  onSelect
+}: {
+  testId: string
+  title: string
+  kind: 'archived' | 'trashed'
+  selected: boolean
+  onSelect: () => void
+}): ReactElement {
+  return (
+    <ButtonBase
+      data-testid={testId}
+      onClick={onSelect}
+      aria-pressed={selected}
+      aria-label={title}
+      sx={{
+        width: '100%',
+        minHeight: 36,
+        px: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        gap: 1,
+        textAlign: 'left',
+        borderLeft: 3,
+        borderLeftColor: selected ? 'primary.main' : 'transparent',
+        backgroundColor: selected ? 'action.selected' : 'transparent',
+        color: 'text.secondary',
+        '&:hover': { backgroundColor: 'action.hover' }
+      }}
+    >
+      {kind === 'archived' ? (
+        <ArchiveOutlinedIcon sx={{ fontSize: 18 }} />
+      ) : (
+        <DeleteOutlineIcon sx={{ fontSize: 18 }} />
+      )}
+      <Typography variant="body2" sx={{ flex: 1, minWidth: 0 }} noWrap>
+        {title}
+      </Typography>
+    </ButtonBase>
   )
 }
 

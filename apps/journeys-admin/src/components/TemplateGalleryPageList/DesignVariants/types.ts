@@ -42,4 +42,11 @@ export interface CollectionViewProps {
   canPublish: boolean
   /** Localized reason the active collection cannot be published, or null. */
   publishBlockedReason: string | null
+  /**
+   * Click handler for the PublishHero quick-create zone. Creates an empty
+   * collection (no templates) — the zone doubles as a button and a drop
+   * target: clicking creates empty, dropping creates seeded with the
+   * dropped template.
+   */
+  onCreateEmptyCollection: () => void
 }

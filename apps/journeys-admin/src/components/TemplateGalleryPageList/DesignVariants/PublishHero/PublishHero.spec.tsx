@@ -53,6 +53,7 @@ interface RenderOptions {
   canPublish?: boolean
   publishBlockedReason?: string | null
   busyId?: string | null
+  onCreateEmptyCollection?: () => void
 }
 
 function Wrapper({ children }: { children: ReactNode }): ReactElement {
@@ -73,7 +74,8 @@ function renderHero(options: RenderOptions = {}): void {
     allTemplatesCount = 0,
     canPublish = true,
     publishBlockedReason = null,
-    busyId = null
+    busyId = null,
+    onCreateEmptyCollection = jest.fn()
   } = options
 
   render(
@@ -93,6 +95,7 @@ function renderHero(options: RenderOptions = {}): void {
         busyId={busyId}
         canPublish={canPublish}
         publishBlockedReason={publishBlockedReason}
+        onCreateEmptyCollection={onCreateEmptyCollection}
       />
     </Wrapper>
   )
