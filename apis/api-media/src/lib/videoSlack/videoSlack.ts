@@ -3,46 +3,48 @@ import { Logger } from 'pino'
 import { logger } from '../../logger'
 
 import {
-  postEmptyWeeklyVideoSlackMessage,
-  postWeeklyVideoSlackMessages
-} from './videoSlackRenderer'
+  type VideoSlackReportProfile,
+  dataLangVideoSlackProfile,
+  productionManagerVideoSlackProfile
+} from './videoSlackProfiles'
+import { postVideoSlackMessages } from './videoSlackRenderer'
 import {
-  WeeklyVideoSummaryOptions,
+  VideoSlackSummaryOptions,
   formatDateIso,
-  isValidWeeklyVideoSummaryWindow,
-  loadWeeklyVideoReport,
-  resolveWeeklyVideoSummaryWindow
+  isValidVideoSlackSummaryWindow,
+  loadVideoSlackReport,
+  resolveVideoSlackSummaryWindow
 } from './videoSlackReport'
 
-export async function sendWeeklyVideoSummary(
+export async function sendVideoSlackSummary(
+  profile: VideoSlackReportProfile,
   currentDate = new Date(),
   currentLogger: Logger = logger,
-  options: WeeklyVideoSummaryOptions = {}
+  options: VideoSlackSummaryOptions = {}
 ): Promise<void> {
-  const childLogger = currentLogger.child({
-    report: 'weekly-video-summary'
-  })
+  const childLogger = currentLogger.child({ report: profile.loggerName })
 
   try {
-    const { startDate, endDate } = resolveWeeklyVideoSummaryWindow({
+    const { startDate, endDate } = resolveVideoSlackSummaryWindow({
       currentDate,
       options
     })
 
-    if (!isValidWeeklyVideoSummaryWindow({ startDate, endDate })) {
+    if (!isValidVideoSlackSummaryWindow({ startDate, endDate })) {
       childLogger.warn(
         {
           windowStart: formatDateIso(startDate),
           windowEnd: formatDateIso(endDate)
         },
-        'Weekly video Slack summary skipped: startDate is after endDate'
+        profile.title + ' Slack summary skipped: startDate is after endDate'
       )
       return
     }
 
-    const { rows, counts } = await loadWeeklyVideoReport({
+    const { rows, counts } = await loadVideoSlackReport({
       startDate,
-      endDate
+      endDate,
+      videoFilter: profile.videoFilter
     })
 
     if (rows.length === 0) {
@@ -50,31 +52,52 @@ export async function sendWeeklyVideoSummary(
         {
           windowStart: formatDateIso(startDate),
           windowEnd: formatDateIso(endDate),
-          newVariants: counts.newVariants,
+          variants: counts.variants,
           renderedRows: rows.length
         },
-        'Weekly video Slack summary: posting empty-week message — no rows to render in the window'
+        profile.title +
+          ' Slack summary skipped: no rows to render in delayed window'
       )
-      await postEmptyWeeklyVideoSlackMessage({
-        startDate,
-        endDate,
-        childLogger
-      })
       return
     }
 
-    await postWeeklyVideoSlackMessages({
+    await postVideoSlackMessages({
+      profile,
       rows,
       startDate,
       endDate,
       childLogger
     })
   } catch (error) {
-    childLogger.warn(
-      {
-        error
-      },
-      'Weekly video Slack summary threw an error'
-    )
+    childLogger.warn({ error }, profile.title + ' Slack summary threw an error')
+    if (options.throwOnError === true) {
+      throw error
+    }
   }
+}
+
+export async function sendDataLangVideoSummary(
+  currentDate = new Date(),
+  currentLogger: Logger = logger,
+  options: VideoSlackSummaryOptions = {}
+): Promise<void> {
+  await sendVideoSlackSummary(
+    dataLangVideoSlackProfile,
+    currentDate,
+    currentLogger,
+    options
+  )
+}
+
+export async function sendProductionManagerFlagshipSummary(
+  currentDate = new Date(),
+  currentLogger: Logger = logger,
+  options: VideoSlackSummaryOptions = {}
+): Promise<void> {
+  await sendVideoSlackSummary(
+    productionManagerVideoSlackProfile,
+    currentDate,
+    currentLogger,
+    options
+  )
 }
