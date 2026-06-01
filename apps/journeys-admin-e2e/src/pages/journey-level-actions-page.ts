@@ -262,11 +262,10 @@ export class JourneyLevelActions {
   }
 
   async clickThreeDotOptionsOfJourneyCreationPage(option): Promise<void> {
-    const menu = this.page.locator('ul[aria-labelledby="edit-journey-actions"]')
-    const menuItem = menu.locator('li', { hasText: option })
+    const menuItem = this.page.getByRole('menuitem', { name: option })
     await expect(menuItem).toBeVisible({ timeout: thirtySecondsTimeout })
-    await menuItem.click({ delay: 500, timeout: thirtySecondsTimeout })
-    await expect(menu).toBeHidden({ timeout: thirtySecondsTimeout })
+    await menuItem.click({ timeout: thirtySecondsTimeout })
+    await expect(menuItem).toBeHidden({ timeout: thirtySecondsTimeout })
   }
 
   async enterDescription(): Promise<void> {

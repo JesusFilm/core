@@ -5,6 +5,8 @@ import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
 import { TeamsPage } from '../../pages/teams-page'
 
+let managerTeamName = ''
+
 test.describe('Verify Add member', () => {
   test.beforeAll('Ensure team exists for member flows', async ({ browser }) => {
     const page = await browser.newPage()
@@ -14,14 +16,17 @@ test.describe('Verify Add member', () => {
     await landingPage.goToAdminUrl()
     await loginPage.login()
     await teamsPage.createNewTeamAndVerifyCreatedTeam()
+    managerTeamName = teamsPage.teamName
     await page.close()
   })
 
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
+    const teamsPage = new TeamsPage(page)
     await landingPage.goToAdminUrl()
     await loginPage.login()
+    await teamsPage.selectTeamFromDropdown(managerTeamName)
   })
 
   // Verify the user able to add the member through member option in discover page

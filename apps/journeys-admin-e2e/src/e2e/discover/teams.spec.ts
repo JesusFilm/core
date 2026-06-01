@@ -48,6 +48,7 @@ test.describe('Teams', () => {
     const teamPage = new TeamsPage(page)
 
     await journeyLevelActions.setBrowserContext(context) // setting the context
+    await teamPage.createNewTeamAndVerifyCreatedTeam() // manager team avoids readonly custom-domain / disabled member fields
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
     const journeyName = await journeyPage.getJourneyName() // getting the journey name

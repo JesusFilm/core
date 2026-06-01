@@ -237,15 +237,13 @@ export class Publisher {
       `${escapeRegex(message)}|${escapeRegex(alternateMessage)}`,
       'i'
     )
-    await expect(
-      this.page.locator('#notistack-snackbar', { hasText: messageRegex })
-    ).toBeVisible({ timeout: 60000 })
-    // 60s for hidden keeps the test from waiting 5 minutes when notistack
-    // lingers; the dismiss animation is normally a few seconds. Original
-    // 300000ms was the largest contributor to the runaway test timeouts.
-    await expect(this.page.locator('#notistack-snackbar')).toBeHidden({
-      timeout: 60000
+    const snackbar = this.page.locator('#notistack-snackbar', {
+      hasText: messageRegex
     })
+    await expect(snackbar).toBeVisible({ timeout: 60000 })
+    // Scope dismiss wait to this toast — earlier "Template Created" snackbars
+    // from setup can still be visible and share the same id.
+    await expect(snackbar).toHaveCount(0, { timeout: 60000 })
   }
 
   async clickTrashTab() {

@@ -320,7 +320,12 @@ export class JourneyPage {
   }
 
   async clickThreeDotBtnOfCustomJourney(): Promise<void> {
-    await this.page.locator('button#edit-journey-actions').click()
+    const menuButton = this.page.getByTestId('ToolbarMenuButton')
+    await expect(menuButton).toBeVisible({ timeout: thirtySecondsTimeout })
+    await menuButton.click()
+    await expect(this.page.getByRole('menu')).toBeVisible({
+      timeout: thirtySecondsTimeout
+    })
   }
 
   async clickEditDetailsInThreeDotOptions() {
