@@ -5,7 +5,7 @@ import { Select } from './Select'
 describe('Select', () => {
   it('renders the select component with options', () => {
     const options = [{ value: '1', label: 'Option 1' }]
-    const onChange = jest.fn()
+    const onChange = vi.fn()
 
     render(
       <Select label="Select Option" options={options} onChange={onChange} />
@@ -20,7 +20,7 @@ describe('Select', () => {
 
   it('handles none selection', () => {
     const options = [{ value: '1', label: 'Option 1' }]
-    const onChange = jest.fn()
+    const onChange = vi.fn()
 
     render(
       <Select

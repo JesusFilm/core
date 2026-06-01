@@ -108,7 +108,7 @@ describe('TeamCreateForm', () => {
         teams: [{ __ref: 'Team:teamId1' }]
       }
     })
-    const handleSubmit = jest.fn()
+    const handleSubmit = vi.fn()
     const { getByRole, getByTestId, getByText } = render(
       <MockedProvider
         mocks={[teamCreateMock, getTeamsMock, updateLastActiveTeamIdMock]}
@@ -209,7 +209,7 @@ describe('TeamCreateForm', () => {
   })
 
   it('validates form', async () => {
-    const handleSubmit = jest.fn()
+    const handleSubmit = vi.fn()
     const { getByText, getByRole } = render(
       <MockedProvider mocks={[teamCreateErrorMock]}>
         <SnackbarProvider>

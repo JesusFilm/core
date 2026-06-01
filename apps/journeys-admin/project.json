@@ -122,10 +122,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/apps/journeys-admin"],
       "options": {
-        "jestConfig": "apps/journeys-admin/jest.config.ts"
+        "configFile": "apps/journeys-admin/vitest.config.mts"
       }
     },
     "lint": {

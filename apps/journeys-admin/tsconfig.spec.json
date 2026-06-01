@@ -2,17 +2,16 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "module": "commonjs",
-    "types": ["jest", "@jest/globals", "node"],
-    "jsx": "react"
+    "types": ["vitest/globals", "node"]
   },
   "include": [
     "**/*.spec.ts",
     "**/*.spec.tsx",
     "**/*.spec.js",
     "**/*.spec.jsx",
+    "**/*.mock.ts",
     "**/*.mock.tsx",
     "**/*.d.ts",
-    "setupTests.ts"
+    "setupTests.tsx"
   ]
 }

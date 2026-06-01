@@ -1,17 +1,18 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { getIntegrationMock } from '../../../libs/useIntegrationQuery/useIntegrationQuery.mock'
 
 import { TeamIntegrations } from './TeamIntegrations'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('TeamIntegrations', () => {
   it('should render TeamIntegrations', async () => {

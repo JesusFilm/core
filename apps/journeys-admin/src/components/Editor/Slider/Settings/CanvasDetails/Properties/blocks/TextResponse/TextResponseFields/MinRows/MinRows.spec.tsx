@@ -12,7 +12,7 @@ import { TEXT_RESPONSE_MIN_ROWS_UPDATE } from './MinRows'
 
 import { MinRows } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -42,7 +42,7 @@ const mockMinRowsUpdate1 = {
       minRows: 4
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       textResponseBlockUpdate: {
         id: selectedBlock.id,
@@ -60,7 +60,7 @@ const mockMinRowsUpdate2 = {
       minRows: null
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       textResponseBlockUpdate: {
         id: selectedBlock.id,
@@ -78,7 +78,7 @@ const mockMinRowsUpdate3 = {
       minRows: 4
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       textResponseBlockUpdate: {
         id: selectedBlock.id,
@@ -89,7 +89,7 @@ const mockMinRowsUpdate3 = {
 }
 
 describe('MinRows', () => {
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should select One Row by default', () => {
     render(

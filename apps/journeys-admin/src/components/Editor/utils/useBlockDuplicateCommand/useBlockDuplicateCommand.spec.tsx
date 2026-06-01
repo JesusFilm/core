@@ -24,11 +24,11 @@ const block: CardBlock = {
   showAssistant: null,
   expandChatByDefault: null
 }
-const execute = jest.fn().mockResolvedValue(block)
+const execute = vi.fn().mockResolvedValue(block)
 
 describe('useBlockDuplicateCommand', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should run the execute command', async () => {

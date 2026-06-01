@@ -2,14 +2,15 @@ import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import type { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 
 import { ImageLibrary } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('ImageLibrary', () => {
@@ -30,9 +31,7 @@ describe('ImageLibrary', () => {
   }
 
   describe('smUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
     it('should switch tabs', () => {
       render(
@@ -40,9 +39,9 @@ describe('ImageLibrary', () => {
           <SnackbarProvider>
             <ImageLibrary
               open
-              onClose={jest.fn()}
-              onChange={jest.fn()}
-              onDelete={jest.fn()}
+              onClose={vi.fn()}
+              onChange={vi.fn()}
+              onDelete={vi.fn()}
               selectedBlock={imageBlock}
             />
           </SnackbarProvider>
@@ -57,9 +56,9 @@ describe('ImageLibrary', () => {
           <SnackbarProvider>
             <ImageLibrary
               open
-              onClose={jest.fn()}
-              onChange={jest.fn()}
-              onDelete={jest.fn()}
+              onClose={vi.fn()}
+              onChange={vi.fn()}
+              onDelete={vi.fn()}
               selectedBlock={imageBlock}
             />
           </SnackbarProvider>
@@ -72,15 +71,15 @@ describe('ImageLibrary', () => {
     })
 
     it('should close ImageLibrary on close Icon click', () => {
-      const onClose = jest.fn()
+      const onClose = vi.fn()
       render(
         <MockedProvider>
           <SnackbarProvider>
             <ImageLibrary
               open
               onClose={onClose}
-              onChange={jest.fn()}
-              onDelete={jest.fn()}
+              onChange={vi.fn()}
+              onDelete={vi.fn()}
               selectedBlock={imageBlock}
             />
           </SnackbarProvider>
@@ -95,9 +94,7 @@ describe('ImageLibrary', () => {
   })
 
   describe('xsDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => false)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => false))
 
     it('should render the Image Library from the bottom', () => {
       render(
@@ -105,9 +102,9 @@ describe('ImageLibrary', () => {
           <SnackbarProvider>
             <ImageLibrary
               open
-              onClose={jest.fn()}
-              onChange={jest.fn()}
-              onDelete={jest.fn()}
+              onClose={vi.fn()}
+              onChange={vi.fn()}
+              onDelete={vi.fn()}
               selectedBlock={imageBlock}
             />
           </SnackbarProvider>

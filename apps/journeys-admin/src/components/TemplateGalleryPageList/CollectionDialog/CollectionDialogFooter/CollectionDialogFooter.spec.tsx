@@ -19,12 +19,12 @@ function makeProps(
     journeyCount: 1,
     isSubmitting: false,
     isUnpublishing: false,
-    onCancel: jest.fn(),
-    onCreate: jest.fn(),
-    onSave: jest.fn(),
-    onSaveDraft: jest.fn(),
-    onPublish: jest.fn(),
-    onUnpublish: jest.fn(),
+    onCancel: vi.fn(),
+    onCreate: vi.fn(),
+    onSave: vi.fn(),
+    onSaveDraft: vi.fn(),
+    onPublish: vi.fn(),
+    onUnpublish: vi.fn(),
     ...overrides
   }
 }
@@ -32,8 +32,8 @@ function makeProps(
 describe('CollectionDialogFooter', () => {
   describe('create mode', () => {
     it('renders Cancel + Create and wires the callbacks', async () => {
-      const onCancel = jest.fn()
-      const onCreate = jest.fn()
+      const onCancel = vi.fn()
+      const onCreate = vi.fn()
       render(
         <CollectionDialogFooter
           {...makeProps({ mode: 'create', onCancel, onCreate })}
@@ -56,8 +56,8 @@ describe('CollectionDialogFooter', () => {
 
   describe('edit mode (draft)', () => {
     it('renders Cancel + Save only', async () => {
-      const onCancel = jest.fn()
-      const onSave = jest.fn()
+      const onCancel = vi.fn()
+      const onSave = vi.fn()
       render(
         <CollectionDialogFooter
           {...makeProps({
@@ -84,9 +84,9 @@ describe('CollectionDialogFooter', () => {
 
   describe('edit mode (published)', () => {
     it('renders Cancel + Unpublish + Save and wires the callbacks', async () => {
-      const onCancel = jest.fn()
-      const onSave = jest.fn()
-      const onUnpublish = jest.fn()
+      const onCancel = vi.fn()
+      const onSave = vi.fn()
+      const onUnpublish = vi.fn()
       render(
         <CollectionDialogFooter
           {...makeProps({
@@ -131,9 +131,9 @@ describe('CollectionDialogFooter', () => {
 
   describe('publish mode', () => {
     it('renders Cancel + Save Draft + Publish and wires the callbacks', async () => {
-      const onCancel = jest.fn()
-      const onSaveDraft = jest.fn()
-      const onPublish = jest.fn()
+      const onCancel = vi.fn()
+      const onSaveDraft = vi.fn()
+      const onPublish = vi.fn()
       render(
         <CollectionDialogFooter
           {...makeProps({

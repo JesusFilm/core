@@ -4,7 +4,7 @@ import { UnsplashCollections } from './UnsplashCollections'
 
 describe('UnsplashCollections', () => {
   it('should call onClick when a chip is clicked', () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     render(<UnsplashCollections onClick={onClick} />)
 
     const christChip = screen.getByRole('button', { name: 'Christ' })

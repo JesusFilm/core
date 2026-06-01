@@ -4,6 +4,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY } from '../../../../../../libs/useTemplateGalleryPageAssignJourneyMutation'
@@ -25,18 +26,18 @@ function unassignMock(journeyId = 'journey-id') {
   }
 }
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.Mock
+const mockUseRouter = useRouter as Mock
 
 describe('ArchiveJourney', () => {
-  const handeClose = jest.fn()
+  const handeClose = vi.fn()
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe("activeTab === 'active'", () => {
@@ -63,7 +64,7 @@ describe('ArchiveJourney', () => {
     })
 
     it('should archive journey', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           journeysArchive: [
             {
@@ -133,7 +134,7 @@ describe('ArchiveJourney', () => {
         }
       })
 
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           journeysArchive: [
             {
@@ -186,7 +187,7 @@ describe('ArchiveJourney', () => {
     })
 
     it('unassigns the journey from its collection after archiving', async () => {
-      const archiveResult = jest.fn(() => ({
+      const archiveResult = vi.fn(() => ({
         data: {
           journeysArchive: [
             {
@@ -197,7 +198,7 @@ describe('ArchiveJourney', () => {
           ]
         }
       }))
-      const unassignResult = jest.fn(() => ({
+      const unassignResult = vi.fn(() => ({
         data: { templateGalleryPageAssignJourney: null }
       }))
 
@@ -239,7 +240,7 @@ describe('ArchiveJourney', () => {
     it('fires the success snackbar BEFORE the unassign mutation resolves (does not block UX)', async () => {
       // Mike review (NES-1644): waitFor doesn't assert ordering. Hold
       // the unassign mock indefinitely; the snackbar must still appear.
-      const archiveResult = jest.fn(() => ({
+      const archiveResult = vi.fn(() => ({
         data: {
           journeysArchive: [
             {
@@ -301,8 +302,8 @@ describe('ArchiveJourney', () => {
     })
 
     it('still surfaces success when the unassign mutation fails (best-effort)', async () => {
-      const warn = jest.spyOn(console, 'warn').mockImplementation(noop)
-      const archiveResult = jest.fn(() => ({
+      const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+      const archiveResult = vi.fn(() => ({
         data: {
           journeysArchive: [
             {
@@ -431,7 +432,7 @@ describe('ArchiveJourney', () => {
     })
 
     it('should unarchive journey to draft', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           journeysRestore: [
             {
@@ -475,7 +476,7 @@ describe('ArchiveJourney', () => {
     })
 
     it('should unarchive journey to published', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           journeysRestore: [
             {

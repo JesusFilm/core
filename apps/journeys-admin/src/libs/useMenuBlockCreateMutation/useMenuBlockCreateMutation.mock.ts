@@ -89,7 +89,7 @@ export const mockUseMenuBlockCreateMutation: MockedResponse<
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       step: mockMenuStep,
       card: mockMenuCard,

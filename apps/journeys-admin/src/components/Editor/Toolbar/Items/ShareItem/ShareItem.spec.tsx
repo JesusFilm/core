@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import { Suspense } from 'react'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
@@ -24,24 +25,24 @@ import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareL
 
 import { ShareItem } from './ShareItem'
 
-jest.mock('../../../../../libs/useCurrentUserLazyQuery', () => ({
+vi.mock('../../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
-  useCurrentUserLazyQuery: jest.fn()
+  useCurrentUserLazyQuery: vi.fn()
 }))
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
-Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
+Object.assign(navigator, { clipboard: { writeText: vi.fn() } })
 
 describe('ShareItem', () => {
   const journeyForSharingMock: MockedResponse<GetJourneyForSharing> = {
@@ -85,8 +86,8 @@ describe('ShareItem', () => {
     }
   }
 
-  const push = jest.fn()
-  const on = jest.fn()
+  const push = vi.fn()
+  const on = vi.fn()
 
   const getCustomDomainsMock = {
     request: {
@@ -111,7 +112,7 @@ describe('ShareItem', () => {
   let originalEnv
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     originalEnv = process.env
     process.env = {
       ...originalEnv,
@@ -154,7 +155,7 @@ describe('ShareItem', () => {
     })
 
     expect(
-      screen.getByRole('dialog', { name: 'Edit Link' })
+      await screen.findByRole('dialog', { name: 'Edit Link' })
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
@@ -199,7 +200,7 @@ describe('ShareItem', () => {
     })
 
     expect(
-      screen.getByRole('dialog', { name: 'Embed journey' })
+      await screen.findByRole('dialog', { name: 'Embed journey' })
     ).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Copy Code' })
@@ -225,7 +226,7 @@ describe('ShareItem', () => {
 
     const getUserRoleMock: MockedResponse<GetUserRole> = {
       request: { query: GET_USER_ROLE },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           getUserRole: {
             __typename: 'UserRole',
@@ -233,7 +234,7 @@ describe('ShareItem', () => {
             roles: [Role.publisher]
           }
         }
-      }))
+      })) as MockedResponse<GetUserRole>['result']
     }
 
     render(
@@ -438,7 +439,7 @@ describe('ShareItem', () => {
   })
 
   it('should call setHasOpenDialog when opening and closing dialog', async () => {
-    const setHasOpenDialog = jest.fn()
+    const setHasOpenDialog = vi.fn()
 
     render(
       <SnackbarProvider>

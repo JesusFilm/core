@@ -6,12 +6,12 @@ import { LastModifiedDate } from '.'
 
 describe('LastModifiedDate', () => {
   beforeAll(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date(fakeDate))
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(fakeDate))
   })
 
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('should show "Edited just now" for recent edits', () => {

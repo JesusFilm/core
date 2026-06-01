@@ -4,7 +4,7 @@ import { ReactionOption } from './ReactionOption'
 
 describe('ReactionOption', () => {
   it('should render', () => {
-    const mockToggle = jest.fn()
+    const mockToggle = vi.fn()
 
     render(
       <ReactionOption
@@ -20,7 +20,7 @@ describe('ReactionOption', () => {
   })
 
   it('should handle toggle event', () => {
-    const mockToggle = jest.fn()
+    const mockToggle = vi.fn()
 
     render(
       <ReactionOption

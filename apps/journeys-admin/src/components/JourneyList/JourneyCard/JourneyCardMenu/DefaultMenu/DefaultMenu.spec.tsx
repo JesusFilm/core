@@ -45,7 +45,7 @@ const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       teams: [
         {
@@ -63,7 +63,7 @@ const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
         lastActiveTeamId: 'teamId'
       }
     }
-  }))
+  })) as MockedResponse<GetLastActiveTeamIdAndTeams>['result']
 }
 
 const currentUserMock = {
@@ -406,8 +406,8 @@ describe('DefaultMenu', () => {
   })
 
   it('should call correct functions on Access click', () => {
-    const setOpenAccessDialog = jest.fn()
-    const handleCloseMenu = jest.fn()
+    const setOpenAccessDialog = vi.fn()
+    const handleCloseMenu = vi.fn()
 
     const { getByRole } = render(
       <MockedProvider
@@ -478,7 +478,7 @@ describe('DefaultMenu', () => {
   })
 
   it('should redirect to preview with custom Domain', async () => {
-    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
+    const result = vi.fn().mockReturnValue(getCustomDomainMock.result)
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -518,8 +518,8 @@ describe('DefaultMenu', () => {
   })
 
   it('should call correct functions on Delete click', async () => {
-    const handleCloseMenu = jest.fn()
-    const setOpenTrashDialog = jest.fn()
+    const handleCloseMenu = vi.fn()
+    const setOpenTrashDialog = vi.fn()
 
     const { getByRole } = render(
       <MockedProvider mocks={[teamWithManagerMock]}>
@@ -1061,8 +1061,8 @@ describe('DefaultMenu', () => {
   })
 
   it('should call correct functions on Translate click', async () => {
-    const setOpenTranslateDialog = jest.fn()
-    const handleCloseMenu = jest.fn()
+    const setOpenTranslateDialog = vi.fn()
+    const handleCloseMenu = vi.fn()
 
     const { getByRole } = render(
       <MockedProvider mocks={[teamWithManagerMock]}>

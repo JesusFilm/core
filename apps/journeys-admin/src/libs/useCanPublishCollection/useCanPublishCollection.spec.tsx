@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
+import { type MockInstance } from 'vitest'
 
 import { GET_CUSTOM_DOMAINS } from '../useCustomDomainsQuery/useCustomDomainsQuery'
 
@@ -131,10 +132,10 @@ describe('useCanPublishCollection', () => {
       request: { query: GET_CUSTOM_DOMAINS, variables: { teamId: 'teamId' } },
       result: { errors: [new GraphQLError('Backend exploded')] }
     }
-    let consoleWarn: jest.SpyInstance
+    let consoleWarn: MockInstance
 
     beforeEach(() => {
-      consoleWarn = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
+      consoleWarn = vi.spyOn(console, 'warn').mockImplementation(vi.fn())
     })
 
     afterEach(() => {

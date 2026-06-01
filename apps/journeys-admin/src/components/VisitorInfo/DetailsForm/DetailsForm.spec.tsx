@@ -25,7 +25,7 @@ describe('DetailsForm', () => {
   })
 
   it('submits data when form updated', async () => {
-    const visitorUpdateResult = jest.fn(() => visitorUpdateMock.result)
+    const visitorUpdateResult = vi.fn(() => visitorUpdateMock.result)
     const { getByText } = render(
       <MockedProvider
         mocks={[

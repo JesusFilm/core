@@ -45,7 +45,7 @@ describe('SidePanel', () => {
   })
 
   it('should call onClose', () => {
-    const onClose = jest.fn()
+    const onClose = vi.fn()
     const { getByTestId } = render(
       <PageProvider
         initialState={{
