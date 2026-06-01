@@ -325,12 +325,12 @@ describe('UploadVideoVariantContext', () => {
       let resolveUpload: (value: {
         headers: { etag: string }
       }) => void = () => {}
-      ;(axios.put as Mock).mockImplementationOnce(
-        () =>
-          new Promise<{ headers: { etag: string } }>((resolve) => {
-            resolveUpload = resolve
-          })
+      const uploadDeferred = new Promise<{ headers: { etag: string } }>(
+        (resolve) => {
+          resolveUpload = resolve
+        }
       )
+      ;(axios.put as Mock).mockImplementationOnce(() => uploadDeferred)
 
       let uploadPromise: Promise<void> = Promise.resolve()
       act(() => {
