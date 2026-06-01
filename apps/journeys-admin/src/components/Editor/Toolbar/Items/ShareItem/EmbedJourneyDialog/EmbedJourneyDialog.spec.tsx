@@ -4,13 +4,13 @@ import { SnackbarProvider } from 'notistack'
 
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
 describe('embedJourneyDialog', () => {
-  const onClose = jest.fn()
+  const onClose = vi.fn()
 
   it('closes the modal on cancel click', () => {
     const { getByRole } = render(
@@ -44,7 +44,7 @@ describe('embedJourneyDialog', () => {
     beforeEach(() => {
       Object.assign(navigator, {
         clipboard: {
-          writeText: jest.fn()
+          writeText: vi.fn()
         }
       })
       process.env = {
@@ -54,7 +54,7 @@ describe('embedJourneyDialog', () => {
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      vi.resetAllMocks()
       Object.assign(navigator, { ...global.navigator })
       process.env = originalEnv
     })

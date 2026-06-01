@@ -50,7 +50,7 @@ describe('WebsiteToggle', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyUpdate: {
             ...defaultJourney,

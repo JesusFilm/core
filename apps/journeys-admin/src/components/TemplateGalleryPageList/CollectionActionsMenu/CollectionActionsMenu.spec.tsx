@@ -80,7 +80,7 @@ describe('CollectionActionsMenu', () => {
   })
 
   it('invokes onEdit for a published collection', async () => {
-    const handleEdit = jest.fn()
+    const handleEdit = vi.fn()
     const collection = makeCollection({
       id: 'page-42',
       status: TemplateGalleryPageStatus.published,
@@ -97,7 +97,7 @@ describe('CollectionActionsMenu', () => {
   })
 
   it('invokes onPublish for a draft collection', async () => {
-    const handlePublish = jest.fn()
+    const handlePublish = vi.fn()
     const collection = makeCollection({ id: 'page-7' })
     render(
       <CollectionActionsMenu

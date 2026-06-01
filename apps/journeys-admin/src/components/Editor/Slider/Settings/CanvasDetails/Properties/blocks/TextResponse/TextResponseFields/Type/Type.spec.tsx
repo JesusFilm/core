@@ -41,7 +41,7 @@ describe('Type', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           __typename: 'TextResponseBlock',
@@ -52,7 +52,7 @@ describe('Type', () => {
           routeId: null
         }
       }
-    }))
+    })) as MockedResponse<TextResponseTypeUpdate>['result']
   }
 
   const mockPhoneUpdate: MockedResponse<TextResponseTypeUpdate> = {
@@ -68,7 +68,7 @@ describe('Type', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           __typename: 'TextResponseBlock',
@@ -79,7 +79,7 @@ describe('Type', () => {
           routeId: null
         }
       }
-    }))
+    })) as MockedResponse<TextResponseTypeUpdate>['result']
   }
 
   const mockFreeformUpdate: MockedResponse<TextResponseTypeUpdate> = {
@@ -95,7 +95,7 @@ describe('Type', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           __typename: 'TextResponseBlock',
@@ -106,11 +106,11 @@ describe('Type', () => {
           routeId: null
         }
       }
-    }))
+    })) as MockedResponse<TextResponseTypeUpdate>['result']
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should change type to email', async () => {
@@ -234,7 +234,7 @@ describe('Type', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           textResponseBlockUpdate: {
             __typename: 'TextResponseBlock',
@@ -245,7 +245,7 @@ describe('Type', () => {
             routeId: 'route'
           }
         }
-      }))
+      })) as MockedResponse<TextResponseTypeUpdate>['result']
     }
 
     render(

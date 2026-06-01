@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactFlowProvider } from '@xyflow/react'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -11,12 +12,12 @@ import { stepAndCardBlockCreateMock } from '../../../../../libs/useStepAndCardBl
 
 import { NewStepButton } from '.'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('NewStepButton', () => {
   it('should render', () => {
@@ -35,7 +36,7 @@ describe('NewStepButton', () => {
     mockUuidv4.mockReturnValueOnce('newStep.id')
     mockUuidv4.mockReturnValueOnce('newCard.id')
 
-    const result = jest.fn().mockReturnValue(stepAndCardBlockCreateMock.result)
+    const result = vi.fn().mockReturnValue(stepAndCardBlockCreateMock.result)
 
     render(
       <MockedProvider mocks={[{ ...stepAndCardBlockCreateMock, result }]}>

@@ -20,7 +20,7 @@ export const textResponseWithButtonDeleteMock: MockedResponse<
       endIconId: 'endIcon.id'
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       textResponse: [
         {
@@ -51,5 +51,8 @@ export const textResponseWithButtonDeleteMock: MockedResponse<
         }
       ]
     }
-  }))
+  })) as MockedResponse<
+    TextResponseWithButtonDelete,
+    TextResponseWithButtonDeleteVariables
+  >['result']
 }

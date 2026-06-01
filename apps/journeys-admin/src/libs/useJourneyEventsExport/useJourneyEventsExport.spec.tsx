@@ -1,5 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
+import { type MockInstance, type MockedFunction } from 'vitest'
 
 import {
   CreateEventsExportLog,
@@ -24,20 +25,20 @@ import {
 import { FILTERED_EVENTS } from './utils/constants'
 import { processCsv } from './utils/processCsv/processCsv'
 
-jest.mock('./utils/processCsv/processCsv', () => ({
-  processCsv: jest.fn()
+vi.mock('./utils/processCsv/processCsv', () => ({
+  processCsv: vi.fn()
 }))
-const mockProcessCsv = processCsv as jest.MockedFunction<typeof processCsv>
+const mockProcessCsv = processCsv as MockedFunction<typeof processCsv>
 
 const mockGetJourneyEventsCountQuery = getMockGetJourneyEventsCountQuery()
 
 describe('useJourneyEventsExport', () => {
-  let consoleErrorSpy: jest.SpyInstance
-  let consoleWarnSpy: jest.SpyInstance
+  let consoleErrorSpy: MockInstance
+  let consoleWarnSpy: MockInstance
 
   beforeAll(() => {
-    consoleErrorSpy = jest.spyOn(console, 'error').mockReturnValue()
-    consoleWarnSpy = jest.spyOn(console, 'warn').mockReturnValue()
+    consoleErrorSpy = vi.spyOn(console, 'error').mockReturnValue()
+    consoleWarnSpy = vi.spyOn(console, 'warn').mockReturnValue()
   })
 
   afterAll(() => {
@@ -46,12 +47,12 @@ describe('useJourneyEventsExport', () => {
   })
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should fetch journey events', async () => {
-    const queryResult = jest.fn(() => ({ ...mockGetJourneyEventsQuery.result }))
-    const mutationResult = jest.fn(() => ({
+    const queryResult = vi.fn(() => ({ ...mockGetJourneyEventsQuery.result }))
+    const mutationResult = vi.fn(() => ({
       ...mockCreateEventsExportLogMutation.result
     }))
 
@@ -113,7 +114,7 @@ describe('useJourneyEventsExport', () => {
           after: null
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyEventsConnection: {
             __typename: 'JourneyEventsConnection',
@@ -146,7 +147,10 @@ describe('useJourneyEventsExport', () => {
             }
           }
         }
-      }))
+      })) as MockedResponse<
+        GetJourneyEvents,
+        GetJourneyEventsVariables
+      >['result']
     }
 
     const mockGetJourneyEventsQueryPage2: MockedResponse<
@@ -166,7 +170,7 @@ describe('useJourneyEventsExport', () => {
           after: 'cursor1'
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyEventsConnection: {
             __typename: 'JourneyEventsConnection',
@@ -199,7 +203,10 @@ describe('useJourneyEventsExport', () => {
             }
           }
         }
-      }))
+      })) as MockedResponse<
+        GetJourneyEvents,
+        GetJourneyEventsVariables
+      >['result']
     }
 
     const mockCreateEventsExportLogMutation: MockedResponse<
@@ -217,14 +224,17 @@ describe('useJourneyEventsExport', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           createJourneyEventsExportLog: {
             __typename: 'JourneyEventsExportLog',
             id: '123'
           }
         }
-      }))
+      })) as MockedResponse<
+        CreateEventsExportLog,
+        CreateEventsExportLogVariables
+      >['result']
     }
 
     const { result } = renderHook(() => useJourneyEventsExport(), {

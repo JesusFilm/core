@@ -66,16 +66,16 @@ function renderHero(options: RenderOptions = {}): void {
     collections = [],
     selectedCollectionId = null,
     selectedCollection = null,
-    onSelectCollection = jest.fn(),
-    onOpenPublish = jest.fn(),
-    onEdit = jest.fn(),
-    onUngroup = jest.fn(),
+    onSelectCollection = vi.fn(),
+    onOpenPublish = vi.fn(),
+    onEdit = vi.fn(),
+    onUngroup = vi.fn(),
     filteredJourneys = [],
     allTemplatesCount = 0,
     canPublish = true,
     publishBlockedReason = null,
     busyId = null,
-    onCreateEmptyCollection = jest.fn()
+    onCreateEmptyCollection = vi.fn()
   } = options
 
   render(
@@ -115,7 +115,7 @@ describe('PublishHero', () => {
   })
 
   it('calls onSelectCollection with the collection id when a sidebar row is clicked', async () => {
-    const handleSelect = jest.fn()
+    const handleSelect = vi.fn()
     const collections = [makeCollection({ id: 'col-42', title: 'Sales' })]
     renderHero({ collections, onSelectCollection: handleSelect })
 
@@ -124,7 +124,7 @@ describe('PublishHero', () => {
   })
 
   it('calls onSelectCollection with null when the All Templates row is clicked', async () => {
-    const handleSelect = jest.fn()
+    const handleSelect = vi.fn()
     renderHero({
       collections: [makeCollection({ id: 'a' })],
       selectedCollectionId: 'a',
@@ -154,7 +154,7 @@ describe('PublishHero', () => {
   })
 
   it('calls onOpenPublish with the active collection when the PUBLISH NOW button is clicked', async () => {
-    const handlePublish = jest.fn()
+    const handlePublish = vi.fn()
     const collection = makeCollection({
       id: 'draft-1',
       title: 'Marketing',

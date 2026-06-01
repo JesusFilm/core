@@ -448,7 +448,7 @@ describe('EventLabel', () => {
         'card1.id',
         BlockEventLabel.decisionForChrist
       )
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
 
       render(
         <MockedProvider mocks={[{ ...executeMock, result: mockExecuteResult }]}>
@@ -490,8 +490,8 @@ describe('EventLabel', () => {
         BlockEventLabel.decisionForChrist
       )
 
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
-      const mockUndoResult = jest.fn().mockReturnValue(undoMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
+      const mockUndoResult = vi.fn().mockReturnValue(undoMock.result)
 
       render(
         <MockedProvider
@@ -543,9 +543,9 @@ describe('EventLabel', () => {
       )
       const redoMock = createCardEventLabelUpdateMock('card1.id', null)
 
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
-      const mockUndoResult = jest.fn().mockReturnValue(undoMock.result)
-      const mockRedoResult = jest.fn().mockReturnValue(redoMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
+      const mockUndoResult = vi.fn().mockReturnValue(undoMock.result)
+      const mockRedoResult = vi.fn().mockReturnValue(redoMock.result)
 
       render(
         <MockedProvider
@@ -603,7 +603,7 @@ describe('EventLabel', () => {
         'button1.id',
         BlockEventLabel.prayerRequest
       )
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
 
       render(
         <MockedProvider mocks={[{ ...executeMock, result: mockExecuteResult }]}>
@@ -648,8 +648,8 @@ describe('EventLabel', () => {
         BlockEventLabel.prayerRequest
       )
 
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
-      const mockUndoResult = jest.fn().mockReturnValue(undoMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
+      const mockUndoResult = vi.fn().mockReturnValue(undoMock.result)
 
       render(
         <MockedProvider
@@ -707,9 +707,9 @@ describe('EventLabel', () => {
         BlockEventLabel.decisionForChrist
       )
 
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
-      const mockUndoResult = jest.fn().mockReturnValue(undoMock.result)
-      const mockRedoResult = jest.fn().mockReturnValue(redoMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
+      const mockUndoResult = vi.fn().mockReturnValue(undoMock.result)
+      const mockRedoResult = vi.fn().mockReturnValue(redoMock.result)
 
       render(
         <MockedProvider
@@ -767,7 +767,7 @@ describe('EventLabel', () => {
         'radioOption1.id',
         BlockEventLabel.custom1
       )
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
 
       render(
         <MockedProvider mocks={[{ ...executeMock, result: mockExecuteResult }]}>
@@ -812,8 +812,8 @@ describe('EventLabel', () => {
         BlockEventLabel.custom1
       )
 
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
-      const mockUndoResult = jest.fn().mockReturnValue(undoMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
+      const mockUndoResult = vi.fn().mockReturnValue(undoMock.result)
 
       render(
         <MockedProvider
@@ -871,9 +871,9 @@ describe('EventLabel', () => {
         BlockEventLabel.custom2
       )
 
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
-      const mockUndoResult = jest.fn().mockReturnValue(undoMock.result)
-      const mockRedoResult = jest.fn().mockReturnValue(redoMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
+      const mockUndoResult = vi.fn().mockReturnValue(undoMock.result)
+      const mockRedoResult = vi.fn().mockReturnValue(redoMock.result)
 
       render(
         <MockedProvider
@@ -931,7 +931,7 @@ describe('EventLabel', () => {
         'video1.id',
         BlockEventLabel.specialVideoStart
       )
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
 
       render(
         <MockedProvider mocks={[{ ...executeMock, result: mockExecuteResult }]}>
@@ -980,8 +980,8 @@ describe('EventLabel', () => {
         null
       )
 
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
-      const mockUndoResult = jest.fn().mockReturnValue(undoMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
+      const mockUndoResult = vi.fn().mockReturnValue(undoMock.result)
 
       render(
         <MockedProvider
@@ -1046,9 +1046,9 @@ describe('EventLabel', () => {
         null
       )
 
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
-      const mockUndoResult = jest.fn().mockReturnValue(undoMock.result)
-      const mockRedoResult = jest.fn().mockReturnValue(redoMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
+      const mockUndoResult = vi.fn().mockReturnValue(undoMock.result)
+      const mockRedoResult = vi.fn().mockReturnValue(redoMock.result)
 
       render(
         <MockedProvider
@@ -1108,7 +1108,7 @@ describe('EventLabel', () => {
         'video1.id',
         BlockEventLabel.specialVideoComplete
       )
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
 
       render(
         <MockedProvider mocks={[{ ...executeMock, result: mockExecuteResult }]}>
@@ -1156,8 +1156,8 @@ describe('EventLabel', () => {
         null
       )
 
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
-      const mockUndoResult = jest.fn().mockReturnValue(undoMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
+      const mockUndoResult = vi.fn().mockReturnValue(undoMock.result)
 
       render(
         <MockedProvider
@@ -1221,9 +1221,9 @@ describe('EventLabel', () => {
         null
       )
 
-      const mockExecuteResult = jest.fn().mockReturnValue(executeMock.result)
-      const mockUndoResult = jest.fn().mockReturnValue(undoMock.result)
-      const mockRedoResult = jest.fn().mockReturnValue(redoMock.result)
+      const mockExecuteResult = vi.fn().mockReturnValue(executeMock.result)
+      const mockUndoResult = vi.fn().mockReturnValue(undoMock.result)
+      const mockRedoResult = vi.fn().mockReturnValue(redoMock.result)
 
       render(
         <MockedProvider

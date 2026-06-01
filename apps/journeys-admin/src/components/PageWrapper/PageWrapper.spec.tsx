@@ -1,14 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { User } from '../../libs/auth/authContext'
 
 import { PageWrapper } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('PageWrapper', () => {
@@ -124,11 +125,11 @@ describe('PageWrapper', () => {
     }
 
     afterEach(() => {
-      jest.resetAllMocks()
+      vi.resetAllMocks()
     })
 
     it('should show the side nav bar', () => {
-      ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+      ;(useMediaQuery as Mock).mockImplementation(() => true)
 
       const { getByTestId, getByText, queryByRole } = render(
         <MockedProvider>
@@ -167,11 +168,11 @@ describe('PageWrapper', () => {
 
   describe('HelpScoutBeacon', () => {
     beforeEach(() => {
-      window.Beacon = jest.fn()
+      window.Beacon = vi.fn()
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      vi.resetAllMocks()
     })
 
     it('should render HelpScoutBeacon with fab variant when showAppHeader is true', () => {

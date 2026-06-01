@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import '../../../../test/i18n'
 
@@ -8,9 +9,9 @@ import { copyToClipboard } from '../../../libs/copyToClipboard'
 
 import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
 
-jest.mock('../../../libs/copyToClipboard')
+vi.mock('../../../libs/copyToClipboard')
 
-const mockCopyToClipboard = copyToClipboard as jest.MockedFunction<
+const mockCopyToClipboard = copyToClipboard as MockedFunction<
   typeof copyToClipboard
 >
 
@@ -20,7 +21,7 @@ describe('CollectionPublishSuccessDialog', () => {
   beforeEach(() => {
     mockCopyToClipboard.mockReset()
     originalOpen = window.open
-    window.open = jest.fn()
+    window.open = vi.fn()
   })
 
   afterEach(() => {
@@ -32,9 +33,9 @@ describe('CollectionPublishSuccessDialog', () => {
       React.ComponentProps<typeof CollectionPublishSuccessDialog>
     > = {}
   ): {
-    onClose: jest.Mock
+    onClose: Mock
   } {
-    const onClose = jest.fn()
+    const onClose = vi.fn()
     render(
       <SnackbarProvider>
         <CollectionPublishSuccessDialog

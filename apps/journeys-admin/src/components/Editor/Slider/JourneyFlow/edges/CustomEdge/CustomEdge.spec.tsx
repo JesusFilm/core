@@ -2,14 +2,15 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { Position, ReactFlowProvider } from '@xyflow/react'
 import { ReactElement } from 'react'
+import { type MockedFunction } from 'vitest'
 
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 import { useDeleteEdge } from '../../libs/useDeleteEdge'
 
 import { CustomEdge } from '.'
 
-jest.mock('@xyflow/react', () => {
-  const originalModule = jest.requireActual('@xyflow/react')
+vi.mock('@xyflow/react', async () => {
+  const originalModule = await vi.importActual('@xyflow/react')
   return {
     __esModule: true,
     ...originalModule,
@@ -19,15 +20,13 @@ jest.mock('@xyflow/react', () => {
   }
 })
 
-jest.mock('../../libs/useDeleteEdge', () => {
+vi.mock('../../libs/useDeleteEdge', async () => {
   return {
-    useDeleteEdge: jest.fn()
+    useDeleteEdge: vi.fn()
   }
 })
 
-const mockUseDeleteEdge = useDeleteEdge as jest.MockedFunction<
-  typeof useDeleteEdge
->
+const mockUseDeleteEdge = useDeleteEdge as MockedFunction<typeof useDeleteEdge>
 
 describe('CustomEdge', () => {
   beforeEach(() => {
@@ -63,7 +62,7 @@ describe('CustomEdge', () => {
   })
 
   it('should handle delete edge', () => {
-    const deleteEdge = jest.fn()
+    const deleteEdge = vi.fn()
     mockUseDeleteEdge.mockImplementation(() => deleteEdge)
     render(
       <ReactFlowProvider>

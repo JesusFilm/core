@@ -18,15 +18,15 @@ import {
   TemplateSettingsDialog
 } from './TemplateSettingsDialog'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
 describe('TemplateSettingsDialog', () => {
-  const onClose = jest.fn()
+  const onClose = vi.fn()
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should update field data and close dialog on submit', async () => {
     // NES-1678: strategy section UI removed. The form still carries
@@ -41,7 +41,7 @@ describe('TemplateSettingsDialog', () => {
       languageId: '529'
     }
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyUpdate: {
           ...defaultJourney,
@@ -73,7 +73,7 @@ describe('TemplateSettingsDialog', () => {
       }
     }))
 
-    const result2 = jest.fn(() => ({
+    const result2 = vi.fn(() => ({
       data: {
         journeyCustomizationDescriptionUpdate: {
           id: defaultJourney.id,
@@ -83,7 +83,7 @@ describe('TemplateSettingsDialog', () => {
       }
     }))
 
-    const result3 = jest.fn(() => ({
+    const result3 = vi.fn(() => ({
       data: {
         journeyFeature: {
           id: defaultJourney.id,
@@ -93,7 +93,7 @@ describe('TemplateSettingsDialog', () => {
       }
     }))
 
-    const tagResult = jest.fn(() => ({
+    const tagResult = vi.fn(() => ({
       data: {
         tags: [
           {
@@ -319,7 +319,7 @@ describe('TemplateSettingsDialog', () => {
       }
     }
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyUpdate: {
           ...defaultJourney,

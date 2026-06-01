@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import {
   GetJourneyVisitors_visitors_edges_node_visitor as Visitor,
@@ -9,12 +10,12 @@ import { VisitorStatus } from '../../../../__generated__/globalTypes'
 
 import { VisitorCard } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('VisitorCard', () => {
   beforeEach(() => {

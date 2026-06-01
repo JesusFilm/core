@@ -13,9 +13,9 @@ import { SectionVideoCarousel } from '.'
 const originalUseCarouselContent =
   carouselContentHook.useSectionVideoCollectionCarouselContent
 
-const mockVideoCard = jest.fn()
+const mockVideoCard = vi.fn()
 
-jest.mock('../VideoCard', () => ({
+vi.mock('../VideoCard', () => ({
   VideoCard: (props: any) => {
     mockVideoCard(props)
     const videoId = props.video?.id ?? 'skeleton'
@@ -23,11 +23,11 @@ jest.mock('../VideoCard', () => ({
   }
 }))
 
-jest.mock('@core/shared/ui/icons/Icon', () => ({
+vi.mock('@core/shared/ui/icons/Icon', () => ({
   Icon: () => <div data-testid="MockIcon" />
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   useRouter: () => ({ locale: 'en' })
 }))
 
@@ -253,17 +253,18 @@ describe('SectionVideoCarousel', () => {
   beforeEach(() => {
     mockVideoCard.mockClear()
     capturedSlides = []
-    jest
-      .spyOn(carouselContentHook, 'useSectionVideoCollectionCarouselContent')
-      .mockImplementation((options) => {
-        const result = originalUseCarouselContent(options)
-        capturedSlides = result.slides
-        return result
-      })
+    vi.spyOn(
+      carouselContentHook,
+      'useSectionVideoCollectionCarouselContent'
+    ).mockImplementation((options) => {
+      const result = originalUseCarouselContent(options)
+      capturedSlides = result.slides
+      return result
+    })
   })
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 
   it('renders slides from collection children and videos', async () => {

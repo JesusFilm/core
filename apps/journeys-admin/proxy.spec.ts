@@ -2,8 +2,8 @@ import { NextRequest } from 'next/server'
 
 import proxy, { COOKIE_FINGERPRINT } from './proxy'
 
-jest.mock('next-firebase-auth-edge', () => ({
-  authMiddleware: jest.fn(
+vi.mock('next-firebase-auth-edge', () => ({
+  authMiddleware: vi.fn(
     async (
       _req: NextRequest,
       options: { handleInvalidToken: () => Promise<Response> }

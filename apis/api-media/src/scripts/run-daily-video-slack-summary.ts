@@ -1,34 +1,42 @@
 /**
- * Manual trigger for the weekly video Slack summary (same logic as the worker).
+ * Manual trigger for the daily video Slack summary (same logic as the worker).
  *
  * Usage (from repo root). Load secrets first — e.g. create `apis/api-media/.env` via
  * `pnpm exec nx run api-media:fetch-secrets` (needs `DOPPLER_API_MEDIA_TOKEN`), then:
  *
- *   set -a && source apis/api-media/.env && set +a && pnpm exec nx run api-media:run-weekly-video-slack-summary
+ *   set -a && source apis/api-media/.env && set +a && pnpm exec nx run api-media:run-daily-video-slack-summary
  *
  * Nx runs `prisma-media:prisma-generate` before the script. Same env + args with tsx only:
  *
- *   set -a && source apis/api-media/.env && set +a && pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-weekly-video-slack-summary.ts
+ *   set -a && source apis/api-media/.env && set +a && pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-daily-video-slack-summary.ts
  *
  * Optional positional as-of date:
- *   ... run-weekly-video-slack-summary.ts 2026-03-20T12:00:00.000Z
+ *   ... run-daily-video-slack-summary.ts 2026-03-20T12:00:00.000Z
  *
  * Explicit window bounds:
- *   ... run-weekly-video-slack-summary.ts --start 2025-03-01T00:00:00.000Z --end 2025-04-01T00:00:00.000Z
+ *   ... run-daily-video-slack-summary.ts --start 2025-03-01T00:00:00.000Z --end 2025-04-01T00:00:00.000Z
  *
- * If only --end is provided, start defaults to end-7d.
+ * Report profile:
+ *   ... run-daily-video-slack-summary.ts --profile production-managers
+ *   ... run-daily-video-slack-summary.ts --profile data-lang
+ *
+ * If only --end is provided, start defaults to end-48h. Without explicit bounds, the daily delayed window is 48h-24h before the as-of date.
  */
 import {
-  isValidWeeklyVideoSummaryWindow,
-  resolveWeeklyVideoSummaryWindow,
-  sendWeeklyVideoSummary
+  isValidVideoSlackSummaryWindow,
+  resolveVideoSlackSummaryWindow,
+  sendDataLangVideoSummary,
+  sendProductionManagerFlagshipSummary
 } from '../lib/videoSlack'
 import { logger } from '../logger'
+
+type ReportProfileName = 'data-lang' | 'production-managers'
 
 interface ParsedCliArgs {
   startIso?: string
   endIso?: string
   positionalAsOf?: string
+  profile: ReportProfileName
 }
 
 function readFlagValue(argv: string[], index: number, flag: string): string {
@@ -39,8 +47,15 @@ function readFlagValue(argv: string[], index: number, flag: string): string {
   return value
 }
 
+function parseReportProfile(value: string): ReportProfileName {
+  if (value === 'data-lang' || value === 'production-managers') {
+    return value
+  }
+  throw new Error('--profile must be either data-lang or production-managers')
+}
+
 function parseCliArgs(argv: string[]): ParsedCliArgs {
-  const parsed: ParsedCliArgs = {}
+  const parsed: ParsedCliArgs = { profile: 'data-lang' }
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
     if (arg === '--start') {
@@ -59,6 +74,17 @@ function parseCliArgs(argv: string[]): ParsedCliArgs {
     }
     if (arg.startsWith('--end=')) {
       parsed.endIso = arg.slice('--end='.length)
+      continue
+    }
+    if (arg === '--profile') {
+      parsed.profile = parseReportProfile(
+        readFlagValue(argv, i + 1, '--profile')
+      )
+      i++
+      continue
+    }
+    if (arg.startsWith('--profile=')) {
+      parsed.profile = parseReportProfile(arg.slice('--profile='.length))
       continue
     }
     if (parsed.positionalAsOf == null) {
@@ -89,7 +115,7 @@ async function main(): Promise<void> {
     )
   }
 
-  const { startDate, endDate } = resolveWeeklyVideoSummaryWindow({
+  const { startDate, endDate } = resolveVideoSlackSummaryWindow({
     currentDate:
       parsed.endIso != null
         ? parseIso(parsed.endIso, 'end')
@@ -106,22 +132,34 @@ async function main(): Promise<void> {
     }
   })
 
-  if (!isValidWeeklyVideoSummaryWindow({ startDate, endDate })) {
+  if (!isValidVideoSlackSummaryWindow({ startDate, endDate })) {
     throw new Error('--start must be less than or equal to --end')
   }
 
   logger.info(
     {
+      profile: parsed.profile,
       windowStart: startDate.toISOString(),
       windowEnd: endDate.toISOString()
     },
-    'Running weekly summary window'
+    'Running daily summary window'
   )
-  await sendWeeklyVideoSummary(endDate, logger, { startDate, endDate })
-  logger.info('sendWeeklyVideoSummary finished')
+  const options = {
+    startDate,
+    endDate,
+    throwOnError: true
+  }
+  if (parsed.profile === 'production-managers') {
+    await sendProductionManagerFlagshipSummary(endDate, logger, options)
+    logger.info('sendProductionManagerFlagshipSummary finished')
+    return
+  }
+
+  await sendDataLangVideoSummary(endDate, logger, options)
+  logger.info('sendDataLangVideoSummary finished')
 }
 
 main().catch((error) => {
-  logger.error({ error }, 'run-weekly-video-slack-summary failed')
+  logger.error({ error }, 'run-daily-video-slack-summary failed')
   process.exit(1)
 })

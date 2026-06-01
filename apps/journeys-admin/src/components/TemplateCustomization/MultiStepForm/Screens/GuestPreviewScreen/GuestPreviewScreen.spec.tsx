@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
@@ -8,18 +9,18 @@ import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 
 import { GuestPreviewScreen } from './GuestPreviewScreen'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (str: string) => str
   })
 }))
 
-jest.mock('../LinksScreen/CardsPreview', () => ({
+vi.mock('../LinksScreen/CardsPreview', () => ({
   CardsPreview: ({
     steps,
     onCardClick
@@ -36,7 +37,7 @@ jest.mock('../LinksScreen/CardsPreview', () => ({
   )
 }))
 
-jest.mock(
+vi.mock(
   '../LinksScreen/CardsPreview/TemplateCardPreviewDialog/TemplateCardPreviewDialog',
   () => ({
     TemplateCardPreviewDialog: ({
@@ -61,7 +62,7 @@ jest.mock(
   })
 )
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 const defaultScreens: CustomizationScreen[] = [
   'language',
@@ -74,15 +75,15 @@ const defaultScreens: CustomizationScreen[] = [
 ]
 
 describe('GuestPreviewScreen', () => {
-  let push: jest.Mock
+  let push: Mock
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    push = jest.fn()
+    vi.clearAllMocks()
+    push = vi.fn()
     mockUseRouter.mockReturnValue({
       push,
       query: {},
-      events: { on: jest.fn() }
+      events: { on: vi.fn() }
     } as unknown as NextRouter)
   })
 

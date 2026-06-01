@@ -62,7 +62,7 @@ describe('CollectionChip', () => {
             description: 'A great collection of templates'
           })}
           selected={false}
-          onSelect={jest.fn()}
+          onSelect={vi.fn()}
         />
       </Wrapper>
     )
@@ -79,7 +79,7 @@ describe('CollectionChip', () => {
         <CollectionChip
           collection={makeCollection({ description: '' })}
           selected={false}
-          onSelect={jest.fn()}
+          onSelect={vi.fn()}
         />
       </Wrapper>
     )
@@ -90,7 +90,7 @@ describe('CollectionChip', () => {
   })
 
   it('calls onSelect with the collection id when clicked', async () => {
-    const handleSelect = jest.fn()
+    const handleSelect = vi.fn()
     render(
       <Wrapper>
         <CollectionChip
@@ -110,7 +110,7 @@ describe('CollectionChip', () => {
         <CollectionChip
           collection={makeCollection({ id: 'col-1' })}
           selected
-          onSelect={jest.fn()}
+          onSelect={vi.fn()}
         />
       </Wrapper>
     )
@@ -129,7 +129,7 @@ describe('CollectionChip', () => {
             publishedAt: '2026-05-06T00:00:00Z'
           })}
           selected={false}
-          onSelect={jest.fn()}
+          onSelect={vi.fn()}
         />
       </Wrapper>
     )
@@ -144,7 +144,7 @@ describe('CollectionChip', () => {
             status: TemplateGalleryPageStatus.draft
           })}
           selected={false}
-          onSelect={jest.fn()}
+          onSelect={vi.fn()}
         />
       </Wrapper>
     )
@@ -163,7 +163,7 @@ describe('CollectionChip', () => {
         <CollectionChip
           collection={makeCollection({ templates })}
           selected={false}
-          onSelect={jest.fn()}
+          onSelect={vi.fn()}
         />
       </Wrapper>
     )
@@ -184,7 +184,7 @@ describe('CollectionChip', () => {
         <CollectionChip
           collection={makeCollection({ templates })}
           selected={false}
-          onSelect={jest.fn()}
+          onSelect={vi.fn()}
         />
       </Wrapper>
     )

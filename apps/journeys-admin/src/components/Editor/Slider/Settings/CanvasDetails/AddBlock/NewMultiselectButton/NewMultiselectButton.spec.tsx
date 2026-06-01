@@ -2,6 +2,7 @@ import { InMemoryCache, gql } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -20,17 +21,17 @@ import {
 
 import { NewMultiselectButton } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 const TEST_JOURNEY_QUERY = gql`
   query TestJourney($id: ID!) {
@@ -67,7 +68,7 @@ const multiselectBlockCreateMock: MockedResponse = {
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       multiselectBlockCreate: {
         __typename: 'MultiselectBlock',
@@ -148,7 +149,7 @@ const multiselectWithButtonCreateMock: MockedResponse = {
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       multiselectBlockCreate: {
         __typename: 'MultiselectBlock',
@@ -227,7 +228,7 @@ const multiselectWithButtonDeleteMock: MockedResponse = {
       endIconId: 'endIcon.id'
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       multiselect: {
         id: 'multiselect.id',
@@ -271,7 +272,7 @@ const multiselectWithButtonRestoreMock: MockedResponse = {
       endIconId: 'endIcon.id'
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       multiselect: [
         {
@@ -326,7 +327,7 @@ const multiselectWithButtonRestoreMock: MockedResponse = {
 }
 
 describe('NewMultiselectButton', () => {
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   describe('Multiselect only', () => {
     it('should create a new Multiselect with two options', async () => {
@@ -558,8 +559,22 @@ describe('NewMultiselectButton', () => {
 
   describe('loading state', () => {
     it('multiselect only: should disable when loading', async () => {
+      mockUuidv4
+        .mockReturnValueOnce('multiselect.id')
+        .mockReturnValueOnce('option1.id')
+        .mockReturnValueOnce('option2.id')
+
+      // The click fires MultiselectBlockCreate. A never-resolving mock keeps
+      // the mutation in flight (button stays disabled) and matches the
+      // operation so it does not raise an unhandled Apollo error after the
+      // test completes.
+      const loadingMock: MockedResponse = {
+        ...multiselectBlockCreateMock,
+        delay: Infinity
+      }
+
       const { getByRole } = render(
-        <MockedProvider>
+        <MockedProvider mocks={[loadingMock]}>
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
@@ -579,8 +594,25 @@ describe('NewMultiselectButton', () => {
     })
 
     it('multiselect with button: should disable when loading', async () => {
+      mockUuidv4
+        .mockReturnValueOnce('multiselect.id')
+        .mockReturnValueOnce('option1.id')
+        .mockReturnValueOnce('option2.id')
+        .mockReturnValueOnce('button.id')
+        .mockReturnValueOnce('startIcon.id')
+        .mockReturnValueOnce('endIcon.id')
+
+      // The click fires MultiselectWithButtonCreate. A never-resolving mock
+      // keeps the mutation in flight (button stays disabled) and matches the
+      // operation so it does not raise an unhandled Apollo error after the
+      // test completes.
+      const loadingMock: MockedResponse = {
+        ...multiselectWithButtonCreateMock,
+        delay: Infinity
+      }
+
       const { getByRole } = render(
-        <MockedProvider>
+        <MockedProvider mocks={[loadingMock]}>
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,

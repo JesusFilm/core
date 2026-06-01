@@ -5,15 +5,15 @@ import { ThemeProvider } from '../../../../ThemeProvider'
 import { SharedWithMeMode } from './SharedWithMeMode'
 
 describe('SharedWithMeMode', () => {
-  const mockRenderList = jest.fn(() => (
+  const mockRenderList = vi.fn(() => (
     <div data-testid="rendered-list">List</div>
   ))
-  const mockSetActiveEvent = jest.fn()
-  const mockSetSortOrder = jest.fn()
-  const mockHandleStatusChange = jest.fn()
+  const mockSetActiveEvent = vi.fn()
+  const mockSetSortOrder = vi.fn()
+  const mockHandleStatusChange = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render component with correct test id and call renderList with journeys and selectedStatus', () => {

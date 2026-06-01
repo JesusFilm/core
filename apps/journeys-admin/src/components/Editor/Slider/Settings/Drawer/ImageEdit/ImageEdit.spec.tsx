@@ -27,9 +27,9 @@ import {
 
 import { ImageEdit } from './ImageEdit'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('ImageEdit', () => {
@@ -63,7 +63,7 @@ describe('ImageEdit', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           imageBlockCreate: {
             ...image,
@@ -122,7 +122,7 @@ describe('ImageEdit', () => {
     'creates the %s image from gallery selection',
     async (target, field) => {
       const imageBlockCreateMock = getJourneyImageBlockCreateMock()
-      const journeyUpdateResult = jest.fn(() => ({
+      const journeyUpdateResult = vi.fn(() => ({
         data: {
           journeyUpdate: {
             __typename: 'Journey',
@@ -194,7 +194,7 @@ describe('ImageEdit', () => {
   ] as const)(
     'updates the %s image from gallery selection',
     async (target, field) => {
-      const updateResult = jest.fn(() => ({
+      const updateResult = vi.fn(() => ({
         data: {
           imageBlockUpdate: {
             ...image,
@@ -273,13 +273,13 @@ describe('ImageEdit', () => {
       }
     })
 
-    const imageDeleteResult = jest.fn(() => ({
+    const imageDeleteResult = vi.fn(() => ({
       data: {
         blockDelete: []
       }
     }))
 
-    const journeyUpdateResult = jest.fn(() => ({
+    const journeyUpdateResult = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',
@@ -362,13 +362,13 @@ describe('ImageEdit', () => {
       }
     })
 
-    const imageDeleteResult = jest.fn(() => ({
+    const imageDeleteResult = vi.fn(() => ({
       data: {
         blockDelete: []
       }
     }))
 
-    const journeyUpdateResult = jest.fn(() => ({
+    const journeyUpdateResult = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',

@@ -9,13 +9,13 @@ import { MuxDetails } from './MuxDetails'
 
 const mockDocument = globalThis.document
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('video.js', () => {
-  const videojs = jest.fn(
+vi.mock('video.js', () => {
+  const videojs = vi.fn(
     (
       element?: HTMLVideoElement | null,
       options?: { poster?: string | null }
@@ -39,20 +39,20 @@ jest.mock('video.js', () => {
       }
 
       return {
-        on: jest.fn(),
-        off: jest.fn(),
-        poster: jest.fn(),
-        src: jest.fn()
+        on: vi.fn(),
+        off: vi.fn(),
+        poster: vi.fn(),
+        src: vi.fn()
       }
     }
   )
 
-  ;(videojs as any).getPlayers = jest.fn(() => ({}))
-  return videojs
+  ;(videojs as any).getPlayers = vi.fn(() => ({}))
+  return { __esModule: true, default: videojs }
 })
 
-jest.mock('@core/journeys/ui/Video/utils/getCaptionsAndSubtitleTracks', () => ({
-  getCaptionsAndSubtitleTracks: jest.fn(() => [])
+vi.mock('@core/journeys/ui/Video/utils/getCaptionsAndSubtitleTracks', () => ({
+  getCaptionsAndSubtitleTracks: vi.fn(() => [])
 }))
 
 const mockVideoBlock = {
@@ -93,7 +93,7 @@ const mockVideoBlock = {
 describe('MuxDetails', () => {
   it('should render details of a video', async () => {
     const { getByRole } = render(
-      <MuxDetails activeVideoBlock={mockVideoBlock} open onSelect={jest.fn()} />
+      <MuxDetails activeVideoBlock={mockVideoBlock} open onSelect={vi.fn()} />
     )
     const videoPlayer = getByRole('region', {
       name: 'Video Player'
@@ -119,7 +119,7 @@ describe('MuxDetails', () => {
       <MuxDetails
         activeVideoBlock={videoBlockWithSubtitles}
         open
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
 
@@ -141,7 +141,7 @@ describe('MuxDetails', () => {
       <MuxDetails
         activeVideoBlock={videoBlockWithoutSubtitles}
         open
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
 
@@ -158,7 +158,7 @@ describe('MuxDetails', () => {
       <MuxDetails
         activeVideoBlock={mockVideoBlock}
         open={false}
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
 
@@ -167,7 +167,7 @@ describe('MuxDetails', () => {
 
   it('should update subtitle tracks on showGeneratedSubtitles change', async () => {
     const { rerender, getByRole } = render(
-      <MuxDetails activeVideoBlock={mockVideoBlock} open onSelect={jest.fn()} />
+      <MuxDetails activeVideoBlock={mockVideoBlock} open onSelect={vi.fn()} />
     )
 
     await waitFor(() => {
@@ -185,7 +185,7 @@ describe('MuxDetails', () => {
     }
 
     rerender(
-      <MuxDetails activeVideoBlock={updatedBlock} open onSelect={jest.fn()} />
+      <MuxDetails activeVideoBlock={updatedBlock} open onSelect={vi.fn()} />
     )
 
     await waitFor(() => {
@@ -199,7 +199,7 @@ describe('MuxDetails', () => {
 
   it('should render video element with correct attributes', () => {
     const { container } = render(
-      <MuxDetails activeVideoBlock={mockVideoBlock} open onSelect={jest.fn()} />
+      <MuxDetails activeVideoBlock={mockVideoBlock} open onSelect={vi.fn()} />
     )
 
     const videoElement = container.querySelector('video')

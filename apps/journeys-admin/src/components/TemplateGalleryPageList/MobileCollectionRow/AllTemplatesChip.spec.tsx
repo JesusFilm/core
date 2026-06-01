@@ -14,7 +14,7 @@ function renderChip(
       <AllTemplatesChip
         selected={false}
         count={7}
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
         {...props}
       />
     </DndContext>
@@ -37,7 +37,7 @@ describe('AllTemplatesChip', () => {
   })
 
   it('calls onSelect when clicked', async () => {
-    const handleSelect = jest.fn()
+    const handleSelect = vi.fn()
     renderChip({ onSelect: handleSelect })
     await userEvent.click(screen.getByTestId('AllTemplatesChip'))
     expect(handleSelect).toHaveBeenCalledTimes(1)

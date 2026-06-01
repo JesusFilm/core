@@ -37,13 +37,13 @@ describe('AddUserSection', () => {
     beforeEach(() => {
       Object.assign(navigator, {
         clipboard: {
-          writeText: jest.fn()
+          writeText: vi.fn()
         }
       })
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      vi.resetAllMocks()
       Object.assign(navigator, originalNavigator)
     })
 

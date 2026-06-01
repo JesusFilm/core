@@ -90,6 +90,33 @@ function getTextFromMessage(message: UIMessage): string {
     .join('')
 }
 
+// AI SDK v6's HttpChatTransport discards the HTTP status on a non-2xx response
+// and throws `new Error(await response.text())`, so the only signal the client
+// gets is the response *body*. The server (apps/journeys/pages/api/chat) tags
+// its deterministic failures with a structured `code`; we read it back out
+// here. Transient failures (network drop, upstream 5xx, mid-stream abort)
+// arrive as non-JSON messages → no code → treated as retriable.
+function parseChatErrorCode(error: Error | undefined): string | undefined {
+  if (error?.message == null) return undefined
+  try {
+    const parsed = JSON.parse(error.message) as { code?: unknown }
+    return typeof parsed.code === 'string' ? parsed.code : undefined
+  } catch {
+    return undefined
+  }
+}
+
+// Codes whose retry would deterministically fail again — re-firing wastes a
+// request and, for the cap-hit, re-sends a max-size prompt. Retry is hidden
+// for these and shown for everything else (transient / unknown).
+const NON_RETRIABLE_CHAT_ERROR_CODES = new Set([
+  'conversation_capped',
+  'invalid_request',
+  'not_found'
+])
+
+const CONVERSATION_CAPPED_CODE = 'conversation_capped'
+
 const TYPEWRITER_CHARS_PER_SEC = 280
 
 interface TypewriterResult {
@@ -230,7 +257,7 @@ export function AiChat({
   const journeyIdRef = useRef(journeyId)
   journeyIdRef.current = journeyId
 
-  const [sessionId] = useState<string | undefined>(() => {
+  const [sessionId, setSessionId] = useState<string | undefined>(() => {
     if (typeof window === 'undefined') return undefined
     // sessionStorage can throw in Safari private mode, sandboxed
     // iframes, and quota-exceeded states. Fall back to a fresh UUID
@@ -261,7 +288,16 @@ export function AiChat({
     []
   )
 
-  const { messages, sendMessage, regenerate, stop, status, error } = useChat({
+  const {
+    messages,
+    sendMessage,
+    regenerate,
+    stop,
+    status,
+    error,
+    setMessages,
+    clearError
+  } = useChat({
     transport,
     onError: (err) => {
       console.error('[AiChat] useChat onError', {
@@ -279,6 +315,33 @@ export function AiChat({
     void regenerate()
   }, [regenerate])
 
+  const errorCode = useMemo(() => parseChatErrorCode(error), [error])
+  const isConversationCapped = errorCode === CONVERSATION_CAPPED_CODE
+  // Retriable by default so transient failures (network/5xx/mid-stream, which
+  // carry no code) keep their Retry; hidden only for known deterministic codes.
+  const canRetry =
+    error != null && !NON_RETRIABLE_CHAT_ERROR_CODES.has(errorCode ?? '')
+
+  // Cap-hit is a terminal state with no usable "close" control on mobile (the
+  // pinned bar only collapses — it never unmounts AiChat), so reset the
+  // conversation in place instead: clear the resent history (which clears the
+  // server-side size cap), drop the error, and rotate the sessionId so the
+  // next turn is a clean Langfuse session. Works identically on the desktop
+  // overlay and the mobile pinned bar.
+  const handleStartNewConversation = useCallback(() => {
+    setMessages([])
+    clearError()
+    setInput('')
+    setCollapsed(false)
+    const fresh = uuidv4()
+    try {
+      window.sessionStorage.setItem('aiChat.sessionId', fresh)
+    } catch {
+      // sessionStorage can throw (Safari private mode, sandboxed iframes).
+    }
+    setSessionId(fresh)
+  }, [setMessages, clearError])
+
   useEffect(() => {
     if (
       initialMessage != null &&
@@ -294,12 +357,12 @@ export function AiChat({
   const handleSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault()
-      if (input.trim().length === 0 || isLoading) return
+      if (input.trim().length === 0 || isLoading || isConversationCapped) return
       setCollapsed(false)
       void sendMessage({ text: input })
       setInput('')
     },
-    [input, isLoading, sendMessage]
+    [input, isLoading, isConversationCapped, sendMessage]
   )
 
   const lastAssistantIndex = useMemo(() => {
@@ -408,23 +471,48 @@ export function AiChat({
                 surface={isOverlay ? 'dark' : 'light'}
               >
                 <Box component="span" sx={{ opacity: 0.7 }}>
-                  {t('Something went wrong. Please try again.')}
+                  {isConversationCapped
+                    ? t(
+                        "This conversation's gotten long. Start a new one to keep chatting — this clears the current session."
+                      )
+                    : t('Something went wrong. Please try again.')}
                 </Box>
               </Message>
-              <Box sx={{ display: 'flex', px: 2, py: 0.25 }}>
-                <Button
-                  size="small"
-                  onClick={handleRetry}
-                  aria-label={t('Retry')}
-                  sx={{
-                    fontSize: 12,
-                    color: isOverlay ? OVERLAY_FG_RETRY : MUTED_FG,
-                    minWidth: 0
-                  }}
-                >
-                  {t('Retry')}
-                </Button>
-              </Box>
+              {isConversationCapped ? (
+                // Always shown in the capped state — it's the only way out
+                // now that the input is disabled.
+                <Box sx={{ display: 'flex', px: 2, py: 0.25 }}>
+                  <Button
+                    size="small"
+                    onClick={handleStartNewConversation}
+                    aria-label={t('Start a new conversation')}
+                    sx={{
+                      fontSize: 12,
+                      color: isOverlay ? OVERLAY_FG_RETRY : MUTED_FG,
+                      minWidth: 0
+                    }}
+                  >
+                    {t('Start a new conversation')}
+                  </Button>
+                </Box>
+              ) : (
+                canRetry && (
+                  <Box sx={{ display: 'flex', px: 2, py: 0.25 }}>
+                    <Button
+                      size="small"
+                      onClick={handleRetry}
+                      aria-label={t('Retry')}
+                      sx={{
+                        fontSize: 12,
+                        color: isOverlay ? OVERLAY_FG_RETRY : MUTED_FG,
+                        minWidth: 0
+                      }}
+                    >
+                      {t('Retry')}
+                    </Button>
+                  </Box>
+                )
+              )}
             </Box>
           )}
         </Conversation>
@@ -478,6 +566,7 @@ export function AiChat({
             onSubmit={handleSubmit}
             isLoading={isLoading}
             onStop={stop}
+            disabled={isConversationCapped}
             variant={isOverlay ? 'floating' : 'inline'}
           />
         </Box>

@@ -1,17 +1,18 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { UserJourneyRequest } from '../../../__generated__/UserJourneyRequest'
 
 import { AccessDenied, USER_JOURNEY_REQUEST } from './AccessDenied'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('AccessDenied', () => {
   it('should request access', async () => {
@@ -24,14 +25,14 @@ describe('AccessDenied', () => {
         query: USER_JOURNEY_REQUEST,
         variables: { journeyId: 'mockedJourneyId' }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           userJourneyRequest: {
             id: 'mockedJourneyId',
             __typename: 'UserJourney'
           }
         }
-      }))
+      })) as MockedResponse<UserJourneyRequest>['result']
     }
 
     const { getAllByRole } = render(

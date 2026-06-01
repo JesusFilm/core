@@ -47,7 +47,7 @@ const mockJourney = {
 
 describe('LanguageScreenCardPreview', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders BlockRenderer with first step', async () => {

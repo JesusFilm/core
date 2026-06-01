@@ -121,10 +121,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/apps/watch"],
       "options": {
-        "jestConfig": "apps/watch/jest.config.ts"
+        "configFile": "apps/watch/vitest.config.mts"
       }
     },
     "lint": {
