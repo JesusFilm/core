@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { GoogleSheetsSyncButton } from './GoogleSheetsSyncButton'
 
 describe('GoogleSheetsSyncButton', () => {
-  const handleSyncClick = jest.fn()
+  const handleSyncClick = vi.fn()
 
   beforeEach(() => {
     handleSyncClick.mockClear()

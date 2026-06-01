@@ -65,7 +65,7 @@ describe('PromptInput', () => {
     })
 
     it('truncates an over-cap paste and surfaces the clipped value to onInputChange', () => {
-      const onInputChange = jest.fn()
+      const onInputChange = vi.fn()
       render(
         <PromptInput
           input=""
@@ -90,7 +90,7 @@ describe('PromptInput', () => {
     })
 
     it('lets a within-cap paste pass through untouched (browser handles it)', () => {
-      const onInputChange = jest.fn()
+      const onInputChange = vi.fn()
       render(
         <PromptInput
           input="hello "
@@ -151,6 +151,44 @@ describe('PromptInput', () => {
       fireEvent.keyDown(textarea, { key: 'a' })
 
       expect(form?.className).not.toMatch(/prompt-input-shake/)
+    })
+  })
+
+  describe('disabled state (NES-1663)', () => {
+    it('disables the textarea and the send button when disabled', () => {
+      render(
+        <PromptInput
+          input="hello"
+          onInputChange={noop}
+          onSubmit={noop}
+          isLoading={false}
+          disabled
+        />
+      )
+      expect(
+        screen.getByRole('textbox', { name: 'Chat message input' })
+      ).toBeDisabled()
+      expect(
+        screen.getByRole('button', { name: 'Send message' })
+      ).toBeDisabled()
+    })
+
+    it('does not submit on Enter while disabled', () => {
+      const onSubmit = vi.fn()
+      render(
+        <PromptInput
+          input="hello"
+          onInputChange={noop}
+          onSubmit={onSubmit}
+          isLoading={false}
+          disabled
+        />
+      )
+      fireEvent.keyDown(
+        screen.getByRole('textbox', { name: 'Chat message input' }),
+        { key: 'Enter' }
+      )
+      expect(onSubmit).not.toHaveBeenCalled()
     })
   })
 })

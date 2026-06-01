@@ -15,7 +15,7 @@ describe('ActionDetails', () => {
   const buttonBlock = journey.blocks?.[2]
   const signUpBlock = journey.blocks?.[6]
 
-  const result1 = jest.fn(() => ({
+  const result1 = vi.fn(() => ({
     data: {
       blockUpdateLinkAction: {
         parentBlockId: buttonBlock?.id,
@@ -25,7 +25,7 @@ describe('ActionDetails', () => {
     }
   }))
 
-  const result2 = jest.fn(() => ({
+  const result2 = vi.fn(() => ({
     data: {
       blockUpdateLinkAction: {
         parentBlockId: signUpBlock?.id,

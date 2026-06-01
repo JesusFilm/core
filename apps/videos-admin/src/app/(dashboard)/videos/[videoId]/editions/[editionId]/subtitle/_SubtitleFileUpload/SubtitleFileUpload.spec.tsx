@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useField } from 'formik'
+import { type Mock } from 'vitest'
 
 import { SubtitleFileUpload } from './SubtitleFileUpload'
 
@@ -13,12 +14,12 @@ const metaMock = {
   initialTouched: false
 }
 const helpersMock = {
-  setValue: jest.fn()
+  setValue: vi.fn()
 }
 
-jest.mock('formik', () => ({
+vi.mock('formik', () => ({
   __esModule: true,
-  useField: jest.fn()
+  useField: vi.fn()
 }))
 
 interface Subtitle {
@@ -27,17 +28,17 @@ interface Subtitle {
 }
 
 const originalCreateObjectURL = global.URL.createObjectURL
-const useFieldMock = useField as jest.Mock
+const useFieldMock = useField as Mock
 
 describe('SubtitleFileUpload', () => {
   beforeEach(() => {
-    global.URL.createObjectURL = jest.fn(() => 'mock-url')
-    jest.clearAllMocks()
+    global.URL.createObjectURL = vi.fn(() => 'mock-url')
+    vi.clearAllMocks()
   })
 
   afterEach(() => {
     global.URL.createObjectURL = originalCreateObjectURL
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   afterAll(() => {
@@ -157,8 +158,8 @@ describe('SubtitleFileUpload', () => {
   })
 
   it('should handle multiple files dropped together', async () => {
-    const vttHelpersMock = { setValue: jest.fn() }
-    const srtHelpersMock = { setValue: jest.fn() }
+    const vttHelpersMock = { setValue: vi.fn() }
+    const srtHelpersMock = { setValue: vi.fn() }
 
     useFieldMock.mockImplementationOnce(() => [
       fieldMockVtt,

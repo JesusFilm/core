@@ -3,6 +3,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -14,33 +15,33 @@ import { User } from '../../../../../libs/auth/authContext'
 
 import { UserMenu } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', async () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('@apollo/client', () => ({
+vi.mock('@apollo/client', async () => ({
   __esModule: true,
-  ...jest.requireActual('@apollo/client'),
-  useApolloClient: jest.fn()
+  ...(await vi.importActual('@apollo/client')),
+  useApolloClient: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const mockUseApolloClient = useApolloClient as jest.MockedFunction<
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
+const mockUseApolloClient = useApolloClient as MockedFunction<
   typeof useApolloClient
 >
 
-const mockLogout = jest.fn()
-jest.mock('../../../../../libs/auth/firebase', () => ({
+const mockLogout = vi.fn()
+vi.mock('../../../../../libs/auth/firebase', async () => ({
   __esModule: true,
   logout: (...args: unknown[]) => mockLogout(...args)
 }))
 
 describe('UserMenu', () => {
-  const handleProfileClose = jest.fn()
+  const handleProfileClose = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render the menu', () => {
@@ -87,7 +88,7 @@ describe('UserMenu', () => {
   })
 
   it('should redirect user to email preferences page', async () => {
-    const push = jest.fn()
+    const push = vi.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
     const { getByText } = render(
@@ -130,7 +131,7 @@ describe('UserMenu', () => {
   })
 
   it('should call logout on logout click', async () => {
-    const clearStore = jest.fn()
+    const clearStore = vi.fn()
     mockUseApolloClient.mockReturnValue({
       clearStore
     } as unknown as ApolloClient<object>)
@@ -138,7 +139,7 @@ describe('UserMenu', () => {
       request: {
         query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           teams: [
             {
@@ -156,7 +157,7 @@ describe('UserMenu', () => {
             lastActiveTeamId: 'teamId'
           }
         }
-      }))
+      })) as MockedResponse<GetLastActiveTeamIdAndTeams>['result']
     }
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[getTeams]}>

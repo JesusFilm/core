@@ -17,7 +17,7 @@ import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoI
 
 import { LinkAction } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -68,7 +68,7 @@ describe('LinkAction', () => {
 
   it('updates action url', async () => {
     // TODO TEST: update for new props (customizable, parentStepId)
-    const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
+    const result = vi.fn().mockReturnValue(blockActionLinkUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock, selectedStep }}>
@@ -104,7 +104,7 @@ describe('LinkAction', () => {
   })
 
   it('accepts links without protocol as a URL', async () => {
-    const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
+    const result = vi.fn().mockReturnValue(blockActionLinkUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock, selectedStep }}>
@@ -123,7 +123,7 @@ describe('LinkAction', () => {
   })
 
   it('accepts deep links as a URL', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         blockUpdateLinkAction: {
           parentBlockId: selectedBlock.id,
@@ -187,7 +187,7 @@ describe('LinkAction', () => {
   })
 
   it('should submit when enter is pressed', async () => {
-    const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
+    const result = vi.fn().mockReturnValue(blockActionLinkUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock, selectedStep }}>
@@ -208,7 +208,7 @@ describe('LinkAction', () => {
   })
 
   it('should handle undo', async () => {
-    const result = jest
+    const result = vi
       .fn()
       .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
     render(

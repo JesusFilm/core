@@ -17,7 +17,7 @@ import { RADIO_QUESTION_UPDATE } from './RadioQuestion'
 
 import { RadioQuestion } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -54,7 +54,7 @@ const mockRadioQuestionUpdate: MockedResponse<
       gridView: true
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       radioQuestionBlockUpdate: {
         id: selectedBlock.id,
@@ -64,7 +64,10 @@ const mockRadioQuestionUpdate: MockedResponse<
         __typename: 'RadioQuestionBlock'
       }
     }
-  }))
+  })) as MockedResponse<
+    RadioQuestionUpdate,
+    RadioQuestionUpdateVariables
+  >['result']
 }
 
 const mockRadioQuestionUpdateUndo: MockedResponse<
@@ -79,7 +82,7 @@ const mockRadioQuestionUpdateUndo: MockedResponse<
       gridView: false
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       radioQuestionBlockUpdate: {
         id: selectedBlock.id,
@@ -89,7 +92,10 @@ const mockRadioQuestionUpdateUndo: MockedResponse<
         __typename: 'RadioQuestionBlock'
       }
     }
-  }))
+  })) as MockedResponse<
+    RadioQuestionUpdate,
+    RadioQuestionUpdateVariables
+  >['result']
 }
 
 const mockRadioQuestionUpdateRedo: MockedResponse<
@@ -104,7 +110,7 @@ const mockRadioQuestionUpdateRedo: MockedResponse<
       gridView: true
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       radioQuestionBlockUpdate: {
         id: selectedBlock.id,
@@ -114,11 +120,14 @@ const mockRadioQuestionUpdateRedo: MockedResponse<
         __typename: 'RadioQuestionBlock'
       }
     }
-  }))
+  })) as MockedResponse<
+    RadioQuestionUpdate,
+    RadioQuestionUpdateVariables
+  >['result']
 }
 
 describe('RadioQuestion Properties', () => {
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should render with instructions text', () => {
     render(

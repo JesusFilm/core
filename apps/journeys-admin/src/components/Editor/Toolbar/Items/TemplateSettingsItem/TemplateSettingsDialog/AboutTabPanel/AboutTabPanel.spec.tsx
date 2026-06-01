@@ -10,9 +10,9 @@ import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { AboutTabPanel } from './AboutTabPanel'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 // NES-1678: The strategy-section tests (`should call onChange on form change`,
@@ -22,7 +22,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 // `TemplateSettingsFormValues` (via `JourneyUpdateInput`) so existing values
 // round-trip on save, but there is no editing surface to assert against.
 describe('AboutTabPanel', () => {
-  afterEach(() => jest.clearAllMocks())
+  afterEach(() => vi.clearAllMocks())
 
   it('should render Customize Template text area', () => {
     const publishedGlobalTemplateJourney =

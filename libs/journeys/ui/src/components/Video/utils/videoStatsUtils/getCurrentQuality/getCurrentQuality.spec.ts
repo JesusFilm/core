@@ -6,10 +6,10 @@ import { isYoutubeTech } from '../isYoutubeTech'
 import { getCurrentQuality } from './getCurrentQuality'
 
 // Mock the dependencies
-jest.mock('../isHtml5Tech')
-jest.mock('../isYoutubeTech')
-jest.mock('../../../utils/youtubeQualityMap', () => ({
-  getYoutubeQualityMap: jest.fn().mockImplementation(() => ({
+vi.mock('../isHtml5Tech')
+vi.mock('../isYoutubeTech')
+vi.mock('../../../utils/youtubeQualityMap', () => ({
+  getYoutubeQualityMap: vi.fn().mockImplementation(() => ({
     small: '240p',
     medium: '360p',
     large: '480p',
@@ -23,8 +23,8 @@ jest.mock('../../../utils/youtubeQualityMap', () => ({
 describe('getCurrentQuality', () => {
   // Mock player and tech
   const mockPlayer = {
-    tech: jest.fn(),
-    qualityLevels: jest.fn()
+    tech: vi.fn(),
+    qualityLevels: vi.fn()
   } as any
 
   const mockHtml5Tech = {
@@ -34,21 +34,17 @@ describe('getCurrentQuality', () => {
   const mockYoutubeTech = {
     name_: 'Youtube',
     ytPlayer: {
-      getPlaybackQuality: jest.fn()
+      getPlaybackQuality: vi.fn()
     }
   }
 
-  const mockedIsYoutubeTech = isYoutubeTech as jest.MockedFunction<
-    typeof isYoutubeTech
-  >
-  const mockedIsHtml5Tech = isHtml5Tech as jest.MockedFunction<
-    typeof isHtml5Tech
-  >
+  const mockedIsYoutubeTech = vi.mocked(isYoutubeTech)
+  const mockedIsHtml5Tech = vi.mocked(isHtml5Tech)
   // Use type assertion to satisfy the TFunction type
-  const mockT = jest.fn((key) => key) as unknown as TFunction
+  const mockT = vi.fn((key) => key) as unknown as TFunction
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockPlayer.tech.mockReturnValue(mockHtml5Tech)
   })
 

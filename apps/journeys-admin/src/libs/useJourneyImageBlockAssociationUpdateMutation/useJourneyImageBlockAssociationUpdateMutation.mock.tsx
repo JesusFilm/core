@@ -15,7 +15,7 @@ export const journeyImageBlockAssociationUpdateMock: MockedResponse<JourneyImage
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',
@@ -27,5 +27,5 @@ export const journeyImageBlockAssociationUpdateMock: MockedResponse<JourneyImage
           creatorImageBlock: null
         }
       }
-    }))
+    })) as MockedResponse<JourneyImageBlockAssociationUpdate>['result']
   }

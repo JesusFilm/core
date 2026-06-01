@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { getIntegrationMock } from '../../../libs/useIntegrationQuery/useIntegrationQuery.mock'
 
@@ -12,21 +13,21 @@ import {
   INTEGRATION_GROWTH_SPACES_UPDATE
 } from './GrowthSpacesIntegrationDetails'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
-xdescribe('GrowthSpacesIntegrationDetails', () => {
+describe.skip('GrowthSpacesIntegrationDetails', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('Integration Update', () => {
     it('should update the integration on save', async () => {
-      const push = jest.fn()
+      const push = vi.fn()
       mockedUseRouter.mockReturnValue({
         push,
         query: {
@@ -35,7 +36,7 @@ xdescribe('GrowthSpacesIntegrationDetails', () => {
         }
       } as unknown as NextRouter)
 
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           integrationGrowthSpacesUpdate: {
             id: 'integration.id'
@@ -119,7 +120,7 @@ xdescribe('GrowthSpacesIntegrationDetails', () => {
     })
 
     it('should show error snackbar on network error', async () => {
-      const push = jest.fn()
+      const push = vi.fn()
       mockedUseRouter.mockReturnValue({
         push,
         query: {
@@ -128,7 +129,7 @@ xdescribe('GrowthSpacesIntegrationDetails', () => {
         }
       } as unknown as NextRouter)
 
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           integrationGrowthSpacesUpdate: {
             id: null
@@ -213,7 +214,7 @@ xdescribe('GrowthSpacesIntegrationDetails', () => {
     it('should remove the integration on remove button click', async () => {
       const cache = new InMemoryCache()
 
-      const push = jest.fn()
+      const push = vi.fn()
       mockedUseRouter.mockReturnValue({
         push,
         query: {
@@ -222,9 +223,9 @@ xdescribe('GrowthSpacesIntegrationDetails', () => {
         }
       } as unknown as NextRouter)
 
-      const mockResult = jest.fn().mockReturnValue(getIntegrationMock.result)
+      const mockResult = vi.fn().mockReturnValue(getIntegrationMock.result)
 
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           integrationDelete: {
             __typename: 'IntegrationGrowthSpaces',
@@ -281,9 +282,9 @@ xdescribe('GrowthSpacesIntegrationDetails', () => {
         }
       } as unknown as NextRouter)
 
-      const mockResult = jest.fn().mockReturnValue(getIntegrationMock.result)
+      const mockResult = vi.fn().mockReturnValue(getIntegrationMock.result)
 
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           integrationDelete: {
             id: null

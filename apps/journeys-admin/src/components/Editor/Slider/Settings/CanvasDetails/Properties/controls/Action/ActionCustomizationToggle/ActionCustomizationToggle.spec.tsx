@@ -9,18 +9,22 @@ import {
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../../../__generated__/BlockFields'
 import { ContactActionType } from '../../../../../../../../../../__generated__/globalTypes'
+import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 
 import { ActionCustomizationToggle } from './ActionCustomizationToggle'
 
-const mockAddAction = jest.fn()
-jest.mock('../../../../../../../utils/useActionCommand', () => ({
-  useActionCommand: () => ({ addAction: mockAddAction })
+const mockAddAction = vi.fn()
+vi.mock('../../../../../../../utils/useActionCommand', () => ({
+  useActionCommand: vi.fn(() => ({ addAction: mockAddAction }))
 }))
 
 describe('ActionCustomizationToggle', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-    jest.restoreAllMocks()
+    vi.clearAllMocks()
+    vi.restoreAllMocks()
+    vi.mocked(useActionCommand).mockReturnValue({
+      addAction: mockAddAction
+    } as unknown as ReturnType<typeof useActionCommand>)
   })
 
   it('renders toggle for LinkAction and reflects checked state', () => {
@@ -114,13 +118,10 @@ describe('ActionCustomizationToggle', () => {
   })
 
   it('dispatches addAction on LinkAction toggle change', () => {
-    const addAction = jest.fn()
-    jest
-      .spyOn(
-        require('../../../../../../../utils/useActionCommand'),
-        'useActionCommand'
-      )
-      .mockReturnValue({ addAction })
+    const addAction = vi.fn()
+    vi.mocked(useActionCommand).mockReturnValue({
+      addAction
+    } as unknown as ReturnType<typeof useActionCommand>)
 
     const selectedBlock = {
       id: 'button-3',
@@ -165,13 +166,10 @@ describe('ActionCustomizationToggle', () => {
   })
 
   it('dispatches addAction on EmailAction toggle change', () => {
-    const addAction = jest.fn()
-    jest
-      .spyOn(
-        require('../../../../../../../utils/useActionCommand'),
-        'useActionCommand'
-      )
-      .mockReturnValue({ addAction })
+    const addAction = vi.fn()
+    vi.mocked(useActionCommand).mockReturnValue({
+      addAction
+    } as unknown as ReturnType<typeof useActionCommand>)
 
     const selectedBlock = {
       id: 'button-4',
@@ -369,13 +367,10 @@ describe('ActionCustomizationToggle', () => {
   })
 
   it('dispatches addAction on ChatAction toggle change', () => {
-    const addAction = jest.fn()
-    jest
-      .spyOn(
-        require('../../../../../../../utils/useActionCommand'),
-        'useActionCommand'
-      )
-      .mockReturnValue({ addAction })
+    const addAction = vi.fn()
+    vi.mocked(useActionCommand).mockReturnValue({
+      addAction
+    } as unknown as ReturnType<typeof useActionCommand>)
 
     const selectedBlock = {
       id: 'button-7',

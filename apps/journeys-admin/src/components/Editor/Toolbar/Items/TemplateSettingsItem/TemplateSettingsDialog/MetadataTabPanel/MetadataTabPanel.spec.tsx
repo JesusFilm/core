@@ -15,10 +15,10 @@ import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 import { MetadataTabPanel } from './MetadataTabPanel'
 
 describe('MetadataTabPanel', () => {
-  afterEach(() => jest.clearAllMocks())
+  afterEach(() => vi.clearAllMocks())
 
   it('shows published date', () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const publishedGlobalTemplateJourney =
       publishedGlobalTemplate as unknown as Journey
     const showFeaturedSettings =
@@ -44,7 +44,7 @@ describe('MetadataTabPanel', () => {
   })
 
   it('does not show published date for local template', () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { queryByRole } = render(
       <MockedProvider>
         <JourneyProvider
@@ -68,7 +68,7 @@ describe('MetadataTabPanel', () => {
   })
 
   it('should handle form change', () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const publishedGlobalTemplateJourney =
       publishedGlobalTemplate as unknown as Journey
     const showFeaturedSettings =
@@ -96,7 +96,7 @@ describe('MetadataTabPanel', () => {
     })
 
     expect(handleChange).toHaveBeenCalled()
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     expect(handleChange).not.toHaveBeenCalled()
 
     fireEvent.change(getByRole('textbox', { name: 'Description' }), {
@@ -104,7 +104,7 @@ describe('MetadataTabPanel', () => {
     })
 
     expect(handleChange).toHaveBeenCalled()
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     expect(handleChange).not.toHaveBeenCalled()
 
     fireEvent.click(getByRole('checkbox', { name: 'Featured' }))
@@ -112,7 +112,7 @@ describe('MetadataTabPanel', () => {
   })
 
   it('should not show featured checkbox for local template', () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const publishedLocalTemplateJourney =
       publishedLocalTemplate as unknown as Journey
     const showFeaturedSettings =
@@ -197,7 +197,7 @@ describe('MetadataTabPanel', () => {
       }
     }
 
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getLanguagesMock]}>
         <FormikProvider

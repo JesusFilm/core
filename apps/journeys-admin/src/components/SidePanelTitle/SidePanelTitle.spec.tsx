@@ -1,26 +1,25 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { render } from '@testing-library/react'
+import { type MockedFunction } from 'vitest'
 
 import { SidePanelTitle } from './SidePanelTitle'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-const mockUseMediaQuery = useMediaQuery as jest.MockedFunction<
-  typeof useMediaQuery
->
+const mockUseMediaQuery = useMediaQuery as MockedFunction<typeof useMediaQuery>
 
 describe('SidePanelTitle', () => {
   beforeEach(() => {
-    window.Beacon = jest.fn()
+    window.Beacon = vi.fn()
     mockUseMediaQuery.mockImplementation(() => true)
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should render the side panel title and HelpScoutBeaconFab', () => {

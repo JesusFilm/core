@@ -1,5 +1,6 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import {
   ActiveCanvasDetailsDrawer,
@@ -22,9 +23,9 @@ import { TestEditorState } from '../../../libs/TestEditorState'
 
 import { JourneyQuickSettingsGoals } from './JourneyQuickSettingsGoals'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 const blocks: Blocks[] = [
@@ -179,7 +180,7 @@ describe('JourneyQuickSettingsGoals', () => {
   })
 
   it('should setSelectedGoalUrl on first render', async () => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
 
     render(
       <EditorProvider initialState={state}>

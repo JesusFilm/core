@@ -267,7 +267,7 @@ describe('TagsFilter', () => {
   }
 
   it('should call handleChange on option click', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagsFilter
@@ -293,7 +293,7 @@ describe('TagsFilter', () => {
   })
 
   it('should call handleChange on multiple option click', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagsFilter
@@ -324,7 +324,7 @@ describe('TagsFilter', () => {
   })
 
   it('should remove tag from being selected', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagsFilter
@@ -350,7 +350,7 @@ describe('TagsFilter', () => {
   })
 
   it('should render multiple parent tag sections', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getMultipleTagsMock]}>
         <TagsFilter
@@ -388,7 +388,7 @@ describe('TagsFilter', () => {
   })
 
   it('renders parent tag icons', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByTestId, getByRole } = render(
       <MockedProvider mocks={[allParentTagsMock]}>
         <TagsFilter
@@ -413,7 +413,7 @@ describe('TagsFilter', () => {
   })
 
   it('should show proper icons', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByTestId } = render(
       <MockedProvider mocks={[allParentTagsMock]}>
         <TagsFilter
@@ -428,7 +428,7 @@ describe('TagsFilter', () => {
   })
 
   it('should filter options when input has leading/trailing spaces', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole, queryByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagsFilter
@@ -450,7 +450,7 @@ describe('TagsFilter', () => {
   })
 
   it('should show all options when input contains only spaces', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole, getAllByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagsFilter
@@ -468,7 +468,7 @@ describe('TagsFilter', () => {
   })
 
   it('should filter normally when input has spaces in the middle', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole, queryByText, getByText } = render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagsFilter
@@ -491,7 +491,7 @@ describe('TagsFilter', () => {
   })
 
   it('should filter options case insensitively', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole, queryByText, getByText } = render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagsFilter

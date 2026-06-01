@@ -5,10 +5,10 @@ import { SnackbarProvider } from 'notistack'
 import { AppHeader } from './AppHeader'
 
 describe('AppHeader', () => {
-  const mockOnClick = jest.fn()
+  const mockOnClick = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render the header with all elements', () => {

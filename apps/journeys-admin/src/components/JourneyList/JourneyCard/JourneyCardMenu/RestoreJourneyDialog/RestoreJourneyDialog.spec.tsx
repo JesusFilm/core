@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
@@ -10,27 +11,24 @@ import { JOURNEY_RESTORE } from './RestoreJourneyDialog'
 
 import { RestoreJourneyDialog } from '.'
 
-jest.mock(
-  '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
-  () => ({
-    useTemplateFamilyStatsAggregateLazyQuery: jest.fn()
-  })
-)
+vi.mock('../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: vi.fn()
+}))
 
 const mockedUseTemplateFamilyStatsAggregateLazyQuery =
-  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+  useTemplateFamilyStatsAggregateLazyQuery as MockedFunction<
     typeof useTemplateFamilyStatsAggregateLazyQuery
   >
 
 describe('RestoreJourneyDialog', () => {
-  const refetchTemplateStats = jest.fn()
+  const refetchTemplateStats = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     refetchTemplateStats.mockClear()
     mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
       query: [
-        jest.fn(),
+        vi.fn(),
         {
           data: undefined,
           loading: false,
@@ -42,8 +40,8 @@ describe('RestoreJourneyDialog', () => {
   })
 
   it('should restore journey to published', async () => {
-    const handleClose = jest.fn()
-    const result = jest.fn(() => ({
+    const handleClose = vi.fn()
+    const result = vi.fn(() => ({
       data: {
         journeysRestore: [
           {
@@ -87,8 +85,8 @@ describe('RestoreJourneyDialog', () => {
   })
 
   it('should restore journey to draft', async () => {
-    const handleClose = jest.fn()
-    const result = jest.fn(() => ({
+    const handleClose = vi.fn()
+    const result = vi.fn(() => ({
       data: {
         journeysRestore: [
           {
@@ -162,8 +160,8 @@ describe('RestoreJourneyDialog', () => {
   })
 
   it('should call refetchTemplateStats when restoring a journey with fromTemplateId', async () => {
-    const handleClose = jest.fn()
-    const result = jest.fn(() => ({
+    const handleClose = vi.fn()
+    const result = vi.fn(() => ({
       data: {
         journeysRestore: [
           {

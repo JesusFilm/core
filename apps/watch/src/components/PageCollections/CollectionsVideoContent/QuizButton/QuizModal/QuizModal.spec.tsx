@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { QuizModal } from './QuizModal'
 
 describe('QuizModal', () => {
-  const mockOnClose = jest.fn()
+  const mockOnClose = vi.fn()
 
   beforeEach(() => {
     mockOnClose.mockClear()

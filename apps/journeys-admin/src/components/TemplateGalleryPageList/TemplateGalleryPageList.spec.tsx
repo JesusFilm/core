@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
@@ -192,16 +192,115 @@ describe('TemplateGalleryPageList', () => {
       </MockedProvider>
     )
 
+    // The only journey is archived, so there are no active templates — the
+    // Collections section is gated off (NES-1696). Wait on the post-load DnD
+    // scope (always rendered) rather than the collection card.
     await waitFor(() =>
-      expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
+      expect(getByTestId('TemplateGalleryDndScope')).toBeInTheDocument()
     )
     // The archived journey should NOT appear in the unsectioned list.
     expect(queryByText('Welcome Tour')).not.toBeInTheDocument()
   })
 
+  describe('Collections section visibility gate (NES-1696)', () => {
+    // No team templates at all — the gate hides the entire Collections
+    // section (heading + Create button + collection cards).
+    const journeysMockEmpty: MockedResponse<GetAdminJourneys> = {
+      request: {
+        query: GET_ADMIN_JOURNEYS,
+        variables: {
+          template: true,
+          teamId: TEAM_ID,
+          status: [JourneyStatus.draft, JourneyStatus.published]
+        }
+      },
+      result: { data: { journeys: [] } }
+    }
+
+    // The team's only active template lives inside the collection (the
+    // unsectioned pool is empty). In-collection templates still count toward
+    // the gate, so the section must render.
+    const collectionsMockWithTemplate: MockedResponse<GetTemplateGalleryPages> =
+      {
+        request: {
+          query: GET_TEMPLATE_GALLERY_PAGES,
+          variables: { teamId: TEAM_ID }
+        },
+        result: {
+          data: {
+            templateGalleryPages: [
+              {
+                ...(collectionsMock.result as { data: GetTemplateGalleryPages })
+                  .data.templateGalleryPages[0],
+                templates: [
+                  {
+                    __typename: 'TemplateGalleryItem',
+                    id: 'journey-1',
+                    title: 'Welcome Tour',
+                    primaryImageBlock: null
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+
+    it('hides the Collections section when the team has no active templates', async () => {
+      const { queryByText, queryByTestId, getByTestId } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMockEmpty
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByTestId('TemplateGalleryDndScope')).toBeInTheDocument()
+      )
+      expect(queryByTestId('CreateCollectionButton')).not.toBeInTheDocument()
+      expect(queryByText('Featured Templates')).not.toBeInTheDocument()
+    })
+
+    it('shows the Collections section when the only active template lives inside a collection', async () => {
+      const { getByText, getByTestId } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMockWithTemplate,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Featured Templates')).toBeInTheDocument()
+      )
+      expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+    })
+  })
+
   describe('Template Info mobile trigger (NES-1686)', () => {
     it('renders the inline info trigger next to the Collections heading when onOpenInfo is provided and calls it on click', async () => {
-      const handleOpenInfo = jest.fn()
+      const handleOpenInfo = vi.fn()
       const { getByTestId } = render(
         <MockedProvider
           mocks={[
@@ -301,7 +400,7 @@ describe('TemplateGalleryPageList', () => {
   // NES-1666: original CollectionDialog case — kept to guard against
   // regressions in the v1 wiring after the v2 context plumbing landed.
   it('marks the DnD subtree inert while CollectionDialog is open (NES-1666)', async () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <MockedProvider
         mocks={[getLastActiveTeamIdAndTeamsMock, collectionsMock, journeysMock]}
       >
@@ -316,17 +415,25 @@ describe('TemplateGalleryPageList', () => {
     )
 
     await waitFor(() =>
-      expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+      expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
     )
 
     const dndScope = getByTestId('TemplateGalleryDndScope')
     // Default state: no dialog open, subtree is interactive.
     expect(dndScope).not.toHaveAttribute('inert')
 
-    // Open the create-collection dialog and confirm the DnD subtree
-    // flips to inert. The CollectionDialog renders in a portal so it
-    // is unaffected.
-    fireEvent.click(getByTestId('CreateCollectionButton'))
+    // Open the publish dialog from the draft collection's action menu
+    // and confirm the DnD subtree flips to inert. The CollectionDialog
+    // renders in a portal so it is unaffected. (The create button no
+    // longer opens a dialog — it creates instantly with an auto-name —
+    // and drafts now surface "Publish" as the single dialog entry
+    // point in place of the old "Edit" item.)
+    fireEvent.click(
+      within(getByTestId('CollectionCard-page-1')).getByLabelText(
+        'Collection actions'
+      )
+    )
+    fireEvent.click(getByText('Publish'))
     await waitFor(() =>
       expect(getByTestId('TemplateGalleryDndScope')).toHaveAttribute('inert')
     )

@@ -64,13 +64,13 @@ const step2: TreeBlock<StepBlock> = {
 
 describe('useDeleteEdge', () => {
   it('should delete an edge from a step and undo/redo', async () => {
-    const mockResult = jest
+    const mockResult = vi
       .fn()
       .mockReturnValue(stepBlockNextBlockUpdateMock.result)
-    const mockUndoResult = jest
+    const mockUndoResult = vi
       .fn()
       .mockReturnValue(stepBlockNextBlockUpdateMock.result)
-    const mockRedoResult = jest
+    const mockRedoResult = vi
       .fn()
       .mockReturnValue(stepBlockNextBlockUpdateMock.result)
     const { result } = renderHook(() => useDeleteEdge(), {
@@ -111,11 +111,11 @@ describe('useDeleteEdge', () => {
   })
 
   it('should delete an edge from a block action and undo/redo', async () => {
-    const mockResult = jest.fn().mockReturnValue(blockActionDeleteMock.result)
-    const mockUndoResult = jest
+    const mockResult = vi.fn().mockReturnValue(blockActionDeleteMock.result)
+    const mockUndoResult = vi
       .fn()
       .mockReturnValue(stepBlockNextBlockUpdateMock.result)
-    const mockRedoResult = jest
+    const mockRedoResult = vi
       .fn()
       .mockReturnValue(stepBlockNextBlockUpdateMock.result)
     const { result } = renderHook(() => useDeleteEdge(), {

@@ -16,8 +16,11 @@ import { prisma } from '@core/prisma/media/client'
 
 import { logger } from '../../logger'
 
-import { sendWeeklyVideoSummary } from './videoSlack'
-import { postWeeklyVideoSlackMessages } from './videoSlackRenderer'
+import {
+  sendDataLangVideoSummary,
+  sendProductionManagerFlagshipSummary
+} from './videoSlack'
+import { postDataLangVideoSlackMessages } from './videoSlackRenderer'
 import type { ReportRow } from './videoSlackReport'
 
 type LanguageRow = Language & { name: Array<{ value: string }> }
@@ -97,12 +100,12 @@ function videoVariantRow(overrides: Partial<VideoVariantRow>): VideoVariantRow {
 }
 
 vi.mock('node-fetch')
-vi.mock('@core/prisma/languages/client', () => ({
-  prisma: mockDeep<LanguagesPrismaClient>()
-}))
-vi.mock('@core/prisma/media/client', () => ({
-  prisma: mockDeep<MediaPrismaClient>()
-}))
+vi.mock('@core/prisma/languages/client', () => {
+  return { prisma: mockDeep<LanguagesPrismaClient>() }
+})
+vi.mock('@core/prisma/media/client', () => {
+  return { prisma: mockDeep<MediaPrismaClient>() }
+})
 vi.mock('../../logger', () => ({
   logger: {
     warn: vi.fn(),
@@ -114,9 +117,7 @@ vi.mock('../../logger', () => ({
 describe('videoSlack', () => {
   const mockFetch = fetch as MockedFunction<typeof fetch>
   const mockLanguagesPrisma =
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- vi.mock factory return is inferred as the prisma client type; cast is needed for .mockResolvedValue
     languagesPrisma as DeepMockProxy<LanguagesPrismaClient>
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- vi.mock factory return is inferred as the prisma client type; cast is needed for .mockResolvedValue
   const mockMediaPrisma = prisma as DeepMockProxy<MediaPrismaClient>
   const mockLoggerWarn = vi.mocked(logger.warn)
   const mockLoggerInfo = vi.mocked(logger.info)
@@ -146,7 +147,9 @@ describe('videoSlack', () => {
     process.env = {
       ...originalEnv,
       SLACK_VIDEO_ADMIN_BOT_TOKEN: 'test-token',
-      SLACK_DATA_LANGS_CHANNEL_ID: 'test-channel'
+      SLACK_DATA_LANGS_CHANNEL_ID: 'test-channel',
+      SLACK_PRODUCTION_MANAGERS_CHANNEL_ID: 'production-manager-channel',
+      WATCH_URL: 'https://www.jesusfilm.org/watch'
     }
     mockFetch.mockResolvedValue({
       ok: true,
@@ -167,7 +170,7 @@ describe('videoSlack', () => {
     process.env = originalEnv
   })
 
-  it('should post a production-style weekly report to Slack', async () => {
+  it('should post a production-style daily report to Slack', async () => {
     mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([
       videoVariantRow({
         videoId: 'created-video',
@@ -193,7 +196,7 @@ describe('videoSlack', () => {
       })
     ])
 
-    await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
+    await sendDataLangVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
 
     expect(mockFetch).toHaveBeenCalledWith(
       'https://slack.com/api/chat.postMessage',
@@ -212,20 +215,21 @@ describe('videoSlack', () => {
     expect(body).toMatchObject({
       channel: 'test-channel'
     })
-    expect(body.text).toContain('Weekly Video Report')
+    expect(body.text).toContain('Data-Language Daily Video Report')
     expect(body.text).toContain('2 videos updated')
 
     const blocksText = JSON.stringify(body.blocks)
+    expect(blocksText).toContain('Report date')
+    expect(blocksText).toContain('April 6th, 2026')
     expect(blocksText).toContain('Media Component ID')
     expect(blocksText).toContain('created-video')
     expect(blocksText).toContain('updated-video')
-    expect(blocksText).toContain('New')
-    expect(blocksText).toContain('Update')
+    expect(blocksText).toContain('Updates (new audio language)')
     expect(blocksText).toContain('English')
   })
 
   it('should post a single message regardless of date range spanning months', async () => {
-    await postWeeklyVideoSlackMessages({
+    await postDataLangVideoSlackMessages({
       rows: [
         reportRow({
           mediaComponentId: 'january-video',
@@ -245,16 +249,18 @@ describe('videoSlack', () => {
 
     const body = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
     expect(body.thread_ts).toBeUndefined()
-    expect(body.text).toContain('Weekly Video Report')
+    expect(body.text).toContain('Data-Language Daily Video Report')
     expect(body.text).toContain('2 videos updated')
     const blocksText = JSON.stringify(body.blocks)
+    expect(blocksText).toContain('Window')
+    expect(blocksText).toContain('January 1st, 2026 → February 28th, 2026')
     expect(blocksText).toContain('january-video')
     expect(blocksText).toContain('february-video')
   })
 
-  it('should split a very large report into part messages without thread replies', async () => {
-    await postWeeklyVideoSlackMessages({
-      rows: Array.from({ length: 800 }, (_, index) =>
+  it('should split a large report at Slack table row limits without thread replies', async () => {
+    await postDataLangVideoSlackMessages({
+      rows: Array.from({ length: 120 }, (_, index) =>
         reportRow({
           production: `Production ${index} with a deliberately long title`,
           mediaComponentId: `video-${index}`,
@@ -272,13 +278,16 @@ describe('videoSlack', () => {
       JSON.parse(options?.body as string)
     )
 
-    expect(bodies[0].text).toContain('Weekly Video Report part 1')
-    expect(bodies[1].text).toContain('Weekly Video Report part 2')
-    expect(
-      bodies[0].blocks.filter(
-        (block: { type: string }) => block.type === 'section'
-      ).length
-    ).toBeGreaterThan(2)
+    expect(bodies[0].text).toContain('Data-Language Daily Video Report part 1')
+    expect(bodies[1].text).toContain('Data-Language Daily Video Report part 2')
+    const firstTable = bodies[0].blocks.find(
+      (block: { type?: string }) => block.type === 'table'
+    )
+    const secondTable = bodies[1].blocks.find(
+      (block: { type?: string }) => block.type === 'table'
+    )
+    expect(firstTable.rows).toHaveLength(100)
+    expect(secondTable.rows).toHaveLength(22)
     expect(bodies.every((body) => body.thread_ts == null)).toBe(true)
   })
 
@@ -338,30 +347,23 @@ describe('videoSlack', () => {
       })
     ])
 
-    await sendWeeklyVideoSummary(new Date('2026-04-10T00:00:00.000Z'))
+    await sendDataLangVideoSummary(new Date('2026-04-10T00:00:00.000Z'))
 
     const [, options] = mockFetch.mock.calls[0]
     const body = JSON.parse(options?.body as string)
-    const sectionTexts = (body.blocks as { text?: { text: string } }[])
-      .map((block) => block.text?.text)
-      .filter((text): text is string => text != null)
-      .join('\n')
-    const jesusLines = sectionTexts
-      .split('\n')
-      .filter((line) => line.includes('jf-parent'))
-    const segmentLines = sectionTexts
-      .split('\n')
-      .filter((line) => line.includes('jf-segment'))
-
-    expect(jesusLines).toHaveLength(1)
-    expect(segmentLines).toHaveLength(0)
-    expect(jesusLines[0]).toContain('3 / 4 ⚠')
+    const table = body.blocks.find(
+      (block: { type?: string }) => block.type === 'table'
+    )
+    const tableText = JSON.stringify(table)
+    expect(tableText).toContain('jf-parent')
+    expect(tableText).not.toContain('jf-segment')
+    expect(tableText).toContain('3 / 4 ⚠')
   })
 
   it('should only query published variants of published videos', async () => {
     mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([])
 
-    await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
+    await sendDataLangVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
 
     const variantQueries = mockMediaPrisma.videoVariant.findMany.mock.calls
     expect(variantQueries.length).toBeGreaterThan(0)
@@ -390,7 +392,7 @@ describe('videoSlack', () => {
       })
     ])
 
-    await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
+    await sendDataLangVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
 
     expect(mockFetch).not.toHaveBeenCalled()
     expect(mockLoggerWarn).toHaveBeenCalledWith(
@@ -398,24 +400,238 @@ describe('videoSlack', () => {
     )
   })
 
-  it('should post a simple empty-week message when there are no new variants', async () => {
+  it('should skip the data-language report when there are no rows', async () => {
     mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([])
 
-    await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
+    await sendDataLangVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
 
-    expect(mockFetch).toHaveBeenCalledTimes(1)
-    const [, options] = mockFetch.mock.calls[0]
-    const body = JSON.parse(options?.body as string)
-    expect(body.channel).toBe('test-channel')
-    expect(body.text).toContain('no new videos')
-    expect(JSON.stringify(body.blocks)).toContain('No new videos this week')
-    expect(JSON.stringify(body.blocks)).toContain('March 31st, 2026')
-    expect(JSON.stringify(body.blocks)).toContain('April 7th, 2026')
+    expect(mockFetch).not.toHaveBeenCalled()
     expect(mockLoggerInfo).toHaveBeenCalledWith(
       expect.objectContaining({
-        newVariants: 0
+        variants: 0,
+        renderedRows: 0
       }),
-      'Weekly video Slack summary: posting empty-week message — no rows to render in the window'
+      'Data-Language Daily Video Report Slack summary skipped: no rows to render in delayed window'
+    )
+  })
+
+  it('should post a delayed Production Managers flagship report to its Slack channel', async () => {
+    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([
+      videoVariantRow({
+        videoId: '1_jf-0-0',
+        languageId: '529',
+        version: 2,
+        createdAt: new Date('2026-05-20T14:00:00.000Z'),
+        updatedAt: new Date('2026-05-20T14:00:00.000Z'),
+        share: 'https://legacy.example.com/ignored-share-url',
+        slug: 'jesus/english',
+        video: videoRow({
+          id: '1_jf-0-0',
+          originId: '1',
+          slug: 'jesus',
+          title: [{ value: 'JESUS' }]
+        })
+      }),
+      videoVariantRow({
+        videoId: 'walking-with-jesus-africa-episode-1',
+        languageId: '496',
+        version: 4,
+        createdAt: new Date('2026-01-01T00:00:00.000Z'),
+        updatedAt: new Date('2026-05-21T12:00:00.000Z'),
+        share: 'https://legacy.example.com/ignored-wj-share-url',
+        slug: 'walking-with-jesus-africa/spanish',
+        video: videoRow({
+          id: 'walking-with-jesus-africa-episode-1',
+          label: 'episode',
+          title: [{ value: 'Walking with Jesus (Africa) Episode 1' }]
+        })
+      })
+    ])
+    mockMediaPrisma.video.findMany.mockResolvedValueOnce([
+      videoRow({
+        id: 'walking-with-jesus-africa-id',
+        label: 'series',
+        originId: '1',
+        slug: 'walking-with-jesus-africa',
+        title: [{ value: 'Walking with Jesus (Africa)' }],
+        children: [
+          { id: 'walking-with-jesus-africa-episode-1', label: 'episode' }
+        ]
+      })
+    ])
+    mockLanguagesPrisma.language.findMany.mockResolvedValueOnce([
+      languageRow({ id: '529', name: [{ value: 'English' }] }),
+      languageRow({ id: '496', name: [{ value: 'Spanish' }] })
+    ])
+
+    await sendProductionManagerFlagshipSummary(
+      new Date('2026-05-22T13:00:00.000Z')
+    )
+
+    expect(mockMediaPrisma.videoVariant.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          published: true,
+          OR: [
+            {
+              createdAt: {
+                gte: new Date('2026-05-20T13:00:00.000Z'),
+                lte: new Date('2026-05-21T13:00:00.000Z')
+              }
+            },
+            {
+              updatedAt: {
+                gte: new Date('2026-05-20T13:00:00.000Z'),
+                lte: new Date('2026-05-21T13:00:00.000Z')
+              }
+            }
+          ],
+          video: expect.objectContaining({
+            published: true,
+            OR: expect.arrayContaining([
+              {
+                originId: {
+                  in: ['1']
+                }
+              },
+              {
+                id: {
+                  in: ['MAG1', '2_ChosenWitness', '2_0-Legion']
+                }
+              },
+              {
+                parents: {
+                  some: {
+                    OR: expect.arrayContaining([
+                      {
+                        originId: {
+                          in: ['1']
+                        }
+                      },
+                      {
+                        id: {
+                          in: ['MAG1', '2_ChosenWitness', '2_0-Legion']
+                        }
+                      }
+                    ])
+                  }
+                }
+              }
+            ])
+          })
+        })
+      })
+    )
+
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+    const body = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
+    expect(body.channel).toBe('production-manager-channel')
+    expect(body.text).toContain('Production Managers Daily Video Report')
+    const blocksText = JSON.stringify(body.blocks)
+    expect(blocksText).toContain('JESUS')
+    expect(blocksText).toContain('Updates (new audio language)')
+    expect(blocksText).toContain('Walking with Jesus (Africa)')
+    expect(blocksText).toContain('Spanish')
+    expect(blocksText).toContain('@david.reeves_jfp')
+    expect(blocksText).toContain(
+      'created or updated during the reporting window'
+    )
+    expect(body.blocks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: 'table' })])
+    )
+    expect(blocksText).toContain('"text":"Watch"')
+    expect(blocksText).toContain('"text":"Nexus"')
+    expect(blocksText).toContain(
+      'https://www.jesusfilm.org/watch/jesus.html/english.html'
+    )
+    expect(blocksText).toContain(
+      'https://nexus.jesusfilm.org/media/videos/1_jf-0-0?languageId=529'
+    )
+  })
+
+  it('should split large Production Managers table reports at Slack table row limits', async () => {
+    mockLanguagesPrisma.language.findMany.mockResolvedValue([])
+    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce(
+      Array.from({ length: 120 }, (_, index) =>
+        videoVariantRow({
+          id: 'variant-' + index,
+          videoId: '1_jf-0-0',
+          languageId: String(1000 + index),
+          version: index + 1,
+          createdAt: new Date('2026-05-20T14:00:00.000Z'),
+          updatedAt: new Date('2026-05-20T14:00:00.000Z'),
+          share: 'https://legacy.example.com/ignored-' + index,
+          slug: 'jesus/language-' + index,
+          video: videoRow({
+            id: '1_jf-0-0',
+            originId: '1',
+            slug: 'jesus',
+            title: [{ value: 'JESUS' }]
+          })
+        })
+      )
+    )
+
+    await sendProductionManagerFlagshipSummary(
+      new Date('2026-05-22T13:00:00.000Z')
+    )
+
+    expect(mockFetch).toHaveBeenCalledTimes(2)
+    const bodies = mockFetch.mock.calls.map(([, options]) =>
+      JSON.parse(options?.body as string)
+    )
+    expect(bodies[0].text).toContain('part 1')
+    expect(bodies[1].text).toContain('part 2')
+
+    const firstTable = bodies[0].blocks.find(
+      (block: { type?: string }) => block.type === 'table'
+    )
+    const secondTable = bodies[1].blocks.find(
+      (block: { type?: string }) => block.type === 'table'
+    )
+
+    expect(firstTable.rows).toHaveLength(100)
+    expect(secondTable.rows).toHaveLength(22)
+    expect(JSON.stringify(firstTable)).toContain('"text":"Watch"')
+    expect(JSON.stringify(secondTable)).toContain('"text":"Nexus"')
+  })
+
+  it('should not post the Production Managers report when there are no rows', async () => {
+    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([])
+
+    await sendProductionManagerFlagshipSummary(
+      new Date('2026-05-22T13:00:00.000Z')
+    )
+
+    expect(mockFetch).not.toHaveBeenCalled()
+    expect(mockLoggerInfo).toHaveBeenCalledWith(
+      expect.objectContaining({ renderedRows: 0, variants: 0 }),
+      'Production Managers Daily Video Report Slack summary skipped: no rows to render in delayed window'
+    )
+  })
+
+  it('should skip the Production Managers report when channel env is missing', async () => {
+    delete process.env.SLACK_PRODUCTION_MANAGERS_CHANNEL_ID
+    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([
+      videoVariantRow({
+        videoId: '1_jf-0-0',
+        createdAt: new Date('2026-05-20T14:00:00.000Z'),
+        updatedAt: new Date('2026-05-20T14:00:00.000Z'),
+        video: videoRow({
+          id: '1_jf-0-0',
+          slug: 'jesus',
+          title: [{ value: 'JESUS' }]
+        })
+      })
+    ])
+
+    await sendProductionManagerFlagshipSummary(
+      new Date('2026-05-22T13:00:00.000Z')
+    )
+
+    expect(mockFetch).not.toHaveBeenCalled()
+    expect(mockLoggerWarn).toHaveBeenCalledWith(
+      'Skipping video Slack notification because SLACK_VIDEO_ADMIN_BOT_TOKEN or SLACK_PRODUCTION_MANAGERS_CHANNEL_ID is missing'
     )
   })
 
@@ -439,14 +655,14 @@ describe('videoSlack', () => {
       json: vi.fn().mockResolvedValue({ ok: false, error: 'channel_not_found' })
     } as any)
 
-    await sendWeeklyVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
+    await sendDataLangVideoSummary(new Date('2026-04-07T00:00:00.000Z'))
 
     expect(mockLoggerWarn).toHaveBeenCalledWith(
       expect.objectContaining({
         error: 'channel_not_found',
         status: 200
       }),
-      'Weekly video Slack summary failed'
+      'Data-Language Daily Video Report Slack summary failed'
     )
   })
 })

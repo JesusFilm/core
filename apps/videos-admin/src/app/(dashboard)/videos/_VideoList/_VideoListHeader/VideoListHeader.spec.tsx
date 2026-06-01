@@ -2,11 +2,11 @@ import { render, screen } from '@testing-library/react'
 
 import { VideoListHeader } from './VideoListHeader'
 
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn().mockReturnValue({
-    push: jest.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn().mockReturnValue({
+    push: vi.fn()
   }),
-  usePathname: jest.fn().mockReturnValue('/videos')
+  usePathname: vi.fn().mockReturnValue('/videos')
 }))
 
 describe('VideoListHeader', () => {

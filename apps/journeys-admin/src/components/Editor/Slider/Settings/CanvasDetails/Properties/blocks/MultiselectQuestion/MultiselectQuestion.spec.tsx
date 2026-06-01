@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -13,7 +14,7 @@ import { MULTISELECT_BLOCK_UPDATE } from './MultiselectQuestion'
 
 import { MultiselectQuestion } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -97,7 +98,7 @@ const mockUpdateBoth: MockedResponse = {
       input: { min: 1, max: 2 }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       multiselectBlockUpdate: {
         __typename: 'MultiselectBlock',
@@ -198,7 +199,7 @@ describe('MultiselectQuestion Properties', () => {
           input: { min: 0, max: 2 }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           multiselectBlockUpdate: {
             __typename: 'MultiselectBlock',
@@ -231,7 +232,7 @@ describe('MultiselectQuestion Properties', () => {
     fireEvent.click(toggle)
 
     await waitFor(() =>
-      expect(mockEnableSetsDefaults.result as jest.Mock).toHaveBeenCalled()
+      expect(mockEnableSetsDefaults.result as Mock).toHaveBeenCalled()
     )
   })
 
@@ -244,7 +245,7 @@ describe('MultiselectQuestion Properties', () => {
           input: { max: 1 }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           multiselectBlockUpdate: {
             __typename: 'MultiselectBlock',
@@ -275,7 +276,7 @@ describe('MultiselectQuestion Properties', () => {
     fireEvent.change(maxInput, { target: { value: '0' } })
 
     await waitFor(() =>
-      expect(mockClampMaxToOne.result as jest.Mock).toHaveBeenCalled()
+      expect(mockClampMaxToOne.result as Mock).toHaveBeenCalled()
     )
   })
 })

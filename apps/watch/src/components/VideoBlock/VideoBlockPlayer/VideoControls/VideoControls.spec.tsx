@@ -7,38 +7,40 @@ import { videos } from '../../../Videos/__generated__/testData'
 
 import { VideoControls } from './VideoControls'
 
-jest.mock('next/image', () => {
-  return function MockImage(props: any) {
+vi.mock('next/image', () => ({
+  __esModule: true,
+  default: function MockImage(props: any) {
+    // eslint-disable-next-line @next/next/no-img-element
     return <img data-testid="video-image" {...props} />
   }
-})
+}))
 
-jest.mock('fscreen', () => ({
+vi.mock('fscreen', () => ({
   __esModule: true,
   default: {
     fullscreenElement: null,
-    requestFullscreen: jest.fn(),
-    exitFullscreen: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn()
+    requestFullscreen: vi.fn(),
+    exitFullscreen: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn()
   }
 }))
 
 const mockPlayer = {
-  currentTime: jest.fn(),
-  volume: jest.fn(),
-  muted: jest.fn(),
-  userActive: jest.fn(),
-  on: jest.fn(),
-  off: jest.fn(),
-  play: jest.fn(),
-  pause: jest.fn(),
-  isDisposed: jest.fn().mockReturnValue(false)
+  currentTime: vi.fn(),
+  volume: vi.fn(),
+  muted: vi.fn(),
+  userActive: vi.fn(),
+  on: vi.fn(),
+  off: vi.fn(),
+  play: vi.fn(),
+  pause: vi.fn(),
+  isDisposed: vi.fn().mockReturnValue(false)
 } as unknown as Player
 
 describe('VideoControls', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const defaultProps = {
@@ -50,8 +52,8 @@ describe('VideoControls', () => {
   it('does not read volume from a disposed player', () => {
     const disposedPlayer = {
       ...mockPlayer,
-      isDisposed: jest.fn().mockReturnValue(true),
-      volume: jest.fn(() => {
+      isDisposed: vi.fn().mockReturnValue(true),
+      volume: vi.fn(() => {
         throw new Error('disposed')
       })
     } as unknown as Player

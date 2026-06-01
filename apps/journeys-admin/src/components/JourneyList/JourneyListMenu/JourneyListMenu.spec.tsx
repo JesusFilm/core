@@ -1,21 +1,22 @@
 import { fireEvent, render } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyListMenu } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { status: 'active' } }))
+  useRouter: vi.fn(() => ({ query: { status: 'active' } }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('JourneyListMenu', () => {
   it('should be empty if not needed', () => {
     mockedUseRouter.mockReturnValue({
       query: { status: '' }
     } as unknown as NextRouter)
-    const { queryByRole } = render(<JourneyListMenu onClick={jest.fn()} />)
+    const { queryByRole } = render(<JourneyListMenu onClick={vi.fn()} />)
     expect(queryByRole('button')).not.toBeInTheDocument()
   })
 
@@ -28,7 +29,7 @@ describe('JourneyListMenu', () => {
 
     it('should render correctly on active', () => {
       const { getByText, getByRole } = render(
-        <JourneyListMenu onClick={jest.fn()} />
+        <JourneyListMenu onClick={vi.fn()} />
       )
       fireEvent.click(getByRole('button'))
       expect(getByText('Archive All')).toBeInTheDocument()
@@ -36,7 +37,7 @@ describe('JourneyListMenu', () => {
     })
 
     it('should call archiveAllActive', () => {
-      const handleClick = jest.fn()
+      const handleClick = vi.fn()
       const { getByText, getByRole } = render(
         <JourneyListMenu onClick={handleClick} />
       )
@@ -46,7 +47,7 @@ describe('JourneyListMenu', () => {
     })
 
     it('should call trashAllActive', () => {
-      const handleClick = jest.fn()
+      const handleClick = vi.fn()
       const { getByText, getByRole } = render(
         <JourneyListMenu onClick={handleClick} />
       )
@@ -65,7 +66,7 @@ describe('JourneyListMenu', () => {
 
     it('should render correctly on archived', () => {
       const { getByText, getByRole } = render(
-        <JourneyListMenu onClick={jest.fn()} />
+        <JourneyListMenu onClick={vi.fn()} />
       )
       fireEvent.click(getByRole('button'))
       expect(getByText('Unarchive All')).toBeInTheDocument()
@@ -73,7 +74,7 @@ describe('JourneyListMenu', () => {
     })
 
     it('should call archiveAllActive', () => {
-      const handleClick = jest.fn()
+      const handleClick = vi.fn()
       const { getByText, getByRole } = render(
         <JourneyListMenu onClick={handleClick} />
       )
@@ -83,7 +84,7 @@ describe('JourneyListMenu', () => {
     })
 
     it('should call trashAllArchived', () => {
-      const handleClick = jest.fn()
+      const handleClick = vi.fn()
       const { getByText, getByRole } = render(
         <JourneyListMenu onClick={handleClick} />
       )
@@ -102,7 +103,7 @@ describe('JourneyListMenu', () => {
 
     it('should render correctly on trashed', () => {
       const { getByText, getByRole } = render(
-        <JourneyListMenu onClick={jest.fn()} />
+        <JourneyListMenu onClick={vi.fn()} />
       )
       fireEvent.click(getByRole('button'))
       expect(getByText('Restore All')).toBeInTheDocument()
@@ -110,7 +111,7 @@ describe('JourneyListMenu', () => {
     })
 
     it('should call archiveAllActive', () => {
-      const handleClick = jest.fn()
+      const handleClick = vi.fn()
       const { getByText, getByRole } = render(
         <JourneyListMenu onClick={handleClick} />
       )
@@ -120,7 +121,7 @@ describe('JourneyListMenu', () => {
     })
 
     it('should call trashAllArchived', () => {
-      const handleClick = jest.fn()
+      const handleClick = vi.fn()
       const { getByText, getByRole } = render(
         <JourneyListMenu onClick={handleClick} />
       )
