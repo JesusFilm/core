@@ -322,9 +322,7 @@ describe('UploadVideoVariantContext', () => {
       // Kick off the upload. START_UPLOAD dispatches synchronously before the
       // first await, so the metadata is observable mid-flight — before the
       // pipeline reaches COMPLETE and resets state back to initial.
-      let resolveUpload: (value: {
-        headers: { etag: string }
-      }) => void = () => {}
+      let resolveUpload: (value: { headers: { etag: string } }) => void
       const uploadDeferred = new Promise<{ headers: { etag: string } }>(
         (resolve) => {
           resolveUpload = resolve
