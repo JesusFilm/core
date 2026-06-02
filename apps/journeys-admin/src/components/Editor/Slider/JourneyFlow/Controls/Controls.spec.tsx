@@ -6,7 +6,7 @@ import { Controls } from '.'
 
 describe('Controls', () => {
   it('should call reset function on click', () => {
-    const handleReset = jest.fn()
+    const handleReset = vi.fn()
     render(
       <MockedProvider>
         <ReactFlowProvider>
@@ -23,7 +23,7 @@ describe('Controls', () => {
     render(
       <MockedProvider>
         <ReactFlowProvider>
-          <Controls handleReset={jest.fn()} />
+          <Controls handleReset={vi.fn()} />
         </ReactFlowProvider>
       </MockedProvider>
     )

@@ -14,12 +14,12 @@ import {
 
 describe('buildPresetDateRange', () => {
   beforeAll(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date('2024-06-15T12:00:00.000Z'))
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2024-06-15T12:00:00.000Z'))
   })
 
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('returns today range for "today" preset', () => {

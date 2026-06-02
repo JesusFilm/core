@@ -21,7 +21,7 @@ export const getJourneySettingsUpdateMock = <T extends JourneyUpdateInput>(
         input
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         journeyUpdate: {
           ...defaultJourney,

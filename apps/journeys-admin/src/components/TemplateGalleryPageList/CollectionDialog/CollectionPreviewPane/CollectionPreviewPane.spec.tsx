@@ -11,7 +11,7 @@ describe('CollectionPreviewPane', () => {
 
   beforeEach(() => {
     originalOpen = window.open
-    window.open = jest.fn()
+    window.open = vi.fn()
   })
 
   afterEach(() => {

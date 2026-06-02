@@ -10,6 +10,7 @@ import { ReactElement, memo } from 'react'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
+import { COLLECTION_GRID_SPACING } from '../collectionLayout'
 
 // Drop zone identity is encoded into a string the dnd-kit `over.id` carries
 // back into the dispatcher. Wrappers use the encoder; the parent uses the
@@ -70,45 +71,34 @@ interface DraggableJourneysGridProps {
   journeys: readonly Journey[]
   publishedLock: boolean
   dragInFlight: boolean
-  /**
-   * When true (default), wraps the grid in outer padding that matches
-   * the Grid's spacing so the gap from a card to the collection
-   * edge equals the gap between cards — the in-collection layout
-   * Sushma flagged in DM.
-   * Pass false in the All Templates section so cards line up with
-   * the collection-card edges above instead of inset by the padding.
-   */
-  outerPadding?: boolean
 }
 
 function DraggableJourneysGridImpl({
   journeys,
   publishedLock,
-  dragInFlight,
-  outerPadding = true
+  dragInFlight
 }: DraggableJourneysGridProps): ReactElement | null {
   if (journeys.length === 0) return null
   // SortableContext gives intra-collection ordering: each item is both a
   // draggable AND a drop target with a known index, so dnd-kit hands us
   // the over-item id in handleDragEnd.
   const ids = journeys.map((j) => j.id)
+  // No outer padding: the grid sits directly in its container so the
+  // in-collection grid and the All Templates grid share identical
+  // geometry and their cards column-align (NES-1696). The card gap is
+  // matched to the CollectionCard's inner padding via collectionLayout.
   return (
     <SortableContext items={ids} strategy={rectSortingStrategy}>
-      <Box sx={outerPadding ? { p: { xs: 2.5, sm: 4 } } : undefined}>
-        <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
-          {journeys.map((journey) => (
-            <Grid
-              key={journey.id}
-              size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
-            >
-              <DraggableJourney
-                journey={journey}
-                disabled={publishedLock || dragInFlight}
-              />
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+      <Grid container spacing={COLLECTION_GRID_SPACING}>
+        {journeys.map((journey) => (
+          <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}>
+            <DraggableJourney
+              journey={journey}
+              disabled={publishedLock || dragInFlight}
+            />
+          </Grid>
+        ))}
+      </Grid>
     </SortableContext>
   )
 }

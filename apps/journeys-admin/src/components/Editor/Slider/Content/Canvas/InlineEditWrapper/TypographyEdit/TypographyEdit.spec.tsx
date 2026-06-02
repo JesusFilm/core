@@ -15,7 +15,7 @@ import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TYPOGRAPHY_BLOCK_UPDATE_CONTENT, TypographyEdit } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -45,7 +45,7 @@ describe('TypographyEdit', () => {
         content: 'test'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         typographyBlockUpdate: [
           {
@@ -70,7 +70,7 @@ describe('TypographyEdit', () => {
         content: 'test content'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         typographyBlockUpdate: [
           {
@@ -118,7 +118,7 @@ describe('TypographyEdit', () => {
     journeyCustomizationFields: []
   } as unknown as Journey
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('selects the input on click', () => {
     render(
@@ -219,7 +219,7 @@ describe('TypographyEdit', () => {
 
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([mockUpdateSuccess1, mockUpdateSuccess2])
+      new MockLink([firstUpdateMock, mockUpdateSuccess2])
     ])
 
     render(

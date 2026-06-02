@@ -67,7 +67,7 @@ describe('CardsPreview', () => {
 
   it('should call onCardClick with the step when a card is clicked', () => {
     const steps = buildSteps(3)
-    const handleCardClick = jest.fn()
+    const handleCardClick = vi.fn()
     render(
       <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
         <CardsPreview steps={steps} onCardClick={handleCardClick} />

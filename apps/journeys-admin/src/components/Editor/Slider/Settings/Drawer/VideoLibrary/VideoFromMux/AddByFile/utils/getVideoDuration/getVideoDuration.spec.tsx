@@ -1,10 +1,12 @@
+import { type Mock } from 'vitest'
+
 import { getVideoDuration } from './getVideoDuration'
 
 describe('getVideoDuration', () => {
   let mockVideo: Pick<HTMLVideoElement, 'preload' | 'src'> & {
     duration: number
-    onloadedmetadata: jest.Mock<void, []>
-    onerror: jest.Mock<void, []>
+    onloadedmetadata: Mock<() => void>
+    onerror: Mock<() => void>
   }
 
   beforeEach(() => {
@@ -12,20 +14,20 @@ describe('getVideoDuration', () => {
       preload: '',
       src: '',
       duration: 123,
-      onloadedmetadata: jest.fn(),
-      onerror: jest.fn()
+      onloadedmetadata: vi.fn(),
+      onerror: vi.fn()
     }
 
-    jest.spyOn(document, 'createElement').mockImplementation(() => {
+    vi.spyOn(document, 'createElement').mockImplementation(() => {
       return mockVideo as unknown as HTMLVideoElement
     })
 
-    jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url')
-    jest.spyOn(URL, 'revokeObjectURL').mockImplementation()
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url')
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined)
   })
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 
   it('resolves with video duration when metadata loads', async () => {

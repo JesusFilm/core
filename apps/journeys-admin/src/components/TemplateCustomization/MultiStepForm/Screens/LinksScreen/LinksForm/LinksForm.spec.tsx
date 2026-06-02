@@ -46,11 +46,11 @@ describe('LinksForm', () => {
     render(
       <Formik
         initialValues={{ 'url-1': '', 'email-1': '', 'chat-1': '' }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -84,12 +84,12 @@ describe('LinksForm', () => {
       }
     ]
 
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     render(
-      <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'url-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -115,12 +115,12 @@ describe('LinksForm', () => {
       }
     ]
 
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     render(
-      <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'url-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -145,13 +145,13 @@ describe('LinksForm', () => {
         customizable: null
       }
     ]
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(vi.fn())
 
     render(
-      <Formik initialValues={{ 'url-1': 'example.com' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'url-1': 'example.com' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -180,12 +180,12 @@ describe('LinksForm', () => {
       }
     ]
 
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     render(
-      <Formik initialValues={{ 'email-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -211,12 +211,12 @@ describe('LinksForm', () => {
       }
     ]
 
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     render(
-      <Formik initialValues={{ 'email-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -244,12 +244,12 @@ describe('LinksForm', () => {
       }
     ]
 
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     render(
-      <Formik initialValues={{ 'email-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -273,12 +273,12 @@ describe('LinksForm', () => {
       }
     ]
 
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     render(
-      <Formik initialValues={{ 'chat-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'chat-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -305,10 +305,10 @@ describe('LinksForm', () => {
     ]
 
     render(
-      <Formik initialValues={{ 'email-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -330,10 +330,10 @@ describe('LinksForm', () => {
     ]
 
     const { container } = render(
-      <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'url-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -355,12 +355,12 @@ describe('LinksForm', () => {
       }
     ]
 
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     render(
-      <Formik initialValues={{ 'email-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -386,12 +386,12 @@ describe('LinksForm', () => {
       }
     ]
 
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     render(
-      <Formik initialValues={{ 'email-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -418,16 +418,16 @@ describe('LinksForm', () => {
         customizable: null
       }
     ]
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(vi.fn())
 
     render(
       <Formik
         initialValues={{ 'email-1': 'test@example.com' }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -455,16 +455,16 @@ describe('LinksForm', () => {
         customizable: null
       }
     ]
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(vi.fn())
 
     render(
       <Formik
         initialValues={{ 'email-1': 'mailto:test@example.com' }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -491,13 +491,13 @@ describe('LinksForm', () => {
         platform: MessagePlatform.whatsApp
       }
     ]
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(vi.fn())
 
     render(
-      <Formik initialValues={{ 'chat-1': 'wa.me/123' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'chat-1': 'wa.me/123' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -515,7 +515,7 @@ describe('LinksForm', () => {
   })
 
   it('should open phone link with tel: protocol', () => {
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(vi.fn())
     const links: JourneyLink[] = [
       {
         id: 'phone-1',
@@ -530,11 +530,11 @@ describe('LinksForm', () => {
     render(
       <Formik
         initialValues={{ 'phone-1__cc': '+1', 'phone-1__local': '5551234' }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -551,7 +551,7 @@ describe('LinksForm', () => {
   })
 
   it('should open phone link with sms: protocol', () => {
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(vi.fn())
     const links: JourneyLink[] = [
       {
         id: 'phone-2',
@@ -566,11 +566,11 @@ describe('LinksForm', () => {
     render(
       <Formik
         initialValues={{ 'phone-2__cc': '+1', 'phone-2__local': '5559876' }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -598,12 +598,12 @@ describe('LinksForm', () => {
       }
     ]
 
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     render(
-      <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'url-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -645,11 +645,11 @@ describe('LinksForm', () => {
           'phone-1__local': '3333',
           'url-1': ''
         }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} onPlatformChange={jest.fn()} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -679,11 +679,11 @@ describe('LinksForm', () => {
       render(
         <Formik
           initialValues={{ 'chat-1': 'https://wa.me/123' }}
-          onSubmit={jest.fn()}
+          onSubmit={vi.fn()}
         >
           {(formik) => (
             <FormikProvider value={formik}>
-              <LinksForm links={[chatLink]} onPlatformChange={jest.fn()} />
+              <LinksForm links={[chatLink]} onPlatformChange={vi.fn()} />
             </FormikProvider>
           )}
         </Formik>
@@ -694,10 +694,10 @@ describe('LinksForm', () => {
 
     it('should render Chat URL placeholder for chat button links', () => {
       render(
-        <Formik initialValues={{ 'chat-1': '' }} onSubmit={jest.fn()}>
+        <Formik initialValues={{ 'chat-1': '' }} onSubmit={vi.fn()}>
           {(formik) => (
             <FormikProvider value={formik}>
-              <LinksForm links={[chatLink]} onPlatformChange={jest.fn()} />
+              <LinksForm links={[chatLink]} onPlatformChange={vi.fn()} />
             </FormikProvider>
           )}
         </Formik>
@@ -718,11 +718,11 @@ describe('LinksForm', () => {
       render(
         <Formik
           initialValues={{ 'chat-legacy': 'https://vk.com/123' }}
-          onSubmit={jest.fn()}
+          onSubmit={vi.fn()}
         >
           {(formik) => (
             <FormikProvider value={formik}>
-              <LinksForm links={[legacyLink]} onPlatformChange={jest.fn()} />
+              <LinksForm links={[legacyLink]} onPlatformChange={vi.fn()} />
             </FormikProvider>
           )}
         </Formik>
@@ -733,12 +733,12 @@ describe('LinksForm', () => {
     })
 
     it('should call onPlatformChange when a new platform is selected', async () => {
-      const onPlatformChange = jest.fn()
+      const onPlatformChange = vi.fn()
 
       render(
         <Formik
           initialValues={{ 'chat-1': 'https://wa.me/123' }}
-          onSubmit={jest.fn()}
+          onSubmit={vi.fn()}
         >
           {(formik) => (
             <FormikProvider value={formik}>

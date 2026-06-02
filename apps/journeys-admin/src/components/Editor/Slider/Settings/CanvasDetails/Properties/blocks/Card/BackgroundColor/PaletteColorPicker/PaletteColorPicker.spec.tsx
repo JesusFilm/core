@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { PaletteColorPicker } from './PaletteColorPicker'
 
 describe('PaletteColorPicker', () => {
-  const mockOnChange = jest.fn()
+  const mockOnChange = vi.fn()
   const testColors = [
     '#FFFFFF',
     '#F2F3F6',
@@ -16,7 +16,7 @@ describe('PaletteColorPicker', () => {
   ]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('Initial Rendering', () => {

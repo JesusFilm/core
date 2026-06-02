@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
 import { Suspense } from 'react'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
@@ -33,14 +34,14 @@ import {
 } from './QrCodeDialog'
 import { GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS } from './ScanCount/ScanCount'
 
-jest.mock('date-fns', () => {
+vi.mock('date-fns', async () => {
   return {
-    ...jest.requireActual('date-fns'),
-    formatISO: jest.fn()
+    ...(await vi.importActual('date-fns')),
+    formatISO: vi.fn()
   }
 })
 
-const mockFormatIso = formatISO as jest.MockedFunction<typeof formatISO>
+const mockFormatIso = formatISO as MockedFunction<typeof formatISO>
 
 const teamMock = {
   request: {
@@ -73,10 +74,10 @@ describe('QrCodeDialog', () => {
   })
 
   afterAll(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
-  const handleClose = jest.fn()
+  const handleClose = vi.fn()
   const journey = {
     id: 'journey.id',
     team: {
@@ -258,7 +259,7 @@ describe('QrCodeDialog', () => {
       GetJourneyQrCodesVariables
     > = {
       ...getJourneyQrCodesMock,
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           qrCodes: []
         }
@@ -277,7 +278,7 @@ describe('QrCodeDialog', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           qrCodeCreate: {
             ...qrCode
@@ -322,7 +323,7 @@ describe('QrCodeDialog', () => {
       GetJourneyQrCodesVariables
     > = {
       ...getJourneyQrCodesMock,
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           qrCodes: []
         }

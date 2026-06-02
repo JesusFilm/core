@@ -194,14 +194,19 @@ describe('/api/chat handler', () => {
         }
       } as unknown as NextApiRequest
 
-      const { res, status, end, json } = makeRes()
+      const { res, status, json } = makeRes()
 
       await handler(req, res)
 
       expect(mockGetFlags).toHaveBeenCalledTimes(1)
       expect(status).toHaveBeenCalledWith(404)
-      expect(end).toHaveBeenCalledWith()
-      expect(json).not.toHaveBeenCalled()
+      // Carries a `code` so the client recognises the deterministic flag-off
+      // and hides Retry. Crucially, this still never reads req.body (the Proxy
+      // above would throw) — the flag check alone decides the 404.
+      expect(json).toHaveBeenCalledWith({
+        error: 'not found',
+        code: 'not_found'
+      })
     })
 
     it('returns 404 when apologistChat flag is missing', async () => {
@@ -212,12 +217,15 @@ describe('/api/chat handler', () => {
         body: { messages: [{ role: 'user', content: 'hi' }] }
       } as unknown as NextApiRequest
 
-      const { res, status, end } = makeRes()
+      const { res, status, json } = makeRes()
 
       await handler(req, res)
 
       expect(status).toHaveBeenCalledWith(404)
-      expect(end).toHaveBeenCalledWith()
+      expect(json).toHaveBeenCalledWith({
+        error: 'not found',
+        code: 'not_found'
+      })
     })
 
     it('returns 405 for non-POST when flag is on', async () => {
@@ -247,7 +255,10 @@ describe('/api/chat handler', () => {
       await handler(req, res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
     })
   })
 
@@ -843,7 +854,10 @@ describe('/api/chat handler', () => {
       await handler(postReq('not-an-object'), res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
@@ -853,7 +867,10 @@ describe('/api/chat handler', () => {
       await handler(postReq({}), res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
@@ -863,7 +880,10 @@ describe('/api/chat handler', () => {
       await handler(postReq({ messages: [{ content: 'hi' }] }), res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
@@ -876,7 +896,10 @@ describe('/api/chat handler', () => {
       )
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
@@ -886,7 +909,10 @@ describe('/api/chat handler', () => {
       await handler(postReq({ messages: [{ role: 'user' }] }), res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
@@ -904,7 +930,10 @@ describe('/api/chat handler', () => {
       )
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
       expect(mockLoggerError).toHaveBeenCalledWith(
         expect.objectContaining({ event: 'apologist_chat_convert_error' }),
@@ -923,12 +952,16 @@ describe('/api/chat handler', () => {
       )
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
     it('rejects when the messages array exceeds the count cap', async () => {
-      const messages = Array.from({ length: 21 }, () => ({
+      // 41 > MAX_MESSAGES (40, raised in NES-1663).
+      const messages = Array.from({ length: 41 }, () => ({
         role: 'user',
         content: 'hi'
       }))
@@ -937,24 +970,60 @@ describe('/api/chat handler', () => {
       await handler(postReq({ messages }), res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
-    it('rejects when the cumulative input chars exceed the total cap', async () => {
-      // 7 messages * 3000 chars = 21000 > 20000 cap, each within per-message
-      // and message-count caps.
-      const messages = Array.from({ length: 7 }, () => ({
+    it('rejects an over-cap conversation with a coded 400 and logs a warn event (NES-1663)', async () => {
+      // 11 messages * 4000 chars = 44000 > MAX_TOTAL_CHARS (40000), each at the
+      // per-message cap and within the message-count cap.
+      const messages = Array.from({ length: 11 }, () => ({
         role: 'user',
-        content: 'x'.repeat(3000)
+        content: 'x'.repeat(4000)
       }))
       const { res, status, json } = makeRes()
 
-      await handler(postReq({ messages }), res)
+      await handler(
+        {
+          method: 'POST',
+          body: {
+            messages,
+            language: 'es',
+            sessionId: 'sess-1',
+            journeyId: 'journey-1'
+          },
+          headers: {}
+        } as unknown as NextApiRequest,
+        res
+      )
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'request too large' })
+      // Coded body: the client switches on `code` (AI SDK v6 hides the status)
+      // to show the catered message + hide Retry.
+      expect(json).toHaveBeenCalledWith({
+        error: 'request too large',
+        code: 'conversation_capped'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
+
+      // Observability: warn (not error — it's user-driven, not a fault) with
+      // non-PII triage fields for the Datadog frequency query.
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        {
+          event: 'chat_conversation_capped',
+          sessionId: 'sess-1',
+          journeyId: 'journey-1',
+          language: 'es',
+          messageCount: 11,
+          promptChars: 44000
+        },
+        'chat conversation hit size cap'
+      )
+      // Never escalated to an error log — keeps it out of error alerts.
+      expect(mockLoggerError).not.toHaveBeenCalled()
     })
 
     it('counts parts[].text toward the per-message and total caps', async () => {
@@ -969,7 +1038,10 @@ describe('/api/chat handler', () => {
       await handler(postReq({ messages }), res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 

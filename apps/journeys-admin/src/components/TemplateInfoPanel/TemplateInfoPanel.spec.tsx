@@ -6,7 +6,9 @@ describe('TemplateInfoPanel', () => {
   it('renders the always-visible header copy verbatim', () => {
     render(<TemplateInfoPanel />)
 
-    expect(screen.getByText('What templates are about:')).toBeInTheDocument()
+    expect(
+      screen.getByText('What team templates are about:')
+    ).toBeInTheDocument()
     expect(
       screen.getByText(
         'You can share projects created on our platform with others. This allows you to track the performance of every project generated from your template.'
@@ -187,7 +189,7 @@ describe('TemplateInfoPanel', () => {
     })
 
     it('invokes onClose when the close button is clicked', () => {
-      const handleClose = jest.fn()
+      const handleClose = vi.fn()
       render(<TemplateInfoPanel contained onClose={handleClose} />)
 
       fireEvent.click(screen.getByTestId('TemplateInfoPanelClose'))

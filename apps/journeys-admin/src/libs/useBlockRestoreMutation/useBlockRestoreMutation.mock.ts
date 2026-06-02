@@ -64,7 +64,7 @@ export const useBlockRestoreMutationMock: MockedResponse<
       id: 'blockId'
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       blockRestore: [cardBlock]
     }

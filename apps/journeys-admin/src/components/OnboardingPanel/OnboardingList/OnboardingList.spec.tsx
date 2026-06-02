@@ -1,21 +1,22 @@
 import { useSuspenseQuery } from '@apollo/client'
 import { render, screen } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { onboardingJourneys } from '../data'
 
 import { OnboardingList } from './OnboardingList'
 
-jest.mock('@apollo/client', () => {
-  const actual = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const actual = await vi.importActual('@apollo/client')
   return {
     ...actual,
-    useSuspenseQuery: jest.fn()
+    useSuspenseQuery: vi.fn()
   }
 })
 
 describe('OnboardingList', () => {
   beforeEach(() => {
-    ;(useSuspenseQuery as unknown as jest.Mock).mockReturnValue({
+    ;(useSuspenseQuery as unknown as Mock).mockReturnValue({
       data: { onboardingJourneys }
     })
   })

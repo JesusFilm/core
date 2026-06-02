@@ -17,19 +17,19 @@ describe('ToggleButtonGroup', () => {
       }
     ]
     const { getByText, rerender } = render(
-      <ToggleButtonGroup options={options} value="abc" onChange={jest.fn()} />
+      <ToggleButtonGroup options={options} value="abc" onChange={vi.fn()} />
     )
     expect(getByText('ABC').parentElement).toHaveClass('Mui-selected')
     expect(getByText('DEF').parentElement).not.toHaveClass('Mui-selected')
     rerender(
-      <ToggleButtonGroup options={options} value="def" onChange={jest.fn()} />
+      <ToggleButtonGroup options={options} value="def" onChange={vi.fn()} />
     )
     expect(getByText('ABC').parentElement).not.toHaveClass('Mui-selected')
     expect(getByText('DEF').parentElement).toHaveClass('Mui-selected')
   })
 
   it('calls onChange', () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const options = [
       {
         value: 'abc',
@@ -55,7 +55,7 @@ describe('ToggleButtonGroup', () => {
       }
     ]
     const { getByTestId } = render(
-      <ToggleButtonGroup options={options} value="abc" onChange={jest.fn()} />
+      <ToggleButtonGroup options={options} value="abc" onChange={vi.fn()} />
     )
     expect(getByTestId('abc-content')).toBeInTheDocument()
   })
@@ -74,14 +74,14 @@ describe('ToggleButtonGroup', () => {
       }
     ]
     const { getAllByTestId } = render(
-      <ToggleButtonGroup options={options} value="abc" onChange={jest.fn()} />
+      <ToggleButtonGroup options={options} value="abc" onChange={vi.fn()} />
     )
     expect(getAllByTestId('Clock1Icon')).toHaveLength(2)
   })
 
   it('renders children', () => {
     const { getByText } = render(
-      <ToggleButtonGroup options={[]} value="abc" onChange={jest.fn()}>
+      <ToggleButtonGroup options={[]} value="abc" onChange={vi.fn()}>
         <div data-testid="children">Children</div>
       </ToggleButtonGroup>
     )

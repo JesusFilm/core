@@ -4,14 +4,14 @@ import { VideoSearch } from './VideoSearch'
 
 describe('VideoSearch', () => {
   it('has value in textbox', () => {
-    render(<VideoSearch value="Jesus" onChange={jest.fn()} />)
+    render(<VideoSearch value="Jesus" onChange={vi.fn()} />)
     expect(screen.getByRole('searchbox', { name: 'Search' })).toHaveValue(
       'Jesus'
     )
   })
 
   it('calls onChange on change', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(<VideoSearch onChange={onChange} />)
     const searchBox = screen.getByRole('searchbox', { name: 'Search' })
     await waitFor(() =>
@@ -24,14 +24,14 @@ describe('VideoSearch', () => {
 
   it('uses the search icon if tab is internal', () => {
     const { getByTestId } = render(
-      <VideoSearch onChange={jest.fn()} icon="search" />
+      <VideoSearch onChange={vi.fn()} icon="search" />
     )
     expect(getByTestId('Search1Icon')).toBeInTheDocument()
   })
 
   it('uses the link icon if tab is youtube', () => {
     const { getByTestId } = render(
-      <VideoSearch onChange={jest.fn()} icon="link" />
+      <VideoSearch onChange={vi.fn()} icon="link" />
     )
     expect(getByTestId('LinkIcon')).toBeInTheDocument()
   })

@@ -5,20 +5,20 @@ import { startPolling } from './startPolling'
 describe('startPolling', () => {
   const mockServices = {
     hasShownStartNotification: { current: new Set<string>() },
-    showSnackbar: jest.fn(),
-    t: jest.fn((key: string) => key),
-    setPollingTasks: jest.fn()
+    showSnackbar: vi.fn(),
+    t: vi.fn((key: string) => key),
+    setPollingTasks: vi.fn()
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockServices.hasShownStartNotification.current.clear()
   })
 
   it('should create polling task with correct properties', () => {
     const videoId = 'video-1'
     const languageCode = 'en'
-    const onComplete = jest.fn()
+    const onComplete = vi.fn()
 
     startPolling(videoId, languageCode, onComplete, mockServices)
 

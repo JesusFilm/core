@@ -1,6 +1,7 @@
 import { act, cleanup, render } from '@testing-library/react'
 import { ComponentProps } from 'react'
 import videojs from 'video.js'
+import { type MockInstance } from 'vitest'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -9,30 +10,30 @@ import { TreeBlock, blockHistoryVar } from '../../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { extractYouTubeCaptionsAndAddTextTracks } from '../utils/extractYouTubeCaptionsAndAddTextTracks'
+import { getCaptionsAndSubtitleTracks } from '../utils/getCaptionsAndSubtitleTracks'
 import { getMuxMetadata } from '../utils/getMuxMetadata'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
 import { InitAndPlay } from '.'
 
-jest.mock('../utils/getMuxMetadata', () => ({
-  getMuxMetadata: jest.fn()
+vi.mock('../utils/getMuxMetadata', () => ({
+  getMuxMetadata: vi.fn()
 }))
 
-jest.mock('../utils/getCaptionsAndSubtitleTracks', () => ({
-  getCaptionsAndSubtitleTracks: jest.fn()
+vi.mock('../utils/getCaptionsAndSubtitleTracks', () => ({
+  getCaptionsAndSubtitleTracks: vi.fn()
 }))
 
-jest.mock('../utils/extractYouTubeCaptionsAndAddTextTracks', () => ({
-  extractYouTubeCaptionsAndAddTextTracks: jest.fn()
+vi.mock('../utils/extractYouTubeCaptionsAndAddTextTracks', () => ({
+  extractYouTubeCaptionsAndAddTextTracks: vi.fn()
 }))
 
 const mockGetMuxMetadata = getMuxMetadata
-const { getCaptionsAndSubtitleTracks: mockGetCaptionsAndSubtitleTracks } =
-  jest.requireMock('../utils/getCaptionsAndSubtitleTracks')
-const {
-  extractYouTubeCaptionsAndAddTextTracks:
-    mockExtractYouTubeCaptionsAndAddTextTracks
-} = jest.requireMock('../utils/extractYouTubeCaptionsAndAddTextTracks')
+const mockGetCaptionsAndSubtitleTracks = vi.mocked(getCaptionsAndSubtitleTracks)
+const mockExtractYouTubeCaptionsAndAddTextTracks = vi.mocked(
+  extractYouTubeCaptionsAndAddTextTracks
+)
 
 describe('InitAndPlay', () => {
   let defaultProps: ComponentProps<typeof InitAndPlay>
@@ -65,7 +66,7 @@ describe('InitAndPlay', () => {
     defaultProps = {
       videoRef: { current: video },
       player,
-      setPlayer: jest.fn(),
+      setPlayer: vi.fn(),
       activeStep: true,
       triggerTimes: [0],
       videoEndTime: 100,
@@ -76,9 +77,9 @@ describe('InitAndPlay', () => {
       endAt: 100,
       autoplay: true,
       posterBlock: undefined,
-      setLoading: jest.fn(),
-      setShowPoster: jest.fn(),
-      setVideoEndTime: jest.fn(),
+      setLoading: vi.fn(),
+      setShowPoster: vi.fn(),
+      setVideoEndTime: vi.fn(),
       source: VideoBlockSource.internal,
       title: 'video title',
       mediaVideo: {
@@ -198,7 +199,7 @@ describe('InitAndPlay', () => {
 
   it('should handle autoplay', () => {
     blockHistoryVar([defaultStepBlock])
-    const playStub = jest.spyOn(player, 'play')
+    const playStub = vi.spyOn(player, 'play')
 
     render(<InitAndPlay {...defaultProps} />)
 
@@ -229,7 +230,7 @@ describe('InitAndPlay', () => {
     } as unknown as TreeBlock<StepBlock>
     blockHistoryVar([stepBlock])
 
-    const playStub = jest.spyOn(player, 'play')
+    const playStub = vi.spyOn(player, 'play')
 
     render(<InitAndPlay {...defaultProps} />)
 
@@ -265,7 +266,7 @@ describe('InitAndPlay', () => {
   describe('Mux subtitles', () => {
     let mockSubtitleTrack: TextTrack
     let mockCaptionTrack: TextTrack
-    let readyStateSpy: jest.SpyInstance
+    let readyStateSpy: MockInstance
 
     beforeEach(() => {
       mockSubtitleTrack = {
@@ -284,7 +285,7 @@ describe('InitAndPlay', () => {
         id: 'cap-en'
       } as TextTrack
 
-      readyStateSpy = jest.spyOn(player, 'readyState').mockReturnValue(4)
+      readyStateSpy = vi.spyOn(player, 'readyState').mockReturnValue(4)
     })
 
     afterEach(() => {
@@ -429,10 +430,10 @@ describe('InitAndPlay', () => {
   })
 
   describe('YouTube subtitles', () => {
-    let readyStateSpy: jest.SpyInstance
+    let readyStateSpy: MockInstance
 
     beforeEach(() => {
-      readyStateSpy = jest.spyOn(player, 'readyState').mockReturnValue(4)
+      readyStateSpy = vi.spyOn(player, 'readyState').mockReturnValue(4)
     })
 
     afterEach(() => {

@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
@@ -25,14 +26,14 @@ import { IMAGE_BLOCK_UPDATE } from './ImageOptions'
 
 import { ImageOptions } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('ImageOptions', () => {
   beforeEach(() => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
   })
 
   const selectedBlock: TreeBlock<ImageBlock> = {
@@ -86,7 +87,7 @@ describe('ImageOptions', () => {
 
   it('updates image block from gallery selection', async () => {
     const undoInput = toImageBlockUpdateInput(selectedBlock)
-    const updateResult = jest.fn(() => ({
+    const updateResult = vi.fn(() => ({
       data: {
         imageBlockUpdate: {
           ...selectedBlock,
@@ -94,7 +95,7 @@ describe('ImageOptions', () => {
         }
       }
     }))
-    const undoResult = jest.fn(() => ({
+    const undoResult = vi.fn(() => ({
       data: {
         imageBlockUpdate: {
           ...selectedBlock,
@@ -184,13 +185,13 @@ describe('ImageOptions', () => {
   })
 
   it('fake delete image block', async () => {
-    const deleteResult = jest.fn(() => ({
+    const deleteResult = vi.fn(() => ({
       data: response
     }))
-    const undoResult = jest.fn(() => ({
+    const undoResult = vi.fn(() => ({
       data: response
     }))
-    const redoResult = jest.fn(() => ({
+    const redoResult = vi.fn(() => ({
       data: response
     }))
     render(
@@ -259,13 +260,13 @@ describe('ImageOptions', () => {
   })
 
   it('update image block scale', async () => {
-    const zoomUpdateResult = jest.fn(() => ({
+    const zoomUpdateResult = vi.fn(() => ({
       data: scaleUpdateResponse
     }))
-    const undoResult = jest.fn(() => ({
+    const undoResult = vi.fn(() => ({
       data: response
     }))
-    const redoResult = jest.fn(() => ({
+    const redoResult = vi.fn(() => ({
       data: scaleUpdateResponse
     }))
 

@@ -34,7 +34,7 @@ export const getTemplateGalleryPageAssignJourneyMock = (
   TemplateGalleryPageAssignJourneyVariables
 > => ({
   request: { query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY, variables },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       templateGalleryPageAssignJourney: { ...defaultAssigned, ...overrides }
     }

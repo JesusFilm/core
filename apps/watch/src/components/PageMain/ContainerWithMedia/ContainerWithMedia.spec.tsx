@@ -6,7 +6,7 @@ import { videos } from '../../Videos/__generated__/testData'
 
 import { ContainerWithMedia } from '.'
 
-jest.mock('../../VideoCarousel', () => ({
+vi.mock('../../VideoCarousel', () => ({
   VideoCarousel: ({
     slides,
     containerSlug,
@@ -24,11 +24,11 @@ jest.mock('../../VideoCarousel', () => ({
   )
 }))
 
-jest.mock('../../VideoBlock', () => ({
+vi.mock('../../VideoBlock', () => ({
   VideoBlock: () => <div data-testid="VideoBlock">VideoBlock</div>
 }))
 
-jest.mock('../../ContentPageBlurFilter', () => ({
+vi.mock('../../ContentPageBlurFilter', () => ({
   ContentPageBlurFilter: ({ children }: any) => (
     <div data-testid="ContentPageBlurFilter">{children}</div>
   )
@@ -49,8 +49,8 @@ describe('ContainerWithMedia', () => {
     activeVideo: null,
     currentMuxInsert: null,
     loading: false,
-    onSelectSlide: jest.fn(),
-    onMuxInsertComplete: jest.fn()
+    onSelectSlide: vi.fn(),
+    onMuxInsertComplete: vi.fn()
   }
 
   it('should render VideoCarousel within ContentPageBlurFilter', () => {

@@ -57,7 +57,7 @@ describe('Typography align selector', () => {
         color: null
       }
     }
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         typographyBlockUpdate: {
           id: 'id',
@@ -109,7 +109,7 @@ describe('Typography align selector', () => {
         color: null
       }
     }
-    const result1 = jest.fn(() => ({
+    const result1 = vi.fn(() => ({
       data: {
         typographyBlockUpdate: {
           id: 'id',
@@ -117,7 +117,7 @@ describe('Typography align selector', () => {
         }
       }
     }))
-    const result2 = jest.fn(() => ({
+    const result2 = vi.fn(() => ({
       data: {
         typographyBlockUpdate: {
           id: 'id',

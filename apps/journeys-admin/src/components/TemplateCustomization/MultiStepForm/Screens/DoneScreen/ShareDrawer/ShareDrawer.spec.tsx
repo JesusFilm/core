@@ -7,7 +7,7 @@ import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__gen
 
 import { ShareDrawer } from './ShareDrawer'
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {
     return {
@@ -17,10 +17,10 @@ jest.mock('react-i18next', () => ({
 }))
 
 describe('ShareDrawer', () => {
-  const mockOnClose = jest.fn()
+  const mockOnClose = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders when open is true', () => {

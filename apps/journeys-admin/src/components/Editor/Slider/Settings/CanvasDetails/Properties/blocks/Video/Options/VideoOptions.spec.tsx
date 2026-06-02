@@ -9,6 +9,7 @@ import {
   useInstantSearch,
   useSearchBox
 } from 'react-instantsearch'
+import { type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
@@ -27,15 +28,13 @@ import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/Loc
 
 import { VIDEO_BLOCK_UPDATE, VideoOptions } from './VideoOptions'
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
-const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
+const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >
-const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+const mockUseInfiniteHits = useInfiniteHits as MockedFunction<
   typeof useInfiniteHits
 >
 
@@ -150,12 +149,12 @@ describe('VideoOptions', () => {
   }
 
   const searchBox = {
-    refine: jest.fn()
+    refine: vi.fn()
   } as unknown as SearchBoxRenderState
 
   const infiniteHits = {
     items: videoItems,
-    showMore: jest.fn(),
+    showMore: vi.fn(),
     isLastPage: false
   } as unknown as InfiniteHitsRenderState
 
@@ -171,18 +170,18 @@ describe('VideoOptions', () => {
     mockUseSearchBox.mockReturnValue(searchBox)
     mockUseInfiniteHits.mockReturnValue(infiniteHits)
     mockUseInstantSearch.mockReturnValue(instantSearch)
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('updates video block', async () => {
-    const videoBlockResult = jest.fn(() => {
+    const videoBlockResult = vi.fn(() => {
       return {
         data: {
           videoBlockUpdate: video
         }
       }
     })
-    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const result = vi.fn().mockReturnValue(getVideoMock.result)
     const videoBlockUpdateVariables = {
       id: video.id,
       input: {
@@ -238,13 +237,13 @@ describe('VideoOptions', () => {
   })
 
   it('should undo the property change', async () => {
-    const result = jest.fn().mockReturnValue(getVideoMock.result)
-    const result1 = jest.fn().mockReturnValue({
+    const result = vi.fn().mockReturnValue(getVideoMock.result)
+    const result1 = vi.fn().mockReturnValue({
       data: {
         videoBlockUpdate: video
       }
     })
-    const result2 = jest.fn().mockReturnValue({
+    const result2 = vi.fn().mockReturnValue({
       data: {
         videoBlockUpdate: video
       }
@@ -323,14 +322,14 @@ describe('VideoOptions', () => {
   })
 
   it('it should reset subtitle language id and show generated subtitles when selecting different video', async () => {
-    const videoBlockResult = jest.fn(() => {
+    const videoBlockResult = vi.fn(() => {
       return {
         data: {
           videoBlockUpdate: video
         }
       }
     })
-    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const result = vi.fn().mockReturnValue(getVideoMock.result)
     const videoBlockUpdateVariables = {
       id: video.id,
       input: {

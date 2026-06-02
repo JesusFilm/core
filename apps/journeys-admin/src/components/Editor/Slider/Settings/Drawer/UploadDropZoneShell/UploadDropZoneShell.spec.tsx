@@ -33,7 +33,7 @@ describe('UploadDropZoneShell', () => {
   })
 
   it('should forward additional props via spread', () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     render(
       <UploadDropZoneShell
         data-testid="drop zone"
