@@ -25,7 +25,11 @@ export function prependMuxVideo(
   }
 ): void {
   const ref = cache.writeFragment({
-    data: { __typename: 'MuxVideo', ...video, duration: video.duration ?? null },
+    data: {
+      __typename: 'MuxVideo',
+      ...video,
+      duration: video.duration ?? null
+    },
     fragment: NEW_MUX_VIDEO_FRAGMENT
   })
   if (ref == null) return
