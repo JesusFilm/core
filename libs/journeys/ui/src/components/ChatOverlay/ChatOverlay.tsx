@@ -1,7 +1,6 @@
 'use client'
 
 import Box from '@mui/material/Box'
-import { alpha } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 
@@ -44,9 +43,11 @@ export function ChatOverlay({
         sx={{
           position: 'absolute',
           inset: 0,
-          bgcolor: (theme) => alpha(theme.palette.grey[900], 0.88),
-          backdropFilter: 'blur(6px)',
-          WebkitBackdropFilter: 'blur(6px)'
+          // Fully opaque so the journey card behind the overlay is not
+          // visible. Previously alpha(grey[900], 0.88) + 6px backdrop blur
+          // left underlying card content perceptible, which hurt chat
+          // legibility (NES-1654, Lucinda's feedback).
+          bgcolor: 'grey.900'
         }}
       />
       <Box
