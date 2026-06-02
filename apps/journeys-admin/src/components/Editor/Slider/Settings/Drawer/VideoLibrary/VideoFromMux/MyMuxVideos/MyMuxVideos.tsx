@@ -77,9 +77,7 @@ export function MyMuxVideos({
     !loading && error == null && uploading !== true && videos.length === 0
   if (isEmpty) return null
 
-  const handleClick = (
-    video: MuxVideoNode & { playbackId: string }
-  ): void => {
+  const handleClick = (video: MuxVideoNode & { playbackId: string }): void => {
     setPreviewVideo({
       id: video.id,
       playbackId: video.playbackId,
