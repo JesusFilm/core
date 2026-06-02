@@ -1,8 +1,16 @@
 'use client'
 
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
+
+import {
+  OVERLAY_CLOSE_BG,
+  OVERLAY_CLOSE_BG_HOVER
+} from '../AiChat/chatStyles'
 
 const AiChat = dynamic(
   async () =>
@@ -21,6 +29,7 @@ export function ChatOverlay({
   open,
   onClose
 }: ChatOverlayProps): ReactElement | null {
+  const { t } = useTranslation('libs-journeys-ui')
   if (!open) return null
 
   return (
@@ -42,14 +51,37 @@ export function ChatOverlay({
         aria-hidden
         sx={{
           position: 'absolute',
-          inset: 0,
-          // Fully opaque so the journey card behind the overlay is not
-          // visible. Previously alpha(grey[900], 0.88) + 6px backdrop blur
-          // left underlying card content perceptible, which hurt chat
-          // legibility (NES-1654, Lucinda's feedback).
-          bgcolor: 'grey.900'
+          // Inset the dark surface so the journey card peeks through the
+          // 16px frame around the overlay. Combined with the top-right
+          // close affordance below, the user is oriented to the overlay
+          // relationship rather than thinking the page itself changed.
+          inset: 16,
+          bgcolor: 'grey.900',
+          borderRadius: '20px'
         }}
       />
+      <IconButton
+        onClick={onClose}
+        aria-label={t('Close chat')}
+        disableRipple
+        sx={{
+          position: 'absolute',
+          top: 'calc(env(safe-area-inset-top) + 24px)',
+          right: 24,
+          zIndex: 1,
+          width: 40,
+          height: 40,
+          p: 0,
+          color: 'common.white',
+          bgcolor: OVERLAY_CLOSE_BG,
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: 'none',
+          backgroundClip: 'padding-box',
+          '&:hover': { bgcolor: OVERLAY_CLOSE_BG_HOVER }
+        }}
+      >
+        <CloseRoundedIcon fontSize="small" />
+      </IconButton>
       <Box
         sx={{
           position: 'relative',
@@ -61,7 +93,7 @@ export function ChatOverlay({
           minHeight: 0
         }}
       >
-        <AiChat collapsible={false} variant="overlay" onClose={onClose} />
+        <AiChat collapsible={false} variant="overlay" />
       </Box>
     </Box>
   )

@@ -85,6 +85,9 @@ export const OVERLAY_CLOSE_BG = 'rgba(197, 45, 58, 0.72)'
 /** Hover state for the muted brand-red close control. */
 export const OVERLAY_CLOSE_BG_HOVER = 'rgba(197, 45, 58, 0.86)'
 
+/** Empty-state hero text colour on the dark overlay backdrop. */
+export const OVERLAY_HERO_FG = 'rgba(255, 255, 255, 0.85)'
+
 // --- Misc chat surfaces ---
 
 /** Plain assistant text on the dark blurred overlay backdrop. */

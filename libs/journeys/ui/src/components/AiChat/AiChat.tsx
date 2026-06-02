@@ -1,10 +1,9 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
 import { DefaultChatTransport, UIMessage } from 'ai'
 import { useTranslation } from 'next-i18next/pages'
 import {
@@ -29,9 +28,8 @@ import { ChatHeader } from './ChatHeader'
 import {
   HEADER_WASH,
   MUTED_FG,
-  OVERLAY_CLOSE_BG,
-  OVERLAY_CLOSE_BG_HOVER,
   OVERLAY_FG_RETRY,
+  OVERLAY_HERO_FG,
   SHEET_BOTTOM_FADE
 } from './chatStyles'
 import { DragHandle } from './DragHandle'
@@ -71,12 +69,6 @@ interface AiChatProps {
    * are ignored, drag interactions own the state from there.
    */
   initialCollapsed?: boolean
-  /**
-   * Optional close action for parent-owned overlay chrome. Rendered as a
-   * sibling of the floating input so it stays discoverable without covering
-   * typed text.
-   */
-  onClose?: () => void
 }
 
 export type AiChatSheetState = 'idle' | 'active' | 'collapsed'
@@ -230,8 +222,7 @@ export function AiChat({
   collapsible = true,
   variant = 'panel',
   onSheetStateChange,
-  initialCollapsed = false,
-  onClose
+  initialCollapsed = false
 }: AiChatProps): ReactElement {
   const isOverlay = variant === 'overlay'
   const isPanel = !isOverlay
@@ -386,7 +377,12 @@ export function AiChat({
 
   const showDragHandle = isPanel && collapsible
   const showHeader = isPanel
-  const showOverlayClose = isOverlay && onClose != null
+  // Empty-state hero is overlay-only: gives the user a clear "this is
+  // the chat" signal when the overlay auto-opens with no messages yet
+  // (NES-1654). Hidden once a message exists, is being sent, or there's
+  // an error so it doesn't compete with conversation content.
+  const showOverlayHero =
+    isOverlay && messages.length === 0 && !isLoading && error == null
   // We keep header/conversation/input mounted in every state and rely on
   // the parent sheet's height transition + overflow:hidden to clip them
   // as the sheet collapses. Hiding via display:none would short-circuit
@@ -418,6 +414,9 @@ export function AiChat({
 
       <Box
         sx={{
+          // `relative` anchors the overlay hero's absolute positioning
+          // to the conversation area rather than the viewport.
+          position: 'relative',
           display: 'flex',
           flex: 1,
           flexDirection: 'column',
@@ -427,6 +426,32 @@ export function AiChat({
           mx: 'auto'
         }}
       >
+        {showOverlayHero && (
+          <Box
+            aria-hidden
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              px: 4,
+              pointerEvents: 'none'
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: { xs: 22, sm: 26, md: 28 },
+                fontWeight: 500,
+                color: OVERLAY_HERO_FG,
+                textAlign: 'center',
+                lineHeight: 1.3
+              }}
+            >
+              {t('Ask me anything')}
+            </Typography>
+          </Box>
+        )}
         <Conversation
           scrollKey={messages.length}
           // 72px = floating capsule height (44px) + bottom offset (8px) +
@@ -570,27 +595,6 @@ export function AiChat({
             variant={isOverlay ? 'floating' : 'inline'}
           />
         </Box>
-        {showOverlayClose && (
-          <IconButton
-            onClick={onClose}
-            aria-label={t('Close chat')}
-            disableRipple
-            sx={{
-              width: 32,
-              height: 32,
-              flexShrink: 0,
-              p: 0,
-              color: 'common.white',
-              bgcolor: OVERLAY_CLOSE_BG,
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: 'none',
-              backgroundClip: 'padding-box',
-              '&:hover': { bgcolor: OVERLAY_CLOSE_BG_HOVER }
-            }}
-          >
-            <CloseRoundedIcon fontSize="small" />
-          </IconButton>
-        )}
       </Box>
     </Box>
   )
