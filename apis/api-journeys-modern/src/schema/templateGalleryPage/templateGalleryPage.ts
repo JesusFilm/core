@@ -2,6 +2,7 @@ import { builder } from '../builder'
 
 import { TemplateGalleryPageStatus } from './enums'
 import { TemplateGalleryItemRef } from './templateGalleryItem'
+import { TemplateGalleryPageMediaRef } from './templateGalleryPageMedia'
 
 // `shareable` is intentionally omitted: TemplateGalleryPage is owned
 // exclusively by api-journeys-modern and is not federated with the legacy
@@ -53,6 +54,8 @@ export const TemplateGalleryPageRef = builder.prismaObject(
       }),
       mediaUrl: t.exposeString('mediaUrl', {
         nullable: true,
+        deprecationReason:
+          'Superseded by the `media` relation (NES-1704). Retained on legacy rows behind the LD flag; not written by new UI.',
         description:
           'Optional https URL of a hero/cover media asset shown on the public page. https-only on write.'
       }),
@@ -123,6 +126,16 @@ export const TemplateGalleryPageRef = builder.prismaObject(
           page.templates
             .filter((tpt) => tpt.journey.teamId === page.teamId)
             .map((tpt) => tpt.journey)
+      }),
+      // 1:1 nullable relation. `t.relation` spreads the Pothos `query`
+      // parameter automatically, so nested selections resolve correctly
+      // (avoids the NES-1480 footgun of a hand-built field that ignores
+      // `query`). Legacy rows with no media row resolve to `null`.
+      media: t.relation('media', {
+        type: TemplateGalleryPageMediaRef,
+        nullable: true,
+        description:
+          'Embedded media shown on the public page. `null` for legacy rows that predate the multi-type embed (which used the deprecated `mediaUrl` scalar).'
       })
     })
   }

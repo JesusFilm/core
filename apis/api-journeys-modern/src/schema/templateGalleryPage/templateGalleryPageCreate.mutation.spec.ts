@@ -1,3 +1,4 @@
+import { GraphQLError } from 'graphql'
 import { type MockedFunction, vi } from 'vitest'
 
 import { Prisma } from '@core/prisma/journeys/client'
@@ -7,9 +8,18 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
+import { linkValidate } from './media/linkValidate'
+import { muxValidate } from './media/muxValidate'
+
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('./media/linkValidate', () => ({ linkValidate: vi.fn() }))
+vi.mock('./media/muxValidate', () => ({ muxValidate: vi.fn() }))
+
+const mockLinkValidate = linkValidate as MockedFunction<typeof linkValidate>
+const mockMuxValidate = muxValidate as MockedFunction<typeof muxValidate>
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
@@ -70,7 +80,7 @@ describe('templateGalleryPageCreate', () => {
   it('creates a draft page with generated slug and validated journeyIds', async () => {
     prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
     prismaMock.journey.findMany.mockResolvedValue([{ id: 'j1' }] as any)
-    prismaMock.templateGalleryPage.create.mockResolvedValue({
+    const page = {
       id: 'p1',
       title: 'My Welcome',
       slug: 'my-welcome',
@@ -80,7 +90,11 @@ describe('templateGalleryPageCreate', () => {
       creatorImageSrc: null,
       creatorImageAlt: null,
       mediaUrl: null
-    } as any)
+    }
+    prismaMock.templateGalleryPage.create.mockResolvedValue(page as any)
+    prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue(
+      page as any
+    )
 
     const result = await authClient({
       document: TEMPLATE_GALLERY_PAGE_CREATE,
@@ -131,7 +145,7 @@ describe('templateGalleryPageCreate', () => {
   it('persists creatorImageSrc and creatorImageAlt as plain scalars', async () => {
     prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
     prismaMock.journey.findMany.mockResolvedValue([] as any)
-    prismaMock.templateGalleryPage.create.mockResolvedValue({
+    const page = {
       id: 'p1',
       title: 'My Welcome',
       slug: 'my-welcome',
@@ -141,7 +155,11 @@ describe('templateGalleryPageCreate', () => {
       creatorImageSrc: 'https://images.example.com/alice.jpg',
       creatorImageAlt: 'Alice headshot',
       mediaUrl: null
-    } as any)
+    }
+    prismaMock.templateGalleryPage.create.mockResolvedValue(page as any)
+    prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue(
+      page as any
+    )
 
     const result = await authClient({
       document: TEMPLATE_GALLERY_PAGE_CREATE,
@@ -259,21 +277,25 @@ describe('templateGalleryPageCreate', () => {
     prismaMock.journey.findMany.mockResolvedValue([] as any)
     const p2002 = new Prisma.PrismaClientKnownRequestError(
       'unique constraint failed',
-      { code: 'P2002', clientVersion: '7.0.0' }
+      { code: 'P2002', clientVersion: '7.0.0', meta: { target: ['slug'] } }
     )
+    const page = {
+      id: 'p1',
+      title: 'My Welcome',
+      slug: 'my-welcome-2',
+      status: 'draft',
+      description: '',
+      creatorName: 'Alice',
+      creatorImageSrc: null,
+      creatorImageAlt: null,
+      mediaUrl: null
+    }
     prismaMock.templateGalleryPage.create
       .mockRejectedValueOnce(p2002)
-      .mockResolvedValueOnce({
-        id: 'p1',
-        title: 'My Welcome',
-        slug: 'my-welcome-2',
-        status: 'draft',
-        description: '',
-        creatorName: 'Alice',
-        creatorImageSrc: null,
-        creatorImageAlt: null,
-        mediaUrl: null
-      } as any)
+      .mockResolvedValueOnce(page as any)
+    prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue(
+      page as any
+    )
 
     const result = await authClient({
       document: TEMPLATE_GALLERY_PAGE_CREATE,
@@ -309,7 +331,7 @@ describe('templateGalleryPageCreate', () => {
     prismaMock.journey.findMany.mockResolvedValue([] as any)
     const p2002 = new Prisma.PrismaClientKnownRequestError(
       'unique constraint failed',
-      { code: 'P2002', clientVersion: '7.0.0' }
+      { code: 'P2002', clientVersion: '7.0.0', meta: { target: ['slug'] } }
     )
     prismaMock.templateGalleryPage.create
       .mockRejectedValueOnce(p2002)
@@ -356,5 +378,232 @@ describe('templateGalleryPageCreate', () => {
       errors: [expect.anything()]
     })
     expect(prismaMock.templateGalleryPage.create).toHaveBeenCalledTimes(1)
+  })
+
+  it('does NOT retry on a non-slug P2002 (propagates immediately)', async () => {
+    prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockResolvedValue([] as any)
+    const nonSlugP2002 = new Prisma.PrismaClientKnownRequestError(
+      'unique constraint failed',
+      {
+        code: 'P2002',
+        clientVersion: '7.0.0',
+        meta: { target: ['templateGalleryPageId'] }
+      }
+    )
+    prismaMock.templateGalleryPage.create.mockRejectedValueOnce(nonSlugP2002)
+
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_CREATE,
+      variables: {
+        input: { teamId: 'team-1', title: 'X', creatorName: 'Alice' }
+      }
+    })
+
+    expect(result).toEqual({ data: null, errors: [expect.anything()] })
+    expect(prismaMock.templateGalleryPage.create).toHaveBeenCalledTimes(1)
+  })
+
+  describe('media', () => {
+    const TEMPLATE_GALLERY_PAGE_CREATE_WITH_MEDIA = graphql(`
+      mutation TemplateGalleryPageCreateWithMedia(
+        $input: TemplateGalleryPageCreateInput!
+      ) {
+        templateGalleryPageCreate(input: $input) {
+          id
+          media {
+            id
+            type
+            embedUrl
+            muxPlaybackId
+          }
+        }
+      }
+    `)
+
+    function mockPageRead(media: unknown): void {
+      prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
+      prismaMock.journey.findMany.mockResolvedValue([] as any)
+      prismaMock.templateGalleryPage.create.mockResolvedValue({
+        id: 'p1'
+      } as any)
+      prismaMock.templateGalleryPageMedia.create.mockResolvedValue({} as any)
+      prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue({
+        id: 'p1',
+        media
+      } as any)
+    }
+
+    it('creates a link media row and returns the media relation', async () => {
+      mockLinkValidate.mockResolvedValue({
+        embedUrl: 'https://www.youtube-nocookie.com/embed/abc'
+      })
+      mockPageRead({
+        id: 'm1',
+        type: 'link',
+        embedUrl: 'https://www.youtube-nocookie.com/embed/abc',
+        muxPlaybackId: null
+      })
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_CREATE_WITH_MEDIA,
+        variables: {
+          input: {
+            teamId: 'team-1',
+            title: 'X',
+            creatorName: 'Alice',
+            media: { type: 'link', url: 'https://www.youtube.com/watch?v=abc' }
+          }
+        }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data.templateGalleryPageCreate.media).toEqual({
+        id: 'm1',
+        type: 'link',
+        embedUrl: 'https://www.youtube-nocookie.com/embed/abc',
+        muxPlaybackId: null
+      })
+      expect(mockLinkValidate).toHaveBeenCalledWith(
+        'https://www.youtube.com/watch?v=abc'
+      )
+      expect(prismaMock.templateGalleryPageMedia.create).toHaveBeenCalledWith({
+        data: {
+          templateGalleryPageId: 'p1',
+          type: 'link',
+          embedUrl: 'https://www.youtube-nocookie.com/embed/abc',
+          muxVideoId: null,
+          muxPlaybackId: null
+        }
+      })
+    })
+
+    it('creates a mux media row and returns the media relation', async () => {
+      mockMuxValidate.mockResolvedValue({
+        muxVideoId: 'vid-1',
+        muxPlaybackId: 'pb_x'
+      })
+      mockPageRead({
+        id: 'm1',
+        type: 'mux',
+        embedUrl: null,
+        muxPlaybackId: 'pb_x'
+      })
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_CREATE_WITH_MEDIA,
+        variables: {
+          input: {
+            teamId: 'team-1',
+            title: 'X',
+            creatorName: 'Alice',
+            media: { type: 'mux', muxVideoId: 'vid-1' }
+          }
+        }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data.templateGalleryPageCreate.media).toEqual({
+        id: 'm1',
+        type: 'mux',
+        embedUrl: null,
+        muxPlaybackId: 'pb_x'
+      })
+      expect(mockMuxValidate).toHaveBeenCalledWith('vid-1')
+      expect(prismaMock.templateGalleryPageMedia.create).toHaveBeenCalledWith({
+        data: {
+          templateGalleryPageId: 'p1',
+          type: 'mux',
+          embedUrl: null,
+          muxVideoId: 'vid-1',
+          muxPlaybackId: 'pb_x'
+        }
+      })
+    })
+
+    it.each([['undefined', undefined] as const, ['null', null] as const])(
+      'creates no media row when media is %s',
+      async (_label, mediaInput) => {
+        mockPageRead(null)
+
+        const result = (await authClient({
+          document: TEMPLATE_GALLERY_PAGE_CREATE_WITH_MEDIA,
+          variables: {
+            input: {
+              teamId: 'team-1',
+              title: 'X',
+              creatorName: 'Alice',
+              media: mediaInput
+            }
+          }
+        })) as any
+
+        expect(result.errors).toBeUndefined()
+        expect(result.data.templateGalleryPageCreate.media).toBeNull()
+        expect(
+          prismaMock.templateGalleryPageMedia.create
+        ).not.toHaveBeenCalled()
+      }
+    )
+
+    it.each([
+      [
+        'link with a muxVideoId',
+        { type: 'link', url: 'https://x', muxVideoId: 'v' }
+      ],
+      ['mux with a url', { type: 'mux', muxVideoId: 'v', url: 'https://x' }],
+      ['link with no url', { type: 'link' }]
+    ])('rejects %s with MEDIA_INPUT_SHAPE_MISMATCH', async (_label, media) => {
+      prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
+      prismaMock.journey.findMany.mockResolvedValue([] as any)
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_CREATE_WITH_MEDIA,
+        variables: {
+          input: {
+            teamId: 'team-1',
+            title: 'X',
+            creatorName: 'Alice',
+            media: media as any
+          }
+        }
+      })) as any
+
+      expect(result.errors?.[0]?.extensions?.reason).toBe(
+        'MEDIA_INPUT_SHAPE_MISMATCH'
+      )
+      expect(prismaMock.templateGalleryPage.create).not.toHaveBeenCalled()
+      expect(prismaMock.templateGalleryPageMedia.create).not.toHaveBeenCalled()
+    })
+
+    it('propagates a helper error (EMBED_HOST_NOT_ALLOWED) before any write', async () => {
+      prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
+      prismaMock.journey.findMany.mockResolvedValue([] as any)
+      mockLinkValidate.mockRejectedValue(
+        new GraphQLError('not allowed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            reason: 'EMBED_HOST_NOT_ALLOWED'
+          }
+        })
+      )
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_CREATE_WITH_MEDIA,
+        variables: {
+          input: {
+            teamId: 'team-1',
+            title: 'X',
+            creatorName: 'Alice',
+            media: { type: 'link', url: 'https://evil.example.com/x' }
+          }
+        }
+      })) as any
+
+      expect(result.errors?.[0]?.extensions?.reason).toBe(
+        'EMBED_HOST_NOT_ALLOWED'
+      )
+      expect(prismaMock.templateGalleryPage.create).not.toHaveBeenCalled()
+    })
   })
 })

@@ -286,6 +286,14 @@ export enum Service {
 }
 
 /**
+ * Discriminator for the media attached to a TemplateGalleryPage. Determines which underlying fields are populated.
+ */
+export enum TemplateGalleryPageMediaType {
+  link = "link",
+  mux = "mux",
+}
+
+/**
  * Lifecycle state of a TemplateGalleryPage. Anonymous traffic via `templateGalleryPageBySlug` only sees `published` rows; drafts are hidden.
  */
 export enum TemplateGalleryPageStatus {
@@ -965,6 +973,16 @@ export interface TemplateGalleryPageCreateInput {
   creatorImageAlt?: string | null;
   mediaUrl?: string | null;
   journeyIds?: string[] | null;
+  media?: TemplateGalleryPageMediaInput | null;
+}
+
+/**
+ * Discriminated input for attaching media to a TemplateGalleryPage. When `type` is `link`, supply `url` (server-validated and normalized per provider). When `type` is `mux`, supply `muxVideoId` (validated against the media DB).
+ */
+export interface TemplateGalleryPageMediaInput {
+  type: TemplateGalleryPageMediaType;
+  url?: string | null;
+  muxVideoId?: string | null;
 }
 
 /**
@@ -979,6 +997,7 @@ export interface TemplateGalleryPageUpdateInput {
   creatorImageAlt?: string | null;
   mediaUrl?: string | null;
   journeyIds?: string[] | null;
+  media?: TemplateGalleryPageMediaInput | null;
 }
 
 export interface TextResponseBlockCreateInput {

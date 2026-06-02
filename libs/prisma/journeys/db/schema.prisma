@@ -741,14 +741,37 @@ model TemplateGalleryPage {
   creatorName      String
   creatorImageSrc  String?
   creatorImageAlt  String?
+  /// @deprecated NES-1704 — superseded by the `media` relation.
+  /// Kept on legacy rows behind the LD flag; not read or written by new UI.
   mediaUrl         String?
   publishedAt      DateTime?
   createdAt        DateTime                      @default(now())
   updatedAt        DateTime                      @updatedAt
   team             Team                          @relation(fields: [teamId], references: [id], onDelete: Cascade)
   templates        TemplateGalleryPageTemplate[]
+  media            TemplateGalleryPageMedia?
 
   @@index([teamId, createdAt(sort: Desc)])
+}
+
+enum TemplateGalleryPageMediaType {
+  link
+  mux
+}
+
+model TemplateGalleryPageMedia {
+  id                    String                       @id @default(uuid())
+  templateGalleryPageId String                       @unique
+  type                  TemplateGalleryPageMediaType
+  /// Populated for `link`, null for `mux`.
+  embedUrl              String?
+  /// Cross-DB scalar (no @relation). Populated for `mux`, null for `link`.
+  muxVideoId            String?
+  /// Denormalized from MuxVideo.playbackId at save time. Populated for `mux`, null for `link`.
+  muxPlaybackId         String?
+  createdAt             DateTime                     @default(now())
+  updatedAt             DateTime                     @updatedAt
+  templateGalleryPage   TemplateGalleryPage          @relation(fields: [templateGalleryPageId], references: [id], onDelete: Cascade)
 }
 
 model TemplateGalleryPageTemplate {

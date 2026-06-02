@@ -35,5 +35,21 @@ export const env = {
   },
   get PLAUSIBLE_URL(): string {
     return process.env.PLAUSIBLE_URL ?? 'https://example.com'
+  },
+  // The embed allowlist (single env-sourced list). Includes the built-in
+  // provider hosts the normalizers expect plus `loom.com`, a host with no
+  // normalizer used to exercise the "allowlisted, stored as-is" path.
+  get TEMPLATE_LIBRARY_EMBED_HOSTS(): ReadonlySet<string> {
+    return new Set([
+      'canva.com',
+      'www.canva.com',
+      'youtube.com',
+      'www.youtube.com',
+      'm.youtube.com',
+      'youtu.be',
+      'docs.google.com',
+      'loom.com',
+      'www.loom.com'
+    ])
   }
 }

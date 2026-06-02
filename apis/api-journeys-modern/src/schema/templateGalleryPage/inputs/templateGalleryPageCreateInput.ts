@@ -1,5 +1,7 @@
 import { builder } from '../../builder'
 
+import { TemplateGalleryPageMediaInput } from './templateGalleryPageMediaInput'
+
 export const TemplateGalleryPageCreateInput = builder.inputType(
   'TemplateGalleryPageCreateInput',
   {
@@ -42,6 +44,12 @@ export const TemplateGalleryPageCreateInput = builder.inputType(
         required: false,
         description:
           'Optional initial template journeys to attach. Cross-team and non-template ids are silently filtered out.'
+      }),
+      media: t.field({
+        type: TemplateGalleryPageMediaInput,
+        required: false,
+        description:
+          'Optional embedded media. When `type` is `link`, the `url` is server-validated and normalized per provider; when `type` is `mux`, the `muxVideoId` is validated against the media DB.'
       })
     })
   }

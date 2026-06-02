@@ -10,6 +10,7 @@ import { assertHttpsUrl } from './assertHttpsUrl'
 import { filterToTeamTemplates } from './filterToTeamTemplates'
 import { SlugTakenError, validateUserSuppliedSlug } from './generateUniqueSlug'
 import { TemplateGalleryPageUpdateInput } from './inputs'
+import { resolveMediaInput } from './media/resolveMediaInput'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageUpdate', (t) =>
@@ -48,6 +49,12 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
 
       assertHttpsUrl(input.mediaUrl, 'mediaUrl')
       assertHttpsUrl(input.creatorImageSrc, 'creatorImageSrc')
+
+      // Validate + normalize media BEFORE the transaction — the external IO
+      // (oEmbed fetches, cross-DB Mux read) must not run inside the tx. Returns
+      // null when media is null or undefined; the tx below distinguishes
+      // `null` (clear the row) from `undefined` (leave it alone).
+      const mediaCreate = await resolveMediaInput(input.media)
 
       const slug =
         input.slug != null
@@ -110,6 +117,37 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
                 }))
               })
             }
+          }
+        }
+
+        // media: undefined leaves it alone, null clears it (idempotent), an
+        // object replaces it. mediaCreate is non-null exactly when an object
+        // was supplied (validated/normalized pre-tx).
+        if (input.media === null) {
+          await tx.templateGalleryPageMedia.deleteMany({
+            where: { templateGalleryPageId: id }
+          })
+        } else if (mediaCreate != null) {
+          // Upsert keyed on the unique templateGalleryPageId. A concurrent
+          // first-create can race two upserts into a P2002 on that unique
+          // constraint; surface it as CONFLICT rather than an unwrapped 500
+          // (NES-1547 pattern).
+          try {
+            await tx.templateGalleryPageMedia.upsert({
+              where: { templateGalleryPageId: id },
+              create: { templateGalleryPageId: id, ...mediaCreate },
+              update: { ...mediaCreate }
+            })
+          } catch (error) {
+            if (
+              error instanceof Prisma.PrismaClientKnownRequestError &&
+              error.code === 'P2002'
+            ) {
+              throw new GraphQLError('media was modified concurrently; retry', {
+                extensions: { code: 'CONFLICT', field: 'media' }
+              })
+            }
+            throw error
           }
         }
 

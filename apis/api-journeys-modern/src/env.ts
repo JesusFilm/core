@@ -1,6 +1,8 @@
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 
+import { parseEmbedHostsEnv } from './parseEmbedHostsEnv'
+
 export const env = createEnv({
   runtimeEnv: process.env,
   skipValidation: process.env.SKIP_ENV_VALIDATION === '1',
@@ -33,6 +35,16 @@ export const env = createEnv({
     MUX_UGC_SECRET_KEY: z.string().trim().min(1),
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
     REDIS_URL: z.string().trim().min(1).default('redis'),
-    SERVICE_VERSION: z.string().trim().default('')
+    SERVICE_VERSION: z.string().trim().default(''),
+    // JSON object mapping a label (service name) to a single allowed hostname,
+    // one entry per host — the single source of truth for the template-library
+    // embed allowlist. Must include the provider hosts the normalizers expect
+    // (canva.com, youtube.com, docs.google.com, etc.); there is no code-default
+    // seeding. Parsed and validated by parseEmbedHostsEnv — a non-object,
+    // malformed JSON, or an invalid hostname value fails boot loudly.
+    TEMPLATE_LIBRARY_EMBED_HOSTS: z
+      .string()
+      .default('{}')
+      .transform(parseEmbedHostsEnv)
   }
 })

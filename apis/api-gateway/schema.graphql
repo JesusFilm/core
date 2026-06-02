@@ -2752,7 +2752,9 @@ type TemplateGalleryPage @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   Optional https URL of a hero/cover media asset shown on the public page. https-only on write.
   """
-  mediaUrl: String
+  mediaUrl: String @deprecated(
+    reason: "Superseded by the `media` relation (NES-1704). Retained on legacy rows behind the LD flag; not written by new UI."
+  )
   """
   Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.
   """
@@ -2767,6 +2769,29 @@ type TemplateGalleryPage @join__type(graph: API_JOURNEYS_MODERN)  {
   Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
   """
   templates: [TemplateGalleryItem!]!
+  """
+  Embedded media shown on the public page. `null` for legacy rows that predate the multi-type embed (which used the deprecated `mediaUrl` scalar).
+  """
+  media: TemplateGalleryPageMedia
+}
+
+"""
+Media attached to a TemplateGalleryPage. `type` discriminates the populated fields: `link` populates `embedUrl`; `mux` populates `muxPlaybackId`. All fields source directly from the stored row so public-page reads never cross to the media database.
+"""
+type TemplateGalleryPageMedia @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID!
+  """
+  Discriminator for which underlying field is populated.
+  """
+  type: TemplateGalleryPageMediaType!
+  """
+  Server-normalized iframe URL. Populated for `link`; null for `mux`.
+  """
+  embedUrl: String
+  """
+  Mux playback ID, denormalized from MuxVideo at save time so public reads never cross to the media DB. Populated for `mux`; null for `link`.
+  """
+  muxPlaybackId: String
 }
 
 type UserDeleteJourneysCheckResult @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4062,6 +4087,20 @@ enum TemplateGalleryPageStatus @join__type(graph: API_JOURNEYS_MODERN)  {
   published @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+"""
+Discriminator for the media attached to a TemplateGalleryPage. Determines which underlying fields are populated.
+"""
+enum TemplateGalleryPageMediaType @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  An embeddable URL (Canva, YouTube, Google Slides, or an allowlisted host). `embedUrl` is populated; the Mux fields are null.
+  """
+  link @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  """
+  A Mux video upload. `muxPlaybackId` is populated; `embedUrl` is null.
+  """
+  mux @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum USER_DELETE_LOG_LEVEL @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
   INFO @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_USERS) 
   WARN @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_USERS) 
@@ -5126,6 +5165,28 @@ input TemplateGalleryPageCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   Optional initial template journeys to attach. Cross-team and non-template ids are silently filtered out.
   """
   journeyIds: [ID!]
+  """
+  Optional embedded media. When `type` is `link`, the `url` is server-validated and normalized per provider; when `type` is `mux`, the `muxVideoId` is validated against the media DB.
+  """
+  media: TemplateGalleryPageMediaInput
+}
+
+"""
+Discriminated input for attaching media to a TemplateGalleryPage. When `type` is `link`, supply `url` (server-validated and normalized per provider). When `type` is `mux`, supply `muxVideoId` (validated against the media DB).
+"""
+input TemplateGalleryPageMediaInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Discriminator selecting which other field is required.
+  """
+  type: TemplateGalleryPageMediaType!
+  """
+  The pasted embed URL. Required when `type` is `link`; must be omitted when `type` is `mux`.
+  """
+  url: String
+  """
+  The Mux video id to attach. Required when `type` is `mux`; must be omitted when `type` is `link`.
+  """
+  muxVideoId: ID
 }
 
 """
@@ -5164,6 +5225,10 @@ input TemplateGalleryPageUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   When provided, replaces the page's template list with these journeys in this exact order (existing assignments are deleted then recreated). Cross-team and non-template ids are silently filtered out. Omit to leave the template list unchanged.
   """
   journeyIds: [ID!]
+  """
+  Embedded media. Omit to leave the existing media unchanged; pass `null` to clear it (deletes the media row); pass an object to replace it (validated and normalized per `type`).
+  """
+  media: TemplateGalleryPageMediaInput
 }
 
 input TextResponseBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {

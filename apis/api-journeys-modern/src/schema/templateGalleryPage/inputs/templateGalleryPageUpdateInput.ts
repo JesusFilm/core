@@ -1,5 +1,7 @@
 import { builder } from '../../builder'
 
+import { TemplateGalleryPageMediaInput } from './templateGalleryPageMediaInput'
+
 // Deliberately omits status, publishedAt, id, teamId, createdAt, updatedAt — those are
 // either immutable or transitioned via dedicated mutations (templateGalleryPagePublish).
 export const TemplateGalleryPageUpdateInput = builder.inputType(
@@ -44,6 +46,12 @@ export const TemplateGalleryPageUpdateInput = builder.inputType(
         required: false,
         description:
           "When provided, replaces the page's template list with these journeys in this exact order (existing assignments are deleted then recreated). Cross-team and non-template ids are silently filtered out. Omit to leave the template list unchanged."
+      }),
+      media: t.field({
+        type: TemplateGalleryPageMediaInput,
+        required: false,
+        description:
+          'Embedded media. Omit to leave the existing media unchanged; pass `null` to clear it (deletes the media row); pass an object to replace it (validated and normalized per `type`).'
       })
     })
   }

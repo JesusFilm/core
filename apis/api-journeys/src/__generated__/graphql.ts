@@ -5205,7 +5205,12 @@ export type TemplateGalleryPage = {
   description: Scalars['String']['output'];
   /** Stable UUID identifier. */
   id: Scalars['ID']['output'];
-  /** Optional https URL of a hero/cover media asset shown on the public page. https-only on write. */
+  /** Embedded media shown on the public page. `null` for legacy rows that predate the multi-type embed (which used the deprecated `mediaUrl` scalar). */
+  media?: Maybe<TemplateGalleryPageMedia>;
+  /**
+   * Optional https URL of a hero/cover media asset shown on the public page. https-only on write.
+   * @deprecated Superseded by the `media` relation (NES-1704). Retained on legacy rows behind the LD flag; not written by new UI.
+   */
   mediaUrl?: Maybe<Scalars['String']['output']>;
   /** Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published. */
   publishedAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -5234,6 +5239,8 @@ export type TemplateGalleryPageCreateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   /** Optional initial template journeys to attach. Cross-team and non-template ids are silently filtered out. */
   journeyIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** Optional embedded media. When `type` is `link`, the `url` is server-validated and normalized per provider; when `type` is `mux`, the `muxVideoId` is validated against the media DB. */
+  media?: InputMaybe<TemplateGalleryPageMediaInput>;
   /** Optional https URL of a hero/cover media asset. Rejected if not https. */
   mediaUrl?: InputMaybe<Scalars['String']['input']>;
   /** Owning team. Caller must be a member. */
@@ -5241,6 +5248,36 @@ export type TemplateGalleryPageCreateInput = {
   /** Display title. Drives slug auto-generation: lowercased + hyphenated form of the title, max 200 characters, with the reserved-word list (`admin`, `api`, `app`, `auth`, `graphql`, `health`, `journey`, `journeys`, `public`, `sign-in`, `sign-up`, `static`, `templates`, `webhook`, `webhooks`) blocked. On collision the resolver tries `<base>-2`..`<base>-50`, then falls back to a 6-character random suffix. */
   title: Scalars['String']['input'];
 };
+
+/** Media attached to a TemplateGalleryPage. `type` discriminates the populated fields: `link` populates `embedUrl`; `mux` populates `muxPlaybackId`. All fields source directly from the stored row so public-page reads never cross to the media database. */
+export type TemplateGalleryPageMedia = {
+  __typename?: 'TemplateGalleryPageMedia';
+  /** Server-normalized iframe URL. Populated for `link`; null for `mux`. */
+  embedUrl?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  /** Mux playback ID, denormalized from MuxVideo at save time so public reads never cross to the media DB. Populated for `mux`; null for `link`. */
+  muxPlaybackId?: Maybe<Scalars['String']['output']>;
+  /** Discriminator for which underlying field is populated. */
+  type: TemplateGalleryPageMediaType;
+};
+
+/** Discriminated input for attaching media to a TemplateGalleryPage. When `type` is `link`, supply `url` (server-validated and normalized per provider). When `type` is `mux`, supply `muxVideoId` (validated against the media DB). */
+export type TemplateGalleryPageMediaInput = {
+  /** The Mux video id to attach. Required when `type` is `mux`; must be omitted when `type` is `link`. */
+  muxVideoId?: InputMaybe<Scalars['ID']['input']>;
+  /** Discriminator selecting which other field is required. */
+  type: TemplateGalleryPageMediaType;
+  /** The pasted embed URL. Required when `type` is `link`; must be omitted when `type` is `mux`. */
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Discriminator for the media attached to a TemplateGalleryPage. Determines which underlying fields are populated. */
+export enum TemplateGalleryPageMediaType {
+  /** An embeddable URL (Canva, YouTube, Google Slides, or an allowlisted host). `embedUrl` is populated; the Mux fields are null. */
+  Link = 'link',
+  /** A Mux video upload. `muxPlaybackId` is populated; `embedUrl` is null. */
+  Mux = 'mux'
+}
 
 /** Lifecycle state of a TemplateGalleryPage. Anonymous traffic via `templateGalleryPageBySlug` only sees `published` rows; drafts are hidden. */
 export enum TemplateGalleryPageStatus {
@@ -5262,6 +5299,8 @@ export type TemplateGalleryPageUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   /** When provided, replaces the page's template list with these journeys in this exact order (existing assignments are deleted then recreated). Cross-team and non-template ids are silently filtered out. Omit to leave the template list unchanged. */
   journeyIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** Embedded media. Omit to leave the existing media unchanged; pass `null` to clear it (deletes the media row); pass an object to replace it (validated and normalized per `type`). */
+  media?: InputMaybe<TemplateGalleryPageMediaInput>;
   /** Optional https hero media URL. Pass `null` to clear. Rejected if not https. */
   mediaUrl?: InputMaybe<Scalars['String']['input']>;
   /** Updated public slug. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, not be in the reserved list, and not be in use by another page. Changing the slug breaks any external links to the old URL. */

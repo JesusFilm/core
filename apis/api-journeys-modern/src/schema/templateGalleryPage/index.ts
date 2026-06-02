@@ -1,6 +1,7 @@
 import './enums'
 import './inputs'
 import './templateGalleryItem'
+import './templateGalleryPageMedia'
 import './templateGalleryPage'
 import './templateGalleryPage.query'
 import './templateGalleryPageBySlug.query'
