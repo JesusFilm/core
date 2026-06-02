@@ -7,10 +7,7 @@ import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import {
-  OVERLAY_CLOSE_BG,
-  OVERLAY_CLOSE_BG_HOVER
-} from '../AiChat/chatStyles'
+import { OVERLAY_CLOSE_BG, OVERLAY_CLOSE_BG_HOVER } from '../AiChat/chatStyles'
 
 const AiChat = dynamic(
   async () =>
