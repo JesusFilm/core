@@ -3,6 +3,7 @@
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import { alpha } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
@@ -49,11 +50,13 @@ export function ChatOverlay({
         sx={{
           position: 'absolute',
           inset: 0,
-          // Fully opaque so the journey card behind the overlay is not
-          // visible. Previously alpha(grey[900], 0.88) + 6px backdrop blur
-          // left underlying card content perceptible, which hurt chat
-          // legibility (NES-1654, Lucinda's feedback).
-          bgcolor: 'grey.900'
+          // Near-opaque (98%) — Lucinda's original feedback was that the
+          // previous 88% + 6px blur showed too much of the journey card.
+          // Fully opaque (100%) read as a flat slab; 98% gives a hint of
+          // depth without compromising legibility. No backdrop blur — at
+          // this opacity the 2% bleed-through doesn't justify the GPU
+          // cost. Tune-in-place value (NES-1654 iter).
+          bgcolor: (theme) => alpha(theme.palette.grey[900], 0.98)
         }}
       />
       <IconButton
