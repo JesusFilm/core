@@ -13,6 +13,18 @@ import { MuxUploadField } from './MuxUploadField'
 
 type MediaUiMode = 'mux' | 'canva' | 'youtube'
 
+// Exact YouTube hosts — mirrors the allowlists in `embedAttrs` and
+// `previewEmbedUrl` rather than a permissive `endsWith` (which would match
+// look-alike hosts like `notyoutube.com`).
+const YOUTUBE_HOSTS = new Set([
+  'youtu.be',
+  'youtube.com',
+  'www.youtube.com',
+  'm.youtube.com',
+  'youtube-nocookie.com',
+  'www.youtube-nocookie.com'
+])
+
 interface MediaSectionProps {
   media: CollectionMediaValues
   /** Inline error for the media field (schema or backend reason message). */
@@ -36,13 +48,7 @@ function inferMode(media: CollectionMediaValues): MediaUiMode {
   if (media.type === 'link') {
     try {
       const host = new URL(media.url).hostname.toLowerCase()
-      if (
-        host === 'youtu.be' ||
-        host.endsWith('youtube.com') ||
-        host.endsWith('youtube-nocookie.com')
-      ) {
-        return 'youtube'
-      }
+      if (YOUTUBE_HOSTS.has(host)) return 'youtube'
     } catch {
       // fall through to the Canva default
     }
@@ -120,9 +126,28 @@ export function MediaSection({
               (media.muxPlaybackId != null && media.muxPlaybackId !== ''))
           }
           playbackId={media.type === 'mux' ? media.muxPlaybackId : null}
-          onUploadStart={() => onChange({ type: 'mux', muxVideoId: '' })}
+          // Preserve any existing playbackId so an in-flight *replacement*
+          // upload still knows about the previously-saved video (so cancelling
+          // reverts to it instead of clearing it).
+          onUploadStart={() =>
+            onChange({
+              type: 'mux',
+              muxVideoId: '',
+              muxPlaybackId: media.type === 'mux' ? media.muxPlaybackId : null
+            })
+          }
           onComplete={(videoId) =>
             onChange({ type: 'mux', muxVideoId: videoId })
+          }
+          // Cancel reverts to the prior saved video when one existed, else none.
+          onCancel={() =>
+            onChange(
+              media.type === 'mux' &&
+                media.muxPlaybackId != null &&
+                media.muxPlaybackId !== ''
+                ? { type: 'mux', muxVideoId: '', muxPlaybackId: media.muxPlaybackId }
+                : { type: 'none' }
+            )
           }
           onRemove={() => onChange({ type: 'none' })}
         />

@@ -32,8 +32,14 @@ export function TemplateGalleryMedia({
     return <MuxMedia playbackId={media.muxPlaybackId} />
   }
 
-  if (media.embedUrl == null) return null
-  return <LinkMedia embedUrl={media.embedUrl} />
+  if (media.type === TemplateGalleryPageMediaType.link) {
+    if (media.embedUrl == null) return null
+    return <LinkMedia embedUrl={media.embedUrl} />
+  }
+
+  // Exhaustiveness: a new media type added to the enum must be handled here
+  // rather than silently falling into the link branch.
+  return null
 }
 
 function MuxMedia({ playbackId }: { playbackId: string }): ReactElement {

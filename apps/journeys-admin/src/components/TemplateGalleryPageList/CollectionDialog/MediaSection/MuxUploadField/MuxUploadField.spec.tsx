@@ -21,10 +21,12 @@ function renderField(
 ): {
   onUploadStart: ReturnType<typeof vi.fn>
   onComplete: ReturnType<typeof vi.fn>
+  onCancel: ReturnType<typeof vi.fn>
   onRemove: ReturnType<typeof vi.fn>
 } {
   const onUploadStart = vi.fn()
   const onComplete = vi.fn()
+  const onCancel = vi.fn()
   const onRemove = vi.fn()
   render(
     <MuxUploadField
@@ -33,11 +35,12 @@ function renderField(
       playbackId={null}
       onUploadStart={onUploadStart}
       onComplete={onComplete}
+      onCancel={onCancel}
       onRemove={onRemove}
       {...props}
     />
   )
-  return { onUploadStart, onComplete, onRemove }
+  return { onUploadStart, onComplete, onCancel, onRemove }
 }
 
 describe('MuxUploadField', () => {
@@ -47,12 +50,14 @@ describe('MuxUploadField', () => {
     mockCancelUploadForBlock.mockReset()
   })
 
-  it('starts an upload when a file is chosen', () => {
+  it('aborts a prior upload then starts a new one when a file is chosen', () => {
     const { onUploadStart, onComplete } = renderField()
     const file = new File(['x'], 'clip.mp4', { type: 'video/mp4' })
     fireEvent.change(screen.getByTestId('MuxUploadFieldInput'), {
       target: { files: [file] }
     })
+    // Re-pick aborts any prior in-flight upload for this key first.
+    expect(mockCancelUploadForBlock).toHaveBeenCalledWith({ id: 'key-1' })
     expect(onUploadStart).toHaveBeenCalledTimes(1)
     expect(mockAddUploadTask).toHaveBeenCalledWith(
       'key-1',
@@ -63,13 +68,14 @@ describe('MuxUploadField', () => {
     )
   })
 
-  it('shows progress and cancels an in-flight upload', () => {
+  it('shows progress and cancels an in-flight upload (reverting, not removing)', () => {
     mockGetUploadStatus.mockReturnValue({ status: 'uploading', progress: 42 })
-    const { onRemove } = renderField()
+    const { onCancel, onRemove } = renderField()
     expect(screen.getByTestId('MuxUploadFieldUploading')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     expect(mockCancelUploadForBlock).toHaveBeenCalledWith({ id: 'key-1' })
-    expect(onRemove).toHaveBeenCalledTimes(1)
+    expect(onCancel).toHaveBeenCalledTimes(1)
+    expect(onRemove).not.toHaveBeenCalled()
   })
 
   it('shows the processing state', () => {

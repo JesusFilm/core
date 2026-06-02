@@ -2,24 +2,24 @@ import { previewEmbedUrl } from './previewEmbedUrl'
 
 describe('previewEmbedUrl', () => {
   it('normalizes the common YouTube shapes to a nocookie embed', () => {
-    expect(previewEmbedUrl('https://www.youtube.com/watch?v=abc123')).toBe(
-      'https://www.youtube-nocookie.com/embed/abc123'
+    expect(previewEmbedUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(
+      'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
     )
-    expect(previewEmbedUrl('https://youtu.be/abc123')).toBe(
-      'https://www.youtube-nocookie.com/embed/abc123'
+    expect(previewEmbedUrl('https://youtu.be/dQw4w9WgXcQ')).toBe(
+      'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
     )
-    expect(previewEmbedUrl('https://www.youtube.com/shorts/abc123')).toBe(
-      'https://www.youtube-nocookie.com/embed/abc123'
+    expect(previewEmbedUrl('https://www.youtube.com/shorts/dQw4w9WgXcQ')).toBe(
+      'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
     )
-    expect(previewEmbedUrl('https://m.youtube.com/watch?v=abc123')).toBe(
-      'https://www.youtube-nocookie.com/embed/abc123'
+    expect(previewEmbedUrl('https://m.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(
+      'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
     )
   })
 
   it('passes through an already-normalized nocookie embed', () => {
     expect(
-      previewEmbedUrl('https://www.youtube-nocookie.com/embed/abc123')
-    ).toBe('https://www.youtube-nocookie.com/embed/abc123')
+      previewEmbedUrl('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ')
+    ).toBe('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ')
   })
 
   it('returns null for Canva / Slides / unknown hosts that need server normalization', () => {
@@ -35,5 +35,14 @@ describe('previewEmbedUrl', () => {
     expect(previewEmbedUrl('   ')).toBeNull()
     expect(previewEmbedUrl('http://www.youtube.com/watch?v=abc')).toBeNull()
     expect(previewEmbedUrl('not a url')).toBeNull()
+  })
+
+  it('returns null for YouTube URLs that are not a single video', () => {
+    // youtu.be/playlist and /channel paths must not be mistaken for a video id.
+    expect(previewEmbedUrl('https://youtu.be/playlist?list=PL123')).toBeNull()
+    expect(previewEmbedUrl('https://www.youtube.com/channel/UCabc')).toBeNull()
+    expect(
+      previewEmbedUrl('https://www.youtube.com/watch?v=tooshort')
+    ).toBeNull()
   })
 })

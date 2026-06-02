@@ -62,7 +62,7 @@ interface MuxVideoUploadContextType {
     languageName?: string,
     onComplete?: (videoId: string) => void
   ) => void
-  cancelUploadForBlock: (block: TreeBlock) => void
+  cancelUploadForBlock: (block: Pick<TreeBlock, 'id'>) => void
 }
 
 const MuxVideoUploadContext = createContext<
@@ -192,7 +192,7 @@ export function MuxVideoUploadProvider({
   )
 
   const cancelUploadForBlock = useCallback(
-    (block: TreeBlock) => {
+    (block: Pick<TreeBlock, 'id'>) => {
       cancelUploadForBlockUtil(block, {
         uploadTasks,
         setUploadTasks,

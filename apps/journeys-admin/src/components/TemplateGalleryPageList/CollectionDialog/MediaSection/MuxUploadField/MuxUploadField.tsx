@@ -7,8 +7,6 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement, useRef } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
-
 import { useMuxVideoUpload } from '../../../../MuxVideoUploadProvider'
 
 interface MuxUploadFieldProps {
@@ -27,7 +25,11 @@ interface MuxUploadFieldProps {
   /** Fires when the provider confirms the upload is ready, with the new
    *  Mux video id. */
   onComplete: (videoId: string) => void
-  /** Clears the attached video from the form (cancel / remove). */
+  /** Aborts an in-flight upload and reverts the form to its prior committed
+   *  media (the previously-saved video, or none). Distinct from `onRemove`,
+   *  which deletes an already-attached video. */
+  onCancel: () => void
+  /** Deletes the attached video from the form (Remove button). */
   onRemove: () => void
 }
 
@@ -46,6 +48,7 @@ export function MuxUploadField({
   playbackId,
   onUploadStart,
   onComplete,
+  onCancel,
   onRemove
 }: MuxUploadFieldProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -59,16 +62,17 @@ export function MuxUploadField({
     // Reset the input so re-selecting the same file fires onChange again.
     event.target.value = ''
     if (file == null) return
+    // Abort any prior in-flight upload for this key before starting a new
+    // one, so a quick re-pick doesn't leave two pipelines racing to set the
+    // form's muxVideoId.
+    cancelUploadForBlock({ id: uploadKey })
     onUploadStart()
     addUploadTask(uploadKey, file, undefined, undefined, onComplete)
   }
 
   function handleCancel(): void {
-    // The provider only exposes a TreeBlock-keyed cancel; the dialog has no
-    // TreeBlock, so pass a minimal shape whose `id` matches the upload key
-    // (the cancel util reads only `block.id`).
-    cancelUploadForBlock({ id: uploadKey } as unknown as TreeBlock)
-    onRemove()
+    cancelUploadForBlock({ id: uploadKey })
+    onCancel()
   }
 
   function openPicker(): void {

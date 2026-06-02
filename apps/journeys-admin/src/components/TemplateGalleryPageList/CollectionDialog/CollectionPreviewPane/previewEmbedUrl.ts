@@ -13,20 +13,27 @@ const YOUTUBE_WATCH_HOSTS = new Set([
   'm.youtube.com'
 ])
 
+// A YouTube video id is exactly 11 url-safe base64 chars. Validating the
+// shape stops non-video paths (e.g. youtu.be/playlist, /channel/UC…) from
+// being mistaken for a video and producing a broken preview iframe.
+const YOUTUBE_ID_RE = /^[\w-]{11}$/
+
+function asYouTubeId(candidate: string | null | undefined): string | null {
+  return candidate != null && YOUTUBE_ID_RE.test(candidate) ? candidate : null
+}
+
 function youTubeId(url: URL): string | null {
   // youtu.be/<id>
   if (url.hostname === 'youtu.be') {
-    const id = url.pathname.split('/')[1]
-    return id !== '' ? id : null
+    return asYouTubeId(url.pathname.split('/')[1])
   }
   if (YOUTUBE_WATCH_HOSTS.has(url.hostname)) {
     // watch?v=<id>
-    const v = url.searchParams.get('v')
-    if (v != null && v !== '') return v
+    const fromQuery = asYouTubeId(url.searchParams.get('v'))
+    if (fromQuery != null) return fromQuery
     // /shorts/<id>, /embed/<id>, /live/<id>
     const [, segment, id] = url.pathname.split('/')
-    if (['shorts', 'embed', 'live'].includes(segment) && id != null && id !== '')
-      return id
+    if (['shorts', 'embed', 'live'].includes(segment)) return asYouTubeId(id)
   }
   return null
 }

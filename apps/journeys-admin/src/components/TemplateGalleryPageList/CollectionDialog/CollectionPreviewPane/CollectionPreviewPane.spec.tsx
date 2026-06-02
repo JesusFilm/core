@@ -87,12 +87,12 @@ describe('CollectionPreviewPane', () => {
       renderPane({
         values: {
           ...baseValues,
-          media: { type: 'link', url: 'https://www.youtube.com/watch?v=abc123' }
+          media: { type: 'link', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }
         }
       })
       expect(screen.getByTestId('GalleryMediaPreviewIframe')).toHaveAttribute(
         'src',
-        'https://www.youtube-nocookie.com/embed/abc123'
+        'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
       )
     })
 

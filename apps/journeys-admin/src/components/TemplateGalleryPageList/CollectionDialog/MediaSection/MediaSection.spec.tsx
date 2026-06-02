@@ -7,7 +7,19 @@ import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
 import { MediaSection } from './MediaSection'
 
 vi.mock('./MuxUploadField', () => ({
-  MuxUploadField: () => <div data-testid="MuxUploadFieldStub" />
+  MuxUploadField: (props: {
+    onUploadStart: () => void
+    onComplete: (videoId: string) => void
+    onCancel: () => void
+    onRemove: () => void
+  }) => (
+    <div data-testid="MuxUploadFieldStub">
+      <button onClick={() => props.onUploadStart()}>stub-start</button>
+      <button onClick={() => props.onComplete('vid-new')}>stub-complete</button>
+      <button onClick={() => props.onCancel()}>stub-cancel</button>
+      <button onClick={() => props.onRemove()}>stub-remove</button>
+    </div>
+  )
 }))
 
 function renderSection(
@@ -106,5 +118,45 @@ describe('MediaSection', () => {
   it('renders the upload field in Video upload mode', () => {
     renderSection({ type: 'mux', muxVideoId: 'v1' })
     expect(screen.getByTestId('MuxUploadFieldStub')).toBeInTheDocument()
+  })
+
+  it('preserves the existing playbackId when a replacement upload starts', () => {
+    const { onChange } = renderSection({
+      type: 'mux',
+      muxVideoId: '',
+      muxPlaybackId: 'pb-9'
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'stub-start' }))
+    expect(onChange).toHaveBeenCalledWith({
+      type: 'mux',
+      muxVideoId: '',
+      muxPlaybackId: 'pb-9'
+    })
+  })
+
+  it('reverts to the prior saved video when a replacement upload is cancelled', () => {
+    const { onChange } = renderSection({
+      type: 'mux',
+      muxVideoId: '',
+      muxPlaybackId: 'pb-9'
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'stub-cancel' }))
+    expect(onChange).toHaveBeenCalledWith({
+      type: 'mux',
+      muxVideoId: '',
+      muxPlaybackId: 'pb-9'
+    })
+  })
+
+  it('clears to none when cancelling a fresh upload with no prior video', () => {
+    const { onChange } = renderSection({ type: 'mux', muxVideoId: '' })
+    fireEvent.click(screen.getByRole('button', { name: 'stub-cancel' }))
+    expect(onChange).toHaveBeenCalledWith({ type: 'none' })
+  })
+
+  it('sets the new video id on upload completion', () => {
+    const { onChange } = renderSection({ type: 'mux', muxVideoId: '' })
+    fireEvent.click(screen.getByRole('button', { name: 'stub-complete' }))
+    expect(onChange).toHaveBeenCalledWith({ type: 'mux', muxVideoId: 'vid-new' })
   })
 })
