@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import videojs from 'video.js'
 
 import {
   VideoBlockObjectFit,
@@ -167,8 +168,10 @@ describe('MuxDetails', () => {
     })
   })
 
-  it('should not render when open is false', () => {
-    const { queryByTestId } = render(
+  it('should not initialise the player when open is false', () => {
+    vi.mocked(videojs).mockClear()
+
+    render(
       <MuxDetails
         id="videoId"
         activeVideoBlock={mockVideoBlock}
@@ -177,7 +180,7 @@ describe('MuxDetails', () => {
       />
     )
 
-    expect(queryByTestId('MuxDetails')).toBeInTheDocument()
+    expect(videojs).not.toHaveBeenCalled()
   })
 
   it('should update subtitle tracks on showGeneratedSubtitles change', async () => {

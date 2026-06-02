@@ -59,14 +59,17 @@ export function MyMuxVideos({
     GetMyMuxVideosVariables
   >(GET_MY_MUX_VIDEOS, {
     variables: { offset: 0, limit: PEEK_LIMIT },
-    fetchPolicy: 'cache-and-network',
-    nextFetchPolicy: 'cache-first',
+    fetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true
   })
 
   const isFetchingMore = networkStatus === NetworkStatus.fetchMore
 
-  const allVideos = data?.getMyMuxVideos ?? []
+  const hasPlaybackId = (
+    video: MuxVideoNode
+  ): video is MuxVideoNode & { playbackId: string } => video.playbackId != null
+
+  const allVideos = (data?.getMyMuxVideos ?? []).filter(hasPlaybackId)
   const videos = allVideos.slice(0, pagesFetched * PAGE_SIZE)
   const hasMore = allVideos.length > pagesFetched * PAGE_SIZE
 
@@ -74,10 +77,12 @@ export function MyMuxVideos({
     !loading && error == null && uploading !== true && videos.length === 0
   if (isEmpty) return null
 
-  const handleClick = (video: MuxVideoNode): void => {
+  const handleClick = (
+    video: MuxVideoNode & { playbackId: string }
+  ): void => {
     setPreviewVideo({
       id: video.id,
-      playbackId: video.playbackId as string,
+      playbackId: video.playbackId,
       duration: video.duration ?? null
     })
   }
@@ -159,7 +164,7 @@ export function MyMuxVideos({
               >
                 <Box
                   component="img"
-                  src={`https://image.mux.com/${video.playbackId as string}/thumbnail.png?time=1`}
+                  src={`https://image.mux.com/${video.playbackId}/thumbnail.png?time=1`}
                   alt=""
                   loading="lazy"
                   decoding="async"

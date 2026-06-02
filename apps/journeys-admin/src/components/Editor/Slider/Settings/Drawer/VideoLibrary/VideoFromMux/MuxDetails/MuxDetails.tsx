@@ -75,7 +75,7 @@ export function MuxDetails({
         }
       }
     }
-  }, [open, playbackId, activeVideoBlock?.showGeneratedSubtitles])
+  }, [open, playbackId])
 
   useEffect(() => {
     updateSubtitleTracks(playerRef.current)

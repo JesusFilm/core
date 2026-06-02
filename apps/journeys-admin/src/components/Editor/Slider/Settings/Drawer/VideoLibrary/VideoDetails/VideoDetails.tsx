@@ -65,31 +65,6 @@ export function VideoDetails({
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
 
-  // playbackId is only consumed by MuxDetails; LocalDetails and YouTubeDetails
-  // accept a narrower prop set and harmlessly ignore it. It stays in this shared
-  // shape so VideoDetails can forward it generically without a per-source branch.
-  let Details: (
-    props: Pick<
-      VideoDetailsProps,
-      'id' | 'open' | 'onSelect' | 'activeVideoBlock' | 'playbackId'
-    >
-  ) => ReactElement
-
-  switch (source) {
-    case VideoBlockSource.internal:
-      Details = LocalDetails
-      break
-    case VideoBlockSource.mux:
-      Details = MuxDetails
-      break
-    case VideoBlockSource.youTube:
-      Details = YouTubeDetails
-      break
-    default:
-      Details = LocalDetails
-      break
-  }
-
   const handleSelect = (
     block: VideoBlockUpdateInput,
     shouldCloseDrawer?: boolean
@@ -121,6 +96,30 @@ export function VideoDetails({
       },
       false
     )
+  }
+
+  // playbackId is a Mux-only concern, so it is forwarded exclusively into the
+  // MuxDetails branch. LocalDetails and YouTubeDetails receive a narrower prop
+  // set that omits playbackId entirely.
+  const sharedDetailsProps: Pick<
+    VideoDetailsProps,
+    'id' | 'open' | 'onSelect' | 'activeVideoBlock'
+  > = {
+    id,
+    open,
+    onSelect: handleSelect,
+    activeVideoBlock
+  }
+
+  function renderDetails(): ReactElement {
+    const key = activeVideoBlock?.videoId
+    if (source === VideoBlockSource.mux)
+      return (
+        <MuxDetails key={key} {...sharedDetailsProps} playbackId={playbackId} />
+      )
+    if (source === VideoBlockSource.youTube)
+      return <YouTubeDetails key={key} {...sharedDetailsProps} />
+    return <LocalDetails key={key} {...sharedDetailsProps} />
   }
 
   return (
@@ -166,17 +165,7 @@ export function VideoDetails({
           }}
         >
           {/* render conditional to unmount details content if not open */}
-          {open && (
-            <Details
-              data-testid="DetailsContent"
-              key={activeVideoBlock?.videoId}
-              id={id}
-              open={open}
-              onSelect={handleSelect}
-              activeVideoBlock={activeVideoBlock}
-              playbackId={playbackId}
-            />
-          )}
+          {open && renderDetails()}
         </Box>
       </Stack>
     </Drawer>

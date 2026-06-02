@@ -13,6 +13,7 @@ import {
 } from '../../../../../../../../__generated__/globalTypes'
 import { validateMuxLanguage } from '../../../../../../../libs/validateMuxLanguage'
 import { useMuxVideoUpload } from '../../../../../../MuxVideoUploadProvider'
+import { isUploadActive } from '../../../../../../MuxVideoUploadProvider/utils/isUploadActive'
 
 import { AddByFile } from './AddByFile'
 import { MyMuxVideos } from './MyMuxVideos'
@@ -40,10 +41,7 @@ export function VideoFromMux({
   // so we key on the card — which already exists — instead.
   const uploadTask =
     selectedBlock?.id != null ? getUploadStatus(selectedBlock.id) : null
-  const uploading =
-    uploadTask?.status === 'uploading' ||
-    uploadTask?.status === 'processing' ||
-    uploadTask?.status === 'waiting'
+  const uploading = isUploadActive(uploadTask)
 
   const selectedVideoId =
     videoBlock?.source === VideoBlockSource.mux ? videoBlock.videoId : null

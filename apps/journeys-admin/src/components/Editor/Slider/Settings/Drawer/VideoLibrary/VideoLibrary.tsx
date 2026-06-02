@@ -18,6 +18,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import { VideoBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
 import { useMuxVideoUpload } from '../../../../../MuxVideoUploadProvider'
+import { isUploadActive } from '../../../../../MuxVideoUploadProvider/utils/isUploadActive'
 import { Drawer } from '../Drawer'
 
 import { VideoFromLocal } from './VideoFromLocal'
@@ -120,10 +121,7 @@ export function VideoLibrary({
     // use editor provider selected block as this accounts for background videos where the video block does not yet exist, hence the selectedBlock prop is null
     if (editorSelectedBlock != null) {
       const activeUpload = getUploadStatus(editorSelectedBlock.id)
-      const isActive =
-        activeUpload?.status === 'uploading' ||
-        activeUpload?.status === 'processing' ||
-        activeUpload?.status === 'waiting'
+      const isActive = isUploadActive(activeUpload)
       // Only announce a cancellation for user-driven selects (Select / Apply,
       // which pass shouldCloseDrawer=true). A natural upload completion calls
       // onSelect with shouldCloseDrawer=false while the task is still mid-flight

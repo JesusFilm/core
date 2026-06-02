@@ -1,6 +1,8 @@
 import { InMemoryCache } from '@apollo/client'
+import { offsetLimitPagination } from '@apollo/client/utilities'
 
-import { GET_MY_MUX_VIDEOS } from './MyMuxVideos'
+import { GET_MY_MUX_VIDEOS } from '../../components/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/MyMuxVideos'
+
 import { prependMuxVideo } from './prependMuxVideo'
 
 const NEW_VIDEO = {
@@ -14,12 +16,7 @@ function buildCache(): InMemoryCache {
     typePolicies: {
       Query: {
         fields: {
-          getMyMuxVideos: {
-            keyArgs: false,
-            merge(existing = [], incoming: unknown[]) {
-              return [...existing, ...incoming]
-            }
-          }
+          getMyMuxVideos: offsetLimitPagination()
         }
       }
     }
