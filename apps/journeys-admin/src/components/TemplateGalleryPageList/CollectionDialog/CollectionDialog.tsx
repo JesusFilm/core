@@ -16,12 +16,14 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
+import { MuxVideoUploadProvider } from '../../MuxVideoUploadProvider'
 
 import { CollectionDialogFooter } from './CollectionDialogFooter'
 import { CollectionPreviewPane } from './CollectionPreviewPane'
 import { CreatorImagePickerDrawer } from './CreatorImagePickerDrawer'
 import { DiscardConfirmDialog } from './DiscardConfirmDialog'
 import { JourneyPickerField } from './JourneyPickerField'
+import { MediaSection } from './MediaSection'
 import { useCollectionForm } from './useCollectionForm'
 
 export interface CollectionDialogProps {
@@ -164,6 +166,15 @@ export function CollectionDialog({
         const selectedJourneysOrdered = values.journeyIds
           .map((id) => journeysById.get(id))
           .filter((j): j is Journey => j != null)
+        // Block every submit path while a Mux upload is pending: the form
+        // carries a `mux` media with no durable id yet (muxVideoId is set by
+        // the provider's onComplete, muxPlaybackId only exists on a saved
+        // row). There is no `readyToStream` task field to read.
+        const mediaBlocked =
+          values.media.type === 'mux' &&
+          values.media.muxVideoId === '' &&
+          (values.media.muxPlaybackId == null ||
+            values.media.muxPlaybackId === '')
         return (
           <>
             <Dialog
@@ -204,6 +215,7 @@ export function CollectionDialog({
                   onSaveDraft={handleSaveDraftClick}
                   onPublish={handlePublishClick}
                   onUnpublish={handleUnpublishClick}
+                  submitBlocked={mediaBlocked}
                 />
               }
               testId="CollectionDialog"
@@ -223,6 +235,10 @@ export function CollectionDialog({
                   minHeight: 0
                 }}
               >
+                {/* Provider wraps the whole dialog body — above the media
+                    type-toggle AND the preview pane — so switching media type
+                    mid-upload does not unmount it and abort the upload. */}
+                <MuxVideoUploadProvider>
                 <Stack
                   direction={{ xs: 'column', md: 'row' }}
                   alignItems="stretch"
@@ -516,23 +532,29 @@ export function CollectionDialog({
                               )}
                             </Stack>
 
-                            {/* NES-1682: the "Add PDF/Video with
-                                instructions" section (TextField + helper
-                                copy referencing Canva / Google Slides) was
-                                removed per QA's decision to hide the embed
-                                editing surface. The `mediaUrl` field still
-                                rides through `CollectionFormValues` so
-                                existing values round-trip on save, but
-                                there is no editing surface and the embed
-                                preview in `CollectionPreviewPane` is also
-                                hidden. Replaces NES-1660 (helper-text
-                                approach was rejected by QA). */}
+                            <MediaSection
+                              media={values.media}
+                              error={
+                                Boolean(touched.media) &&
+                                typeof errors.media === 'string'
+                                  ? errors.media
+                                  : undefined
+                              }
+                              onChange={(next) => {
+                                void setFieldValue('media', next)
+                              }}
+                              onBlur={() => {
+                                void setFieldTouched('media', true, false)
+                              }}
+                              headerSx={SECTION_HEADER}
+                            />
                           </Stack>
                         </Collapse>
                       </Stack>
                     </Stack>
                   </Box>
                 </Stack>
+                </MuxVideoUploadProvider>
               </Form>
             </Dialog>
             <CreatorImagePickerDrawer

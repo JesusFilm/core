@@ -190,6 +190,14 @@ export enum Service {
   apiVideos = "apiVideos",
 }
 
+/**
+ * Discriminator for the media attached to a TemplateGalleryPage. Determines which underlying fields are populated.
+ */
+export enum TemplateGalleryPageMediaType {
+  link = "link",
+  mux = "mux",
+}
+
 export enum TextResponseType {
   email = "email",
   freeForm = "freeForm",

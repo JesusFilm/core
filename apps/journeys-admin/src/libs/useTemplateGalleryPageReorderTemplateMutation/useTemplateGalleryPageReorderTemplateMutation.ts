@@ -33,7 +33,12 @@ export const TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE = gql`
       creatorName
       creatorImageSrc
       creatorImageAlt
-      mediaUrl
+      media {
+        id
+        type
+        embedUrl
+        muxPlaybackId
+      }
       publishedAt
       createdAt
       updatedAt

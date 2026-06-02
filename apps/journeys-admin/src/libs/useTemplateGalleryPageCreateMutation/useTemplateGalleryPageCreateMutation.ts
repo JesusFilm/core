@@ -26,7 +26,12 @@ export const TEMPLATE_GALLERY_PAGE_CREATE = gql`
       creatorName
       creatorImageSrc
       creatorImageAlt
-      mediaUrl
+      media {
+        id
+        type
+        embedUrl
+        muxPlaybackId
+      }
       publishedAt
       createdAt
       updatedAt

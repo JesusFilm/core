@@ -44,6 +44,10 @@ export interface CollectionDialogFooterProps {
   onPublish: () => void
   /** Called for Unpublish (edit + isPublished). Bypasses Formik. */
   onUnpublish: () => void
+  /** True when a media upload is in flight or incomplete — gates every
+   *  submit path (Create / Save / Save Draft / Publish) so the form can't
+   *  be saved with an unfinished Mux upload. Cancel/Unpublish are exempt. */
+  submitBlocked?: boolean
 }
 
 /**
@@ -73,10 +77,13 @@ export function CollectionDialogFooter({
   onSave,
   onSaveDraft,
   onPublish,
-  onUnpublish
+  onUnpublish,
+  submitBlocked = false
 }: CollectionDialogFooterProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const busy = isSubmitting || isUnpublishing
+  // Submit paths are also blocked while a media upload is incomplete.
+  const submitDisabled = busy || submitBlocked
 
   if (mode === 'create') {
     return (
@@ -89,7 +96,7 @@ export function CollectionDialogFooter({
           color="primary"
           onClick={onCreate}
           loading={isSubmitting}
-          disabled={busy}
+          disabled={submitDisabled}
         >
           {t('Create')}
         </Button>
@@ -114,7 +121,7 @@ export function CollectionDialogFooter({
         <Button onClick={onCancel} disabled={busy}>
           {t('Cancel')}
         </Button>
-        <Button onClick={onSaveDraft} disabled={busy}>
+        <Button onClick={onSaveDraft} disabled={submitDisabled}>
           {t('Save Draft')}
         </Button>
         <Tooltip
@@ -133,7 +140,7 @@ export function CollectionDialogFooter({
               color="primary"
               onClick={onPublish}
               loading={isSubmitting}
-              disabled={publishBlocked || busy}
+              disabled={publishBlocked || submitDisabled}
             >
               {t('Publish')}
             </Button>
@@ -167,7 +174,7 @@ export function CollectionDialogFooter({
           color="primary"
           onClick={onSave}
           loading={isSubmitting}
-          disabled={busy}
+          disabled={submitDisabled}
         >
           {t('Save')}
         </Button>
@@ -188,7 +195,7 @@ export function CollectionDialogFooter({
         color="primary"
         onClick={onSave}
         loading={isSubmitting}
-        disabled={busy}
+        disabled={submitDisabled}
       >
         {t('Save')}
       </Button>

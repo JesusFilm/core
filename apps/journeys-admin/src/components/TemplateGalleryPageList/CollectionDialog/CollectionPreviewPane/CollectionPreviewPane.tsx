@@ -8,13 +8,17 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, memo } from 'react'
+import { ReactElement, memo, useEffect, useState } from 'react'
 
+import { embedAttrs } from '@core/journeys/ui/TemplateGalleryMedia'
 import CopyRightIcon from '@core/shared/ui/icons/CopyRight'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { copyToClipboard } from '../../../../libs/copyToClipboard'
+import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
+
+import { previewEmbedUrl } from './previewEmbedUrl'
 
 export interface CollectionPreviewValues {
   title: string
@@ -22,7 +26,7 @@ export interface CollectionPreviewValues {
   creatorName: string
   creatorImageSrc: string
   creatorImageAlt: string
-  mediaUrl: string
+  media: CollectionMediaValues
 }
 
 interface CollectionPreviewPaneProps {
@@ -378,15 +382,131 @@ function CollectionPreviewPaneImpl({
                 ))}
           </Stack>
         </Box>
-        {/* NES-1682: the Strategy section (StrategySection rendered with
-            mediaUrl) was removed from the preview alongside the embed
-            textbox in CollectionDialog. The `mediaUrl` field still rides
-            through the form so existing values round-trip on save, and
-            the shared StrategySection component itself is untouched (it
-            remains in use for other surfaces). The previous label
-            "Strategy" + the iframe/placeholder preview no longer appear
-            here. */}
+        <Box sx={{ mt: 2.5 }}>
+          <GalleryMediaPreview media={values.media} />
+        </Box>
       </Box>
+    </Box>
+  )
+}
+
+/**
+ * Mirrors the public `TemplateGalleryMedia` renderer inside the preview card.
+ * `mux` shows a thumbnail from the persisted playbackId (only available for an
+ * already-saved upload; a fresh upload shows a processing placeholder). `link`
+ * shows an iframe for URLs that can be safely previewed client-side (https +
+ * directly-embeddable host, with YouTube normalized to the nocookie embed) and
+ * a "preview after saving" placeholder for Canva/Slides which need the server's
+ * oEmbed normalization. The link URL is debounced so the iframe does not reflow
+ * on every keystroke.
+ */
+function GalleryMediaPreview({
+  media
+}: {
+  media: CollectionMediaValues
+}): ReactElement | null {
+  const { t } = useTranslation('apps-journeys-admin')
+  const url = media.type === 'link' ? media.url : ''
+  const [debouncedUrl, setDebouncedUrl] = useState(url)
+
+  useEffect(() => {
+    const handle = setTimeout(() => setDebouncedUrl(url), 500)
+    return () => clearTimeout(handle)
+  }, [url])
+
+  if (media.type === 'none') return null
+
+  if (media.type === 'mux') {
+    if (media.muxPlaybackId != null && media.muxPlaybackId !== '') {
+      return (
+        <Box
+          component="img"
+          data-testid="GalleryMediaPreviewThumbnail"
+          src={`https://image.mux.com/${media.muxPlaybackId}/thumbnail.jpg`}
+          alt={t('Video thumbnail')}
+          sx={{ width: '100%', borderRadius: 1, display: 'block' }}
+        />
+      )
+    }
+    return (
+      <MediaPreviewPlaceholder label={t('Processing video…')} />
+    )
+  }
+
+  const embedUrl = previewEmbedUrl(debouncedUrl)
+  if (embedUrl != null) {
+    const attrs = embedAttrs(embedUrl)
+    return (
+      <Box
+        sx={{
+          position: 'relative',
+          width: '100%',
+          paddingTop: attrs.aspectRatioPaddingTop,
+          borderRadius: 1,
+          overflow: 'hidden'
+        }}
+      >
+        <Box
+          component="iframe"
+          data-testid="GalleryMediaPreviewIframe"
+          src={embedUrl}
+          title={t('Media preview')}
+          allow={attrs.allow}
+          allowFullScreen={attrs.allowFullScreen}
+          referrerPolicy={attrs.referrerPolicy}
+          sandbox={attrs.sandbox}
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            border: 0
+          }}
+        />
+      </Box>
+    )
+  }
+
+  // Non-empty but not client-previewable (Canva/Slides/unknown) vs empty.
+  return (
+    <MediaPreviewPlaceholder
+      label={
+        debouncedUrl.trim() !== ''
+          ? t('Preview available after saving')
+          : t('Paste a link to see a preview')
+      }
+    />
+  )
+}
+
+function MediaPreviewPlaceholder({ label }: { label: string }): ReactElement {
+  return (
+    <Box
+      data-testid="GalleryMediaPreviewPlaceholder"
+      sx={{
+        width: '100%',
+        paddingTop: '56.25%',
+        position: 'relative',
+        borderRadius: 1,
+        bgcolor: 'action.hover'
+      }}
+    >
+      <Typography
+        variant="caption"
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          color: 'text.secondary',
+          px: 2
+        }}
+      >
+        {label}
+      </Typography>
     </Box>
   )
 }

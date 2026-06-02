@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { makeGallery, mockTemplate } from './galleryFixture'
+import { makeGallery, makeLinkMedia, mockTemplate } from './galleryFixture'
 import { TemplateGalleryView } from './TemplateGalleryView'
 
 describe('TemplateGalleryView', () => {
@@ -8,7 +8,9 @@ describe('TemplateGalleryView', () => {
     render(
       <TemplateGalleryView
         gallery={makeGallery({
-          mediaUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+          media: makeLinkMedia(
+            'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
+          ),
           templates: [mockTemplate]
         })}
       />
@@ -34,8 +36,8 @@ describe('TemplateGalleryView', () => {
     expect(screen.queryByTestId('TemplateGalleryGrid')).not.toBeInTheDocument()
   })
 
-  it('omits the media block when mediaUrl is null', () => {
-    render(<TemplateGalleryView gallery={makeGallery({ mediaUrl: null })} />)
+  it('omits the media block when media is null', () => {
+    render(<TemplateGalleryView gallery={makeGallery({ media: null })} />)
     expect(screen.queryByTestId('TemplateGalleryMedia')).not.toBeInTheDocument()
   })
 })

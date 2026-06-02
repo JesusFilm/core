@@ -24,7 +24,7 @@ describe('CollectionPreviewPane', () => {
     creatorName: 'Creator',
     creatorImageSrc: '',
     creatorImageAlt: '',
-    mediaUrl: ''
+    media: { type: 'none' as const }
   }
 
   function renderPane(
@@ -80,5 +80,79 @@ describe('CollectionPreviewPane', () => {
     expect(
       screen.getByRole('button', { name: 'Open in new tab' })
     ).toBeDisabled()
+  })
+
+  describe('media preview', () => {
+    it('normalizes a YouTube watch URL and renders an iframe', () => {
+      renderPane({
+        values: {
+          ...baseValues,
+          media: { type: 'link', url: 'https://www.youtube.com/watch?v=abc123' }
+        }
+      })
+      expect(screen.getByTestId('GalleryMediaPreviewIframe')).toHaveAttribute(
+        'src',
+        'https://www.youtube-nocookie.com/embed/abc123'
+      )
+    })
+
+    it('shows a save-first placeholder for a Canva URL (needs server normalization)', () => {
+      renderPane({
+        values: {
+          ...baseValues,
+          media: { type: 'link', url: 'https://www.canva.com/design/DA/view' }
+        }
+      })
+      expect(
+        screen.queryByTestId('GalleryMediaPreviewIframe')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByText('Preview available after saving')
+      ).toBeInTheDocument()
+    })
+
+    it('does not iframe a non-allowlisted or non-https URL', () => {
+      renderPane({
+        values: {
+          ...baseValues,
+          media: { type: 'link', url: 'http://evil.example/x' }
+        }
+      })
+      expect(
+        screen.queryByTestId('GalleryMediaPreviewIframe')
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders a Mux thumbnail for an existing upload', () => {
+      renderPane({
+        values: {
+          ...baseValues,
+          media: { type: 'mux', muxVideoId: '', muxPlaybackId: 'pb-1' }
+        }
+      })
+      expect(
+        screen.getByTestId('GalleryMediaPreviewThumbnail')
+      ).toHaveAttribute('src', 'https://image.mux.com/pb-1/thumbnail.jpg')
+    })
+
+    it('shows a processing placeholder for a fresh upload without a playbackId', () => {
+      renderPane({
+        values: {
+          ...baseValues,
+          media: { type: 'mux', muxVideoId: 'v1' }
+        }
+      })
+      expect(screen.getByText('Processing video…')).toBeInTheDocument()
+    })
+
+    it('renders no media node when media is none', () => {
+      renderPane()
+      expect(
+        screen.queryByTestId('GalleryMediaPreviewIframe')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('GalleryMediaPreviewPlaceholder')
+      ).not.toBeInTheDocument()
+    })
   })
 })

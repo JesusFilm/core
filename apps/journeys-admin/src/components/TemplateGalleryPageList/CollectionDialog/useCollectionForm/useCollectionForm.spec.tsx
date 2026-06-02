@@ -6,8 +6,14 @@ import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 import { ReactNode } from 'react'
 
-import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../../__generated__/GetTemplateGalleryPages'
-import { TemplateGalleryPageStatus } from '../../../../../__generated__/globalTypes'
+import {
+  GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage,
+  GetTemplateGalleryPages_templateGalleryPages_media as TemplateGalleryPageMedia
+} from '../../../../../__generated__/GetTemplateGalleryPages'
+import {
+  TemplateGalleryPageMediaType,
+  TemplateGalleryPageStatus
+} from '../../../../../__generated__/globalTypes'
 import { getTemplateGalleryPageCreateMock } from '../../../../libs/useTemplateGalleryPageCreateMutation/useTemplateGalleryPageCreateMutation.mock'
 import { TEMPLATE_GALLERY_PAGE_UPDATE } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation'
 import { getTemplateGalleryPageUpdateMock } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation.mock'
@@ -47,10 +53,30 @@ function defaultValues(
     creatorName: 'Creator',
     creatorImageSrc: '',
     creatorImageAlt: '',
-    mediaUrl: '',
+    media: { type: 'none' },
     slug: 'my-collection',
     journeyIds: [],
     ...overrides
+  }
+}
+
+function linkMedia(embedUrl: string): TemplateGalleryPageMedia {
+  return {
+    __typename: 'TemplateGalleryPageMedia',
+    id: 'media-1',
+    type: TemplateGalleryPageMediaType.link,
+    embedUrl,
+    muxPlaybackId: null
+  }
+}
+
+function muxMedia(muxPlaybackId: string): TemplateGalleryPageMedia {
+  return {
+    __typename: 'TemplateGalleryPageMedia',
+    id: 'media-1',
+    type: TemplateGalleryPageMediaType.mux,
+    embedUrl: null,
+    muxPlaybackId
   }
 }
 
@@ -84,7 +110,7 @@ function makeCollection(
     creatorName: 'Original Creator',
     creatorImageSrc: null,
     creatorImageAlt: null,
-    mediaUrl: null,
+    media: null,
     publishedAt: null,
     createdAt: '2026-05-06T00:00:00Z',
     updatedAt: '2026-05-06T00:00:00Z',
@@ -116,7 +142,7 @@ describe('useCollectionForm', () => {
         creatorName: '',
         creatorImageSrc: '',
         creatorImageAlt: '',
-        mediaUrl: '',
+        media: { type: 'none' },
         slug: '',
         journeyIds: []
       })
@@ -131,7 +157,7 @@ describe('useCollectionForm', () => {
         creatorName: 'C',
         creatorImageSrc: 'https://img/x.png',
         creatorImageAlt: 'alt',
-        mediaUrl: 'https://m/x',
+        media: linkMedia('https://www.youtube-nocookie.com/embed/x'),
         status: TemplateGalleryPageStatus.published,
         templates: [
           {
@@ -166,11 +192,33 @@ describe('useCollectionForm', () => {
         creatorName: 'C',
         creatorImageSrc: 'https://img/x.png',
         creatorImageAlt: 'alt',
-        mediaUrl: 'https://m/x',
+        media: {
+          type: 'link',
+          url: 'https://www.youtube-nocookie.com/embed/x'
+        },
         slug: 'hydrate-slug',
         journeyIds: ['j1', 'j2']
       })
       expect(result.current.isPublished).toBe(true)
+    })
+
+    it('hydrates an existing mux row, seeding playbackId with an empty videoId', () => {
+      const collection = makeCollection({ media: muxMedia('pb-9') })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose: vi.fn()
+          }),
+        { wrapper: wrapperWithMocks([]) }
+      )
+      expect(result.current.initialValues.media).toEqual({
+        type: 'mux',
+        muxVideoId: '',
+        muxPlaybackId: 'pb-9'
+      })
     })
   })
 
@@ -194,12 +242,7 @@ describe('useCollectionForm', () => {
       ).resolves.toBeTruthy()
     })
 
-    // NES-1682: the Canva / Google Slides URL validation for mediaUrl
-    // was removed alongside the embed textbox UI in CollectionDialog.
-    // The field still rides through the form values for existing-data
-    // round-trip, but there is no editing surface and no per-value
-    // validation rule left to assert against. Length cap stays.
-    it('caps mediaUrl length but does not enforce URL shape (NES-1682)', async () => {
+    it('accepts a complete media value and rejects an incomplete one', async () => {
       const { result } = renderHook(
         () =>
           useCollectionForm({
@@ -210,32 +253,41 @@ describe('useCollectionForm', () => {
         { wrapper: wrapperWithMocks([]) }
       )
 
-      // Any shape passes — no Canva / Slides regex left.
+      // none, a link with a URL, and a completed mux upload all pass.
+      await expect(
+        result.current.schema.validate(defaultValues({ media: { type: 'none' } }))
+      ).resolves.toBeTruthy()
       await expect(
         result.current.schema.validate(
-          defaultValues({ mediaUrl: 'http://insecure.example' })
+          defaultValues({ media: { type: 'link', url: 'https://x.test/a' } })
         )
       ).resolves.toBeTruthy()
       await expect(
         result.current.schema.validate(
-          defaultValues({ mediaUrl: 'https://www.youtube.com/watch?v=abc' })
+          defaultValues({ media: { type: 'mux', muxVideoId: 'vid-1' } })
         )
       ).resolves.toBeTruthy()
-      // Existing Canva / Slides values still pass (round-trip on save).
+      // An existing mux row is valid via its persisted playbackId even
+      // though the form's muxVideoId is empty.
       await expect(
         result.current.schema.validate(
           defaultValues({
-            mediaUrl: 'https://www.canva.com/design/DAHJBsAPHB4/view'
+            media: { type: 'mux', muxVideoId: '', muxPlaybackId: 'pb-1' }
           })
         )
       ).resolves.toBeTruthy()
 
-      // Length cap at 2048 still applies as a defensive bound.
+      // An empty link URL and a pending upload (no id) are rejected.
       await expect(
         result.current.schema.validate(
-          defaultValues({ mediaUrl: 'a'.repeat(2049) })
+          defaultValues({ media: { type: 'link', url: '' } })
         )
-      ).rejects.toThrow(/url too long/i)
+      ).rejects.toThrow()
+      await expect(
+        result.current.schema.validate(
+          defaultValues({ media: { type: 'mux', muxVideoId: '' } })
+        )
+      ).rejects.toThrow()
     })
 
     it('rejects slugs with uppercase or invalid characters', async () => {
@@ -285,7 +337,7 @@ describe('useCollectionForm', () => {
           creatorImageSrc: null,
           creatorImageAlt: null,
           description: null,
-          mediaUrl: null,
+          media: null,
           journeyIds: ['j1']
         }
       })
@@ -369,7 +421,7 @@ describe('useCollectionForm', () => {
             creatorName: 'Old',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            mediaUrl: '',
+            media: { type: 'none' },
             slug: 'old-slug',
             journeyIds: ['j1', 'j2']
           },
@@ -419,7 +471,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            mediaUrl: '',
+            media: { type: 'none' },
             slug: collection.slug,
             journeyIds: []
           },
@@ -476,7 +528,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            mediaUrl: '',
+            media: { type: 'none' },
             slug: collection.slug,
             journeyIds: ['j1', 'j2']
           },
@@ -529,7 +581,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            mediaUrl: '',
+            media: { type: 'none' },
             slug: '',
             journeyIds: []
           },
@@ -585,7 +637,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            mediaUrl: '',
+            media: { type: 'none' },
             slug: 'new-slug',
             journeyIds: []
           },
@@ -644,7 +696,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            mediaUrl: '',
+            media: { type: 'none' },
             slug: collection.slug,
             journeyIds: []
           },
@@ -661,6 +713,146 @@ describe('useCollectionForm', () => {
     })
   })
 
+  describe('handleSubmit — media', () => {
+    it('sends new mux media on create', async () => {
+      const onClose = vi.fn()
+      const createMock = getTemplateGalleryPageCreateMock({
+        input: {
+          teamId: 'team-1',
+          title: 'New',
+          creatorName: 'Creator',
+          creatorImageSrc: null,
+          creatorImageAlt: null,
+          description: null,
+          media: { type: TemplateGalleryPageMediaType.mux, muxVideoId: 'vid-1' },
+          journeyIds: []
+        }
+      })
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({ mode: 'create', teamId: 'team-1', onClose }),
+        { wrapper: wrapperWithMocks([createMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          defaultValues({
+            title: 'New',
+            media: { type: 'mux', muxVideoId: 'vid-1' }
+          }),
+          fakeHelpers()
+        )
+      })
+
+      expect(createMock.result).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+
+    it('clears media (null) when an existing link is removed', async () => {
+      const onClose = vi.fn()
+      const collection = makeCollection({
+        id: 'page-m',
+        media: linkMedia('https://www.youtube-nocookie.com/embed/x')
+      })
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-m',
+        input: { media: null }
+      })
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: collection.title,
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            media: { type: 'none' },
+            slug: collection.slug,
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalled()
+    })
+
+    it('maps a backend media reason to an inline media field error', async () => {
+      const onClose = vi.fn()
+      const collection = makeCollection({ id: 'page-y' })
+      const errorMock: MockedResponse = {
+        request: {
+          query: TEMPLATE_GALLERY_PAGE_UPDATE,
+          variables: {
+            id: 'page-y',
+            input: {
+              media: {
+                type: TemplateGalleryPageMediaType.link,
+                url: 'https://youtu.be/p'
+              }
+            }
+          }
+        },
+        result: {
+          errors: [
+            new GraphQLError('This video is private', {
+              extensions: { code: 'BAD_USER_INPUT', reason: 'YOUTUBE_PRIVATE' }
+            })
+          ]
+        }
+      }
+
+      const helpers = fakeHelpers()
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([errorMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: collection.title,
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            media: { type: 'link', url: 'https://youtu.be/p' },
+            slug: collection.slug,
+            journeyIds: []
+          },
+          helpers
+        )
+      })
+
+      expect(helpers.setFieldTouched).toHaveBeenCalledWith('media', true, false)
+      expect(helpers.setFieldError).toHaveBeenCalledWith(
+        'media',
+        expect.stringMatching(/private/i)
+      )
+      expect(onClose).not.toHaveBeenCalled()
+    })
+  })
+
   describe('handleSubmit — parentBusy short-circuit', () => {
     it('does not fire any mutation and shows an info snackbar', async () => {
       const onClose = vi.fn()
@@ -672,7 +864,7 @@ describe('useCollectionForm', () => {
           creatorImageSrc: null,
           creatorImageAlt: null,
           description: null,
-          mediaUrl: null,
+          media: null,
           journeyIds: []
         }
       })

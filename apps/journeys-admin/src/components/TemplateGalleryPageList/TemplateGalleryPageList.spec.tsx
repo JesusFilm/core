@@ -42,7 +42,7 @@ const collectionsMock: MockedResponse<GetTemplateGalleryPages> = {
           creatorName: 'Jesus Film',
           creatorImageSrc: null,
           creatorImageAlt: null,
-          mediaUrl: null,
+          media: null,
           publishedAt: null,
           createdAt: '2026-05-01T00:00:00.000Z',
           updatedAt: '2026-05-01T00:00:00.000Z',

@@ -3,9 +3,28 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { TemplateGalleryPageMediaType } from "./globalTypes";
+
 // ====================================================
 // GraphQL query operation: GetTemplateGalleryPage
 // ====================================================
+
+export interface GetTemplateGalleryPage_templateGalleryPageBySlug_media {
+  __typename: "TemplateGalleryPageMedia";
+  id: string;
+  /**
+   * Discriminator for which underlying field is populated.
+   */
+  type: TemplateGalleryPageMediaType;
+  /**
+   * Server-normalized iframe URL. Populated for `link`; null for `mux`.
+   */
+  embedUrl: string | null;
+  /**
+   * Mux playback ID, denormalized from MuxVideo at save time so public reads never cross to the media DB. Populated for `mux`; null for `link`.
+   */
+  muxPlaybackId: string | null;
+}
 
 export interface GetTemplateGalleryPage_templateGalleryPageBySlug_templates_language_name {
   __typename: "LanguageName";
@@ -71,9 +90,9 @@ export interface GetTemplateGalleryPage_templateGalleryPageBySlug {
    */
   creatorName: string;
   /**
-   * Optional https URL of a hero/cover media asset shown on the public page. https-only on write.
+   * Embedded media shown on the public page. `null` for legacy rows that predate the multi-type embed (which used the deprecated `mediaUrl` scalar).
    */
-  mediaUrl: string | null;
+  media: GetTemplateGalleryPage_templateGalleryPageBySlug_media | null;
   /**
    * Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.
    */

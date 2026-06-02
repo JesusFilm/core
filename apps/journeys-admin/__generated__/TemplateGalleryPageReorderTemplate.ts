@@ -3,11 +3,28 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TemplateGalleryPageStatus } from "./globalTypes";
+import { TemplateGalleryPageStatus, TemplateGalleryPageMediaType } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TemplateGalleryPageReorderTemplate
 // ====================================================
+
+export interface TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTemplate_media {
+  __typename: "TemplateGalleryPageMedia";
+  id: string;
+  /**
+   * Discriminator for which underlying field is populated.
+   */
+  type: TemplateGalleryPageMediaType;
+  /**
+   * Server-normalized iframe URL. Populated for `link`; null for `mux`.
+   */
+  embedUrl: string | null;
+  /**
+   * Mux playback ID, denormalized from MuxVideo at save time so public reads never cross to the media DB. Populated for `mux`; null for `link`.
+   */
+  muxPlaybackId: string | null;
+}
 
 export interface TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTemplate_templates_primaryImageBlock {
   __typename: "ImageBlock";
@@ -58,9 +75,9 @@ export interface TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTe
    */
   creatorImageAlt: string | null;
   /**
-   * Optional https URL of a hero/cover media asset shown on the public page. https-only on write.
+   * Embedded media shown on the public page. `null` for legacy rows that predate the multi-type embed (which used the deprecated `mediaUrl` scalar).
    */
-  mediaUrl: string | null;
+  media: TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTemplate_media | null;
   /**
    * Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.
    */

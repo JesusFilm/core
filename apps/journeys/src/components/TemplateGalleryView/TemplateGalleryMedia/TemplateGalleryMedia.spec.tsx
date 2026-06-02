@@ -1,47 +1,64 @@
 import { render, screen } from '@testing-library/react'
 
+import { makeLinkMedia, makeMuxMedia } from '../galleryFixture'
+
 import { TemplateGalleryMedia } from './TemplateGalleryMedia'
 
-vi.mock('@core/journeys/ui/StrategySection', () => ({
-  StrategySection: ({
-    strategySlug,
-    variant
-  }: {
-    strategySlug?: string
-    variant?: string
-  }) => (
-    <div
-      data-testid="StrategySectionMock"
-      data-strategy-slug={strategySlug}
-      data-variant={variant}
-    />
-  )
-}))
-
 describe('TemplateGalleryMedia', () => {
-  it('renders the Strategy heading and forwards mediaUrl to StrategySection', () => {
+  it('renders a YouTube iframe with host-specific allow, referrerPolicy and sandbox', () => {
     render(
-      <TemplateGalleryMedia mediaUrl="https://www.canva.com/design/abc/view" />
+      <TemplateGalleryMedia
+        media={makeLinkMedia('https://www.youtube-nocookie.com/embed/abc123')}
+      />
     )
-    expect(screen.getByTestId('TemplateGalleryMedia')).toBeInTheDocument()
+    const iframe = screen.getByTestId('TemplateGalleryMediaIframe')
+    expect(iframe).toHaveAttribute(
+      'src',
+      'https://www.youtube-nocookie.com/embed/abc123'
+    )
+    expect(iframe.getAttribute('allow')).toContain('picture-in-picture')
+    expect(iframe).toHaveAttribute(
+      'referrerpolicy',
+      'strict-origin-when-cross-origin'
+    )
+    expect(iframe.getAttribute('sandbox')).toContain('allow-presentation')
+  })
+
+  it('renders a Canva iframe with fullscreen allow and Canva sandbox', () => {
+    render(
+      <TemplateGalleryMedia
+        media={makeLinkMedia('https://www.canva.com/design/DA/view?embed')}
+      />
+    )
+    const iframe = screen.getByTestId('TemplateGalleryMediaIframe')
+    expect(iframe).toHaveAttribute('allow', 'fullscreen')
+    expect(iframe.getAttribute('sandbox')).toContain('allow-forms')
+  })
+
+  it('renders a Google Slides iframe through the link branch', () => {
+    render(
+      <TemplateGalleryMedia
+        media={makeLinkMedia('https://docs.google.com/presentation/d/1/embed')}
+      />
+    )
+    const iframe = screen.getByTestId('TemplateGalleryMediaIframe')
+    expect(iframe).toHaveAttribute(
+      'src',
+      'https://docs.google.com/presentation/d/1/embed'
+    )
+    // Slides does not get Canva's allow-forms token.
+    expect(iframe.getAttribute('sandbox')).not.toContain('allow-forms')
+  })
+
+  it('renders a Mux video.js player sourced from stream.mux.com', () => {
+    render(<TemplateGalleryMedia media={makeMuxMedia('playback123')} />)
     expect(
-      screen.getByRole('heading', { level: 5, name: 'Strategy' })
-    ).toBeInTheDocument()
-    const stub = screen.getByTestId('StrategySectionMock')
-    expect(stub).toHaveAttribute(
-      'data-strategy-slug',
-      'https://www.canva.com/design/abc/view'
-    )
-    expect(stub).toHaveAttribute('data-variant', 'placeholder')
+      screen.getByTestId('TemplateGalleryMedia').querySelector('source')
+    ).toHaveAttribute('src', 'https://stream.mux.com/playback123.m3u8')
   })
 
-  it('renders nothing when mediaUrl is null', () => {
-    const { container } = render(<TemplateGalleryMedia mediaUrl={null} />)
-    expect(container).toBeEmptyDOMElement()
-  })
-
-  it('renders nothing when mediaUrl is empty', () => {
-    const { container } = render(<TemplateGalleryMedia mediaUrl="" />)
+  it('renders nothing when media is null (legacy row)', () => {
+    const { container } = render(<TemplateGalleryMedia media={null} />)
     expect(container).toBeEmptyDOMElement()
   })
 })

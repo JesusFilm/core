@@ -4,7 +4,7 @@ import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { useMemo, useRef, useState } from 'react'
-import { ObjectSchema, array, object, string } from 'yup'
+import { ObjectSchema, array, mixed, object, string } from 'yup'
 
 import { TEMPLATE_GALLERY_SLUG_RE } from '@core/journeys/ui/templateGallerySlug'
 
@@ -19,13 +19,21 @@ import { useTemplateGalleryPagePublishMutation } from '../../../../libs/useTempl
 import { useTemplateGalleryPageUnpublishMutation } from '../../../../libs/useTemplateGalleryPageUnpublishMutation'
 import { useTemplateGalleryPageUpdateMutation } from '../../../../libs/useTemplateGalleryPageUpdateMutation'
 
+import {
+  CollectionMediaValues,
+  collectionMediaToFormValues,
+  formMediaToInput,
+  mediaKey
+} from './collectionMedia'
+import { mediaErrorMessage } from './mediaErrorMessage'
+
 export interface CollectionFormValues {
   title: string
   description: string
   creatorName: string
   creatorImageSrc: string
   creatorImageAlt: string
-  mediaUrl: string
+  media: CollectionMediaValues
   slug: string
   journeyIds: string[]
 }
@@ -96,12 +104,7 @@ export interface UseCollectionFormResult {
   isUnpublishing: boolean
 }
 
-const FIELD_ERROR_KEYS = new Set([
-  'slug',
-  'mediaUrl',
-  'creatorImageSrc',
-  'title'
-])
+const FIELD_ERROR_KEYS = new Set(['slug', 'creatorImageSrc', 'title'])
 
 function buildSchema(t: TFunction): ObjectSchema<CollectionFormValues> {
   return object({
@@ -112,13 +115,20 @@ function buildSchema(t: TFunction): ObjectSchema<CollectionFormValues> {
     creatorName: string().max(100, t('Max 100 characters')).default(''),
     creatorImageSrc: string().default(''),
     creatorImageAlt: string().default(''),
-    // NES-1682: the Canva / Google Slides URL validation was removed
-    // alongside the embed textbox UI in CollectionDialog. The field
-    // still exists in the form so existing values round-trip on save,
-    // but there is no editing surface and no validation rule to assert
-    // against. We keep the length cap as a defensive bound for the
-    // round-tripped value.
-    mediaUrl: string().max(2048, t('URL too long')).default(''),
+    // Tagged media union (NES-1707). The server is the source of truth for
+    // URL validation and normalization; this rule only guards against
+    // submitting an empty link/upload. An existing mux row is valid via its
+    // persisted playbackId even though the form's muxVideoId is empty (the
+    // read model never exposes the original muxVideoId).
+    media: mixed<CollectionMediaValues>()
+      .required()
+      .test('media-complete', t('Add a link or upload a video'), (value) => {
+        if (value == null) return false
+        if (value.type === 'none') return true
+        if (value.type === 'link') return value.url.trim() !== ''
+        return value.muxVideoId !== '' || value.muxPlaybackId != null
+      })
+      .default({ type: 'none' }),
     slug: string()
       .max(200, t('Max 200 characters'))
       .matches(TEMPLATE_GALLERY_SLUG_RE, {
@@ -166,7 +176,7 @@ export function useCollectionForm({
       creatorName: collection?.creatorName ?? '',
       creatorImageSrc: collection?.creatorImageSrc ?? '',
       creatorImageAlt: collection?.creatorImageAlt ?? '',
-      mediaUrl: collection?.mediaUrl ?? '',
+      media: collectionMediaToFormValues(collection?.media),
       slug: collection?.slug ?? '',
       journeyIds: collection?.templates.map((tpl) => tpl.id) ?? []
     }),
@@ -222,7 +232,7 @@ export function useCollectionForm({
           creatorImageAlt:
             values.creatorImageAlt === '' ? null : values.creatorImageAlt,
           description: values.description === '' ? null : values.description,
-          mediaUrl: values.mediaUrl === '' ? null : values.mediaUrl,
+          media: formMediaToInput(values.media),
           journeyIds: values.journeyIds
         }
         await templateGalleryPageCreate({ variables: { input } })
@@ -247,8 +257,15 @@ export function useCollectionForm({
           input.creatorImageAlt =
             values.creatorImageAlt === '' ? null : values.creatorImageAlt
         }
-        if (values.mediaUrl !== (collection.mediaUrl ?? '')) {
-          input.mediaUrl = values.mediaUrl === '' ? null : values.mediaUrl
+        // Emit `media` only when it differs from the persisted value.
+        // `mediaKey` produces the same key for an untouched existing row
+        // (keyed by playbackId / embedUrl) so an unedited media slot is
+        // omitted; `formMediaToInput` returns null for `none`, which clears.
+        if (
+          mediaKey(values.media) !==
+          mediaKey(collectionMediaToFormValues(collection.media))
+        ) {
+          input.media = formMediaToInput(values.media)
         }
         // Skip the slug field when the user cleared it. yup's
         // `excludeEmptyString` lets an empty value pass validation (so
@@ -320,6 +337,16 @@ export function useCollectionForm({
       onClose()
     } catch (error) {
       if (error instanceof ApolloError) {
+        // Media validation errors carry a structured `extensions.reason`
+        // (BAD_USER_INPUT) rather than a `field` — surface them inline on the
+        // media field with a human-readable, translated message.
+        const rawReason = error.graphQLErrors?.[0]?.extensions?.reason
+        const reason = typeof rawReason === 'string' ? rawReason : undefined
+        if (reason != null) {
+          await helpers.setFieldTouched('media', true, false)
+          helpers.setFieldError('media', mediaErrorMessage(reason, t))
+          return
+        }
         // Map field-scoped errors back to Formik fields when possible.
         const rawField = error.graphQLErrors?.[0]?.extensions?.field
         const fieldError = typeof rawField === 'string' ? rawField : undefined
