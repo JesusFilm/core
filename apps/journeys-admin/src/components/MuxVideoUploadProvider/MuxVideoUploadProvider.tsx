@@ -1,4 +1,4 @@
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { gql, useApolloClient, useLazyQuery, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import {
@@ -16,6 +16,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 
 import { CreateMuxVideoUploadByFileMutation } from '../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { GetMyMuxVideoQuery } from '../../../__generated__/GetMyMuxVideoQuery'
+import { prependMuxVideo } from '../../libs/apolloClient/prependMuxVideo'
 
 import { addUploadToQueue as addUploadTaskUtil } from './utils/addUploadToQueue'
 import { cancelUploadForBlock as cancelUploadForBlockUtil } from './utils/cancelUploadForBlock'
@@ -106,8 +107,10 @@ export function MuxVideoUploadProvider({
     [enqueueSnackbar, closeSnackbar]
   )
 
+  const apolloClient = useApolloClient()
+
   const handlePollingCompleteCallback = useCallback(
-    async (videoId: string) => {
+    async (videoId: string, playbackId: string) => {
       await handlePollingComplete(videoId, {
         pollingTasks,
         setPollingTasks,
@@ -115,8 +118,16 @@ export function MuxVideoUploadProvider({
         t,
         pollingIntervalsRef
       })
+      // Surgical cache prepend — mirrors prependCloudflareImage in the image
+      // picker. Avoids the offsetLimitPagination refetch-stomp where an
+      // offset:0 refetch would overwrite accumulated later pages.
+      prependMuxVideo(apolloClient.cache, {
+        id: videoId,
+        playbackId,
+        readyToStream: true
+      })
     },
-    [showSnackbar, t, pollingTasks, pollingIntervalsRef]
+    [showSnackbar, t, pollingTasks, pollingIntervalsRef, apolloClient]
   )
 
   const handlePollingErrorCallback = useCallback(
@@ -227,8 +238,8 @@ export function MuxVideoUploadProvider({
             video?.assetId != null &&
             video?.playbackId != null
 
-          if (isVideoReady) {
-            await handlePollingCompleteCallback(videoId)
+          if (isVideoReady && video?.playbackId != null) {
+            await handlePollingCompleteCallback(videoId, video.playbackId)
             return
           }
 
