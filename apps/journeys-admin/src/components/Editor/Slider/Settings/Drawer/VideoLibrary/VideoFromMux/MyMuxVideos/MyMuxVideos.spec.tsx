@@ -9,7 +9,7 @@ import { GET_MY_MUX_VIDEOS, MyMuxVideos, PAGE_SIZE } from './MyMuxVideos'
 
 const PEEK_LIMIT = PAGE_SIZE + 1
 
-jest.mock('../../VideoDetails', () => ({
+vi.mock('../../VideoDetails', () => ({
   __esModule: true,
   VideoDetails: ({
     id,
@@ -57,7 +57,7 @@ describe('MyMuxVideos', () => {
   it('should render uploading skeleton tile when uploading is true', async () => {
     render(
       <MockedProvider mocks={[buildMock([readyVideo('a')])]}>
-        <MyMuxVideos onSelect={jest.fn()} uploading />
+        <MyMuxVideos onSelect={vi.fn()} uploading />
       </MockedProvider>
     )
 
@@ -69,7 +69,7 @@ describe('MyMuxVideos', () => {
   it('should render nothing when no videos and not uploading', async () => {
     const { container } = render(
       <MockedProvider mocks={[buildMock([])]}>
-        <MyMuxVideos onSelect={jest.fn()} />
+        <MyMuxVideos onSelect={vi.fn()} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -79,7 +79,7 @@ describe('MyMuxVideos', () => {
   })
 
   it('should open the preview when a tile is clicked and apply the selection on confirm', async () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     render(
       <MockedProvider mocks={[buildMock([readyVideo('a')])]}>
         <MyMuxVideos onSelect={onSelect} />
@@ -115,7 +115,7 @@ describe('MyMuxVideos', () => {
 
     render(
       <MockedProvider cache={buildCache()} mocks={[buildMock(firstPage)]}>
-        <MyMuxVideos onSelect={jest.fn()} />
+        <MyMuxVideos onSelect={vi.fn()} />
       </MockedProvider>
     )
 
@@ -142,7 +142,7 @@ describe('MyMuxVideos', () => {
           buildMock(secondPage, { offset: PAGE_SIZE, limit: PEEK_LIMIT })
         ]}
       >
-        <MyMuxVideos onSelect={jest.fn()} />
+        <MyMuxVideos onSelect={vi.fn()} />
       </MockedProvider>
     )
 
@@ -161,7 +161,7 @@ describe('MyMuxVideos', () => {
 
     render(
       <MockedProvider cache={buildCache()} mocks={[buildMock(firstPage)]}>
-        <MyMuxVideos onSelect={jest.fn()} />
+        <MyMuxVideos onSelect={vi.fn()} />
       </MockedProvider>
     )
 
@@ -176,7 +176,7 @@ describe('MyMuxVideos', () => {
   it('should highlight the selected video tile', async () => {
     render(
       <MockedProvider mocks={[buildMock([readyVideo('a'), readyVideo('b')])]}>
-        <MyMuxVideos selectedVideoId="b" onSelect={jest.fn()} />
+        <MyMuxVideos selectedVideoId="b" onSelect={vi.fn()} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -203,7 +203,7 @@ describe('MyMuxVideos', () => {
           }
         ]}
       >
-        <MyMuxVideos onSelect={jest.fn()} />
+        <MyMuxVideos onSelect={vi.fn()} />
       </MockedProvider>
     )
 
@@ -234,7 +234,7 @@ describe('MyMuxVideos', () => {
           }
         ]}
       >
-        <MyMuxVideos onSelect={jest.fn()} />
+        <MyMuxVideos onSelect={vi.fn()} />
       </MockedProvider>
     )
 

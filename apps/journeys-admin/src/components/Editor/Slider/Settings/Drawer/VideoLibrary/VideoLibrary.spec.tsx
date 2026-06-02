@@ -688,7 +688,7 @@ describe('VideoLibrary', () => {
   })
 
   it('should show a cancellation snackbar when an active upload is interrupted by a new selection', async () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     const selectedBlock: TreeBlock<VideoBlock> = {
       id: 'video1.id',
       __typename: 'VideoBlock',
@@ -1230,7 +1230,7 @@ describe('VideoLibrary', () => {
   })
 
   it('should not show a cancellation snackbar when an upload completes naturally (shouldCloseDrawer=false)', async () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     const editorBlock = {
       id: 'bg-card-id',
       __typename: 'CardBlock',
