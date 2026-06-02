@@ -252,7 +252,9 @@ describe('openrouterModel', () => {
       const operation = vi.fn(
         (_model, signal: AbortSignal) =>
           new Promise((_resolve, reject) => {
-            signal.addEventListener('abort', () => reject(signal.reason))
+            signal.addEventListener('abort', () =>
+              reject(signal.reason as Error)
+            )
           })
       )
 
@@ -272,7 +274,9 @@ describe('openrouterModel', () => {
         .mockImplementationOnce(
           (_model, signal: AbortSignal) =>
             new Promise((_resolve, reject) => {
-              signal.addEventListener('abort', () => reject(signal.reason))
+              signal.addEventListener('abort', () =>
+              reject(signal.reason as Error)
+            )
             })
         )
         .mockResolvedValueOnce('recovered')
