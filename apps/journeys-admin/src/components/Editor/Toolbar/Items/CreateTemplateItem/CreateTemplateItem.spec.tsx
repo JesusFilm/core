@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
@@ -15,31 +16,31 @@ import {
   REMOVE_USER_JOURNEY
 } from './CreateTemplateItem'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', async () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('@core/journeys/ui/useJourneyDuplicateMutation', () => ({
-  ...jest.requireActual('@core/journeys/ui/useJourneyDuplicateMutation'),
-  useJourneyDuplicateMutation: jest.fn()
+vi.mock('@core/journeys/ui/useJourneyDuplicateMutation', async () => ({
+  ...(await vi.importActual('@core/journeys/ui/useJourneyDuplicateMutation')),
+  useJourneyDuplicateMutation: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 const mockUseJourneyDuplicateMutation =
-  useJourneyDuplicateMutation as jest.MockedFunction<
+  useJourneyDuplicateMutation as MockedFunction<
     typeof useJourneyDuplicateMutation
   >
 
 describe('CreateTemplateItem', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should create a global template on menu card click', async () => {
-    const push = jest.fn()
+    const push = vi.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyTemplate: {
           id: 'templateId',
@@ -47,7 +48,7 @@ describe('CreateTemplateItem', () => {
         }
       }
     }))
-    const journeyDuplicateMock = jest.fn().mockResolvedValue({
+    const journeyDuplicateMock = vi.fn().mockResolvedValue({
       data: {
         journeyDuplicate: {
           id: 'duplicatedJourneyId'
@@ -61,7 +62,7 @@ describe('CreateTemplateItem', () => {
         error: undefined,
         data: undefined,
         called: false,
-        reset: jest.fn(),
+        reset: vi.fn(),
         client: {} as any
       }
     ])
@@ -132,9 +133,9 @@ describe('CreateTemplateItem', () => {
   })
 
   it('should create a global template on menu card click with journey from props', async () => {
-    const push = jest.fn()
+    const push = vi.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyTemplate: {
           id: 'templateId',
@@ -142,7 +143,7 @@ describe('CreateTemplateItem', () => {
         }
       }
     }))
-    const journeyDuplicateMock = jest.fn().mockResolvedValue({
+    const journeyDuplicateMock = vi.fn().mockResolvedValue({
       data: {
         journeyDuplicate: {
           id: 'duplicatedJourneyId'
@@ -156,7 +157,7 @@ describe('CreateTemplateItem', () => {
         error: undefined,
         data: undefined,
         called: false,
-        reset: jest.fn(),
+        reset: vi.fn(),
         client: {} as any
       }
     ])
@@ -223,15 +224,15 @@ describe('CreateTemplateItem', () => {
   })
 
   it('should create a local template on menu card click', async () => {
-    const push = jest.fn()
-    const handleCloseMenu = jest.fn()
+    const push = vi.fn()
+    const handleCloseMenu = vi.fn()
     const query = { existingParam: 'value' }
     mockUseRouter.mockReturnValue({
       push,
       pathname: '/',
       query
     } as unknown as NextRouter)
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyTemplate: {
           id: 'templateId',
@@ -239,7 +240,7 @@ describe('CreateTemplateItem', () => {
         }
       }
     }))
-    const journeyDuplicateMock = jest.fn().mockResolvedValue({
+    const journeyDuplicateMock = vi.fn().mockResolvedValue({
       data: {
         journeyDuplicate: {
           id: 'duplicatedJourneyId'
@@ -253,7 +254,7 @@ describe('CreateTemplateItem', () => {
         error: undefined,
         data: undefined,
         called: false,
-        reset: jest.fn(),
+        reset: vi.fn(),
         client: {} as any
       }
     ])
@@ -351,15 +352,15 @@ describe('CreateTemplateItem', () => {
   })
 
   it('should create a local template on menu card click with journey from props', async () => {
-    const push = jest.fn()
-    const handleCloseMenu = jest.fn()
+    const push = vi.fn()
+    const handleCloseMenu = vi.fn()
     const query = { existingParam: 'value' }
     mockUseRouter.mockReturnValue({
       push,
       pathname: '/',
       query
     } as unknown as NextRouter)
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyTemplate: {
           id: 'templateId',
@@ -367,7 +368,7 @@ describe('CreateTemplateItem', () => {
         }
       }
     }))
-    const journeyDuplicateMock = jest.fn().mockResolvedValue({
+    const journeyDuplicateMock = vi.fn().mockResolvedValue({
       data: {
         journeyDuplicate: {
           id: 'duplicatedJourneyId'
@@ -381,7 +382,7 @@ describe('CreateTemplateItem', () => {
         error: undefined,
         data: undefined,
         called: false,
-        reset: jest.fn(),
+        reset: vi.fn(),
         client: {} as any
       }
     ])
@@ -470,13 +471,13 @@ describe('CreateTemplateItem', () => {
   })
 
   it('should navigate to journeys list template tab when creating local template from Editor context', async () => {
-    const push = jest.fn()
-    const handleCloseMenu = jest.fn()
+    const push = vi.fn()
+    const handleCloseMenu = vi.fn()
     mockUseRouter.mockReturnValue({
       push,
       pathname: '/journeys/[journeyId]'
     } as unknown as NextRouter)
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyTemplate: {
           id: 'templateId',
@@ -484,7 +485,7 @@ describe('CreateTemplateItem', () => {
         }
       }
     }))
-    const journeyDuplicateMock = jest.fn().mockResolvedValue({
+    const journeyDuplicateMock = vi.fn().mockResolvedValue({
       data: {
         journeyDuplicate: {
           id: 'duplicatedJourneyId'
@@ -498,7 +499,7 @@ describe('CreateTemplateItem', () => {
         error: undefined,
         data: undefined,
         called: false,
-        reset: jest.fn(),
+        reset: vi.fn(),
         client: {} as any
       }
     ])

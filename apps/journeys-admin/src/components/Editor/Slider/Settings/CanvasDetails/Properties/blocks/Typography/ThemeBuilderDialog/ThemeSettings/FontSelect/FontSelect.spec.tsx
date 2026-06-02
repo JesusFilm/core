@@ -5,7 +5,7 @@ import Header1Icon from '@core/shared/ui/icons/Header1'
 import { FontSelect } from './FontSelect'
 
 describe('FontSelect', () => {
-  const handleChange = jest.fn()
+  const handleChange = vi.fn()
 
   it('should render font select with options', () => {
     render(

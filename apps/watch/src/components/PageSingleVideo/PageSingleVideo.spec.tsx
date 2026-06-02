@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { MockedFunction } from 'vitest'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { useVideoChildren } from '../../libs/useVideoChildren/useVideoChildren'
@@ -10,12 +11,12 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { PageSingleVideo } from './PageSingleVideo'
 
-jest.mock('../../libs/useVideoChildren/useVideoChildren', () => ({
-  ...jest.requireActual('../../libs/useVideoChildren/useVideoChildren'),
-  useVideoChildren: jest.fn()
+vi.mock('../../libs/useVideoChildren/useVideoChildren', async () => ({
+  ...(await vi.importActual('../../libs/useVideoChildren/useVideoChildren')),
+  useVideoChildren: vi.fn()
 }))
 
-const mockUseVideoChildren = useVideoChildren as jest.MockedFunction<
+const mockUseVideoChildren = useVideoChildren as MockedFunction<
   typeof useVideoChildren
 >
 
@@ -115,7 +116,7 @@ const mockChildren = [
 
 describe('PageSingleVideo', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseVideoChildren.mockReturnValue({
       children: [],
       loading: false
@@ -379,7 +380,7 @@ describe('PageSingleVideo', () => {
 
   it('should open new tab when free resource button is clicked', async () => {
     const user = userEvent.setup()
-    window.open = jest.fn()
+    window.open = vi.fn()
     render(
       <MockedProvider>
         <VideoProvider value={{ content: videoWithBibleCitations }}>

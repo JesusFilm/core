@@ -5,7 +5,7 @@ import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../..
 import { ZoomImage } from './ZoomImage'
 
 describe('ZoomImage', () => {
-  const updateImageBlock = jest.fn()
+  const updateImageBlock = vi.fn()
 
   const imageBlock: ImageBlock = {
     id: 'image.id',
@@ -29,7 +29,7 @@ describe('ZoomImage', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders ZoomImage with initial scale', () => {

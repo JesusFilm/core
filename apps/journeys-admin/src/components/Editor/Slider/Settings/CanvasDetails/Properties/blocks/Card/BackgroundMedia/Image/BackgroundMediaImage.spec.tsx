@@ -4,6 +4,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
@@ -53,17 +54,17 @@ import {
 
 import { BackgroundMediaImage } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -158,7 +159,7 @@ const image: TreeBlock<ImageBlock> = {
 
 describe('BackgroundMediaImage', () => {
   beforeEach(() => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
   })
 
   const coverBlockDeleteMock: MockedResponse<
@@ -235,7 +236,7 @@ describe('BackgroundMediaImage', () => {
         __typename: 'CardBlock'
       }
     }
-    const createResult = jest.fn(() => ({
+    const createResult = vi.fn(() => ({
       data: response
     }))
     const coverImageBlockCreateMock: MockedResponse<
@@ -333,7 +334,7 @@ describe('BackgroundMediaImage', () => {
     it('updates image cover block from gallery selection', async () => {
       const priorImage = existingCoverBlock.children[0] as TreeBlock<ImageBlock>
       const undoInput = toImageBlockUpdateInput(priorImage)
-      const updateResult = jest.fn(() => ({
+      const updateResult = vi.fn(() => ({
         data: {
           imageBlockUpdate: {
             ...image,
@@ -341,7 +342,7 @@ describe('BackgroundMediaImage', () => {
           }
         }
       }))
-      const undoResult = jest.fn(() => ({
+      const undoResult = vi.fn(() => ({
         data: {
           imageBlockUpdate: {
             ...image,

@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
@@ -12,14 +13,14 @@ import {
 
 import { GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS, ScanCount } from './ScanCount'
 
-jest.mock('date-fns', () => {
+vi.mock('date-fns', async () => {
   return {
-    ...jest.requireActual('date-fns'),
-    formatISO: jest.fn()
+    ...(await vi.importActual('date-fns')),
+    formatISO: vi.fn()
   }
 })
 
-const mockFormatIso = formatISO as jest.MockedFunction<typeof formatISO>
+const mockFormatIso = formatISO as MockedFunction<typeof formatISO>
 
 describe('ScanCount', () => {
   beforeEach(() => {
@@ -27,7 +28,7 @@ describe('ScanCount', () => {
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render the scan count', async () => {

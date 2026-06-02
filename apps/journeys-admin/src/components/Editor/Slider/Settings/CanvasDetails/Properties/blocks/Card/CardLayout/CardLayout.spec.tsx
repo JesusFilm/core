@@ -21,7 +21,7 @@ import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoI
 
 import { CARD_BLOCK_LAYOUT_UPDATE, CardLayout } from './CardLayout'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -199,7 +199,7 @@ describe('CardLayout', () => {
         __typename: 'Journey'
       }
     })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: { id: 'card1.id', fullscreen: true }
       }
@@ -256,12 +256,12 @@ describe('CardLayout', () => {
         __typename: 'Journey'
       }
     })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: { id: 'card1.id', fullscreen: true }
       }
     }))
-    const result2 = jest.fn(() => ({
+    const result2 = vi.fn(() => ({
       data: {
         cardBlockUpdate: { id: 'card1.id', fullscreen: false }
       }
@@ -333,7 +333,7 @@ describe('CardLayout', () => {
       expandChatByDefault: null
     } as unknown as TreeBlock<CardBlock>
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: { id: 'card1.id', fullscreen: true }
       }

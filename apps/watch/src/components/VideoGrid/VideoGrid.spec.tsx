@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import type { MockedFunction } from 'vitest'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
@@ -6,31 +7,31 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoGrid } from './VideoGrid'
 
-jest.mock('react-instantsearch')
-jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
-jest.mock('../../libs/blurhash', () => ({
-  useBlurhash: jest.fn(() => ({
+vi.mock('react-instantsearch')
+vi.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
+vi.mock('../../libs/blurhash', () => ({
+  useBlurhash: vi.fn(() => ({
     blurhash: null,
     dominantColor: null,
     isLoading: false,
     error: null
   })),
-  blurImage: jest.fn(() => 'data:image/webp;base64,test')
+  blurImage: vi.fn(() => 'data:image/webp;base64,test')
 }))
-jest.mock('../../libs/thumbnail', () => ({
-  useThumbnailUrl: jest.fn(() => ({
+vi.mock('../../libs/thumbnail', () => ({
+  useThumbnailUrl: vi.fn(() => ({
     thumbnailUrl: null,
     isLoading: false,
     error: null
   }))
 }))
-jest.mock('../../libs/watchContext', () => ({
-  useWatch: jest.fn(() => ({
+vi.mock('../../libs/watchContext', () => ({
+  useWatch: vi.fn(() => ({
     state: { audioLanguageId: '529' }
   }))
 }))
 
-const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
+const mockedUseAlgoliaVideos = useAlgoliaVideos as MockedFunction<
   typeof useAlgoliaVideos
 >
 
@@ -40,9 +41,9 @@ describe('VideoGrid', () => {
       loading: false,
       noResults: false,
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<VideoGrid videos={videos} />)
@@ -63,9 +64,9 @@ describe('VideoGrid', () => {
       loading: false,
       noResults: false,
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<VideoGrid videos={videos} showLoadMore />)
@@ -80,9 +81,9 @@ describe('VideoGrid', () => {
       loading: true,
       noResults: false,
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<VideoGrid videos={[]} showLoadMore loading />)
@@ -97,9 +98,9 @@ describe('VideoGrid', () => {
       loading: true,
       noResults: false,
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<VideoGrid videos={[]} loading />)
@@ -114,9 +115,9 @@ describe('VideoGrid', () => {
       loading: false,
       noResults: true,
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<VideoGrid videos={videos} showLoadMore hasNoResults />)
@@ -129,9 +130,9 @@ describe('VideoGrid', () => {
       loading: false,
       noResults: true,
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<VideoGrid videos={[]} hasNoResults />)
@@ -147,12 +148,12 @@ describe('VideoGrid', () => {
       loading: false,
       noResults: true,
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
-    const handleClearSearch = jest.fn()
+    const handleClearSearch = vi.fn()
 
     render(
       <VideoGrid videos={[]} hasNoResults onClearSearch={handleClearSearch} />
@@ -167,9 +168,9 @@ describe('VideoGrid', () => {
       loading: false,
       noResults: true,
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(
@@ -187,9 +188,9 @@ describe('VideoGrid', () => {
       loading: false,
       noResults: false,
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false,
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     })
 
     render(<VideoGrid videos={videos.slice(0, 2)} showSequenceNumbers />)

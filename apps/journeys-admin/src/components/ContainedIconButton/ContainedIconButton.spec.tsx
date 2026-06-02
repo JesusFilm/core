@@ -4,7 +4,7 @@ import noop from 'lodash/noop'
 import { ContainedIconButton } from './ContainedIconButton'
 
 describe('ContainedIconButton', () => {
-  const onClick = jest.fn()
+  const onClick = vi.fn()
 
   it('should render button', async () => {
     const { getByRole } = render(

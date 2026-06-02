@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
@@ -11,48 +12,42 @@ import { ThemeProvider } from '../../ThemeProvider'
 
 import { CopyToCollectionMenuItem } from './CopyToCollectionMenuItem'
 
-jest.mock('@core/journeys/ui/useJourneyDuplicateMutation', () => ({
-  useJourneyDuplicateMutation: jest.fn()
+vi.mock('@core/journeys/ui/useJourneyDuplicateMutation', () => ({
+  useJourneyDuplicateMutation: vi.fn()
 }))
 
-jest.mock('@core/journeys/ui/useJourneyAiTranslateSubscription', () => ({
-  useJourneyAiTranslateSubscription: jest.fn()
+vi.mock('@core/journeys/ui/useJourneyAiTranslateSubscription', () => ({
+  useJourneyAiTranslateSubscription: vi.fn()
 }))
 
-jest.mock('../../../libs/useTemplateGalleryPageAssignJourneyMutation', () => ({
-  useTemplateGalleryPageAssignJourneyMutation: jest.fn()
+vi.mock('../../../libs/useTemplateGalleryPageAssignJourneyMutation', () => ({
+  useTemplateGalleryPageAssignJourneyMutation: vi.fn()
 }))
 
-const mockRefetchQueries = jest.fn(() => Promise.resolve([]))
+const mockRefetchQueries = vi.fn(() => Promise.resolve([]))
 
-jest.mock('@apollo/client', () => {
-  const actual = jest.requireActual('@apollo/client')
-  return {
-    ...actual,
-    useApolloClient: () => ({
-      refetchQueries: mockRefetchQueries
-    })
-  }
-})
+vi.mock('@apollo/client', async () => ({
+  ...(await vi.importActual('@apollo/client')),
+  useApolloClient: () => ({
+    refetchQueries: mockRefetchQueries
+  })
+}))
 
 const mockActiveTeam: { id: string; title: string } | null = {
   id: 'team-1',
   title: 'Team 1'
 }
-const mockUseTeam = jest.fn<
-  { activeTeam: { id: string; title: string } | null },
-  []
+const mockUseTeam = vi.fn<
+  () => { activeTeam: { id: string; title: string } | null }
 >(() => ({ activeTeam: mockActiveTeam }))
 
-jest.mock('@core/journeys/ui/TeamProvider', () => ({
+vi.mock('@core/journeys/ui/TeamProvider', () => ({
   useTeam: () => mockUseTeam()
 }))
 
-jest.mock('./CopyToCollectionDialog.stub', () => ({}), { virtual: true })
-
 // Replace the dialog with a controllable stub so the menu-item tests focus
 // purely on orchestration. The real dialog is exercised by U2's spec.
-jest.mock('../CopyToCollectionDialog', () => ({
+vi.mock('../CopyToCollectionDialog', () => ({
   CopyToCollectionDialog: (props: {
     open: boolean
     loading?: boolean
@@ -123,11 +118,12 @@ jest.mock('../CopyToCollectionDialog', () => ({
   }
 }))
 
-type DuplicateFn = jest.Mock<
-  Promise<{ data?: { journeyDuplicate?: { id: string } | null } }>,
-  [unknown?]
+type DuplicateFn = Mock<
+  (
+    arg?: unknown
+  ) => Promise<{ data?: { journeyDuplicate?: { id: string } | null } }>
 >
-type AssignFn = jest.Mock<Promise<unknown>, [unknown?]>
+type AssignFn = Mock<(arg?: unknown) => Promise<unknown>>
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -148,22 +144,22 @@ let lastSubscriptionOpts:
   | undefined
 
 const subscriptionHookMock =
-  useJourneyAiTranslateSubscription as jest.MockedFunction<
+  useJourneyAiTranslateSubscription as MockedFunction<
     typeof useJourneyAiTranslateSubscription
   >
-const duplicateHookMock = useJourneyDuplicateMutation as jest.MockedFunction<
+const duplicateHookMock = useJourneyDuplicateMutation as MockedFunction<
   typeof useJourneyDuplicateMutation
 >
 const assignHookMock =
-  useTemplateGalleryPageAssignJourneyMutation as jest.MockedFunction<
+  useTemplateGalleryPageAssignJourneyMutation as MockedFunction<
     typeof useTemplateGalleryPageAssignJourneyMutation
   >
 
 function setupMocks(): void {
-  duplicate = jest.fn(async () => ({
+  duplicate = vi.fn(async () => ({
     data: { journeyDuplicate: { id: 'new-journey-id' } }
   })) as DuplicateFn
-  assign = jest.fn(async () => ({})) as AssignFn
+  assign = vi.fn(async () => ({})) as AssignFn
 
   duplicateHookMock.mockReturnValue([
     duplicate as unknown as never,
@@ -182,20 +178,20 @@ function setupMocks(): void {
 
 function renderItem(
   overrides: Partial<{
-    handleCloseMenu: jest.Mock
-    setHasOpenDialog: jest.Mock
-    handleKeepMounted: jest.Mock
+    handleCloseMenu: Mock
+    setHasOpenDialog: Mock
+    handleKeepMounted: Mock
     journey: Journey
   }> = {}
 ): {
-  handleCloseMenu: jest.Mock
-  setHasOpenDialog: jest.Mock
-  handleKeepMounted: jest.Mock
+  handleCloseMenu: Mock
+  setHasOpenDialog: Mock
+  handleKeepMounted: Mock
   unmount: () => void
 } {
-  const handleCloseMenu = overrides.handleCloseMenu ?? jest.fn()
-  const setHasOpenDialog = overrides.setHasOpenDialog ?? jest.fn()
-  const handleKeepMounted = overrides.handleKeepMounted ?? jest.fn()
+  const handleCloseMenu = overrides.handleCloseMenu ?? vi.fn()
+  const setHasOpenDialog = overrides.setHasOpenDialog ?? vi.fn()
+  const handleKeepMounted = overrides.handleKeepMounted ?? vi.fn()
   const { unmount } = render(
     <MockedProvider mocks={[]}>
       <ThemeProvider>
@@ -479,7 +475,7 @@ describe('CopyToCollectionMenuItem', () => {
         })
     )
 
-    const errorSpy = jest
+    const errorSpy = vi
       .spyOn(console, 'error')
       .mockImplementation(() => undefined)
 

@@ -14,7 +14,7 @@ export const getTemplateGalleryPageDeleteMock = (
   TemplateGalleryPageDeleteVariables
 > => ({
   request: { query: TEMPLATE_GALLERY_PAGE_DELETE, variables },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       templateGalleryPageDelete: {
         __typename: 'TemplateGalleryPage' as const,

@@ -15,7 +15,7 @@ export const getTemplateGalleryPagePublishMock = (
   TemplateGalleryPagePublishVariables
 > => ({
   request: { query: TEMPLATE_GALLERY_PAGE_PUBLISH, variables },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       templateGalleryPagePublish: {
         __typename: 'TemplateGalleryPage',
@@ -26,5 +26,8 @@ export const getTemplateGalleryPagePublishMock = (
         slug: 'collection'
       }
     }
-  }))
+  })) as MockedResponse<
+    TemplateGalleryPagePublish,
+    TemplateGalleryPagePublishVariables
+  >['result']
 })

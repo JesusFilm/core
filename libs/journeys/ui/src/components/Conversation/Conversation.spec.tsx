@@ -181,4 +181,58 @@ describe('Conversation', () => {
       expect.objectContaining({ behavior: 'smooth' })
     )
   })
+
+  it('drops the scroll-to-bottom pill after the conversation is reset (NES-1663)', () => {
+    // Tall conversation, reader scrolled up → pill visible.
+    mockScrollMetrics({ scrollHeight: 1000, scrollTop: 100, clientHeight: 400 })
+    const { queryByTestId, container, rerender } = render(
+      <Conversation scrollKey={8} bottomClearance={72}>
+        <div>messages</div>
+      </Conversation>
+    )
+    fireEvent.scroll(getScrollContainer(container))
+    expect(queryByTestId('ScrollToBottomPill')).toBeInTheDocument()
+
+    // Reset clears the conversation (scrollKey shrinks to 0).
+    rerender(
+      <Conversation scrollKey={0} bottomClearance={72}>
+        <div />
+      </Conversation>
+    )
+    expect(queryByTestId('ScrollToBottomPill')).not.toBeInTheDocument()
+
+    // …and it stays gone once the idle sheet finishes shrinking: the bottom-
+    // clearance padding (144) now exceeds the viewport (72), which without the
+    // reset-pin would re-strand scrollTop above it and resurface the pill.
+    mockScrollMetrics({ scrollHeight: 144, scrollTop: 0, clientHeight: 72 })
+    fireResizeObservers()
+    expect(queryByTestId('ScrollToBottomPill')).not.toBeInTheDocument()
+  })
+
+  it('resumes normal pill behaviour once a new message follows a reset (NES-1663)', () => {
+    mockScrollMetrics({ scrollHeight: 1000, scrollTop: 100, clientHeight: 400 })
+    const { queryByTestId, container, rerender } = render(
+      <Conversation scrollKey={3}>
+        <div>messages</div>
+      </Conversation>
+    )
+
+    // Reset, then a fresh message arrives (scrollKey grows again) → the
+    // reset-pin is released.
+    rerender(
+      <Conversation scrollKey={0}>
+        <div />
+      </Conversation>
+    )
+    rerender(
+      <Conversation scrollKey={1}>
+        <div>new</div>
+      </Conversation>
+    )
+
+    // Reader scrolls up in the new conversation → the pill works again.
+    mockScrollMetrics({ scrollHeight: 1000, scrollTop: 100, clientHeight: 400 })
+    fireEvent.scroll(getScrollContainer(container))
+    expect(queryByTestId('ScrollToBottomPill')).toBeInTheDocument()
+  })
 })

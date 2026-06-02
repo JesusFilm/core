@@ -27,9 +27,7 @@ describe('useBlockActionChatUpdateMutation', () => {
   }
 
   it('should update block action', async () => {
-    const mockResult = jest
-      .fn()
-      .mockReturnValue(blockActionChatUpdateMock.result)
+    const mockResult = vi.fn().mockReturnValue(blockActionChatUpdateMock.result)
 
     const { result } = renderHook(() => useBlockActionChatUpdateMutation(), {
       wrapper: ({ children }) => (

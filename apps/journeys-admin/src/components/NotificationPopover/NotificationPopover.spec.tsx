@@ -11,7 +11,7 @@ describe('NotificationPopover', () => {
         open
         currentRef={(<div>hello world</div>) as unknown as HTMLElement}
         pointerPosition="10%"
-        handleClose={jest.fn()}
+        handleClose={vi.fn()}
       />
     )
 
@@ -20,7 +20,7 @@ describe('NotificationPopover', () => {
   })
 
   it('should close popover', () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
 
     render(
       <NotificationPopover
@@ -38,8 +38,8 @@ describe('NotificationPopover', () => {
   })
 
   it('should show popover action', () => {
-    const handleClose = jest.fn()
-    const handleAction = jest.fn()
+    const handleClose = vi.fn()
+    const handleAction = vi.fn()
 
     render(
       <NotificationPopover

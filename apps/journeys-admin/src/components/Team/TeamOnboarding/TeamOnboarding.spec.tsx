@@ -4,6 +4,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -20,15 +21,15 @@ import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMu
 
 import { TeamOnboarding } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
+vi.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
-  useCurrentUserLazyQuery: jest.fn().mockReturnValue({
-    loadUser: jest.fn(),
+  useCurrentUserLazyQuery: vi.fn().mockReturnValue({
+    loadUser: vi.fn(),
     data: {
       __typename: 'AuthenticatedUser',
       id: 'userId',
@@ -37,7 +38,7 @@ jest.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
   })
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('TeamOnboarding', () => {
   const teamCreateMock: MockedResponse<TeamCreate> = {
@@ -121,11 +122,11 @@ describe('TeamOnboarding', () => {
 
     return <div data-testid="active-team-title">{activeTeam?.title}</div>
   }
-  let push: jest.Mock
+  let push: Mock
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    push = jest.fn()
+    vi.clearAllMocks()
+    push = vi.fn()
 
     mockUseRouter.mockReturnValue({
       push,
@@ -215,7 +216,7 @@ describe('TeamOnboarding', () => {
   })
 
   it('should update last active team id', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         teams: [],
         getJourneyProfile: {

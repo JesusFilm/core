@@ -6,11 +6,11 @@ const createMatchMedia =
     matches: mediaQuery.match(query, { width }),
     media: query,
     onchange: null,
-    addListener: () => jest.fn(),
-    removeListener: () => jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn()
+    addListener: () => vi.fn(),
+    removeListener: () => vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn()
   })
 
 window.matchMedia = createMatchMedia(window.innerWidth)

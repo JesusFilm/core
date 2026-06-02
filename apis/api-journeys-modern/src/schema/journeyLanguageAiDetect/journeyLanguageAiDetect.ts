@@ -2,9 +2,10 @@ import { Output, generateText } from 'ai'
 import { z } from 'zod'
 
 import { prisma } from '@core/prisma/journeys/client'
-import { withGeminiFallback } from '@core/shared/ai/geminiModel'
+import { withOpenrouterFallback } from '@core/shared/ai/openrouterModel'
 import { hardenPrompt } from '@core/shared/ai/prompts'
 
+import { env } from '../../env'
 import { builder } from '../builder'
 
 builder.mutationFields((t) => ({
@@ -77,7 +78,7 @@ builder.mutationFields((t) => ({
       }`
 
         try {
-          const { output: detectedLanguage } = await withGeminiFallback(
+          const { output: detectedLanguage } = await withOpenrouterFallback(
             (model) =>
               generateText({
                 model,
@@ -89,7 +90,8 @@ builder.mutationFields((t) => ({
                   })
                 }),
                 prompt: languageDetectionPrompt
-              })
+              }),
+            env.TRANSLATION_AI_MODELS
           )
           return detectedLanguage.isSameLanguage
         } catch {

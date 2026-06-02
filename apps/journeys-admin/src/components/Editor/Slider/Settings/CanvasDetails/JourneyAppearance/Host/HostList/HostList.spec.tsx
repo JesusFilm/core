@@ -14,9 +14,9 @@ import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
 import { HostList } from './HostList'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
 describe('HostList', () => {
@@ -63,7 +63,7 @@ describe('HostList', () => {
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostList
               teamHosts={{ hosts: [defaultHost, host2] }}
-              handleSelection={jest.fn()}
+              handleSelection={vi.fn()}
             />
           </JourneyProvider>
         </ThemeProvider>
@@ -88,7 +88,7 @@ describe('HostList', () => {
   })
 
   it('should call handleselection on info button click, navigate to info', () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -106,7 +106,7 @@ describe('HostList', () => {
   })
 
   it('should call handleselection on create new button click, navigate to form', () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -124,7 +124,7 @@ describe('HostList', () => {
   })
 
   it('should update journey host on list item click, navigate to host selection', async () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
 
     const updateJourneyHostMock: MockedResponse<
       UpdateJourneyHost,
@@ -139,7 +139,7 @@ describe('HostList', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyUpdate: {
             __typename: 'Journey',
@@ -150,7 +150,10 @@ describe('HostList', () => {
             }
           }
         }
-      }))
+      })) as MockedResponse<
+        UpdateJourneyHost,
+        UpdateJourneyHostVariables
+      >['result']
     }
     const { getByRole } = render(
       <MockedProvider mocks={[updateJourneyHostMock]}>

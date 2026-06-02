@@ -44,8 +44,8 @@ const blockActionDeleteMock: MockedResponse<
 describe('useActionCommand', () => {
   describe('addAction', () => {
     it('should call actionLinkUpdate and handle undo/redo', async () => {
-      const mockResult = jest.fn().mockReturnValue(blockActionDeleteMock.result)
-      const mockRedoResult = jest
+      const mockResult = vi.fn().mockReturnValue(blockActionDeleteMock.result)
+      const mockRedoResult = vi
         .fn()
         .mockReturnValue(blockActionLinkUpdateMock.result)
       const { result } = renderHook(() => useActionCommand(), {
@@ -89,8 +89,8 @@ describe('useActionCommand', () => {
     })
 
     it('should call actionEmailUpdate and handle undo/redo', async () => {
-      const mockResult = jest.fn().mockReturnValue(blockActionDeleteMock.result)
-      const mockRedoResult = jest
+      const mockResult = vi.fn().mockReturnValue(blockActionDeleteMock.result)
+      const mockRedoResult = vi
         .fn()
         .mockReturnValue(blockActionEmailUpdateMock.result)
       const { result } = renderHook(() => useActionCommand(), {
@@ -134,8 +134,8 @@ describe('useActionCommand', () => {
     })
 
     it('should call actionNavigateToBlockUpdate and handle undo/redo', async () => {
-      const mockResult = jest.fn().mockReturnValue(blockActionDeleteMock.result)
-      const mockRedoResult = jest
+      const mockResult = vi.fn().mockReturnValue(blockActionDeleteMock.result)
+      const mockRedoResult = vi
         .fn()
         .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
       const { result } = renderHook(() => useActionCommand(), {
@@ -180,8 +180,8 @@ describe('useActionCommand', () => {
     })
 
     it('should call actionChatUpdate and handle undo/redo', async () => {
-      const mockResult = jest.fn().mockReturnValue(blockActionDeleteMock.result)
-      const mockRedoResult = jest
+      const mockResult = vi.fn().mockReturnValue(blockActionDeleteMock.result)
+      const mockRedoResult = vi
         .fn()
         .mockReturnValue(blockActionChatUpdateMock.result)
       const { result } = renderHook(() => useActionCommand(), {
@@ -225,8 +225,8 @@ describe('useActionCommand', () => {
     })
 
     it('should call actionPhoneUpdate and handle undo/redo', async () => {
-      const mockResult = jest.fn().mockReturnValue(blockActionDeleteMock.result)
-      const mockRedoResult = jest
+      const mockResult = vi.fn().mockReturnValue(blockActionDeleteMock.result)
+      const mockRedoResult = vi
         .fn()
         .mockReturnValue(blockActionPhoneUpdateMock.result)
       const { result } = renderHook(() => useActionCommand(), {
@@ -272,10 +272,10 @@ describe('useActionCommand', () => {
     })
 
     it('should call actionDelete and handle undo/redo', async () => {
-      const mockResult = jest
+      const mockResult = vi
         .fn()
         .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
-      const mockRedoResult = jest
+      const mockRedoResult = vi
         .fn()
         .mockReturnValue(blockActionDeleteMock.result)
       const { result } = renderHook(() => useActionCommand(), {
@@ -317,7 +317,7 @@ describe('useActionCommand', () => {
     })
 
     it('should dispatch editor focus and undo editor focus', async () => {
-      const mockResult = jest.fn().mockReturnValue(blockActionDeleteMock.result)
+      const mockResult = vi.fn().mockReturnValue(blockActionDeleteMock.result)
       const { result } = renderHook(() => useActionCommand(), {
         wrapper: ({ children }) => (
           <EditorProvider>

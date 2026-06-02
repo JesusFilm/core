@@ -5,8 +5,8 @@ import { createShowSnackbar } from './showSnackbar'
 
 describe('createShowSnackbar', () => {
   it('should call enqueueSnackbar with correct message and variant', () => {
-    const enqueueSnackbar = jest.fn()
-    const closeSnackbar = jest.fn()
+    const enqueueSnackbar = vi.fn()
+    const closeSnackbar = vi.fn()
     const showSnackbar = createShowSnackbar(enqueueSnackbar, closeSnackbar)
 
     showSnackbar('Test message', 'success')
@@ -20,8 +20,8 @@ describe('createShowSnackbar', () => {
   })
 
   it('should include persist option when persist is true', () => {
-    const enqueueSnackbar = jest.fn()
-    const closeSnackbar = jest.fn()
+    const enqueueSnackbar = vi.fn()
+    const closeSnackbar = vi.fn()
     const showSnackbar = createShowSnackbar(enqueueSnackbar, closeSnackbar)
 
     showSnackbar('Test message', 'error', true)
@@ -36,8 +36,8 @@ describe('createShowSnackbar', () => {
   })
 
   it('should not include persist option when persist is false', () => {
-    const enqueueSnackbar = jest.fn()
-    const closeSnackbar = jest.fn()
+    const enqueueSnackbar = vi.fn()
+    const closeSnackbar = vi.fn()
     const showSnackbar = createShowSnackbar(enqueueSnackbar, closeSnackbar)
 
     showSnackbar('Test message', 'info', false)
@@ -53,8 +53,8 @@ describe('createShowSnackbar', () => {
 
   it('should call closeSnackbar when action button is clicked', async () => {
     const user = userEvent.setup()
-    const enqueueSnackbar = jest.fn()
-    const closeSnackbar = jest.fn()
+    const enqueueSnackbar = vi.fn()
+    const closeSnackbar = vi.fn()
     const showSnackbar = createShowSnackbar(enqueueSnackbar, closeSnackbar)
 
     showSnackbar('Test message', 'warning')
@@ -74,8 +74,8 @@ describe('createShowSnackbar', () => {
   })
 
   it('should handle all variant types', () => {
-    const enqueueSnackbar = jest.fn()
-    const closeSnackbar = jest.fn()
+    const enqueueSnackbar = vi.fn()
+    const closeSnackbar = vi.fn()
     const showSnackbar = createShowSnackbar(enqueueSnackbar, closeSnackbar)
 
     const variants: Array<'success' | 'error' | 'info' | 'warning'> = [
@@ -97,8 +97,8 @@ describe('createShowSnackbar', () => {
   })
 
   it('should handle options object with autoHideDuration and preventDuplicate', () => {
-    const enqueueSnackbar = jest.fn()
-    const closeSnackbar = jest.fn()
+    const enqueueSnackbar = vi.fn()
+    const closeSnackbar = vi.fn()
     const showSnackbar = createShowSnackbar(enqueueSnackbar, closeSnackbar)
 
     showSnackbar('Test message', 'success', {
@@ -116,8 +116,8 @@ describe('createShowSnackbar', () => {
   })
 
   it('should handle options object with persist true and autoHideDuration null', () => {
-    const enqueueSnackbar = jest.fn()
-    const closeSnackbar = jest.fn()
+    const enqueueSnackbar = vi.fn()
+    const closeSnackbar = vi.fn()
     const showSnackbar = createShowSnackbar(enqueueSnackbar, closeSnackbar)
 
     showSnackbar('Test message', 'warning', {

@@ -39,9 +39,9 @@ import { JourneyLink } from '../../../utils/getJourneyLinks'
 
 import { LinksScreen } from './LinksScreen'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   useRouter: () => ({
-    push: jest.fn(),
+    push: vi.fn(),
     query: {}
   })
 }))
@@ -88,7 +88,7 @@ describe('LinksScreen', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <LinksScreen handleNext={jest.fn()} />
+          <LinksScreen handleNext={vi.fn()} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -101,7 +101,7 @@ describe('LinksScreen', () => {
   })
 
   it('shows validation error for invalid chat URL on submit', async () => {
-    const handleNext = jest.fn().mockResolvedValue(undefined)
+    const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -121,7 +121,7 @@ describe('LinksScreen', () => {
   })
 
   it('calls handleNext on submit (unchanged values)', async () => {
-    const handleNext = jest.fn().mockResolvedValue(undefined)
+    const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -135,7 +135,7 @@ describe('LinksScreen', () => {
   })
 
   it('should show loading state on the Next button after submitting', async () => {
-    const handleNext = jest.fn().mockResolvedValue(undefined)
+    const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -154,7 +154,7 @@ describe('LinksScreen', () => {
   })
 
   it('calls correct mutations for changed url, email, and chat', async () => {
-    const handleNext = jest.fn().mockResolvedValue(undefined)
+    const handleNext = vi.fn().mockResolvedValue(undefined)
 
     const journeyWithLinks = {
       ...defaultJourney,
@@ -223,7 +223,7 @@ describe('LinksScreen', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           blockUpdateLinkAction: {
             __typename: 'LinkAction',
@@ -234,7 +234,10 @@ describe('LinksScreen', () => {
             parentStepId: 'step-1'
           }
         }
-      }))
+      })) as MockedResponse<
+        BlockActionLinkUpdate,
+        BlockActionLinkUpdateVariables
+      >['result']
     }
 
     const emailUpdateMock: MockedResponse<
@@ -252,7 +255,7 @@ describe('LinksScreen', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           blockUpdateEmailAction: {
             __typename: 'EmailAction',
@@ -263,7 +266,10 @@ describe('LinksScreen', () => {
             parentStepId: 'step-1'
           }
         }
-      }))
+      })) as MockedResponse<
+        BlockActionEmailUpdate,
+        BlockActionEmailUpdateVariables
+      >['result']
     }
 
     const chatUpdateMock: MockedResponse<
@@ -281,7 +287,7 @@ describe('LinksScreen', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           chatButtonUpdate: {
             __typename: 'ChatButton',
@@ -291,7 +297,10 @@ describe('LinksScreen', () => {
             customizable: true
           }
         }
-      }))
+      })) as MockedResponse<
+        JourneyChatButtonUpdate,
+        JourneyChatButtonUpdateVariables
+      >['result']
     }
 
     render(
@@ -327,7 +336,7 @@ describe('LinksScreen', () => {
   })
 
   it('accepts phone numbers and calls phone update mutation', async () => {
-    const handleNext = jest.fn().mockResolvedValue(undefined)
+    const handleNext = vi.fn().mockResolvedValue(undefined)
     const journeyWithPhone = {
       ...defaultJourney,
       id: 'journey-id',
@@ -377,7 +386,7 @@ describe('LinksScreen', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           blockUpdatePhoneAction: {
             __typename: 'PhoneAction',
@@ -390,7 +399,10 @@ describe('LinksScreen', () => {
             parentStepId: 'step-1'
           }
         }
-      }))
+      })) as MockedResponse<
+        BlockActionPhoneUpdate,
+        BlockActionPhoneUpdateVariables
+      >['result']
     }
 
     render(
@@ -462,7 +474,7 @@ describe('LinksScreen', () => {
             variant: 'admin'
           }}
         >
-          <LinksScreen handleNext={jest.fn()} />
+          <LinksScreen handleNext={vi.fn()} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -488,7 +500,7 @@ describe('LinksScreen', () => {
   })
 
   it('calls chatButtonUpdate mutation when platform icon is changed', async () => {
-    const handleNext = jest.fn().mockResolvedValue(undefined)
+    const handleNext = vi.fn().mockResolvedValue(undefined)
 
     const platformUpdateMock: MockedResponse<
       JourneyChatButtonUpdate,
@@ -505,7 +517,7 @@ describe('LinksScreen', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           chatButtonUpdate: {
             __typename: 'ChatButton' as const,

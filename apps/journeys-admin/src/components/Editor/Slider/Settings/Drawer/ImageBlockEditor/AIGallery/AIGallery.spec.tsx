@@ -51,7 +51,7 @@ describe('AIGallery', () => {
   }
 
   it('should submit prompt successfully', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(
       <MockedProvider mocks={[getAIImage]}>
         <SnackbarProvider>
@@ -90,7 +90,7 @@ describe('AIGallery', () => {
     render(
       <MockedProvider mocks={[emptyResultMock]}>
         <SnackbarProvider>
-          <AIGallery onChange={jest.fn()} />
+          <AIGallery onChange={vi.fn()} />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -110,7 +110,7 @@ describe('AIGallery', () => {
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ mediaLibrary: false }}>
-            <AIGallery onChange={jest.fn()} />
+            <AIGallery onChange={vi.fn()} />
           </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -142,7 +142,7 @@ describe('AIGallery', () => {
       <MockedProvider mocks={[myAiImagesMock]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ mediaLibrary: true }}>
-            <AIGallery onChange={jest.fn()} />
+            <AIGallery onChange={vi.fn()} />
           </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -175,7 +175,7 @@ describe('AIGallery', () => {
       <MockedProvider mocks={[myAiImagesMock, getAIImage]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ mediaLibrary: true }}>
-            <AIGallery onChange={jest.fn()} />
+            <AIGallery onChange={vi.fn()} />
           </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -232,7 +232,7 @@ describe('AIGallery', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ mediaLibrary: true }}>
-            <AIGallery onChange={jest.fn()} />
+            <AIGallery onChange={vi.fn()} />
           </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -255,7 +255,7 @@ describe('AIGallery', () => {
     render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
-          <AIGallery onChange={jest.fn()} />
+          <AIGallery onChange={vi.fn()} />
         </SnackbarProvider>
       </MockedProvider>
     )

@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -21,12 +22,12 @@ import { UpdateLastActiveTeamId } from '../../../__generated__/UpdateLastActiveT
 
 import { UseTemplateDeepLink } from './UseTemplateDeepLink'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 const teamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
@@ -231,18 +232,18 @@ interface SetupOptions {
   duplicateError?: boolean
   includeJourneyMock?: boolean
   translationError?: boolean
-  push?: jest.Mock
-  replace?: jest.Mock
+  push?: Mock
+  replace?: Mock
 }
 
 function setup(options: SetupOptions = {}): {
-  push: jest.Mock
-  replace: jest.Mock
+  push: Mock
+  replace: Mock
 } {
   const useTemplate =
     'useTemplate' in options ? options.useTemplate : sourceJourneyId
-  const push = options.push ?? jest.fn().mockResolvedValue(true)
-  const replace = options.replace ?? jest.fn().mockResolvedValue(true)
+  const push = options.push ?? vi.fn().mockResolvedValue(true)
+  const replace = options.replace ?? vi.fn().mockResolvedValue(true)
   const query = useTemplate == null ? {} : { useTemplate }
   mockUseRouter.mockReturnValue({
     pathname: '/',
@@ -296,7 +297,7 @@ async function selectTranslationSpanish(): Promise<void> {
 
 describe('UseTemplateDeepLink', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders nothing when useTemplate param is absent', () => {
