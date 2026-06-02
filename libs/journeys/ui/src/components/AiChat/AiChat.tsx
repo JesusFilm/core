@@ -423,7 +423,16 @@ export function AiChat({
           minHeight: 0,
           width: '100%',
           maxWidth: { xs: 'none', sm: '48rem' },
-          mx: 'auto'
+          mx: 'auto',
+          // Overlay-only top inset: pushes the first message down so it
+          // vertically aligns with the close button at top:safe-area+24,
+          // and keeps content out of the device safe-area zone (notch,
+          // status bar) on iPad. Combined with Conversation's own pt:1
+          // (8px), the first message top sits at safe-area+24 — same y
+          // as the close button (NES-1654 iter). Panel variant keeps
+          // pt:0 because it already has ChatHeader + drag handle owning
+          // the top spacing.
+          pt: isOverlay ? 'calc(env(safe-area-inset-top) + 16px)' : 0
         }}
       >
         {showOverlayHero && (
