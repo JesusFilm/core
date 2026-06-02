@@ -13,9 +13,12 @@ import { MuxUploadField } from './MuxUploadField'
 
 type MediaUiMode = 'mux' | 'canva' | 'youtube'
 
-// Exact YouTube hosts — mirrors the allowlists in `embedAttrs` and
-// `previewEmbedUrl` rather than a permissive `endsWith` (which would match
-// look-alike hosts like `notyoutube.com`).
+// The union of YouTube hosts the normalizers recognize (watch/share + the
+// nocookie embed a persisted link carries), used only to pick the initial
+// picker tab. Exact-match — not a permissive `endsWith` that would match
+// look-alike hosts like `notyoutube.com`. NOTE: this is intentionally broader
+// than `embedAttrs` (which only sees post-normalization nocookie hosts) and
+// `previewEmbedUrl` (watch hosts only) — do not "sync" the three.
 const YOUTUBE_HOSTS = new Set([
   'youtu.be',
   'youtube.com',
@@ -96,6 +99,32 @@ export function MediaSection({
     )
   }
 
+  // The previously-saved video, if any — the read model exposes only a
+  // playbackId (never the original muxVideoId), so this both marks the row as
+  // already-saved and is the value an in-flight replacement reverts to.
+  const savedPlaybackId =
+    media.type === 'mux' &&
+    media.muxPlaybackId != null &&
+    media.muxPlaybackId !== ''
+      ? media.muxPlaybackId
+      : null
+
+  // Canva and YouTube share one TextField; only the copy differs.
+  const linkCopy =
+    mode === 'youtube'
+      ? {
+          ariaLabel: t('YouTube link'),
+          placeholder: t('Paste a YouTube link'),
+          helper: t('Paste any YouTube link — watch, share, shorts, or embed.')
+        }
+      : {
+          ariaLabel: t('Canva link'),
+          placeholder: t('Paste a Canva design link'),
+          helper: t(
+            'Paste a Canva design link. In Canva: Share → set to Anyone with the link before pasting.'
+          )
+        }
+
   return (
     <Stack spacing={1}>
       <Typography sx={headerSx}>{t('Media')}</Typography>
@@ -122,19 +151,14 @@ export function MediaSection({
           uploadKey={uploadKey}
           hasVideo={
             media.type === 'mux' &&
-            (media.muxVideoId !== '' ||
-              (media.muxPlaybackId != null && media.muxPlaybackId !== ''))
+            (media.muxVideoId !== '' || savedPlaybackId != null)
           }
-          playbackId={media.type === 'mux' ? media.muxPlaybackId : null}
+          playbackId={savedPlaybackId}
           // Preserve any existing playbackId so an in-flight *replacement*
           // upload still knows about the previously-saved video (so cancelling
           // reverts to it instead of clearing it).
           onUploadStart={() =>
-            onChange({
-              type: 'mux',
-              muxVideoId: '',
-              muxPlaybackId: media.type === 'mux' ? media.muxPlaybackId : null
-            })
+            onChange({ type: 'mux', muxVideoId: '', muxPlaybackId: savedPlaybackId })
           }
           onComplete={(videoId) =>
             onChange({ type: 'mux', muxVideoId: videoId })
@@ -142,10 +166,8 @@ export function MediaSection({
           // Cancel reverts to the prior saved video when one existed, else none.
           onCancel={() =>
             onChange(
-              media.type === 'mux' &&
-                media.muxPlaybackId != null &&
-                media.muxPlaybackId !== ''
-                ? { type: 'mux', muxVideoId: '', muxPlaybackId: media.muxPlaybackId }
+              savedPlaybackId != null
+                ? { type: 'mux', muxVideoId: '', muxPlaybackId: savedPlaybackId }
                 : { type: 'none' }
             )
           }
@@ -153,41 +175,18 @@ export function MediaSection({
         />
       )}
 
-      {mode === 'canva' && (
+      {mode !== 'mux' && (
         <TextField
           value={linkValue}
           onChange={handleUrlChange}
           onBlur={onBlur}
-          placeholder={t('Paste a Canva design link')}
+          placeholder={linkCopy.placeholder}
           fullWidth
           variant="filled"
           hiddenLabel
-          inputProps={{ 'aria-label': t('Canva link') }}
+          inputProps={{ 'aria-label': linkCopy.ariaLabel }}
           error={error != null}
-          helperText={
-            error ??
-            t(
-              'Paste a Canva design link. In Canva: Share → set to Anyone with the link before pasting.'
-            )
-          }
-        />
-      )}
-
-      {mode === 'youtube' && (
-        <TextField
-          value={linkValue}
-          onChange={handleUrlChange}
-          onBlur={onBlur}
-          placeholder={t('Paste a YouTube link')}
-          fullWidth
-          variant="filled"
-          hiddenLabel
-          inputProps={{ 'aria-label': t('YouTube link') }}
-          error={error != null}
-          helperText={
-            error ??
-            t('Paste any YouTube link — watch, share, shorts, or embed.')
-          }
+          helperText={error ?? linkCopy.helper}
         />
       )}
     </Stack>

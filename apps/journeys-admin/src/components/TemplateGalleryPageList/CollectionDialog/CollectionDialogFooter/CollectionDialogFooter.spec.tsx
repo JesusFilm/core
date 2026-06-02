@@ -209,4 +209,54 @@ describe('CollectionDialogFooter', () => {
       expect(screen.getByRole('button', { name: 'Publish' })).toBeDisabled()
     })
   })
+
+  describe('submitBlocked (in-flight media upload gate)', () => {
+    it('disables Create but not Cancel in create mode', () => {
+      render(
+        <CollectionDialogFooter
+          {...makeProps({ mode: 'create', submitBlocked: true })}
+        />
+      )
+      expect(screen.getByRole('button', { name: 'Create' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeEnabled()
+    })
+
+    it('disables Save but not Cancel in edit (draft) mode', () => {
+      render(
+        <CollectionDialogFooter
+          {...makeProps({ mode: 'edit', submitBlocked: true })}
+        />
+      )
+      expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeEnabled()
+    })
+
+    it('disables Save but leaves Unpublish enabled in edit (published) mode', () => {
+      render(
+        <CollectionDialogFooter
+          {...makeProps({
+            mode: 'edit',
+            isPublished: true,
+            submitBlocked: true
+          })}
+        />
+      )
+      expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+      // Unpublish is a deliberate status change, not a save path — it must
+      // stay usable even with an unfinished media upload.
+      expect(screen.getByRole('button', { name: 'Unpublish' })).toBeEnabled()
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeEnabled()
+    })
+
+    it('disables Save Draft and Publish but not Cancel in publish mode', () => {
+      render(
+        <CollectionDialogFooter
+          {...makeProps({ mode: 'publish', submitBlocked: true })}
+        />
+      )
+      expect(screen.getByRole('button', { name: 'Save Draft' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Publish' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeEnabled()
+    })
+  })
 })

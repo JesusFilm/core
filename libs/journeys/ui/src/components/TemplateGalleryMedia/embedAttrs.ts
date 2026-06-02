@@ -40,11 +40,12 @@ const YOUTUBE_HOSTS = new Set([
 const CANVA_HOSTS = new Set(['canva.com', 'www.canva.com'])
 const SLIDES_HOSTS = new Set(['docs.google.com'])
 
-function parseHost(embedUrl: string): string | null {
+function parseHost(embedUrl: string): string {
   try {
     return new URL(embedUrl).hostname.toLowerCase()
   } catch {
-    return null
+    // Empty string is in none of the host sets, so it falls to the default.
+    return ''
   }
 }
 
@@ -55,7 +56,7 @@ function parseHost(embedUrl: string): string | null {
 export function embedAttrs(embedUrl: string): EmbedIframeAttrs {
   const host = parseHost(embedUrl)
 
-  if (host != null && YOUTUBE_HOSTS.has(host)) {
+  if (YOUTUBE_HOSTS.has(host)) {
     return {
       allow:
         'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
@@ -67,7 +68,7 @@ export function embedAttrs(embedUrl: string): EmbedIframeAttrs {
     }
   }
 
-  if (host != null && CANVA_HOSTS.has(host)) {
+  if (CANVA_HOSTS.has(host)) {
     return {
       allow: 'fullscreen',
       allowFullScreen: true,
@@ -77,7 +78,7 @@ export function embedAttrs(embedUrl: string): EmbedIframeAttrs {
     }
   }
 
-  if (host != null && SLIDES_HOSTS.has(host)) {
+  if (SLIDES_HOSTS.has(host)) {
     return {
       allow: 'fullscreen',
       allowFullScreen: true,
