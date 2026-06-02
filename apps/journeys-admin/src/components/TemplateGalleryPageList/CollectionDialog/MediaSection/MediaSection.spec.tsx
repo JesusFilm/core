@@ -9,13 +9,15 @@ import { MediaSection } from './MediaSection'
 vi.mock('./MuxUploadField', () => ({
   MuxUploadField: (props: {
     onUploadStart: () => void
-    onComplete: (videoId: string) => void
+    onComplete: (videoId: string, playbackId: string | null) => void
     onCancel: () => void
     onRemove: () => void
   }) => (
     <div data-testid="MuxUploadFieldStub">
       <button onClick={() => props.onUploadStart()}>stub-start</button>
-      <button onClick={() => props.onComplete('vid-new')}>stub-complete</button>
+      <button onClick={() => props.onComplete('vid-new', 'pb-new')}>
+        stub-complete
+      </button>
       <button onClick={() => props.onCancel()}>stub-cancel</button>
       <button onClick={() => props.onRemove()}>stub-remove</button>
     </div>
@@ -148,9 +150,13 @@ describe('MediaSection', () => {
     expect(onChange).toHaveBeenCalledWith({ type: 'none' })
   })
 
-  it('sets the new video id on upload completion', () => {
+  it('sets the new video id and playbackId on upload completion', () => {
     const { onChange } = renderSection({ type: 'mux', muxVideoId: '' })
     fireEvent.click(screen.getByRole('button', { name: 'stub-complete' }))
-    expect(onChange).toHaveBeenCalledWith({ type: 'mux', muxVideoId: 'vid-new' })
+    expect(onChange).toHaveBeenCalledWith({
+      type: 'mux',
+      muxVideoId: 'vid-new',
+      muxPlaybackId: 'pb-new'
+    })
   })
 })

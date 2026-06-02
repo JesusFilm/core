@@ -1,3 +1,4 @@
+import { useApolloClient } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -7,7 +8,11 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement, useRef } from 'react'
 
-import { useMuxVideoUpload } from '../../../../MuxVideoUploadProvider'
+import { GetMyMuxVideoQuery } from '../../../../../../__generated__/GetMyMuxVideoQuery'
+import {
+  GET_MY_MUX_VIDEO_QUERY,
+  useMuxVideoUpload
+} from '../../../../MuxVideoUploadProvider'
 
 interface MuxUploadFieldProps {
   /** Stable key identifying this dialog's upload task in the provider. */
@@ -22,9 +27,10 @@ interface MuxUploadFieldProps {
    *  the parent mark the form's media as a pending mux upload so Save is
    *  gated until the upload finishes. */
   onUploadStart: () => void
-  /** Fires when the provider confirms the upload is ready, with the new
-   *  Mux video id. */
-  onComplete: (videoId: string) => void
+  /** Fires when the provider confirms the upload is ready, with the new Mux
+   *  video id and its playback id (read from the provider's poll cache so the
+   *  preview can render a thumbnail immediately, before the row is saved). */
+  onComplete: (videoId: string, playbackId: string | null) => void
   /** Aborts an in-flight upload and reverts the form to its prior committed
    *  media (the previously-saved video, or none). Distinct from `onRemove`,
    *  which deletes an already-attached video. */
@@ -54,8 +60,21 @@ export function MuxUploadField({
   const { t } = useTranslation('apps-journeys-admin')
   const { getUploadStatus, addUploadTask, cancelUploadForBlock } =
     useMuxVideoUpload()
+  const client = useApolloClient()
   const inputRef = useRef<HTMLInputElement>(null)
   const task = getUploadStatus(uploadKey)
+
+  // The provider polls `getMyMuxVideo` (network-only) until ready, so by the
+  // time it fires the completion callback the playbackId is in the Apollo
+  // cache. Read it here and pass it up so the preview can show the thumbnail
+  // immediately, without waiting for the save round-trip.
+  function handleComplete(videoId: string): void {
+    const cached = client.readQuery<GetMyMuxVideoQuery>({
+      query: GET_MY_MUX_VIDEO_QUERY,
+      variables: { id: videoId }
+    })
+    onComplete(videoId, cached?.getMyMuxVideo?.playbackId ?? null)
+  }
 
   function handlePick(event: ChangeEvent<HTMLInputElement>): void {
     const file = event.target.files?.[0]
@@ -67,7 +86,7 @@ export function MuxUploadField({
     // form's muxVideoId.
     cancelUploadForBlock({ id: uploadKey })
     onUploadStart()
-    addUploadTask(uploadKey, file, undefined, undefined, onComplete)
+    addUploadTask(uploadKey, file, undefined, undefined, handleComplete)
   }
 
   function handleCancel(): void {

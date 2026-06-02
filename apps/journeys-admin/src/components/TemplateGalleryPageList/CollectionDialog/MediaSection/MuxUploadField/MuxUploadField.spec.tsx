@@ -7,14 +7,21 @@ import { MuxUploadField } from './MuxUploadField'
 const mockGetUploadStatus = vi.fn()
 const mockAddUploadTask = vi.fn()
 const mockCancelUploadForBlock = vi.fn()
+const mockReadQuery = vi.fn()
 
 vi.mock('../../../../MuxVideoUploadProvider', () => ({
+  GET_MY_MUX_VIDEO_QUERY: 'GET_MY_MUX_VIDEO_QUERY',
   useMuxVideoUpload: () => ({
     getUploadStatus: mockGetUploadStatus,
     addUploadTask: mockAddUploadTask,
     cancelUploadForBlock: mockCancelUploadForBlock
   })
 }))
+
+vi.mock('@apollo/client', async () => {
+  const actual = await vi.importActual('@apollo/client')
+  return { ...actual, useApolloClient: () => ({ readQuery: mockReadQuery }) }
+})
 
 function renderField(
   props: Partial<React.ComponentProps<typeof MuxUploadField>> = {}
@@ -48,24 +55,51 @@ describe('MuxUploadField', () => {
     mockGetUploadStatus.mockReset().mockReturnValue(null)
     mockAddUploadTask.mockReset()
     mockCancelUploadForBlock.mockReset()
+    mockReadQuery.mockReset().mockReturnValue(null)
   })
 
-  it('aborts a prior upload then starts a new one when a file is chosen', () => {
-    const { onUploadStart, onComplete } = renderField()
-    const file = new File(['x'], 'clip.mp4', { type: 'video/mp4' })
+  function pickFile(): void {
     fireEvent.change(screen.getByTestId('MuxUploadFieldInput'), {
-      target: { files: [file] }
+      target: { files: [new File(['x'], 'clip.mp4', { type: 'video/mp4' })] }
     })
+  }
+
+  it('aborts a prior upload then starts a new one when a file is chosen', () => {
+    const { onUploadStart } = renderField()
+    pickFile()
     // Re-pick aborts any prior in-flight upload for this key first.
     expect(mockCancelUploadForBlock).toHaveBeenCalledWith({ id: 'key-1' })
     expect(onUploadStart).toHaveBeenCalledTimes(1)
     expect(mockAddUploadTask).toHaveBeenCalledWith(
       'key-1',
-      file,
+      expect.any(File),
       undefined,
       undefined,
-      onComplete
+      expect.any(Function)
     )
+  })
+
+  it('passes the videoId and the cached playbackId to onComplete', () => {
+    mockReadQuery.mockReturnValue({ getMyMuxVideo: { playbackId: 'pb-x' } })
+    const { onComplete } = renderField()
+    pickFile()
+    // The provider invokes the completion callback (5th arg to addUploadTask).
+    const completeCb = mockAddUploadTask.mock.calls[0][4] as (
+      videoId: string
+    ) => void
+    completeCb('vid-1')
+    expect(onComplete).toHaveBeenCalledWith('vid-1', 'pb-x')
+  })
+
+  it('passes null playbackId when the cache has none', () => {
+    mockReadQuery.mockReturnValue(null)
+    const { onComplete } = renderField()
+    pickFile()
+    const completeCb = mockAddUploadTask.mock.calls[0][4] as (
+      videoId: string
+    ) => void
+    completeCb('vid-1')
+    expect(onComplete).toHaveBeenCalledWith('vid-1', null)
   })
 
   it('shows progress and cancels an in-flight upload (reverting, not removing)', () => {

@@ -111,8 +111,8 @@ export function MediaSection({
           onUploadStart={() =>
             onChange({ type: 'mux', muxVideoId: '', muxPlaybackId: savedPlaybackId })
           }
-          onComplete={(videoId) =>
-            onChange({ type: 'mux', muxVideoId: videoId })
+          onComplete={(videoId, playbackId) =>
+            onChange({ type: 'mux', muxVideoId: videoId, muxPlaybackId: playbackId })
           }
           // Cancel reverts to the prior saved video when one existed, else none.
           onCancel={() =>
