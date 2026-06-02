@@ -35,6 +35,22 @@ interface JourneyViewCardActionsProps {
 // button line up exactly.
 const ACTION_SIZE = 40
 
+/**
+ * Build the admin "Use Template" deep link, guarding against a schemeless
+ * `NEXT_PUBLIC_JOURNEYS_ADMIN_URL` value (e.g. `admin.staging.local`) which
+ * would otherwise throw inside `new URL` and crash the page at render.
+ */
+function buildUseTemplateHref(adminUrl: string, itemId: string): string {
+  try {
+    const url = new URL('/', adminUrl)
+    url.searchParams.set('useTemplate', itemId)
+    return url.toString()
+  } catch {
+    const sanitisedBase = adminUrl.replace(/\/$/, '')
+    return `${sanitisedBase}/?useTemplate=${encodeURIComponent(itemId)}`
+  }
+}
+
 export function JourneyViewCardActions({
   itemId,
   itemSlug,
@@ -87,12 +103,12 @@ export function JourneyViewCardActions({
 
   const adminUrl =
     process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? 'https://admin.nextstep.is'
-  // Deep link into the admin "Use Template" receiver (NES-1608). Built via
-  // `new URL` so a trailing slash on the env var doesn't double the path; the
-  // URL searchParams handle encoding the template id.
-  const useTemplateUrl = new URL('/', adminUrl)
-  useTemplateUrl.searchParams.set('useTemplate', itemId)
-  const useTemplateHref = useTemplateUrl.toString()
+  // Deep link into the admin "Use Template" receiver (NES-1608). Prefer the
+  // `new URL` form so a trailing slash on the env var doesn't double the path
+  // and the URL searchParams handle encoding the template id. Fall back to a
+  // sanitised template string if the env var is ever a schemeless value
+  // (e.g. `admin.staging.local`) — `new URL` would throw and crash render.
+  const useTemplateHref = buildUseTemplateHref(adminUrl, itemId)
   // Public viewer route on the same root domain. Encode the slug as a free
   // defence: a slug containing `/`, `..`, or URL-encoded segment separators
   // would otherwise let the link navigate cross-origin or escape route scope.

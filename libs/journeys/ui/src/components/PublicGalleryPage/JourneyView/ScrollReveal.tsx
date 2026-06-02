@@ -73,12 +73,17 @@ export function ScrollReveal({
         (theme) => ({
           opacity: shown ? 1 : 0,
           transform: shown ? 'none' : hiddenTransform,
-          transition: theme.transitions.create(['opacity', 'transform'], {
-            duration: 700,
-            easing: theme.transitions.easing.easeOut
-          }),
-          transitionDelay: `${delay}ms`,
-          willChange: 'opacity, transform'
+          // Under reduced motion the element is shown immediately, so any
+          // remaining transition would animate the "instant" reveal over
+          // its full duration. Force `none` to keep instant truly instant.
+          transition: reduceMotion
+            ? 'none'
+            : theme.transitions.create(['opacity', 'transform'], {
+                duration: 700,
+                easing: theme.transitions.easing.easeOut
+              }),
+          transitionDelay: reduceMotion ? '0ms' : `${delay}ms`,
+          willChange: reduceMotion ? 'auto' : 'opacity, transform'
         }),
         ...(sx == null ? [] : Array.isArray(sx) ? sx : [sx])
       ]}

@@ -8,10 +8,10 @@ import { ReactElement } from 'react'
 import {
   GALLERY_ACCENT,
   GALLERY_CARD_RADIUS,
-  PublicGalleryPageItem
+  PublicGalleryPageItem,
+  metaLine
 } from '../galleryTokens'
 
-import { metaLine } from './JourneyViewCard'
 import { JourneyViewCardActions } from './JourneyViewCardActions'
 import { ScrollReveal } from './ScrollReveal'
 
@@ -24,10 +24,17 @@ import { ScrollReveal } from './ScrollReveal'
  */
 export function FeaturedRow({
   item,
-  imagePosition
+  imagePosition,
+  priority = false
 }: {
   item: PublicGalleryPageItem
   imagePosition: 'left' | 'right'
+  /**
+   * Hint to `next/image` for above-the-fold priority loading; reserved for
+   * the very first featured row (cover is text-only, so the first featured
+   * image is the closest thing to a hero on this page).
+   */
+  priority?: boolean
 }): ReactElement {
   const meta = metaLine(item)
   const hasDescription = item.description != null && item.description !== ''
@@ -67,6 +74,7 @@ export function FeaturedRow({
               src={imageSrc}
               alt={imageAlt}
               fill
+              priority={priority}
               sizes="(max-width: 900px) 100vw, 600px"
               style={{ objectFit: 'cover' }}
             />

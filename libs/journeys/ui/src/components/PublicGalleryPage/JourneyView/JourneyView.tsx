@@ -91,6 +91,10 @@ export function JourneyView({ data }: JourneyViewProps): ReactElement {
 
 function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
+  // -- no early returns above the useParallax calls --
+  // Each useParallax(...) runs several hooks internally; introducing a
+  // conditional `return` in between would shift their order between
+  // renders and break the rules of hooks.
   // The cover carries the CTA, so its drift is halved (half the default
   // strength) to keep the movement subtle there; the other sections keep the
   // standard parallax.
@@ -155,7 +159,7 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
           }}
         >
           <Container maxWidth="md">
-            <Box ref={introRef} sx={{ willChange: 'transform' }}>
+            <Box ref={introRef}>
               <JourneyViewHeader data={data} creatorAboveDescription />
             </Box>
           </Container>
@@ -212,7 +216,7 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
           }}
         >
           <Container maxWidth="lg">
-            <Box ref={featuredRef} sx={{ willChange: 'transform' }}>
+            <Box ref={featuredRef}>
               <SectionLabel>{t('Explore')}</SectionLabel>
               <Stack spacing={{ xs: 9, md: 13 }} sx={{ mt: 2 }}>
                 {featured.map((item, index) => (
@@ -220,6 +224,7 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
                     key={item.id}
                     item={item}
                     imagePosition={index % 2 === 0 ? 'left' : 'right'}
+                    priority={index === 0}
                   />
                 ))}
               </Stack>
@@ -247,7 +252,7 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
           }}
         >
           <Container maxWidth="lg">
-            <Box ref={restRef} sx={{ willChange: 'transform' }}>
+            <Box ref={restRef}>
               <SectionLabel>{t('More')}</SectionLabel>
               {/* Mobile (xs/sm): portrait overlay cards, two per row */}
               <Box

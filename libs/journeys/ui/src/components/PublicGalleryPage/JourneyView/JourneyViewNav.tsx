@@ -96,9 +96,14 @@ export function JourneyViewNav({
   // centre band (45% margins top and bottom) keeps one section active through
   // most of the scroll. The cover spans the viewport at the top, so it's the
   // active link on first load.
+  //
+  // Keyed on the joined ids — not on `sections` — so a language change (which
+  // rebuilds the labels) doesn't tear the observer down and re-attach it for
+  // a fresh closure with the same id set.
+  const sectionIdsKey = sections.map((section) => section.id).join(',')
   useEffect(() => {
     if (typeof IntersectionObserver !== 'function') return
-    const ids = sections.map((section) => section.id)
+    const ids = sectionIdsKey === '' ? [] : sectionIdsKey.split(',')
     const elements = ids
       .map((id) => document.getElementById(id))
       .filter((element): element is HTMLElement => element != null)
@@ -125,7 +130,7 @@ export function JourneyViewNav({
     )
     elements.forEach((element) => observer.observe(element))
     return () => observer.disconnect()
-  }, [sections])
+  }, [sectionIdsKey])
 
   return (
     <Box component="nav" aria-label={ariaLabel}>

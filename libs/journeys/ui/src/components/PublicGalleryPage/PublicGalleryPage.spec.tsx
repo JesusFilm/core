@@ -256,6 +256,74 @@ describe('PublicGalleryPage', () => {
           'https://staging.example.com/?useTemplate=template-0'
         )
       })
+
+      it('falls back to a sanitised template string when the env value is schemeless', () => {
+        // `new URL('/', 'admin.staging.local')` throws because the base isn't a
+        // valid absolute URL. The guard in buildUseTemplateHref catches it and
+        // hand-builds the href, so render doesn't crash.
+        process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL = 'admin.staging.local'
+        render(
+          <PublicGalleryPage
+            variant="journey"
+            data={makeData({ items: makeItems(1) })}
+          />
+        )
+        expect(
+          screen.getAllByTestId('GalleryTemplateCardUseButton')[0]
+        ).toHaveAttribute('href', 'admin.staging.local/?useTemplate=template-0')
+      })
+    })
+
+    describe('card action links', () => {
+      it('carry rel="noopener noreferrer" and target="_blank" on Use and Preview', () => {
+        render(
+          <PublicGalleryPage
+            variant="journey"
+            data={makeData({ items: makeItems(1) })}
+          />
+        )
+        const useLink = screen.getAllByTestId('GalleryTemplateCardUseButton')[0]
+        const previewLink = screen.getAllByTestId(
+          'GalleryTemplateCardPreviewButton'
+        )[0]
+        expect(useLink).toHaveAttribute('target', '_blank')
+        expect(useLink).toHaveAttribute('rel', 'noopener noreferrer')
+        expect(previewLink).toHaveAttribute('target', '_blank')
+        expect(previewLink).toHaveAttribute('rel', 'noopener noreferrer')
+      })
+
+      it('encodes a slug containing "/" so it never escapes the route', () => {
+        const items = [{ ...mockItem, id: 'template-0', slug: 'foo/bar' }]
+        render(
+          <PublicGalleryPage variant="journey" data={makeData({ items })} />
+        )
+        // The slug is run through encodeURIComponent before being interpolated
+        // into the preview path, so "/" becomes "%2F" and can't be read as a
+        // path-segment separator.
+        expect(
+          screen.getAllByTestId('GalleryTemplateCardPreviewButton')[0]
+        ).toHaveAttribute('href', '/foo%2Fbar')
+      })
+
+      it('gives Preview buttons an aria-label keyed on the item title', () => {
+        // The stubbed-t test environment returns keys verbatim and does NOT
+        // interpolate `{{title}}`, so we assert on the key shape rather than
+        // an interpolated value. The presence of `{{title}}` in the rendered
+        // attribute proves the `t('Preview {{title}}', { title: itemTitle })`
+        // call site is wired correctly — production i18n then interpolates
+        // it into a distinct, screen-reader-friendly label per card.
+        render(
+          <PublicGalleryPage
+            variant="journey"
+            data={makeData({ items: makeItems(1) })}
+          />
+        )
+        const preview = screen.getAllByTestId(
+          'GalleryTemplateCardPreviewButton'
+        )[0]
+        expect(preview.getAttribute('aria-label')).toMatch(/\{\{title\}\}/)
+        expect(preview.getAttribute('aria-label')).not.toBe('Preview')
+      })
     })
 
     describe('meta line', () => {

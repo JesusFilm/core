@@ -32,16 +32,23 @@ export function ScrollProvider({
     let frame = 0
     const update = (): void => {
       frame = 0
+      // Drop a throwing subscriber after its first failure so the console
+      // isn't flooded with the same error on every rAF tick. The thrown
+      // error is logged once with the subscriber count for context.
+      const failing: Array<() => void> = []
       subscribers.current.forEach((callback) => {
-        // Isolate subscriber failures so one throwing callback doesn't
-        // skip the rest in the same tick.
         try {
           callback()
         } catch (error) {
           // eslint-disable-next-line no-console
-          console.error('ScrollProvider subscriber threw:', error)
+          console.error(
+            'ScrollProvider subscriber threw, unsubscribing:',
+            error
+          )
+          failing.push(callback)
         }
       })
+      failing.forEach((callback) => subscribers.current.delete(callback))
     }
     const onScroll = (): void => {
       if (frame === 0) frame = requestAnimationFrame(update)

@@ -1,4 +1,8 @@
+import { intlFormat, isValid, parseISO } from 'date-fns'
+
 import { brandRed } from '@core/shared/ui/themes/base/tokens/colors'
+
+import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 
 /**
  * Shared visual tokens, view-model types, and the featured/rest split rule
@@ -78,4 +82,33 @@ export function splitFeatured(
     featured: items.slice(0, featuredCount),
     rest: items.slice(featuredCount)
   }
+}
+
+/**
+ * Derive the small "Month Year · Language" caption line above a card's
+ * title. Returns an empty string when neither part is available — a sibling
+ * helper to `splitFeatured` so any derivation of `PublicGalleryPageItem`
+ * lives in the leaf module and can't drift between child views.
+ */
+export function metaLine(item: PublicGalleryPageItem): string {
+  const names = item.languageName ?? []
+  const localLanguage = names.find(({ primary }) => !primary)?.value
+  const nativeLanguage = names.find(({ primary }) => primary)?.value ?? ''
+  const displayLanguage = abbreviateLanguageName(
+    localLanguage ?? nativeLanguage
+  )
+
+  // String-coerce defensively: a custom DateTime scalar or a Date slipping
+  // in here would make parseISO return Invalid Date and silently drop the
+  // meta-line date.
+  const parsedCreatedAt =
+    item.createdAt != null ? parseISO(String(item.createdAt)) : null
+  const date =
+    parsedCreatedAt != null && isValid(parsedCreatedAt)
+      ? intlFormat(parsedCreatedAt, { month: 'long', year: 'numeric' })
+      : null
+
+  return [date, displayLanguage]
+    .filter((part): part is string => part != null && part !== '')
+    .join(' · ')
 }
