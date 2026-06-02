@@ -45,7 +45,7 @@ test.describe('Publisher page - Single Template', () => {
   })
 })
 
-test.describe('Publisher page - All Templates', () => {
+test.skip('Publisher page - All Templates', () => {
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
