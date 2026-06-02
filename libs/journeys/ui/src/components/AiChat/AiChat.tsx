@@ -406,7 +406,10 @@ export function AiChat({
   // Burmese, CJK) the split returns a single chunk and the whole
   // greeting wave-lifts as one unit — still on-tone.
   const heroWords = useMemo(
-    () => t('Ask me anything').split(/\s+/).filter((w) => w.length > 0),
+    () =>
+      t('Ask me anything')
+        .split(/\s+/)
+        .filter((w) => w.length > 0),
     [t]
   )
   // We keep header/conversation/input mounted in every state and rely on
