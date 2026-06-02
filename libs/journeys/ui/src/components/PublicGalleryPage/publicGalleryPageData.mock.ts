@@ -1,7 +1,4 @@
-import {
-  PublicGalleryPageData,
-  PublicGalleryPageItem
-} from './PublicGalleryPage'
+import { PublicGalleryPageData, PublicGalleryPageItem } from './galleryTokens'
 
 export const mockItem: PublicGalleryPageItem = {
   id: 'template-1',

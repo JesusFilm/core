@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { GALLERY_ACCENT } from '../PublicGalleryPage'
+import { GALLERY_ACCENT } from '../galleryTokens'
 
 import { useScrollSubscription } from './scrollContext'
 
@@ -234,6 +234,10 @@ export function JourneyViewNav({
         anchor="right"
         open={drawerOpen}
         onClose={handleCloseDrawer}
+        // Keep the Paper mounted when closed so the hamburger's unconditional
+        // `aria-controls="gallery-nav-drawer"` always resolves to a real DOM
+        // node (MUI Drawer's default unmounts the Modal subtree when closed).
+        keepMounted
         slotProps={{
           paper: {
             id: 'gallery-nav-drawer',

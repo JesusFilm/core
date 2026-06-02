@@ -2,6 +2,8 @@ import Box from '@mui/material/Box'
 import { SxProps, Theme } from '@mui/material/styles'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 
+import { usePrefersReducedMotion } from './usePrefersReducedMotion'
+
 type RevealFrom = 'left' | 'right' | 'up'
 
 interface ScrollRevealProps {
@@ -30,14 +32,12 @@ export function ScrollReveal({
 }: ScrollRevealProps): ReactElement {
   const ref = useRef<HTMLDivElement>(null)
   const [shown, setShown] = useState(false)
+  const reduceMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     const element = ref.current
     if (element == null) return
 
-    const reduceMotion =
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
     // No observer (jsdom/older browsers) or reduced motion: show immediately.
     if (reduceMotion || typeof IntersectionObserver === 'undefined') {
       setShown(true)
@@ -57,7 +57,7 @@ export function ScrollReveal({
     )
     observer.observe(element)
     return () => observer.disconnect()
-  }, [])
+  }, [reduceMotion])
 
   const hiddenTransform =
     from === 'left'

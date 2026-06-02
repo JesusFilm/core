@@ -93,8 +93,10 @@ export function JourneyViewCardActions({
   const useTemplateUrl = new URL('/', adminUrl)
   useTemplateUrl.searchParams.set('useTemplate', itemId)
   const useTemplateHref = useTemplateUrl.toString()
-  // Public viewer route on the same root domain.
-  const previewHref = `/${itemSlug}`
+  // Public viewer route on the same root domain. Encode the slug as a free
+  // defence: a slug containing `/`, `..`, or URL-encoded segment separators
+  // would otherwise let the link navigate cross-origin or escape route scope.
+  const previewHref = `/${encodeURIComponent(itemSlug)}`
 
   const useButtonSx = onDark
     ? {

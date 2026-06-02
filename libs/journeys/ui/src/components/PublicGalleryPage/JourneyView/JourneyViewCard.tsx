@@ -11,7 +11,7 @@ import {
   GALLERY_ACCENT,
   GALLERY_CARD_RADIUS,
   PublicGalleryPageItem
-} from '../PublicGalleryPage'
+} from '../galleryTokens'
 
 import { JourneyViewCardActions } from './JourneyViewCardActions'
 

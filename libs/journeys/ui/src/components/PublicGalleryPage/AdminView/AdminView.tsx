@@ -4,14 +4,14 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import { JourneyViewCard } from '../JourneyView/JourneyViewCard'
-import { JourneyViewHeader } from '../JourneyView/JourneyViewHeader'
-import { JourneyViewMedia } from '../JourneyView/JourneyViewMedia'
 import {
   GALLERY_ACCENT,
   PublicGalleryPageData,
   splitFeatured
-} from '../PublicGalleryPage'
+} from '../galleryTokens'
+import { JourneyViewCard } from '../JourneyView/JourneyViewCard'
+import { JourneyViewHeader } from '../JourneyView/JourneyViewHeader'
+import { JourneyViewMedia } from '../JourneyView/JourneyViewMedia'
 
 interface AdminViewProps {
   data: PublicGalleryPageData
@@ -72,7 +72,15 @@ export function AdminView({ data }: AdminViewProps): ReactElement {
   }
 
   return (
-    <Box data-testid="PublicGalleryPageAdminView" sx={{ width: '100%' }}>
+    <Box
+      data-testid="PublicGalleryPageAdminView"
+      // The admin variant is a decorative preview — duplicate of fields the
+      // form already announces. Default to aria-hidden so a consumer that
+      // forgets to wrap it (the JSDoc says they should) still doesn't expose
+      // a duplicate subtree to assistive tech.
+      aria-hidden="true"
+      sx={{ width: '100%' }}
+    >
       <Box sx={{ py: 4 }}>
         <JourneyViewHeader data={headerData} creatorAboveDescription />
       </Box>

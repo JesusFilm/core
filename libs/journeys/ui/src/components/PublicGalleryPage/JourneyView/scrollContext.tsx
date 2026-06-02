@@ -32,7 +32,16 @@ export function ScrollProvider({
     let frame = 0
     const update = (): void => {
       frame = 0
-      subscribers.current.forEach((callback) => callback())
+      subscribers.current.forEach((callback) => {
+        // Isolate subscriber failures so one throwing callback doesn't
+        // skip the rest in the same tick.
+        try {
+          callback()
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error('ScrollProvider subscriber threw:', error)
+        }
+      })
     }
     const onScroll = (): void => {
       if (frame === 0) frame = requestAnimationFrame(update)

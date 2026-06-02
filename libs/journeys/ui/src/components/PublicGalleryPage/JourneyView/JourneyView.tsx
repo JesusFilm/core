@@ -1,25 +1,21 @@
-import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { Theme, lighten, useTheme } from '@mui/material/styles'
+import { Theme, lighten } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import Image from 'next/image'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, ReactNode, RefObject, useMemo, useRef } from 'react'
+import { ReactElement, ReactNode, useMemo } from 'react'
 
 import {
   GALLERY_ACCENT,
-  GALLERY_CARD_RADIUS,
   PublicGalleryPageData,
-  PublicGalleryPageItem,
   splitFeatured
-} from '../PublicGalleryPage'
+} from '../galleryTokens'
 
-import { JourneyViewCard, metaLine } from './JourneyViewCard'
-import { JourneyViewCardActions } from './JourneyViewCardActions'
+import { FeaturedRow } from './FeaturedRow'
+import { JourneyViewCard } from './JourneyViewCard'
 import { JourneyViewEmptyState } from './JourneyViewEmptyState'
 import { JourneyViewHeader } from './JourneyViewHeader'
 import { JourneyViewMedia } from './JourneyViewMedia'
@@ -29,9 +25,9 @@ import {
   JourneyViewNavSection,
   scrollToSection
 } from './JourneyViewNav'
-import { ScrollProvider, useScrollSubscription } from './scrollContext'
+import { ScrollProvider } from './scrollContext'
 import { ScrollReveal } from './ScrollReveal'
-import { usePrefersReducedMotion } from './usePrefersReducedMotion'
+import { useParallax } from './useParallax'
 
 interface JourneyViewProps {
   data: PublicGalleryPageData
@@ -62,54 +58,6 @@ const fullHeightSection = {
   justifyContent: 'center'
 } as const
 
-/**
- * Viewport-relative parallax that closes the gap between sections as you
- * scroll: the leaving (upper) section lags — scrolling slower — while the
- * arriving (lower) section is pulled up toward it, so neighbouring sections
- * draw together as a boundary crosses the viewport. Strength is the peak
- * offset as a fraction of the viewport height, lighter on mobile (xs/sm)
- * than on desktop. Offset is 0 when centred, so each section reads normally
- * when it's the focus.
- *
- * Driven by the shared `ScrollProvider` so three parallax refs + the nav's
- * border-fade ride one window scroll listener, not four. `prefers-reduced-
- * motion` is tracked reactively, so toggling the OS setting mid-session
- * starts/stops the drift immediately.
- */
-function useParallax(
-  desktopStrength = 0.06,
-  mobileStrength = 0.03
-): RefObject<HTMLDivElement | null> {
-  const ref = useRef<HTMLDivElement>(null)
-  const { breakpoints } = useTheme()
-  const mobileMaxWidth = breakpoints.values.md
-  const reduceMotion = usePrefersReducedMotion()
-
-  useScrollSubscription(() => {
-    const element = ref.current
-    if (element == null) return
-    if (reduceMotion) {
-      // Clear any prior offset so toggling reduce-motion ON mid-session
-      // doesn't leave the element stuck mid-translate.
-      element.style.transform = ''
-      return
-    }
-    const viewport = window.innerHeight || 1
-    // xs/sm get the gentler drift; md+ the full strength.
-    const strength =
-      window.innerWidth < mobileMaxWidth ? mobileStrength : desktopStrength
-    const rect = element.getBoundingClientRect()
-    // -1 (well above the viewport) … 0 (centred) … 1 (well below)
-    const progress = (rect.top + rect.height / 2 - viewport / 2) / viewport
-    const clamped = Math.max(-1, Math.min(1, progress))
-    // Negative sign: below-centre content lifts (catches up to the section
-    // above) and above-centre content sinks (lags), shrinking the gap.
-    element.style.transform = `translateY(${(-clamped * strength * viewport).toFixed(1)}px)`
-  })
-
-  return ref
-}
-
 function SectionLabel({ children }: { children: ReactNode }): ReactElement {
   return (
     <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 3 }}>
@@ -127,107 +75,6 @@ function SectionLabel({ children }: { children: ReactNode }): ReactElement {
       >
         {children}
       </Typography>
-    </Stack>
-  )
-}
-
-function FeaturedRow({
-  item,
-  imagePosition
-}: {
-  item: PublicGalleryPageItem
-  imagePosition: 'left' | 'right'
-}): ReactElement {
-  const meta = metaLine(item)
-  const hasDescription = item.description != null && item.description !== ''
-  const imageSrc = item.image?.src ?? null
-  const imageAlt = item.image?.alt ?? item.title
-
-  // Picture animates in from its own side first, then the text from the
-  // opposite side a beat later.
-  const imageFrom = imagePosition === 'left' ? 'left' : 'right'
-  const textFrom = imagePosition === 'left' ? 'right' : 'left'
-
-  return (
-    <Stack
-      direction={{
-        xs: 'column',
-        md: imagePosition === 'right' ? 'row-reverse' : 'row'
-      }}
-      spacing={{ xs: 3, md: 6 }}
-      sx={{ alignItems: { md: 'center' } }}
-    >
-      <ScrollReveal
-        from={imageFrom}
-        sx={{ width: '100%', flex: { md: '1 1 56%' } }}
-      >
-        <Box
-          sx={{
-            position: 'relative',
-            width: '100%',
-            aspectRatio: '3 / 2',
-            borderRadius: GALLERY_CARD_RADIUS,
-            overflow: 'hidden',
-            backgroundColor: '#ECECEC'
-          }}
-        >
-          {imageSrc != null ? (
-            <Image
-              src={imageSrc}
-              alt={imageAlt}
-              fill
-              sizes="(max-width: 900px) 100vw, 600px"
-              style={{ objectFit: 'cover' }}
-            />
-          ) : (
-            <Stack
-              alignItems="center"
-              justifyContent="center"
-              sx={{ position: 'absolute', inset: 0 }}
-            >
-              <InsertPhotoRoundedIcon
-                sx={{ fontSize: 56, color: 'rgba(0,0,0,0.25)' }}
-              />
-            </Stack>
-          )}
-        </Box>
-      </ScrollReveal>
-      <ScrollReveal
-        from={textFrom}
-        delay={180}
-        sx={{ width: '100%', flex: { md: '1 1 44%' } }}
-      >
-        <Stack spacing={2}>
-          {meta !== '' && (
-            <Typography
-              variant="overline"
-              sx={{
-                color: GALLERY_ACCENT,
-                fontWeight: 700,
-                letterSpacing: '0.12em'
-              }}
-            >
-              {meta}
-            </Typography>
-          )}
-          <Typography variant="h4" sx={{ fontWeight: 800 }}>
-            {item.title}
-          </Typography>
-          {hasDescription && (
-            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-              {item.description}
-            </Typography>
-          )}
-          <Box sx={{ pt: 1 }}>
-            <JourneyViewCardActions
-              itemId={item.id}
-              itemSlug={item.slug}
-              itemTitle={item.title}
-              accent={GALLERY_ACCENT}
-            />
-          </Box>
-        </Stack>
-      </ScrollReveal>
     </Stack>
   )
 }
