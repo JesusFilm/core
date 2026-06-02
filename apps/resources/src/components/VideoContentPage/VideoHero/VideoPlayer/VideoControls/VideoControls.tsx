@@ -57,14 +57,6 @@ interface VideoControlProps {
   onVisibleChanged?: (active: boolean) => void
 }
 
-function isPlayerReady(player?: Player): player is Player {
-  return player != null && !player.isDisposed()
-}
-
-function getPlayerVolume(player?: Player): number {
-  return isPlayerReady(player) ? (player.volume() ?? 1) * 100 : 100
-}
-
 function evtToDataLayer(
   eventType,
   mcId,
@@ -228,7 +220,7 @@ export function VideoControls({
   useEffect(() => {
     dispatchPlayer({
       type: 'SetVolume',
-      volume: getPlayerVolume(player)
+      volume: (player?.volume() ?? 1) * 100
     })
     player?.on('play', () => {
       if ((player?.currentTime() ?? 0) < 0.02) {
@@ -298,19 +290,17 @@ export function VideoControls({
     player?.on('volumechange', () => {
       dispatchPlayer({
         type: 'SetMute',
-        mute: isPlayerReady(player) ? (player.muted() ?? false) : false
+        mute: player?.muted() ?? false
       })
       dispatchPlayer({
         type: 'SetVolume',
-        volume: getPlayerVolume(player)
+        volume: (player?.volume() ?? 1) * 100
       })
     })
     player?.on('fullscreenchange', () => {
       dispatchPlayer({
         type: 'SetFullscreen',
-        fullscreen: isPlayerReady(player)
-          ? (player.isFullscreen() ?? false)
-          : false
+        fullscreen: player?.isFullscreen() ?? false
       })
     })
     player?.on('useractive', () =>
@@ -401,9 +391,9 @@ export function VideoControls({
 
   function handlePlay(): void {
     if (!play) {
-      if (isPlayerReady(player)) void player.play()
+      void player?.play()
     } else {
-      if (isPlayerReady(player)) void player.pause()
+      void player?.pause()
     }
   }
 
@@ -416,7 +406,7 @@ export function VideoControls({
       })
     } else {
       if (isMobile()) {
-        if (isPlayerReady(player)) void player.requestFullscreen()
+        void player?.requestFullscreen()
         dispatchPlayer({
           type: 'SetFullscreen',
           fullscreen: true
@@ -437,12 +427,12 @@ export function VideoControls({
         type: 'SetProgress',
         progress: value
       })
-      if (isPlayerReady(player)) player.currentTime(value)
+      player?.currentTime(value)
     }
   }
 
   function handleMute(): void {
-    if (isPlayerReady(player)) player.muted(!mute)
+    player?.muted(!mute)
     dispatchPlayer({
       type: 'SetMute',
       mute: !mute
@@ -456,7 +446,7 @@ export function VideoControls({
         type: 'SetVolume',
         volume: value
       })
-      if (isPlayerReady(player)) player.volume(value / 100)
+      player?.volume(value / 100)
     }
   }
 
@@ -504,7 +494,7 @@ export function VideoControls({
       onClick={getClickHandler(handlePlay, () => {
         void handleFullscreen()
       })}
-      onMouseMove={() => isPlayerReady(player) && player.userActive(true)}
+      onMouseMove={() => player?.userActive(true)}
       data-testid="VideoControls"
     >
       {!loading ? (
@@ -542,7 +532,7 @@ export function VideoControls({
           {images[0]?.mobileCinematicHigh != null && (
             <Image
               src={images[0].mobileCinematicHigh}
-              alt={imageAlt[0]?.value ?? ''}
+              alt={imageAlt[0].value}
               fill
               sizes="100vw"
               style={{

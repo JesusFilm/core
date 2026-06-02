@@ -34,8 +34,7 @@ const mockPlayer = {
   on: vi.fn(),
   off: vi.fn(),
   play: vi.fn(),
-  pause: vi.fn(),
-  isDisposed: vi.fn().mockReturnValue(false)
+  pause: vi.fn()
 } as unknown as Player
 
 describe('VideoControls', () => {
@@ -48,26 +47,6 @@ describe('VideoControls', () => {
     placement: 'singleVideo' as const,
     wasUnmuted: true
   }
-
-  it('does not read volume from a disposed player', () => {
-    const disposedPlayer = {
-      ...mockPlayer,
-      isDisposed: vi.fn().mockReturnValue(true),
-      volume: vi.fn(() => {
-        throw new Error('disposed')
-      })
-    } as unknown as Player
-
-    expect(() =>
-      render(
-        <VideoProvider value={{ content: videos[0] }}>
-          <PlayerProvider>
-            <VideoControls {...defaultProps} player={disposedPlayer} />
-          </PlayerProvider>
-        </VideoProvider>
-      )
-    ).not.toThrow()
-  })
 
   it('should render video controls', () => {
     render(
