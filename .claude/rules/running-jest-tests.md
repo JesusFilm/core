@@ -2,7 +2,7 @@
 
 **Applies when:** Running Jest tests for an app or library that has a `jest.config.ts` at its workspace root. This rule covers Jest unit/component tests only — E2E tests use a different workflow.
 
-For workspaces that have migrated to Vitest (have a `vitest.config.mts` instead — `apps/arclight`, `apps/journeys`, `apis/api-analytics`, `apis/api-media`), see `running-vitest-tests.md`.
+For workspaces that have migrated to Vitest (have a `vitest.config.mts` instead — `apps/arclight`, `apps/journeys`, `apps/journeys-admin`, `apps/watch`, `apis/api-analytics`, `apis/api-media`), see `running-vitest-tests.md`.
 
 ## Use `npx jest` directly — never `npx nx test`
 

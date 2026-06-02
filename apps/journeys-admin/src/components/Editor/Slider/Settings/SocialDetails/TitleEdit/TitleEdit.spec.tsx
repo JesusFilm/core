@@ -57,7 +57,7 @@ describe('TitleEdit', () => {
   })
 
   it('should update seo title', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',
@@ -108,7 +108,7 @@ describe('TitleEdit', () => {
       'This is a very long title that exceeds the 50-character limit and should be truncated properly by component'
     const expectedTruncatedTitle = longTitle.substring(0, 50)
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',

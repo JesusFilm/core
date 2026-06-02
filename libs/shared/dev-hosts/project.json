@@ -21,10 +21,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/libs/shared/dev-hosts"],
       "options": {
-        "jestConfig": "libs/shared/dev-hosts/jest.config.ts"
+        "configFile": "libs/shared/dev-hosts/vitest.config.mts"
       }
     }
   }

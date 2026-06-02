@@ -5,34 +5,35 @@ import {
   signOut as firebaseSignOut,
   signInWithEmailAndPassword
 } from 'firebase/auth'
+import { type MockedFunction } from 'vitest'
 
 import { getFirebaseAuth } from '../../../libs/auth'
 
 import { PasswordPage } from './PasswordPage'
 
-const mockLoginWithCredential = jest.fn().mockResolvedValue(undefined)
-const mockLogin = jest.fn().mockResolvedValue(undefined)
-const mockFirebaseSignOut = firebaseSignOut as jest.MockedFunction<
+const mockLoginWithCredential = vi.fn().mockResolvedValue(undefined)
+const mockLogin = vi.fn().mockResolvedValue(undefined)
+const mockFirebaseSignOut = firebaseSignOut as MockedFunction<
   typeof firebaseSignOut
 >
 
-jest.mock('firebase/auth', () => ({
-  signInWithEmailAndPassword: jest.fn(),
-  signOut: jest.fn().mockResolvedValue(undefined)
+vi.mock('firebase/auth', () => ({
+  signInWithEmailAndPassword: vi.fn(),
+  signOut: vi.fn().mockResolvedValue(undefined)
 }))
 
-jest.mock('../../../libs/auth', () => ({
-  getFirebaseAuth: jest.fn(() => ({ currentUser: null })),
+vi.mock('../../../libs/auth', () => ({
+  getFirebaseAuth: vi.fn(() => ({ currentUser: null })),
   login: (...args: unknown[]) => mockLogin(...args),
   loginWithCredential: (...args: unknown[]) => mockLoginWithCredential(...args)
 }))
 
-jest.mock('../../../libs/pendingGuestJourney', () => ({
-  getPendingGuestJourney: jest.fn(() => null),
-  clearPendingGuestJourney: jest.fn()
+vi.mock('../../../libs/pendingGuestJourney', () => ({
+  getPendingGuestJourney: vi.fn(() => null),
+  clearPendingGuestJourney: vi.fn()
 }))
 
-const mockGetFirebaseAuth = getFirebaseAuth as jest.MockedFunction<
+const mockGetFirebaseAuth = getFirebaseAuth as MockedFunction<
   typeof getFirebaseAuth
 >
 
@@ -60,7 +61,7 @@ describe('PasswordPage', () => {
 
   it('should sign user in if password is correct', async () => {
     const mockSignInWithEmailAndPassword =
-      signInWithEmailAndPassword as jest.MockedFunction<
+      signInWithEmailAndPassword as MockedFunction<
         typeof signInWithEmailAndPassword
       >
 
@@ -80,7 +81,7 @@ describe('PasswordPage', () => {
 
   it('should show error text if password is incorrect', async () => {
     const mockSignInWithEmailAndPassword =
-      signInWithEmailAndPassword as jest.MockedFunction<
+      signInWithEmailAndPassword as MockedFunction<
         typeof signInWithEmailAndPassword
       >
 
@@ -89,7 +90,7 @@ describe('PasswordPage', () => {
     })
 
     const { getByLabelText, getByRole, getByText } = render(
-      <PasswordPage setActivePage={jest.fn()} userEmail="example@example.com" />
+      <PasswordPage setActivePage={vi.fn()} userEmail="example@example.com" />
     )
 
     fireEvent.change(getByLabelText('Password'), {
@@ -109,7 +110,7 @@ describe('PasswordPage', () => {
 
   it('should show error text if user makes too many login attempts', async () => {
     const mockSignInWithEmailAndPassword =
-      signInWithEmailAndPassword as jest.MockedFunction<
+      signInWithEmailAndPassword as MockedFunction<
         typeof signInWithEmailAndPassword
       >
 
@@ -118,7 +119,7 @@ describe('PasswordPage', () => {
     })
 
     const { getByLabelText, getByRole, getByText } = render(
-      <PasswordPage setActivePage={jest.fn()} userEmail="example@example.com" />
+      <PasswordPage setActivePage={vi.fn()} userEmail="example@example.com" />
     )
 
     fireEvent.change(getByLabelText('Password'), {
@@ -139,7 +140,7 @@ describe('PasswordPage', () => {
   })
 
   it('should take user to help page if they have forgotten their password', async () => {
-    const mockSetActivePage = jest.fn()
+    const mockSetActivePage = vi.fn()
 
     const { getByText } = render(
       <PasswordPage
@@ -155,7 +156,7 @@ describe('PasswordPage', () => {
   })
 
   it('should take user to home page on pressing cancel', async () => {
-    const mockSetActivePage = jest.fn()
+    const mockSetActivePage = vi.fn()
 
     const { getByRole } = render(
       <PasswordPage
@@ -173,7 +174,7 @@ describe('PasswordPage', () => {
   it('should toggle password visibility on clicking eye', async () => {
     const { getByLabelText } = render(
       <PasswordPage
-        setActivePage={jest.fn()}
+        setActivePage={vi.fn()}
         userEmail="example@example.com"
         userPassword="example"
       />
@@ -192,15 +193,15 @@ describe('PasswordPage', () => {
     } as ReturnType<typeof getFirebaseAuth>)
 
     const mockSignInWithEmailAndPassword =
-      signInWithEmailAndPassword as jest.MockedFunction<
+      signInWithEmailAndPassword as MockedFunction<
         typeof signInWithEmailAndPassword
       >
     mockSignInWithEmailAndPassword.mockResolvedValueOnce({
-      user: { getIdToken: jest.fn().mockResolvedValue('token') }
+      user: { getIdToken: vi.fn().mockResolvedValue('token') }
     } as unknown as UserCredential)
 
     const { getByLabelText, getByRole } = render(
-      <PasswordPage setActivePage={jest.fn()} userEmail="example@example.com" />
+      <PasswordPage setActivePage={vi.fn()} userEmail="example@example.com" />
     )
 
     fireEvent.change(getByLabelText('Password'), {

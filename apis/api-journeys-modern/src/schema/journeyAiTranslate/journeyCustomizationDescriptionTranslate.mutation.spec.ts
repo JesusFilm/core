@@ -7,8 +7,10 @@ import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import { translateCustomizationDescription } from './translateCustomizationFields/translateCustomizationFields'
 
-vi.mock('@ai-sdk/google', () => ({
-  google: vi.fn(() => 'mocked-google-model')
+vi.mock('@openrouter/ai-sdk-provider', () => ({
+  openrouter: {
+    chat: vi.fn(() => 'mocked-openrouter-model')
+  }
 }))
 
 vi.mock('ai', () => ({
@@ -130,26 +132,6 @@ describe('journeyCustomizationDescriptionTranslate', () => {
   })
 
   it('should skip translation when description is null', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
-      ...mockJourney,
-      journeyCustomizationDescription: null
-    } as any)
-
-    prismaMock.journey.findUniqueOrThrow.mockResolvedValueOnce({
-      ...mockJourney,
-      journeyCustomizationDescription: null
-    } as any)
-
-    await authClient({
-      document: JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE,
-      variables: { input: mockInput }
-    })
-
-    expect(mockTranslateDescription).not.toHaveBeenCalled()
-    expect(prismaMock.journey.update).not.toHaveBeenCalled()
-  })
-
-  it('should skip all translation when no description', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       ...mockJourney,
       journeyCustomizationDescription: null

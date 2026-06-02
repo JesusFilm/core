@@ -1,9 +1,11 @@
-import { google } from '@ai-sdk/google'
 import { Output, generateText } from 'ai'
 import { z } from 'zod'
 
 import { JourneyCustomizationField } from '@core/prisma/journeys/client'
+import { withOpenrouterFallback } from '@core/shared/ai/openrouterModel'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
+
+import { env } from '../../../env'
 
 const CUSTOMIZATION_SYSTEM_PROMPT = `${preSystemPrompt}
 
@@ -18,14 +20,28 @@ You are a professional translation engine.
 const BatchTranslationSchema = z.object({
   translations: z
     .array(z.string())
-    .describe('Translated texts in the same order as the input values')
+    .describe(
+      'Translated texts in the same order as the input values. Each element must be the plain translated text only — no surrounding quotes, no list prefixes, no markdown formatting.'
+    )
 })
+
+/**
+ * Strips formatting artifacts that some models add to structured-output
+ * string fields: surrounding quotes, list-item prefixes, leading/trailing
+ * whitespace.
+ */
+function cleanTranslation(text: string): string {
+  let cleaned = text.trim()
+  cleaned = cleaned.replace(/^["'"'«»]+|["'"'«»]+$/g, '')
+  cleaned = cleaned.replace(/^(?:\d+[.)]\s*|-\s+|\*\s+)/, '')
+  return cleaned.trim()
+}
 
 const CustomizationDescriptionTranslationSchema = z.object({
   translatedDescription: z
     .string()
     .describe(
-      'Translated customization description with all {{ ... }} blocks preserved verbatim'
+      'Translated customization description with all {{ ... }} blocks preserved verbatim. Plain text only — no surrounding quotes or markdown formatting.'
     )
 })
 
@@ -52,22 +68,32 @@ async function translateBatch({
 
   const prompt = `${journeyAnalysis ? `Context:\n${hardenPrompt(journeyAnalysis)}\n\n` : ''}Translate each value from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
 Return translations in the same order as input.
+Each translation must be the plain translated text only — do NOT wrap in quotes, do NOT prefix with numbers or bullet points.
 
 ${numberedValues}`
 
-  const { output } = await generateText({
-    model: google('gemini-2.5-flash'),
-    messages: [
-      { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
-      {
-        role: 'user',
-        content: [{ type: 'text', text: prompt }]
-      }
-    ],
-    output: Output.object({ schema: BatchTranslationSchema })
-  })
+  const { output } = await withOpenrouterFallback(
+    (model) =>
+      generateText({
+        model,
+        messages: [
+          { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content: [{ type: 'text', text: prompt }]
+          }
+        ],
+        output: Output.object({ schema: BatchTranslationSchema })
+      }),
+    env.TRANSLATION_AI_MODELS
+  )
 
-  return values.map((original, i) => output.translations[i] ?? original)
+  return values.map((original, i) => {
+    const raw = output.translations[i]
+    if (raw == null) return original
+    const cleaned = cleanTranslation(raw)
+    return cleaned.length > 0 ? cleaned : original
+  })
 }
 
 /**
@@ -170,7 +196,7 @@ export async function translateCustomizationFields({
             targetLanguageName,
             journeyAnalysis
           })
-        : Promise.resolve([] as string[]),
+        : Promise.resolve([]),
 
       defaultValueEntries.length > 0
         ? translateBatch({
@@ -179,7 +205,7 @@ export async function translateCustomizationFields({
             targetLanguageName: effectiveDefaultValueTarget,
             journeyAnalysis
           })
-        : Promise.resolve([] as string[]),
+        : Promise.resolve([]),
 
       hasDescription
         ? translateCustomizationDescription({
@@ -248,28 +274,32 @@ ${fieldContext}
 Description:
 ${hardenPrompt(description)}`
 
-  const { output } = await generateText({
-    model: google('gemini-2.5-flash'),
-    messages: [
-      { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
-      {
-        role: 'user',
-        content: [{ type: 'text', text: prompt }]
-      }
-    ],
-    output: Output.object({
-      schema: CustomizationDescriptionTranslationSchema
-    })
-  })
+  const { output } = await withOpenrouterFallback(
+    (model) =>
+      generateText({
+        model,
+        messages: [
+          { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content: [{ type: 'text', text: prompt }]
+          }
+        ],
+        output: Output.object({
+          schema: CustomizationDescriptionTranslationSchema
+        })
+      }),
+    env.TRANSLATION_AI_MODELS
+  )
+
+  const translatedDescription = cleanTranslation(output.translatedDescription)
 
   if (fieldMatches.length > 0) {
     const translatedTokens: string[] = []
     const verifyPattern =
       /\{\{\s*([^:}]+)(?:\s*:\s*(?:(['"])([^'"]*)\2|([^}]*?)))?\s*\}\}/g
     let verifyMatch
-    while (
-      (verifyMatch = verifyPattern.exec(output.translatedDescription)) !== null
-    ) {
+    while ((verifyMatch = verifyPattern.exec(translatedDescription)) !== null) {
       translatedTokens.push(verifyMatch[0])
     }
 
@@ -286,5 +316,5 @@ ${hardenPrompt(description)}`
     }
   }
 
-  return output.translatedDescription
+  return translatedDescription
 }

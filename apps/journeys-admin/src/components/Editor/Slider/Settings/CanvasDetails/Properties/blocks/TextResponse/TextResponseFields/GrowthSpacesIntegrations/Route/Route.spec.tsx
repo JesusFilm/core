@@ -79,7 +79,7 @@ describe('Route', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
@@ -87,7 +87,10 @@ describe('Route', () => {
           routeId: 'route.id'
         }
       }
-    }))
+    })) as MockedResponse<
+      TextResponseRouteUpdate,
+      TextResponseRouteUpdateVariables
+    >['result']
   }
 
   const routeUpdateMock2: MockedResponse<
@@ -103,7 +106,7 @@ describe('Route', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
@@ -111,11 +114,14 @@ describe('Route', () => {
           routeId: null
         }
       }
-    }))
+    })) as MockedResponse<
+      TextResponseRouteUpdate,
+      TextResponseRouteUpdateVariables
+    >['result']
   }
 
   it('should change routeId of text response', async () => {
-    const result = jest.fn(() => getIntegrationMock.result)
+    const result = vi.fn(() => getIntegrationMock.result)
     render(
       <MockedProvider
         mocks={[
@@ -143,7 +149,7 @@ describe('Route', () => {
   })
 
   it('should not render route select if integrationId is not set', async () => {
-    const result = jest.fn(() => getIntegrationMock.result)
+    const result = vi.fn(() => getIntegrationMock.result)
     render(
       <MockedProvider
         mocks={[
@@ -170,7 +176,7 @@ describe('Route', () => {
   })
 
   it('should undo change to routeId', async () => {
-    const result = jest.fn(() => getIntegrationMock.result)
+    const result = vi.fn(() => getIntegrationMock.result)
     render(
       <MockedProvider
         mocks={[
@@ -205,7 +211,7 @@ describe('Route', () => {
   })
 
   it('should redo the change to routeId that was undone', async () => {
-    const result = jest.fn(() => getIntegrationMock.result)
+    const result = vi.fn(() => getIntegrationMock.result)
     const mockFirstUpdate = {
       ...routeUpdateMock,
       maxUsageCount: 2

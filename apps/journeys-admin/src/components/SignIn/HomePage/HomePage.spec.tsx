@@ -1,12 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { fetchSignInMethodsForEmail } from 'firebase/auth'
+import { type MockedFunction } from 'vitest'
 
 import { HomePage } from './HomePage'
 
-jest.mock('firebase/auth', () => ({
-  getAuth: jest.fn(),
-  fetchSignInMethodsForEmail: jest.fn()
+vi.mock('firebase/auth', () => ({
+  getAuth: vi.fn(),
+  fetchSignInMethodsForEmail: vi.fn()
 }))
 
 describe('Home', () => {
@@ -84,7 +85,7 @@ describe('Home', () => {
 
   it('should start signing in when valid email entered', async () => {
     const mockFetchSignInMethodsForEmail =
-      fetchSignInMethodsForEmail as jest.MockedFunction<
+      fetchSignInMethodsForEmail as MockedFunction<
         typeof fetchSignInMethodsForEmail
       >
 

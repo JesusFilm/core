@@ -6,7 +6,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { ToggleOption } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -16,7 +16,7 @@ describe('ToggleOption', () => {
     heading: 'Toggle Heading',
     description: 'Toggle Description',
     checked: false,
-    handleChange: jest.fn(),
+    handleChange: vi.fn(),
     children: <Typography>Children</Typography>
   }
 

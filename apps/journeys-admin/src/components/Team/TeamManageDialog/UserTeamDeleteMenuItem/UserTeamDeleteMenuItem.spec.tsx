@@ -8,7 +8,7 @@ import {
 } from './UserTeamDeleteMenuItem'
 
 describe('UserTeamDeleteMenuItem', () => {
-  const result = jest.fn(() => ({
+  const result = vi.fn(() => ({
     data: {
       userTeamDelete: {
         id: 'userTeamId'
@@ -38,7 +38,7 @@ describe('UserTeamDeleteMenuItem', () => {
   })
 
   it('should remove a team member', async () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const { getByText } = render(
       <MockedProvider mocks={mocks} cache={cache}>
         <UserTeamDeleteMenuItem id="userTeamId" onClick={handleClick} />

@@ -16,7 +16,7 @@ export const getTemplateGalleryPagesMock = (
   GetTemplateGalleryPagesVariables
 > => ({
   request: { query: GET_TEMPLATE_GALLERY_PAGES, variables },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: { templateGalleryPages: [...pages] }
   }))
 })

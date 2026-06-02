@@ -143,7 +143,7 @@ describe('VideoBlockEditor', () => {
         <ThemeProvider>
           <MockedProvider mocks={mocks}>
             <SnackbarProvider>
-              <VideoBlockEditor selectedBlock={null} onChange={jest.fn()} />
+              <VideoBlockEditor selectedBlock={null} onChange={vi.fn()} />
             </SnackbarProvider>
           </MockedProvider>
         </ThemeProvider>
@@ -160,7 +160,7 @@ describe('VideoBlockEditor', () => {
             <SnackbarProvider>
               <VideoBlockEditor
                 selectedBlock={videoInternal}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -198,7 +198,7 @@ describe('VideoBlockEditor', () => {
                     ]
                   } as unknown as VideoBlock['mediaVideo']
                 }}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -254,7 +254,7 @@ describe('VideoBlockEditor', () => {
                     ...videoInternal.mediaVideo
                   } as unknown as VideoBlock['mediaVideo']
                 }}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -296,7 +296,7 @@ describe('VideoBlockEditor', () => {
                     ]
                   } as unknown as VideoBlock['mediaVideo']
                 }}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -315,7 +315,7 @@ describe('VideoBlockEditor', () => {
             <SnackbarProvider>
               <VideoBlockEditor
                 selectedBlock={videoYouTube}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -334,13 +334,15 @@ describe('VideoBlockEditor', () => {
           <SnackbarProvider>
             <VideoBlockEditor
               selectedBlock={videoInternal}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>
     )
-    expect(getByRole('checkbox', { name: 'Autoplay' })).toBeEnabled()
+    await waitFor(() =>
+      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeEnabled()
+    )
   })
 
   it('renders VideoBlockEditorSettings when videoId is present', async () => {
@@ -350,7 +352,7 @@ describe('VideoBlockEditor', () => {
           <SnackbarProvider>
             <VideoBlockEditor
               selectedBlock={videoInternal}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -373,7 +375,7 @@ describe('VideoBlockEditor', () => {
           <SnackbarProvider>
             <VideoBlockEditor
               selectedBlock={videoWithoutId}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -391,7 +393,7 @@ describe('VideoBlockEditor', () => {
           <SnackbarProvider>
             <VideoBlockEditor
               selectedBlock={videoInternal}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -401,7 +403,7 @@ describe('VideoBlockEditor', () => {
   })
 
   it('calls onChange when video properties are updated', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider mocks={mocks}>
@@ -436,7 +438,7 @@ describe('VideoBlockEditor', () => {
       <ThemeProvider>
         <MockedProvider mocks={mocks}>
           <SnackbarProvider>
-            <VideoBlockEditor selectedBlock={videoMux} onChange={jest.fn()} />
+            <VideoBlockEditor selectedBlock={videoMux} onChange={vi.fn()} />
           </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>
@@ -477,7 +479,7 @@ describe('VideoBlockEditor', () => {
           <SnackbarProvider>
             <VideoBlockEditor
               selectedBlock={videoWithPoster}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -497,7 +499,7 @@ describe('VideoBlockEditor', () => {
             <SnackbarProvider>
               <VideoBlockEditor
                 selectedBlock={videoInternal}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -523,7 +525,7 @@ describe('VideoBlockEditor', () => {
                     <EditorProvider>
                       <VideoBlockEditor
                         selectedBlock={videoInternal}
-                        onChange={jest.fn()}
+                        onChange={vi.fn()}
                       />
                     </EditorProvider>
                   </CommandProvider>
@@ -553,7 +555,7 @@ describe('VideoBlockEditor', () => {
                     <EditorProvider>
                       <VideoBlockEditor
                         selectedBlock={videoInternal}
-                        onChange={jest.fn()}
+                        onChange={vi.fn()}
                       />
                     </EditorProvider>
                   </CommandProvider>
@@ -588,7 +590,7 @@ describe('VideoBlockEditor', () => {
                     <EditorProvider>
                       <VideoBlockEditor
                         selectedBlock={videoWithCustomizable}
-                        onChange={jest.fn()}
+                        onChange={vi.fn()}
                       />
                     </EditorProvider>
                   </CommandProvider>
@@ -625,7 +627,7 @@ describe('VideoBlockEditor', () => {
                     <EditorProvider>
                       <VideoBlockEditor
                         selectedBlock={videoWithCustomizableFalse}
-                        onChange={jest.fn()}
+                        onChange={vi.fn()}
                       />
                     </EditorProvider>
                   </CommandProvider>
@@ -642,7 +644,7 @@ describe('VideoBlockEditor', () => {
     })
 
     it('commits trimmed adapter notes on blur', async () => {
-      const onChange = jest.fn().mockResolvedValue(undefined)
+      const onChange = vi.fn().mockResolvedValue(undefined)
       const videoWithCustomizable = {
         ...videoInternal,
         customizable: true,
@@ -705,7 +707,7 @@ describe('VideoBlockEditor', () => {
                     <EditorProvider>
                       <VideoBlockEditor
                         selectedBlock={videoWithCustomizable}
-                        onChange={jest.fn()}
+                        onChange={vi.fn()}
                       />
                     </EditorProvider>
                   </CommandProvider>
@@ -743,7 +745,7 @@ describe('VideoBlockEditor', () => {
                     <EditorProvider>
                       <VideoBlockEditor
                         selectedBlock={videoWithCustomizable}
-                        onChange={jest.fn()}
+                        onChange={vi.fn()}
                       />
                     </EditorProvider>
                   </CommandProvider>
@@ -779,7 +781,7 @@ describe('VideoBlockEditor', () => {
                     <EditorProvider>
                       <VideoBlockEditor
                         selectedBlock={videoWithCustomizable}
-                        onChange={jest.fn()}
+                        onChange={vi.fn()}
                       />
                     </EditorProvider>
                   </CommandProvider>

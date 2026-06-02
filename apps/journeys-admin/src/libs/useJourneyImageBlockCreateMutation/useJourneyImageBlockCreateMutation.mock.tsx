@@ -16,7 +16,7 @@ export const journeyImageBlockCreateMock: MockedResponse<JourneyImageBlockCreate
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         imageBlockCreate: {
           __typename: 'ImageBlock',
@@ -34,5 +34,5 @@ export const journeyImageBlockCreateMock: MockedResponse<JourneyImageBlockCreate
           customizable: null
         }
       }
-    }))
+    })) as MockedResponse<JourneyImageBlockCreate>['result']
   }

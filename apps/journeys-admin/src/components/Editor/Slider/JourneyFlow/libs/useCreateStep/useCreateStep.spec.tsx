@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import {
   BlockRestore,
@@ -12,19 +13,19 @@ import { TestUseCreateStepHooks } from '../TestUseCreateStepHooks'
 
 import { mockBlockDelete, mockNewStepBlock } from './useCreateStep.mock'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('useCreateStep', () => {
   it('should create a step on click', async () => {
     mockUuidv4.mockReturnValueOnce('newStep.id')
     mockUuidv4.mockReturnValueOnce('newCard.id')
 
-    const result = jest.fn().mockReturnValue(stepAndCardBlockCreateMock.result)
+    const result = vi.fn().mockReturnValue(stepAndCardBlockCreateMock.result)
 
     render(
       <MockedProvider mocks={[{ ...stepAndCardBlockCreateMock, result }]}>
@@ -41,8 +42,8 @@ describe('useCreateStep', () => {
     mockUuidv4.mockReturnValueOnce('newStep.id')
     mockUuidv4.mockReturnValueOnce('newCard.id')
 
-    const result = jest.fn().mockReturnValue(stepAndCardBlockCreateMock.result)
-    const result2 = jest.fn().mockReturnValue(mockBlockDelete.result)
+    const result = vi.fn().mockReturnValue(stepAndCardBlockCreateMock.result)
+    const result2 = vi.fn().mockReturnValue(mockBlockDelete.result)
 
     render(
       <MockedProvider
@@ -76,9 +77,9 @@ describe('useCreateStep', () => {
         }
       }
 
-    const result = jest.fn().mockReturnValue(stepAndCardBlockCreateMock.result)
-    const result2 = jest.fn().mockReturnValue(mockBlockDelete.result)
-    const result3 = jest.fn().mockResolvedValue(mockRestoreStep.request)
+    const result = vi.fn().mockReturnValue(stepAndCardBlockCreateMock.result)
+    const result2 = vi.fn().mockReturnValue(mockBlockDelete.result)
+    const result3 = vi.fn().mockResolvedValue(mockRestoreStep.request)
 
     render(
       <MockedProvider

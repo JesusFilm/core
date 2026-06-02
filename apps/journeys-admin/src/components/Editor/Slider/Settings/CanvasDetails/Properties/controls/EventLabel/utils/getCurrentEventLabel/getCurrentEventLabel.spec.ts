@@ -13,10 +13,10 @@ import { eventLabelOptions } from '../eventLabels'
 import { getCurrentEventLabel } from './getCurrentEventLabel'
 
 describe('getCurrentEventLabel', () => {
-  const t = jest.fn((key) => key) as unknown as TFunction
+  const t = vi.fn((key) => key) as unknown as TFunction
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should return the first event label option (None) by default', () => {

@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import type { MockedFunction } from 'vitest'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { usePlayer, useThrottledPlayerProgress } from '../../libs/playerContext'
@@ -6,56 +7,58 @@ import { UnifiedCardData } from '../../types/inserts'
 
 import { VideoCarouselCard } from '.'
 
-jest.mock('next/image', () => {
-  return function MockImage(props: any) {
+vi.mock('next/image', () => ({
+  __esModule: true,
+  default: function MockImage(props: any) {
+    // eslint-disable-next-line @next/next/no-img-element
     return <img data-testid="video-image" {...props} />
   }
-})
-
-jest.mock('../../libs/playerContext', () => ({
-  usePlayer: jest.fn()
 }))
 
-jest.mock('../../libs/utils/getLabelDetails/getLabelDetails', () => ({
+vi.mock('../../libs/playerContext', () => ({
+  usePlayer: vi.fn()
+}))
+
+vi.mock('../../libs/utils/getLabelDetails/getLabelDetails', () => ({
   getLabelDetails: () => ({ label: 'Chapter' })
 }))
 
-jest.mock('../../libs/utils/getWatchUrl', () => ({
+vi.mock('../../libs/utils/getWatchUrl', () => ({
   getWatchUrl: () => '/watch/test-video'
 }))
 
-jest.mock('../../libs/blurhash', () => ({
-  useBlurhash: jest.fn(() => ({
+vi.mock('../../libs/blurhash', () => ({
+  useBlurhash: vi.fn(() => ({
     blurhash: null,
     dominantColor: null,
     isLoading: false,
     error: null
   })),
-  blurImage: jest.fn(() => 'data:image/webp;base64,test')
+  blurImage: vi.fn(() => 'data:image/webp;base64,test')
 }))
 
-jest.mock('../../libs/thumbnail', () => ({
-  useThumbnailUrl: jest.fn(() => ({
+vi.mock('../../libs/thumbnail', () => ({
+  useThumbnailUrl: vi.fn(() => ({
     thumbnailUrl: 'test-image.jpg',
     isLoading: false,
     error: null
   }))
 }))
 
-jest.mock('../../libs/watchContext', () => ({
-  useWatch: jest.fn(() => ({
+vi.mock('../../libs/watchContext', () => ({
+  useWatch: vi.fn(() => ({
     state: { audioLanguageId: '529' }
   }))
 }))
 
-jest.mock('../../libs/playerContext', () => ({
-  usePlayer: jest.fn(),
-  useThrottledPlayerProgress: jest.fn(() => 0)
+vi.mock('../../libs/playerContext', () => ({
+  usePlayer: vi.fn(),
+  useThrottledPlayerProgress: vi.fn(() => 0)
 }))
 
-const mockUsePlayer = usePlayer as jest.MockedFunction<typeof usePlayer>
+const mockUsePlayer = usePlayer as MockedFunction<typeof usePlayer>
 const useThrottledPlayerProgressMock =
-  useThrottledPlayerProgress as jest.MockedFunction<
+  useThrottledPlayerProgress as MockedFunction<
     typeof useThrottledPlayerProgress
   >
 
@@ -105,7 +108,7 @@ describe('VideoCarouselCard', () => {
   })
 
   it('calls onVideoSelect when clicked in interactive mode', () => {
-    const mockOnVideoSelect = jest.fn()
+    const mockOnVideoSelect = vi.fn()
 
     render(
       <VideoCarouselCard

@@ -10,7 +10,7 @@ import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { CategoriesTabPanel } from './CategoriesTabPanel'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => false
 }))
@@ -277,7 +277,7 @@ describe('CategoriesTabPanel', () => {
   })
 
   it('calls onChange with selected tags from all tag groups', async () => {
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
 
     const { getByRole, getAllByRole } = render(
       <MockedProvider mocks={[tagsMock]}>

@@ -20,7 +20,7 @@ import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoI
 
 import { CARD_BLOCK_THEME_MODE_UPDATE, CardStyling } from './CardStyling'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -228,7 +228,7 @@ describe('CardStyling', () => {
         __typename: 'Journey'
       }
     })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: {
           id: 'card1.id',
@@ -280,7 +280,7 @@ describe('CardStyling', () => {
         __typename: 'Journey'
       }
     })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: {
           id: 'card1.id',

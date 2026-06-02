@@ -1,30 +1,31 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { HelpScoutBeacon } from './HelpScoutBeacon'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('HelpScoutBeacon', () => {
   beforeEach(() => {
-    window.Beacon = jest.fn()
+    window.Beacon = vi.fn()
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should render icon button', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     mockedUseRouter.mockReturnValue({
       events: {
-        on: jest.fn(),
-        off: jest.fn()
+        on: vi.fn(),
+        off: vi.fn()
       }
     } as unknown as NextRouter)
 
@@ -35,11 +36,11 @@ describe('HelpScoutBeacon', () => {
   })
 
   it('should render menu item', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     mockedUseRouter.mockReturnValue({
       events: {
-        on: jest.fn(),
-        off: jest.fn()
+        on: vi.fn(),
+        off: vi.fn()
       }
     } as unknown as NextRouter)
 
@@ -52,8 +53,8 @@ describe('HelpScoutBeacon', () => {
   it('should update icon if beacon has been manually opened', () => {
     mockedUseRouter.mockReturnValue({
       events: {
-        on: jest.fn(),
-        off: jest.fn()
+        on: vi.fn(),
+        off: vi.fn()
       }
     } as unknown as NextRouter)
 
@@ -72,8 +73,8 @@ describe('HelpScoutBeacon', () => {
   it('should open beacon', () => {
     mockedUseRouter.mockReturnValue({
       events: {
-        on: jest.fn(),
-        off: jest.fn()
+        on: vi.fn(),
+        off: vi.fn()
       }
     } as unknown as NextRouter)
 
@@ -85,11 +86,11 @@ describe('HelpScoutBeacon', () => {
   })
 
   it('should open help page if beacon has not loaded', () => {
-    const push = jest.fn()
+    const push = vi.fn()
     mockedUseRouter.mockReturnValue({
       events: {
-        on: jest.fn(),
-        off: jest.fn()
+        on: vi.fn(),
+        off: vi.fn()
       },
       push
     } as unknown as NextRouter)

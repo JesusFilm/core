@@ -35,5 +35,8 @@ export const env = {
   },
   get PLAUSIBLE_URL(): string {
     return process.env.PLAUSIBLE_URL ?? 'https://example.com'
+  },
+  get TRANSLATION_AI_MODELS(): string[] {
+    return ['google/gemma-4-26b-a4b-it', 'google/gemini-2.5-flash']
   }
 }

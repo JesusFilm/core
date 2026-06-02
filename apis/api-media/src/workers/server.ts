@@ -87,6 +87,12 @@ async function main(): Promise<void> {
       )
       run(
         await import(
+          /* webpackChunkName: "production-manager-video-slack-summary" */
+          './productionManagerVideoSlackSummary'
+        )
+      )
+      run(
+        await import(
           /* webpackChunkName: "process-image-blurhash" */
           './processImageBlurhash'
         )

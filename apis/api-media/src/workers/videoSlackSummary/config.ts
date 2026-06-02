@@ -1,5 +1,7 @@
 export const queueName = 'api-media-video-slack-summary'
 export const jobName = `${queueName}-job`
 
-const EVERY_MONDAY_AT_9_AM_UTC = '0 0 9 * * 1'
-export const repeat = EVERY_MONDAY_AT_9_AM_UTC
+// BullMQ repeat cron runs in UTC here. 14:00 UTC is 10 AM Eastern during
+// daylight saving time and 9 AM Eastern during standard time.
+const EVERY_DAY_AT_14_UTC = '0 0 14 * * *'
+export const repeat = EVERY_DAY_AT_14_UTC

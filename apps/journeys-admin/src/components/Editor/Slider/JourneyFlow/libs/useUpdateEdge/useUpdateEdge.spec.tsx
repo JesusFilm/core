@@ -39,13 +39,9 @@ const step1: TreeBlock<StepBlock> = {
 
 describe('useUpdateEdge', () => {
   it('should update block order for SocialPreview edge and undo/redo', async () => {
-    const mockResult = jest.fn().mockReturnValue(blockOrderUpdateMock.result)
-    const mockUndoResult = jest
-      .fn()
-      .mockReturnValue(blockOrderUpdateMock.result)
-    const mockRedoResult = jest
-      .fn()
-      .mockReturnValue(blockOrderUpdateMock.result)
+    const mockResult = vi.fn().mockReturnValue(blockOrderUpdateMock.result)
+    const mockUndoResult = vi.fn().mockReturnValue(blockOrderUpdateMock.result)
+    const mockRedoResult = vi.fn().mockReturnValue(blockOrderUpdateMock.result)
 
     const { result } = renderHook(() => useUpdateEdge(), {
       wrapper: ({ children }) => (
@@ -93,13 +89,13 @@ describe('useUpdateEdge', () => {
   })
 
   it('should update nextBlockId for step block edge and undo/redo', async () => {
-    const mockResult = jest
+    const mockResult = vi
       .fn()
       .mockReturnValue(stepBlockNextBlockUpdateMock.result)
-    const mockUndoResult = jest
+    const mockUndoResult = vi
       .fn()
       .mockReturnValue(stepBlockNextBlockUpdateMock.result)
-    const mockRedoResult = jest
+    const mockRedoResult = vi
       .fn()
       .mockReturnValue(stepBlockNextBlockUpdateMock.result)
 
@@ -155,7 +151,7 @@ describe('useUpdateEdge', () => {
   })
 
   it('should update navigateToBlockAction for action edge and undo/redo', async () => {
-    const blockActionResult = jest
+    const blockActionResult = vi
       .fn()
       .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
 
@@ -184,11 +180,11 @@ describe('useUpdateEdge', () => {
   })
 
   it('should update edge for source node change', async () => {
-    const blockActionResult = jest
+    const blockActionResult = vi
       .fn()
       .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
 
-    const stepBlockResult = jest
+    const stepBlockResult = vi
       .fn()
       .mockReturnValue(stepBlockNextBlockUpdateMock.result)
 
