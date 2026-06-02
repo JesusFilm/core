@@ -282,10 +282,7 @@ describe('VideoFromMux', () => {
       <MockedProvider>
         <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
           <EditorProvider initialState={{ selectedBlock: selectedVideoBlock }}>
-            <VideoFromMux
-              onSelect={vi.fn()}
-              videoBlock={internalVideoBlock}
-            />
+            <VideoFromMux onSelect={vi.fn()} videoBlock={internalVideoBlock} />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
