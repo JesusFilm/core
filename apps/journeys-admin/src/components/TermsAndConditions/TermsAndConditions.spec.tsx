@@ -265,6 +265,46 @@ describe('TermsAndConditions', () => {
     })
   })
 
+  it('should navigate and clear loading even if the team refetch never resolves', async () => {
+    // Regression: the post-accept flow must not couple navigation or the
+    // button's loading state to the background team refetch / persistence.
+    // If the refetch stalls (e.g. a slow gateway), the user must still be
+    // taken to the destination instead of being stranded on a spinner.
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
+
+    const { getByRole, queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          journeyProfileCreateMock,
+          teamCreateMock,
+          getTeams, // initial TeamProvider query
+          { ...getTeams, delay: Infinity }, // query.refetch() never resolves
+          updateLastActiveTeamIdMock,
+          journeyDuplicateMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TermsAndConditions />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Next' }))
+
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith('/?onboarding=true')
+    )
+    await waitFor(() =>
+      expect(queryByRole('progressbar')).not.toBeInTheDocument()
+    )
+  })
+
   it('should pass redirect query location to next page', async () => {
     mockUseRouter.mockReturnValue({
       push,

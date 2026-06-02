@@ -102,27 +102,27 @@ export function TermsAndConditions(): ReactElement {
     }
 
     if (teamId != null && team != null) {
-      await Promise.allSettled([
-        updateLastActiveTeamId({
-          variables: {
-            input: { lastActiveTeamId: teamId }
-          }
-        }),
-        router.push(
-          router.query.redirect != null
-            ? new URL(router.query.redirect as string, window.location.origin)
-            : hasExistingTeam
-              ? '/'
-              : '/?onboarding=true'
-        ),
-        query
-          .refetch()
-          .then(() =>
-            console.log('[TermsAndConditions] Team data refetched successfully')
-          )
-      ])
-
+      // Resolve the active team locally before navigating so the destination
+      // page reflects the new team without waiting on the background refetch.
       setActiveTeam(team)
+
+      // Persist the last active team and refresh team data in the background.
+      // Navigation must not be coupled to these requests: if either stalled,
+      // the user would be stranded on the Terms screen with a spinning button.
+      void updateLastActiveTeamId({
+        variables: {
+          input: { lastActiveTeamId: teamId }
+        }
+      })
+      void query.refetch()
+
+      await router.push(
+        router.query.redirect != null
+          ? new URL(router.query.redirect as string, window.location.origin)
+          : hasExistingTeam
+            ? '/'
+            : '/?onboarding=true'
+      )
     }
     setLoading(false)
   }
