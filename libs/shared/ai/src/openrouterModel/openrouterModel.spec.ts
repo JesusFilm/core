@@ -275,8 +275,8 @@ describe('openrouterModel', () => {
           (_model, signal: AbortSignal) =>
             new Promise((_resolve, reject) => {
               signal.addEventListener('abort', () =>
-              reject(signal.reason as Error)
-            )
+                reject(signal.reason as Error)
+              )
             })
         )
         .mockResolvedValueOnce('recovered')
