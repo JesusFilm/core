@@ -12,7 +12,6 @@ import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
 import {
-  ActionButton,
   ActionCard,
   BodyWrapper,
   EmailContainer,
@@ -22,7 +21,9 @@ import {
 } from '@core/yoga/email/components'
 
 interface VerifyEmailProps {
-  inviteLink: string
+  // Retained for caller compatibility; the deep-link button was replaced by
+  // the inline OTP, so the template no longer reads this.
+  inviteLink?: string
   token: string
   story?: boolean
   recipient: {
@@ -38,7 +39,6 @@ interface WrapperProps {
 }
 
 export const EmailVerifyJesusFilmOne = ({
-  inviteLink,
   recipient,
   token,
   story = false
@@ -66,19 +66,20 @@ export const EmailVerifyJesusFilmOne = ({
                   </Text>
                 </th>
               </Row>
-              <Row className="px-[28px]">
-                <Column align="center">
-                  <ActionButton
-                    buttonText="Verify Email Address"
-                    url={inviteLink}
-                  />
-                </Column>
+              <Row>
+                <th>
+                  <Text className="mt-0 mb-[16px] text-center text-[14px] leading-[24px] font-[400]">
+                    Enter this 6-digit verification code in the app to confirm
+                    your email address.
+                  </Text>
+                </th>
               </Row>
               <Row>
-                <Text className="mt-[24px] mb-[8px] text-center text-[14px] leading-[24px] font-[400]">
-                  Your verification code is{' '}
-                  <strong className="text-[#C52D3A]">{token}</strong>
-                </Text>
+                <Column align="center">
+                  <Text className="my-0 text-center text-[40px] leading-[48px] font-bold tracking-[8px] text-[#C52D3A]">
+                    {token}
+                  </Text>
+                </Column>
               </Row>
             </Section>
           </ActionCard>
