@@ -436,7 +436,17 @@ export function AiChat({
               alignItems: 'center',
               justifyContent: 'center',
               px: 4,
-              pointerEvents: 'none'
+              pointerEvents: 'none',
+              // One-shot wave animation on mount: each character lifts
+              // 8px then settles, staggered left-to-right. Draws the eye
+              // to the hero when the chat opens, then stays out of the
+              // way. The base (0%/100%) is translateY(0) so each char's
+              // resting state is its natural position — no fill-mode
+              // needed.
+              '@keyframes aiChatHeroWave': {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-8px)' }
+              }
             }}
           >
             <Typography
@@ -448,7 +458,23 @@ export function AiChat({
                 lineHeight: 1.3
               }}
             >
-              {t('Ask me anything')}
+              {Array.from(t('Ask me anything')).map((char, i) => (
+                <Box
+                  key={i}
+                  component="span"
+                  sx={{
+                    display: 'inline-block',
+                    animation: `aiChatHeroWave 700ms ease-in-out ${i * 50}ms 1`,
+                    '@media (prefers-reduced-motion: reduce)': {
+                      animation: 'none'
+                    }
+                  }}
+                >
+                  {/* nbsp keeps inter-word spacing intact inside the
+                      inline-block per-character spans. */}
+                  {char === ' ' ? '\u00A0' : char}
+                </Box>
+              ))}
             </Typography>
           </Box>
         )}

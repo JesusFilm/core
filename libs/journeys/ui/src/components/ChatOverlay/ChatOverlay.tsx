@@ -48,13 +48,12 @@ export function ChatOverlay({
         aria-hidden
         sx={{
           position: 'absolute',
-          // Inset the dark surface so the journey card peeks through the
-          // 16px frame around the overlay. Combined with the top-right
-          // close affordance below, the user is oriented to the overlay
-          // relationship rather than thinking the page itself changed.
-          inset: 16,
-          bgcolor: 'grey.900',
-          borderRadius: '20px'
+          inset: 0,
+          // Fully opaque so the journey card behind the overlay is not
+          // visible. Previously alpha(grey[900], 0.88) + 6px backdrop blur
+          // left underlying card content perceptible, which hurt chat
+          // legibility (NES-1654, Lucinda's feedback).
+          bgcolor: 'grey.900'
         }}
       />
       <IconButton
@@ -66,8 +65,11 @@ export function ChatOverlay({
           top: 'calc(env(safe-area-inset-top) + 24px)',
           right: 24,
           zIndex: 1,
-          width: 40,
-          height: 40,
+          // Matches PromptInput's submit/stop icon button (32×32) so the
+          // two affordances at opposite corners of the overlay feel
+          // proportionate.
+          width: 32,
+          height: 32,
           p: 0,
           color: 'common.white',
           bgcolor: OVERLAY_CLOSE_BG,
@@ -84,7 +86,12 @@ export function ChatOverlay({
           position: 'relative',
           width: '100%',
           maxWidth: '48rem',
-          maxHeight: '80vh',
+          // Full-height panel so the AiChat flex column has real height
+          // for the conversation-container (flex:1) to fill — that gives
+          // the absolutely-positioned empty-state hero proper space to
+          // centre within the viewport rather than collapsing to the
+          // bottom (NES-1654 iteration).
+          height: '100%',
           display: 'flex',
           flexDirection: 'column',
           minHeight: 0
