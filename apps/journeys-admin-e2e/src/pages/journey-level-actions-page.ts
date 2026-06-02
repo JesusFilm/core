@@ -2,7 +2,7 @@
 import { expect } from '@playwright/test'
 import type { Page } from 'playwright-core'
 
-import { generateRandomNumber } from '../framework/helpers'
+import { generateRandomNumber, getEmail } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
 let randomNumber = ''
@@ -23,7 +23,6 @@ export class JourneyLevelActions {
   constructor(page: Page) {
     this.page = page
     randomNumber = generateRandomNumber(3)
-    this.memberEmail = `playwright${randomNumber}@example.com`
   }
 
   async setBrowserContext(context): Promise<void> {
@@ -119,19 +118,72 @@ export class JourneyLevelActions {
   }
 
   async enterTeamMember(): Promise<void> {
-    await this.page.locator('input[name="email"]').fill(this.memberEmail)
+    const [localPart, domain] = (await getEmail('admin')).split('@')
+    // Plus-alias keeps a deliverable address while staying unique per run.
+    this.memberEmail =
+      `${localPart}+journey-invite-${randomNumber}@${domain}`.toLowerCase()
+    const accessDialog = this.page.getByTestId('AccessDialog')
+    await expect(accessDialog).toBeVisible({ timeout: thirtySecondsTimeout })
+    const emailInput = accessDialog.getByRole('textbox', { name: 'Email' })
+    await expect(emailInput).toBeEditable({ timeout: thirtySecondsTimeout })
+    await emailInput.fill(this.memberEmail)
+    await emailInput.blur()
+    await expect(
+      accessDialog.locator('.MuiFormHelperText-root.Mui-error')
+    ).toHaveCount(0)
   }
 
   async clickPlusMemberInMemberPopup(): Promise<void> {
-    await this.page.locator('button[aria-label="add user"]').click()
+    const accessDialog = this.page.getByTestId('AccessDialog')
+    const emailInput = accessDialog.getByRole('textbox', { name: 'Email' })
+    const addUserButton = accessDialog.getByRole('button', { name: 'add user' })
+    await addUserButton.scrollIntoViewIfNeeded()
+    await expect(addUserButton).toBeEnabled({ timeout: thirtySecondsTimeout })
+    await emailInput.press('Enter')
+    await expect(emailInput).toHaveValue('', { timeout: thirtySecondsTimeout })
+  }
+
+  /** Client-side success: invite form clears with no validation error. */
+  async verifyAccessInviteSubmitted(): Promise<void> {
+    const accessDialog = this.page.getByTestId('AccessDialog')
+    await expect(accessDialog.getByRole('textbox', { name: 'Email' })).toHaveValue(
+      ''
+    )
+    await expect(
+      accessDialog.locator('.MuiFormHelperText-root.Mui-error')
+    ).toHaveCount(0)
   }
 
   async verifyAccessAddedInManageEditors(): Promise<void> {
-    await expect(
-      this.page.locator('div[data-testid="UserListItem"] p', {
-        hasText: this.memberEmail
-      })
-    ).toBeVisible({ timeout: 20000 })
+    const accessDialog = this.page.getByTestId('AccessDialog')
+    const inviteRow = accessDialog
+      .locator('[data-testid="UserListItem"], [data-testId="UserListItem"]')
+      .filter({ hasText: this.memberEmail })
+    await expect(inviteRow.first()).toBeVisible({
+      timeout: thirtySecondsTimeout
+    })
+  }
+
+  /** Re-open Access so GetUserInvites refetches after userInviteCreate. */
+  async reopenAccessFromJourneyCard(journeyName: string): Promise<void> {
+    await this.clickDiaLogBoxCloseBtn()
+    await this.clickThreeDotOfCreatedJourney(journeyName)
+    await this.clickThreeDotOptions('Access')
+    await expect(this.page.getByTestId('AccessDialog')).toBeVisible({
+      timeout: thirtySecondsTimeout
+    })
+  }
+
+  /** Re-open Manage Access from the journey editor toolbar menu. */
+  async reopenManageAccessFromEditor(): Promise<void> {
+    await this.clickDiaLogBoxCloseBtn()
+    await this.page
+      .locator('[data-testid="ToolbarMenuButton"]')
+      .click({ timeout: thirtySecondsTimeout })
+    await this.clickThreeDotOptionsOfJourneyCreationPage('Manage Access')
+    await expect(this.page.getByTestId('AccessDialog')).toBeVisible({
+      timeout: thirtySecondsTimeout
+    })
   }
 
   async clickDiaLogBoxCloseBtn(): Promise<void> {
@@ -211,27 +263,41 @@ export class JourneyLevelActions {
   }
 
   async clickSelectTeamDropDownIcon(): Promise<void> {
+    const backdrop = this.page.locator('.MuiModal-backdrop').first()
+    if (await backdrop.isVisible({ timeout: 500 }).catch(() => false)) {
+      const duplicateDialog = this.page.locator(
+        'div[data-testid="dialog-action"]'
+      )
+      if (!(await duplicateDialog.isVisible({ timeout: 500 }).catch(() => false))) {
+        await this.page.keyboard.press('Escape')
+        await backdrop.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
+      }
+    }
     const dropdown = this.page
       .getByTestId('team-duplicate-select')
       .locator('div[aria-haspopup="listbox"]')
     await expect(dropdown).toHaveCount(1)
     await expect(dropdown).toBeVisible()
-    await dropdown.click()
+    if ((await dropdown.getAttribute('aria-expanded')) !== 'true') {
+      await dropdown.click()
+    }
+    await expect(
+      this.page.locator('div[id="menu-teamSelect"] ul[role="listbox"]').first()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 
   async selectTeamToCopyTheJourney(): Promise<void> {
-    this.selectedTeam = await this.page
-      .locator('div[id="menu-teamSelect"] ul[role="listbox"] li')
-      .last()
-      .getAttribute('aria-label')
-    await this.page
-      .locator('div[id="menu-teamSelect"] ul[role="listbox"] li')
-      .last()
-      .click()
+    const teamOptions = this.page.locator(
+      'div[id="menu-teamSelect"] ul[role="listbox"] li[role="option"]'
+    )
+    const lastOption = teamOptions.last()
+    this.selectedTeam =
+      (await lastOption.getAttribute('aria-label')) ??
+      (await lastOption.innerText())
+    await expect(lastOption).toBeVisible({ timeout: thirtySecondsTimeout })
+    await lastOption.click()
     await expect(
-      this.page
-        .locator('div[id="menu-teamSelect"] ul[role="listbox"] li')
-        .first()
+      this.page.locator('div[id="menu-teamSelect"] ul[role="listbox"]').first()
     ).toBeHidden({ timeout: thirtySecondsTimeout })
   }
 

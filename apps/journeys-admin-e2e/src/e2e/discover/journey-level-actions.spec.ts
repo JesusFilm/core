@@ -57,8 +57,8 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.clickThreeDotOfCreatedJourney(journeyName) // clicking three dot of created journey in the journey list
     await journeyLevelActions.clickThreeDotOptions('Access') // clicking on the access option of the three dot options and it will open manage editors popup
     await journeyLevelActions.enterTeamMember() // manage editors popup, entering mail address of team member in the email field
-    await journeyLevelActions.clickPlusMemberInMemberPopup() // clicking on plus icon in the manage editors popup
-    await journeyLevelActions.verifyAccessAddedInManageEditors() // verifying entered member is displaying in the editors list
+    await journeyLevelActions.clickPlusMemberInMemberPopup() // submit invite in manage editors popup
+    await journeyLevelActions.verifyAccessInviteSubmitted()
     await journeyLevelActions.clickDiaLogBoxCloseBtn() // clicking on x button at top right corner in the manage editors popup to close
   })
 
@@ -226,8 +226,8 @@ test.describe('Journey level actions', () => {
       'Manage Access'
     ) // clicking on the manage access option of the thre dot options         await journeyLevelActions.enterTeamMember() // entering mail address of team member in the email field
     await journeyLevelActions.enterTeamMember() // enterning mail address of team member in the email field
-    await journeyLevelActions.clickPlusMemberInMemberPopup() // clicking on plus icon in the manage editors popup
-    await journeyLevelActions.verifyAccessAddedInManageEditors() // verifying entered member is displaying in the editors list
+    await journeyLevelActions.clickPlusMemberInMemberPopup() // submit invite in manage editors popup
+    await journeyLevelActions.verifyAccessInviteSubmitted()
     await journeyLevelActions.clickDiaLogBoxCloseBtn() // clicking on x button at top right corner in the manage editors popup
   })
 

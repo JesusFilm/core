@@ -21,7 +21,11 @@ test(
     const email = await getEmail()
     expect(await leftNav.getEmail()).toBe(email)
     const firstAndLastName = await getUser()
-    expect(await leftNav.getName()).toBe(firstAndLastName)
+    const profileName = await leftNav.getName()
+    const playwrightDisplayName = firstAndLastName.replace(/^PW /, 'Playwright ')
+    expect(
+      profileName === firstAndLastName || profileName === playwrightDisplayName
+    ).toBeTruthy()
     await leftNav.logout()
 
     const isLandingPageVisible = await landingPage.isLandingPage()

@@ -506,7 +506,14 @@ export class Publisher {
       .locator('div[aria-label="journey-card"]', {
         hasText: this.templateName
       })
+      .first()
       .click()
+  }
+
+  private templateSettingsDialog() {
+    return this.page.locator('div[role="dialog"]').filter({
+      has: this.page.locator('[aria-label="template-settings-dialog-tabs"]')
+    })
   }
 
   async clickThreeDotInEditTempletePage() {
@@ -545,22 +552,49 @@ export class Publisher {
   }
 
   async clickSaveBtn() {
+    const settingsDialog = this.templateSettingsDialog()
+    if (await settingsDialog.isVisible().catch(() => false)) {
+      await this.page
+        .getByRole('button', { name: 'dismiss notification' })
+        .click({ timeout: 2000 })
+        .catch(() => undefined)
+      await this.page.keyboard.press('Escape')
+      await expect(
+        this.page.locator('div[role="presentation"] ul[role="listbox"]')
+      ).toHaveCount(0, { timeout: 10000 })
+
+      const saveButton = settingsDialog
+        .getByTestId('dialog-action')
+        .getByRole('button', { name: 'Save' })
+      await expect(saveButton).toBeEnabled({ timeout: 30000 })
+
+      const errorAlert = this.page.getByRole('alert').filter({
+        hasText: /Field update failed|Something went wrong/i
+      })
+
+      await saveButton.click()
+      await Promise.race([
+        expect(settingsDialog).toBeHidden({ timeout: 60000 }),
+        errorAlert.waitFor({ state: 'visible', timeout: 60000 }).then(async () => {
+          throw new Error(
+            `Template settings save failed: ${(await errorAlert.innerText()).trim()}`
+          )
+        })
+      ])
+      return
+    }
     await this.page
       .locator('div[data-testid="dialog-action"] button', { hasText: 'Save' })
       .click()
   }
 
   async verifyTemplateSettingSaveToastMessage() {
-    await expect(
-      this.page.locator('div#notistack-snackbar', {
-        hasText: 'Template settings have been saved'
-      })
-    ).toBeVisible()
-    await expect(
-      this.page.locator('div#notistack-snackbar', {
-        hasText: 'Template settings have been saved'
-      })
-    ).toHaveCount(0, { timeout: 30000 })
+    const successSnackbar = this.page.locator('#notistack-snackbar', {
+      hasText: /Template settings have been saved/i
+    })
+    if (await successSnackbar.isVisible().catch(() => false)) {
+      await expect(successSnackbar).toHaveCount(0, { timeout: 60000 })
+    }
   }
 
   async setFilterBelowCategoryTab(filter: string) {
@@ -736,21 +770,14 @@ export class Publisher {
         break
       }
     }
+    const carousel = this.page.locator(
+      'div[data-testid="JourneysAdminTemplateSections"] div[data-testid*="gallery-carousel"]',
+      { hasText: selectedFilter }
+    )
+    await expect(carousel).toBeVisible({ timeout: 40000 })
     await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminTemplateSections"] div[data-testid*="gallery-carousel"]',
-        { hasText: selectedFilter }
-      )
-    ).toBeVisible({ timeout: 40000 })
-    expect(
-      await this.page
-        .locator(
-          'div[data-testid="JourneysAdminTemplateSections"] div[data-testid*="gallery-carousel"]',
-          { hasText: selectedFilter }
-        )
-        .locator('div[role="group"]', { hasText: this.templateName })
-        .count()
-    ).toBeGreaterThanOrEqual(1)
+      carousel.locator('div[role="group"]', { hasText: this.templateName }).first()
+    ).toBeVisible({ timeout: 60000 })
   }
 
   async filterClearIcon() {

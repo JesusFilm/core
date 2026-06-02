@@ -28,9 +28,6 @@ export class TeamsPage {
     await this.clickCreateBtn()
     await this.verifyTeamCreatedSnackbarMsg()
     await this.clickDiaLogBoxCloseBtn()
-    await this.clickTeamSelectionDropDown()
-    // await this.selectLastTeam() // due to bug
-    // await this.clickTeamSelectionDropDown()
     await this.selectCreatedNewTeam()
     await this.verifyTeamNameUpdatedInTeamSelectDropdown()
   }
@@ -113,11 +110,38 @@ export class TeamsPage {
       .locator('div[aria-haspopup="listbox"]')
   }
 
-  async clickTeamSelectionDropDown() {
+  /** Close dialogs/menus so TeamSelect clicks are not intercepted by MUI backdrops. */
+  async dismissOpenOverlays(): Promise<void> {
+    const backdrop = this.page.locator('.MuiModal-backdrop').first()
+    if (await backdrop.isVisible({ timeout: 500 }).catch(() => false)) {
+      await this.page.keyboard.press('Escape')
+      await backdrop.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
+    }
+    const openListbox = this.page.locator('ul[role="listbox"]')
+    if (await openListbox.first().isVisible({ timeout: 500 }).catch(() => false)) {
+      await this.page.keyboard.press('Escape')
+      await openListbox
+        .first()
+        .waitFor({ state: 'hidden', timeout: 5000 })
+        .catch(() => {})
+    }
+  }
+
+  async clickTeamSelectionDropDown(): Promise<void> {
+    await this.dismissOpenOverlays()
     const dropdown = this.getTeamSelectDropdown()
     await expect(dropdown).toHaveCount(1)
     await expect(dropdown).toBeVisible()
+    if ((await dropdown.getAttribute('aria-expanded')) === 'true') {
+      await expect(this.page.locator('ul[role="listbox"]').first()).toBeVisible({
+        timeout: thirtySecondsTimeout
+      })
+      return
+    }
     await dropdown.click()
+    await expect(this.page.locator('ul[role="listbox"]').first()).toBeVisible({
+      timeout: thirtySecondsTimeout
+    })
   }
 
   async selectLastTeam() {
@@ -138,8 +162,11 @@ export class TeamsPage {
     const teamOption = this.page.locator('ul[role="listbox"] li[role="option"]', {
       hasText: teamName
     })
-    await expect(teamOption).toBeVisible({ timeout: thirtySecondsTimeout })
-    await teamOption.click()
+    await expect(teamOption.first()).toBeVisible({ timeout: thirtySecondsTimeout })
+    await teamOption.first().click()
+    await expect(this.page.locator('ul[role="listbox"]').first()).toBeHidden({
+      timeout: thirtySecondsTimeout
+    })
     await expect(this.getTeamSelectDropdown()).toHaveText(teamName, {
       timeout: thirtySecondsTimeout
     })
