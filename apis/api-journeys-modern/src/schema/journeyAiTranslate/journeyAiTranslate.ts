@@ -3,7 +3,10 @@ import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
 import { Block, prisma } from '@core/prisma/journeys/client'
-import { createOpenrouterFallbackSession } from '@core/shared/ai/openrouterModel'
+import {
+  AiRequestTimeoutError,
+  createOpenrouterFallbackSession
+} from '@core/shared/ai/openrouterModel'
 import { hardenPrompt } from '@core/shared/ai/prompts'
 
 import { env } from '../../env'
@@ -170,9 +173,10 @@ ${hardenPrompt(cardContent)}
 Blocks to translate (use the EXACT IDs shown in square brackets as blockId):
 ${hardenPrompt(blocksInfo)}`
 
-  await session.execute(async (model) => {
+  await session.execute(async (model, abortSignal) => {
     const { elementStream } = streamText({
       model,
+      abortSignal,
       maxRetries: 0,
       messages: [
         { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
@@ -547,11 +551,20 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
         }
       } catch (error) {
         console.error('Translation error:', error)
-        yield {
-          progress: 100,
-          message: 'Translation failed: ' + (error as Error).message,
-          journey: null
+        // Rethrow as a GraphQLError so the client subscription terminates with
+        // an error (firing the frontend `onError`) instead of completing
+        // normally. A normal completion would silently close the dialog with
+        // no error surfaced. GraphQLErrors are not masked by the Yoga server,
+        // so the message reaches the client.
+        if (error instanceof GraphQLError) throw error
+        if (error instanceof AiRequestTimeoutError) {
+          throw new GraphQLError(
+            'Translation timed out while contacting the AI service. Please try again.'
+          )
         }
+        throw new GraphQLError(
+          error instanceof Error ? error.message : 'Translation failed'
+        )
       }
     },
     resolve: (progressUpdate) => progressUpdate

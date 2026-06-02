@@ -1,6 +1,7 @@
 import { openrouter } from '@openrouter/ai-sdk-provider'
 
 import {
+  AiRequestTimeoutError,
   createOpenrouterFallbackSession,
   withOpenrouterFallback
 } from './openrouterModel'
@@ -34,6 +35,7 @@ describe('openrouterModel', () => {
   beforeEach(() => {
     process.env = { ...originalEnv }
     delete process.env.GEMINI_MAX_RETRIES
+    delete process.env.AI_REQUEST_TIMEOUT_MS
     mockedOpenrouter.chat.mockClear()
   })
 
@@ -58,7 +60,8 @@ describe('openrouterModel', () => {
       expect(result).toBe('ok')
       expect(operation).toHaveBeenCalledTimes(1)
       expect(operation).toHaveBeenCalledWith(
-        expect.objectContaining({ modelId: 'custom/free-model' })
+        expect.objectContaining({ modelId: 'custom/free-model' }),
+        expect.any(AbortSignal)
       )
     })
 
@@ -232,6 +235,58 @@ describe('openrouterModel', () => {
       await expect(session.execute(operation)).rejects.toThrow('rate limited')
       expect(operation).toHaveBeenCalledTimes(3)
     })
+
+    it('should pass an abort signal to the operation', async () => {
+      const session = createOpenrouterFallbackSession(TEST_MODELS)
+      const operation = vi.fn().mockResolvedValue('ok')
+
+      await session.execute(operation)
+
+      expect(operation.mock.calls[0][1]).toBeInstanceOf(AbortSignal)
+      expect(operation.mock.calls[0][1].aborted).toBe(false)
+    })
+
+    it('should time out and reject when an operation hangs', async () => {
+      process.env.AI_REQUEST_TIMEOUT_MS = '5000'
+      const session = createOpenrouterFallbackSession(['only/model'])
+      const operation = vi.fn(
+        (_model, signal: AbortSignal) =>
+          new Promise((_resolve, reject) => {
+            signal.addEventListener('abort', () => reject(signal.reason))
+          })
+      )
+
+      const promise = session.execute(operation)
+      const assertion = expect(promise).rejects.toBeInstanceOf(
+        AiRequestTimeoutError
+      )
+      await vi.advanceTimersByTimeAsync(5000)
+      await assertion
+    })
+
+    it('should fall to the next model when the first times out', async () => {
+      process.env.AI_REQUEST_TIMEOUT_MS = '5000'
+      const session = createOpenrouterFallbackSession(TEST_MODELS)
+      const operation = vi
+        .fn()
+        .mockImplementationOnce(
+          (_model, signal: AbortSignal) =>
+            new Promise((_resolve, reject) => {
+              signal.addEventListener('abort', () => reject(signal.reason))
+            })
+        )
+        .mockResolvedValueOnce('recovered')
+
+      const promise = session.execute(operation)
+      await vi.advanceTimersByTimeAsync(5000)
+      const result = await promise
+
+      expect(result).toBe('recovered')
+      expect(operation).toHaveBeenCalledTimes(2)
+      expect(operation.mock.calls[1][0]).toEqual(
+        expect.objectContaining({ modelId: 'custom/primary-model' })
+      )
+    })
   })
 
   describe('withOpenrouterFallback', () => {
@@ -241,7 +296,8 @@ describe('openrouterModel', () => {
 
       expect(result).toBe('ok')
       expect(operation).toHaveBeenCalledWith(
-        expect.objectContaining({ modelId: 'custom/free-model' })
+        expect.objectContaining({ modelId: 'custom/free-model' }),
+        expect.any(AbortSignal)
       )
     })
 
