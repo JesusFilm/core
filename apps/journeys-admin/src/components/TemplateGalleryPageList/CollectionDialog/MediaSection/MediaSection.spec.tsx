@@ -40,29 +40,26 @@ function renderSection(
 }
 
 describe('MediaSection', () => {
-  it('offers Video upload, Canva and YouTube — but not Google Slides', () => {
+  it('offers just Upload and Link (no per-provider tabs)', () => {
     renderSection({ type: 'none' })
+    expect(screen.getByRole('button', { name: 'Upload' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Link' })).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'Video upload' })
-    ).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Canva' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'YouTube' })).toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: /slides/i })
+      screen.queryByRole('button', { name: /canva|youtube|slides/i })
     ).not.toBeInTheDocument()
     expect(
       screen.getByRole('group', { name: 'Media type' })
     ).toBeInTheDocument()
   })
 
-  it('defaults a new (none) collection to the Canva URL input', () => {
+  it('defaults a new (none) collection to the Link input', () => {
     renderSection({ type: 'none' })
-    expect(screen.getByLabelText('Canva link')).toBeInTheDocument()
+    expect(screen.getByLabelText('Media link')).toBeInTheDocument()
   })
 
-  it('emits a link value as the user types a Canva URL', () => {
+  it('emits a link value as the user types a URL', () => {
     const { onChange } = renderSection({ type: 'none' })
-    fireEvent.change(screen.getByLabelText('Canva link'), {
+    fireEvent.change(screen.getByLabelText('Media link'), {
       target: { value: 'https://canva.com/x' }
     })
     expect(onChange).toHaveBeenCalledWith({
@@ -76,30 +73,27 @@ describe('MediaSection', () => {
       type: 'link',
       url: 'https://canva.com/x'
     })
-    fireEvent.click(screen.getByRole('button', { name: 'YouTube' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Upload' }))
     expect(onChange).toHaveBeenCalledWith({ type: 'none' })
   })
 
-  it('opens the YouTube tab for a saved YouTube link', () => {
+  it('opens the Link tab for any saved link', () => {
     renderSection({
       type: 'link',
       url: 'https://www.youtube-nocookie.com/embed/abc'
     })
-    expect(screen.getByRole('button', { name: 'YouTube' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'Link' })).toHaveAttribute(
       'aria-pressed',
       'true'
     )
-    expect(screen.getByLabelText('YouTube link')).toHaveValue(
+    expect(screen.getByLabelText('Media link')).toHaveValue(
       'https://www.youtube-nocookie.com/embed/abc'
     )
   })
 
-  it('opens the Canva tab for a saved Canva link', () => {
-    renderSection({
-      type: 'link',
-      url: 'https://www.canva.com/design/DA/view'
-    })
-    expect(screen.getByRole('button', { name: 'Canva' })).toHaveAttribute(
+  it('opens the Upload tab for a saved mux row', () => {
+    renderSection({ type: 'mux', muxVideoId: '', muxPlaybackId: 'pb-1' })
+    expect(screen.getByRole('button', { name: 'Upload' })).toHaveAttribute(
       'aria-pressed',
       'true'
     )
@@ -115,7 +109,7 @@ describe('MediaSection', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders the upload field in Video upload mode', () => {
+  it('renders the upload field in Upload mode', () => {
     renderSection({ type: 'mux', muxVideoId: 'v1' })
     expect(screen.getByTestId('MuxUploadFieldStub')).toBeInTheDocument()
   })

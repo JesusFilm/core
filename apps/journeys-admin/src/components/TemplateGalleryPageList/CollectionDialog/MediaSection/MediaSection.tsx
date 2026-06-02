@@ -11,22 +11,7 @@ import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
 
 import { MuxUploadField } from './MuxUploadField'
 
-type MediaUiMode = 'mux' | 'canva' | 'youtube'
-
-// The union of YouTube hosts the normalizers recognize (watch/share + the
-// nocookie embed a persisted link carries), used only to pick the initial
-// picker tab. Exact-match — not a permissive `endsWith` that would match
-// look-alike hosts like `notyoutube.com`. NOTE: this is intentionally broader
-// than `embedAttrs` (which only sees post-normalization nocookie hosts) and
-// `previewEmbedUrl` (watch hosts only) — do not "sync" the three.
-const YOUTUBE_HOSTS = new Set([
-  'youtu.be',
-  'youtube.com',
-  'www.youtube.com',
-  'm.youtube.com',
-  'youtube-nocookie.com',
-  'www.youtube-nocookie.com'
-])
+type MediaUiMode = 'mux' | 'link'
 
 interface MediaSectionProps {
   media: CollectionMediaValues
@@ -40,33 +25,18 @@ interface MediaSectionProps {
   headerSx: SxProps<Theme>
 }
 
-/**
- * Picks the initial picker tab from the persisted media. A `link` row is
- * disambiguated by its (normalized) URL host — YouTube hosts open the YouTube
- * tab, everything else (Canva, Slides, unknown) opens the Canva tab, which is
- * also the default for a brand-new (`none`) collection.
- */
+/** A `mux` row opens the Upload tab; everything else (link / none) opens Link. */
 function inferMode(media: CollectionMediaValues): MediaUiMode {
-  if (media.type === 'mux') return 'mux'
-  if (media.type === 'link') {
-    try {
-      const host = new URL(media.url).hostname.toLowerCase()
-      if (YOUTUBE_HOSTS.has(host)) return 'youtube'
-    } catch {
-      // fall through to the Canva default
-    }
-    return 'canva'
-  }
-  return 'canva'
+  return media.type === 'mux' ? 'mux' : 'link'
 }
 
 /**
- * Media editing surface for the CollectionDialog: a type picker (Video upload
- * / Canva / YouTube — Google Slides is intentionally not offered) with a
- * per-type input. Canva and YouTube both submit as `{ type: 'link', url }`;
- * the picker only chooses the input UI and helper copy. Switching type clears
- * the prior value (R12), and clearing only happens on explicit activation, not
- * focus traversal. Must be rendered inside a `MuxVideoUploadProvider`.
+ * Media editing surface for the CollectionDialog: a two-way picker — Upload (a
+ * Mux video) or Link (any embeddable URL: Canva, YouTube, …). The provider is
+ * inferred server-side from the URL host, so Link is a single field; the
+ * backend validates and normalizes it. Switching type clears the prior value
+ * (R12), and clearing only happens on explicit activation, not focus traversal.
+ * Must be rendered inside a `MuxVideoUploadProvider`.
  */
 export function MediaSection({
   media,
@@ -109,22 +79,6 @@ export function MediaSection({
       ? media.muxPlaybackId
       : null
 
-  // Canva and YouTube share one TextField; only the copy differs.
-  const linkCopy =
-    mode === 'youtube'
-      ? {
-          ariaLabel: t('YouTube link'),
-          placeholder: t('Paste a YouTube link'),
-          helper: t('Paste any YouTube link — watch, share, shorts, or embed.')
-        }
-      : {
-          ariaLabel: t('Canva link'),
-          placeholder: t('Paste a Canva design link'),
-          helper: t(
-            'Paste a Canva design link. In Canva: Share → set to Anyone with the link before pasting.'
-          )
-        }
-
   return (
     <Stack spacing={1}>
       <Typography sx={headerSx}>{t('Media')}</Typography>
@@ -135,14 +89,11 @@ export function MediaSection({
         onChange={handleModeChange}
         aria-label={t('Media type')}
       >
-        <ToggleButton value="mux" aria-label={t('Video upload')}>
-          {t('Video upload')}
+        <ToggleButton value="mux" aria-label={t('Upload')}>
+          {t('Upload')}
         </ToggleButton>
-        <ToggleButton value="canva" aria-label={t('Canva')}>
-          {t('Canva')}
-        </ToggleButton>
-        <ToggleButton value="youtube" aria-label={t('YouTube')}>
-          {t('YouTube')}
+        <ToggleButton value="link" aria-label={t('Link')}>
+          {t('Link')}
         </ToggleButton>
       </ToggleButtonGroup>
 
@@ -175,18 +126,21 @@ export function MediaSection({
         />
       )}
 
-      {mode !== 'mux' && (
+      {mode === 'link' && (
         <TextField
           value={linkValue}
           onChange={handleUrlChange}
           onBlur={onBlur}
-          placeholder={linkCopy.placeholder}
+          placeholder={t('Paste a Canva or YouTube link')}
           fullWidth
           variant="filled"
           hiddenLabel
-          inputProps={{ 'aria-label': linkCopy.ariaLabel }}
+          inputProps={{ 'aria-label': t('Media link') }}
           error={error != null}
-          helperText={error ?? linkCopy.helper}
+          helperText={
+            error ??
+            t('Paste a Canva or YouTube link. In Canva, set Share → Anyone with the link first.')
+          }
         />
       )}
     </Stack>
