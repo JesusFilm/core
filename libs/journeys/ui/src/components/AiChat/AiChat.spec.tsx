@@ -199,4 +199,72 @@ describe('AiChat', () => {
       ).not.toBeInTheDocument()
     })
   })
+
+  describe('overlay empty-state hero (NES-1654)', () => {
+    // `showOverlayHero = isOverlay && messages.length === 0 && !isLoading && error == null`
+    // is 4-input branching logic, not a static-config edit — these tests
+    // guard the condition without testing the wave styling itself.
+
+    it('shows when overlay variant is idle with no messages, error, or in-flight request', () => {
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      expect(screen.getByTestId('overlay-hero')).toBeInTheDocument()
+    })
+
+    it('hides while a request is in flight (submitted)', () => {
+      setChatState({ messages: [], status: 'submitted', error: undefined })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      expect(screen.queryByTestId('overlay-hero')).not.toBeInTheDocument()
+    })
+
+    it('hides while a response is streaming', () => {
+      setChatState({ messages: [], status: 'streaming', error: undefined })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      expect(screen.queryByTestId('overlay-hero')).not.toBeInTheDocument()
+    })
+
+    it('hides once a message is present', () => {
+      setChatState({
+        messages: [
+          {
+            id: '1',
+            role: 'user',
+            parts: [{ type: 'text', text: 'hi' }]
+          }
+        ],
+        status: 'ready',
+        error: undefined
+      })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      expect(screen.queryByTestId('overlay-hero')).not.toBeInTheDocument()
+    })
+
+    it('hides when an error is present', () => {
+      setChatState({
+        messages: [],
+        status: 'ready',
+        error: new Error('boom')
+      })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      expect(screen.queryByTestId('overlay-hero')).not.toBeInTheDocument()
+    })
+
+    it('does not render on the panel variant', () => {
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="panel" collapsible={false} />)
+
+      expect(screen.queryByTestId('overlay-hero')).not.toBeInTheDocument()
+    })
+  })
 })

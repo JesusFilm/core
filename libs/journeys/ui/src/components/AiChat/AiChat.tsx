@@ -383,6 +383,32 @@ export function AiChat({
   // an error so it doesn't compete with conversation content.
   const showOverlayHero =
     isOverlay && messages.length === 0 && !isLoading && error == null
+
+  // The wave animation is a one-shot intro — it plays the first time the
+  // hero ever mounts in this AiChat instance, then stays silent. Without
+  // this gate, `handleStartNewConversation` (cap-hit reset) would re-fire
+  // the wave on every reset because `setMessages([])` + `clearError()`
+  // flips `showOverlayHero` false → true and the inner spans re-mount.
+  // Reads as deliberate ("welcome") instead of busy ("attention").
+  const heroAnimatedRef = useRef(false)
+  const shouldAnimateHero = showOverlayHero && !heroAnimatedRef.current
+  useEffect(() => {
+    if (showOverlayHero) heroAnimatedRef.current = true
+  }, [showOverlayHero])
+
+  // Whole-word stagger preserves script behaviour that per-character
+  // splitting would break — Arabic contextual shaping (initial/medial/
+  // final letterforms + ligatures) and combining marks on Devanagari /
+  // Bengali / Thai / Burmese / Urdu / Nepali (translations for all of
+  // these exist in libs/locales/<bcp47>/libs-journeys-ui.json). Each
+  // word stays in a single text run, so the renderer sees neighbouring
+  // characters and shapes correctly. For whitespace-less scripts (Thai,
+  // Burmese, CJK) the split returns a single chunk and the whole
+  // greeting wave-lifts as one unit — still on-tone.
+  const heroWords = useMemo(
+    () => t('Ask me anything').split(/\s+/).filter((w) => w.length > 0),
+    [t]
+  )
   // We keep header/conversation/input mounted in every state and rely on
   // the parent sheet's height transition + overflow:hidden to clip them
   // as the sheet collapses. Hiding via display:none would short-circuit
@@ -438,6 +464,7 @@ export function AiChat({
         {showOverlayHero && (
           <Box
             aria-hidden
+            data-testid="overlay-hero"
             sx={{
               position: 'absolute',
               inset: 0,
@@ -446,10 +473,10 @@ export function AiChat({
               justifyContent: 'center',
               px: 4,
               pointerEvents: 'none',
-              // One-shot wave animation on mount: each character lifts
-              // 8px then settles, staggered left-to-right. Draws the eye
-              // to the hero when the chat opens, then stays out of the
-              // way. The base (0%/100%) is translateY(0) so each char's
+              // One-shot wave animation on mount: each word lifts 8px
+              // then settles, staggered left-to-right. Draws the eye to
+              // the hero when the chat opens, then stays out of the
+              // way. The base (0%/100%) is translateY(0) so each word's
               // resting state is its natural position — no fill-mode
               // needed.
               '@keyframes aiChatHeroWave': {
@@ -467,21 +494,26 @@ export function AiChat({
                 lineHeight: 1.3
               }}
             >
-              {Array.from(t('Ask me anything')).map((char, i) => (
+              {heroWords.map((word, i) => (
                 <Box
-                  key={i}
+                  key={`${i}-${word}`}
                   component="span"
                   sx={{
                     display: 'inline-block',
-                    animation: `aiChatHeroWave 700ms ease-in-out ${i * 50}ms 1`,
+                    animation: shouldAnimateHero
+                      ? `aiChatHeroWave 700ms ease-in-out ${i * 80}ms 1`
+                      : 'none',
                     '@media (prefers-reduced-motion: reduce)': {
                       animation: 'none'
                     }
                   }}
                 >
-                  {/* nbsp keeps inter-word spacing intact inside the
-                      inline-block per-character spans. */}
-                  {char === ' ' ? '\u00A0' : char}
+                  {/* Trailing nbsp keeps the visual gap between word
+                      spans (inline-block strips inter-element
+                      whitespace). The last word gets none so we don't
+                      pad the right edge. */}
+                  {word}
+                  {i < heroWords.length - 1 ? '\u00A0' : null}
                 </Box>
               ))}
             </Typography>
