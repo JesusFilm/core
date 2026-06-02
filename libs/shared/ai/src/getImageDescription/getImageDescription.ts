@@ -1,37 +1,49 @@
 import { generateText } from 'ai'
 
-import { withGeminiFallback } from '../geminiModel'
+import { withOpenrouterFallback } from '../openrouterModel'
 
-export const getImageDescription = async ({
+function parseModelNames(raw: string | undefined): string[] {
+  if (raw == null) return []
+  return raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+}
+
+export async function getImageDescription({
   imageUrl,
-  prompt = 'Analyze this image and provide a brief description focusing on key elements relevant to a journey or story (1-2 sentences)'
+  prompt = 'Analyze this image and provide a brief description focusing on key elements relevant to a journey or story (1-2 sentences)',
+  modelNames
 }: {
   imageUrl: string
   prompt?: string
-}): Promise<string | null> => {
-  try {
-    // Use Gemini to analyze the image via URL directly
-    const { text } = await withGeminiFallback((model) =>
-      generateText({
-        model,
-        maxRetries: 0,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: prompt
-              },
+  modelNames?: string[]
+}): Promise<string | null> {
+  const resolvedModels =
+    modelNames ?? parseModelNames(process.env.IMAGE_DESCRIPTION_AI_MODELS)
+  if (resolvedModels.length === 0) {
+    throw new Error(
+      'No model names provided and IMAGE_DESCRIPTION_AI_MODELS is not set'
+    )
+  }
 
-              {
-                type: 'image',
-                image: imageUrl
-              }
-            ]
-          }
-        ]
-      })
+  try {
+    const { text } = await withOpenrouterFallback(
+      (model) =>
+        generateText({
+          model,
+          maxRetries: 0,
+          messages: [
+            {
+              role: 'user',
+              content: [
+                { type: 'text', text: prompt },
+                { type: 'image', image: imageUrl }
+              ]
+            }
+          ]
+        }),
+      resolvedModels
     )
     return text
   } catch (error) {
