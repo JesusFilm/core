@@ -17,7 +17,7 @@ describe('Hotkeys', () => {
       execute: () => {},
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       undo: () => {},
-      redo: jest.fn()
+      redo: vi.fn()
     }
 
     const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
@@ -41,8 +41,8 @@ describe('Hotkeys', () => {
   it('should disable button if no redo', async () => {
     const command0: Command = {
       parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
-      execute: jest.fn(),
-      undo: jest.fn()
+      execute: vi.fn(),
+      undo: vi.fn()
     }
 
     const wrapper = ({ children }: { children: ReactNode }): ReactNode => (

@@ -9,15 +9,15 @@ import { MuxDetails } from './MuxDetails'
 
 const mockDocument = globalThis.document
 
-const mockDispose = jest.fn()
+const mockDispose = vi.fn()
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('video.js', () => {
-  const videojs = jest.fn(
+vi.mock('video.js', () => {
+  const videojs = vi.fn(
     (
       element?: HTMLVideoElement | null,
       options?: { poster?: string | null }
@@ -41,21 +41,21 @@ jest.mock('video.js', () => {
       }
 
       return {
-        on: jest.fn(),
-        off: jest.fn(),
-        poster: jest.fn(),
-        src: jest.fn(),
+        on: vi.fn(),
+        off: vi.fn(),
+        poster: vi.fn(),
+        src: vi.fn(),
         dispose: mockDispose
       }
     }
   )
 
-  ;(videojs as any).getPlayers = jest.fn(() => ({}))
-  return videojs
+  ;(videojs as any).getPlayers = vi.fn(() => ({}))
+  return { __esModule: true, default: videojs }
 })
 
-jest.mock('@core/journeys/ui/Video/utils/getCaptionsAndSubtitleTracks', () => ({
-  getCaptionsAndSubtitleTracks: jest.fn(() => [])
+vi.mock('@core/journeys/ui/Video/utils/getCaptionsAndSubtitleTracks', () => ({
+  getCaptionsAndSubtitleTracks: vi.fn(() => [])
 }))
 
 const mockVideoBlock = {
@@ -104,7 +104,7 @@ describe('MuxDetails', () => {
         id="videoId"
         activeVideoBlock={mockVideoBlock}
         open
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
     const videoPlayer = getByRole('region', {
@@ -132,7 +132,7 @@ describe('MuxDetails', () => {
         id="videoId"
         activeVideoBlock={videoBlockWithSubtitles}
         open
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
 
@@ -155,7 +155,7 @@ describe('MuxDetails', () => {
         id="videoId"
         activeVideoBlock={videoBlockWithoutSubtitles}
         open
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
 
@@ -173,7 +173,7 @@ describe('MuxDetails', () => {
         id="videoId"
         activeVideoBlock={mockVideoBlock}
         open={false}
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
 
@@ -186,7 +186,7 @@ describe('MuxDetails', () => {
         id="videoId"
         activeVideoBlock={mockVideoBlock}
         open
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
 
@@ -209,7 +209,7 @@ describe('MuxDetails', () => {
         id="videoId"
         activeVideoBlock={updatedBlock}
         open
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
 
@@ -228,7 +228,7 @@ describe('MuxDetails', () => {
         id="videoId"
         activeVideoBlock={mockVideoBlock}
         open
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
 
@@ -245,7 +245,7 @@ describe('MuxDetails', () => {
         id="videoId"
         activeVideoBlock={mockVideoBlock}
         open
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
     expect(mockDispose).not.toHaveBeenCalled()
@@ -254,7 +254,7 @@ describe('MuxDetails', () => {
   })
 
   it('should render a Select button when no activeVideoBlock and call onSelect with playbackId fallback', () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     const { getByRole } = render(
       <MuxDetails
         id="newVideoId"
@@ -279,7 +279,7 @@ describe('MuxDetails', () => {
         id="videoId"
         activeVideoBlock={mockVideoBlock}
         open
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
     expect(queryByRole('button', { name: 'Select' })).not.toBeInTheDocument()

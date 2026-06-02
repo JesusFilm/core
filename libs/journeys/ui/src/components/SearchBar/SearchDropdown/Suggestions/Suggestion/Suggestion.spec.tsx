@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { Suggestion, SuggestionVariant } from '.'
 
 describe('Suggestion', () => {
-  const handleClick = jest.fn()
+  const handleClick = vi.fn()
 
   it('should display default query', () => {
     render(<Suggestion handleClick={handleClick} />)

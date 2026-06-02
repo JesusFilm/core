@@ -1,11 +1,12 @@
-import { Output, generateText, streamText } from 'ai'
+import { Output, streamText } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
 import { Block, prisma } from '@core/prisma/journeys/client'
-import { createGeminiFallbackSession } from '@core/shared/ai/geminiModel'
-import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
+import { createOpenrouterFallbackSession } from '@core/shared/ai/openrouterModel'
+import { hardenPrompt } from '@core/shared/ai/prompts'
 
+import { env } from '../../env'
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { builder } from '../builder'
 import { JourneyRef } from '../journey/journey'
@@ -16,15 +17,10 @@ import {
 } from './blockTranslation'
 import { getCardBlocksContent } from './getCardBlocksContent'
 import { translateCustomizationFields } from './translateCustomizationFields'
-
-const TRANSLATION_SYSTEM_PROMPT = `${preSystemPrompt}
-
-You are a professional translator for interactive journey content.
-- Translate accurately while being culturally appropriate for the target language
-- Keep UI text (button labels, placeholders) concise and natural
-- Preserve all {{variable}} template syntax exactly as-is — never translate content inside {{ }}
-- For Bible passages, use an established translation in the target language — never translate scripture yourself. If none is identified, use the most popular English Bible translation.
-- DO NOT translate proper nouns`
+import {
+  TRANSLATION_SYSTEM_PROMPT,
+  translateJourneyMetadata
+} from './translateJourneyMetadata/translateJourneyMetadata'
 
 // Define the translation progress interface
 interface JourneyAiTranslateProgress {
@@ -59,28 +55,6 @@ builder.objectType(JourneyAiTranslateProgressRef, {
 })
 
 // Define Zod schemas for AI responses
-const JourneyAnalysisSchema = z.object({
-  analysis: z
-    .string()
-    .describe(
-      'Analysis of journey themes, target audience, cultural considerations, and identified Bible translation for the target language'
-    ),
-  title: z.string().describe('Translated journey title'),
-  description: z
-    .string()
-    .describe(
-      'Translated journey description, or empty string if none was provided'
-    ),
-  seoTitle: z
-    .string()
-    .describe('Translated SEO title, or empty string if none was provided'),
-  seoDescription: z
-    .string()
-    .describe(
-      'Translated SEO description, or empty string if none was provided'
-    )
-})
-
 const BlockTranslationUpdatesSchema = z
   .object({
     content: z.string().optional(),
@@ -153,41 +127,6 @@ function getTranslatableBlocksForCard(
   })
 }
 
-function buildAnalysisPrompt({
-  sourceLanguageName,
-  targetLanguageName,
-  journeyTitle,
-  journeyDescription,
-  seoTitle,
-  seoDescription,
-  cardBlocksContent
-}: {
-  sourceLanguageName: string
-  targetLanguageName: string
-  journeyTitle: string
-  journeyDescription: string | null
-  seoTitle: string | null
-  seoDescription: string | null
-  cardBlocksContent: string[]
-}): string {
-  const trimmedDescription = journeyDescription?.trim() ?? ''
-  const hasDescription = Boolean(trimmedDescription)
-
-  return `Translate this journey from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
-
-Analyze the content first: identify themes, target audience, and cultural adaptation needs.
-If the content references the Bible, identify the most appropriate Bible translation in the target language.
-Fields marked as "(not provided)" must return empty strings.
-
-${hardenPrompt(`Journey Title: ${journeyTitle}
-${hasDescription ? `Journey Description: ${trimmedDescription}` : '(No description provided)'}
-${seoTitle ? `SEO Title: ${seoTitle}` : '(No SEO title provided)'}
-${seoDescription ? `SEO Description: ${seoDescription}` : '(No SEO description provided)'}
-
-Journey Content:
-${cardBlocksContent.join('\n')}`)}`
-}
-
 async function translateCardBlocks({
   allBlocks,
   cardBlock,
@@ -210,7 +149,7 @@ async function translateCardBlocks({
     blockId: string,
     updates: Partial<Record<TranslatableBlockField, string>>
   ) => void
-  session: ReturnType<typeof createGeminiFallbackSession>
+  session: ReturnType<typeof createOpenrouterFallbackSession>
 }): Promise<void> {
   const blocksToTranslate = getTranslatableBlocksForCard(allBlocks, cardBlock)
   if (blocksToTranslate.length === 0) return
@@ -401,35 +340,23 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           journey: null
         }
 
-        const session = createGeminiFallbackSession()
+        const session = createOpenrouterFallbackSession(
+          env.TRANSLATION_AI_MODELS
+        )
 
-        // Step 1: Analyze and translate journey title, description, and SEO fields
-        const analysisPrompt = buildAnalysisPrompt({
+        // Step 1: Analyze the journey, then translate the title, description,
+        // and SEO fields each in their own single-field call so the model
+        // cannot swap one field's value into another field's slot.
+        const analysisResult = await translateJourneyMetadata({
           sourceLanguageName: input.journeyLanguageName,
           targetLanguageName: input.textLanguageName,
           journeyTitle: input.name,
           journeyDescription: journey.description,
           seoTitle: journey.seoTitle,
           seoDescription: journey.seoDescription,
-          cardBlocksContent
+          cardBlocksContent,
+          session
         })
-
-        const { output: analysisResult } = await session.execute((model) =>
-          generateText({
-            model,
-            maxRetries: 0,
-            messages: [
-              { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
-              {
-                role: 'user',
-                content: [{ type: 'text', text: analysisPrompt }]
-              }
-            ],
-            output: Output.object({
-              schema: JourneyAnalysisSchema
-            })
-          })
-        )
 
         if (!analysisResult.title) {
           throw new GraphQLError('Failed to translate journey title')
@@ -685,37 +612,22 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
         cardBlocks
       })
 
-      const session = createGeminiFallbackSession()
+      const session = createOpenrouterFallbackSession(env.TRANSLATION_AI_MODELS)
 
       try {
-        // 4. Use Gemini to analyze the journey content and get intent, and translate title/description
-        const analysisPrompt = buildAnalysisPrompt({
+        // 4. Analyze the journey, then translate the title, description, and
+        // SEO fields each in their own single-field call so the model cannot
+        // swap one field's value into another field's slot.
+        const analysisAndTranslation = await translateJourneyMetadata({
           sourceLanguageName,
           targetLanguageName,
           journeyTitle: input.name,
           journeyDescription: journey.description,
           seoTitle: journey.seoTitle,
           seoDescription: journey.seoDescription,
-          cardBlocksContent
+          cardBlocksContent,
+          session
         })
-
-        const { output: analysisAndTranslation } = await session.execute(
-          (model) =>
-            generateText({
-              model,
-              maxRetries: 0,
-              messages: [
-                { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
-                {
-                  role: 'user',
-                  content: [{ type: 'text', text: analysisPrompt }]
-                }
-              ],
-              output: Output.object({
-                schema: JourneyAnalysisSchema
-              })
-            })
-        )
 
         if (!analysisAndTranslation.title)
           throw new Error('Failed to translate journey title')

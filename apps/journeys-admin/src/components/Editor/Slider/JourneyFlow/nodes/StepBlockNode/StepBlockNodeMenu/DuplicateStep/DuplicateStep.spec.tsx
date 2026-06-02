@@ -5,6 +5,7 @@ import { userEvent } from '@testing-library/user-event'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -26,11 +27,11 @@ import { STEP_DUPLICATE } from './DuplicateStep'
 
 import { DuplicateStep } from '.'
 
-jest.mock('uuid', () => ({
-  v4: jest.fn()
+vi.mock('uuid', () => ({
+  v4: vi.fn()
 }))
 
-const mockV4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockV4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('DuplicateStep', () => {
   beforeEach(() =>
@@ -77,7 +78,7 @@ describe('DuplicateStep', () => {
   } as unknown as Journey
 
   it('duplicate the step', async () => {
-    const mockDuplicateStepResult = jest.fn(() => ({
+    const mockDuplicateStepResult = vi.fn(() => ({
       ...mockStepDuplicate.result
     }))
 
@@ -113,11 +114,11 @@ describe('DuplicateStep', () => {
   })
 
   it('should undo the duplicated step', async () => {
-    const mockDuplicateStepResult = jest.fn(() => ({
+    const mockDuplicateStepResult = vi.fn(() => ({
       ...mockStepDuplicate.result
     }))
 
-    const blockDeleteMockResult = jest
+    const blockDeleteMockResult = vi
       .fn()
       .mockResolvedValue(deleteBlockMock.result)
     render(
@@ -168,15 +169,15 @@ describe('DuplicateStep', () => {
   })
 
   it('should redo the duplicated step', async () => {
-    const mockDuplicateStepResult = jest.fn(() => ({
+    const mockDuplicateStepResult = vi.fn(() => ({
       ...mockStepDuplicate.result
     }))
 
-    const blockDeleteMockResult = jest
+    const blockDeleteMockResult = vi
       .fn()
       .mockResolvedValue(deleteBlockMock.result)
 
-    const blockRestoreMockResult = jest
+    const blockRestoreMockResult = vi
       .fn()
       .mockResolvedValue(blockRestoreMock.result)
 
@@ -299,7 +300,7 @@ describe('DuplicateStep', () => {
   })
 
   it('should handle actions on duplication success', async () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const initialState = {
       steps: [{ ...selectedStep, parentOrder: 0 }],
       selectedStep: { ...selectedStep, parentOrder: 0 }

@@ -23,7 +23,7 @@ import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 
 import { Properties } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))

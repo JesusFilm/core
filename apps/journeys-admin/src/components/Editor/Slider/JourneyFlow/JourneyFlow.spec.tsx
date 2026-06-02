@@ -5,6 +5,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/compat/router'
 import { NextRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -47,44 +48,41 @@ const defaultJourney = {
   socialNodeY: DEFAULT_SOCIAL_NODE_Y
 }
 
-jest.mock('next/compat/router', () => ({
+vi.mock('next/compat/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
-jest.mock('../../../../libs/useStepBlockPositionUpdateMutation', () => {
+vi.mock('../../../../libs/useStepBlockPositionUpdateMutation', () => {
   return {
-    useStepBlockPositionUpdateMutation: jest
-      .fn()
-      .mockReturnValue([jest.fn(), null])
+    useStepBlockPositionUpdateMutation: vi.fn().mockReturnValue([vi.fn(), null])
   }
 })
 
 const mockUseStepBlockPositionUpdateMutation =
-  useStepBlockPositionUpdateMutation as jest.MockedFunction<
+  useStepBlockPositionUpdateMutation as MockedFunction<
     typeof useStepBlockPositionUpdateMutation
   >
 
-jest.mock('../../../../libs/useJourneyUpdateMutation', () => {
+vi.mock('../../../../libs/useJourneyUpdateMutation', () => {
   return {
-    useJourneyUpdateMutation: jest.fn().mockReturnValue([jest.fn(), null])
+    useJourneyUpdateMutation: vi.fn().mockReturnValue([vi.fn(), null])
   }
 })
 
-const mockUseJourneyUpdateMutation =
-  useJourneyUpdateMutation as jest.MockedFunction<
-    typeof useJourneyUpdateMutation
-  >
+const mockUseJourneyUpdateMutation = useJourneyUpdateMutation as MockedFunction<
+  typeof useJourneyUpdateMutation
+>
 
-jest.mock('./libs/transformSteps', () => {
+vi.mock('./libs/transformSteps', () => {
   return {
-    transformSteps: jest.fn()
+    transformSteps: vi.fn()
   }
 })
 
-const mockTransformSteps = transformSteps as jest.MockedFunction<
+const mockTransformSteps = transformSteps as MockedFunction<
   typeof transformSteps
 >
 
@@ -118,9 +116,7 @@ describe('JourneyFlow', () => {
   mockTransformSteps.mockReturnValue({ nodes, edges })
 
   it('should render graph', async () => {
-    const result = jest
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     const nonTemplateJourney: Journey = {
       ...defaultJourney,
@@ -173,9 +169,9 @@ describe('JourneyFlow', () => {
       x: null,
       y: null
     }))
-    const result = jest.fn().mockReturnValue({ data: { blocks } })
-    const mockUpdate = jest.fn()
-    const mockResult = jest.fn() as unknown as MutationResult
+    const result = vi.fn().mockReturnValue({ data: { blocks } })
+    const mockUpdate = vi.fn()
+    const mockResult = vi.fn() as unknown as MutationResult
     mockUseStepBlockPositionUpdateMutation.mockReturnValue([
       mockUpdate,
       mockResult
@@ -238,11 +234,9 @@ describe('JourneyFlow', () => {
   })
 
   it('should reorganize graph', async () => {
-    const result = jest
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
-    const mockUpdate = jest.fn()
-    const mockResult = jest.fn() as unknown as MutationResult
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const mockUpdate = vi.fn()
+    const mockResult = vi.fn() as unknown as MutationResult
     mockUseStepBlockPositionUpdateMutation.mockReturnValue([
       mockUpdate,
       mockResult
@@ -336,13 +330,11 @@ describe('JourneyFlow', () => {
   })
 
   it('should update social preview node position during reset/undo/redo', async () => {
-    const result = jest
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     // Mock for journey update
-    const mockJourneyUpdate = jest.fn()
-    const mockJourneyResult = jest.fn() as unknown as MutationResult
+    const mockJourneyUpdate = vi.fn()
+    const mockJourneyResult = vi.fn() as unknown as MutationResult
     mockUseJourneyUpdateMutation.mockReturnValue([
       mockJourneyUpdate,
       mockJourneyResult
@@ -428,9 +420,7 @@ describe('JourneyFlow', () => {
   })
 
   it('should hide new step button if in analytics mode', async () => {
-    const result = jest
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
@@ -490,9 +480,7 @@ describe('JourneyFlow', () => {
   })
 
   it('should hide analytics panel for local templates', async () => {
-    const result = jest
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     const localTemplateJourney = {
       ...defaultJourney,
@@ -533,9 +521,7 @@ describe('JourneyFlow', () => {
   })
 
   it('should not show analytics panel for global templates', async () => {
-    const result = jest
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     const jfpTeamTemplateJourney = {
       ...defaultJourney,
@@ -576,9 +562,7 @@ describe('JourneyFlow', () => {
   })
 
   it('should show analytics panel for journeys', async () => {
-    const result = jest
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     const jfpTeamTemplateJourney = {
       ...defaultJourney,
@@ -619,9 +603,7 @@ describe('JourneyFlow', () => {
   })
 
   it('should hide analytics panel when editorAnalytics feature flag is false', async () => {
-    const result = jest
-      .fn()
-      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
@@ -688,7 +670,7 @@ describe('JourneyFlow', () => {
       journey: Journey,
       flags: { teamTemplateCollection?: boolean; editorAnalytics?: boolean }
     ) {
-      const result = jest
+      const result = vi
         .fn()
         .mockReturnValue(mockGetStepBlocksWithPosition.result)
 

@@ -1,18 +1,17 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { MockedFunction } from 'vitest'
 
 import { useLanguages } from '../../libs/useLanguages'
 import { WatchProvider } from '../../libs/watchContext'
 
 import { DialogLangSwitch } from './DialogLangSwitch'
 
-jest.mock('../../libs/useLanguages', () => ({
-  useLanguages: jest.fn()
+vi.mock('../../libs/useLanguages', () => ({
+  useLanguages: vi.fn()
 }))
-const useLanguagesMock = useLanguages as jest.MockedFunction<
-  typeof useLanguages
->
+const useLanguagesMock = useLanguages as MockedFunction<typeof useLanguages>
 
 describe('DialogLangSwitch', () => {
   const french = {
@@ -25,7 +24,7 @@ describe('DialogLangSwitch', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     useLanguagesMock.mockReturnValue({
       languages: [
         {
@@ -88,7 +87,7 @@ describe('DialogLangSwitch', () => {
   })
 
   it('should call handleClose when close button is clicked', async () => {
-    const mockHandleClose = jest.fn()
+    const mockHandleClose = vi.fn()
     render(
       <MockedProvider mocks={[]} addTypename={false}>
         <WatchProvider>

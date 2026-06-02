@@ -74,6 +74,8 @@ export interface R2Asset {
   publicUrl: string
   uploadUrl: string
   id?: string
+  fileName?: string
+  originalFilename?: string
 }
 
 export interface VideoSubtitleInput {

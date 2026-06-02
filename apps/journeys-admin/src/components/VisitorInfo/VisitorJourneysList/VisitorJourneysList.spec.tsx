@@ -8,7 +8,7 @@ import { VisitorJourneysList } from '.'
 
 describe('JourneyList', () => {
   it('should get visitor events', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: getVisitorEvents
     }))
 

@@ -6,10 +6,10 @@ import { eventLabelOptions } from '../eventLabels'
 import { getEventLabelOption } from './getEventLabelOption'
 
 describe('getEventLabelOption', () => {
-  const t = jest.fn((key) => key) as unknown as TFunction
+  const t = vi.fn((key) => key) as unknown as TFunction
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should return the option when value matches an event label type', () => {

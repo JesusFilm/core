@@ -14,7 +14,7 @@ import { ICON_BLOCK_NAME_UPDATE } from './Icon'
 
 import { Icon } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -92,7 +92,7 @@ describe('Icon', () => {
       children: [testIcon]
     }
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         iconBlockUpdate: {
           id: 'iconBlock.id',
@@ -131,7 +131,7 @@ describe('Icon', () => {
   })
 
   it('removes icon when selecing the default option', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         iconBlockUpdate: {
           id: 'iconBlock.id',
@@ -169,7 +169,7 @@ describe('Icon', () => {
   })
 
   it('changes the icon when selecting a different icon', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         iconBlockUpdate: {
           id: 'iconBlock.id',
@@ -207,7 +207,7 @@ describe('Icon', () => {
   })
 
   it('should undo the icon change', async () => {
-    const result1 = jest.fn(() => ({
+    const result1 = vi.fn(() => ({
       data: {
         iconBlockUpdate: {
           id: 'iconBlock.id',
@@ -230,7 +230,7 @@ describe('Icon', () => {
       result: result1
     }
 
-    const result2 = jest.fn(() => ({
+    const result2 = vi.fn(() => ({
       data: {
         iconBlockUpdate: {
           id: 'iconBlock.id',
@@ -271,7 +271,7 @@ describe('Icon', () => {
   })
 
   it('should redo the icon change that was undone', async () => {
-    const result1 = jest.fn(() => ({
+    const result1 = vi.fn(() => ({
       data: {
         iconBlockUpdate: {
           id: 'iconBlock.id',
@@ -295,7 +295,7 @@ describe('Icon', () => {
       maxUsageCount: 2
     }
 
-    const result2 = jest.fn(() => ({
+    const result2 = vi.fn(() => ({
       data: {
         iconBlockUpdate: {
           id: 'iconBlock.id',

@@ -86,7 +86,7 @@ const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeam
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         teams: [
           {
@@ -104,7 +104,7 @@ const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeam
           lastActiveTeamId: 'teamId'
         }
       }
-    }))
+    })) as MockedResponse<GetLastActiveTeamIdAndTeams>['result']
   }
 
 describe('DomainNameForm', () => {
@@ -119,7 +119,7 @@ describe('DomainNameForm', () => {
 
   it('should delete a custom domain', async () => {
     const cache = new InMemoryCache()
-    const result = jest.fn().mockReturnValue(deleteCustomDomainMock.result)
+    const result = vi.fn().mockReturnValue(deleteCustomDomainMock.result)
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider
@@ -142,7 +142,7 @@ describe('DomainNameForm', () => {
 
   it('should create a custom domain', async () => {
     const cache = new InMemoryCache()
-    const result = jest.fn().mockReturnValue(createCustomDomainMock.result)
+    const result = vi.fn().mockReturnValue(createCustomDomainMock.result)
     const { queryByTestId, getByRole } = render(
       <SnackbarProvider>
         <MockedProvider

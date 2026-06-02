@@ -1,10 +1,10 @@
 import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
+import { LabelChip } from '../../LabelChip'
 import { bulletListSx, mediaSlotSx, subHeadingSx } from '../styles'
 
 /**
@@ -23,23 +23,7 @@ export function TemplateTypesSection(): ReactElement {
       <Stack gap={1}>
         <Stack direction="row" gap={1} alignItems="center">
           <Typography sx={subHeadingSx}>{t('Quick-Start')}</Typography>
-          <Chip
-            label={t('RECOMMENDED')}
-            size="small"
-            sx={{
-              bgcolor: '#DEDFE0',
-              color: 'text.primary',
-              borderRadius: 1,
-              height: 'auto',
-              fontFamily: 'Open Sans, sans-serif',
-              fontWeight: 600,
-              fontSize: 14,
-              lineHeight: '20px',
-              px: 1,
-              py: 0.5,
-              '& .MuiChip-label': { px: 0 }
-            }}
-          />
+          <LabelChip label={t('RECOMMENDED')} />
         </Stack>
         <Box component="ul" sx={bulletListSx}>
           <li>{t('Best for new or mobile users.')}</li>

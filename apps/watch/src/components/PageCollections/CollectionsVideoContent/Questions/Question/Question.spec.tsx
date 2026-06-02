@@ -6,12 +6,12 @@ describe('Question Component', () => {
   const defaultProps = {
     question: 'Test Question?',
     isOpen: false,
-    onToggle: jest.fn(),
+    onToggle: vi.fn(),
     children: <p data-testid="test-children">{'Test Answer'}</p>
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders with the provided question text', () => {

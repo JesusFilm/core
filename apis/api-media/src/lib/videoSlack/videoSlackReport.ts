@@ -3,7 +3,9 @@ import { prisma } from '@core/prisma/media/client'
 
 import { logger } from '../../logger'
 
-const oneWeekInDays = 7
+import type { VideoSlackVideoFilter } from './videoSlackProfiles'
+
+const oneDayMs = 24 * 60 * 60 * 1000
 const englishLanguageIdForNames = '529'
 const packageParentLabels = new Set(['series', 'featureFilm'])
 const packageChildLabels = new Set(['episode', 'segment'])
@@ -18,14 +20,17 @@ export interface ReportRow {
   changeDate: Date
   total: number
   packageSize: number
+  watchUrl?: string
+  nexusUrl?: string
 }
 
-export interface WeeklyVideoSummaryOptions {
+export interface VideoSlackSummaryOptions {
   startDate?: Date
   endDate?: Date
+  throwOnError?: boolean
 }
 
-interface WeeklyVideoSummaryWindow {
+interface VideoSlackSummaryWindow {
   startDate: Date
   endDate: Date
 }
@@ -34,11 +39,13 @@ interface ReportRowSeed extends ReportRow {
   videoLabel: string
 }
 
-interface NewVariantRow {
+interface VariantRow {
   videoId: string
   languageId: string
   createdAt: Date
+  updatedAt: Date
   version: number
+  slug: string
   video: {
     id: string
     label: string
@@ -52,39 +59,36 @@ export function formatDateIso(value: Date): string {
   return value.toISOString().slice(0, 10)
 }
 
-export function resolveWeeklyVideoSummaryWindow(args: {
+export function resolveVideoSlackSummaryWindow(args: {
   currentDate?: Date
-  options?: WeeklyVideoSummaryOptions
-}): WeeklyVideoSummaryWindow {
+  options?: VideoSlackSummaryOptions
+}): VideoSlackSummaryWindow {
   const { currentDate = new Date(), options = {} } = args
   const endDate =
-    options.endDate != null ? new Date(options.endDate) : new Date(currentDate)
-  if (options.endDate == null) {
-    endDate.setUTCHours(23, 59, 59, 999)
-  }
-
+    options.endDate != null
+      ? new Date(options.endDate)
+      : new Date(currentDate.getTime() - oneDayMs)
   const startDate =
-    options.startDate != null ? new Date(options.startDate) : new Date(endDate)
-
-  if (options.startDate == null) {
-    startDate.setUTCDate(startDate.getUTCDate() - oneWeekInDays)
-    startDate.setUTCHours(0, 0, 0, 0)
-  }
+    options.startDate != null
+      ? new Date(options.startDate)
+      : new Date(currentDate.getTime() - 2 * oneDayMs)
 
   return { startDate, endDate }
 }
 
-export function isValidWeeklyVideoSummaryWindow(
-  window: WeeklyVideoSummaryWindow
+export function isValidVideoSlackSummaryWindow(
+  window: VideoSlackSummaryWindow
 ): boolean {
   return window.startDate.getTime() <= window.endDate.getTime()
 }
 
-const newVariantSelect = {
+const variantSelect = {
   videoId: true,
   languageId: true,
   createdAt: true,
+  updatedAt: true,
   version: true,
+  slug: true,
   video: {
     select: {
       id: true,
@@ -125,26 +129,77 @@ function sortReportRows<T extends ReportRow>(rows: T[]): T[] {
   })
 }
 
-async function getNewVariantsForReport(
-  startDate: Date,
+type VideoIdentityWhere =
+  | { id: { in: string[] } }
+  | { originId: { in: string[] } }
+
+function videoIdentityFilters(
+  filter: VideoSlackVideoFilter
+): VideoIdentityWhere[] {
+  const filters: VideoIdentityWhere[] = []
+  if (filter.ids != null && filter.ids.length > 0) {
+    filters.push({ id: { in: filter.ids } })
+  }
+  if (filter.originIds != null && filter.originIds.length > 0) {
+    filters.push({ originId: { in: filter.originIds } })
+  }
+  return filters
+}
+
+function videoFilterWhere(filter?: VideoSlackVideoFilter):
+  | {
+      OR: Array<
+        VideoIdentityWhere | { parents: { some: { OR: VideoIdentityWhere[] } } }
+      >
+    }
+  | Record<string, never> {
+  if (filter == null) {
+    return {}
+  }
+
+  const directVideoFilters = videoIdentityFilters(filter)
+  if (directVideoFilters.length === 0) {
+    return {}
+  }
+
+  return {
+    OR: [
+      ...directVideoFilters,
+      {
+        parents: {
+          some: {
+            OR: directVideoFilters
+          }
+        }
+      }
+    ]
+  }
+}
+
+async function getVariantsForReport(args: {
+  startDate: Date
   endDate: Date
-): Promise<NewVariantRow[]> {
+  videoFilter?: VideoSlackVideoFilter
+}): Promise<VariantRow[]> {
+  const { startDate, endDate, videoFilter } = args
+
   return await prisma.videoVariant.findMany({
     where: {
       published: true,
-      createdAt: {
-        gte: startDate,
-        lte: endDate
-      },
+      OR: [
+        { createdAt: { gte: startDate, lte: endDate } },
+        { updatedAt: { gte: startDate, lte: endDate } }
+      ],
       video: {
         label: { not: 'collection' },
-        published: true
+        published: true,
+        ...videoFilterWhere(videoFilter)
       }
     },
     orderBy: {
-      createdAt: 'desc'
+      updatedAt: 'desc'
     },
-    select: newVariantSelect
+    select: variantSelect
   })
 }
 
@@ -176,7 +231,7 @@ async function loadLanguageNames(ids: string[]): Promise<Map<string, string>> {
   } catch (error) {
     logger.warn(
       { error },
-      'Weekly video Slack: could not load language names; using raw language IDs'
+      'Video Slack: could not load language names; using raw language IDs'
     )
   }
 
@@ -198,19 +253,17 @@ interface PackageRoot {
   packageSize: number
 }
 
-async function loadPackageRoots(args: {
-  newVariants: ValidNewVariant[]
-}): Promise<{
+async function loadPackageRoots(args: { variants: ValidVariant[] }): Promise<{
   packageRootById: Map<string, PackageRoot>
   childToPackageRoot: Map<string, PackageRoot>
 }> {
-  const { newVariants } = args
+  const { variants } = args
   const packageRootById = new Map<string, PackageRoot>()
   const childToPackageRoot = new Map<string, PackageRoot>()
 
   const childCandidateIds = new Set<string>()
   const directParentIds = new Set<string>()
-  for (const variant of newVariants) {
+  for (const variant of variants) {
     if (packageChildLabels.has(variant.video.label)) {
       childCandidateIds.add(variant.video.id)
     }
@@ -279,36 +332,79 @@ async function loadPackageRoots(args: {
   return { packageRootById, childToPackageRoot }
 }
 
-interface ValidNewVariant {
+interface ValidVariant {
   videoId: string
   languageId: string
   createdAt: Date
+  updatedAt: Date
   version: number
-  video: NonNullable<NewVariantRow['video']>
+  slug: string
+  video: NonNullable<VariantRow['video']>
 }
 
 interface VariantGroup {
   packageRoot: PackageRoot | null
-  fallbackVideo: ValidNewVariant['video']
+  fallbackVideo: ValidVariant['video']
   languageId: string
-  variants: ValidNewVariant[]
+  variants: ValidVariant[]
   latestChangeDate: Date
 }
 
+function latestVariantChangeDate(variant: ValidVariant): Date {
+  return variant.updatedAt > variant.createdAt
+    ? variant.updatedAt
+    : variant.createdAt
+}
+
+function buildNexusUrl(mediaComponentId: string, languageId: string): string {
+  return (
+    'https://nexus.jesusfilm.org/media/videos/' +
+    encodeURIComponent(mediaComponentId) +
+    '?languageId=' +
+    encodeURIComponent(languageId)
+  )
+}
+
+function buildWatchUrl(variantSlug: string): string | undefined {
+  const watchUrl = process.env.WATCH_URL
+  if (watchUrl == null || watchUrl === '') {
+    return undefined
+  }
+
+  const [videoSlug, languageSlug] = variantSlug.split('/')
+  if (
+    videoSlug == null ||
+    videoSlug === '' ||
+    languageSlug == null ||
+    languageSlug === ''
+  ) {
+    return undefined
+  }
+
+  return (
+    watchUrl.replace(/\/$/, '') +
+    '/' +
+    encodeURIComponent(videoSlug) +
+    '.html/' +
+    encodeURIComponent(languageSlug) +
+    '.html'
+  )
+}
+
 async function buildReportRows(args: {
-  newVariants: NewVariantRow[]
+  variants: VariantRow[]
   windowStart: Date
   windowEnd: Date
   languageNames: Map<string, string>
 }): Promise<ReportRow[]> {
-  const { newVariants, windowStart, windowEnd, languageNames } = args
+  const { variants, windowStart, windowEnd, languageNames } = args
 
-  const validVariants: ValidNewVariant[] = newVariants.filter(
-    (variant): variant is ValidNewVariant => variant.video != null
+  const validVariants: ValidVariant[] = variants.filter(
+    (variant): variant is ValidVariant => variant.video != null
   )
 
   const { packageRootById, childToPackageRoot } = await loadPackageRoots({
-    newVariants: validVariants
+    variants: validVariants
   })
 
   const groupsByKey = new Map<string, VariantGroup>()
@@ -321,13 +417,14 @@ async function buildReportRows(args: {
       packageRoot = childToPackageRoot.get(variant.video.id) ?? null
     }
 
+    const changeDate = latestVariantChangeDate(variant)
     const rootId = packageRoot?.id ?? variant.video.id
-    const key = `${rootId}:${variant.languageId}`
+    const key = rootId + ':' + variant.languageId
     const existing = groupsByKey.get(key)
     if (existing != null) {
       existing.variants.push(variant)
-      if (variant.createdAt > existing.latestChangeDate) {
-        existing.latestChangeDate = variant.createdAt
+      if (changeDate > existing.latestChangeDate) {
+        existing.latestChangeDate = changeDate
       }
       continue
     }
@@ -336,7 +433,7 @@ async function buildReportRows(args: {
       fallbackVideo: variant.video,
       languageId: variant.languageId,
       variants: [variant],
-      latestChangeDate: variant.createdAt
+      latestChangeDate: changeDate
     })
   }
 
@@ -356,6 +453,9 @@ async function buildReportRows(args: {
           ? (group.variants.find((variant) => variant.videoId === root.id) ??
             group.variants[0])
           : group.variants[0]
+      const watchUrl = group.variants
+        .map((variant) => buildWatchUrl(variant.slug))
+        .find((url): url is string => url != null)
       return {
         version: versionVariant.version,
         production: productionLabel(rowVideo),
@@ -366,6 +466,8 @@ async function buildReportRows(args: {
         changeDate: group.latestChangeDate,
         total,
         packageSize,
+        watchUrl,
+        nexusUrl: buildNexusUrl(rowVideo.id, group.languageId),
         videoLabel: labelSource.label
       }
     }
@@ -384,26 +486,33 @@ async function buildReportRows(args: {
     changeType: row.changeType,
     changeDate: row.changeDate,
     total: row.total,
-    packageSize: row.packageSize
+    packageSize: row.packageSize,
+    watchUrl: row.watchUrl,
+    nexusUrl: row.nexusUrl
   }))
 }
 
-export async function loadWeeklyVideoReport(args: {
+export async function loadVideoSlackReport(args: {
   startDate: Date
   endDate: Date
+  videoFilter?: VideoSlackVideoFilter
 }): Promise<{
   rows: ReportRow[]
   counts: {
-    newVariants: number
+    variants: number
   }
 }> {
-  const { startDate, endDate } = args
-  const newVariants = await getNewVariantsForReport(startDate, endDate)
+  const { startDate, endDate, videoFilter } = args
+  const variants = await getVariantsForReport({
+    startDate,
+    endDate,
+    videoFilter
+  })
   const languageNames = await loadLanguageNames(
-    newVariants.map((variant) => variant.languageId)
+    variants.map((variant) => variant.languageId)
   )
   const rows = await buildReportRows({
-    newVariants,
+    variants,
     windowStart: startDate,
     windowEnd: endDate,
     languageNames
@@ -412,7 +521,7 @@ export async function loadWeeklyVideoReport(args: {
   return {
     rows,
     counts: {
-      newVariants: newVariants.length
+      variants: variants.length
     }
   }
 }

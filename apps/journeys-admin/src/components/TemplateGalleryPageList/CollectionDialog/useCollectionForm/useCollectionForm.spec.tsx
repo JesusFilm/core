@@ -14,14 +14,14 @@ import { getTemplateGalleryPageUpdateMock } from '../../../../libs/useTemplateGa
 
 import { CollectionFormValues, useCollectionForm } from './useCollectionForm'
 
-const mockEnqueueSnackbar = jest.fn()
-jest.mock('notistack', () => {
-  const actual = jest.requireActual('notistack')
+const mockEnqueueSnackbar = vi.fn()
+vi.mock('notistack', async () => {
+  const actual = await vi.importActual('notistack')
   return {
     ...actual,
     useSnackbar: () => ({
       enqueueSnackbar: mockEnqueueSnackbar,
-      closeSnackbar: jest.fn()
+      closeSnackbar: vi.fn()
     })
   }
 })
@@ -56,18 +56,18 @@ function defaultValues(
 
 function fakeHelpers(): FormikHelpers<CollectionFormValues> {
   return {
-    setFieldError: jest.fn(),
-    setFieldTouched: jest.fn().mockResolvedValue(undefined),
-    setFieldValue: jest.fn().mockResolvedValue(undefined),
-    setSubmitting: jest.fn(),
-    setStatus: jest.fn(),
-    setErrors: jest.fn(),
-    setTouched: jest.fn().mockResolvedValue(undefined),
-    setValues: jest.fn().mockResolvedValue(undefined),
-    resetForm: jest.fn(),
-    validateForm: jest.fn().mockResolvedValue({}),
-    validateField: jest.fn(),
-    submitForm: jest.fn().mockResolvedValue(undefined)
+    setFieldError: vi.fn(),
+    setFieldTouched: vi.fn().mockResolvedValue(undefined),
+    setFieldValue: vi.fn().mockResolvedValue(undefined),
+    setSubmitting: vi.fn(),
+    setStatus: vi.fn(),
+    setErrors: vi.fn(),
+    setTouched: vi.fn().mockResolvedValue(undefined),
+    setValues: vi.fn().mockResolvedValue(undefined),
+    resetForm: vi.fn(),
+    validateForm: vi.fn().mockResolvedValue({}),
+    validateField: vi.fn(),
+    submitForm: vi.fn().mockResolvedValue(undefined)
   } as unknown as FormikHelpers<CollectionFormValues>
 }
 
@@ -105,7 +105,7 @@ describe('useCollectionForm', () => {
           useCollectionForm({
             mode: 'create',
             teamId: 'team-1',
-            onClose: jest.fn()
+            onClose: vi.fn()
           }),
         { wrapper: wrapperWithMocks([]) }
       )
@@ -155,7 +155,7 @@ describe('useCollectionForm', () => {
             mode: 'edit',
             teamId: 'team-1',
             collection,
-            onClose: jest.fn()
+            onClose: vi.fn()
           }),
         { wrapper: wrapperWithMocks([]) }
       )
@@ -181,7 +181,7 @@ describe('useCollectionForm', () => {
           useCollectionForm({
             mode: 'create',
             teamId: 'team-1',
-            onClose: jest.fn()
+            onClose: vi.fn()
           }),
         { wrapper: wrapperWithMocks([]) }
       )
@@ -205,7 +205,7 @@ describe('useCollectionForm', () => {
           useCollectionForm({
             mode: 'create',
             teamId: 'team-1',
-            onClose: jest.fn()
+            onClose: vi.fn()
           }),
         { wrapper: wrapperWithMocks([]) }
       )
@@ -244,7 +244,7 @@ describe('useCollectionForm', () => {
           useCollectionForm({
             mode: 'create',
             teamId: 'team-1',
-            onClose: jest.fn()
+            onClose: vi.fn()
           }),
         { wrapper: wrapperWithMocks([]) }
       )
@@ -263,7 +263,7 @@ describe('useCollectionForm', () => {
           useCollectionForm({
             mode: 'create',
             teamId: 'team-1',
-            onClose: jest.fn()
+            onClose: vi.fn()
           }),
         { wrapper: wrapperWithMocks([]) }
       )
@@ -276,7 +276,7 @@ describe('useCollectionForm', () => {
 
   describe('handleSubmit — create branch', () => {
     it('fires templateGalleryPageCreate with mapped input and closes the dialog', async () => {
-      const onClose = jest.fn()
+      const onClose = vi.fn()
       const createMock = getTemplateGalleryPageCreateMock({
         input: {
           teamId: 'team-1',
@@ -322,7 +322,7 @@ describe('useCollectionForm', () => {
 
   describe('handleSubmit — update branch', () => {
     it('sends only the changed fields (diff vs original)', async () => {
-      const onClose = jest.fn()
+      const onClose = vi.fn()
       const collection = makeCollection({
         id: 'page-7',
         title: 'Old',
@@ -386,7 +386,7 @@ describe('useCollectionForm', () => {
     })
 
     it('sends description as empty string when the user clears a non-empty description', async () => {
-      const onClose = jest.fn()
+      const onClose = vi.fn()
       const collection = makeCollection({
         id: 'page-8',
         title: 'Title',
@@ -432,7 +432,7 @@ describe('useCollectionForm', () => {
     })
 
     it('omits journeyIds when membership is unchanged', async () => {
-      const onClose = jest.fn()
+      const onClose = vi.fn()
       const collection = makeCollection({
         id: 'page-7',
         title: 'Old',
@@ -495,7 +495,7 @@ describe('useCollectionForm', () => {
       // it would rename the published page to an empty slug and break
       // every external link. The submit diff must drop the field when
       // the user cleared it.
-      const onClose = jest.fn()
+      const onClose = vi.fn()
       const collection = makeCollection({
         id: 'page-7',
         title: 'Old',
@@ -544,7 +544,7 @@ describe('useCollectionForm', () => {
 
   describe('handleSubmit — error mapping', () => {
     it('maps a graphQLErrors[0].extensions.field to a Formik field error for known fields', async () => {
-      const onClose = jest.fn()
+      const onClose = vi.fn()
       const collection = makeCollection({
         id: 'page-9',
         slug: 'old-slug'
@@ -603,7 +603,7 @@ describe('useCollectionForm', () => {
     })
 
     it('falls back to a snackbar when the field is unknown', async () => {
-      const onClose = jest.fn()
+      const onClose = vi.fn()
       const collection = makeCollection({
         id: 'page-10',
         title: 'Old'
@@ -663,7 +663,7 @@ describe('useCollectionForm', () => {
 
   describe('handleSubmit — parentBusy short-circuit', () => {
     it('does not fire any mutation and shows an info snackbar', async () => {
-      const onClose = jest.fn()
+      const onClose = vi.fn()
       const createMock = getTemplateGalleryPageCreateMock({
         input: {
           teamId: 'team-1',

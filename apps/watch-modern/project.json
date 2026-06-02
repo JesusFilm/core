@@ -116,10 +116,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/apps/watch-modern"],
       "options": {
-        "jestConfig": "apps/watch-modern/jest.config.ts"
+        "configFile": "apps/watch-modern/vitest.config.mts"
       }
     },
     "lint": {

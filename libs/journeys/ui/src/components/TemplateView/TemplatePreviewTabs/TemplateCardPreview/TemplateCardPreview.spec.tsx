@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { render, screen, waitFor } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { TreeBlock } from '../../../../libs/block/TreeBlock'
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
@@ -10,15 +11,15 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../li
 
 import { TemplateCardPreview } from './TemplateCardPreview'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-const mockSlideTo = jest.fn()
-const mockUpdate = jest.fn()
+const mockSlideTo = vi.fn()
+const mockUpdate = vi.fn()
 
-jest.mock('swiper/react', () => {
+vi.mock('swiper/react', () => {
   const React = require('react')
   return {
     Swiper: ({ children, onSwiper, onSlideChangeTransitionEnd }: any) => {
@@ -48,7 +49,7 @@ describe('TemplateCardPreview', () => {
   })
 
   it('renders correct number of cards', async () => {
-    ;(useMediaQuery as unknown as jest.Mock).mockReturnValue(false)
+    ;(useMediaQuery as unknown as Mock).mockReturnValue(false)
     const steps = [
       {
         id: '1',
@@ -215,7 +216,7 @@ describe('TemplateCardPreview', () => {
   })
 
   it('renders correct number of cards on small breakpoints', async () => {
-    ;(useMediaQuery as unknown as jest.Mock).mockReturnValue(true)
+    ;(useMediaQuery as unknown as Mock).mockReturnValue(true)
     const steps = [
       {
         id: '1',

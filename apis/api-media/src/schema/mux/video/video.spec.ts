@@ -166,6 +166,82 @@ describe('mux/video', () => {
         })
         expect(data).toHaveProperty('data', null)
       })
+
+      it('should apply readyToStream and playbackId filter when pagination args are omitted', async () => {
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        ;(prismaMock.muxVideo.findMany as Mock).mockResolvedValue([])
+
+        await authClient({
+          document: GET_MY_MUX_VIDEOS,
+          variables: {}
+        })
+
+        expect(prismaMock.muxVideo.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: {
+              userId: 'testUserId',
+              readyToStream: true,
+              playbackId: { not: null }
+            },
+            orderBy: { createdAt: 'desc' },
+            take: undefined,
+            skip: undefined
+          })
+        )
+      })
+
+      it('should preserve readyToStream and playbackId filter across non-zero pagination args', async () => {
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        ;(prismaMock.muxVideo.findMany as Mock).mockResolvedValue([])
+
+        await authClient({
+          document: GET_MY_MUX_VIDEOS,
+          variables: {
+            offset: 20,
+            limit: 5
+          }
+        })
+
+        expect(prismaMock.muxVideo.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: {
+              userId: 'testUserId',
+              readyToStream: true,
+              playbackId: { not: null }
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 5,
+            skip: 20
+          })
+        )
+      })
+
+      it('should return an empty array when findMany returns no results', async () => {
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        ;(prismaMock.muxVideo.findMany as Mock).mockResolvedValue([])
+
+        const data = await authClient({
+          document: GET_MY_MUX_VIDEOS,
+          variables: {
+            offset: 0,
+            limit: 10
+          }
+        })
+
+        expect(data).toHaveProperty('data.getMyMuxVideos', [])
+      })
     })
 
     describe('getMyMuxVideo', () => {

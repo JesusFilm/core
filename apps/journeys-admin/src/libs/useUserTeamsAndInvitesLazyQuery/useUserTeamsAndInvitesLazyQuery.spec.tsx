@@ -8,7 +8,7 @@ import { useUserTeamsAndInvitesLazyQuery } from './useUserTeamsAndInvitesLazyQue
 
 describe('useUserTeamsAndInvitesLazyQuery', () => {
   it('should get user teams and invites', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         userTeams: [
           {

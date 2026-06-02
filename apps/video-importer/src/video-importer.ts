@@ -8,9 +8,7 @@ import {
   SUBTITLE_FILENAME_REGEX,
   VIDEO_FILENAME_REGEX
 } from './importerFilenamePatterns'
-import { processAudioPreviewFile } from './importers/audiopreview'
-import { processSubtitleFile } from './importers/subtitle'
-import { processVideoFile } from './importers/video'
+import { checkStartupEnvironment } from './startupPreflight'
 import {
   type ProcessingSummary,
   createProcessingSummary,
@@ -44,6 +42,56 @@ function getDefaultFolderPath(): string {
 }
 
 async function main() {
+  const startupFailures = checkStartupEnvironment()
+  if (startupFailures.length > 0) {
+    console.error('[video-importer] Invalid .env configuration:')
+    for (const failure of startupFailures) {
+      console.error(`- ${failure.variable}: ${failure.message}`)
+    }
+
+    const canPostSlack =
+      typeof process.env.SLACK_BOT_TOKEN === 'string' &&
+      process.env.SLACK_BOT_TOKEN.trim().length > 0 &&
+      typeof process.env.SLACK_CHANNEL_ID === 'string' &&
+      process.env.SLACK_CHANNEL_ID.trim().length > 0
+
+    if (canPostSlack) {
+      try {
+        const { postVideoImporterMisconfigurationAlert } = await import(
+          /* webpackChunkName: "video-importer-slack" */ './services/slack'
+        )
+        await postVideoImporterMisconfigurationAlert({
+          errors: startupFailures
+        })
+      } catch (err) {
+        console.error(
+          '[video-importer] Slack misconfiguration alert failed:',
+          err
+        )
+      }
+    } else {
+      console.error(
+        '[video-importer] Slack alert not sent because SLACK_BOT_TOKEN and SLACK_CHANNEL_ID are required.'
+      )
+    }
+
+    process.exit(1)
+  }
+
+  const [
+    { processAudioPreviewFile },
+    { processSubtitleFile },
+    { processVideoFile }
+  ] = await Promise.all([
+    import(
+      /* webpackChunkName: "video-importer-audiopreview" */ './importers/audiopreview'
+    ),
+    import(
+      /* webpackChunkName: "video-importer-subtitle" */ './importers/subtitle'
+    ),
+    import(/* webpackChunkName: "video-importer-video" */ './importers/video')
+  ])
+
   const defaultFolderPath = getDefaultFolderPath()
 
   const folderPath = options.folder
@@ -188,10 +236,14 @@ async function main() {
     slackTokenConfigured &&
     slackChannelConfigured
   ) {
-    const { postVideoImporterSlackSummary } = await import(
-      /* webpackChunkName: "video-importer-slack" */ './services/slack'
-    )
-    await postVideoImporterSlackSummary({ folderPath, summary })
+    try {
+      const { postVideoImporterSlackSummary } = await import(
+        /* webpackChunkName: "video-importer-slack" */ './services/slack'
+      )
+      await postVideoImporterSlackSummary({ folderPath, summary })
+    } catch (err) {
+      console.error('[video-importer] Slack notification failed:', err)
+    }
   }
 
   // Errors are logged inline where they occur

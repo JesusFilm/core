@@ -14,7 +14,7 @@ import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL, SignUpEdit } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -39,7 +39,7 @@ describe('SignUpEdit', () => {
         submitLabel: 'Submit update'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         signUpBlockUpdate: [
           {
@@ -60,7 +60,7 @@ describe('SignUpEdit', () => {
         submitLabel: 'Submit'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         signUpBlockUpdate: [
           {
@@ -73,7 +73,7 @@ describe('SignUpEdit', () => {
     }))
   }
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('selects the input on click', async () => {
     render(

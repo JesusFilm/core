@@ -8,7 +8,7 @@ import { NotificationSwitch } from '.'
 
 describe('NotificationSwitch', () => {
   it('updates event email notifications on click', async () => {
-    const result = jest
+    const result = vi
       .fn()
       .mockReturnValueOnce(useJourneyNotifcationUpdateMock.result)
     render(

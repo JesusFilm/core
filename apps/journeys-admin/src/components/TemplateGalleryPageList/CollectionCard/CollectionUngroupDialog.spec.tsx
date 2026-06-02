@@ -11,8 +11,8 @@ describe('CollectionUngroupDialog', () => {
       <CollectionUngroupDialog
         open={false}
         wasPublished={false}
-        onClose={jest.fn()}
-        onConfirm={jest.fn()}
+        onClose={vi.fn()}
+        onConfirm={vi.fn()}
       />
     )
     expect(
@@ -25,8 +25,8 @@ describe('CollectionUngroupDialog', () => {
       <CollectionUngroupDialog
         open
         wasPublished={false}
-        onClose={jest.fn()}
-        onConfirm={jest.fn()}
+        onClose={vi.fn()}
+        onConfirm={vi.fn()}
       />
     )
     expect(screen.getByText('Remove this collection?')).toBeInTheDocument()
@@ -46,8 +46,8 @@ describe('CollectionUngroupDialog', () => {
       <CollectionUngroupDialog
         open
         wasPublished
-        onClose={jest.fn()}
-        onConfirm={jest.fn()}
+        onClose={vi.fn()}
+        onConfirm={vi.fn()}
       />
     )
     expect(
@@ -56,8 +56,8 @@ describe('CollectionUngroupDialog', () => {
   })
 
   it('fires onConfirm on Remove and onClose on Cancel', async () => {
-    const onConfirm = jest.fn()
-    const onClose = jest.fn()
+    const onConfirm = vi.fn()
+    const onClose = vi.fn()
     render(
       <CollectionUngroupDialog
         open

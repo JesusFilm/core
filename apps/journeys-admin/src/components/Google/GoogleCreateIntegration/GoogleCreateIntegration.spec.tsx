@@ -2,47 +2,48 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { GoogleCreateIntegration } from './GoogleCreateIntegration'
 import { useIntegrationGoogleCreate } from './libs/useIntegrationGoogleCreate'
 
 import '../../../../test/i18n'
 
-jest.mock('next/router', () => ({
-  useRouter: jest.fn()
+vi.mock('next/router', () => ({
+  useRouter: vi.fn()
 }))
 
-jest.mock('./libs/useIntegrationGoogleCreate', () => ({
-  useIntegrationGoogleCreate: jest.fn()
+vi.mock('./libs/useIntegrationGoogleCreate', () => ({
+  useIntegrationGoogleCreate: vi.fn()
 }))
 
-jest.mock('notistack', () => ({
+vi.mock('notistack', () => ({
   __esModule: true,
   SnackbarProvider: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
   ),
-  useSnackbar: jest.fn()
+  useSnackbar: vi.fn()
 }))
 
-jest.mock('../../../libs/googleOAuthUrl', () => ({
-  getGoogleOAuthUrl: jest.fn(
+vi.mock('../../../libs/googleOAuthUrl', () => ({
+  getGoogleOAuthUrl: vi.fn(
     (teamId: string) => `https://example.com/oauth?teamId=${teamId}`
   )
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 const mockUseIntegrationGoogleCreate =
-  useIntegrationGoogleCreate as jest.MockedFunction<
+  useIntegrationGoogleCreate as MockedFunction<
     typeof useIntegrationGoogleCreate
   >
-const mockUseSnackbar = useSnackbar as jest.MockedFunction<typeof useSnackbar>
+const mockUseSnackbar = useSnackbar as MockedFunction<typeof useSnackbar>
 
 describe('GoogleCreateIntegration', () => {
-  const mockReplace = jest.fn()
-  const mockEnqueueSnackbar = jest.fn()
+  const mockReplace = vi.fn()
+  const mockEnqueueSnackbar = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseRouter.mockReturnValue({
       query: { teamId: 'teamId' },
       replace: mockReplace
@@ -50,7 +51,7 @@ describe('GoogleCreateIntegration', () => {
     mockUseIntegrationGoogleCreate.mockReturnValue({ loading: false })
     mockUseSnackbar.mockReturnValue({
       enqueueSnackbar: mockEnqueueSnackbar,
-      closeSnackbar: jest.fn()
+      closeSnackbar: vi.fn()
     })
   })
 

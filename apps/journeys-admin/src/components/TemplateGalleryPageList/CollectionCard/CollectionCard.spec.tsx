@@ -44,7 +44,7 @@ describe('CollectionCard', () => {
     expect(screen.getByText('Empty')).toBeInTheDocument()
   })
 
-  it('shows a Published chip when the collection is published', () => {
+  it('shows a Live chip when the collection is published', () => {
     render(
       <CollectionCard
         collection={makeCollection({
@@ -54,7 +54,7 @@ describe('CollectionCard', () => {
         })}
       />
     )
-    expect(screen.getByText('Published')).toBeInTheDocument()
+    expect(screen.getByText('Live')).toBeInTheDocument()
     expect(screen.queryByText('Empty')).not.toBeInTheDocument()
   })
 
@@ -121,8 +121,8 @@ describe('CollectionCard', () => {
   })
 
   it('fires onPublish on a draft and onEdit on a published collection', async () => {
-    const onEdit = jest.fn()
-    const onPublish = jest.fn()
+    const onEdit = vi.fn()
+    const onPublish = vi.fn()
     const draft = makeCollection({ templates: [journeyRef('j1')] })
 
     const { rerender } = render(
@@ -153,7 +153,7 @@ describe('CollectionCard', () => {
   })
 
   it('opens the ungroup confirmation dialog from the menu and fires onUngroup on confirm', async () => {
-    const onUngroup = jest.fn()
+    const onUngroup = vi.fn()
     const collection = makeCollection({ templates: [journeyRef('j1')] })
     render(<CollectionCard collection={collection} onUngroup={onUngroup} />)
     await userEvent.click(
@@ -199,7 +199,7 @@ describe('CollectionCard', () => {
 
   it('renders a Preview menu item that opens the proxy URL in a new tab when published', async () => {
     const originalOpen = window.open
-    window.open = jest.fn() as unknown as typeof window.open
+    window.open = vi.fn() as unknown as typeof window.open
     try {
       render(
         <CollectionCard

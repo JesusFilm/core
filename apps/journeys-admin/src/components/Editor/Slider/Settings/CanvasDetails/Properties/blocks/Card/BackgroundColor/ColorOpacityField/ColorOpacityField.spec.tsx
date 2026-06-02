@@ -13,10 +13,10 @@ const ThemeWrapper = ({ children }: { children: React.ReactNode }) => (
 )
 
 describe('ColorOpacityField', () => {
-  const mockOnColorChange = jest.fn()
+  const mockOnColorChange = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('Initial Rendering', () => {
@@ -362,7 +362,7 @@ describe('ColorOpacityField', () => {
         expect(mockOnColorChange).toHaveBeenCalledWith('#FF000000')
       })
 
-      jest.clearAllMocks()
+      vi.clearAllMocks()
 
       // Test 100%
       await userEvent.clear(opacityInput as HTMLInputElement)
@@ -520,7 +520,7 @@ describe('ColorOpacityField', () => {
         expect(mockOnColorChange).toHaveBeenCalledWith('#ABCDEF4D')
       })
 
-      jest.clearAllMocks()
+      vi.clearAllMocks()
 
       // Then change opacity
       await userEvent.clear(opacityInput as HTMLInputElement)

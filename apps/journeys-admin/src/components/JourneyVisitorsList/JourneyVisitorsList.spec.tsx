@@ -91,7 +91,7 @@ describe('JourneyVisitorsList', () => {
   })
 
   it('should load more', () => {
-    const handleFetchNext = jest.fn()
+    const handleFetchNext = vi.fn()
     const { getByRole } = render(
       <JourneyVisitorsList
         visitorEdges={visitorEdges}

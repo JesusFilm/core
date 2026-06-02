@@ -6,17 +6,20 @@ import { GET_USER_INVITES } from '../../libs/useUserInvitesLazyQuery/useUserInvi
 
 import { AccessDialog, GET_JOURNEY_WITH_PERMISSIONS } from './AccessDialog'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-const user1 = { id: 'userTeamId', email: 'kujojotaro@example.com' }
+const user1 = vi.hoisted(() => ({
+  id: 'userTeamId',
+  email: 'kujojotaro@example.com'
+}))
 
-jest.mock('../../libs/useCurrentUserLazyQuery', () => ({
+vi.mock('../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
-  useCurrentUserLazyQuery: jest.fn().mockReturnValue({
-    loadUser: jest.fn(),
+  useCurrentUserLazyQuery: vi.fn().mockReturnValue({
+    loadUser: vi.fn(),
     data: {
       __typename: 'AuthenticatedUser',
       ...user1
@@ -191,7 +194,7 @@ const mocks = [
 
 describe('AccessDialog', () => {
   it('should display users and requested users', async () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider addTypename mocks={mocks}>
@@ -208,7 +211,7 @@ describe('AccessDialog', () => {
   })
 
   it('should not display users that are part of the team as guests', async () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
     const { getByText, getAllByText } = render(
       <SnackbarProvider>
         <MockedProvider addTypename mocks={mocks}>
@@ -225,7 +228,7 @@ describe('AccessDialog', () => {
   })
 
   it('should display team members', async () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
     const { getByText } = render(
       <SnackbarProvider>
         <MockedProvider addTypename mocks={mocks}>
@@ -243,7 +246,7 @@ describe('AccessDialog', () => {
   })
 
   it('team members list should be read only', async () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
     const { getByRole, getAllByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider addTypename mocks={mocks}>
@@ -262,7 +265,7 @@ describe('AccessDialog', () => {
   })
 
   it('if user is part of user team, should filter them out of user journey', async () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
     const { getByText, getAllByText } = render(
       <SnackbarProvider>
         <MockedProvider addTypename mocks={mocks}>
@@ -279,7 +282,7 @@ describe('AccessDialog', () => {
   })
 
   it('calls on close', () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
     const { getByTestId } = render(
       <SnackbarProvider>
         <MockedProvider>

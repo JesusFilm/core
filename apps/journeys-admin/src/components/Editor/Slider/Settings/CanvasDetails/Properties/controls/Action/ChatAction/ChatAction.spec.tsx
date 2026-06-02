@@ -17,7 +17,7 @@ import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoI
 
 import { ChatAction } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -67,7 +67,7 @@ describe('ChatAction', () => {
   })
 
   it('updates action chat url', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         blockUpdateChatAction: {
           __typename: 'ChatAction',
@@ -133,7 +133,7 @@ describe('ChatAction', () => {
   })
 
   it('accepts links without protocol as a URL', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         blockUpdateChatAction: {
           __typename: 'ChatAction',
@@ -180,7 +180,7 @@ describe('ChatAction', () => {
   })
 
   it('accepts deep links as a URL', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         blockUpdateChatAction: {
           parentBlockId: selectedBlock.id,
@@ -227,7 +227,7 @@ describe('ChatAction', () => {
   })
 
   it('should submit when enter is pressed', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         blockUpdateChatAction: {
           __typename: 'ChatAction',
@@ -276,7 +276,7 @@ describe('ChatAction', () => {
   })
 
   it('should handle undo', async () => {
-    const result = jest
+    const result = vi
       .fn()
       .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
     render(

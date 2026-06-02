@@ -15,7 +15,7 @@ export const getTemplateGalleryPageUnpublishMock = (
   TemplateGalleryPageUnpublishVariables
 > => ({
   request: { query: TEMPLATE_GALLERY_PAGE_UNPUBLISH, variables },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       templateGalleryPageUnpublish: {
         __typename: 'TemplateGalleryPage',
@@ -25,5 +25,8 @@ export const getTemplateGalleryPageUnpublishMock = (
         updatedAt: '2026-05-06T00:00:00Z'
       }
     }
-  }))
+  })) as MockedResponse<
+    TemplateGalleryPageUnpublish,
+    TemplateGalleryPageUnpublishVariables
+  >['result']
 })

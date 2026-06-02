@@ -1,5 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -27,23 +28,23 @@ const user1 = {
   __typename: 'AuthenticatedUser'
 }
 
-jest.mock('../../../../../../../libs/useCurrentUserLazyQuery', () => ({
+vi.mock('../../../../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
-  useCurrentUserLazyQuery: jest.fn()
+  useCurrentUserLazyQuery: vi.fn()
 }))
 
-const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as jest.Mock
+const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as Mock
 
 describe('Host', () => {
   beforeEach(() => {
     mockUseCurrentUserLazyQuery.mockReturnValue({
-      loadUser: jest.fn(),
+      loadUser: vi.fn(),
       data: user1
     })
   })
 
   afterAll(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   const userTeam: UserTeam = {

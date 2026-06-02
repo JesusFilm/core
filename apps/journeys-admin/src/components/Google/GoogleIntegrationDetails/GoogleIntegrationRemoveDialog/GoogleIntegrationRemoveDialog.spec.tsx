@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import { GET_INTEGRATION } from '../../../../libs/useIntegrationQuery'
 
@@ -13,8 +14,8 @@ import {
 
 import '../../../../../test/i18n'
 
-jest.mock('next/router', () => ({
-  useRouter: jest.fn()
+vi.mock('next/router', () => ({
+  useRouter: vi.fn()
 }))
 
 describe('GoogleIntegrationRemoveDialog', () => {
@@ -35,11 +36,11 @@ describe('GoogleIntegrationRemoveDialog', () => {
   function renderComponent(
     props: Partial<GoogleIntegrationRemoveDialogProps> = {}
   ): ReturnType<typeof render> {
-    ;(useRouter as jest.Mock).mockReturnValue({
-      push: jest.fn()
+    ;(useRouter as Mock).mockReturnValue({
+      push: vi.fn()
     })
 
-    const handleClose = props.handleClose ?? jest.fn()
+    const handleClose = props.handleClose ?? vi.fn()
 
     return render(
       <MockedProvider mocks={[integrationDeleteMock]} addTypename={false}>
@@ -66,7 +67,7 @@ describe('GoogleIntegrationRemoveDialog', () => {
   })
 
   it('closes dialog on cancel', async () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
 
     const { getByRole } = renderComponent({ handleClose })
 

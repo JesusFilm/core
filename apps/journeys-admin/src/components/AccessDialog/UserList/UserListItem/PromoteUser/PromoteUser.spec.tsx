@@ -9,8 +9,8 @@ import { PromoteUser } from '.'
 
 describe('PromoteUser', () => {
   it('should promote user journey', async () => {
-    const handleClick = jest.fn()
-    const result = jest.fn(() => ({
+    const handleClick = vi.fn()
+    const result = vi.fn(() => ({
       data: {
         userJourneyPromote: {
           id: 'userId',

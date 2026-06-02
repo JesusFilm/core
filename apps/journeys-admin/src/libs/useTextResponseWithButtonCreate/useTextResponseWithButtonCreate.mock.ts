@@ -59,7 +59,7 @@ export const textResponseWithButtonCreateMock: MockedResponse<
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       textResponse: {
         id: 'textResponse.id',
@@ -133,5 +133,8 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         __typename: 'ButtonBlock'
       }
     }
-  }))
+  })) as MockedResponse<
+    TextResponseWithButtonCreate,
+    TextResponseWithButtonCreateVariables
+  >['result']
 }
