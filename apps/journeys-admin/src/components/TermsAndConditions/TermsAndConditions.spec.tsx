@@ -297,9 +297,7 @@ describe('TermsAndConditions', () => {
     fireEvent.click(getByRole('checkbox'))
     fireEvent.click(getByRole('button', { name: 'Next' }))
 
-    await waitFor(() =>
-      expect(push).toHaveBeenCalledWith('/?onboarding=true')
-    )
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/?onboarding=true'))
     await waitFor(() =>
       expect(queryByRole('progressbar')).not.toBeInTheDocument()
     )
