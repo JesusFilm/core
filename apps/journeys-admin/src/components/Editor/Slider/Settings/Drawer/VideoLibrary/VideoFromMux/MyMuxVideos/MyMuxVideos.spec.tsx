@@ -46,11 +46,15 @@ const buildMock = (
   result: { data: { getMyMuxVideos: videos } }
 })
 
-const readyVideo = (id: string): GetMyMuxVideos['getMyMuxVideos'][number] => ({
+const readyVideo = (
+  id: string,
+  duration: number | null = 9
+): GetMyMuxVideos['getMyMuxVideos'][number] => ({
   __typename: 'MuxVideo',
   id,
   playbackId: `${id}-playback`,
-  readyToStream: true
+  readyToStream: true,
+  duration
 })
 
 describe('MyMuxVideos', () => {
@@ -96,6 +100,30 @@ describe('MyMuxVideos', () => {
     const preview = await screen.findByTestId('mock-video-details')
     expect(preview.getAttribute('data-id')).toBe('a')
     expect(preview.getAttribute('data-playback-id')).toBe('a-playback')
+
+    fireEvent.click(screen.getByTestId('mock-video-details-select'))
+    expect(onSelect).toHaveBeenCalledWith(
+      { videoId: 'a', duration: 9, endAt: 9 },
+      true
+    )
+  })
+
+  it('should not set endAt when the selected video has no duration', async () => {
+    const onSelect = vi.fn()
+    render(
+      <MockedProvider mocks={[buildMock([readyVideo('a', null)])]}>
+        <MyMuxVideos onSelect={onSelect} />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('my-mux-video-a')).toBeInTheDocument()
+    })
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Select uploaded video' })
+    )
+    await screen.findByTestId('mock-video-details')
 
     fireEvent.click(screen.getByTestId('mock-video-details-select'))
     expect(onSelect).toHaveBeenCalledWith({ videoId: 'a' }, true)

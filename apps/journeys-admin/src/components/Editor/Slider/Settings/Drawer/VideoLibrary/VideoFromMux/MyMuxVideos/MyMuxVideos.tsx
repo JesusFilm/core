@@ -27,6 +27,7 @@ export const GET_MY_MUX_VIDEOS = gql`
       id
       playbackId
       readyToStream
+      duration
     }
   }
 `
@@ -49,6 +50,7 @@ export function MyMuxVideos({
   const [previewVideo, setPreviewVideo] = useState<{
     id: string
     playbackId: string
+    duration: number | null
   } | null>(null)
   const [pagesFetched, setPagesFetched] = useState(1)
 
@@ -73,7 +75,11 @@ export function MyMuxVideos({
   if (isEmpty) return null
 
   const handleClick = (video: MuxVideoNode): void => {
-    setPreviewVideo({ id: video.id, playbackId: video.playbackId as string })
+    setPreviewVideo({
+      id: video.id,
+      playbackId: video.playbackId as string,
+      duration: video.duration ?? null
+    })
   }
 
   const handlePreviewClose = (): void => {
@@ -81,7 +87,16 @@ export function MyMuxVideos({
   }
 
   const handlePreviewSelect = (block: VideoBlockUpdateInput): void => {
-    onSelect(block, true)
+    // Reset endAt/duration to the selected video's full length. Without this the
+    // stale endAt from a previously selected (longer) video carries over and the
+    // VideoBlockEditorSettings validation rejects it with an "End time has to be
+    // no more than video duration" snackbar.
+    const duration = previewVideo?.duration
+    const nextBlock =
+      duration != null && duration > 0
+        ? { ...block, duration, endAt: duration }
+        : block
+    onSelect(nextBlock, true)
     setPreviewVideo(null)
   }
 

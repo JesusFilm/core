@@ -33,6 +33,7 @@ function seedCache(
     id: string
     playbackId: string
     readyToStream: boolean
+    duration: number | null
   }>
 ): void {
   cache.writeQuery({
@@ -77,13 +78,15 @@ describe('prependMuxVideo', () => {
         __typename: 'MuxVideo',
         id: 'existing-1',
         playbackId: 'pb-1',
-        readyToStream: true
+        readyToStream: true,
+        duration: null
       },
       {
         __typename: 'MuxVideo',
         id: 'existing-2',
         playbackId: 'pb-2',
-        readyToStream: true
+        readyToStream: true,
+        duration: null
       }
     ])
 
@@ -100,13 +103,15 @@ describe('prependMuxVideo', () => {
         __typename: 'MuxVideo',
         id: NEW_VIDEO.id,
         playbackId: NEW_VIDEO.playbackId,
-        readyToStream: NEW_VIDEO.readyToStream
+        readyToStream: NEW_VIDEO.readyToStream,
+        duration: null
       },
       {
         __typename: 'MuxVideo',
         id: 'existing-1',
         playbackId: 'pb-1',
-        readyToStream: true
+        readyToStream: true,
+        duration: null
       }
     ])
 

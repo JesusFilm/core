@@ -12,6 +12,7 @@ export interface GetMyMuxVideos_getMyMuxVideos {
   id: string;
   playbackId: string | null;
   readyToStream: boolean;
+  duration: number | null;
 }
 
 export interface GetMyMuxVideos {

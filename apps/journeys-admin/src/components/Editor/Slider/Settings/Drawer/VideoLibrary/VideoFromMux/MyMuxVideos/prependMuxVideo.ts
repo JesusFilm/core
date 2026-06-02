@@ -5,6 +5,7 @@ const NEW_MUX_VIDEO_FRAGMENT = gql`
     id
     playbackId
     readyToStream
+    duration
   }
 `
 
@@ -16,10 +17,15 @@ const NEW_MUX_VIDEO_FRAGMENT = gql`
  */
 export function prependMuxVideo(
   cache: ApolloCache<unknown>,
-  video: { id: string; playbackId: string; readyToStream: boolean }
+  video: {
+    id: string
+    playbackId: string
+    readyToStream: boolean
+    duration?: number | null
+  }
 ): void {
   const ref = cache.writeFragment({
-    data: { __typename: 'MuxVideo', ...video },
+    data: { __typename: 'MuxVideo', duration: null, ...video },
     fragment: NEW_MUX_VIDEO_FRAGMENT
   })
   if (ref == null) return
