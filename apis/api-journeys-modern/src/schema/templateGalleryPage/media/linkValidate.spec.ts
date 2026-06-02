@@ -3,24 +3,10 @@ import { googleSlidesSpec } from './googleSlidesValidate'
 import { linkValidate } from './linkValidate'
 import { youTubeSpec } from './youTubeOEmbed'
 
-vi.mock('@core/prisma/media/client', () => ({
-  prisma: {
-    shortLinkBlocklistDomain: {
-      findFirst: vi.fn()
-    }
-  }
-}))
-
-const { prisma: mockPrismaMedia } = await vi.importMock<any>(
-  '@core/prisma/media/client'
-)
-
 describe('linkValidate', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
     vi.clearAllMocks()
-    // No host is blocklisted by default.
-    mockPrismaMedia.shortLinkBlocklistDomain.findFirst.mockResolvedValue(null)
   })
 
   describe('normalizer dispatch (tier-1 hosts)', () => {
@@ -67,21 +53,7 @@ describe('linkValidate', () => {
     ).resolves.toEqual({ embedUrl: 'https://loom.com/share/abc123' })
   })
 
-  it('rejects EMBED_HOST_BLOCKED before the allowlist, even for a built-in host', async () => {
-    mockPrismaMedia.shortLinkBlocklistDomain.findFirst.mockResolvedValue({
-      hostname: 'www.canva.com'
-    })
-    const spy = vi.spyOn(canvaSpec, 'normalize')
-
-    await expect(
-      linkValidate('https://www.canva.com/design/DAF/abc/edit')
-    ).rejects.toMatchObject({
-      extensions: { code: 'BAD_USER_INPUT', reason: 'EMBED_HOST_BLOCKED' }
-    })
-    expect(spy).not.toHaveBeenCalled()
-  })
-
-  it('rejects EMBED_HOST_NOT_ALLOWED for a host in neither set', async () => {
+  it('rejects EMBED_HOST_NOT_ALLOWED for a host not in the allowlist', async () => {
     await expect(
       linkValidate('https://evil.example.com/x')
     ).rejects.toMatchObject({
@@ -93,16 +65,5 @@ describe('linkValidate', () => {
     await expect(linkValidate('http://www.canva.com/design/x')).rejects.toThrow(
       /https/
     )
-    expect(
-      mockPrismaMedia.shortLinkBlocklistDomain.findFirst
-    ).not.toHaveBeenCalled()
-  })
-
-  it('queries the blocklist with the lowercased hostname', async () => {
-    vi.spyOn(canvaSpec, 'normalize').mockResolvedValue({ embedUrl: 'x' })
-    await linkValidate('https://www.canva.com/design/DAF/abc/edit')
-    expect(
-      mockPrismaMedia.shortLinkBlocklistDomain.findFirst
-    ).toHaveBeenCalledWith({ where: { hostname: 'www.canva.com' } })
   })
 })

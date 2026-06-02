@@ -1,7 +1,5 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma as prismaMedia } from '@core/prisma/media/client'
-
 import { env } from '../../../env'
 import { assertHttpsUrl } from '../assertHttpsUrl'
 
@@ -51,32 +49,15 @@ function getAllowedHosts(): ReadonlySet<string> {
  *
  * Order of operations:
  *  1. `assertHttpsUrl` — reject non-https before any host logic.
- *  2. Blocklist gate — reuse `ShortLinkBlocklistDomain`. Runs first and applies
- *     to ALL hosts so security can kill an embed source with a manual INSERT,
- *     no deploy.
- *  3. Allowlist gate — host must be in the env-owned TEMPLATE_LIBRARY_EMBED_HOSTS
- *     set.
- *  4. Normalizer lookup (NOT a gate) — providers with a normalizer get
+ *  2. Allowlist gate — host must be in the env-owned TEMPLATE_LIBRARY_EMBED_HOSTS
+ *     set. This is the single authoritative control: to disable a host, remove
+ *     it from the Doppler list (no deploy).
+ *  3. Normalizer lookup (NOT a gate) — providers with a normalizer get
  *     provider-specific handling; everything else is stored as-is.
  */
 export async function linkValidate(url: string): Promise<{ embedUrl: string }> {
   assertHttpsUrl(url, 'url')
   const hostname = new URL(url).hostname.toLowerCase()
-
-  // Deliberate direct cross-DB read (not via the gateway): matches the only
-  // existing consumer of this table — shortLink.ts's `findFirst({ where:
-  // { hostname } })` — and the cross-DB read precedent in lib/mediaCleanup.
-  // Exact-hostname match by design, same as shortLink; the env allowlist is the
-  // primary control and a kill-switch INSERT here also disables short-links for
-  // the host (shared kill-switch surface).
-  const blocked = await prismaMedia.shortLinkBlocklistDomain.findFirst({
-    where: { hostname }
-  })
-  if (blocked != null) {
-    throw new GraphQLError('This host is blocked and cannot be embedded.', {
-      extensions: { code: 'BAD_USER_INPUT', reason: 'EMBED_HOST_BLOCKED' }
-    })
-  }
 
   if (!getAllowedHosts().has(hostname)) {
     throw new GraphQLError('This host is not allowed to be embedded.', {
