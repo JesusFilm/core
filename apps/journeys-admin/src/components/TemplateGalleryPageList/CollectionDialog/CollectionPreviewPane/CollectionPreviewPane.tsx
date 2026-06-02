@@ -10,7 +10,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, memo, useEffect, useState } from 'react'
 
-import { embedAttrs } from '@core/journeys/ui/TemplateGalleryMedia'
+import { EmbedIframe } from '@core/journeys/ui/TemplateGalleryMedia'
 import CopyRightIcon from '@core/shared/ui/icons/CopyRight'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
@@ -435,36 +435,13 @@ function GalleryMediaPreview({
 
   const embedUrl = previewEmbedUrl(debouncedUrl)
   if (embedUrl != null) {
-    const attrs = embedAttrs(embedUrl)
     return (
-      <Box
-        sx={{
-          position: 'relative',
-          width: '100%',
-          paddingTop: attrs.aspectRatioPaddingTop,
-          borderRadius: 1,
-          overflow: 'hidden'
-        }}
-      >
-        <Box
-          component="iframe"
-          data-testid="GalleryMediaPreviewIframe"
-          src={embedUrl}
-          title={t('Media preview')}
-          allow={attrs.allow}
-          allowFullScreen={attrs.allowFullScreen}
-          referrerPolicy={attrs.referrerPolicy}
-          sandbox={attrs.sandbox}
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            border: 0
-          }}
-        />
-      </Box>
+      <EmbedIframe
+        embedUrl={embedUrl}
+        title={t('Media preview')}
+        borderRadius={1}
+        testId="GalleryMediaPreview"
+      />
     )
   }
 

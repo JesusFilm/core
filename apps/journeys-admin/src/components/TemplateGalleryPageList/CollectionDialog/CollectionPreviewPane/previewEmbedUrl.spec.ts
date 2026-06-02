@@ -45,4 +45,25 @@ describe('previewEmbedUrl', () => {
       previewEmbedUrl('https://www.youtube.com/watch?v=tooshort')
     ).toBeNull()
   })
+
+  it('re-validates the id on the nocookie passthrough', () => {
+    expect(
+      previewEmbedUrl('https://www.youtube-nocookie.com/embed/')
+    ).toBeNull()
+    expect(
+      previewEmbedUrl('https://www.youtube-nocookie.com/embed/playlist?list=PL')
+    ).toBeNull()
+  })
+
+  it('rejects the canonical URL-allowlist bypass payloads', () => {
+    // javascript:/data: schemes, and a credential-prefixed look-alike host
+    // that actually resolves to an attacker domain.
+    expect(previewEmbedUrl('javascript:alert(1)//youtube.com')).toBeNull()
+    expect(
+      previewEmbedUrl('data:text/html,<script>alert(1)</script>')
+    ).toBeNull()
+    expect(
+      previewEmbedUrl('https://www.youtube.com@evil.example/watch?v=dQw4w9WgXcQ')
+    ).toBeNull()
+  })
 })

@@ -56,13 +56,17 @@ export function previewEmbedUrl(rawUrl: string): string | null {
 
   if (url.protocol !== 'https:') return null
 
-  // Already a normalized YouTube embed — pass through.
+  // Already a normalized YouTube embed — re-validate the id so an empty or
+  // malformed `/embed/<garbage>` still falls through to the placeholder.
   if (
     (url.hostname === 'www.youtube-nocookie.com' ||
       url.hostname === 'youtube-nocookie.com') &&
     url.pathname.startsWith('/embed/')
   ) {
-    return trimmed
+    const embedId = asYouTubeId(url.pathname.split('/')[2])
+    return embedId != null
+      ? `https://www.youtube-nocookie.com/embed/${embedId}`
+      : null
   }
 
   const id = youTubeId(url)

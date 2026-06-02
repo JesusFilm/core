@@ -4,7 +4,7 @@ import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 import Player from 'video.js/dist/types/player'
 
-import { embedAttrs } from '@core/journeys/ui/TemplateGalleryMedia'
+import { EmbedIframe } from '@core/journeys/ui/TemplateGalleryMedia'
 
 import { GetTemplateGalleryPage_templateGalleryPageBySlug_media as TemplateGalleryPageMedia } from '../../../../__generated__/GetTemplateGalleryPage'
 import { TemplateGalleryPageMediaType } from '../../../../__generated__/globalTypes'
@@ -34,7 +34,14 @@ export function TemplateGalleryMedia({
 
   if (media.type === TemplateGalleryPageMediaType.link) {
     if (media.embedUrl == null) return null
-    return <LinkMedia embedUrl={media.embedUrl} />
+    return (
+      <EmbedIframe
+        embedUrl={media.embedUrl}
+        title="Gallery media"
+        borderRadius={4}
+        testId="TemplateGalleryMedia"
+      />
+    )
   }
 
   // Exhaustiveness: a new media type added to the enum must be handled here
@@ -73,41 +80,6 @@ function MuxMedia({ playbackId }: { playbackId: string }): ReactElement {
           type="application/x-mpegURL"
         />
       </video>
-    </Box>
-  )
-}
-
-function LinkMedia({ embedUrl }: { embedUrl: string }): ReactElement {
-  const attrs = embedAttrs(embedUrl)
-  return (
-    <Box
-      data-testid="TemplateGalleryMedia"
-      sx={{
-        position: 'relative',
-        width: '100%',
-        paddingTop: attrs.aspectRatioPaddingTop,
-        borderRadius: 4,
-        overflow: 'hidden'
-      }}
-    >
-      <Box
-        component="iframe"
-        data-testid="TemplateGalleryMediaIframe"
-        src={embedUrl}
-        title="Gallery media"
-        allow={attrs.allow}
-        allowFullScreen={attrs.allowFullScreen}
-        referrerPolicy={attrs.referrerPolicy}
-        sandbox={attrs.sandbox}
-        sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          border: 0
-        }}
-      />
     </Box>
   )
 }
