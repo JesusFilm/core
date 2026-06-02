@@ -59,7 +59,10 @@ function MuxMedia({ playbackId }: { playbackId: string }): ReactElement {
       controls: true,
       fluid: true,
       responsive: true,
-      bigPlayButton: true
+      bigPlayButton: true,
+      // Force a 16:9 frame so a portrait upload letterboxes inside it rather
+      // than making the player tall.
+      aspectRatio: '16:9'
     })
     return () => {
       playerRef.current?.dispose()
@@ -68,7 +71,10 @@ function MuxMedia({ playbackId }: { playbackId: string }): ReactElement {
   }, [])
 
   return (
-    <Box data-testid="TemplateGalleryMedia" sx={{ borderRadius: 4, overflow: 'hidden' }}>
+    <Box
+      data-testid="TemplateGalleryMedia"
+      sx={{ borderRadius: 4, overflow: 'hidden' }}
+    >
       <video
         data-testid="TemplateGalleryMediaMux"
         ref={videoRef}

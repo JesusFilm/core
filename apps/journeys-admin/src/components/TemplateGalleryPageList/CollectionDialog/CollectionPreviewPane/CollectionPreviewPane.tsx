@@ -463,7 +463,7 @@ function MediaPreviewPlaceholder({ label }: { label: string }): ReactElement {
       data-testid="GalleryMediaPreviewPlaceholder"
       sx={{
         width: '100%',
-        paddingTop: '56.25%',
+        aspectRatio: '16 / 9',
         position: 'relative',
         borderRadius: 1,
         bgcolor: 'action.hover'

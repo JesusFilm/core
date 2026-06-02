@@ -136,12 +136,30 @@ export function MuxUploadField({
       {!uploading && !processing && !errored && hasVideo && (
         <Stack spacing={1} data-testid="MuxUploadFieldReady">
           {playbackId != null && playbackId !== '' ? (
+            // Compact, 16:9-framed thumbnail in the editing pane — the form
+            // column is wide, so a full-width (and portrait videos a tall)
+            // thumbnail dominated the dialog.
             <Box
-              component="img"
-              src={`https://image.mux.com/${playbackId}/thumbnail.jpg`}
-              alt={t('Video thumbnail')}
-              sx={{ width: '100%', borderRadius: 1, display: 'block' }}
-            />
+              sx={{
+                width: '100%',
+                maxWidth: 168,
+                aspectRatio: '16 / 9',
+                borderRadius: 1,
+                overflow: 'hidden'
+              }}
+            >
+              <Box
+                component="img"
+                src={`https://image.mux.com/${playbackId}/thumbnail.jpg`}
+                alt={t('Video thumbnail')}
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block'
+                }}
+              />
+            </Box>
           ) : (
             <Typography variant="body2">{t('Video ready')}</Typography>
           )}
