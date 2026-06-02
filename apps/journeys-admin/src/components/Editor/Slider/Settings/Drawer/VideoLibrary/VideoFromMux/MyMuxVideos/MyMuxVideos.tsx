@@ -113,7 +113,7 @@ export function MyMuxVideos({
 
   return (
     <Stack sx={{ p: 6, gap: 2 }} data-testid="MyMuxVideos">
-      <Typography variant="overline">{t('Your uploads')}</Typography>
+      <Typography variant="overline">{t('Uploads')}</Typography>
       {error != null && (
         <Typography color="error" variant="body2" sx={{ pb: 1 }}>
           {t('Could not load your videos.')}
