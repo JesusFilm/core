@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps, Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
@@ -20,6 +21,13 @@ import { MuxUploadField } from './MuxUploadField'
 
 type MediaUiMode = 'mux' | 'link'
 
+// Reserved height for the media input area. Every state — Link field, the empty
+// upload prompt, an in-flight upload, the attached video — renders inside this
+// fixed-height box so switching Link <-> Upload (or an upload moving through its
+// states) never shifts the dialog layout. Sized to the tallest steady state
+// (the link field plus its helper line).
+const MEDIA_AREA_MIN_HEIGHT = 80
+
 interface MediaSectionProps {
   media: CollectionMediaValues
   /** Inline error for the media field (schema or backend reason message). */
@@ -38,20 +46,21 @@ interface MediaSectionProps {
   headerSx: SxProps<Theme>
 }
 
-/** A `mux` row opens the Upload tab; everything else (link / none) opens Link. */
+/** A `mux` row opens Upload; everything else (link / none) opens Link. */
 function inferMode(media: CollectionMediaValues): MediaUiMode {
   return media.type === 'mux' ? 'mux' : 'link'
 }
 
 /**
- * Media editing surface for the CollectionDialog: a two-way picker — Upload (a
- * Mux video) or Link (any embeddable URL: Canva, YouTube, …). The provider is
- * inferred server-side from the URL host, so Link is a single field; the
- * backend validates and normalizes it. Media saves out of band from the dialog
- * (link on blur, upload on completion, Remove immediately), so switching tabs
- * only changes which input is shown — it never wipes the saved media; the
- * active media is replaced only by committing a new link / upload or an
- * explicit Remove. Must be rendered inside a `MuxVideoUploadProvider`.
+ * Media editing surface for the CollectionDialog: a two-way picker — Link (any
+ * embeddable URL: Canva, YouTube, Google Slides) or Upload (a Mux video). The
+ * provider is inferred server-side from the URL host, so Link is a single
+ * field; the backend validates and normalizes it. Media saves out of band from
+ * the dialog (link on blur, upload on completion, Remove immediately), so
+ * switching only changes which input is shown — it never wipes the saved media;
+ * the active media is replaced only by committing a new link / upload or an
+ * explicit Remove. The input lives in a fixed-height box so no state change
+ * shifts the layout. Must be rendered inside a `MuxVideoUploadProvider`.
  */
 export function MediaSection({
   media,
@@ -71,9 +80,9 @@ export function MediaSection({
     next: MediaUiMode | null
   ): void {
     // `next` is null when the active button is re-clicked — ignore so the
-    // selection can't be toggled off. Switching tabs only changes the input
-    // shown; it never clears the saved media (the user can compare Upload vs
-    // Link without losing what's already saved).
+    // selection can't be toggled off. Switching only changes the visible
+    // input; it never clears the saved media (the user can compare Upload vs
+    // Link without losing it).
     if (next == null || next === mode) return
     setMode(next)
   }
@@ -106,82 +115,106 @@ export function MediaSection({
       : null
 
   return (
-    <Stack spacing={1}>
+    <Stack gap={1}>
       <Typography sx={headerSx}>{t('Media')}</Typography>
+
+      {/* Full-width, equal-width toggle matching the app's media-source
+          switches (e.g. BackgroundMedia's Image/Video). textTransform none so
+          it reads "Link" / "Upload", not the bare size="small" caps group this
+          used to be. */}
       <ToggleButtonGroup
         exclusive
-        size="small"
+        fullWidth
         value={mode}
         onChange={handleModeChange}
         aria-label={t('Media type')}
         disabled={saving}
+        sx={{
+          '& .MuiToggleButton-root': { textTransform: 'none', py: 1, mb: 1 }
+        }}
       >
-        <ToggleButton value="mux" aria-label={t('Upload')}>
-          {t('Upload')}
-        </ToggleButton>
         <ToggleButton value="link" aria-label={t('Link')}>
           {t('Link')}
         </ToggleButton>
+        <ToggleButton value="mux" aria-label={t('Upload')}>
+          {t('Upload')}
+        </ToggleButton>
       </ToggleButtonGroup>
 
-      {mode === 'mux' && (
-        <MuxUploadField
-          uploadKey={uploadKey}
-          hasVideo={
-            media.type === 'mux' &&
-            (media.muxVideoId !== '' || savedPlaybackId != null)
-          }
-          playbackId={savedPlaybackId}
-          // Preserve any existing playbackId so an in-flight *replacement*
-          // upload still knows about the previously-saved video (so cancelling
-          // reverts to it instead of clearing it). Start is transient; the
-          // upload isn't saved until it completes.
-          onUploadStart={() =>
-            onChange({ type: 'mux', muxVideoId: '', muxPlaybackId: savedPlaybackId })
-          }
-          // Completion is the commit point — persist the new video now.
-          onComplete={(videoId, playbackId) =>
-            onCommit({ type: 'mux', muxVideoId: videoId, muxPlaybackId: playbackId })
-          }
-          // Cancel reverts (transient) to the prior saved video when one
-          // existed, else none — nothing was persisted during the in-flight
-          // upload, so there's nothing to save here.
-          onCancel={() =>
-            onChange(
-              savedPlaybackId != null
-                ? { type: 'mux', muxVideoId: '', muxPlaybackId: savedPlaybackId }
-                : { type: 'none' }
-            )
-          }
-          // Remove deletes the attached video — commit the cleared state.
-          onRemove={() => onCommit({ type: 'none' })}
-        />
-      )}
+      <Box sx={{ minHeight: MEDIA_AREA_MIN_HEIGHT }}>
+        {mode === 'mux' ? (
+          <MuxUploadField
+            uploadKey={uploadKey}
+            hasVideo={
+              media.type === 'mux' &&
+              (media.muxVideoId !== '' || savedPlaybackId != null)
+            }
+            playbackId={savedPlaybackId}
+            // Preserve any existing playbackId so an in-flight *replacement*
+            // upload still knows about the previously-saved video (so cancelling
+            // reverts to it instead of clearing it). Start is transient; the
+            // upload isn't saved until it completes.
+            onUploadStart={() =>
+              onChange({
+                type: 'mux',
+                muxVideoId: '',
+                muxPlaybackId: savedPlaybackId
+              })
+            }
+            // Completion is the commit point — persist the new video now.
+            onComplete={(videoId, playbackId) =>
+              onCommit({
+                type: 'mux',
+                muxVideoId: videoId,
+                muxPlaybackId: playbackId
+              })
+            }
+            // Cancel reverts (transient) to the prior saved video when one
+            // existed, else none — nothing was persisted during the in-flight
+            // upload, so there's nothing to save here.
+            onCancel={() =>
+              onChange(
+                savedPlaybackId != null
+                  ? {
+                      type: 'mux',
+                      muxVideoId: '',
+                      muxPlaybackId: savedPlaybackId
+                    }
+                  : { type: 'none' }
+              )
+            }
+            // Remove deletes the attached video — commit the cleared state.
+            onRemove={() => onCommit({ type: 'none' })}
+          />
+        ) : (
+          <TextField
+            value={linkValue}
+            onChange={handleUrlChange}
+            onBlur={handleUrlBlur}
+            disabled={saving}
+            placeholder={t('Paste link')}
+            fullWidth
+            variant="filled"
+            hiddenLabel
+            inputProps={{ 'aria-label': t('Media link') }}
+            error={error != null}
+            helperText={
+              error ?? t('We support YouTube, Canva, and Google Slides.')
+            }
+          />
+        )}
+      </Box>
 
-      {mode === 'link' && (
-        <TextField
-          value={linkValue}
-          onChange={handleUrlChange}
-          onBlur={handleUrlBlur}
-          disabled={saving}
-          placeholder={t('Paste a Canva or YouTube link')}
-          fullWidth
-          variant="filled"
-          hiddenLabel
-          inputProps={{ 'aria-label': t('Media link') }}
-          error={error != null}
-          helperText={
-            error ??
-            t('Paste a Canva or YouTube link. In Canva, set Share → Anyone with the link first.')
-          }
-        />
-      )}
-
-      {saving && (
-        <Typography variant="caption" color="text.secondary">
-          {t('Saving…')}
-        </Typography>
-      )}
+      {/* Status line — gives the section a consistent bottom rhythm and keeps
+          its height stable when "Saving…" toggles (also covers Upload mode,
+          which has no helper-text line of its own). */}
+      <Box sx={{ minHeight: 20 }}>
+        {saving && (
+          <Typography variant="caption" color="text.secondary">
+            {t('Saving…')}
+          </Typography>
+        )}
+      </Box>
     </Stack>
   )
 }

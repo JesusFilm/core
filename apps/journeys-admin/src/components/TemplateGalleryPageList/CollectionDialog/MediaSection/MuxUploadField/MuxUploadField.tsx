@@ -153,15 +153,21 @@ export function MuxUploadField({
       )}
 
       {!uploading && !processing && !errored && hasVideo && (
-        <Stack spacing={1} data-testid="MuxUploadFieldReady">
+        // Compact attached state: a small 16:9 thumbnail beside the actions so
+        // the whole row fits the section's reserved height (the wide editing
+        // column made a full-size thumbnail dominate the dialog, and the left
+        // preview pane already shows the video at full size).
+        <Stack
+          direction="row"
+          spacing={1.5}
+          alignItems="center"
+          data-testid="MuxUploadFieldReady"
+        >
           {playbackId != null && playbackId !== '' ? (
-            // Compact, 16:9-framed thumbnail in the editing pane — the form
-            // column is wide, so a full-width (and portrait videos a tall)
-            // thumbnail dominated the dialog.
             <Box
               sx={{
-                width: '100%',
-                maxWidth: 168,
+                width: 96,
+                flexShrink: 0,
                 aspectRatio: '16 / 9',
                 borderRadius: 1,
                 overflow: 'hidden'
@@ -194,9 +200,20 @@ export function MuxUploadField({
       )}
 
       {!uploading && !processing && !errored && !hasVideo && (
-        <Button variant="outlined" onClick={openPicker} data-testid="MuxUploadFieldPick">
-          {t('Upload a video')}
-        </Button>
+        <Stack spacing={0.5} alignItems="flex-start">
+          <Button
+            variant="outlined"
+            color="secondary"
+            fullWidth
+            onClick={openPicker}
+            data-testid="MuxUploadFieldPick"
+          >
+            {t('Choose a video')}
+          </Button>
+          <Typography variant="caption" color="text.secondary">
+            {t('MP4 or MOV, up to 1 GB.')}
+          </Typography>
+        </Stack>
       )}
     </Box>
   )
