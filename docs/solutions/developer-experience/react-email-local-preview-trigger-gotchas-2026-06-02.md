@@ -53,7 +53,7 @@ below were run and verified in the devcontainer.
 Importing the tsx-transpiled template from an **ESM** script (`.mts`, or `.ts` with
 `"module": "esnext"`) fails:
 
-```
+```text
 SyntaxError: The requested module '.../EmailVerifyJesusFilmOne' does not provide an export named 'EmailVerifyJesusFilmOne'
 ```
 
