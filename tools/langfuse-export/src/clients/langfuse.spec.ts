@@ -56,6 +56,17 @@ describe('mapTrace', () => {
     expect(result.ipCountry).toBe('NZ')
   })
 
+  it('coerces a boolean metadata value to its string form (true and false both surface)', () => {
+    expect(
+      mapTrace({ id: 't', metadata: { journeyId: true }, tags: [] }).journeyId
+    ).toBe('true')
+    // `false` intentionally becomes the non-empty string 'false' (a surfaced
+    // value), not undefined — downstream callers want the flag visible.
+    expect(
+      mapTrace({ id: 't', metadata: { journeyId: false }, tags: [] }).journeyId
+    ).toBe('false')
+  })
+
   it('drops NaN and Infinity so a non-finite number cannot become "NaN" in the report', () => {
     const result = mapTrace({
       id: 't',
