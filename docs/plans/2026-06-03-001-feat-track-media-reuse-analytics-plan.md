@@ -200,7 +200,7 @@ We already track new media uploads via GTM (`image_upload_success` / `image_uplo
 | Risk                                                                     | Mitigation                                                                                                          |
 | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
 | Event fires on preview-open instead of confirm (video), inflating counts | Instrument `handlePreviewSelect` (confirm), not `handleClick` (preview); covered by an explicit U3 test scenario.   |
-| PII leaks into GTM payload                                               | Explicit minimal payloads (`isAi` / `videoSource` only, no asset IDs); no spreading of objects (R3).                 |
+| PII leaks into GTM payload                                               | Explicit minimal payloads (`isAi` / `videoSource` only, no asset IDs); no spreading of objects (R3).                |
 | GTM event names drift from downstream dashboard expectations             | Use stable `snake_case` names consistent with the `image_upload_*` family; names listed in Key Technical Decisions. |
 
 ---
