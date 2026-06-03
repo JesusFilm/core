@@ -90,6 +90,9 @@ export const OVERLAY_CLOSE_BG_HOVER = 'rgba(197, 45, 58, 0.86)'
 /** Plain assistant text on the dark blurred overlay backdrop. */
 export const PLAIN_ASSISTANT_FG_ON_DARK = 'rgba(255, 255, 255, 0.92)'
 
+/** Empty-state hero text colour on the dark overlay backdrop. */
+export const OVERLAY_HERO_FG = 'rgba(255, 255, 255, 0.85)'
+
 /** Dim text colour for the retry button on the dark overlay. */
 export const OVERLAY_FG_RETRY = 'rgba(255, 255, 255, 0.7)'
 
