@@ -16,7 +16,9 @@ vi.mock('@opentelemetry/instrumentation-http', () => ({
 vi.mock('@opentelemetry/resources', () => ({
   resourceFromAttributes: vi.fn(() => ({}))
 }))
-vi.mock('@opentelemetry/sdk-trace-base', () => ({ SimpleSpanProcessor: vi.fn() }))
+vi.mock('@opentelemetry/sdk-trace-base', () => ({
+  SimpleSpanProcessor: vi.fn()
+}))
 vi.mock('@opentelemetry/sdk-trace-node', () => ({
   NodeTracerProvider: vi.fn(() => ({ register }))
 }))
@@ -25,7 +27,10 @@ vi.mock('@opentelemetry/semantic-conventions', () => ({
   ATTR_SERVICE_VERSION: 'service.version'
 }))
 vi.mock('@pothos/tracing-opentelemetry', () => ({
-  AttributeNames: { OPERATION_NAME: 'operation.name', SOURCE: 'graphql.source' },
+  AttributeNames: {
+    OPERATION_NAME: 'operation.name',
+    SOURCE: 'graphql.source'
+  },
   SpanNames: { EXECUTE: 'execute' }
 }))
 vi.mock('@prisma/instrumentation', () => ({ PrismaInstrumentation: vi.fn() }))
