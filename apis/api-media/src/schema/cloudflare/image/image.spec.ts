@@ -752,6 +752,58 @@ describe('cloudflareImage', () => {
           { imageId: 'id' }
         )
       })
+
+      const CREATE_FROM_PROMPT_WITH_JOURNEY_MUTATION = graphql(`
+        mutation createCloudflareImageFromPromptWithJourney(
+          $prompt: String!
+          $journeyId: ID
+        ) {
+          createCloudflareImageFromPrompt(prompt: $prompt, journeyId: $journeyId) {
+            id
+          }
+        }
+      `)
+
+      it('should persist teamId from the journey when journeyId is provided', async () => {
+        mockCreateImageFromText.mockResolvedValue(new Response())
+        mockCreateImageFromResponse.mockResolvedValue({ id: 'id' })
+        journeysPrismaMock.journey.findUnique.mockResolvedValue({
+          teamId: 'teamId',
+          team: { userTeams: [{ id: 'userTeamId' }] }
+        } as never)
+        prismaMock.cloudflareImage.create.mockResolvedValue({
+          id: 'id'
+        } as unknown as CloudflareImage)
+
+        await authClient({
+          document: CREATE_FROM_PROMPT_WITH_JOURNEY_MUTATION,
+          variables: { prompt: 'test prompt', journeyId: 'journeyId' }
+        })
+
+        expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: 'teamId' })
+          })
+        )
+      })
+
+      it('should not create a row when caller lacks access to the journey team', async () => {
+        journeysPrismaMock.journey.findUnique.mockResolvedValue({
+          teamId: 'teamId',
+          team: { userTeams: [] }
+        } as never)
+
+        const result = (await authClient({
+          document: CREATE_FROM_PROMPT_WITH_JOURNEY_MUTATION,
+          variables: { prompt: 'test prompt', journeyId: 'journeyId' }
+        })) as {
+          data: unknown
+          errors?: { extensions?: { code?: string } }[]
+        }
+
+        expect(result.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+        expect(prismaMock.cloudflareImage.create).not.toHaveBeenCalled()
+      })
     })
 
     describe('deleteCloudflareImage', () => {

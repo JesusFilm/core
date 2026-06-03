@@ -932,6 +932,72 @@ describe('mux/video', () => {
         })
         expect(result).toHaveProperty('data', null)
       })
+
+      const CREATE_BY_URL_WITH_JOURNEY = graphql(`
+        mutation CreateMuxVideoUploadByUrlWithJourney(
+          $url: String!
+          $journeyId: ID
+        ) {
+          createMuxVideoUploadByUrl(url: $url, journeyId: $journeyId) {
+            id
+          }
+        }
+      `)
+
+      it('should persist teamId from the journey when journeyId is provided', async () => {
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        journeysPrismaMock.journey.findUnique.mockResolvedValue({
+          teamId: 'teamId',
+          team: { userTeams: [{ id: 'userTeamId' }] }
+        } as never)
+        ;(prismaMock.muxVideo.create as Mock).mockResolvedValue({
+          id: 'videoId'
+        })
+
+        await authClient({
+          document: CREATE_BY_URL_WITH_JOURNEY,
+          variables: {
+            url: 'https://example.com/video.mp4',
+            journeyId: 'journeyId'
+          }
+        })
+
+        expect(prismaMock.muxVideo.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: 'teamId' })
+          })
+        )
+      })
+
+      it('should not create a row when caller lacks access to the journey team', async () => {
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        journeysPrismaMock.journey.findUnique.mockResolvedValue({
+          teamId: 'teamId',
+          team: { userTeams: [] }
+        } as never)
+
+        const result = (await authClient({
+          document: CREATE_BY_URL_WITH_JOURNEY,
+          variables: {
+            url: 'https://example.com/video.mp4',
+            journeyId: 'journeyId'
+          }
+        })) as {
+          data: unknown
+          errors?: { extensions?: { code?: string } }[]
+        }
+
+        expect(result.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+        expect(prismaMock.muxVideo.create).not.toHaveBeenCalled()
+      })
     })
 
     describe('deleteMuxVideo', () => {
