@@ -10,6 +10,7 @@ import {
   GetMyCloudflareImagesVariables
 } from '../../../../../../../../__generated__/GetMyCloudflareImages'
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
+import { sendImageSelectEvent } from '../../../../../../../libs/sendMediaSelectEvent'
 import { LoadMoreButton } from '../LoadMoreButton'
 
 import { MediaLibraryList, MediaLibraryListImage } from './MediaLibraryList'
@@ -81,6 +82,7 @@ export function MediaLibrary({
   if (isEmpty) return null
 
   function handleSelect(img: MediaLibraryListImage): void {
+    sendImageSelectEvent({ imageId: img.id, isAi })
     onSelect({
       src: img.src,
       blurhash: img.blurhash,

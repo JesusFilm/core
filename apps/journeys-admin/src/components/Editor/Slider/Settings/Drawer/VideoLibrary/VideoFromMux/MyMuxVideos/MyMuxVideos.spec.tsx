@@ -1,13 +1,21 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { offsetLimitPagination } from '@apollo/client/utilities'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type MockedFunction } from 'vitest'
 
 import { GetMyMuxVideos } from '../../../../../../../../../__generated__/GetMyMuxVideos'
 
 import { GET_MY_MUX_VIDEOS, MyMuxVideos, PAGE_SIZE } from './MyMuxVideos'
 
 const PEEK_LIMIT = PAGE_SIZE + 1
+
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
+}))
+
+const mockSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
 vi.mock('../../VideoDetails', () => ({
   __esModule: true,
@@ -58,6 +66,10 @@ const readyVideo = (
 })
 
 describe('MyMuxVideos', () => {
+  beforeEach(() => {
+    mockSendGTMEvent.mockClear()
+  })
+
   it('should render uploading skeleton tile when uploading is true', async () => {
     render(
       <MockedProvider mocks={[buildMock([readyVideo('a')])]}>
@@ -106,6 +118,75 @@ describe('MyMuxVideos', () => {
       { videoId: 'a', duration: 9, endAt: 9 },
       true
     )
+  })
+
+  it('should send video_select event with mux source on confirm', async () => {
+    render(
+      <MockedProvider mocks={[buildMock([readyVideo('a')])]}>
+        <MyMuxVideos onSelect={vi.fn()} />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('my-mux-video-a')).toBeInTheDocument()
+    })
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Select uploaded video' })
+    )
+    await screen.findByTestId('mock-video-details')
+
+    fireEvent.click(screen.getByTestId('mock-video-details-select'))
+    expect(mockSendGTMEvent).toHaveBeenCalledWith({
+      event: 'video_select',
+      videoId: 'a',
+      duration: 9,
+      source: 'mux'
+    })
+  })
+
+  it('should send video_select event with null duration when the video has no duration', async () => {
+    render(
+      <MockedProvider mocks={[buildMock([readyVideo('a', null)])]}>
+        <MyMuxVideos onSelect={vi.fn()} />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('my-mux-video-a')).toBeInTheDocument()
+    })
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Select uploaded video' })
+    )
+    await screen.findByTestId('mock-video-details')
+
+    fireEvent.click(screen.getByTestId('mock-video-details-select'))
+    expect(mockSendGTMEvent).toHaveBeenCalledWith({
+      event: 'video_select',
+      videoId: 'a',
+      duration: null,
+      source: 'mux'
+    })
+  })
+
+  it('should not send video_select when only opening the preview', async () => {
+    render(
+      <MockedProvider mocks={[buildMock([readyVideo('a')])]}>
+        <MyMuxVideos onSelect={vi.fn()} />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('my-mux-video-a')).toBeInTheDocument()
+    })
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Select uploaded video' })
+    )
+    await screen.findByTestId('mock-video-details')
+
+    expect(mockSendGTMEvent).not.toHaveBeenCalled()
   })
 
   it('should not set endAt when the selected video has no duration', async () => {
