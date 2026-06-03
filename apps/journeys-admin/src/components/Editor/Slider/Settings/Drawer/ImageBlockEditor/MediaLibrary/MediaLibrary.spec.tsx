@@ -3,6 +3,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { offsetLimitPagination } from '@apollo/client/utilities'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { GraphQLError } from 'graphql'
 import { type MockedFunction } from 'vitest'
 
 import { GET_MY_CLOUDFLARE_IMAGES, MediaLibrary } from './MediaLibrary'
@@ -362,5 +363,77 @@ describe('MediaLibrary', () => {
     expect(
       await screen.findByTestId('media-library-image-img-0')
     ).toBeInTheDocument()
+  })
+
+  it('should forward teamId to the query variables when set', async () => {
+    const teamMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }
+      },
+      result: { data: { getMyCloudflareImages: makeImages(2) } }
+    }
+    render(
+      <MockedProvider mocks={[teamMock]}>
+        <MediaLibrary
+          title="Uploads"
+          onSelect={vi.fn()}
+          isAi={false}
+          teamId="team-1"
+        />
+      </MockedProvider>
+    )
+    expect(
+      await screen.findByTestId('media-library-image-img-0')
+    ).toBeInTheDocument()
+  })
+
+  it('should omit teamId and fall back to personal-only when teamId is null', async () => {
+    render(
+      <MockedProvider mocks={[firstShortPageMock]}>
+        <MediaLibrary
+          title="Uploads"
+          onSelect={vi.fn()}
+          isAi={false}
+          teamId={null}
+        />
+      </MockedProvider>
+    )
+    // firstShortPageMock has no teamId variable, so a match proves teamId was omitted
+    expect(
+      await screen.findByTestId('media-library-image-img-0')
+    ).toBeInTheDocument()
+  })
+
+  it('should call onForbidden and suppress the error when the team query is rejected with FORBIDDEN', async () => {
+    const onForbidden = vi.fn()
+    const forbiddenMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }
+      },
+      result: {
+        errors: [
+          new GraphQLError('Not a member of this team', {
+            extensions: { code: 'FORBIDDEN' }
+          })
+        ]
+      }
+    }
+    render(
+      <MockedProvider mocks={[forbiddenMock]}>
+        <MediaLibrary
+          title="Uploads"
+          onSelect={vi.fn()}
+          isAi={false}
+          teamId="team-1"
+          onForbidden={onForbidden}
+        />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(onForbidden).toHaveBeenCalledTimes(1))
+    expect(
+      screen.queryByText('Could not load your images.')
+    ).not.toBeInTheDocument()
   })
 })

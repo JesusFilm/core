@@ -22,4 +22,5 @@ export interface GetMyCloudflareImagesVariables {
   offset?: number | null;
   limit?: number | null;
   isAi?: boolean | null;
+  teamId?: string | null;
 }

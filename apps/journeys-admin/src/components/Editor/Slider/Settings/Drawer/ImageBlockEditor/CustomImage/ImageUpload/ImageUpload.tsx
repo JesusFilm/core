@@ -8,6 +8,7 @@ import fetch from 'node-fetch'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import { ErrorCode, FileRejection, useDropzone } from 'react-dropzone'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
 import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
@@ -42,6 +43,7 @@ export function ImageUpload({
 }: ImageUploadProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { cache } = useApolloClient()
+  const { journey } = useJourney()
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
   const [errorCode, setErrorCode] = useState<ErrorCode>()
@@ -78,7 +80,9 @@ export function ImageUpload({
       })
       return
     }
-    const { data } = await createCloudflareUploadByFile({})
+    const { data } = await createCloudflareUploadByFile({
+      variables: { journeyId: journey?.id }
+    })
     setUploading?.(true)
     setSuccess(undefined)
     setErrorCode(undefined)

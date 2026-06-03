@@ -4,6 +4,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
@@ -41,6 +42,7 @@ export function AIGallery({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { mediaLibrary } = useFlags()
+  const { activeTeam, refetch } = useTeam()
   const { cache } = useApolloClient()
   const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
   const [galleryKey, setGalleryKey] = useState(0)
@@ -117,6 +119,8 @@ export function AIGallery({
           onSelect={onChange}
           isAi={true}
           uploading={loading}
+          teamId={activeTeam?.id ?? null}
+          onForbidden={refetch}
         />
       )}
     </Box>
