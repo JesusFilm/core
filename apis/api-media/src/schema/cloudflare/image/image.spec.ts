@@ -630,6 +630,59 @@ describe('cloudflareImage', () => {
           { imageId: 'id' }
         )
       })
+
+      const CREATE_BY_URL_WITH_JOURNEY_MUTATION = graphql(`
+        mutation createCloudflareUploadByUrlWithJourney(
+          $url: String!
+          $journeyId: ID
+        ) {
+          createCloudflareUploadByUrl(url: $url, journeyId: $journeyId) {
+            id
+          }
+        }
+      `)
+
+      it('should persist teamId from the journey when journeyId is provided', async () => {
+        mockCreateImageFromUrl.mockResolvedValue({ id: 'id' })
+        journeysPrismaMock.journey.findUnique.mockResolvedValue({
+          teamId: 'teamId'
+        } as never)
+        journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
+          id: 'userTeamId'
+        } as never)
+        prismaMock.cloudflareImage.create.mockResolvedValue({
+          id: 'id'
+        } as unknown as CloudflareImage)
+
+        await authClient({
+          document: CREATE_BY_URL_WITH_JOURNEY_MUTATION,
+          variables: { url: 'testUrl', journeyId: 'journeyId' }
+        })
+
+        expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: 'teamId' })
+          })
+        )
+      })
+
+      it('should not create a row when caller lacks access to the journey team', async () => {
+        journeysPrismaMock.journey.findUnique.mockResolvedValue({
+          teamId: 'teamId'
+        } as never)
+        journeysPrismaMock.userTeam.findUnique.mockResolvedValue(null)
+
+        const result = (await authClient({
+          document: CREATE_BY_URL_WITH_JOURNEY_MUTATION,
+          variables: { url: 'testUrl', journeyId: 'journeyId' }
+        })) as {
+          data: unknown
+          errors?: { extensions?: { code?: string } }[]
+        }
+
+        expect(result.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+        expect(prismaMock.cloudflareImage.create).not.toHaveBeenCalled()
+      })
     })
 
     describe('createCloudflareImageFromPrompt', () => {

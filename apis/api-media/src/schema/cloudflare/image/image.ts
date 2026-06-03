@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import { Prisma, prisma } from '@core/prisma/media/client'
 
 import {
@@ -208,16 +210,17 @@ builder.mutationFields((t) => ({
         input: t.arg({ type: ImageInput, required: false }),
         journeyId: t.arg.id({ required: false })
       },
-      resolve: async (
-        query,
-        _root,
-        { url, input, journeyId },
-        { user }: any
-      ) => {
-        const teamId =
-          journeyId != null && user?.id != null
-            ? await resolveAuthorizedTeamId({ journeyId, userId: user.id })
-            : null
+      resolve: async (query, _root, { url, input, journeyId }, context) => {
+        const user = context.type === 'authenticated' ? context.user : undefined
+
+        let teamId: string | null = null
+        if (journeyId != null) {
+          if (user == null)
+            throw new GraphQLError('journeyId requires an authenticated user', {
+              extensions: { code: 'FORBIDDEN' }
+            })
+          teamId = await resolveAuthorizedTeamId({ journeyId, userId: user.id })
+        }
 
         const { id } = await createImageFromUrl(url)
         const image = await prisma.cloudflareImage.create({
