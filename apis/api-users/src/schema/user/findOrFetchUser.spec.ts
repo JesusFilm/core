@@ -323,7 +323,11 @@ describe('findOrFetchUser', () => {
     prismaMock.user.create.mockRejectedValueOnce(
       new Prisma.PrismaClientKnownRequestError(
         'Unique constraint failed on the fields: (`userId`)',
-        { code: 'P2002', clientVersion: 'prismaVersion', meta: { target: ['userId'] } }
+        {
+          code: 'P2002',
+          clientVersion: 'prismaVersion',
+          meta: { target: ['userId'] }
+        }
       )
     )
     prismaMock.user.update.mockResolvedValueOnce(user)
@@ -348,7 +352,11 @@ describe('findOrFetchUser', () => {
     prismaMock.user.create.mockRejectedValueOnce(
       new Prisma.PrismaClientKnownRequestError(
         'Unique constraint failed on the fields: (`email`)',
-        { code: 'P2002', clientVersion: 'prismaVersion', meta: { target: ['email'] } }
+        {
+          code: 'P2002',
+          clientVersion: 'prismaVersion',
+          meta: { target: ['email'] }
+        }
       )
     )
 
