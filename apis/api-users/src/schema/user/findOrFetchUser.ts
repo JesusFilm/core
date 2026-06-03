@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import { Prisma, User, prisma } from '@core/prisma/users/client'
 import {
   type UserRecord,
@@ -95,7 +97,6 @@ export async function findOrFetchUser(
   }
 
   let user: User | null = null
-  let retry = 0
   let userCreated = false
   // this function can run in parallel as such it is possible for multiple
   // calls to reach this point and try to create the same user
@@ -106,15 +107,35 @@ export async function findOrFetchUser(
     })
     userCreated = true
   } catch (e) {
-    do {
-      user = await prisma.user.update({
-        where: {
-          userId
-        },
-        data
+    // The only create failure we can safely recover from is a userId
+    // unique-constraint violation caused by a concurrent call that won the
+    // race and already created this user — update by userId is then valid.
+    // A P2002 on email means a *different* user already owns this email, so
+    // updating by userId would target a non-existent row (P2025); surface a
+    // meaningful error instead. Anything else is unexpected and rethrown.
+    if (
+      !(e instanceof Prisma.PrismaClientKnownRequestError) ||
+      e.code !== 'P2002'
+    )
+      throw e
+
+    const target = e.meta?.target
+    const fields = Array.isArray(target) ? target : [target]
+    if (
+      fields.some(
+        (field) => typeof field === 'string' && field.includes('email')
+      )
+    )
+      throw new GraphQLError('Email already in use', {
+        extensions: { code: 'BAD_USER_INPUT' }
       })
-      retry++
-    } while (user == null && retry < 3)
+
+    user = await prisma.user.update({
+      where: {
+        userId
+      },
+      data
+    })
   }
   // after user create so it is only sent once
   if (email != null && userCreated && !emailVerified)

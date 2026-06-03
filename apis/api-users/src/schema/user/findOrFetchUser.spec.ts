@@ -1,5 +1,6 @@
 import { Mock, vi } from 'vitest'
 
+import { Prisma } from '@core/prisma/users/client'
 import { auth } from '@core/yoga/firebaseClient'
 
 import { prismaMock } from '../../../test/prismaMock'
@@ -315,6 +316,61 @@ describe('findOrFetchUser', () => {
       undefined,
       'JesusFilmOne'
     )
+  })
+
+  it('should update by userId when create loses the concurrent create race', async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.create.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError(
+        'Unique constraint failed on the fields: (`userId`)',
+        { code: 'P2002', clientVersion: 'prismaVersion', meta: { target: ['userId'] } }
+      )
+    )
+    prismaMock.user.update.mockResolvedValueOnce(user)
+
+    const data = await findOrFetchUser({}, 'userId', undefined)
+    expect(data).toEqual(user)
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
+      where: { userId: 'userId' },
+      data: {
+        email: 'amin@email.com',
+        emailVerified: false,
+        firstName: 'Amin',
+        imageUrl: 'https://bit.ly/3Gth4',
+        lastName: 'One',
+        userId: 'userId'
+      }
+    })
+  })
+
+  it('should throw "Email already in use" when create fails on the email unique constraint', async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.create.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError(
+        'Unique constraint failed on the fields: (`email`)',
+        { code: 'P2002', clientVersion: 'prismaVersion', meta: { target: ['email'] } }
+      )
+    )
+
+    await expect(findOrFetchUser({}, 'userId', undefined)).rejects.toThrow(
+      'Email already in use'
+    )
+    expect(prismaMock.user.update).not.toHaveBeenCalled()
+  })
+
+  it('should rethrow unexpected create errors without attempting an update', async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.create.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError('Connection lost', {
+        code: 'P1001',
+        clientVersion: 'prismaVersion'
+      })
+    )
+
+    await expect(findOrFetchUser({}, 'userId', undefined)).rejects.toThrow(
+      'Connection lost'
+    )
+    expect(prismaMock.user.update).not.toHaveBeenCalled()
   })
 
   it('should pass app type when provided', async () => {
