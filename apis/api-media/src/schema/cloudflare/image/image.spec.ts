@@ -758,7 +758,10 @@ describe('cloudflareImage', () => {
           $prompt: String!
           $journeyId: ID
         ) {
-          createCloudflareImageFromPrompt(prompt: $prompt, journeyId: $journeyId) {
+          createCloudflareImageFromPrompt(
+            prompt: $prompt
+            journeyId: $journeyId
+          ) {
             id
           }
         }
