@@ -3,10 +3,10 @@ import { GraphQLError } from 'graphql'
 import { EmbedNormalizerSpec } from './types'
 
 // Google Slides has no oEmbed and no API to resolve an arbitrary URL into an
-// embeddable one, so this is positive-acceptance shape validation only: the URL
-// must be a presentation that has been "Published to web", which is the only
-// shape that renders in an iframe. We never rewrite — the published URL is
-// stored verbatim.
+// embeddable one, so this is positive-acceptance shape validation: the URL must
+// be a presentation that has been "Published to web", the only shape that
+// renders in an iframe. The single rewrite we perform is `/pub` → `/embed`
+// (see below) because the published "Link" URL is X-Frame-Options blocked.
 
 async function normalize(url: string): Promise<{ embedUrl: string }> {
   let parsed: URL
@@ -57,6 +57,19 @@ async function normalize(url: string): Promise<{ embedUrl: string }> {
         }
       }
     )
+  }
+
+  // The published "Link" URL ends in `/pub` (or `/pubhtml`), but that page is
+  // served with `X-Frame-Options: SAMEORIGIN`, so the browser refuses to render
+  // it in our cross-origin iframe. The sibling `/embed` page carries no such
+  // header. Rewrite the trailing segment so a user can paste the more-prominent
+  // "Publish to web → Link" URL and still get an embeddable result; a URL that
+  // already ends in `/embed` passes through unchanged. Query params (start /
+  // loop / delayms) are preserved by URL serialization.
+  if (lastSegment === 'pub' || lastSegment === 'pubhtml') {
+    segments[segments.length - 1] = 'embed'
+    parsed.pathname = `/${segments.join('/')}`
+    return { embedUrl: parsed.toString() }
   }
 
   return { embedUrl: url }
