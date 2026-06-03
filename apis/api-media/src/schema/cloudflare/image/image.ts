@@ -1,10 +1,8 @@
-import { GraphQLError } from 'graphql'
-
 import { Prisma, prisma } from '@core/prisma/media/client'
 
 import {
   assertTeamMembership,
-  resolveAuthorizedTeamId
+  maybeResolveTeamId
 } from '../../../lib/journeysAccess/journeysAccess'
 import { jobName as processImageBlurhashJobName } from '../../../workers/processImageBlurhash/config'
 import { queue as processImageBlurhashQueue } from '../../../workers/processImageBlurhash/queue'
@@ -179,10 +177,7 @@ builder.mutationFields((t) => ({
         journeyId: t.arg.id({ required: false })
       },
       resolve: async (query, _root, { input, journeyId }, { user }) => {
-        const teamId =
-          journeyId != null
-            ? await resolveAuthorizedTeamId({ journeyId, userId: user.id })
-            : null
+        const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
 
         const { id, uploadURL } = await createImageByDirectUpload()
 
@@ -213,14 +208,10 @@ builder.mutationFields((t) => ({
       resolve: async (query, _root, { url, input, journeyId }, context) => {
         const user = context.type === 'authenticated' ? context.user : undefined
 
-        let teamId: string | null = null
-        if (journeyId != null) {
-          if (user == null)
-            throw new GraphQLError('journeyId requires an authenticated user', {
-              extensions: { code: 'FORBIDDEN' }
-            })
-          teamId = await resolveAuthorizedTeamId({ journeyId, userId: user.id })
-        }
+        const teamId = await maybeResolveTeamId({
+          journeyId,
+          userId: user?.id
+        })
 
         const { id } = await createImageFromUrl(url)
         const image = await prisma.cloudflareImage.create({
@@ -254,10 +245,7 @@ builder.mutationFields((t) => ({
         journeyId: t.arg.id({ required: false })
       },
       resolve: async (query, _root, { prompt, input, journeyId }, { user }) => {
-        const teamId =
-          journeyId != null
-            ? await resolveAuthorizedTeamId({ journeyId, userId: user.id })
-            : null
+        const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
 
         const image = await createImageFromResponse(
           await createImageFromText(prompt)

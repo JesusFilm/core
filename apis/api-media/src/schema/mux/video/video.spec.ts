@@ -727,10 +727,8 @@ describe('mux/video', () => {
           roles: ['publisher']
         })
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
-          teamId: 'teamId'
-        } as never)
-        journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
-          id: 'userTeamId'
+          teamId: 'teamId',
+          team: { userTeams: [{ id: 'userTeamId' }] }
         } as never)
         ;(prismaMock.muxVideo.create as Mock).mockResolvedValue({
           id: 'videoId'
@@ -755,9 +753,9 @@ describe('mux/video', () => {
           roles: ['publisher']
         })
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
-          teamId: 'teamId'
+          teamId: 'teamId',
+          team: { userTeams: [] }
         } as never)
-        journeysPrismaMock.userTeam.findUnique.mockResolvedValue(null)
 
         const result = (await authClient({
           document: CREATE_BY_FILE_WITH_JOURNEY,

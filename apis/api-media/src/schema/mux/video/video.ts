@@ -4,7 +4,7 @@ import { Prisma, prisma } from '@core/prisma/media/client'
 
 import {
   assertTeamMembership,
-  resolveAuthorizedTeamId
+  maybeResolveTeamId
 } from '../../../lib/journeysAccess/journeysAccess'
 import { queue as processVideoDownloadsQueue } from '../../../workers/processVideoDownloads/queue'
 import { jobName as processVideoUploadsJobName } from '../../../workers/processVideoUploads/config'
@@ -390,10 +390,7 @@ builder.mutationFields((t) => ({
             extensions: { code: 'NOT_FOUND' }
           })
 
-        const teamId =
-          journeyId != null
-            ? await resolveAuthorizedTeamId({ journeyId, userId: user.id })
-            : null
+        const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
 
         const isUserGenerated = !currentRoles.includes('publisher')
           ? true
@@ -455,10 +452,7 @@ builder.mutationFields((t) => ({
           extensions: { code: 'NOT_FOUND' }
         })
 
-      const teamId =
-        journeyId != null
-          ? await resolveAuthorizedTeamId({ journeyId, userId: user.id })
-          : null
+      const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
 
       const isUserGenerated = !currentRoles.includes('publisher')
         ? true

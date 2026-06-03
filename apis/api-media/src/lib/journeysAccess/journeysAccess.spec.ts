@@ -2,7 +2,11 @@ import { GraphQLError } from 'graphql'
 
 import { journeysPrismaMock } from '../../../test/journeysPrismaMock'
 
-import { assertTeamMembership, resolveAuthorizedTeamId } from './journeysAccess'
+import {
+  assertTeamMembership,
+  maybeResolveTeamId,
+  resolveAuthorizedTeamId
+} from './journeysAccess'
 
 describe('journeysAccess', () => {
   describe('assertTeamMembership', () => {
@@ -36,10 +40,8 @@ describe('journeysAccess', () => {
   describe('resolveAuthorizedTeamId', () => {
     it('should return the journey teamId when the user is a member', async () => {
       journeysPrismaMock.journey.findUnique.mockResolvedValue({
-        teamId: 'teamId'
-      } as never)
-      journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
-        id: 'userTeamId'
+        teamId: 'teamId',
+        team: { userTeams: [{ id: 'userTeamId' }] }
       } as never)
 
       const teamId = await resolveAuthorizedTeamId({
@@ -50,7 +52,14 @@ describe('journeysAccess', () => {
       expect(teamId).toBe('teamId')
       expect(journeysPrismaMock.journey.findUnique).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
-        select: { teamId: true }
+        select: {
+          teamId: true,
+          team: {
+            select: {
+              userTeams: { where: { userId: 'userId' }, select: { id: true } }
+            }
+          }
+        }
       })
     })
 
@@ -68,9 +77,9 @@ describe('journeysAccess', () => {
 
     it('should throw FORBIDDEN when the user is not a member of the journey team', async () => {
       journeysPrismaMock.journey.findUnique.mockResolvedValue({
-        teamId: 'teamId'
+        teamId: 'teamId',
+        team: { userTeams: [] }
       } as never)
-      journeysPrismaMock.userTeam.findUnique.mockResolvedValue(null)
 
       await expect(
         resolveAuthorizedTeamId({ journeyId: 'journeyId', userId: 'userId' })
@@ -79,6 +88,40 @@ describe('journeysAccess', () => {
           extensions: { code: 'FORBIDDEN' }
         })
       )
+    })
+  })
+
+  describe('maybeResolveTeamId', () => {
+    it('should return null when no journeyId is provided', async () => {
+      const teamId = await maybeResolveTeamId({ userId: 'userId' })
+
+      expect(teamId).toBeNull()
+      expect(journeysPrismaMock.journey.findUnique).not.toHaveBeenCalled()
+    })
+
+    it('should throw FORBIDDEN when journeyId is provided without a user', async () => {
+      await expect(
+        maybeResolveTeamId({ journeyId: 'journeyId', userId: null })
+      ).rejects.toThrow(
+        new GraphQLError('journeyId requires an authenticated user', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      )
+      expect(journeysPrismaMock.journey.findUnique).not.toHaveBeenCalled()
+    })
+
+    it('should resolve the authorized teamId when both journeyId and user are provided', async () => {
+      journeysPrismaMock.journey.findUnique.mockResolvedValue({
+        teamId: 'teamId',
+        team: { userTeams: [{ id: 'userTeamId' }] }
+      } as never)
+
+      const teamId = await maybeResolveTeamId({
+        journeyId: 'journeyId',
+        userId: 'userId'
+      })
+
+      expect(teamId).toBe('teamId')
     })
   })
 })

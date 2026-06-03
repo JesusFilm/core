@@ -520,10 +520,8 @@ describe('cloudflareImage', () => {
           uploadURL: 'testUrl'
         })
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
-          teamId: 'teamId'
-        } as never)
-        journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
-          id: 'userTeamId'
+          teamId: 'teamId',
+          team: { userTeams: [{ id: 'userTeamId' }] }
         } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
@@ -543,9 +541,9 @@ describe('cloudflareImage', () => {
 
       it('should not create a row when caller lacks access to the journey team', async () => {
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
-          teamId: 'teamId'
+          teamId: 'teamId',
+          team: { userTeams: [] }
         } as never)
-        journeysPrismaMock.userTeam.findUnique.mockResolvedValue(null)
 
         const result = (await authClient({
           document: CREATE_BY_FILE_WITH_JOURNEY_MUTATION,
@@ -645,10 +643,8 @@ describe('cloudflareImage', () => {
       it('should persist teamId from the journey when journeyId is provided', async () => {
         mockCreateImageFromUrl.mockResolvedValue({ id: 'id' })
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
-          teamId: 'teamId'
-        } as never)
-        journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
-          id: 'userTeamId'
+          teamId: 'teamId',
+          team: { userTeams: [{ id: 'userTeamId' }] }
         } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
@@ -668,9 +664,9 @@ describe('cloudflareImage', () => {
 
       it('should not create a row when caller lacks access to the journey team', async () => {
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
-          teamId: 'teamId'
+          teamId: 'teamId',
+          team: { userTeams: [] }
         } as never)
-        journeysPrismaMock.userTeam.findUnique.mockResolvedValue(null)
 
         const result = (await authClient({
           document: CREATE_BY_URL_WITH_JOURNEY_MUTATION,
