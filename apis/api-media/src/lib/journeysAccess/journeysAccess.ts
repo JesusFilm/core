@@ -41,7 +41,9 @@ export async function resolveAuthorizedTeamId({
     where: { id: journeyId },
     select: {
       teamId: true,
-      team: { select: { userTeams: { where: { userId }, select: { id: true } } } }
+      team: {
+        select: { userTeams: { where: { userId }, select: { id: true } } }
+      }
     }
   })
 
