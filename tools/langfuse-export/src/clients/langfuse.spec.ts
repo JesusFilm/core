@@ -46,11 +46,7 @@ describe('mapTrace', () => {
     ).toBeNull()
   })
 
-  // NES-1577 follow-up: production traces have been observed carrying
-  // `journeyId` as a number rather than the string the chat zod schema
-  // declares. Surface coerced values so the export attributes the trace
-  // instead of silently dropping the field.
-  it('coerces a numeric journeyId to a string so non-string types surface', () => {
+  it('coerces a numeric metadata value to its string form so non-string types surface', () => {
     const result = mapTrace({
       id: 't',
       metadata: { journeyId: 1, ipCountry: 'NZ', language: 'en' },
@@ -60,7 +56,7 @@ describe('mapTrace', () => {
     expect(result.ipCountry).toBe('NZ')
   })
 
-  it('drops NaN/Infinity rather than rendering "NaN" as a journey id', () => {
+  it('drops NaN and Infinity so a non-finite number cannot become "NaN" in the report', () => {
     const result = mapTrace({
       id: 't',
       metadata: { journeyId: Number.NaN },
