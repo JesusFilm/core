@@ -81,4 +81,55 @@ describe('canvaSpec.normalize', () => {
       extensions: { reason: 'CANVA_UNAVAILABLE' }
     })
   })
+
+  describe('canva.link share links', () => {
+    const SHARE_LINK = 'https://canva.link/0fi14tc9momlpe8'
+    const RESOLVED = 'https://www.canva.com/design/DAF123/abc/view'
+
+    it('resolves the redirect, then returns the oEmbed src', async () => {
+      fetchMock
+        // 1) redirect resolution: response.url is the canonical design URL
+        .mockResolvedValueOnce({ url: RESOLVED })
+        // 2) oEmbed on the resolved URL
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({
+            html: `<iframe src="${RESOLVED}?embed"></iframe>`
+          })
+        })
+
+      await expect(canvaSpec.normalize(SHARE_LINK)).resolves.toEqual({
+        embedUrl: `${RESOLVED}?embed`
+      })
+    })
+
+    it('falls back to /view?embed on the resolved URL when oEmbed fails', async () => {
+      fetchMock
+        .mockResolvedValueOnce({ url: RESOLVED })
+        .mockResolvedValueOnce({ ok: false, status: 503 })
+
+      await expect(canvaSpec.normalize(SHARE_LINK)).resolves.toEqual({
+        embedUrl: 'https://www.canva.com/design/DAF123/abc/view?embed'
+      })
+    })
+
+    it('fails closed when the share link resolves to a non-canva host', async () => {
+      fetchMock.mockResolvedValueOnce({ url: 'https://evil.example.com/x' })
+
+      await expect(canvaSpec.normalize(SHARE_LINK)).rejects.toMatchObject({
+        extensions: { reason: 'CANVA_UNAVAILABLE' }
+      })
+      // oEmbed must never be reached for a bad resolution
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('fails closed when the redirect resolution fetch fails', async () => {
+      fetchMock.mockRejectedValueOnce(new Error('network'))
+
+      await expect(canvaSpec.normalize(SHARE_LINK)).rejects.toMatchObject({
+        extensions: { reason: 'CANVA_UNAVAILABLE' }
+      })
+    })
+  })
 })

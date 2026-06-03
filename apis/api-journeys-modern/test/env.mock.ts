@@ -43,6 +43,7 @@ export const env = {
     return new Set([
       'canva.com',
       'www.canva.com',
+      'canva.link',
       'youtube.com',
       'www.youtube.com',
       'm.youtube.com',
