@@ -73,16 +73,15 @@ Implementation against the 2026-04-28 pivot landed in PR #9102. Production state
 
 **Image picker (`ImageBlockEditor`):**
 
-- "Your uploads" grid in Custom tab.
-- "Your generations" grid in AI tab.
+- Grid titled **"Uploads"** in Custom tab, **"Generations"** in AI tab. (Implementation note: shipped as a single shared `MediaLibrary` component reused across both tabs, differentiated by an `isAi` prop — not two separate `MyCloudflareImagesGrid` components as earlier drafts of this plan assumed. The grid title wording also landed as "Uploads"/"Generations" rather than the "Your uploads"/"Your generations" of the original draft.)
 - Backed by existing `getMyCloudflareImages(offset, limit, isAi): [CloudflareImage!]!` — additive `isAi` arg only, no schema-breaking change.
-- New nullable `CloudflareImage.isAi` column populated by upload/URL/AI mutations. Existing 38k rows stay NULL and are excluded from both grids (no backfill — accepted limitation).
+- New nullable `CloudflareImage.isAi` column populated by upload/URL/AI mutations. Existing 38k rows stay NULL and are excluded from both grids (no backfill — accepted limitation). Indexed by `@@index([userId, isAi, createdAt(sort: Desc)])`.
 - Frontend: offset/limit pagination with `length >= PAGE_SIZE` heuristic for "Load More". `offsetLimitPagination(['isAi'])` cache config.
 
 **Video picker (`VideoFromMux`):**
 
-- "Your uploads" grid below the Mux upload form.
-- Backed by existing `getMyMuxVideos(offset, limit): [MuxVideo!]!` — no schema change. Resolver only added a deterministic `orderBy { createdAt: 'desc' }` (correctness for offset pagination, not a UI preference).
+- `MyMuxVideos` grid below the Mux upload form (`AddByFile`).
+- Backed by existing `getMyMuxVideos(offset, limit): [MuxVideo!]!` — no schema change. Resolver added a deterministic `orderBy { createdAt: 'desc' }` (correctness for offset pagination, not a UI preference) and filters to ready, playable rows only (`readyToStream: true, playbackId: { not: null }`). A `duration` field was added to the `GetMyMuxVideos` selection and threaded through so the gallery preview doesn't refetch it.
 - Click-a-tile opens existing `VideoDetails` + `MuxDetails` with a Select button. Gallery flow reuses the same preview infrastructure as the active-block flow; `playbackId` is threaded through to avoid a redundant fetch. `MuxDetails.dispose()` fix shipped alongside.
 - `MuxVideoUploadProvider` refetches `GetMyMuxVideos` after polling completes so freshly-ready uploads surface in the gallery.
 - `VideoLibrary.onSelect` now closes the outer drawer when `shouldCloseDrawer` is true so picking the same video as the active block still navigates back to Properties.
@@ -98,14 +97,14 @@ v1 is currently merged but not yet generally available. Before going live we gat
 - **Flag name:** `mediaLibrary` (already provisioned in LaunchDarkly; serves `true` when on).
 - **Access pattern:** `const { mediaLibrary } = useFlags()` from `@core/shared/ui/FlagsProvider` — the same pattern used by `editorAnalytics` in `apps/journeys-admin/src/components/Editor/Toolbar/Toolbar.tsx:92` and similar editor flags.
 - **Surfaces to gate:**
-  - `MyCloudflareImagesGrid` mount in the Custom tab (`CustomImage.tsx`) — render only when `mediaLibrary` is true.
-  - `MyCloudflareImagesGrid` mount in the AI tab (`AIGallery.tsx`) — same.
-  - `MyMuxVideosGrid` mount in `VideoFromMux.tsx` — same.
+  - `MediaLibrary` mount in the Custom tab (`CustomImage.tsx`, `isAi={false}`) — render only when `mediaLibrary` is true.
+  - `MediaLibrary` mount in the AI tab (`AIGallery.tsx`, `isAi`) — same.
+  - `MyMuxVideos` mount in `VideoFromMux.tsx` — same.
 - **What is NOT gated:**
   - The `isAi` column on `CloudflareImage` and the `isAi` value written by upload/URL/AI mutations. These are additive, schema-only, and harmless when the UI is off — leaving them on means cohorts who flip the flag on later already have populated history.
   - The deterministic `orderBy` on `getMyMuxVideos`. Pure correctness improvement, no behavior change for existing list consumers.
   - Resolver argument changes (`isAi`, future `teamId`). Optional args; off-by-default.
-- **Default behavior with flag off:** the editor pickers behave exactly as they did pre-PR-#9102 — no "Your uploads" / "Your generations" grids, no behavior change in upload, AI, or Mux flows.
+- **Default behavior with flag off:** the editor pickers behave exactly as they did pre-PR-#9102 — no "Uploads" / "Generations" grids, no behavior change in upload, AI, or Mux flows.
 - **Rollout steps:**
   1. Wrap the three grid mount points in `mediaLibrary && (...)`.
   2. Verify with the flag off: existing pickers unchanged.
