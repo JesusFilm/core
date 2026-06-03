@@ -136,6 +136,7 @@
     "@types/mailchimp__mailchimp_marketing": "^3.0.19",
     "@types/node-fetch": "^2.6.13",
     "@upstash/redis": "^1.35.3",
+    "@vercel/functions": "^3.0.0",
     "@xyflow/react": "^12.4.4",
     "adal-node": "^0.2.3",
     "ai": "^6.0.116",

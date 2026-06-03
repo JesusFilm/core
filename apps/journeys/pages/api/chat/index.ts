@@ -1,6 +1,7 @@
 import { google } from '@ai-sdk/google'
 import { openai } from '@ai-sdk/openai'
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
+import { waitUntil } from '@vercel/functions'
 import {
   type LanguageModel,
   UIMessage,
@@ -169,6 +170,26 @@ function resolveChatModel():
   }
 }
 
+/**
+ * Schedule a Langfuse batch flush that survives Vercel's serverless freeze
+ * (NES-1616, prior art NES-801 / PR #7920).
+ *
+ * On Vercel the function instance is frozen the moment the response stream
+ * closes. Calling `await langfuse.flushAsync()` from inside `streamText`'s
+ * `onError` / `onFinish` races that freeze — the in-memory batch is shipped on
+ * the *next* invocation, which is why "first message in a session never
+ * traces" until a second message arrives.
+ *
+ * `waitUntil()` registers the flush promise with the Vercel runtime so the
+ * function lifetime is extended until the flush resolves. Off-Vercel (local
+ * dev, tests) `@vercel/functions` falls back to a transparent no-op while the
+ * promise still runs, so the symbol is safe to call unconditionally.
+ */
+function scheduleLangfuseFlush(langfuse: Langfuse | null): void {
+  if (langfuse == null) return
+  waitUntil(langfuse.flushAsync())
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -310,7 +331,7 @@ export default async function handler(
       system,
       messages: modelMessages,
       maxOutputTokens: MAX_OUTPUT_TOKENS,
-      onError: async ({ error }) => {
+      onError: ({ error }) => {
         const err = error as Error
         logger.error(
           {
@@ -328,9 +349,9 @@ export default async function handler(
           level: 'ERROR',
           statusMessage: err?.message ?? 'stream error'
         })
-        await langfuse?.flushAsync()
+        scheduleLangfuseFlush(langfuse)
       },
-      onFinish: async ({ text, usage, finishReason }) => {
+      onFinish: ({ text, usage, finishReason }) => {
         if (finishReason === 'error') {
           endGenerationIfPending({
             level: 'ERROR',
@@ -373,7 +394,7 @@ export default async function handler(
             '[chat] completed'
           )
         }
-        await langfuse?.flushAsync()
+        scheduleLangfuseFlush(langfuse)
       }
     })
 
@@ -412,12 +433,13 @@ export default async function handler(
     )
     // Sync throws happen before the LLM call, but the trace + generation
     // were already created above — close the lifecycle so Langfuse
-    // doesn't carry a dangling unfinished span.
+    // doesn't carry a dangling unfinished span. waitUntil keeps the flush
+    // alive past the response without blocking the 500 to the client.
     endGenerationIfPending({
       level: 'ERROR',
       statusMessage: err?.message ?? 'sync throw'
     })
-    await langfuse?.flushAsync()
+    scheduleLangfuseFlush(langfuse)
     if (!res.headersSent) {
       res.status(500).json({ error: 'upstream streamText failed' })
     } else {

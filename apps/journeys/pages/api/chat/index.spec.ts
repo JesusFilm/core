@@ -1,4 +1,5 @@
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
+import { waitUntil } from '@vercel/functions'
 import { convertToModelMessages, streamText } from 'ai'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { type Mock, type MockedFunction } from 'vitest'
@@ -27,6 +28,13 @@ vi.mock('@ai-sdk/openai-compatible', () => ({
   createOpenAICompatible: vi.fn(() => ({
     chatModel: vi.fn(() => ({ id: 'compat' }))
   }))
+}))
+// NES-1616: the handler defers Langfuse's batch flush to `waitUntil` so the
+// flush survives Vercel's serverless freeze. Mocking it lets us assert that
+// the lifecycle pattern stays intact and lets the flushAsync promise resolve
+// inside the test runtime.
+vi.mock('@vercel/functions', () => ({
+  waitUntil: vi.fn()
 }))
 vi.mock('ai', () => ({
   convertToModelMessages: vi.fn((messages) => messages),
@@ -59,6 +67,7 @@ const mockCreateOpenAICompatible =
   createOpenAICompatible as unknown as MockedFunction<
     typeof createOpenAICompatible
   >
+const mockWaitUntil = waitUntil as unknown as MockedFunction<typeof waitUntil>
 
 interface CapturedRes {
   res: NextApiResponse
@@ -584,17 +593,25 @@ describe('/api/chat handler', () => {
       expect(mockStreamText).toHaveBeenCalledTimes(1)
       expect(mockPipeStream).toHaveBeenCalledTimes(1)
 
-      await expect(
+      // Callbacks are sync after NES-1616 (no flush await in their body), so
+      // invoke directly and assert they don't throw rather than using the
+      // `.resolves` promise-modifier pattern.
+      expect(() =>
         lastStreamConfig?.onFinish?.({
           text: 'reply',
           usage: { inputTokens: 1, outputTokens: 2 },
           finishReason: 'stop'
         })
-      ).resolves.not.toThrow()
+      ).not.toThrow()
 
-      await expect(
+      expect(() =>
         lastStreamConfig?.onError?.({ error: new Error('mid-stream') })
-      ).resolves.not.toThrow()
+      ).not.toThrow()
+
+      // Critical: with no langfuse, the handler must not schedule a
+      // background flush. Bare `waitUntil(undefined)` would be a contract
+      // violation, and a wasted Vercel lifetime extension.
+      expect(mockWaitUntil).not.toHaveBeenCalled()
     })
 
     it('ends the generation with output + usage on a successful onFinish', async () => {
@@ -755,6 +772,54 @@ describe('/api/chat handler', () => {
         expect.objectContaining({ event: 'apologist_chat_stream_error' }),
         '[chat] streamText onError'
       )
+    })
+
+    // NES-1616: regression guard. The flush MUST be scheduled via
+    // `waitUntil`, not awaited inline, or Vercel will freeze the function
+    // before the batch ships (the original NES-801 symptom). If a future
+    // refactor moves the flush back to a bare `await langfuse.flushAsync()`
+    // this assertion fails immediately.
+    it('schedules the langfuse flush via waitUntil from onFinish (NES-1616 regression)', async () => {
+      const fake = makeFakeLangfuse()
+      mockGetLangfuse.mockReturnValue(fake as never)
+
+      await handler(postReq(), makeRes().res)
+      // waitUntil must not fire until the lifecycle callback runs — the
+      // handler's main body never schedules a flush on its own.
+      expect(mockWaitUntil).not.toHaveBeenCalled()
+
+      await lastStreamConfig?.onFinish?.({
+        text: 'reply',
+        usage: { inputTokens: 1, outputTokens: 2 },
+        finishReason: 'stop'
+      })
+
+      expect(fake.flushAsync).toHaveBeenCalledTimes(1)
+      expect(mockWaitUntil).toHaveBeenCalledTimes(1)
+      // The promise handed to waitUntil is the one returned by flushAsync,
+      // so Vercel waits on the actual batch ship — not on a stale resolved
+      // promise.
+      const flushPromise = fake.flushAsync.mock.results[0].value as Promise<
+        unknown
+      >
+      expect(mockWaitUntil).toHaveBeenCalledWith(flushPromise)
+    })
+
+    it('schedules the langfuse flush via waitUntil from onError (NES-1616 regression)', async () => {
+      const fake = makeFakeLangfuse()
+      mockGetLangfuse.mockReturnValue(fake as never)
+
+      await handler(postReq(), makeRes().res)
+      expect(mockWaitUntil).not.toHaveBeenCalled()
+
+      await lastStreamConfig?.onError?.({ error: new Error('mid-stream') })
+
+      expect(fake.flushAsync).toHaveBeenCalledTimes(1)
+      expect(mockWaitUntil).toHaveBeenCalledTimes(1)
+      const flushPromise = fake.flushAsync.mock.results[0].value as Promise<
+        unknown
+      >
+      expect(mockWaitUntil).toHaveBeenCalledWith(flushPromise)
     })
 
     it('ends the generation exactly once when onError fires before onFinish', async () => {
