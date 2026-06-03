@@ -1,10 +1,9 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
 import { DefaultChatTransport, UIMessage } from 'ai'
 import { useTranslation } from 'next-i18next/pages'
 import {
@@ -29,9 +28,8 @@ import { ChatHeader } from './ChatHeader'
 import {
   HEADER_WASH,
   MUTED_FG,
-  OVERLAY_CLOSE_BG,
-  OVERLAY_CLOSE_BG_HOVER,
   OVERLAY_FG_RETRY,
+  OVERLAY_HERO_FG,
   SHEET_BOTTOM_FADE
 } from './chatStyles'
 import { DragHandle } from './DragHandle'
@@ -71,12 +69,6 @@ interface AiChatProps {
    * are ignored, drag interactions own the state from there.
    */
   initialCollapsed?: boolean
-  /**
-   * Optional close action for parent-owned overlay chrome. Rendered as a
-   * sibling of the floating input so it stays discoverable without covering
-   * typed text.
-   */
-  onClose?: () => void
 }
 
 export type AiChatSheetState = 'idle' | 'active' | 'collapsed'
@@ -230,8 +222,7 @@ export function AiChat({
   collapsible = true,
   variant = 'panel',
   onSheetStateChange,
-  initialCollapsed = false,
-  onClose
+  initialCollapsed = false
 }: AiChatProps): ReactElement {
   const isOverlay = variant === 'overlay'
   const isPanel = !isOverlay
@@ -386,7 +377,41 @@ export function AiChat({
 
   const showDragHandle = isPanel && collapsible
   const showHeader = isPanel
-  const showOverlayClose = isOverlay && onClose != null
+  // Empty-state hero is overlay-only: gives the user a clear "this is
+  // the chat" signal when the overlay auto-opens with no messages yet
+  // (NES-1654). Hidden once a message exists, is being sent, or there's
+  // an error so it doesn't compete with conversation content.
+  const showOverlayHero =
+    isOverlay && messages.length === 0 && !isLoading && error == null
+
+  // The wave animation is a one-shot intro — it plays the first time the
+  // hero ever mounts in this AiChat instance, then stays silent. Without
+  // this gate, `handleStartNewConversation` (cap-hit reset) would re-fire
+  // the wave on every reset because `setMessages([])` + `clearError()`
+  // flips `showOverlayHero` false → true and the inner spans re-mount.
+  // Reads as deliberate ("welcome") instead of busy ("attention").
+  const heroAnimatedRef = useRef(false)
+  const shouldAnimateHero = showOverlayHero && !heroAnimatedRef.current
+  useEffect(() => {
+    if (showOverlayHero) heroAnimatedRef.current = true
+  }, [showOverlayHero])
+
+  // Whole-word stagger preserves script behaviour that per-character
+  // splitting would break — Arabic contextual shaping (initial/medial/
+  // final letterforms + ligatures) and combining marks on Devanagari /
+  // Bengali / Thai / Burmese / Urdu / Nepali (translations for all of
+  // these exist in libs/locales/<bcp47>/libs-journeys-ui.json). Each
+  // word stays in a single text run, so the renderer sees neighbouring
+  // characters and shapes correctly. For whitespace-less scripts (Thai,
+  // Burmese, CJK) the split returns a single chunk and the whole
+  // greeting wave-lifts as one unit — still on-tone.
+  const heroWords = useMemo(
+    () =>
+      t('Ask me anything')
+        .split(/\s+/)
+        .filter((w) => w.length > 0),
+    [t]
+  )
   // We keep header/conversation/input mounted in every state and rely on
   // the parent sheet's height transition + overflow:hidden to clip them
   // as the sheet collapses. Hiding via display:none would short-circuit
@@ -418,15 +443,93 @@ export function AiChat({
 
       <Box
         sx={{
+          // `relative` anchors the overlay hero's absolute positioning
+          // to the conversation area rather than the viewport.
+          position: 'relative',
           display: 'flex',
           flex: 1,
           flexDirection: 'column',
           minHeight: 0,
           width: '100%',
           maxWidth: { xs: 'none', sm: '48rem' },
-          mx: 'auto'
+          mx: 'auto',
+          // Overlay-only top inset: pushes the first message *below*
+          // the close button instead of trying to share its y-line.
+          // The earlier horizontal alignment (pt:safe-area+16 → first
+          // message at safe-area+24, same y as the close button) broke
+          // at narrow widths: the conversation column fills full
+          // viewport at xs, message text reaches the right edge, and
+          // overlaps the absolutely-positioned close button (which
+          // stays at right:24, width:32). Vertical stacking with a
+          // small visible gap is the resilient choice (NES-1654 iter).
+          //
+          // Math: close button is top:safe-area+24, height 32 → bottom
+          // edge at safe-area+56. Plus 8px breathing room, plus
+          // Conversation's own pt:1 (8px) inside, the first message
+          // lands at safe-area+72 — 16px clear of the close button at
+          // any viewport width. Panel variant keeps pt:0 because the
+          // ChatHeader + drag handle own the top spacing there.
+          pt: isOverlay ? 'calc(env(safe-area-inset-top) + 64px)' : 0
         }}
       >
+        {showOverlayHero && (
+          <Box
+            aria-hidden
+            data-testid="overlay-hero"
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              px: 4,
+              pointerEvents: 'none',
+              // One-shot wave animation on mount: each word lifts 8px
+              // then settles, staggered left-to-right. Draws the eye to
+              // the hero when the chat opens, then stays out of the
+              // way. The base (0%/100%) is translateY(0) so each word's
+              // resting state is its natural position — no fill-mode
+              // needed.
+              '@keyframes aiChatHeroWave': {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-8px)' }
+              }
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: { xs: 22, sm: 26, md: 28 },
+                fontWeight: 500,
+                color: OVERLAY_HERO_FG,
+                textAlign: 'center',
+                lineHeight: 1.3
+              }}
+            >
+              {heroWords.map((word, i) => (
+                <Box
+                  key={`${i}-${word}`}
+                  component="span"
+                  sx={{
+                    display: 'inline-block',
+                    animation: shouldAnimateHero
+                      ? `aiChatHeroWave 700ms ease-in-out ${i * 80}ms 1`
+                      : 'none',
+                    '@media (prefers-reduced-motion: reduce)': {
+                      animation: 'none'
+                    }
+                  }}
+                >
+                  {/* Trailing nbsp keeps the visual gap between word
+                      spans (inline-block strips inter-element
+                      whitespace). The last word gets none so we don't
+                      pad the right edge. */}
+                  {word}
+                  {i < heroWords.length - 1 ? '\u00A0' : null}
+                </Box>
+              ))}
+            </Typography>
+          </Box>
+        )}
         <Conversation
           scrollKey={messages.length}
           // 72px = floating capsule height (44px) + bottom offset (8px) +
@@ -570,27 +673,6 @@ export function AiChat({
             variant={isOverlay ? 'floating' : 'inline'}
           />
         </Box>
-        {showOverlayClose && (
-          <IconButton
-            onClick={onClose}
-            aria-label={t('Close chat')}
-            disableRipple
-            sx={{
-              width: 32,
-              height: 32,
-              flexShrink: 0,
-              p: 0,
-              color: 'common.white',
-              bgcolor: OVERLAY_CLOSE_BG,
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: 'none',
-              backgroundClip: 'padding-box',
-              '&:hover': { bgcolor: OVERLAY_CLOSE_BG_HOVER }
-            }}
-          >
-            <CloseRoundedIcon fontSize="small" />
-          </IconButton>
-        )}
       </Box>
     </Box>
   )

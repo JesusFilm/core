@@ -54,19 +54,16 @@ export async function service(
     case 'JesusFilmOne':
       from = '"Jesus Film Project" <no-reply@jesusfilm.org>'
       subject = 'Verify your email address with the Jesus Film Project'
-      url = `${process.env.JESUS_FILM_PROJECT_VERIFY_URL ?? ''}?token=${job.data.token}&email=${emailAlias ?? job.data.email}`
       html = await render(
         EmailVerifyJesusFilmOne({
           token: job.data.token,
-          recipient,
-          inviteLink: url
+          recipient
         })
       )
       text = await render(
         EmailVerifyJesusFilmOne({
           token: job.data.token,
-          recipient,
-          inviteLink: url
+          recipient
         }),
         { plainText: true }
       )
