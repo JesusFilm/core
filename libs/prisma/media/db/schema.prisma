@@ -35,8 +35,11 @@ model CloudflareImage {
   blurhash            String?
   blurhashAttemptedAt DateTime?
   isAi                Boolean?
+  teamId              String?
 
   @@index([userId, isAi, createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([teamId, createdAt(sort: Desc)])
   @@index([blurhashAttemptedAt])
   @@index([updatedAt, id])
 }
@@ -56,9 +59,11 @@ model MuxVideo {
   updatedAt     DateTime           @default(now()) @updatedAt
   videoVariants VideoVariant[]
   subtitles     MuxSubtitleTrack[]
+  teamId        String?
 
   @@index(userId(type: Hash))
   @@index([userId, createdAt(sort: Desc)])
+  @@index([teamId, createdAt(sort: Desc)])
   @@index(assetId(type: Hash))
 }
 

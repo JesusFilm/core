@@ -1,5 +1,9 @@
 import { Prisma, prisma } from '@core/prisma/media/client'
 
+import {
+  assertTeamMembership,
+  resolveAuthorizedTeamId
+} from '../../../lib/journeysAccess/journeysAccess'
 import { jobName as processImageBlurhashJobName } from '../../../workers/processImageBlurhash/config'
 import { queue as processImageBlurhashQueue } from '../../../workers/processImageBlurhash/queue'
 import { builder, toPrismaDateTimeFilter } from '../../builder'
@@ -78,13 +82,24 @@ builder.queryFields((t) => ({
     args: {
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false }),
-      isAi: t.arg.boolean({ required: false })
+      isAi: t.arg.boolean({ required: false }),
+      teamId: t.arg.id({ required: false })
     },
-    resolve: async (query, _root, { offset, limit, isAi }, { user }) => {
+    resolve: async (
+      query,
+      _root,
+      { offset, limit, isAi, teamId },
+      { user }
+    ) => {
+      if (teamId != null)
+        await assertTeamMembership({ teamId, userId: user.id })
+
       return await prisma.cloudflareImage.findMany({
         ...query,
         where: {
-          userId: user.id,
+          ...(teamId != null
+            ? { OR: [{ userId: user.id }, { teamId }] }
+            : { userId: user.id }),
           ...(isAi != null ? { isAi } : {})
         },
         orderBy: { createdAt: 'desc' },
@@ -154,9 +169,15 @@ builder.mutationFields((t) => ({
       type: 'CloudflareImage',
       nullable: false,
       args: {
-        input: t.arg({ type: ImageInput, required: false })
+        input: t.arg({ type: ImageInput, required: false }),
+        journeyId: t.arg.id({ required: false })
       },
-      resolve: async (query, _root, { input }, { user }) => {
+      resolve: async (query, _root, { input, journeyId }, { user }) => {
+        const teamId =
+          journeyId != null
+            ? await resolveAuthorizedTeamId({ journeyId, userId: user.id })
+            : null
+
         const { id, uploadURL } = await createImageByDirectUpload()
 
         return await prisma.cloudflareImage.create({
@@ -167,7 +188,8 @@ builder.mutationFields((t) => ({
             userId: user.id,
             aspectRatio: input?.aspectRatio ?? undefined,
             videoId: input?.videoId ?? undefined,
-            isAi: false
+            isAi: false,
+            teamId
           }
         })
       }
@@ -179,9 +201,20 @@ builder.mutationFields((t) => ({
       nullable: false,
       args: {
         url: t.arg.string({ required: true }),
-        input: t.arg({ type: ImageInput, required: false })
+        input: t.arg({ type: ImageInput, required: false }),
+        journeyId: t.arg.id({ required: false })
       },
-      resolve: async (query, _root, { url, input }, { user }: any) => {
+      resolve: async (
+        query,
+        _root,
+        { url, input, journeyId },
+        { user }: any
+      ) => {
+        const teamId =
+          journeyId != null && user?.id != null
+            ? await resolveAuthorizedTeamId({ journeyId, userId: user.id })
+            : null
+
         const { id } = await createImageFromUrl(url)
         const image = await prisma.cloudflareImage.create({
           ...query,
@@ -191,7 +224,8 @@ builder.mutationFields((t) => ({
             uploaded: true,
             aspectRatio: input?.aspectRatio ?? undefined,
             videoId: input?.videoId ?? undefined,
-            isAi: false
+            isAi: false,
+            teamId
           }
         })
 
@@ -209,9 +243,15 @@ builder.mutationFields((t) => ({
       nullable: false,
       args: {
         prompt: t.arg.string({ required: true }),
-        input: t.arg({ type: ImageInput, required: false })
+        input: t.arg({ type: ImageInput, required: false }),
+        journeyId: t.arg.id({ required: false })
       },
-      resolve: async (query, _root, { prompt, input }, { user }) => {
+      resolve: async (query, _root, { prompt, input, journeyId }, { user }) => {
+        const teamId =
+          journeyId != null
+            ? await resolveAuthorizedTeamId({ journeyId, userId: user.id })
+            : null
+
         const image = await createImageFromResponse(
           await createImageFromText(prompt)
         )
@@ -224,7 +264,8 @@ builder.mutationFields((t) => ({
             uploaded: true,
             aspectRatio: input?.aspectRatio ?? undefined,
             videoId: input?.videoId ?? undefined,
-            isAi: true
+            isAi: true,
+            teamId
           }
         })
 
