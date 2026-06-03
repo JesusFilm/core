@@ -1,13 +1,36 @@
 import { googleSlidesSpec } from './googleSlidesValidate'
 
 describe('googleSlidesSpec.normalize', () => {
-  it.each([
-    'https://docs.google.com/presentation/d/1AbC/pub',
-    'https://docs.google.com/presentation/d/1AbC/embed',
-    'https://docs.google.com/presentation/d/e/2PACX-abc/pub'
-  ])('accepts a published URL and stores it as-is: %s', async (url) => {
+  it('stores an already-embeddable /embed URL as-is', async () => {
+    const url = 'https://docs.google.com/presentation/d/1AbC/embed'
     await expect(googleSlidesSpec.normalize(url)).resolves.toEqual({
       embedUrl: url
+    })
+  })
+
+  it.each([
+    // The published "Link" URL ends in /pub (or /pubhtml) and is
+    // X-Frame-Options blocked; it is rewritten to the embeddable /embed form.
+    [
+      'https://docs.google.com/presentation/d/1AbC/pub',
+      'https://docs.google.com/presentation/d/1AbC/embed'
+    ],
+    [
+      'https://docs.google.com/presentation/d/1AbC/pubhtml',
+      'https://docs.google.com/presentation/d/1AbC/embed'
+    ],
+    [
+      'https://docs.google.com/presentation/d/e/2PACX-abc/pub',
+      'https://docs.google.com/presentation/d/e/2PACX-abc/embed'
+    ],
+    // Query params (start / loop / delayms) survive the rewrite.
+    [
+      'https://docs.google.com/presentation/d/e/2PACX-abc/pub?start=false&loop=false&delayms=3000',
+      'https://docs.google.com/presentation/d/e/2PACX-abc/embed?start=false&loop=false&delayms=3000'
+    ]
+  ])('rewrites a published /pub URL to /embed: %s', async (input, expected) => {
+    await expect(googleSlidesSpec.normalize(input)).resolves.toEqual({
+      embedUrl: expected
     })
   })
 
