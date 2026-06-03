@@ -1,3 +1,5 @@
+import './tracer'
+
 import { createServer } from 'node:http'
 
 import { logger } from './logger'

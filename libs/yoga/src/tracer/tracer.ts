@@ -33,6 +33,14 @@ const resource = resourceFromAttributes({
   [ATTR_SERVICE_VERSION]: attributes['service.version'] ?? '0.0.1'
 })
 
+// When DD_TRACE_OTEL_ENABLED is set, dd-trace registers itself as the global
+// OpenTelemetry TracerProvider and instruments HTTP/Prisma natively. Standing up
+// this OTLP provider on top would override dd-trace and double-instrument, so the
+// service that opts into dd-trace must skip this registration. The `tracer` and
+// `tracingPlugin` exports below keep working because they go through the
+// @opentelemetry/api, which dd-trace then backs.
+const datadogTracerEnabled = process.env.DD_TRACE_OTEL_ENABLED === 'true'
+
 export const provider = new NodeTracerProvider({
   resource,
   spanProcessors: [
@@ -44,17 +52,19 @@ export const provider = new NodeTracerProvider({
   ]
 })
 
-provider.register()
+if (!datadogTracerEnabled) {
+  provider.register()
 
-registerInstrumentations({
-  instrumentations: [
-    new HttpInstrumentation({
-      ignoreIncomingRequestHook: (req) =>
-        req.url?.includes('/.well-known/apollo/server-health') ?? false
-    }),
-    new PrismaInstrumentation()
-  ]
-})
+  registerInstrumentations({
+    instrumentations: [
+      new HttpInstrumentation({
+        ignoreIncomingRequestHook: (req) =>
+          req.url?.includes('/.well-known/apollo/server-health') ?? false
+      }),
+      new PrismaInstrumentation()
+    ]
+  })
+}
 
 export const tracingPlugin: Plugin = {
   onExecute: ({ setExecuteFn, executeFn }) => {

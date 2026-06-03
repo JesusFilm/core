@@ -4,6 +4,9 @@ EXPOSE 4002
 
 ARG SERVICE_VERSION=0.0.1
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
+# Hand tracing to dd-trace (APM) so logs correlate with traces via dd.trace_id.
+# Scoped to this image; @core/yoga/tracer reads this to skip its OTLP provider.
+ENV DD_TRACE_OTEL_ENABLED="true"
 ENV PNPM_HOME="/usr/local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
