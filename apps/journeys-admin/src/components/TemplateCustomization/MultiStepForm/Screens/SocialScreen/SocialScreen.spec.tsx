@@ -10,7 +10,7 @@ import { JOURNEY_SEO_TITLE_UPDATE } from '../../../../Editor/Slider/Settings/Soc
 import { SocialScreen } from './SocialScreen'
 
 describe('SocialScreen', () => {
-  const handleNext = jest.fn().mockResolvedValue(undefined)
+  const handleNext = vi.fn().mockResolvedValue(undefined)
 
   const baseJourney = {
     ...journey,
@@ -20,7 +20,7 @@ describe('SocialScreen', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     handleNext.mockClear()
   })
 
@@ -45,7 +45,7 @@ describe('SocialScreen', () => {
   })
 
   it('should update SEO title and make correct network call', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',
@@ -82,7 +82,7 @@ describe('SocialScreen', () => {
   })
 
   it('should update SEO description and make correct network call', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',
@@ -126,7 +126,7 @@ describe('SocialScreen', () => {
   })
 
   it('should update both title and description, then call handleNext when Done button is clicked', async () => {
-    const titleResult = jest.fn(() => ({
+    const titleResult = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',
@@ -136,7 +136,7 @@ describe('SocialScreen', () => {
       }
     }))
 
-    const descriptionResult = jest.fn(() => ({
+    const descriptionResult = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',

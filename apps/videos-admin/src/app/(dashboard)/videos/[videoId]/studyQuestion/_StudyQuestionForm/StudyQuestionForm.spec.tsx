@@ -4,7 +4,7 @@ import { StudyQuestionForm } from './StudyQuestionForm'
 
 describe('StudyQuestionForm', () => {
   it('should render create form', () => {
-    const handleSubmit = jest.fn()
+    const handleSubmit = vi.fn()
 
     render(
       <StudyQuestionForm
@@ -24,7 +24,7 @@ describe('StudyQuestionForm', () => {
   })
 
   it('should render edit form', () => {
-    const handleSubmit = jest.fn()
+    const handleSubmit = vi.fn()
 
     render(
       <StudyQuestionForm
@@ -44,7 +44,7 @@ describe('StudyQuestionForm', () => {
   })
 
   it('should have autoFocus property set on the input field', () => {
-    const handleSubmit = jest.fn()
+    const handleSubmit = vi.fn()
 
     render(
       <StudyQuestionForm
@@ -58,7 +58,7 @@ describe('StudyQuestionForm', () => {
   })
 
   it('should validate required field', async () => {
-    const handleSubmit = jest.fn()
+    const handleSubmit = vi.fn()
 
     render(
       <StudyQuestionForm
@@ -81,7 +81,7 @@ describe('StudyQuestionForm', () => {
   })
 
   it('should submit form', async () => {
-    const handleSubmit = jest.fn()
+    const handleSubmit = vi.fn()
 
     render(
       <StudyQuestionForm
@@ -112,7 +112,7 @@ describe('StudyQuestionForm', () => {
   })
 
   it('should disable submit button when loading', () => {
-    const handleSubmit = jest.fn()
+    const handleSubmit = vi.fn()
 
     render(
       <StudyQuestionForm

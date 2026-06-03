@@ -26,7 +26,7 @@ describe('CheckboxOption', () => {
   })
 
   it('should call onChange when clicked', () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     const { getByRole } = render(
       <CheckboxOption
         checked={false}
@@ -40,7 +40,7 @@ describe('CheckboxOption', () => {
   })
 
   it('should call onClick when provided', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const { getByLabelText } = render(
       <CheckboxOption
         checked={false}

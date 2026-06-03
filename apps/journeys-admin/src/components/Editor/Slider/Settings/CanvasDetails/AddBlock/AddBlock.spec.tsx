@@ -57,7 +57,9 @@ describe('AddBlock', () => {
               color: null
             }
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   }

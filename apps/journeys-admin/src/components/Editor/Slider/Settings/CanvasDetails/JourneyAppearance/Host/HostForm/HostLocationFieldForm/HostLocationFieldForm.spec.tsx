@@ -20,7 +20,7 @@ describe('HostLocationFieldForm', () => {
   })
 
   it('should call on change on text input', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(<HostLocationFieldForm value="" onChange={onChange} />)
     const input = screen.getByRole('textbox', { name: 'Location' })
     fireEvent.change(input, { target: { value: 'Belfast' } })

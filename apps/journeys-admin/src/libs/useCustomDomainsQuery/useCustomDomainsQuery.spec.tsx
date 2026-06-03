@@ -13,6 +13,7 @@ const customDomains: CustomDomain[] = [
     name: 'example.com',
     apexName: 'example.com',
     id: 'customDomainId',
+    routeAllTeamJourneys: false,
     journeyCollection: {
       __typename: 'JourneyCollection',
       id: 'journeyCollectionId',
@@ -23,7 +24,7 @@ const customDomains: CustomDomain[] = [
 
 describe('useCustomDomainsQuery', () => {
   it('should get custom domain for a team', async () => {
-    const mockResult = jest.fn(() => ({
+    const mockResult = vi.fn(() => ({
       data: {
         customDomains
       }
@@ -63,7 +64,7 @@ describe('useCustomDomainsQuery', () => {
   })
 
   it('should handle empty custom domains array', async () => {
-    const mockResult = jest.fn(() => ({
+    const mockResult = vi.fn(() => ({
       data: {
         customDomains: []
       }

@@ -1,6 +1,7 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
 import { ReactElement } from 'react'
+import { type Mock } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrappersProps } from '@core/journeys/ui/BlockRenderer'
@@ -12,14 +13,14 @@ import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { CardWrapper } from '.'
 
-jest.mock('@core/journeys/ui/Card', () => ({
+vi.mock('@core/journeys/ui/Card', () => ({
   __esModule: true,
-  Card: jest.fn(() => <></>)
+  Card: vi.fn(() => <></>)
 }))
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn(() => true)
+  default: vi.fn(() => true)
 }))
 
 describe('CardWrapper', () => {
@@ -87,7 +88,9 @@ describe('CardWrapper', () => {
             }
           ]
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <CardWrapper block={block}>
@@ -155,7 +158,9 @@ describe('CardWrapper', () => {
         parentOrder: 0,
         themeMode: null,
         themeName: null,
-        wrappers: {}
+        wrappers: {},
+        showAssistant: null,
+        expandChatByDefault: null
       },
       undefined
     )
@@ -221,7 +226,9 @@ describe('CardWrapper', () => {
             }
           ]
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <CardWrapper block={block}>
@@ -289,7 +296,9 @@ describe('CardWrapper', () => {
         parentOrder: 0,
         themeMode: null,
         themeName: null,
-        wrappers: {}
+        wrappers: {},
+        showAssistant: null,
+        expandChatByDefault: null
       },
       undefined
     )
@@ -308,7 +317,9 @@ describe('CardWrapper', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const step: TreeBlock = {
       id: 'stepId',
@@ -334,9 +345,7 @@ describe('CardWrapper', () => {
   })
 
   describe('mobile', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => false)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => false))
 
     it('opens card template library', () => {
       const card: TreeBlock = {
@@ -351,7 +360,9 @@ describe('CardWrapper', () => {
         fullscreen: false,
         backdropBlur: null,
         eventLabel: null,
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       }
       const step: TreeBlock = {
         id: 'stepId',
@@ -407,7 +418,9 @@ describe('CardWrapper', () => {
             focalTop: 50,
             customizable: null
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
       const step: TreeBlock = {
         id: 'stepId',

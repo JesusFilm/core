@@ -12,7 +12,7 @@ describe('calculatePoint', () => {
 
   const mockRef: RefObject<HTMLDivElement> = {
     current: {
-      getBoundingClientRect: jest.fn(() => mockBoundingRect)
+      getBoundingClientRect: vi.fn(() => mockBoundingRect)
     } as unknown as HTMLDivElement
   }
 

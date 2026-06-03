@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { PhoneField } from './PhoneField'
 
 // Mock translations to return the key as-is
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
@@ -13,8 +13,8 @@ describe('PhoneField', () => {
       <PhoneField
         callingCode="+7"
         phoneNumber="3333"
-        handleCallingCodeChange={jest.fn()}
-        handlePhoneNumberChange={jest.fn()}
+        handleCallingCodeChange={vi.fn()}
+        handlePhoneNumberChange={vi.fn()}
       />
     )
 
@@ -25,14 +25,14 @@ describe('PhoneField', () => {
   })
 
   it('submits calling code', async () => {
-    const handleCallingCodeChange = jest.fn()
+    const handleCallingCodeChange = vi.fn()
 
     render(
       <PhoneField
         callingCode="+7"
         phoneNumber="3333"
         handleCallingCodeChange={handleCallingCodeChange}
-        handlePhoneNumberChange={jest.fn()}
+        handlePhoneNumberChange={vi.fn()}
       />
     )
 
@@ -46,13 +46,13 @@ describe('PhoneField', () => {
   })
 
   it('submits phone number', async () => {
-    const handlePhoneNumberChange = jest.fn()
+    const handlePhoneNumberChange = vi.fn()
 
     render(
       <PhoneField
         callingCode="+7"
         phoneNumber="3333"
-        handleCallingCodeChange={jest.fn()}
+        handleCallingCodeChange={vi.fn()}
         handlePhoneNumberChange={handlePhoneNumberChange}
       />
     )

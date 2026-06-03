@@ -16,12 +16,12 @@ import { RADIO_QUESTION_BLOCK_CREATE } from './NewRadioQuestionButton'
 
 import { NewRadioQuestionButton } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
   v4: () => 'uuid'
 }))
@@ -48,13 +48,15 @@ describe('NewRadioQuestionButton', () => {
         fullscreen: false,
         backdropBlur: null,
         eventLabel: null,
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   }
 
   it('should check if the mutation gets called', async () => {
-    const radioCreateResult = jest.fn(() => ({
+    const radioCreateResult = vi.fn(() => ({
       data: {
         radioQuestionBlockCreate: {
           __typename: 'RadioQuestionBlock',
@@ -139,7 +141,7 @@ describe('NewRadioQuestionButton', () => {
   })
 
   it('should undo if undo is clicked', async () => {
-    const radioCreateResult = jest.fn(() => ({
+    const radioCreateResult = vi.fn(() => ({
       data: {
         radioQuestionBlockCreate: {
           __typename: 'RadioQuestionBlock',
@@ -177,7 +179,7 @@ describe('NewRadioQuestionButton', () => {
       }
     }))
 
-    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteResult = vi.fn().mockResolvedValue({ ...deleteBlock.result })
     const deleteBlockMock = {
       ...deleteBlock,
       request: {
@@ -240,7 +242,7 @@ describe('NewRadioQuestionButton', () => {
   })
 
   it('should redo if redo is clicked', async () => {
-    const radioCreateResult = jest.fn(() => ({
+    const radioCreateResult = vi.fn(() => ({
       data: {
         radioQuestionBlockCreate: {
           __typename: 'RadioQuestionBlock',
@@ -278,7 +280,7 @@ describe('NewRadioQuestionButton', () => {
       }
     }))
 
-    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteResult = vi.fn().mockResolvedValue({ ...deleteBlock.result })
     const deleteBlockMock = {
       ...deleteBlock,
       request: {
@@ -290,9 +292,7 @@ describe('NewRadioQuestionButton', () => {
       result: deleteResult
     }
 
-    const restoreResult = jest
-      .fn()
-      .mockResolvedValue({ ...blockRestore.result })
+    const restoreResult = vi.fn().mockResolvedValue({ ...blockRestore.result })
 
     const blockRestoreMock = {
       ...blockRestore,
@@ -367,7 +367,7 @@ describe('NewRadioQuestionButton', () => {
       }
     })
 
-    const radioCreateResult = jest.fn(() => ({
+    const radioCreateResult = vi.fn(() => ({
       data: {
         radioQuestionBlockCreate: {
           __typename: 'RadioQuestionBlock',
@@ -460,7 +460,40 @@ describe('NewRadioQuestionButton', () => {
 
   it('should disable when loading', async () => {
     const { getByRole } = render(
-      <MockedProvider>
+      // The click fires RadioQuestionBlockCreate. A never-resolving mock keeps
+      // the mutation in flight (button stays disabled) and matches the
+      // operation so it does not raise an unhandled Apollo error after the
+      // test completes.
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: RADIO_QUESTION_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  id: 'uuid',
+                  parentBlockId: 'cardId'
+                },
+                radioOptionBlockCreateInput1: {
+                  id: 'uuid',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'uuid',
+                  label: 'Option 1'
+                },
+                radioOptionBlockCreateInput2: {
+                  id: 'uuid',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'uuid',
+                  label: 'Option 2'
+                }
+              }
+            },
+            delay: Infinity,
+            result: {}
+          }
+        ]}
+      >
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,

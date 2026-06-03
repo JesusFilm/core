@@ -1,4 +1,5 @@
 import { ExecutionResult } from 'graphql'
+import { type MockedFunction, vi } from 'vitest'
 
 import { UserJourneyRole, UserTeamRole } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
@@ -7,23 +8,23 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-jest.mock('@core/prisma/users/client', () => ({
+vi.mock('@core/prisma/users/client', () => ({
   prisma: {
     user: {
-      findFirst: jest.fn()
+      findFirst: vi.fn()
     }
   }
 }))
 
-const { prisma: mockPrismaUsers } = jest.requireMock(
+const { prisma: mockPrismaUsers } = await vi.importMock<any>(
   '@core/prisma/users/client'
 )
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
@@ -86,7 +87,7 @@ describe('journeyTransferFromAnonymous', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
     prismaMock.userRole.findUnique.mockResolvedValue({
       id: 'userRoleId',
@@ -98,8 +99,8 @@ describe('journeyTransferFromAnonymous', () => {
   function makeTxMock(targetTeamId = 'targetTeamId') {
     return {
       userJourney: {
-        deleteMany: jest.fn().mockResolvedValue({ count: 1 }),
-        create: jest.fn().mockResolvedValue({
+        deleteMany: vi.fn().mockResolvedValue({ count: 1 }),
+        create: vi.fn().mockResolvedValue({
           id: 'newUjId',
           userId: mockUser.id,
           journeyId: 'journeyId',
@@ -107,17 +108,17 @@ describe('journeyTransferFromAnonymous', () => {
         })
       },
       journey: {
-        update: jest.fn().mockResolvedValue({
+        update: vi.fn().mockResolvedValue({
           id: 'journeyId',
           teamId: targetTeamId
         }),
-        count: jest.fn().mockResolvedValue(0)
+        count: vi.fn().mockResolvedValue(0)
       },
       userTeam: {
-        deleteMany: jest.fn().mockResolvedValue({ count: 1 })
+        deleteMany: vi.fn().mockResolvedValue({ count: 1 })
       },
       team: {
-        delete: jest.fn().mockResolvedValue({})
+        delete: vi.fn().mockResolvedValue({})
       }
     }
   }

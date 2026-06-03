@@ -232,7 +232,9 @@ export function CardQuote(): ReactElement {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      __typename: 'CardBlock'
+      __typename: 'CardBlock',
+      showAssistant: null,
+      expandChatByDefault: null
     } satisfies CardBlock
 
     const createdBlocks = [imageBlock, subtitle, title, body]

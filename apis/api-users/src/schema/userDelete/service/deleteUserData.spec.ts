@@ -1,11 +1,13 @@
+import { vi } from 'vitest'
+
 import { prismaMock } from '../../../../test/prismaMock'
 
 import { deleteFirebaseUser, deleteUserData } from './deleteUserData'
 
-const mockDeleteUser = jest.fn()
-const mockGetUserByEmail = jest.fn()
+const mockDeleteUser = vi.fn()
+const mockGetUserByEmail = vi.fn()
 
-jest.mock('@core/yoga/firebaseClient', () => ({
+vi.mock('@core/yoga/firebaseClient', () => ({
   auth: {
     deleteUser: (...args: unknown[]) => mockDeleteUser(...args),
     getUserByEmail: (...args: unknown[]) => mockGetUserByEmail(...args)
@@ -27,7 +29,7 @@ const baseInput = {
 
 describe('deleteFirebaseUser', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should delete firebase user by UID', async () => {
@@ -77,7 +79,7 @@ describe('deleteFirebaseUser', () => {
 
 describe('deleteUserData', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should successfully delete user data', async () => {

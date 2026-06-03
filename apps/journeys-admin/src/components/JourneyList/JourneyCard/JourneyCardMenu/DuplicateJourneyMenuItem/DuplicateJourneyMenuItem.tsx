@@ -119,8 +119,6 @@ export function DuplicateJourneyMenuItem({
           setOpen(false)
         }}
         submitAction={handleDuplicateJourney}
-        journeyIsTemplate={journey?.template ?? false}
-        journeyFromTemplateId={journey?.fromTemplateId}
       />
     </>
   )

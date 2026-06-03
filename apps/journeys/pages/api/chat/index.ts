@@ -9,6 +9,7 @@ import {
 } from 'ai'
 import { Langfuse, TextPromptClient } from 'langfuse'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { z } from 'zod'
 
 import { getFlags } from '../../../src/libs/getFlags'
 import {
@@ -16,6 +17,80 @@ import {
   getActivePromptLabel,
   getLangfuse
 } from '../../../src/libs/langfuse/client'
+import { logger } from '../../../src/libs/logger'
+
+// Request bounds (NES-1579). Hard ceilings so a single chat request can't be
+// arbitrarily expensive or arbitrarily shaped.
+// Array-length cap on conversation turns. Raised 20 → 40 in NES-1663 so legit
+// deep conversations don't hit a silent reject at ~8-10 turns.
+const MAX_MESSAGES = 40
+const MAX_PARTS_PER_MESSAGE = 20
+// Applied per field — once on `content` and once on each `parts[].text` —
+// so a single message can carry more than this in aggregate. The
+// MAX_TOTAL_CHARS budget below is the real per-request backstop.
+// Keep in sync with the per-message cap MAX_MESSAGE_CHARS in
+// libs/journeys/ui/src/components/PromptInput/PromptInput.tsx — the UI
+// caps typing/pasting at that length and the server rejects any single
+// field longer than it, so the two constants must match.
+const MAX_FIELD_CHARS = 4000
+// ~10k input-token budget at ~4 chars/token (raised 20000 → 40000 in
+// NES-1663). Buys ~16-20 turns of normal conversation before the cap bites.
+// When it is still hit, the handler logs `chat_conversation_capped` and the
+// client shows a catered "start a fresh conversation" message instead of a
+// dead-end Retry. Conversation-history management (sliding window / rolling
+// summary) stays deferred — revive only if cap-hits prove frequent at volume.
+const MAX_TOTAL_CHARS = 40000
+const MAX_OUTPUT_TOKENS = 512
+
+export const config = {
+  api: {
+    // Scales with the MAX_TOTAL_CHARS budget: 4-byte-per-char UTF-8 worst case
+    // (international users) + JSON wrapping. Raised 128kb → 256kb in NES-1663
+    // alongside the char budget — it *must* track it or oversized bodies 413
+    // before the handler runs.
+    bodyParser: { sizeLimit: '256kb' }
+  }
+}
+
+const messagePartSchema = z
+  .object({
+    type: z.string().min(1).optional(),
+    text: z.string().max(MAX_FIELD_CHARS).optional()
+  })
+  .passthrough()
+
+const messageSchema = z
+  .object({
+    role: z.enum(['user', 'assistant', 'system']),
+    content: z.string().max(MAX_FIELD_CHARS).optional(),
+    parts: z.array(messagePartSchema).max(MAX_PARTS_PER_MESSAGE).optional()
+  })
+  .passthrough()
+  .refine((m) => m.content != null || (m.parts?.length ?? 0) > 0, {
+    message: 'message requires content or parts'
+  })
+
+const chatRequestSchema = z.object({
+  messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
+  language: z.string().max(64).optional(),
+  sessionId: z.string().max(128).optional(),
+  journeyId: z.string().max(128).optional()
+})
+
+type ParsedChatMessage = z.infer<typeof messageSchema>
+
+function totalMessageChars(messages: ParsedChatMessage[]): number {
+  let total = 0
+  for (const m of messages) {
+    if (typeof m.content === 'string') total += m.content.length
+    if (Array.isArray(m.parts)) {
+      for (const p of m.parts) {
+        if (typeof p.text === 'string') total += p.text.length
+      }
+    }
+  }
+  return total
+}
 
 type ChatProvider = 'apologist' | 'gemini' | 'openai' | 'openrouter'
 
@@ -94,20 +169,17 @@ function resolveChatModel():
   }
 }
 
-interface ChatRequestBody {
-  messages: UIMessage[]
-  language?: string
-  sessionId?: string
-  journeyId?: string
-}
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
+  const startedAt = Date.now()
   const flags = await getFlags()
   if (flags.apologistChat !== true) {
-    res.status(404).end()
+    // `code` so the client can recognise a deterministic flag-off and hide
+    // Retry (re-firing would 404 again). See the error-code contract note at
+    // the cap-hit branch below.
+    res.status(404).json({ error: 'not found', code: 'not_found' })
     return
   }
 
@@ -117,11 +189,39 @@ export default async function handler(
     return
   }
 
-  const { messages, language, sessionId, journeyId } =
-    req.body as ChatRequestBody
+  const parsed = chatRequestSchema.safeParse(req.body)
+  if (!parsed.success) {
+    res.status(400).json({ error: 'invalid request', code: 'invalid_request' })
+    return
+  }
+  const { messages, language, sessionId, journeyId } = parsed.data
 
-  if (!messages || messages.length === 0) {
-    res.status(400).json({ error: 'messages are required' })
+  const promptChars = totalMessageChars(messages)
+  if (promptChars > MAX_TOTAL_CHARS) {
+    // Expected, user-driven condition (a deep conversation outgrew the cap),
+    // not a backend fault — `warn`, not `error`, so it stays out of error
+    // alerts. Tracked with a single Datadog query
+    // (`service:journeys event:chat_conversation_capped`); the decision to
+    // revive history-windowing keys off this frequency.
+    logger.warn(
+      {
+        event: 'chat_conversation_capped',
+        sessionId,
+        journeyId,
+        language,
+        messageCount: messages.length,
+        promptChars
+      },
+      'chat conversation hit size cap'
+    )
+    // Error-code contract: AI SDK v6's transport discards the HTTP status and
+    // surfaces only the response body as `error.message`, so a structured
+    // `code` is how the client distinguishes failures. `conversation_capped`
+    // drives both the catered cap-hit message and retry-gating in
+    // libs/journeys/ui/src/components/AiChat/AiChat.tsx.
+    res
+      .status(400)
+      .json({ error: 'request too large', code: 'conversation_capped' })
     return
   }
 
@@ -131,15 +231,57 @@ export default async function handler(
     return
   }
 
+  const { provider, modelId } = modelResult.resolved
+  const ipCountry = req.headers['x-vercel-ip-country'] as string | undefined
+  // Shared non-PII context spread into every observability event so the
+  // success event and all error events stay queryable on the same fields in
+  // Datadog. The `event` tag stays unique per failure site; these fields stay
+  // common. `turn` = user-message ordinal (1, 2, 3…); `promptChars` = full
+  // prompt size this turn. Both climb across a session because the whole
+  // history is resent each turn — count events per session for volume, max()
+  // for depth; never sum these. Never includes message text, the model reply,
+  // or the raw IP.
+  const chatLogContext = {
+    journeyId,
+    language,
+    ipCountry,
+    sessionId,
+    provider,
+    modelId,
+    turn: messages.filter((m) => m.role === 'user').length,
+    promptChars: totalMessageChars(messages)
+  }
+
   const langfuse = getLangfuse()
   const { system, promptClient } = await resolveSystemMessage({
     language,
     langfuse
   })
-  const modelMessages = await convertToModelMessages(messages)
-
-  const { provider, modelId } = modelResult.resolved
-  const ipCountry = req.headers['x-vercel-ip-country'] as string | undefined
+  // Defence-in-depth: the schema rejects most malformed inputs, but the
+  // AI SDK can still throw on shapes that pass `.passthrough()` (e.g.
+  // unsupported part `type`). Map that to a 400 so a malformed-request
+  // failure isn't misattributed as an upstream LLM 500. Runs before the
+  // trace/generation are created, so there's no dangling Langfuse span.
+  let modelMessages: Awaited<ReturnType<typeof convertToModelMessages>>
+  try {
+    modelMessages = await convertToModelMessages(
+      messages as unknown as UIMessage[]
+    )
+  } catch (error) {
+    const err = error as Error
+    logger.error(
+      {
+        event: 'apologist_chat_convert_error',
+        ...chatLogContext,
+        name: err?.name,
+        message: err?.message,
+        durationMs: Date.now() - startedAt
+      },
+      '[chat] convertToModelMessages failed'
+    )
+    res.status(400).json({ error: 'invalid request', code: 'invalid_request' })
+    return
+  }
 
   const trace = langfuse?.trace({
     name: 'apologist-chat',
@@ -167,17 +309,20 @@ export default async function handler(
       model: modelResult.resolved.model,
       system,
       messages: modelMessages,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
       onError: async ({ error }) => {
         const err = error as Error
-        // TODO(NES-1615): swap console for structured pino + dd-trace logger
-        // so this reaches Datadog instead of dying in Vercel runtime logs.
-        console.error('[chat] streamText onError', {
-          provider,
-          modelId,
-          name: err?.name,
-          message: err?.message,
-          stack: err?.stack
-        })
+        logger.error(
+          {
+            event: 'apologist_chat_stream_error',
+            ...chatLogContext,
+            name: err?.name,
+            message: err?.message,
+            stack: err?.stack,
+            durationMs: Date.now() - startedAt
+          },
+          '[chat] streamText onError'
+        )
         // streamText errors are LLM lifecycle events — record in Langfuse.
         endGenerationIfPending({
           level: 'ERROR',
@@ -191,6 +336,15 @@ export default async function handler(
             level: 'ERROR',
             statusMessage: `finishReason=${finishReason}`
           })
+          logger.error(
+            {
+              event: 'apologist_chat_error',
+              ...chatLogContext,
+              finishReason,
+              durationMs: Date.now() - startedAt
+            },
+            '[chat] completed with error'
+          )
         } else {
           endGenerationIfPending({
             output: text,
@@ -204,6 +358,20 @@ export default async function handler(
                 : undefined,
             level: 'DEFAULT'
           })
+          // Safe, non-PII observability event — registers that a chat
+          // happened, with metadata for troubleshooting. Never logs the
+          // user's message text, the reply, or the raw IP.
+          logger.info(
+            {
+              event: 'apologist_chat_completed',
+              ...chatLogContext,
+              promptTokens: usage?.inputTokens,
+              completionTokens: usage?.outputTokens,
+              finishReason,
+              durationMs: Date.now() - startedAt
+            },
+            '[chat] completed'
+          )
         }
         await langfuse?.flushAsync()
       }
@@ -212,17 +380,19 @@ export default async function handler(
     result.pipeUIMessageStreamToResponse(res, {
       onError: (error) => {
         const err = error as Error
-        // TODO(NES-1615): pipe-step failures (write to closed socket etc.)
-        // are infrastructure errors, not LLM events — they belong in
-        // Datadog, not Langfuse. Swap console for structured pino logger
-        // once the journeys app has dd-trace + next-logger wired up
-        // (mirror apps/journeys-admin/next-logger.config.js).
-        console.error('[chat] pipe onError', {
-          provider,
-          modelId,
-          name: err?.name,
-          message: err?.message
-        })
+        // Pipe-step failures (write to closed socket etc.) are
+        // infrastructure errors, not LLM events — logged to Datadog,
+        // not recorded in Langfuse.
+        logger.error(
+          {
+            event: 'apologist_chat_pipe_error',
+            ...chatLogContext,
+            name: err?.name,
+            message: err?.message,
+            durationMs: Date.now() - startedAt
+          },
+          '[chat] pipe onError'
+        )
         // Generic message back to the client — never leak raw error
         // details into the SSE error chunk.
         return 'stream failed'
@@ -230,13 +400,16 @@ export default async function handler(
     })
   } catch (error) {
     const err = error as Error
-    // TODO(NES-1615): structured logger so sync throws reach Datadog.
-    console.error('[chat] synchronous error', {
-      provider,
-      modelId,
-      name: err?.name,
-      message: err?.message
-    })
+    logger.error(
+      {
+        event: 'apologist_chat_sync_error',
+        ...chatLogContext,
+        name: err?.name,
+        message: err?.message,
+        durationMs: Date.now() - startedAt
+      },
+      '[chat] synchronous error'
+    )
     // Sync throws happen before the LLM call, but the trace + generation
     // were already created above — close the lifecycle so Langfuse
     // doesn't carry a dangling unfinished span.
@@ -269,7 +442,7 @@ async function resolveSystemMessage({
       { label: getActivePromptLabel() }
     )
     if (promptClient.type !== 'text') {
-      console.warn(
+      logger.warn(
         `[langfuse] expected text prompt for ${APOLOGIST_PROMPT_NAME}, got ${promptClient.type} — using fallback`
       )
       return { system: fallback, promptClient: null }
@@ -280,10 +453,10 @@ async function resolveSystemMessage({
     return { system: compiled, promptClient }
   } catch (error) {
     const err = error as Error
-    console.warn('[langfuse] getPrompt failed — using fallback', {
-      name: err?.name,
-      message: err?.message
-    })
+    logger.warn(
+      { name: err?.name, message: err?.message },
+      '[langfuse] getPrompt failed — using fallback'
+    )
     return { system: fallback, promptClient: null }
   }
 }

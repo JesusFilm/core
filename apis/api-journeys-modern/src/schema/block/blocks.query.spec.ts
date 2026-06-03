@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
@@ -30,7 +32,7 @@ describe('blocks', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns blocks when authorized', async () => {

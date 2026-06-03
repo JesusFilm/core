@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { prismaMock } from '../../../test/prismaMock'
 
 import {
@@ -14,57 +16,52 @@ import {
 } from './utils'
 
 const mockEmailQueue = {
-  getJob: jest.fn(),
-  remove: jest.fn(),
-  add: jest.fn()
+  getJob: vi.fn(),
+  remove: vi.fn(),
+  add: vi.fn()
 }
 
 const mockGoogleSheetsSyncQueue = {
-  add: jest.fn()
+  add: vi.fn()
 }
 
-jest.mock('../../workers/emailEvents/queue', () => ({
+vi.mock('../../workers/emailEvents/queue', () => ({
   queue: mockEmailQueue
 }))
 
-jest.mock('../../workers/googleSheetsSync/queue', () => ({
+vi.mock('../../workers/googleSheetsSync/queue', () => ({
   queue: mockGoogleSheetsSyncQueue
 }))
 
 const mockLogger = {
-  warn: jest.fn(),
-  error: jest.fn(),
-  info: jest.fn(),
-  debug: jest.fn()
+  warn: vi.fn(),
+  error: vi.fn(),
+  info: vi.fn(),
+  debug: vi.fn()
 }
 
-jest.mock('../logger', () => ({
+vi.mock('../logger', () => ({
   get logger() {
     return mockLogger
   }
 }))
 
 describe('event utils', () => {
+  const originalNodeEnv = process.env.NODE_ENV
+
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     // Set up queue mocks before tests run
     __setEmailQueueForTests(mockEmailQueue)
     __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueue)
     // Clear NODE_ENV to allow queue to work
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: undefined,
-      writable: true,
-      configurable: true
-    })
+    delete (process.env as Record<string, string | undefined>).NODE_ENV
   })
 
   afterEach(() => {
     // Restore test environment
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: 'test',
-      writable: true,
-      configurable: true
-    })
+    ;(process.env as Record<string, string | undefined>).NODE_ENV =
+      originalNodeEnv
   })
 
   describe('validateBlockEvent', () => {
@@ -87,10 +84,9 @@ describe('event utils', () => {
 
       prismaMock.block.findUnique.mockResolvedValue(mockBlock as any)
       prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
-      prismaMock.visitor.findFirst.mockResolvedValue(mockVisitor as any)
-      prismaMock.journeyVisitor.findUnique.mockResolvedValue(
-        mockJourneyVisitor as any
-      )
+      prismaMock.$queryRaw
+        .mockResolvedValueOnce([mockVisitor] as any)
+        .mockResolvedValueOnce([mockJourneyVisitor] as any)
       prismaMock.block.findFirst.mockResolvedValue({
         id: 'step-id',
         journeyId: 'journey-id',
@@ -99,9 +95,7 @@ describe('event utils', () => {
 
       const result = await validateBlockEvent('user-id', 'block-id', 'step-id')
 
-      expect(prismaMock.visitor.findFirst).toHaveBeenCalledWith({
-        where: { userId: 'user-id', teamId: 'team-id' }
-      })
+      expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(2)
       expect(result).toEqual({
         visitor: mockVisitor,
         journeyVisitor: mockJourneyVisitor,
@@ -111,7 +105,7 @@ describe('event utils', () => {
       })
     })
 
-    it('should create journeyVisitor if it does not exist', async () => {
+    it('should upsert journeyVisitor so block events can race ahead of journeyViewEventCreate', async () => {
       const mockBlock = {
         id: 'block-id',
         journeyId: 'journey-id'
@@ -130,11 +124,9 @@ describe('event utils', () => {
 
       prismaMock.block.findUnique.mockResolvedValue(mockBlock as any)
       prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
-      prismaMock.visitor.findFirst.mockResolvedValue(mockVisitor as any)
-      prismaMock.journeyVisitor.findUnique.mockResolvedValue(null)
-      prismaMock.journeyVisitor.create.mockResolvedValue(
-        mockJourneyVisitor as any
-      )
+      prismaMock.$queryRaw
+        .mockResolvedValueOnce([mockVisitor] as any)
+        .mockResolvedValueOnce([mockJourneyVisitor] as any)
       prismaMock.block.findFirst.mockResolvedValue({
         id: 'step-id',
         journeyId: 'journey-id',
@@ -143,13 +135,7 @@ describe('event utils', () => {
 
       const result = await validateBlockEvent('user-id', 'block-id', 'step-id')
 
-      expect(prismaMock.journeyVisitor.create).toHaveBeenCalledWith({
-        data: {
-          journeyId: 'journey-id',
-          visitorId: 'visitor-id'
-        }
-      })
-
+      expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(2)
       expect(result.journeyVisitor).toEqual(mockJourneyVisitor)
       expect(result.teamId).toEqual('team-id')
     })
@@ -174,21 +160,6 @@ describe('event utils', () => {
       )
     })
 
-    it('should throw error when visitor does not exist', async () => {
-      prismaMock.block.findUnique.mockResolvedValue({
-        id: 'block-id',
-        journeyId: 'journey-id'
-      } as any)
-      prismaMock.journey.findUnique.mockResolvedValue({
-        teamId: 'team-id'
-      } as any)
-      prismaMock.visitor.findFirst.mockResolvedValue(null)
-
-      await expect(validateBlockEvent('user-id', 'block-id')).rejects.toThrow(
-        'Visitor does not exist'
-      )
-    })
-
     it('should throw error when stepId is invalid', async () => {
       prismaMock.block.findUnique.mockResolvedValue({
         id: 'block-id',
@@ -197,14 +168,15 @@ describe('event utils', () => {
       prismaMock.journey.findUnique.mockResolvedValue({
         teamId: 'team-id'
       } as any)
-      prismaMock.visitor.findFirst.mockResolvedValue({
-        id: 'visitor-id'
-      } as any)
-      prismaMock.journeyVisitor.findUnique.mockResolvedValue({
-        id: 'jv-id',
-        journeyId: 'journey-id',
-        visitorId: 'visitor-id'
-      } as any)
+      prismaMock.$queryRaw
+        .mockResolvedValueOnce([{ id: 'visitor-id' }] as any)
+        .mockResolvedValueOnce([
+          {
+            id: 'jv-id',
+            journeyId: 'journey-id',
+            visitorId: 'visitor-id'
+          }
+        ] as any)
       prismaMock.block.findFirst.mockResolvedValue(null)
 
       await expect(
@@ -271,65 +243,38 @@ describe('event utils', () => {
   })
 
   describe('getByUserIdAndJourneyId', () => {
-    it('should return visitor and journeyVisitor when both exist', async () => {
-      const mockJourney = { teamId: 'team-id' }
-      const mockVisitor = {
-        id: 'visitor-id'
-      }
+    it('should atomically upsert visitor and journeyVisitor and return them', async () => {
+      const mockVisitor = { id: 'visitor-id' }
       const mockJourneyVisitor = {
         id: 'jv-id',
         journeyId: 'journey-id',
         visitorId: 'visitor-id'
       }
 
-      prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
-      prismaMock.visitor.findFirst.mockResolvedValue(mockVisitor as any)
-      prismaMock.journeyVisitor.findUnique.mockResolvedValue(
-        mockJourneyVisitor as any
+      prismaMock.$queryRaw
+        .mockResolvedValueOnce([mockVisitor] as any)
+        .mockResolvedValueOnce([mockJourneyVisitor] as any)
+
+      const result = await getByUserIdAndJourneyId(
+        'user-id',
+        'journey-id',
+        'team-id'
       )
 
-      const result = await getByUserIdAndJourneyId('user-id', 'journey-id')
-
-      expect(prismaMock.visitor.findFirst).toHaveBeenCalledWith({
-        where: { userId: 'user-id', teamId: 'team-id' }
-      })
+      expect(prismaMock.journey.findUnique).not.toHaveBeenCalled()
+      expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(2)
       expect(result).toEqual({
         visitor: mockVisitor,
         journeyVisitor: mockJourneyVisitor
       })
     })
 
-    it('should return null when journey does not exist', async () => {
-      prismaMock.journey.findUnique.mockResolvedValue(null)
+    it('should rethrow database errors from the atomic upsert', async () => {
+      prismaMock.$queryRaw.mockRejectedValue(new Error('boom'))
 
-      const result = await getByUserIdAndJourneyId('user-id', 'journey-id')
-
-      expect(result).toBeNull()
-    })
-
-    it('should return null when visitor does not exist', async () => {
-      prismaMock.journey.findUnique.mockResolvedValue({
-        teamId: 'team-id'
-      } as any)
-      prismaMock.visitor.findFirst.mockResolvedValue(null)
-
-      const result = await getByUserIdAndJourneyId('user-id', 'journey-id')
-
-      expect(result).toBeNull()
-    })
-
-    it('should return null when journeyVisitor does not exist', async () => {
-      prismaMock.journey.findUnique.mockResolvedValue({
-        teamId: 'team-id'
-      } as any)
-      prismaMock.visitor.findFirst.mockResolvedValue({
-        id: 'visitor-id'
-      } as any)
-      prismaMock.journeyVisitor.findUnique.mockResolvedValue(null)
-
-      const result = await getByUserIdAndJourneyId('user-id', 'journey-id')
-
-      expect(result).toBeNull()
+      await expect(
+        getByUserIdAndJourneyId('user-id', 'journey-id', 'team-id')
+      ).rejects.toThrow('boom')
     })
   })
 
@@ -384,11 +329,7 @@ describe('event utils', () => {
   describe('sendEventsEmail', () => {
     beforeEach(() => {
       __setEmailQueueForTests(mockEmailQueue)
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: undefined,
-        writable: true,
-        configurable: true
-      })
+      delete (process.env as Record<string, string | undefined>).NODE_ENV
     })
 
     it('should add email job to queue', async () => {
@@ -435,16 +376,12 @@ describe('event utils', () => {
   describe('resetEventsEmailDelay', () => {
     beforeEach(() => {
       __setEmailQueueForTests(mockEmailQueue)
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: undefined,
-        writable: true,
-        configurable: true
-      })
+      delete (process.env as Record<string, string | undefined>).NODE_ENV
     })
 
     it('should change delay of existing job', async () => {
       const existingJob = {
-        changeDelay: jest.fn().mockResolvedValue(undefined)
+        changeDelay: vi.fn().mockResolvedValue(undefined)
       }
       mockEmailQueue.getJob.mockResolvedValue(existingJob as any)
 
@@ -455,7 +392,7 @@ describe('event utils', () => {
 
     it('should use minimum delay of 2 minutes', async () => {
       const existingJob = {
-        changeDelay: jest.fn().mockResolvedValue(undefined)
+        changeDelay: vi.fn().mockResolvedValue(undefined)
       }
       mockEmailQueue.getJob.mockResolvedValue(existingJob as any)
 
@@ -488,21 +425,17 @@ describe('event utils', () => {
 
   describe('appendEventToGoogleSheets', () => {
     beforeEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueue)
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: undefined,
-        writable: true,
-        configurable: true
-      })
+      delete (process.env as Record<string, string | undefined>).NODE_ENV
       mockLogger.warn.mockClear()
       // Pin clock to a known mid-minute time so delay calculations are deterministic
-      jest.useFakeTimers()
-      jest.setSystemTime(new Date('2024-01-01T00:00:30.000Z'))
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2024-01-01T00:00:30.000Z'))
     })
 
     afterEach(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('should return early when no sync config exists', async () => {

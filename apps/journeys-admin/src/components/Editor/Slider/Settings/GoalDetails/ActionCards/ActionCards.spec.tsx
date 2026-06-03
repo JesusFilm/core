@@ -45,7 +45,9 @@ describe('ActionCards', () => {
                     themeName: null,
                     fullscreen: false,
                     backdropBlur: null,
-                    eventLabel: null
+                    eventLabel: null,
+                    showAssistant: null,
+                    expandChatByDefault: null
                   },
                   {
                     __typename: 'RadioQuestionBlock',

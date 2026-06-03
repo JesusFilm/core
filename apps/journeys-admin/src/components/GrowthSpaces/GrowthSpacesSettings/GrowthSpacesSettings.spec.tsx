@@ -14,8 +14,8 @@ describe('GrowthSpacesSettings', () => {
   })
 
   it('should call setAccessId and setAccessSecret on change', async () => {
-    const setAccessId = jest.fn()
-    const setAccessSecret = jest.fn()
+    const setAccessId = vi.fn()
+    const setAccessSecret = vi.fn()
     render(
       <GrowthSpacesSettings
         accessId="accessId"
@@ -46,7 +46,7 @@ describe('GrowthSpacesSettings', () => {
   })
 
   it('should call onClick on save button click', async () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     render(
       <GrowthSpacesSettings
         accessId="accessId"
@@ -59,7 +59,7 @@ describe('GrowthSpacesSettings', () => {
   })
 
   it('should call onDelete on remove button click', async () => {
-    const onDelete = jest.fn()
+    const onDelete = vi.fn()
     render(
       <GrowthSpacesSettings
         accessId="accessId"

@@ -5,14 +5,16 @@ import { Command } from 'commander'
 
 import {
   AUDIO_PREVIEW_FILENAME_REGEX,
-  processAudioPreviewFile
-} from './importers/audiopreview'
-import {
   SUBTITLE_FILENAME_REGEX,
-  processSubtitleFile
-} from './importers/subtitle'
-import { VIDEO_FILENAME_REGEX, processVideoFile } from './importers/video'
-import type { ProcessingSummary } from './types'
+  VIDEO_FILENAME_REGEX
+} from './importerFilenamePatterns'
+import { checkStartupEnvironment } from './startupPreflight'
+import {
+  type ProcessingSummary,
+  createProcessingSummary,
+  recordProcessingFailure
+} from './types'
+import { toErrorMessage } from './utils/errorMessage'
 
 const program = new Command()
 
@@ -22,6 +24,7 @@ program
     "Folder containing video files. Defaults to the executable's directory."
   )
   .option('--dry-run', 'Print actions without uploading', false)
+  .option('--no-slack', 'Do not post a Slack summary after the run')
   .parse(process.argv)
 
 const options = program.opts()
@@ -39,6 +42,56 @@ function getDefaultFolderPath(): string {
 }
 
 async function main() {
+  const startupFailures = checkStartupEnvironment()
+  if (startupFailures.length > 0) {
+    console.error('[video-importer] Invalid .env configuration:')
+    for (const failure of startupFailures) {
+      console.error(`- ${failure.variable}: ${failure.message}`)
+    }
+
+    const canPostSlack =
+      typeof process.env.SLACK_BOT_TOKEN === 'string' &&
+      process.env.SLACK_BOT_TOKEN.trim().length > 0 &&
+      typeof process.env.SLACK_CHANNEL_ID === 'string' &&
+      process.env.SLACK_CHANNEL_ID.trim().length > 0
+
+    if (canPostSlack) {
+      try {
+        const { postVideoImporterMisconfigurationAlert } = await import(
+          /* webpackChunkName: "video-importer-slack" */ './services/slack'
+        )
+        await postVideoImporterMisconfigurationAlert({
+          errors: startupFailures
+        })
+      } catch (err) {
+        console.error(
+          '[video-importer] Slack misconfiguration alert failed:',
+          err
+        )
+      }
+    } else {
+      console.error(
+        '[video-importer] Slack alert not sent because SLACK_BOT_TOKEN and SLACK_CHANNEL_ID are required.'
+      )
+    }
+
+    process.exit(1)
+  }
+
+  const [
+    { processAudioPreviewFile },
+    { processSubtitleFile },
+    { processVideoFile }
+  ] = await Promise.all([
+    import(
+      /* webpackChunkName: "video-importer-audiopreview" */ './importers/audiopreview'
+    ),
+    import(
+      /* webpackChunkName: "video-importer-subtitle" */ './importers/subtitle'
+    ),
+    import(/* webpackChunkName: "video-importer-video" */ './importers/video')
+  ])
+
   const defaultFolderPath = getDefaultFolderPath()
 
   const folderPath = options.folder
@@ -78,11 +131,9 @@ async function main() {
     console.log(`Found ${audioPreviewFiles.length} audio preview files.`)
   }
 
-  const summary: ProcessingSummary = {
-    total: videoFiles.length + subtitleFiles.length + audioPreviewFiles.length,
-    successful: 0,
-    failed: 0
-  }
+  const summary: ProcessingSummary = createProcessingSummary(
+    videoFiles.length + subtitleFiles.length + audioPreviewFiles.length
+  )
 
   for (const file of videoFiles) {
     console.log(`\nProcessing: ${file}`)
@@ -98,7 +149,11 @@ async function main() {
       await processVideoFile(file, filePath, contentLength, summary)
     } catch (err) {
       console.error(`Error processing ${file}:`, err)
-      summary.failed++
+      recordProcessingFailure(
+        summary,
+        file,
+        `Unhandled error: ${toErrorMessage(err)}`
+      )
     }
   }
 
@@ -118,7 +173,11 @@ async function main() {
       await processSubtitleFile(file, filePath, contentLength, summary)
     } catch (err) {
       console.error(`Error processing subtitle ${file}:`, err)
-      summary.failed++
+      recordProcessingFailure(
+        summary,
+        file,
+        `Unhandled error: ${toErrorMessage(err)}`
+      )
     }
   }
 
@@ -140,7 +199,11 @@ async function main() {
       await processAudioPreviewFile(file, filePath, contentLength, summary)
     } catch (err) {
       console.error(`Error processing audio preview ${file}:`, err)
-      summary.failed++
+      recordProcessingFailure(
+        summary,
+        file,
+        `Unhandled error: ${toErrorMessage(err)}`
+      )
     }
   }
 
@@ -149,6 +212,39 @@ async function main() {
   console.log(`Total files: ${summary.total}`)
   console.log(`Successfully processed: ${summary.successful}`)
   console.log(`Failed: ${summary.failed}`)
+
+  const slackTokenConfigured =
+    typeof process.env.SLACK_BOT_TOKEN === 'string' &&
+    process.env.SLACK_BOT_TOKEN.trim().length > 0
+  const slackChannelConfigured =
+    typeof process.env.SLACK_CHANNEL_ID === 'string' &&
+    process.env.SLACK_CHANNEL_ID.trim().length > 0
+
+  if (
+    !options.dryRun &&
+    !options.noSlack &&
+    slackTokenConfigured !== slackChannelConfigured
+  ) {
+    console.warn(
+      '[video-importer] Slack is partially configured: set both SLACK_BOT_TOKEN and SLACK_CHANNEL_ID to enable notifications.'
+    )
+  }
+
+  if (
+    !options.dryRun &&
+    !options.noSlack &&
+    slackTokenConfigured &&
+    slackChannelConfigured
+  ) {
+    try {
+      const { postVideoImporterSlackSummary } = await import(
+        /* webpackChunkName: "video-importer-slack" */ './services/slack'
+      )
+      await postVideoImporterSlackSummary({ folderPath, summary })
+    } catch (err) {
+      console.error('[video-importer] Slack notification failed:', err)
+    }
+  }
 
   // Errors are logged inline where they occur
 }

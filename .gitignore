@@ -49,6 +49,9 @@ Thumbs.db
 .env*local
 .dev.vars
 
+# langfuse-export run artifacts (contain chat-derived content — never commit)
+tools/langfuse-export/output/
+
 # nx generated files
 migrations.json
 
@@ -102,10 +105,6 @@ next-env.d.ts
 
 # node sea
 sea-prep.blob
-
-# Strapi CMS compiled config files
-apis/cms/config/*.js
-apis/cms/config/*.js.map
 
 # storybook
 storybook-static/

@@ -1,4 +1,5 @@
-import { Output, generateText, streamText } from 'ai'
+import { Output, streamText } from 'ai'
+import { type MockedFunction, vi } from 'vitest'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -7,44 +8,49 @@ import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
 import { translateCustomizationFields } from './translateCustomizationFields/translateCustomizationFields'
+import { translateJourneyMetadata } from './translateJourneyMetadata/translateJourneyMetadata'
 
 // Mock all external dependencies
-jest.mock('@ai-sdk/google', () => ({
-  google: jest.fn(() => 'mocked-google-model')
+vi.mock('@openrouter/ai-sdk-provider', () => ({
+  openrouter: {
+    chat: vi.fn(() => 'mocked-openrouter-model')
+  }
 }))
 
-jest.mock('ai', () => ({
+vi.mock('ai', () => ({
   Output: {
-    object: jest.fn((config) => ({ type: 'object', ...config })),
-    array: jest.fn((config) => ({ type: 'array', ...config }))
+    object: vi.fn((config) => ({ type: 'object', ...config })),
+    array: vi.fn((config) => ({ type: 'array', ...config }))
   },
-  generateText: jest.fn(),
-  streamText: jest.fn()
+  generateText: vi.fn(),
+  streamText: vi.fn()
 }))
 
-jest.mock('@core/shared/ai/prompts', () => ({
-  hardenPrompt: jest.fn((text) => `<hardened>${text}</hardened>`),
+vi.mock('@core/shared/ai/prompts', () => ({
+  hardenPrompt: vi.fn((text) => `<hardened>${text}</hardened>`),
   preSystemPrompt: 'mocked system prompt'
 }))
 
-jest.mock('../../lib/auth/ability', () => ({
+vi.mock('../../lib/auth/ability', () => ({
   Action: {
     Update: 'update'
   },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('./getCardBlocksContent', () => ({
-  getCardBlocksContent: jest.fn()
+vi.mock('./getCardBlocksContent', () => ({
+  getCardBlocksContent: vi.fn()
 }))
 
-jest.mock(
-  './translateCustomizationFields/translateCustomizationFields',
-  () => ({
-    translateCustomizationFields: jest.fn()
-  })
-)
+vi.mock('./translateCustomizationFields/translateCustomizationFields', () => ({
+  translateCustomizationFields: vi.fn()
+}))
+
+vi.mock('./translateJourneyMetadata/translateJourneyMetadata', () => ({
+  TRANSLATION_SYSTEM_PROMPT: 'mocked translation system prompt',
+  translateJourneyMetadata: vi.fn()
+}))
 
 // Mock utility to create AsyncIterator for testing
 function createMockAsyncIterator<T>(items: T[]): AsyncIterable<T> {
@@ -64,24 +70,18 @@ function createMockAsyncIterator<T>(items: T[]): AsyncIterable<T> {
 }
 
 describe('journeyAiTranslateCreate mutation', () => {
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
-  const mockGenerateText = generateText as jest.MockedFunction<
-    typeof generateText
-  >
-  const mockStreamText = streamText as jest.MockedFunction<typeof streamText>
-  const mockOutputObject = Output.object as jest.MockedFunction<
-    typeof Output.object
-  >
-  const mockOutputArray = Output.array as jest.MockedFunction<
-    typeof Output.array
-  >
-  const mockGetCardBlocksContent = getCardBlocksContent as jest.MockedFunction<
+  const mockAbility = ability as MockedFunction<typeof ability>
+  const mockStreamText = streamText as MockedFunction<typeof streamText>
+  const mockOutputArray = Output.array as MockedFunction<typeof Output.array>
+  const mockGetCardBlocksContent = getCardBlocksContent as MockedFunction<
     typeof getCardBlocksContent
   >
   const mockTranslateCustomizationFields =
-    translateCustomizationFields as jest.MockedFunction<
+    translateCustomizationFields as MockedFunction<
       typeof translateCustomizationFields
     >
+  const mockTranslateJourneyMetadata =
+    translateJourneyMetadata as MockedFunction<typeof translateJourneyMetadata>
 
   // Sample data
   const mockJourneyId = 'journey123'
@@ -167,7 +167,9 @@ describe('journeyAiTranslateCreate mutation', () => {
     analysis:
       'This journey is about example content. Cultural adaptations include...',
     title: 'Título del Viaje Traducido',
-    description: 'Descripción del viaje traducida'
+    description: 'Descripción del viaje traducida',
+    seoTitle: '',
+    seoDescription: ''
   }
 
   const mockTranslatedBlocks = [
@@ -220,7 +222,7 @@ describe('journeyAiTranslateCreate mutation', () => {
   `)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Set up prismaMock
     prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
@@ -235,20 +237,7 @@ describe('journeyAiTranslateCreate mutation', () => {
 
     mockAbility.mockReturnValue(true)
 
-    mockGenerateText.mockResolvedValue({
-      output: mockAnalysisAndTranslation,
-      usage: {
-        totalTokens: 1000,
-        inputTokens: 600,
-        outputTokens: 400
-      },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
+    mockTranslateJourneyMetadata.mockResolvedValue(mockAnalysisAndTranslation)
 
     // Create a mock implementation for streamText
     mockStreamText.mockReturnValue({
@@ -315,28 +304,15 @@ describe('journeyAiTranslateCreate mutation', () => {
       }
     )
 
-    // Verify AI analysis was requested
-    expect(mockOutputObject).toHaveBeenCalled()
+    // Verify journey metadata translation was requested with the journey's
+    // own title and description (not swapped)
     expect(mockOutputArray).toHaveBeenCalled()
-    expect(mockGenerateText).toHaveBeenCalledWith(
+    expect(mockTranslateJourneyMetadata).toHaveBeenCalledWith(
       expect.objectContaining({
-        model: 'mocked-google-model',
-        output: expect.any(Object),
-        messages: expect.arrayContaining([
-          expect.objectContaining({
-            role: 'system',
-            content: expect.any(String)
-          }),
-          expect.objectContaining({
-            role: 'user',
-            content: expect.arrayContaining([
-              expect.objectContaining({
-                type: 'text',
-                text: expect.any(String)
-              })
-            ])
-          })
-        ])
+        journeyTitle: mockInput.name,
+        journeyDescription: mockJourney.description,
+        sourceLanguageName: mockInput.journeyLanguageName,
+        targetLanguageName: mockInput.textLanguageName
       })
     )
 
@@ -471,23 +447,10 @@ describe('journeyAiTranslateCreate mutation', () => {
   })
 
   it('should throw an error if title translation fails', async () => {
-    mockGenerateText.mockResolvedValueOnce({
-      output: {
-        ...mockAnalysisAndTranslation,
-        title: '' // Empty title
-      },
-      usage: {
-        totalTokens: 1000,
-        inputTokens: 600,
-        outputTokens: 400
-      },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
+    mockTranslateJourneyMetadata.mockResolvedValueOnce({
+      ...mockAnalysisAndTranslation,
+      title: '' // Empty title
+    })
 
     const result = await authClient({
       document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
@@ -598,23 +561,10 @@ describe('journeyAiTranslateCreate mutation', () => {
       languageId: mockInput.textLanguageId
     } as any)
 
-    mockGenerateText.mockResolvedValueOnce({
-      output: {
-        ...mockAnalysisAndTranslation,
-        description: '' // Empty description
-      },
-      usage: {
-        totalTokens: 1000,
-        inputTokens: 600,
-        outputTokens: 400
-      },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
+    mockTranslateJourneyMetadata.mockResolvedValueOnce({
+      ...mockAnalysisAndTranslation,
+      description: '' // Empty description
+    })
 
     const result = await authClient({
       document: graphql(`
@@ -735,18 +685,17 @@ describe('journeyAiTranslateCreate mutation', () => {
 })
 
 describe('journeyAiTranslateCreateSubscription', () => {
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
-  const mockGenerateText = generateText as jest.MockedFunction<
-    typeof generateText
-  >
-  const mockStreamText = streamText as jest.MockedFunction<typeof streamText>
-  const mockGetCardBlocksContent = getCardBlocksContent as jest.MockedFunction<
+  const mockAbility = ability as MockedFunction<typeof ability>
+  const mockStreamText = streamText as MockedFunction<typeof streamText>
+  const mockGetCardBlocksContent = getCardBlocksContent as MockedFunction<
     typeof getCardBlocksContent
   >
   const mockTranslateCustomizationFields =
-    translateCustomizationFields as jest.MockedFunction<
+    translateCustomizationFields as MockedFunction<
       typeof translateCustomizationFields
     >
+  const mockTranslateJourneyMetadata =
+    translateJourneyMetadata as MockedFunction<typeof translateJourneyMetadata>
 
   // Sample data
   const mockJourneyId = 'journey123'
@@ -840,7 +789,7 @@ describe('journeyAiTranslateCreateSubscription', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Set up prismaMock
     prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
@@ -861,21 +810,8 @@ describe('journeyAiTranslateCreateSubscription', () => {
     // Mock card blocks content
     mockGetCardBlocksContent.mockResolvedValue(mockCardBlocksContent)
 
-    // Mock generateText for journey analysis
-    mockGenerateText.mockResolvedValue({
-      output: mockAnalysisAndTranslation,
-      usage: {
-        totalTokens: 1000,
-        inputTokens: 600,
-        outputTokens: 400
-      },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
+    // Mock journey metadata translation (analysis + title/description/SEO)
+    mockTranslateJourneyMetadata.mockResolvedValue(mockAnalysisAndTranslation)
 
     // Mock streamText for block translations
     mockStreamText.mockReturnValue({
@@ -921,7 +857,7 @@ describe('journeyAiTranslateCreateSubscription', () => {
 
   it('should validate subscription includes SEO fields in schema', () => {
     // Test that the subscription now supports SEO fields
-    expect(mockGenerateText).toBeDefined()
+    expect(mockTranslateJourneyMetadata).toBeDefined()
     expect(mockStreamText).toBeDefined()
 
     // This tests the updated schema includes SEO fields
@@ -958,17 +894,6 @@ describe('journeyAiTranslateCreateSubscription', () => {
     )
     expect(radioOption).toBeDefined()
     expect(radioOption?.parentBlockId).toBe('radio1')
-  })
-
-  it('should translate customization fields in subscription', async () => {
-    // Verify that translateCustomizationFields is called with correct parameters
-    expect(mockTranslateCustomizationFields).toBeDefined()
-
-    // The function should be called during the subscription flow
-    // This is verified by the mock setup in beforeEach
-    expect(
-      mockTranslateCustomizationFields.mock.calls.length
-    ).toBeGreaterThanOrEqual(0)
   })
 
   it('should handle journey with no customization fields', async () => {

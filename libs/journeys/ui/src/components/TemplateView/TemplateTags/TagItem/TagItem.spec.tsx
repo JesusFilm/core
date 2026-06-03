@@ -4,9 +4,9 @@ import Grid1Icon from '@core/shared/ui/icons/Grid1'
 
 import { TagItem } from './TagItem'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('TagItem', () => {

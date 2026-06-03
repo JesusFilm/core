@@ -1,26 +1,27 @@
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyFields } from '../../../../../../../../../../__generated__/JourneyFields'
 
 import { handleCreateRadioOption } from './handleCreateRadioOption'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('handleCreateRadioOption', () => {
-  const dispatch = jest.fn()
-  const addBlock = jest.fn()
-  const radioOptionBlockCreate = jest.fn()
+  const dispatch = vi.fn()
+  const addBlock = vi.fn()
+  const radioOptionBlockCreate = vi.fn()
   const parentBlockId = 'parentBlockId'
   const journey = { id: 'journeyId' } as unknown as JourneyFields
   const siblingCount = 3
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should create a radio option block when sibling count is provided', () => {

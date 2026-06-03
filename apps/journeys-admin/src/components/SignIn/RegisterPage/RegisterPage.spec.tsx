@@ -9,6 +9,7 @@ import {
   updateProfile
 } from 'firebase/auth'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import {
   JourneyPublish,
@@ -18,46 +19,46 @@ import { getFirebaseAuth } from '../../../libs/auth'
 
 import { JOURNEY_PUBLISH, RegisterPage } from './RegisterPage'
 
-const mockLoginWithCredential = jest.fn().mockResolvedValue(undefined)
+const mockLoginWithCredential = vi.fn().mockResolvedValue(undefined)
 
-jest.mock('firebase/auth', () => ({
-  createUserWithEmailAndPassword: jest.fn(),
-  signInWithEmailAndPassword: jest.fn(),
-  updateProfile: jest.fn(),
-  linkWithCredential: jest.fn(),
+vi.mock('firebase/auth', () => ({
+  createUserWithEmailAndPassword: vi.fn(),
+  signInWithEmailAndPassword: vi.fn(),
+  updateProfile: vi.fn(),
+  linkWithCredential: vi.fn(),
   EmailAuthProvider: {
-    credential: jest.fn((email: string, password: string) => ({
+    credential: vi.fn((email: string, password: string) => ({
       email,
       password
     }))
   }
 }))
 
-const mockLogin = jest.fn().mockResolvedValue(undefined)
+const mockLogin = vi.fn().mockResolvedValue(undefined)
 
-jest.mock('../../../libs/auth', () => ({
-  getFirebaseAuth: jest.fn(() => ({ currentUser: null })),
+vi.mock('../../../libs/auth', () => ({
+  getFirebaseAuth: vi.fn(() => ({ currentUser: null })),
   login: (...args: unknown[]) => mockLogin(...args),
   loginWithCredential: (...args: unknown[]) => mockLoginWithCredential(...args)
 }))
 
-jest.mock('../../../libs/pendingGuestJourney', () => ({
-  getPendingGuestJourney: jest.fn(() => null),
-  clearPendingGuestJourney: jest.fn()
+vi.mock('../../../libs/pendingGuestJourney', () => ({
+  getPendingGuestJourney: vi.fn(() => null),
+  clearPendingGuestJourney: vi.fn()
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('PasswordPage', () => {
-  const back = jest.fn()
+  const back = vi.fn()
 
   const routerWithRedirect = {
-    back: jest.fn(),
-    push: jest.fn(),
+    back: vi.fn(),
+    push: vi.fn(),
     query: {
       redirect: '/templates/journey-123/customize'
     }
@@ -66,7 +67,7 @@ describe('PasswordPage', () => {
   beforeEach(() => {
     mockUseRouter.mockReturnValue({
       back,
-      push: jest.fn(),
+      push: vi.fn(),
       query: {
         redirect: null
       }
@@ -76,10 +77,7 @@ describe('PasswordPage', () => {
   it('should render register page', () => {
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={jest.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
 
@@ -92,10 +90,7 @@ describe('PasswordPage', () => {
   it('should require user to enter a name and password', async () => {
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={jest.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
 
@@ -108,12 +103,12 @@ describe('PasswordPage', () => {
 
   it('should allow user to create an account', async () => {
     const mockCreateUserWithEmailAndPassword =
-      createUserWithEmailAndPassword as jest.MockedFunction<
+      createUserWithEmailAndPassword as MockedFunction<
         typeof createUserWithEmailAndPassword
       >
 
     const mockSignInWithEmailAndPassword =
-      signInWithEmailAndPassword as jest.MockedFunction<
+      signInWithEmailAndPassword as MockedFunction<
         typeof signInWithEmailAndPassword
       >
 
@@ -125,10 +120,7 @@ describe('PasswordPage', () => {
 
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={jest.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
 
@@ -150,13 +142,13 @@ describe('PasswordPage', () => {
   })
 
   it('should convert anonymous account to permanent account', async () => {
-    const mockGetFirebaseAuth = getFirebaseAuth as jest.MockedFunction<
+    const mockGetFirebaseAuth = getFirebaseAuth as MockedFunction<
       typeof getFirebaseAuth
     >
-    const mockLinkWithCredential = linkWithCredential as jest.MockedFunction<
+    const mockLinkWithCredential = linkWithCredential as MockedFunction<
       typeof linkWithCredential
     >
-    const mockUpdateProfile = updateProfile as jest.MockedFunction<
+    const mockUpdateProfile = updateProfile as MockedFunction<
       typeof updateProfile
     >
     const anonymousUser = { isAnonymous: true, uid: 'anon-123' }
@@ -176,22 +168,19 @@ describe('PasswordPage', () => {
         query: JOURNEY_PUBLISH,
         variables: { id: 'journey-123' }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyPublish: {
             __typename: 'Journey',
             id: 'journey-123'
           }
         }
-      }))
+      })) as MockedResponse<JourneyPublish, JourneyPublishVariables>['result']
     }
 
     render(
       <MockedProvider mocks={[journeyPublishMock]}>
-        <RegisterPage
-          setActivePage={jest.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
 
@@ -222,7 +211,7 @@ describe('PasswordPage', () => {
 
   it('should show error if existing email is entered', async () => {
     const mockCreateUserWithEmailAndPassword =
-      createUserWithEmailAndPassword as jest.MockedFunction<
+      createUserWithEmailAndPassword as MockedFunction<
         typeof createUserWithEmailAndPassword
       >
 
@@ -232,10 +221,7 @@ describe('PasswordPage', () => {
 
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={jest.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
 
@@ -259,14 +245,14 @@ describe('PasswordPage', () => {
   })
 
   it('should fallback to signInWithEmailAndPassword when anonymous and email-already-in-use', async () => {
-    const mockGetFirebaseAuth = getFirebaseAuth as jest.MockedFunction<
+    const mockGetFirebaseAuth = getFirebaseAuth as MockedFunction<
       typeof getFirebaseAuth
     >
-    const mockLinkWithCredential = linkWithCredential as jest.MockedFunction<
+    const mockLinkWithCredential = linkWithCredential as MockedFunction<
       typeof linkWithCredential
     >
     const mockSignInWithEmailAndPassword =
-      signInWithEmailAndPassword as jest.MockedFunction<
+      signInWithEmailAndPassword as MockedFunction<
         typeof signInWithEmailAndPassword
       >
 
@@ -280,16 +266,13 @@ describe('PasswordPage', () => {
     )
 
     const signedInCredential = {
-      user: { getIdToken: jest.fn().mockResolvedValue('new-token') }
+      user: { getIdToken: vi.fn().mockResolvedValue('new-token') }
     } as unknown as UserCredential
     mockSignInWithEmailAndPassword.mockResolvedValue(signedInCredential)
 
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={jest.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
 
@@ -320,10 +303,7 @@ describe('PasswordPage', () => {
   it('should validate password', async () => {
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={jest.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
     fireEvent.change(screen.getByLabelText('Password'), {
@@ -340,7 +320,7 @@ describe('PasswordPage', () => {
   it('should toggle password visibility on clicking eye', async () => {
     render(
       <MockedProvider>
-        <RegisterPage setActivePage={jest.fn()} userPassword="example" />
+        <RegisterPage setActivePage={vi.fn()} userPassword="example" />
       </MockedProvider>
     )
     const passwordInput = screen.getByLabelText('Password')
@@ -353,10 +333,7 @@ describe('PasswordPage', () => {
   it('should check if name is too short', async () => {
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={jest.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
     fireEvent.change(screen.getByLabelText('Name'), {
@@ -371,10 +348,7 @@ describe('PasswordPage', () => {
   it('should check if name is too long', async () => {
     render(
       <MockedProvider>
-        <RegisterPage
-          setActivePage={jest.fn()}
-          userEmail="example@example.com"
-        />
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
       </MockedProvider>
     )
     fireEvent.change(screen.getByLabelText('Name'), {
@@ -390,7 +364,7 @@ describe('PasswordPage', () => {
   })
 
   it('should go back to home page when cancel is clicked', async () => {
-    const mockSetActivePage = jest.fn()
+    const mockSetActivePage = vi.fn()
     render(
       <MockedProvider>
         <RegisterPage

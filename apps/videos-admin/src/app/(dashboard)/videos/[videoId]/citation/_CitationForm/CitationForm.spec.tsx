@@ -332,7 +332,7 @@ describe('CitationForm Validation', () => {
           verseStart: '',
           verseEnd: ''
         }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         {({ values, errors, handleChange }) => (
           <Form>

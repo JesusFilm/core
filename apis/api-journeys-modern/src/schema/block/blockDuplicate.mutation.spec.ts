@@ -1,22 +1,27 @@
+import { GraphQLError } from 'graphql'
+import { type MockedFunction, vi } from 'vitest'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { Action, ability } from '../../lib/auth/ability'
+import { fetchBlockWithJourneyAcl } from '../../lib/auth/fetchBlockWithJourneyAcl'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 
-jest.mock('../../lib/auth/ability', () => ({
+vi.mock('../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../lib/auth/fetchBlockWithJourneyAcl', () => ({
-  fetchBlockWithJourneyAcl: jest.fn()
+vi.mock('../../lib/auth/fetchBlockWithJourneyAcl', () => ({
+  fetchBlockWithJourneyAcl: vi.fn()
 }))
 
-jest.mock(
+vi.mock(
   '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable',
   () => ({
-    recalculateJourneyCustomizable: jest.fn()
+    recalculateJourneyCustomizable: vi.fn()
   })
 )
 
@@ -49,14 +54,7 @@ describe('blockDuplicate', () => {
       }
     }
   `)
-
-  const {
-    fetchBlockWithJourneyAcl
-  } = require('../../lib/auth/fetchBlockWithJourneyAcl')
-  const {
-    recalculateJourneyCustomizable
-  } = require('../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable')
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockAbility = ability as MockedFunction<typeof ability>
 
   const id = 'blockId'
   const journey = { id: 'journeyId' }
@@ -72,11 +70,11 @@ describe('blockDuplicate', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('duplicates the block when authorized and returns response fields', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue(block)
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue(block)
     mockAbility.mockReturnValue(true)
 
     prismaMock.block.findUnique.mockResolvedValue(block as any)
@@ -126,7 +124,7 @@ describe('blockDuplicate', () => {
       } as any)
 
     const tx = {
-      journey: { update: jest.fn().mockResolvedValue(journey) }
+      journey: { update: vi.fn().mockResolvedValue(journey) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -167,7 +165,7 @@ describe('blockDuplicate', () => {
   })
 
   it('duplicates with custom idMap and returns the mapped id', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue(block)
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue(block)
     mockAbility.mockReturnValue(true)
 
     prismaMock.block.findUnique.mockResolvedValue(block as any)
@@ -217,7 +215,7 @@ describe('blockDuplicate', () => {
       } as any)
 
     const tx = {
-      journey: { update: jest.fn().mockResolvedValue(journey) }
+      journey: { update: vi.fn().mockResolvedValue(journey) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -260,7 +258,7 @@ describe('blockDuplicate', () => {
       y: 200
     }
 
-    fetchBlockWithJourneyAcl.mockResolvedValue(stepBlock)
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue(stepBlock)
     mockAbility.mockReturnValue(true)
 
     prismaMock.block.findUnique.mockResolvedValue(stepBlock as any)
@@ -320,7 +318,7 @@ describe('blockDuplicate', () => {
       } as any)
 
     const tx = {
-      journey: { update: jest.fn().mockResolvedValue(journey) }
+      journey: { update: vi.fn().mockResolvedValue(journey) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -359,7 +357,7 @@ describe('blockDuplicate', () => {
   })
 
   it('returns FORBIDDEN when unauthorized', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue(block)
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue(block)
     mockAbility.mockReturnValue(false)
 
     const result = await authClient({
@@ -379,9 +377,76 @@ describe('blockDuplicate', () => {
     expect(recalculateJourneyCustomizable).not.toHaveBeenCalled()
   })
 
+  it('preserves per-card showAssistant and expandChatByDefault when duplicating a CardBlock', async () => {
+    const cardBlock = {
+      id: 'cardBlockId',
+      typename: 'CardBlock',
+      journeyId: 'journeyId',
+      parentBlockId: 'stepId',
+      parentOrder: 0,
+      backgroundColor: '#FFF',
+      fullscreen: false,
+      themeMode: null,
+      themeName: null,
+      showAssistant: true,
+      expandChatByDefault: false,
+      action: null,
+      settings: {},
+      journey
+    }
+
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue(cardBlock)
+    mockAbility.mockReturnValue(true)
+
+    prismaMock.block.findUnique.mockResolvedValue(cardBlock as any)
+    prismaMock.block.findMany.mockResolvedValueOnce([]).mockResolvedValue([
+      { ...cardBlock, parentOrder: 0 } as any,
+      {
+        ...cardBlock,
+        id: 'duplicatedCardId',
+        parentOrder: 1
+      } as any
+    ])
+    prismaMock.block.create.mockResolvedValue({
+      ...cardBlock,
+      id: 'duplicatedCardId',
+      parentOrder: null
+    } as any)
+    prismaMock.block.update
+      .mockResolvedValueOnce({
+        ...cardBlock,
+        id: 'duplicatedCardId',
+        parentOrder: null
+      } as any)
+      .mockResolvedValueOnce({ ...cardBlock, parentOrder: 0 } as any)
+      .mockResolvedValueOnce({
+        ...cardBlock,
+        id: 'duplicatedCardId',
+        parentOrder: 1
+      } as any)
+
+    const tx = {
+      journey: { update: vi.fn().mockResolvedValue(journey) }
+    }
+    prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
+
+    await authClient({
+      document: BLOCK_DUPLICATE,
+      variables: { id: 'cardBlockId', parentOrder: 1 }
+    })
+
+    expect(prismaMock.block.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          showAssistant: true,
+          expandChatByDefault: false
+        })
+      })
+    )
+  })
+
   it('returns NOT_FOUND when block does not exist', async () => {
-    const { GraphQLError } = require('graphql')
-    fetchBlockWithJourneyAcl.mockRejectedValue(
+    ;(fetchBlockWithJourneyAcl as any).mockRejectedValue(
       new GraphQLError('block not found', {
         extensions: { code: 'NOT_FOUND' }
       })

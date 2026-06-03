@@ -12,7 +12,7 @@ import { CopyLinkItem } from './CopyLinkItem'
 
 Object.assign(navigator, {
   clipboard: {
-    writeText: jest.fn()
+    writeText: vi.fn()
   }
 })
 
@@ -24,14 +24,14 @@ describe('CopyLinkItem', () => {
   })
 
   it('should copy url in development', async () => {
-    const onClose = jest.fn()
-    jest.resetModules()
+    const onClose = vi.fn()
+    vi.resetModules()
     process.env = {
       ...originalEnv,
       NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'
     }
 
-    jest.spyOn(navigator.clipboard, 'writeText')
+    vi.spyOn(navigator.clipboard, 'writeText')
 
     const { getByRole, getByText } = render(
       <SnackbarProvider>
@@ -61,14 +61,14 @@ describe('CopyLinkItem', () => {
   })
 
   it('should copy url in production', async () => {
-    const onClose = jest.fn()
-    jest.resetModules()
+    const onClose = vi.fn()
+    vi.resetModules()
     process.env = {
       ...originalEnv,
       NEXT_PUBLIC_JOURNEYS_URL: undefined
     }
 
-    jest.spyOn(navigator.clipboard, 'writeText')
+    vi.spyOn(navigator.clipboard, 'writeText')
 
     const { getByRole, getByText } = render(
       <SnackbarProvider>
@@ -98,15 +98,15 @@ describe('CopyLinkItem', () => {
   })
 
   it('should copy url in production with custom domain', async () => {
-    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
-    const onClose = jest.fn()
-    jest.resetModules()
+    const result = vi.fn().mockReturnValue(getCustomDomainMock.result)
+    const onClose = vi.fn()
+    vi.resetModules()
     process.env = {
       ...originalEnv,
       NEXT_PUBLIC_JOURNEYS_URL: undefined
     }
 
-    jest.spyOn(navigator.clipboard, 'writeText')
+    vi.spyOn(navigator.clipboard, 'writeText')
 
     const { getByRole, getByText } = render(
       <SnackbarProvider>

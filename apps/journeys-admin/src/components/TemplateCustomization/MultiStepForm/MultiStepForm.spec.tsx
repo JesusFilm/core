@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import React from 'react'
+import { type Mock } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
@@ -46,8 +47,8 @@ const guestAuth = {
     isAnonymous: true
   }
 }
-const mockUseAuth = jest.fn(() => defaultAuth)
-jest.mock('../../../libs/auth', () => ({
+const mockUseAuth = vi.fn(() => defaultAuth)
+vi.mock('../../../libs/auth', () => ({
   useAuth: () => mockUseAuth()
 }))
 
@@ -56,7 +57,7 @@ const defaultFlags = {
   customizableMedia: false
 }
 
-jest.mock('./TemplateVideoUploadProvider', () => ({
+vi.mock('./TemplateVideoUploadProvider', () => ({
   TemplateVideoUploadProvider: ({
     children
   }: {
@@ -64,24 +65,24 @@ jest.mock('./TemplateVideoUploadProvider', () => ({
   }) => <>{children}</>
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   useRouter: () => ({
-    push: jest.fn(),
+    push: vi.fn(),
     query: {}
   })
 }))
 
-const mockPush = jest.fn()
-const mockReplace = jest.fn().mockResolvedValue(true)
-jest.mock('next/router', () => ({
-  useRouter: jest.fn(() => ({
+const mockPush = vi.fn()
+const mockReplace = vi.fn().mockResolvedValue(true)
+vi.mock('next/router', () => ({
+  useRouter: vi.fn(() => ({
     push: mockPush,
     replace: mockReplace,
     query: { journeyId: 'journeyId' },
     isReady: false
   }))
 }))
-const mockUseRouter = jest.requireMock('next/router').useRouter as jest.Mock
+const mockUseRouter = (await vi.importMock('next/router')).useRouter as Mock
 
 function setRouterQuery(
   query: Record<string, string>,
@@ -96,7 +97,7 @@ function setRouterQuery(
 }
 
 // Mock the screen components to avoid complex dependencies
-jest.mock('./Screens', () => ({
+vi.mock('./Screens', () => ({
   LanguageScreen: ({
     handleNext
   }: {
@@ -181,7 +182,7 @@ jest.mock('./Screens', () => ({
 
 describe('MultiStepForm', () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseAuth.mockImplementation(() => defaultAuth)
   })
 

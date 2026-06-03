@@ -26,7 +26,7 @@ describe('useJourneyUpdateMutation', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         journeyUpdate: {
           ...defaultJourney,
@@ -56,7 +56,7 @@ describe('useJourneyUpdateMutation', () => {
           displayTitle: 'display title'
         }
       }
-    }))
+    })) as MockedResponse<JourneySettingsUpdate>['result']
   }
 
   it('should update journey details', async () => {

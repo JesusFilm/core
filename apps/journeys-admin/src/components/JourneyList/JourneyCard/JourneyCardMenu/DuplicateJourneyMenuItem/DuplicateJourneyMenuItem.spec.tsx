@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
@@ -20,35 +21,32 @@ import { defaultJourney } from '../../../journeyListData'
 
 import { DuplicateJourneyMenuItem } from './DuplicateJourneyMenuItem'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({
+  useRouter: vi.fn(() => ({
     query: { tab: 'active' }
   }))
 }))
 
-jest.mock(
-  '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
-  () => ({
-    useTemplateFamilyStatsAggregateLazyQuery: jest.fn()
-  })
-)
+vi.mock('../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: vi.fn()
+}))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 const mockedUseTemplateFamilyStatsAggregateLazyQuery =
-  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+  useTemplateFamilyStatsAggregateLazyQuery as MockedFunction<
     typeof useTemplateFamilyStatsAggregateLazyQuery
   >
 
 describe('DuplicateJourneys', () => {
-  const handleCloseMenu = jest.fn()
-  const refetchTemplateStats = jest.fn()
+  const handleCloseMenu = vi.fn()
+  const refetchTemplateStats = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
       query: [
-        jest.fn(),
+        vi.fn(),
         {
           data: undefined,
           loading: false,
@@ -60,7 +58,7 @@ describe('DuplicateJourneys', () => {
   })
 
   it('should duplicate a journey on menu card click', async () => {
-    const result = jest.fn(() => {
+    const result = vi.fn(() => {
       return {
         data: {
           journeyDuplicate: {
@@ -70,7 +68,7 @@ describe('DuplicateJourneys', () => {
       }
     })
 
-    const result2 = jest.fn(() => ({
+    const result2 = vi.fn(() => ({
       data: {
         teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
         getJourneyProfile: {
@@ -168,7 +166,7 @@ describe('DuplicateJourneys', () => {
   })
 
   it('should duplicate a journey on menu card click with journey from props', async () => {
-    const result = jest.fn(() => {
+    const result = vi.fn(() => {
       return {
         data: {
           journeyDuplicate: {
@@ -178,7 +176,7 @@ describe('DuplicateJourneys', () => {
       }
     })
 
-    const result2 = jest.fn(() => ({
+    const result2 = vi.fn(() => ({
       data: {
         teams: [{ id: 'team1.id', title: 'Team Name', __typename: 'Team' }],
         getJourneyProfile: {
@@ -256,8 +254,8 @@ describe('DuplicateJourneys', () => {
   })
 
   it('should open copy to team dialog when on shared with me', async () => {
-    const push = jest.fn()
-    const events = { on: jest.fn() }
+    const push = vi.fn()
+    const events = { on: vi.fn() }
 
     mockedUseRouter.mockReturnValue({
       query: { param: null },
@@ -265,7 +263,7 @@ describe('DuplicateJourneys', () => {
       events
     } as unknown as NextRouter)
 
-    const result = jest.fn(() => {
+    const result = vi.fn(() => {
       return {
         data: {
           journeyDuplicate: {
@@ -275,7 +273,7 @@ describe('DuplicateJourneys', () => {
       }
     })
 
-    const result2 = jest.fn(() => ({
+    const result2 = vi.fn(() => ({
       data: {
         teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
         getJourneyProfile: {
@@ -294,14 +292,14 @@ describe('DuplicateJourneys', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyProfileUpdate: {
             __typename: 'JourneyProfile',
             id: 'teamId'
           }
         }
-      }))
+      })) as MockedResponse<UpdateLastActiveTeamId>['result']
     }
 
     const mockLanguage = {
@@ -445,8 +443,8 @@ describe('DuplicateJourneys', () => {
   })
 
   it('should open copy to team dialog when on shared with me with journey from props', async () => {
-    const push = jest.fn()
-    const events = { on: jest.fn() }
+    const push = vi.fn()
+    const events = { on: vi.fn() }
 
     mockedUseRouter.mockReturnValue({
       query: { param: null },
@@ -454,7 +452,7 @@ describe('DuplicateJourneys', () => {
       events
     } as unknown as NextRouter)
 
-    const result = jest.fn(() => {
+    const result = vi.fn(() => {
       return {
         data: {
           journeyDuplicate: {
@@ -464,7 +462,7 @@ describe('DuplicateJourneys', () => {
       }
     })
 
-    const result2 = jest.fn(() => ({
+    const result2 = vi.fn(() => ({
       data: {
         teams: [{ id: 'team1.id', title: 'Team Name', __typename: 'Team' }],
         getJourneyProfile: {
@@ -483,14 +481,14 @@ describe('DuplicateJourneys', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyProfileUpdate: {
             __typename: 'JourneyProfile',
             id: 'team1.id'
           }
         }
-      }))
+      })) as MockedResponse<UpdateLastActiveTeamId>['result']
     }
 
     const mockLanguage = {
@@ -700,7 +698,7 @@ describe('DuplicateJourneys', () => {
   })
 
   it('should call refetchTemplateStats when duplicating a journey with fromTemplateId', async () => {
-    const result = jest.fn(() => {
+    const result = vi.fn(() => {
       return {
         data: {
           journeyDuplicate: {
@@ -710,7 +708,7 @@ describe('DuplicateJourneys', () => {
       }
     })
 
-    const result2 = jest.fn(() => ({
+    const result2 = vi.fn(() => ({
       data: {
         teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
         getJourneyProfile: {

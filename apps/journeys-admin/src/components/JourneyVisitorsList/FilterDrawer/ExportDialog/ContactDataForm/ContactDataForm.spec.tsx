@@ -6,7 +6,7 @@ import { ContactDataForm } from './ContactDataForm'
 
 describe('ContactDataForm', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const ContactDataFormWithState = () => {

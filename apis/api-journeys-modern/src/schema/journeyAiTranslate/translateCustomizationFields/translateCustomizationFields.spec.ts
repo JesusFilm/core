@@ -1,18 +1,27 @@
 import { generateText } from 'ai'
+import { type MockedFunction, vi } from 'vitest'
 
 import { translateCustomizationFields } from './translateCustomizationFields'
 
-jest.mock('@ai-sdk/google', () => ({
-  google: jest.fn(() => 'mocked-google-model')
+vi.mock('@openrouter/ai-sdk-provider', () => ({
+  openrouter: {
+    chat: vi.fn(() => 'mocked-openrouter-model')
+  }
 }))
 
-jest.mock('ai', () => ({
-  Output: { object: jest.fn(({ schema }) => ({ schema })) },
-  generateText: jest.fn()
+vi.mock('ai', () => ({
+  Output: { object: vi.fn(({ schema }) => ({ schema })) },
+  generateText: vi.fn()
 }))
 
-jest.mock('@core/shared/ai/prompts', () => ({
-  hardenPrompt: jest.fn((text) => `<hardened>${text}</hardened>`),
+vi.mock('@core/shared/ai/openrouterModel', () => ({
+  withOpenrouterFallback: vi.fn(async (operation) => {
+    return operation('mocked-model')
+  })
+}))
+
+vi.mock('@core/shared/ai/prompts', () => ({
+  hardenPrompt: vi.fn((text) => `<hardened>${text}</hardened>`),
   preSystemPrompt: 'mocked system prompt'
 }))
 
@@ -27,9 +36,7 @@ const baseMockResponse = {
 }
 
 describe('translateCustomizationFields', () => {
-  const mockGenerateText = generateText as jest.MockedFunction<
-    typeof generateText
-  >
+  const mockGenerateText = generateText as MockedFunction<typeof generateText>
 
   const mockJourneyCustomizationFields = [
     {
@@ -62,7 +69,7 @@ describe('translateCustomizationFields', () => {
   ]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should translate customization fields and description', async () => {
@@ -537,5 +544,115 @@ describe('translateCustomizationFields', () => {
     expect(result.translatedDescription).toBeNull()
     expect(result.translatedFields).toHaveLength(0)
     expect(mockGenerateText).not.toHaveBeenCalled()
+  })
+
+  it('should strip surrounding quotes from translated field values', async () => {
+    const fields = [
+      {
+        id: 'field1',
+        journeyId: 'journey123',
+        key: 'greeting',
+        value: 'Hello',
+        defaultValue: 'Welcome',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
+
+    mockGenerateText.mockImplementation(async (options: any) => {
+      const prompt = options.messages[1].content[0].text
+
+      if (prompt.includes('Hello')) {
+        return {
+          output: { translations: ['"Bonjour"'] },
+          ...baseMockResponse
+        } as any
+      }
+      if (prompt.includes('Welcome')) {
+        return {
+          output: { translations: ["'Bienvenue'"] },
+          ...baseMockResponse
+        } as any
+      }
+
+      return {
+        output: { translations: ['Translated'] },
+        ...baseMockResponse
+      } as any
+    })
+
+    const result = await translateCustomizationFields({
+      journeyCustomizationDescription: null,
+      journeyCustomizationFields: fields,
+      sourceLanguageName: 'English',
+      targetLanguageName: 'French'
+    })
+
+    expect(result.translatedFields[0].translatedValue).toBe('Bonjour')
+    expect(result.translatedFields[0].translatedDefaultValue).toBe('Bienvenue')
+  })
+
+  it('should strip list-item prefixes from translated field values', async () => {
+    const fields = [
+      {
+        id: 'field1',
+        journeyId: 'journey123',
+        key: 'greeting',
+        value: 'Hello',
+        defaultValue: 'Welcome',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
+
+    mockGenerateText.mockImplementation(async (options: any) => {
+      const prompt = options.messages[1].content[0].text
+
+      if (prompt.includes('Hello')) {
+        return {
+          output: { translations: ['1. Bonjour'] },
+          ...baseMockResponse
+        } as any
+      }
+      if (prompt.includes('Welcome')) {
+        return {
+          output: { translations: ['- Bienvenue'] },
+          ...baseMockResponse
+        } as any
+      }
+
+      return {
+        output: { translations: ['Translated'] },
+        ...baseMockResponse
+      } as any
+    })
+
+    const result = await translateCustomizationFields({
+      journeyCustomizationDescription: null,
+      journeyCustomizationFields: fields,
+      sourceLanguageName: 'English',
+      targetLanguageName: 'French'
+    })
+
+    expect(result.translatedFields[0].translatedValue).toBe('Bonjour')
+    expect(result.translatedFields[0].translatedDefaultValue).toBe('Bienvenue')
+  })
+
+  it('should strip quotes from translated description', async () => {
+    mockGenerateText.mockResolvedValueOnce({
+      output: {
+        translatedDescription: '"Bienvenue!"'
+      },
+      ...baseMockResponse
+    } as any)
+
+    const result = await translateCustomizationFields({
+      journeyCustomizationDescription: 'Welcome!',
+      journeyCustomizationFields: [],
+      sourceLanguageName: 'English',
+      targetLanguageName: 'French'
+    })
+
+    expect(result.translatedDescription).toBe('Bienvenue!')
   })
 })

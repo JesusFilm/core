@@ -1,15 +1,21 @@
+import { useMutation } from '@apollo/client'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { useRouter } from 'next/navigation'
+import { enqueueSnackbar } from 'notistack'
+import { type Mock } from 'vitest'
+
+import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
 
 // Import the component under test
 import DeleteAudio from './page'
 
 // Mock Apollo client
-jest.mock('@apollo/client', () => {
-  const original = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const original = await vi.importActual('@apollo/client')
   return {
     ...original,
-    useMutation: jest.fn(() => [jest.fn(), { loading: false }]),
-    useSuspenseQuery: jest.fn(() => ({
+    useMutation: vi.fn(() => [vi.fn(), { loading: false }]),
+    useSuspenseQuery: vi.fn(() => ({
       data: {
         videoVariant: {
           id: 'variant-456',
@@ -23,7 +29,7 @@ jest.mock('@apollo/client', () => {
 })
 
 // Mock the Dialog component
-jest.mock('@core/shared/ui/Dialog', () => ({
+vi.mock('@core/shared/ui/Dialog', () => ({
   Dialog: ({ children, onClose, dialogTitle, dialogAction, loading }) => (
     <div data-testid="mock-dialog">
       <div data-testid="dialog-title">{dialogTitle.title}</div>
@@ -43,15 +49,15 @@ jest.mock('@core/shared/ui/Dialog', () => ({
 }))
 
 // Mock router
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn()
-  })
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
+  }))
 }))
 
 // Mock notistack
-jest.mock('notistack', () => ({
-  enqueueSnackbar: jest.fn()
+vi.mock('notistack', () => ({
+  enqueueSnackbar: vi.fn()
 }))
 
 describe('DeleteAudio', () => {
@@ -60,39 +66,38 @@ describe('DeleteAudio', () => {
   const mockReturnUrl = `/videos/${mockVideoId}/audio`
 
   // Mock functions
-  const mockDeleteMutation = jest.fn()
-  const mockRouterPush = jest.fn()
-  const mockEnqueueSnackbar = jest.fn()
+  const mockDeleteMutation = vi.fn()
+  const mockRouterPush = vi.fn()
+  const mockEnqueueSnackbar = vi.fn()
 
   // Reset mocks before each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Mock router.push
-    jest
-      .spyOn(require('next/navigation'), 'useRouter')
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     // Mock useMutation
-    jest
-      .spyOn(require('@apollo/client'), 'useMutation')
-      .mockReturnValue([mockDeleteMutation, { loading: false }])
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+      mockDeleteMutation,
+      { loading: false }
+    ])
 
     // Mock enqueueSnackbar
-    jest
-      .spyOn(require('notistack'), 'enqueueSnackbar')
-      .mockImplementation(mockEnqueueSnackbar)
+    vi.mocked(enqueueSnackbar as unknown as Mock).mockImplementation(
+      mockEnqueueSnackbar
+    )
   })
 
   it('renders the delete audio dialog with confirmation message', () => {
     render(
       <DeleteAudio
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 
@@ -114,10 +119,10 @@ describe('DeleteAudio', () => {
   it('navigates back when cancel button is clicked', () => {
     render(
       <DeleteAudio
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 
@@ -133,10 +138,10 @@ describe('DeleteAudio', () => {
   it('calls delete mutation when delete button is clicked', () => {
     render(
       <DeleteAudio
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 
@@ -149,16 +154,17 @@ describe('DeleteAudio', () => {
 
   it('shows loading state when mutation is in progress', () => {
     // Mock loading state
-    jest
-      .spyOn(require('@apollo/client'), 'useMutation')
-      .mockReturnValue([mockDeleteMutation, { loading: true }])
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
+      mockDeleteMutation,
+      { loading: true }
+    ])
 
     render(
       <DeleteAudio
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 

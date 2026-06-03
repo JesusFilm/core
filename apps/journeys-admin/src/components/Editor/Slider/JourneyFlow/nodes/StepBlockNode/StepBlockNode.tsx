@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { NodeProps, useUpdateNodeInternals } from '@xyflow/react'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
@@ -33,7 +33,12 @@ export function StepBlockNode({
 
   const step = steps?.find((step) => step.id === id)
   const actionBlocks = filterActionBlocks(step)
-  updateNodeInternals(step?.id ?? '')
+
+  useEffect(() => {
+    if (step?.id != null) {
+      updateNodeInternals(step.id)
+    }
+  }, [step?.id, actionBlocks.length, updateNodeInternals])
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id

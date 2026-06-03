@@ -1,3 +1,5 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { Action, ability } from '../../lib/auth/ability'
@@ -5,35 +7,34 @@ import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import { translateCustomizationDescription } from './translateCustomizationFields/translateCustomizationFields'
 
-jest.mock('@ai-sdk/google', () => ({
-  google: jest.fn(() => 'mocked-google-model')
+vi.mock('@openrouter/ai-sdk-provider', () => ({
+  openrouter: {
+    chat: vi.fn(() => 'mocked-openrouter-model')
+  }
 }))
 
-jest.mock('ai', () => ({
+vi.mock('ai', () => ({
   Output: {
-    object: jest.fn((config) => ({ type: 'object', ...config }))
+    object: vi.fn((config) => ({ type: 'object', ...config }))
   },
-  generateText: jest.fn()
+  generateText: vi.fn()
 }))
 
-jest.mock('@core/shared/ai/prompts', () => ({
-  hardenPrompt: jest.fn((text) => `<hardened>${text}</hardened>`),
+vi.mock('@core/shared/ai/prompts', () => ({
+  hardenPrompt: vi.fn((text) => `<hardened>${text}</hardened>`),
   preSystemPrompt: 'mocked system prompt'
 }))
 
-jest.mock('../../lib/auth/ability', () => ({
+vi.mock('../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock(
-  './translateCustomizationFields/translateCustomizationFields',
-  () => ({
-    translateCustomizationFields: jest.fn(),
-    translateCustomizationDescription: jest.fn()
-  })
-)
+vi.mock('./translateCustomizationFields/translateCustomizationFields', () => ({
+  translateCustomizationFields: vi.fn(),
+  translateCustomizationDescription: vi.fn()
+}))
 
 const JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE = graphql(`
   mutation JourneyCustomizationDescriptionTranslate(
@@ -47,9 +48,9 @@ const JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE = graphql(`
 `)
 
 describe('journeyCustomizationDescriptionTranslate', () => {
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockAbility = ability as MockedFunction<typeof ability>
   const mockTranslateDescription =
-    translateCustomizationDescription as jest.MockedFunction<
+    translateCustomizationDescription as MockedFunction<
       typeof translateCustomizationDescription
     >
 
@@ -84,7 +85,7 @@ describe('journeyCustomizationDescriptionTranslate', () => {
   })
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockAbility.mockReturnValue(true)
     prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
     mockTranslateDescription.mockResolvedValue(
@@ -131,26 +132,6 @@ describe('journeyCustomizationDescriptionTranslate', () => {
   })
 
   it('should skip translation when description is null', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
-      ...mockJourney,
-      journeyCustomizationDescription: null
-    } as any)
-
-    prismaMock.journey.findUniqueOrThrow.mockResolvedValueOnce({
-      ...mockJourney,
-      journeyCustomizationDescription: null
-    } as any)
-
-    await authClient({
-      document: JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE,
-      variables: { input: mockInput }
-    })
-
-    expect(mockTranslateDescription).not.toHaveBeenCalled()
-    expect(prismaMock.journey.update).not.toHaveBeenCalled()
-  })
-
-  it('should skip all translation when no description', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       ...mockJourney,
       journeyCustomizationDescription: null

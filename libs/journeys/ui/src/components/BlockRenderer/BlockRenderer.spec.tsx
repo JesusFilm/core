@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
@@ -15,15 +16,15 @@ import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
 
 import { BlockRenderer } from './BlockRenderer'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('BlockRenderer', () => {
-  const stepViewEventResult = jest.fn(() => ({
+  const stepViewEventResult = vi.fn(() => ({
     data: {
       stepViewEventCreate: {
         id: 'uuid',
@@ -146,7 +147,9 @@ describe('BlockRenderer', () => {
             color: null
           }
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
@@ -187,7 +190,9 @@ describe('BlockRenderer', () => {
             color: null
           }
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const { getByTestId, getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>

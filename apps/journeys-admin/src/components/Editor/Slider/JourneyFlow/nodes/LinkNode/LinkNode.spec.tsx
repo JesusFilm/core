@@ -85,7 +85,9 @@ describe('LinkNode', () => {
               settings: null,
               eventLabel: null
             }
-          ]
+          ],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     }

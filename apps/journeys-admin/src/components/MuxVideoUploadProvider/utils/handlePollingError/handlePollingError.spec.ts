@@ -5,18 +5,18 @@ import { handlePollingError } from './handlePollingError'
 
 describe('handlePollingError', () => {
   beforeEach(() => {
-    jest.useFakeTimers()
-    jest.clearAllMocks()
+    vi.useFakeTimers()
+    vi.clearAllMocks()
   })
 
   afterEach(() => {
-    jest.runOnlyPendingTimers()
-    jest.useRealTimers()
+    vi.runOnlyPendingTimers()
+    vi.useRealTimers()
   })
 
   it('should update task status to error', () => {
-    const setPollingTasks = jest.fn()
-    const showSnackbar = jest.fn()
+    const setPollingTasks = vi.fn()
+    const showSnackbar = vi.fn()
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const task: PollingTask = {
@@ -40,8 +40,8 @@ describe('handlePollingError', () => {
   })
 
   it('should clear polling interval', () => {
-    const setPollingTasks = jest.fn()
-    const showSnackbar = jest.fn()
+    const setPollingTasks = vi.fn()
+    const showSnackbar = vi.fn()
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const noop = (): void => {
@@ -60,8 +60,8 @@ describe('handlePollingError', () => {
   })
 
   it('should show error snackbar', () => {
-    const setPollingTasks = jest.fn()
-    const showSnackbar = jest.fn()
+    const setPollingTasks = vi.fn()
+    const showSnackbar = vi.fn()
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
 
@@ -79,8 +79,8 @@ describe('handlePollingError', () => {
   })
 
   it('should remove task after cleanup delay', () => {
-    const setPollingTasks = jest.fn()
-    const showSnackbar = jest.fn()
+    const setPollingTasks = vi.fn()
+    const showSnackbar = vi.fn()
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const task: PollingTask = {
@@ -99,7 +99,7 @@ describe('handlePollingError', () => {
     expect(setPollingTasks).toHaveBeenCalledTimes(1)
 
     // Advance time by cleanup delay
-    jest.advanceTimersByTime(TASK_CLEANUP_DELAY)
+    vi.advanceTimersByTime(TASK_CLEANUP_DELAY)
 
     // Second call removes the task
     expect(setPollingTasks).toHaveBeenCalledTimes(2)
@@ -112,8 +112,8 @@ describe('handlePollingError', () => {
   })
 
   it('should return previous map if task does not exist', () => {
-    const setPollingTasks = jest.fn()
-    const showSnackbar = jest.fn()
+    const setPollingTasks = vi.fn()
+    const showSnackbar = vi.fn()
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const prev = new Map<string, PollingTask>()

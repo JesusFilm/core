@@ -1,11 +1,16 @@
+import { useMutation } from '@apollo/client'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
+
+import { resolvedParams } from '../../../../../../../../test/utils/resolvedParams'
 
 import SubtitlePage from './page'
 
 // Mock the components used in the page
-jest.mock('../_SubtitleFileUpload', () => ({
+vi.mock('../_SubtitleFileUpload', () => ({
   SubtitleFileUpload: ({ subtitle }) => (
     <div data-testid="subtitle-file-upload">
       <div data-testid="subtitle-vtt-src">{subtitle?.vttSrc}</div>
@@ -14,7 +19,7 @@ jest.mock('../_SubtitleFileUpload', () => ({
   )
 }))
 
-jest.mock('../../../../../../../../components/FormLanguageSelect', () => ({
+vi.mock('../../../../../../../../components/FormLanguageSelect', () => ({
   FormLanguageSelect: ({ name, label, initialLanguage }) => (
     <div data-testid="form-language-select">
       <div data-testid="language-name">{name}</div>
@@ -25,9 +30,9 @@ jest.mock('../../../../../../../../components/FormLanguageSelect', () => ({
 }))
 
 // Mock the Apollo Client hooks
-jest.mock('@apollo/client', () => ({
-  useMutation: jest.fn(() => [jest.fn(), { loading: false }]),
-  useSuspenseQuery: jest.fn(() => ({
+vi.mock('@apollo/client', () => ({
+  useMutation: vi.fn(() => [vi.fn(), { loading: false }]),
+  useSuspenseQuery: vi.fn(() => ({
     data: {
       videoEdition: {
         name: 'Test Edition',
@@ -56,22 +61,22 @@ jest.mock('@apollo/client', () => ({
 }))
 
 // Mock the next/navigation
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
-    push: jest.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
   }))
 }))
 
 // Mock the useCreateR2AssetMutation hook
-jest.mock(
+vi.mock(
   '../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset',
   () => ({
-    useCreateR2AssetMutation: jest.fn(() => [jest.fn()])
+    useCreateR2AssetMutation: vi.fn(() => [vi.fn()])
   })
 )
 
 // Mock Dialog component
-jest.mock('@core/shared/ui/Dialog', () => ({
+vi.mock('@core/shared/ui/Dialog', () => ({
   Dialog: ({ children, onClose, dialogTitle }) => (
     <div data-testid="dialog">
       <div data-testid="dialog-title">{dialogTitle.title}</div>
@@ -84,8 +89,8 @@ jest.mock('@core/shared/ui/Dialog', () => ({
 }))
 
 // Mock Formik to make it easier to test
-jest.mock('formik', () => {
-  const originalModule = jest.requireActual('formik')
+vi.mock('formik', async () => {
+  const originalModule = (await vi.importActual('formik')) as any
   return {
     ...originalModule,
     Formik: ({ initialValues, onSubmit, children }) => {
@@ -96,25 +101,25 @@ jest.mock('formik', () => {
         isSubmitting: false,
         isValidating: false,
         submitCount: 0,
-        handleChange: jest.fn(),
-        handleBlur: jest.fn(),
+        handleChange: vi.fn(),
+        handleBlur: vi.fn(),
         handleSubmit: (e) => {
           e?.preventDefault?.()
-          onSubmit(initialValues, { setSubmitting: jest.fn() })
+          onSubmit(initialValues, { setSubmitting: vi.fn() })
         },
-        handleReset: jest.fn(),
-        setFieldValue: jest.fn(),
-        setFieldError: jest.fn(),
-        setFieldTouched: jest.fn(),
-        validateForm: jest.fn(),
-        validateField: jest.fn(),
-        setErrors: jest.fn(),
-        setTouched: jest.fn(),
-        setValues: jest.fn(),
-        setStatus: jest.fn(),
-        setSubmitting: jest.fn(),
-        resetForm: jest.fn(),
-        setFormikState: jest.fn(),
+        handleReset: vi.fn(),
+        setFieldValue: vi.fn(),
+        setFieldError: vi.fn(),
+        setFieldTouched: vi.fn(),
+        validateForm: vi.fn(),
+        validateField: vi.fn(),
+        setErrors: vi.fn(),
+        setTouched: vi.fn(),
+        setValues: vi.fn(),
+        setStatus: vi.fn(),
+        setSubmitting: vi.fn(),
+        resetForm: vi.fn(),
+        setFormikState: vi.fn(),
         dirty: true,
         isValid: true
       }
@@ -128,7 +133,7 @@ jest.mock('formik', () => {
             <button
               data-testid="submit-button"
               onClick={() =>
-                onSubmit(initialValues, { setSubmitting: jest.fn() })
+                onSubmit(initialValues, { setSubmitting: vi.fn() })
               }
             >
               Submit
@@ -146,11 +151,11 @@ describe('SubtitlePage', () => {
     render(
       <SnackbarProvider>
         <SubtitlePage
-          params={{
+          params={resolvedParams({
             videoId: 'video-123',
             editionId: 'edition-123',
             subtitleId: 'subtitle-123'
-          }}
+          })}
         />
       </SnackbarProvider>
     )
@@ -181,8 +186,8 @@ describe('SubtitlePage', () => {
   })
 
   it('redirects on close button click', async () => {
-    const mockRouter = { push: jest.fn() }
-    require('next/navigation').useRouter.mockReturnValue(mockRouter)
+    const mockRouter = { push: vi.fn() }
+    vi.mocked(useRouter as unknown as Mock).mockReturnValue(mockRouter)
 
     renderComponent()
 
@@ -196,8 +201,8 @@ describe('SubtitlePage', () => {
   })
 
   it('calls update mutation on form submission', async () => {
-    const mockUpdateMutation = jest.fn()
-    require('@apollo/client').useMutation.mockReturnValue([
+    const mockUpdateMutation = vi.fn()
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
       mockUpdateMutation,
       { loading: false }
     ])

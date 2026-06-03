@@ -4,7 +4,7 @@ import { AudioLanguageFileUpload } from './AudioLanguageFileUpload'
 
 describe('AudioLanguageFileUpload', () => {
   it('should render upload area', () => {
-    render(<AudioLanguageFileUpload onFileSelect={jest.fn()} />)
+    render(<AudioLanguageFileUpload onFileSelect={vi.fn()} />)
 
     expect(screen.getByTestId('AudioLanguageFileUpload')).toBeInTheDocument()
     expect(screen.getByText('Drop a video here')).toBeInTheDocument()
@@ -15,7 +15,7 @@ describe('AudioLanguageFileUpload', () => {
     const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
 
     render(
-      <AudioLanguageFileUpload onFileSelect={jest.fn()} selectedFile={file} />
+      <AudioLanguageFileUpload onFileSelect={vi.fn()} selectedFile={file} />
     )
 
     expect(screen.getByText('test.mp4')).toBeInTheDocument()
@@ -26,7 +26,7 @@ describe('AudioLanguageFileUpload', () => {
     it('should show uploading state with progress bar', () => {
       render(
         <AudioLanguageFileUpload
-          onFileSelect={jest.fn()}
+          onFileSelect={vi.fn()}
           uploading
           uploadProgress={50}
         />
@@ -42,7 +42,7 @@ describe('AudioLanguageFileUpload', () => {
     })
 
     it('should show processing state with indeterminate progress bar', () => {
-      render(<AudioLanguageFileUpload onFileSelect={jest.fn()} processing />)
+      render(<AudioLanguageFileUpload onFileSelect={vi.fn()} processing />)
 
       expect(screen.getByText('Processing...')).toBeInTheDocument()
       expect(screen.getByRole('progressbar')).toBeInTheDocument()
@@ -55,7 +55,7 @@ describe('AudioLanguageFileUpload', () => {
     it('should show error state', () => {
       render(
         <AudioLanguageFileUpload
-          onFileSelect={jest.fn()}
+          onFileSelect={vi.fn()}
           error="Something went wrong"
         />
       )
@@ -70,7 +70,7 @@ describe('AudioLanguageFileUpload', () => {
   describe('file handling', () => {
     it('should handle successful file selection', async () => {
       const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
-      const onFileSelect = jest.fn()
+      const onFileSelect = vi.fn()
 
       render(<AudioLanguageFileUpload onFileSelect={onFileSelect} />)
       const input = screen.getByTestId('DropZone')
@@ -83,7 +83,7 @@ describe('AudioLanguageFileUpload', () => {
 
     it('should handle file rejection', async () => {
       const file = new File(['test'], 'test.txt', { type: 'text/plain' })
-      const onFileSelect = jest.fn()
+      const onFileSelect = vi.fn()
 
       render(<AudioLanguageFileUpload onFileSelect={onFileSelect} />)
 

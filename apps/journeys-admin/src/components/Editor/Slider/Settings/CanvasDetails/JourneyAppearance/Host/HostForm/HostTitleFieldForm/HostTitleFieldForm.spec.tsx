@@ -27,7 +27,7 @@ describe('HostTitleFieldForm', () => {
   })
 
   it('should call on change on text input', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(<HostTitleFieldForm value="" onChange={onChange} />)
     const input = screen.getByRole('textbox', { name: 'Host Name' })
     fireEvent.change(input, { target: { value: 'Someone' } })

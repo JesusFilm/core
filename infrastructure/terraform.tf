@@ -16,7 +16,7 @@ terraform {
       source = "DopplerHQ/doppler"
     }
   }
-  required_version = ">= 1.0.9"
+  required_version = ">= 1.11.0"
 }
 
 provider "aws" {

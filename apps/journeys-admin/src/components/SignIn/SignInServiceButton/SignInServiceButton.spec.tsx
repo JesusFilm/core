@@ -8,6 +8,7 @@ import {
   signInWithPopup
 } from 'firebase/auth'
 import { NextRouter, useRouter } from 'next/router'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import {
   JourneyPublish,
@@ -18,78 +19,74 @@ import { JOURNEY_PUBLISH } from '../RegisterPage/RegisterPage'
 
 import { SignInServiceButton } from './SignInServiceButton'
 
-const mockSetCustomParameters = jest.fn()
-const mockLoginWithCredential = jest.fn().mockResolvedValue(undefined)
-const mockLogin = jest.fn().mockResolvedValue(undefined)
+const mockSetCustomParameters = vi.fn()
+const mockLoginWithCredential = vi.fn().mockResolvedValue(undefined)
+const mockLogin = vi.fn().mockResolvedValue(undefined)
 
-jest.mock('firebase/auth', () => {
-  const credentialFromError = jest.fn()
-  const OAuthProviderMock: jest.Mock & {
-    credentialFromError: jest.Mock
+vi.mock('firebase/auth', () => {
+  const credentialFromError = vi.fn()
+  const OAuthProviderMock: Mock & {
+    credentialFromError: Mock
   } = Object.assign(
-    jest.fn().mockImplementation(() => ({
-      setCustomParameters: jest.fn()
+    vi.fn().mockImplementation(() => ({
+      setCustomParameters: vi.fn()
     })),
     { credentialFromError }
   )
   return {
-    signInWithPopup: jest.fn(),
-    signInWithCredential: jest.fn(),
-    linkWithPopup: jest.fn(),
+    signInWithPopup: vi.fn(),
+    signInWithCredential: vi.fn(),
+    linkWithPopup: vi.fn(),
     OAuthProvider: OAuthProviderMock,
-    GoogleAuthProvider: jest.fn().mockImplementation(() => ({
-      setCustomParameters: jest.fn()
+    GoogleAuthProvider: vi.fn().mockImplementation(() => ({
+      setCustomParameters: vi.fn()
     })),
-    FacebookAuthProvider: jest.fn().mockImplementation(() => ({
-      setCustomParameters: jest.fn()
+    FacebookAuthProvider: vi.fn().mockImplementation(() => ({
+      setCustomParameters: vi.fn()
     }))
   }
 })
 
-jest.mock('../../../libs/auth', () => ({
-  getFirebaseAuth: jest.fn(() => ({ currentUser: null })),
+vi.mock('../../../libs/auth', () => ({
+  getFirebaseAuth: vi.fn(() => ({ currentUser: null })),
   login: (...args: unknown[]) => mockLogin(...args),
   loginWithCredential: (...args: unknown[]) => mockLoginWithCredential(...args)
 }))
 
-jest.mock('../../../libs/pendingGuestJourney', () => ({
-  getPendingGuestJourney: jest.fn(() => null),
-  clearPendingGuestJourney: jest.fn()
+vi.mock('../../../libs/pendingGuestJourney', () => ({
+  getPendingGuestJourney: vi.fn(() => null),
+  clearPendingGuestJourney: vi.fn()
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockSignInWithPopup = signInWithPopup as jest.MockedFunction<
+const mockSignInWithPopup = signInWithPopup as MockedFunction<
   typeof signInWithPopup
 >
-const mockSignInWithCredential = signInWithCredential as jest.MockedFunction<
+const mockSignInWithCredential = signInWithCredential as MockedFunction<
   typeof signInWithCredential
 >
-const mockGetFirebaseAuth = getFirebaseAuth as jest.MockedFunction<
+const mockGetFirebaseAuth = getFirebaseAuth as MockedFunction<
   typeof getFirebaseAuth
 >
-const mockLinkWithPopup = linkWithPopup as jest.MockedFunction<
-  typeof linkWithPopup
->
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { OAuthProvider: MockedOAuthProvider } = require('firebase/auth')
-
-const mockCredentialFromError =
-  MockedOAuthProvider.credentialFromError as jest.Mock
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockLinkWithPopup = linkWithPopup as MockedFunction<typeof linkWithPopup>
+const mockCredentialFromError = (
+  OAuthProvider as unknown as { credentialFromError: Mock }
+).credentialFromError
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('SignInServiceButton', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetFirebaseAuth.mockReturnValue({
       currentUser: null
     } as ReturnType<typeof getFirebaseAuth>)
     mockUseRouter.mockReturnValue({
-      back: jest.fn(),
-      push: jest.fn(),
+      back: vi.fn(),
+      push: vi.fn(),
       query: {}
     } as unknown as NextRouter)
   })
@@ -144,13 +141,13 @@ describe('SignInServiceButton', () => {
       user: {
         displayName: 'First name last name',
         email: 'example@example.com',
-        getIdToken: jest.fn().mockResolvedValue('guest-linked-token')
+        getIdToken: vi.fn().mockResolvedValue('guest-linked-token')
       }
     } as unknown as UserCredential
 
     const routerWithRedirect = {
-      back: jest.fn(),
-      push: jest.fn(),
+      back: vi.fn(),
+      push: vi.fn(),
       query: { redirect: '/templates/journey-123/customize' }
     } as unknown as NextRouter
 
@@ -177,14 +174,14 @@ describe('SignInServiceButton', () => {
           query: JOURNEY_PUBLISH,
           variables: { id: 'journey-123' }
         },
-        result: jest.fn(() => ({
+        result: vi.fn(() => ({
           data: {
             journeyPublish: {
               __typename: 'Journey',
               id: 'journey-123'
             }
           }
-        }))
+        })) as MockedResponse<JourneyPublish, JourneyPublishVariables>['result']
       }
 
       render(
@@ -217,14 +214,14 @@ describe('SignInServiceButton', () => {
           query: JOURNEY_PUBLISH,
           variables: { id: 'journey-123' }
         },
-        result: jest.fn(() => ({
+        result: vi.fn(() => ({
           data: {
             journeyPublish: {
               __typename: 'Journey',
               id: 'journey-123'
             }
           }
-        }))
+        })) as MockedResponse<JourneyPublish, JourneyPublishVariables>['result']
       }
 
       render(
@@ -255,14 +252,14 @@ describe('SignInServiceButton', () => {
           query: JOURNEY_PUBLISH,
           variables: { id: 'journey-123' }
         },
-        result: jest.fn(() => ({
+        result: vi.fn(() => ({
           data: {
             journeyPublish: {
               __typename: 'Journey',
               id: 'journey-123'
             }
           }
-        }))
+        })) as MockedResponse<JourneyPublish, JourneyPublishVariables>['result']
       }
 
       render(
@@ -287,7 +284,7 @@ describe('SignInServiceButton', () => {
     })
 
     it('should call getIdToken with force-refresh on the pending journey path', async () => {
-      const mockGetIdToken = jest.fn().mockResolvedValue('fresh-google-token')
+      const mockGetIdToken = vi.fn().mockResolvedValue('fresh-google-token')
       mockLinkWithPopup.mockResolvedValueOnce({
         user: {
           displayName: 'Jane Smith',
@@ -297,15 +294,15 @@ describe('SignInServiceButton', () => {
       } as unknown as UserCredential)
 
       mockUseRouter.mockReturnValueOnce({
-        back: jest.fn(),
-        push: jest.fn(),
+        back: vi.fn(),
+        push: vi.fn(),
         query: {}
       } as unknown as NextRouter)
 
-      const { getPendingGuestJourney } = jest.requireMock(
+      const { getPendingGuestJourney } = await vi.importMock(
         '../../../libs/pendingGuestJourney'
       )
-      ;(getPendingGuestJourney as jest.Mock).mockReturnValueOnce({
+      ;(getPendingGuestJourney as Mock).mockReturnValueOnce({
         journeyId: 'pending-journey-id'
       })
 
@@ -342,7 +339,7 @@ describe('SignInServiceButton', () => {
       )
 
       const signedInCredential = {
-        user: { getIdToken: jest.fn().mockResolvedValue('new-token') }
+        user: { getIdToken: vi.fn().mockResolvedValue('new-token') }
       } as unknown as UserCredential
       mockSignInWithCredential.mockResolvedValueOnce(signedInCredential)
 

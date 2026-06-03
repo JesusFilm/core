@@ -20,7 +20,7 @@ import {
 
 import { Label } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -51,7 +51,7 @@ describe('Edit Label field', () => {
         label: 'Your answer here more'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
@@ -69,7 +69,7 @@ describe('Edit Label field', () => {
         label: 'Your answer here'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
@@ -87,7 +87,7 @@ describe('Edit Label field', () => {
         label: 'Your answer here more'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
@@ -105,7 +105,7 @@ describe('Edit Label field', () => {
         label: ''
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
@@ -115,7 +115,7 @@ describe('Edit Label field', () => {
     }))
   }
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should display label value', () => {
     render(
@@ -263,7 +263,7 @@ describe('Edit Label field', () => {
           hideLabel: true
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           textResponseBlockUpdate: {
             id: block.id,

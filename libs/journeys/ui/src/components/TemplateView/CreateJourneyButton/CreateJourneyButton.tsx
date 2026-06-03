@@ -23,6 +23,7 @@ export interface JourneyForTemplate {
   template?: boolean | null
   customizable?: boolean | null
   fromTemplateId?: string | null
+  team?: { id: string } | null
   language: {
     id: string
     name: Array<{ value: string; primary: boolean }>
@@ -357,8 +358,10 @@ export function CreateJourneyButton({
               : undefined
           }
           isTranslating={translationVariables != null}
-          journeyIsTemplate={journeyDataToUse?.template ?? false}
-          journeyFromTemplateId={journeyDataToUse?.fromTemplateId}
+          defaultToActiveTeam={
+            journeyDataToUse?.team != null &&
+            journeyDataToUse.team.id !== 'jfp-team'
+          }
         />
       )}
     </>

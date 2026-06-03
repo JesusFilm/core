@@ -41,7 +41,7 @@ function PageMainBody({ languageId }: PageMainProps): ReactElement {
     handleVideoSelect,
     handleMuxInsertComplete,
     handleSkipActiveVideo
-  } = useWatchHeroCarousel({ locale: '529' })
+  } = useWatchHeroCarousel({ languageId })
 
   return (
     <div>

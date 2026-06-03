@@ -36,7 +36,9 @@ const card: TreeBlock<CardBlock> = {
   fullscreen: true,
   backdropBlur: null,
   eventLabel: null,
-  children: [image]
+  children: [image],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 const emptyCard: TreeBlock<CardBlock> = {
@@ -51,7 +53,9 @@ const emptyCard: TreeBlock<CardBlock> = {
   fullscreen: true,
   backdropBlur: null,
   eventLabel: null,
-  children: []
+  children: [],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 describe('getPriorityImage', () => {
