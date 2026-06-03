@@ -5,7 +5,14 @@ import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ChangeEvent, MouseEvent, ReactElement, useId, useState } from 'react'
+import {
+  ChangeEvent,
+  FocusEvent,
+  MouseEvent,
+  ReactElement,
+  useId,
+  useState
+} from 'react'
 
 import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
 
@@ -17,10 +24,16 @@ interface MediaSectionProps {
   media: CollectionMediaValues
   /** Inline error for the media field (schema or backend reason message). */
   error?: string
-  /** Updates the form's media value. */
+  /** Transient update — typing a link, an upload starting. No network. */
   onChange: (media: CollectionMediaValues) => void
-  /** Marks the media field touched (URL blur). */
-  onBlur: () => void
+  /**
+   * Commit — the value is final, persist it now (out of band from the
+   * dialog's Save). Fires on link blur, upload completion, and Remove. The
+   * parent runs the immediate save and writes the normalized result back.
+   */
+  onCommit: (media: CollectionMediaValues) => void
+  /** True while the parent is persisting a committed media value. */
+  saving?: boolean
   /** Section-header typography, shared with the rest of the dialog. */
   headerSx: SxProps<Theme>
 }
@@ -34,15 +47,18 @@ function inferMode(media: CollectionMediaValues): MediaUiMode {
  * Media editing surface for the CollectionDialog: a two-way picker — Upload (a
  * Mux video) or Link (any embeddable URL: Canva, YouTube, …). The provider is
  * inferred server-side from the URL host, so Link is a single field; the
- * backend validates and normalizes it. Switching type clears the prior value
- * (R12), and clearing only happens on explicit activation, not focus traversal.
- * Must be rendered inside a `MuxVideoUploadProvider`.
+ * backend validates and normalizes it. Media saves out of band from the dialog
+ * (link on blur, upload on completion, Remove immediately), so switching tabs
+ * only changes which input is shown — it never wipes the saved media; the
+ * active media is replaced only by committing a new link / upload or an
+ * explicit Remove. Must be rendered inside a `MuxVideoUploadProvider`.
  */
 export function MediaSection({
   media,
   error,
   onChange,
-  onBlur,
+  onCommit,
+  saving = false,
   headerSx
 }: MediaSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -55,16 +71,26 @@ export function MediaSection({
     next: MediaUiMode | null
   ): void {
     // `next` is null when the active button is re-clicked — ignore so the
-    // selection can't be toggled off. Only an actual switch clears state.
+    // selection can't be toggled off. Switching tabs only changes the input
+    // shown; it never clears the saved media (the user can compare Upload vs
+    // Link without losing what's already saved).
     if (next == null || next === mode) return
     setMode(next)
-    onChange({ type: 'none' })
   }
 
   const linkValue = media.type === 'link' ? media.url : ''
   function handleUrlChange(event: ChangeEvent<HTMLInputElement>): void {
     const value = event.target.value
     onChange(
+      value.trim() === '' ? { type: 'none' } : { type: 'link', url: value }
+    )
+  }
+  // Commit the link the moment the field loses focus — read the DOM value
+  // directly so the committed value can't lag a final keystroke. An empty
+  // field commits `none` (clears the saved link).
+  function handleUrlBlur(event: FocusEvent<HTMLInputElement>): void {
+    const value = event.target.value
+    onCommit(
       value.trim() === '' ? { type: 'none' } : { type: 'link', url: value }
     )
   }
@@ -88,6 +114,7 @@ export function MediaSection({
         value={mode}
         onChange={handleModeChange}
         aria-label={t('Media type')}
+        disabled={saving}
       >
         <ToggleButton value="mux" aria-label={t('Upload')}>
           {t('Upload')}
@@ -107,14 +134,18 @@ export function MediaSection({
           playbackId={savedPlaybackId}
           // Preserve any existing playbackId so an in-flight *replacement*
           // upload still knows about the previously-saved video (so cancelling
-          // reverts to it instead of clearing it).
+          // reverts to it instead of clearing it). Start is transient; the
+          // upload isn't saved until it completes.
           onUploadStart={() =>
             onChange({ type: 'mux', muxVideoId: '', muxPlaybackId: savedPlaybackId })
           }
+          // Completion is the commit point — persist the new video now.
           onComplete={(videoId, playbackId) =>
-            onChange({ type: 'mux', muxVideoId: videoId, muxPlaybackId: playbackId })
+            onCommit({ type: 'mux', muxVideoId: videoId, muxPlaybackId: playbackId })
           }
-          // Cancel reverts to the prior saved video when one existed, else none.
+          // Cancel reverts (transient) to the prior saved video when one
+          // existed, else none — nothing was persisted during the in-flight
+          // upload, so there's nothing to save here.
           onCancel={() =>
             onChange(
               savedPlaybackId != null
@@ -122,7 +153,8 @@ export function MediaSection({
                 : { type: 'none' }
             )
           }
-          onRemove={() => onChange({ type: 'none' })}
+          // Remove deletes the attached video — commit the cleared state.
+          onRemove={() => onCommit({ type: 'none' })}
         />
       )}
 
@@ -130,7 +162,8 @@ export function MediaSection({
         <TextField
           value={linkValue}
           onChange={handleUrlChange}
-          onBlur={onBlur}
+          onBlur={handleUrlBlur}
+          disabled={saving}
           placeholder={t('Paste a Canva or YouTube link')}
           fullWidth
           variant="filled"
@@ -142,6 +175,12 @@ export function MediaSection({
             t('Paste a Canva or YouTube link. In Canva, set Share → Anyone with the link first.')
           }
         />
+      )}
+
+      {saving && (
+        <Typography variant="caption" color="text.secondary">
+          {t('Saving…')}
+        </Typography>
       )}
     </Stack>
   )

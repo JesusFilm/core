@@ -749,15 +749,17 @@ describe('useCollectionForm', () => {
       expect(onClose).toHaveBeenCalledTimes(1)
     })
 
-    it('clears media (null) when an existing link is removed', async () => {
+    it('does NOT send media on update — it is persisted out of band', async () => {
       const onClose = vi.fn()
       const collection = makeCollection({
-        id: 'page-m',
-        media: linkMedia('https://www.youtube-nocookie.com/embed/x')
+        id: 'page-1',
+        media: linkMedia('https://old.test/embed')
       })
+      // Only the title diffs; media differs too but must be omitted from the
+      // update input (media is saved via persistMedia, not the dialog Save).
       const updateMock = getTemplateGalleryPageUpdateMock({
-        id: 'page-m',
-        input: { media: null }
+        id: 'page-1',
+        input: { title: 'New Title' }
       })
 
       const { result } = renderHook(
@@ -769,6 +771,47 @@ describe('useCollectionForm', () => {
             onClose
           }),
         { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: 'New Title',
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            media: { type: 'link', url: 'https://new.test/x' },
+            slug: collection.slug,
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      // The mock only matches a title-only input — if media leaked into the
+      // input the request wouldn't match and result would never fire.
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalled()
+    })
+
+    it('does not fire an update at all when only media changed', async () => {
+      const onClose = vi.fn()
+      const collection = makeCollection({
+        id: 'page-1',
+        media: linkMedia('https://old.test/embed')
+      })
+      // No update mock registered: if handleSubmit fired one, MockedProvider
+      // would error on the unmatched request.
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([]) }
       )
 
       await act(async () => {
@@ -787,18 +830,142 @@ describe('useCollectionForm', () => {
         )
       })
 
-      expect(updateMock.result).toHaveBeenCalledTimes(1)
-      expect(onClose).toHaveBeenCalled()
+      expect(mockEnqueueSnackbar).not.toHaveBeenCalledWith(
+        expect.stringMatching(/updated/i),
+        expect.anything()
+      )
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('persistMedia', () => {
+    it('is a no-op in create mode (no row to update yet)', async () => {
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({ mode: 'create', teamId: 'team-1', onClose: vi.fn() }),
+        { wrapper: wrapperWithMocks([]) }
+      )
+
+      let outcome: unknown
+      await act(async () => {
+        outcome = await result.current.persistMedia({
+          type: 'link',
+          url: 'https://canva.com/x'
+        })
+      })
+      expect(outcome).toEqual({})
     })
 
-    it('maps a backend media reason to an inline media field error', async () => {
-      const onClose = vi.fn()
-      const collection = makeCollection({ id: 'page-y' })
+    it('persists a link immediately and returns the server-normalized media', async () => {
+      const collection = makeCollection({ id: 'page-1' })
+      const updateMock = getTemplateGalleryPageUpdateMock(
+        {
+          id: 'page-1',
+          input: {
+            media: {
+              type: TemplateGalleryPageMediaType.link,
+              url: 'https://canva.com/x'
+            }
+          }
+        },
+        {
+          media: {
+            __typename: 'TemplateGalleryPageMedia',
+            id: 'm1',
+            type: TemplateGalleryPageMediaType.link,
+            embedUrl: 'https://canva.com/embed/x',
+            muxPlaybackId: null
+          }
+        }
+      )
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose: vi.fn()
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      let outcome: unknown
+      await act(async () => {
+        outcome = await result.current.persistMedia({
+          type: 'link',
+          url: 'https://canva.com/x'
+        })
+      })
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(outcome).toEqual({
+        media: { type: 'link', url: 'https://canva.com/embed/x' }
+      })
+    })
+
+    it('clears the media row when committing none', async () => {
+      const collection = makeCollection({
+        id: 'page-1',
+        media: linkMedia('https://old.test/embed')
+      })
+      const updateMock = getTemplateGalleryPageUpdateMock(
+        { id: 'page-1', input: { media: null } },
+        { media: null }
+      )
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose: vi.fn()
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      let outcome: unknown
+      await act(async () => {
+        outcome = await result.current.persistMedia({ type: 'none' })
+      })
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(outcome).toEqual({ media: { type: 'none' } })
+    })
+
+    it('is a no-op when the committed value matches what is already saved', async () => {
+      const collection = makeCollection({
+        id: 'page-1',
+        media: linkMedia('https://x.test/embed')
+      })
+      // No update mock — re-committing the saved value must not hit the network.
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose: vi.fn()
+          }),
+        { wrapper: wrapperWithMocks([]) }
+      )
+
+      let outcome: unknown
+      await act(async () => {
+        outcome = await result.current.persistMedia({
+          type: 'link',
+          url: 'https://x.test/embed'
+        })
+      })
+      expect(outcome).toEqual({})
+    })
+
+    it('returns a translated inline error on a backend media reason', async () => {
+      const collection = makeCollection({ id: 'page-1' })
       const errorMock: MockedResponse = {
         request: {
           query: TEMPLATE_GALLERY_PAGE_UPDATE,
           variables: {
-            id: 'page-y',
+            id: 'page-1',
             input: {
               media: {
                 type: TemplateGalleryPageMediaType.link,
@@ -816,40 +983,54 @@ describe('useCollectionForm', () => {
         }
       }
 
-      const helpers = fakeHelpers()
       const { result } = renderHook(
         () =>
           useCollectionForm({
             mode: 'edit',
             teamId: 'team-1',
             collection,
-            onClose
+            onClose: vi.fn()
           }),
         { wrapper: wrapperWithMocks([errorMock]) }
       )
 
+      let outcome: { media?: unknown; error?: string } = {}
       await act(async () => {
-        await result.current.handleSubmit(
-          {
-            title: collection.title,
-            description: collection.description ?? '',
-            creatorName: collection.creatorName ?? '',
-            creatorImageSrc: '',
-            creatorImageAlt: '',
-            media: { type: 'link', url: 'https://youtu.be/p' },
-            slug: collection.slug,
-            journeyIds: []
-          },
-          helpers
-        )
+        outcome = await result.current.persistMedia({
+          type: 'link',
+          url: 'https://youtu.be/p'
+        })
       })
+      expect(outcome.media).toBeUndefined()
+      expect(outcome.error).toMatch(/private/i)
+    })
 
-      expect(helpers.setFieldTouched).toHaveBeenCalledWith('media', true, false)
-      expect(helpers.setFieldError).toHaveBeenCalledWith(
-        'media',
-        expect.stringMatching(/private/i)
+    it('short-circuits with an info snackbar when the parent is busy', async () => {
+      const collection = makeCollection({ id: 'page-1' })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            parentBusy: true,
+            onClose: vi.fn()
+          }),
+        { wrapper: wrapperWithMocks([]) }
       )
-      expect(onClose).not.toHaveBeenCalled()
+
+      let outcome: unknown
+      await act(async () => {
+        outcome = await result.current.persistMedia({
+          type: 'link',
+          url: 'https://canva.com/x'
+        })
+      })
+      expect(outcome).toEqual({})
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        expect.stringMatching(/finishing previous action/i),
+        expect.objectContaining({ variant: 'info' })
+      )
     })
   })
 

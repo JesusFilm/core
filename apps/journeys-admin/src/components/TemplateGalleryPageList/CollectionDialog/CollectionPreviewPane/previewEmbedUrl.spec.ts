@@ -22,12 +22,38 @@ describe('previewEmbedUrl', () => {
     ).toBe('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ')
   })
 
-  it('returns null for Canva / Slides / unknown hosts that need server normalization', () => {
+  it('returns null for RAW Canva / Slides / unknown hosts that need server normalization', () => {
+    // Raw design / share / edit links — not directly embeddable.
     expect(previewEmbedUrl('https://www.canva.com/design/DA/view')).toBeNull()
     expect(
       previewEmbedUrl('https://docs.google.com/presentation/d/1/edit')
     ).toBeNull()
+    expect(
+      previewEmbedUrl('https://docs.google.com/presentation/d/e/2PACX/pub')
+    ).toBeNull()
     expect(previewEmbedUrl('https://example.com/whatever')).toBeNull()
+  })
+
+  it('passes through an already server-normalized Google Slides /embed URL', () => {
+    const url =
+      'https://docs.google.com/presentation/d/e/2PACX-abc/embed?start=false&loop=false&delayms=3000'
+    expect(previewEmbedUrl(url)).toBe(url)
+  })
+
+  it('passes through an already server-normalized Canva ?embed URL', () => {
+    const url = 'https://www.canva.com/design/DAF/my-slug/view?embed'
+    expect(previewEmbedUrl(url)).toBe(url)
+    // Also the no-www host the canonical fallback can emit.
+    const bare = 'https://canva.com/design/DAF/my-slug/view?embed'
+    expect(previewEmbedUrl(bare)).toBe(bare)
+  })
+
+  it('does not treat a docs.google.com path that merely contains "embed" as embeddable', () => {
+    // Only a trailing /embed segment is the published shape; an /edit URL
+    // whose id contains "embed" must stay a placeholder.
+    expect(
+      previewEmbedUrl('https://docs.google.com/presentation/d/embedXYZ/edit')
+    ).toBeNull()
   })
 
   it('returns null for empty, non-https, or unparseable input', () => {

@@ -13,6 +13,11 @@ const YOUTUBE_WATCH_HOSTS = new Set([
   'm.youtube.com'
 ])
 
+// Hosts a server-normalized Canva embed URL can carry. Mirrors the backend
+// canvaSpec design hosts (the oEmbed src and the canonical-path fallback are
+// both canva.com-hosted).
+const CANVA_EMBED_HOSTS = new Set(['canva.com', 'www.canva.com'])
+
 // A YouTube video id is exactly 11 url-safe base64 chars. Validating the
 // shape stops non-video paths (e.g. youtu.be/playlist, /channel/UC…) from
 // being mistaken for a video and producing a broken preview iframe.
@@ -72,7 +77,23 @@ export function previewEmbedUrl(rawUrl: string): string | null {
   const id = youTubeId(url)
   if (id != null) return `https://www.youtube-nocookie.com/embed/${id}`
 
-  // Canva, Google Slides, and unknown hosts need server normalization — not
-  // previewable client-side.
+  // Already server-normalized Google Slides: the published embed shape is
+  // `/presentation/d/.../embed`. A raw `/edit` or `/pub` URL has no `/embed`
+  // segment and is X-Frame-Options blocked, so it stays a placeholder until
+  // the link is saved (the server rewrites /pub → /embed on save).
+  if (url.hostname === 'docs.google.com' && url.pathname.endsWith('/embed')) {
+    return trimmed
+  }
+
+  // Already server-normalized Canva: the oEmbed / canonical-fallback URL
+  // carries the `embed` flag (`…/view?embed`). A raw design or share link has
+  // no such flag and isn't directly embeddable, so it stays a placeholder
+  // until the server resolves it on save.
+  if (CANVA_EMBED_HOSTS.has(url.hostname) && url.searchParams.has('embed')) {
+    return trimmed
+  }
+
+  // Raw Canva / Slides share links and unknown hosts need server
+  // normalization — not previewable client-side.
   return null
 }

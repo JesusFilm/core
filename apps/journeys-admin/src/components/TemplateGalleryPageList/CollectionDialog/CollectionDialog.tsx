@@ -81,7 +81,10 @@ export function CollectionDialog({
     handleSubmit,
     setSubmitIntent,
     handleUnpublishAction,
-    isUnpublishing
+    isUnpublishing,
+    persistMedia,
+    mediaSaving,
+    nonMediaDirty
   } = useCollectionForm({
     mode,
     teamId,
@@ -117,25 +120,33 @@ export function CollectionDialog({
         values,
         errors,
         touched,
-        dirty,
         handleChange,
         handleBlur,
         handleSubmit,
         setFieldValue,
         setFieldTouched,
+        setFieldError,
         setValues,
         isSubmitting
       }) => {
+        // Media saves out of band (persistMedia), so it must not count as an
+        // unsaved change: a media-only edit is already committed. Discard
+        // only guards the dialog-saved fields — plus, in create mode where
+        // media rides along with the create mutation, any pending media.
+        const hasUnsavedChanges =
+          nonMediaDirty(values) ||
+          (mode === 'create' && values.media.type !== 'none')
         // Block close paths while a mutation is in flight so the user
         // can't dismiss the dialog mid-mutation (which would orphan the
-        // post-await side effects). Covers Formik submit (isSubmitting)
-        // and the out-of-band unpublish action (isUnpublishing). Submit
-        // succeeds → onClose() runs explicitly. Also intercepts close
-        // paths when the form is dirty: opens the "discard changes?"
-        // confirmation instead of closing immediately.
+        // post-await side effects). Covers Formik submit (isSubmitting),
+        // the out-of-band unpublish action (isUnpublishing), and an
+        // in-flight media persist (mediaSaving). Submit succeeds →
+        // onClose() runs explicitly. Also intercepts close paths when
+        // there are unsaved (dialog-saved) changes: opens the "discard
+        // changes?" confirmation instead of closing immediately.
         const guardedClose = (): void => {
-          if (isSubmitting || isUnpublishing) return
-          if (dirty) {
+          if (isSubmitting || isUnpublishing || mediaSaving) return
+          if (hasUnsavedChanges) {
             setDiscardConfirmOpen(true)
             return
           }
@@ -169,12 +180,15 @@ export function CollectionDialog({
         // Block every submit path while a Mux upload is pending: the form
         // carries a `mux` media with no durable id yet (muxVideoId is set by
         // the provider's onComplete, muxPlaybackId only exists on a saved
-        // row). There is no `readyToStream` task field to read.
+        // row). There is no `readyToStream` task field to read. Also block
+        // while an out-of-band media persist is in flight so Save can't race
+        // the media write.
         const mediaBlocked =
-          values.media.type === 'mux' &&
-          values.media.muxVideoId === '' &&
-          (values.media.muxPlaybackId == null ||
-            values.media.muxPlaybackId === '')
+          mediaSaving ||
+          (values.media.type === 'mux' &&
+            values.media.muxVideoId === '' &&
+            (values.media.muxPlaybackId == null ||
+              values.media.muxPlaybackId === ''))
         return (
           <>
             <Dialog
@@ -534,17 +548,35 @@ export function CollectionDialog({
 
                             <MediaSection
                               media={values.media}
+                              saving={mediaSaving}
                               error={
                                 Boolean(touched.media) &&
                                 typeof errors.media === 'string'
                                   ? errors.media
                                   : undefined
                               }
+                              // Transient edits (typing a link, an upload
+                              // starting) only update the form value.
                               onChange={(next) => {
                                 void setFieldValue('media', next)
                               }}
-                              onBlur={() => {
-                                void setFieldTouched('media', true, false)
+                              // Commit persists immediately, out of band from
+                              // the dialog's Save (the link/upload parallel).
+                              // Apply optimistically, then write back the
+                              // server-normalized value or surface the inline
+                              // error.
+                              onCommit={async (next) => {
+                                await setFieldValue('media', next)
+                                const result = await persistMedia(next)
+                                if (result.media != null) {
+                                  await setFieldValue('media', result.media)
+                                }
+                                if (result.error != null) {
+                                  await setFieldTouched('media', true, false)
+                                  setFieldError('media', result.error)
+                                } else {
+                                  setFieldError('media', undefined)
+                                }
                               }}
                               headerSx={SECTION_HEADER}
                             />

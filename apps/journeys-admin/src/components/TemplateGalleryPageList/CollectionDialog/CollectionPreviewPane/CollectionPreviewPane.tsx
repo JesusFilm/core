@@ -394,11 +394,12 @@ function CollectionPreviewPaneImpl({
  * Mirrors the public `TemplateGalleryMedia` renderer inside the preview card.
  * `mux` shows a thumbnail from the persisted playbackId (only available for an
  * already-saved upload; a fresh upload shows a processing placeholder). `link`
- * shows an iframe for URLs that can be safely previewed client-side (https +
- * directly-embeddable host, with YouTube normalized to the nocookie embed) and
- * a "preview after saving" placeholder for Canva/Slides which need the server's
- * oEmbed normalization. The link URL is debounced so the iframe does not reflow
- * on every keystroke.
+ * shows an iframe for any URL previewEmbedUrl accepts: a YouTube URL (normalized
+ * client-side to the nocookie embed) or an already server-normalized Canva /
+ * Slides embed URL (which persistMedia writes back on commit). A raw Canva /
+ * Slides link the user is still typing isn't directly embeddable, so it shows a
+ * placeholder until committed. The link URL is debounced so the iframe does not
+ * reflow on every keystroke.
  */
 function GalleryMediaPreview({
   media
@@ -445,12 +446,15 @@ function GalleryMediaPreview({
     )
   }
 
-  // Non-empty but not client-previewable (Canva/Slides/unknown) vs empty.
+  // Non-empty but not yet client-previewable — a raw Canva / Slides link the
+  // user is still typing. It becomes previewable once committed: the server
+  // normalizes it (Canva `…/view?embed`, Slides `/embed`) and persistMedia
+  // writes that embeddable URL back, which previewEmbedUrl then passes through.
   return (
     <MediaPreviewPlaceholder
       label={
         debouncedUrl.trim() !== ''
-          ? t('Preview available after saving')
+          ? t('Preview appears once you add the link')
           : t('Paste a link to see a preview')
       }
     />

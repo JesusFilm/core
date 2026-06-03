@@ -96,7 +96,7 @@ describe('CollectionPreviewPane', () => {
       )
     })
 
-    it('shows a save-first placeholder for a Canva URL (needs server normalization)', () => {
+    it('shows a placeholder for a RAW Canva URL still being typed (needs server normalization)', () => {
       renderPane({
         values: {
           ...baseValues,
@@ -107,8 +107,36 @@ describe('CollectionPreviewPane', () => {
         screen.queryByTestId('GalleryMediaPreviewIframe')
       ).not.toBeInTheDocument()
       expect(
-        screen.getByText('Preview available after saving')
+        screen.getByText('Preview appears once you add the link')
       ).toBeInTheDocument()
+    })
+
+    it('renders an iframe for an already server-normalized Canva ?embed URL', () => {
+      renderPane({
+        values: {
+          ...baseValues,
+          media: {
+            type: 'link',
+            url: 'https://www.canva.com/design/DAF/my-slug/view?embed'
+          }
+        }
+      })
+      expect(screen.getByTestId('GalleryMediaPreviewIframe')).toHaveAttribute(
+        'src',
+        'https://www.canva.com/design/DAF/my-slug/view?embed'
+      )
+    })
+
+    it('renders an iframe for an already server-normalized Google Slides /embed URL', () => {
+      const url =
+        'https://docs.google.com/presentation/d/e/2PACX-abc/embed?start=false'
+      renderPane({
+        values: { ...baseValues, media: { type: 'link', url } }
+      })
+      expect(screen.getByTestId('GalleryMediaPreviewIframe')).toHaveAttribute(
+        'src',
+        url
+      )
     })
 
     it('does not iframe a non-allowlisted or non-https URL', () => {
