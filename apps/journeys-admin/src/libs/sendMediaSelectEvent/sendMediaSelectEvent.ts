@@ -4,10 +4,6 @@ interface ImageSelectEvent {
   isAi: boolean
 }
 
-interface VideoSelectEvent {
-  duration: number | null
-}
-
 export function sendImageSelectEvent({ isAi }: ImageSelectEvent): void {
   sendGTMEvent({
     event: 'image_select',
@@ -15,10 +11,9 @@ export function sendImageSelectEvent({ isAi }: ImageSelectEvent): void {
   })
 }
 
-export function sendVideoSelectEvent({ duration }: VideoSelectEvent): void {
+export function sendVideoSelectEvent(): void {
   sendGTMEvent({
     event: 'video_select',
-    duration,
     videoSource: 'mux'
   })
 }

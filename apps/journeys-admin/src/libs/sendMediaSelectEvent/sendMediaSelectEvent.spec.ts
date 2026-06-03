@@ -38,22 +38,11 @@ describe('sendMediaSelectEvent', () => {
   })
 
   describe('sendVideoSelectEvent', () => {
-    it('should send video_select event with duration and mux videoSource', () => {
-      sendVideoSelectEvent({ duration: 120 })
+    it('should send video_select event with mux videoSource', () => {
+      sendVideoSelectEvent()
 
       expect(mockSendGTMEvent).toHaveBeenCalledWith({
         event: 'video_select',
-        duration: 120,
-        videoSource: 'mux'
-      })
-    })
-
-    it('should send video_select event with null duration', () => {
-      sendVideoSelectEvent({ duration: null })
-
-      expect(mockSendGTMEvent).toHaveBeenCalledWith({
-        event: 'video_select',
-        duration: null,
         videoSource: 'mux'
       })
     })

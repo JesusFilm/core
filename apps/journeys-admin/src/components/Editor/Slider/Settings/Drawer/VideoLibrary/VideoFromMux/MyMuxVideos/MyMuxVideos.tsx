@@ -91,9 +91,7 @@ export function MyMuxVideos({
   }
 
   const handlePreviewSelect = (block: VideoBlockUpdateInput): void => {
-    if (previewVideo != null) {
-      sendVideoSelectEvent({ duration: previewVideo.duration })
-    }
+    sendVideoSelectEvent()
     // Reset endAt/duration to the selected video's full length. Without this the
     // stale endAt from a previously selected (longer) video carries over and the
     // VideoBlockEditorSettings validation rejects it with an "End time has to be

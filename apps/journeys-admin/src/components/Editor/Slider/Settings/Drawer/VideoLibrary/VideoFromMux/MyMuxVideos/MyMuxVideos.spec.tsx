@@ -139,31 +139,6 @@ describe('MyMuxVideos', () => {
     fireEvent.click(screen.getByTestId('mock-video-details-select'))
     expect(mockSendGTMEvent).toHaveBeenCalledWith({
       event: 'video_select',
-      duration: 9,
-      videoSource: 'mux'
-    })
-  })
-
-  it('should send video_select event with null duration when the video has no duration', async () => {
-    render(
-      <MockedProvider mocks={[buildMock([readyVideo('a', null)])]}>
-        <MyMuxVideos onSelect={vi.fn()} />
-      </MockedProvider>
-    )
-
-    await waitFor(() => {
-      expect(screen.getByTestId('my-mux-video-a')).toBeInTheDocument()
-    })
-
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Select uploaded video' })
-    )
-    await screen.findByTestId('mock-video-details')
-
-    fireEvent.click(screen.getByTestId('mock-video-details-select'))
-    expect(mockSendGTMEvent).toHaveBeenCalledWith({
-      event: 'video_select',
-      duration: null,
       videoSource: 'mux'
     })
   })
