@@ -420,13 +420,32 @@ function GalleryMediaPreview({
   if (media.type === 'mux') {
     if (media.muxPlaybackId != null && media.muxPlaybackId !== '') {
       return (
+        // Letterbox the thumbnail in a fixed 16:9 black frame, mirroring the
+        // public page's video player: a portrait (or any non-16:9) video keeps
+        // the same height as a landscape one and fills the sides with black
+        // bars, rather than stretching the preview card to its native height.
         <Box
-          component="img"
-          data-testid="GalleryMediaPreviewThumbnail"
-          src={`https://image.mux.com/${media.muxPlaybackId}/thumbnail.jpg`}
-          alt={t('Video thumbnail')}
-          sx={{ width: '100%', borderRadius: 1, display: 'block' }}
-        />
+          sx={{
+            width: '100%',
+            aspectRatio: '16 / 9',
+            borderRadius: 1,
+            overflow: 'hidden',
+            bgcolor: 'common.black'
+          }}
+        >
+          <Box
+            component="img"
+            data-testid="GalleryMediaPreviewThumbnail"
+            src={`https://image.mux.com/${media.muxPlaybackId}/thumbnail.jpg`}
+            alt={t('Video thumbnail')}
+            sx={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              display: 'block'
+            }}
+          />
+        </Box>
       )
     }
     return (
