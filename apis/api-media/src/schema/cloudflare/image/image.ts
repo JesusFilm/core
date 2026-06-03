@@ -94,6 +94,10 @@ builder.queryFields((t) => ({
       if (teamId != null)
         await assertTeamMembership({ teamId, userId: user.id })
 
+      // Single merged grid: personal + team uploads interleaved by createdAt.
+      // The `userId OR teamId` predicate is served by a bitmap-OR across the
+      // `(userId, createdAt DESC)` and `(teamId, createdAt DESC)` indexes — keep
+      // both indexes (see migration) or this degrades to a full table scan.
       return await prisma.cloudflareImage.findMany({
         ...query,
         where: {
