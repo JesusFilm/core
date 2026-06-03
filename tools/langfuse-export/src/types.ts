@@ -98,9 +98,9 @@ export interface RegionStats {
   syntheticConversations: number
   turns: number
   multiTurn: CountShare // share of conversations with > 1 turn
-  // Long-conversation threshold mirrors Aaron's HollowBible "> 10 messages"
-  // callout. One ConversationTurn = one user + one assistant message, so
-  // 10 messages ≈ 5 turns. Constant lives in aggregate.ts.
+  // Long-conversation threshold: > 10 messages exchanged. One
+  // ConversationTurn = one user + one assistant message, so > 10 messages
+  // maps to > 5 turns. Constant lives in aggregate.ts.
   longConversation: CountShare
   perLanguage: Record<string, number> // turn count by language code
   topQuestions: TopQuestion[]

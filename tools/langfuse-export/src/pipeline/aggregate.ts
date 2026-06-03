@@ -10,9 +10,9 @@ import type {
 } from '../types'
 
 const DEFAULT_TOP_N = 20
-// "Long conversation" threshold per NES-1577 (Aaron's HollowBible callout:
-// "> 10 messages"). One ConversationTurn = one user + one assistant message,
-// so > 10 messages maps to > 5 turns.
+// "Long conversation" threshold: > 10 messages exchanged. One
+// ConversationTurn = one user + one assistant message, so > 10 messages
+// maps to > 5 turns.
 const LONG_CONVERSATION_TURNS = 5
 // Cap per-region top-questions so a high-volume country doesn't blow the
 // rendered report up. Global top-questions stays at DEFAULT_TOP_N.
