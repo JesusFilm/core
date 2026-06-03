@@ -82,7 +82,7 @@ export function MediaLibrary({
   if (isEmpty) return null
 
   function handleSelect(img: MediaLibraryListImage): void {
-    sendImageSelectEvent({ imageId: img.id, isAi })
+    sendImageSelectEvent({ isAi })
     onSelect({
       src: img.src,
       blurhash: img.blurhash,

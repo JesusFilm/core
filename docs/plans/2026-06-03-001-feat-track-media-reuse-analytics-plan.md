@@ -23,7 +23,7 @@ We already track new media uploads via GTM (`image_upload_success` / `image_uplo
 
 - R1. Firing a `image_select` GTM event when a creator selects a past custom image from the `MediaLibrary` grid.
 - R2. Firing a `video_select` GTM event when a creator selects a past video upload from the `MyMuxVideos` grid.
-- R3. Event payloads carry minimal, non-PII identifiers only (`imageId` + `isAi` for images; `videoId` + `duration` + `source: 'mux'` for videos).
+- R3. Event payloads carry minimal, non-PII, low-cardinality dimensions only — no asset IDs (`isAi` for images; `duration` + `videoSource: 'mux'` for videos).
 - R4. The implementation reuses the established `sendGTMEvent` helper pattern (`apps/journeys-admin/src/libs/send*Event/`) — no new analytics vendor or dependency.
 
 ---
@@ -39,6 +39,7 @@ We already track new media uploads via GTM (`image_upload_success` / `image_uplo
 ### Deferred to Follow-Up Work
 
 - Registering / building the GTM dashboard or report that consumes `image_select` and `video_select`: GTM container configuration, outside this repo.
+- **Ownership dimension** (own upload vs team upload) on the select events — becomes computable and meaningful only once team-shared media selection ships (NES-1635 / v1.1 team-shared visibility). Add a low-cardinality boolean/enum to the payloads then; not added now because every current selection is the user's own upload.
 
 ---
 
@@ -62,8 +63,8 @@ We already track new media uploads via GTM (`image_upload_success` / `image_uplo
 
 - **Use `sendGTMEvent` (Google Tag Manager), not Plausible:** GTM is the established mechanism for creator/editor product-usage events in journeys-admin and there is direct adjacent precedent (`sendImageUploadEvent`). Plausible in this app is exclusively journey-visitor analytics. (User-confirmed.)
 - **One shared helper module (`sendMediaSelectEvent`) exporting both functions:** images and videos are the same conceptual event family ("reuse existing media"), so co-locating `sendImageSelectEvent` and `sendVideoSelectEvent` keeps them discoverable and consistent, matching how `sendImageUploadEvent` groups success/failure.
-- **Minimal, explicit payloads (no PII):** `image_select → { imageId, isAi }`, `video_select → { videoId, duration, source: 'mux' }`. (User-confirmed.)
-- **`source` discriminator on `video_select` only:** unlike images (one image source today), the video picker has multiple sources — Mux uploads, YouTube, internal library — that could later emit `video_select`. Tagging `source: 'mux'` keeps the video event self-describing and unambiguous if those other paths are instrumented under the same event name. The image event omits it.
+- **Minimal, explicit payloads, no asset IDs (no PII):** `image_select → { isAi }`, `video_select → { duration, videoSource: 'mux' }`. (User-confirmed.) Asset IDs were dropped: the metric is the event count, GTM/GA handle high-cardinality values poorly, and per-asset analysis is better done from the DB. The future analytical need is an *ownership* dimension (own vs team upload), not an ID — see Deferred to Follow-Up Work.
+- **`videoSource` discriminator on `video_select` only:** unlike images (one image source today), the video picker has multiple sources — Mux uploads, YouTube, internal library — that could later emit `video_select`. Tagging `videoSource: 'mux'` keeps the video event self-describing and unambiguous if those other paths are instrumented under the same event name. The image event omits it. Named `videoSource` (not `source`) so the dataLayer key is unambiguous and won't collide with a generic `source` from other events.
 - **Event naming `image_select` / `video_select`:** `snake_case` noun_verb, consistent with the existing `image_upload_success` family.
 
 ---
@@ -73,7 +74,7 @@ We already track new media uploads via GTM (`image_upload_success` / `image_uplo
 ### Resolved During Planning
 
 - Analytics vendor: GTM (`sendGTMEvent`). Resolved with user.
-- Payload contents: minimal IDs (`imageId`/`isAi`, `videoId`/`duration`). Resolved with user.
+- Payload contents: minimal low-cardinality dimensions, no asset IDs (`isAi`; `duration` + `videoSource`). Resolved with user.
 
 ### Deferred to Implementation
 
@@ -100,9 +101,9 @@ We already track new media uploads via GTM (`image_upload_success` / `image_uplo
 **Approach:**
 
 - Mirror `sendImageUploadEvent.ts`. Define typed params interfaces.
-- `sendImageSelectEvent({ imageId, isAi })` → `sendGTMEvent({ event: 'image_select', imageId, isAi })`.
-- `sendVideoSelectEvent({ videoId, duration })` → `sendGTMEvent({ event: 'video_select', videoId, duration, source: 'mux' })` where `duration: number | null`.
-- `source` is a constant set inside `sendVideoSelectEvent` (callers do not pass it). The image helper carries no `source`.
+- `sendImageSelectEvent({ isAi })` → `sendGTMEvent({ event: 'image_select', isAi })`.
+- `sendVideoSelectEvent({ duration })` → `sendGTMEvent({ event: 'video_select', duration, videoSource: 'mux' })` where `duration: number | null`.
+- `videoSource` is a constant set inside `sendVideoSelectEvent` (callers do not pass it). The image helper carries no source dimension.
 - `index.ts` re-exports both functions (barrel).
 
 **Patterns to follow:**
@@ -111,10 +112,10 @@ We already track new media uploads via GTM (`image_upload_success` / `image_uplo
 
 **Test scenarios:**
 
-- Happy path: `sendImageSelectEvent({ imageId: 'abc', isAi: false })` calls `sendGTMEvent` with `{ event: 'image_select', imageId: 'abc', isAi: false }`.
-- Happy path: `sendImageSelectEvent` with `isAi: true` forwards `isAi: true`.
-- Happy path: `sendVideoSelectEvent({ videoId: 'xyz', duration: 120 })` calls `sendGTMEvent` with `{ event: 'video_select', videoId: 'xyz', duration: 120, source: 'mux' }`.
-- Edge case: `sendVideoSelectEvent({ videoId: 'xyz', duration: null })` forwards `duration: null` (with `source: 'mux'`) without throwing.
+- Happy path: `sendImageSelectEvent({ isAi: false })` calls `sendGTMEvent` with `{ event: 'image_select', isAi: false }`.
+- Happy path: `sendImageSelectEvent({ isAi: true })` forwards `isAi: true`.
+- Happy path: `sendVideoSelectEvent({ duration: 120 })` calls `sendGTMEvent` with `{ event: 'video_select', duration: 120, videoSource: 'mux' }`.
+- Edge case: `sendVideoSelectEvent({ duration: null })` forwards `duration: null` (with `videoSource: 'mux'`) without throwing.
 
 **Verification:**
 
@@ -138,7 +139,7 @@ We already track new media uploads via GTM (`image_upload_success` / `image_uplo
 **Approach:**
 
 - Import `sendImageSelectEvent` from `../../../../../../../../libs/sendMediaSelectEvent` (match the relative depth used for the existing `sendImageUploadEvent` import in the sibling `ImageUpload` component).
-- In `handleSelect(img)` (line 83), call `sendImageSelectEvent({ imageId: img.id, isAi })` — `isAi` is already a component prop. Fire alongside the existing `onSelect(...)` call; do not change selection behavior.
+- In `handleSelect(img)` (line 83), call `sendImageSelectEvent({ isAi })` — `isAi` is already a component prop. Fire alongside the existing `onSelect(...)` call; do not change selection behavior.
 
 **Patterns to follow:**
 
@@ -146,8 +147,7 @@ We already track new media uploads via GTM (`image_upload_success` / `image_uplo
 
 **Test scenarios:**
 
-- Happy path: clicking an image in the grid invokes `onSelect` (existing behavior) **and** `sendImageSelectEvent` with `{ imageId, isAi }`. Mock `@next/third-parties/google`'s `sendGTMEvent` (or the helper) and assert payload, including `isAi: true` when the component is rendered with `isAi`.
-- Edge case: the event fires with the selected image's `id`, not a stale/previous image's id, when multiple images are present.
+- Happy path: clicking an image in the grid invokes `onSelect` (existing behavior) **and** `sendImageSelectEvent` with `{ isAi }`. Mock `@next/third-parties/google`'s `sendGTMEvent` (or the helper) and assert payload, including `isAi: true` when the component is rendered with `isAi`.
 
 **Verification:**
 
@@ -171,7 +171,7 @@ We already track new media uploads via GTM (`image_upload_success` / `image_uplo
 **Approach:**
 
 - Import `sendVideoSelectEvent` from the new lib.
-- In `handlePreviewSelect` (line 92), call `sendVideoSelectEvent({ videoId: previewVideo.id, duration: previewVideo.duration ?? null })`. This is the confirmed-selection seam (after the preview dialog), so it counts deliberate selections, not previews. Do not alter the existing `onSelect`/`endAt` reset logic.
+- In `handlePreviewSelect` (line 92), call `sendVideoSelectEvent({ duration: previewVideo.duration })` (guarded by `previewVideo != null`). This is the confirmed-selection seam (after the preview dialog), so it counts deliberate selections, not previews. Do not alter the existing `onSelect`/`endAt` reset logic.
 
 **Patterns to follow:**
 
@@ -179,7 +179,7 @@ We already track new media uploads via GTM (`image_upload_success` / `image_uplo
 
 **Test scenarios:**
 
-- Happy path: opening a video's preview and confirming selection invokes `onSelect` (existing behavior) **and** `sendVideoSelectEvent` with `{ videoId, duration }` (helper appends `source: 'mux'`).
+- Happy path: opening a video's preview and confirming selection invokes `onSelect` (existing behavior) **and** `sendVideoSelectEvent` with `{ duration }` (helper appends `videoSource: 'mux'`).
 - Edge case: a video whose `duration` is `null` still fires `video_select` with `duration: null` and selection succeeds.
 - Integration: clicking a grid thumbnail alone (opening preview, `handleClick`) does **not** fire `video_select` — only the confirm step does.
 

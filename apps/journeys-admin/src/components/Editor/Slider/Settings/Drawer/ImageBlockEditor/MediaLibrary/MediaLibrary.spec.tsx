@@ -172,7 +172,6 @@ describe('MediaLibrary', () => {
     fireEvent.click(tile)
     expect(mockSendGTMEvent).toHaveBeenCalledWith({
       event: 'image_select',
-      imageId: 'img-0',
       isAi: false
     })
   })
@@ -194,7 +193,6 @@ describe('MediaLibrary', () => {
     fireEvent.click(tile)
     expect(mockSendGTMEvent).toHaveBeenCalledWith({
       event: 'image_select',
-      imageId: 'img-0',
       isAi: true
     })
   })

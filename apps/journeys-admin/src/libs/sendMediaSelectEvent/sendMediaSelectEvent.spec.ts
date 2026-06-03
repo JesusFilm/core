@@ -18,59 +18,43 @@ describe('sendMediaSelectEvent', () => {
   })
 
   describe('sendImageSelectEvent', () => {
-    it('should send image_select event with imageId and isAi', () => {
-      sendImageSelectEvent({
-        imageId: 'abc',
-        isAi: false
-      })
+    it('should send image_select event with isAi false', () => {
+      sendImageSelectEvent({ isAi: false })
 
       expect(mockSendGTMEvent).toHaveBeenCalledWith({
         event: 'image_select',
-        imageId: 'abc',
         isAi: false
       })
     })
 
     it('should forward isAi when true', () => {
-      sendImageSelectEvent({
-        imageId: 'def',
-        isAi: true
-      })
+      sendImageSelectEvent({ isAi: true })
 
       expect(mockSendGTMEvent).toHaveBeenCalledWith({
         event: 'image_select',
-        imageId: 'def',
         isAi: true
       })
     })
   })
 
   describe('sendVideoSelectEvent', () => {
-    it('should send video_select event with videoId, duration and mux source', () => {
-      sendVideoSelectEvent({
-        videoId: 'xyz',
-        duration: 120
-      })
+    it('should send video_select event with duration and mux videoSource', () => {
+      sendVideoSelectEvent({ duration: 120 })
 
       expect(mockSendGTMEvent).toHaveBeenCalledWith({
         event: 'video_select',
-        videoId: 'xyz',
         duration: 120,
-        source: 'mux'
+        videoSource: 'mux'
       })
     })
 
     it('should send video_select event with null duration', () => {
-      sendVideoSelectEvent({
-        videoId: 'xyz',
-        duration: null
-      })
+      sendVideoSelectEvent({ duration: null })
 
       expect(mockSendGTMEvent).toHaveBeenCalledWith({
         event: 'video_select',
-        videoId: 'xyz',
         duration: null,
-        source: 'mux'
+        videoSource: 'mux'
       })
     })
   })

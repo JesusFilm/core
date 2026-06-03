@@ -120,7 +120,7 @@ describe('MyMuxVideos', () => {
     )
   })
 
-  it('should send video_select event with mux source on confirm', async () => {
+  it('should send video_select event with mux videoSource on confirm', async () => {
     render(
       <MockedProvider mocks={[buildMock([readyVideo('a')])]}>
         <MyMuxVideos onSelect={vi.fn()} />
@@ -139,9 +139,8 @@ describe('MyMuxVideos', () => {
     fireEvent.click(screen.getByTestId('mock-video-details-select'))
     expect(mockSendGTMEvent).toHaveBeenCalledWith({
       event: 'video_select',
-      videoId: 'a',
       duration: 9,
-      source: 'mux'
+      videoSource: 'mux'
     })
   })
 
@@ -164,9 +163,8 @@ describe('MyMuxVideos', () => {
     fireEvent.click(screen.getByTestId('mock-video-details-select'))
     expect(mockSendGTMEvent).toHaveBeenCalledWith({
       event: 'video_select',
-      videoId: 'a',
       duration: null,
-      source: 'mux'
+      videoSource: 'mux'
     })
   })
 
