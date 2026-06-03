@@ -14,6 +14,13 @@ const FETCH_TIMEOUT_MS = 5000
 const CANONICAL_DESIGN_PATH =
   /^\/design\/([^/]+)\/([^/]+)\/(?:edit|view|watch)\/?$/
 
+// Canva's short share-link host (e.g. https://canva.link/0fi14tc9momlpe8). It
+// is not a design URL the oEmbed endpoint or the canonical-path fallback can
+// read directly, so it is resolved to its underlying canva.com/design/... URL
+// first (see resolveShareLink).
+const CANVA_LINK_HOST = 'canva.link'
+const CANVA_DESIGN_HOSTS = new Set(['canva.com', 'www.canva.com'])
+
 function canvaUnavailable(): GraphQLError {
   return new GraphQLError(
     'Canva embed could not be verified for this URL. Open the design, use Share → "More" → embed, and paste a design link of the form canva.com/design/<id>/<slug>/view.',
@@ -76,8 +83,54 @@ function canvaRegexFallback(url: string): { embedUrl: string } {
   }
 }
 
+// Resolves a canva.link short share link to its underlying canva.com design
+// URL by following the HTTP redirect, then validates the destination is an
+// https canva.com host before handing it to the normal oEmbed + fallback path.
+// Non-share hosts pass through unchanged. Fails closed (CANVA_UNAVAILABLE) when
+// the link can't be resolved or resolves somewhere unexpected — the canonical
+// fallback can't rescue a bare canva.link URL.
+async function resolveShareLink(url: string): Promise<string> {
+  let parsed: URL
+  try {
+    parsed = new URL(url)
+  } catch {
+    throw canvaUnavailable()
+  }
+  if (parsed.hostname.toLowerCase() !== CANVA_LINK_HOST) return url
+
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
+  let finalUrl: string
+  try {
+    const response = await fetch(url, {
+      redirect: 'follow',
+      signal: controller.signal
+    })
+    finalUrl = response.url
+  } catch {
+    throw canvaUnavailable()
+  } finally {
+    clearTimeout(timeout)
+  }
+
+  let finalParsed: URL
+  try {
+    finalParsed = new URL(finalUrl)
+  } catch {
+    throw canvaUnavailable()
+  }
+  if (
+    finalParsed.protocol !== 'https:' ||
+    !CANVA_DESIGN_HOSTS.has(finalParsed.hostname.toLowerCase())
+  ) {
+    throw canvaUnavailable()
+  }
+  return finalUrl
+}
+
 async function normalize(url: string): Promise<{ embedUrl: string }> {
-  const src = await fetchOEmbedSrc(url)
+  const resolvedUrl = await resolveShareLink(url)
+  const src = await fetchOEmbedSrc(resolvedUrl)
   if (src != null) {
     // Re-validate the URL Canva handed us through the same https guard applied
     // to user input — closes a `javascript:`/`data:` injection vector if the
@@ -91,10 +144,10 @@ async function normalize(url: string): Promise<{ embedUrl: string }> {
     assertHttpsUrl(src, 'url')
     return { embedUrl: src }
   }
-  return canvaRegexFallback(url)
+  return canvaRegexFallback(resolvedUrl)
 }
 
 export const canvaSpec: EmbedNormalizerSpec = {
-  hosts: ['canva.com', 'www.canva.com'],
+  hosts: ['canva.com', 'www.canva.com', 'canva.link'],
   normalize
 }
