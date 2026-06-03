@@ -11,14 +11,14 @@ related_components:
   - testing_framework
   - development_workflow
 applies_when:
-  - "Rendering a react-email template standalone (outside the app) with tsx"
-  - "Triggering a verification-email send locally without the Redis/BullMQ worker running"
-  - "Writing a throwaway script that imports from apis/api-users/src/schema/user or workers/email"
-  - "Running api-users vitest specs directly from the command line"
+  - 'Rendering a react-email template standalone (outside the app) with tsx'
+  - 'Triggering a verification-email send locally without the Redis/BullMQ worker running'
+  - 'Writing a throwaway script that imports from apis/api-users/src/schema/user or workers/email'
+  - 'Running api-users vitest specs directly from the command line'
 symptoms:
   - "SyntaxError: The requested module ... does not provide an export named '<Component>' when importing a template from a .mts/ESM script"
-  - "Throwaway script never exits — runs to timeout, SIGTERM (exit 143) — even though the email already sent"
-  - "Failed to load url /workspaces/core/test/prismaMock.ts (0 tests) when running api-users vitest from the repo root"
+  - 'Throwaway script never exits — runs to timeout, SIGTERM (exit 143) — even though the email already sent'
+  - 'Failed to load url /workspaces/core/test/prismaMock.ts (0 tests) when running api-users vitest from the repo root'
 tags:
   - react-email
   - bullmq
@@ -87,9 +87,7 @@ and serve on `0.0.0.0` so the devcontainer forwards the port:
 ```ts
 const { createServer } = require('node:http')
 const { render } = require('@react-email/render')
-const {
-  EmailVerifyJesusFilmOne
-} = require('./apis/api-users/src/emails/templates/EmailVerifyJesusFilmOne/EmailVerifyJesusFilmOne')
+const { EmailVerifyJesusFilmOne } = require('./apis/api-users/src/emails/templates/EmailVerifyJesusFilmOne/EmailVerifyJesusFilmOne')
 
 async function main() {
   const html = await render(EmailVerifyJesusFilmOne(EmailVerifyJesusFilmOne.PreviewProps))
@@ -98,7 +96,10 @@ async function main() {
     res.end(html)
   }).listen(4321, '0.0.0.0', () => console.log('http://localhost:4321'))
 }
-main().catch((e) => { console.error(e); process.exit(1) })
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})
 ```
 
 ```bash
@@ -154,7 +155,10 @@ async function main() {
   await prisma.user.delete({ where: { userId: USER_ID } }) // email is unique; clean up
   await prisma.$disconnect()
 }
-main().catch((e) => { console.error(e); process.exit(1) })
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})
 ```
 
 ```bash
