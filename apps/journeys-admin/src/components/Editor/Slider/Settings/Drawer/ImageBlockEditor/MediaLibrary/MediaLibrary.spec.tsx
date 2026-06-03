@@ -1,10 +1,18 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { offsetLimitPagination } from '@apollo/client/utilities'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type MockedFunction } from 'vitest'
 
 import { GET_MY_CLOUDFLARE_IMAGES, MediaLibrary } from './MediaLibrary'
 import { prependCloudflareImage } from './prependCloudflareImage'
+
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
+}))
+
+const mockSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
 function makeImages(
   count: number,
@@ -66,6 +74,10 @@ function paginatedCache(): InMemoryCache {
 }
 
 describe('MediaLibrary', () => {
+  beforeEach(() => {
+    mockSendGTMEvent.mockClear()
+  })
+
   it('should render images returned by the query', async () => {
     render(
       <MockedProvider mocks={[firstFullPageMock]}>
@@ -147,6 +159,41 @@ describe('MediaLibrary', () => {
       focalLeft: 50,
       focalTop: 50,
       customizable: null
+    })
+  })
+
+  it('should send image_select event when a tile is clicked', async () => {
+    render(
+      <MockedProvider mocks={[firstFullPageMock]}>
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
+      </MockedProvider>
+    )
+    const tile = await screen.findByTestId('media-library-image-img-0')
+    fireEvent.click(tile)
+    expect(mockSendGTMEvent).toHaveBeenCalledWith({
+      event: 'image_select',
+      isAi: false
+    })
+  })
+
+  it('should send image_select with isAi true when rendered as AI', async () => {
+    const aiMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 11, isAi: true }
+      },
+      result: { data: { getMyCloudflareImages: makeImages(2) } }
+    }
+    render(
+      <MockedProvider mocks={[aiMock]}>
+        <MediaLibrary title="Your generations" onSelect={vi.fn()} isAi />
+      </MockedProvider>
+    )
+    const tile = await screen.findByTestId('media-library-image-img-0')
+    fireEvent.click(tile)
+    expect(mockSendGTMEvent).toHaveBeenCalledWith({
+      event: 'image_select',
+      isAi: true
     })
   })
 
