@@ -10,14 +10,14 @@ related_components:
   - tooling
   - database
 applies_when:
-  - "A plan over-specifies component decomposition before implementation begins"
-  - "Choosing pagination machinery (Relay cursor connections vs offset/limit) for a small bounded list"
+  - 'A plan over-specifies component decomposition before implementation begins'
+  - 'Choosing pagination machinery (Relay cursor connections vs offset/limit) for a small bounded list'
   - "A design's source-of-truth assumption may be invalidated by existing write/update behavior"
-  - "Reusing media or assets a user previously uploaded or generated in the editor"
+  - 'Reusing media or assets a user previously uploaded or generated in the editor'
 symptoms:
-  - "Plan named two near-identical per-tab grid components that collapsed into one shared component in practice"
-  - "A Relay/Connection refactor was prototyped then reverted as overengineered for the UX"
-  - "Block.src is overwritten in place by imageBlockUpdate, so the Block table cannot serve as history"
+  - 'Plan named two near-identical per-tab grid components that collapsed into one shared component in practice'
+  - 'A Relay/Connection refactor was prototyped then reverted as overengineered for the UX'
+  - 'Block.src is overwritten in place by imageBlockUpdate, so the Block table cannot serve as history'
 tags:
   - architecture
   - abstraction
@@ -53,11 +53,11 @@ The plan named a `MyCloudflareImagesGrid` per tab. Shipped instead: one `MediaLi
 <MediaLibrary isAi={true} title={t('Generations')} onSelect={onChange} ... />
 ```
 
-The two tabs differed only by a filter flag and a title string — a prop, not a new component. Video, which has a genuinely different query and rendering, correctly got a *sibling* (`VideoLibrary/VideoFromMux/MyMuxVideos/MyMuxVideos.tsx`), not a forced merge.
+The two tabs differed only by a filter flag and a title string — a prop, not a new component. Video, which has a genuinely different query and rendering, correctly got a _sibling_ (`VideoLibrary/VideoFromMux/MyMuxVideos/MyMuxVideos.tsx`), not a forced merge.
 
-**Rule of thumb:** collapse to one component when call sites differ only by data/config; keep siblings when they differ structurally. (Reinforces the team DRY preference — share from the source rather than copying. *(auto memory [claude])*)
+**Rule of thumb:** collapse to one component when call sites differ only by data/config; keep siblings when they differ structurally. (Reinforces the team DRY preference — share from the source rather than copying. _(auto memory [claude])_)
 
-This abstraction *emerged*; it was not designed up front, and an earlier reuse attempt was correctly rejected first (see What Didn't Work).
+This abstraction _emerged_; it was not designed up front, and an earlier reuse attempt was correctly rejected first (see What Didn't Work).
 
 ### 2. Prefer the simplest pagination that satisfies the cache
 
@@ -96,7 +96,7 @@ The original design assumed the `Block` table held "previously used images." It 
 ```ts
 // apis/api-journeys-modern/src/schema/block/image/imageBlockUpdate.mutation.ts
 const input = await transformInput({ ...args.input })
-return await update(id, { ...input })   // Block.src replaced in place; prior src gone
+return await update(id, { ...input }) // Block.src replaced in place; prior src gone
 ```
 
 So "give me the image I used last week" is unanswerable from `Block` — the first cover creates a row, every subsequent pick on that card mutates the same row's `src`. The pivot: back the grids with the independent, append-only `CloudflareImage` / `MuxVideo` tables in api-media, `userId`-scoped. To split AI generations from uploads, a **nullable** `isAi` column was added with **no backfill**:
@@ -124,7 +124,7 @@ Existing ~153k rows stay `NULL` and are excluded by the `isAi != null ? { isAi }
 
 ## What Didn't Work
 
-Implementation surfaced several abstractions that were built and then walked back — concrete instances of the "let it emerge" guidance *(session history)*:
+Implementation surfaced several abstractions that were built and then walked back — concrete instances of the "let it emerge" guidance _(session history)_:
 
 - **Reusing `UnsplashList` as the grid.** Rejected: it bakes in Unsplash-specific side effects (`triggerUnsplashDownload` on every click) and photographer attribution. The grid was instead built fresh ("inspired by" UnsplashList's MUI structure), then split into `MediaLibrary` + a presentational `MediaLibraryList`.
 - **Mobile horizontal-scroll variant** (IntersectionObserver sentinel, scroll-snap, 120px tiles) was built, then reverted in favor of a single 2-column grid at all breakpoints.
@@ -136,6 +136,6 @@ Note: session history did **not** contain a coding attempt for the Relay/Connect
 
 ## Related
 
-- `docs/solutions/integration-issues/federation-subgraph-scalar-registration-hidden-prerequisites.md` — Prior art on validating spec premises before implementing and not bundling pagination/scope creep into a feature PR (same api-media module). Complementary: that doc warns against *adding* pagination on unbounded queries; learning #2 here is the inverse — a pagination abstraction correctly *reverted* as overengineered.
+- `docs/solutions/integration-issues/federation-subgraph-scalar-registration-hidden-prerequisites.md` — Prior art on validating spec premises before implementing and not bundling pagination/scope creep into a feature PR (same api-media module). Complementary: that doc warns against _adding_ pagination on unbounded queries; learning #2 here is the inverse — a pagination abstraction correctly _reverted_ as overengineered.
 - `docs/solutions/best-practices/template-gallery-page-collections-patterns-nes1539.md` — Sibling journeys-admin feature; its §8 (component decomposition) and §10 (ship simplest, iterate) reinforce the right-sizing-abstractions learning.
 - `docs/solutions/integration-issues/pothos-public-unauthenticated-query-pattern-api-journeys-modern.md` — Related Pothos query-shape patterns in the same API generation.
