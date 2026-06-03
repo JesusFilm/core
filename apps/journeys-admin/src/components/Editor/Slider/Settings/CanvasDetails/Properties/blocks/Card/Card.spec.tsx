@@ -623,7 +623,7 @@ describe('Card', () => {
   })
 
   describe('ChatAssistant Section', () => {
-    it('does not render the AI chat accordion when apologistChat flag is off', () => {
+    it('does not render the AI chat accordion when aiChatEditor flag is off', () => {
       const card = createCard()
       renderWithProviders(<Card {...card} />)
 
@@ -632,10 +632,10 @@ describe('Card', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('renders the AI chat accordion when apologistChat flag is on', () => {
+    it('renders the AI chat accordion when aiChatEditor flag is on', () => {
       const card = createCard()
       renderWithProviders(<Card {...card} />, {
-        flags: { apologistChat: true }
+        flags: { aiChatEditor: true }
       })
 
       expect(
@@ -652,7 +652,7 @@ describe('Card', () => {
         expandChatByDefault: false
       })
       renderWithProviders(<Card {...card} />, {
-        flags: { apologistChat: true }
+        flags: { aiChatEditor: true }
       })
 
       expect(
@@ -666,7 +666,7 @@ describe('Card', () => {
         expandChatByDefault: true
       })
       renderWithProviders(<Card {...card} />, {
-        flags: { apologistChat: true }
+        flags: { aiChatEditor: true }
       })
 
       expect(
