@@ -26,7 +26,7 @@ vi.mock('./MuxUploadField', () => ({
 
 function renderSection(
   media: CollectionMediaValues,
-  props: { error?: string; saving?: boolean } = {}
+  props: { error?: string; saving?: boolean; disableModeSwitch?: boolean } = {}
 ): {
   onChange: ReturnType<typeof vi.fn>
   onCommit: ReturnType<typeof vi.fn>
@@ -36,8 +36,10 @@ function renderSection(
   render(
     <MediaSection
       media={media}
+      uploadKey="upload-key-1"
       error={props.error}
       saving={props.saving}
+      disableModeSwitch={props.disableModeSwitch}
       onChange={onChange}
       onCommit={onCommit}
       headerSx={{}}
@@ -212,5 +214,11 @@ describe('MediaSection', () => {
     renderSection({ type: 'link', url: 'https://x.test/a' }, { saving: true })
     expect(screen.getByText('Saving…')).toBeInTheDocument()
     expect(screen.getByLabelText('Media link')).toBeDisabled()
+  })
+
+  it('locks the Link/Upload toggle while an upload is in flight', () => {
+    renderSection({ type: 'mux', muxVideoId: '' }, { disableModeSwitch: true })
+    expect(screen.getByRole('button', { name: 'Link' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Upload' })).toBeDisabled()
   })
 })

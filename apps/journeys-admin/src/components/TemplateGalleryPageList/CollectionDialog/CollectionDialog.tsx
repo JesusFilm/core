@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useId, useMemo, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -16,7 +16,10 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
-import { MuxVideoUploadProvider } from '../../MuxVideoUploadProvider'
+import {
+  MuxVideoUploadProvider,
+  useMuxVideoUpload
+} from '../../MuxVideoUploadProvider'
 
 import { CollectionDialogFooter } from './CollectionDialogFooter'
 import { CollectionPreviewPane } from './CollectionPreviewPane'
@@ -60,7 +63,7 @@ const SECTION_HEADER = {
   color: '#444451'
 } as const
 
-export function CollectionDialog({
+function CollectionDialogContent({
   open,
   mode,
   teamId,
@@ -73,6 +76,11 @@ export function CollectionDialog({
   onPublished
 }: CollectionDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { getUploadStatus, cancelUploadForBlock } = useMuxVideoUpload()
+  // Stable upload key shared by the media field and this dialog's upload
+  // controls. Lifted out of MediaSection so the dialog can read the in-flight
+  // status (to lock the toggle + Save) and abort the upload from discard.
+  const uploadKey = useId()
 
   const {
     initialValues,
@@ -129,13 +137,24 @@ export function CollectionDialog({
         setValues,
         isSubmitting
       }) => {
+        // A Mux upload is genuinely in flight (uploading bytes, or Mux is
+        // processing). Reliable signal from the provider — unlike the form
+        // value it also catches a *replacement* upload, which still carries the
+        // prior video's playbackId.
+        const uploadTask = getUploadStatus(uploadKey)
+        const uploadInFlight =
+          uploadTask?.status === 'uploading' ||
+          uploadTask?.status === 'processing'
         // Media saves out of band (persistMedia), so it must not count as an
         // unsaved change: a media-only edit is already committed. Discard
         // only guards the dialog-saved fields — plus, in create mode where
-        // media rides along with the create mutation, any pending media.
+        // media rides along with the create mutation, any pending media. An
+        // in-flight upload also counts so Cancel routes through discard (which
+        // aborts it).
         const hasUnsavedChanges =
           nonMediaDirty(values) ||
-          (mode === 'create' && values.media.type !== 'none')
+          (mode === 'create' && values.media.type !== 'none') ||
+          uploadInFlight
         // Block close paths while a mutation is in flight so the user
         // can't dismiss the dialog mid-mutation (which would orphan the
         // post-await side effects). Covers Formik submit (isSubmitting),
@@ -177,14 +196,13 @@ export function CollectionDialog({
         const selectedJourneysOrdered = values.journeyIds
           .map((id) => journeysById.get(id))
           .filter((j): j is Journey => j != null)
-        // Block every submit path while a Mux upload is pending: the form
-        // carries a `mux` media with no durable id yet (muxVideoId is set by
-        // the provider's onComplete, muxPlaybackId only exists on a saved
-        // row). There is no `readyToStream` task field to read. Also block
-        // while an out-of-band media persist is in flight so Save can't race
-        // the media write.
+        // Block every submit path while a Mux upload is in flight (provider
+        // status) or while an out-of-band media persist is running, plus the
+        // form-value guard for a fresh upload that hasn't produced a durable id
+        // yet (also covers an errored upload sitting on an empty muxVideoId).
         const mediaBlocked =
           mediaSaving ||
+          uploadInFlight ||
           (values.media.type === 'mux' &&
             values.media.muxVideoId === '' &&
             (values.media.muxPlaybackId == null ||
@@ -249,10 +267,6 @@ export function CollectionDialog({
                   minHeight: 0
                 }}
               >
-                {/* Provider wraps the whole dialog body — above the media
-                    type-toggle AND the preview pane — so switching media type
-                    mid-upload does not unmount it and abort the upload. */}
-                <MuxVideoUploadProvider>
                 <Stack
                   direction={{ xs: 'column', md: 'row' }}
                   alignItems="stretch"
@@ -548,6 +562,8 @@ export function CollectionDialog({
 
                             <MediaSection
                               media={values.media}
+                              uploadKey={uploadKey}
+                              disableModeSwitch={uploadInFlight}
                               saving={mediaSaving}
                               error={
                                 Boolean(touched.media) &&
@@ -586,7 +602,6 @@ export function CollectionDialog({
                     </Stack>
                   </Box>
                 </Stack>
-                </MuxVideoUploadProvider>
               </Form>
             </Dialog>
             <CreatorImagePickerDrawer
@@ -606,6 +621,10 @@ export function CollectionDialog({
               open={discardConfirmOpen}
               onCancel={() => setDiscardConfirmOpen(false)}
               onConfirm={() => {
+                // Discarding aborts any in-flight upload (upchunk + polling).
+                // The provider's unmount cleanup only clears polling, never the
+                // upload itself, so cancel it explicitly. No-op when idle.
+                cancelUploadForBlock({ id: uploadKey })
                 setDiscardConfirmOpen(false)
                 onClose()
               }}
@@ -614,5 +633,16 @@ export function CollectionDialog({
         )
       }}
     </Formik>
+  )
+}
+
+export function CollectionDialog(props: CollectionDialogProps): ReactElement {
+  // Provider wraps the whole dialog so the media field, the toggle, AND the
+  // dialog's action/close logic share one upload context — switching media
+  // type mid-upload never unmounts it, and the discard flow can abort it.
+  return (
+    <MuxVideoUploadProvider>
+      <CollectionDialogContent {...props} />
+    </MuxVideoUploadProvider>
   )
 }

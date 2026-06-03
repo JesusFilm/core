@@ -11,7 +11,6 @@ import {
   FocusEvent,
   MouseEvent,
   ReactElement,
-  useId,
   useState
 } from 'react'
 
@@ -30,6 +29,9 @@ const MEDIA_AREA_MIN_HEIGHT = 80
 
 interface MediaSectionProps {
   media: CollectionMediaValues
+  /** Stable per-dialog upload key, owned by the dialog so it can read the
+   *  in-flight status and abort the upload from its discard flow. */
+  uploadKey: string
   /** Inline error for the media field (schema or backend reason message). */
   error?: string
   /** Transient update — typing a link, an upload starting. No network. */
@@ -42,6 +44,11 @@ interface MediaSectionProps {
   onCommit: (media: CollectionMediaValues) => void
   /** True while the parent is persisting a committed media value. */
   saving?: boolean
+  /** True while a Mux upload is in flight — locks the Link/Upload toggle so the
+   *  user can't switch to a link mid-upload (which would race the upload's
+   *  completion). The dialog also blocks Save and routes Cancel through the
+   *  discard prompt while this holds. */
+  disableModeSwitch?: boolean
   /** Section-header typography, shared with the rest of the dialog. */
   headerSx: SxProps<Theme>
 }
@@ -64,15 +71,15 @@ function inferMode(media: CollectionMediaValues): MediaUiMode {
  */
 export function MediaSection({
   media,
+  uploadKey,
   error,
   onChange,
   onCommit,
   saving = false,
+  disableModeSwitch = false,
   headerSx
 }: MediaSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  // Stable per-dialog upload key in place of the editor's videoBlockId.
-  const uploadKey = useId()
   const [mode, setMode] = useState<MediaUiMode>(() => inferMode(media))
 
   function handleModeChange(
@@ -128,7 +135,7 @@ export function MediaSection({
         value={mode}
         onChange={handleModeChange}
         aria-label={t('Media type')}
-        disabled={saving}
+        disabled={saving || disableModeSwitch}
         sx={{
           '& .MuiToggleButton-root': { textTransform: 'none', py: 1, mb: 1 }
         }}
