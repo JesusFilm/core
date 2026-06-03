@@ -75,9 +75,7 @@ function regionBadgeLine(counts: Record<string, number>): string {
   )
   if (entries.length === 0) return ''
   return entries
-    .map(
-      ([country, count]) => `${escapeHtml(country)} &times;${count}`
-    )
+    .map(([country, count]) => `${escapeHtml(country)} &times;${count}`)
     .join(' &middot; ')
 }
 
@@ -117,8 +115,7 @@ function renderThemes(
         regionCounts[country] = (regionCounts[country] ?? 0) + 1
       }
       const geo = regionBadgeLine(regionCounts)
-      const geoLine =
-        geo.length > 0 ? `<p class="meta">Geo: ${geo}</p>` : ''
+      const geoLine = geo.length > 0 ? `<p class="meta">Geo: ${geo}</p>` : ''
       return `<div class="theme"><h3>${escapeHtml(theme.label)} <span class="count">(${theme.sessionIds.length})</span></h3>${geoLine}<ul>${excerpts}</ul></div>`
     })
     .join('')

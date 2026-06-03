@@ -113,7 +113,8 @@ function sortRegions(
   regions: Record<string, RegionStats>
 ): Record<string, RegionStats> {
   const entries = Object.entries(regions).sort(
-    (a, b) => b[1].conversations - a[1].conversations || a[0].localeCompare(b[0])
+    (a, b) =>
+      b[1].conversations - a[1].conversations || a[0].localeCompare(b[0])
   )
   const sorted: Record<string, RegionStats> = {}
   for (const [key, value] of entries) sorted[key] = value
@@ -276,7 +277,8 @@ export function buildStats(
 
     topQuestions,
     topQuestionsIncludedConversations: topQuestionsIncluded,
-    topQuestionsExcludedConversations: totalConversations - topQuestionsIncluded,
+    topQuestionsExcludedConversations:
+      totalConversations - topQuestionsIncluded,
 
     perRegion: sortRegions(perRegion)
   }
