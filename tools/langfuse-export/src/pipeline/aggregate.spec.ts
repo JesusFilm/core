@@ -1,4 +1,8 @@
-import { buildStats } from './aggregate'
+import {
+  buildStats,
+  LONG_CONVERSATION_TURNS,
+  REGION_TOP_QUESTIONS
+} from './aggregate'
 import { renderReport } from './report'
 import type {
   ConversationTurn,
@@ -166,6 +170,174 @@ describe('buildStats', () => {
   })
 })
 
+describe('buildStats perRegion (NES-1577)', () => {
+  function multiTurn(
+    sessionId: string,
+    overrides: Partial<SanitisedConversation>
+  ): SanitisedConversation {
+    return conv({
+      sessionId,
+      synthetic: false,
+      turns: [
+        turn({ userMessage: 'Tell me about salvation' }),
+        turn({ userMessage: 'and what about grace?' })
+      ],
+      ...overrides
+    })
+  }
+
+  it('groups conversations by ipCountry and surfaces per-region top questions', () => {
+    const conversations = [
+      multiTurn('nz-1', {
+        ipCountry: 'NZ',
+        language: 'en',
+        turns: [
+          turn({ userMessage: 'How can I trust the Bible?' }),
+          turn({ userMessage: 'Thanks' })
+        ]
+      }),
+      multiTurn('nz-2', {
+        ipCountry: 'NZ',
+        language: 'en',
+        turns: [
+          turn({ userMessage: 'How can I trust the Bible?' }),
+          turn({ userMessage: 'Tell me more' })
+        ]
+      }),
+      multiTurn('mx-1', {
+        ipCountry: 'MX',
+        language: 'es',
+        turns: [
+          turn({ userMessage: '¿Cómo protejo a mi familia?' }),
+          turn({ userMessage: 'Gracias' })
+        ]
+      })
+    ]
+    const stats = buildStats(conversations, 0, window)
+
+    expect(Object.keys(stats.perRegion)).toEqual(['NZ', 'MX'])
+
+    const nz = stats.perRegion.NZ
+    expect(nz.conversations).toBe(2)
+    expect(nz.realConversations).toBe(2)
+    expect(nz.syntheticConversations).toBe(0)
+    expect(nz.turns).toBe(4)
+    expect(nz.multiTurn.count).toBe(2)
+    expect(nz.multiTurn.share).toBeCloseTo(1.0, 6)
+    expect(nz.perLanguage.en).toBe(4)
+    expect(nz.topQuestions[0].message).toBe('How can I trust the Bible?')
+    expect(nz.topQuestions[0].count).toBe(2)
+    expect(nz.topQuestionsIncludedConversations).toBe(2)
+
+    const mx = stats.perRegion.MX
+    expect(mx.conversations).toBe(1)
+    expect(mx.perLanguage.es).toBe(2)
+    expect(mx.topQuestions[0].message).toBe('¿Cómo protejo a mi familia?')
+  })
+
+  it('orders regions by conversation count, breaking ties on country code', () => {
+    const conversations = [
+      multiTurn('us-1', { ipCountry: 'US' }),
+      multiTurn('us-2', { ipCountry: 'US' }),
+      multiTurn('za-1', { ipCountry: 'ZA' }),
+      multiTurn('br-1', { ipCountry: 'BR' })
+    ]
+    const stats = buildStats(conversations, 0, window)
+    // US has 2 conversations; BR and ZA each have 1 — BR wins the tie on
+    // alphabetical country code.
+    expect(Object.keys(stats.perRegion)).toEqual(['US', 'BR', 'ZA'])
+  })
+
+  it('uppercases the country key and buckets a missing one under "unknown"', () => {
+    const conversations = [
+      multiTurn('lower-1', { ipCountry: 'nz' }),
+      // Missing/empty ipCountry should land under 'unknown' rather than ''.
+      multiTurn('missing-1', { ipCountry: undefined }),
+      multiTurn('empty-1', { ipCountry: '' })
+    ]
+    const stats = buildStats(conversations, 0, window)
+    expect(stats.perRegion.NZ.conversations).toBe(1)
+    expect(stats.perRegion.unknown.conversations).toBe(2)
+  })
+
+  it('counts the long-conversation threshold (> 5 turns, matching > 10 messages)', () => {
+    const longTurns = Array.from(
+      { length: LONG_CONVERSATION_TURNS + 1 },
+      (_unused, index) => turn({ userMessage: `q${index}` })
+    )
+    const shortTurns = Array.from(
+      { length: LONG_CONVERSATION_TURNS },
+      (_unused, index) => turn({ userMessage: `q${index}` })
+    )
+    const conversations = [
+      conv({
+        sessionId: 'long-1',
+        synthetic: false,
+        ipCountry: 'NZ',
+        turns: longTurns
+      }),
+      conv({
+        sessionId: 'short-1',
+        synthetic: false,
+        ipCountry: 'NZ',
+        turns: shortTurns
+      })
+    ]
+    const stats = buildStats(conversations, 0, window)
+    expect(stats.perRegion.NZ.longConversation.count).toBe(1)
+    expect(stats.perRegion.NZ.longConversation.share).toBeCloseTo(0.5, 6)
+  })
+
+  it('caps per-region top questions at REGION_TOP_QUESTIONS', () => {
+    const turns = (text: string): ConversationTurn[] => [
+      turn({ userMessage: text }),
+      turn({ userMessage: 'follow-up' })
+    ]
+    const conversations = Array.from(
+      { length: REGION_TOP_QUESTIONS + 5 },
+      (_unused, index) =>
+        conv({
+          sessionId: `nz-${index}`,
+          synthetic: false,
+          ipCountry: 'NZ',
+          turns: turns(`distinct question ${index}`)
+        })
+    )
+    const stats = buildStats(conversations, 0, window)
+    expect(stats.perRegion.NZ.topQuestions.length).toBe(REGION_TOP_QUESTIONS)
+  })
+
+  it('separates real and synthetic conversations within a region', () => {
+    const conversations = [
+      conv({
+        sessionId: 'real-1',
+        synthetic: false,
+        ipCountry: 'NZ',
+        turns: [turn(), turn()]
+      }),
+      conv({
+        sessionId: 'synth-1',
+        synthetic: true,
+        ipCountry: 'NZ',
+        turns: [turn()]
+      })
+    ]
+    const stats = buildStats(conversations, 0, window)
+    const nz = stats.perRegion.NZ
+    expect(nz.conversations).toBe(2)
+    expect(nz.realConversations).toBe(1)
+    expect(nz.syntheticConversations).toBe(1)
+    // Multi-turn share denominates over all conversations in the region,
+    // including the synthetic single-turn one.
+    expect(nz.multiTurn.share).toBeCloseTo(0.5, 6)
+  })
+
+  it('emits an empty perRegion when there are no conversations', () => {
+    const stats = buildStats([], 0, window)
+    expect(stats.perRegion).toEqual({})
+  })
+})
+
 describe('renderReport', () => {
   const sanitised = [
     conv({
@@ -230,5 +402,117 @@ describe('renderReport', () => {
     const stats = buildStats(sanitised, 0, window)
     const html = renderReport(stats, sanitised, { themes: [] })
     expect(html).toMatch(/No themes were produced/i)
+  })
+
+  describe('long-message handling', () => {
+    it('truncates over-long user messages with an ellipsis and never writes the full string', () => {
+      const long = 'a'.repeat(500)
+      const conversations = [
+        conv({
+          sessionId: 'noise',
+          synthetic: false,
+          turns: [
+            turn({ userMessage: long }),
+            turn({ userMessage: 'follow-up' })
+          ]
+        })
+      ]
+      const stats = buildStats(conversations, 0, window)
+      const html = renderReport(stats, conversations, null)
+      // The raw 500-char run never appears verbatim in the HTML.
+      expect(html).not.toContain(long)
+      // A truncated run of 'a' ends with the ellipsis marker.
+      expect(html).toMatch(/a{50,250}…/)
+    })
+
+    it('wraps user-attributed text in the clamp container at every render site', () => {
+      const stats = buildStats(sanitised, 0, window)
+      const html = renderReport(stats, sanitised, {
+        themes: [{ label: 'Salvation', sessionIds: ['real-1'] }]
+      })
+      // Global top-questions cell.
+      expect(html).toContain(
+        '<td><div class="clamp">What is the meaning of salvation?</div></td>'
+      )
+      // Theme excerpt list item.
+      expect(html).toContain(
+        '<li><div class="clamp">What is the meaning of salvation?</div></li>'
+      )
+    })
+
+    it('wraps the degradation-path flat sample in the clamp container too', () => {
+      const stats = buildStats(sanitised, 0, window)
+      const html = renderReport(stats, sanitised, null)
+      // null themes -> flat sample fallback under the AI-grouped themes section.
+      expect(html).toContain(
+        '<li><div class="clamp">What is the meaning of salvation?</div></li>'
+      )
+    })
+  })
+
+  describe('per-region section (NES-1577)', () => {
+    const multiCountry: SanitisedConversation[] = [
+      conv({
+        sessionId: 'nz-1',
+        synthetic: false,
+        ipCountry: 'NZ',
+        language: 'en',
+        turns: [
+          turn({ userMessage: 'How can I trust the Bible?' }),
+          turn({ userMessage: 'Tell me more' })
+        ]
+      }),
+      conv({
+        sessionId: 'nz-2',
+        synthetic: false,
+        ipCountry: 'NZ',
+        language: 'en',
+        turns: [
+          turn({ userMessage: 'How can I trust the Bible?' }),
+          turn({ userMessage: 'Thanks' })
+        ]
+      }),
+      conv({
+        sessionId: 'mx-1',
+        synthetic: false,
+        ipCountry: 'MX',
+        language: 'es',
+        turns: [
+          turn({ userMessage: '¿Cómo protejo a mi familia?' }),
+          turn({ userMessage: 'Gracias' })
+        ]
+      })
+    ]
+
+    it('renders one card per country with country-specific top questions', () => {
+      const stats = buildStats(multiCountry, 0, window)
+      const html = renderReport(stats, multiCountry, null)
+      expect(html).toContain('By region')
+      // Both countries appear as headings in their cards.
+      expect(html).toMatch(/<h3>NZ\b/)
+      expect(html).toMatch(/<h3>MX\b/)
+      // Per-region top questions render verbatim.
+      expect(html).toContain('How can I trust the Bible?')
+      expect(html).toContain('¿Cómo protejo a mi familia?')
+      // The long-conversation data label uses the >10 messages threshold
+      // (rendered HTML-escaped) — every region card carries it.
+      expect(html).toMatch(/Long \(&gt;10 messages\)/)
+    })
+
+    it('annotates themes with a per-country geo breakdown', () => {
+      const stats = buildStats(multiCountry, 0, window)
+      const themes = {
+        themes: [{ label: 'Salvation', sessionIds: ['nz-1', 'nz-2', 'mx-1'] }]
+      }
+      const html = renderReport(stats, multiCountry, themes)
+      // Geo annotation: NZ ×2 · MX ×1 (dominant country first).
+      expect(html).toMatch(/Geo:\s*NZ\s*&times;2.*MX\s*&times;1/)
+    })
+
+    it('shows a "no regional signals" note when conversations are empty', () => {
+      const stats = buildStats([], 0, window)
+      const html = renderReport(stats, [], null)
+      expect(html).toContain('No regional signals in this window.')
+    })
   })
 })

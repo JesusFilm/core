@@ -112,7 +112,16 @@ function metaString(
   key: string
 ): string | undefined {
   const value = metadata[key]
-  return typeof value === 'string' && value.length > 0 ? value : undefined
+  if (typeof value === 'string') return value.length > 0 ? value : undefined
+  // Coerce finite numbers and booleans so a client that mistyped one of
+  // these fields still surfaces in the export instead of being silently
+  // dropped. NES-1577 follow-up: the chat zod schema declares journeyId
+  // as a string, but production traces have been observed carrying it
+  // as a number — coercing here lets the report attribute the trace
+  // regardless of the wire-type.
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value)
+  if (typeof value === 'boolean') return String(value)
+  return undefined
 }
 
 function numberOrNull(value: unknown): number | null {

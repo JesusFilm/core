@@ -87,6 +87,26 @@ export interface TopQuestion {
   count: number
 }
 
+// Per-region "fingerprint" (NES-1577): the slice of activity from one country.
+// `country` is the trace's `ipCountry` (Vercel edge geo, ISO-3166-1 alpha-2),
+// or 'unknown' when capture failed. Top-questions use the same eligibility as
+// the global rollup (real-session, length>1) so a region's noise floor matches.
+export interface RegionStats {
+  country: string
+  conversations: number // total (real + synthetic) — honest denominator
+  realConversations: number // non-synthetic
+  syntheticConversations: number
+  turns: number
+  multiTurn: CountShare // share of conversations with > 1 turn
+  // Long-conversation threshold mirrors Aaron's HollowBible "> 10 messages"
+  // callout. One ConversationTurn = one user + one assistant message, so
+  // 10 messages ≈ 5 turns. Constant lives in aggregate.ts.
+  longConversation: CountShare
+  perLanguage: Record<string, number> // turn count by language code
+  topQuestions: TopQuestion[]
+  topQuestionsIncludedConversations: number
+}
+
 export interface ReportStats {
   windowFrom: string
   windowTo: string
@@ -122,6 +142,10 @@ export interface ReportStats {
   topQuestions: TopQuestion[]
   topQuestionsIncludedConversations: number
   topQuestionsExcludedConversations: number
+
+  // Per-region fingerprints (NES-1577). Keyed by ISO-3166 country code or
+  // 'unknown'. Ordered by conversations desc when rendered.
+  perRegion: Record<string, RegionStats>
 }
 
 // Theme labels + group assignments returned by the LLM. Never excerpt text —
