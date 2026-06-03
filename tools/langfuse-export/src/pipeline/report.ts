@@ -8,7 +8,7 @@
 // confirm Langfuse's per-model pricing tables match our gateway billing,
 // so we omit them from the reviewer-facing report.
 
-import { firstUserMessage } from './normalize'
+import { firstUserMessage, normalizeCountry } from './normalize'
 import type {
   RegionStats,
   ReportStats,
@@ -105,13 +105,12 @@ function renderThemes(
         .join('')
       // Per-theme region breakdown — deterministic, no LLM. Lets a reader
       // see "salvation is asked across NZ + US" without a second synthesis
-      // pass. 'unknown' covers conversations whose trace lacked a country.
+      // pass. normalizeCountry() is shared with aggregate.ts so these keys
+      // (incl. the UNKNOWN_COUNTRY bucket for traces lacking a country) stay
+      // in lockstep with the per-region cards.
       const regionCounts: Record<string, number> = {}
       for (const conversation of conversations) {
-        const country =
-          conversation.ipCountry != null && conversation.ipCountry.length > 0
-            ? conversation.ipCountry.toUpperCase()
-            : 'unknown'
+        const country = normalizeCountry(conversation.ipCountry)
         regionCounts[country] = (regionCounts[country] ?? 0) + 1
       }
       const geo = regionBadgeLine(regionCounts)

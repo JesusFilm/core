@@ -8,6 +8,7 @@ import type {
   SanitisedConversation,
   TopQuestion
 } from '../types'
+import { normalizeCountry } from './normalize'
 
 const DEFAULT_TOP_N = 20
 // "Long conversation" threshold: > 10 messages exchanged. One
@@ -17,10 +18,6 @@ const LONG_CONVERSATION_TURNS = 5
 // Cap per-region top-questions so a high-volume country doesn't blow the
 // rendered report up. Global top-questions stays at DEFAULT_TOP_N.
 const REGION_TOP_QUESTIONS = 10
-// Buckets a missing country code under a stable key. NES-1574 captures
-// ipCountry on every trace, but earlier traces and edge-cache misses can
-// still land here — we surface those so the gap is visible, not silenced.
-const UNKNOWN_COUNTRY = 'unknown'
 const UNKNOWN_LANGUAGE = 'unknown'
 
 function dayKey(iso: string): string {
@@ -168,11 +165,9 @@ export function buildStats(
     if (eligibleForQuestions) topQuestionsIncluded += 1
 
     // Normalise the country once per conversation so empty strings, undefined,
-    // and lowercase variants all land under the same bucket key.
-    const country =
-      conversation.ipCountry != null && conversation.ipCountry.length > 0
-        ? conversation.ipCountry.toUpperCase()
-        : UNKNOWN_COUNTRY
+    // and lowercase variants all land under the same bucket key (shared with
+    // report.ts so the per-region cards and per-theme Geo line stay aligned).
+    const country = normalizeCountry(conversation.ipCountry)
     const region = regionOf(country)
     region.conversations += 1
     if (conversation.synthetic) region.syntheticConversations += 1
@@ -288,6 +283,5 @@ export {
   DEFAULT_TOP_N,
   LONG_CONVERSATION_TURNS,
   REGION_TOP_QUESTIONS,
-  UNKNOWN_COUNTRY,
   UNKNOWN_LANGUAGE
 }

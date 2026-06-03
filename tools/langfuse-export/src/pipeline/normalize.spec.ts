@@ -1,8 +1,10 @@
 import {
   DEFAULT_LOAD_TEST_REGEX,
+  UNKNOWN_COUNTRY,
   extractAssistantReply,
   extractLatestUserMessage,
-  normalize
+  normalize,
+  normalizeCountry
 } from './normalize'
 import type { ObservationRecord, TraceRecord } from '../types'
 
@@ -234,5 +236,18 @@ describe('normalize', () => {
     )
     expect(excludedTurnCount).toBe(0)
     expect(conversations).toHaveLength(1)
+  })
+})
+
+describe('normalizeCountry', () => {
+  it('upper-cases a present country code so case variants share one bucket', () => {
+    expect(normalizeCountry('nz')).toBe('NZ')
+    expect(normalizeCountry('NZ')).toBe('NZ')
+  })
+
+  it('collapses missing, null, and empty codes to UNKNOWN_COUNTRY', () => {
+    expect(normalizeCountry(undefined)).toBe(UNKNOWN_COUNTRY)
+    expect(normalizeCountry(null)).toBe(UNKNOWN_COUNTRY)
+    expect(normalizeCountry('')).toBe(UNKNOWN_COUNTRY)
   })
 })

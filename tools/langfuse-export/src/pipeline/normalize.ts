@@ -220,3 +220,19 @@ export function firstUserMessage(conversation: {
   }
   return ''
 }
+
+// Stable bucket key for a trace's country. Missing/empty codes collapse to
+// UNKNOWN_COUNTRY; present codes are upper-cased so 'nz' and 'NZ' don't split
+// into separate buckets. Shared by aggregate (per-region cards) and report
+// (per-theme Geo line) so the two country key spaces never drift apart — if one
+// side ever changed its normalisation, the per-theme annotation would silently
+// stop matching the region cards. NES-1574 captures ipCountry on every trace,
+// but earlier traces and edge-cache misses can still land in UNKNOWN_COUNTRY,
+// which we surface so the gap is visible rather than silenced.
+export const UNKNOWN_COUNTRY = 'unknown'
+
+export function normalizeCountry(ipCountry: string | null | undefined): string {
+  return ipCountry != null && ipCountry.length > 0
+    ? ipCountry.toUpperCase()
+    : UNKNOWN_COUNTRY
+}
