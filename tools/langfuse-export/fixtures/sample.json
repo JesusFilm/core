@@ -1,41 +1,627 @@
 {
   "_comment": "Synthetic, PII-free fixture for offline runs (NES-1719). Not derived from real traces. Drives normalize -> sanitize -> facets -> dataset -> explorer -> zip with no network. 'god'/'jesus' saturate user messages (suppressed as over-common); topical terms survive as facets; includes a null-session and a load-test probe (excluded).",
   "traces": [
-    { "id": "t1", "sessionId": "s-001", "timestamp": "2026-05-10T09:00:00.000Z", "environment": "production", "metadata": {}, "tags": [], "language": "en", "ipCountry": "US" },
-    { "id": "t2", "sessionId": "s-002", "timestamp": "2026-05-11T09:00:00.000Z", "environment": "production", "metadata": {}, "tags": [], "language": "en", "ipCountry": "GB" },
-    { "id": "t3", "sessionId": "s-003", "timestamp": "2026-05-12T09:00:00.000Z", "environment": "production", "metadata": {}, "tags": [], "language": "es", "ipCountry": "MX" },
-    { "id": "t4", "sessionId": "s-004", "timestamp": "2026-05-13T09:00:00.000Z", "environment": "production", "metadata": {}, "tags": [], "language": "en", "ipCountry": "NG" },
-    { "id": "t5", "sessionId": "s-005", "timestamp": "2026-05-14T09:00:00.000Z", "environment": "production", "metadata": {}, "tags": [], "language": "en", "ipCountry": "IN" },
-    { "id": "t6", "sessionId": "s-006", "timestamp": "2026-05-15T09:00:00.000Z", "environment": "production", "metadata": {}, "tags": [], "language": "pt", "ipCountry": "BR" },
-    { "id": "t7", "sessionId": "s-007", "timestamp": "2026-05-16T09:00:00.000Z", "environment": "production", "metadata": {}, "tags": [], "language": "en", "ipCountry": "US" },
-    { "id": "t8", "sessionId": "s-008", "timestamp": "2026-05-17T09:00:00.000Z", "environment": "production", "metadata": {}, "tags": [], "language": "de", "ipCountry": "DE" },
-    { "id": "t9", "sessionId": "s-009", "timestamp": "2026-05-18T09:00:00.000Z", "environment": "production", "metadata": {}, "tags": [], "language": "en", "ipCountry": "KE" },
-    { "id": "t10", "sessionId": "s-010", "timestamp": "2026-05-19T09:00:00.000Z", "environment": "production", "metadata": {}, "tags": [], "language": "en", "ipCountry": "PH" },
-    { "id": "t11", "sessionId": "s-011", "timestamp": "2026-05-20T09:00:00.000Z", "environment": "production", "metadata": {}, "tags": [], "language": "en", "ipCountry": "CA" },
-    { "id": "tsyn", "sessionId": null, "timestamp": "2026-05-21T09:00:00.000Z", "environment": "production", "metadata": {}, "tags": [], "language": "en", "ipCountry": "US" },
-    { "id": "tload", "sessionId": "s-load", "timestamp": "2026-05-22T09:00:00.000Z", "environment": "production", "metadata": {}, "tags": [], "language": "en", "ipCountry": "US" }
+    {
+      "id": "t1",
+      "sessionId": "s-001",
+      "timestamp": "2026-05-10T09:00:00.000Z",
+      "environment": "production",
+      "metadata": {},
+      "tags": [],
+      "language": "en",
+      "ipCountry": "US"
+    },
+    {
+      "id": "t2",
+      "sessionId": "s-002",
+      "timestamp": "2026-05-11T09:00:00.000Z",
+      "environment": "production",
+      "metadata": {},
+      "tags": [],
+      "language": "en",
+      "ipCountry": "GB"
+    },
+    {
+      "id": "t3",
+      "sessionId": "s-003",
+      "timestamp": "2026-05-12T09:00:00.000Z",
+      "environment": "production",
+      "metadata": {},
+      "tags": [],
+      "language": "es",
+      "ipCountry": "MX"
+    },
+    {
+      "id": "t4",
+      "sessionId": "s-004",
+      "timestamp": "2026-05-13T09:00:00.000Z",
+      "environment": "production",
+      "metadata": {},
+      "tags": [],
+      "language": "en",
+      "ipCountry": "NG"
+    },
+    {
+      "id": "t5",
+      "sessionId": "s-005",
+      "timestamp": "2026-05-14T09:00:00.000Z",
+      "environment": "production",
+      "metadata": {},
+      "tags": [],
+      "language": "en",
+      "ipCountry": "IN"
+    },
+    {
+      "id": "t6",
+      "sessionId": "s-006",
+      "timestamp": "2026-05-15T09:00:00.000Z",
+      "environment": "production",
+      "metadata": {},
+      "tags": [],
+      "language": "pt",
+      "ipCountry": "BR"
+    },
+    {
+      "id": "t7",
+      "sessionId": "s-007",
+      "timestamp": "2026-05-16T09:00:00.000Z",
+      "environment": "production",
+      "metadata": {},
+      "tags": [],
+      "language": "en",
+      "ipCountry": "US"
+    },
+    {
+      "id": "t8",
+      "sessionId": "s-008",
+      "timestamp": "2026-05-17T09:00:00.000Z",
+      "environment": "production",
+      "metadata": {},
+      "tags": [],
+      "language": "de",
+      "ipCountry": "DE"
+    },
+    {
+      "id": "t9",
+      "sessionId": "s-009",
+      "timestamp": "2026-05-18T09:00:00.000Z",
+      "environment": "production",
+      "metadata": {},
+      "tags": [],
+      "language": "en",
+      "ipCountry": "KE"
+    },
+    {
+      "id": "t10",
+      "sessionId": "s-010",
+      "timestamp": "2026-05-19T09:00:00.000Z",
+      "environment": "production",
+      "metadata": {},
+      "tags": [],
+      "language": "en",
+      "ipCountry": "PH"
+    },
+    {
+      "id": "t11",
+      "sessionId": "s-011",
+      "timestamp": "2026-05-20T09:00:00.000Z",
+      "environment": "production",
+      "metadata": {},
+      "tags": [],
+      "language": "en",
+      "ipCountry": "CA"
+    },
+    {
+      "id": "tsyn",
+      "sessionId": null,
+      "timestamp": "2026-05-21T09:00:00.000Z",
+      "environment": "production",
+      "metadata": {},
+      "tags": [],
+      "language": "en",
+      "ipCountry": "US"
+    },
+    {
+      "id": "tload",
+      "sessionId": "s-load",
+      "timestamp": "2026-05-22T09:00:00.000Z",
+      "environment": "production",
+      "metadata": {},
+      "tags": [],
+      "language": "en",
+      "ipCountry": "US"
+    }
   ],
   "observations": [
-    { "id": "o1a", "traceId": "t1", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-10T09:00:00.000Z", "endTime": "2026-05-10T09:00:02.000Z", "latencySeconds": 1.4, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "Did the resurrection of Jesus really happen and what is the evidence?" }] }], "outputRaw": "Historians point to the empty tomb and very early testimony about Jesus.", "inputTokens": 40, "outputTokens": 30, "totalTokens": 70, "costUsd": 0.0009 },
-    { "id": "o1b", "traceId": "t1", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-10T09:01:00.000Z", "endTime": "2026-05-10T09:01:02.000Z", "latencySeconds": 1.1, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "Which resurrection evidence about Jesus is strongest?" }] }], "outputRaw": "The empty tomb plus multiple independent eyewitness reports are often cited.", "inputTokens": 35, "outputTokens": 28, "totalTokens": 63, "costUsd": 0.0008 },
-    { "id": "o2a", "traceId": "t2", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-11T09:00:00.000Z", "endTime": "2026-05-11T09:00:02.000Z", "latencySeconds": 1.3, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "Is there prophecy about Jesus and God in scripture?" }] }], "outputRaw": "Passages such as Isaiah 53 are commonly read as prophecy about Jesus.", "inputTokens": 33, "outputTokens": 26, "totalTokens": 59, "costUsd": 0.0008 },
-    { "id": "o2b", "traceId": "t2", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-11T09:01:00.000Z", "endTime": "2026-05-11T09:01:02.000Z", "latencySeconds": 1.0, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "How reliable is the resurrection of Jesus as history?" }] }], "outputRaw": "Several early sources support the resurrection account.", "inputTokens": 30, "outputTokens": 18, "totalTokens": 48, "costUsd": 0.0006 },
-    { "id": "o3a", "traceId": "t3", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-12T09:00:00.000Z", "endTime": "2026-05-12T09:00:02.000Z", "latencySeconds": 1.6, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "Can history prove the resurrection of Jesus and confirm God?" }] }], "outputRaw": "There is historical material around the resurrection worth weighing carefully.", "inputTokens": 31, "outputTokens": 22, "totalTokens": 53, "costUsd": 0.0007 },
-    { "id": "o4a", "traceId": "t4", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-13T09:00:00.000Z", "endTime": "2026-05-13T09:00:02.000Z", "latencySeconds": 1.2, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "Why does God allow so much suffering and evil?" }] }], "outputRaw": "The problem of suffering is hard, and many thinkers have addressed it.", "inputTokens": 29, "outputTokens": 24, "totalTokens": 53, "costUsd": 0.0007 },
-    { "id": "o4b", "traceId": "t4", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-13T09:01:00.000Z", "endTime": "2026-05-13T09:01:02.000Z", "latencySeconds": 0.9, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "If God is good why is there evil in the world?" }] }], "outputRaw": "The problem of evil is central to this discussion.", "inputTokens": 28, "outputTokens": 16, "totalTokens": 44, "costUsd": 0.0005 },
-    { "id": "o5a", "traceId": "t5", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-14T09:00:00.000Z", "endTime": "2026-05-14T09:00:02.000Z", "latencySeconds": 1.5, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "Where does morality come from without God?" }] }], "outputRaw": "Many argue objective morality needs a grounding beyond preference.", "inputTokens": 26, "outputTokens": 20, "totalTokens": 46, "costUsd": 0.0006 },
-    { "id": "o5b", "traceId": "t5", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-14T09:01:00.000Z", "endTime": "2026-05-14T09:01:02.000Z", "latencySeconds": 1.1, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "Is suffering compatible with a loving God and Jesus?" }] }], "outputRaw": "Believers hold that a loving God can permit suffering for greater goods.", "inputTokens": 30, "outputTokens": 22, "totalTokens": 52, "costUsd": 0.0007 },
-    { "id": "o6a", "traceId": "t6", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-15T09:00:00.000Z", "endTime": "2026-05-15T09:00:02.000Z", "latencySeconds": 1.3, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "How can a good God permit evil and suffering?" }] }], "outputRaw": "This is the classic problem of evil and suffering.", "inputTokens": 27, "outputTokens": 16, "totalTokens": 43, "costUsd": 0.0005 },
-    { "id": "o7a", "traceId": "t7", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-16T09:00:00.000Z", "endTime": "2026-05-16T09:00:02.000Z", "latencySeconds": 1.7, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "Does science disprove God? What about evolution and Jesus?" }] }], "outputRaw": "Many scientists hold faith alongside accepting evolution.", "inputTokens": 31, "outputTokens": 18, "totalTokens": 49, "costUsd": 0.0006 },
-    { "id": "o7b", "traceId": "t7", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-16T09:01:00.000Z", "endTime": "2026-05-16T09:01:02.000Z", "latencySeconds": 1.0, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "Is evolution compatible with faith in Jesus?" }] }], "outputRaw": "Some read the science and faith as complementary rather than opposed.", "inputTokens": 25, "outputTokens": 18, "totalTokens": 43, "costUsd": 0.0005 },
-    { "id": "o8a", "traceId": "t8", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-17T09:00:00.000Z", "endTime": "2026-05-17T09:00:02.000Z", "latencySeconds": 1.4, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "How do we reconcile science and faith in God?" }] }], "outputRaw": "People reconcile them in several ways, depending on assumptions.", "inputTokens": 27, "outputTokens": 17, "totalTokens": 44, "costUsd": 0.0005 },
-    { "id": "o8b", "traceId": "t8", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-17T09:01:00.000Z", "endTime": "2026-05-17T09:01:02.000Z", "latencySeconds": 1.1, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "Did evolution rule out God as creator?" }] }], "outputRaw": "Science and evolution do not by themselves settle that question.", "inputTokens": 24, "outputTokens": 17, "totalTokens": 41, "costUsd": 0.0005 },
-    { "id": "o9a", "traceId": "t9", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-18T09:00:00.000Z", "endTime": "2026-05-18T09:00:02.000Z", "latencySeconds": 1.2, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "I have doubt about prophecy, Jesus, and God." }] }], "outputRaw": "Doubt is normal; many people explore prophecy and the evidence carefully.", "inputTokens": 23, "outputTokens": 20, "totalTokens": 43, "costUsd": 0.0006 },
-    { "id": "o10a", "traceId": "t10", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-19T09:00:00.000Z", "endTime": "2026-05-19T09:00:02.000Z", "latencySeconds": 1.5, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "How do I deal with doubt about morality and God?" }] }], "outputRaw": "Exploring morality and your doubt openly is a healthy step.", "inputTokens": 26, "outputTokens": 18, "totalTokens": 44, "costUsd": 0.0005 },
-    { "id": "o10b", "traceId": "t10", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-19T09:01:00.000Z", "endTime": "2026-05-19T09:01:02.000Z", "latencySeconds": 1.0, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "Does objective morality point to God and Jesus?" }] }], "outputRaw": "Some argue it does, via a moral lawgiver.", "inputTokens": 24, "outputTokens": 14, "totalTokens": 38, "costUsd": 0.0004 },
-    { "id": "o11a", "traceId": "t11", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-20T09:00:00.000Z", "endTime": "2026-05-20T09:00:02.000Z", "latencySeconds": 1.3, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "Who was Jesus historically and was he God?" }] }], "outputRaw": "Most historians see Jesus as a first-century Jewish teacher; believers hold he is God.", "inputTokens": 25, "outputTokens": 24, "totalTokens": 49, "costUsd": 0.0006 },
-    { "id": "osyn", "traceId": "tsyn", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-21T09:00:00.000Z", "endTime": "2026-05-21T09:00:02.000Z", "latencySeconds": 1.1, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "Is faith in God reasonable?" }] }], "outputRaw": "Many people find faith reasonable on a range of grounds.", "inputTokens": 18, "outputTokens": 16, "totalTokens": 34, "costUsd": 0.0004 },
-    { "id": "oload", "traceId": "tload", "type": "GENERATION", "model": "google/gemini-2.5-flash-lite", "startTime": "2026-05-22T09:00:00.000Z", "endTime": "2026-05-22T09:00:01.000Z", "latencySeconds": 0.4, "inputRaw": [{ "role": "user", "content": [{ "type": "text", "text": "load test concurrent client ping" }] }], "outputRaw": "ok", "inputTokens": 6, "outputTokens": 1, "totalTokens": 7, "costUsd": 0.00001 }
+    {
+      "id": "o1a",
+      "traceId": "t1",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-10T09:00:00.000Z",
+      "endTime": "2026-05-10T09:00:02.000Z",
+      "latencySeconds": 1.4,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Did the resurrection of Jesus really happen and what is the evidence?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "Historians point to the empty tomb and very early testimony about Jesus.",
+      "inputTokens": 40,
+      "outputTokens": 30,
+      "totalTokens": 70,
+      "costUsd": 0.0009
+    },
+    {
+      "id": "o1b",
+      "traceId": "t1",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-10T09:01:00.000Z",
+      "endTime": "2026-05-10T09:01:02.000Z",
+      "latencySeconds": 1.1,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Which resurrection evidence about Jesus is strongest?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "The empty tomb plus multiple independent eyewitness reports are often cited.",
+      "inputTokens": 35,
+      "outputTokens": 28,
+      "totalTokens": 63,
+      "costUsd": 0.0008
+    },
+    {
+      "id": "o2a",
+      "traceId": "t2",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-11T09:00:00.000Z",
+      "endTime": "2026-05-11T09:00:02.000Z",
+      "latencySeconds": 1.3,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Is there prophecy about Jesus and God in scripture?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "Passages such as Isaiah 53 are commonly read as prophecy about Jesus.",
+      "inputTokens": 33,
+      "outputTokens": 26,
+      "totalTokens": 59,
+      "costUsd": 0.0008
+    },
+    {
+      "id": "o2b",
+      "traceId": "t2",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-11T09:01:00.000Z",
+      "endTime": "2026-05-11T09:01:02.000Z",
+      "latencySeconds": 1.0,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "How reliable is the resurrection of Jesus as history?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "Several early sources support the resurrection account.",
+      "inputTokens": 30,
+      "outputTokens": 18,
+      "totalTokens": 48,
+      "costUsd": 0.0006
+    },
+    {
+      "id": "o3a",
+      "traceId": "t3",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-12T09:00:00.000Z",
+      "endTime": "2026-05-12T09:00:02.000Z",
+      "latencySeconds": 1.6,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Can history prove the resurrection of Jesus and confirm God?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "There is historical material around the resurrection worth weighing carefully.",
+      "inputTokens": 31,
+      "outputTokens": 22,
+      "totalTokens": 53,
+      "costUsd": 0.0007
+    },
+    {
+      "id": "o4a",
+      "traceId": "t4",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-13T09:00:00.000Z",
+      "endTime": "2026-05-13T09:00:02.000Z",
+      "latencySeconds": 1.2,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Why does God allow so much suffering and evil?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "The problem of suffering is hard, and many thinkers have addressed it.",
+      "inputTokens": 29,
+      "outputTokens": 24,
+      "totalTokens": 53,
+      "costUsd": 0.0007
+    },
+    {
+      "id": "o4b",
+      "traceId": "t4",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-13T09:01:00.000Z",
+      "endTime": "2026-05-13T09:01:02.000Z",
+      "latencySeconds": 0.9,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "If God is good why is there evil in the world?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "The problem of evil is central to this discussion.",
+      "inputTokens": 28,
+      "outputTokens": 16,
+      "totalTokens": 44,
+      "costUsd": 0.0005
+    },
+    {
+      "id": "o5a",
+      "traceId": "t5",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-14T09:00:00.000Z",
+      "endTime": "2026-05-14T09:00:02.000Z",
+      "latencySeconds": 1.5,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Where does morality come from without God?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "Many argue objective morality needs a grounding beyond preference.",
+      "inputTokens": 26,
+      "outputTokens": 20,
+      "totalTokens": 46,
+      "costUsd": 0.0006
+    },
+    {
+      "id": "o5b",
+      "traceId": "t5",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-14T09:01:00.000Z",
+      "endTime": "2026-05-14T09:01:02.000Z",
+      "latencySeconds": 1.1,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Is suffering compatible with a loving God and Jesus?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "Believers hold that a loving God can permit suffering for greater goods.",
+      "inputTokens": 30,
+      "outputTokens": 22,
+      "totalTokens": 52,
+      "costUsd": 0.0007
+    },
+    {
+      "id": "o6a",
+      "traceId": "t6",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-15T09:00:00.000Z",
+      "endTime": "2026-05-15T09:00:02.000Z",
+      "latencySeconds": 1.3,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "How can a good God permit evil and suffering?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "This is the classic problem of evil and suffering.",
+      "inputTokens": 27,
+      "outputTokens": 16,
+      "totalTokens": 43,
+      "costUsd": 0.0005
+    },
+    {
+      "id": "o7a",
+      "traceId": "t7",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-16T09:00:00.000Z",
+      "endTime": "2026-05-16T09:00:02.000Z",
+      "latencySeconds": 1.7,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Does science disprove God? What about evolution and Jesus?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "Many scientists hold faith alongside accepting evolution.",
+      "inputTokens": 31,
+      "outputTokens": 18,
+      "totalTokens": 49,
+      "costUsd": 0.0006
+    },
+    {
+      "id": "o7b",
+      "traceId": "t7",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-16T09:01:00.000Z",
+      "endTime": "2026-05-16T09:01:02.000Z",
+      "latencySeconds": 1.0,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Is evolution compatible with faith in Jesus?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "Some read the science and faith as complementary rather than opposed.",
+      "inputTokens": 25,
+      "outputTokens": 18,
+      "totalTokens": 43,
+      "costUsd": 0.0005
+    },
+    {
+      "id": "o8a",
+      "traceId": "t8",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-17T09:00:00.000Z",
+      "endTime": "2026-05-17T09:00:02.000Z",
+      "latencySeconds": 1.4,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "How do we reconcile science and faith in God?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "People reconcile them in several ways, depending on assumptions.",
+      "inputTokens": 27,
+      "outputTokens": 17,
+      "totalTokens": 44,
+      "costUsd": 0.0005
+    },
+    {
+      "id": "o8b",
+      "traceId": "t8",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-17T09:01:00.000Z",
+      "endTime": "2026-05-17T09:01:02.000Z",
+      "latencySeconds": 1.1,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            { "type": "text", "text": "Did evolution rule out God as creator?" }
+          ]
+        }
+      ],
+      "outputRaw": "Science and evolution do not by themselves settle that question.",
+      "inputTokens": 24,
+      "outputTokens": 17,
+      "totalTokens": 41,
+      "costUsd": 0.0005
+    },
+    {
+      "id": "o9a",
+      "traceId": "t9",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-18T09:00:00.000Z",
+      "endTime": "2026-05-18T09:00:02.000Z",
+      "latencySeconds": 1.2,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "I have doubt about prophecy, Jesus, and God."
+            }
+          ]
+        }
+      ],
+      "outputRaw": "Doubt is normal; many people explore prophecy and the evidence carefully.",
+      "inputTokens": 23,
+      "outputTokens": 20,
+      "totalTokens": 43,
+      "costUsd": 0.0006
+    },
+    {
+      "id": "o10a",
+      "traceId": "t10",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-19T09:00:00.000Z",
+      "endTime": "2026-05-19T09:00:02.000Z",
+      "latencySeconds": 1.5,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "How do I deal with doubt about morality and God?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "Exploring morality and your doubt openly is a healthy step.",
+      "inputTokens": 26,
+      "outputTokens": 18,
+      "totalTokens": 44,
+      "costUsd": 0.0005
+    },
+    {
+      "id": "o10b",
+      "traceId": "t10",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-19T09:01:00.000Z",
+      "endTime": "2026-05-19T09:01:02.000Z",
+      "latencySeconds": 1.0,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Does objective morality point to God and Jesus?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "Some argue it does, via a moral lawgiver.",
+      "inputTokens": 24,
+      "outputTokens": 14,
+      "totalTokens": 38,
+      "costUsd": 0.0004
+    },
+    {
+      "id": "o11a",
+      "traceId": "t11",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-20T09:00:00.000Z",
+      "endTime": "2026-05-20T09:00:02.000Z",
+      "latencySeconds": 1.3,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Who was Jesus historically and was he God?"
+            }
+          ]
+        }
+      ],
+      "outputRaw": "Most historians see Jesus as a first-century Jewish teacher; believers hold he is God.",
+      "inputTokens": 25,
+      "outputTokens": 24,
+      "totalTokens": 49,
+      "costUsd": 0.0006
+    },
+    {
+      "id": "osyn",
+      "traceId": "tsyn",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-21T09:00:00.000Z",
+      "endTime": "2026-05-21T09:00:02.000Z",
+      "latencySeconds": 1.1,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [{ "type": "text", "text": "Is faith in God reasonable?" }]
+        }
+      ],
+      "outputRaw": "Many people find faith reasonable on a range of grounds.",
+      "inputTokens": 18,
+      "outputTokens": 16,
+      "totalTokens": 34,
+      "costUsd": 0.0004
+    },
+    {
+      "id": "oload",
+      "traceId": "tload",
+      "type": "GENERATION",
+      "model": "google/gemini-2.5-flash-lite",
+      "startTime": "2026-05-22T09:00:00.000Z",
+      "endTime": "2026-05-22T09:00:01.000Z",
+      "latencySeconds": 0.4,
+      "inputRaw": [
+        {
+          "role": "user",
+          "content": [
+            { "type": "text", "text": "load test concurrent client ping" }
+          ]
+        }
+      ],
+      "outputRaw": "ok",
+      "inputTokens": 6,
+      "outputTokens": 1,
+      "totalTokens": 7,
+      "costUsd": 0.00001
+    }
   ],
   "themes": {
     "s-001": ["Resurrection & evidence"],

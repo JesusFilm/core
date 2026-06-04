@@ -18,9 +18,7 @@ import type {
 // Invert the LLM's theme->sessionIds grouping into per-session theme labels.
 // Pure; deterministic. A session absent from every theme maps to []. Labels
 // are de-duplicated and kept in first-seen order per session.
-export function invertThemes(
-  synthesis: ThemeSynthesis
-): Map<string, string[]> {
+export function invertThemes(synthesis: ThemeSynthesis): Map<string, string[]> {
   const bySession = new Map<string, string[]>()
   for (const theme of synthesis.themes) {
     for (const sessionId of theme.sessionIds) {

@@ -62,7 +62,12 @@ describe('invertThemes', () => {
 
 const facets: FacetExtraction = {
   keywordFacets: [
-    { key: 'keyword:resurrection', label: 'resurrection', kind: 'keyword', count: 2 }
+    {
+      key: 'keyword:resurrection',
+      label: 'resurrection',
+      kind: 'keyword',
+      count: 2
+    }
   ],
   sessionKeywordKeys: new Map([
     ['s1', ['keyword:resurrection']],
