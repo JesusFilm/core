@@ -41,7 +41,10 @@ header.top h1 { margin:0 0 .2rem; font-size:1.1rem; }
 .facets { border-right:1px solid var(--line); background:var(--panel); }
 .list { border-right:1px solid var(--line); }
 .detail { background:var(--panel); }
-.group-title { font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:.85rem 0 .35rem; }
+.group-title { font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:.5rem 0 .25rem; padding:.25rem .3rem; display:flex; align-items:center; gap:.4rem; cursor:pointer; user-select:none; border-radius:6px; }
+.group-title:hover { background:#f0f0f3; color:var(--ink); }
+.caret { display:inline-block; width:.85em; text-align:center; font-size:.8rem; color:var(--accent); }
+.group-title .gcount { margin-left:auto; font-weight:400; color:var(--muted); }
 .facet { display:flex; justify-content:space-between; align-items:center; gap:.5rem; padding:.28rem .5rem; border-radius:6px; cursor:pointer; user-select:none; }
 .facet:hover { background:#f0f0f3; }
 .facet.active { background:var(--accent-soft); color:var(--accent); font-weight:600; }
@@ -58,6 +61,7 @@ button.clear:hover { background:#f0f0f3; }
 .card .sub { font-size:.76rem; color:var(--muted); margin:.15rem 0; }
 .card .preview { font-size:.82rem; color:#333; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .chip { display:inline-block; font-size:.7rem; background:#eef; color:#33387a; border-radius:10px; padding:.05rem .45rem; margin:.15rem .25rem .15rem 0; }
+.pill { display:inline-block; font-size:.7rem; line-height:1.45; border:1px solid transparent; border-radius:999px; padding:.02rem .45rem; margin-right:.35rem; white-space:nowrap; vertical-align:middle; }
 .empty { color:var(--muted); font-style:italic; padding:1rem .2rem; }
 .detail h2 { font-size:1.05rem; margin:.1rem 0 .3rem; }
 .detail .sub { color:var(--muted); font-size:.8rem; margin-bottom:.4rem; }
@@ -81,6 +85,9 @@ const VIEWER_JS = `
   var summary = data.summary || {};
   var selected = Object.create(null);
   var activeId = null;
+  // Facet groups collapse by default; expanded ones are recorded here so the
+  // state survives the re-render that fires when a facet is toggled.
+  var expandedGroups = Object.create(null);
 
   function el(tag, className, text) {
     var node = document.createElement(tag);
@@ -96,9 +103,30 @@ const VIEWER_JS = `
   }
   function sessionMatches(session) {
     var keys = selectedKeys();
+    if (keys.length === 0) return true;
     var has = session.facetKeys || [];
+    // Group selected keys by facet kind (the prefix before ':'). A session
+    // matches if, for every group with a selection, it carries at least one of
+    // that group's keys: OR within a group, AND across groups. So a viewer can
+    // pick multiple countries (Country A OR Country B) and still narrow by a
+    // theme or keyword on top.
+    var groups = {};
     for (var i = 0; i < keys.length; i++) {
-      if (has.indexOf(keys[i]) === -1) return false;
+      var key = keys[i];
+      var kind = key.slice(0, key.indexOf(':'));
+      if (!groups[kind]) groups[kind] = [];
+      groups[kind].push(key);
+    }
+    for (var g in groups) {
+      var groupKeys = groups[g];
+      var matchedGroup = false;
+      for (var j = 0; j < groupKeys.length; j++) {
+        if (has.indexOf(groupKeys[j]) !== -1) {
+          matchedGroup = true;
+          break;
+        }
+      }
+      if (!matchedGroup) return false;
     }
     return true;
   }
@@ -109,13 +137,37 @@ const VIEWER_JS = `
     }
     return out;
   }
-  function metaLine(session) {
-    var parts = [];
-    if (session.language) parts.push(session.language);
-    if (session.ipCountry) parts.push(session.ipCountry);
-    parts.push(session.messageCount + ' messages');
-    if (session.synthetic) parts.push('null-session');
-    return parts.join('  \\u00b7  ');
+  // Stable hue per value so every 'US' / 'en' pill shares a colour and a reader
+  // can line up sessions with the same country or language at a glance.
+  function hueOf(seed) {
+    var hash = 0;
+    for (var i = 0; i < seed.length; i++) {
+      hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+    }
+    return hash % 360;
+  }
+  function pill(kind, value) {
+    var node = el('span', 'pill', value);
+    var hue = hueOf(kind + ':' + value);
+    node.style.backgroundColor = 'hsl(' + hue + ', 70%, 90%)';
+    node.style.color = 'hsl(' + hue + ', 45%, 28%)';
+    node.style.borderColor = 'hsl(' + hue + ', 55%, 80%)';
+    return node;
+  }
+  // language + country as coloured pills; message count (and null-session) stay
+  // as plain muted text after them.
+  function buildMeta(session) {
+    var sub = el('div', 'sub');
+    if (session.language) {
+      var langPill = pill('lang', session.language);
+      langPill.title = 'Journey language, not the language the user typed';
+      sub.appendChild(langPill);
+    }
+    if (session.ipCountry) sub.appendChild(pill('country', session.ipCountry));
+    var rest = session.messageCount + ' messages';
+    if (session.synthetic) rest += '  \\u00b7  null-session';
+    sub.appendChild(document.createTextNode(rest));
+    return sub;
   }
 
   function renderHeader() {
@@ -146,7 +198,26 @@ const VIEWER_JS = `
 
   function renderFacetGroup(host, title, items) {
     if (items.length === 0) return;
-    host.appendChild(el('div', 'group-title', title + ' (' + items.length + ')'));
+    var expanded = expandedGroups[title] === true;
+    // How many of this group's facets are currently selected, so a collapsed
+    // group still signals that it is filtering.
+    var activeCount = 0;
+    for (var n = 0; n < items.length; n++) {
+      if (selected[items[n].key]) activeCount += 1;
+    }
+
+    var header = el('div', 'group-title');
+    header.appendChild(el('span', 'caret', expanded ? '\\u25BE' : '\\u25B8'));
+    header.appendChild(el('span', null, title));
+    var count = activeCount > 0 ? activeCount + ' / ' + items.length : String(items.length);
+    header.appendChild(el('span', 'gcount', count));
+    header.addEventListener('click', function () {
+      expandedGroups[title] = !expanded;
+      renderFacets();
+    });
+    host.appendChild(header);
+
+    if (!expanded) return;
     for (var i = 0; i < items.length; i++) {
       (function (facet) {
         var row = el('div', 'facet' + (selected[facet.key] ? ' active' : ''));
@@ -168,13 +239,19 @@ const VIEWER_JS = `
       host.appendChild(el('div', 'empty', 'No facets available.'));
       return;
     }
-    host.appendChild(el('div', 'meta', 'Select facets to narrow. Sessions must match every selected facet.'));
+    host.appendChild(el('div', 'meta', 'Select facets to narrow. Within a group any match counts; across groups all must match.'));
+    var countries = [];
+    var languages = [];
     var themes = [];
     var keywords = [];
     for (var i = 0; i < facets.length; i++) {
-      if (facets[i].kind === 'theme') themes.push(facets[i]);
+      if (facets[i].kind === 'country') countries.push(facets[i]);
+      else if (facets[i].kind === 'language') languages.push(facets[i]);
+      else if (facets[i].kind === 'theme') themes.push(facets[i]);
       else keywords.push(facets[i]);
     }
+    renderFacetGroup(host, 'Country', countries);
+    renderFacetGroup(host, 'Journey Language', languages);
     renderFacetGroup(host, 'Themes', themes);
     renderFacetGroup(host, 'Keywords', keywords);
   }
@@ -204,7 +281,7 @@ const VIEWER_JS = `
       (function (session) {
         var card = el('div', 'card' + (session.id === activeId ? ' active' : ''));
         card.appendChild(el('div', 'label', session.label));
-        card.appendChild(el('div', 'sub', metaLine(session)));
+        card.appendChild(buildMeta(session));
         card.appendChild(el('div', 'preview', session.firstUserMessage || '(no user text)'));
         card.addEventListener('click', function () {
           activeId = session.id;
@@ -231,7 +308,7 @@ const VIEWER_JS = `
       return;
     }
     host.appendChild(el('h2', null, session.label));
-    host.appendChild(el('div', 'sub', metaLine(session)));
+    host.appendChild(buildMeta(session));
     if (session.themes && session.themes.length > 0) {
       var chips = el('div');
       for (var t = 0; t < session.themes.length; t++) {

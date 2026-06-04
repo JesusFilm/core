@@ -99,6 +99,10 @@ export function buildDataset(
     }
 
     const themeKeys = themes.map((label) => `theme:${label}`)
+    const countryKeys =
+      facets.sessionCountryKeys.get(conversation.sessionId) ?? []
+    const languageKeys =
+      facets.sessionLanguageKeys.get(conversation.sessionId) ?? []
     const keywordKeys = facets.sessionKeywordKeys.get(conversation.sessionId) ?? []
 
     return {
@@ -112,7 +116,7 @@ export function buildDataset(
       firstUserMessage: firstUserMessage(conversation),
       startTime: conversationStartTime(conversation),
       themes,
-      facetKeys: [...themeKeys, ...keywordKeys],
+      facetKeys: [...countryKeys, ...languageKeys, ...themeKeys, ...keywordKeys],
       messages
     }
   })
@@ -139,7 +143,12 @@ export function buildDataset(
       suppressedKeywordCount: facets.suppressedKeywordCount,
       themesAvailable: themesBySession != null
     },
-    facets: [...themeFacets, ...facets.keywordFacets],
+    facets: [
+      ...facets.countryFacets,
+      ...facets.languageFacets,
+      ...themeFacets,
+      ...facets.keywordFacets
+    ],
     sessions
   }
 }

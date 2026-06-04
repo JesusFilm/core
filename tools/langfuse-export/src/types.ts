@@ -156,10 +156,12 @@ export interface DatasetMessage {
   model: string | null
 }
 
-// A facet the viewer can filter on. `kind` separates LLM themes from
-// deterministic keywords so the UI groups them; `count` is the number of
-// sessions carrying the facet (document frequency), shown next to each chip.
-export type FacetKind = 'theme' | 'keyword'
+// A facet the viewer can filter on. `kind` groups facets in the UI: LLM
+// `theme`s, deterministic content `keyword`s, `country` (the trace's
+// ipCountry — a region filter), and `language` (the journey's configured
+// BCP-47 language). `count` is the number of sessions carrying the facet
+// (document frequency), shown next to each chip.
+export type FacetKind = 'theme' | 'keyword' | 'country' | 'language'
 
 export interface Facet {
   key: string // stable filter key, e.g. 'keyword:resurrection' or 'theme:Suffering'

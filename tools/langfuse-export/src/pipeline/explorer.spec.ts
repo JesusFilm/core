@@ -15,6 +15,8 @@ const dataset: InsightsDataset = {
     themesAvailable: true
   },
   facets: [
+    { key: 'country:US', label: 'US', kind: 'country', count: 1 },
+    { key: 'language:en', label: 'en', kind: 'language', count: 1 },
     { key: 'keyword:resurrection', label: 'resurrection', kind: 'keyword', count: 1 }
   ],
   sessions: [
@@ -23,11 +25,17 @@ const dataset: InsightsDataset = {
       label: 'Session 001',
       synthetic: false,
       language: 'en',
+      ipCountry: 'US',
       messageCount: 2,
       firstUserMessage: 'Hi',
       startTime: '2026-05-10T00:00:00.000Z',
       themes: ['Resurrection'],
-      facetKeys: ['theme:Resurrection', 'keyword:resurrection'],
+      facetKeys: [
+        'theme:Resurrection',
+        'country:US',
+        'language:en',
+        'keyword:resurrection'
+      ],
       messages: [
         // Hostile content: a literal </script> must not break the page.
         {

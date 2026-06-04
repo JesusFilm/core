@@ -18,7 +18,7 @@
 // distinctive facets. Frequency-threshold suppression (not LLM-judged) is the
 // chosen rule from the ticket's open question — deterministic and offline.
 
-import type { Facet, SanitisedConversation } from '../types'
+import type { Facet, FacetKind, SanitisedConversation } from '../types'
 
 export interface FacetExtractionOptions {
   minTermLength?: number
@@ -35,6 +35,15 @@ export interface FacetExtraction {
   // Distinct terms held back because they were over-common (the headline
   // "N keywords suppressed" figure shown in the viewer).
   suppressedKeywordCount: number
+  // Country (ipCountry) facets — a region filter. Metadata-derived, not content-
+  // derived, but lives here so all facet building is in one place.
+  countryFacets: Facet[]
+  // sessionId -> its country facet key(s) (one, or none when ipCountry is absent).
+  sessionCountryKeys: Map<string, string[]>
+  // Journey-language facets (the journey's configured BCP-47 language).
+  languageFacets: Facet[]
+  // sessionId -> its language facet key(s) (one, or none when language is absent).
+  sessionLanguageKeys: Map<string, string[]>
 }
 
 const DEFAULT_MIN_TERM_LENGTH = 3
@@ -65,6 +74,32 @@ const STOPWORDS = new Set([
 function tokenize(text: string): string[] {
   const matches = text.toLowerCase().match(/\p{L}+/gu)
   return matches ?? []
+}
+
+// Metadata facets (country, journey-language): group sessions by a single
+// metadata value, one vote each. Sessions missing the value contribute no
+// facet (they stay visible until that group is filtered). Pure grouping — no
+// content analysis — so it covers any per-session scalar attribute.
+function buildMetadataFacets(
+  conversations: SanitisedConversation[],
+  kind: FacetKind,
+  valueOf: (conversation: SanitisedConversation) => string | undefined
+): { facets: Facet[]; sessionKeys: Map<string, string[]> } {
+  const counts = new Map<string, number>()
+  const sessionKeys = new Map<string, string[]>()
+  for (const conversation of conversations) {
+    const value = valueOf(conversation)
+    if (value == null || value.length === 0) {
+      sessionKeys.set(conversation.sessionId, [])
+      continue
+    }
+    counts.set(value, (counts.get(value) ?? 0) + 1)
+    sessionKeys.set(conversation.sessionId, [`${kind}:${value}`])
+  }
+  const facets: Facet[] = Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([label, count]) => ({ key: `${kind}:${label}`, label, kind, count }))
+  return { facets, sessionKeys }
 }
 
 // The distinct, filtered terms a single session contributes (one vote per
@@ -99,9 +134,24 @@ export function buildFacets(
     return {
       keywordFacets: [],
       sessionKeywordKeys: new Map(),
-      suppressedKeywordCount: 0
+      suppressedKeywordCount: 0,
+      countryFacets: [],
+      sessionCountryKeys: new Map(),
+      languageFacets: [],
+      sessionLanguageKeys: new Map()
     }
   }
+
+  const country = buildMetadataFacets(
+    conversations,
+    'country',
+    (conversation) => conversation.ipCountry
+  )
+  const language = buildMetadataFacets(
+    conversations,
+    'language',
+    (conversation) => conversation.language
+  )
 
   // Per-session term sets (computed once) + global document frequency.
   const termsBySession = new Map<string, Set<string>>()
@@ -152,7 +202,15 @@ export function buildFacets(
     sessionKeywordKeys.set(conversation.sessionId, keys)
   }
 
-  return { keywordFacets, sessionKeywordKeys, suppressedKeywordCount }
+  return {
+    keywordFacets,
+    sessionKeywordKeys,
+    suppressedKeywordCount,
+    countryFacets: country.facets,
+    sessionCountryKeys: country.sessionKeys,
+    languageFacets: language.facets,
+    sessionLanguageKeys: language.sessionKeys
+  }
 }
 
 export {

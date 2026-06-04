@@ -68,7 +68,19 @@ const facets: FacetExtraction = {
     ['s1', ['keyword:resurrection']],
     ['s2', []]
   ]),
-  suppressedKeywordCount: 3
+  suppressedKeywordCount: 3,
+  countryFacets: [{ key: 'country:US', label: 'US', kind: 'country', count: 1 }],
+  sessionCountryKeys: new Map([
+    ['s1', ['country:US']],
+    ['s2', []]
+  ]),
+  languageFacets: [
+    { key: 'language:en', label: 'en', kind: 'language', count: 1 }
+  ],
+  sessionLanguageKeys: new Map([
+    ['s1', ['language:en']],
+    ['s2', []]
+  ])
 }
 
 describe('buildDataset', () => {
@@ -138,16 +150,22 @@ describe('buildDataset', () => {
     expect(synthetic.messageCount).toBe(1)
   })
 
-  it('combines theme and keyword facet keys onto each session', () => {
+  it('combines country, language, theme and keyword facet keys onto each session', () => {
     const session = dataset.sessions[1] // s1
     expect(session.facetKeys).toContain('theme:Resurrection')
+    expect(session.facetKeys).toContain('country:US')
+    expect(session.facetKeys).toContain('language:en')
     expect(session.facetKeys).toContain('keyword:resurrection')
     expect(session.themes).toEqual(['Resurrection'])
   })
 
-  it('emits theme facets first, then keyword facets, with session counts', () => {
+  it('emits country, language, theme and keyword facets with session counts', () => {
+    const countryFacets = dataset.facets.filter((f) => f.kind === 'country')
+    const languageFacets = dataset.facets.filter((f) => f.kind === 'language')
     const themeFacets = dataset.facets.filter((f) => f.kind === 'theme')
     const keywordFacets = dataset.facets.filter((f) => f.kind === 'keyword')
+    expect(countryFacets.map((f) => f.label)).toEqual(['US'])
+    expect(languageFacets.map((f) => f.label)).toEqual(['en'])
     expect(themeFacets.map((f) => f.label)).toEqual([
       'Doubt',
       'Resurrection',
@@ -155,8 +173,8 @@ describe('buildDataset', () => {
     ])
     expect(themeFacets.every((f) => f.count === 1)).toBe(true)
     expect(keywordFacets.map((f) => f.label)).toEqual(['resurrection'])
-    // Theme facets precede keyword facets in the combined list.
-    expect(dataset.facets[0].kind).toBe('theme')
+    // Country facets lead the combined list; keyword facets trail it.
+    expect(dataset.facets[0].kind).toBe('country')
     expect(dataset.facets[dataset.facets.length - 1].kind).toBe('keyword')
   })
 
@@ -185,7 +203,7 @@ describe('buildDataset', () => {
       '2026-06-04T00:00:00.000Z'
     )
     expect(noThemes.summary.themesAvailable).toBe(false)
-    expect(noThemes.facets.every((f) => f.kind === 'keyword')).toBe(true)
+    expect(noThemes.facets.some((f) => f.kind === 'theme')).toBe(false)
     expect(noThemes.sessions[1].themes).toEqual([])
   })
 })

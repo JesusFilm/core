@@ -18,11 +18,18 @@ function turn(userMessage: string): ConversationTurn {
 }
 
 // The brand is compile-time only — casting a plain object is safe at runtime.
-function conv(sessionId: string, messages: string[]): SanitisedConversation {
+function conv(
+  sessionId: string,
+  messages: string[],
+  ipCountry?: string,
+  language?: string
+): SanitisedConversation {
   return {
     sessionId,
     synthetic: false,
     tags: [],
+    ipCountry,
+    language,
     turns: messages.map(turn)
   } as unknown as SanitisedConversation
 }
@@ -80,6 +87,42 @@ describe('buildFacets', () => {
     expect(result.keywordFacets).toEqual([])
     expect(result.sessionKeywordKeys.size).toBe(0)
     expect(result.suppressedKeywordCount).toBe(0)
+    expect(result.countryFacets).toEqual([])
+    expect(result.sessionCountryKeys.size).toBe(0)
+    expect(result.languageFacets).toEqual([])
+    expect(result.sessionLanguageKeys.size).toBe(0)
+  })
+
+  it('builds country facets from ipCountry, one vote per session', () => {
+    const result = buildFacets([
+      conv('s1', ['hello'], 'US'),
+      conv('s2', ['hello'], 'US'),
+      conv('s3', ['hello'], 'NZ'),
+      conv('s4', ['hello']) // no ipCountry -> no country facet
+    ])
+    expect(result.countryFacets.map((f) => `${f.label}=${f.count}`)).toEqual([
+      'US=2',
+      'NZ=1'
+    ])
+    expect(result.countryFacets.every((f) => f.kind === 'country')).toBe(true)
+    expect(result.sessionCountryKeys.get('s1')).toEqual(['country:US'])
+    expect(result.sessionCountryKeys.get('s4')).toEqual([])
+  })
+
+  it('builds journey-language facets from the language field', () => {
+    const result = buildFacets([
+      conv('s1', ['hello'], 'US', 'en'),
+      conv('s2', ['hello'], 'NZ', 'en'),
+      conv('s3', ['hello'], 'MX', 'es'),
+      conv('s4', ['hello'], 'US') // no language -> no language facet
+    ])
+    expect(result.languageFacets.map((f) => `${f.label}=${f.count}`)).toEqual([
+      'en=2',
+      'es=1'
+    ])
+    expect(result.languageFacets.every((f) => f.kind === 'language')).toBe(true)
+    expect(result.sessionLanguageKeys.get('s1')).toEqual(['language:en'])
+    expect(result.sessionLanguageKeys.get('s4')).toEqual([])
   })
 
   it('respects the maxFacets cap, keeping the highest-frequency terms', () => {
