@@ -8,17 +8,17 @@ import Link from '@mui/material/Link'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import Stack from '@mui/material/Stack'
-import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { GALLERY_ACCENT } from '../galleryTokens'
+import {
+  GALLERY_ACCENT,
+  GALLERY_NAV_HEIGHT,
+  galleryGlassSx
+} from '../galleryTokens'
 
 import { useScrollSubscription } from './scrollContext'
-
-/** Height of the fixed desktop bar; sections offset their scroll target by it. */
-export const GALLERY_NAV_HEIGHT = 56
 
 export interface JourneyViewNavSection {
   /** id of the section element this link scrolls to. */
@@ -136,26 +136,24 @@ export function JourneyViewNav({
     <Box component="nav" aria-label={ariaLabel}>
       {/* Desktop (md+): a fixed glass top bar with the section links centred */}
       <Box
-        sx={{
-          display: { xs: 'none', md: 'flex' },
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: (theme) => theme.zIndex.appBar,
-          height: GALLERY_NAV_HEIGHT,
-          alignItems: 'center',
-          // Glass: a translucent tint over a backdrop blur keeps the links
-          // legible while content stays visible, softly blurred, scrolling
-          // behind. WebkitBackdropFilter covers Safari/iOS.
-          backgroundColor: (theme) =>
-            alpha(theme.palette.background.default, 0.6),
-          backdropFilter: 'saturate(180%) blur(8px)',
-          WebkitBackdropFilter: 'saturate(180%) blur(8px)',
-          borderBottom: '1px solid',
-          borderColor: scrolled ? 'divider' : 'transparent',
-          transition: 'border-color 200ms ease'
-        }}
+        sx={[
+          // Glass treatment shared with the hamburger button and drawer Paper
+          // — see `galleryGlassSx` for the recipe.
+          galleryGlassSx,
+          {
+            display: { xs: 'none', md: 'flex' },
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: (theme) => theme.zIndex.appBar,
+            height: GALLERY_NAV_HEIGHT,
+            alignItems: 'center',
+            borderBottom: '1px solid',
+            borderColor: scrolled ? 'divider' : 'transparent',
+            transition: 'border-color 200ms ease'
+          }
+        ]}
       >
         <Container maxWidth="lg">
           <Stack
@@ -216,29 +214,35 @@ export function JourneyViewNav({
       <IconButton
         aria-label={ariaLabel}
         // `aria-haspopup="dialog"` matches the MUI Drawer's role and replaces
-        // the deprecated boolean form.
+        // the deprecated boolean form. `aria-expanded` is explicit so screen
+        // readers announce the collapsed/expanded state on both transitions —
+        // omitting it (the prior `drawerOpen ? 'true' : undefined`) leaves
+        // AT silent on the closed state. `aria-controls` is unconditional
+        // because the Drawer Paper is kept mounted (see the Drawer's
+        // `keepMounted` below), so the id is always a real DOM node.
         aria-haspopup="dialog"
         aria-controls="gallery-nav-drawer"
-        aria-expanded={drawerOpen ? 'true' : undefined}
+        aria-expanded={drawerOpen}
         onClick={handleOpenDrawer}
-        sx={{
-          display: { xs: 'inline-flex', md: 'none' },
-          position: 'fixed',
-          top: 8,
-          right: 8,
-          zIndex: (theme) => theme.zIndex.appBar,
-          color: 'text.primary',
-          backgroundColor: (theme) =>
-            alpha(theme.palette.background.default, 0.6),
-          backdropFilter: 'saturate(180%) blur(8px)',
-          WebkitBackdropFilter: 'saturate(180%) blur(8px)',
-          border: '1px solid',
-          borderColor: 'divider',
-          '&:hover': {
-            backgroundColor: (theme) =>
-              alpha(theme.palette.background.default, 0.85)
+        sx={[
+          galleryGlassSx,
+          {
+            display: { xs: 'inline-flex', md: 'none' },
+            position: 'fixed',
+            top: 8,
+            right: 8,
+            zIndex: (theme) => theme.zIndex.appBar,
+            color: 'text.primary',
+            border: '1px solid',
+            borderColor: 'divider',
+            '&:hover': {
+              // Slightly stronger tint on hover so the surface lifts; the
+              // glass blur stays the same.
+              backgroundColor: (theme) =>
+                `rgba(${theme.palette.mode === 'dark' ? '255,255,255' : '0,0,0'}, 0.05)`
+            }
           }
-        }}
+        ]}
       >
         <MenuRoundedIcon />
       </IconButton>
@@ -254,17 +258,24 @@ export function JourneyViewNav({
         slotProps={{
           paper: {
             id: 'gallery-nav-drawer',
-            sx: {
-              width: { xs: '75vw', sm: 320 },
-              maxWidth: 360,
-              // Match the bar's glass treatment: a translucent tint over a
-              // backdrop blur so the page shows through, softly blurred.
-              backgroundColor: (theme) =>
-                alpha(theme.palette.background.default, 0.6),
-              backgroundImage: 'none',
-              backdropFilter: 'saturate(180%) blur(8px)',
-              WebkitBackdropFilter: 'saturate(180%) blur(8px)'
-            }
+            // `inert` removes the closed Paper from the tab order and the
+            // accessibility tree — without it, `keepMounted` would leave the
+            // Close button and each section's ListItemButton focusable and
+            // announced even though they're off-screen and visually hidden.
+            inert: !drawerOpen,
+            sx: [
+              // Match the bar's glass treatment so the three surfaces stay
+              // in lockstep.
+              galleryGlassSx,
+              {
+                width: { xs: '75vw', sm: 320 },
+                maxWidth: 360,
+                // MUI's default Paper applies a subtle elevation overlay in
+                // dark mode via `backgroundImage`; suppress it so the glass
+                // tint reads cleanly.
+                backgroundImage: 'none'
+              }
+            ]
           },
           // Drop the default dark scrim so the glass reveals the blurred page
           // behind it rather than a dim overlay (taps still close the drawer).
@@ -289,7 +300,10 @@ export function JourneyViewNav({
                 key={section.id}
                 selected={active}
                 onClick={() => handleSelect(section.id)}
-                aria-current={active ? 'true' : undefined}
+                // Use the same canonical `'location'` token as the desktop
+                // links so the active-section announcement is consistent
+                // across surfaces (was the deprecated boolean `'true'`).
+                aria-current={active ? 'location' : undefined}
               >
                 <Typography
                   sx={{

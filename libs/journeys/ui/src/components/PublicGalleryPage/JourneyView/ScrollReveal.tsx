@@ -39,9 +39,15 @@ export function ScrollReveal({
 }: ScrollRevealProps): ReactElement {
   const ref = useRef<HTMLDivElement>(null)
   const reduceMotion = usePrefersReducedMotion()
-  // Skip the brief opacity-0 flash on disabled / reduced-motion mounts by
-  // initialising the shown state synchronously to the final value.
-  const [shown, setShown] = useState<boolean>(() => disabled || reduceMotion)
+  // Initial `shown` must be deterministic between server and client to avoid
+  // a hydration mismatch — `disabled` is a prop (safe), but `reduceMotion`
+  // is `false` on the server and `true` on a reduce-motion client, so we
+  // cannot include it in the initial state. The effect below will flip
+  // `shown` to true on mount when reduce-motion is on.
+  const [shown, setShown] = useState<boolean>(disabled)
+  // Single derivation: animation off either because the consumer asked for
+  // a static render, or because the OS asked for reduced motion.
+  const animate = !disabled && !reduceMotion
 
   useEffect(() => {
     const element = ref.current
@@ -49,11 +55,7 @@ export function ScrollReveal({
 
     // Decorative use, no observer (jsdom/older browsers), or reduced motion:
     // show immediately and don't attach the observer.
-    if (
-      disabled ||
-      reduceMotion ||
-      typeof IntersectionObserver === 'undefined'
-    ) {
+    if (!animate || typeof IntersectionObserver === 'undefined') {
       setShown(true)
       return
     }
@@ -71,7 +73,7 @@ export function ScrollReveal({
     )
     observer.observe(element)
     return () => observer.disconnect()
-  }, [reduceMotion, disabled])
+  }, [animate])
 
   const hiddenTransform =
     from === 'left'
@@ -87,18 +89,17 @@ export function ScrollReveal({
         (theme) => ({
           opacity: shown ? 1 : 0,
           transform: shown ? 'none' : hiddenTransform,
-          // Under reduced motion or decorative use the element is shown
-          // immediately, so any remaining transition would animate the
-          // "instant" reveal over its full duration. Force `none` then.
-          transition:
-            reduceMotion || disabled
-              ? 'none'
-              : theme.transitions.create(['opacity', 'transform'], {
-                  duration: 700,
-                  easing: theme.transitions.easing.easeOut
-                }),
-          transitionDelay: reduceMotion || disabled ? '0ms' : `${delay}ms`,
-          willChange: reduceMotion || disabled ? 'auto' : 'opacity, transform'
+          // When animation is off the element is shown immediately, so any
+          // remaining transition would animate the "instant" reveal over its
+          // full duration. Force `none` then.
+          transition: animate
+            ? theme.transitions.create(['opacity', 'transform'], {
+                duration: 700,
+                easing: theme.transitions.easing.easeOut
+              })
+            : 'none',
+          transitionDelay: animate ? `${delay}ms` : '0ms',
+          willChange: animate ? 'opacity, transform' : 'auto'
         }),
         ...(sx == null ? [] : Array.isArray(sx) ? sx : [sx])
       ]}

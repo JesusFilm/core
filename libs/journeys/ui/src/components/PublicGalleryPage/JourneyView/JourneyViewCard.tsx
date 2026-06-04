@@ -9,6 +9,7 @@ import {
   GALLERY_ACCENT,
   GALLERY_CARD_RADIUS,
   PublicGalleryPageItem,
+  clampLines,
   metaLine
 } from '../galleryTokens'
 
@@ -32,14 +33,6 @@ interface JourneyViewCardProps {
 
 const OVERLAY_GRADIENT =
   'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 55%, rgba(0,0,0,0) 100%)'
-
-const clamp = (lines: number) =>
-  ({
-    display: '-webkit-box',
-    WebkitBoxOrient: 'vertical',
-    WebkitLineClamp: lines,
-    overflow: 'hidden'
-  }) as const
 
 export function JourneyViewCard({
   item,
@@ -139,7 +132,7 @@ export function JourneyViewCard({
               // Same `body2` description font as the overlay variant — pick
               // a fixed two-line clamp so cards in a row finish at the same
               // height regardless of how much text each item carries.
-              sx={{ color: 'text.secondary', ...clamp(2) }}
+              sx={{ color: 'text.secondary', ...clampLines(2) }}
             >
               {item.description}
             </Typography>
@@ -211,7 +204,7 @@ export function JourneyViewCard({
                 // grids align in title size, not just description size.
                 fontSize: '1.0625rem',
                 lineHeight: 1.3,
-                ...clamp(2)
+                ...clampLines(2)
               }}
             >
               {item.title}
@@ -219,7 +212,7 @@ export function JourneyViewCard({
             {hasDescription && (
               <Typography
                 variant="body2"
-                sx={{ color: 'rgba(255,255,255,0.85)', ...clamp(2) }}
+                sx={{ color: 'rgba(255,255,255,0.85)', ...clampLines(2) }}
               >
                 {item.description}
               </Typography>

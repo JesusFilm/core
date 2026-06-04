@@ -8,6 +8,11 @@ import { ReactElement } from 'react'
 
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
+import {
+  GALLERY_ACTION_SIZE,
+  GALLERY_USE_BUTTON_MIN_WIDTH
+} from '../galleryTokens'
+
 interface JourneyViewCardActionsProps {
   /** Template id (admin deep link) and slug (public viewer route). */
   itemId: string
@@ -31,14 +36,14 @@ interface JourneyViewCardActionsProps {
   decorative?: boolean
 }
 
-// Use and Preview share this height so the labelled button and the icon
-// button line up exactly.
-const ACTION_SIZE = 40
-
 /**
  * Build the admin "Use Template" deep link, guarding against a schemeless
  * `NEXT_PUBLIC_JOURNEYS_ADMIN_URL` value (e.g. `admin.staging.local`) which
  * would otherwise throw inside `new URL` and crash the page at render.
+ * In the fallback path we re-prepend `https://` so the resulting href is an
+ * absolute URL — without the scheme, the browser resolves it as a relative
+ * path against the current host (`https://gallery.host/admin.staging.local/...`)
+ * instead of navigating to the admin app.
  */
 function buildUseTemplateHref(adminUrl: string, itemId: string): string {
   try {
@@ -46,8 +51,14 @@ function buildUseTemplateHref(adminUrl: string, itemId: string): string {
     url.searchParams.set('useTemplate', itemId)
     return url.toString()
   } catch {
-    const sanitisedBase = adminUrl.replace(/\/$/, '')
-    return `${sanitisedBase}/?useTemplate=${encodeURIComponent(itemId)}`
+    // Trim whitespace before stripping `/` so a misconfigured env var with
+    // padding still produces a parsable URL — `https://  admin.local  /...`
+    // would be rejected by the browser; `https://admin.local/...` works.
+    const sanitisedBase = adminUrl
+      .trim()
+      .replace(/^\/+/, '')
+      .replace(/\/+$/, '')
+    return `https://${sanitisedBase}/?useTemplate=${encodeURIComponent(itemId)}`
   }
 }
 
@@ -68,12 +79,12 @@ export function JourneyViewCardActions({
         <Box
           sx={{
             flex: fullWidth ? 1 : '0 0 auto',
-            height: ACTION_SIZE,
+            height: GALLERY_ACTION_SIZE,
             px: fullWidth ? 0 : 2.5,
             // Match the live (non-decorative) button's `minWidth` so the
             // admin preview's Use look-alike carries the same visual
             // weight as what the publisher will see.
-            minWidth: fullWidth ? undefined : 180,
+            minWidth: fullWidth ? undefined : GALLERY_USE_BUTTON_MIN_WIDTH,
             borderRadius: 1,
             border: `1px solid ${accent}`,
             color: accent,
@@ -88,8 +99,8 @@ export function JourneyViewCardActions({
         </Box>
         <Box
           sx={{
-            width: ACTION_SIZE,
-            height: ACTION_SIZE,
+            width: GALLERY_ACTION_SIZE,
+            height: GALLERY_ACTION_SIZE,
             flexShrink: 0,
             backgroundColor: accent,
             color: '#FFFFFF',
@@ -105,8 +116,12 @@ export function JourneyViewCardActions({
     )
   }
 
+  // `||` (not `??`) so an explicitly-empty `NEXT_PUBLIC_JOURNEYS_ADMIN_URL`
+  // (a common misconfiguration when an env var is set but blank) still
+  // falls back to the default instead of producing a malformed
+  // `https:///?useTemplate=...` href.
   const adminUrl =
-    process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? 'https://admin.nextstep.is'
+    process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL || 'https://admin.nextstep.is'
   // Deep link into the admin "Use Template" receiver (NES-1608). Prefer the
   // `new URL` form so a trailing slash on the env var doesn't double the path
   // and the URL searchParams handle encoding the template id. Fall back to a
@@ -148,12 +163,12 @@ export function JourneyViewCardActions({
         aria-label={t('Use {{title}}', { title: itemTitle })}
         data-testid="GalleryTemplateCardUseButton"
         sx={{
-          height: ACTION_SIZE,
+          height: GALLERY_ACTION_SIZE,
           // In the Explore section the button is non-fullWidth (it sits in a
           // text column next to a Play icon button); give it a roomier
           // minWidth so the label has weight matching the surrounding type.
           // In More cards `fullWidth` stretches it to fill the column.
-          minWidth: fullWidth ? undefined : 180,
+          minWidth: fullWidth ? undefined : GALLERY_USE_BUTTON_MIN_WIDTH,
           ...useButtonSx
         }}
       >
@@ -167,8 +182,8 @@ export function JourneyViewCardActions({
         aria-label={t('Preview {{title}}', { title: itemTitle })}
         data-testid="GalleryTemplateCardPreviewButton"
         sx={{
-          width: ACTION_SIZE,
-          height: ACTION_SIZE,
+          width: GALLERY_ACTION_SIZE,
+          height: GALLERY_ACTION_SIZE,
           flexShrink: 0,
           backgroundColor: accent,
           color: '#FFFFFF',

@@ -1,3 +1,5 @@
+import { alpha } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 import { intlFormat, isValid, parseISO } from 'date-fns'
 
 import { brandRed } from '@core/shared/ui/themes/base/tokens/colors'
@@ -27,6 +29,47 @@ export const GALLERY_ACCENT = brandRed
 
 /** Corner radius (theme spacing units) for gallery card images. */
 export const GALLERY_CARD_RADIUS = 3
+
+/** Height of the fixed desktop section-nav bar; sections offset their scroll target by it. */
+export const GALLERY_NAV_HEIGHT = 56
+
+/** Shared height of the Use / Preview action controls so the row aligns. */
+export const GALLERY_ACTION_SIZE = 40
+
+/**
+ * Minimum width of the outlined "Use" button when it sits next to the Play
+ * icon button (Explore section, and the decorative admin look-alike). Keeps
+ * the label visually weighted against the surrounding type.
+ */
+export const GALLERY_USE_BUTTON_MIN_WIDTH = 180
+
+/**
+ * Glass-surface sx fragment: translucent tint + backdrop blur (with the
+ * `WebkitBackdropFilter` fallback for Safari/iOS). Applied to the desktop
+ * nav bar, the mobile hamburger button, and the mobile drawer's Paper so
+ * the three surfaces stay in lockstep. Plain callback form (not
+ * `SxProps<Theme>`) so it composes inside MUI's `sx={[fragment, {...}]}`
+ * array form — `SxProps<Theme>` is the outer-array type, not the inner
+ * element type, so typing it that way breaks array composition.
+ */
+export const galleryGlassSx = (theme: Theme) => ({
+  backgroundColor: alpha(theme.palette.background.default, 0.6),
+  backdropFilter: 'saturate(180%) blur(8px)',
+  WebkitBackdropFilter: 'saturate(180%) blur(8px)'
+})
+
+/**
+ * Multi-line clamp sx fragment — the `-webkit-line-clamp` recipe used by
+ * the More cards and the Explore featured rows' descriptions to cap long
+ * copy at `lines` lines with an ellipsis. Spread into a Typography `sx`.
+ */
+export const clampLines = (lines: number) =>
+  ({
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: lines,
+    overflow: 'hidden'
+  }) as const
 
 /**
  * Neutral view-model for the public gallery (template-collection) page,

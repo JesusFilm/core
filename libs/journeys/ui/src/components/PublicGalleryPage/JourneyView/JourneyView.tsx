@@ -6,10 +6,11 @@ import Stack from '@mui/material/Stack'
 import { Theme, lighten } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, ReactNode, useMemo, useState } from 'react'
+import { ReactElement, ReactNode, useMemo, useRef, useState } from 'react'
 
 import {
   GALLERY_ACCENT,
+  GALLERY_NAV_HEIGHT,
   PublicGalleryPageData,
   splitFeatured
 } from '../galleryTokens'
@@ -20,7 +21,6 @@ import { JourneyViewEmptyState } from './JourneyViewEmptyState'
 import { JourneyViewHeader } from './JourneyViewHeader'
 import { JourneyViewMedia } from './JourneyViewMedia'
 import {
-  GALLERY_NAV_HEIGHT,
   JourneyViewNav,
   JourneyViewNavSection,
   scrollToSection
@@ -152,7 +152,11 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
         }}
       >
         <Container maxWidth="md">
-          <Box ref={introRef}>
+          {/* `willChange: 'transform'` hints to the browser that this
+              subtree will be GPU-composited (the parallax writes to
+              `transform` on every rAF tick); without it the parallax
+              layers paint on the main thread on weaker devices. */}
+          <Box ref={introRef} sx={{ willChange: 'transform' }}>
             <JourneyViewHeader data={data} creatorAboveDescription />
           </Box>
         </Container>
@@ -173,7 +177,7 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
           }}
         >
           <Container maxWidth="lg">
-            <Box ref={featuredRef}>
+            <Box ref={featuredRef} sx={{ willChange: 'transform' }}>
               <SectionLabel>{t('Explore')}</SectionLabel>
               <Stack spacing={{ xs: 9, md: 13 }} sx={{ mt: 2 }}>
                 {featured.map((item, index) => (
@@ -209,7 +213,7 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
           }}
         >
           <Container maxWidth="lg">
-            <Box ref={restRef}>
+            <Box ref={restRef} sx={{ willChange: 'transform' }}>
               <SectionLabel>{t('More')}</SectionLabel>
               {/* Mobile (xs/sm): portrait overlay cards, two per row */}
               <Box
@@ -294,13 +298,22 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
 function CoverCta(): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const [visible, setVisible] = useState(true)
+  // Mirror `visible` in a ref so the scroll callback can bail out when the
+  // value hasn't changed — without this, every rAF tick while scrolling
+  // calls `setVisible` (React bails on equal values, but the closure still
+  // runs the read below). Initial value matches `useState(true)`.
+  const visibleRef = useRef(true)
 
   useScrollSubscription(() => {
-    const root = document.documentElement
-    const pageScrolls = root.scrollHeight > window.innerHeight + 1
-    // On a non-scrolling page the CTA stays put — there's nothing to scroll
-    // to but the design still earns the affordance.
-    setVisible(!pageScrolls || window.scrollY < 100)
+    // On a page that can't scroll, `scrollY` stays at 0 so the CTA stays
+    // visible (the design earns the affordance even when there's nothing
+    // to scroll to). That makes the original `documentElement.scrollHeight`
+    // check redundant — a layout-forcing read for a condition that scrollY
+    // already implies — and lets the hot path stay cheap.
+    const next = window.scrollY < 100
+    if (next === visibleRef.current) return
+    visibleRef.current = next
+    setVisible(next)
   })
 
   return (

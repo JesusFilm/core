@@ -9,6 +9,7 @@ import {
   GALLERY_ACCENT,
   GALLERY_CARD_RADIUS,
   PublicGalleryPageItem,
+  clampLines,
   metaLine
 } from '../galleryTokens'
 
@@ -148,11 +149,9 @@ export function FeaturedRow({
                 color: 'text.secondary',
                 // Long descriptions otherwise dominate the row; cap to three
                 // lines and let Preview show the full text on the template
-                // page. Same `-webkit-line-clamp` recipe as the More cards.
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: 3,
-                overflow: 'hidden'
+                // page. Shared `clampLines` recipe so the Explore row and
+                // the More cards can't drift on the same `-webkit-line-clamp`.
+                ...clampLines(3)
               }}
             >
               {item.description}

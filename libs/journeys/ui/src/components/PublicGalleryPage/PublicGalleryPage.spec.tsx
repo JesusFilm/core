@@ -259,10 +259,12 @@ describe('PublicGalleryPage', () => {
         )
       })
 
-      it('falls back to a sanitised template string when the env value is schemeless', () => {
+      it('falls back to an absolute https:// href when the env value is schemeless', () => {
         // `new URL('/', 'admin.staging.local')` throws because the base isn't a
         // valid absolute URL. The guard in buildUseTemplateHref catches it and
-        // hand-builds the href, so render doesn't crash.
+        // hand-builds the href with an `https://` scheme so the browser resolves
+        // it as an absolute URL — without the scheme it would otherwise be
+        // treated as a path relative to the current host.
         process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL = 'admin.staging.local'
         render(
           <PublicGalleryPage
@@ -272,7 +274,10 @@ describe('PublicGalleryPage', () => {
         )
         expect(
           screen.getAllByTestId('GalleryTemplateCardUseButton')[0]
-        ).toHaveAttribute('href', 'admin.staging.local/?useTemplate=template-0')
+        ).toHaveAttribute(
+          'href',
+          'https://admin.staging.local/?useTemplate=template-0'
+        )
       })
     })
 
